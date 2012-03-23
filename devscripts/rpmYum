@@ -1,0 +1,21 @@
+#/bin/sh
+#
+WORKSPACE=$(pwd)
+if [ "$1" = "init" ]
+then
+  rpm -i RPMS/x86_64/mdsplus-${2}-repo*.rpm
+elif [ "$1" = "clean" ]
+then
+  for i in $(rpm -qa | grep mdsplus | grep repo)
+  do
+    rpm -e $i
+  done
+else
+  if [ -z "$3" ]
+  then
+    yum $1 $2
+  else
+    yum $1 $2 "$3"
+  fi
+fi
+exit $?

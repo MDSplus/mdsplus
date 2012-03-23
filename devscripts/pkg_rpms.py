@@ -217,7 +217,7 @@ def makeRpmsCommand(args):
         except Exception,e:
             print "Error creating repo: %s" (e,)
             sys.exit(p.wait())
-        sys.path.insert(0,WORKSPACE+'/x86_64/tests')
+        sys.path.insert(0,WORKSPACE+'/x86_64/mdsplus/tests')
         from distribution_tests import test_rpms as test
         test(WORKSPACE,FLAVOR)
         sys.stdout.flush()
