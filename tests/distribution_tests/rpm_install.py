@@ -6,11 +6,11 @@ import sys
 WORKSPACE=os.environ['WORKSPACE']
 
 def initYum(WORKSPACE,FLAVOR):
-  p=subprocess.Popen('sudo devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
   return p.wait()
 
 def cleanYum():
-  p=subprocess.Popen('sudo devscripts/rpmYum clean',shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean',shell=True,cwd=WORKSPACE)
   return p.wait()
   
 def rpm_install(pkg,FLAVOR):
@@ -22,7 +22,7 @@ def rpm_install(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo devscripts/rpmYum install -y %s' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum install -y %s' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error installing package %s" % (package,)
@@ -39,7 +39,7 @@ def rpm_remove(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo devscripts/rpmYum remove -y "mdsplus*"' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum remove -y "mdsplus*"' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
@@ -49,9 +49,8 @@ def rpm_remove(pkg,FLAVOR):
 
 def rpm_install_tests(WORKSPACE,FLAVOR):
   print "Testing package installation"
-  p=subprocess.Popen('sudo devscripts/rpmYum remove -y "mdsplus*"',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
-  p.wait()
-  p=subprocess.Popen('sudo devscripts/rpmYum clean all 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  cleanYum()  
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean all 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error doing yum clean all"
