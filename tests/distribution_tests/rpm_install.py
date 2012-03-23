@@ -6,7 +6,7 @@ import sys
 WORKSPACE=os.environ['WORKSPACE']
 
 def initYum(WORKSPACE,FLAVOR):
-  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('chmod a+x x86_64/mdsplus/devscripts/rpmyum; sudo x86_64/mdsplus/devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
   return p.wait()
 
 def cleanYum():
