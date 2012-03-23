@@ -3,7 +3,7 @@
 WORKSPACE=$(pwd)
 if [ "$1" = "init" ]
 then
-  cat - > /etc/yum.repos.d/mdsplus-${2}.repo <<EOF
+  cat - > /etc/yum.repos.d/mdsplus.repo <<EOF
 [MDSplus]
 name=MDSplus-${2}
 baseurl=file://${WORKSPACE}/RPMS
@@ -17,6 +17,7 @@ then
   do
     rpm -e $i
   done
+  rm -f /etc/yum.repos.d/mdsplus.repo
 else
   if [ -z "$3" ]
   then
