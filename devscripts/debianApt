@@ -1,5 +1,6 @@
 #/bin/sh
 #
+WORKSPACE=$(pwd)
 if [ "$1" = "init" ]
 then
   rm -Rf ${WORKSPACE}/apt
