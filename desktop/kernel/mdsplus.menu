@@ -1,0 +1,10 @@
+<Menu>
+  <Name>Applications</Name>
+  <Menu>
+    <Name>MDSplus</Name>
+    <Directory>MDSplus.directory</Directory>
+    <Include>
+      <Category>MDSplus</Category>
+    </Include>
+  </Menu>
+</Menu>
