@@ -60,5 +60,5 @@ def rpm_install_tests(WORKSPACE,FLAVOR):
   pkgs=getPackages()
   pkgs.append('mdsplus')
   for pkg in pkgs:
-    debian_install(pkg,FLAVOR)
-    debian_remove(pkg,FLAVOR)
+    rpm_install(pkg,FLAVOR)
+    rpm_remove(pkg,FLAVOR)
