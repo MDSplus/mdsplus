@@ -2,7 +2,7 @@
 Summary: Support for MIT data acquisition devices
 Group: Applications/Acquisition
 Release: --RELEASE--
-
+Requires: mdsplus--RPMFLAVOR---python
 %description mitdevices
 Support for MIT Data acquisition devices
 
