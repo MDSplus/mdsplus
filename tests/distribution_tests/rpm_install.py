@@ -31,6 +31,7 @@ def rpm_install(pkg,FLAVOR):
     print "Error installing package %s" % (package,)
     sys.exit(1)
   else:
+    print p.stdout.read()
     print "Successfully installed package %s" % (package,)
 
 def rpm_remove(pkg,FLAVOR):
@@ -43,12 +44,13 @@ def rpm_remove(pkg,FLAVOR):
   else:
     package='mdsplus%s-%s' % (flav,pkg)
   sys.stdout.flush()
-  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum remove -y "mdsplus*"',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum remove',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
     sys.exit(1)
   else:
+    print p.stdout.read()
     print "Successfully removed package %s" % (package,)
 
 def rpm_install_tests(WORKSPACE,FLAVOR):
