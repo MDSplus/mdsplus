@@ -8,6 +8,7 @@ then
 name=MDSplus-${2}
 baseurl=file://${WORKSPACE}/RPMS
 enabled=1
+exclude=*i686*
 EOF
   rpm --import ${WORKSPACE}/x86_64/mdsplus/rpm/RPM-GPG-KEY-MDSplus
 elif [ "$1" = "done" ]
