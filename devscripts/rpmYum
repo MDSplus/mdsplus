@@ -18,6 +18,12 @@ then
     rpm -e $i
   done
   rm -f /etc/yum.repos.d/mdsplus.repo
+elif [ "$1" = "remove" ]
+then
+  for i in $(rpm -qa | grep mdsplus | grep -v repo)
+  then
+    yum remove -y $i
+  done
 else
   if [ -z "$3" ]
   then
