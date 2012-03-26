@@ -7,7 +7,7 @@ WORKSPACE=os.environ['WORKSPACE']
 
 def initYum(WORKSPACE,FLAVOR):
   sys.stdout.flush()
-  p=subprocess.Popen('chmod a+x x86_64/mdsplus/devscripts/rpmyum; sudo x86_64/mdsplus/devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('chmod a+x x86_64/mdsplus/devscripts/rpmYum; sudo x86_64/mdsplus/devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
   return p.wait()
 
 def cleanYum():
@@ -43,7 +43,7 @@ def rpm_remove(pkg,FLAVOR):
   else:
     package='mdsplus%s-%s' % (flav,pkg)
   sys.stdout.flush()
-  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum remove -y "mdsplus*"' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum remove -y "mdsplus*"',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
