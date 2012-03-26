@@ -7,7 +7,7 @@ Release: --RELEASE--
 Interface to mssql databases
 
 %files mssql
-/usr/local/mdsplus/lib??/lib??Sql*
+/usr/local/mdsplus/lib??/lib*Sql*
 %exclude /usr/local/mdsplus/lib??/*.a
 
 %post mssql
