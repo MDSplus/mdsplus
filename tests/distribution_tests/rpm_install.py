@@ -6,10 +6,12 @@ import sys
 WORKSPACE=os.environ['WORKSPACE']
 
 def initYum(WORKSPACE,FLAVOR):
+  sys.stdout.flush()
   p=subprocess.Popen('chmod a+x x86_64/mdsplus/devscripts/rpmyum; sudo x86_64/mdsplus/devscripts/rpmYum init %s' % (FLAVOR,),shell=True,cwd=WORKSPACE)
   return p.wait()
 
 def cleanYum():
+  sys.stdout.flush()
   p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean',shell=True,cwd=WORKSPACE)
   return p.wait()
   
@@ -22,6 +24,7 @@ def rpm_install(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
+  sys.stdout.flush()
   p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum install -y %s' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
@@ -39,6 +42,7 @@ def rpm_remove(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
+  sys.stdout.flush()
   p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum remove -y "mdsplus*"' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
@@ -50,6 +54,7 @@ def rpm_remove(pkg,FLAVOR):
 def rpm_install_tests(WORKSPACE,FLAVOR):
   print "Testing package installation"
   cleanYum()  
+  sys.stdout.flush()
   p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean all 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
