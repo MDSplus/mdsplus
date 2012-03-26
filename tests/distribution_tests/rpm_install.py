@@ -12,7 +12,7 @@ def initYum(WORKSPACE,FLAVOR):
 
 def cleanYum():
   sys.stdout.flush()
-  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean',shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum done',shell=True,cwd=WORKSPACE)
   return p.wait()
   
 def rpm_install(pkg,FLAVOR):
@@ -55,7 +55,6 @@ def rpm_remove(pkg,FLAVOR):
 
 def rpm_install_tests(WORKSPACE,FLAVOR):
   print "Testing package installation"
-  cleanYum()  
   sys.stdout.flush()
   p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean all 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
