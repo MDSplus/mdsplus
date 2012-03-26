@@ -8,17 +8,17 @@ X-Windows applications which use the Motif window system. This package provides 
 dwscope, dwpad, traverser, actions, actmon
 
 %files motif
-/usr/local/mdsplus/bin*/dw*
-/usr/local/mdsplus/bin*/act*
-/usr/local/mdsplus/bin*/traverser
-/usr/local/mdsplus/lib*/libXmds*
+/usr/local/mdsplus/bin??/dw*
+/usr/local/mdsplus/bin??/act*
+/usr/local/mdsplus/bin??/traverser
+/usr/local/mdsplus/lib??/libXmds*
 /usr/local/mdsplus/uid*
 /usr/local/mdsplus/desktop/motif
 /usr/local/mdsplus/pixmaps/dwpad.png
 /usr/local/mdsplus/pixmaps/dwscope.png
 /usr/local/mdsplus/pixmaps/traverser.png
 
-%exclude /usr/local/mdsplus/lib*/*.a
+%exclude /usr/local/mdsplus/lib??/*.a
 
 %post motif
 if [ -d /usr/share/applications/mdsplus ]

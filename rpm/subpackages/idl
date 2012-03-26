@@ -7,10 +7,10 @@ Release: --RELEASE--
 IDL (ITT Interactive Data Language) extensions for MDSplus
 
 %files idl
-/usr/local/mdsplus/lib*/lib*Idl*
+/usr/local/mdsplus/lib??/lib??Idl*
 /usr/local/mdsplus/idl
 %exclude /usr/local/mdsplus/idl/camac
-%exclude /usr/local/mdsplus/lib*/*.a
+%exclude /usr/local/mdsplus/lib??/*.a
 
 %post idl
 ldconfig >/dev/null 2>&1
