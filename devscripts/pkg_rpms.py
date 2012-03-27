@@ -144,7 +144,7 @@ def makeRpmsCommand(args):
             else:
                 for p in ('x86_64','i686'):
                   try:
-                    rpm="%s/RPMS/%s/mdsplus%s-%s-%s-%s.%s.%s.rpm" % (WORKSPACE,p,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST,p)
+                    rpm="/mnt/dist/%s/RPMS/%s/mdsplus%s-%s-%s-%s.%s.%s.rpm" % (FLAVOR,p,rpmflavor,pkg,VERSION,updates[pkg]['Release'],DIST,p)
 		    os.stat(rpm)
                   except:
                     print "%s missing, rebuilding" % (rpm)
