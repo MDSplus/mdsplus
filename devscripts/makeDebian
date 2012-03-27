@@ -48,7 +48,7 @@ else
     file=$(echo $(basename $f) | awk -F. '{print $2}')
     rsync -a $f ${WORKSPACE}/debian/${pkg}/DEBIAN/${file}
   done
-  DEB="${WORKSPACE}/DEBS/${arch}/mdsplus${debflavor}-${pkg}-${version}.${release}_${arch}.deb"
+  DEB="${WORKSPACE}/DEBS/${arch}/mdsplus${debflavor}-${pkg}_${version}.${release}_${arch}.deb"
   mkdir ${WORKSPACE}/DEBS/${arch} -p
   dpkg-deb --build ${WORKSPACE}/debian/${pkg} ${DEB}
   if [ "$?" == "0" ]
