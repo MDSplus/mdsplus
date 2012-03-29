@@ -3813,6 +3813,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_6C9EE2F59BA94ECE9FD9C013A722D2B5"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_6CB25CCCB67F478D9C95DAB674D0C289"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -7612,6 +7618,12 @@
         "Entry"
         {
         "MsmKey" = "8:_D4025DEF04DB45E8A2ED1380742E83EF"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D41E53696FDC4E468BFD4C724C545A8C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -36551,7 +36563,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:MDSplus"
         "ProductCode" = "8:{778A10F8-1AE6-4ECB-ACE0-E921B4180805}"
-        "PackageCode" = "8:{FF7835F5-D4B1-49D3-B1AC-2AF315B7B376}"
+        "PackageCode" = "8:{CB4EC241-05AA-4280-86B8-D109FA731831}"
         "UpgradeCode" = "8:{2524E4A1-B623-4178-B4DA-57BAF36E6D84}"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
@@ -38413,6 +38425,34 @@
                 {
                 }
             }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6C9EE2F59BA94ECE9FD9C013A722D2B5"
+            {
+            "SourcePath" = "8:..\\java\\classes\\MDSobjects.jar"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_4CCC903E933D485DB9B3ED6AF0CC9B1F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{02A1CB34-AA0D-49D9-B470-031FB1E74902}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_70B2C542423744BDBDF815C57C81D8AA"
             {
             "SourcePath" = "8:..\\x64\\Release\\Mdsdcl.dll"
@@ -39003,7 +39043,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_AC423D8806824F92B994DA149CB558F9"
             {
-            "SourcePath" = "8:..\\java\\classes\\jTraverser.jar C:\\Users\\twf.000\\Documents\\Visual Studio 2008\\Projects\\mdsplus\\java\\classes\\DeviceBeans.jar"
+            "SourcePath" = "8:..\\java\\classes\\jTraverser.jar"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4CCC903E933D485DB9B3ED6AF0CC9B1F"
@@ -39444,6 +39484,34 @@
             "OutputConfiguration" = "8:Release|Win32"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{9FA03224-2FD0-4355-8D48-2BB5B3D3CAC9}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_D41E53696FDC4E468BFD4C724C545A8C"
+            {
+            "SourcePath" = "8:..\\java\\classes\\MDSplus.jar"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_4CCC903E933D485DB9B3ED6AF0CC9B1F"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{FFDA5357-22C9-497B-B85C-61DF99C0F4F8}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
