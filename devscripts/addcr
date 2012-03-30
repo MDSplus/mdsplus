@@ -1,0 +1,4 @@
+#!/bin/sh
+awk '{print $0 ""}' $1 > fixcr.tmp
+cp fixcr.tmp $1
+rm fixcr.tmp
