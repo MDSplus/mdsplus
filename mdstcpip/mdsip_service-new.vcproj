@@ -154,6 +154,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib"
+				OutputFile="$(OutDir)\mdsip_service.exe"
 				LinkIncremental="1"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
@@ -318,6 +319,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib"
+				OutputFile="$(OutDir)\mdsip_service.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(IntDir)/mdsip_service.pdb"
