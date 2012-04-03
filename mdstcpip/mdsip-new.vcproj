@@ -154,6 +154,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="wsock32.lib"
+				OutputFile="$(OutDir)\mdsip.exe"
 				LinkIncremental="1"
 				SubSystem="1"
 				RandomizedBaseAddress="1"
