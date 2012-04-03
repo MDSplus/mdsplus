@@ -102,6 +102,11 @@ def makeRpmsCommand(args):
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
     DISTPATH=args[2]+"/"+DIST+"/"+FLAVOR+"/"
+    for d in ['RPMS','SOURCES','SPECS','SRPMS','EGGS']:
+        try:
+            os.mkdir("%s/%s" % (WORKSPACE,d))
+        except:
+            pass
     VERSION=getVersion()
     if FLAVOR=="stable":
         rpmflavor=""
@@ -115,7 +120,7 @@ def makeRpmsCommand(args):
     specfile="%s/SPECS/mdsplus-%s-%s-%s.spec" % (WORKSPACE,FLAVOR,VERSION,DIST)
     beginRpmSpec(specfile,VERSION,release,rpmflavor)
     need_to_build=False
-    need_to_update_changelog=False
+    need_changelog=False
     updates=dict()
     for pkg in getPackages():
         updates[pkg]=dict()
@@ -127,7 +132,7 @@ def makeRpmsCommand(args):
             print "No releases yet for %s mdsplus-%s. Building." % (FLAVOR,pkg)
             updates[pkg]['Update']=True
             updates[pkg]['Tag']=True
-            need_to_update_changelog=True
+            need_changelog=True
         else:
             c=checkRelease(pkg)
             if len(c) > 0:
@@ -138,7 +143,7 @@ def makeRpmsCommand(args):
                 for line in c:
                     print line
                 print "================================="
-                need_to_update_changelog=True
+                need_changelog=True
             else:
                 for p in ('x86_64','i686'):
                   try:
@@ -152,15 +157,11 @@ def makeRpmsCommand(args):
         addPkgToRpmSpec(specfile,pkg,updates[pkg]['Release'],DIST,rpmflavor)
     status="ok"
     if need_to_build:
-        if need_to_update_changelog and 'UPDATE_CHANGELOG' in os.environ:
-            p=subprocess.Popen('$(pwd)/UpdateChangeLog %s' % (os.getcwd(),FLAVOR),shell=True,os.getcwd())
+        if 'UPDATE_CHANGELOG' in os.environ and need_changelog:
+            print "Updating ChangeLog"
+            sys.stdout.flush()
+            p=subprocess.Popen('$(pwd)/UpdateChangeLog %s' % (FLAVOR,),shell=True,cwd=os.getcwd())
             p.wait()
-    for d in ['RPMS','SOURCES','SPECS','SRPMS','EGGS']:
-        try:
-            os.mkdir("%s/%s" % (WORKSPACE,d))
-        except:
-            pass
-
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
         sys.stdout.flush()
         p=subprocess.Popen('export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
