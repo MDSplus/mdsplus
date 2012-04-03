@@ -76,9 +76,11 @@ def makeMsiCommand(args):
         pythonflavor=FLAVOR+"-"
     release=getRelease("windows")
     need_to_build=False
+    need_to_tag=False
     if len(checkRelease("windows")) > 0:
         need_to_build=True
         release=release+1
+        need_to_tag=True
     print "Making directory: %s\\..\\%s" % (WORKSPACE,FLAVOR) 
     try:
       os.mkdir("%s\\..\\%s" % (WORKSPACE,FLAVOR))
@@ -153,8 +155,9 @@ def makeMsiCommand(args):
         if (stat != 0):
             print "Build failed!"
             sys.exit(stat)
-        print "Tag all modules for this release. This can take a while!"
-        newRelease('windows',FLAVOR,VERSION,release,'win')
+        if need_to_tag:
+            print "Tag all modules for this release. This can take a while!"
+            newRelease('windows',FLAVOR,VERSION,release,'win')
         build_url=os.environ['BUILD_URL']
         writeMsiInfo(msi32)
         writeMsiInfo(msi64)    
