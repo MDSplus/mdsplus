@@ -14,7 +14,7 @@ typedef int socklen_t;
 #define MSG_NOSIGNAL 0
 #define MSG_DONTWAIT 0
 #include <io.h>
-#define close _close
+#define close closesocket
 #include <process.h>
 #define getpid _getpid
 extern int pthread_mutex_init();
@@ -241,9 +241,7 @@ static int tcp_disconnect(int conid) {
       free(c->username);
       free(c);
     }
-#ifndef HAVE_WINDOWS_H
     status = close(s);
-#endif
     status = shutdown(s,2);
   }
   fflush(stdout);
@@ -441,9 +439,7 @@ static int tcp_connect(int conid, char *protocol, char *host) {
 	if (status == 0) {
 	  fprintf(stderr,"Error in connect: Timeout on connection\n");
 	  shutdown(s,2);
-#ifndef HAVE_WINDOWS_H
 	  close(s);
-#endif
 	  fflush(stderr);
 	  return -1;
 	}
