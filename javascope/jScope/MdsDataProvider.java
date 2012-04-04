@@ -1100,12 +1100,14 @@ public class MdsDataProvider
         return GetByteArray(in);
     }
 
-    protected synchronized byte[] GetByteArray(String in) throws IOException
+    public synchronized byte[] GetByteArray(String in) throws IOException
     {
         byte out_byte[] = null;
         ByteArrayOutputStream dosb = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(dosb);
 
+        if (!CheckOpen())
+            return null;
         Descriptor desc = mds.MdsValue(in);
         switch (desc.dtype)
         {
