@@ -135,7 +135,7 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
         deviceTable3.setLabelString("Mapping:");
         deviceTable3.setNumCols(1);
         deviceTable3.setNumRows(192);
-        deviceTable3.setOffsetNid(20);
+        deviceTable3.setOffsetNid(1339);
         deviceTable3.setPreferredColumnWidth(60);
         deviceTable3.setPreferredHeight(200);
         deviceTable3.setUseExpressions(true);
@@ -147,7 +147,7 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
         deviceTable4.setLabelString("Autozero Mask");
         deviceTable4.setNumCols(1);
         deviceTable4.setNumRows(192);
-        deviceTable4.setOffsetNid(26);
+        deviceTable4.setOffsetNid(1345);
         deviceTable4.setPreferredColumnWidth(4);
         deviceTable4.setPreferredHeight(200);
         jPanel3.add(deviceTable4);
@@ -156,7 +156,7 @@ public class MARTE_MHD_ISetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("I2T Limit (A): ");
-        deviceField9.setOffsetNid(32);
+        deviceField9.setOffsetNid(1351);
         jPanel4.add(deviceField9);
 
         jTabbedPane1.addTab("Alarms", jPanel4);

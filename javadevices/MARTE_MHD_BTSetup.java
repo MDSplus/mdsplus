@@ -4,7 +4,7 @@
  */
 
 /*
- * MARTE_MHD_BRSetup.java
+ * MARTE_MHD_BTSetup.java
  *
  * Created on Mar 2, 2011, 1:07:35 PM
  */
@@ -13,10 +13,10 @@
  *
  * @author manduchi
  */
-public class MARTE_MHD_BRSetup extends DeviceSetup {
+public class MARTE_MHD_BTSetup extends DeviceSetup {
 
-    /** Creates new form MARTE_MHD_BRSetup */
-    public MARTE_MHD_BRSetup() {
+    /** Creates new form MARTE_MHD_BTSetup */
+    public MARTE_MHD_BTSetup() {
         initComponents();
     }
 
@@ -51,15 +51,28 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceTable3 = new DeviceTable();
         deviceTable4 = new DeviceTable();
         jPanel4 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
         deviceField11 = new DeviceField();
+        deviceField12 = new DeviceField();
+        deviceField13 = new DeviceField();
+        deviceField14 = new DeviceField();
+        deviceField15 = new DeviceField();
+        deviceField16 = new DeviceField();
+        deviceField17 = new DeviceField();
+        deviceField18 = new DeviceField();
+        deviceField19 = new DeviceField();
+        deviceField20 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
+        jPanel11 = new javax.swing.JPanel();
+        deviceChoice3 = new DeviceChoice();
+        deviceTable2 = new DeviceTable();
 
         setDeviceProvider("localhost");
-        setDeviceTitle("MARTe MhdBr Setup");
-        setDeviceType("MARTE_MHD_BR");
+        setDeviceTitle("MARTe MhdBt Setup");
+        setDeviceType("MARTE_MHD_BT");
         setHeight(400);
         setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
@@ -156,25 +169,88 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Mapping&Offset", jPanel3);
 
+        deviceChoice2.setChoiceIntValues(new int[] {0, 1, 2, 3, 4, 5, 6, 7, 8});
+        deviceChoice2.setChoiceItems(new String[] {"NONE", "MODE", "MODE_AND_PHASE", "RATIO", "RATIO_AND_PHASE", "MODE_M0_N7", "MODE_AND_PHASE_M0_N7", "MODE_M0_N1", "MODE_AND_PHASE_M0_N1"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Trig. Mode: ");
+        deviceChoice2.setOffsetNid(1351);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel4.add(deviceChoice2);
+
         deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Max. Br Horizontal Probes (T): ");
+        deviceField9.setLabelString("Min Amp.: ");
         deviceField9.setNumCols(6);
-        deviceField9.setOffsetNid(1351);
+        deviceField9.setOffsetNid(1357);
         jPanel4.add(deviceField9);
 
         deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Max. Br Vertical Probes (T): ");
+        deviceField10.setLabelString("Max Amp.: ");
         deviceField10.setNumCols(6);
-        deviceField10.setOffsetNid(1357);
+        deviceField10.setOffsetNid(1363);
         jPanel4.add(deviceField10);
 
         deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Max time period above threshold (s):");
+        deviceField11.setLabelString("Min Phase.: ");
         deviceField11.setNumCols(6);
-        deviceField11.setOffsetNid(1363);
+        deviceField11.setOffsetNid(1369);
         jPanel4.add(deviceField11);
 
-        jTabbedPane1.addTab("Alarms", jPanel4);
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("Max Phase: ");
+        deviceField12.setNumCols(6);
+        deviceField12.setOffsetNid(1375);
+        jPanel4.add(deviceField12);
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("Min Ratio:  ");
+        deviceField13.setNumCols(6);
+        deviceField13.setOffsetNid(1381);
+        jPanel4.add(deviceField13);
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("Max Ratio: ");
+        deviceField14.setNumCols(6);
+        deviceField14.setOffsetNid(1387);
+        jPanel4.add(deviceField14);
+
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("N. Times:");
+        deviceField15.setNumCols(6);
+        deviceField15.setOffsetNid(1393);
+        jPanel4.add(deviceField15);
+
+        deviceField16.setIdentifier("");
+        deviceField16.setLabelString("Trig. Times:");
+        deviceField16.setNumCols(6);
+        deviceField16.setOffsetNid(1399);
+        jPanel4.add(deviceField16);
+
+        deviceField17.setIdentifier("");
+        deviceField17.setLabelString("Duration: ");
+        deviceField17.setNumCols(6);
+        deviceField17.setOffsetNid(1405);
+        jPanel4.add(deviceField17);
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("Threshold: ");
+        deviceField18.setNumCols(6);
+        deviceField18.setOffsetNid(1411);
+        jPanel4.add(deviceField18);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("Inhibit: ");
+        deviceField19.setNumCols(6);
+        deviceField19.setOffsetNid(1417);
+        jPanel4.add(deviceField19);
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("End Time: ");
+        deviceField20.setNumCols(6);
+        deviceField20.setOffsetNid(1423);
+        jPanel4.add(deviceField20);
+
+        jTabbedPane1.addTab("Thomson Triggers", jPanel4);
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -189,6 +265,24 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("In Calibration", jPanel10);
 
+        deviceChoice3.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice3.setChoiceItems(new String[] {"None", "Ip", "Bp"});
+        deviceChoice3.setConvert(true);
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("Mode: ");
+        deviceChoice3.setOffsetNid(1429);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel11.add(deviceChoice3);
+
+        deviceTable2.setIdentifier("");
+        deviceTable2.setLabelString("Corr. Factors: ");
+        deviceTable2.setNumCols(1);
+        deviceTable2.setNumRows(192);
+        deviceTable2.setOffsetNid(1435);
+        jPanel11.add(deviceTable2);
+
+        jTabbedPane1.addTab("Correction", jPanel11);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -198,10 +292,21 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
+    private DeviceField deviceField12;
+    private DeviceField deviceField13;
+    private DeviceField deviceField14;
+    private DeviceField deviceField15;
+    private DeviceField deviceField16;
+    private DeviceField deviceField17;
+    private DeviceField deviceField18;
+    private DeviceField deviceField19;
     private DeviceField deviceField2;
+    private DeviceField deviceField20;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
@@ -210,10 +315,12 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private DeviceTable deviceTable1;
+    private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
