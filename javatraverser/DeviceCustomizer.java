@@ -44,11 +44,15 @@ public class DeviceCustomizer extends Panel
         {
 		    deviceProvider = new MdsDataProvider(DeviceSetupBeanInfo.beanDeviceProvider);
 		}
+        byte[] linBytes = null;
         try{
-		    linFields = deviceProvider.GetString("JavaGetDeviceFields(\""+
+            linBytes = deviceProvider.GetByteArray("JavaGetDeviceFields(\""+
 		        DeviceSetupBeanInfo.beanDeviceType + "\")");
-		}catch(IOException e) {JOptionPane.showMessageDialog(null, "Cannot retrieve device field names");}
-		StringTokenizer st = new StringTokenizer(linFields);
+                   linFields = new String(linBytes);
+		   // linFields = deviceProvider.GetString("JavaGetDeviceFields(\""+
+		   //     DeviceSetupBeanInfo.beanDeviceType + "\")");
+		}catch(Exception exc) {JOptionPane.showMessageDialog(null, "Cannot retrieve device field names: "+ exc);}
+ 		StringTokenizer st = new StringTokenizer(linFields);
 		lastFields = new String[st.countTokens()];
 		for(int i = 0; i < lastFields.length; i++)
 		    lastFields[i] = st.nextToken();
