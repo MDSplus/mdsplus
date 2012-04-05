@@ -160,7 +160,7 @@ def makeRpmsCommand(args):
         if 'UPDATE_CHANGELOG' in os.environ and need_changelog:
             print "Updating ChangeLog"
             sys.stdout.flush()
-            p=subprocess.Popen('$(pwd)/UpdateChangeLog %s' % (FLAVOR,),shell=True,cwd=os.getcwd())
+            p=subprocess.Popen('$(pwd)/devscripts/UpdateChangeLog %s' % (FLAVOR,),shell=True,cwd=os.getcwd())
             p.wait()
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
         sys.stdout.flush()
