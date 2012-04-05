@@ -4,8 +4,8 @@ import MARTE_GENERIC
 
 class MARTE_MHD_BR(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe MHD_BT'
-    parNames = ['maxBrHor', 'maxBrVer', 'thresholdPeriod']
-    parValues = [0,0,0]
+    parNames = ['InputMapping', 'InputAutozero', 'maxBrHor', 'maxBrVer', 'thresholdPeriod']
+    parValues = [0,0,0,0,0]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])

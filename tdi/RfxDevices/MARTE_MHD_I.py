@@ -3,8 +3,8 @@ import MARTE_GENERIC
 
 class MARTE_MHD_I(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe MHD_I'
-    parNames = ['i2t']
-    parValues = [0]
+    parNames = ['InputMapping', 'InputAutozero', 'i2t']
+    parValues = [0,0,0]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])

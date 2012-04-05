@@ -5,10 +5,10 @@ import MARTE_GENERIC
 
 class MARTE_MHD_BT(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe MHD_BT'
-    parNames = ['triggerMode', 'ttMinAmp', 'ttMaxAmp', 'ttMinPhase', 'ttMaxPhase', 'ttMinRatio', 'ttMaxRatio',
+    parNames = ['InputMapping', 'InputAutozero', 'triggerMode', 'ttMinAmp', 'ttMaxAmp', 'ttMinPhase', 'ttMaxPhase', 'ttMinRatio', 'ttMaxRatio',
       'nTrigTimes', 'trigTimes', 'trigDuration', 'trigThreshold', 'trigInhibitTime', 'trigEndTime',
       'correctionMode', 'btCorrectionCoeffs']
-    parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
+    parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
