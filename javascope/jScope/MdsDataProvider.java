@@ -531,7 +531,7 @@ public class MdsDataProvider
             }
             int shape[] = GetNumDimensions(expr);
 
-            if (error != null)
+            if (error != null || shape == null)
             {
                 _jscope_set = false;
                 error = null;
