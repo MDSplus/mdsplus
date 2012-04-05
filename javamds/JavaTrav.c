@@ -42,7 +42,8 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	{{4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
 	{NciEND_OF_LIST, 0, 0, 0}};
 	static EMPTYXD(xd);
-	struct descriptor dsc = {0, DTYPE_T, CLASS_S, 0};
+	DESCRIPTOR_A(dsc, 1, DTYPE_B, 0, 0);
+	//struct descriptor dsc = {0, DTYPE_T, CLASS_S, 0};
 	char log_string[4096];
 
 
@@ -72,7 +73,8 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	for(i = 0; i < conglomerate_nids; i++, curr_nid++)
 	    sprintf(&names[strlen(names)], "%s ", TreeGetMinimumPath(&nid, curr_nid));
 	TreeQuitTree("TEST", -1);
-	dsc.length = strlen(names);
+//	dsc.length = strlen(names);
+	dsc.arsize = strlen(names);
 	dsc.pointer = names;
 	MdsCopyDxXd(&dsc, &xd);
 	printf("%s\n",names);
