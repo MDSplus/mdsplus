@@ -41,7 +41,7 @@
 #endif
 
 #if defined(__sgi) || defined(sun)
-#define memcpy(a,b,c) bcopy(b,a,c)
+#define memcpy(a,b,c) (bcopy(b,a,c),(void *)b)
 #include <errno.h>
 #elif defined(_WIN32)
 #include <errno.h>
@@ -93,6 +93,7 @@
 #endif
 
 #include <stdio.h>
+#include <string.h>
 #ifdef _USE_VARARGS
 #include <varargs.h>
 #define _NO_MDS_PROTO
@@ -104,7 +105,6 @@
 #else
 #include <ipdesc.h>
 #endif
-#include <string.h>
 #include <stdlib.h>
 
 #define VMS_CLIENT     1

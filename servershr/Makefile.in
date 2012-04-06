@@ -55,7 +55,7 @@ install:
 	fi;
 
 @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) $(LDFLAGS)
 
 @MAKELIBDIR@libMdsServerShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

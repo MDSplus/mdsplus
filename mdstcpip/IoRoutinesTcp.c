@@ -8,10 +8,12 @@
 #include <stdio.h>
 #include <config.h>
 #include <time.h>
+#ifdef HAVE_SYS_FILIO_H
+#include <sys/filio.h>
+#endif
 #ifdef HAVE_WINDOWS_H
 typedef int socklen_t;
 #define snprintf _snprintf
-#define MSG_NOSIGNAL 0
 #define MSG_DONTWAIT 0
 #include <io.h>
 #define close closesocket
@@ -31,7 +33,9 @@ extern int pthread_mutex_unlock();
 #endif
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
-
+#ifndef MSG_NOSIGNAL
+#define MSG_NOSIGNAL 0
+#endif
 static ssize_t tcp_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t tcp_recv(int conid, void *buffer, size_t len);
 static int tcp_disconnect(int conid);

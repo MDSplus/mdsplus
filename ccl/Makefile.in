@@ -39,7 +39,7 @@ ccl_commands.c:	ccl_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@libccl_commands@SHARETYPE@:	$(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
 
 @MAKEBINDIR@mdsccl:	ccl
 	cp ccl $@

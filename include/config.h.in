@@ -102,6 +102,12 @@
 /* Define if you have the <strings.h> header file.  */
 #undef HAVE_STRINGS_H
 
+/* Define if you have the <linux/types.h> header file. */
+#undef HAVE_LINUX_TYPES_H
+
+/* Define if you have the <drm/drm.h> header file. */
+#undef HAVE_DRM_DRM_H
+
 /* Define if you have the <sys/filio.h> header file.  */
 #undef HAVE_SYS_FILIO_H
 
