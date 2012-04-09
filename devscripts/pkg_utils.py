@@ -13,7 +13,7 @@ class CvsStatus(object):
 def getDist():
     if os.name=="nt":
         return "win"
-    elif os.uname()[0]=='SunOs':
+    elif os.uname()[0]=='SunOS':
         dist=os.uname()[0]+os.uname()[3].split('.')[0]
     elif os.uname()[0]=='Linux':
         if 'el5' in os.uname()[2]:
