@@ -13,13 +13,18 @@ class CvsStatus(object):
 def getDist():
     if os.name=="nt":
         return "win"
-    dist="?"
-    try:
-        p=subprocess.Popen('rpmbuild -E "%dist" 2>/dev/null',stdout=subprocess.PIPE,shell=True)
-        dist=p.stdout.read()[1:-1]
-        p.wait()
-    except:
-        pass
+    elif os.uname()[0]=='SunOs':
+        dist=os.uname()[0]+os.uname()[3].split('.')[0]
+    elif os.uname()[0]=='Linux':
+        if 'el5' in os.uname()[2]:
+            dist='el5'
+        elif 'el6' in os.uname()[2]:
+            dist='el5'
+        elif 'Ubuntu' in os.uname()[3]:
+            dist=getLsbReleaseDist()
+    else:
+        print "Error getting distribution information, uname=%s" % (str(os.uname()),)
+        sys.exit(1)
     return dist
 
 def getLsbReleaseDist():
