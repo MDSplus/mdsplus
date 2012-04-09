@@ -97,14 +97,18 @@ def makeSolarisPkgsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        cmd='cd ${WORKSPACE}/i686/mdsplus;' +\
-            './configure --enable-mdsip_connections --enable-nodebug --disable-camac --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec_prefix=%s/BUILDROOT/i686/usr/local/mdsplus;' % (WORKSPACE,) +\
+        prefix="%s/BUILDROOT/i686/usr/local/mdsplus" %(WORKSPACE,)
+        cmd='alias tar=gtar;' +\
+            'cd ${WORKSPACE}/i686/mdsplus;' +\
+            'unset LANG;' +\
+            './configure --enable-mdsip_connections --enable-nodebug --disable-camac --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix,prefix) +\
              'if ( !make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
              'rm -Rf dist;' +\
              'if ( ! python setup.py bdist_egg); then exit 1; fi;' +\
+             'mkdir -p %s/BUILDROOT/i686/usr/local/mdsplus/mdsobjects/python;' % (WORKSPACE,) +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
         sys.stdout.flush()
@@ -115,8 +119,12 @@ def makeSolarisPkgsCommand(args):
             print "Error building mdsplus. Status=%d" % (build_status,)
             status="error"
             sys.exit(1)
-        cmd='cd ${WORKSPACE}/x86_64/mdsplus;' +\
-            './configure --enable-mdsip_connections --enable-nodebug --disable-camac --disable-java --with-idl=$IDL_DIR --exec_prefix=%s/BUILDROOT/x86_64/usr/local/mdsplus CFLAGS="-m64" FFLAGS="-m64";' % (WORKSPACE,) +\
+        prefix="%s/BUILDROOT/x86_64/usr/local/mdsplus" %(WORKSPACE,)
+        cmd='alias tar=gtar;' +\
+            'cd ${WORKSPACE}/x86_64/mdsplus;' +\
+            'unset LANG;' +\
+            './configure --enable-mdsip_connections --disable-camac --disable-java --with-idl=$IDL_DIR' +\
+            '--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (WORKSPACE,WORKSPACE) +\
              'if (! make); then exit 1; fi; if (! make install); then exit 1; fi'
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
@@ -127,20 +135,22 @@ def makeSolarisPkgsCommand(args):
             status="error"
             sys.exit(1)
         
-            build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
-            if build_status != 0:
-		print "Error build catch all package, status=%d" % (build_status,)
-                sys.exit(build_status)
-            for pkg in getPackages():
-                debfile=getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates)
-                build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
-                if build_status != 0:
-                    print "Error building debian package %s, status=%d" % (debfile,build_status)
-                    sys.exit(build_status)
-                writeRpmInfo(debfile[0:-3])
+#        build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
+#        if build_status != 0:
+#            print "Error build catch all package, status=%d" % (build_status,)
+#            sys.exit(build_status)
+#        for pkg in getPackages():
+#            debfile=getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates)
+#            build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
+#            if build_status != 0:
+#                print "Error building debian package %s, status=%d" % (debfile,build_status)
+#                sys.exit(build_status)
+#            writeRpmInfo(debfile[0:-3])
         if updates['python']['Update']:
             sys.stdout.flush()     
-            p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % (pythonflavor,VERSION,updates['python']['Release']),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
+            p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % 
+                               (pythonflavor,VERSION,updates['python']['Release']),
+                               shell=True,cwd="%s/x86_64/mdsplus/mdsobjects/python"%(WORKSPACE))
             python_status=p.wait()
             if python_status != 0:
                 print "Error building MDSplus-%s%s-%s" % (pythonflavor,VERSION,updates['python']['Release'])
