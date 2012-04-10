@@ -117,8 +117,8 @@ def makeSolarisPkgsCommand(args):
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
              'rm -Rf dist;' +\
              'if ( ! python setup.py bdist_egg); then exit 1; fi;' +\
-             'mkdir -p %s/BUILDROOT/i686/usr/local/mdsplus/mdsobjects/python;' % (WORKSPACE,) +\
-             'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
+             'mkdir -p %s/mdsobjects/python;' % (prefix32,) +\
+             'rsync -a dist %s/mdsobjects/python/;' % (prefix32,) +\
              'cd $olddir'
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
