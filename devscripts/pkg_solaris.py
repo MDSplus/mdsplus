@@ -105,7 +105,7 @@ def makeSolarisPkgsCommand(args):
     if need_to_build:
         prefix="%s/BUILDROOT/i686/usr/local/mdsplus" %(WORKSPACE,)
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
-            'unset LANG;' +\
+            'export LANG=en_US;' +\
             './configure --enable-mdsip_connections --enable-nodebug --disable-camac --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix,prefix) +\
              'if ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
