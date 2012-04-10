@@ -727,7 +727,7 @@ then
     CAMSHR="camshr"
     REMCAMLIB="RemCamShr"
   else
-    CAMAC=""
+    CAMSHR=""
     REMCAMLIB="CamShr"
   fi
 else
