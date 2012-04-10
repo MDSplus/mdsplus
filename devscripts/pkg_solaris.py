@@ -49,7 +49,7 @@ def makeSolarisPkgsCommand(args):
     FLAVOR=getFlavor()
     DISTPATH='/mnt/dist/'+FLAVOR+'/'
     need_to_build=len(args) > 3
-    for d in ['BUILDROOT','BUILDROOT/i686','BUILDROOT/x86_64']:
+    for d in ['BUILDROOT','BUILDROOT/i686','BUILDROOT/x86_64','EGGS']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
@@ -156,14 +156,14 @@ def makeSolarisPkgsCommand(args):
                 print "Error building MDSplus-%s%s-%s" % (pythonflavor,VERSION,updates['python']['Release'])
             else:
                 sys.stdout.flush()
-                p=subprocess.Popen('mv dist/* %s/EGGS/;rm -Rf dist'%(WORKSPACE,),shell=True,cwd="%s/mdsobjects/python"%(WORKSPACE))
+                p=subprocess.Popen('mv dist/* %s/EGGS/;rm -Rf dist'%(WORKSPACE,),shell=True,cwd="%s/x86_64/mdsplus/mdsobjects/python"%(WORKSPACE))
                 p.wait()
     else:
-        print 'All DEBS are up to date'
+        print 'All packages are up to date'
         status="skip"
     if status=="ok":
-        sys.path.insert(0,WORKSPACE+'/tests')
-        from distribution_tests import test_debian as test
+        sys.path.insert(0,WORKSPACE+'x86_64/mdsplus/tests')
+        from distribution_tests import test_solaris as test
         test(WORKSPACE,FLAVOR)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         sys.stdout.flush()
