@@ -102,7 +102,7 @@ def makeSolarisPkgsCommand(args):
             'cd ${WORKSPACE}/i686/mdsplus;' +\
             'unset LANG;' +\
             './configure --enable-mdsip_connections --enable-nodebug --disable-camac --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix,prefix) +\
-             'if ( !make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
+             'if ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
@@ -125,7 +125,7 @@ def makeSolarisPkgsCommand(args):
             'unset LANG;' +\
             './configure --enable-mdsip_connections --disable-camac --disable-java --with-idl=$IDL_DIR' +\
             '--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (WORKSPACE,WORKSPACE) +\
-             'if (! make); then exit 1; fi; if (! make install); then exit 1; fi'
+             'if (! make ); then exit 1; fi; if (! make install); then exit 1; fi'
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
