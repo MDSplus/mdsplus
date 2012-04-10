@@ -59,7 +59,7 @@ def makeSolarisPkgsCommand(args):
             os.symlink('/usr/bin/g%s','%s/bin/%s' % (app,WORKSPACE,app))
         except:
             pass
-    os.environ['PATH']='%s/bin:'+os.environ['PATH']
+    os.environ['PATH']='%s/bin:' % (WORKSPACE,)+os.environ['PATH']
 #    prepareRepo("%s/REPO" % (WORKSPACE,))
     VERSION=getVersion()
 #    HW,BITS=getHardwarePlatform()
