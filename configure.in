@@ -913,7 +913,7 @@ AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
 if ( which $UIL 2>/dev/null )
 then
-  UIL="env LANG=en_US $IDL"
+  UIL="env LANG=en_US $UIL"
   MOTIF_APS="\$(MOTIF_APS)"
   AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
