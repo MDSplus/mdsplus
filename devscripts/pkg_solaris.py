@@ -55,7 +55,7 @@ def makeSolarisPkgsCommand(args):
         except:
             pass
     os.symlink('/usr/bin/gtar','$s/bin/tar' % (WORKSPACE,))
-    os.symlink('/usr/bin/gmake','$s/bin/make' $ (WORKSPACE,))
+    os.symlink('/usr/bin/gmake','$s/bin/make' % (WORKSPACE,))
     os.environ['PATH']='%s/bin:'+os.environ['PATH']
 #    prepareRepo("%s/REPO" % (WORKSPACE,))
     VERSION=getVersion()
