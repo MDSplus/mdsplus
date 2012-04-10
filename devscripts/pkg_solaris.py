@@ -49,6 +49,10 @@ def makeSolarisPkgsCommand(args):
     FLAVOR=getFlavor()
     DISTPATH='/mnt/dist/'+FLAVOR+'/'
     need_to_build=len(args) > 3
+    try:
+        shutil.rmtree('%s/BUILDROOT' % (WORKSPACE,))
+    except:
+        pass
     for d in ['BUILDROOT','BUILDROOT/i686','BUILDROOT/x86_64','EGGS','bin']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
@@ -103,9 +107,10 @@ def makeSolarisPkgsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        prefix="%s/BUILDROOT/i686/usr/local/mdsplus" %(WORKSPACE,)
+        prefix32="%s/BUILDROOT/i686/usr/local/mdsplus" %(WORKSPACE,)
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
-            './configure --enable-mdsip_connections --enable-nodebug --disable-camac --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix,prefix) +\
+            './configure --enable-mdsip_connections --enable-nodebug --disable-camac ' +\
+            '--with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix32,prefix32) +\
              'if ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
@@ -123,11 +128,15 @@ def makeSolarisPkgsCommand(args):
             print "Error building mdsplus. Status=%d" % (build_status,)
             status="error"
             sys.exit(1)
-        prefix="%s/BUILDROOT/x86_64/usr/local/mdsplus" %(WORKSPACE,)
+        prefix64="%s/BUILDROOT/x86_64/usr/local/mdsplus" %(WORKSPACE,)
         cmd='cd ${WORKSPACE}/x86_64/mdsplus;' +\
             './configure --enable-mdsip_connections --disable-camac --disable-java --with-idl=$IDL_DIR' +\
-            '--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (prefix,prefix) +\
-             'if (! make ); then exit 1; fi; if (! make install); then exit 1; fi'
+            '--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (prefix64,prefix64) +\
+            'if (! make ); then exit 1; fi; if (! make install); then exit 1; fi;' +\
+            'mv %s/lib $s/lib64; mv %s/bin %s/bin64;' % (prefix64,prefix64,prefix64,prefix64) +\
+            'rsync -a %s/lib %s/lib32;' % (prefix32,prefix64) +\
+            'rsync -a %s/bin %s/bin64;' % (prefix32,prefix64) +\
+            'rsync -a %s/java %s/;' % (prefix32,prefix64)
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
