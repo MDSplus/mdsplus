@@ -54,8 +54,11 @@ def makeSolarisPkgsCommand(args):
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
             pass
-    os.symlink('/usr/bin/gtar','%s/bin/tar' % (WORKSPACE,))
-    os.symlink('/usr/bin/gmake','%s/bin/make' % (WORKSPACE,))
+    for app in ('tar','make'):
+        try:
+            os.symlink('/usr/bin/g%s','%s/bin/%s' % (app,WORKSPACE,app))
+        except:
+            pass
     os.environ['PATH']='%s/bin:'+os.environ['PATH']
 #    prepareRepo("%s/REPO" % (WORKSPACE,))
     VERSION=getVersion()
