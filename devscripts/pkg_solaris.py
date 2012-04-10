@@ -133,7 +133,7 @@ def makeSolarisPkgsCommand(args):
         cmd=cmd+'./configure --enable-mdsip_connections --disable-camac --disable-java --with-idl=$IDL_DIR'
         cmd=cmd+'--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (prefix64,prefix64)
         cmd=cmd+'if (! make ); then exit 1; fi; if (! make install); then exit 1; fi;'
-        cmd=cmd+'mv %s/lib $s/lib64; mv %s/bin %s/bin64;' % (prefix64,prefix64,prefix64,prefix64)
+        cmd=cmd+'mv %s/lib %s/lib64; mv %s/bin %s/bin64;' % (prefix64,prefix64,prefix64,prefix64)
         cmd=cmd+'rsync -a %s/lib %s/lib32;' % (prefix32,prefix64)
         cmd=cmd+'rsync -a %s/bin %s/bin64;' % (prefix32,prefix64)
         cmd=cmd+'rsync -a %s/java %s/;' % (prefix32,prefix64)
