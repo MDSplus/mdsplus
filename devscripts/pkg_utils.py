@@ -14,18 +14,18 @@ def getDist():
     if os.name=="nt":
         return "win"
     elif os.uname()[0]=='SunOS':
-        dist=os.uname()[0]+os.uname()[3].split('.')[0]
+        return os.uname()[0]+os.uname()[3].split('.')[0]
     elif os.uname()[0]=='Linux':
-        if 'el5' in os.uname()[2]:
-            dist='el5'
-        elif 'el6' in os.uname()[2]:
-            dist='el5'
-        elif 'Ubuntu' in os.uname()[3]:
-            dist=getLsbReleaseDist()
-    else:
-        print "Error getting distribution information, uname=%s" % (str(os.uname()),)
-        sys.exit(1)
-    return dist
+        if 'Ubuntu' in os.uname()[3]:
+            return getLsbReleaseDist()
+        parts=os.uname()[2].split('.')
+        for p in parts:
+            if p.startswith('el'):
+                return p
+            if p.startswith('fc'):
+                return p
+    print "Error getting distribution information, uname=%s" % (str(os.uname()),)
+    sys.exit(1)
 
 def getLsbReleaseDist():
     p=subprocess.Popen('lsb_release -a -s 2>/dev/null',stdout=subprocess.PIPE,shell=True)
