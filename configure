@@ -14071,6 +14071,7 @@ fi
 $as_echo_n "checking for uil command... " >&6; }
 if ( which $UIL 2>/dev/null )
 then
+  UIL="env LANG=en_US $IDL"
   MOTIF_APS="\$(MOTIF_APS)"
   { $as_echo "$as_me:$LINENO: result: have uil so openmotif apps will be built." >&5
 $as_echo "have uil so openmotif apps will be built." >&6; }
