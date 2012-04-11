@@ -103,8 +103,10 @@ private:
     int nDims;
     int *dims;
 
-    aitFloat64 lopr, hopr, highAlarm, lowAlarm, highWarning, lowWarning, highCtrl, lowCtrl,
-	highGraphic, lowGraphic;
+    aitFloat64 lopr, hopr, highAlarm, lowAlarm, highWarning, lowWarning, highCtrl, lowCtrl, highGraphic, lowGraphic;
+
+    aitFloat64 defHighAlarm, defLowAlarm, defHighWarning, defLowWarning, defHighCtrl, defLowCtrl, defHighGraphic, defLowGraphic;
+
     int precision;
     char *units;
     char **enums;

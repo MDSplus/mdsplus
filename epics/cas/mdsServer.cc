@@ -1,7 +1,59 @@
 #include "mdsServer.h"
+#include <string.h>
 
 
+/*Conversion ot support charcters not supported by mdsplus:
+:  -->  __
+.  -->  ___
+-  -->  ____
+*/
+static void convertToPvName(char *in, char *convName)
+{
+    int len = strlen(in);
+    int outLen = 0;
+    convName[0] = '\\';
+    int idx = 0;
+    while(idx < len)
+    {
+	if(in[idx] == '_')
+	{
+	    if(idx < len - 1 && in[idx+1] == '_')
+	    {
+		if(idx < len - 2 && in[idx+2] == '_')
+		{
+		    if(idx < len - 3 && in[idx+3] == '_')
+		    {
+			convName[outLen++] = '-';
+			idx += 4;
+		    }
+		    else
+		    {
+			convName[outLen++] = '.';
+			idx += 3;
+		    }
+		}
+		else
+		{
+		    convName[outLen++] = ':';
+		    idx += 2;
+		}
+	    }
+	    else
+	    {
+		convName[outLen++] = '_';
+		idx += 1;
+	    }
+	}
+	else
+	{
+	    convName[outLen++] = in[idx];
+	    idx += 1;
+	}
+    }
+    convName[outLen] = 0;
+}		
 
+/*
 mdsServer::mdsServer (Tree *tree, bool appendIn) 
 {
     append = appendIn;
@@ -25,7 +77,8 @@ printf("TAG: %s\n", tags[i]);
 		if(tags[i][startId-1] == ':' && tags[i][startId - 2] ==':')
 		    break;
 	    } 
-	    sprintf(pvName, "%s", &tags[i][startId]);
+	    convertToPvName(&tags[i][startId], pvName);
+//	    sprintf(pvName, "%s", &tags[i][startId]);
 printf("TAG1: %s\n", pvName);
 	    if(!strcmp(pvName, "TOP")) //Alway present to indicate the root
 		continue;
@@ -45,6 +98,59 @@ printf("TAG1: %s\n", pvName);
 	cout << "Error reading tags: "<< exc->what() << "\n";
     }
 }
+
+*/
+
+mdsServer::mdsServer (Tree *tree, bool appendIn) 
+{
+    append = appendIn;
+    mdsPV *pPV;
+    mdsPV::initFT();
+    
+    // pre-create all of the PVs that this server will export
+    try {
+	TreeNodeArray *stringNodes = tree->getNodeWild("***", 1 << TreeUSAGE_TEXT);
+	int numNodes = stringNodes->getNumNodes();
+	for(int i = 0; i < numNodes; i++)
+	{
+	    char *currName = (*stringNodes)[i]->getNodeName();
+/*   A Process Variable is assumed to be defined when at least sibling nodes named PV_NAME and VAL are found
+*/	    if(!strcmp(currName, "PV_NAME"))
+	    {
+		char *fullPath = (*stringNodes)[i]->getFullPath();
+		//Replace last PV_NAME with VAL
+		sprintf(&fullPath[strlen(fullPath) - strlen("PV_NAME")], "VAL");
+		try {
+		    TreeNode *valNode = tree->getNode(fullPath);
+		    TreeNode *parentNode = (*stringNodes)[i]->getParent();
+		    Data *pvNameData = (*stringNodes)[i]->getData();
+		    char *pvName = pvNameData->getString();
+ 	    	    pPV = new mdsPV(*this, pvName, tree, parentNode, append);
+	    	    if(pPV->isValid())
+		    {
+	    		this->installAliasName(*pPV, pvName);
+			cout << pvName << "\n";
+		    }
+	    	    else
+			delete pPV;
+	    	    delete[]pvName;
+		    deleteData(pvNameData);
+		    delete parentNode;
+		    delete valNode;
+		}catch(MdsException exc)
+		{
+		    cout << "Inconsistent node set found: " << fullPath << "\n";
+		}
+		delete [] fullPath;
+	    }
+	    delete [] currName;
+	}
+	delete stringNodes;
+     }catch(MdsException *exc)
+    {
+	cout << "Error Scanning tree: "<< exc->what() << "\n";
+    }
+ }
 
 
 mdsServer::~mdsServer()

@@ -223,6 +223,9 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
     this->name = new char[strlen(name) + 1];
     strcpy(this->name, name);
     TreeNode *prevDef;
+//Default vales */
+    highAlarm = 1000, lowAlarm = -1000, highWarning = 100, lowWarning = -100, highCtrl = 10, lowCtrl = -10, highGraphic = 1, lowGraphic = -1;
+
 //Retrieve all the PV-related nodes
     try {
 	prevDef = tree->getDefault();
@@ -284,7 +287,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasOpr = true;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get LOPR or HOPR for " << name << "\n";
+//	    cout << "Cannot get LOPR or HOPR for " << name << "\n";
 	    hasOpr = false;
 	    delete exc;
 	}
@@ -294,7 +297,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    delete currNode;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get UNITS for " << name << "\n";
+//	    cout << "Cannot get UNITS for " << name << "\n";
 	    units = NULL;
 	    delete exc;
 	}
@@ -308,7 +311,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasAlarm = true;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get HIGH_ALARM or LOW_ALARM for " << name << "\n";
+//	    cout << "Cannot get HIGH_ALARM or LOW_ALARM for " << name << "\n";
 	    hasAlarm = false;
 	    delete exc;
 	}
@@ -322,7 +325,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasWarning = true;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get HIGH_WARN or LOW_WARN for " << name << "\n";
+//	    cout << "Cannot get HIGH_WARN or LOW_WARN for " << name << "\n";
 	    hasWarning = false;
 	    delete exc;
 	}
@@ -336,7 +339,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasCtrl = true;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get HIGH_CTRL or LOW_CTRL for " << name << "\n";
+//	    cout << "Cannot get HIGH_CTRL or LOW_CTRL for " << name << "\n";
 	    hasCtrl = false;
 	    delete exc;
 	}
@@ -350,7 +353,7 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    hasGraphic = true;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get HIGH_GRAPH or LOW_GRAPH for " << name << "\n";
+//	    cout << "Cannot get HIGH_GRAPH or LOW_GRAPH for " << name << "\n";
 	    hasGraphic = false;
 	    delete exc;
 	}
@@ -360,14 +363,13 @@ mdsPV::mdsPV(mdsServer & casIn, char *name, Tree *treeIn, TreeNode *topNode, boo
 	    delete currNode;
 	} catch(MdsException *exc)
 	{
-	    cout << "Cannot get PREC for " << name << "\n";
+//	    cout << "Cannot get PREC for " << name << "\n";
 	    precision = 0;
 	    delete exc;
 	}
 	try {
 	    currNode = tree->getNode(":ENUMS");
 	    Data *enumData = currNode->getData();
-	printf("DATA: %x\n", enumData);
 	    enums = enumData->getStringArray(&numEnums);
 	    deleteData(enumData);
 	    delete currNode;
@@ -699,7 +701,9 @@ caStatus mdsPV::getHighAlarm ( gdd & value )
 	value.put(highAlarm);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defHighAlarm);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 
@@ -710,7 +714,9 @@ caStatus mdsPV::getLowAlarm ( gdd & value )
 	value.put(lowAlarm);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defLowAlarm);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 caStatus mdsPV::getHighWarning ( gdd & value )
@@ -720,7 +726,9 @@ caStatus mdsPV::getHighWarning ( gdd & value )
 	value.put(highWarning);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defHighWarning);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 
@@ -731,7 +739,9 @@ caStatus mdsPV::getLowWarning ( gdd & value )
 	value.put(lowWarning);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defLowWarning);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 caStatus mdsPV::getHighCtrl ( gdd & value )
@@ -741,7 +751,9 @@ caStatus mdsPV::getHighCtrl ( gdd & value )
 	value.put(highCtrl);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defHighCtrl);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 
@@ -752,7 +764,9 @@ caStatus mdsPV::getLowCtrl ( gdd & value )
 	value.put(lowCtrl);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defLowCtrl);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 caStatus mdsPV::getHighGraphic ( gdd & value )
@@ -762,7 +776,9 @@ caStatus mdsPV::getHighGraphic ( gdd & value )
 	value.put(highGraphic);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defHighGraphic);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 
@@ -773,7 +789,9 @@ caStatus mdsPV::getLowGraphic ( gdd & value )
 	value.put(lowGraphic);
     	return S_cas_success;
     }
-    return S_cas_noConvert;
+    value.put(defLowGraphic);
+    return S_cas_success;
+//    return S_cas_noConvert;
 }
 
 
