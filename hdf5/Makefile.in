@@ -49,7 +49,7 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 @bindir@
 
 @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS)
+	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS) $(LDFLAGS)
 
 @MAKELIBDIR@libhdf5tdi.a : hdf5tdi.o 
 	$(AR) -cr $@ hdf5tdi.o 
