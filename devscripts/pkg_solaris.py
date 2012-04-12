@@ -3,7 +3,7 @@ from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, 
 from pkg_rpms import writeRpmInfo
 
 
-def writeDebInfo(outfile):
+def writePkgInfo(outfile):
     f=open(outfile+'-info.html','w')
     url="http://hudson.mdsplus.org/job/%s/%s" % (os.environ['JOB_NAME'],os.environ['BUILD_NUMBER'])
     f.write('<html>\n<head>\n'+
@@ -17,26 +17,6 @@ def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST):
     p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisPkg %s %s %s %d %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
     return p.wait()
 
-def prepareRepo(repodir):
-    for f in ('conf','pool','dists','db'):
-        try:
-            shutil.rmtree(repodir+'/'+f)
-        except:
-            pass
-        os.mkdir(repodir+'/'+f)
-    f=open(repodir+'/conf/distributions','w')
-    f.write(
-"""Origin: MDSplus Development Team
-Label: MDSplus
-Codename: MDSplus
-Version: 1.0
-Architectures: i386 amd64 source
-Components: alpha beta stable
-Description: MDSplus packages
-SignWith: MDSplus
-""")
-    f.close()
-
 def getPkgfile(WORKSPACE,arch,dist,pkgflavor,pkg,VERSION,updates):
     if pkg == 'all':
         return "%s/PKGS/%s/mdsplus%s_%s.%d_%s.%s.%s.pkg" % (WORKSPACE,arch,pkgflavor,VERSION,updates[pkg]['Release'],dist.os.uname()[4],arch)
@@ -49,25 +29,23 @@ def makeSolarisPkgsCommand(args):
     FLAVOR=getFlavor()
     DISTPATH=args[2]+'/'+DIST
     need_to_build=len(args) > 3
-    try:
-        shutil.rmtree('%s/BUILDROOT' % (WORKSPACE,))
-    except:
-        pass
-    for d in ['BUILDROOT','BUILDROOT/i686','BUILDROOT/x86_64','EGGS','bin']:
+    for arch in ('x86_64','i686'):
+        try:
+            shutil.rmtree('%s/%s/BUILDROOT' % (WORKSPACE,arch))
+        except:
+            pass
+    for d in ['x86_64/BUILDROOT','i686/BUILDROOT','EGGS','bin']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
             pass
-    for app in ('tar','make'):
+    for app in ('tar','make','find'):
         try:
             os.symlink('/usr/bin/g%s','%s/bin/%s' % (app,WORKSPACE,app))
         except:
             pass
     os.environ['PATH']='%s/bin:' % (WORKSPACE,)+os.environ['PATH']
-#    prepareRepo("%s/REPO" % (WORKSPACE,))
     VERSION=getVersion()
-#    HW,BITS=getHardwarePlatform()
-#    arch={32:'i386',64:'amd64'}[BITS]
     if FLAVOR=="stable":
         pkgflavor=""
         pythonflavor=""
@@ -107,7 +85,7 @@ def makeSolarisPkgsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        prefix32="%s/BUILDROOT/i686/usr/local/mdsplus" %(WORKSPACE,)
+        prefix32="%s/i686/BUILDROOT/usr/local/mdsplus" %(WORKSPACE,)
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
             './configure --enable-mdsip_connections --enable-nodebug --disable-camac ' +\
             '--with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix32,prefix32) +\
@@ -128,7 +106,7 @@ def makeSolarisPkgsCommand(args):
             print "Error building mdsplus. Status=%d" % (build_status,)
             status="error"
             sys.exit(1)
-        prefix64="%s/BUILDROOT/x86_64/usr/local/mdsplus" % (WORKSPACE,)
+        prefix64="%s/x86_64/BUILDROOT/usr/local/mdsplus" % (WORKSPACE,)
         cmd='cd ${WORKSPACE}/x86_64/mdsplus;'
         cmd=cmd+'./configure --enable-mdsip_connections --disable-camac --disable-java --with-idl=$IDL_DIR'
         cmd=cmd+'--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (prefix64,prefix64)

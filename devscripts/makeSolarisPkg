@@ -6,7 +6,7 @@ then
   arch=$4
   dn=$(dirname $fn)
   mkdir -p ${ddn}${dn}
-  rsync -a ${WORKSPACE}/BUILDROOT/$arch${fn} ${ddn}${dn}
+  rsync -a ${WORKSPACE}/$arch/BUILDROOT/{fn} ${ddn}${dn}
 else
   flavor=$1
   pkg=$2
@@ -33,7 +33,7 @@ else
               if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0; \
             };  \
             if (F==1 && substr($1,1,1) == "/") {  \
-              system("cd ${WORKSPACE}/BUILDROOT/'$arch'; gfind . -wholename \"*" $1 "*\" \
+              system("cd ${WORKSPACE}/'$arch'/BUILDROOT/; find . -wholename \"*" $1 "*\" \
               -exec '$0' copy_it '$pkg' {} '$arch' \\;");
            }  \
           }' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}
