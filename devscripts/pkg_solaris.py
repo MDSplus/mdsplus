@@ -88,7 +88,7 @@ def makeSolarisPkgsCommand(args):
     if need_to_build:
         prefix32="%s/i686/BUILDROOT/usr/local/mdsplus" %(WORKSPACE,)
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
-            './configure --enable-mdsip_connections --enable-nodebug --disable-camac ' +\
+            './configure --enable-mdsip_connections --enable-nodebug ' +\
             '--with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix32,prefix32) +\
              'if ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
@@ -109,7 +109,7 @@ def makeSolarisPkgsCommand(args):
             sys.exit(1)
         prefix64="%s/x86_64/BUILDROOT/usr/local/mdsplus" % (WORKSPACE,)
         cmd='cd ${WORKSPACE}/x86_64/mdsplus;'
-        cmd=cmd+'./configure --enable-mdsip_connections --disable-camac --disable-java --with-idl=$IDL_DIR'
+        cmd=cmd+'./configure --enable-mdsip_connections --disable-java --with-idl=$IDL_DIR'
         cmd=cmd+'--exec-prefix=%s --prefix=%s CFLAGS="-m64" FFLAGS="-m64";' % (prefix64,prefix64)
         cmd=cmd+'if (! make ); then exit 1; fi; if (! make install); then exit 1; fi;'
         cmd=cmd+'mv %s/lib %s/lib64; mv %s/bin %s/bin64;' % (prefix64,prefix64,prefix64,prefix64)
