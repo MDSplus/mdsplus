@@ -43,7 +43,7 @@ else
     done
   fi
   cd ${WORKSPACE}/BUILDROOT/${arch}/${pkg}
-  find . -print | grep -v prototype | pkgproto | gawk '{ans=$0; gsub('twf staff','root root',ans); print ans;}' > prototype
+  find . -print | grep -v prototype | pkgproto | gawk '{ans=$0; gsub("twf staff","root root",ans); print ans;}' > prototype
   echo "i pkginfo=./pkginfo" >> prototype
   cat <<EOF > pkginfo
 PKG="mdsplus${pkgflavor}-${pkg}"
