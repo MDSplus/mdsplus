@@ -146,7 +146,7 @@ def makeSolarisPkgsCommand(args):
             status="error"
             sys.exit(1)
         for pkg in getPackages():
-            for arch in ('x86_64','i686'}:
+            for arch in ('x86_64','i686'):
                 build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],'x86_64',DIST)
                 if build_status != 0:
                     print "Error building x86_64 package for %s" % (pkg,)
