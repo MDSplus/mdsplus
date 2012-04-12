@@ -1,0 +1,66 @@
+#!/bin/bash
+if [ "$1" == "copy_it" ]
+then
+  ddn=${WORKSPACE}/solaris/$2
+  fn=${3:1}
+  arch=$4
+  dn=$(dirname $fn)
+  mkdir -p ${ddn}${dn}
+  rsync -a ${WORKSPACE}/BUILDROOT/$arch${fn} ${ddn}${dn}
+else
+  flavor=$1
+  pkg=$2
+  version=$3
+  release=$4
+  arch=$5
+  if [ ! -r ~/.gnupg ]
+  then
+    rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
+    tar zxfC ~/rpm-signing-keys.tgz ~/
+  fi
+  rm -Rf ${WORKSPACE}/solaris/${pkg}
+  mkdir -p ${WORKSPACE}/solaris/${pkg}
+  if [ $flavor == "stable" ]
+  then
+    pkgflavor=""
+  else
+    pkgflavor="-${flavor}"
+  fi
+  if [ ! "${pkg}" == "all" ]
+  then
+    gawk '{ if (substr($1,1,1) == "%") {   \
+              if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0; \
+            };  \
+            if (F==1 && substr($1,1,1) == "/") {  \
+              system("cd ${WORKSPACE}/BUILDROOT/'$arch'; gfind . -wholename \"*" $1 "*\" \
+              -exec '$0' copy_it '$pkg' {} '$arch' \\;");
+           }  \
+          }' ${WORKSPACE}x86_64/mdsplus/rpm/subpackages/${pkg}
+    for f in `gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}x86_64/mdsplus/rpm/subpackages/${pkg}`
+    do
+      rm -Rf ${WORKSPACE}/solaris/${pkg}${f}
+    done
+  fi
+  cd ${WORKSPACE}BUILDROOT/${arch}/${pkg}
+  find . -print | grep -v prototype | pkgproto | gawk '{ans=$0; gsub('twf staff','root root',ans); print ans;}' > prototype
+  echo "i pkginfo=./pkginfo" >> prototype
+  cat <<EOF > pkginfo
+PKG="mdsplus${pkgflavor}-${pkg}"
+NAME="MDSplus $flavor release of the $pkg package"
+ARCH="$(uname -m)"
+VERSION="${version}-${release}"
+CATEGORY="application"
+VENDOR="MDSplus Development Consortium"
+BASEDIR="/"
+CLASSES="none"
+EOF
+  pkgmk -r $(pwd)
+  mkdir -p ${WORKSPACE}/PKGS/${arch}
+  cd /var/spool/pkg
+  if ( pkgtrans -s $(pwd) ${WORKSPACE}/PKGS/${arch}/mdsplus${pkgflavor}-${pkg}_${version}-${release}_$(uname -m).${arch}.pkg mdsplus${pkgflavor}-${pkg} )
+  then
+    rm -Rf mdsplus${pkgflavor}-${pkg}
+  else
+    exit  $?
+  fi
+fi
