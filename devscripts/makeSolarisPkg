@@ -1,7 +1,7 @@
 #!/bin/bash
 if [ "$1" == "copy_it" ]
 then
-  ddn=${WORKSPACE}/solaris/$2
+  ddn=${WORKSPACE}/$4/solaris/$2
   fn=${3:1}
   arch=$4
   dn=$(dirname $fn)
@@ -19,8 +19,8 @@ else
     rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
     tar zxfC ~/rpm-signing-keys.tgz ~/
   fi
-  rm -Rf ${WORKSPACE}/solaris/${pkg}
-  mkdir -p ${WORKSPACE}/solaris/${pkg}
+  rm -Rf ${WORKSPACE}/$arch/solaris/${pkg}
+  mkdir -p ${WORKSPACE}/$arch/solaris/${pkg}
   if [ $flavor == "stable" ]
   then
     pkgflavor=""
@@ -39,10 +39,10 @@ else
           }' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}
     for f in `gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}`
     do
-      rm -Rf ${WORKSPACE}/solaris/${pkg}${f}
+      rm -Rf ${WORKSPACE}/$arch/solaris/${pkg}${f}
     done
   fi
-  cd ${WORKSPACE}/BUILDROOT/${arch}/${pkg}
+  cd ${WORKSPACE}/$arch/solaris/$pkg
   find . -print | grep -v prototype | pkgproto | gawk '{ans=$0; gsub("twf staff","root root",ans); print ans;}' > prototype
   echo "i pkginfo=./pkginfo" >> prototype
   cat <<EOF > pkginfo
