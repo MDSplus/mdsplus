@@ -13,6 +13,7 @@ else
   version=$3
   release=$4
   arch=$5
+  dist=$6
   if [ ! -r ~/.gnupg ]
   then
     rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
@@ -57,7 +58,7 @@ EOF
   pkgmk -r $(pwd)
   mkdir -p ${WORKSPACE}/PKGS/${arch}
   cd /var/spool/pkg
-  if ( pkgtrans -s $(pwd) ${WORKSPACE}/PKGS/${arch}/mdsplus${pkgflavor}-${pkg}_${version}-${release}_$(uname -m).${arch}.pkg mdsplus${pkgflavor}-${pkg} )
+  if ( pkgtrans -s $(pwd) ${WORKSPACE}/PKGS/${arch}/mdsplus${pkgflavor}-${pkg}_${version}-${release}_${dist}.$(uname -m).${arch}.pkg mdsplus${pkgflavor}-${pkg} )
   then
     rm -Rf mdsplus${pkgflavor}-${pkg}
   else

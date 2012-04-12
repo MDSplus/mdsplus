@@ -12,9 +12,9 @@ def writeDebInfo(outfile):
             '</body>\n</html>\n')
     f.close()
 
-def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
+def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST):
     sys.stdout.flush()
-    p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('%s/devscripts/makeSolarisPkg %s %s %s %d %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
     return p.wait()
 
 def prepareRepo(repodir):
@@ -37,11 +37,11 @@ SignWith: MDSplus
 """)
     f.close()
 
-def getPkgfile(WORKSPACE,arch,pkgflavor,pkg,VERSION,updates):
+def getPkgfile(WORKSPACE,arch,dist,pkgflavor,pkg,VERSION,updates):
     if pkg == 'all':
-        return "%s/PKG/%s/mdsplus%s_%s.%d_%s.pkg" % (WORKSPACE,arch,pkgflavor,VERSION,updates[pkg]['Release'],arch)
+        return "%s/PKGS/%s/mdsplus%s_%s.%d_%s.%s.%s.pkg" % (WORKSPACE,arch,pkgflavor,VERSION,updates[pkg]['Release'],dist.os.uname()[4],arch)
     else:
-        return "%s/PKG/%s/mdsplus%s-%s_%s.%d_%s.pkg" % (WORKSPACE,arch,pkgflavor,pkg,VERSION,updates[pkg]['Release'],arch)
+        return "%s/PKGS/%s/mdsplus%s-%s_%s.%d_%s.%s.%s.pkg" % (WORKSPACE,arch,pkgflavor,pkg,VERSION,updates[pkg]['Release'],dist.os.uname()[4].arch)
     
 def makeSolarisPkgsCommand(args):
     DIST=getDist()
@@ -145,7 +145,13 @@ def makeSolarisPkgsCommand(args):
             print "Error building mdsplus. Status=%d" % (build_status,)
             status="error"
             sys.exit(1)
-        
+        for pkg in getPackages():
+            for arch in ('x86_64','i686'}:
+                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],'x86_64',DIST)
+                if build_status != 0:
+                    print "Error building x86_64 package for %s" % (pkg,)
+                    sys.exit(1)
+
 #        build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
 #        if build_status != 0:
 #            print "Error build catch all package, status=%d" % (build_status,)
