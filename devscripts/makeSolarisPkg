@@ -6,7 +6,7 @@ then
   arch=$4
   dn=$(dirname $fn)
   mkdir -p ${ddn}${dn}
-  rsync -a ${WORKSPACE}/$arch/BUILDROOT/{fn} ${ddn}${dn}
+  rsync -a ${WORKSPACE}/$arch/BUILDROOT${fn} ${ddn}${dn}
 else
   flavor=$1
   pkg=$2
