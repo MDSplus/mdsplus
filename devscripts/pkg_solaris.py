@@ -42,7 +42,8 @@ def makeSolarisPkgsCommand(args):
     for app in ('tar','make','find'):
         try:
             os.symlink('/usr/bin/g%s','%s/bin/%s' % (app,WORKSPACE,app))
-        except:
+        except Exception,e:
+            print "Error making app symlink: %s" % (e,)
             pass
     os.environ['PATH']='%s/bin:' % (WORKSPACE,)+os.environ['PATH']
     VERSION=getVersion()
