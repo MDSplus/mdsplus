@@ -14,7 +14,7 @@ def writeDebInfo(outfile):
 
 def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST):
     sys.stdout.flush()
-    p=subprocess.Popen('%s/devscripts/makeSolarisPkg %s %s %s %d %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
+    p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisPkg %s %s %s %d %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
     return p.wait()
 
 def prepareRepo(repodir):
