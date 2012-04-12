@@ -67,8 +67,8 @@ hdf5tdi.exports: hdf5tdi.def
 	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
 
 @MAKEBINDIR@hdf5ToMds : hdf5ToMds.o 
-	$(CC) -o $@ @CC_LDFLAGS@ hdf5ToMds.o $(LIBS)
+	$(CC) -o $@ @CC_LDFLAGS@ hdf5ToMds.o $(LIBS) $(CFLAGS)
 
 @MAKEBINDIR@MDSplus2HDF5 : MDSplus2HDF5.o
-	$(CC) -o $@ @CC_LDFLAGS@ MDSplus2HDF5.o $(LIBS)
+	$(CC) -o $@ @CC_LDFLAGS@ MDSplus2HDF5.o $(LIBS) $(CFLAGS)
 
