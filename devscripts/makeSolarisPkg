@@ -36,13 +36,13 @@ else
               system("cd ${WORKSPACE}/BUILDROOT/'$arch'; gfind . -wholename \"*" $1 "*\" \
               -exec '$0' copy_it '$pkg' {} '$arch' \\;");
            }  \
-          }' ${WORKSPACE}x86_64/mdsplus/rpm/subpackages/${pkg}
-    for f in `gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}x86_64/mdsplus/rpm/subpackages/${pkg}`
+          }' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}
+    for f in `gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}`
     do
       rm -Rf ${WORKSPACE}/solaris/${pkg}${f}
     done
   fi
-  cd ${WORKSPACE}BUILDROOT/${arch}/${pkg}
+  cd ${WORKSPACE}/BUILDROOT/${arch}/${pkg}
   find . -print | grep -v prototype | pkgproto | gawk '{ans=$0; gsub('twf staff','root root',ans); print ans;}' > prototype
   echo "i pkginfo=./pkginfo" >> prototype
   cat <<EOF > pkginfo
