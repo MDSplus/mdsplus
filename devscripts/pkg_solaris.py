@@ -147,9 +147,9 @@ def makeSolarisPkgsCommand(args):
             sys.exit(1)
         for pkg in getPackages():
             for arch in ('x86_64','i686'):
-                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],'x86_64',DIST)
+                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],arch,DIST)
                 if build_status != 0:
-                    print "Error building x86_64 package for %s" % (pkg,)
+                    print "Error building %s package for %s" % (arch,pkg)
                     sys.exit(1)
 
 #        build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
@@ -179,7 +179,7 @@ def makeSolarisPkgsCommand(args):
         print 'All packages are up to date'
         status="skip"
     if status=="ok":
-        p=subprocess.Popen('rsync -av %s/PKGS/* $s/' % (WORKSPACE,DISTPATH),shell=True)
+        p=subprocess.Popen('rsync -av %s/PKGS/* %s/' % (WORKSPACE,DISTPATH),shell=True)
         pstat=p.wait()
         if pstat != 0:
             print "Error copying packages to dist"
