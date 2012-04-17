@@ -40,7 +40,7 @@ else
     for f in `gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}`
     do
       echo rm -Rf ${WORKSPACE}/$arch/solaris/${pkg}${f}
-      rm -Rfv ${WORKSPACE}/$arch/solaris/${pkg}${f}
+      rm -Rf ${WORKSPACE}/$arch/solaris/${pkg}${f}
     done
   fi
   cd ${WORKSPACE}/$arch/solaris/$pkg
