@@ -38,7 +38,7 @@ else
               -exec '$0' copy_it '$pkg' {} '$arch' \\;");
            }  \
           }' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg}
-    for f in ${WORKSPACE}/$arch/solaris/${pkg}$(gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print $2;}}' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg})
+    for f in $(gawk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") print "'${WORKSPACE}/$arch/solaris/${pkg}'" $2;}}' ${WORKSPACE}/x86_64/mdsplus/rpm/subpackages/${pkg})
     do
       echo going to do: rm -Rf ${f}
       # rm -Rf ${f}
