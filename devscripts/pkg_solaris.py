@@ -158,7 +158,7 @@ def makeSolarisPkgsCommand(args):
         print 'All packages are up to date'
         status="skip"
     if status=="ok":
-        p=subprocess.Popen('rsync -av %s/PKGS/* %s/' % (WORKSPACE,DISTPATH),shell=True)
+        p=subprocess.Popen('rsync -av %s/PKGS/* %s/%s/' % (WORKSPACE,DISTPATH,FLAVOR),shell=True)
         pstat=p.wait()
         if pstat != 0:
             print "Error copying packages to dist"
