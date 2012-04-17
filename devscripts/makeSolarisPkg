@@ -27,6 +27,7 @@ else
   else
     pkgflavor="-${flavor}"
   fi
+  echo "Making: ${WORKSPACE}/PKGS/${arch}/mdsplus${pkgflavor}-${pkg}_${version}-${release}_${dist}.$(uname -m).${arch}.pkg 
   if [ ! "${pkg}" == "all" ]
   then
     gawk '{ if (substr($1,1,1) == "%") {   \
