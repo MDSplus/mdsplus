@@ -14,13 +14,10 @@ SOURCES = CamIosb.c CamMulti.c CamSingle.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = remcam.export
 
-all : @MAKESHLIBDIR@ @MAKESHLIBDIR@libRemCamShr@SHARETYPE@
+all : @MAKESHLIBDIR@ @MAKESHLIBDIR@lib@REMCAMLIB@@SHARETYPE@
 
-@MAKESHLIBDIR@libRemCamShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
-	if [ ! -r "@MAKESHLIBDIR@libCamShr@SHARETYPE@" ] ; then \
-		ln -sf libRemCamShr@SHARETYPE@ @MAKESHLIBDIR@libCamShr@SHARETYPE@; \
-	fi
+@MAKESHLIBDIR@lib@REMCAMLIB@@SHARETYPE@ : $(OBJECTS) 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
 @MAKESHLIBDIR@ :
 	mkdir @MAKESHLIBDIR@
@@ -28,7 +25,7 @@ all : @MAKESHLIBDIR@ @MAKESHLIBDIR@libRemCamShr@SHARETYPE@
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libRemCamShr@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@lib@REMCAMLIB@@SHARETYPE@
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -38,7 +35,4 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libRemCamShr@SHARETYPE@ @libdir@
-	if [ ! -r "@libdir@libCamShr@SHARETYPE@" ]; then \
-          ln -sf libRemCamShr@SHARETYPE@ @libdir@/libCamShr@SHARETYPE@; \
-	fi
+	$(INSTALL) -m 755  @MAKESHLIBDIR@lib@REMCAMLIB@@SHARETYPE@ @libdir@
