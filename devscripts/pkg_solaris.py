@@ -116,6 +116,7 @@ def makeSolarisPkgsCommand(args):
         cmd=cmd+'rsync -a %s/lib/* %s/lib32;' % (prefix32,prefix64)
         cmd=cmd+'rsync -a %s/bin/* %s/bin32;' % (prefix32,prefix64)
         cmd=cmd+'rsync -a %s/java %s/;' % (prefix32,prefix64)
+        cmd=cmd+'rsync -a %s/mdsobjects %s/' % (prefix32,prefix64)
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
         build_status=p.wait()
