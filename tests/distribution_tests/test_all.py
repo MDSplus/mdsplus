@@ -28,6 +28,28 @@ def test_debian(WORKSPACE,FLAVOR):
   if not ok:
     sys.exit(1)
  
+def test_solaris(WORKSPACE,FLAVOR):
+  from solaris_install import solaris_install_tests,install,remove
+  ok=False
+  try:
+    solaris_install_tests(WORKSPACE,FLAVOR)
+    sys.stdout.flush()
+    pkgs=('kernel','camac','mitdevices','python')
+    for pkg in pkgs:
+       install(pkg,FLAVOR)
+    sys.stdout.flush()
+    ok=python_test()
+    sys.stdout.flush()
+    pkgs=list(pkgs)
+    pkgs.reverse()
+    for pkg in pkgs:
+      remove(pkg,FLAVOR)
+    cleanApt()
+  except Exception,e:
+    print "Error %s" % (e,)
+  if not ok:
+    sys.exit(1)
+
 def test_rpms(WORKSPACE,FLAVOR):
   from rpm_install import rpm_install_tests,rpm_install,rpm_remove,initYum,cleanYum
   ok=False
