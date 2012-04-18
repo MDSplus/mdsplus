@@ -115,8 +115,8 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct *setup)
   static DESCRIPTOR_FLOAT(coef_d,&coefficient);
   static short offset;
   static struct descriptor_s  offset_d    = {2,DTYPE_W,CLASS_S,(char *)&offset};
-  static DESCRIPTOR_FUNCTION_0($value,(unsigned char *)&OpcValue);
-  static DESCRIPTOR_FUNCTION_2(add_exp,(unsigned char *)&OpcAdd,&offset_d,&$value);
+  static DESCRIPTOR_FUNCTION_0(dvalue,(unsigned char *)&OpcValue);
+  static DESCRIPTOR_FUNCTION_2(add_exp,(unsigned char *)&OpcAdd,&offset_d,&dvalue);
   static DESCRIPTOR_FUNCTION_2(mult_exp,(unsigned char *)&OpcMultiply,&coef_d,&add_exp);
   static DESCRIPTOR(volts_str,"volts");
   static DESCRIPTOR_WITH_UNITS(volts,&mult_exp,&volts_str);

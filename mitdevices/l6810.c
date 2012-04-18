@@ -167,8 +167,8 @@ int l6810___store(struct descriptor *niddsc_ptr, InStoreStruct *in_struct)
   static DESCRIPTOR_FLOAT(coef_d,&coefficient);
   static short offset = -2048;
   static struct descriptor_s  offset_d    = {2,DTYPE_W,CLASS_S,(char *)&offset};
-  static DESCRIPTOR_FUNCTION_1($value,(unsigned char *)&OpcValue,0);
-  static DESCRIPTOR_FUNCTION_2(add_exp,(unsigned char *)&OpcAdd,&offset_d,&$value);
+  static DESCRIPTOR_FUNCTION_1(dvalue,(unsigned char *)&OpcValue,0);
+  static DESCRIPTOR_FUNCTION_2(add_exp,(unsigned char *)&OpcAdd,&offset_d,&dvalue);
   static DESCRIPTOR_FUNCTION_2(mult_exp,(unsigned char *)&OpcMultiply,&coef_d,&add_exp);
   static DESCRIPTOR(volts_str,"volts");
   static DESCRIPTOR_WITH_UNITS(volts,&mult_exp,&volts_str);
@@ -191,7 +191,7 @@ int l6810___store(struct descriptor *niddsc_ptr, InStoreStruct *in_struct)
   struct setup setup;
 
   return_on_error(DevNids(niddsc_ptr,sizeof(c_nids),c_nids));
-  $value.ndesc = 0;
+  dvalue.ndesc = 0;
   return_on_error(DevCamChk(CamPiow(in_struct->name, 0, 8, 0, 16, 0), &one, 0));
   if ((CamXandQ(0)&1) == 0) return DEV$_NOT_TRIGGERED;
 

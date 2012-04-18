@@ -88,8 +88,8 @@ int l8590_mem___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
   static DESCRIPTOR_NID(sclr_niddsc,0);
   static int latch_nid;
   static DESCRIPTOR_NID(latch,&latch_nid);
-  static FUNCTION(1) $value = {2,DTYPE_FUNCTION,CLASS_R,(unsigned char *)&OpcValue,0,0};
-  static DESCRIPTOR_SIGNAL_1(signal,&$value,&counts,&latch);
+  static FUNCTION(1) dvalue = {2,DTYPE_FUNCTION,CLASS_R,(unsigned char *)&OpcValue,0,0};
+  static DESCRIPTOR_SIGNAL_1(signal,&dvalue,&counts,&latch);
   int setup_status = 0;
   latch_nid = setup->head_nid + L8590_MEM_N_LATCH;
   TreeGetDefaultNid(&old_def);

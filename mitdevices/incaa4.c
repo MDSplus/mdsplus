@@ -114,8 +114,8 @@ int incaa4___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
   static DESCRIPTOR_FLOAT(coef_d,&coefficient);
   static int key;
   static DESCRIPTOR_LONG(key_d,&key);
-  static DESCRIPTOR_FUNCTION_1($value,(unsigned char *)&OpcValue,0);
-  static DESCRIPTOR_FUNCTION_2(mult_exp,(unsigned char *)&OpcMultiply,&coef_d,&$value);
+  static DESCRIPTOR_FUNCTION_1(dvalue,(unsigned char *)&OpcValue,0);
+  static DESCRIPTOR_FUNCTION_2(mult_exp,(unsigned char *)&OpcMultiply,&coef_d,&dvalue);
   static DESCRIPTOR(volts_str,"volts");
   static DESCRIPTOR_WITH_UNITS(volts,&mult_exp,&volts_str);
   static DESCRIPTOR_WINDOW(window,&start_d,&end_d,&trigger_d);
@@ -144,7 +144,7 @@ int incaa4___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
   trig_in_nid = setup->head_nid + INCAA4_N_TRIG_IN;
   clock_in_nid = setup->head_nid + INCAA4_N_CLOCK_IN;
   clock_out_nid = setup->head_nid + INCAA4_N_CLOCK_OUT;
-  $value.ndesc = 0;
+  dvalue.ndesc = 0;
 
   pio(0,2,(int *)&csreg);
   pio(0,0,&mar);
