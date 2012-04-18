@@ -22,3 +22,4 @@ then
 fi
 echo "${CLIENT_BASEDIR}/usr/local/mdsplus" > /etc/.mdsplus_dir
 installf "$PKGINST" /etc/.mdsplus_dir
+installf -f "$PKGINST"
