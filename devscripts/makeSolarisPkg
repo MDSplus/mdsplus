@@ -47,6 +47,21 @@ else
   cd ${WORKSPACE}/$arch/solaris/$pkg
   find . -print | grep -v prototype | pkgproto | gawk '{ans=$0; gsub("twf staff","root root",ans); print ans;}' > prototype
   echo "i pkginfo=./pkginfo" >> prototype
+  if [ -r ${WORKSPACE}/x86_64/mdsplus/rpm/solaris11/${pkg}.depends ]
+  then
+    gawk '{gsub("<PKGFLAVOR>","'$pkgflavor'");print $0;}' ${WORKSPACE}/x86_64/mdsplus/rpm/solaris11/${pkg}.depends > ./depends
+    echo "i depends=./depends" >> prototype
+  fi
+  if [ -r ${WORKSPACE}/x86_64/mdsplus/rpm/solaris11/${pkg}.postinstall ]
+  then
+    cp ${WORKSPACE}/x86_64/mdsplus/rpm/solaris11/${pkg}.postinstall ./postinstall
+    echo "i postinstall=./postinstall" >> prototype
+  fi
+  if [ -r ${WORKSPACE}/x86_64/mdsplus/rpm/solaris11/${pkg}.preremove ]
+  then
+    cp ${WORKSPACE}/x86_64/mdsplus/rpm/solaris11/${pkg}.preremove ./preremove
+    echo "i preremove=./preremove" >> prototype
+  fi
   cat <<EOF > pkginfo
 PKG="mdsplus${pkgflavor}-${pkg}"
 NAME="MDSplus $flavor release of the $pkg package"
