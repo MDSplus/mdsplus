@@ -164,7 +164,8 @@ def makeSolarisPkgsCommand(args):
         if pstat != 0:
             print "Error copying packages to dist"
             sys.exit(pstat)
-        sys.path.insert(0,WORKSPACE+'x86_64/mdsplus/tests')
+        sys.path.insert(0,WORKSPACE+'/x86_64/mdsplus/tests')
+        print "Python path is %s" % (str(sys.path),)
         from distribution_tests import test_solaris as test
         test(WORKSPACE,FLAVOR)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
