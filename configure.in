@@ -50,18 +50,6 @@ AC_ARG_ENABLE(perf,
 		AC_DEFINE(USE_PERF)
 	fi
 
-dnl See if we should build the camac libraries, mitdevices etc.
-
-case "$target" in
-*linux*) camac_default="yes";;
-*) camac_default="no";;
-esac
-
-AC_ARG_ENABLE(camac,
-	[ --enable-camac        Build CAMAC and device libraries ],
-	camac_build="$enableval",
-        camac_build="$camac_default")
-
 AC_ARG_ENABLE(java,
 	[ --disable-java	do not build java libraries and applications],
         java_enable="$enableval",
@@ -714,28 +702,18 @@ AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/fi
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readline.h)
 AC_CHECK_HEADERS(malloc.h)
 
-
-if test "$camac_build" = "yes"
+REMCAM="remcam"
+CCL="ccl"
+MITDEVICES="mitdevices"
+GEN_DEVICE="gen_device"
+AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
+if test "$DO_CAMSHR" = yes
 then
-  GEN_DEVICE="gen_device"
-  REMCAM="remcam"
-  CCL="ccl"
-  MITDEVICES="mitdevices"
-  AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
-  if test "$DO_CAMSHR" = yes
-  then
-    CAMSHR="camshr"
-    REMCAMLIB="RemCamShr"
-  else
-    CAMSHR=""
-    REMCAMLIB="CamShr"
-  fi
+  CAMSHR="camshr"
+  REMCAMLIB="RemCamShr"
 else
-  GEN_DEVICE=""
-  REMCAM=""
-  CCL=""
-  MITDEVICES=""
   CAMSHR=""
+  REMCAMLIB="CamShr"
 fi
 
 dnl Check for default hdf5 header and library

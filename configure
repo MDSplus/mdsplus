@@ -813,7 +813,6 @@ enable_option_checking
 enable_mdsip_connections
 enable_nodebug
 enable_perf
-enable_camac
 enable_java
 enable_universal
 with_jdk
@@ -1474,7 +1473,6 @@ Optional Features:
  --enable-mdsip_connections     Use new improved mdsip connections
   --enable-nodebug        compile without debug info
   --enable-perf          enable MDSplus I/O statistics
- --enable-camac        Build CAMAC and device libraries
  --disable-java	do not build java libraries and applications
  --enable-universal	Build MacOSX Universal Binary
   --enable-globus        use globus_io for mdsip communications
@@ -5534,20 +5532,6 @@ _ACEOF
 
 	fi
 
-
-case "$target" in
-*linux*) camac_default="yes";;
-*) camac_default="no";;
-esac
-
-# Check whether --enable-camac was given.
-if test "${enable_camac+set}" = set; then
-  enableval=$enable_camac; camac_build="$enableval"
-else
-  camac_build="$camac_default"
-fi
-
-
 # Check whether --enable-java was given.
 if test "${enable_java+set}" = set; then
   enableval=$enable_java; java_enable="$enableval"
@@ -8785,13 +8769,10 @@ fi
 done
 
 
-
-if test "$camac_build" = "yes"
-then
-  GEN_DEVICE="gen_device"
-  REMCAM="remcam"
-  CCL="ccl"
-  MITDEVICES="mitdevices"
+REMCAM="remcam"
+CCL="ccl"
+MITDEVICES="mitdevices"
+GEN_DEVICE="gen_device"
 
 for ac_header in scsi/sg.h
 do
@@ -8940,20 +8921,13 @@ fi
 
 done
 
-  if test "$DO_CAMSHR" = yes
-  then
-    CAMSHR="camshr"
-    REMCAMLIB="RemCamShr"
-  else
-    CAMSHR=""
-    REMCAMLIB="CamShr"
-  fi
+if test "$DO_CAMSHR" = yes
+then
+  CAMSHR="camshr"
+  REMCAMLIB="RemCamShr"
 else
-  GEN_DEVICE=""
-  REMCAM=""
-  CCL=""
-  MITDEVICES=""
   CAMSHR=""
+  REMCAMLIB="CamShr"
 fi
 
 HDF5_APS=""
