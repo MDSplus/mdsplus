@@ -17,6 +17,7 @@ from SIS3820 import SIS3820
 from FEMTO import FEMTO
 from MARTE_GENERIC import MARTE_GENERIC
 from MARTE import MARTE
+from MARTE_MHD_CTRL import MARTE_MHD_CTRL
 from MARTE_MHD_BT import MARTE_MHD_BT
 from MARTE_MHD_BR import MARTE_MHD_BR
 from MARTE_MHD_I import MARTE_MHD_I
