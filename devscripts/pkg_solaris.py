@@ -14,7 +14,7 @@ def writePkgInfo(outfile):
 
 def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo):
     sys.stdout.flush()
-    p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisRepoPkg %s %s %s %d %s %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
+    p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisRepoPkg %s %s %s %d %s %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo),shell=True)
     return p.wait()
 
 def getPkgfile(WORKSPACE,arch,dist,pkgflavor,pkg,VERSION,updates):
