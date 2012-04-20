@@ -1,0 +1,23 @@
+#!/bin/sh
+#
+svccfg -s application/pkg/server add mdsplus
+svccfg -s application/pkg/server add testing
+svccfg -s application/pkg/server:mdsplus addpg pkg application
+svccfg -s application/pkg/server:testing addpg pkg application
+svccfg -s application/pkg/server:mdsplus setprop pkg/inst_root=/home/twf/repo
+svccfg -s application/pkg/server:mdsplus setprop pkg/readonly=true
+svccfg -s application/pkg/server:mdsplus setprop pkg/port=80
+svccfg -s application/pkg/server:mdsplus addpg general framework
+svccfg -s application/pkg/server:mdsplus addpropvalue general/complete astring: mdsplus
+svccfg -s application/pkg/server:mdsplus addpropvalue general/enabled boolean: true
+svcadm refresh application/pkg/server:mdsplus
+svcadm enable application/pkg/server:mdsplus
+svccfg -s application/pkg/server:testing setprop pkg/inst_root=/home/twf/repo-for-testing
+svccfg -s application/pkg/server:testing setprop pkg/readonly=true
+svccfg -s application/pkg/server:testing setprop pkg/port=81
+svccfg -s application/pkg/server:testing addpg general framework
+svccfg -s application/pkg/server:testing addpropvalue general/complete astring: testing
+svccfg -s application/pkg/server:testing addpropvalue general/enabled boolean: true
+svcadm refresh application/pkg/server:testing
+svcadm enable application/pkg/server:testing
+
