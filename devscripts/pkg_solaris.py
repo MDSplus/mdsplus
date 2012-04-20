@@ -12,9 +12,9 @@ def writePkgInfo(outfile):
             '</body>\n</html>\n')
     f.close()
 
-def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST):
+def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo):
     sys.stdout.flush()
-    p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisPkg %s %s %s %d %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
+    p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisRepoPkg %s %s %s %d %s %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST),shell=True)
     return p.wait()
 
 def getPkgfile(WORKSPACE,arch,dist,pkgflavor,pkg,VERSION,updates):
@@ -127,7 +127,7 @@ def makeSolarisPkgsCommand(args):
             sys.exit(1)
         for pkg in getPackages():
             for arch in ('x86_64','i686'):
-                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],arch,DIST)
+                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],arch,DIST,'~/repo-for-testing')
                 if build_status != 0:
                     print "Error building %s package for %s" % (arch,pkg)
                     sys.exit(1)
