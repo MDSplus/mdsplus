@@ -30,14 +30,14 @@ class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
     'horFieldControlEnable_6', 'kpAmplitudes_6','kpPhases_6','ki_6','kd_6','tStart_6','tEnd_6','cutoffFreq_6',
     'horFieldControlEnable_7', 'kpAmplitudes_7','kpPhases_7','ki_7','kd_7','tStart_7','tEnd_7','cutoffFreq_7',
     'horFieldControlEnable_8', 'kpAmplitudes_8','kpPhases_8','ki_8','kd_8','tStart_8','tEnd_8','cutoffFreq_8',
-    'vsKpAmplitudes_1','vsKpPhases_1','vsKi_1','vsKd_1','vsTStart_1','vsTEnd_1','vsCutoffFreq_1',
-    'vsKpAmplitudes_2','vsKpPhases_2','vsKi_2','vsKd_2','vsTStart_2','vsTEnd_2','vsCutoffFreq_2',
-    'vsKpAmplitudes_3','vsKpPhases_3','vsKi_3','vsKd_3','vsTStart_3','vsTEnd_3','vsCutoffFreq_3',
-    'vsKpAmplitudes_4','vsKpPhases_4','vsKi_4','vsKd_4','vsTStart_4','vsTEnd_4','vsCutoffFreq_4',
-    'vsKpAmplitudes_5','vsKpPhases_5','vsKi_5','vsKd_5','vsTStart_5','vsTEnd_5','vsCutoffFreq_5',
-    'vsKpAmplitudes_6','vsKpPhases_6','vsKi_6','vsKd_6','vsTStart_6','vsTEnd_6','vsCutoffFreq_6',
-    'vsKpAmplitudes_7','vsKpPhases_7','vsKi_7','vsKd_7','vsTStart_7','vsTEnd_7','vsCutoffFreq_7',
-    'vsKpAmplitudes_8','vsKpPhases_8','vsKi_8','vsKd_8','vsTStart_8','vsTEnd_8','vsCutoffFreq_8',
+    'vsKpAmplitudes_1','vsKpPhases_1','vsKp_1', 'vsKi_1','vsKd_1','vsTStart_1','vsTEnd_1','vsCutoffFreq_1',
+    'vsKpAmplitudes_2','vsKpPhases_2','vsKp_2', 'vsKi_2','vsKd_2','vsTStart_2','vsTEnd_2','vsCutoffFreq_2',
+    'vsKpAmplitudes_3','vsKpPhases_3','vsKp_3', 'vsKi_3','vsKd_3','vsTStart_3','vsTEnd_3','vsCutoffFreq_3',
+    'vsKpAmplitudes_4','vsKpPhases_4','vsKp_4', 'vsKi_4','vsKd_4','vsTStart_4','vsTEnd_4','vsCutoffFreq_4',
+    'vsKpAmplitudes_5','vsKpPhases_5','vsKp_5', 'vsKi_5','vsKd_5','vsTStart_5','vsTEnd_5','vsCutoffFreq_5',
+    'vsKpAmplitudes_6','vsKpPhases_6','vsKp_6', 'vsKi_6','vsKd_6','vsTStart_6','vsTEnd_6','vsCutoffFreq_6',
+    'vsKpAmplitudes_7','vsKpPhases_7','vsKp_7', 'vsKi_7','vsKd_7','vsTStart_7','vsTEnd_7','vsCutoffFreq_7',
+    'vsKpAmplitudes_8','vsKpPhases_8','vsKp_8', 'vsKi_8','vsKd_8','vsTStart_8','vsTEnd_8','vsCutoffFreq_8',
     'staticDecoupler']
     parValues = [0,0,0,0,0,Data.compile('zero(192, 0)'), 0]
     for i in range(88):  #References
@@ -54,6 +54,7 @@ class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
       parValues.append(0)
       parValues.append(0)
     for i in range(8):  #VS Controller
+      parValues.append(Data.compile('zero(192, 0.)'))
       parValues.append(Data.compile('zero(192, 0.)'))
       parValues.append(Data.compile('zero(192, 0.)'))
       parValues.append(Data.compile('zero(192, 0.)'))
