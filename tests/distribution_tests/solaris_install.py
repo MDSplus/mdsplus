@@ -14,7 +14,7 @@ def install(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo pkg install  $(ls PKGS/x86_64/%s*)' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo /usr/bin/pkg install  -g /home/twf/repo-for-testing-x86_64 %s)' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error installing package %s" % (package,)
