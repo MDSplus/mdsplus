@@ -52,7 +52,18 @@ else
   fi
   if [ ! -d $repo ]
   then
-    pkgrepo create $repo
+    mkdir -p $repo
+    cat - > $repo/pkg5.repository << EOF
+[publisher]
+prefix = www.mdsplus.org
+
+[CONFIGURATION]
+version = 4
+
+[repository]
+version = 4
+
+EOF
   fi
   cd ${WORKSPACE}/$arch/solaris
   echo "set name=pkg.fmri value=pkg://www.mdsplus.org/mdsplus${pkgflavor}-${pkg}@${version}.${release}" > ./${pkg}-tmp/manifest
