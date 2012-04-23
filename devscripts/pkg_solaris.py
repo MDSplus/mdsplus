@@ -127,7 +127,7 @@ def makeSolarisPkgsCommand(args):
             sys.exit(1)
         for pkg in getPackages():
             for arch in ('x86_64','i686'):
-                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],arch,DIST,'~/repo-for-testing')
+                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],arch,DIST,'~/repo-for-testing-%s' % (arch))
                 if build_status != 0:
                     print "Error building %s package for %s" % (arch,pkg)
                     sys.exit(1)
@@ -159,31 +159,19 @@ def makeSolarisPkgsCommand(args):
         print 'All packages are up to date'
         status="skip"
     if status=="ok":
-        p=subprocess.Popen('rsync -av %s/PKGS/* %s/%s/' % (WORKSPACE,DISTPATH,FLAVOR),shell=True)
-        pstat=p.wait()
-        if pstat != 0:
-            print "Error copying packages to dist"
-            sys.exit(pstat)
         sys.path.insert(0,WORKSPACE+'/x86_64/mdsplus/tests')
-        print "Python path is %s" % (str(sys.path),)
         from distribution_tests import test_solaris as test
         test(WORKSPACE,FLAVOR)
-        print "Build completed successfully. Checking for new releaseas and tagging the modules"
+        print "Build and testing completed successfully. Updating packages in public repositories."
         sys.stdout.flush()
-        p=subprocess.Popen(
-            'find DEBS -name "*.deb" -exec reprepro -V --waitforlock 20 -b /mnt/dist/repo -C %s includedeb MDSplus {} \;' % (FLAVOR,),
-            shell=True,cwd=WORKSPACE)
-        pstat=p.wait()
-        p=subprocess.Popen('rsync -av DEBS SOURCES EGGS /mnt/dist/%s/' % (FLAVOR,),shell=True,cwd=WORKSPACE)
-        pstat=p.wait()
-        if pstat != 0:
-            print "Error copying files to destination"
-            sys.exit(1)
-        for d in ('EGGS','REPO','DEBS'):
-            try:
-                shutil.rmtree(WORKSPACE+'/'+d)
-            except:
-                pass
+        for pkg in getPackages():
+            for arch in ('x86_64','i686'):
+                build_status=createPkg(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],arch,DIST,'~/mdsplus-repo-%s' % (arch))
+                if build_status != 0:
+                    print "Error building %s package for %s" % (arch,pkg)
+                    sys.exit(1)
+        print "Tagging modules with new releases."
+        sys.stdout.flush()
         for pkg in getPackages():
             if updates[pkg]['Tag']:
                 print "New release. Tag %s modules with %s %s %s %s" % (pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
