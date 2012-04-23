@@ -124,6 +124,7 @@ CAENDT5720Setup.java\
 RFXVConfigSetup.java\
 MARTESetup.java\
 MARTE_MHD_BRSetup.java\
+MARTE_MHD_CTRLSetup.java\
 MARTE_MHD_ISetup.java\
 MARTE_MHD_BTSetup.java\
 LASER_YAGSetup.java\
