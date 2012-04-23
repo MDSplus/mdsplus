@@ -59,6 +59,13 @@ else
   pkgsend generate ./$pkg >> ./${pkg}-tmp/manifest
   pkgdepend generate -md ./${pkg} ./${pkg}-tmp/manifest > ./${pkg}-tmp/manifest.1
   pkgdepend resolve -m ./${pkg}-tmp/manifest.1
+  pkgmogrify -O ./${pkg}-tmp/manifest ./${pkg}-tmp/manifest.1.res /dev/stdin <<EOF
+<transform dir path=usr$ -> drop>
+<transform dir file link -> edit path usr/local/mdsplus/lib32 usr/local/mdsplus/lib>
+<transform dir file link -> edit path usr/local/mdsplus/lib64 usr/local/mdsplus/lib/amd64>
+<transform dir file link -> edit path usr/local/mdsplus/bin32 usr/local/mdsplus/bin>
+<transform dir file link -> edit path usr/local/mdsplus/bin64 usr/local/mdsplus/bin/amd64>
+EOF
   pkgrepo remove -s $repo mdsplus${pkgflavor}-${pkg}@${version}.${release}
-  pkgsend -s $repo publish -d ./${pkg} ./${pkg}-tmp/manifest.1.res
+  pkgsend -s $repo publish -d ./${pkg} ./${pkg}-tmp/manifest
 fi
