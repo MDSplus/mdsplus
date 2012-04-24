@@ -170,6 +170,8 @@ def makeSolarisPkgsCommand(args):
                 if build_status != 0:
                     print "Error building %s package for %s" % (arch,pkg)
                     sys.exit(1)
+        p=subprocess.Popen('devscripts/solarisServeRestart',shell=True,cwd="%s/x86_64/mdsplus"%(WORKSPACE))
+	p.wait()
         print "Tagging modules with new releases."
         sys.stdout.flush()
         for pkg in getPackages():
