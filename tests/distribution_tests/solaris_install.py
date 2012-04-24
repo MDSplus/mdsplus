@@ -31,7 +31,7 @@ def remove(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo pkg uninstall %s' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo /usr/bin/pkg uninstall %s' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
