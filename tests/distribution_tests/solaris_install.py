@@ -14,12 +14,22 @@ def install(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo /usr/bin/pkg install  -g /home/twf/repo-for-testing-x86_64 %s' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
-  if p.wait() != 0:
+  p=subprocess.Popen('sudo /usr/bin/pkg install  -g /home/twf/repo-for-testing-x86_64 %s 2>&1' % (package),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  if p.wait() not in (0,4):
     print p.stdout.read()
     print "Error installing package %s" % (package,)
     sys.exit(1)
   else:
+    if pkg == "kernel":
+      p=subprocess.Popen('sudo /usr/bin/crle -l /usr/local/mdsplus/lib -u; sudo /usr/bin/crle -64 -l /usr/local/mdsplus/lib/amd64 -u',shell=True)
+      p.wait()
+      os.environ['MDS_PATH']="/usr/local/mdsplus/tdi"
+    elif pkg == "python":
+      for d1,d2,fn in os.walk('/usr/local/mdsplus/mdsobjects/python/dist'):
+	for f in fn:
+           if f.endswith('.egg'):
+             sys.path.insert(0,'/usr/local/mdsplus/mdsobjects/python/dist/'+f)
+             break
     print "Successfully installed package %s" % (package,)
 
 def remove(pkg,FLAVOR):
@@ -31,7 +41,7 @@ def remove(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
-  p=subprocess.Popen('sudo /usr/bin/pkg uninstall %s' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo /usr/bin/pkg uninstall %s 2>&1' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)

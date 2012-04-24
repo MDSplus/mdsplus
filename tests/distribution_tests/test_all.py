@@ -2,7 +2,6 @@ import sys
 
 def python_test():
   import MDSplus
-  import sys
   sys.path.insert(0,MDSplus.__path__[0])
   from unittest import TextTestRunner
   from MDSplus.tests import test_all
@@ -44,7 +43,6 @@ def test_solaris(WORKSPACE,FLAVOR):
     pkgs.reverse()
     for pkg in pkgs:
       remove(pkg,FLAVOR)
-    cleanApt()
   except Exception,e:
     print "Error %s" % (e,)
   if not ok:
