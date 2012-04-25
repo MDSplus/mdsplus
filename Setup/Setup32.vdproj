@@ -3819,12 +3819,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_CED5471DC5FB45D7A2C8A76908CB9FC1"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_CF13567B360641178FDFF261AE90DFE2"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -16309,26 +16303,6 @@
             "Folder" = "8:_6B0027B98BB34E03ACB4D6B67AE987D6"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CED5471DC5FB45D7A2C8A76908CB9FC1"
-            {
-            "SourcePath" = "8:..\\matlab\\mdsipmex.mexlx"
-            "TargetName" = "8:mdsipmex.mexlx"
-            "Tag" = "8:"
-            "Folder" = "8:_F5B7E037D5614EE3B12809035AA8B85C"
-            "Condition" = "8:INCLUDE_MATLAB"
-            "Transitive" = "11:TRUE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
