@@ -277,7 +277,7 @@ static void getMulticastAddr(char *eventName, char *retIp)
 	unsigned int hash = 0;
 	for(i = 0; i < len; i++)
 		hash += eventName[i];
-	sprintf(retIp, "225.0.0.%d", hash%256);
+	sprintf(retIp, "239.0.0.%d", hash%256);
 }
 
 
