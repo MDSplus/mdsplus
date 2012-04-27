@@ -269,15 +269,30 @@ static int getPort()
 	return udpPort;
 }
 
+static char *getMulticastAddressFormat() {
+  char *addrStr = getenv("mdsevent_address");
+  char *ans=(char *)malloc(50);
+  unsigned int num,p1,p2,p3,p4;
+  if (addrStr && ((num=sscanf(addrStr,"%d.%d.%d.%d",&p1,&p2,&p3,&p4)) == 4) && (p1 < 256) && (p2 < 256) && (p3 < 256) && p4 == 0) {
+    sprintf(ans,"%d.%d.%d.",p1,p2,p3);
+    strcat(ans,"%d");
+  } else {
+    strcpy(ans,"255.0.0.%d");
+  }
+  return ans;
+}
 
 static void getMulticastAddr(char *eventName, char *retIp)
 {
+        static char *multicast_address_format=0;
 	int i;
 	int len = strlen(eventName);
 	unsigned int hash = 0;
+        if (multicast_address_format==0)
+          multicast_address_format=getMulticastAddressFormat();
 	for(i = 0; i < len; i++)
 		hash += eventName[i];
-	sprintf(retIp, "239.0.0.%d", hash%256);
+	sprintf(retIp, multicast_address_format, hash%256);
 }
 
 
