@@ -24,7 +24,7 @@ def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo):
     p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisRepoPkg %s %s %s %d %s %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo),shell=True)
     return p.wait()
 
-def getPkgfile(arch,dist,pkgflavor,pkg,VERSION,updates):
+def getPkgFile(arch,dist,pkgflavor,pkg,VERSION,updates):
     return "mdsplus%s-%s_%s-%d_%s.%s.%s.pkg" % (pkgflavor,pkg,VERSION,updates[pkg]['Release'],dist,os.uname()[4],arch)
 
 def makeSolarisPkgsCommand(args):
@@ -80,7 +80,7 @@ def makeSolarisPkgsCommand(args):
                 print "================================="
             else:
                 for arch in ('i686','x86_64'):
-                  pkgfile='%s/%s/PKG/%s' % (WORKSPACE,arch,getPkgfile(arch,DIST,pkgflavor,pkg,VERSION,updates))
+                  pkgfile='%s/%s/PKG/%s' % (WORKSPACE,arch,getPkgFile(arch,DIST,pkgflavor,pkg,VERSION,updates))
                   try:
                       os.stat(pkgfile)
                   except Exception,e:
