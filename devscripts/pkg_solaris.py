@@ -17,12 +17,9 @@ def createPkg(WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo):
     p=subprocess.Popen('%s/x86_64/mdsplus/devscripts/makeSolarisRepoPkg %s %s %s %d %s %s %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,arch,DIST,repo),shell=True)
     return p.wait()
 
-def getPkgfile(WORKSPACE,arch,dist,pkgflavor,pkg,VERSION,updates):
-    if pkg == 'all':
-        return "%s/PKGS/%s/mdsplus%s_%s.%d_%s.%s.%s.pkg" % (WORKSPACE,arch,pkgflavor,VERSION,updates[pkg]['Release'],dist.os.uname()[4],arch)
-    else:
-        return "%s/PKGS/%s/mdsplus%s-%s_%s.%d_%s.%s.%s.pkg" % (WORKSPACE,arch,pkgflavor,pkg,VERSION,updates[pkg]['Release'],dist.os.uname()[4].arch)
-    
+def getPkgfile(arch,dist,pkgflavor,pkg,VERSION,updates):
+    return "mdsplus%s-%s_%s-%d_%s.%s.%s.pkg" % (pkgflavor,pkg,VERSION,updates[pkg]['Release'],dist,os.uname()[4],arch)
+
 def makeSolarisPkgsCommand(args):
     DIST=getDist()
     WORKSPACE=getWorkspace()
@@ -34,7 +31,7 @@ def makeSolarisPkgsCommand(args):
             shutil.rmtree('%s/%s/BUILDROOT' % (WORKSPACE,arch))
         except:
             pass
-    for d in ['x86_64/BUILDROOT','i686/BUILDROOT','EGGS','bin']:
+    for d in ['x86_64/BUILDROOT','i686/BUILDROOT','EGGS','bin','x86_64/PKG','i686/PKG']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
@@ -76,7 +73,7 @@ def makeSolarisPkgsCommand(args):
                 print "================================="
             else:
                 for arch in ('i686','x86_64'):
-                  pkgfile=getPkgfile('/mnt/dist/%s' % (FLAVOR,),arch,pkgflavor,pkg,VERSION,updates)
+                  pkgfile='%s/%s/PKG/%s' % (WORKSPACE,arch,getPkgfile(arch,DIST,pkgflavor,pkg,VERSION,updates))
                   try:
                       os.stat(pkgfile)
                   except Exception,e:
@@ -86,6 +83,12 @@ def makeSolarisPkgsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
+        for pkg in getPackages():
+          for arch in ('i686','x86_64'):
+            try:
+              os.unlink('%s/%s/PKG/%s' % (WORKSPACE,arch,getPkgFile(arch,DIST,pkgflavor,pkg,VERSION,updates)))
+            except:
+              pass
         prefix32="%s/i686/BUILDROOT/usr/local/mdsplus" %(WORKSPACE,)
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
             './configure --enable-mdsip_connections --enable-nodebug ' +\
@@ -132,17 +135,6 @@ def makeSolarisPkgsCommand(args):
                     print "Error building %s package for %s" % (arch,pkg)
                     sys.exit(1)
 
-#        build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
-#        if build_status != 0:
-#            print "Error build catch all package, status=%d" % (build_status,)
-#            sys.exit(build_status)
-#        for pkg in getPackages():
-#            debfile=getDebfile(WORKSPACE,arch,debflavor,pkg,VERSION,updates)
-#            build_status=createDeb(WORKSPACE,FLAVOR,pkg,VERSION,updates[pkg]['Release'],DIST)
-#            if build_status != 0:
-#                print "Error building debian package %s, status=%d" % (debfile,build_status)
-#                sys.exit(build_status)
-#            writeRpmInfo(debfile[0:-3])
         if updates['python']['Update']:
             sys.stdout.flush()     
             p=subprocess.Popen('env MDSPLUS_PYTHON_VERSION="%s%s-%s" python setup.py bdist_egg' % 
@@ -170,6 +162,9 @@ def makeSolarisPkgsCommand(args):
                 if build_status != 0:
                     print "Error building %s package for %s" % (arch,pkg)
                     sys.exit(1)
+                else:
+                  fd=os.open('%s/%s/PKG/%s' % (WORKSPACE,arch,getPkgFile(arch,DIST,pkgflavor,pkg,VERSION,updates)),'w')
+                  fd.close()
         p=subprocess.Popen('devscripts/solarisServeRestart',shell=True,cwd="%s/x86_64/mdsplus"%(WORKSPACE))
 	p.wait()
         print "Tagging modules with new releases."
