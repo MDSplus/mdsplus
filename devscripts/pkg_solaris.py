@@ -1,7 +1,14 @@
 import subprocess,datetime,os,sys,shutil
-from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform
+from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages as getAllPackages, makeSrcTar, newRelease, getHardwarePlatform
 from pkg_rpms import writeRpmInfo
 
+def getPackages():
+    pkgs=getAllPackages()
+    ans=list()
+    for pkg in pkgs:
+      if pkg!='gsi':
+	ans.append(pkg)
+    return ans
 
 def writePkgInfo(outfile):
     f=open(outfile+'-info.html','w')
