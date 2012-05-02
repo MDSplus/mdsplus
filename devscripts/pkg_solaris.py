@@ -31,7 +31,6 @@ def makeSolarisPkgsCommand(args):
     DIST=getDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
-    DISTPATH=args[2]+'/'+DIST
     need_to_build=len(args) > 3
     for arch in ('x86_64','i686'):
         try:
