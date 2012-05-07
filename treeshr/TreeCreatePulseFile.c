@@ -281,6 +281,10 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   return status;
 }
 
+#define MAX_CHUNK 1024*1024*256
+#define MIN(a,b) ((a) < (b))?(a):(b)
+#define MAX(a,b) ((a) > (b))?(a):(b)
+
 STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 {
   int status = TreeFAILURE;
@@ -296,16 +300,25 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
       if (lock_it) MDS_IO_LOCK(src_fd,0,(int)src_len,MDS_IO_LOCK_RD,0);
       if (src_len > 0)
       {
-        void *buff = malloc((int)src_len);
-        size_t bytes_read = MDS_IO_READ(src_fd,buff,(size_t)src_len);
-        if (bytes_read == (size_t)src_len)
-	{
-          int bytes_written = MDS_IO_WRITE(dst_fd,buff,(size_t)src_len);
-          if (bytes_written == src_len)
-            status = TreeSUCCESS;
+        size_t chunk_size = MIN(MAX_CHUNK, src_len);
+        void *buff = malloc((int)chunk_size);
+        _int64 bytes_to_go = src_len;
+        while(bytes_to_go > 0)
+        {
+          size_t io_size = MIN(bytes_to_go, chunk_size);
+          size_t bytes_read = MDS_IO_READ(src_fd,buff,(size_t)io_size);
+          if (bytes_read == io_size)
+	  {
+            int bytes_written = MDS_IO_WRITE(dst_fd,buff,(size_t)io_size);
+            if (bytes_written != io_size)
+              break;
+          }
+          bytes_to_go -= io_size;
         }
         if (buff)
           free(buff);
+        if (bytes_to_go == 0)
+          status = TreeSUCCESS;
       }
       else if (src_len == 0)
           status = TreeSUCCESS;
