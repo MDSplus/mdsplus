@@ -115,6 +115,7 @@ def makeDebsCommand(args):
         if build_status != 0:
             print "Error building mdsplus. Status=%d" % (build_status,)
             status="error"
+            sys.exit(build_status)
         else:
             build_status=createDeb(WORKSPACE,FLAVOR,'all','1.0',0,DIST)
             if build_status != 0:
