@@ -100,7 +100,7 @@ def makeDebsCommand(args):
                  '--exclude SOURCES --exclude DEBS --exclude EGGS --exclude REPO ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
-             'if (! make ); then exit $?; fi;if (! make install ); then exit $?; fi;' +\
+             'if (! make ); then exit 1; fi;if (! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
