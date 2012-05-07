@@ -657,12 +657,14 @@ AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_N
 AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
 AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
-AC_CHECK_LIB(readline,readline,LIBREADLINE="-lreadline -lcurses",LIBREADLINE="",-lcurses)
-if test "$LIBREADLINE" = ""
+AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'],,,)
+if test "$ac_cv_search_readline" = "no"
 then
   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
   TDIC=""
+  LIBREADLINE=""
 else
+  LIBREADLINE="$ac_cv_search_readline"
   TDIC="tdic"
 fi
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
@@ -845,27 +847,30 @@ if test $mdsplus_ok = yes; then
 fi
 
 dnl Check for Sybase
-AC_MSG_CHECKING(for SYBASE open/client or freetds)
-: ${SYBASE=/usr/local/sybase}
-if test -r "/usr/lib${SYB64}/libsybdb.so"
+AC_SEARCH_LIBS([dbopen],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
+if test "$SYBASE_LIB" = ""
 then
+  AC_MSG_CHECKING(for SYBASE open/client or freetds)
+  : ${SYBASE=/usr/local/sybase}
+  if test -r "/usr/lib${SYB64}/libsybdb.so"
+  then
         SYBASE_INC="-DSYBASE"
         SYBASE_LIB="-lsybdb"
         SYBASE="SYBASE"
         AC_MSG_RESULT(have freetds)
-elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
-then 
+  elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
+  then 
         SYBASE_INC="-I$SYBASE/include -DSYBASE"
         SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
 	SYBASE="SYBASE"
         AC_MSG_RESULT(have sybase open/client)
-else
+  else
         SYBASE_INC=""
         SYBASE_LIB=""
 	SYBASE=""
         AC_MSG_RESULT(no sybase open/client)
+  fi
 fi
-
 AC_MSG_CHECKING(if mdssql should be built)
 if test -n "$SYBASE_INC"
 then
