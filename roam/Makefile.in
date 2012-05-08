@@ -20,7 +20,7 @@ SOURCES = \
 
 OBJECTS = $(SOURCES:.c=.o)
 
-all : makefile-header \
+all : \
       @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ \
       @MAKESHLIBDIR@libRoam@SHARETYPE@ \
       $(modules) \
