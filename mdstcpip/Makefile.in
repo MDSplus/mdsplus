@@ -242,7 +242,7 @@ ifdef MdsIpGSI
 #include makefile-header
 
 $(MdsIpGSI) :  IoRoutinesGsi.c
-	$(CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $$(pkg-config --cflags globus-xio) -I$(top_srcdir)/include  @LINKSHARED -L@MAKESHLIBDIR@ -lMdsIpShr
+	$(CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $$(pkg-config --cflags globus-xio) -I$(top_srcdir)/include  @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp mdsipsd $@
