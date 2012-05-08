@@ -16,6 +16,10 @@ def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
     return p.wait()
 
 def prepareRepo(repodir,clean):
+    try:
+      os.mkdir(repodir)
+    except OSError:
+      pass
     for f in ('conf','pool','dists','db'):
       if clean:
         try:
