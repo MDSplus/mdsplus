@@ -15,13 +15,20 @@ def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
     p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
     return p.wait()
 
-def prepareRepo(repodir):
+def prepareRepo(repodir,clean):
     for f in ('conf','pool','dists','db'):
+      if clean:
         try:
             shutil.rmtree(repodir+'/'+f)
         except:
             pass
+      try:
         os.mkdir(repodir+'/'+f)
+      except OSError,e:
+        if e.errno == os.errno.EEXIST:
+           pass
+        else:
+           raise e
     f=open(repodir+'/conf/distributions','w')
     f.write(
 """Origin: MDSplus Development Team
@@ -52,7 +59,7 @@ def makeDebsCommand(args):
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
             pass
-    prepareRepo("%s/REPO" % (WORKSPACE,))
+    prepareRepo("%s/REPO" % (WORKSPACE,),True)
     VERSION=getVersion()
     HW,BITS=getHardwarePlatform()
     arch={32:'i386',64:'amd64'}[BITS]
@@ -147,6 +154,7 @@ def makeDebsCommand(args):
         test(WORKSPACE,FLAVOR)
         print "Build completed successfully. Checking for new releaseas and tagging the modules"
         sys.stdout.flush()
+        prepareRepo("/mnt/dist/repo",False)
         p=subprocess.Popen(
             'find DEBS -name "*.deb" -exec reprepro -V --waitforlock 20 -b /mnt/dist/repo -C %s includedeb MDSplus {} \;' % (FLAVOR,),
             shell=True,cwd=WORKSPACE)
