@@ -126,5 +126,6 @@ install:
 @MAKEBINDIR@ : ; mkdir @MAKEBINDIR@
 
 @MAKEBINDIR@jScope : jScope.template
+        - chmod u+rw $@
 	cp jScope.template $@
-	chmod a+x $@
+	chmod a+x,u+rw,g+rw $@
