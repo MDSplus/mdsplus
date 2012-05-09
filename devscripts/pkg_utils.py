@@ -14,10 +14,10 @@ def getDist():
     if os.name=="nt":
         return "win"
     elif os.uname()[0]=='SunOS':
-        return os.uname()[0]+os.uname()[3].split('.')[0]
+        return os.uname()[0]+"-"+os.uname()[3].split('.')[0]
     elif os.uname()[0]=='Linux':
         if 'Ubuntu' in os.uname()[3]:
-            return getLsbReleaseDist()
+            return getLsbReleaseDist()+os.uname()[4]
         parts=os.uname()[2].split('.')
         for p in parts:
             if p.startswith('el'):
