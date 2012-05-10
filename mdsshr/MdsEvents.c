@@ -2191,7 +2191,12 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
 	pthread_mutex_lock(&qh->mutex);
 	if (timeout>0) {
 	  static struct timespec abstime;
+#ifdef HAVE_CLOCK_GETTIME
 	  clock_gettime(CLOCK_REALTIME,&abstime);
+#else
+          abstime.tv_sec=time();
+          abstime.tv_nsec=0;
+#endif
 	  abstime.tv_sec+=timeout;
 	  status=pthread_cond_timedwait(&qh->cond,&qh->mutex,&abstime);
 	} else {
