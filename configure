@@ -11147,9 +11147,9 @@ _ACEOF
 
 fi
 
-{ $as_echo "$as_me:$LINENO: checking for library containing dbopen" >&5
-$as_echo_n "checking for library containing dbopen... " >&6; }
-if test "${ac_cv_search_dbopen+set}" = set; then
+{ $as_echo "$as_me:$LINENO: checking for library containing dbsqlexec" >&5
+$as_echo_n "checking for library containing dbsqlexec... " >&6; }
+if test "${ac_cv_search_dbsqlexec+set}" = set; then
   $as_echo_n "(cached) " >&6
 else
   ac_func_search_save_LIBS=$LIBS
@@ -11166,11 +11166,11 @@ cat >>conftest.$ac_ext <<_ACEOF
 #ifdef __cplusplus
 extern "C"
 #endif
-char dbopen ();
+char dbsqlexec ();
 int
 main ()
 {
-return dbopen ();
+return dbsqlexec ();
   ;
   return 0;
 }
@@ -11203,7 +11203,7 @@ $as_echo "$ac_try_echo") >&5
 	 test "$cross_compiling" = yes ||
 	 $as_test_x conftest$ac_exeext
        }; then
-  ac_cv_search_dbopen=$ac_res
+  ac_cv_search_dbsqlexec=$ac_res
 else
   $as_echo "$as_me: failed program was:" >&5
 sed 's/^/| /' conftest.$ac_ext >&5
@@ -11214,21 +11214,21 @@ fi
 rm -rf conftest.dSYM
 rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
       conftest$ac_exeext
-  if test "${ac_cv_search_dbopen+set}" = set; then
+  if test "${ac_cv_search_dbsqlexec+set}" = set; then
   break
 fi
 done
-if test "${ac_cv_search_dbopen+set}" = set; then
+if test "${ac_cv_search_dbsqlexec+set}" = set; then
   :
 else
-  ac_cv_search_dbopen=no
+  ac_cv_search_dbsqlexec=no
 fi
 rm conftest.$ac_ext
 LIBS=$ac_func_search_save_LIBS
 fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_search_dbopen" >&5
-$as_echo "$ac_cv_search_dbopen" >&6; }
-ac_res=$ac_cv_search_dbopen
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_search_dbsqlexec" >&5
+$as_echo "$ac_cv_search_dbsqlexec" >&6; }
+ac_res=$ac_cv_search_dbsqlexec
 if test "$ac_res" != no; then
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
   SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE"

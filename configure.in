@@ -855,7 +855,7 @@ if test $mdsplus_ok = yes; then
 fi
 
 dnl Check for Sybase
-AC_SEARCH_LIBS([dbopen],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
+AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
 if test "$SYBASE_LIB" = ""
 then
   AC_MSG_CHECKING(for SYBASE open/client or freetds)
