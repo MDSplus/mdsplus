@@ -657,7 +657,7 @@ AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_N
 AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
 AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
-AC_SEARCH_LIBS([clock_gettime],[],AC_DEFINE(HAVE_CLOCK_GETTIME))
+AC_SEARCH_LIBS([clock_gettime],[rt],AC_DEFINE(HAVE_CLOCK_GETTIME);CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime",CLOCK_GETTIME_LIB="")
 AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'],,,)
 if test "$ac_cv_search_readline" = "no"
 then
@@ -926,6 +926,7 @@ LIBS="$LIBPTHREAD $LIBS"
 AC_SUBST(CAMSHR)
 AC_SUBST(CC_LDFLAGS)
 AC_SUBST(CCL)
+AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
 AC_SUBST(D3D_FFLAGS)

@@ -729,6 +729,7 @@ DNET_STUB
 D3D_FFLAGS
 D3DLIB
 D3D_PACKAGE
+CLOCK_GETTIME_LIB
 CCL
 CC_LDFLAGS
 CAMSHR
@@ -8082,7 +8083,7 @@ return clock_gettime ();
   return 0;
 }
 _ACEOF
-for ac_lib in '' ; do
+for ac_lib in '' rt; do
   if test -z "$ac_lib"; then
     ac_res="none required"
   else
@@ -8141,7 +8142,9 @@ if test "$ac_res" != no; then
   cat >>confdefs.h <<\_ACEOF
 #define HAVE_CLOCK_GETTIME 1
 _ACEOF
-
+;CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+else
+  CLOCK_GETTIME_LIB=""
 fi
 
 { $as_echo "$as_me:$LINENO: checking for library containing readline" >&5
@@ -14541,6 +14544,7 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
+
 
 
 
