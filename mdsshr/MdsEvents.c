@@ -2058,7 +2058,12 @@ int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen,int timeou
     pthread_mutex_lock(&t.mutex);
     if (timeout>0) {
       static struct timespec abstime;
+#ifdef HAVE_CLOCK_GETTIME
       clock_gettime(CLOCK_REALTIME,&abstime);
+#else
+      abstime.tv_sec=time(0);
+      abstime.tv_nsec=0;
+#endif
       abstime.tv_sec+=timeout;
       status=pthread_cond_timedwait(&t.cond,&t.mutex,&abstime);
     } else {
