@@ -36,7 +36,7 @@
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
-#ifdef SYBASE
+#ifdef HAVE_SYBASE
 #ifdef __VMS
 #include <dvidef.h>	/*for line width*/
 #include <starlet.h>

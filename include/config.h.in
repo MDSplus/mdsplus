@@ -78,6 +78,9 @@
 /* Define if you have the clock_gettime function. */
 #undef HAVE_CLOCK_GETTIME
 
+/* Define if you have the sybase includes (freetds) */
+#undef HAVE_SYBASE
+
 /* Define if you have the select function.  */
 #undef HAVE_SELECT
 

@@ -884,6 +884,7 @@ if test -n "$SYBASE_INC"
 then
         MDSSQL="mdssql"
         AC_MSG_RESULT(have sql so yes.)
+        AC_DEFINE(HAVE_SYBASE)
 else
         MDSSQL=""
         AC_MSG_RESULT(missing sql so no.)

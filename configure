@@ -11270,6 +11270,10 @@ then
         MDSSQL="mdssql"
         { $as_echo "$as_me:$LINENO: result: have sql so yes." >&5
 $as_echo "have sql so yes." >&6; }
+        cat >>confdefs.h <<\_ACEOF
+#define HAVE_SYBASE 1
+_ACEOF
+
 else
         MDSSQL=""
         { $as_echo "$as_me:$LINENO: result: missing sql so no." >&5
