@@ -2062,8 +2062,6 @@ unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *patte
   struct descr pat;
   struct descr spat;
   char pc;
-  int true;
-  true = 1;
   cand.length = candidate->length;
   cand.ptr = candidate->pointer;
   scand = cand;
@@ -2072,7 +2070,7 @@ unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *patte
   spat = pat;
   scand.length = 0;
 
-  while (true) {
+  while (1) {
     if (--pat.length < 0)
     {
       if (cand.length == 0)
