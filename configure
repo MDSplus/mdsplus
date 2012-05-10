@@ -8139,14 +8139,19 @@ $as_echo "$ac_cv_search_clock_gettime" >&6; }
 ac_res=$ac_cv_search_clock_gettime
 if test "$ac_res" != no; then
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+
+fi
+
+if test "$ac_cv_search_clock_gettime" = "no"
+then
+  CLOCK_GETTIME_LIB=""
+else
+  CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
   cat >>confdefs.h <<\_ACEOF
 #define HAVE_CLOCK_GETTIME 1
 _ACEOF
-;CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
-else
-  CLOCK_GETTIME_LIB=""
-fi
 
+fi
 { $as_echo "$as_me:$LINENO: checking for library containing readline" >&5
 $as_echo_n "checking for library containing readline... " >&6; }
 if test "${ac_cv_search_readline+set}" = set; then
