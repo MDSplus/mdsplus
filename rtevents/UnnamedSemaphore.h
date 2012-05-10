@@ -33,7 +33,6 @@ public:
 				throw new SystemException("Error waiting semaphore", errno);
 		}
 	}
-#ifndef __APPLE_CC__	
 	int timedWait(Timeout &timeout)
 	{
 		struct timespec waitTimeout;
@@ -51,7 +50,6 @@ public:
 			throw new SystemException("Error in UnnamedSemaphore::timedWait", errno);
 		return status;
 	}
-#endif
 	void  post() //return 0 if seccessful
 	{
 		int status = sem_post(&semStruct);
