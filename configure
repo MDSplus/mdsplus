@@ -6021,7 +6021,7 @@ then
 fi
 { $as_echo "$as_me:$LINENO: checking for idl" >&5
 $as_echo_n "checking for idl... " >&6; }
-if test "$IDL_DIR" != "" -a -r $IDL_DIR
+if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
 then
   IDL_INC="-I$IDL_DIR/external"
   IDLMDSEVENT="idlmdsevent"

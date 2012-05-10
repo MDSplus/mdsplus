@@ -241,7 +241,7 @@ then
   fi
 fi
 AC_MSG_CHECKING(for idl)
-if test "$IDL_DIR" != "" -a -r $IDL_DIR
+if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
 then
   IDL_INC="-I$IDL_DIR/external"
   IDLMDSEVENT="idlmdsevent"
