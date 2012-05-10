@@ -655,6 +655,7 @@ SIZEOF_INT_P
 SHARETYPEMOD
 SHARETYPEJNI
 SHARETYPE
+RTEVENTS
 REMCAMLIB
 REMCAM
 NSLLIB
@@ -6072,7 +6073,7 @@ UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
 GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
-
+RTEVENTS="rtevents cacheshr"
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -6267,6 +6268,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X...";
+       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then
           FFLAGS="$FFLAGS -w -f -V -W"
@@ -14553,6 +14555,7 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
+
 
 
 
