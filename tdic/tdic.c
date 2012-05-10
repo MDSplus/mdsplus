@@ -29,6 +29,9 @@ extern int TdiExecute();
 static void *READhandle = NULL;
 #ifdef DYNreadline
 #include <dlfcn.h>
+#ifndef PARAMS
+#define PARAMS(gub) gub
+#endif
 void (*Busing_history) PARAMS((void)) = NULL;
 int (*Bread_history) PARAMS((const char *)) = NULL;
 int (*Bwrite_history) PARAMS((const char *)) = NULL;
