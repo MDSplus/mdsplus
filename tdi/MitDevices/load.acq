@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # file: load.acq
 #
@@ -8,9 +8,5 @@
 #
 cd /ffs/user
 tar -xzf /bigffs/mdsacqkit.tgz
-mv xmlfunctions.sh doInit.sh get.State sendFile acq.ao.zero unpack_waves unpack_d_waves /usr/local/bin
-ln -s /usr/local/bin/unpack_waves /ffs/unpack_waves
-ln -s /usr/local/bin/unpack_d_waves /ffs/unpack_d_waves
+mv xmlfunctions.sh doInit.sh get.State sendFile /usr/local/bin
 cat acq_inetd.conf >> /etc/inetd.conf
-rm -f acq_inetd.conf
-mkdir -p /etc/postshot.d

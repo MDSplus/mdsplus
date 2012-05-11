@@ -1,9 +1,0 @@
-[Desktop Entry]
-Encoding=UTF-8
-Name=jScope
-Comment=MDSplus JAVA based plotting application
-Exec=jScope
-Icon=$MDSPLUS_DIR/pixmaps/dwscope.png
-Terminal=false
-Type=Application
-Categories=GNOME;Application;MDSplus;X-Red-Hat-Base;

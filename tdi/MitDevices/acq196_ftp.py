@@ -9,20 +9,19 @@ from xml.marshal.generic import dumps, loads, load
 
 import MDSplus
 
-class ACQ216_FTP(ACQ_FTP):
+class ACQ196_FTP(ACQ_FTP):
     """
-    D-Tacq ACQ216  16 channel transient recorder
+    D-Tacq ACQ196  96 channel transient recorder
     
     """
     from copy import copy
     parts=copy(ACQ_FTP.acq_parts)
 
-    for i in range(16):
+    for i in range(96):
 	parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
 	parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
 	parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
 	parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
-	parts.append({'path':':INPUT_%2.2d:VIN'%(i+1,),'type':'NUMERIC', 'value':10, 'options':('no_write_shot')})
     del i
     parts.extend(ACQ_FTP.clock_parts)
 
@@ -39,13 +38,13 @@ class ACQ216_FTP(ACQ_FTP):
 	    path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
-            msg="Must specify active chans as int in (2,4,8,16)"
+            msg="Must specify active chans as int in (32,64,96)"
 
             active_chan = int(self.active_chan)
             msg=None
-            if active_chan not in (2,4,8,16) :
-                print "active chans must be in (2, 4, 8, 16 )"
-                active_chan = 16
+            if active_chan not in (32,64,96) :
+                print "active chans must be in (32, 64, 96 )"
+                active_chan = 96
             msg="Could not read trigger source"
             trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
             msg="Could not read clock source"
@@ -110,9 +109,6 @@ class ACQ216_FTP(ACQ_FTP):
                     fd.write("acqcmd setExternalClock %s %d DO2\n" % (clock_src, clock_div,))
                 else:
                     fd.write("acqcmd setExternalClock %s\n" % clock_src)
-
-            for chan in range(16):
-                fd.write("set.vin %d %d\n" % (chan+1, int(self.__getattr__('input_%2.2d_vin' % (chan+1,)))))
 
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig,post_trig,trig_src,'rising',))
             fd.write(". /usr/local/bin/xmlfunctions.sh\n")
@@ -202,7 +198,7 @@ class ACQ216_FTP(ACQ_FTP):
 #
 # now store each channel
 #
-	for chan in range(16):
+	for chan in range(96):
 	    if self.debugging():
 		print "working on channel %d" % chan
             chan_node = self.__getattr__('input_%2.2d' % (chan+1,))

@@ -1,7 +1,9 @@
 #!/bin/sh
-if [ -e /tmp/ready ]
-then
-  echo "Ready"
-else
-  /usr/local/bin/acqcmd getState
+ps | grep postshot.sh | grep -v grep
+if [ ! $? ] 
+then 
+   echo "POST" 
+else 
+  cat /proc/driver/acq200/status/status 
 fi
+

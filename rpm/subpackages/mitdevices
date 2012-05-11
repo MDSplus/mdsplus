@@ -11,13 +11,3 @@ Support for MIT Data acquisition devices
 /usr/local/mdsplus/lib*/libMIT*
 /usr/local/mdsplus/tdi/MitDevices
 %exclude /usr/local/mdsplus/lib*/*.a
-
-%post mitdevices
-ldconfig >/dev/null 2>&1
-pushd $RPM_INSTALL_PREFIX/mdsplus/tdi/MitDevices
-python setup.py install
-popd
-
-%postun mitdevices
-ldconfig >/dev/null 2>&1
-
