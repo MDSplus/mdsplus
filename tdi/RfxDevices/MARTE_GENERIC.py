@@ -108,10 +108,11 @@ class MARTE_GENERIC(Device):
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Control')
         return 0
-      
       print eventStr
       Event.setevent("MARTE", eventStr)
+      time.sleep(3)
       return 1
+    
     def trigger(self, arg):
       eventStr = "TRIGGER " + str(self.id.data())
       Event.setevent("MARTE", eventStr)
@@ -150,6 +151,7 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       Event.setevent("MARTE", eventStr)
+      time.sleep(3)
       return 1
       
     def seq_init(self,arg):
@@ -158,7 +160,6 @@ class MARTE_GENERIC(Device):
       self.pre_req(arg)
       time.sleep(3)
       self.init(arg)
-      time.sleep(3)
       self.pulse_req(arg)
       return 1
 
@@ -168,12 +169,10 @@ class MARTE_GENERIC(Device):
       self.pre_req(arg)
       time.sleep(3)
       self.init(arg)
-      time.sleep(3)
       return 1
 
     def seq_init_stop(self,arg):
       self.init(arg)
-      time.sleep(3)
       self.pulse_req(arg)
       return 1
 
