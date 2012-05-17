@@ -184,3 +184,15 @@ class MARTE_GENERIC(Device):
       time.sleep(3)
       self.collection_complete(arg)
       return 1
+    
+    def seq_store_start(self,arg):
+      self.post_req(arg)
+      time.sleep(3)
+      self.store(arg)
+      return 1
+    
+    def seq_store_stop(self,arg):
+      self.store(arg)
+      time.sleep(3)
+      self.collection_complete(arg)
+      return 1
