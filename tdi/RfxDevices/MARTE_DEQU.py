@@ -4,8 +4,8 @@ import MARTE_GENERIC
 
 class MARTE_DEQU(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe DEQU'
-    parNames = []
-    parValues = []
+    parNames = ['InputMapping', 'InputAutozero']
+    parValues = [0,0]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])

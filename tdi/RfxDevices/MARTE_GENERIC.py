@@ -162,6 +162,21 @@ class MARTE_GENERIC(Device):
       self.pulse_req(arg)
       return 1
 
+    def seq_init_start(self,arg):
+      self.abort(arg)
+      time.sleep(3)
+      self.pre_req(arg)
+      time.sleep(3)
+      self.init(arg)
+      time.sleep(3)
+      return 1
+
+    def seq_init_stop(self,arg):
+      self.init(arg)
+      time.sleep(3)
+      self.pulse_req(arg)
+      return 1
+
     def seq_store(self,arg):
       self.post_req(arg)
       time.sleep(3)
