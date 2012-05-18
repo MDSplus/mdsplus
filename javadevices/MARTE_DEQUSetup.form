@@ -201,7 +201,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Autozero Mask"/>
                     <Property name="numCols" type="int" value="1"/>
-                    <Property name="numRows" type="int" value="192"/>
+                    <Property name="numRows" type="int" value="128"/>
                     <Property name="offsetNid" type="int" value="1345"/>
                     <Property name="preferredColumnWidth" type="int" value="4"/>
                     <Property name="preferredHeight" type="int" value="200"/>

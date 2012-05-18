@@ -144,7 +144,7 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         deviceTable4.setIdentifier("");
         deviceTable4.setLabelString("Autozero Mask");
         deviceTable4.setNumCols(1);
-        deviceTable4.setNumRows(192);
+        deviceTable4.setNumRows(128);
         deviceTable4.setOffsetNid(1345);
         deviceTable4.setPreferredColumnWidth(4);
         deviceTable4.setPreferredHeight(200);
