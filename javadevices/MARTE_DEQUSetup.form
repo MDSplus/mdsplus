@@ -187,7 +187,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Mapping:"/>
                     <Property name="numCols" type="int" value="1"/>
-                    <Property name="numRows" type="int" value="192"/>
+                    <Property name="numRows" type="int" value="128"/>
                     <Property name="offsetNid" type="int" value="1339"/>
                     <Property name="preferredColumnWidth" type="int" value="60"/>
                     <Property name="preferredHeight" type="int" value="200"/>
@@ -205,43 +205,6 @@
                     <Property name="offsetNid" type="int" value="1345"/>
                     <Property name="preferredColumnWidth" type="int" value="4"/>
                     <Property name="preferredHeight" type="int" value="200"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel4">
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Alarms">
-                    <Property name="tabTitle" type="java.lang.String" value="Alarms"/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
-
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-              <SubComponents>
-                <Component class="DeviceField" name="deviceField9">
-                  <Properties>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Max. Br Horizontal Probes (T): "/>
-                    <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="1351"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField10">
-                  <Properties>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Max. Br Vertical Probes (T): "/>
-                    <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="1357"/>
-                  </Properties>
-                </Component>
-                <Component class="DeviceField" name="deviceField11">
-                  <Properties>
-                    <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Max time period above threshold (s):"/>
-                    <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="1363"/>
                   </Properties>
                 </Component>
               </SubComponents>

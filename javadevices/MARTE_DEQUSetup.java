@@ -50,10 +50,6 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         jPanel3 = new javax.swing.JPanel();
         deviceTable3 = new DeviceTable();
         deviceTable4 = new DeviceTable();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
 
@@ -136,7 +132,7 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         deviceTable3.setIdentifier("");
         deviceTable3.setLabelString("Mapping:");
         deviceTable3.setNumCols(1);
-        deviceTable3.setNumRows(192);
+        deviceTable3.setNumRows(128);
         deviceTable3.setOffsetNid(1339);
         deviceTable3.setPreferredColumnWidth(60);
         deviceTable3.setPreferredHeight(200);
@@ -155,26 +151,6 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         jPanel3.add(deviceTable4);
 
         jTabbedPane1.addTab("Mapping&Offset", jPanel3);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Max. Br Horizontal Probes (T): ");
-        deviceField9.setNumCols(6);
-        deviceField9.setOffsetNid(1351);
-        jPanel4.add(deviceField9);
-
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Max. Br Vertical Probes (T): ");
-        deviceField10.setNumCols(6);
-        deviceField10.setOffsetNid(1357);
-        jPanel4.add(deviceField10);
-
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Max time period above threshold (s):");
-        deviceField11.setNumCols(6);
-        deviceField11.setOffsetNid(1363);
-        jPanel4.add(deviceField11);
-
-        jTabbedPane1.addTab("Alarms", jPanel4);
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -199,8 +175,6 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceField deviceField1;
-    private DeviceField deviceField10;
-    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -208,7 +182,6 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
-    private DeviceField deviceField9;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
@@ -216,7 +189,6 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
