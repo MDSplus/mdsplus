@@ -17,7 +17,7 @@ extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void
 extern "C" int  SendArg(int sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 int *dims, char *bytes);
 extern "C" int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
-extern "C" int MdsOpen(int sock, char *tree, int *shot);
+extern "C" int MdsOpen(int sock, char *tree, int shot);
 extern "C" int MdsSetDefault(int sock, char *node);
 extern "C" int MdsClose(int sock);
 extern "C" int ConnectToMds(char *host);
@@ -272,7 +272,7 @@ void Connection::unlockGlobal()
 
 void Connection::openTree(char *tree, int shot)
 {
-	int status = MdsOpen(sockId, tree, &shot);
+	int status = MdsOpen(sockId, tree, shot);
 printf("SOCK ID: %d\n", sockId);
 	if(!(status & 1))
 		throw new MdsException(status);
