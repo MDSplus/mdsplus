@@ -451,9 +451,14 @@ Data *Data::getDimensionAt(int dimIdx)
 			args[i] = currArg->convertToDsc();
 		}
 		int status;
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, getActiveTree(), &status);
+		Tree *actTree = 0;
+		try {
+			actTree = getActiveTree();
+		}catch(MdsException *exc){actTree = 0;}
+		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
+		if(actTree) delete actTree;
 		if(!(status & 1))
 			throw new MdsException(status);
 		return res;
@@ -884,7 +889,6 @@ double *Array::getDoubleArray(int *numElements)
 
 char **Array::getStringArray(int *numElements)
 {
-printf("ARRAY GET STRING ARRAY\n");
 	int size = arsize/length;
 	char **retArr = new char*[size];
 	for(int i = 0; i < size; i++)
