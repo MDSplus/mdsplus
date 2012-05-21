@@ -133,7 +133,8 @@ SPIDER_SMSetup.java\
 SPIDERSetup.java\
 ZELOS2150GVSetup.java\
 NI6259AISetup.java\
-FAKECAMERASetup.java
+FAKECAMERASetup.java\
+AWG2021Setup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar

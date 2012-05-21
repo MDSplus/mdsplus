@@ -25,21 +25,20 @@ public fun RfxTemperature2D(in _sonda, in _mode)
   	    _sigs = [];
 		
 		if(_i <= 9)
-			_tagPre = "\\"//_sonda//"0"//TEXT(_i, 1);
+			_tagPre = "\\\\"//_sonda//"0"//TEXT(_i, 1);
 		else
-			_tagPre = "\\"//_sonda//TEXT(_i, 2);
+			_tagPre = "\\\\"//_sonda//TEXT(_i, 2);
 
 
 	    for(_j = 0; _j <= 8; _j++)
 		{
 			_tag = _tagPre//TEXT(_j, 1);
 	
-		
 			_error = 0;
-			_data = if_error( data(build_path(_tag)), _error = 1);
-/*
-write(*, "\t\t\tTags ", _tag);
-*/
+			_data = if_error( data(build_path("\""//_tag//"\"")),, _error = 1);
+
+write(*, "\t\t\tTags ", _tag, _error);
+
 			if( !_error)
 			{
 				_sigs = [_sigs, _data];
@@ -48,7 +47,7 @@ write(*, "\t\t\tTags ", _tag);
 		}
 
 		_error = 0;
-		_time =	if_error( dim_of(build_path(_tag)), _error = 1);
+		_time =	if_error( dim_of(build_path("\""//_tag//"\"")),, _error = 1);
 			
 		_row = [];
 		if( !_error)
