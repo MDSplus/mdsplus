@@ -151,7 +151,7 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       Event.setevent("MARTE", eventStr)
-      time.sleep(3)
+      time.sleep(10)
       return 1
       
     def seq_init(self,arg):
@@ -192,6 +192,5 @@ class MARTE_GENERIC(Device):
     
     def seq_store_stop(self,arg):
       self.store(arg)
-      time.sleep(3)
       self.collection_complete(arg)
       return 1

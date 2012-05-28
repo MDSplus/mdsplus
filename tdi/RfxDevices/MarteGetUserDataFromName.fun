@@ -1,10 +1,5 @@
-public fun MarteGetUserArray(as_is _marteRoot, in _name, in _idx, optional in _signal, optional in _dimension)
+public fun MarteGetUserDataFromName(in _rootName, in _name)
 {
-    if(present(_signal))
-    {
-	return (make_signal(_signal[_idx],,_dimension));
-    }
-    _rootName = getnci(_marteRoot, 'FULLPATH');
     _names = data(build_path(_rootName // '.SIGNALS.USER:NAMES'));
     _numNames = size(_names);
     for(_i = 0; _i < _numNames; _i++)
@@ -24,10 +19,6 @@ public fun MarteGetUserArray(as_is _marteRoot, in _name, in _idx, optional in _s
 	else
 	    _samples = build_path(_rootName // '.SIGNALS.USER.USER_' // text(_i,3) // ':DATA');
     }
-    write(*, 'ORA FACCIO MAKE SIGNAL');
-    _sig =  (make_signal(data(_samples)[_idx],,dim_of(_samples)));
-/*    _sig =  (make_signal(_samples[_idx],,dim_of(_samples))); */
-    write(*, 'FATTO');
-    return (_sig);
+    return(_samples);
 }
 
