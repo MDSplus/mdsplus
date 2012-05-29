@@ -3,6 +3,6 @@ Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
 Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---camac,mdsplus--FLAVOR---kernel,mdsplus--FLAVOR---motif,mdsplus--FLAVOR---python
+Depends: mdsplus--FLAVOR---camac,mdsplus--FLAVOR---kernel,mdsplus--FLAVOR---motif,mdsplus--FLAVOR---python,python-xmlmarshaller,python-glade2
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus support for data acquisition devices used at the C-Mod experiment at MIT.
