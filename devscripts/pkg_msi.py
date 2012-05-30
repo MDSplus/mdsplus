@@ -162,5 +162,5 @@ def makeMsiCommand(args):
     sys.stdout.flush()
     print "Done tagging modules. Now copying files to distribution location"
     sys.stdout.flush()
-    p=subprocess.Popen('pscp -r -i c:\\Users\\twf\\id_dsa_nop.ppk %s\\%s %s' % (WORKSPACE,FLAVOR,DISTPATH),shell=True)
+    p=subprocess.Popen('pscp -r -i c:\\Users\\twf\\id_dsa_nop.ppk %s\\..\\%s %s' % (WORKSPACE,FLAVOR,DISTPATH),shell=True)
     sys.exit(p.wait())
