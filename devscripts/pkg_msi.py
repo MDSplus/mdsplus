@@ -162,5 +162,7 @@ def makeMsiCommand(args):
         writeMsiInfo(msi32)
         writeMsiInfo(msi64)    
     sys.stdout.flush()
+    print "Done tagging modules. Now copying files to distribution location"
+    sys.stdout.flush()
     p=subprocess.Popen('pushd %s & mkdir %s & xcopy /e/y ..\\%s %s' % (WORKSPACE,DISTPATH,FLAVOR,DISTPATH),shell=True)
     sys.exit(p.wait())
