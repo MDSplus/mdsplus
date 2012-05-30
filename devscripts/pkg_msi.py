@@ -81,11 +81,9 @@ def makeMsiCommand(args):
         need_to_build=True
         release=release+1
         need_to_tag=True
-    print "Making directory: %s\\..\\%s" % (WORKSPACE,FLAVOR) 
     try:
       os.mkdir("%s\\..\\%s" % (WORKSPACE,FLAVOR))
     except Exception,e:
-      print e
       pass
     for p in ('x86','x86_64'):
         try:
