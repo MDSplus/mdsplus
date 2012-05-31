@@ -24,10 +24,7 @@ public fun MarteGetUserArray(as_is _marteRoot, in _name, in _idx, optional in _s
 	else
 	    _samples = build_path(_rootName // '.SIGNALS.USER.USER_' // text(_i,3) // ':DATA');
     }
-    write(*, 'ORA FACCIO MAKE SIGNAL');
     _sig =  (make_signal(data(_samples)[_idx],,dim_of(_samples)));
-/*    _sig =  (make_signal(_samples[_idx],,dim_of(_samples))); */
-    write(*, 'FATTO');
     return (_sig);
 }
 
