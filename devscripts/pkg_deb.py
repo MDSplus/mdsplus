@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys,shutil
-from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform, getDist()
+from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform, getDist
 from pkg_rpms import writeRpmInfo
 def writeDebInfo(outfile):
     f=open(outfile+'-info.html','w')
