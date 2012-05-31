@@ -3,6 +3,6 @@ Version: --VERSION--.--RELEASE--
 Section: admin
 Priority: optional
 Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---kernel,python,python-numpy,python-setup
+Depends: mdsplus--FLAVOR---kernel,python,python-numpy,python-setuptools
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: MDSplus python objects.
