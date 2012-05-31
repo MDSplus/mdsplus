@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys,shutil
-from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform
+from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform, getDist()
 from pkg_rpms import writeRpmInfo
 def writeDebInfo(outfile):
     f=open(outfile+'-info.html','w')
@@ -177,6 +177,6 @@ def makeDebsCommand(args):
             if updates[pkg]['Tag']:
                 print "New release. Tag %s modules with %s %s %s %s" % (pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
                 sys.stdout.flush()
-                newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],DIST)
+                newRelease(pkg,FLAVOR,VERSION,updates[pkg]['Release'],getDist())
     if status=="error":
         sys.exit(1)
