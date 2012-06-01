@@ -6189,7 +6189,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
            MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
 	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
-           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava -L$jdk_dir/jre/lib/amd64/native_threads -lhpi";
+           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
          else
            CFLAGS="$CFLAGS -m32";
            LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
@@ -6201,11 +6201,11 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib32/"
            MAKEUIDDIR="\$(top_srcdir)/uid32/"
            MAKEBINDIR="\$(top_srcdir)/bin32/"
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
          fi
 	 CC_LDFLAGS="$CFLAGS"
        else
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
        fi
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
@@ -6264,7 +6264,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        TAR_EXCLUDE="--exclude";
        jni_inc_dir="$jdk_dir/include";
        jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
+       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X...";
