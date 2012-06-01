@@ -277,7 +277,8 @@ static char *getMulticastAddressFormat() {
     sprintf(ans,"%d.%d.%d.",p1,p2,p3);
     strcat(ans,"%d");
   } else {
-    strcpy(ans,"255.0.0.%d");
+    //strcpy(ans,"255.0.0.%d");
+    strcpy(ans,"224.1.0.1");
   }
   return ans;
 }
@@ -366,7 +367,7 @@ int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *ast
 
 	getMulticastAddr(eventName, ipAddress);
 	ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
-    ipMreq.imr_interface.s_addr = INADDR_ANY;
+        ipMreq.imr_interface.s_addr = INADDR_ANY;
 	if(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0)
     {	
   	   	perror("Error setting socket options IP_ADD_MEMBERSHIPin udpStartReceiver\n");
