@@ -31,7 +31,7 @@ if __name__ == "__main__":
     else:
         if sys.argv[1] in dir():
             rtn=eval("%sCommand" %(sys.argv[1],),globals())
-        except NameError,e:
+        else:
             print "Invalid command"
             printHelp()
         rtn(sys.argv)
