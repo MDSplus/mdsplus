@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys,shutil
-from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages as getAllPackages, makeSrcTar, newRelease, getHardwarePlatform
+from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages as getAllPackages, makeSrcTar, newRelease, getHardwarePlatform, getTopDir
 from pkg_rpms import writeRpmInfo
 
 def getPackages():
@@ -109,7 +109,7 @@ def makeSolarisPkgsCommand(args):
              'rsync -a dist %s/mdsobjects/python/;' % (prefix32,) +\
              'cd $olddir'
         sys.stdout.flush()
-        p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
+        p=subprocess.Popen(cmd,shell=True,cwd=getTopDir())
         build_status=p.wait()
         print "%s, Done building i686 parts - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:
@@ -127,7 +127,7 @@ def makeSolarisPkgsCommand(args):
         cmd=cmd+'rsync -a %s/java %s/;' % (prefix32,prefix64)
         cmd=cmd+'rsync -a %s/mdsobjects %s/' % (prefix32,prefix64)
         sys.stdout.flush()
-        p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
+        p=subprocess.Popen(cmd,shell=True,cwd=getTopDir())
         build_status=p.wait()
         print "%s, Done building x86_64 parts - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:

@@ -22,14 +22,14 @@ from pkg_deb import makeDebsCommand
 from pkg_solaris import makeSolarisPkgsCommand
 
 if __name__ == "__main__":
-    orig_pwd=os.getcwd()
-    if os.path.dirname(sys.argv[0]) != '':
-      os.chdir(os.path.dirname(sys.argv[0]))
-    os.chdir("..")
+#    orig_pwd=os.getcwd()
+#    if os.path.dirname(sys.argv[0]) != '':
+#      os.chdir(os.path.dirname(sys.argv[0]))
+#    os.chdir("..")
     if len(sys.argv) < 2:
         printHelp()
     else:
-        try:
+        if sys.argv[1] in dir():
             rtn=eval("%sCommand" %(sys.argv[1],),globals())
         except NameError,e:
             print "Invalid command"

@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys,shutil
-from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform, getDist
+from pkg_utils import getLsbReleaseDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getHardwarePlatform, getDist, getTopDir
 from pkg_rpms import writeRpmInfo
 def writeDebInfo(outfile):
     f=open(outfile+'-info.html','w')
@@ -12,7 +12,7 @@ def writeDebInfo(outfile):
 
 def createDeb(WORKSPACE,FLAVOR,pkg,VERSION,release,DIST):
     sys.stdout.flush()
-    p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('%s/devscripts/makeDebian %s %s %s %d %s' % (WORKSPACE,FLAVOR,pkg,VERSION,release,DIST),shell=True,cwd=getTopDir())
     return p.wait()
 
 def prepareRepo(repodir,clean):
@@ -120,7 +120,7 @@ def makeDebsCommand(args):
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
         sys.stdout.flush()
-        p=subprocess.Popen(cmd,shell=True,cwd=os.getcwd())
+        p=subprocess.Popen(cmd,shell=True,cwd=getTopDir())
         build_status=p.wait()
         print "%s, Done building - status=%d" % (str(datetime.datetime.now()),build_status)
         if build_status != 0:

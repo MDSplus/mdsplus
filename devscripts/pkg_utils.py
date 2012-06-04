@@ -1,11 +1,14 @@
 import subprocess,sys,tarfile,os
 
+def getTopDir():
+  return os.path.dirname(os.path.abspath(__file__+'../'))
+
 class CvsStatus(object):
     status=None
 
     def __init__(self):
         if CvsStatus.status is None:
-            p=subprocess.Popen('cvs -q status -Rv',stdout=subprocess.PIPE,shell=True,cwd=os.getcwd())
+            p=subprocess.Popen('cvs -q status -Rv',stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
             CvsStatus.all=p.stdout.read()
             p.wait()
             CvsStatus.status=CvsStatus.all.split('\n')
@@ -47,7 +50,7 @@ def getHardwarePlatform():
 
 
 def getFlavor():
-    p=subprocess.Popen('cvs status configure.in',stdout=subprocess.PIPE,shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('cvs status configure.in',stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
     stat=p.stdout.readline()
     while len(stat) > 0:
         if 'Sticky Tag' in stat:
@@ -63,7 +66,7 @@ def getVersion(flavor=None):
     if flavor is None:
         flavor=getFlavor()
     v="?"
-    p=subprocess.Popen('cvs status -v include/release.h',stdout=subprocess.PIPE,shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('cvs status -v include/release.h',stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
     stat=p.stdout.readline()
     while len(stat) > 0:
         if "pkgver-%s" % (flavor,) in stat:
@@ -79,7 +82,7 @@ def getReleaseTag(package):
     FLAVOR=getFlavor()
     tag=None
     rel="pkgrel-%s-%s-%s-" % (FLAVOR,package,getVersion().replace(".","-"))
-    p=subprocess.Popen('cvs status -v rpm/subpackages/%s 2>%s' % (package,os.devnull),stdout=subprocess.PIPE,shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('cvs status -v rpm/subpackages/%s 2>%s' % (package,os.devnull),stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
     stat=p.stdout.readline()
     major=0
     minor=0
@@ -160,21 +163,21 @@ def checkRelease(package):
 def promoteCommand(args):
     flavor=args[2]
     if flavor == "alpha":
-        p=subprocess.Popen('cvs -Q rtag -dB beta mdsplus',shell=True,cwd=os.getcwd())
+        p=subprocess.Popen('cvs -Q rtag -dB beta mdsplus',shell=True,cwd=getTopDir())
         if p.wait()!=0:
             print "Error promoting alpha to beta release"
             return
-        p=subprocess.Popen('cvs -Q rtag -bR -r HEAD beta mdsplus',shell=True,cwd=os.getcwd())
+        p=subprocess.Popen('cvs -Q rtag -bR -r HEAD beta mdsplus',shell=True,cwd=getTopDir())
         if p.wait()!=0:
             print "Error promoting alpha to beta release"
             return
         flavor="beta"
     elif flavor == "beta":
-        p=subprocess.Popen('cvs -Q rtag -dB stable mdsplus',shell=True,cwd=os.getcwd())
+        p=subprocess.Popen('cvs -Q rtag -dB stable mdsplus',shell=True,cwd=getTopDir())
         if p.wait()!=0:
             print "Error promoting beta to stable release"
             return
-        p=subprocess.Popen('cvs -Q rtag -bR -r beta stable mdsplus',shell=True,cwd=os.getcwd())
+        p=subprocess.Popen('cvs -Q rtag -bR -r beta stable mdsplus',shell=True,cwd=getTopDir())
         if p.wait()!=0:
             print "Error promoting beta to stable release"
             return
@@ -193,7 +196,7 @@ def newVersionCommand(args):
       v=version.split('.')
       majv=int(v[0])
       minv=int(v[1])
-      p=subprocess.Popen('cvs -Q tag -d pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
+      p=subprocess.Popen('cvs -Q tag -d pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=getTopDir())
       if p.wait()!=0:
         print "Error deleting old version tags"
         return
@@ -212,17 +215,17 @@ def newVersionCommand(args):
         except:
 	  print "version must be one of 'major', 'minor' or nnn.n"
           sys.exit(1)
-      p=subprocess.Popen('cvs -Q tag pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=os.getcwd())
+      p=subprocess.Popen('cvs -Q tag pkgver-%s-%d-%d include/release.h' % (flavor,majv,minv),shell=True,cwd=getTopDir())
       if p.wait()!=0:
         print "Error changing version"
         return
       for pkg in getPackages():
-        p=subprocess.Popen('cvs status -v rpm/subpackages/%s' % (pkg,),shell=True,stdout=subprocess.PIPE,cwd=os.getcwd())
+        p=subprocess.Popen('cvs status -v rpm/subpackages/%s' % (pkg,),shell=True,stdout=subprocess.PIPE,cwd=getTopDir())
         line=p.stdout.readline()
         while len(line) > 0:
             if "pkgrel-%s" % (flavor,) in line:
                 rel=line.split()[0]
-                p2=subprocess.Popen('cvs -Q tag -d %s rpm/subpackages/%s' % (rel,pkg),shell=True,cwd=os.getcwd())
+                p2=subprocess.Popen('cvs -Q tag -d %s rpm/subpackages/%s' % (rel,pkg),shell=True,cwd=getTopDir())
                 p2.wait()
             line=p.stdout.readline()
         p.wait()
@@ -263,7 +266,7 @@ def newRelease(pkg,flavor,version,release,dist):
     cs=CvsStatus()
     tagversion=version.replace(".","-")
     newtag="pkgrel-%s-%s-%s-%s-%s" % (flavor,pkg,version.replace(".","-"),release,dist)
-    p=subprocess.Popen('cvs -Q tag -F "%s" rpm/subpackages/%s' % (newtag,pkg),shell=True,cwd=os.getcwd())
+    p=subprocess.Popen('cvs -Q tag -F "%s" rpm/subpackages/%s' % (newtag,pkg),shell=True,cwd=getTopDir())
     p.wait()
     for line in cs.status:
         if "Repository revision" in line:
@@ -277,18 +280,18 @@ def newRelease(pkg,flavor,version,release,dist):
             if PKG==pkg and F is not None:
                 if 'win' not in sys.platform:
                     F=F.replace('$','\\$')
-                p=subprocess.Popen('cvs -Q tag -F "%s" "%s"' % (newtag,F),shell=True,cwd=os.getcwd())
+                p=subprocess.Popen('cvs -Q tag -F "%s" "%s"' % (newtag,F),shell=True,cwd=getTopDir())
                 p.wait()
 
 def getPackages(includeEmpty=False):
     pkgs=list()
-    w=os.walk("%s%srpm%ssubpackages"%(os.getcwd(),os.sep,os.sep))
+    w=os.walk("%s%srpm%ssubpackages"%(getTopDir(),os.sep,os.sep))
     path,dirs,files = w.next()
     for pkg in files:
         if includeEmpty:
             pkgs.append(pkg)
         else:
-            s=os.stat("%s%srpm%ssubpackages%s%s"%(os.getcwd(),os.sep,os.sep,os.sep,pkg))
+            s=os.stat("%s%srpm%ssubpackages%s%s"%(getTopDir(),os.sep,os.sep,os.sep,pkg))
             if s.st_size > 0:
                 pkgs.append(pkg)
     return pkgs
@@ -384,7 +387,7 @@ def listCommand(args):
     else:
         pkg=item
         try:
-            os.stat("%s%srpm/subpackages/%s" % (os.getcwd(),os.sep,pkg,))
+            os.stat("%s%srpm/subpackages/%s" % (getTopDir(),os.sep,pkg,))
         except:
             print "Package %s does not exist!" % (pkg,)
             sys.exit(1)
@@ -406,30 +409,28 @@ def listCommand(args):
             print o
 
 def pkgaddCommand(args):
-    from __main__ import orig_pwd
     pkg=args[2]
     path=args[3]
     try:
-        os.stat("%s%srpm/subpackages/%s" % (os.getcwd(),os.sep,pkg,))
+        os.stat("%s%srpm/subpackages/%s" % (getTopDir(),os.sep,pkg,))
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
     if 'win' not in sys.platform:
         path=path.replace('$','\\$')
-    p=subprocess.Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=orig_pwd)
+    p=subprocess.Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True)
     if p.wait() == 0:
         print "%s added to package %s" % (path,pkg)
 
 def pkgremoveCommand(args):
-    from __main__ import orig_pwd
     pkg=args[2]
     path=args[3]
     try:
-        os.stat("%s%srpm/subpackages/%s" % (os.getcwd(),os.sep,pkg,))
+        os.stat("%s%srpm/subpackages/%s" % (getTopDir(),os.sep,pkg,))
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
-    p=subprocess.Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True,cwd=orig_pwd)
+    p=subprocess.Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True)
     if p.wait() == 0:
         print "%s removed from package %s" % (path,pkg)
 

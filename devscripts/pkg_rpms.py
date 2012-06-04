@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys
-from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease
+from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, makeSrcTar, newRelease, getTopDir
 def signrpmsCommand(args):
     print signrpms(args[2])
 
@@ -63,7 +63,7 @@ def makeRepoRpms():
                 ' --define="_builddir %s"' % (WORKSPACE,)+\
                 ' --define="flavor %s"' % (FLAVOR,)+\
                 ' --define="s_dist %s"' % (DIST,)+\
-                ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=os.getcwd())
+                ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=getTopDir())
     rpmbuild_status=p.wait()
     if rpmbuild_status != 0:
         print "Error building repository rpm for x86_64 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
@@ -77,7 +77,7 @@ def makeRepoRpms():
                     ' --define="_builddir %s"' % (WORKSPACE,)+\
                     ' --define="flavor %s"' % (FLAVOR,)+\
                     ' --define="s_dist %s"' % (DIST,)+\
-                    ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=os.getcwd())
+                    ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=getTopDir())
         rpmbuild_status=p.wait()
         if rpmbuild_status != 0:
             print "Error building repository rpm for i686 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
@@ -160,7 +160,7 @@ def makeRpmsCommand(args):
         if 'UPDATE_CHANGELOG' in os.environ and need_changelog:
             print "Updating ChangeLog"
             sys.stdout.flush()
-            p=subprocess.Popen('$(pwd)/devscripts/UpdateChangeLog %s' % (FLAVOR,),shell=True,cwd=os.getcwd())
+            p=subprocess.Popen('$(pwd)/devscripts/UpdateChangeLog %s' % (FLAVOR,),shell=True,cwd=getTopDir())
             p.wait()
         print "%s, Starting to build 32-bit rpms" % (str(datetime.datetime.now()),)
         sys.stdout.flush()
@@ -172,7 +172,7 @@ def makeRpmsCommand(args):
                     ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
                     ' --define="_builddir %s/i686/mdsplus"' % (WORKSPACE,)+\
-                    ' %s' %(specfile,),shell=True,cwd=os.getcwd())
+                    ' %s' %(specfile,),shell=True,cwd=getTopDir())
         rpmbuild_status=p.wait()
         print "%s, Done building 32-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status)
         if rpmbuild_status != 0:
@@ -194,7 +194,7 @@ def makeRpmsCommand(args):
                         ' --buildroot %s/BUILDROOT/x86_64 -ba' % (WORKSPACE,)+\
                         ' --define="_topdir %s"' % (WORKSPACE,)+
                     ' --define="_builddir %s/x86_64/mdsplus"' % (WORKSPACE,)+
-                    ' %s' %(specfile,),shell=True,cwd=os.getcwd())
+                    ' %s' %(specfile,),shell=True,cwd=getTopDir())
             rpmbuild_status=p.wait()
             print "%s, Done building 64-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status)
             if rpmbuild_status != 0:
