@@ -501,6 +501,11 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 		  FORLD="$CC"
 		  LOC="F2C_LOC"
 		  VAL="F2C_VAL"
+       elif (test "$F77" = "gfortran"); then
+          FFLAGS="$FFLAGS -fno-range-check"
+          FORLD="$F77"
+          LOC="loc"
+          FOR_LDFLAGS="-lg2c"
        fi;
        FEXECLIBDIR="-L";
        LD="$CC"
