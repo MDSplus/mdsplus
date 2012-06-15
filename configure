@@ -678,6 +678,7 @@ MAKEUIDDIR
 MAKESHLIBDIR_RULE
 MAKESHLIBDIR
 MAKELIBDIR
+MAKE_DYNLIB_SYMLINKS
 MAKEBINDIR
 VAL
 LOC
@@ -4170,6 +4171,7 @@ alpha-dec-osf*) : ${CC=cc};
 sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
+MAKE_DYNLIB_SIMLINKS=""
 
 if test "$NOF77"
 then
@@ -6315,7 +6317,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPATH="DYLD_LIBRARY_PATH"
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
-                     X_EXTRA_LIBS="-lXmu";;
+                     MAKE_DYNLIB_SYMLINKS="pushd $libdir; for l in *.so; do ln -sf \$\${l:0:\$\${#l}-3}.so \$\${l:0:\$\${#l}-3}.dynlib; done; popd"
+       X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
        RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
@@ -14604,6 +14607,7 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
+
 
 
 
