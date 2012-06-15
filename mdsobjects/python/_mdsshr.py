@@ -56,12 +56,15 @@ def MDSEventCan(eventid):
 
 def MDSWfeventTimed(event,timeout):
     import numpy as _N
-    from mdsarray import makeArray
+    from mdsarray import makeArray,Uint8Array
     buffer=_N.uint8(0).repeat(repeats=4096)
     numbytes=_C.c_int(0)
     status=__MDSWfeventTimed(event,len(buffer),buffer.ctypes.data,numbytes,timeout)
     if (status & 1) == 1:
-        return makeArray(buffer[range(numbytes.value)])
+	if numbytes.value == 0:
+	  return makeArray(Uint8Array([]))
+        else:
+          return makeArray(buffer[range(numbytes.value)])
     elif (status == 0):
         raise MdsTimeout,"Event %s timed out." % (str(event),)
     else:
