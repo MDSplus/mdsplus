@@ -678,8 +678,8 @@ MAKEUIDDIR
 MAKESHLIBDIR_RULE
 MAKESHLIBDIR
 MAKELIBDIR
-MAKE_DYNLIB_SYMLINKS
 MAKEBINDIR
+MACOSX
 VAL
 LOC
 LINKMODULE
@@ -4171,7 +4171,7 @@ alpha-dec-osf*) : ${CC=cc};
 sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
-MAKE_DYNLIB_SIMLINKS=""
+MACOSX=""
 
 if test "$NOF77"
 then
@@ -6270,6 +6270,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
+       MACOSX="macosx"
        RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then
@@ -6317,8 +6318,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPATH="DYLD_LIBRARY_PATH"
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
-                     MAKE_DYNLIB_SYMLINKS="pushd $libdir; for l in *.so; do ln -sf \$\${l:0:\$\${#l}-3}.so \$\${l:0:\$\${#l}-3}.dylib; done; popd"
-       X_EXTRA_LIBS="-lXmu";;
+                     X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
        RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
@@ -14718,7 +14718,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
 ac_config_headers="$ac_config_headers include/config.h"
 
-ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15335,6 +15335,7 @@ do
     "javatraverser/Makefile") CONFIG_FILES="$CONFIG_FILES javatraverser/Makefile" ;;
     "javadevices/Makefile") CONFIG_FILES="$CONFIG_FILES javadevices/Makefile" ;;
     "manpages/Makefile") CONFIG_FILES="$CONFIG_FILES manpages/Makefile" ;;
+    "macosx/Makefile") CONFIG_FILES="$CONFIG_FILES macosx/Makefile" ;;
     "math/Makefile") CONFIG_FILES="$CONFIG_FILES math/Makefile" ;;
     "math/csint.f") CONFIG_FILES="$CONFIG_FILES math/csint.f" ;;
     "math/dsvrgn.f") CONFIG_FILES="$CONFIG_FILES math/dsvrgn.f" ;;

@@ -56,7 +56,8 @@ PARTS = \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
 	@MDSVME@ \
-	@HDF5_APS@
+	@HDF5_APS@ \
+	@MACOSX@
 
 all:
 	cdir=`pwd`;\
@@ -110,7 +111,6 @@ install:
 	done
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
-	@MAKE_DYNLIB_SYMLINKS@
 
 BINARIES = bin etc lib uid \
            tdi idl trees envsyms \

@@ -16,7 +16,7 @@ alpha-dec-osf*) : ${CC=cc};
 sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
-MAKE_DYNLIB_SIMLINKS=""
+MACOSX=""
 
 if test "$NOF77"
 then
@@ -487,6 +487,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
+       MACOSX="macosx"
        RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
@@ -538,7 +539,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_INETD="killall -HUP inetd";
        dnl HDF5_LIBS="-lz -lsz";
        dnl HDF5_DIR="/usr/local";
-       MAKE_DYNLIB_SYMLINKS="pushd $libdir; for l in *.so; do ln -sf \$\${l:0:\$\${#l}-3}.so \$\${l:0:\$\${#l}-3}.dylib; done; popd"
        X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
        RTEVENTS=""
@@ -1044,8 +1044,8 @@ AC_SUBST(LINKJNI)
 AC_SUBST(LINKMODULE)
 AC_SUBST(LOC)
 AC_SUBST(VAL)
+AC_SUBST(MACOSX)
 AC_SUBST(MAKEBINDIR)
-AC_SUBST(MAKE_DYNLIB_SYMLINKS)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKESHLIBDIR_RULE)
@@ -1117,6 +1117,7 @@ javascope/Makefile
 javatraverser/Makefile
 javadevices/Makefile
 manpages/Makefile
+macosx/Makefile
 math/Makefile 
 math/csint.f 
 math/dsvrgn.f
