@@ -1,0 +1,18 @@
+Title MDSplus
+Version 1.5
+Description This installs MDSplus for Mac OS X.
+
+Still a beta, but only one reported bug.  Can't write to local trees....
+DefaultLocation (null)
+DeleteWarning I don't really delete the logical changes or the xinitd changes.
+
+### Package Flags
+
+NeedsAuthorization NO
+Required NO
+Relocatable NO
+RequiresReboot NO
+UseUserMask YES
+OverwritePermissions NO
+InstallFat NO
+RootVolumeOnly NO
