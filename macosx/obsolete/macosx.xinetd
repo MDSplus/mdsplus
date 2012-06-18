@@ -1,0 +1,18 @@
+# default: on
+# description: The mdsip server serves mdsip sessions; it the \
+#       standard mdsip.hosts and logs into /var/log/mdsplus.
+service mdsip
+{
+	type		= UNLISTED
+        disable		= no
+        port            = 8000
+	protocol	= tcp
+        socket_type     = stream
+        wait            = no
+        user            = root
+        groups          = yes
+        server          = /usr/local/mdsplus/bin/mdsipd
+        server_args     = mdsip /var/log/mdsplus/mdsipd
+        log_on_failure  += USERID
+        log_on_success  += USERID
+}
