@@ -118,45 +118,45 @@ try:
 except Exception,e:
     def TreeUsingPrivateCtx():
         return False
-__RTreeShr=_load_library('CacheShr')
-__RTreeOpen=__RTreeShr._RTreeOpen
-__RTreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p]
-__RTreeClose=__RTreeShr._RTreeClose
-__RTreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
-RTreeConfigure=__RTreeShr.RTreeConfigure
-RTreeConfigure.argtypes=[_C.c_int,_C.c_int]
-RTreeSynch=__RTreeShr.RTreeSynch
-RTreeFlush=__RTreeShr._RTreeFlush
-RTreeFlush.argtypes=[_C.c_void_p,_C.c_int]
+#__RTreeShr=_load_library('CacheShr')
+#__RTreeOpen=__RTreeShr._RTreeOpen
+#__RTreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p]
+#__RTreeClose=__RTreeShr._RTreeClose
+#__RTreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+#RTreeConfigure=__RTreeShr.RTreeConfigure
+#RTreeConfigure.argtypes=[_C.c_int,_C.c_int]
+#RTreeSynch=__RTreeShr.RTreeSynch
+#RTreeFlush=__RTreeShr._RTreeFlush
+#RTreeFlush.argtypes=[_C.c_void_p,_C.c_int]
 
-__RTreePutRecord=__RTreeShr._RTreePutRecord
-__RTreePutRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd),_C.c_int]
-__RTreeBeginSegment=__RTreeShr._RTreeBeginSegment
-__RTreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
-__RTreeBeginTimestampedSegment=__RTreeShr._RTreeBeginTimestampedSegment
-__RTreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
-__RTreeUpdateSegment=__RTreeShr._RTreeUpdateSegment
-__RTreeUpdateSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int,_C.c_int]
-__RTreePutSegment=__RTreeShr._RTreePutSegment
-__RTreePutSegment.argtpes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_a),_C.c_int]
-__RTreePutTimestampedSegment=__RTreeShr._RTreePutTimestampedSegment
-__RTreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.POINTER(_C.c_int64),_C.c_int]
-__RTreePutRow=__RTreeShr._RTreePutRow
-__RTreePutRow.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(_C.c_int64),_C.c_void_p,_C.c_int]
-__RTreeGetNumSegments=__RTreeShr._RTreeGetNumSegments
-__RTreeGetNumSegments.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_int)]
-__RTreeGetSegment=__RTreeShr._RTreeGetSegment
-__RTreeGetSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
-__RTreeGetSegmentLimits=__RTreeShr._RTreeGetSegmentLimits
-__RTreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
-__RTreeDiscardOldSegments=__RTreeShr._RTreeDiscardOldSegments
-__RTreeDiscardOldSegments.argtypes=[_C.c_void_p,_C.c_int,_C.c_int64]
-__RTreeDiscardData=__RTreeShr._RTreeDiscardData
-__RTreeDiscardData.argtypes=[_C.c_void_p,_C.c_int]
-__RTreeFlushNode=__RTreeShr._RTreeFlushNode
-__RTreeFlushNode.argtypes=[_C.c_void_p,_C.c_int]
-__RTreeGetRecord=__RTreeShr._RTreeGetRecord
-__RTreeGetRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd)]
+#__RTreePutRecord=__RTreeShr._RTreePutRecord
+#__RTreePutRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd),_C.c_int]
+#__RTreeBeginSegment=__RTreeShr._RTreeBeginSegment
+#__RTreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
+#__RTreeBeginTimestampedSegment=__RTreeShr._RTreeBeginTimestampedSegment
+#__RTreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
+#__RTreeUpdateSegment=__RTreeShr._RTreeUpdateSegment
+#__RTreeUpdateSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int,_C.c_int]
+#__RTreePutSegment=__RTreeShr._RTreePutSegment
+#__RTreePutSegment.argtpes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_a),_C.c_int]
+#__RTreePutTimestampedSegment=__RTreeShr._RTreePutTimestampedSegment
+#__RTreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.POINTER(_C.c_int64),_C.c_int]
+#__RTreePutRow=__RTreeShr._RTreePutRow
+#__RTreePutRow.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(_C.c_int64),_C.c_void_p,_C.c_int]
+#__RTreeGetNumSegments=__RTreeShr._RTreeGetNumSegments
+#__RTreeGetNumSegments.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_int)]
+#__RTreeGetSegment=__RTreeShr._RTreeGetSegment
+#__RTreeGetSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
+#__RTreeGetSegmentLimits=__RTreeShr._RTreeGetSegmentLimits
+#__RTreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
+#__RTreeDiscardOldSegments=__RTreeShr._RTreeDiscardOldSegments
+#__RTreeDiscardOldSegments.argtypes=[_C.c_void_p,_C.c_int,_C.c_int64]
+#__RTreeDiscardData=__RTreeShr._RTreeDiscardData
+#__RTreeDiscardData.argtypes=[_C.c_void_p,_C.c_int]
+#__RTreeFlushNode=__RTreeShr._RTreeFlushNode
+#__RTreeFlushNode.argtypes=[_C.c_void_p,_C.c_int]
+#__RTreeGetRecord=__RTreeShr._RTreeGetRecord
+#__RTreeGetRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd)]
 
 
 
