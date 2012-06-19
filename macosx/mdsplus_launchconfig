@@ -5,7 +5,8 @@ then
 elif [ "$1" == "CLEAN_ENV" ]
 then
   EXPORTCMD="$0"
-  . /usr/local/mdsplus/setup.sh
+  MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
+  . $MDSPLUS_DIR/setup.sh
 else
   echo setenv $1 "$2" 
 fi
