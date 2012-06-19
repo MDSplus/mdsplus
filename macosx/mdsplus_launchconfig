@@ -1,0 +1,12 @@
+#!/bin/bash
+if [ -z "$1" ]
+then
+  env -i $0 CLEAN_ENV
+elif [ "$1" == "CLEAN_ENV" ]
+then
+  EXPORTCMD="$0"
+  . /usr/local/mdsplus/setup.sh
+else
+  echo setenv $1 "$2" 
+fi
+

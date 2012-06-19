@@ -17,4 +17,5 @@ clean :
 
 install:
 	$(INSTALL) -m 755  mdsip.plist $(exec_prefix)/etc
+	$(INSTALL) -m 755  mdsplus_launchconfig @bindir@
 	pushd @libdir@; for l in *.so; do ln -sf $${l:0:$${#l}-3}.so $${l:0:$${#l}-3}.dylib; done; popd
