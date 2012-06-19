@@ -61,6 +61,22 @@
 #            . $HOME/myscript.csh
 #
 #
+if [ -z "$EXPORTCMD" ]
+then
+  awkexportcmd="export \" \$1 \" ;\""
+else
+  awkexportcmd="export \" \$1 \" ; $EXPORTCMD \" \$1 \" \$\" \$1 \" ;\""
+fi
+
+doExport()
+{
+  eval export $1="\$$1"
+  if ( test "$EXPORTCMD" != "" )
+  then
+    $EXPORTCMD $1 "$(printenv $1)"
+  fi
+}
+
 if (test "$MDSPLUS_DIR" = "")
 then
   MDSPLUS_DIR=/usr/local/mdsplus
@@ -68,26 +84,26 @@ then
   then
     MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
   fi
+  doExport MDSPLUS_DIR
 fi
-export MDSPLUS_DIR
 if ( test "$temp_sym_name" != "") 
 then
   eval temp_sym_old_value=$`echo $temp_sym_name`
   if ( test "$temp_sym_old_value" = "" )
   then
     eval $temp_sym_name='`echo $temp_sym_value`'
-    export $temp_sym_name
+    doExport $temp_sym_name
   else
     if echo $temp_sym_old_value | grep $temp_sym_value > /dev/null ; then
-      :
+	:
     else
       case $temp_direction in
       '>')
         eval $temp_sym_name='`echo ${temp_sym_old_value}${temp_delim}${temp_sym_value}`'
-        export $temp_sym_name;;
+        doExport $temp_sym_name;;
       '<')
         eval $temp_sym_name='`echo ${temp_sym_value}${temp_delim}${temp_sym_old_value}`'
-        export $temp_sym_name;;
+        doExport $temp_sym_name;;
       *)
         echo bad direction - $temp_direction;;
       esac
@@ -135,7 +151,7 @@ else
       echo Processing $temp_file
     fi
     awkcmd='{ if (($3 != "") && ((substr($3,2,1) == ":") || (substr($3,2,1) == ";"))) $3 = substr($3,1,1) "\\" substr($3,2) } '
-    awkcmd="$awkcmd"'{ if ((NF > 0) && ($1 !~ /^#.*/) && (NF < 3) && ($1 != "source") && ($1 != ".") && ($1 != "include")) print $1 "=" $2 "; export " $1 " ;" ;'
+    awkcmd="$awkcmd"'{ if ((NF > 0) && ($1 !~ /^#.*/) && (NF < 3) && ($1 != "source") && ($1 != ".") && ($1 != "include")) print $1 "=" $2 "; '$awkexportcmd' ;'
     awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "source")) print "" ; '
     awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == "include")) print "temp_file=" $2 "; . '$temp_setup_script' ; " ; '
     awkcmd="$awkcmd"'else if ((NF > 0) && ($1 == ".")) print $0 ";" ; '
