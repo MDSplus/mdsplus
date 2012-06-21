@@ -1,0 +1,5 @@
+#!/bin/bash
+for f in $(ls $2/mdsplus | grep -v local)
+do
+  rm -Rf $2/mdsplus/$f
+done
