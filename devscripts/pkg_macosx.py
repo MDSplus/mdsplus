@@ -39,7 +39,7 @@ def makeMacosxPkgCommand(args):
       os.mkdir("%s/pkg" % WORKSPACE)
     except:
       pass
-    pkgfile="%s\\pkg\\MDSplus%s-%s-%d.pkg" % (WORKSPACE,pkgflavor,VERSION.replace('.','-'),release)
+    pkgfile="%s/pkg/MDSplus%s-%s-%d.pkg" % (WORKSPACE,pkgflavor,VERSION.replace('.','-'),release)
     if not need_to_build:
         try:
             os.stat(pkgfile)
@@ -63,5 +63,4 @@ def makeMacosxPkgCommand(args):
        build_url=os.environ['BUILD_URL']
        writePkgInfo(pkgfile[0:-4])
     sys.stdout.flush()
-    p=subprocess.Popen('pscp -r -i c:\\Users\\twf\\id_dsa_nop.ppk %s\\..\\%s %s' % (WORKSPACE,FLAVOR,DISTPATH),shell=True)
-    sys.exit(p.wait())
+    shell(WORKSPACE,'rsync -a pkg/* %s' % (args[2],),'Failed to copy to destination')
