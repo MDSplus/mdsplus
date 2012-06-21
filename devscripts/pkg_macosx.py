@@ -11,6 +11,7 @@ def writePkgInfo(outfile):
     f.close()
 
 def shell(cwd,cmd,msg):
+  print cmd
   sys.stdout.flush()
   p=subprocess.Popen(cmd,shell=True,cwd=cwd)
   stat=p.wait()
