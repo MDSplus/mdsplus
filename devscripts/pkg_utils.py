@@ -280,7 +280,7 @@ def newRelease(pkg,flavor,version,release,dist):
             ls=line.split()
             PKG=ls[0][4:]
             if PKG==pkg and F is not None:
-                if 'win' not in sys.platform:
+                if not sys.platform.startswith('win'):
                     F=F.replace('$','\\$')
                 p=subprocess.Popen('cvs -Q tag -F "%s" "%s"' % (newtag,F),shell=True,cwd=getTopDir())
                 p.wait()
@@ -418,7 +418,7 @@ def pkgaddCommand(args):
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
-    if 'win' not in sys.platform:
+    if not sys.platform.startswith('win'):
         path=path.replace('$','\\$')
     p=subprocess.Popen('cvs -Q tag -F pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True)
     if p.wait() == 0:
@@ -432,6 +432,8 @@ def pkgremoveCommand(args):
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
+    if not sys.platform.startswidth('win'):
+       path=path.replace('$','\\$')
     p=subprocess.Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True)
     if p.wait() == 0:
         print "%s removed from package %s" % (path,pkg)
