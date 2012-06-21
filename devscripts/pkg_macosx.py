@@ -39,7 +39,8 @@ def makeMacosxPkgCommand(args):
       os.mkdir("%s/pkg" % WORKSPACE)
     except:
       pass
-    pkgfile="%s/pkg/MDSplus%s-%s-%d.pkg" % (WORKSPACE,pkgflavor,VERSION.replace('.','-'),release)
+    v=os.uname()[2].split('.')
+    pkgfile="%s/pkg/MDSplus%s-%s-%d-osx-%s-%s.pkg" % (WORKSPACE,pkgflavor,VERSION.replace('.','-'),release,v[0],v[1])
     if not need_to_build:
         try:
             os.stat(pkgfile)
