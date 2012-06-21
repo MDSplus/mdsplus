@@ -19,19 +19,18 @@ from pkg_rpms import makeRepoRpmsCommand
 from pkg_rpms import makeRpmsCommand
 from pkg_msi import makeMsiCommand
 from pkg_deb import makeDebsCommand
-from pkg_solaris import makeSolarisPkgsCommand
 
 if __name__ == "__main__":
-#    orig_pwd=os.getcwd()
-#    if os.path.dirname(sys.argv[0]) != '':
-#      os.chdir(os.path.dirname(sys.argv[0]))
-#    os.chdir("..")
+    orig_pwd=os.getcwd()
+    if os.path.dirname(sys.argv[0]) != '':
+      os.chdir(os.path.dirname(sys.argv[0]))
+    os.chdir("..")
     if len(sys.argv) < 2:
         printHelp()
     else:
-        if sys.argv[1] in dir():
+        try:
             rtn=eval("%sCommand" %(sys.argv[1],),globals())
-        else:
+        except NameError,e:
             print "Invalid command"
             printHelp()
         rtn(sys.argv)

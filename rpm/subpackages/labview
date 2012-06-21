@@ -1,8 +1,6 @@
 %package labview
 Summary: National Instruments Labview extensions
 Group: Applications/Acquisition
-Release: --RELEASE--
-
 %description labview
 National Instruments Labview interface to MDSplus
 

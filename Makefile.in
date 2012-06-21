@@ -2,7 +2,6 @@
 # @configure_input@
 prefix=@prefix@
 SHELL=/bin/sh
-exec_prefix=@exec_prefix@
 
 JAVA_APS = javamds \
 	   javascope \
@@ -10,8 +9,7 @@ JAVA_APS = javamds \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
-	   mdsobjects/java \
-           mdsobjects/cpp
+	   mdsobjects/java
 
 MOTIF_APS = xmdsshr \
 	    actions \
@@ -31,7 +29,9 @@ PARTS = \
         tditest \
 	xtreeshr \
         @MDSTCPIP@ \
-	@RTEVENTS@ \
+	rtevents \
+        cacheshr \
+        mdsobjects/cpp \
         mdslibidl \
         cdu     \
         mdsdcl  \
@@ -99,7 +99,7 @@ RELEASE:
 RPM :
 	devscripts/MakeRpm
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php epics
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python
 
 install: 
 	devscripts/mkdirhier @exec_prefix@/local/tdi
@@ -110,7 +110,7 @@ install:
 	done
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
-	@MAKE_DYNLIB_SYMLINKS@
+	devscripts/install_symlinks "@exec_prefix@"
 
 BINARIES = bin etc lib uid \
            tdi idl trees envsyms \

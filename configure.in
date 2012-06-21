@@ -5,10 +5,7 @@ AC_INIT()
 #AC_CONFIG_HEADER(include/config.h)
 AC_CONFIG_AUX_DIR(conf)
 AC_CANONICAL_SYSTEM
-AC_CHECK_SIZEOF(int *)
-SIZEOF_INT_P=$ac_cv_sizeof_int_p
-AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
-AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
+
 dnl See if we need to use native compilers
 case "$target" in
 alpha-dec-osf*) : ${CC=cc};
@@ -16,7 +13,6 @@ alpha-dec-osf*) : ${CC=cc};
 sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
-MAKE_DYNLIB_SIMLINKS=""
 
 if test "$NOF77"
 then
@@ -50,6 +46,30 @@ AC_ARG_ENABLE(perf,
 	if test "$enableval" = yes; then
 		AC_DEFINE(USE_PERF)
 	fi
+
+dnl See if we should build the camac libraries, mitdevices etc.
+
+case "$target" in
+*linux*) camac_default="yes";;
+*) camac_default="no";;
+esac
+
+AC_ARG_ENABLE(camac,
+	[ --enable-camac        Build CAMAC and device libraries ],
+	camac_build="$enableval",
+        camac_build="$camac_default")
+if test "$camac_build" = "yes"
+then
+	GEN_DEVICE="gen_device"
+	REMCAM="remcam"
+	CCL="ccl"
+	MITDEVICES="mitdevices"
+else
+	GEN_DEVICE=""
+	REMCAM=""
+	CCL="ccl"
+	MITDEVICES=""
+fi
 
 AC_ARG_ENABLE(java,
 	[ --disable-java	do not build java libraries and applications],
@@ -242,7 +262,7 @@ then
   fi
 fi
 AC_MSG_CHECKING(for idl)
-if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
+if test "$IDL_DIR" != "" -a -r $IDL_DIR
 then
   IDL_INC="-I$IDL_DIR/external"
   IDLMDSEVENT="idlmdsevent"
@@ -263,6 +283,7 @@ IDL_LD=""
 MDSVME=""
 LOC="%loc"
 VAL="%val"
+CAMSHR=""
 
 CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
@@ -292,7 +313,7 @@ UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
 GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
-RTEVENTS="rtevents cacheshr"
+
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -326,20 +347,19 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FEXECLIBDIR="-L";
        HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
        SHARETYPE=".so";;
-*-solaris2*)  
+sparc-sun-solaris2*)  
        GROFF=nroff;
        GROFF_MAN_FLAGS="-t -man ";
        if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D_ILP32 "; else CFLAGS="$CFLAGS -D_LP64 "; fi;
        if test $CC = gcc; then
 	 LD=gcc;
 	 FORLD=gcc;
-         LINKSHARED="-shared ";
+         LINKSHARED="-Wl,-G -symbolic ";
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
          LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fPIC -D_POSIX_PTHREAD_SEMANTICS";
-         LDFLAGS="$CFLAGS";
+         CFLAGS="$CFLAGS -fPIC ";
        else 
          LINKSHARED="-G ";
          LD_LDARC="-B static ";
@@ -353,19 +373,14 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            CFLAGS="$CFLAGS -Kpic";
          fi;
        fi;
-       if test "$F77" = "gfortran"
-       then
-         FFLAGS="$FFLAGS -fPIC -fno-range-check"
-       else
-         FFLAGS="$FFLAGS -PIC";
-       fi
+       FFLAGS="$FFLAGS -PIC";
        IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
        JVM="";
-       jni_inc_dir="${JDK_DIR}/include";
-       jni_md_inc_dir="${JDK_DIR}/include/solaris";
+       jni_inc_dir="/usr/java/include";
+       jni_md_inc_dir="/usr/java/include/solaris";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
@@ -391,24 +406,18 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        then
          if ( echo $target | grep 64 > /dev/null )
          then
-           if [ -d /usr/lib64 ]
-           then
-             D64="64"
-           else
-             D64=""
-           fi
-           SYB64=$D64
+           SYB64="64"
            CFLAGS="$CFLAGS -m64"
            LD="ld -m elf_x86_64 --oformat elf64-x86-64 --no-warn-mismatch"
            FFLAGS="$FFLAGS -m64"
            FORLD="$F77 -m64"
            UILCMD=uil
-           uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
-           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
+           uiddir="${uiddir}64"
+	   MAKELIBDIR="\$(top_srcdir)/lib64/"
+           MAKESHLIBDIR="\$(top_srcdir)/lib64/"
+           MAKEUIDDIR="\$(top_srcdir)/uid64/"
+	   MAKEBINDIR="\$(top_srcdir)/bin64/"
+           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava -L$jdk_dir/jre/lib/amd64/native_threads -lhpi";
          else
            CFLAGS="$CFLAGS -m32";
            LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
@@ -420,12 +429,13 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib32/"
            MAKEUIDDIR="\$(top_srcdir)/uid32/"
            MAKEBINDIR="\$(top_srcdir)/bin32/"
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
          fi
 	 CC_LDFLAGS="$CFLAGS"
        else
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
        fi
+       CAMSHR="camshr";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
          LOC="%loc"
@@ -454,6 +464,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CAMSHR="camshr";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
          FOR_LDFLAGS="-lg2c"
@@ -483,65 +494,10 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        TAR_EXCLUDE="--exclude";
        jni_inc_dir="$jdk_dir/include";
        jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava -L$jdk_dir/jre/lib/i386/native_threads -lhpi";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*apple-darwin10*) echo "Configuring for MacOS X lion 10";
-       RTEVENTS=""
-       CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
-       if (test "$F77" = "f77"); then 
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
-       elif (test "$F77" = "g77"); then
-          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
-          FOR_LDFLAGS="-lg2c"; 
-		  FORLD="$F77"
-       elif (test "$F77" = "fort77"); then
-          FFLAGS="$FFLAGS -!bs -Wf,-!it";
-          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
-       elif (test "$F77" = "gfortran"); then
-          FFLAGS="$FFLAGS -fno-range-check"
-          FORLD="$F77"
-          LOC="loc"
-       fi;
-       FEXECLIBDIR="-L";
-       LD="$CC"
-       LDSHARE="";
-       LD_LDSHARE="";
-       LDARC="";
-       LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
-       dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
-	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
-	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
-       IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
-       LINKJNI="$LINKSHARED";
-       SHARETYPE=".so";
-       SHARETYPEJNI=".jnilib";
-       SHARETYPEMOD=".so";
-       LIBPTHREAD="";
-       TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
-       jni_inc_dir="$JDK_DIR/include";
-       jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
-       JVM="-framework JavaVM";
-       LIBPATH="DYLD_LIBRARY_PATH"
-       HUP_TO_XINETD="killall -HUP xinetd";
-       HUP_TO_INETD="killall -HUP inetd";
-       dnl HDF5_LIBS="-lz -lsz";
-       dnl HDF5_DIR="/usr/local";
-       MAKE_DYNLIB_SYMLINKS="pushd $libdir; for l in *.so; do ln -sf \$\${l:0:\$\${#l}-3}.so \$\${l:0:\$\${#l}-3}.dylib; done; popd"
-       X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
-       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W"
@@ -629,6 +585,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPE=".so";;
 esac
 
+AC_CHECK_SIZEOF(int *)
+SIZEOF_INT_P=$ac_cv_sizeof_int_p
+
 dnl see if we have libdc1394 libraries and what version
 AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
 AC_CHECK_LIB(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
@@ -713,22 +672,12 @@ AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_N
 AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
 AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
-AC_SEARCH_LIBS([clock_gettime],[rt],,,)
-if test "$ac_cv_search_clock_gettime" = "no"
-then
-  CLOCK_GETTIME_LIB=""
-else
-  CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
-  AC_DEFINE(HAVE_CLOCK_GETTIME)
-fi
-AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'],,,)
-if test "$ac_cv_search_readline" = "no"
+AC_CHECK_LIB(readline,readline,LIBREADLINE="-lreadline -lcurses",LIBREADLINE="",-lcurses)
+if test "$LIBREADLINE" = ""
 then
   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
   TDIC=""
-  LIBREADLINE=""
 else
-  LIBREADLINE="$ac_cv_search_readline"
   TDIC="tdic"
 fi
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
@@ -764,23 +713,9 @@ AC_ARG_ENABLE(staticmotif,
         fi)
   
 dnl Checks for header files.
-AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h)
+AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h)
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readline.h)
 AC_CHECK_HEADERS(malloc.h)
-
-REMCAM="remcam"
-CCL="ccl"
-MITDEVICES="mitdevices"
-GEN_DEVICE="gen_device"
-AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
-if test "$DO_CAMSHR" = yes
-then
-  CAMSHR="camshr"
-  REMCAMLIB="RemCamShr"
-else
-  CAMSHR=""
-  REMCAMLIB="CamShr"
-fi
 
 dnl Check for default hdf5 header and library
 HDF5_APS=""
@@ -805,7 +740,7 @@ fi
 dnl Check for jdk files
 AC_CHECK_FILE($jni_inc_dir/jni.h,JDK_CFLAGS="-I$jni_inc_dir")
 AC_CHECK_FILE($jni_md_inc_dir/jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir")
-if test "$JDK_CFLAGS" -a "$java_enable" = "yes"
+if test "$JDK_CFLAGS"
 then
   JAVA_APS="\$(JAVA_APS)"
 else
@@ -911,36 +846,32 @@ if test $mdsplus_ok = yes; then
 fi
 
 dnl Check for Sybase
-AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
-if test "$SYBASE_LIB" = ""
+AC_MSG_CHECKING(for SYBASE open/client or freetds)
+: ${SYBASE=/usr/local/sybase}
+if test -r "/usr/lib${SYB64}/libsybdb.so"
 then
-  AC_MSG_CHECKING(for SYBASE open/client or freetds)
-  : ${SYBASE=/usr/local/sybase}
-  if test -r "/usr/lib${SYB64}/libsybdb.so"
-  then
         SYBASE_INC="-DSYBASE"
         SYBASE_LIB="-lsybdb"
         SYBASE="SYBASE"
         AC_MSG_RESULT(have freetds)
-  elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
-  then 
+elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
+then 
         SYBASE_INC="-I$SYBASE/include -DSYBASE"
         SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
 	SYBASE="SYBASE"
         AC_MSG_RESULT(have sybase open/client)
-  else
+else
         SYBASE_INC=""
         SYBASE_LIB=""
 	SYBASE=""
         AC_MSG_RESULT(no sybase open/client)
-  fi
 fi
+
 AC_MSG_CHECKING(if mdssql should be built)
 if test -n "$SYBASE_INC"
 then
         MDSSQL="mdssql"
         AC_MSG_RESULT(have sql so yes.)
-        AC_DEFINE(HAVE_SYBASE)
 else
         MDSSQL=""
         AC_MSG_RESULT(missing sql so no.)
@@ -961,7 +892,6 @@ AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
 if ( which $UIL 2>/dev/null )
 then
-  UIL="env LANG=en_US $UIL"
   MOTIF_APS="\$(MOTIF_APS)"
   AC_MSG_RESULT(have uil so openmotif apps will be built.)
 else
@@ -979,8 +909,11 @@ then
 else
 	X_CFLAGS=-D_NO_DXm
 fi
+LDFLAGS="$X_LIBS"
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
+LDFLAGS="$X_LIBS $LIBXEXT"
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
+LDFLAGS=""
 
 AC_DEFINE_UNQUOTED(TARGET_OS,${target_os})
 AC_DEFINE_UNQUOTED(TARGET_CPU,${target_cpu})
@@ -990,7 +923,6 @@ LIBS="$LIBPTHREAD $LIBS"
 AC_SUBST(CAMSHR)
 AC_SUBST(CC_LDFLAGS)
 AC_SUBST(CCL)
-AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
 AC_SUBST(D3D_FFLAGS)
@@ -1045,7 +977,6 @@ AC_SUBST(LINKMODULE)
 AC_SUBST(LOC)
 AC_SUBST(VAL)
 AC_SUBST(MAKEBINDIR)
-AC_SUBST(MAKE_DYNLIB_SYMLINKS)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKESHLIBDIR_RULE)
@@ -1065,17 +996,13 @@ AC_SUBST(MOTIF_LDARC)
 AC_SUBST(MOTIF_LD_LDSHARE)
 AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(NEED_SEMUN)
-AC_SUBST(NSLLIB)
 AC_SUBST(RANLIB)
 AC_SUBST(REMCAM)
-AC_SUBST(REMCAMLIB)
 AC_SUBST(RMIC)
-AC_SUBST(RTEVENTS)
 AC_SUBST(SHARETYPE)
 AC_SUBST(SHARETYPEJNI)
 AC_SUBST(SHARETYPEMOD)
 AC_SUBST(SIZEOF_INT_P)
-AC_SUBST(SOCKETLIB)
 AC_SUBST(SRBLIB)
 AC_SUBST(SRBINCLUDE)
 AC_SUBST(SYBASE_INC)
@@ -1124,6 +1051,7 @@ math/svign.f
 math/svrgn.f
 math/umach.f 
 mdsdcl/Makefile 
+mdsip_xio/Makefile
 mdslib/Makefile 
 mdslibidl/Makefile 
 mdsobjects/cpp/Makefile

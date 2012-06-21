@@ -1,4 +1,4 @@
-Name: mdsplus-%flavor-repo
+Name: mdsplus-repo-%flavor
 Version: 1.0
 Release: 0%{dist}
 License: BSD Open Source
@@ -16,13 +16,11 @@ MDSplus Yum repository setup
 
 %install
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
-mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
-cp ${WORKSPACE}/x86_64/mdsplus/rpm/RPM-GPG-KEY-MDSplus $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 outfile=$RPM_BUILD_ROOT/etc/yum.repos.d/mdsplus-%flavor.repo
 cat - > $outfile <<EOF
 [MDSplus]
 name=MDSplus-%flavor 
-baseurl=http://www.mdsplus.org/dist/%{s_dist}/%{flavor}/RPMS
+baseurl=http://www.mdsplus.org/repo/rhel5-%flavor/RPMS
 enabled=1
 EOF
 if [ "%_target" != "i686-linux" ]
@@ -30,8 +28,7 @@ then
 echo "exclude=*i686*" >> $outfile
 fi
 cat - >>$outfile <<EOF 
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+gpgcheck=0
 metadata_expire=300
 EOF
 
@@ -41,11 +38,5 @@ rm -Rf $RPM_BUILD_ROOT
 
 %files
 /etc/yum.repos.d/mdsplus-%flavor.repo
-/etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 
-%post
-dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2>/dev/null)
-
-%postun
-nohup rpm -e gpg-pubkey-b09cb563 >dev/null 2>&1 &
 

@@ -1,8 +1,0 @@
-#!/bin/sh
-#
-# file: load.acq
-#
-# append acq_inetd.conf to /etc/inetd
-#
-cat /ffs/user/acq_inetd.conf >> /etc/inetd.conf
-mkdir -p /etc/postshot.d

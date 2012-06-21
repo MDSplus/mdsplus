@@ -1,11 +1,11 @@
-Name: mdsplus--RPMFLAVOR--
-Version: --VERSION--
-Release: --RELEASE--%{?dist}
+Name: mdsplus
+Version: %{?mdsver}
+Release: %{?mdsrel}%{?dist}
 License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
-Source: mdsplus--RPMFLAVOR-----VERSION--.tar.gz
+Source: %{?kitname}.tar.gz
 Prefix: /usr/local
-BuildRoot: /tmp
+BuildRoot: /var/tmp/mdsplus
 Summary: MDSplus Data Acquisition System
 AutoReqProv: yes

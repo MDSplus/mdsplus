@@ -1,8 +1,6 @@
 %package d3d
 Summary: TDI functions used at D3D experiment at General Atomics
 Group: Applications/Acquisition
-Release: --RELEASE--
-
 %description d3d
 TDI functions used at the D3D experiment at General Atomics.
 
