@@ -22,7 +22,6 @@ def makeMacosxPkgCommand(args):
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
     VERSION=getVersion()
-    DISTPATH=args[2]+'\\Windows\\'
     if FLAVOR=="stable":
         pkgflavor=""
     else:

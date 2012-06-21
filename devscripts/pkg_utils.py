@@ -1,7 +1,7 @@
 import subprocess,sys,tarfile,os
 
 def getTopDir():
-  return os.path.dirname(os.path.abspath(__file__+'../'))
+  return os.path.dirname(os.path.abspath(__file__+'/../'))
 
 class CvsStatus(object):
     status=None
