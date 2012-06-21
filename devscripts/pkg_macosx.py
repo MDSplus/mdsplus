@@ -30,7 +30,6 @@ def makeMacosxPkgCommand(args):
         pyflavor=FLAVOR+"-"
         pkgflavor="-"+FLAVOR
     release=getRelease("macosx")
-    release=0
     need_to_build=False
     need_to_tag=False
     if len(checkRelease("macosx")) > 0:
