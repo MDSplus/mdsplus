@@ -1,7 +1,7 @@
 import os,sys
-def printHelp():
+def printHelp(stat):
     print "This is going to be help"
-    sys.exit(0)
+    sys.exit(stat)
     return
 
 from pkg_utils import pkgaddCommand
@@ -28,12 +28,12 @@ if __name__ == "__main__":
 #      os.chdir(os.path.dirname(sys.argv[0]))
 #    os.chdir("..")
     if len(sys.argv) < 2:
-        printHelp()
+        printHelp(0)
     else:
-        if sys.argv[1] in dir():
-            rtn=eval("%sCommand" %(sys.argv[1],),globals())
+        cmd="%sCommand" % (sys.argv[1],)
+        if cmd in dir():
+            eval(cmd,globals())(sys.argv)
         else:
             print "Invalid command"
-            printHelp()
-        rtn(sys.argv)
+            printHelp(1)
 
