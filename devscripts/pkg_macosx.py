@@ -53,7 +53,7 @@ def makeMacosxPkgCommand(args):
              "configure failed")
        shell(mdsplusdir,'make','make failed')
        shell(mdsplusdir,'rm -Rf ../build/mdsplus; make install','make install failed')
-       shell(mdsplusdir,'cd ../build/mdsplus/mdsobjects/python; env MDSPLUS_PYTHON_VERSION=mdsplus%s%s-%s python setup.py bdist_egg' % (pkgflavor,VERSION.replace('.','-')),'python bdist_egg failed')
+       shell(mdsplusdir,'cd ../build/mdsplus/mdsobjects/python; env MDSPLUS_PYTHON_VERSION=mdsplus%s-%s python setup.py bdist_egg' % (pkgflavor,VERSION.replace('.','-')),'python bdist_egg failed')
        shell(mdsplusdir,'rm -f %s; /Developer/usr/bin/packagemaker --title "MDSplus%s" --version "%s.%d" --scripts %s/mdsplus/macosx/scripts --install-to "/usr/local" --target "10.5" -r %s/build -v -i "MDSplus%s" -o %s' % (pkgfile,pkgflavor,VERSION,release,WORKSPACE,WORKSPACE,pkgflavor,pkgfile),'Building package failed')
        print "%s, Setup kit build completed" % (str(datetime.datetime.now()))
        if need_to_tag:
