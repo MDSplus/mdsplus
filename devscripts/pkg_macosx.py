@@ -44,8 +44,9 @@ def makeMacosxPkgCommand(args):
     v=os.uname()[2].split('.')
     pkgfile="%s/pkg/MDSplus%s-%s-%d-osx-%s-%s.pkg" % (WORKSPACE,pkgflavor,VERSION.replace('.','-'),release,v[0],v[1])
     if not need_to_build:
+        print "Checking to see if package file, %s, exists" % (pkgfile,)
         try:
-            os.stat(pkgfile)
+            print os.stat(pkgfile)
         except:
             print '%s is missing. Rebuilding.' % (pkgfile,)
             need_to_build=True
