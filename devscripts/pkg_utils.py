@@ -27,6 +27,8 @@ def getDist():
                 return p
             if p.startswith('fc'):
                 return p
+    elif os.uname()[0]=='Darwin':
+        return 'macosx'
     print "Error getting distribution information, uname=%s" % (str(os.uname()),)
     sys.exit(1)
 
