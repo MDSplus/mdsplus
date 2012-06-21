@@ -20,7 +20,7 @@ fi
 echo "source $MDSPLUS_DIR/setup.csh" >> /etc/csh.login
 
 if ( ! grep mdsip /etc/services > /dev/null 2>&1 )
-  echo "mdsip 8000/tcp # MDSplus mdsip data service"" >> /etc/services
+  echo "mdsip 8000/tcp # MDSplus mdsip data service" >> /etc/services
 fi
 
 easy_install $2/mdsplus/mdsobjects/python/dist/*.egg
