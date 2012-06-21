@@ -20,6 +20,7 @@ from pkg_rpms import makeRpmsCommand
 from pkg_msi import makeMsiCommand
 from pkg_deb import makeDebsCommand
 from pkg_solaris import makeSolarisPkgsCommand
+from pkg_macosx import makeMacosxPkgCommand
 
 if __name__ == "__main__":
 #    orig_pwd=os.getcwd()
