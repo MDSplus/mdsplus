@@ -50,6 +50,7 @@ def getHardwarePlatform():
 
 
 def getFlavor():
+    print "getTopDir returns %s" % (getTopDir(),)
     p=subprocess.Popen('cvs status configure.in',stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
     stat=p.stdout.readline()
     while len(stat) > 0:
