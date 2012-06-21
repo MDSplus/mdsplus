@@ -27,14 +27,14 @@ def makeMacosxPkgCommand(args):
         pkgflavor=""
     else:
         pkgflavor="-"+FLAVOR
-#    release=getRelease("macosx")
+    release=getRelease("macosx")
     release=0
     need_to_build=False
     need_to_tag=False
-#    if len(checkRelease("macosx")) > 0:
-#        need_to_build=True
-#        release=release+1
-#        need_to_tag=True
+    if len(checkRelease("macosx")) > 0:
+        need_to_build=True
+        release=release+1
+        need_to_tag=True
     try:
       os.mkdir("%s/pkg" % WORKSPACE)
     except:
