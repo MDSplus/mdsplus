@@ -53,6 +53,7 @@ def getFlavor():
     p=subprocess.Popen('cvs status configure.in',stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
     stat=p.stdout.readline()
     while len(stat) > 0:
+        print stat
         if 'Sticky Tag' in stat:
             if '(none)' in stat:
                 flavor='alpha'
