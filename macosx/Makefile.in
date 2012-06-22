@@ -16,7 +16,7 @@ clean :
 	:
 
 install:
-	mkdir $(exec_prefix)/scripts
+	mkdir -p $(exec_prefix)/scripts
 	$(INSTALL) -m 755  mdsip.plist $(exec_prefix)/etc
 	$(INSTALL) -m 755  mdsplus_launchconfig @bindir@
 	$(INSTALL) -m 755  scripts/preupgrade $(exec_prefix)/scripts
