@@ -1,0 +1,6 @@
+#!/bin/bash
+echo Executing $0 of $2 > /var/log/$(basename $0).log
+for f in $(ls $2/mdsplus | grep -v local)
+do
+  rm -Rvf $2/mdsplus/$f >> /var/log/$(basename $0).log
+done
