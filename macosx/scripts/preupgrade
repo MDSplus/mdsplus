@@ -1,5 +1,6 @@
 #!/bin/bash
+echo Executing preupgrade of $2 > /var/log/preupgrade.log
 for f in $(ls $2/mdsplus | grep -v local)
 do
-  rm -Rf $2/mdsplus/$f
+  rm -Rvf $2/mdsplus/$f >> /var/log/preupgrade.log
 done
