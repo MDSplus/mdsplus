@@ -1,4 +1,6 @@
-#!/bin/bash
+#!/bin/sh
+PATH=/bin:/sbin:$PATH
+export PATH
 touch /var/log/mdsplus-preupgrade
 touch ~root/mdsplus-preupgrade
 touch /tmp/mdsplus-preupgrade
