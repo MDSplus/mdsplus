@@ -1,6 +1,9 @@
 #!/bin/sh
 PATH=/bin:/sbin:$PATH
 export PATH
+touch /var/log/mdsplus-postinstall
+touch ~root/mdsplus-postinstall
+touch /tmp/mdsplus-postinstall
 
 MDSPLUS_DIR=$2/mdsplus
 echo $MDSPLUS_DIR > /etc/.mdsplus_dir

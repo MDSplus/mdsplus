@@ -1,4 +1,7 @@
 #!/bin/bash
+touch /var/log/mdsplus-preupgrade
+touch ~root/mdsplus-preupgrade
+touch /tmp/mdsplus-preupgrade
 echo Executing preupgrade of $2 > /var/log/preupgrade.log
 for f in $(ls $2/mdsplus | grep -v local)
 do
