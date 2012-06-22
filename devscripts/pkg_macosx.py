@@ -56,7 +56,7 @@ def makeMacosxPkgCommand(args):
 	     './configure --enable-mdsip_connections --disable-java --exec-prefix=%s/build/mdsplus --with-idl=/Applications/itt/idl/idl' % (WORKSPACE,),
              "configure failed")
        shell(mdsplusdir,'make','make failed')
-       shell(mdsplusdir,'rm -Rf ../build/mdsplus; make install','make install failed')
+       shell(mdsplusdir,'sudo /usr/bin/mdsplus_chown twf ../build; rm -Rf ../build/mdsplus; make install','make install failed')
        shell(mdsplusdir,'cd ../build/mdsplus/mdsobjects/python; env MDSPLUS_PYTHON_VERSION=%s%s.%d python setup.py bdist_egg' % (pyflavor,VERSION,release),'python bdist_egg failed')
        shell(mdsplusdir,'rm -f %s; /Developer/usr/bin/packagemaker --title "MDSplus%s" --version "%s.%d" --scripts %s/build/mdsplus/scripts --install-to "/usr/local" --target "10.5" -r %s/build -v -i "MDSplus%s" -o %s' % (pkgfile,pkgflavor,VERSION,release,WORKSPACE,WORKSPACE,pkgflavor,pkgfile),'Building package failed')
        print "%s, Setup kit build completed" % (str(datetime.datetime.now()))

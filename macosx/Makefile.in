@@ -23,4 +23,3 @@ install:
         $(INSTALL) -m 755  scripts/postinstall $(exec_prefix)/scripts
         $(INSTALL) -m 755  scripts/postupgrade $(exec_prefix)/scripts
 	pushd @libdir@; for l in *.so; do ln -sf $${l:0:$${#l}-3}.so $${l:0:$${#l}-3}.dylib; done; popd
-        sudo /usr/bin/mdsplus_chown $(exec_prefix)
