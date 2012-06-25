@@ -1,10 +1,6 @@
 #!/bin/sh
 PATH=/bin:/sbin:$PATH
 export PATH
-touch /var/log/mdsplus-preinstall
-touch ~root/mdsplus-preinstall
-touch /tmp/mdsplus-preinstall
-echo Executing preinstall of $2 > /var/log/preinstall.log
 for f in $(ls $2/mdsplus 2>/dev/null | grep -v local)
 do
   rm -Rvf $2/mdsplus/$f >> /var/log/preinstall.log
