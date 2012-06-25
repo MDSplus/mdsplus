@@ -1,8 +1,0 @@
-#!/bin/sh
-#
-PATH=/bin:/sbin:$PATH
-export PATH
-touch /var/log/mdsplus-postupgrade
-touch ~root/mdsplus-postupgrade
-echo $0 "$1" "$2" "$3" > /var/log/$(basename $0).log
-$(dirname $0)/postinstall "$1" "$2" "$3" upgrade
