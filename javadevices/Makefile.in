@@ -134,7 +134,8 @@ SPIDERSetup.java\
 ZELOS2150GVSetup.java\
 NI6259AISetup.java\
 FAKECAMERASetup.java\
-AWG2021Setup.java
+AWG2021Setup.java\
+RFXWAVESETUP.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar
