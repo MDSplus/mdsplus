@@ -83,8 +83,8 @@ public class RFXWAVESETUPSetup extends DeviceSetup
     deviceField1.setNumCols(30);
     deviceField1.setIdentifier("");
 
-    deviceWave1.setOffsetNid(8);
-    deviceWave1.setMaxYVisible(false);
+    deviceWave1.setOffsetNid(4);
+//    deviceWave1.setMaxYVisible(false);
     deviceWave1.setIdentifier("");
     deviceWave1.setUpdateExpression("");
     deviceField2.setOffsetNid(3);
@@ -94,8 +94,8 @@ public class RFXWAVESETUPSetup extends DeviceSetup
     deviceField2.setIdentifier("");
     jPanel9.add(deviceField2, null);
 
-    deviceWave2.setOffsetNid(15);
-    deviceWave2.setMaxYVisible(false);
+    deviceWave2.setOffsetNid(11);
+//    deviceWave2.setMaxYVisible(false);
     deviceWave2.setIdentifier("");
     deviceWave2.setUpdateExpression("");
     deviceField3.setOffsetNid(10);
@@ -105,8 +105,8 @@ public class RFXWAVESETUPSetup extends DeviceSetup
     deviceField3.setIdentifier("");
     jPanel10.add(deviceField3, null);
 
-    deviceWave3.setOffsetNid(22);
-    deviceWave3.setMaxYVisible(false);
+    deviceWave3.setOffsetNid(18);
+//    deviceWave3.setMaxYVisible(false);
     deviceWave3.setIdentifier("");
     deviceWave3.setUpdateExpression("");
     deviceField4.setOffsetNid(17);
@@ -116,8 +116,8 @@ public class RFXWAVESETUPSetup extends DeviceSetup
     deviceField4.setIdentifier("");
     jPanel11.add(deviceField4, null);
 
-    deviceWave4.setOffsetNid(29);
-    deviceWave4.setMaxYVisible(false);
+    deviceWave4.setOffsetNid(25);
+//    deviceWave4.setMaxYVisible(false);
     deviceWave4.setIdentifier("");
     deviceWave4.setUpdateExpression("");
     deviceField5.setOffsetNid(24);
@@ -127,8 +127,8 @@ public class RFXWAVESETUPSetup extends DeviceSetup
     deviceField5.setIdentifier("");
     jPanel12.add(deviceField5, null);
 
-    deviceWave5.setOffsetNid(36);
-    deviceWave5.setMaxYVisible(false);
+    deviceWave5.setOffsetNid(32);
+//    deviceWave5.setMaxYVisible(false);
     deviceWave5.setIdentifier("");
     deviceWave5.setUpdateExpression("");
     deviceField6.setOffsetNid(31);
@@ -139,8 +139,8 @@ public class RFXWAVESETUPSetup extends DeviceSetup
     jPanel13.add(deviceField6, null);
 
 
-    deviceWave6.setOffsetNid(43);
-    deviceWave6.setMaxYVisible(false);
+    deviceWave6.setOffsetNid(39);
+//    deviceWave6.setMaxYVisible(false);
     deviceWave6.setIdentifier("");
     deviceWave6.setUpdateExpression("");
     deviceField7.setOffsetNid(38);
