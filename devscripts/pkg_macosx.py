@@ -69,4 +69,4 @@ def makeMacosxPkgCommand(args):
        build_url=os.environ['BUILD_URL']
        writePkgInfo(pkgfile[0:-4])
     sys.stdout.flush()
-    shell(WORKSPACE,'rsync -a pkg/* %s' % (args[2],),'Failed to copy to destination')
+    shell(WORKSPACE,'rsync -a pkg/* %s/%s' % (args[2],FLAVOR),'Failed to copy to destination')
