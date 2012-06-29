@@ -2078,7 +2078,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
 
 	void *ctx = getCtx(ctx1, ctx2);
 
-	status = _RTreeGetRecord(ctx, nid, &xd);
+	status = _TreeGetRecord(ctx, nid, &xd);
 	if(!(status & 1))
 		throwMdsException(env, status);
 
