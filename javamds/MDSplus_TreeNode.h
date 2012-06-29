@@ -310,26 +310,26 @@ JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_isOn
 /*
  * Class:     MDSplus_TreeNode
  * Method:    getData
- * Signature: (IIIZI)LMDSplus/Data;
+ * Signature: (III)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
-  (JNIEnv *, jclass, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    putData
- * Signature: (IIILMDSplus/Data;ZI)V
+ * Signature: (IIILMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    deleteData
- * Signature: (IIIZI)V
+ * Signature: (III)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_deleteData
-  (JNIEnv *, jclass, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode
@@ -350,122 +350,122 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_TreeNode_getTags
 /*
  * Class:     MDSplus_TreeNode
  * Method:    beginSegment
- * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject, jobject, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject, jobject);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    makeSegment
- * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;IZI)V
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;I)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject, jobject, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject, jobject, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    putSegment
- * Signature: (IIILMDSplus/Data;IZI)V
+ * Signature: (IIILMDSplus/Data;I)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    updateSegment
- * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jobject);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    beginTimestampedSegment
- * Signature: (IIILMDSplus/Data;ZI)V
+ * Signature: (IIILMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    putTimestampedSegment
- * Signature: (IIILMDSplus/Data;[JZI)V
+ * Signature: (IIILMDSplus/Data;[J)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    makeTimestampedSegment
- * Signature: (IIILMDSplus/Data;[JZI)V
+ * Signature: (IIILMDSplus/Data;[J)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlongArray);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    putRow
- * Signature: (IIILMDSplus/Data;JIZI)V
+ * Signature: (IIILMDSplus/Data;JI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    getNumSegments
- * Signature: (IIIZI)I
+ * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNumSegments
-  (JNIEnv *, jclass, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    acceptSegment
- * Signature: (IIILMDSplus/Data;LMDSplus/Data;ZI)V
+ * Signature: (IIILMDSplus/Data;LMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_acceptSegment
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jobject);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    acceptRow
- * Signature: (IIILMDSplus/Data;JZI)V
+ * Signature: (IIILMDSplus/Data;J)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_acceptRow
-  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jobject, jlong);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    getSegmentStart
- * Signature: (IIIIZI)LMDSplus/Data;
+ * Signature: (IIII)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentStart
-  (JNIEnv *, jclass, jint, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    getSegmentEnd
- * Signature: (IIIIZI)LMDSplus/Data;
+ * Signature: (IIII)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentEnd
-  (JNIEnv *, jclass, jint, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    getSegmentDim
- * Signature: (IIIIZI)LMDSplus/Data;
+ * Signature: (IIII)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentDim
-  (JNIEnv *, jclass, jint, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode
  * Method:    getSegment
- * Signature: (IIIIZI)LMDSplus/Data;
+ * Signature: (IIII)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegment
-  (JNIEnv *, jclass, jint, jint, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jint, jint, jint, jint);
 
 /*
  * Class:     MDSplus_TreeNode

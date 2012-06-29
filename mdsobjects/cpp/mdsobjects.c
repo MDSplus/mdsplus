@@ -11,7 +11,6 @@
 #include <treeshr.h>
 #include <ncidef.h>
 #include <usagedef.h>
-#include <cacheshr.h>
 
 extern int TdiData(), TdiDecompile(), TdiCompile();
 extern int CvtConvertFloat();
