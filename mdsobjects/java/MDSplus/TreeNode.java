@@ -138,26 +138,26 @@ public class TreeNode extends Data
         static native int[]getNciNids(int nid, int ctx1, int ctx2, int nciNumType, int nciType) throws MdsException;
         static native void turnOn(int nid, int ctx1, int ctx2, boolean on) throws MdsException;
         static native boolean isOn(int nid, int ctx1, int ctx2) throws MdsException;
-        static native Data getData(int nid, int ctx1, int ctx2, boolean isCached, int policy) throws MdsException;
-        static native void putData(int nid, int ctx1, int ctx2, Data data, boolean isCached, int policy) throws MdsException;
-        static native void deleteData(int nid, int ctx1, int ctx2, boolean isCached, int policy) throws MdsException;
+        static native Data getData(int nid, int ctx1, int ctx2) throws MdsException;
+        static native void putData(int nid, int ctx1, int ctx2, Data data) throws MdsException;
+        static native void deleteData(int nid, int ctx1, int ctx2) throws MdsException;
         static native void doMethod(int nid, int ctx1, int ctx2, java.lang.String method) throws MdsException; 
         static native java.lang.String[] getTags(int nid, int ctx1, int ctx2) throws MdsException;
-        static native void beginSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, boolean isCached, int policy)throws MdsException;
-        static native void makeSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, int filledRows, boolean isCached, int policy)throws MdsException;
-        static native void putSegment(int nid, int ctx1, int ctx2, Data data, int  offset, boolean isCached, int policy)throws MdsException;
-        static native void updateSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, boolean isCached, int policy)throws MdsException;
-        static native void beginTimestampedSegment(int nid, int ctx1, int ctx2,Data initData, boolean isCached, int policy)throws MdsException;
-        static native void putTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long times[], boolean isCached, int policy)throws MdsException;
-        static native void makeTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long times[], boolean isCached, int policy)throws MdsException;
-        static native void putRow(int nid, int ctx1, int ctx2, Data row, long time, int size, boolean isCached, int policy)throws MdsException;
-        static native int getNumSegments(int nid, int ctx1, int ctx2, boolean isCached, int policy)throws MdsException;
-        static native void acceptSegment(int nid, int ctx1, int ctx2, Data seg, Data time, boolean isCached, int policy)throws MdsException;
-        static native void acceptRow(int nid, int ctx1, int ctx2, Data seg, long time, boolean isCached, int policy)throws MdsException;
-        static native Data getSegmentStart(int nid, int ctx1, int ctx2, int idx, boolean isCached, int policy)throws MdsException;
-        static native Data getSegmentEnd(int nid, int ctx1, int ctx2, int idx, boolean isCached, int policy)throws MdsException;
-        static native Data getSegmentDim(int nid, int ctx1, int ctx2, int idx, boolean isCached, int policy)throws MdsException;
-        static native Data getSegment(int nid, int ctx1, int ctx2, int idx, boolean isCached, int policy)throws MdsException;
+        static native void beginSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData)throws MdsException;
+        static native void makeSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, int filledRows)throws MdsException;
+        static native void putSegment(int nid, int ctx1, int ctx2, Data data, int  offset)throws MdsException;
+        static native void updateSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim)throws MdsException;
+        static native void beginTimestampedSegment(int nid, int ctx1, int ctx2,Data initData)throws MdsException;
+        static native void putTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long times[])throws MdsException;
+        static native void makeTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long times[])throws MdsException;
+        static native void putRow(int nid, int ctx1, int ctx2, Data row, long time, int size)throws MdsException;
+        static native int getNumSegments(int nid, int ctx1, int ctx2)throws MdsException;
+        static native void acceptSegment(int nid, int ctx1, int ctx2, Data seg, Data time)throws MdsException;
+        static native void acceptRow(int nid, int ctx1, int ctx2, Data seg, long time)throws MdsException;
+        static native Data getSegmentStart(int nid, int ctx1, int ctx2, int idx)throws MdsException;
+        static native Data getSegmentEnd(int nid, int ctx1, int ctx2, int idx)throws MdsException;
+        static native Data getSegmentDim(int nid, int ctx1, int ctx2, int idx)throws MdsException;
+        static native Data getSegment(int nid, int ctx1, int ctx2, int idx)throws MdsException;
         static native int addNode(int nid, int ctx1, int ctx2, java.lang.String name,  int usage)throws MdsException;
         static native void deleteNode(int nid, int ctx1, int ctx2,  java.lang.String name)throws MdsException;
         static native void renameNode(int nid, int ctx1, int ctx2,  java.lang.String newName)throws MdsException;
@@ -167,8 +167,6 @@ public class TreeNode extends Data
         static native void setSubtree(int nid, int ctx1, int ctx2, boolean isSubtree);
         static native void moveNode(int nid, int ctx1, int ctx2, int parentNid, java.lang.String newName);
         
-        protected boolean isCached() {return false;}
-        protected int getCachePolicy(){return 0;}
         /**
 	 * Return true if data has to be comressed when written.
 	 */
@@ -557,7 +555,7 @@ public class TreeNode extends Data
 	public Data getData() throws MdsException
         {
             resolveNid();
-            return getData(nid, tree.getCtx1(), tree.getCtx2(), isCached(), getCachePolicy());
+            return getData(nid, tree.getCtx1(), tree.getCtx2());
 	}
 
 	/**
@@ -568,7 +566,7 @@ public class TreeNode extends Data
 	public void putData(Data data) throws MdsException
         {
             resolveNid();
-            putData(nid, tree.getCtx1(), tree.getCtx2(), data, isCached(), getCachePolicy());
+            putData(nid, tree.getCtx1(), tree.getCtx2(), data);
 	}
 
 	/**
@@ -577,7 +575,7 @@ public class TreeNode extends Data
 	public void deleteData() throws MdsException
         {
             resolveNid();
-            deleteData(nid, tree.getCtx1(), tree.getCtx2(), isCached(), getCachePolicy());
+            deleteData(nid, tree.getCtx1(), tree.getCtx2());
 	}
 
 	/**
@@ -681,12 +679,12 @@ public class TreeNode extends Data
 	public void beginSegment(Data start, Data end, Data dim, Array initData) throws MdsException
         {
             resolveNid();
-            beginSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, isCached(), getCachePolicy());
+            beginSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData);
 	}
 	public void makeSegment(Data start, Data end, Data dim, Array initData) throws MdsException
         {
             resolveNid();
-            makeSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, dim.getShape()[0], isCached(), getCachePolicy());
+            makeSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, dim.getShape()[0]);
 	}
 
 	/**
@@ -698,7 +696,7 @@ public class TreeNode extends Data
 	public void putSegment(Array data, int offset) throws MdsException
         {
             resolveNid();
-            putSegment(nid, tree.getCtx1(), tree.getCtx2(), data, offset, isCached(), getCachePolicy());
+            putSegment(nid, tree.getCtx1(), tree.getCtx2(), data, offset);
 	}
 
 	/**
@@ -711,7 +709,7 @@ public class TreeNode extends Data
 	public void updateSegment(Data start, Data end, Data dim) throws MdsException
         {
             resolveNid();
-            updateSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, isCached(), getCachePolicy());
+            updateSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim);
 	}
 
 	/**
@@ -722,7 +720,7 @@ public class TreeNode extends Data
 	public void beginTimestampedSegment(Array initData) throws MdsException
         {
             resolveNid();
-            beginTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),initData, isCached(), getCachePolicy());
+            beginTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),initData);
 	}
 
 	/**
@@ -734,12 +732,12 @@ public class TreeNode extends Data
 	public void putTimestampedSegment(Data data, long times[]) throws MdsException
         {
             resolveNid();
-            putTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),data, times, isCached(), getCachePolicy());
+            putTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),data, times);
 	}
 	public void makeTimestampedSegment(Data data, long times[]) throws MdsException
         {
             resolveNid();
-            makeTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),data, times, isCached(), getCachePolicy());
+            makeTimestampedSegment(nid, tree.getCtx1(), tree.getCtx2(),data, times);
 	}
 
 	/**
@@ -752,7 +750,7 @@ public class TreeNode extends Data
 	public void putRow(Data row, long time, int size) throws MdsException
         {
             resolveNid();
-            putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, size, isCached(), getCachePolicy());
+            putRow(nid, tree.getCtx1(), tree.getCtx2(), row, time, size);
 	}
 
         public void putRow(Data row, long time) throws MdsException
@@ -767,7 +765,7 @@ public class TreeNode extends Data
 	public int getNumSegments() throws MdsException
         {
             resolveNid();
-            return getNumSegments(nid, tree.getCtx1(), tree.getCtx2(), isCached(), getCachePolicy());
+            return getNumSegments(nid, tree.getCtx1(), tree.getCtx2());
 	}
 
 	/**
@@ -778,7 +776,7 @@ public class TreeNode extends Data
 	public Data getSegmentStart(int idx) throws MdsException
         {
             resolveNid();
-            return getSegmentStart(nid, tree.getCtx1(), tree.getCtx2(), idx, isCached(), getCachePolicy());
+            return getSegmentStart(nid, tree.getCtx1(), tree.getCtx2(), idx);
 	}
 
 	/**
@@ -789,7 +787,7 @@ public class TreeNode extends Data
 	public Data getSegmentEnd(int idx) throws MdsException
         {
             resolveNid();
-            return getSegmentEnd(nid, tree.getCtx1(), tree.getCtx2(), idx, isCached(), getCachePolicy());
+            return getSegmentEnd(nid, tree.getCtx1(), tree.getCtx2(), idx);
 	}
 
 	/**
@@ -799,7 +797,7 @@ public class TreeNode extends Data
 	public Data getSegmentDim(int idx) throws MdsException
         {
             resolveNid();
-            return getSegmentDim(nid, tree.getCtx1(), tree.getCtx2(), idx, isCached(), getCachePolicy());
+            return getSegmentDim(nid, tree.getCtx1(), tree.getCtx2(), idx);
 	}
 
 	/**
@@ -810,7 +808,7 @@ public class TreeNode extends Data
 	public Array getSegment(int idx) throws MdsException
         {
             resolveNid();
-            return (Array)getSegment(nid, tree.getCtx1(), tree.getCtx2(), idx, isCached(), getCachePolicy());
+            return (Array)getSegment(nid, tree.getCtx1(), tree.getCtx2(), idx);
 	}
 
 	/**

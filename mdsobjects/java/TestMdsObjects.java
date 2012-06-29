@@ -43,22 +43,19 @@ public class TestMdsObjects
    static void testRowsMem()
    {
        try {
-            CachedTree tree = new CachedTree("test",1);
-            CachedTreeNode sig=tree.getCachedNode("\\sig_1");
+            Tree tree = new Tree("test",1);
+            TreeNode sig=tree.getNode("\\sig_1");
             sig.deleteData();
             float []data = new float[10]; //Use a small row
             for(int i = 1; i <=4020; i++)
             {
 		for(int j=0;j<10;j++)
                     data[j] = i*10000 + j;
-                if(i < 4020 - 1)
+                //if(i < 4020 - 1)
                     sig.putRow(new Float32Array(data), (long)i);
-                else
-                    sig.putLastRow(new Float32Array(data), (long)i);
 //The last time it is necessary to call putLastRow method                
             }
 //This method must be called before exiting in order to allow all pending data to be written on disk            
-            tree.synch();
        }catch(Exception exc)
        {
            System.err.println("Error in testRow: " + exc);
