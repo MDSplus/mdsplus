@@ -292,7 +292,7 @@ UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
 GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
-RTEVENTS="rtevents cacheshr"
+RTEVENTS="rtevents"
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -488,7 +488,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
        MACOSX="macosx"
-       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W"
@@ -534,6 +533,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="$jni_inc_dir";
        JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
        JVM="-framework JavaVM";
+       java_enable="yes"
        LIBPATH="DYLD_LIBRARY_PATH"
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
@@ -541,11 +541,10 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        dnl HDF5_DIR="/usr/local";
        X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
-       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
+          FFLAGS="$FFLAGS -w -f -V -W";
+		  FORLD="$F77";
        elif (test "$F77" = "g77"); then
           FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
           FOR_LDFLAGS="-lg2c"; 
@@ -553,9 +552,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        elif (test "$F77" = "fort77"); then
           FFLAGS="$FFLAGS -!bs -Wf,-!it";
           FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
+		  FORLD="$CC";
+		  LOC="F2C_LOC";
+		  VAL="F2C_VAL";
        fi;
        FEXECLIBDIR="-L";
        LD="$CC"
@@ -564,27 +563,27 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="";
        LD_LDARC="";
        UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib";
+       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib";
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
 	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
+       X_CFLAGS="-I/usr/OpenMotif/include";
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".jnilib";
        SHARETYPEMOD=".so";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
+       JDK_DIR=/Library/Java/Home;
        jni_inc_dir="$JDK_DIR/include";
        jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
+       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar";
        JVM="-framework JavaVM";
-       java_enable="yes"
-       LIBPATH="DYLD_LIBRARY_PATH"
+       java_enable="yes";
+       LIBPATH="DYLD_LIBRARY_PATH";
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
        dnl HDF5_LIBS="-lz -lsz";
@@ -1102,7 +1101,7 @@ AC_CONFIG_HEADER(include/config.h)
 AC_OUTPUT(Makefile
 envsyms
 actions/Makefile
-cacheshr/Makefile 
+#cacheshr/Makefile 
 camshr/Makefile
 ccl/Makefile 
 cdu/Makefile 

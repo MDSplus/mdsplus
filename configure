@@ -6075,7 +6075,7 @@ UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
 GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
-RTEVENTS="rtevents cacheshr"
+RTEVENTS="rtevents"
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -6271,7 +6271,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
        MACOSX="macosx"
-       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then
           FFLAGS="$FFLAGS -w -f -V -W"
@@ -6315,16 +6314,16 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="$jni_inc_dir";
        JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
        JVM="-framework JavaVM";
+       java_enable="yes"
        LIBPATH="DYLD_LIBRARY_PATH"
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
                      X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
-       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
+          FFLAGS="$FFLAGS -w -f -V -W";
+		  FORLD="$F77";
        elif (test "$F77" = "g77"); then
           FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
           FOR_LDFLAGS="-lg2c";
@@ -6332,9 +6331,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        elif (test "$F77" = "fort77"); then
           FFLAGS="$FFLAGS -!bs -Wf,-!it";
           FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
+		  FORLD="$CC";
+		  LOC="F2C_LOC";
+		  VAL="F2C_VAL";
        fi;
        FEXECLIBDIR="-L";
        LD="$CC"
@@ -6343,25 +6342,25 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="";
        LD_LDARC="";
        UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib";
+       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib";
        	   	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
+       X_CFLAGS="-I/usr/OpenMotif/include";
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".jnilib";
        SHARETYPEMOD=".so";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
+       JDK_DIR=/Library/Java/Home;
        jni_inc_dir="$JDK_DIR/include";
        jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
+       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar";
        JVM="-framework JavaVM";
-       java_enable="yes"
-       LIBPATH="DYLD_LIBRARY_PATH"
+       java_enable="yes";
+       LIBPATH="DYLD_LIBRARY_PATH";
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
                      X_EXTRA_LIBS="-lXmu";;
@@ -14805,7 +14804,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
 ac_config_headers="$ac_config_headers include/config.h"
 
-ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+ac_config_files="$ac_config_files Makefile envsyms actions/Makefile #cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15405,7 +15404,7 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "envsyms") CONFIG_FILES="$CONFIG_FILES envsyms" ;;
     "actions/Makefile") CONFIG_FILES="$CONFIG_FILES actions/Makefile" ;;
-    "cacheshr/Makefile") CONFIG_FILES="$CONFIG_FILES cacheshr/Makefile" ;;
+    "#cacheshr/Makefile") CONFIG_FILES="$CONFIG_FILES #cacheshr/Makefile" ;;
     "camshr/Makefile") CONFIG_FILES="$CONFIG_FILES camshr/Makefile" ;;
     "ccl/Makefile") CONFIG_FILES="$CONFIG_FILES ccl/Makefile" ;;
     "cdu/Makefile") CONFIG_FILES="$CONFIG_FILES cdu/Makefile" ;;
