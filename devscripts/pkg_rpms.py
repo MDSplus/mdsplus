@@ -32,7 +32,7 @@ def beginRpmSpec(specfile,version,release,rpmflavor):
     f_in.close()
     for pkg in getPackages():
         f_out.write("requires: mdsplus%s-%s\n" % (rpmflavor,pkg))
-    f_in=open('rpm/mdsplus-part2-hudson.spec',"r")
+    f_in=open('%s/rpm/mdsplus-part2-hudson.spec' % (getTopDir(),),"r")
     line=f_in.readline()
     while len(line) > 0:
         f_out.write(line)
