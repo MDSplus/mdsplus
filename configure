@@ -817,7 +817,6 @@ enable_mdsip_connections
 enable_nodebug
 enable_perf
 enable_java
-enable_universal
 with_jdk
 with_xio
 with_gsi
@@ -1477,7 +1476,6 @@ Optional Features:
   --enable-nodebug        compile without debug info
   --enable-perf          enable MDSplus I/O statistics
  --disable-java	do not build java libraries and applications
- --enable-universal	Build MacOSX Universal Binary
   --enable-globus        use globus_io for mdsip communications
   --enable-memcheck       enable virtual memory debugging
   --enable-gcc_profiling       enable gcc profiling
@@ -5545,21 +5543,21 @@ else
 fi
 
 
-if test "$target_vendor" = "apple"
-then
-			java_enable="no"
-	# Check whether --enable-universal was given.
-if test "${enable_universal+set}" = set; then
-  enableval=$enable_universal; universal_build="$enableval"
-
-fi
-
-	if test "$universal_build" = yes; then
-		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		F77=fort77
-	fi
-fi
+#if test "$target_vendor" = "apple"
+#then
+#	dnl the java section breaks with macos x due to different structure
+#	dnl this disables it for now..  is there a AC_PROG_JAVA?
+#	java_enable="no"
+#	AC_ARG_ENABLE(universal,
+#		[ --enable-universal	Build MacOSX Universal Binary ],
+#		universal_build="$enableval"
+#		)
+#	if test "$universal_build" = yes; then
+#		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+#		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+#		F77=fort77
+#	fi
+#fi
 
 if test "$java_enable" = "yes"
 then
