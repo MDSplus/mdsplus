@@ -906,6 +906,7 @@ AC_CHECK_FUNCS(sigvec sigvector)
 AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(nis_local_host,mdsplus_ok=yes,mdsplus_ok=no)
 AC_CHECK_FUNC(malloc)
+AC_CHECK_FUNC(sched_setscheduler)
 if test $mdsplus_ok = yes; then
 		 AC_DEFINE(USE_NIS)
 fi
