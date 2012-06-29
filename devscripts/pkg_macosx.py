@@ -53,7 +53,7 @@ def makeMacosxPkgCommand(args):
        mdsplusdir="%s/mdsplus" % (WORKSPACE,)
        print "%s, Starting build" % (str(datetime.datetime.now()),)
        shell(mdsplusdir,
-	     './configure --enable-mdsip_connections --disable-java --exec-prefix=%s/build/mdsplus --with-idl=/Applications/itt/idl/idl' % (WORKSPACE,),
+	     './configure --enable-mdsip_connections --exec-prefix=%s/build/mdsplus --with-idl=/Applications/itt/idl/idl' % (WORKSPACE,),
              "configure failed")
        shell(mdsplusdir,'make','make failed')
        shell(mdsplusdir,'sudo /usr/bin/mdsplus_sudo remove ../build','remove build failed')
