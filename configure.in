@@ -59,21 +59,21 @@ AC_ARG_ENABLE(java,
 
 dnl this new java section hoses macos x... why not use the autoconf java macros?
 dnl I'm faking a disable so I can enable by hand later...
-#if test "$target_vendor" = "apple"
-#then
-#	dnl the java section breaks with macos x due to different structure
-#	dnl this disables it for now..  is there a AC_PROG_JAVA?
-#	java_enable="no"
-#	AC_ARG_ENABLE(universal,
-#		[ --enable-universal	Build MacOSX Universal Binary ],
-#		universal_build="$enableval"
-#		)
-#	if test "$universal_build" = yes; then
-#		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-#		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-#		F77=fort77
-#	fi 
-#fi
+if test "$target_vendor" = "apple"
+then
+	dnl the java section breaks with macos x due to different structure
+	dnl this disables it for now..  is there a AC_PROG_JAVA?
+	java_enable="no"
+	AC_ARG_ENABLE(universal,
+		[ --enable-universal	Build MacOSX Universal Binary ],
+		universal_build="$enableval"
+		)
+	if test "$universal_build" = yes; then
+		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+		F77=fort77
+	fi 
+fi
 
 if test "$java_enable" = "yes"
 then
@@ -583,6 +583,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="$jni_inc_dir";
        JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
        JVM="-framework JavaVM";
+       java_enable="yes"
        LIBPATH="DYLD_LIBRARY_PATH"
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
