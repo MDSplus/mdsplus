@@ -1009,7 +1009,9 @@ EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
+#if (SIZEOF_LONG != 8)
 EXPORT void MDSplus::deleteNativeArray(_int64 *array){delete [] array;}
+#endif
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
