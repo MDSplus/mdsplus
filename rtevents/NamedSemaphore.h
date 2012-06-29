@@ -15,6 +15,29 @@
 #include <stdio.h>
 #include "SystemException.h"
 #include "Timeout.h"
+#include <pthread.h>
+
+struct TimeoutStructNamed {
+    struct timespec waitTimeout;    
+    sem_t *sem;
+    bool *timeoutOccurred;
+    bool waitPending;
+};
+
+static void *handleTimeoutNamed(void *arg)
+{
+    struct TimeoutStructNamed *infoPtr = (struct TimeoutStructNamed*)arg;
+    nanosleep(&infoPtr->waitTimeout, NULL);
+    if(infoPtr->waitPending)
+    {
+	*infoPtr->timeoutOccurred = true;
+	sem_post(infoPtr->sem);
+    }
+    else
+    	delete infoPtr;
+    return NULL;
+}
+    
 
 class EXPORT NamedSemaphore
 {
@@ -22,7 +45,7 @@ class EXPORT NamedSemaphore
 public:
 	void initialize(char *name, int initVal) //Named semaphore
 	{
-		semPtr = sem_open(name, O_CREAT, 0x0777, 1);
+		semPtr = sem_open(name, O_CREAT, 0x0777, initVal);
         //It appears that Linux does not report the correct privileges in sem_open, so do it with chmod
         chmod(name, 0777);
 
@@ -55,15 +78,27 @@ public:
 	{
 		struct timespec waitTimeout;
 		time(&waitTimeout.tv_sec);
-		waitTimeout.tv_sec += timeout.getSecs();
-		waitTimeout.tv_nsec += timeout.getNanoSecs();
+		waitTimeout.tv_sec = timeout.getSecs();
+		waitTimeout.tv_nsec = timeout.getNanoSecs();
 		if(waitTimeout.tv_nsec >= 1000000000)
 		{
 			waitTimeout.tv_nsec %= 1000000000;
 			waitTimeout.tv_sec++;
 		}
 		bool timeoutOccurred = false;
-		int status = sem_timedwait(semPtr, &waitTimeout);
+		struct TimeoutStructNamed *timout = new TimeoutStructNamed;
+		timout->sem = semPtr;
+		timout->waitTimeout = waitTimeout;
+		timout->waitPending = true;
+		timout->timeoutOccurred = &timeoutOccurred;
+		pthread_t pid;
+		pthread_create(&pid, NULL, handleTimeoutNamed,  (void *)timout);
+		int status = sem_wait(semPtr);
+		if(timeoutOccurred)
+		    delete timout;
+		else
+		    timout->waitPending = false;
+		return status;
 		if(errno != ETIMEDOUT)
 			throw new SystemException("Error in UnnamedSemaphore::timedWait", errno);
 		return status;
