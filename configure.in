@@ -1101,7 +1101,6 @@ AC_CONFIG_HEADER(include/config.h)
 AC_OUTPUT(Makefile
 envsyms
 actions/Makefile
-#cacheshr/Makefile 
 camshr/Makefile
 ccl/Makefile 
 cdu/Makefile 
