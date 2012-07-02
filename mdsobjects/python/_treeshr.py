@@ -118,47 +118,6 @@ try:
 except Exception,e:
     def TreeUsingPrivateCtx():
         return False
-#__RTreeShr=_load_library('CacheShr')
-#__RTreeOpen=__RTreeShr._RTreeOpen
-#__RTreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p]
-#__RTreeClose=__RTreeShr._RTreeClose
-#__RTreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
-#RTreeConfigure=__RTreeShr.RTreeConfigure
-#RTreeConfigure.argtypes=[_C.c_int,_C.c_int]
-#RTreeSynch=__RTreeShr.RTreeSynch
-#RTreeFlush=__RTreeShr._RTreeFlush
-#RTreeFlush.argtypes=[_C.c_void_p,_C.c_int]
-
-#__RTreePutRecord=__RTreeShr._RTreePutRecord
-#__RTreePutRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd),_C.c_int]
-#__RTreeBeginSegment=__RTreeShr._RTreeBeginSegment
-#__RTreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
-#__RTreeBeginTimestampedSegment=__RTreeShr._RTreeBeginTimestampedSegment
-#__RTreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
-#__RTreeUpdateSegment=__RTreeShr._RTreeUpdateSegment
-#__RTreeUpdateSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int,_C.c_int]
-#__RTreePutSegment=__RTreeShr._RTreePutSegment
-#__RTreePutSegment.argtpes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_a),_C.c_int]
-#__RTreePutTimestampedSegment=__RTreeShr._RTreePutTimestampedSegment
-#__RTreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.POINTER(_C.c_int64),_C.c_int]
-#__RTreePutRow=__RTreeShr._RTreePutRow
-#__RTreePutRow.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(_C.c_int64),_C.c_void_p,_C.c_int]
-#__RTreeGetNumSegments=__RTreeShr._RTreeGetNumSegments
-#__RTreeGetNumSegments.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_int)]
-#__RTreeGetSegment=__RTreeShr._RTreeGetSegment
-#__RTreeGetSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
-#__RTreeGetSegmentLimits=__RTreeShr._RTreeGetSegmentLimits
-#__RTreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
-#__RTreeDiscardOldSegments=__RTreeShr._RTreeDiscardOldSegments
-#__RTreeDiscardOldSegments.argtypes=[_C.c_void_p,_C.c_int,_C.c_int64]
-#__RTreeDiscardData=__RTreeShr._RTreeDiscardData
-#__RTreeDiscardData.argtypes=[_C.c_void_p,_C.c_int]
-#__RTreeFlushNode=__RTreeShr._RTreeFlushNode
-#__RTreeFlushNode.argtypes=[_C.c_void_p,_C.c_int]
-#__RTreeGetRecord=__RTreeShr._RTreeGetRecord
-#__RTreeGetRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd)]
-
-
 
 class TreeException(Exception):
     pass
@@ -488,14 +447,6 @@ def TreeDeletePulse(tree,shot):
     if not (status & 1):
         raise TreeException,MdsGetMsg(status)
     
-def RTreeOpen(tree,shot):
-    ctx=_C.c_void_p(0)
-    status = __RTreeOpen(_C.pointer(ctx),tree,shot)
-    if (status & 1):
-        return ctx
-    else:
-        raise TreeException,MdsGetMsg(status)
-
 def TreeRestoreContext(ctx):
     try:
         return __TreeSwitchDbid(ctx)
@@ -512,13 +463,6 @@ def TreeGetContext():
 
 def TreeClose(ctx,tree,shot):
     status = __TreeClose(_C.pointer(ctx),tree,shot)
-    if (status & 1):
-        return status
-    else:
-        raise TreeException,MdsGetMsg(status)
-
-def RTreeClose(ctx,tree,shot):
-    status = __RTreeClose(_C.pointer(ctx),tree,shot)
     if (status & 1):
         return status
     else:
@@ -548,15 +492,6 @@ def TreeGetVersionDate():
     if not (status & 1):
         raise TreeException,MdsGetMsg(status)
     return Uint64(dt.value).date
-
-def RTreeCloseAll(ctx):
-    if ctx is not None:
-        status = __RTreeClose(_C.pointer(ctx),None,0)
-        while (status & 1) == 1:
-            try:
-                status = __RTreeClose(_C.pointer(ctx),None,0)
-            except:
-                status = 0
 
 def TreeGetNumSegments(n):
     """Get number of segments in a node."""
@@ -686,157 +621,6 @@ def TreeUpdateSegment(n,start,end,dimension,idx):
         raise TreeException,MdsGetMsg(status)
     return None
     
-def RTreePutRecord(n,value):
-    """Put record into MDSplus tree. Accepts path, TreeNode or integer and the value"""
-    try:
-        n.tree.lock()
-        status=__RTreePutRecord(n.tree.ctx,n.nid,_C.pointer(descriptor(value)),n.cachePolicy)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeBeginSegment(n,start,end,dimension,initialValue,idx):
-    """Begin a segment."""
-    try:
-        n.tree.lock()
-        status=__RTreeBeginSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                   _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),
-                                   idx,n.cachePolicy)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeUpdateSegment(n,start,end,dimension,idx):
-    """Update a segment."""
-    try:
-        n.tree.lock()
-        status=__RTreeUpdateSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                    _C.pointer(descriptor(dimension)),idx,n.cachePolicy)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-    
-def RTreePutSegment(n,value,idx):
-    """Put a segment"""
-    try:
-        n.tree.lock()
-        status=__RTreePutSegment(n.tree.ctx,n.nid,idx,_C.pointer(descriptor(value)),n.cachePolicy)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status;
-    else:
-        raise TreeException,MdsGetMsg(status)
-
-def RTreePutTimestampedSegment(n,value,timestampArray):
-    """Put a timestampedsegment"""
-    try:
-        n.tree.lock()
-        status=__RTreePutTimestampedSegment(n.tree.ctx,n.nid,idx,_C.pointer(descriptor(value)),descriptor_a(timestampArray).pointer,n.cachePolicy)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status;
-    else:
-        raise TreeException,MdsGetMsg(status)
-
-def RTreePutRow(n,bufsize,array,timestamp):
-    """Begin a segment."""
-    try:
-        n.tree.lock()
-        status=__RTreePutRow(n.tree.ctx,n.nid,bufsize,_C.pointer(_C.c_int64(timestamp)),
-                             _C.pointer(descriptor(array)),n.cachePolicy)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeGetNumSegments(n):
-    """Get number of segments in a node."""
-    try:
-        n.tree.lock()
-        num=_C.c_int(0)
-        status=__RTreeGetNumSegments(n.tree.ctx,n.nid,_C.pointer(num))
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return num.value
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeGetRecord(n):
-    """Get cached record"""
-    value=descriptor_xd()
-    try:
-        n.tree.lock()
-        status=__RTreeGetRecord(n.tree.ctx,n.nid,_C.pointer(value))
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return value.value
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeGetSegmentStart(n,idx):
-    """Get cached record"""
-    start=descriptor_xd()
-    end=descriptor_xd()
-    try:
-        n.tree.lock()
-        status=__RTreeGetSegmentLimits(n.tree.ctx,n.nid,idx,_C.pointer(start),_C.pointer(end))
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return start.value
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeGetSegmentEnd(n,idx):
-    """Get cached record"""
-    start=descriptor_xd()
-    end=descriptor_xd()
-    try:
-        n.tree.lock()
-        status=__RTreeGetSegmentLimits(n.tree.ctx,n.nid,idx,_C.pointer(start),_C.pointer(end))
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return end.value
-    else:
-        raise TreeException,MdsGetMsg(status)
-    return None
-
-def RTreeFlushNode(n):
-    """Flush cache of node"""
-    try:
-        n.tree.lock()
-        status=__RTreeFlushNode(n.tree.ctx,n.nid)
-    finally:
-        n.tree.unlock()
-    if (status & 1):
-        return status
-    else:
-        raise TreeException,mdsGetMsg(status)
-    return None
-
 class DBI_ITM_INT(_C.Structure):
     _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.POINTER(_C.c_int)),
               ("retlen",_C.c_void_p),
