@@ -2064,7 +2064,7 @@ protected:
 		void resolveNid();
 	};
 	
-	
+#ifdef CACHEDTREES	
 /////////////////CachedTreeNode/////////////////////////////
 #define MDS_WRITE_THROUGH 1
 #define MDS_WRITE_BACK 2
@@ -2086,7 +2086,7 @@ protected:
 		void terminateSegment();
 	};
 
-
+#endif
 
 ////////////////Class TreeNodeArray///////////////////////
 	class EXPORT TreeNodeArray
@@ -2196,7 +2196,7 @@ protected:
 	};
 
 /////////////////End Class Tree /////////////////////
-
+#ifdef CACHEDTREES
 /////////////////CachedTree/////////////////////////
 
 #define DEFAULT_CACHE_SIZE 2000000
@@ -2227,7 +2227,8 @@ protected:
 		static void synch();
 	};
 
-/////////////////End CachedTree///////
+/////////////////End CachedTree/////////
+#endif
 /////////////Class Event///////////
 	class EXPORT Event
 	{
