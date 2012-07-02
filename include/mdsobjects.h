@@ -137,6 +137,9 @@ EXPORT void deleteNativeArray(char *array);
 EXPORT void deleteNativeArray(short *array);
 EXPORT void deleteNativeArray(int *array);
 EXPORT void deleteNativeArray(long *array);
+#if (SIZEOF_LONG != 8)
+EXPORT void MDSplus::deleteNativeArray(_int64 *array);
+#endif
 EXPORT void deleteNativeArray(float *array);
 EXPORT void deleteNativeArray(double *array);
 EXPORT void deleteNativeArray(char **array);
