@@ -110,6 +110,7 @@ install:
 	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
 	done
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
+	cp MDSplus-License.txt @exec_prefix@ 
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
 
 BINARIES = bin etc lib uid \
