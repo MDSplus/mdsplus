@@ -8,6 +8,7 @@ Core applications, libraries and configuration files
 
 %files kernel
 %defattr(-,root,root)
+/usr/local/mdsplus/MDSplus-License.txt
 /usr/local/mdsplus/bin??
 /usr/local/mdsplus/ChangeLog
 /usr/local/mdsplus/etc
