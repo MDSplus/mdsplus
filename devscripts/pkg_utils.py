@@ -163,6 +163,14 @@ def checkRelease(package):
           print l
     return ans
 def promoteCommand(args):
+    """Promote the alpha release to beta or beta release to stable.
+
+Format: promote alpha|beta
+
+"""
+    if len(args) < 3:
+      print "Specify either alpha or beta for first argument to the promote commannd.\nFor more information use help promote."
+      sys.exit(1)
     flavor=args[2]
     if flavor == "alpha":
         p=subprocess.Popen('cvs -Q rtag -dB beta mdsplus',shell=True,cwd=getTopDir())
@@ -189,6 +197,24 @@ def promoteCommand(args):
         return
 
 def newVersionCommand(args):
+    """Change base version number of a release.
+
+Format: newVersion alpha|beta|stable major|minor|version-number
+
+Examples:
+
+    python pkg.py newVersion alpha minor
+
+      If the current alpha version was 3.1 the alpha version would be changed to 3.2
+
+    python pkg.py newVersion beta major
+
+      If the current beta version was 2.5 then the new beta version would be changed to 3.0
+
+    python pkg.py newVersion stable 3.6
+
+      The new stable version would be set to 3.6
+"""
     flavor=args[2]
     if len(args) <= 3 or (len(args) > 3 and args[3] == "skip"):
 	sys.exit(0)
@@ -242,28 +268,6 @@ def getWorkspace():
         sys.exit(1)
     return ans
 
-def makeSrcTar(file):
-    cs=CvsStatus()
-    def excludeCVS(file):
-        if "/CVS" in file:
-            return True
-        if len(file) == len("../mdsplus"):
-            return False
-        if file[len("../mdsplus"):] in cs.all:
-            return False
-        return True
-    tgz=tarfile.open(file,mode="w:gz")
-    try:
-        tgz.add('../mdsplus',arcname='mdsplus',exclude=excludeCVS)
-    except TypeError,e:
-        walk=os.walk('../mdsplus')
-        for path, dir, files in walk:
-            for name in files:
-                fname=os.path.join(path,name)
-                if not excludeCVS(fname):
-                    tgz.add(fname,recursive=False,arcname=fname[3:])
-    tgz.close()
-
 def newRelease(pkg,flavor,version,release,dist):
     cs=CvsStatus()
     tagversion=version.replace(".","-")
@@ -299,17 +303,26 @@ def getPackages(includeEmpty=False):
     return pkgs
 
 def newReleaseCommand(args):
+    """Internal"""
     newRelease(args[2],args[3],args[4],args[5],args[6])
 
-def makeSrcTarCommand(args):
-    makeSrcTar(args[2])
-
 def getPackagesCommand(args):
+    """List all package names.
+
+Format:
+
+    getPackages [includeEmpty]
+"""
     includeEmpty = len(args) >= 3 and args[2]=="includeEmpty"
     for pkg in getPackages(includeEmpty):
         print pkg
 
 def checkReleasesCommand(args):
+    """Check to see if any changes where made to any package sources since the last published release of that package
+Format:
+
+    pkg.py checkRelease
+"""
     for pkg in getPackages():
         ans=checkRelease(pkg)
         if len(ans) == 0:
@@ -319,18 +332,36 @@ def checkReleasesCommand(args):
             for m in ans:
                 print "   %s" % (m,)
 def getVersionCommand(args):
+    """Get current version number of alpha,beta or stable releases
+
+Format:
+
+    pkg.py getVersion alpha|beta|stable
+"""
     if len(args) >= 3:
         print getVersion(args[2])
     else:
         print getVersion()
 
 def getReleaseTagCommand(args):
+    """Internal"""
     print getReleaseTag(args[2])
 
 def getReleaseCommand(args):
+    """Get release of a package.
+
+Format:
+    pkg.py getRelease package-name
+"""
     print getRelease(args[2])
 
 def checkReleaseCommand(args):
+    """Check to see if any package source was changed since last release
+
+Format:
+
+    pkg.py checkRelease pkgname (i.e. camac)
+"""
     ans=checkRelease(args[2])
     if len(ans)==0:
         print "ok"
@@ -339,11 +370,21 @@ def checkReleaseCommand(args):
             print line
 
 def listCommand(args):
-    cs=CvsStatus()
+    """List modules in packages.
+
+Format:
+
+    pkg.py list package-name|none
+
+    Use none to list modules not yet included in any package. Use pkgadd command to add new/orphaned
+    modules to packages.
+"""
     if len(args) >= 3:
         item=args[2]
     else:
-        item=""
+        print listCommand.__doc__
+        sys.exit(1)
+    cs=CvsStatus()
     if item == "none":
         F=None
         IN_PACKAGE=False
@@ -411,6 +452,12 @@ def listCommand(args):
             print o
 
 def pkgaddCommand(args):
+    """Add module to package.
+
+Format:
+
+    pkg.py pkgadd package-name module-file
+"""
     pkg=args[2]
     path=args[3]
     try:
@@ -425,6 +472,12 @@ def pkgaddCommand(args):
         print "%s added to package %s" % (path,pkg)
 
 def pkgremoveCommand(args):
+    """Remove module from a package.
+
+Format:
+
+   pkg.py remove package-name module-file
+"""
     pkg=args[2]
     path=args[3]
     try:
@@ -432,7 +485,7 @@ def pkgremoveCommand(args):
     except:
         print "Package %s does not exist!" % (pkg,)
         sys.exit(1)
-    if not sys.platform.startswidth('win'):
+    if not sys.platform.startswith('win'):
        path=path.replace('$','\\$')
     p=subprocess.Popen('cvs -Q tag -d pkg_%s %s >%s 2>&1' % (pkg,path,os.devnull),shell=True)
     if p.wait() == 0:

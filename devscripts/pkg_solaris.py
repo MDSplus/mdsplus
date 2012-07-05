@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys,shutil
-from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages as getAllPackages, makeSrcTar, newRelease, getHardwarePlatform, getTopDir
+from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages as getAllPackages, newRelease, getHardwarePlatform, getTopDir
 from pkg_rpms import writeRpmInfo
 
 def getPackages():
@@ -28,6 +28,7 @@ def getPkgFile(arch,dist,pkgflavor,pkg,VERSION,updates):
     return "mdsplus%s-%s_%s-%d_%s.%s.%s.pkg" % (pkgflavor,pkg,VERSION,updates[pkg]['Release'],dist,os.uname()[4],arch)
 
 def makeSolarisPkgsCommand(args):
+    """Make solaris distribution packages."""
     DIST=getDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()

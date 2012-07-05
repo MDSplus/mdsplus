@@ -20,6 +20,7 @@ def shell(cwd,cmd,msg):
     sys.exit(stat)
 
 def makeMacosxPkgCommand(args):
+    "Make distribution package for macosx."""
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
     VERSION=getVersion()
