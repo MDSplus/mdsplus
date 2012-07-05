@@ -15,6 +15,8 @@ from pkg_utils import getPackagesCommand
 from pkg_utils import checkReleasesCommand
 from pkg_utils import newReleaseCommand
 from pkg_utils import makeSrcTarCommand
+from pkg_utils import promoteCommand
+from pkg_utils import newVersionCommand
 from pkg_rpms import makeRepoRpmsCommand
 from pkg_rpms import makeRpmsCommand
 from pkg_msi import makeMsiCommand
