@@ -518,7 +518,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
+	   LINKSHARED="$LDFLAGS -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
        X_CFLAGS="-I/usr/OpenMotif/include"
