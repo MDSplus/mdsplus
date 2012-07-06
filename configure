@@ -1473,7 +1473,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
- --enable-mdsip_connections     Use new improved mdsip connections
+ --enable-mdsip_connections     Default. Use --enable-mdsip_connection=no to override.
   --enable-nodebug        compile without debug info
   --enable-perf          enable MDSplus I/O statistics
  --disable-java	do not build java libraries and applications
@@ -5510,7 +5510,11 @@ _ACEOF
 
 	  MDSIP_CONNECTIONS="yes";
         else
-          MDSIP_CONNECTIONS="no";
+          MDSIP_CONNECTIONS="yes";
+          cat >>confdefs.h <<\_ACEOF
+#define MDSIP_CONNECTIONS 1
+_ACEOF
+
         fi
 fi
 
