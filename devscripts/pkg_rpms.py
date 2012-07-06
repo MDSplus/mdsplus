@@ -236,7 +236,7 @@ def makeRpmsCommand(args):
         except:
           dotar=False
         if dotar:
-          p=subprocess.Popen('tar zcf ../SOURCES/mdsplus%s-%s.tar.gz --exclude CVS mdsplus' % (WORKSPACE,rpmflavor,VERSION),shell=True,cwd="%s/source" % (WORKSPACE,))
+          p=subprocess.Popen('tar zcf ../SOURCES/mdsplus%s-%s.tar.gz --exclude CVS mdsplus' % (rpmflavor,VERSION),shell=True,cwd="%s/source" % (WORKSPACE,))
           pstat=p.wait()
           if pstat != 0:
             print "Error creating source tarball"
