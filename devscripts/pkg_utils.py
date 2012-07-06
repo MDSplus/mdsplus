@@ -3,6 +3,15 @@ import subprocess,sys,tarfile,os
 def getTopDir():
   return os.path.dirname(os.path.abspath(__file__+'/../'))
 
+def shell(cwd,cmd,msg):
+  print cmd
+  sys.stdout.flush()
+  p=subprocess.Popen(cmd,shell=True,cwd=cwd)
+  stat=p.wait()
+  if stat != 0:
+    print msg
+    sys.exit(stat)
+
 class CvsStatus(object):
     status=None
 

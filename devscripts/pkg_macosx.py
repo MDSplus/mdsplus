@@ -1,5 +1,5 @@
 import os,subprocess,datetime,sys
-from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFlavor, newRelease
+from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFlavor, newRelease, shell
 
 def writePkgInfo(outfile):
     f=open(outfile+'-info.html','w')
@@ -9,15 +9,6 @@ def writePkgInfo(outfile):
             '</head>\n<body>\n<p>For more info please follow <a href="%s">this link</a>.</p>\n' % (url,)+
             '</body>\n</html>\n')
     f.close()
-
-def shell(cwd,cmd,msg):
-  print cmd
-  sys.stdout.flush()
-  p=subprocess.Popen(cmd,shell=True,cwd=cwd)
-  stat=p.wait()
-  if stat != 0:
-    print msg
-    sys.exit(stat)
 
 def makeMacosxPkgCommand(args):
     "Make distribution package for macosx."""

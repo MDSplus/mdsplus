@@ -169,7 +169,6 @@ def makeRpmsCommand(args):
         p=subprocess.Popen('export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
                     'scp alchome.psfc.mit.edu:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~/;tar xfC ~/rpm-signing-keys.tgz ~;' +\
                     'rm -Rf %s/RPMS/*;' % (WORKSPACE,) +\
-                    'tar zcf %s/SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ../mdsplus;' % (WORKSPACE,rpmflavor,VERSION) +\
                     'rpmbuild --target i686-linux' +\
                     ' --buildroot %s/BUILDROOT/i686 -ba' % (WORKSPACE,)+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
@@ -231,6 +230,18 @@ def makeRpmsCommand(args):
         from distribution_tests import test_rpms as test
         test(WORKSPACE,FLAVOR)
         sys.stdout.flush()
+        try:
+	  os.stat("%s/source" % (WORKSPACE,))
+          dotar=True
+        except:
+          dotar=False
+        if dotar:
+          p=subprocess.Popen('tar zcf ../SOURCES/mdsplus%s-%s.tar.gz --exclude CVS mdsplus' % (WORKSPACE,rpmflavor,VERSION),shell=True,cwd="%s/source" % (WORKSPACE,))
+          pstat=p.wait()
+          if pstat != 0:
+            print "Error creating source tarball"
+            sys.exit(1)
+
         p=subprocess.Popen('rsync -av RPMS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
