@@ -59,7 +59,7 @@ def makeDebsCommand(args):
     FLAVOR=getFlavor()
     DISTPATH='/mnt/dist/'+FLAVOR+'/'
     need_to_build=len(args) > 3
-    for d in ['debian','SOURCES','DEBS','BUILDROOT','EGGS','REPO']:
+    for d in ['debian','DEBS','BUILDROOT','EGGS','REPO']:
         try:
             os.mkdir("%s%s%s" % (WORKSPACE,os.sep,d))
         except:
@@ -106,10 +106,8 @@ def makeDebsCommand(args):
             need_to_build=True
     status="ok"
     if need_to_build:
-        cmd='rm -Rf DEBS/* SOURCES/*;' +\
+        cmd='rm -Rf DEBS/* SOURCES;' +\
              'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
-             'tar zcfh SOURCES/mdsplus%s-%s.tar.gz --exclude CVS ' % (debflavor,VERSION) +\
-                 '--exclude SOURCES --exclude DEBS --exclude EGGS --exclude REPO ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              './configure --enable-mdsip_connections --enable-nodebug --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
              'if (! make ); then exit 1; fi;if (! make install ); then exit 1; fi;' +\
@@ -164,7 +162,7 @@ def makeDebsCommand(args):
             'find DEBS -name "*.deb" -exec reprepro -V --waitforlock 20 -b /mnt/dist/repo -C %s includedeb MDSplus {} \;' % (FLAVOR,),
             shell=True,cwd=WORKSPACE)
         pstat=p.wait()
-        p=subprocess.Popen('rsync -av DEBS SOURCES EGGS /mnt/dist/%s/' % (FLAVOR,),shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('rsync -av DEBS EGGS /mnt/dist/%s/' % (FLAVOR,),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
             print "Error copying files to destination"
