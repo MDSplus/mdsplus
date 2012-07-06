@@ -220,13 +220,6 @@ AC_ARG_ENABLE(gcc_profiling,
            GCCPROF=""
         fi)
 
-if test "$NOF77"
-then
-:;
-else
-AC_PROG_F77
-fi
-
 AC_ARG_WITH(idl,
 	[ --with-idl=idl-top-dir	specify location of idl such as /usr/local/itt/idl],
 	IDL_DIR="$withval",
