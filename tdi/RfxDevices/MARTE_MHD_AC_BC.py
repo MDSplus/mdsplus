@@ -3,7 +3,7 @@ import MARTE_GENERIC
 
 class MARTE_MHD_AC_BC(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe MHD_AC_BC'
-    parNames = ['InputMapping']
+    parNames = ['OutputMapping']
     parValues = [0]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
