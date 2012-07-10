@@ -278,7 +278,7 @@ static char *getMulticastAddressFormat() {
     strcat(ans,"%d");
   } else {
     //strcpy(ans,"255.0.0.%d");
-    strcpy(ans,"224.1.0.%d");
+    strcpy(ans,"225.0.0.%d");
   }
   return ans;
 }
