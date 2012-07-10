@@ -1215,9 +1215,11 @@ int StrConcat( struct descriptor *out, struct descriptor *first, ...)
     va_count(narg);
     va_start(incrmtr,first);
     if (out->class == CLASS_D)
-    {
-      for (i=1;i<narg && (status & 1);i++)
-        StrAppend(out,va_arg(incrmtr,struct descriptor *));
+    { struct descriptor *arg=va_arg(incrmtr,struct descriptor *);
+      for (i=1;i<narg && (status & 1) && arg;i++) {
+        StrAppend(out,arg);
+        arg=va_arg(incrmtr,struct descriptor *);
+      }
     }
     else if (out->class == CLASS_S)
     {
@@ -1232,7 +1234,11 @@ int StrConcat( struct descriptor *out, struct descriptor *first, ...)
            temp.pointer += next->length)
       {
         next = va_arg(incrmtr,struct descriptor *);
-        StrCopyDx(&temp,next);
+        if (next) {
+          StrCopyDx(&temp,next);
+        } else {
+          temp.length=0;
+        }
       }
     }
     else

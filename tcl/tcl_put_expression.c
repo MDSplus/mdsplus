@@ -51,8 +51,10 @@ int TclPutExpression()
                    }
                 else if (!val_part.dscW_length)
                     break;
-                if (use_lf)
-                    StrConcat(&dsc_ascValue,&dsc_ascValue,&val_part,"\n",0);
+                if (use_lf) {
+                    static DESCRIPTOR(lf,"\n");
+                    StrConcat(&dsc_ascValue,&dsc_ascValue,&val_part,&lf,0);
+                }
                 else
                     StrAppend(&dsc_ascValue,&val_part);
                }
