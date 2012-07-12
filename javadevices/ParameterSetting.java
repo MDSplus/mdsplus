@@ -2142,11 +2142,33 @@ public class ParameterSetting
                 checkBoxes[i].setSelected(false);
                 checkBoxes[i].setEnabled(false);
             }
+
+
+            Enumeration mapNames = mapSetupHash.keys();
+            System.out.println("\n\n\nMAP CONTENT");
+             while (mapNames.hasMoreElements())
+                System.out.println((String)mapNames.nextElement());
+
+
+
+
+
+
+
+
+
             Enumeration pathNames = setupHash.keys();
             while (pathNames.hasMoreElements())
             {
-                Integer currInt = (Integer) mapSetupHash.get(pathNames.
-                    nextElement());
+                String currPathName = (String)pathNames.nextElement();
+ System.out.println("Setup Hash: " + currPathName);
+
+
+//                Integer currInt = (Integer) mapSetupHash.get(pathNames.
+//                    nextElement());
+                Integer currInt = (Integer) mapSetupHash.get(currPathName);
+ if(currInt == null)
+     System.out.println("MISSING IDX!!");
                 if (currInt != null)
                 {
                     int idx = currInt.intValue();

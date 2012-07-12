@@ -95,7 +95,7 @@ public class MARTE_DEQUSetup extends DeviceSetup {
 
         jPanel2.add(jPanel7);
 
-        deviceChoice1.setChoiceItems(new String[] {"DequControl"});
+        deviceChoice1.setChoiceItems(new String[] {"EquControl"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Control: ");
         deviceChoice1.setOffsetNid(12);

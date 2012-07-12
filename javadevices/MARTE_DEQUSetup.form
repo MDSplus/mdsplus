@@ -108,7 +108,7 @@
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                   <StringArray count="1">
-                    <StringItem index="0" value="DequControl"/>
+                    <StringItem index="0" value="EquControl"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
