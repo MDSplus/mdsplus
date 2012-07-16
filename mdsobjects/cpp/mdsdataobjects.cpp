@@ -889,7 +889,7 @@ double *Array::getDoubleArray(int *numElements)
 
 char **Array::getStringArray(int *numElements)
 {
-	int size = arsize/length;
+	int size = (length > 0)? arsize/length : 0;
 	char **retArr = new char*[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
