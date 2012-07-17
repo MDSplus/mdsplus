@@ -29,15 +29,10 @@ dnl Check out the compiler
 AC_PROG_CC
 AC_PROG_CXX
 
+MDSIP_CONNECTIONS="yes";
 AC_ARG_ENABLE(mdsip_connections,
-        [ --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.],
-        if test "$enableval" = yes; then
-          AC_DEFINE(MDSIP_CONNECTIONS)
-	  MDSIP_CONNECTIONS="yes";
-        else 
-          MDSIP_CONNECTIONS="yes";
-          AC_DEFINE(MDSIP_CONNECTIONS)
-        fi)
+        [ --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.],MDSIP_CONNECTIONS="$enableval")
+AC_DEFINE(MDSIP_CONNECTIONS)
 
 AC_ARG_ENABLE(nodebug,
 	[  --enable-nodebug        compile without debug info],

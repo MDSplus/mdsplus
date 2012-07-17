@@ -5501,22 +5501,15 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+MDSIP_CONNECTIONS="yes";
 # Check whether --enable-mdsip_connections was given.
 if test "${enable_mdsip_connections+set}" = set; then
-  enableval=$enable_mdsip_connections; if test "$enableval" = yes; then
-          cat >>confdefs.h <<\_ACEOF
-#define MDSIP_CONNECTIONS 1
-_ACEOF
-
-	  MDSIP_CONNECTIONS="yes";
-        else
-          MDSIP_CONNECTIONS="yes";
-          cat >>confdefs.h <<\_ACEOF
-#define MDSIP_CONNECTIONS 1
-_ACEOF
-
-        fi
+  enableval=$enable_mdsip_connections; MDSIP_CONNECTIONS="$enableval"
 fi
+
+cat >>confdefs.h <<\_ACEOF
+#define MDSIP_CONNECTIONS 1
+_ACEOF
 
 
 # Check whether --enable-nodebug was given.
