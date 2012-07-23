@@ -3,26 +3,26 @@ from _mdsshr import _load_library
 from _descriptor import descriptor_xd,MdsGetMsg,descriptor,descriptor_a
 __TreeShr=_load_library('TreeShr')
 __TreeOpen=__TreeShr._TreeOpen
-__TreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int,_C.c_int]
+__TreeOpen.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32,_C.c_int32]
 __TreeOpenNew=__TreeShr._TreeOpenNew
-__TreeOpenNew.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeOpenNew.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32]
 __TreeOpenEdit=__TreeShr._TreeOpenEdit
-__TreeOpenEdit.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeOpenEdit.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32]
 __TreeQuitTree=__TreeShr._TreeQuitTree
-__TreeQuitTree.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeQuitTree.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32]
 __TreeWriteTree=__TreeShr._TreeWriteTree
-__TreeWriteTree.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeWriteTree.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32]
 __TreeClose=__TreeShr._TreeClose
-__TreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int]
+__TreeClose.argtypes=[_C.POINTER(_C.c_void_p),_C.c_char_p,_C.c_int32]
 __TreeFindNode=__TreeShr._TreeFindNode
-__TreeFindNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int)]
+__TreeFindNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int32)]
 TreeFreeDbid=__TreeShr.TreeFreeDbid
 TreeFreeDbid.argtypes=[_C.c_void_p]
 __TreeGetPath=__TreeShr._TreeGetPath
-__TreeGetPath.argtypes=[_C.c_void_p,_C.c_int]
+__TreeGetPath.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeGetPath.restype=_C.c_void_p
 __TreeFindTagWild=__TreeShr._TreeFindTagWild
-__TreeFindTagWild.argtpes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int),_C.POINTER(_C.c_void_p)]
+__TreeFindTagWild.argtpes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int32),_C.POINTER(_C.c_void_p)]
 __TreeFindTagWild.restype=_C.c_void_p
 __TreeGetDbi=__TreeShr._TreeGetDbi
 __TreeGetDbi.argtypes=[_C.c_void_p,_C.c_void_p]
@@ -36,80 +36,80 @@ __TreeSwitchDbid=__TreeShr.TreeSwitchDbid
 __TreeSwitchDbid.argtypes=[_C.c_void_p]
 __TreeSwitchDbid.restype=_C.c_void_p
 TreeCreatePulseFile=__TreeShr._TreeCreatePulseFile
-TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.c_void_p]
+TreeCreatePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.c_void_p]
 __TreeDeletePulseFile=__TreeShr._TreeDeletePulseFile
-__TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int,_C.c_int]
+__TreeDeletePulseFile.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32]
 __TreeDoMethod=__TreeShr._TreeDoMethod
-__TreeDoMethod.argtypes=[_C.c_void_p,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int]
+__TreeDoMethod.argtypes=[_C.c_void_p,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int32]
 __TreeGetRecord=__TreeShr._TreeGetRecord
-__TreeGetRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_xd)]
+__TreeGetRecord.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor_xd)]
 __TreePutRecord=__TreeShr._TreePutRecord
-__TreePutRecord.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.c_int]
+__TreePutRecord.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.c_int32]
 __TreeSetTimeContext=__TreeShr.TreeSetTimeContext
 __TreeSetTimeContext.argtypes=[_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor)]
 __TreeTurnOn=__TreeShr._TreeTurnOn
-__TreeTurnOn.argtypes=[_C.c_void_p,_C.c_int]
+__TreeTurnOn.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeTurnOff=__TreeShr._TreeTurnOff
-__TreeTurnOff.argtypes=[_C.c_void_p,_C.c_int]
+__TreeTurnOff.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeFindNodeTags=__TreeShr._TreeFindNodeTags
-__TreeFindNodeTags.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_void_p)]
+__TreeFindNodeTags.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(_C.c_void_p)]
 __TreeFindNodeTags.restype=_C.c_void_p
 __TreeAddNode=__TreeShr._TreeAddNode
-__TreeAddNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int),_C.c_int]
+__TreeAddNode.argtypes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int32),_C.c_int32]
 __TreeSetSubtree=__TreeShr._TreeSetSubtree
-__TreeSetSubtree.argtypes=[_C.c_void_p,_C.c_int]
+__TreeSetSubtree.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeSetNoSubtree=__TreeShr._TreeSetNoSubtree
-__TreeSetNoSubtree.argtypes=[_C.c_void_p,_C.c_int]
+__TreeSetNoSubtree.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeAddTag=__TreeShr._TreeAddTag
-__TreeAddTag.argtypes=[_C.c_void_p,_C.c_int,_C.c_char_p]
+__TreeAddTag.argtypes=[_C.c_void_p,_C.c_int32,_C.c_char_p]
 __TreeRemoveTag=__TreeShr._TreeRemoveTag
 __TreeRemoveTag.argtypes=[_C.c_void_p,_C.c_char_p]
 __TreeRenameNode=__TreeShr._TreeRenameNode
-__TreeRenameNode.argtypes=[_C.c_void_p,_C.c_int,_C.c_char_p]
+__TreeRenameNode.argtypes=[_C.c_void_p,_C.c_int32,_C.c_char_p]
 __TreeAddConglom=__TreeShr._TreeAddConglom
-__TreeAddConglom.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_char_p,_C.POINTER(_C.c_int)]
+__TreeAddConglom.argtypes=[_C.c_void_p,_C.c_char_p,_C.c_char_p,_C.POINTER(_C.c_int32)]
 __TreeDeleteNodeInitialize=__TreeShr._TreeDeleteNodeInitialize
-__TreeDeleteNodeInitialize.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_int),_C.c_int]
+__TreeDeleteNodeInitialize.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(_C.c_int32),_C.c_int32]
 __TreeDeleteNodeExecute=__TreeShr._TreeDeleteNodeExecute
 __TreeDeleteNodeExecute.argtypes=[_C.c_void_p]
 TreeGetCurrentShotId=__TreeShr.TreeGetCurrentShotId
 TreeGetCurrentShotId.argtypes=[_C.c_char_p]
 TreeSetCurrentShotId=__TreeShr.TreeSetCurrentShotId
-TreeSetCurrentShotId.argtypes=[_C.c_char_p,_C.c_int]
+TreeSetCurrentShotId.argtypes=[_C.c_char_p,_C.c_int32]
 __TreeSetViewDate=__TreeShr.TreeSetViewDate
 __TreeSetViewDate.argtypes=[_C.POINTER(_C.c_ulonglong)]
 __TreeGetViewDate=__TreeShr.TreeGetViewDate
 __TreeGetViewDate.argtypes=[_C.POINTER(_C.c_ulonglong)]
 __TreeBeginSegment=__TreeShr._TreeBeginSegment
-__TreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int]
+__TreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int32]
 __TreeMakeSegment=__TreeShr._TreeMakeSegment
-__TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
-                            _C.POINTER(descriptor_a),_C.c_int,_C.c_int]
+__TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
+                            _C.POINTER(descriptor_a),_C.c_int32,_C.c_int32]
 __TreeBeginTimestampedSegment=__TreeShr._TreeBeginTimestampedSegment
-__TreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor_a),_C.c_int]
+__TreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor_a),_C.c_int32]
 __TreeMakeTimestampedSegment=__TreeShr._TreeMakeTimestampedSegment
-__TreeMakeTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_void_p,_C.POINTER(descriptor_a),_C.c_int,_C.c_int]
+__TreeMakeTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.c_void_p,_C.POINTER(descriptor_a),_C.c_int32,_C.c_int32]
 __TreeUpdateSegment=__TreeShr._TreeUpdateSegment
-__TreeUpdateSegment.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int]
+__TreeUpdateSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.c_int32]
 __TreePutSegment=__TreeShr._TreePutSegment
-__TreePutSegment.argtpes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_a)]
+__TreePutSegment.argtpes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.POINTER(descriptor_a)]
 __TreePutTimestampedSegment=__TreeShr._TreePutTimestampedSegment
-__TreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_void_p,_C.POINTER(descriptor_a)]
+__TreePutTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.c_void_p,_C.POINTER(descriptor_a)]
 __TreePutRow=__TreeShr._TreePutRow
-__TreePutRow.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(_C.c_int64),_C.POINTER(descriptor_a)]
+__TreePutRow.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.POINTER(_C.c_int64),_C.POINTER(descriptor_a)]
 __TreeGetNumSegments=__TreeShr._TreeGetNumSegments
-__TreeGetNumSegments.argtypes=[_C.c_void_p,_C.c_int,_C.POINTER(_C.c_int)]
+__TreeGetNumSegments.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(_C.c_int32)]
 __TreeGetSegment=__TreeShr._TreeGetSegment
-__TreeGetSegment.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
+__TreeGetSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
 __TreeGetSegmentLimits=__TreeShr._TreeGetSegmentLimits
-__TreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int,_C.c_int,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
+__TreeGetSegmentLimits.argtypes=[_C.c_void_p,_C.c_int32,_C.c_int32,_C.POINTER(descriptor_xd),_C.POINTER(descriptor_xd)]
 __TreeStartConglomerate=__TreeShr._TreeStartConglomerate
-__TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int]
+__TreeStartConglomerate.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeEndConglomerate=__TreeShr._TreeEndConglomerate
 __TreeEndConglomerate.argtypes=[_C.c_void_p]
 try:
     _TreeUsePrivateCtx=__TreeShr.TreeUsePrivateCtx
-    _TreeUsePrivateCtx.argtypes=[_C.c_int]
+    _TreeUsePrivateCtx.argtypes=[_C.c_int32]
     def TreeUsePrivateCtx(onoff):
         return _TreeUsePrivateCtx(onoff)
     _TreeUsingPrivateCtx=__TreeShr.TreeUsingPrivateCtx
@@ -126,7 +126,7 @@ class TreeNoDataException(TreeException):
     pass
 
 def TreeFindNode(ctx,path):
-    n=_C.c_int()
+    n=_C.c_int32()
     status=__TreeFindNode(ctx,path,n)
     if (status & 1):
         return n.value
@@ -135,7 +135,7 @@ def TreeFindNode(ctx,path):
 
 def TreeGetDefault(ctx):
     """Get default node"""
-    ans=_C.c_int(0)
+    ans=_C.c_int32(0)
     status = __TreeShr._TreeGetDefaultNid(ctx,_C.pointer(ans))
     if (status & 1):
         return ans.value
@@ -144,7 +144,7 @@ def TreeGetDefault(ctx):
     
 def TreeSetDefault(ctx,n):
     """Set default node"""
-    status = __TreeShr._TreeSetDefaultNid(ctx,_C.c_int(n))
+    status = __TreeShr._TreeSetDefaultNid(ctx,_C.c_int32(n))
     if (status & 1):
         return
     else:
@@ -153,7 +153,7 @@ def TreeSetDefault(ctx,n):
 def TreeSetUsage(ctx,n,usage):
     """Set node usage"""
     try:
-        status = __TreeShr._TreeSetUsage(ctx,_C.c_int(n),_C.c_byte(usage))
+        status = __TreeShr._TreeSetUsage(ctx,_C.c_int32(n),_C.c_byte(usage))
     except:
         raise TreeException,"Feature not present in current MDSplus installation. Upgrade to newer version of MDSplus."
     if (status & 1):
@@ -188,7 +188,7 @@ def TreeFindNodeTags(n):
 
 def TreeFindTagWild(tree,wild):
     from mdsarray import makeArray
-    nid=_C.c_int(0)
+    nid=_C.c_int32(0)
     ctx=_C.c_void_p(0)
     tags=list()
     done=False
@@ -369,7 +369,7 @@ def TreeWriteTree(tree,name,shot):
 
 def TreeAddNode(tree,name,usage):
     from treenode import usage_table
-    nid=_C.c_int(0)
+    nid=_C.c_int32(0)
     try:
         usagenum=usage_table[usage.upper()]
         if usagenum==-1:
@@ -424,14 +424,14 @@ def TreeRemoveTag(tree,tag):
         tree.unlock()
 
 def TreeAddConglom(tree,name,devname):
-    nid=_C.c_int(0)
+    nid=_C.c_int32(0)
     status = __TreeAddConglom(tree.ctx,name,devname,nid)
     if not (status & 1):
         raise TreeException,MdsGetMsg(status)
     return nid.value
     
 def TreeDeleteNode(tree,nid,reset):
-    count=_C.c_int(0)
+    count=_C.c_int32(0)
     reset_flag=0
     if reset:
       reset_flag=1
@@ -497,7 +497,7 @@ def TreeGetNumSegments(n):
     """Get number of segments in a node."""
     try:
         n.tree.lock()
-        num=_C.c_int(0)
+        num=_C.c_int32(0)
         status=__TreeGetNumSegments(n.tree.ctx,n.nid,_C.pointer(num))
     finally:
         n.tree.unlock()
@@ -622,7 +622,7 @@ def TreeUpdateSegment(n,start,end,dimension,idx):
     return None
     
 class DBI_ITM_INT(_C.Structure):
-    _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.POINTER(_C.c_int)),
+    _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.POINTER(_C.c_int32)),
               ("retlen",_C.c_void_p),
               ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
               ("retlen2",_C.c_void_p),]
@@ -639,7 +639,7 @@ class DBI_ITM_INT(_C.Structure):
 
 class DBI_ITM_CHAR(_C.Structure):
     _fields_=[("buffer_length",_C.c_ushort),("code",_C.c_ushort),("pointer",_C.c_char_p),
-              ("retlen",_C.POINTER(_C.c_int)),
+              ("retlen",_C.POINTER(_C.c_int32)),
               ("buffer_length2",_C.c_ushort),("code2",_C.c_ushort),("pointer2",_C.c_void_p),
               ("retlen2",_C.c_void_p),]
     
@@ -664,10 +664,10 @@ def TreeGetDbi(tree,itemname):
         raise KeyError,'Item name must be one of %s' % (str(itemlist.keys()),)
     if item[1]==str:
         ans=_C.c_char_p('x'.rjust(item[2]))
-        retlen=_C.c_int(0)
+        retlen=_C.c_int32(0)
         itmlst=DBI_ITM_CHAR(item[0],item[2],ans,retlen)
     else:
-        ans=_C.c_int(0)
+        ans=_C.c_int32(0)
         itmlst=DBI_ITM_INT(item[0],ans)
     try:
         tree.lock()
@@ -686,11 +686,11 @@ def TreeSetDbi(tree,itemname,value):
     except KeyError:
         raise KeyError,'Item name must be one of %s' % (str(itemlist.keys()),)
     if item[1]==str:
-        retlen=_C.c_int(0)
+        retlen=_C.c_int32(0)
         itmlst=DBI_ITM_CHAR(item[0],len(str(value)),_C.c_char_p(str(value)),retlen)
     else:
-        ans=_C.c_int(0)
-        itmlst=DBI_ITM_INT(item[0],_C.c_int(int(value)))
+        ans=_C.c_int32(0)
+        itmlst=DBI_ITM_INT(item[0],_C.c_int32(int(value)))
     try:
         tree.lock()
         status=__TreeSetDbi(tree.ctx,_C.cast(

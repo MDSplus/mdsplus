@@ -69,7 +69,7 @@ class descriptor(_C.Structure):
         if isinstance(value,int):
             self.length=4
             self.dtype=DTYPE_L
-            self.pointer=_C.cast(_C.pointer(_C.c_int(value)),_C.POINTER(descriptor))
+            self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),_C.POINTER(descriptor))
             self.addToCache(value)
             return
         if isinstance(value,long):
@@ -221,7 +221,7 @@ class descriptor(_C.Structure):
             value.restoreContext()
             self.length=4
             self.dtype=DTYPE_NID
-            self.pointer=_C.cast(_C.pointer(_C.c_int(value.nid)),_C.POINTER(descriptor))
+            self.pointer=_C.cast(_C.pointer(_C.c_int32(value.nid)),_C.POINTER(descriptor))
             self.addToCache(value)
             return
 
@@ -283,7 +283,7 @@ class descriptor(_C.Structure):
         if (self.length == 4):
             from _tdishr import CvtConvertFloat
             if (self.dtype == DTYPE_F):
-                CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int,_C.POINTER(_C.c_float),_C.c_int]
+                CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                 val=_C.c_float(0)
                 CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),DTYPE_F,_C.pointer(val),DTYPE_FS)
                 ptrstr=", value="+str(val.value)
@@ -330,22 +330,22 @@ class descriptor(_C.Structure):
             except TypeError:
                 from _tdishr import CvtConvertFloat
                 if (self.dtype == DTYPE_F):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int,_C.POINTER(_C.c_float),_C.c_int]
+                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
                     CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),DTYPE_F,_C.pointer(val),DTYPE_NATIVE_FLOAT)
                     return makeScalar(_N.float32(val.value))
                 if (self.dtype == DTYPE_G):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int,_C.POINTER(_C.c_float),_C.c_int]
+                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
                     CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),DTYPE_G,_C.pointer(val),DTYPE_NATIVE_FLOAT)
                     return makeScalar(_N.float32(val.value))
                 if (self.dtype == DTYPE_D):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_double),_C.c_int,_C.POINTER(_C.c_double),_C.c_int]
+                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_double),_C.c_int32,_C.POINTER(_C.c_double),_C.c_int32]
                     val=_C.c_double(0)
                     CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_double)),DTYPE_D,_C.pointer(val),DTYPE_NATIVE_DOUBLE)
                     return makeScalar(_N.float64(val.value))
                 if (self.dtype == DTYPE_FC):
-                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int,_C.POINTER(_C.c_float),_C.c_int]
+                    CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
                     CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),DTYPE_F,_C.pointer(val),DTYPE_NATIVE_FLOAT)
                     raise "DTYPE_FC is not yet supported"
@@ -354,7 +354,7 @@ class descriptor(_C.Structure):
                     raise "DTYPE_DC is not yet supported"
                     return None
                 if (self.dtype == DTYPE_NID):
-                    return TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_long)).contents.value,descriptor.tree)
+                    return TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == DTYPE_PATH):
                     return TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == DTYPE_IDENT):
@@ -548,10 +548,10 @@ class descriptor_string(_C.Structure):
 class descriptor_apd(_C.Structure):
     if os.name=='nt':
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),
-                  ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int * 24)]
+                  ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),("fill1",_C.c_ushort),
-                  ("aflags",_C.c_ubyte),("fill2",_C.c_ubyte * 3),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int * 24)]
+                  ("aflags",_C.c_ubyte),("fill2",_C.c_ubyte * 3),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int32 * 24)]
 
     def __init__(self,ptr,num):
         self.dclass=CLASS_APD
@@ -604,10 +604,10 @@ class descriptor_apd(_C.Structure):
 class descriptor_a(_C.Structure):
     if os.name=='nt':
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.c_void_p),("scale",_C.c_byte),("digits",_C.c_ubyte),
-                  ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int * 24)]
+                  ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.c_void_p),("scale",_C.c_byte),("digits",_C.c_ubyte),("fill1",_C.c_ushort),
-                  ("aflags",_C.c_ubyte),("fill2",_C.c_ubyte * 3),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int * 24)]
+                  ("aflags",_C.c_ubyte),("fill2",_C.c_ubyte * 3),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int32 * 24)]
 
     def __init__(self,*value):
         if len(value) == 1:

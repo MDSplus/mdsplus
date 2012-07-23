@@ -22,16 +22,16 @@ def _load_library(name):
 
 MdsShr=_load_library('MdsShr')
 __MdsGetMsg=MdsShr.MdsGetMsg
-__MdsGetMsg.argtypes=[_C.c_int]
+__MdsGetMsg.argtypes=[_C.c_int32]
 __MdsGetMsg.restype=_C.c_char_p
 __LibConvertDateString=MdsShr.LibConvertDateString
 __LibConvertDateString.argtypes=[_C.c_char_p,_C.POINTER(_C.c_ulonglong)]
 __MDSWfeventTimed=MdsShr.MDSWfeventTimed
-__MDSWfeventTimed.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p,_C.POINTER(_C.c_int),_C.c_int]
+__MDSWfeventTimed.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p,_C.POINTER(_C.c_int32),_C.c_int32]
 __MDSEventCan=MdsShr.MDSEventCan
-__MDSEventCan.argtypes=[_C.c_int,]
+__MDSEventCan.argtypes=[_C.c_int32,]
 __MDSEvent=MdsShr.MDSEvent
-__MDSEvent.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p]
+__MDSEvent.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p]
 
 class MdsException(Exception):
     pass
@@ -58,7 +58,7 @@ def MDSWfeventTimed(event,timeout):
     import numpy as _N
     from mdsarray import makeArray,Uint8Array
     buffer=_N.uint8(0).repeat(repeats=4096)
-    numbytes=_C.c_int(0)
+    numbytes=_C.c_int32(0)
     status=__MDSWfeventTimed(event,len(buffer),buffer.ctypes.data,numbytes,timeout)
     if (status & 1) == 1:
 	if numbytes.value == 0:
@@ -123,9 +123,9 @@ def DateToQuad(date):
 
 try:
     __MDSQueueEvent=MdsShr.MDSQueueEvent
-    __MDSQueueEvent.argtypes=[_C.c_char_p,_C.POINTER(_C.c_int)]
+    __MDSQueueEvent.argtypes=[_C.c_char_p,_C.POINTER(_C.c_int32)]
     __MDSGetEventQueue=MdsShr.MDSGetEventQueue
-    __MDSGetEventQueue.argtypes=[_C.c_int,_C.c_int,_C.POINTER(_C.c_int),_C.POINTER(_C.c_void_p)]
+    __MDSGetEventQueue.argtypes=[_C.c_int32,_C.c_int32,_C.POINTER(_C.c_int32),_C.POINTER(_C.c_void_p)]
     def MDSQueueEvent(event):
         """Establish an event queue for an MDSplus event. Event occurrences will be monitored and accumulate
         until calls to MDSGetEventQueue retrieves the events occurences.
@@ -134,7 +134,7 @@ try:
         @return: eventid used in MDSGetEventQueue, and MDSEventCan
         @rtype: int
         """
-        eventid=_C.c_int(0)
+        eventid=_C.c_int32(0)
         status = __MDSQueueEvent(event,eventid)
         if status&1 == 1:
             return eventid.value
@@ -155,7 +155,7 @@ try:
         """
         from mdsarray import makeArray
         import numpy as _N
-        dlen=_C.c_int(0)
+        dlen=_C.c_int32(0)
         bptr=_C.c_void_p(0)
         status=__MDSGetEventQueue(eventid,timeout,dlen,bptr)
         if status==1:
