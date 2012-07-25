@@ -118,7 +118,7 @@ class ACQ216(acq.ACQ):
 #    force the routing for this clock output
 #    regardless of the settings for this line 
 #    above
-		    setRoutecmd = 'set.route d%1.1d in fpga out pxi' % (clock_out_num,)
+		    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
                     if self.debugging():
                         print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
                     fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
