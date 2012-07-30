@@ -89,7 +89,7 @@ public class LoadPulse
             }
             catch (Exception exc)
             {
-                System.err.println(exc);
+                System.out.println(exc);
             }
         }
     }
@@ -128,7 +128,7 @@ public class LoadPulse
                 }
                 catch (Exception exc)
                 {
-                    System.err.println("Error writing " + currNode.getPath() +
+                    System.out.println("Error writing " + currNode.getPath() +
                                        " in model: " + exc);
                 }
             }
@@ -136,7 +136,7 @@ public class LoadPulse
         }
         catch (Exception exc)
         {
-            System.err.println("FATAL ERROR: " + exc);
+            System.out.println("FATAL ERROR: " + exc);
         }
     }
 
@@ -149,36 +149,47 @@ public class LoadPulse
             confFileName));
         String basePathLine;
         String currPath = "";
+        String outPath = null;
         NidData defNid = tree.getDefault(0);
         while ( (basePathLine = br.readLine()) != null)
         {
             NidData currNid;
+            NidData outNid;
             if(basePathLine.trim().equals("")) continue;
             System.out.println(basePathLine);
+            String basePath = "";
             try
             {
                 
                 StringTokenizer st = new StringTokenizer(basePathLine, " ");
-                String basePath = st.nextToken();
-                currNid = tree.resolve(new PathData(basePath), 0);
-                if(st.hasMoreTokens() && st.nextToken().toUpperCase().equals("STATE")) //If only state has to retrieved
+                basePath = st.nextToken();
+                currNid = outNid = tree.resolve(new PathData(basePath), 0);
+                outPath = null;
+                if(st.hasMoreTokens())
                 {
-                    NodeInfo currInfo = tree.getInfo(currNid, 0);
-                    currPath = currInfo.getFullPath();
-                    System.out.println(currPath);
-                    try
+                    String next = st.nextToken();
+                    if(next.toUpperCase().equals("STATE")) //If only state has to retrieved
                     {
-                        nodesV.addElement(new NodeDescriptor(currPath,
-                                null, currInfo.isOn(),
-                                currInfo.isParentOn(),
-                                currInfo.isNoWriteModel() ||
-                                currInfo.isWriteOnce()));
+                        NodeInfo currInfo = tree.getInfo(currNid, 0);
+                        currPath = currInfo.getFullPath();
+                         try
+                        {
+                            nodesV.addElement(new NodeDescriptor(currPath,
+                                    null, currInfo.isOn(),
+                                    currInfo.isParentOn(),
+                                    currInfo.isNoWriteModel() ||
+                                    currInfo.isWriteOnce()));
+                        }
+                        catch (Exception exc)
+                        {
+                            System.out.println("Error reading state of " + currPath + ": " + exc);
+                        }
+                        continue;
                     }
-                    catch (Exception exc)
+                    else  //An alternate out pathname is provided in next 
                     {
-                        System.err.println("Error reading state of " + currPath + ": " + exc);
+                        outPath = next.toUpperCase();
                     }
-                    continue;
                 }
                 tree.setDefault(currNid, 0);
                 NidData[] nidsNumeric = tree.getWild(NodeInfo.USAGE_NUMERIC, 0);
@@ -226,10 +237,20 @@ public class LoadPulse
 
                 for (int i = 0; i < nids.length; i++)
                 {
-                    System.out.println(nids[i].getInt());
                     NodeInfo currInfo = tree.getInfo(nids[i], 0);
                     currPath = currInfo.getFullPath();
-                    System.out.println(currPath);
+                    if(i == (nids.length - 1))//If IT IS the node described in LoadPulse.congf (and not any descendant)
+                    {
+                        if(outPath != null)
+                        {
+                            System.out.println(currPath + " --> "+outPath);
+                            currPath = outPath;
+                        }
+                        else
+                            System.out.println(currPath);
+                    }
+                    else
+                       System.out.println(currPath);
                     try
                     {
                         Data currData;
@@ -238,6 +259,7 @@ public class LoadPulse
                         }catch(Exception exc) {currData = null;}
                         if (currData != null)
                         {
+
                             String currDecompiled = currData.toString();
                             nodesV.addElement(new NodeDescriptor(currPath,
                                 currDecompiled, currInfo.isOn(),
@@ -261,7 +283,7 @@ public class LoadPulse
             }
             catch (Exception exc)
             {
-                System.err.println("Error reading " + currPath + ": " + exc);
+                System.out.println("Error reading " + basePath + ": " + exc);
             }
         }
         numPMUnits = countPMUnits();
@@ -270,9 +292,40 @@ public class LoadPulse
         evaluateRTransfer();
         tree.close(0);
         br.close();
-        return nodesV;
+     return nodesV;
     }
 
+
+
+    //Load setup and expands path names into abs path names with reference to pathRefShot
+    public void getSetupWithAbsPath(String experiment, int shot, int pathRefShot, Hashtable setupHash, Hashtable setupOnHash) throws Exception
+    {
+        Hashtable currSetupHash = new Hashtable();
+        getSetup(experiment, shot, currSetupHash, setupOnHash);
+        try {
+            Database tree = new Database(experiment, pathRefShot);
+            tree.open();
+            Enumeration pathNamesEn = currSetupHash.keys();
+            while(pathNamesEn.hasMoreElements())
+            {
+                String currPath = (String)pathNamesEn.nextElement();
+                try {
+                    NidData currNid = tree.resolve(new PathData(currPath), 0);
+                    NodeInfo currInfo = tree.getInfo(currNid, 0);
+                    String currAbsPath = currInfo.getFullPath();
+                    setupHash.put(currAbsPath, currSetupHash.get(currPath));
+                }catch(Exception exc)
+                {
+                    System.out.println("LoadSetup: Cannot expand path name " + currPath + " : "+exc);
+                }
+            }
+            tree.close(0);
+
+        }catch(Exception exc)
+        {
+            System.out.println("Cannot expand path names in LoadSetup: "+exc);
+        }
+    }
     void getSetup(String experiment, int shot, Hashtable setupHash, Hashtable setupOnHash) throws Exception
     {
         Vector nodesV = getNodes(experiment, shot);
@@ -290,7 +343,7 @@ public class LoadPulse
                 }
                 catch (Exception exc)
                 {
-                    System.err.println(
+                    System.out.println(
                         "Internal error in LoadPulse.getSetup(): " + exc);
                 }
             }
@@ -303,7 +356,7 @@ public class LoadPulse
             }
             catch (Exception exc)
             {
-                System.err.println(
+                System.out.println(
                         "Internal error in LoadPulse.getSetup(): " + exc);
             }
         }
@@ -322,7 +375,7 @@ public class LoadPulse
          }
          catch (Exception exc)
          {
-             System.err.println("Error getting num enabled PM: " + exc);
+             System.out.println("Error getting num enabled PM: " + exc);
              return 0;
          }
      }
@@ -338,7 +391,7 @@ public class LoadPulse
          }
          catch (Exception exc)
          {
-             System.err.println("Error getting PC connection: " + exc);
+             System.out.println("Error getting PC connection: " + exc);
          }
      }
 
@@ -353,7 +406,7 @@ public class LoadPulse
          }
          catch (Exception exc)
          {
-             System.err.println("Error getting PV connection: " + exc);
+             System.out.println("Error getting PV connection: " + exc);
          }
      }
 
@@ -368,7 +421,7 @@ public class LoadPulse
          }
          catch (Exception exc)
          {
-             System.err.println("Error getting R transfer: " + exc);
+             System.out.println("Error getting R transfer: " + exc);
          }
      }
 
