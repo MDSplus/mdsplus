@@ -635,7 +635,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Phase: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1543"/>
+                            <Property name="offsetNid" type="int" value="1537"/>
                           </Properties>
                         </Component>
                         <Component class="DeviceField" name="deviceField35">
@@ -643,7 +643,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Start time: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1549"/>
+                            <Property name="offsetNid" type="int" value="1543"/>
                           </Properties>
                         </Component>
                         <Component class="DeviceField" name="deviceField36">
@@ -651,7 +651,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Rise time: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1555"/>
+                            <Property name="offsetNid" type="int" value="1549"/>
                           </Properties>
                         </Component>
                         <Component class="DeviceField" name="deviceField37">

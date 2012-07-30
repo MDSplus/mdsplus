@@ -81,7 +81,7 @@ public class ParameterSetting
     JTabbedPane tabbedP;
 
     NidData nids[] = new NidData[NUM_DEVICES];
-    NidData mhdBcNid;
+    //NidData mhdBcNid;
     DeviceSetup devices[] = new DeviceSetup[NUM_DEVICES];
     JMenuItem applyToModelItem;
     JMenuItem revertModelItem;
@@ -1007,7 +1007,8 @@ public class ParameterSetting
                 if (device == null)
                 //if (devices[11] == null)
                 {
-                    devices[11] = device = new RFXMHDSetup();
+//                    devices[11] = device = new RFXMHDSetup();
+                    devices[11] = device = new MARTE_MHD_CTRLSetup();
                     device.configure(rfx, nid);
                     if (ParameterSetting.this.readOnly)
                         device.setReadOnly(true);
@@ -1022,7 +1023,7 @@ public class ParameterSetting
                         public void deviceClosed(boolean updated, boolean justApplied)
                         {
                             handleDeviceClosed(11, updated);
-                            //Copy the same configuration to MHD BC
+/*                            //Copy the same configuration to MHD BC
                             //devices[11].apply( mhdControlRoot.getInt());
                             
                             //GABRIELE OTTOBRE 2008
@@ -1045,6 +1046,7 @@ public class ParameterSetting
                             copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR303_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR303_VAL");
                             copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR304_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR304_VAL");
                             copyData("\\MHD_AC::CONTROL.PARAMETERS:PAR305_VAL", "\\MHD_BR::CONTROL.PARAMETERS:PAR305_VAL");
+ */
                         }
                     });
                 }
@@ -1822,10 +1824,9 @@ public class ParameterSetting
             nids[9] = tfSetupRoot = rfx.resolve(new PathData("\\TF_SETUP"), 0);
             nids[10] = bfControlRoot = rfx.resolve(new PathData(
                 "\\AXI_TOROIDAL_CONTROL"), 0);
-            nids[11] = mhdControlRoot = rfx.resolve(new PathData(
-                "\\MHD_AC::CONTROL"), 0);
-            mhdBcNid = rfx.resolve(new PathData(
-                "\\MHD_BC::CONTROL"), 0);
+ //           nids[11] = mhdControlRoot = rfx.resolve(new PathData("\\MHD_AC::CONTROL"), 0);
+            nids[11] = mhdControlRoot = rfx.resolve(new PathData("\\MHD_AC::MARTE"), 0);
+            //mhdBcNid = rfx.resolve(new PathData("\\MHD_BC::CONTROL"), 0);
             nids[12] = viSetupRoot = rfx.resolve(new PathData("\\VI_SETUP"), 0);
             nids[13] = pelletSetupRoot = rfx.resolve(new PathData("\\PELLET_SETUP"), 0);
             nids[14] = diagTimesSetupRoot = rfx.resolve(new PathData("\\DIAG_TIMES_SETUP"), 0);
@@ -2144,31 +2145,26 @@ public class ParameterSetting
             }
 
 
-            Enumeration mapNames = mapSetupHash.keys();
+/*            Enumeration mapNames = mapSetupHash.keys();
             System.out.println("\n\n\nMAP CONTENT");
              while (mapNames.hasMoreElements())
                 System.out.println((String)mapNames.nextElement());
 
 
-
-
-
-
-
-
+*/
 
             Enumeration pathNames = setupHash.keys();
             while (pathNames.hasMoreElements())
             {
                 String currPathName = (String)pathNames.nextElement();
- System.out.println("Setup Hash: " + currPathName);
+ //System.out.println("Setup Hash: " + currPathName);
 
 
 //                Integer currInt = (Integer) mapSetupHash.get(pathNames.
 //                    nextElement());
                 Integer currInt = (Integer) mapSetupHash.get(currPathName);
  if(currInt == null)
-     System.out.println("MISSING IDX!!");
+     System.out.println("MISSING IDX for "+currPathName);
                 if (currInt != null)
                 {
                     int idx = currInt.intValue();
@@ -3204,16 +3200,17 @@ System.out.println("APPLY SETUP: "+currPath);
                     String currDec;
                     try
                     {
-                        String fullPath = rfx.getInfo(deviceNids[i], 0).
-                            getFullPath();
+                        String fullPath = rfx.getInfo(deviceNids[i], 0).getFullPath();
+System.out.println("SAVE SETUP: " + fullPath);
+                       if(fullPath.endsWith(".TRIANGLE:REGULATION"))
+                           System.out.println("CUEA");
 
-if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
 
-                        if(!fullPath.endsWith(":PAR236_VAL") &&  //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                        if(!fullPath.endsWith("PARAMS:PAR_312:DATA") &&  //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
                             (fullPath.indexOf("SIGNALS:") == -1)) //E i segnali in RfxControl
                         {
-                            currDec = (rfx.getData(deviceNids[i], 0)).toString();
                             mapSetupHash.put(fullPath, new Integer(idx));
+                            currDec = (rfx.getData(deviceNids[i], 0)).toString();
                             configHash.put(fullPath, currDec);
 
                         }
@@ -3237,11 +3234,13 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
                     {
                         String fullPath = rfx.getInfo(deviceNids[i], 0).
                             getFullPath();
-                        if (!fullPath.endsWith(":PAR236_VAL") && //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
+                      if(fullPath.endsWith(".TRIANGLE:REGULATION"))
+                            System.out.println("CUEA");
+                       if (!fullPath.endsWith(":PAR236_VAL") && //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
                               (fullPath.indexOf("SIGNALS:") == -1)) //E i segnali in RfxControl
                         {
-                            currDec = (rfx.getData(deviceNids[i], 0)).toString();
                             mapSetupHash.put(fullPath, new Integer(idx));
+                            currDec = (rfx.getData(deviceNids[i], 0)).toString();
                             configHash.put(fullPath, currDec);
                         }
                     }
@@ -3286,8 +3285,8 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
                          if(!fullPath.endsWith(":PAR236_VAL") &&  //Escludo le matrici di disaccopiamento!!!!!!!!!!!11
                                 (fullPath.indexOf("SIGNALS:") == -1)) //E i segnali in RfxControl
                          {
-                             currDec = (rfx.getData(deviceNids[i], 0)).toString();
                              mapSetupHash.put(fullPath, new Integer(idx));
+                             currDec = (rfx.getData(deviceNids[i], 0)).toString();
                              configHash.put(fullPath, currDec);
                          }
                     }
@@ -3647,7 +3646,8 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
             LoadPulse loadP = new LoadPulse();
             currSetupHash = new Hashtable();
             currSetupOnHash = new Hashtable();
-            loadP.getSetup("rfx", currShot, currSetupHash, currSetupOnHash);
+            //loadP.getSetup("rfx", currShot, currSetupHash, currSetupOnHash);
+            loadP.getSetupWithAbsPath("rfx", currShot, -1, currSetupHash, currSetupOnHash);
             prevPMUnits = loadP.getPMUnits();
             prevRTransfer = loadP.getRTransfer();
             prevPCConnection = loadP.getPCConnection();
@@ -3710,13 +3710,13 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
 
         boolean  checkVersions()
         {
-            if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", true))
+/*            if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", true))
                 return false;
             if(!checkVersionVme("\\MHD_BC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BC", "MHD_BC", true))
                 return false;
             if(!checkVersionVme("\\MHD_BR::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BR", "MHD_BR", true))
                 return false;
-            if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", true))
+*/            if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", true))
                 return false;
             if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", true))
                 return false;
@@ -3730,13 +3730,13 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
 
         String checkVersionsForPas()
         {
-            if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", false))
+/*            if(!checkVersionVme("\\MHD_AC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_AC", "MHD_AC", false))
                 return "Incompatible major version number for MHD_AC";
             if(!checkVersionVme("\\MHD_BC::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BC", "MHD_BC", false))
                 return "Incompatible major version number for MHD_BC";
             if(!checkVersionVme("\\MHD_BR::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BR", "MHD_BR", false))
                  return "Incompatible major version number for MHD_BR";
-           if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", false))
+*/           if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", false))
                  return "Incompatible major version number for EDA1";
            if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", false))
                 return "Incompatible major version number for EDA3";
@@ -3855,14 +3855,14 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
         if (decouplingName.equals("diagonal"))
         {
             conv = new Convert(
-//                "\\mhd_ac::control.parameters:par236_val", "diagonal", -1);
-                "\\mhd_ac::control.parameters:par236_val", "diagonal", shot);
+ //               "\\mhd_ac::control.parameters:par236_val", "diagonal", shot);
+                "\\\\MHD_AC::MARTE.PARAMS:PAR_312:DATA", "diagonal", shot);
             conv.convertMatrix();
-            conv = new Convert(
+/*            conv = new Convert(
 //                "\\mhd_bc::control.parameters:par236_val", "diagonal", -1);
                   "\\mhd_bc::control.parameters:par236_val", "diagonal", shot);
             conv.convertMatrix();
-        }
+*/        }
         else if(decouplingName.equals("From Shot..."))
         {
             String shotStr = JOptionPane.showInputDialog(ParameterSetting.this, "Shot number: ");
@@ -3880,14 +3880,15 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
         else
         {
             conv = new Convert(
-//                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
-                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
+//                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
+                "\\MHD_AC::MARTE.PARAMS:PAR_312:DATA", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
+
             conv.convertMatrix();
-            conv = new Convert(
+ /*           conv = new Convert(
 //                "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
                 "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
             conv.convertMatrix();
-        }
+ */       }
         decouplingD.setVisible(false);
      }
 
@@ -3951,9 +3952,6 @@ if(fullPath.endsWith("TRIG1_CONTR"))System.out.println("GET SETUP:" + fullPath);
         {
             String currPath = (String) pathNames.nextElement();
 
-//            if(currPath.contains("VP_SETUP"))
-//                System.out.println(currPath);
-if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPath);
 
             String currDecompiled = (String) currSetupHash.get(currPath);
             String modelDecompiled = (String) modelSetupHash.get(currPath);
@@ -3968,14 +3966,14 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
                     changed[idx] = true;
                     modifiedSetupHash.put(currPath, currDecompiled);
 
-///////////////////////////////////GAB 2011 TACON DI URGENZA
+/*//////////////////////////////////GAB 2011 TACON DI URGENZA
 			    if(currPath.startsWith("\\RFX::TOP.RFX.MHD.MHD_AC"))
 			    {
 				String newCurrPath = "\\RFX::TOP.RFX.MHD.MHD_BC"+currPath.substring(24);
 				System.out.println("ZONTATO " + newCurrPath);
                             	modifiedSetupHash.put(newCurrPath, currDecompiled);
  			    }
-//////////////////////////////////////////////////
+/////////////////////////////////////////////////*/
 
 
 
@@ -4124,7 +4122,7 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
             return;
         }
         copyDecoupling(100, -1);
-        copyMhdBr(100, -1);
+        //copyMhdBr(100, -1);
     }
 
     void compareShots()
@@ -4536,7 +4534,7 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
 
     }
 
-
+/*
     void copyMhdBr(int fromShot, int toShot)
     {
         Data data303, data304, data305;
@@ -4611,7 +4609,7 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
         }
 
     }
-
+*/
     void copyDecoupling(int fromShot, int toShot)
     {
         Data decouplingData;
@@ -4629,18 +4627,33 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
+        NidData decNid;
         try {
-            NidData decNid = rfx.resolve(new PathData(
+             decNid = rfx.resolve(new PathData(
                     "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
-            decouplingData = rfx.getData(decNid, 0);
-        }
-        catch(Exception exc)
+        }catch(Exception exc) {decNid = null; }
+        if(decNid == null)
         {
-            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + fromShot, "Error reading data",
+            try {
+             decNid = rfx.resolve(new PathData(
+                    "\\MHD_AC::MARTE.PARAMS:PAR_312:DATA"), 0);
+            }
+            catch(Exception exc)
+            {
+                JOptionPane.showMessageDialog(this, "Cannot find Decoupling for " + fromShot, "Error reading data",
                     JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+       }
+       try {
+           decouplingData = rfx.getData(decNid, 0);
+       } catch (Exception exc)
+       {
+            JOptionPane.showMessageDialog(this, "Cannot read Decoupling for " + fromShot, "Error reading data",
+                JOptionPane.WARNING_MESSAGE);
             return;
-        }
-        try {
+       }
+       try {
             rfx.close(0);
             rfx = new Database("rfx", toShot);
             rfx.open();
@@ -4653,11 +4666,12 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
         }
         try {
             NidData decNid1 = rfx.resolve(new PathData(
-                    "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
-            NidData decNid2 = rfx.resolve(new PathData(
-                    "\\MHD_BC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+//                    "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+                    "\\MHD_AC::MARTE.PARAMS:PAR_312:DATA"), 0);
+//            NidData decNid2 = rfx.resolve(new PathData(
+//                    "\\MHD_BC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
             rfx.putData(decNid1, decouplingData, 0);
-            rfx.putData(decNid2, decouplingData, 0);
+//            rfx.putData(decNid2, decouplingData, 0);
         }
         catch(Exception exc)
         {
@@ -4723,8 +4737,13 @@ if(currPath.endsWith("TRIG1_CONTR")) System.out.println("COMPARE SETUP "+currPat
                 rfx = new Database("rfx", inShot);
                 rfx.open();
             }
-            NidData decNid = rfx.resolve(new PathData(
+            NidData decNid;
+            try {decNid = rfx.resolve(new PathData(
                     "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
+            }catch(Exception exc){decNid = null;}
+            if(decNid == null)
+                decNid = rfx.resolve(new PathData(
+                    "\\MHD_AC::MARTE.PARAMS:PAR_312:DATA"), 0);
             Data decouplingData = rfx.getData(decNid, 0);
             Data evaluatedDecouplingData = rfx.evaluateData(decouplingData, 0);
             float[] decouplingValues = ((ArrayData) evaluatedDecouplingData).getFloatArray();

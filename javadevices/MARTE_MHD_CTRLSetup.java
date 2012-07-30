@@ -810,19 +810,19 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Phase: ");
         deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(1543);
+        deviceField34.setOffsetNid(1537);
         jPanel16.add(deviceField34);
 
         deviceField35.setIdentifier("");
         deviceField35.setLabelString("Start time: ");
         deviceField35.setNumCols(4);
-        deviceField35.setOffsetNid(1549);
+        deviceField35.setOffsetNid(1543);
         jPanel16.add(deviceField35);
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Rise time: ");
         deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(1555);
+        deviceField36.setOffsetNid(1549);
         jPanel16.add(deviceField36);
 
         deviceField37.setIdentifier("");
