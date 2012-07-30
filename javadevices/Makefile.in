@@ -11,6 +11,7 @@ RMIC = @RMIC@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 DEVICES = ParameterSetting.java \
+ParameterSettingOld.java\
 DIO4Setup.java\
 TRCHSetup.java\
 ADC265Setup.java\
