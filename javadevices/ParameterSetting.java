@@ -3882,8 +3882,12 @@ System.out.println("SAVE SETUP: " + fullPath);
             conv = new Convert(
 //                "\\mhd_ac::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
                 "\\MHD_AC::MARTE.PARAMS:PAR_312:DATA", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
-
-            conv.convertMatrix();
+            try {
+                rfx.close(0);
+                conv.convertMatrix();
+                rfx = new Database("RFX", shot);
+                rfx.open();
+              }catch(Exception exc) {System.out.println("CANNOT OPEN RFX AFTER SETTING DECOUPLING");}
  /*           conv = new Convert(
 //                "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", -1);
                 "\\mhd_bc::control.parameters:par236_val", DECOUPLING_BASE_DIR + decouplingName + ".dat", shot);
