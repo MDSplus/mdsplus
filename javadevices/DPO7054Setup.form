@@ -667,10 +667,10 @@
                         <Component class="DeviceChoice" name="deviceChoice48">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -681,7 +681,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -710,10 +713,10 @@
                         <Component class="DeviceChoice" name="deviceChoice52">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -724,7 +727,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -753,10 +759,10 @@
                         <Component class="DeviceChoice" name="deviceChoice56">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -767,7 +773,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -796,10 +805,10 @@
                         <Component class="DeviceChoice" name="deviceChoice60">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -810,7 +819,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -905,10 +917,10 @@
                         <Component class="DeviceChoice" name="deviceChoice21">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -919,7 +931,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -948,10 +963,10 @@
                         <Component class="DeviceChoice" name="deviceChoice24">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -962,7 +977,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -991,10 +1009,10 @@
                         <Component class="DeviceChoice" name="deviceChoice27">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -1005,7 +1023,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
@@ -1034,10 +1055,10 @@
                         <Component class="DeviceChoice" name="deviceChoice30">
                           <Properties>
                             <Property name="choiceFloatValues" type="[F" editor="FloatArrayEditor">
-                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,11,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,58,-125,18,111"/>
+                              <SerializedValue value="-84,-19,0,5,117,114,0,2,91,70,11,-100,-127,-119,34,-32,12,66,2,0,0,120,112,0,0,0,14,65,32,0,0,64,-96,0,0,64,0,0,0,63,-128,0,0,63,0,0,0,62,76,-52,-51,61,-52,-52,-51,61,76,-52,-51,60,35,-41,10,59,-93,-41,10,59,-125,18,111,59,68,-101,-90,59,3,18,111,58,-125,18,111"/>
                             </Property>
                             <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="11">
+                              <StringArray count="14">
                                 <StringItem index="0" value="10"/>
                                 <StringItem index="1" value="5"/>
                                 <StringItem index="2" value="2"/>
@@ -1048,7 +1069,10 @@
                                 <StringItem index="7" value=".05"/>
                                 <StringItem index="8" value=".01"/>
                                 <StringItem index="9" value=".005"/>
-                                <StringItem index="10" value=".001"/>
+                                <StringItem index="10" value=".004"/>
+                                <StringItem index="11" value=".003"/>
+                                <StringItem index="12" value=".002"/>
+                                <StringItem index="13" value=".001"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
