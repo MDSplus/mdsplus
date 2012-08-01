@@ -4632,13 +4632,13 @@ System.out.println("SAVE SETUP: " + fullPath);
             return;
         }
         NidData decNid;
-        try {
+/*        try {
              decNid = rfx.resolve(new PathData(
                     "\\MHD_AC::CONTROL.PARAMETERS:PAR236_VAL"), 0);
         }catch(Exception exc) {decNid = null; }
         if(decNid == null)
         {
-            try {
+ */           try {
              decNid = rfx.resolve(new PathData(
                     "\\MHD_AC::MARTE.PARAMS:PAR_312:DATA"), 0);
             }
@@ -4648,7 +4648,7 @@ System.out.println("SAVE SETUP: " + fullPath);
                     JOptionPane.WARNING_MESSAGE);
                 return;
             }
-       }
+//       }
        try {
            decouplingData = rfx.getData(decNid, 0);
        } catch (Exception exc)
