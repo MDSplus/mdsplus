@@ -1,7 +1,13 @@
 #!/bin/sh
 PATH=/bin:/sbin:$PATH
 export PATH
-for f in $(ls $2/mdsplus 2>/dev/null | grep -v local)
+
+MDSPLUS_DIR="$2/mdsplus"
+if [ ! -d $MDSPLUS_DIR/tdi ]
+then
+  MDSPLUS_DIR=/usr/local/mdsplus
+fi
+for f in $(ls $MDSPLUS_DIR 2>/dev/null | grep -v local)
 do
-  rm -Rvf $2/mdsplus/$f >> /var/log/preinstall.log
+  rm -Rvf $MDSPLUS_DIR/$f >> /var/log/preinstall.log
 done
