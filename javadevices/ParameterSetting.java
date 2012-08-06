@@ -4646,7 +4646,19 @@ System.out.println("SAVE SETUP: " + fullPath);
             {
                 JOptionPane.showMessageDialog(this, "Cannot find Decoupling for " + fromShot, "Error reading data",
                     JOptionPane.WARNING_MESSAGE);
+               try {
+                    rfx.close(0);
+                    rfx = new Database("rfx", toShot);
+                    rfx.open();
+                }
+                catch(Exception exc1)
+                {
+                    JOptionPane.showMessageDialog(this, "Cannot open shot " + toShot, "Error opening shot",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 return;
+
             }
 //       }
        try {
