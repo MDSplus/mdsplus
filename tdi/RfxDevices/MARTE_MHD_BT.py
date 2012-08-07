@@ -15,17 +15,17 @@ class MARTE_MHD_BT(MARTE_GENERIC.MARTE_GENERIC):
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):
-      print 'MARTe mhd_bt', i, 1
+#      print 'MARTe mhd_bt', i, 1
       parts.append({'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'})
-      print 'MARTe mhd_bt', i, 2
+#      print 'MARTe mhd_bt', i, 2
       parts.append({'path':'.PARAMS:PAR_%03d:DESCRIPTION'%(i+1), 'type':'text'})
-      print 'MARTe mhd_bt', i, 3
+#     print 'MARTe mhd_bt', i, 3
       parts.append({'path':'.PARAMS:PAR_%03d:NAME'%(i+1), 'type':'text', 'value':parNames[i]})
-      print 'MARTe mhd_bt', i, 4
+#      print 'MARTe mhd_bt', i, 4
       parts.append({'path':'.PARAMS:PAR_%03d:TYPE'%(i+1), 'type':'text'})
-      print 'MARTe mhd_bt', i, 5
+#      print 'MARTe mhd_bt', i, 5
       parts.append({'path':'.PARAMS:PAR_%03d:DIMS'%(i+1), 'type':'numeric'})
-      print 'MARTe mhd_bt', i, 6
+#      print 'MARTe mhd_bt', i, 6
       parts.append({'path':'.PARAMS:PAR_%03d:DATA'%(i+1), 'type':'numeric','value':parValues[i]})
 
     for i in range(len(parNames), 256):
