@@ -41,6 +41,7 @@ MARTE_MHD_ISetup.java\
 MARTE_MHD_BTSetup.java\
 MARTE_MHD_AC_BCSetup.java\
 MARTE_DEQUSetup.java\
+MARTE_EDA1Setup.java\
 MCUSetup.java\
 MHD_BR_TESTSetup.java\
 MPBDecoderSetup.java\
