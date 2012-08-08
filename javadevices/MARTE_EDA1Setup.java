@@ -233,8 +233,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA1Setup");
         setDeviceType("MARTE_EDA1");
-        setHeight(400);
-        setWidth(500);
+        setHeight(700);
+        setWidth(900);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel2.setLayout(new java.awt.GridLayout(5, 0));
@@ -272,7 +272,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jPanel2.add(jPanel7);
 
-        deviceChoice1.setChoiceItems(new String[] {"NONE", "MODE CONTROL"});
+        deviceChoice1.setChoiceItems(new String[] {"Eda1Control"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Control: ");
         deviceChoice1.setOffsetNid(12);
@@ -993,7 +993,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("aaGain: ");
-        deviceField22.setNumCols(4);
+        deviceField22.setNumCols(20);
         deviceField22.setOffsetNid(1417);
         jPanel43.add(deviceField22);
 
@@ -1005,7 +1005,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField24.setIdentifier("");
         deviceField24.setLabelString("bvGain: ");
-        deviceField24.setNumCols(4);
+        deviceField24.setNumCols(20);
         deviceField24.setOffsetNid(1441);
         jPanel43.add(deviceField24);
 
@@ -1013,7 +1013,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField25.setIdentifier("");
         deviceField25.setLabelString("maxPVATCurr: ");
-        deviceField25.setNumCols(4);
+        deviceField25.setNumCols(20);
         deviceField25.setOffsetNid(1447);
         jPanel44.add(deviceField25);
 
@@ -1045,7 +1045,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField30.setIdentifier("");
         deviceField30.setLabelString("tStartEquilIntegralAction: ");
-        deviceField30.setNumCols(4);
+        deviceField30.setNumCols(20);
         deviceField30.setOffsetNid(1477);
         jPanel45.add(deviceField30);
 
@@ -1096,6 +1096,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jPanel14.add(jPanel46);
 
         jPanel13.add(jPanel14, java.awt.BorderLayout.NORTH);
+
+        jPanel15.setLayout(new java.awt.GridLayout(2, 1));
 
         deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable1.setIdentifier("");
