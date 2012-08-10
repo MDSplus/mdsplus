@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<glade-catalog name="MDSplus Widgets"  library="MDSplus.widgets" domain="glade-3" depends="gtk+"  language="python">
+<glade-catalog name="MDSplus.widgets"  library="gladepython" domain="glade-3" depends="gtk+">
+ <init-function>glade_python_init</init-function>
     <glade-widget-classes>
         <glade-widget-class
             title="MDSplus Expression Field"
             name="MDSplusExprFieldWidget"
-            adaptor="MDSplusExprFieldWidgetAdaptor"
+            xxxadaptor="MDSplusExprFieldWidgetAdaptor"
             generic-name="entry">
             <properties>
               <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
@@ -23,7 +24,7 @@
         <glade-widget-class
             title="MDSplus Expression"
             name="MDSplusExprWidget"
-            adaptor="MDSplusExprWidgetAdaptor"
+            xxxadaptor="MDSplusExprWidgetAdaptor"
             generic-name="textview">
             <properties>
               <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
@@ -39,7 +40,7 @@
         <glade-widget-class
             title="MDSplus Path"
             name="MDSplusPathWidget"
-            adaptor="MDSplusPathWidgetAdaptor"
+            xxxadaptor="MDSplusPathWidgetAdaptor"
             generic-name="label">
             <properties>
               <property save="True" query="False" id="nidOffset" default="-1" optional="True" name="nidOffset">
@@ -58,7 +59,7 @@
         <glade-widget-class
             title="MDSplus OnOffWidget"
             name="MDSplusOnOffWidget"
-            adaptor="MDSplusOnOffWidgetAdaptor"
+            xxxadaptor="MDSplusOnOffWidgetAdaptor"
             icon-name="checkbox.png"
             generic-name="checkbutton">
             <properties>
@@ -82,7 +83,7 @@
         <glade-widget-class
             title="MDSplus NidOptionWidget"
             name="MDSplusNidOptionWidget"
-            adaptor="MDSplusNidOptionWidgetAdaptor"
+            xxxadaptor="MDSplusNidOptionWidgetAdaptor"
             generic-name="comboboxentry">
             <properties>
               <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
@@ -102,7 +103,7 @@
         <glade-widget-class
             title="MDSplus OnOffXdBox Widget"
             name="MDSplusOnOffXdBoxWidget"
-            adaptor="MDSplusOnOffXdBoxWidgetAdaptor"
+            xxxadaptor="MDSplusOnOffXdBoxWidgetAdaptor"
             generic-name="checkbutton">
             <properties>
               <property save="False" query="False" id="size" default="3" visible="False" name="Number of items">
@@ -131,7 +132,7 @@
         <glade-widget-class
             title="MDSplus XdBox Button Widget"
             name="MDSplusXdBoxButtonWidget"
-            adaptor="MDSplusXdBoxButtonWidgetAdaptor"
+            xxxadaptor="MDSplusXdBoxButtonWidgetAdaptor"
             generic-name="button">
             <properties>
               <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
@@ -147,7 +148,7 @@
         <glade-widget-class
             title="MDSplus Digitizer Channels Widget"
             name="MDSplusDigChansWidget"
-            adaptor="MDSplusDigChansWidgetAdaptor"
+            xxxadaptor="MDSplusDigChansWidgetAdaptor"
             generic-name="table">
             <properties>
               <property save="True" query="False" id="putOnApply" default="True" name="putOnApply">
