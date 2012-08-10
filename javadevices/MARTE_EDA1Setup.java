@@ -999,7 +999,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField23.setIdentifier("");
         deviceField23.setLabelString("invAAGain: ");
-        deviceField23.setNumCols(4);
+        deviceField23.setNumCols(20);
         deviceField23.setOffsetNid(1423);
         jPanel43.add(deviceField23);
 
