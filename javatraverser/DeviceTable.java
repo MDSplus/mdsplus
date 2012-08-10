@@ -41,7 +41,7 @@ public class DeviceTable extends DeviceComponent
     public void setRefMode(int refMode)
     {
         this.refMode = refMode;
-        if(refMode == REFLEX || refMode == REFLEX_INVERT)
+       if(refMode == REFLEX || refMode == REFLEX_INVERT)
         {
             table.setDefaultRenderer(Object.class, new TableCellRenderer() {
 
@@ -60,7 +60,6 @@ public class DeviceTable extends DeviceComponent
                 
             });
        }
-        
      }
     public int getRefMode() { return refMode;}
     
@@ -258,6 +257,7 @@ public class DeviceTable extends DeviceComponent
         for (int i = 0; i < items.length; i++)
           items[i] = copiedItems[i];
       }catch(Exception exc){}
+      completeTable();
       table.repaint();
     }
 
@@ -276,6 +276,7 @@ public class DeviceTable extends DeviceComponent
         for (int i = 0; i < numCols; i++)
           items[row * numCols + i] = copiedRowItems[i];
       }catch(Exception exc){}
+      completeTable();
       table.repaint();
     }
     void copyCol(int col)
@@ -294,6 +295,7 @@ public class DeviceTable extends DeviceComponent
         for (int i = 0; i < numRows; i++)
           items[col  + i * numCols] = copiedColItems[i];
       }catch(Exception exc){}
+      completeTable();
       table.repaint();
     }
 
@@ -312,6 +314,7 @@ public class DeviceTable extends DeviceComponent
         for (int i = 0; i < numCols; i++)
           items[row * numCols +i] = items[row*numCols + col];
       }catch(Exception exc){}
+      completeTable();
       table.repaint();
     }
 
@@ -330,6 +333,7 @@ public class DeviceTable extends DeviceComponent
         for (int i = 0; i < numRows; i++)
           items[col  + i * numCols] = items[row*numCols + col];
       }catch(Exception exc){}
+      completeTable();
       table.repaint();
     }
     private boolean isEditable(int row, int col)
@@ -340,15 +344,19 @@ public class DeviceTable extends DeviceComponent
              return editable;
         else if (!editable)
             return false;
-        else
+        else //REFLEX || REFLEX_INVERT
         {
-            int actCol = (displayRowNumber)?col-1:col;
+/*            int actCol = (displayRowNumber)?col-1:col;
             if((row == 0 || row == numRows/2) && actCol > numCols/2)
                 return false;
             else if (row > numRows/2)
                 return false;
             return true;
-        }
+*/          int firstCol = (displayRowNumber)?1:0;
+            if (col == firstCol && row > numRows - numRows/2)
+                return false;
+            return true;
+       }
     }
     
     public void initializeData(Data data, boolean is_on)
@@ -393,13 +401,26 @@ public class DeviceTable extends DeviceComponent
         table.setModel(new AbstractTableModel() {
             public int getColumnCount()
             {
-                if(displayRowNumber || (rowNames != null && rowNames.length > 0))
+                if(refMode == REFLEX || refMode == REFLEX_INVERT)
                 {
+                   if(displayRowNumber || (rowNames != null && rowNames.length > 0))
+                    {
 
-                  return numCols + 1;
+                      return numCols/2+1 + 1;
+                    }
+                    else
+                        return numCols/2+1;
                 }
                 else
-                    return numCols;
+                {
+                    if(displayRowNumber || (rowNames != null && rowNames.length > 0))
+                    {
+
+                      return numCols + 1;
+                    }
+                    else
+                        return numCols;
+                }
             }
             public int getRowCount() {return numRows; }
             public String getColumnName(int idx)
@@ -488,14 +509,14 @@ public class DeviceTable extends DeviceComponent
             }
             public void setValueAt(Object value, int row, int col)
             {
-              int itemIdx;
-              int actCol;
-              if((rowNames != null && rowNames.length > 0) || displayRowNumber)
-                  actCol = col - 1;
-              else
+                int itemIdx;
+                int actCol;
+                if((rowNames != null && rowNames.length > 0) || displayRowNumber)
+                    actCol = col - 1;
+                else
                   actCol = col;
-               if(refMode == REFLEX || refMode == REFLEX_INVERT)
-               {
+ /*               if(refMode == REFLEX || refMode == REFLEX_INVERT)
+                {
                   //binary assumed to be false
                   if(row == 0 || row == numRows/2)
                   {
@@ -531,11 +552,11 @@ public class DeviceTable extends DeviceComponent
                   
                }
                else //refMode == NORMAL
-               {
+ */              {
                     if((rowNames != null && rowNames.length > 0) || displayRowNumber)
                         itemIdx = row * numCols + actCol;
                     else
-                    itemIdx = row * numCols + actCol;
+                        itemIdx = row * numCols + actCol;
 
                     if(binary)
                     {
@@ -547,6 +568,11 @@ public class DeviceTable extends DeviceComponent
                     else
                         items[itemIdx] = (String)value;
                     fireTableCellUpdated(row, col);
+                }
+                if(refMode == REFLEX || refMode == REFLEX_INVERT)
+                {
+                    completeTable();
+                    table.repaint();
                 }
             }
 
@@ -562,12 +588,37 @@ public class DeviceTable extends DeviceComponent
 
           if(binary)
             table.setRowSelectionAllowed(false);
-
-          table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols,preferredHeight));
+          if(refMode == REFLEX || refMode == REFLEX_INVERT)
+            table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * (numCols/2 + 1),preferredHeight));
+          else
+            table.setPreferredScrollableViewportSize(new Dimension(preferredColumnWidth * numCols,preferredHeight));
           table.revalidate();
         initializing = false;
     }
 
+    void completeTable()
+    {
+         if(refMode != REFLEX && refMode != REFLEX_INVERT) return;
+        //First row
+        String sign = "";
+        if (refMode == REFLEX_INVERT)
+            sign = "-";
+
+        //First row
+        for(int i = 1; i < numCols/2; i++)
+            items[numCols - i] = sign+items[i];
+        //First column
+        for(int i = 1; i < numRows/2; i++)
+        {
+            items[(numRows - i)*numCols] = sign + items[i * numCols];
+        }
+        //Remaining
+        for(int i = 1; i < numRows/2; i++)
+            for(int j = 1; j < numCols/2; j++)
+            {
+                items[(numRows - i)*numCols + numCols-j] = items[i*numCols + j];
+            }
+    }
 
     public void displayData(Data data, boolean is_on)
     {
@@ -578,12 +629,18 @@ public class DeviceTable extends DeviceComponent
         int idx = 0;
         while( idx < numCols * numRows && st.hasMoreTokens())
             items[idx++] = st.nextToken();
-        for(int i = 0; i < numCols; i++)
+
+        int actCols = numCols;
+        if(refMode == REFLEX || refMode == REFLEX_INVERT)
+            actCols = numCols/2+1;
+//        for(int i = 0; i < numCols; i++)
+        for(int i = 0; i < actCols; i++)
         {
             table.getColumnModel().getColumn(i).setMinWidth(6);
             table.getColumnModel().getColumn(i).setPreferredWidth(6);
             table.getColumnModel().getColumn(i).setWidth(6);
         }
+        completeTable();
         table.repaint();
         redisplay();
     }
@@ -591,16 +648,12 @@ public class DeviceTable extends DeviceComponent
 
     public Data getData()
     {
+        if(refMode == REFLEX || refMode == REFLEX_INVERT)
+                completeTable();
         int n_data = items.length;
         String dataString = "[";
         for(int i = 0; i < n_data; i++)
         {
-            /*if(items[i] == null || items[i].equals(""))
-            {
-                dataString += "]";
-                break;
-            }
-*/
             if(i % numCols == 0)
                 dataString += "[";
             if(items[i].trim().equals(""))
@@ -610,7 +663,7 @@ public class DeviceTable extends DeviceComponent
             if(i % numCols == numCols - 1)
             {
                 dataString += "]";
-                if(i < n_data - 1 && items[i+1] != null)// && !items[i+1].equals(""))
+                if(i < n_data - 1 && items[i+1] != null)
                     dataString += ",";
                 else
                    if(i == n_data - 1)
@@ -682,6 +735,7 @@ public class DeviceTable extends DeviceComponent
         catch (Exception exc) {
           System.err.println("Error reading from clipboard: " + exc);
         }
+        completeTable();
         table.repaint();
       }
     }
@@ -691,10 +745,11 @@ public class DeviceTable extends DeviceComponent
       Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
       String tableText = "";
       int idx = 0;
+      if(refMode == REFLEX || refMode == REFLEX_INVERT)
       for(int i = 0; i < numRows; i++)
       {
         for (int j = 0; j < numCols; j++)
-          tableText += " " + items[idx++];
+           tableText += " " + items[idx++];
           tableText += "\n";
       }
       clipboard.setContents(new StringSelection(tableText), null);
