@@ -17,6 +17,7 @@ sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
 MACOSX=""
+FOR_LINKSHARED=""
 
 if test "$NOF77"
 then
@@ -295,6 +296,7 @@ hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        LD_LDSHARE="-a shared_archive";
        LD_LDARC="-a archive";
        LINKSHARED="-b +s +b /usr/lib:/usr/local/lib";
+       FOR_LINKSHARED="$LINKSHARED";
        CC_LDFLAGS="-Wl,+s"
        FOR_LDFLAGS="-Wl,+s";
        LIBPATH="SHLIB_PATH";
@@ -310,6 +312,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD_LDSHARE="-B dynamic";
        LD_LDARC="-B static";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
@@ -323,6 +326,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 	 LD=gcc;
 	 FORLD=gcc;
          LINKSHARED="-shared ";
+         FOR_LINKSHARED="$LINKSHARED"
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
@@ -331,6 +335,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          LDFLAGS="$CFLAGS";
        else 
          LINKSHARED="-G ";
+         FOR_LINKSHARED="$LINKSHARED";
          LD_LDARC="-B static ";
          LD_LDSHARE="-B dynamic ";
          LDSHARE="-B dynamic";
@@ -365,6 +370,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDARC="-no_so ";
        LD_LDSHARE="-so_archive ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
        FEXECLIBDIR="-L";
@@ -432,6 +438,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
@@ -465,6 +472,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
@@ -476,8 +484,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
+       GCCLIB=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -507,14 +516,15 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
        dnl LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -prebind \
 	   dnl -seg_addr_table_filename \$(@F) -seg_addr_table ../macosx/bindtable -Wl,-single_module";
-	   LINKSHARED="$LDFLAGS -shared";
+	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64";
+           FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
        X_CFLAGS="-I/usr/OpenMotif/include"
        LINKJNI="$LINKSHARED";
-       SHARETYPE=".so";
+       SHARETYPE=".dylib";
        SHARETYPEJNI=".jnilib";
-       SHARETYPEMOD=".so";
+       SHARETYPEMOD=".dylib";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
        JDK_DIR=/Library/Java/Home
@@ -584,6 +594,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="";
        FOR_LDFLAGS="-lxlf90";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
        MAKESHLIBDIR="\$(top_srcdir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
@@ -603,6 +614,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
@@ -613,6 +625,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDSHARE="";
        LDARC="";
        LINKSHARED="";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";;
@@ -989,6 +1002,7 @@ AC_SUBST(EXPORTS_FILE)
 AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
+AC_SUBST(FOR_LINKSHARED)
 AC_SUBST(GCCLIB)
 AC_SUBST(GEN_DEVICE)
 AC_SUBST(GLOBUS_CFLAGS)
