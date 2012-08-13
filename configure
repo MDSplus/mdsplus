@@ -723,6 +723,7 @@ GLOBUS_FLAVOR
 GLOBUS_CFLAGS
 GEN_DEVICE
 GCCLIB
+FOR_LINKSHARED
 FOR_LDFLAGS
 FORLD
 FEXECLIBDIR
@@ -1473,7 +1474,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
- --enable-mdsip_connections     Use new improved mdsip connections
+ --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.
   --enable-nodebug        compile without debug info
   --enable-perf          enable MDSplus I/O statistics
  --disable-java	do not build java libraries and applications
@@ -4172,6 +4173,7 @@ sparc-sun-solaris2*) : ${CC=cc};;
 esac
 
 MACOSX=""
+FOR_LINKSHARED=""
 
 if test "$NOF77"
 then
@@ -5501,18 +5503,15 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+MDSIP_CONNECTIONS="yes";
 # Check whether --enable-mdsip_connections was given.
 if test "${enable_mdsip_connections+set}" = set; then
-  enableval=$enable_mdsip_connections; if test "$enableval" = yes; then
-          cat >>confdefs.h <<\_ACEOF
+  enableval=$enable_mdsip_connections; MDSIP_CONNECTIONS="$enableval"
+fi
+
+cat >>confdefs.h <<\_ACEOF
 #define MDSIP_CONNECTIONS 1
 _ACEOF
-
-	  MDSIP_CONNECTIONS="yes";
-        else
-          MDSIP_CONNECTIONS="no";
-        fi
-fi
 
 
 # Check whether --enable-nodebug was given.
@@ -5731,278 +5730,6 @@ if test "${enable_gcc_profiling+set}" = set; then
 fi
 
 
-if test "$NOF77"
-then
-:;
-else
-ac_ext=f
-ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
-ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_f77_compiler_gnu
-if test -n "$ac_tool_prefix"; then
-  for ac_prog in g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77 xlf90 f90 pgf90 pghpf epcf90 gfortran g95 xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn
-  do
-    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
-set dummy $ac_tool_prefix$ac_prog; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_F77+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$F77"; then
-  ac_cv_prog_F77="$F77" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_F77="$ac_tool_prefix$ac_prog"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-F77=$ac_cv_prog_F77
-if test -n "$F77"; then
-  { $as_echo "$as_me:$LINENO: result: $F77" >&5
-$as_echo "$F77" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-    test -n "$F77" && break
-  done
-fi
-if test -z "$F77"; then
-  ac_ct_F77=$F77
-  for ac_prog in g77 xlf f77 frt pgf77 cf77 fort77 fl32 af77 xlf90 f90 pgf90 pghpf epcf90 gfortran g95 xlf95 f95 fort ifort ifc efc pgf95 lf95 ftn
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_ac_ct_F77+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_F77"; then
-  ac_cv_prog_ac_ct_F77="$ac_ct_F77" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_F77="$ac_prog"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_F77=$ac_cv_prog_ac_ct_F77
-if test -n "$ac_ct_F77"; then
-  { $as_echo "$as_me:$LINENO: result: $ac_ct_F77" >&5
-$as_echo "$ac_ct_F77" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$ac_ct_F77" && break
-done
-
-  if test "x$ac_ct_F77" = x; then
-    F77=""
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:$LINENO: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    F77=$ac_ct_F77
-  fi
-fi
-
-
-# Provide some information about the compiler.
-$as_echo "$as_me:$LINENO: checking for Fortran 77 compiler version" >&5
-set X $ac_compile
-ac_compiler=$2
-{ (ac_try="$ac_compiler --version >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compiler --version >&5") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-{ (ac_try="$ac_compiler -v >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compiler -v >&5") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-{ (ac_try="$ac_compiler -V >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compiler -V >&5") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-rm -f a.out
-
-# If we don't use `.F' as extension, the preprocessor is not run on the
-# input file.  (Note that this only needs to work for GNU compilers.)
-ac_save_ext=$ac_ext
-ac_ext=F
-{ $as_echo "$as_me:$LINENO: checking whether we are using the GNU Fortran 77 compiler" >&5
-$as_echo_n "checking whether we are using the GNU Fortran 77 compiler... " >&6; }
-if test "${ac_cv_f77_compiler_gnu+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-      program main
-#ifndef __GNUC__
-       choke me
-#endif
-
-      end
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_f77_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_compiler_gnu=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_compiler_gnu=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_cv_f77_compiler_gnu=$ac_compiler_gnu
-
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_f77_compiler_gnu" >&5
-$as_echo "$ac_cv_f77_compiler_gnu" >&6; }
-ac_ext=$ac_save_ext
-ac_test_FFLAGS=${FFLAGS+set}
-ac_save_FFLAGS=$FFLAGS
-FFLAGS=
-{ $as_echo "$as_me:$LINENO: checking whether $F77 accepts -g" >&5
-$as_echo_n "checking whether $F77 accepts -g... " >&6; }
-if test "${ac_cv_prog_f77_g+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  FFLAGS=-g
-cat >conftest.$ac_ext <<_ACEOF
-      program main
-
-      end
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_f77_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_cv_prog_f77_g=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_prog_f77_g=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_prog_f77_g" >&5
-$as_echo "$ac_cv_prog_f77_g" >&6; }
-if test "$ac_test_FFLAGS" = set; then
-  FFLAGS=$ac_save_FFLAGS
-elif test $ac_cv_prog_f77_g = yes; then
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-g -O2"
-  else
-    FFLAGS="-g"
-  fi
-else
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-O2"
-  else
-    FFLAGS=
-  fi
-fi
-
-if test $ac_compiler_gnu = yes; then
-  G77=yes
-else
-  G77=
-fi
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-fi
-
 
 # Check whether --with-idl was given.
 if test "${with_idl+set}" = set; then
@@ -6075,7 +5802,7 @@ UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
 GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
-RTEVENTS="rtevents cacheshr"
+RTEVENTS="rtevents"
 
 LIBPTHREAD=-lpthread
 IS_HP=0
@@ -6089,6 +5816,7 @@ hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        LD_LDSHARE="-a shared_archive";
        LD_LDARC="-a archive";
        LINKSHARED="-b +s +b /usr/lib:/usr/local/lib";
+       FOR_LINKSHARED="$LINKSHARED";
        CC_LDFLAGS="-Wl,+s"
        FOR_LDFLAGS="-Wl,+s";
        LIBPATH="SHLIB_PATH";
@@ -6104,6 +5832,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD_LDSHARE="-B dynamic";
        LD_LDARC="-B static";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        FOR_LDFLAGS="";
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
@@ -6117,6 +5846,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 	 LD=gcc;
 	 FORLD=gcc;
          LINKSHARED="-shared ";
+         FOR_LINKSHARED="$LINKSHARED"
          LD_LDSHARE="-Wl,-B,dynamic";
          LD_LDARC="-Wl,-B,static";
          LDSHARE="-Wl,-B,dynamic";
@@ -6125,6 +5855,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          LDFLAGS="$CFLAGS";
        else
          LINKSHARED="-G ";
+         FOR_LINKSHARED="$LINKSHARED";
          LD_LDARC="-B static ";
          LD_LDSHARE="-B dynamic ";
          LDSHARE="-B dynamic";
@@ -6159,6 +5890,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDARC="-no_so ";
        LD_LDSHARE="-so_archive ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="-lfor";
        FEXECLIBDIR="-L";
@@ -6226,6 +5958,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
@@ -6259,6 +5992,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
@@ -6270,9 +6004,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
+       GCCLIB=""
        MACOSX="macosx"
-       RTEVENTS=""
-       CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
@@ -6300,14 +6034,15 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        UILPATH=/usr/OpenMotif/bin;
        MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
        MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
-       	   	   LINKSHARED="$LDFLAGS -shared -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
+       	   	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64";
+           FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
        X_CFLAGS="-I/usr/OpenMotif/include"
        LINKJNI="$LINKSHARED";
-       SHARETYPE=".so";
+       SHARETYPE=".dylib";
        SHARETYPEJNI=".jnilib";
-       SHARETYPEMOD=".so";
+       SHARETYPEMOD=".dylib";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
        JDK_DIR=/Library/Java/Home
@@ -6315,16 +6050,16 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_md_inc_dir="$jni_inc_dir";
        JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
        JVM="-framework JavaVM";
+       java_enable="yes"
        LIBPATH="DYLD_LIBRARY_PATH"
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
                      X_EXTRA_LIBS="-lXmu";;
 *apple-darwin*) echo "Configuring for MacOS X...";
-       RTEVENTS=""
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
+          FFLAGS="$FFLAGS -w -f -V -W";
+		  FORLD="$F77";
        elif (test "$F77" = "g77"); then
           FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
           FOR_LDFLAGS="-lg2c";
@@ -6332,9 +6067,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        elif (test "$F77" = "fort77"); then
           FFLAGS="$FFLAGS -!bs -Wf,-!it";
           FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
+		  FORLD="$CC";
+		  LOC="F2C_LOC";
+		  VAL="F2C_VAL";
        fi;
        FEXECLIBDIR="-L";
        LD="$CC"
@@ -6343,24 +6078,25 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="";
        LD_LDARC="";
        UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib";
+       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib";
        	   	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
+       X_CFLAGS="-I/usr/OpenMotif/include";
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".jnilib";
        SHARETYPEMOD=".so";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
+       JDK_DIR=/Library/Java/Home;
        jni_inc_dir="$JDK_DIR/include";
        jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
+       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar";
        JVM="-framework JavaVM";
-       LIBPATH="DYLD_LIBRARY_PATH"
+       java_enable="yes";
+       LIBPATH="DYLD_LIBRARY_PATH";
        HUP_TO_XINETD="killall -HUP xinetd";
        HUP_TO_INETD="killall -HUP inetd";
                      X_EXTRA_LIBS="-lXmu";;
@@ -6370,6 +6106,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDARC="";
        FOR_LDFLAGS="-lxlf90";
        LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LIBPATH";
        MAKESHLIBDIR="\$(top_srcdir)/shlib/";
        EXPORTS_FILE="\$(EXPORTS)";
@@ -6389,6 +6126,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD_LDSHARE="-Bdynamic ";
        LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
@@ -6399,6 +6137,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LDSHARE="";
        LDARC="";
        LINKSHARED="";
+       FOR_LINKSHARED="$LINKSHARED";
        LIBPATH="LD_LIBRARY_PATH";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";;
@@ -11194,6 +10933,92 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_func_malloc" >&5
 $as_echo "$ac_cv_func_malloc" >&6; }
 
+{ $as_echo "$as_me:$LINENO: checking for sched_setscheduler" >&5
+$as_echo_n "checking for sched_setscheduler... " >&6; }
+if test "${ac_cv_func_sched_setscheduler+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* Define sched_setscheduler to an innocuous variant, in case <limits.h> declares sched_setscheduler.
+   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
+#define sched_setscheduler innocuous_sched_setscheduler
+
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char sched_setscheduler (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+
+#undef sched_setscheduler
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char sched_setscheduler ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined __stub_sched_setscheduler || defined __stub___sched_setscheduler
+choke me
+#endif
+
+int
+main ()
+{
+return sched_setscheduler ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ac_cv_func_sched_setscheduler=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_func_sched_setscheduler=no
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_func_sched_setscheduler" >&5
+$as_echo "$ac_cv_func_sched_setscheduler" >&6; }
+
 if test $mdsplus_ok = yes; then
 		 cat >>confdefs.h <<\_ACEOF
 #define USE_NIS 1
@@ -14716,9 +14541,10 @@ LIBS="$LIBPTHREAD $LIBS"
 
 
 
+
 ac_config_headers="$ac_config_headers include/config.h"
 
-ac_config_files="$ac_config_files Makefile envsyms actions/Makefile cacheshr/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15318,7 +15144,6 @@ do
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "envsyms") CONFIG_FILES="$CONFIG_FILES envsyms" ;;
     "actions/Makefile") CONFIG_FILES="$CONFIG_FILES actions/Makefile" ;;
-    "cacheshr/Makefile") CONFIG_FILES="$CONFIG_FILES cacheshr/Makefile" ;;
     "camshr/Makefile") CONFIG_FILES="$CONFIG_FILES camshr/Makefile" ;;
     "ccl/Makefile") CONFIG_FILES="$CONFIG_FILES ccl/Makefile" ;;
     "cdu/Makefile") CONFIG_FILES="$CONFIG_FILES cdu/Makefile" ;;

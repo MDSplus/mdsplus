@@ -117,7 +117,7 @@ extern "C" int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs, int i
 extern "C" int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy);
 extern "C" int getTreeNumSegments(void *dbid, int nid, int *numSegments, int isCached); 
-extern "C" int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc, int isCached);
+extern "C" int getTreeSegmentLimits(void *dbid, int nid, void **startDsc, void **endDsc, int isCached);
 extern "C" int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc, int isCached);
 extern "C" int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
 extern "C" int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int isCached, int cachePolicy);
@@ -1456,7 +1456,7 @@ void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 	void *startDsc, *endDsc;
 	resolveNid();
 	//if(tree) tree->lock();
-	int status = getTreeSegmentLimits(tree->getCtx(), getNid(), segmentIdx, &startDsc, &endDsc, isCached());
+	int status = getTreeSegmentLimits(tree->getCtx(), getNid(), &startDsc, &endDsc, isCached());
 	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw new MdsException(status);

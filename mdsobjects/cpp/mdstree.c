@@ -53,7 +53,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
  int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc, 
 								void *timeDsc, int isCached, int cachePolicy);
  int getTreeNumSegments(void *dbid, int nid, int *numSegments, int isCached); 
- int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc, int isCached);
+ int getTreeSegmentLimits(void *dbid, int nid, void **startDsc, void **endDsc, int isCached);
  int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timesDsc, int isCached);
  int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);//No cache option  
  int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int isCached, int cachePolicy);
@@ -250,7 +250,7 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 		return _TreeGetNumSegments(dbid, nid, numSegments);
 }
 
- int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startPtr, void **endPtr, int isCached)
+ int getTreeSegmentLimits(void *dbid, int nid, void **startPtr, void **endPtr, int isCached)
 {
 	struct descriptor_xd *startXd, *endXd;
 	EMPTYXD(emptyXd);
@@ -263,9 +263,9 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 	*startPtr = startXd;
 	*endPtr = endXd;
 	if(isCached)
-		return _RTreeGetSegmentLimits(dbid, nid, idx, startXd, endXd);
+		return _RTreeGetSegmentLimits(dbid, nid, -1, startXd, endXd);
 	else
-		return _TreeGetSegmentLimits(dbid, nid, idx, startXd, endXd);
+		return _TreeGetSegmentLimits(dbid, nid, -1, startXd, endXd);
 }
 
 
