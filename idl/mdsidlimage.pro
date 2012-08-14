@@ -12,7 +12,7 @@ Function MdsIdlImage
       return,a+'/libMdsLibIdl.sl'
     end
     'linux' : return,'libMdsLibIdl.so'
-    'darwin': return,'libMdsLibIdl.so'
+    'darwin': return,'libMdsLibIdl.dylib'
     else  : message,'MDS is not supported on this platform',/IOERROR
   endcase
 end
