@@ -741,6 +741,9 @@ class Data(object):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
+        from _mdsshr import MdsSerializeDscOut
+        from mdsarray import Uint8Array
+        return Uint8Array(MdsSerializeDscOut(self))
         return Data.execute('SerializeOut($)',self)
 
     def deserialize(data):
@@ -749,6 +752,8 @@ class Data(object):
         @type data: Uint8Array
         @rtype: Data
         """
+        from _mdsshr import MdsSerializeDscIn
+        return MdsSerializeDscIn(data)
         return Data.execute('SerializeIn($)',data)
     deserialize=staticmethod(deserialize)
 

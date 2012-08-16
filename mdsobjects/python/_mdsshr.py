@@ -81,6 +81,26 @@ def MdsGetMsg(status,default=None):
         return default
     return __MdsGetMsg(status)
 
+def MdsSerializeDscOut(desc):
+    from _descriptor import descriptor_xd,descriptor
+    xd=descriptor_xd()
+    if not isinstance(desc,descriptor):
+        desc=descriptor(desc)
+    status=MdsShr.MdsSerializeDscOut(_C.pointer(desc),_C.pointer(xd))
+    if (status & 1) == 1:
+      return xd.value
+    else:
+      raise MdsException,MdsGetMsg(status)
+
+def MdsSerializeDscIn(bytes):
+    from _descriptor import descriptor_xd
+    xd=descriptor_xd()
+    status=MdsShr.MdsSerializeDscIn(bytes.ctypes.data,_C.pointer(xd))
+    if (status & 1) == 1:
+      return xd.value
+    else:
+      raise MdsException,MdsGetMsg(status)
+
 def MdsDecompress(value):
     from _descriptor import descriptor_xd
     from mdsarray import makeArray

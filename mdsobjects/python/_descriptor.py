@@ -119,7 +119,7 @@ class descriptor(_C.Structure):
             value._doing_units=True
             r_d=descriptor_r(DTYPE_WITH_UNITS,2)
             r_d.length=0
-            r_d.pointer=_C.cast(0,_C.POINTER(descriptor))
+            r_d.pointer=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor))
             dscs=list()
             dscs.append(descriptor(value))
             r_d.dscptrs[0]=_C.pointer(dscs[0])
@@ -137,7 +137,7 @@ class descriptor(_C.Structure):
             value._doing_help=True
             r_d=descriptor_r(DTYPE_PARAM,3)
             r_d.length=0
-            r_d.pointer=_C.cast(0,_C.POINTER(descriptor))
+            r_d.pointer=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor))
             dscs=list()
             dscs.append(descriptor(value))
             r_d.dscptrs[0]=_C.pointer(dscs[0])
@@ -163,7 +163,7 @@ class descriptor(_C.Structure):
             value._doing_error=True
             r_d=descriptor_r(DTYPE_WITH_ERROR,2)
             r_d.length=0
-            r_d.pointer=_C.cast(0,_C.POINTER(descriptor))
+            r_d.pointer=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor))
             dscs=list()
             dscs.append(descriptor(value))
             r_d.dscptrs[0]=_C.pointer(dscs[0])
@@ -190,14 +190,14 @@ class descriptor(_C.Structure):
             c_d=descriptor_r(value._dtype,len(value.args))
             if value.opcode is None:
                 c_d.length=0
-                c_d.pointer=_C.cast(0,_C.POINTER(descriptor))
+                c_d.pointer=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor))
             else:
                 c_d.length=2
                 c_d.pointer=_C.cast(_C.pointer(_C.c_ushort(value.opcode)),_C.POINTER(descriptor))
             arglist=list()
             for i in range(len(value.args)):
                 if value.args[i] is None:
-                    c_d.dscptrs[i]=_C.cast(0,_C.POINTER(descriptor))
+                    c_d.dscptrs[i]=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor))
                 else:
                     c_d.dscptrs[i]=_C.pointer(descriptor(value.args[i]))
             self.length=1000
