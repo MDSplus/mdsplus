@@ -8,6 +8,11 @@ def getRelease():
         ans=sys.argv[2].split('=')[1]
         sys.argv=sys.argv[0:-1]
         return ans
+      try:
+        from mdsplus_version import mdsplus_version
+        return mdsplus_version
+      except:
+        pass
       if 'MDSPLUS_PYTHON_VERSION' in os.environ:
 	return os.environ['MDSPLUS_PYTHON_VERSION']
       for flavor in ['','-beta','-alpha']:
