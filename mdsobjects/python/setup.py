@@ -1,9 +1,13 @@
 #!/usr/bin/env python
-
+import sys
 
 def getRelease():
     try:
       import os
+      if len(sys.argv) > 2 and 'version=' in sys.argv[2]:
+        ans=sys.argv[2].split('=')[1]
+        sys.argv=sys.argv[0:-1]
+        return ans
       if 'MDSPLUS_PYTHON_VERSION' in os.environ:
 	return os.environ['MDSPLUS_PYTHON_VERSION']
       for flavor in ['','-beta','-alpha']:
