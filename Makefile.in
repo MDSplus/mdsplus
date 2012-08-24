@@ -110,7 +110,7 @@ install:
 	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
 	done
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
-	if [ ! -z "$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$MDSPLUS_VERSION'" > @exec_prefix@/mdsplusobjects/python/mdsplus_version.py; fi
+	if [ ! -z "$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$MDSPLUS_VERSION'" > @exec_prefix@/mdsobjects/python/mdsplus_version.py; fi
 	cp MDSplus-License.txt @exec_prefix@ 
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
 
