@@ -12,5 +12,7 @@ Python interface to MDSplus
 /usr/local/mdsplus/mdsobjects/python
 
 %post python
-easy_install $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python/dist/*.egg
+pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python >/dev/null 2>&1
+python setup.py install >/dev/null 2>&1
+popd >/dev/null 2>&1
 
