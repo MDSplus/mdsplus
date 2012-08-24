@@ -50,6 +50,7 @@ def makeMacosxPkgCommand(args):
        shell(mdsplusdir,'sudo /usr/bin/mdsplus_sudo remove ../build','remove build failed')
        shell(mdsplusdir,'MDSPLUS_VERSION=%s%s.d make install' % (pyflavor,VERSION,release),'make install failed')
        shell(mdsplusdir,'cd ../build/mdsplus/mdsobjects/python; python setup.py bdist_egg version=%s%s.%d' % (pyflavor,VERSION,release),'python bdist_egg failed')
+       shell(mdsplusdir,'rsync -a ../build/mdsplus/mdsobjects/python/dist/*.egg %s/%s/EGGS/' % (args[2],FLAVOR)','Failed to copy eggs to destination')
        shell(mdsplusdir,'sudo /usr/bin/mdsplus_sudo chown ../build','chown failed')
        shell(mdsplusdir,'rm -f %s; /Developer/usr/bin/packagemaker --title "MDSplus%s" --version "%s.%d" --scripts %s/build/mdsplus/scripts --install-to "/usr/local" --target "10.5" -r %s/build -v -i "MDSplus%s" -o %s' % (pkgfile,pkgflavor,VERSION,release,WORKSPACE,WORKSPACE,pkgflavor,pkgfile),'Building package failed')
        shell(mdsplusdir,'sudo /usr/bin/mdsplus_sudo remove ../build','remove build failed')
