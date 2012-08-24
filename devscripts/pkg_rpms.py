@@ -242,7 +242,7 @@ def makeRpmsCommand(args):
             print "Error creating source tarball"
             sys.exit(1)
 
-        p=subprocess.Popen('rsync -av RPMS %s;rsync -av SOURCES %s;rsync -av EGGS %s' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
+        p=subprocess.Popen('rsync -av RPMS %s;rsync -av SOURCES %s;rsync -av ./i686/mdsplus/mdsobjects/python/dist/*.egg %s/EGGS' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=WORKSPACE)
         pstat=p.wait()
         if pstat != 0:
             print "Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,)
