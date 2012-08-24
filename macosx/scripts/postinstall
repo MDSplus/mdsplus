@@ -30,4 +30,7 @@ then
   echo "mdsip 8000/tcp # MDSplus mdsip data service" >> /etc/services
 fi
 
-easy_install $MDSPLUS_DIR/mdsobjects/python/dist/*.egg
+pushd $MDSPLUS_DIR > /dev/null 2>&1
+python setup.py install >/dev/null 2>&1
+popd > /dev/null 2>&1
+exit 0
