@@ -30,7 +30,11 @@ then
   echo "mdsip 8000/tcp # MDSplus mdsip data service" >> /etc/services
 fi
 
-pushd ${MDSPLUS_DIR}/mdsobjects/python > /var/log/mdsplus_postinstall 2>&1
+date > /var/log/mdsplus_postinstall
+pushd ${MDSPLUS_DIR}/mdsobjects/python >> /var/log/mdsplus_postinstall 2>&1
+python setup.py install >>/var/log/mdsplus_postinstall 2>&1
+popd >> /var/log/mdsplus_postinstall 2>&1
+pushd $(MDSPLUS_DIR)/tdi/MitDevices >> /var/log/mdsplus_postinstall 2>&1
 python setup.py install >>/var/log/mdsplus_postinstall 2>&1
 popd >> /var/log/mdsplus_postinstall 2>&1
 exit 0
