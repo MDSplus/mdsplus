@@ -9,5 +9,5 @@ then
 fi
 for f in $(ls $MDSPLUS_DIR 2>/dev/null | grep -v local)
 do
-  rm -Rvf $MDSPLUS_DIR/$f >> /var/log/preinstall.log
+  rm -Rvf $MDSPLUS_DIR/$f >/dev/null 2>&1
 done
