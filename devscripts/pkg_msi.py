@@ -3,7 +3,7 @@ from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFla
 
 def mkdirhier(outfile):
   parts=outfile.split('\\')[0:-1]
-  dirnam=''
+  dirname=''
   for part in parts:
     dirname=dirname+'\\'+part
     try:
