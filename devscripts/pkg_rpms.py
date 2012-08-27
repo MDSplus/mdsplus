@@ -19,7 +19,7 @@ def signrpms(arch):
         print "Error with signrpms - %s" % (e,)
         return 1
 
-def beginRpmSpec(specfile,version,release,rpmflavor):
+def beginRpmSpec(specfile,version,release,rpmflavor,pythonflavor):
     f_in=open('%s/rpm/mdsplus-part1.spec' % (getTopDir(),),'r')
     f_out=open(specfile,'w')
     line=f_in.readline()
@@ -35,6 +35,9 @@ def beginRpmSpec(specfile,version,release,rpmflavor):
     f_in=open('%s/rpm/mdsplus-part2-hudson.spec' % (getTopDir(),),"r")
     line=f_in.readline()
     while len(line) > 0:
+        line=line.replace("--VERSION--",version)
+        line=line.replace("--RELEASE--",str(release))
+        line=line.replace("--PYTHONFLAVOR--",pythonflavor)
         f_out.write(line)
         line=f_in.readline()
     f_in.close()
@@ -120,7 +123,7 @@ def makeRpmsCommand(args):
     if len(checkRelease("kernel")) > 0:
         release=release+1
     specfile="%s/SPECS/mdsplus-%s-%s-%s.spec" % (WORKSPACE,FLAVOR,VERSION,DIST)
-    beginRpmSpec(specfile,VERSION,release,rpmflavor)
+    beginRpmSpec(specfile,VERSION,release,rpmflavor,pythonflavor)
     need_to_build=False
     need_changelog=False
     updates=dict()

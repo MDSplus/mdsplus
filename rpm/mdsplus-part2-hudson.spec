@@ -23,7 +23,7 @@ fi
 if [ "%_target" != "i686-linux" ]
 then
   cd ${WORKSPACE}/x86_64/mdsplus
-  make install
+  env MDSPLUS_VERSION="--PYTHONFLAVOR----VERSION--.--RELEASE--" make install
   rsync -a ${WORKSPACE}/i686/mdsplus/bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
