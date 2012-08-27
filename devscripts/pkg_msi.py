@@ -1,6 +1,16 @@
 import os,subprocess,datetime,sys
 from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFlavor, newRelease
 
+def mkdirhier(outfile):
+  parts=outfile.split{'\\')[0:-1]
+  dirnam=''
+  for part in parts:
+    dirname=dirname+'\\'+part
+    try:
+      os.mkdir(dirname)
+    except Exception,e:
+      print e
+
 def msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     try:
         os.unlink('Setup/Setup%d.vdproj-orig' % (bits,))
@@ -10,6 +20,7 @@ def msiUpdateSetup(FLAVOR,WORKSPACE,VERSION,release,bits,outfile,msiflavor):
     try:
         os.stat(outfile+".uuid")
     except:
+        mkdirhier(outfile)
 	sys.stdout.flush()
         p=subprocess.Popen("uuidgen > %s.uuid" % (outfile,),shell=True)
         stat=p.wait()
