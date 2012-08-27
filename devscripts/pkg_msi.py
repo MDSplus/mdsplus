@@ -2,7 +2,7 @@ import os,subprocess,datetime,sys
 from pkg_utils import getWorkspace, getVersion, getRelease, checkRelease, getFlavor, newRelease
 
 def mkdirhier(outfile):
-  parts=outfile.split{'\\')[0:-1]
+  parts=outfile.split('\\')[0:-1]
   dirnam=''
   for part in parts:
     dirname=dirname+'\\'+part
