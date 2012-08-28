@@ -1461,7 +1461,8 @@ int LibFreeVm(unsigned int *len, void **vm, ZoneList **zone)
     }
     UnlockMdsShrMutex(&VmMutex,&VmMutex_initialized);
   }
-  free(*vm);
+  if (len && *len && vm && *vm)
+    free(*vm);
   if (list) 
     free(list);
   return 1;
