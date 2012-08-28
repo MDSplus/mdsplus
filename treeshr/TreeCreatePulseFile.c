@@ -173,12 +173,14 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       char *part;
       path = MaskReplace(pathin,tree_lower,source_shot);
       pathlen = strlen(path);
-      if (source_shot < 0)
-        sprintf(name,"%s_model",tree_lower);
-      else if (source_shot < 1000)
-        sprintf(name,"%s_%03d",tree_lower,source_shot);
-      else
+      if (source_shot > 999)
         sprintf(name,"%s_%d",tree_lower,source_shot);
+      else if (source_shot > 0)
+        sprintf(name,"%s_%03d",tree_lower,source_shot);
+      else if (source_shot == -1)
+        sprintf(name,"%s_model",tree_lower);
+      else
+        return TreeINVSHOT;
       for (i=0,part=path;i<pathlen+1;i++)
       {
         if (*part == ' ') 
@@ -213,12 +215,15 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
       {
         path = MaskReplace(pathin,tree_lower,shot);
         pathlen = strlen(path);
-        if (shot < 0)
-          sprintf(name,"%s_model",tree_lower);
-        else if (shot < 1000)
-          sprintf(name,"%s_%03d",tree_lower,shot);
-        else
+        if (shot > 999)
           sprintf(name,"%s_%d",tree_lower,shot);
+        else if (shot > 0)
+          sprintf(name,"%s_%03d",tree_lower,shot);
+        else if (shot == -1)
+          sprintf(name,"%s_model",tree_lower);
+        else
+          return TreeINVSHOT;
+
         for (i=0,part=path;i<pathlen+1;i++)
         {
           if (*part == ' ') 
