@@ -53,7 +53,7 @@ int TclSetTree()
     if (sts & 1)
         TclNodeTouched(0,tree);
     else
-        MdsMsg(sts,"Failed to open tree '%s', shot %d",filnam,shot);
+        MdsMsg(sts,"Failed to open tree '%s', shot %s",(char *)dsc_filnam.dscA_pointer,(char *)dsc_asciiShot.dscA_pointer);
 
     str_free1_dx(&dsc_filnam);
     str_free1_dx(&dsc_asciiShot);
