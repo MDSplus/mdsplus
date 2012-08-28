@@ -211,7 +211,7 @@ extern TreeCANCEL;
 #define TreeNOSEGMENTS  0xfd18fba
 #define TreeINVDTYPE 0xfd18fc2
 #define TreeINVSHAPE 0xfd18fca
-
+#define TreeINVSHOT 0xfd18fda
 #endif
 
 #ifndef MDSDESCRIP_H_DEFINED
@@ -297,9 +297,10 @@ static struct stsText  treeshr_stsText[] = {
    ,STS_TEXT(TreeLOCK_FAILURE,"Error locking file, perhaps NFSLOCKING not enabled on this system")
    ,STS_TEXT(TreeFILE_NOT_FOUND,"File or Directory Not Found")
    ,STS_TEXT(TreeCANCEL,"User canceled operation")
-    ,STS_TEXT(TreeNOSEGMENTS,"No segments exist in this node")
-    ,STS_TEXT(TreeINVDTYPE,"Invalid datatype for data segment")
-    ,STS_TEXT(TreeINVSHAPE,"Invalid shape for this data segment")
+   ,STS_TEXT(TreeNOSEGMENTS,"No segments exist in this node")
+   ,STS_TEXT(TreeINVDTYPE,"Invalid datatype for data segment")
+   ,STS_TEXT(TreeINVSHAPE,"Invalid shape for this data segment")
+   ,STS_TEXT(TreeINVSHOT,"Invalid shot number - must be -1 (model), 0 (current), or Positive")
    };
 #endif
 
