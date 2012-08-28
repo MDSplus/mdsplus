@@ -503,7 +503,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        elif (test "$F77" = "gfortran"); then
           FFLAGS="$FFLAGS -fno-range-check"
           FORLD="gcc"
-          FOR_LDFLAGS="-shared -arch x86_64 -arch i386 -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/ -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/i386 -lgfortranbegin -L/usr/local/gfortran/lib -L/usr/local/gfortran/lib/i386 -lquadmath -lgfortran -lgcc"
+          FOR_LDFLAGS="-shared -arch x86_64 -arch i386 -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/ -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/i386 -lgfortranbegin /usr/local/gfortran/lib/libquadmath.a /usr/local/gfortran/lib/i386/libquadmath.a /usr/local/gfortran/lib/libgfortran.a /usr/local/gfortran/lib/i386/libgfortran.a"
           LOC="loc"
        fi;
        FEXECLIBDIR="-L";
