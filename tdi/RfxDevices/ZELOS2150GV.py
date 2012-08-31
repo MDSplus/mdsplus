@@ -2,7 +2,9 @@ from MDSplus import *
 from numpy import *
 from threading import *
 from ctypes import *
+import datetime
 import time
+
 class ZELOS2150GV(Device):
     print 'Zelos2150GV'
     Int32(1).setTdiVar('_PyReleaseThreadLock')
@@ -51,10 +53,13 @@ class ZELOS2150GV(Device):
     class AsynchStore(Thread):
       frameIdx = 0
       stopReq = False
-       
-      def configure(self, device, kappaLib, width, height, hBuffers):
+   
+    
+      def configure(self, device, kappaLib, mdsLib, streamLib, width, height, hBuffers):
         self.device = device
         self.kappaLib = kappaLib
+        self.mdsLib = mdsLib
+        self.streamLib = streamLib
         self.width = width
         self.height = height
         self.hBuffers = hBuffers
@@ -67,64 +72,90 @@ class ZELOS2150GV(Device):
         frameType = c_byte * (self.height.value * self.width.value)  #used for streaming frame
         frame8bit = frameType()
 
-	self.idx = 0
+        self.idx = 0
 
+        treePtr = c_void_p(0);
+        status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
 
-	treePtr = c_void_p(0);
-	status = self.kappaLib.kappaOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
-	if status == -1:
+        if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
           return 0
-        if self.device.frame_sync.data() == 'EXTERNAL': 
-          isExternal = c_int(1)
-        else:
-          isExternal = c_int(0)
-       
 
+        if self.device.frame_sync.data() == 'EXTERNAL': 
+          isExternal = 1
+          timebaseNid=self.device.frame_clock.getNid()
+        else:
+          isExternal = 0
+          timebaseNid=c_int(-1)
+       
         if self.device.streaming.data() == 'Stream and Store': 
           isStreaming = 1
-          isStorage = c_int(1)
+          isStorage = 1
         if self.device.streaming.data() == 'Only Stream': 
           isStreaming = 1
-          isStorage = c_int(0)
+          isStorage = 0
         if self.device.streaming.data() == 'Only Store': 
           isStreaming = 0
-          isStorage = c_int(1)
+          isStorage = 1
 
 
         tcpStreamHandle=c_int(-1)
-        prevFrameTime=c_int64(0)
-        status=-1
+        frameTime=0
+        prevFrameTime=0
+        framePeriod = int(self.device.frame_period.data()/1E-3)
+        status=c_int(-1)
         streamPort=c_int(self.device.stream_port.data())
 
+        lowLim=c_int(0)
+        highLim=c_int(32767)
 
         while not self.stopReq:
 
-          status = self.kappaLib.kappaSaveFrame(self.device.handle, self.width, self.height, frameBuffer, isExternal, treePtr, self.device.frames.getNid(), self.device.frame_clock.getNid(), c_int(self.idx), byref(prevFrameTime), isStorage) 
+          self.kappaLib.kappaGetFrame(self.device.handle, byref(status), frameBuffer)
+          print 'get frame status:', status
 
+          if isExternal==0:  #internal clock source -> S.O. timestamp
+            timestamp=datetime.datetime.now()
+            prevFrameTime=frameTime
+            frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
+            deltaT=frameTime-prevFrameTime
+            #print 'delta T: ', deltaT
+            if (deltaT)<framePeriod:
+              time.sleep((framePeriod-deltaT)/1E3)
+              #print 'sleep di ', (framePeriod-deltaT)
+            #print 'timestamp 64bit: ', frameTime
+            #ts=datetime.datetime.now()
+            #ft=int(time.mktime(ts.timetuple())*1000)+int(ts.microsecond/1000)
+            #print 'timestamp 64bit post wait: ', ft
+
+          if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
+            self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, byref(c_int64(frameTime)), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx)) 
+            self.idx = self.idx + 1
+            print 'saved frame idx:', self.idx
 
           if ( (isStreaming==1) and (tcpStreamHandle.value==-1) ):   
-            self.kappaLib.kappaOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
-            print 'kappa Open Tcp Connection!!!! handle:'
-            print tcpStreamHandle.value
+            self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
+            #print 'Stream Tcp Connection Opened. Handle:',tcpStreamHandle.value
+
           if ( (isStreaming==1) and (tcpStreamHandle.value!=-1) ): 
-              self.kappaLib.kappaSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frameBuffer, frame8bit);
-
-          if status == 0:
-              self.idx = self.idx + 1
-
+            #self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, c_int(14), frame8bit);
+            self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, c_int(0), byref(lowLim), byref(highLim), c_int(0), c_int(32767));
+            self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit);
+   
         #endwhile
-        self.kappaLib.kappaCloseTcpConnection(byref(tcpStreamHandle))
-        print 'kappaCloseTcpConnection'
+        self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
+        #print 'Stream Tcp Connection Closed'
     
-	status = self.kappaLib.kappaStopAcquisition(self.device.handle, self.hBuffers)
+        status = self.kappaLib.kappaStopAcquisition(self.device.handle, self.hBuffers)
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot stop camera acquisition')
 
         #close device and remove from info
         self.kappaLib.kappaClose(self.device.handle)
-	self.device.removeInfo()
+        self.device.removeInfo()
         return 0
+
+
       def stop(self):
         self.stopReq = True
   #end class AsynchStore
@@ -186,10 +217,20 @@ class ZELOS2150GV(Device):
       global zelosHandles
       global zelosNids
       global kappaLib
+      global streamLib
+      global mdsLib
       try:
         kappaLib
       except:
         kappaLib = CDLL("libkappazelos.so")
+      try:
+        mdsLib
+      except:
+        mdsLib = CDLL("libcammdsutils.so")
+      try:
+        streamLib
+      except:
+        streamLib = CDLL("libcamstreamutils.so")
       try:
         idx = zelosNids.index(self.getNid())
         self.handle = zelosHandles[idx]
@@ -201,10 +242,10 @@ class ZELOS2150GV(Device):
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
           return 0
-        try: 
-          self.handle = c_void_p(0)
-          kappaLib.kappaOpen(c_char_p(name), byref(self.handle))
-        except:
+
+        self.handle = c_void_p(0)
+        status = kappaLib.kappaOpen(c_char_p(name), byref(self.handle))
+        if status < 0:  
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
           return 0
       return
@@ -218,7 +259,7 @@ class ZELOS2150GV(Device):
         zelosHandles.remove(self.handle)
       except:
         print 'ERROR TRYING TO REMOVE INFO'
-      returnS
+      return
 
 
 ##########init############################################################################    
@@ -226,69 +267,88 @@ class ZELOS2150GV(Device):
       global kappaLib
       self.restoreInfo()
       self.frames.setCompressOnPut(False)	
-      try: 
-       # kappaLib.kappaBaseSetup(self.handle, c_int(0), c_int(0))
-	kappaLib.kappaSetColorCoding(self.handle, c_int(6));  #Y14
-        if self.frame_sync.data() == 'EXTERNAL': 
-          kappaLib.kappaSetExposureMode(self.handle, c_int(3))
-        else:
-          kappaLib.kappaSetExposureMode(self.handle, c_int(2))
 
-#2 = ZELOS_ENUM_EXPOSUREMODE_FREERUNNINGSEQUENTIAL 
-#3 = ZELOS_ENUM_EXPOSUREMODE_RESETRESTART 
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot perform base setup ')
+      status = kappaLib.kappaSetColorCoding(self.handle, c_int(6));  #Y14
+      if status < 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
         return 0
+
+###Exposure	Mode
+      if self.frame_sync.data() == 'EXTERNAL': 
+        status = kappaLib.kappaSetExposureMode(self.handle, c_int(3)) #3 = ZELOS_ENUM_EXPOSUREMODE_RESETRESTART 
+      else:
+        status = kappaLib.kappaSetExposureMode(self.handle, c_int(2)) #2 = ZELOS_ENUM_EXPOSUREMODE_FREERUNNINGSEQUENTIAL
+
+      if status < 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Mode')
+        return 0
+
 ###Exposure	
       autoExp = self.auto_exp.data()
       if autoExp == 'YES':
-      	kappaLib.kappaSetAET(self.handle, c_int(1))
-        try:
-	  kappaLib.kappaSetAutoExposureLevel(self.handle, c_int(self.exp_lev.data()))
-        except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set exposure level')
+      	status = kappaLib.kappaSetAET(self.handle, c_int(1))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET On')
+          return 0
+        status = kappaLib.kappaSetAutoExposureLevel(self.handle, c_int(self.exp_lev.data()))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Auto Exposure Level')
           return 0
       else:
-      	kappaLib.kappaSetAET(self.handle, c_int(0))
-        try:
-	  kappaLib.kappaSetExposure(self.handle, c_float(self.exp_time.data()))
-        except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set exposure time')
+      	status = kappaLib.kappaSetAET(self.handle, c_int(0))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET Off')
           return 0
+        status = kappaLib.kappaSetExposure(self.handle, c_float(self.exp_time.data()))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Time')
+          return 0
+          
 ###Gain
       autoGain = self.auto_gain.data()
       if autoGain == 'YES':
-      	kappaLib.kappaSetAGC(self.handle, c_int(1))
-      else:
-      	kappaLib.kappaSetAGC(self.handle, c_int(0))
-        try:
-	  kappaLib.kappaSetGain(self.handle, c_int(self.gain_lev.data()))
-        except:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set gain level')
+      	status = kappaLib.kappaSetAGC(self.handle, c_int(1))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
           return 0
+      else:
+      	status = kappaLib.kappaSetAGC(self.handle, c_int(0))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
+          return 0
+        status = kappaLib.kappaSetGain(self.handle, c_int(self.gain_lev.data()))
+        if status < 0:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Gain')
+          return 0
+
+###Slow Scan
       slowScan = self.slow_scan.data()
       if slowScan == 'YES':
-	  kappaLib.kappaSetSlowScan(self.handle, c_int(1))
+       status = kappaLib.kappaSetSlowScan(self.handle, c_int(1))
       else:
-	  kappaLib.kappaSetSlowScan(self.handle, c_int(0))
+       status = kappaLib.kappaSetSlowScan(self.handle, c_int(0))
+      if status < 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Slow Scan')
+        return 0
+
 ###Frame Area
-      try:
-     	kappaLib.kappaSetReadoutArea(self.handle, c_int(self.frame_x.data()),c_int(self.frame_y.data()),c_int(self.frame_width.data()),c_int(self.frame_height.data()))
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set frame area')
+      status = kappaLib.kappaSetReadoutArea(self.handle, c_int(self.frame_x.data()),c_int(self.frame_y.data()),c_int(self.frame_width.data()),c_int(self.frame_height.data()))
+      if status < 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Readout Area')
         return 0
+
 ###Measure Area
-      try:
-     	kappaLib.kappaSetMeasureWindow(self.handle, c_int(self.meas_x.data()),c_int(self.meas_y.data()),c_int(self.meas_width.data()),c_int(self.meas_height.data()))
-      except:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set measure window')
+      status = kappaLib.kappaSetMeasureWindow(self.handle, c_int(self.meas_x.data()),c_int(self.meas_y.data()),c_int(self.meas_width.data()),c_int(self.meas_height.data()))
+      if status < 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Measure Window')
         return 0
+
 ###Binning
-      try:
-        kappaLib.kappaSetBinning(self.handle, c_int(self.hor_binning), c_int(self.ver_binning))
-      except:
+      status = kappaLib.kappaSetBinning(self.handle, c_int(self.hor_binning), c_int(self.ver_binning))
+      if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set horizontal or vertical binning')
         return 0
+
       self.saveInfo()
       return 1
 
@@ -299,11 +359,9 @@ class ZELOS2150GV(Device):
 
       synch = self.frame_sync.data();  ###Synchronization
       if synch == 'INTERNAL':
-        try:
-          timeMs = int(self.frame_period.data()/1E-3)
-	  print timeMs
-	  kappaLib.kappaSetTriggerTimer(self.handle, c_int(timeMs))		
-	except:
+        timeMs = int(self.frame_period.data()/1E-3)
+        status = kappaLib.kappaSetTriggerTimer(self.handle, c_int(timeMs))		
+        if status < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set Frame period in internal sync mode')
           return 0
       else:
@@ -315,6 +373,8 @@ class ZELOS2150GV(Device):
 ##########start store############################################################################   
     def start_store(self, arg):
       global kappaLib
+      global mdsLib
+      global streamLib
       self.restoreInfo()
       self.worker = self.AsynchStore()        
       self.worker.daemon = True 
@@ -327,7 +387,7 @@ class ZELOS2150GV(Device):
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition')
         return 0
-      self.worker.configure(self, kappaLib, width, height, hBuffers)
+      self.worker.configure(self, kappaLib, mdsLib, streamLib, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()
       return 1

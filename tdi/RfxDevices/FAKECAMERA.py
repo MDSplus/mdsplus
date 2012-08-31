@@ -2,34 +2,20 @@ from MDSplus import *
 from numpy import *
 from threading import *
 from ctypes import *
+import datetime
 import time
+
 class FAKECAMERA(Device):
     print 'Fake Camera'
     Int32(1).setTdiVar('_PyReleaseThreadLock')
-    """fake Camera"""
+    """Fake Camera"""
     parts=[
-      {'path':':NAME', 'type':'text'},
+      {'path':':NAME', 'type':'text', 'value':'Fake Camera 1'},
       {'path':':COMMENT', 'type':'text'},
-      {'path':':IP', 'type':'text'},
-      {'path':':EXP_TIME', 'type':'numeric', 'value':20E-3},
-      {'path':':AUTO_EXP', 'type':'text', 'value':'NO'},
-      {'path':':EXP_LEV', 'type':'numeric', 'value':0},
-      {'path':':AUTO_GAIN', 'type':'text', 'value':'NO'},
-      {'path':':GAIN_LEV', 'type':'numeric', 'value':100},
-      {'path':':SLOW_SCAN', 'type':'text', 'value':'NO'},
-      {'path':':FRAME_X', 'type':'numeric', 'value':11},
-      {'path':':FRAME_Y', 'type':'numeric', 'value':11},
-      {'path':':FRAME_WIDTH', 'type':'numeric', 'value':1920},
-      {'path':':FRAME_HEIGHT', 'type':'numeric', 'value':1080},
-      {'path':':MEAS_X', 'type':'numeric', 'value':11},
-      {'path':':MEAS_Y', 'type':'numeric', 'value':11},
-      {'path':':MEAS_WIDTH', 'type':'numeric', 'value':1920},
-      {'path':':MEAS_HEIGHT', 'type':'numeric', 'value':1080},
-      {'path':':VER_BINNING', 'type':'numeric', 'value':1},
-      {'path':':HOR_BINNING', 'type':'numeric', 'value':1},
-      {'path':':FRAME_SYNC', 'type':'text', 'value':'INTERNAL'},
-      {'path':':FRAME_PERIOD', 'type':'numeric', 'value':100E-3},
-      {'path':':FRAME_CLOCK', 'type':'numeric'},
+      {'path':':EXP_NAME', 'type':'text', 'value':'cameratest'},
+      {'path':':EXP_SHOT', 'type':'text', 'value':'84'},
+      {'path':':EXP_NODE', 'type':'text', 'value':'\CAMERATEST::FLIR:FRAMES'},
+      {'path':':FRAME_RATE', 'type':'numeric', 'value':25},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
       {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
       {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},]
@@ -51,14 +37,15 @@ class FAKECAMERA(Device):
     class AsynchStore(Thread):
       frameIdx = 0
       stopReq = False
-       
-      def configure(self, device, FakeCamLib, width, height, hBuffers):
+
+      def configure(self, device, FakeCamLib, mdsLib, streamLib, width, height, hBuffers):
         self.device = device
         self.FakeCamLib = FakeCamLib
+        self.mdsLib = mdsLib
+        self.streamLib = streamLib
         self.width = width
         self.height = height
         self.hBuffers = hBuffers
-
 
       def run(self):
         frameType = c_short * (self.height.value * self.width.value) #used for acquired frame
@@ -67,64 +54,81 @@ class FAKECAMERA(Device):
         frameType = c_byte * (self.height.value * self.width.value)  #used for streaming frame
         frame8bit = frameType()
 
-	self.idx = 0
+        self.idx = 0
 
-
-	treePtr = c_void_p(0);
-	status = self.FakeCamLib.fakeOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
-	if status == -1:
+        treePtr = c_void_p(0);
+        timebaseNid=c_int(-1);  #frame time remapped with storage time by S.O.
+        status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
+        if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
           return 0
-        if self.device.frame_sync.data() == 'EXTERNAL': 
-          isExternal = c_int(1)
-        else:
-          isExternal = c_int(0)
-       
 
         if self.device.streaming.data() == 'Stream and Store': 
           isStreaming = 1
-          isStorage = c_int(1)
+          isStorage = 1
         if self.device.streaming.data() == 'Only Stream': 
           isStreaming = 1
-          isStorage = c_int(0)
+          isStorage = 0
         if self.device.streaming.data() == 'Only Store': 
           isStreaming = 0
-          isStorage = c_int(1)
+          isStorage = 1
 
 
         tcpStreamHandle=c_int(-1)
-        prevFrameTime=c_int64(0)
-        status=-1
+        frameTime=0
+        prevFrameTime=0
+        status=c_int(-1)
         streamPort=c_int(self.device.stream_port.data())
 
+        lowLim=c_int(0)
+        highLim=c_int(32767)
+        framecounter=0
 
         while not self.stopReq:
 
-          status = self.FakeCamLib.fakeSaveFrame(self.device.handle, self.width, self.height, frameBuffer, isExternal, treePtr, self.device.frames.getNid(), self.device.frame_clock.getNid(), c_int(self.idx), byref(prevFrameTime), isStorage) 
+          self.FakeCamLib.fakeGetFrame(self.device.handle, byref(status), frameBuffer, c_int(framecounter))	
+          framecounter = framecounter + 1
 
+
+          timestamp=datetime.datetime.now()
+          prevFrameTime=frameTime
+          frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
+          deltaT=frameTime-prevFrameTime
+          #print 'delta T: ', deltaT
+          #print 'timestamp 64bit: ', frameTime
+          #ts=datetime.datetime.now()
+          #ft=int(time.mktime(ts.timetuple())*1000)+int(ts.microsecond/1000)
+          #print 'timestamp 64bit post wait: ', ft
+
+          if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
+            self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, byref(c_int64(frameTime)), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx)) 
+            self.idx = self.idx + 1
+            print 'saved frame idx:', self.idx
 
           if ( (isStreaming==1) and (tcpStreamHandle.value==-1) ):   
-            self.FakeCamLib.fakeOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
-            print 'Fake camera Open Tcp Connection!!!! handle:'
-            print tcpStreamHandle.value
+            self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
+            #print 'Stream Tcp Connection Opened. Handle:',tcpStreamHandle.value
+
           if ( (isStreaming==1) and (tcpStreamHandle.value!=-1) ): 
-              self.FakeCamLib.fakeSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frameBuffer, frame8bit);
-
-          if status == 0:
-              self.idx = self.idx + 1
-
+            #self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, c_int(14), frame8bit);
+            self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, c_int(0), byref(lowLim), byref(highLim), c_int(0), c_int(32767));
+            self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit);
+   
         #endwhile
-        self.FakeCamLib.fakeCloseTcpConnection(byref(tcpStreamHandle))
-        print 'FakeCameraCloseTcpConnection'
+        self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
+        #print 'Stream Tcp Connection Closed'
     
-	status = self.FakeCamLib.fakeStopAcquisition(self.device.handle, self.hBuffers)
+        status = self.FakeCamLib.fakeStopAcquisition(self.device.handle, self.hBuffers)
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot stop camera acquisition')
 
         #close device and remove from info
         self.FakeCamLib.fakeClose(self.device.handle)
-	self.device.removeInfo()
+        self.device.removeInfo()
         return 0
+
+
+
       def stop(self):
         self.stopReq = True
   #end class AsynchStore
@@ -186,27 +190,63 @@ class FAKECAMERA(Device):
       global fakeHandles
       global fakeNids
       global FakeCamLib
+      global streamLib
+      global mdsLib
       try:
         FakeCamLib
       except:
         FakeCamLib = CDLL("libfakecamera.so")
+      try:
+        mdsLib
+      except:
+        mdsLib = CDLL("libcammdsutils.so")
+      try:
+        streamLib
+      except:
+        streamLib = CDLL("libcamstreamutils.so")
       try:
         idx = fakeNids.index(self.getNid())
         self.handle = fakeHandles[idx]
         print 'RESTORE INFO HANDLE TROVATO'
       except:
         print 'RESTORE INFO HANDLE NON TROVATO'
+
         try: 
           name = self.name.data()
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
           return 0
 
+        try: 
+          exp_name = self.exp_name.data()
+        except:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source experiment name' )
+          return 0
+
+        try: 
+          exp_shot = self.exp_shot.data()
+        except:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source shot' )
+          return 0
+
+        try: 
+          exp_node = self.exp_node.data()
+        except:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing source frame node' )
+          return 0
+
+        try: 
+          frame_rate = self.frame_rate.data()
+        except:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing reading frame rate' )
+          return 0
+
         self.handle = c_void_p(0)
-        status = FakeCamLib.fakeOpen(c_char_p(name), byref(self.handle))
+        status = FakeCamLib.fakeOpen(c_char_p(exp_name), c_char_p(exp_shot), c_char_p(exp_node), c_float(frame_rate), byref(self.handle))
         if status < 0:  
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
           return 0
+
       return
 
 ###remove info###    
@@ -227,111 +267,20 @@ class FAKECAMERA(Device):
       self.restoreInfo()
       self.frames.setCompressOnPut(False)	
 
-      status = FakeCamLib.fakeSetColorCoding(self.handle, c_int(6));  #Y14
-      if status < 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
-        return 0
-
-###Exposure	Mode
-      if self.frame_sync.data() == 'EXTERNAL': 
-        status = FakeCamLib.fakeSetExposureMode(self.handle, c_int(3)) #3 = fake_ENUM_EXPOSUREMODE_RESETRESTART 
-      else:
-        status = FakeCamLib.fakeSetExposureMode(self.handle, c_int(2)) #2 = fake_ENUM_EXPOSUREMODE_FREERUNNINGSEQUENTIAL
-
-      if status < 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Mode')
-        return 0
-
-###Exposure	
-      autoExp = self.auto_exp.data()
-      if autoExp == 'YES':
-      	status = FakeCamLib.fakeSetAET(self.handle, c_int(1))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET On')
-          return 0
-        status = FakeCamLib.fakeSetAutoExposureLevel(self.handle, c_int(self.exp_lev.data()))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Auto Exposure Level')
-          return 0
-      else:
-      	status = FakeCamLib.fakeSetAET(self.handle, c_int(0))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AET Off')
-          return 0
-        status = FakeCamLib.fakeSetExposure(self.handle, c_float(self.exp_time.data()))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Exposure Time')
-          return 0
-          
-###Gain
-      autoGain = self.auto_gain.data()
-      if autoGain == 'YES':
-      	status = FakeCamLib.fakeSetAGC(self.handle, c_int(1))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
-          return 0
-      else:
-      	status = FakeCamLib.fakeSetAGC(self.handle, c_int(0))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set AGC On')
-          return 0
-        status = FakeCamLib.fakeSetGain(self.handle, c_int(self.gain_lev.data()))
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Gain')
-          return 0
-
-###Slow Scan
-      slowScan = self.slow_scan.data()
-      if slowScan == 'YES':
-       status = FakeCamLib.fakeSetSlowScan(self.handle, c_int(1))
-      else:
-       status = FakeCamLib.fakeSetSlowScan(self.handle, c_int(0))
-      if status < 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Slow Scan')
-        return 0
-
-###Frame Area
-      status = FakeCamLib.fakeSetReadoutArea(self.handle, c_int(self.frame_x.data()),c_int(self.frame_y.data()),c_int(self.frame_width.data()),c_int(self.frame_height.data()))
-      if status < 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Readout Area')
-        return 0
-
-###Measure Area
-      status = FakeCamLib.fakeSetMeasureWindow(self.handle, c_int(self.meas_x.data()),c_int(self.meas_y.data()),c_int(self.meas_width.data()),c_int(self.meas_height.data()))
-      if status < 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Measure Window')
-        return 0
-
-###Binning
-      status = FakeCamLib.fakeSetBinning(self.handle, c_int(self.hor_binning), c_int(self.ver_binning))
-      if status < 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set horizontal or vertical binning')
-        return 0
+#      status = FakeCamLib.fakeSetColorCoding(self.handle, c_int(6)); 
+#      if status < 0:
+#        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
+#        return 0
 
       self.saveInfo()
       return 1
 
-####################trigger###PER ORA NON FUNZIONA
-    def trigger(self,arg):
-      global FakeCamLib
-      self.restoreInfo()
-
-      synch = self.frame_sync.data();  ###Synchronization
-      if synch == 'INTERNAL':
-        timeMs = int(self.frame_period.data()/1E-3)
-        status = FakeCamLib.fakeSetTriggerTimer(self.handle, c_int(timeMs))		
-        if status < 0:
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set Frame period in internal sync mode')
-          return 0
-      else:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot issue software trigger if external synchornization')
-        return 0
-      self.saveInfo()
-      return 1
 		
 ##########start store############################################################################   
     def start_store(self, arg):
       global FakeCamLib
+      global mdsLib
+      global streamLib
       self.restoreInfo()
       self.worker = self.AsynchStore()        
       self.worker.daemon = True 
@@ -344,7 +293,7 @@ class FAKECAMERA(Device):
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Start Camera Acquisition')
         return 0
-      self.worker.configure(self, FakeCamLib, width, height, hBuffers)
+      self.worker.configure(self, FakeCamLib, mdsLib, streamLib, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()
       return 1
