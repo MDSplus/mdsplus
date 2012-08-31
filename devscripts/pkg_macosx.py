@@ -46,7 +46,7 @@ def makeMacosxPkgCommand(args):
        shell(mdsplusdir,
 	     './configure --enable-mdsip_connections --exec-prefix=%s/build/mdsplus --with-idl=/Applications/itt/idl/idl' % (WORKSPACE,),
              "configure failed")
-       shell(mdsplusdir,'make','make failed')
+       shell(mdsplusdir,'rm -f lib/*.a; make','make failed')
        shell(mdsplusdir,'sudo /usr/bin/mdsplus_sudo remove ../build','remove build failed')
        shell(mdsplusdir,'env MDSPLUS_VERSION="%s%s.%d" make install' % (pyflavor,VERSION,release),'make install failed')
        shell(mdsplusdir,'cd ../build/mdsplus/mdsobjects/python; python setup.py bdist_egg version=%s%s.%d' % (pyflavor,VERSION,release),'python bdist_egg failed')
