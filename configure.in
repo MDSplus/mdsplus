@@ -30,6 +30,10 @@ dnl Check out the compiler
 AC_PROG_CC
 AC_PROG_CXX
 
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(_int64)
+
 MDSIP_CONNECTIONS="yes";
 AC_ARG_ENABLE(mdsip_connections,
         [ --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.],MDSIP_CONNECTIONS="$enableval")
@@ -281,7 +285,6 @@ HUP_TO_INETD=""
 UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
-GCCLIB="`gcc -print-libgcc-file-name 2> /dev/null`";
 RTEVENTS="rtevents"
 
 LIBPTHREAD=-lpthread
@@ -447,6 +450,48 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
        jni_inc_dir="$jdk_dir/include";
        jni_md_inc_dir="$jdk_dir/include/linux";
+       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
+*arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
+       CC=arm-xilinx-linux-gnueabi-gcc;
+       LD=arm-xilinx-linux-gnueabi-ld;
+       AR=arm-xilinx-linux-gnueabi-ar;
+       RANLIB=arm-xilinx-linux-gnueabi-ranlib;
+       SIZEOF_LONG=4;
+       SIZEOF_LONG_LONG=8;
+       D64="";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       if (test "$F77" = "g77"); then
+         FFLAGS="$FFLAGS -Wno-globals"
+         FOR_LDFLAGS="-lg2c"
+         FORLD="$F77"
+         LOC="%loc"
+       elif (test "$F77" = "gfortran"); then
+         FFLAGS="$FFLAGS -fno-range-check";
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
+         FFLAGS="$FFLAGS -fno-range-check"
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       fi
+       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";
+       TAR_EXCLUDE="--exclude";
+       jni_inc_dir="$jdk_dir/include";
+       jni_md_inc_dir="$jdk_dir/include/linux";
+       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
@@ -631,6 +676,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";;
 esac
+
+GCCLIB="`$CC -print-libgcc-file-name 2> /dev/null`";
 
 dnl see if we have libdc1394 libraries and what version
 AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
@@ -915,28 +962,36 @@ if test $mdsplus_ok = yes; then
 fi
 
 dnl Check for Sybase
-AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
-if test "$SYBASE_LIB" = ""
+if test "$target_cpu" = "arm"
 then
-  AC_MSG_CHECKING(for SYBASE open/client or freetds)
-  : ${SYBASE=/usr/local/sybase}
-  if test -r "/usr/lib${SYB64}/libsybdb.so"
-  then
-        SYBASE_INC="-DSYBASE"
-        SYBASE_LIB="-lsybdb"
-        SYBASE="SYBASE"
-        AC_MSG_RESULT(have freetds)
-  elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
-  then 
-        SYBASE_INC="-I$SYBASE/include -DSYBASE"
-        SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
-	SYBASE="SYBASE"
-        AC_MSG_RESULT(have sybase open/client)
-  else
-        SYBASE_INC=""
-        SYBASE_LIB=""
-	SYBASE=""
-        AC_MSG_RESULT(no sybase open/client)
+   SYBASE_INC=""
+   SYBASE_LIB=""
+   SYBASE=""
+   AC_MSG_RESULT(no sybase open/client)
+else
+    AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
+    if test "$SYBASE_LIB" = ""
+    then
+      AC_MSG_CHECKING(for SYBASE open/client or freetds)
+      : ${SYBASE=/usr/local/sybase}
+      if test -r "/usr/lib${SYB64}/libsybdb.so"
+      then
+          SYBASE_INC="-DSYBASE"
+          SYBASE_LIB="-lsybdb"
+          SYBASE="SYBASE"
+          AC_MSG_RESULT(have freetds)
+      elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
+      then 
+          SYBASE_INC="-I$SYBASE/include -DSYBASE"
+          SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
+  	  SYBASE="SYBASE"
+          AC_MSG_RESULT(have sybase open/client)
+    else
+          SYBASE_INC=""
+          SYBASE_LIB=""
+	  SYBASE=""
+          AC_MSG_RESULT(no sybase open/client)
+    fi
   fi
 fi
 AC_MSG_CHECKING(if mdssql should be built)
@@ -953,9 +1008,6 @@ fi
 AC_DEFINE_UNQUOTED(SHARELIB_TYPE,"${SHARETYPE}")
 AC_C_BIGENDIAN
 AC_C_CHAR_UNSIGNED
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(long long)
-AC_CHECK_SIZEOF(_int64)
 AC_PATH_XTRA
 if test $UILCMD = uil32
 then
