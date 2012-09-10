@@ -65,6 +65,7 @@ void REvent::disconnectFromEvents()
 
 Event::Event(char *evName)
 {
+	sem.initialize(0);
 	eventBufSize = 0;
 	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
@@ -109,13 +110,21 @@ void REvent::setEvent(char *evName, Data *evData)
 	char *buf = evData->serialize(&bufLen);
 	MdsEventTrigger(evName, buf, bufLen);
 }
+
 void REvent::setEventAndWait(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
 	MdsEventTriggerAndWait(evName, buf, bufLen);
 }
+
+void REvent::setEventRaw(char *evName, int bufLen, char *buf)
+{
+	MdsEventTrigger(evName, buf, bufLen);
+}
+
 void REvent::setEventRawAndWait(char *evName, int bufLen, char *buf)
 {
 	MdsEventTriggerAndWait(evName, buf, bufLen);
 }
+
