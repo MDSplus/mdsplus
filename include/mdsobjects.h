@@ -2230,8 +2230,10 @@ protected:
 /////////////////End CachedTree/////////
 #endif
 /////////////Class Event///////////
+#include "../rtevents/UnnamedSemaphore.h"
 	class EXPORT Event
 	{
+	UnnamedSemaphore sem;
 	protected:
 		virtual void connectToEvents();
 		virtual void disconnectFromEvents();
@@ -2241,10 +2243,9 @@ protected:
 		int eventBufSize;
 		int eventId;
 		_int64 eventTime;
-		Event(){}
+		Event(){sem.initialize(0);}
 		Event(char *evName);
 		virtual ~Event();
-		virtual void run() {}
 		char *getRaw(int *size)
 		{
 			*size = eventBufSize;
@@ -2256,9 +2257,28 @@ protected:
 		}
 		char *getName() { return eventName;}
 	    Data *getData();
+		void wait()
+		{
+			sem.wait();
+		}
+		Data *waitData()
+		{
+			sem.wait();
+			return getData();
+		}
+		char *waitRaw(int *size)
+		{
+			sem.wait();
+			return getRaw(size);
+		}
+		virtual void run() 
+		{
+			sem.post();
+		}
 		static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEvent(char *evName, Data *evData);
+		static void waitEvent(char *eventName);
 //To keep them compatible with python
 		static void setevent(char *evName) {setEvent(evName); }
 		static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
