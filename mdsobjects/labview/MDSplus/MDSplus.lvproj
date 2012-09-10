@@ -13,11 +13,12 @@
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Sample and Utility VIs" Type="Folder">
 			<Item Name="PutGetTreeNode Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNode Example.vi"/>
-			<Item Name="WaitEventData Examplevi.vi" Type="VI" URL="../../../../../../Documents and Settings/mdsplus/My Documents/LabVIEW Data/2010(32-bit)/Palettes/vi.lib/MDSplus/WaitEventData Examplevi.vi"/>
 			<Item Name="SetEventData Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/SetEventData Example.vi"/>
 			<Item Name="MakeSegmentUtility.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/MakeSegmentUtility.vi"/>
 			<Item Name="MakeSegment Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/MakeSegment Example.vi"/>
 			<Item Name="PutRow Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRow Example.vi"/>
+			<Item Name="WaitEventData Examplevi.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/WaitEventData Examplevi.vi"/>
+			<Item Name="PutGetTreeNodeExpression Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExpression Example.vi"/>
 		</Item>
 		<Item Name="MDSplus.lvlib" Type="Library" URL="/&lt;vilib&gt;/MDSplus/Library/MDSplus.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
@@ -76,10 +77,6 @@
 				<Item Name="sub2ShouldUseDefSigName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/sub2ShouldUseDefSigName.vi"/>
 				<Item Name="subGetSignalName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/subGetSignalName.vi"/>
 				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
-				<Item Name="Tree Get Active Tree.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Get Active Tree.vi"/>
-				<Item Name="Tree Set Active Tree.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Set Active Tree.vi"/>
-				<Item Name="Get Active Tree.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Tree_Class/Get Active Tree.vi"/>
-				<Item Name="Set Active Tree.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Tree_Class/Set Active Tree.vi"/>
 			</Item>
 			<Item Name="lvanlys.dll" Type="Document" URL="../../../resource/lvanlys.dll"/>
 		</Item>

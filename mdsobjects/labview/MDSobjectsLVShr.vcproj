@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="MDSobjectsLVShr"
 	ProjectGUID="{EDB86082-C257-4799-A4A6-8A18B2CDFB6F}"
 	RootNamespace="MDSobjectsLVShr"
@@ -103,7 +103,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="1"
+			CharacterSet="2"
 			WholeProgramOptimization="1"
 			>
 			<Tool
@@ -125,6 +125,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\tdishr&quot;;&quot;$(SolutionDir)\mdsobjects\cpp&quot;;&quot;$(SolutionDir)\include&quot;;&quot;C:\Program Files\National Instruments\LabVIEW 2010\cintools&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MDSOBJECTSLVSHR_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -143,6 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="..\..\win32\debug\mdsipshr.lib ..\..\win32\debug\RtEventsShr.lib ..\..\win32\debug\MDSobjectsCppShr.lib ..\..\win32\debug\mdsshr.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"

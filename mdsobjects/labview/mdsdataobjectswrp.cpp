@@ -636,13 +636,13 @@ DLLEXPORT void mdsplus_data_compile_tree(void **lvDataPtrOut, const char *exprIn
 	}
 	catch (MdsException *mdsE)
 	{
-		deleteData(dataPtrOut);
+exit(0);
 		errorCode = bogusError;
 		errorMessage = const_cast<char *>(mdsE->what());
 	}
 	catch (exception *e)
 	{
-		deleteData(dataPtrOut);
+exit(0);
 		errorCode = bogusError;
 		errorMessage = const_cast<char *>(e->what());
 	}
