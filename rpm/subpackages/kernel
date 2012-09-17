@@ -80,7 +80,7 @@ then
   do
     if [ ! -h $RPM_INSTALL_PREFIX/mdsplus/$l -a -d $RPM_INSTALL_PREFIX/mdsplus/$l ]
     then
-      echo "$RPM_INSTALL_PREFIX/mdsplus/lib64" >> /etc/ld.so.conf.d/mdsplus.conf
+      echo "$RPM_INSTALL_PREFIX/mdsplus/$l" >> /etc/ld.so.conf.d/mdsplus.conf
     fi
   done
   ldconfig > /dev/null 2>&1
