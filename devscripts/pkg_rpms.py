@@ -59,12 +59,17 @@ def makeRepoRpms():
     WORKSPACE=getWorkspace()
     DIST=getDist()
     FLAVOR=getFlavor()
+    if FLAVOR == "stable":
+      rpmflavor=""
+    else:
+      rpmflavor="-"+FLAVOR
     sys.stdout.flush()
     p=subprocess.Popen('rpmbuild -ba' +\
                 ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
                 ' --define="_topdir %s"' % (WORKSPACE,)+\
                 ' --define="_builddir %s"' % (WORKSPACE,)+\
                 ' --define="flavor %s"' % (FLAVOR,)+\
+                ' --define="rpmflavor %s"' % (rpmflavor,)+\
                 ' --define="s_dist %s"' % (DIST,)+\
                 ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=getTopDir())
     rpmbuild_status=p.wait()
@@ -79,6 +84,7 @@ def makeRepoRpms():
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
                     ' --define="_builddir %s"' % (WORKSPACE,)+\
                     ' --define="flavor %s"' % (FLAVOR,)+\
+                    ' --define="rpmflavor %s" % (rpmflavor,)+\
                     ' --define="s_dist %s"' % (DIST,)+\
                     ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=getTopDir())
         rpmbuild_status=p.wait()
