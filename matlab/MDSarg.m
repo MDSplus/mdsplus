@@ -10,29 +10,42 @@ function  result = MDSarg( thing )
 %
 import MDSplus.*;
 if size(thing) == [1,1]
-    ans=thing;
-else
     switch class(thing)
         case 'double'
-            fprintf('it is a double\n')
-            result = Float64Array(reshape(thing,[],1),size(thing));
+            result = Float64(thing);
         case 'single'
-            fprintf( 'it is a single\n')
-            result = Float32Array(reshape(thing,[],1),size(thing));
+            result = Float32(thing);
         case 'int64'
-            fprintf( 'it is an int64\n')
-            result = Int64Array(reshape(thing,[],1),size(thing));
+            result = Int64(thing);
         case 'int32'
-            fprintf( 'it is an int32\n')
-            result = Int32Array(reshape(thing,[],1),size(thing));
+            result = Int32(thing);
         case 'int16'
-            fprintf( 'it is an int16\n')
-            result = Int16Array(reshape(thing,[],1),size(thing));
+            result = Int16(thing);
         case 'int8'
-            fprintf( 'it is an int8\n')
-            result = Int16Array(reshape(thing,[],1),size(thing));
+            result = Int8(thing);
+        case 'char'
+            result = String(thing);
         otherwise
-            fprintf('it is a %s\n', class(thing))
+            result = thing;
+    end
+else
+    sz = size(thing);
+    switch class(thing)
+        case 'double'
+            result = Float64Array(reshape(thing,[],1),sz(sz > 1));
+        case 'single'
+            result = Float32Array(reshape(thing,[],1),sz(sz > 1));
+        case 'int64'
+            result = Int64Array(reshape(thing,[],1),sz(sz > 1));
+        case 'int32'
+             result = Int32Array(reshape(thing,[],1),sz(sz > 1));
+        case 'int16'
+            result = Int16Array(reshape(thing,[],1),sz(sz > 1));
+        case 'int8'
+            result = Int8Array(reshape(thing,[],1),sz(sz > 1));
+        case 'char'
+            result = String(thing);
+        otherwise
             result = thing;
     end
 end
