@@ -47,7 +47,7 @@ Function MdsIPImage
               end
     'MacOS': return,!dir+'libMdsIpShr.lib'
     'linux': return,'libMdsIpShr.so'
-    'darwin': return,'libMdsIpShr.so'
+    'darwin': return,'libMdsIpShr.dylib'
     else  : message,'MDS is not supported on this platform',/IOERROR 
   endcase
 end
