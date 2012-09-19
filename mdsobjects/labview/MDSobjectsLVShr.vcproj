@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="$(LABVIEW_DIR)\cintools\labviewv.lib"
+				AdditionalDependencies="&quot;$(LABVIEW_DIR)\cintools\labviewv.lib&quot;"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
