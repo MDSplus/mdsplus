@@ -65,7 +65,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="..\..\win32\debug\mdsipshr.lib ..\..\win32\debug\RtEventsShr.lib ..\..\win32\debug\MDSobjectsCppShr.lib ..\..\win32\debug\mdsshr.lib&#x0D;&#x0A;"
+				AdditionalDependencies="$(LABVIEW_DIR)\cintools\labviewv.lib"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"
@@ -144,6 +144,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalDependencies="$(LABVIEW_DIR)\cintools\labviewv.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -215,10 +216,6 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 		</Filter>
-		<File
-			RelativePath="..\..\..\..\..\..\..\..\Program Files\National Instruments\LabVIEW 2010\cintools\labviewv.lib"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>
