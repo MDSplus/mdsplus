@@ -144,7 +144,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="..\..\win32\debug\mdsipshr.lib ..\..\win32\debug\RtEventsShr.lib ..\..\win32\debug\MDSobjectsCppShr.lib ..\..\win32\debug\mdsshr.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
