@@ -41,7 +41,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\tdishr&quot;;&quot;$(SolutionDir)\mdsobjects\cpp&quot;;&quot;$(SolutionDir)\include&quot;;&quot;$(LABVIEW_PATH)\cintools&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\tdishr&quot;;&quot;$(SolutionDir)\mdsobjects\cpp&quot;;&quot;$(SolutionDir)\include&quot;;&quot;$(LABVIEW_DIR)\cintools&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;HAVE_WINDOWS_H"
 				MinimalRebuild="false"
 				ExceptionHandling="1"
