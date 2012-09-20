@@ -25,7 +25,7 @@
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
-			ManagedExtensions="0"
+			ManagedExtensions="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -50,7 +50,7 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				AssemblerListingLocation=".\Debug/"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 				CompileAs="0"
 			/>
 			<Tool
@@ -68,7 +68,7 @@
 				AdditionalOptions="..\..\win32\debug\mdsipshr.lib ..\..\win32\debug\RtEventsShr.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				AssemblyDebug="0"
+				AssemblyDebug="1"
 				ProgramDatabaseFile="$(IntDir)\$(TargetName).pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -101,7 +101,7 @@
 			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="1"
+			CharacterSet="2"
 			ManagedExtensions="1"
 			>
 			<Tool
@@ -215,6 +215,7 @@
 				IgnoreImportLibrary="false"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
+				AssemblyDebug="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="0"
@@ -246,7 +247,7 @@
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="1"
+			CharacterSet="2"
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
