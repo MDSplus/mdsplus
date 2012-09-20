@@ -34,11 +34,12 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
     print 'FATTI PARAMS'
 
     parts.append({'path':'.WAVE_PARAMS', 'type':'structure'})
-    parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':29})
     waveParNames = ['bvAddRef','deltaIpRef','ipRef','normIpRef','iFSAddRef_1','iFSAddRef_2','iFSAddRef_3','iFSAddRef_4','iFSAddRef_5',
         'iFSAddRef_6','iFSAddRef_7','iFSAddRef_8','deltaIFSAddRef_1','deltaIFSAddRef_2','deltaIFSAddRef_3','deltaIFSAddRef_4',
 	'deltaIFSAddRef_5','deltaIFSAddRef_6','deltaIFSAddRef_7','deltaIFSAddRef_8','deltaHRef','pmatRef','pcatRef','tfatRef',
 	'fRef','btwRef','qRef']  
+    parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(waveParNames)})
+    print i, ' WAVES'
     for i in range(len(waveParNames)):
       print 'WAVE', i
       parts.append({'path':'.WAVE_PARAMS:WAVE_%03d'%(i+1), 'type':'structure'})
