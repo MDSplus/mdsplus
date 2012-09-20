@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual C++ Express 2008
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mdsshr", "mdsshr\mdsshr.vcproj", "{D5CFEB70-0478-48EB-97B6-44BCC3EE19BA}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tdishr", "tdishr\tdishr.vcproj", "{2A17EA39-3217-4F9B-A794-4B3C80B40744}"
@@ -293,6 +293,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mdsip_service-new", "mdstcp
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MDSobjectsLVShr", "mdsobjects\labview\MDSobjectsLVShr.vcproj", "{EDB86082-C257-4799-A4A6-8A18B2CDFB6F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{70571434-ABCB-4148-958B-B01BFD255F5B} = {70571434-ABCB-4148-958B-B01BFD255F5B}
+		{D5CFEB70-0478-48EB-97B6-44BCC3EE19BA} = {D5CFEB70-0478-48EB-97B6-44BCC3EE19BA}
+		{41A04396-0358-4B15-AA70-A98527827069} = {41A04396-0358-4B15-AA70-A98527827069}
+		{DB6527B9-920C-4017-B54A-C3AF8B534696} = {DB6527B9-920C-4017-B54A-C3AF8B534696}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
