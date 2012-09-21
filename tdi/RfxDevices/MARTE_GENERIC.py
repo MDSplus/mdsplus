@@ -108,6 +108,9 @@ class MARTE_GENERIC(Device):
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot read Control')
         return 0
+      eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
+      eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
+      eventStr = eventStr + " " + str(self.signals_user.getNid())
       print eventStr
       Event.setevent("MARTE", eventStr)
       time.sleep(3)
