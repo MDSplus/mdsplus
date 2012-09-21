@@ -14,6 +14,7 @@ fun public MdsDevices() {
     'MARTE_DEQU\0',  'RfxDevices\0',
     'MARTE_MHD_CTRL\0',  'RfxDevices\0',
     'MARTE_WAVEGEN\0',  'RfxDevices\0',
+    'MARTE_BREAKDOWN\0',  'RfxDevices\0',
     'MARTE_MHD_AC_BC\0',  'RfxDevices\0',
     'MARTE_EDA1\0',  'RfxDevices\0',
     'MARTE_EDA1_OUT\0',  'RfxDevices\0',
