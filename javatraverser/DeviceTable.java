@@ -602,7 +602,7 @@ public class DeviceTable extends DeviceComponent
         //First row
         String sign = "";
         if (refMode == REFLEX_INVERT)
-            sign = "-";
+            sign = "- ";
 
         //First row
         for(int i = 1; i < numCols/2; i++)
@@ -616,7 +616,7 @@ public class DeviceTable extends DeviceComponent
         for(int i = 1; i < numRows/2; i++)
             for(int j = 1; j < numCols/2; j++)
             {
-                items[(numRows - i)*numCols + numCols-j] = items[i*numCols + j];
+                items[(numRows - i)*numCols + numCols-j] = sign + items[i*numCols + j];
             }
     }
 
