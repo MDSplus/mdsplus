@@ -2380,7 +2380,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2449"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -2728,7 +2728,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2497"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -3076,7 +3076,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2545"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -3424,7 +3424,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2593"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -3772,7 +3772,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2641"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -4120,7 +4120,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2689"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -4468,7 +4468,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2737"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>
@@ -4816,7 +4816,7 @@
                             <Property name="numCols" type="int" value="48"/>
                             <Property name="numRows" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="2785"/>
-                            <Property name="refMode" type="int" value="1"/>
+                            <Property name="refMode" type="int" value="2"/>
                             <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                               <StringArray count="4">
                                 <StringItem index="0" value="0"/>

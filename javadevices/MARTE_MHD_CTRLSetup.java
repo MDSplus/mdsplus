@@ -1694,7 +1694,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable7.setNumCols(48);
         deviceTable7.setNumRows(4);
         deviceTable7.setOffsetNid(2449);
-        deviceTable7.setRefMode(1);
+        deviceTable7.setRefMode(2);
         deviceTable7.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel33.add(deviceTable7);
 
@@ -1771,7 +1771,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable19.setNumCols(48);
         deviceTable19.setNumRows(4);
         deviceTable19.setOffsetNid(2497);
-        deviceTable19.setRefMode(1);
+        deviceTable19.setRefMode(2);
         deviceTable19.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel39.add(deviceTable19);
 
@@ -1848,7 +1848,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable3.setNumCols(48);
         deviceTable3.setNumRows(4);
         deviceTable3.setOffsetNid(2545);
-        deviceTable3.setRefMode(1);
+        deviceTable3.setRefMode(2);
         deviceTable3.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel30.add(deviceTable3);
 
@@ -1925,7 +1925,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable11.setNumCols(48);
         deviceTable11.setNumRows(4);
         deviceTable11.setOffsetNid(2593);
-        deviceTable11.setRefMode(1);
+        deviceTable11.setRefMode(2);
         deviceTable11.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel35.add(deviceTable11);
 
@@ -2002,7 +2002,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable15.setNumCols(48);
         deviceTable15.setNumRows(4);
         deviceTable15.setOffsetNid(2641);
-        deviceTable15.setRefMode(1);
+        deviceTable15.setRefMode(2);
         deviceTable15.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel37.add(deviceTable15);
 
@@ -2079,7 +2079,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable23.setNumCols(48);
         deviceTable23.setNumRows(4);
         deviceTable23.setOffsetNid(2689);
-        deviceTable23.setRefMode(1);
+        deviceTable23.setRefMode(2);
         deviceTable23.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel41.add(deviceTable23);
 
@@ -2156,7 +2156,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable27.setNumCols(48);
         deviceTable27.setNumRows(4);
         deviceTable27.setOffsetNid(2737);
-        deviceTable27.setRefMode(1);
+        deviceTable27.setRefMode(2);
         deviceTable27.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel43.add(deviceTable27);
 
@@ -2233,7 +2233,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable31.setNumCols(48);
         deviceTable31.setNumRows(4);
         deviceTable31.setOffsetNid(2785);
-        deviceTable31.setRefMode(1);
+        deviceTable31.setRefMode(2);
         deviceTable31.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel45.add(deviceTable31);
 
