@@ -1437,9 +1437,10 @@ int LibDeleteVmZone(ZoneList **zone)
 int LibResetVmZone(ZoneList **zone)
 {
   VmList *list;
+  unsigned int len=1;
   LockMdsShrMutex(&VmMutex,&VmMutex_initialized);
   while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
-    LibFreeVm(0, &list->ptr, zone);
+    LibFreeVm(&len, &list->ptr, zone);
   UnlockMdsShrMutex(&VmMutex);
   return 1;
 }
