@@ -28,5 +28,9 @@ fi
 ldconfig >/dev/null 2>&1
 
 %postun motif
-rm -f /usr/share/applications/mdsplus/motif 2>/dev/null
-ldconfig >/dev/null 2>&1
+if [ "$1" == "0" ]
+then
+  rm -f /usr/share/applications/mdsplus/motif 2>/dev/null
+  ldconfig >/dev/null 2>&1
+fi
+

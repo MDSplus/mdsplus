@@ -85,13 +85,15 @@ then
   done
   ldconfig > /dev/null 2>&1
 fi
-echo $RPM_INSTALL_PREFIX/mdsplus > /etc/.mdsplus_dir
-if [ -d /etc/profile.d ]
+if [ "$(uname -i)" == "i386" ]
 then
-  rm -f /etc/profile.d/mdsplus.sh /etc/profile.d/mdsplus.csh 2>/dev/null
-  ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
-  ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
+  bits=32
+else
+  bits=64
 fi
+ln -sf bin${bits} $RPM_INSTALL_PREFIX/mdsplus/bin
+ln -sf lib${bits} $RPM_INSTALL_PREFIX/mdsplus/lib
+ln -sf uil${bits} $RPM_INSTALL_PREFIX/mdsplus/uil
 if [ -d /etc/xdg/menus/applications-merged ]
 then
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/mdsplus.menu /etc/xdg/menus/applications-merged/
@@ -107,30 +109,42 @@ then
 fi
 
 
+%preun kernel
+
+if [ "$1" == "0" ]
+then
+  rm -f $RPM_INSTALL_PREFIX/mdsplus/bin
+  rm -f $RPM_INSTALL_PREFIX/mdsplus/lib
+  rm -f $RPM_INSTALL_PREFIX/mdsplus/uil
+fi
+
 %postun kernel
 
-rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null 
-rm -f /etc/profile.d/mdsplus.sh 2>/dev/null
-rm -f /etc/profile.d/mdsplus.csh 2>/dev/null
-rm -f /etc/.mdsplus_dir 2>/dev/null
-rm -f /etc/xdg/menus/applications-merged/mdsplus.menu
-rm -f /usr/share/desktop-directories/mdsplus.directory
-rm -Rf /usr/share/applications/mdsplus
-if [ -r /etc/xinetd.d/mdsip ]
+if [ "$1" == "0" ]
 then
-  rm -f /etc/xinetd.d/mdsip
-  /sbin/service xinetd reload
-fi
-if ( grep '^mdsip[[:space::]]' /etc/services >/dev/null 2>&1 )
-then
-  tmpfile=$(mktemp)
-  if ( grep -v '^mdsip[[:space::]]' /etc/services > $tmpfile )
+  rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null 
+  rm -f /etc/profile.d/mdsplus.sh 2>/dev/null
+  rm -f /etc/profile.d/mdsplus.csh 2>/dev/null
+  rm -f /etc/.mdsplus_dir 2>/dev/null
+  rm -f /etc/xdg/menus/applications-merged/mdsplus.menu
+  rm -f /usr/share/desktop-directories/mdsplus.directory
+  rm -Rf /usr/share/applications/mdsplus
+  if [ -r /etc/xinetd.d/mdsip ]
   then
-    mv /etc/services /etc/services.rpmsave
-    mv $tmpfile /etc/services
+    rm -f /etc/xinetd.d/mdsip
+    /sbin/service xinetd reload
   fi
-fi 
-ldconfig
+  if ( grep '^mdsip[[:space::]]' /etc/services >/dev/null 2>&1 )
+  then
+    tmpfile=$(mktemp)
+    if ( grep -v '^mdsip[[:space::]]' /etc/services > $tmpfile )
+    then
+      mv /etc/services /etc/services.rpmsave
+      mv $tmpfile /etc/services
+    fi
+  fi 
+  ldconfig
+fi
 
 %triggerin kernel -- xinetd
 if [ ! -r /etx/xinetd.d/mdsip ]
