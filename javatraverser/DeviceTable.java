@@ -617,7 +617,7 @@ public class DeviceTable extends DeviceComponent
         for(int i = 1; i < numRows; i++)
             for(int j = 1; j < numCols/2; j++)
             {
-                items[(numRows - i)*numCols + numCols-j] = sign + items[i*numCols + j];
+                items[(numRows - i)*numCols + numCols-j] = sign + items[i*numRows + j];
             }
         System.out.println("HERMITIAN:");
         for(int i = 0; i < numRows; i++)
