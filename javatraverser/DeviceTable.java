@@ -613,7 +613,8 @@ public class DeviceTable extends DeviceComponent
             items[(numRows - i)*numCols] = sign + items[i * numCols];
         }
         //Remaining
-        for(int i = 1; i < numRows/2; i++)
+//        for(int i = 1; i < numRows/2; i++)
+        for(int i = 1; i < numRows; i++)
             for(int j = 1; j < numCols/2; j++)
             {
                 items[(numRows - i)*numCols + numCols-j] = sign + items[i*numCols + j];
