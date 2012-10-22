@@ -2339,12 +2339,9 @@ public class ParameterSetting
                                          currSetupOnHash);
             if (timeSelect[4]) saveSetup(0, pr_mask, currSetupHash,
                                          currSetupOnHash);
-/*            if (timeSelect[5]) saveSetup(0, ptso_mask, currSetupHash,
+            if (timeSelect[5]) saveSetup(0, ptso_mask, currSetupHash,
                                          currSetupOnHash);
-*/
-            //For PTSO save only state NOT time value
-            if (timeSelect[5]) saveOnSetup(0, ptso_mask, currSetupOnHash);
-           
+
             if (timeSelect[6]) saveSetup(0, ptcb_mask, currSetupHash,
                                          currSetupOnHash);
             if (timeSelect[7]) saveSetup(0, ptct_mask, currSetupHash,
@@ -3142,8 +3139,8 @@ System.out.println("APPLY SETUP: "+currPath);
         if (timeSelect[2]) applySetup(0, pv_mask, setupHash, setupOnHash);
         if (timeSelect[3]) applySetup(0, pp_mask, setupHash, setupOnHash);
         if (timeSelect[4]) applySetup(0, pr_mask, setupHash, setupOnHash);
-        if (timeSelect[5]) applySetup(0, ptso_mask, setupHash,
-                                      setupOnHash);
+//        if (timeSelect[5]) applySetup(0, ptso_mask, setupHash, setupOnHash);
+        if (timeSelect[5]) applyOnSetup(0, ptso_mask, setupOnHash);
         if (timeSelect[6]) applySetup(0, ptcb_mask, setupHash,
                                       setupOnHash);
         if (timeSelect[7]) applySetup(0, ptct_mask, setupHash,
@@ -3176,6 +3173,28 @@ System.out.println("APPLY SETUP: "+currPath);
                     Data currData = Data.fromExpr(currDecompiled);
                     rfx.putData(currNid, currData, 0);
                 }
+                Boolean isOn = (Boolean) setupOnHash.get(fullPath);
+                if (isOn != null)
+                {
+                    rfx.setOn(currNid, isOn.booleanValue(), 0);
+                }
+            }
+        }
+        catch (Exception exc1)
+        {
+            System.err.println("Error applying setup for nid array: " + exc1);
+        }
+    }
+    //Apply only state: used for PTSO
+    void applyOnSetup(int idx, int nidOffsets[], Hashtable setupOnHash)
+    {
+        try
+        {
+            for (int nidIdx = 0; nidIdx < nidOffsets.length; nidIdx++)
+            {
+                NidData currNid = new NidData(nids[idx].getInt() +
+                                              nidOffsets[nidIdx]);
+                String fullPath = rfx.getInfo(currNid, 0).getFullPath();
                 Boolean isOn = (Boolean) setupOnHash.get(fullPath);
                 if (isOn != null)
                 {
@@ -3335,28 +3354,7 @@ System.out.println("SAVE SETUP: " + fullPath);
             System.err.println("Error getting device nids: " + exc1);
         }
     }
-    // Save only state
-    void saveOnSetup(int idx, int nidOffsets[],
-                   Hashtable configOnHash)
-    {
-        try
-        {
-            for (int nidIdx = 0; nidIdx < nidOffsets.length; nidIdx++)
-            {
-                NidData currNid = new NidData(nids[idx].getInt() +
-                                              nidOffsets[nidIdx]);
-                String fullPath = rfx.getInfo(currNid, 0).getFullPath();
-                configOnHash.put(fullPath,
-                                 new Boolean(rfx.isOn(currNid, 0)));
-            }
-        }
-        catch (Exception exc1)
-        {
-            System.err.println("Error getting device nids: " + exc1);
-        }
-    }
-
-    NidData checkDeviceConfig(NidData deviceRoot, Hashtable configHash,
+     NidData checkDeviceConfig(NidData deviceRoot, Hashtable configHash,
                               Hashtable configOnHash)
     {
         try
