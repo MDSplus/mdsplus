@@ -78,79 +78,142 @@ extern int TdiDimOf();
 #define EXPORT
 #endif
 
-EXPORT struct descriptor_xd *JavaResample(struct descriptor_xd  *y_xdptr, struct descriptor_xd *x_xdptr, 
-    float *in_xmin, float *in_xmax, float *dt)
+
+EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax, float *dt)
 {
-    static struct descriptor_xd template_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
-	int i;
-
-	EMPTYXD(emptyXd);
-	EMPTYXD(x_xd);
-	EMPTYXD(y_xd);
-    DESCRIPTOR_SIGNAL_1(sig_d, 0, 0, 0);
-	int status;
-	static struct descriptor_xd retXd;
-
-	struct descriptor startD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)in_xmin};
-	struct descriptor endD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)in_xmax};
-	struct descriptor deltaD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)dt};
-
-	retXd = emptyXd;
-	if(*in_xmax <= *in_xmin) return &retXd; 
-
-	TreeSetTimeContext(&startD, &endD, &deltaD);
-    if(x_xdptr->class == CLASS_XD && ((struct descriptor *)(x_xdptr->pointer))->dtype == DTYPE_T)
-    {
-		((struct descriptor *)(x_xdptr->pointer))->dtype = DTYPE_PATH;
-		status = TdiData(x_xdptr, &x_xd MDS_END_ARG);
-        if(!(status & 1))
-		{
-			TreeSetTimeContext(&emptyXd, &emptyXd, &emptyXd);
-			return &retXd;
-		}
-		((struct descriptor *)(x_xdptr->pointer))->dtype = DTYPE_T;
-    }  
-	else 
+	static EMPTYXD(xd);
+	static EMPTYXD(emptyXd);
+	EMPTYXD(startXd);
+	EMPTYXD(endXd);
+	EMPTYXD(segDataXd);
+	EMPTYXD(segTimesXd);
+	int numSegments, status, currSegment, currIdx, outIdx;
+	int nid = *nidPtr;
+	float segStart, segEnd, actMin, actMax, actDelta, currMin, currMax;
+	int outSamples, minSegment, maxSegment;
+	float *outData, *outTimes, *currTimes, *currData, currSamples, currTime;
+	struct descriptor_a *arrDsc;
+	DESCRIPTOR_A(dataDsc, sizeof(float), DTYPE_FLOAT, 0, 0);
+	DESCRIPTOR_A(timesDsc, sizeof(float), DTYPE_FLOAT, 0, 0);
+	DESCRIPTOR_SIGNAL_1(retSigDsc, &dataDsc, NULL, &timesDsc); 
+	printf("JavaResample %d %f %f %f\n", nid, *xmin, *xmax, *dt);
+	status = TreeGetNumSegments(nid, &numSegments);
+	if(!(status & 1) || numSegments < 1)
 	{
-		status = TdiData(x_xdptr, &x_xd MDS_END_ARG);
-		if(!(status & 1))
+		printf("JavaResample: Unexpected Non Segmented Item!!\n");
+		return &emptyXd;
+	}
+	//Find true xmin and xmax
+	actMin = *xmin;
+	actMax = *xmax;
+	actDelta = *dt;
+
+	for(currSegment = 0; currSegment < numSegments; currSegment++)
+	{
+		status = TreeGetSegmentLimits(nid, currSegment, &startXd, &endXd);
+		if(status & 1) status = TdiData(&startXd, &startXd MDS_END_ARG);
+		if(status & 1) status = TdiFloat(&startXd, &startXd MDS_END_ARG);
+		if(!(status & 1) || startXd.pointer == NULL || startXd.pointer->class != CLASS_S)
 		{
-			TreeSetTimeContext(&emptyXd, &emptyXd, &emptyXd);
-			return &retXd;
+			printf("Cannot get segment start!!\n");
+			return &xd;
+		}
+		if(status & 1) status = TdiData(&endXd, &endXd MDS_END_ARG);
+		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
+		if(!(status & 1) || endXd.pointer == NULL || endXd.pointer->class != CLASS_S)
+		{
+			printf("Cannot get segment end!!\n");
+			return &xd;
+		}
+		segStart = *(float *)startXd.pointer->pointer;
+		segEnd = *(float *)endXd.pointer->pointer;
+		MdsFree1Dx(&startXd, 0);
+		MdsFree1Dx(&endXd, 0);
+		if(currSegment == 0 && actMax < segStart)
+			return &emptyXd; //Window out
+		if(currSegment == 0 && actMin < segStart)
+			actMin = segStart;
+		if(currSegment == numSegments - 1 && actMin > segEnd)
+			return &emptyXd; //Window out
+		if(currSegment == numSegments - 1 && actMax > segEnd)
+			actMax = segEnd;
+		if(actMin <= segEnd && actMin >= segStart)
+			minSegment = currSegment;
+		if(actMax >= segStart && actMax <= segEnd)
+		{
+			maxSegment = currSegment;
+			break;
 		}
 	}
+	//Take into account rounding errors and the fact that a sample more could be for each segment
+	outSamples = ((actMax - actMin)/actDelta +1+numSegments)*2;
+	outData = malloc(outSamples * sizeof(float));
+	outTimes = malloc(outSamples * sizeof(float));
+	outIdx = 0;
 
-    if(y_xdptr->class == CLASS_XD && ((struct descriptor *)(y_xdptr->pointer))->dtype == DTYPE_T)
-    {
-		((struct descriptor *)(y_xdptr->pointer))->dtype = DTYPE_PATH;
-		status = TdiData(y_xdptr, &y_xd MDS_END_ARG);
-		if(!(status & 1))
+	for(currSegment = minSegment; currSegment <= maxSegment; currSegment++)
+	{
+		status = TreeGetSegment(nid, currSegment, &segDataXd, &segTimesXd);
+		if(status & 1) status = TdiData(&segDataXd, &segDataXd MDS_END_ARG);
+		if(status & 1) status = TdiFloat(&segDataXd, &segDataXd MDS_END_ARG);
+		if(status & 1) status = TdiData(&segTimesXd, &segTimesXd MDS_END_ARG);
+		if(status & 1) status = TdiFloat(&segTimesXd, &segTimesXd MDS_END_ARG);
+		if(!(status & 1)||segDataXd.pointer->class != CLASS_A || segTimesXd.pointer->class != CLASS_A)
 		{
-			TreeSetTimeContext(&emptyXd, &emptyXd, &emptyXd);
-			return &retXd;
+			printf("Cannot Get segment %d\n", currSegment);
+			return &emptyXd;
 		}
-		((struct descriptor *)(y_xdptr->pointer))->dtype = DTYPE_T;
-	}  
-/*	TreeSetTimeContext(&emptyXd, &emptyXd, &emptyXd);
-	status = TdiFloat(&x_xd, &x_xd MDS_END_ARG);
-	if(!(status & 1)) return &retXd;
-	status = TdiFloat(&y_xd, &y_xd MDS_END_ARG);
-	if(!(status & 1)) return &retXd;
-    if(x_xd.pointer->class != CLASS_A)
-		return &retXd;
-	if(y_xd.pointer->class != CLASS_A)
-		return &retXd;
-    sig_d.data = (struct descriptor *)&y_xd;
-    sig_d.dimensions[0] = (struct descriptor *)&x_xd;
-    MdsCopyDxXd((struct descriptor *)&sig_d, &retXd);
-*/
-	MdsCopyDxXd((struct descriptor *)&y_xd, &retXd);
-	MdsFree1Dx(&x_xd, NULL);
-    MdsFree1Dx(&y_xd, NULL);
-    return &retXd;
+		arrDsc = (struct descriptor_a *)segDataXd.pointer;
+		currSamples = arrDsc->arsize / arrDsc->length;
+		currData = (float *)arrDsc->pointer;
+		arrDsc = (struct descriptor_a *)segTimesXd.pointer;
+		if(arrDsc->arsize / arrDsc->length < currSamples)
+			currSamples = arrDsc->arsize / arrDsc->length;
+		currTimes = (float *)arrDsc->pointer;
+		if(currSegment == minSegment)
+		{
+			for (currIdx = 0; currIdx < currSamples && currTimes[currIdx] < actMin; currIdx++);
+			if(currIdx == currSamples)
+			{
+				printf("INTERNAL ERROR in JavaResample\n");
+				return &emptyXd;
+			}
+		}
+		else
+			currIdx = 0;
+
+		while(currIdx < currSamples)
+		{
+			currMin = currMax = currData[currIdx];
+			while(currIdx < currSamples && currTimes[currIdx] < actMin + (outIdx + 1)*actDelta)
+			{
+				if(currData[currIdx] > currMax)
+					currMax = currData[currIdx];
+				if(currData[currIdx] < currMin)
+					currMin = currData[currIdx];
+				currIdx++;
+			}
+			outData[2*outIdx] = currMin;
+			outData[2*outIdx+1] = currMax;
+			if(actMin + (outIdx + 1)*actDelta > actMax)
+				break;
+			outTimes[2*outIdx] = actMin + (outIdx + 0.5)*actDelta;
+			outTimes[2*outIdx+1] = actMin + (outIdx + 1)*actDelta;
+			outIdx++;
+		}
+		MdsFree1Dx(&segDataXd, 0);
+		MdsFree1Dx(&segTimesXd, 0);
+	}
+	timesDsc.pointer = (char *)outTimes;
+	timesDsc.arsize = 2*outIdx*sizeof(float);
+	dataDsc.pointer = (char *)outData;
+	dataDsc.arsize = 2*outIdx*sizeof(float);
+	MdsCopyDxXd(&retSigDsc, &xd);
+	free((char *)outTimes);
+	free((char *)outData);
+	return &xd;
 }
-		
-		
+	
 /*************OLD VERSION **********************/		
 		
 static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd  *y_xdptr, struct descriptor_xd *x_xdptr, 
@@ -519,11 +582,12 @@ EXPORT int JavaGetMinMax(char *sigExpr, float *xMin, float *xMax)
 }
 
 //Find estimated (by defect) number of points for segmented and not segmented signal
-EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax)
+EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax, int *nLimit)
 {
 	EMPTYXD(xd);
 	EMPTYXD(startXd);
 	EMPTYXD(endXd);
+	int nThreshold = *nLimit;
 	struct descriptor_a *arrayPtr;
 	float currStart, currEnd;
 	int status, nid, numSegments, numPoints, currSegment;
@@ -590,6 +654,8 @@ EXPORT int JavaGetNumPoints(char *sigExpr, float *xMin, float *xMax)
 		status = TreeGetSegmentInfo(nid, currSegment, &dtype, &dimct, dims, &next_row);
 		if(!(status & 1)) return 0;
 		numPoints += dims[0];
+		if(numPoints > nThreshold)
+			break;
 	}
 	return numPoints;
 }
