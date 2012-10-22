@@ -545,15 +545,22 @@ public class MdsDataProvider
 
         public float[] GetFloatData() throws IOException
         {
+            boolean useResample = false;
             if(resample)
-                setResampleLimits(this.xmin, this.xmax, in_y);
+                useResample = setResampleLimits(this.xmin, this.xmax, in_y);
 
             String in_y_expr = "_jscope_" + v_idx;
             String set_tdivar = "";
             if (!_jscope_set)// || resample)
             {
                 _jscope_set = true;
-                set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
+//If resample option and the data item is a segmented one, use jScope resample version
+//returning ymin-ymax bar for every sample. Otherwise, classic resampling is carried out by
+//MDSplus itself (works also for expressions)
+                if(resample && segmentMode == SEGMENTED_YES && useResample)
+                    set_tdivar = "_jscope_" + v_idx + " = JavaResample(" + in_y + "), ";
+                else
+                    set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
                 var_idx+=2;
             }
 
@@ -1559,9 +1566,10 @@ public class MdsDataProvider
     }
 
 
-    void setResampleLimits(double min, double max, String inY)
+    boolean setResampleLimits(double min, double max, String inY)
     {
         String limitsExpr;
+        boolean useResample;
 //November 2011
         if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)
         {
@@ -1570,29 +1578,38 @@ public class MdsDataProvider
 
             long dt = ((long)maxSpecific - (long)minSpecific)/MAX_PIXELS;
             limitsExpr = "JavaSetResampleLimits("+minSpecific+"UQ,"+maxSpecific+"UQ,"+dt+"UQ)";
+            useResample = true;
         }
         else
         {
             double dt = (max - min) / MAX_PIXELS;
             String numPointsExpr;
             if(inY.startsWith("\\"))
-                numPointsExpr = "JavaGetNumPoints(\"\\"+inY+"\","+min+","+max+")";
+                numPointsExpr = "JavaGetNumPoints(\"\\"+inY+"\","+min+","+max+","+MAX_PIXELS+")";
             else
-                numPointsExpr = "JavaGetNumPoints(\""+inY+"\","+min+","+max+")";
+                numPointsExpr = "JavaGetNumPoints(\""+inY+"\","+min+","+max+","+MAX_PIXELS+")";
             int numPoints[];
             try {
                 numPoints = GetIntArray(numPointsExpr);
             }catch(Exception exc){numPoints = new int[0];}
             if(numPoints.length > 0 && numPoints[0] < MAX_PIXELS)
+            {
                limitsExpr = "JavaSetResampleLimits("+min + "," +max+",0Q)";
+               useResample = false;
+            }
             else
+            {
                limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
+               useResample = true;
+            }
         }
         mds.MdsValue(limitsExpr);
+        return useResample;
     }
     void resetResampleLimits()
     {
-       mds.MdsValue("TreeShr->TreeResetTimeContext()");
+       //mds.MdsValue("TreeShr->TreeResetTimeContext()");
+       mds.MdsValue("JavaSetResampleLimits(0,0,0)");
     }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException
