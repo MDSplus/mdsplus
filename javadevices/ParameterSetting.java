@@ -2339,8 +2339,12 @@ public class ParameterSetting
                                          currSetupOnHash);
             if (timeSelect[4]) saveSetup(0, pr_mask, currSetupHash,
                                          currSetupOnHash);
-            if (timeSelect[5]) saveSetup(0, ptso_mask, currSetupHash,
+/*            if (timeSelect[5]) saveSetup(0, ptso_mask, currSetupHash,
                                          currSetupOnHash);
+*/
+            //For PTSO save only state NOT time value
+            if (timeSelect[5]) saveOnSetup(0, ptso_mask, currSetupOnHash);
+           
             if (timeSelect[6]) saveSetup(0, ptcb_mask, currSetupHash,
                                          currSetupOnHash);
             if (timeSelect[7]) saveSetup(0, ptct_mask, currSetupHash,
@@ -3322,6 +3326,26 @@ System.out.println("SAVE SETUP: " + fullPath);
                 }
                 catch (Exception exc)
                 {}
+                configOnHash.put(fullPath,
+                                 new Boolean(rfx.isOn(currNid, 0)));
+            }
+        }
+        catch (Exception exc1)
+        {
+            System.err.println("Error getting device nids: " + exc1);
+        }
+    }
+    // Save only state
+    void saveOnSetup(int idx, int nidOffsets[],
+                   Hashtable configOnHash)
+    {
+        try
+        {
+            for (int nidIdx = 0; nidIdx < nidOffsets.length; nidIdx++)
+            {
+                NidData currNid = new NidData(nids[idx].getInt() +
+                                              nidOffsets[nidIdx]);
+                String fullPath = rfx.getInfo(currNid, 0).getFullPath();
                 configOnHash.put(fullPath,
                                  new Boolean(rfx.isOn(currNid, 0)));
             }
