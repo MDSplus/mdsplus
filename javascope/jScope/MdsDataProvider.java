@@ -554,12 +554,12 @@ public class MdsDataProvider
             if (!_jscope_set)// || resample)
             {
                 _jscope_set = true;
-//If resample option and the data item is a segmented one, use jScope resample version
-//returning ymin-ymax bar for every sample. Otherwise, classic resampling is carried out by
+//Classic resampling is carried out by
 //MDSplus itself (works also for expressions)
-                if(resample && segmentMode == SEGMENTED_YES && useResample)
-                    set_tdivar = "_jscope_" + v_idx + " = JavaResample(" + in_y + "), ";
-                else
+// JavaResample will provide min-max pairs. Still experimental, not used now.
+                //if(resample && segmentMode == SEGMENTED_YES && useResample)
+                //    set_tdivar = "_jscope_" + v_idx + " = JavaResample(" + in_y + "), ";
+                //else
                     set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
                 var_idx+=2;
             }
