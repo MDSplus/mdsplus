@@ -22,14 +22,15 @@ public fun getBradErrorSignal(in _path, in _upDown, in _id)
 /*		
 			write(*, "Calcola ", _id);
 */		
-			_dim = dim_of ( build_path( _sigs[ _id ] ) );
 
+			_dim = dim_of ( build_path( _sigs[ _id ] ) );
+/*
 			_mod = data(build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2"));
 			_phs = data(build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_PHS_2"));
-
 			_m0 = (2./192.) * _mod * sin( _phs );
-
 			_m0Sig = make_signal( _m0, ,dim_of( build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2")) ); 
+*/
+         _m0Sig = MarteGetUserArray(\MHD_BR::MARTE, 'br', 1);
 
 			_Bv = resample( _m0Sig, minval( _dim ), maxval( _dim ), 0.001 );
 			_d  = resample( build_path( _sigs[ _id ] ), minval( _dim ), maxval( _dim ), 0.001 );
