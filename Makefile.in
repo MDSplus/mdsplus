@@ -57,6 +57,7 @@ PARTS = \
 	@IDLMDSEVENT@ \
 	@MDSVME@ \
 	@HDF5_APS@ \
+	@LV@ \
 	@MACOSX@
 
 all:

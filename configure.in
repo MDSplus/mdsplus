@@ -191,6 +191,26 @@ EOF
           AC_DEFINE(SRB)
         )
 
+dnl Look for labview include file
+AC_ARG_WITH(labview,
+        [ --with-labview=labview-top-dir        specify location of idl such as /usr/local/natinst/Labview],
+        LV_DIR="$withval",
+        LV_DIR="")
+AC_MSG_CHECKING(for labview)
+if test "$LV_DIR" != "" -a -r "$LV_DIR"
+then
+  LV_INC="-I$LV_DIR/cintools"
+  LV="mdsobjects/labview"
+  LV_LIB="-lLV"
+  AC_MSG_RESULT(have labview $LV_INC)
+else
+  LV_INC=""
+  LV=""
+  LV_LIB=""
+  AC_MSG_RESULT(no labview)
+fi
+
+
 AC_ARG_ENABLE(globus,
 	[  --enable-globus        use globus_io for mdsip communications],
 	if test "$enableval" = yes; then
@@ -1100,6 +1120,9 @@ AC_SUBST(LINKSHARED)
 AC_SUBST(LINKJNI)
 AC_SUBST(LINKMODULE)
 AC_SUBST(LOC)
+AC_SUBST(LV)
+AC_SUBST(LVLIB)
+AC_SUBST(LVINCLUDE)
 AC_SUBST(VAL)
 AC_SUBST(MACOSX)
 AC_SUBST(MAKEBINDIR)
@@ -1185,6 +1208,7 @@ mdslib/Makefile
 mdslibidl/Makefile 
 mdsobjects/cpp/Makefile
 mdsobjects/java/Makefile
+mdsobjects/labview/Makefile
 mdsmisc/Makefile
 mdsshr/Makefile 
 mdssql/Makefile
@@ -1254,6 +1278,15 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN(The IDL application directory was not found.)
   AC_MSG_WARN(The some libraries used for interfacing IDL with MDSplus will be skipped.)
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+fi
+if test "$LV" = ""
+then
+  AC_MSG_WARN()
+  AC_MSG_WARN()
+  AC_MSG_WARN("Labview include files were not found.)
+  AC_MSG_WARN("The labview MDSobjects will not be built")
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
