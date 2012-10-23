@@ -94,20 +94,23 @@ public fun bRadCheck(in _save, optional _debug)
 					_error = _CORRENTI_PR_SATURATE;
 				}
 
-				_signalRef = execute(_sigNameRef);
-  				_yRef = abs( data(_signalRef) );
-            _val = sum( ( _yRef > 1. ) * 1.0 );
-            if( _val > 100 )
-            {
-               if ( sum( ( _y > 20. ) * 1.0 ) < 10 )
-               {
-					   if( PRESENT( _debug ) )
-						   write(*, "Probabile saddle coil con corrente nulla in PR "//_sigName// " "//_sigNameRef);
+				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) ) )
+				{
+					_signalRef = execute(_sigNameRef);
+  					_yRef = abs( data(_signalRef) );
+            		_val = sum( ( _yRef > 1. ) * 1.0 );
+            		if( _val > 100 )
+            		{
+               			if ( sum( ( _y > 20. ) * 1.0 ) < 10 )
+               			{
+					   		if( PRESENT( _debug ) )
+						   	write(*, "Probabile saddle coil con corrente nulla  "//_sigName);
  
- 					   _prNullCurrent = [_prNullCurrent,  _sigName];
-					   _error = _error | _CORRENTI_NULL_PR;
-               }
-            }       
+ 					   		_prNullCurrent = [_prNullCurrent,  _sigName];
+					   		_error = _error | _CORRENTI_NULL_PR;
+               			}
+            		}
+				}       
 			}
 		}
 	}
