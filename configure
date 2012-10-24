@@ -681,6 +681,9 @@ MAKELIBDIR
 MAKEBINDIR
 MACOSX
 VAL
+LV_INC
+LV_LIB
+LV
 LOC
 LINKMODULE
 LINKJNI
@@ -823,6 +826,7 @@ with_jdk
 with_xio
 with_gsi
 with_srb
+with_labview
 enable_globus
 enable_memcheck
 enable_gcc_profiling
@@ -1492,6 +1496,7 @@ Optional Packages:
   --with-xio=globus-location:flavor  use globus xio for mdsip communications
   --with-gsi=globus-location:flavor  use globus xio for mdsip communications
   --with-srb=srb-install-dir  Enable srb capabilities
+ --with-labview=labview-top-dir        specify location of idl such as /usr/local/natinst/Labview
  --with-idl=idl-top-dir	specify location of idl such as /usr/local/itt/idl
   --with-x                use the X Window System
 
@@ -6769,6 +6774,32 @@ EOF
 _ACEOF
 
 
+fi
+
+
+
+# Check whether --with-labview was given.
+if test "${with_labview+set}" = set; then
+  withval=$with_labview; LV_DIR="$withval"
+else
+  LV_DIR=""
+fi
+
+{ $as_echo "$as_me:$LINENO: checking for labview" >&5
+$as_echo_n "checking for labview... " >&6; }
+if test "$LV_DIR" != "" -a -r "$LV_DIR"
+then
+  LV_INC="-I$LV_DIR/cintools"
+  LV="mdsobjects/labview"
+  LV_LIB="-lLV"
+  { $as_echo "$as_me:$LINENO: result: have labview $LV_INC" >&5
+$as_echo "have labview $LV_INC" >&6; }
+else
+  LV_INC=""
+  LV=""
+  LV_LIB=""
+  { $as_echo "$as_me:$LINENO: result: no labview" >&5
+$as_echo "no labview" >&6; }
 fi
 
 
@@ -14596,9 +14627,12 @@ LIBS="$LIBPTHREAD $LIBS"
 
 
 
+
+
+
 ac_config_headers="$ac_config_headers include/config.h"
 
-ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15226,6 +15260,7 @@ do
     "mdslibidl/Makefile") CONFIG_FILES="$CONFIG_FILES mdslibidl/Makefile" ;;
     "mdsobjects/cpp/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/cpp/Makefile" ;;
     "mdsobjects/java/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/java/Makefile" ;;
+    "mdsobjects/labview/Makefile") CONFIG_FILES="$CONFIG_FILES mdsobjects/labview/Makefile" ;;
     "mdsmisc/Makefile") CONFIG_FILES="$CONFIG_FILES mdsmisc/Makefile" ;;
     "mdsshr/Makefile") CONFIG_FILES="$CONFIG_FILES mdsshr/Makefile" ;;
     "mdssql/Makefile") CONFIG_FILES="$CONFIG_FILES mdssql/Makefile" ;;
@@ -15967,6 +16002,21 @@ $as_echo "$as_me: WARNING: " >&2;}
 $as_echo "$as_me: WARNING: The IDL application directory was not found." >&2;}
   { $as_echo "$as_me:$LINENO: WARNING: The some libraries used for interfacing IDL with MDSplus will be skipped." >&5
 $as_echo "$as_me: WARNING: The some libraries used for interfacing IDL with MDSplus will be skipped." >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: " >&5
+$as_echo "$as_me: WARNING: " >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: " >&5
+$as_echo "$as_me: WARNING: " >&2;}
+fi
+if test "$LV" = ""
+then
+  { $as_echo "$as_me:$LINENO: WARNING: " >&5
+$as_echo "$as_me: WARNING: " >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: " >&5
+$as_echo "$as_me: WARNING: " >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: \"Labview include files were not found." >&5
+$as_echo "$as_me: WARNING: \"Labview include files were not found." >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: \"The labview MDSobjects will not be built\"" >&5
+$as_echo "$as_me: WARNING: \"The labview MDSobjects will not be built\"" >&2;}
   { $as_echo "$as_me:$LINENO: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:$LINENO: WARNING: " >&5
