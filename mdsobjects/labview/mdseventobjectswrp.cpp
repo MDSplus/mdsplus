@@ -10,7 +10,7 @@ DLLEXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNam
 {
 	Event *eventPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -38,7 +38,7 @@ DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOu
 	Event *eventPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -63,7 +63,7 @@ DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -88,7 +88,7 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 	Event *eventPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -119,7 +119,7 @@ DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteA
 	Event *eventPtr = NULL;
 	char *byteArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -148,7 +148,7 @@ DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteA
 DLLEXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -166,7 +166,7 @@ DLLEXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvD
 {
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -190,7 +190,7 @@ DLLEXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByt
 {
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -218,7 +218,7 @@ DLLEXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evN
 {
 	REvent *reventPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -246,7 +246,7 @@ DLLEXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrO
 	REvent *reventPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -274,7 +274,7 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 	REvent *reventPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -305,7 +305,7 @@ DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByte
 	REvent *reventPtr = NULL;
 	char *byteArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -337,7 +337,7 @@ DLLEXPORT void mdsplus_revent_getTime(const void *lvREventPtr, void **lvUint64Pt
 	REvent *reventPtr = NULL;
 	Uint64 *uint64PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -358,7 +358,7 @@ DLLEXPORT void mdsplus_revent_run(const void *lvREventPtr, ErrorCluster *error)
 {
 	REvent *reventPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -377,7 +377,7 @@ DLLEXPORT void mdsplus_revent_setEvent(const char *evNameIn, const void *lvDataP
 {
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -401,7 +401,7 @@ DLLEXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *
 {
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -425,7 +425,7 @@ DLLEXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvBy
 {
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -449,7 +449,7 @@ DLLEXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrH
 {
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{

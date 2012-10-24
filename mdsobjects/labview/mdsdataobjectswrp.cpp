@@ -32,7 +32,7 @@ DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *err
 {
 	Array *arrayPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -60,7 +60,7 @@ DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lv
 	Array *arrayPtr = NULL;
 	char *byteArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -97,7 +97,7 @@ DLLEXPORT void mdsplus_array_getDoubleArray(const void *lvArrayPtr, LDblArrHdl l
 	Array *arrayPtr = NULL;
 	double *doubleArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -134,7 +134,7 @@ DLLEXPORT void mdsplus_array_getElementAt(const void *lvArrayPtr, void **lvDataP
 	Array *arrayPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -163,7 +163,7 @@ DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lv
 	Data *dataPtrOut = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -197,7 +197,7 @@ DLLEXPORT void mdsplus_array_getFloatArray(const void *lvArrayPtr, LFltArrHdl lv
 	Array *arrayPtr = NULL;
 	float *floatArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -236,7 +236,7 @@ DLLEXPORT void mdsplus_array_getInfo(const void *lvArrayPtr, char *clazzOut, cha
 	int *dims = NULL;
 	void *ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -267,7 +267,7 @@ DLLEXPORT void mdsplus_array_getIntArray(const void *lvArrayPtr, LIntArrHdl lvIn
 	Array *arrayPtr = NULL;
 	int *intArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -304,7 +304,7 @@ DLLEXPORT void mdsplus_array_getLongArray(const void *lvArrayPtr, LLngArrHdl lvL
 	Array *arrayPtr = NULL;
 	_int64 *longArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -341,7 +341,7 @@ DLLEXPORT void mdsplus_array_getShape(const void *lvArrayPtr, LIntArrHdl lvIntAr
 	Array *arrayPtr = NULL;
 	int *intArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -378,7 +378,7 @@ DLLEXPORT void mdsplus_array_getShortArray(const void *lvArrayPtr, LShtArrHdl lv
 	Array *arrayPtr = NULL;
 	short *shortArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -414,7 +414,7 @@ DLLEXPORT void mdsplus_array_getSize(const void *lvArrayPtr, int *sizeOut, Error
 {
 	Array *arrayPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -435,7 +435,7 @@ DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl l
 	char **stringArrOut = NULL;
 	int stringArrLen = 0;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -504,7 +504,7 @@ DLLEXPORT void mdsplus_array_setElementAt(const void *lvArrayPtr, int dimIn, con
 	Array *arrayPtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -531,7 +531,7 @@ DLLEXPORT void mdsplus_array_setElementAt_dims(const void *lvArrayPtr, const LIn
 	Data *dataPtrIn = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -568,7 +568,7 @@ DLLEXPORT void mdsplus_compound_constructor(void **lvCompoundPtrOut, ErrorCluste
 {
 	Compound *compoundPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -599,7 +599,7 @@ DLLEXPORT void mdsplus_data_compile(void **lvDataPtrOut, const char *exprIn, Err
 {
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -626,7 +626,7 @@ DLLEXPORT void mdsplus_data_compile_tree(void **lvDataPtrOut, const char *exprIn
 	Data *dataPtrOut = NULL;
 	Tree *treePtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -654,7 +654,7 @@ DLLEXPORT void mdsplus_data_data(const void *lvDataPtr, void **lvDataPtrOut, Err
 	Data *dataPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -682,7 +682,7 @@ DLLEXPORT void mdsplus_data_decompile(const void *lvDataPtr, LStrHandle lvStrHdl
 	Data *dataPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -712,7 +712,7 @@ DLLEXPORT void mdsplus_data_deserialize(void **lvDataPtrOut, const char *seriali
 {
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -739,7 +739,7 @@ DLLEXPORT void mdsplus_data_deserialize_data(void **lvDataPtrOut, const void *lv
 	Data *dataPtrOut = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -774,7 +774,7 @@ DLLEXPORT void mdsplus_data_evaluate(const void *lvDataPtr, void **lvDataPtrOut,
 	Data *dataPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -801,7 +801,7 @@ DLLEXPORT void mdsplus_data_execute(void **lvDataPtrOut, const char *exprIn, Err
 {
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -828,7 +828,7 @@ DLLEXPORT void mdsplus_data_execute_tree(void **lvDataPtrOut, const char *exprIn
 	Data *dataPtrOut = NULL;
 	Tree *treePtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -855,7 +855,7 @@ DLLEXPORT void mdsplus_data_getByte(const void *lvDataPtr, char *byteOut, ErrorC
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -880,7 +880,7 @@ DLLEXPORT void mdsplus_data_getByteArray(const void *lvDataPtr, LByteArrHdl lvBy
 	Data *dataPtr = NULL;
 	char *byteArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -916,7 +916,7 @@ DLLEXPORT void mdsplus_data_getDouble(const void *lvDataPtr, double *doubleOut, 
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -941,7 +941,7 @@ DLLEXPORT void mdsplus_data_getDoubleArray(const void *lvDataPtr, LDblArrHdl lvD
 	Data *dataPtr = NULL;
 	double *doubleArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -978,7 +978,7 @@ DLLEXPORT void mdsplus_data_getError(const void *lvDataPtr, void **lvDataPtrOut,
 	Data *dataPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -999,7 +999,7 @@ DLLEXPORT void mdsplus_data_getFloat(const void *lvDataPtr, float *floatOut, Err
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1024,7 +1024,7 @@ DLLEXPORT void mdsplus_data_getFloatArray(const void *lvDataPtr, LFltArrHdl lvFl
 	Data *dataPtr = NULL;
 	float *floatArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1061,7 +1061,7 @@ DLLEXPORT void mdsplus_data_getHelp(const void *lvDataPtr, void **lvDataPtrOut, 
 	Data *dataPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1085,7 +1085,7 @@ DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char 
 	int *dims = NULL;
 	void *ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1115,7 +1115,7 @@ DLLEXPORT void mdsplus_data_getInt(const void *lvDataPtr, int *intOut, ErrorClus
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1140,7 +1140,7 @@ DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntA
 	Data *dataPtr = NULL;
 	int *intArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1176,7 +1176,7 @@ DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, _int64 *longOut, Erro
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1201,7 +1201,7 @@ DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLng
 	Data *dataPtr = NULL;
 	_int64 *longArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1238,7 +1238,7 @@ DLLEXPORT void mdsplus_data_getShape(const void *lvDataPtr, LIntArrHdl lvIntArrH
 	Data *dataPtr = NULL;
 	int *intArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1274,7 +1274,7 @@ DLLEXPORT void mdsplus_data_getShort(const void *lvDataPtr, short *shortOut, Err
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1299,7 +1299,7 @@ DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvSh
 	Data *dataPtr = NULL;
 	short *shortArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1336,7 +1336,7 @@ DLLEXPORT void mdsplus_data_getSize(const void *lvDataPtr, int *sizeOut, ErrorCl
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1356,7 +1356,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 	Data *dataPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1388,7 +1388,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 	char **stringArrOut = NULL;
 	int stringArrLen = 0;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1457,7 +1457,7 @@ DLLEXPORT void mdsplus_data_getUnits(const void *lvDataPtr, void **lvDataPtrOut,
 	Data *dataPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1479,7 +1479,7 @@ DLLEXPORT void mdsplus_data_getValidation(const void *lvDataPtr, void **lvDataPt
 	Data *dataPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1500,7 +1500,7 @@ DLLEXPORT void mdsplus_data_plot(const void *lvDataPtr, ErrorCluster *error)
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1525,7 +1525,7 @@ DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteA
 	Data *dataPtr = NULL;
 	char *byteArrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1562,7 +1562,7 @@ DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPt
 	Data *dataPtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1583,7 +1583,7 @@ DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtr
 	Data *dataPtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1604,7 +1604,7 @@ DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPt
 	Data *dataPtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1625,7 +1625,7 @@ DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvD
 	Data *dataPtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1660,7 +1660,7 @@ DLLEXPORT void mdsplus_float32_constructor(void **lvFloat32PtrOut, float valIn, 
 {
 	Float32 *float32PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1687,7 +1687,7 @@ DLLEXPORT void mdsplus_float32_getByte(const void *lvFloat32Ptr, char *byteOut, 
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1706,7 +1706,7 @@ DLLEXPORT void mdsplus_float32_getDouble(const void *lvFloat32Ptr, double *doubl
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1725,7 +1725,7 @@ DLLEXPORT void mdsplus_float32_getFloat(const void *lvFloat32Ptr, float *floatOu
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1744,7 +1744,7 @@ DLLEXPORT void mdsplus_float32_getInt(const void *lvFloat32Ptr, int *intOut, Err
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1763,7 +1763,7 @@ DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, _int64 *longOut
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1782,7 +1782,7 @@ DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOu
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1806,7 +1806,7 @@ DLLEXPORT void mdsplus_float32array_constructor(void **lvFloat32ArrayPtrOut, con
 	Float32Array *float32ArrayPtrOut = NULL;
 	float *float32Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1834,7 +1834,7 @@ DLLEXPORT void mdsplus_float32array_constructor_dims(void **lvFloat32ArrayPtrOut
 	float *float32Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1877,7 +1877,7 @@ DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn,
 {
 	Float64 *float64PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1904,7 +1904,7 @@ DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, 
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1923,7 +1923,7 @@ DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubl
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1942,7 +1942,7 @@ DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOu
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1961,7 +1961,7 @@ DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, Err
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1980,7 +1980,7 @@ DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, _int64 *longOut
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -1999,7 +1999,7 @@ DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOu
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2023,7 +2023,7 @@ DLLEXPORT void mdsplus_float64array_constructor(void **lvFloat64ArrayPtrOut, con
 	Float64Array *float64ArrayPtrOut = NULL;
 	double *float64Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2051,7 +2051,7 @@ DLLEXPORT void mdsplus_float64array_constructor_dims(void **lvFloat64ArrayPtrOut
 	double *float64Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2095,7 +2095,7 @@ DLLEXPORT void mdsplus_int16_constructor(void **lvInt16PtrOut, short valIn, Erro
 {
 	Int16 *int16PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2122,7 +2122,7 @@ DLLEXPORT void mdsplus_int16_getByte(const void *lvInt16Ptr, char *byteOut, Erro
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2141,7 +2141,7 @@ DLLEXPORT void mdsplus_int16_getDouble(const void *lvInt16Ptr, double *doubleOut
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2160,7 +2160,7 @@ DLLEXPORT void mdsplus_int16_getFloat(const void *lvInt16Ptr, float *floatOut, E
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2179,7 +2179,7 @@ DLLEXPORT void mdsplus_int16_getInt(const void *lvInt16Ptr, int *intOut, ErrorCl
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2198,7 +2198,7 @@ DLLEXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, _int64 *longOut, Er
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2217,7 +2217,7 @@ DLLEXPORT void mdsplus_int16_getShort(const void *lvInt16Ptr, short *shortOut, E
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2241,7 +2241,7 @@ DLLEXPORT void mdsplus_int16array_constructor(void **lvInt16ArrayPtrOut, const L
 	Int16Array *int16ArrayPtrOut = NULL;
 	short *int16Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2269,7 +2269,7 @@ DLLEXPORT void mdsplus_int16array_constructor_dims(void **lvInt16ArrayPtrOut, co
 	short *int16Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2312,7 +2312,7 @@ DLLEXPORT void mdsplus_int32_constructor(void **lvInt32PtrOut, int valIn, ErrorC
 {
 	Int32 *int32PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2339,7 +2339,7 @@ DLLEXPORT void mdsplus_int32_getByte(const void *lvInt32Ptr, char *byteOut, Erro
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2358,7 +2358,7 @@ DLLEXPORT void mdsplus_int32_getDouble(const void *lvInt32Ptr, double *doubleOut
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2377,7 +2377,7 @@ DLLEXPORT void mdsplus_int32_getFloat(const void *lvInt32Ptr, float *floatOut, E
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2396,7 +2396,7 @@ DLLEXPORT void mdsplus_int32_getInt(const void *lvInt32Ptr, int *intOut, ErrorCl
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2415,7 +2415,7 @@ DLLEXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, _int64 *longOut, Er
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2434,7 +2434,7 @@ DLLEXPORT void mdsplus_int32_getShort(const void *lvInt32Ptr, short *shortOut, E
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2458,7 +2458,7 @@ DLLEXPORT void mdsplus_int32array_constructor(void **lvInt32ArrayPtrOut, const L
 	Int32Array *int32ArrayPtrOut = NULL;
 	int *int32Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2486,7 +2486,7 @@ DLLEXPORT void mdsplus_int32array_constructor_dims(void **lvInt32ArrayPtrOut, co
 	int *int32Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2529,7 +2529,7 @@ DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, _int64 valIn, Err
 {
 	Int64 *int64PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2556,7 +2556,7 @@ DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, Erro
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2575,7 +2575,7 @@ DLLEXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2594,7 +2594,7 @@ DLLEXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, E
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2613,7 +2613,7 @@ DLLEXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorCl
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2632,7 +2632,7 @@ DLLEXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, _int64 *longOut, Er
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2651,7 +2651,7 @@ DLLEXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, E
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2675,7 +2675,7 @@ DLLEXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const L
 	Int64Array *int64ArrayPtrOut = NULL;
 	_int64 *int64Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2703,7 +2703,7 @@ DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, co
 	_int64 *int64Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2746,7 +2746,7 @@ DLLEXPORT void mdsplus_int8_constructor(void **lvInt8PtrOut, char valIn, ErrorCl
 {
 	Int8 *int8PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2773,7 +2773,7 @@ DLLEXPORT void mdsplus_int8_getByte(const void *lvInt8Ptr, char *byteOut, ErrorC
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2792,7 +2792,7 @@ DLLEXPORT void mdsplus_int8_getDouble(const void *lvInt8Ptr, double *doubleOut, 
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2811,7 +2811,7 @@ DLLEXPORT void mdsplus_int8_getFloat(const void *lvInt8Ptr, float *floatOut, Err
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2830,7 +2830,7 @@ DLLEXPORT void mdsplus_int8_getInt(const void *lvInt8Ptr, int *intOut, ErrorClus
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2849,7 +2849,7 @@ DLLEXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, _int64 *longOut, Erro
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2868,7 +2868,7 @@ DLLEXPORT void mdsplus_int8_getShort(const void *lvInt8Ptr, short *shortOut, Err
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2892,7 +2892,7 @@ DLLEXPORT void mdsplus_int8array_constructor(void **lvInt8ArrayPtrOut, const LBy
 	Int8Array *int8ArrayPtrOut = NULL;
 	char *int8Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2920,7 +2920,7 @@ DLLEXPORT void mdsplus_int8array_constructor_dims(void **lvInt8ArrayPtrOut, cons
 	char *int8Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2967,7 +2967,7 @@ DLLEXPORT void mdsplus_range_constructor(void **lvRangePtrOut, const void *lvBeg
 	Data *endingDataPtrIn = NULL;
 	Data *deltaValDataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -2998,7 +2998,7 @@ DLLEXPORT void mdsplus_range_getBegin(const void *lvRangePtr, void **lvDataPtrOu
 	Range *rangePtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3021,7 +3021,7 @@ DLLEXPORT void mdsplus_range_getEnding(const void *lvRangePtr, void **lvDataPtrO
 	Range *rangePtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3043,7 +3043,7 @@ DLLEXPORT void mdsplus_range_getDeltaVal(const void *lvRangePtr, void **lvDataPt
 	Range *rangePtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3064,7 +3064,7 @@ DLLEXPORT void mdsplus_range_setBegin(const void *lvRangePtr, const void *lvData
 	Range *rangePtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3086,7 +3086,7 @@ DLLEXPORT void mdsplus_range_setEnding(const void *lvRangePtr, const void *lvDat
 	Range *rangePtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3107,7 +3107,7 @@ DLLEXPORT void mdsplus_range_setDeltaVal(const void *lvRangePtr, const void *lvD
 	Range *rangePtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3134,7 +3134,7 @@ DLLEXPORT void mdsplus_signal_constructor(void **lvSignalPtrOut, const void *lvD
 	Data *rawPtrIn = NULL;
 	Data *dim0PtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3164,7 +3164,7 @@ DLLEXPORT void mdsplus_signal_getData(const void *lvSignalPtr, void **lvDataPtrO
 	Signal *signalPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3187,7 +3187,7 @@ DLLEXPORT void mdsplus_signal_getRaw(const void *lvSignalPtr, void **lvRawPtrOut
 	Signal *signalPtr = NULL;
 	Data *rawPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3208,7 +3208,7 @@ DLLEXPORT void mdsplus_signal_getDim(const void *lvSignalPtr, void **lvDim0PtrOu
 	Signal *signalPtr = NULL;
 	Data *dim0PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3228,7 +3228,7 @@ DLLEXPORT void mdsplus_signal_setData(const void *lvSignalPtr, const void *lvDat
 	Signal *signalPtr = NULL;
 	Data *dataPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3250,7 +3250,7 @@ DLLEXPORT void mdsplus_signal_setRaw(const void *lvSignalPtr, const void *lvRawP
 	Signal *signalPtr = NULL;
 	Data *rawPtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3271,7 +3271,7 @@ DLLEXPORT void mdsplus_signal_setDim(const void *lvSignalPtr, const void *lvDim0
 	Signal *signalPtr = NULL;
 	Data *dim0PtrIn = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3298,7 +3298,7 @@ DLLEXPORT void mdsplus_scalar_constructor(void **lvScalarPtrOut, ErrorCluster *e
 {
 	Scalar *scalarPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3328,7 +3328,7 @@ DLLEXPORT void mdsplus_scalar_getInfo(const void *lvScalarPtr, char *clazzOut, c
 	int *dims = NULL;
 	void *ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3362,7 +3362,7 @@ DLLEXPORT void mdsplus_string_constructor(void **lvStringPtrOut, const char *val
 {
 	String *stringPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3383,7 +3383,7 @@ DLLEXPORT void mdsplus_string_constructor_len(void **lvStringPtrOut, const LByte
 	String *stringPtrOut = NULL;
 	char *byteArr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3416,7 +3416,7 @@ DLLEXPORT void mdsplus_string_equals(const void *lvStringPtr, LVBoolean *equalsO
 {
 	String *stringPtr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3439,7 +3439,7 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 	String *stringPtr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3475,7 +3475,7 @@ DLLEXPORT void mdsplus_stringarray_constructor(void **lvStringArrayPtrOut, const
 	char **stringArr = NULL;
 	int stringArrLen = 0;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3516,7 +3516,7 @@ DLLEXPORT void mdsplus_stringarray_constructor_stringLen(void **lvStringArrayPtr
 {
 	StringArray *stringArrayPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3548,7 +3548,7 @@ DLLEXPORT void mdsplus_uint16_constructor(void **lvUint16PtrOut, unsigned short 
 {
 	Uint16 *uint16PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3575,7 +3575,7 @@ DLLEXPORT void mdsplus_uint16_getByte(const void *lvUint16Ptr, char *byteOut, Er
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3594,7 +3594,7 @@ DLLEXPORT void mdsplus_uint16_getDouble(const void *lvUint16Ptr, double *doubleO
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3613,7 +3613,7 @@ DLLEXPORT void mdsplus_uint16_getFloat(const void *lvUint16Ptr, float *floatOut,
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3632,7 +3632,7 @@ DLLEXPORT void mdsplus_uint16_getInt(const void *lvUint16Ptr, int *intOut, Error
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3651,7 +3651,7 @@ DLLEXPORT void mdsplus_uint16_getLong(const void *lvUint16Ptr, _int64 *longOut, 
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3670,7 +3670,7 @@ DLLEXPORT void mdsplus_uint16_getShort(const void *lvUint16Ptr, short *shortOut,
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3694,7 +3694,7 @@ DLLEXPORT void mdsplus_uint16array_constructor(void **lvUint16ArrayPtrOut, const
 	Uint16Array *uint16ArrayPtrOut = NULL;
 	short *uint16Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3722,7 +3722,7 @@ DLLEXPORT void mdsplus_uint16array_constructor_dims(void **lvUint16ArrayPtrOut, 
 	short *uint16Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3766,7 +3766,7 @@ DLLEXPORT void mdsplus_uint32_constructor(void **lvUint32PtrOut, unsigned int va
 {
 	Uint32 *uint32PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3793,7 +3793,7 @@ DLLEXPORT void mdsplus_uint32_getByte(const void *lvUint32Ptr, char *byteOut, Er
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3812,7 +3812,7 @@ DLLEXPORT void mdsplus_uint32_getDouble(const void *lvUint32Ptr, double *doubleO
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3831,7 +3831,7 @@ DLLEXPORT void mdsplus_uint32_getFloat(const void *lvUint32Ptr, float *floatOut,
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3850,7 +3850,7 @@ DLLEXPORT void mdsplus_uint32_getInt(const void *lvUint32Ptr, int *intOut, Error
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3869,7 +3869,7 @@ DLLEXPORT void mdsplus_uint32_getLong(const void *lvUint32Ptr, _int64 *longOut, 
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3888,7 +3888,7 @@ DLLEXPORT void mdsplus_uint32_getShort(const void *lvUint32Ptr, short *shortOut,
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3912,7 +3912,7 @@ DLLEXPORT void mdsplus_uint32array_constructor(void **lvUint32ArrayPtrOut, const
 	Uint32Array *uint32ArrayPtrOut = NULL;
 	int *uint32Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3940,7 +3940,7 @@ DLLEXPORT void mdsplus_uint32array_constructor_dims(void **lvUint32ArrayPtrOut, 
 	int *uint32Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -3985,7 +3985,7 @@ DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned _int64
 {
 	Uint64 *uint64PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4005,7 +4005,7 @@ DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, _int64u valIn, 
 {
 	Uint64 *uint64PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4033,7 +4033,7 @@ DLLEXPORT void mdsplus_uint64_getByte(const void *lvUint64Ptr, char *byteOut, Er
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4053,7 +4053,7 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 	Uint64 *uint64Ptr = NULL;
 	char *strOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4083,7 +4083,7 @@ DLLEXPORT void mdsplus_uint64_getDouble(const void *lvUint64Ptr, double *doubleO
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4102,7 +4102,7 @@ DLLEXPORT void mdsplus_uint64_getFloat(const void *lvUint64Ptr, float *floatOut,
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4121,7 +4121,7 @@ DLLEXPORT void mdsplus_uint64_getInt(const void *lvUint64Ptr, int *intOut, Error
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4140,7 +4140,7 @@ DLLEXPORT void mdsplus_uint64_getLong(const void *lvUint64Ptr, _int64 *longOut, 
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4159,7 +4159,7 @@ DLLEXPORT void mdsplus_uint64_getShort(const void *lvUint64Ptr, short *shortOut,
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4183,7 +4183,7 @@ DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const
 	Uint64Array *uint64ArrayPtrOut = NULL;
 	_int64 *uint64Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4211,7 +4211,7 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 	_int64 *uint64Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4255,7 +4255,7 @@ DLLEXPORT void mdsplus_uint8_constructor(void **lvUint8PtrOut, unsigned char val
 {
 	Uint8 *uint8PtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4282,7 +4282,7 @@ DLLEXPORT void mdsplus_uint8_getByte(const void *lvUint8Ptr, char *byteOut, Erro
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4301,7 +4301,7 @@ DLLEXPORT void mdsplus_uint8_getDouble(const void *lvUint8Ptr, double *doubleOut
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4320,7 +4320,7 @@ DLLEXPORT void mdsplus_uint8_getFloat(const void *lvUint8Ptr, float *floatOut, E
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4339,7 +4339,7 @@ DLLEXPORT void mdsplus_uint8_getInt(const void *lvUint8Ptr, int *intOut, ErrorCl
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4358,7 +4358,7 @@ DLLEXPORT void mdsplus_uint8_getLong(const void *lvUint8Ptr, _int64 *longOut, Er
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4377,7 +4377,7 @@ DLLEXPORT void mdsplus_uint8_getShort(const void *lvUint8Ptr, short *shortOut, E
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4401,7 +4401,7 @@ DLLEXPORT void mdsplus_uint8array_constructor(void **lvUint8ArrayPtrOut, const L
 	Uint8Array *uint8ArrayPtrOut = NULL;
 	char *uint8Arr = NULL;	
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4429,7 +4429,7 @@ DLLEXPORT void mdsplus_uint8array_constructor_dims(void **lvUint8ArrayPtrOut, co
 	char *uint8Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
@@ -4462,7 +4462,7 @@ DLLEXPORT void mdsplus_uint8array_deserialize(const void *lvUint8ArrayPtr, void 
 	Uint8Array *uint8ArrayPtr = NULL;
 	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	char *errorSource = __FUNCTION__;
+	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
