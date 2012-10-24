@@ -18,8 +18,8 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
     /** Creates new form BeanForm */
     public RFXDiagTimesV1Setup() {
         initComponents();
+        setSize(300, 800);
         this.pack();
-        setSize(800, 285);
     }
 
     /** This method is called from within the constructor to
@@ -50,6 +50,7 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
         deviceField5 = new DeviceField();
         jLabel4 = new javax.swing.JLabel();
 
+
         setDeviceProvider("localhost");
         setDeviceTitle("RFX Diagnostic Timing Configuration");
         setDeviceType("RFXDiagTimes");
@@ -61,7 +62,7 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jPanel2.setLayout(new java.awt.GridLayout(4, 0));
+        jPanel2.setLayout(new java.awt.GridLayout(2, 0));
 
         jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -78,13 +79,17 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
         jPanel3.add(deviceField1);
 
         //deviceChoice2.setChoiceItems(new String[] {"N7_AMP", "N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH"});
+/*
+
+Removed Real time thomson scattaring parameters (24-10-2012)
+
         deviceChoice2.setChoiceItems(new String[] {"M1_N7_AMP", "M1_N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH", "M0_N1_AMP", "M0_N1_AMP_PH", "M0_N7_AMP", "M0_N7_AMP_PH"});
 		deviceChoice2.setIdentifier("rtTriggerMode");
         deviceChoice2.setLabelString("Real Time Trigger Mode : ");
         deviceChoice2.setOffsetNid(4);
         deviceChoice2.setUpdateIdentifier("");
         jPanel3.add(deviceChoice2);
-
+*/
         jPanel2.add(jPanel3);
 
         jPanel4.setLayout(new java.awt.BorderLayout());
@@ -98,6 +103,11 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
         jPanel4.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
         jPanel2.add(jPanel4);
+
+/*
+
+Removed Real time thomson scattaring parameters (24-10-2012)
+
 
         deviceField2.setIdentifier("ampMin");
         deviceField2.setLabelString("Amplitude [T]  OR Dom/Sec Min : ");
@@ -128,6 +138,7 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
         jPanel6.add(jLabel4);
 
         jPanel2.add(jPanel6);
+*/
 
         jPanel1.add(jPanel2, java.awt.BorderLayout.CENTER);
 
