@@ -126,13 +126,13 @@ EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 		return -1;
 	}
 }
-//	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, Timeout *timeout = 0)
+//	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, MdsTimeout *timeout = 0)
 
 EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs)
 {
 	Event ev;
 	try {
-		Timeout *timout = new Timeout(millisecs);
+		MdsTimeout *timout = new MdsTimeout(millisecs);
 		ev.triggerAndWait(name,  buf, size, true, timout);
 		delete timout;
 		return 0;

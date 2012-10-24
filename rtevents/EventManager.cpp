@@ -166,7 +166,7 @@ void EventManager::trigger(const char *eventName, char *buf, int size, int type,
 	}
 }
 
-EventAnswer *EventManager::triggerAndCollect(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
+EventAnswer *EventManager::triggerAndCollect(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, MdsTimeout *timeout)
 {
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();
 	while(currHandler)
@@ -186,7 +186,7 @@ EventAnswer *EventManager::triggerAndCollect(const char *eventName, char *buf, i
 	else
 		return new EventAnswer(0, copyBuf);
 }
-bool EventManager::triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
+bool EventManager::triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, MdsTimeout *timeout)
 {
 	bool isTimeout = false;
 	EventHandler *currHandler = (EventHandler *)eventHead.getAbsAddress();

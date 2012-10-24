@@ -63,7 +63,7 @@ public:
 		}
 	}
 
-	int timedWait(Timeout &timeout)
+	int timedWait(MdsTimeout &timeout)
 	{
 		struct timespec waitTimeout;
 		waitTimeout.tv_sec = timeout.getSecs();

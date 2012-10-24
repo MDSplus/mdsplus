@@ -65,21 +65,21 @@ public:
 		evManager->trigger(eventName, buf, size, type, memManager, copyBuf);
 	}
 
-	bool triggerAndWait(const char *eventName, char *buf, int size, int type, bool copyBuf = true, Timeout *timeout = 0)
+	bool triggerAndWait(const char *eventName, char *buf, int size, int type, bool copyBuf = true, MdsTimeout *timeout = 0)
 	{
 		return evManager->triggerAndWait(eventName, buf, size, type, memManager, copyBuf, timeout);
 	}
 
-	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, Timeout *timeout = 0)
+	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, MdsTimeout *timeout = 0)
 	{
 		return evManager->triggerAndWait(eventName, buf, size, 0, memManager, copyBuf, timeout);
 	}
 
-	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, int type, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
+	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, int type, bool copyBuf = true, EventAnswer *inAnsw = 0, MdsTimeout *timeout = 0)
 	{
 		return evManager->triggerAndCollect(eventName, buf, size, type, memManager, copyBuf, inAnsw, timeout);
 	}
-	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0)
+	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, bool copyBuf = true, EventAnswer *inAnsw = 0, MdsTimeout *timeout = 0)
 	{
 		return evManager->triggerAndCollect(eventName, buf, size, 0, memManager, copyBuf, inAnsw, timeout);
 	}

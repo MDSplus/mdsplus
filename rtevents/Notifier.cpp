@@ -74,7 +74,7 @@ void Notifier::waitTermination()
 }
 
 //Return true if timeout occurred
-bool Notifier::waitTermination(Timeout &timeout)
+bool Notifier::waitTermination(MdsTimeout &timeout)
 {
 	bool timeoutOccurred = false;
 	try {

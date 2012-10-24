@@ -74,7 +74,7 @@ public:
 				throw new SystemException("Error waiting semaphore", errno);
 		}
 	}
-	int timedWait(Timeout &timeout)
+	int timedWait(MdsTimeout &timeout)
 	{
 		struct timespec waitTimeout;
 		time(&waitTimeout.tv_sec);

@@ -39,7 +39,7 @@ void initialize(ThreadAttributes *threadAttr, Runnable *runnable, void *arg);
 void trigger();
 void synchTrigger();
 void watchdogTrigger();
-bool waitTermination(Timeout &);
+bool waitTermination(MdsTimeout &);
 void waitTermination();
 bool isPending();
 void dispose(bool semaphoresOnly, SharedMemManager *memManager);

@@ -26,7 +26,7 @@ class EventHandler
 	int type;
 	bool synch;
 	bool collect;
-	bool intTriggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool collect, bool copyBuf, Timeout *timeout = 0);
+	bool intTriggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool collect, bool copyBuf, MdsTimeout *timeout = 0);
 	
 public:
 	void setNext(EventHandler *next)
@@ -62,14 +62,14 @@ public:
 	void resizeRetData(RetEventDataDescriptor *retDataDescr, int newSize, SharedMemManager *memManager);
 	void trigger();
 	void watchdogTrigger();
-	bool triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout = 0);
+	bool triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, MdsTimeout *timeout = 0);
 	bool corresponds(const char *name);
 	void clean(SharedMemManager *memManager);
 	int getRetSize();
 	void *getRetBuffer();
 	void *addRetBuffer(int size, SharedMemManager *memManager);
 	void removeRetDataDescr(RetEventDataDescriptor *retDataDescr,  SharedMemManager *memManager);
-	EventAnswer *triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
+	EventAnswer *triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw = 0, MdsTimeout *timeout = 0);
 	int getType(){return type;}
 	void lockData(){lock.lock();}
 	void unlockData() {lock.unlock();}
