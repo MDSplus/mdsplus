@@ -166,14 +166,24 @@ DLLEXPORT void mdsplus_empty_destructor(void **lvEmptyPtr);
 /********** EVENT **********/
 DLLEXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNameIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_destructor(void **lvEventPtr);
-DLLEXPORT void mdsplus_event_getData(const void *lvEventPtr, void **lvDataPtrOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_event_getRaw(const void *lvEventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_event_getTime(const void *lvEventPtr, void **lvUint64PtrOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_event_run(const void *lvEventPtr, ErrorCluster *error);
+DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evNameIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_destructor(void **lvREventPtr);
+DLLEXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_getTime(const void *lvREventPtr, void **lvUint64PtrOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_run(const void *lvREventPtr, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_setEvent(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *lvDataPtrIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error);
 
 /********** FLOAT32 **********/
 DLLEXPORT void mdsplus_float32_constructor(void **lvFloat32PtrOut, float valIn, ErrorCluster *error);
