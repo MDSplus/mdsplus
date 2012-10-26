@@ -24,6 +24,6 @@ FUN PUBLIC JavaReplaceSignal(in _idx, in _y, optional _opt_x, optional _opt_row,
         _label = '';
     _status = JavaMds->removeAllSignals(val(_idx), val(long(_row)), val(long(_col)));
     if(_status == 0)
-    	_status = JavaMds->addSignal(val(_idx), float(_x), float(_y), val(long(kind(_x))), val(SIZE(_x)), val(long(_row)), val(long(_col)), _color, _label);
+    	_status = JavaMds->addSignal(val(_idx), float(_x), fs_float(_y), val(long(kind(_x))), val(SIZE(_x)), val(long(_row)), val(long(_col)), _color, _label);
     return(_status);
 }
