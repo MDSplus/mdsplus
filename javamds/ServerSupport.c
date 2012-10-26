@@ -89,9 +89,11 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
 	EMPTYXD(segTimesXd);
 	int numSegments, status, currSegment, currIdx, outIdx;
 	int nid = *nidPtr;
-	float segStart, segEnd, actMin, actMax, actDelta, currMin, currMax;
+	double segStart, segEnd, actMin, actMax, actDelta, currMin, currMax;
 	int outSamples, minSegment, maxSegment;
-	float *outData, *outTimes, *currTimes, *currData, currSamples, currTime;
+	float *outData, *outTimes, *currTimes, *currData, currSamples;
+	double *currDataDouble, *currTimesDouble, currTime;
+	int isDouble, isTimeDouble;
 	struct descriptor_a *arrDsc;
 	DESCRIPTOR_A(dataDsc, sizeof(float), DTYPE_FLOAT, 0, 0);
 	DESCRIPTOR_A(timesDsc, sizeof(float), DTYPE_FLOAT, 0, 0);
@@ -125,8 +127,14 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
 			printf("Cannot get segment end!!\n");
 			return &xd;
 		}
-		segStart = *(float *)startXd.pointer->pointer;
-		segEnd = *(float *)endXd.pointer->pointer;
+		if(startXd.pointer->length == sizeof(float))
+			segStart = *(float *)startXd.pointer->pointer;
+		else
+			segStart = *(double *)startXd.pointer->pointer;
+		if(endXd.pointer->length == sizeof(float))
+			segEnd = *(float *)endXd.pointer->pointer;
+		else
+			segEnd = *(double *)endXd.pointer->pointer;
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		if(currSegment == 0 && actMax < segStart)
@@ -165,11 +173,15 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
 		}
 		arrDsc = (struct descriptor_a *)segDataXd.pointer;
 		currSamples = arrDsc->arsize / arrDsc->length;
+		isDouble = (arrDsc->length == sizeof(double));
 		currData = (float *)arrDsc->pointer;
+		currDataDouble = (double *)arrDsc->pointer;
 		arrDsc = (struct descriptor_a *)segTimesXd.pointer;
 		if(arrDsc->arsize / arrDsc->length < currSamples)
 			currSamples = arrDsc->arsize / arrDsc->length;
 		currTimes = (float *)arrDsc->pointer;
+		currTimesDouble = (double *)arrDsc->pointer;
+		isTimeDouble = (arrDsc->length == sizeof(double));
 		if(currSegment == minSegment)
 		{
 			for (currIdx = 0; currIdx < currSamples && currTimes[currIdx] < actMin; currIdx++);
@@ -184,14 +196,33 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
 
 		while(currIdx < currSamples)
 		{
-			currMin = currMax = currData[currIdx];
-			while(currIdx < currSamples && currTimes[currIdx] < actMin + (outIdx + 1)*actDelta)
+			if(isTimeDouble)
+				currTime = currTimesDouble[currIdx];
+			else
+				currTime = currTimes[currIdx];
+			if(isDouble)
 			{
-				if(currData[currIdx] > currMax)
-					currMax = currData[currIdx];
-				if(currData[currIdx] < currMin)
-					currMin = currData[currIdx];
-				currIdx++;
+				currMin = currMax = currDataDouble[currIdx];
+				while(currIdx < currSamples && currTime < actMin + (outIdx + 1)*actDelta)
+				{
+					if(currDataDouble[currIdx] > currMax)
+						currMax = currDataDouble[currIdx];
+					if(currDataDouble[currIdx] < currMin)
+						currMin = currDataDouble[currIdx];
+					currIdx++;
+				}
+			}
+			else
+			{
+				currMin = currMax = currData[currIdx];
+				while(currIdx < currSamples && currTime < actMin + (outIdx + 1)*actDelta)
+				{
+					if(currData[currIdx] > currMax)
+						currMax = currData[currIdx];
+					if(currData[currIdx] < currMin)
+						currMin = currData[currIdx];
+					currIdx++;
+				}
 			}
 			outData[2*outIdx] = currMin;
 			outData[2*outIdx+1] = currMax;
