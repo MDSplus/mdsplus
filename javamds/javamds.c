@@ -14,6 +14,21 @@ extern int TdiCompile(), TdiData(), TdiFloat();
 
 static char error_message[512];
 
+static jint DYN_JNI_CreateJavaVM(JavaVM **jvm, void **env, JavaVMInitArgs *vm_args) {
+  int status;
+  static jint (*JNI_CreateJavaVM)(JavaVM **, void **, JavaVMInitArgs *) = 0;
+  if (JNI_CreateJavaVM == 0) {
+    static DESCRIPTOR(javalib_d,"java");
+    static DESCRIPTOR(javasym_d,"JNI_CreateJavaVM");
+    status = LibFindImageSymbol(&javalib_d,&javasym_d,&JNI_CreateJavaVM);
+    if (!(status & 1)) {
+      JNI_CreateJavaVM = 0;
+      return -1;
+    } 
+  }
+  return (*JNI_CreateJavaVM)(jvm,env,vm_args);
+}
+
 
 #define BYTE 1
 #define FLOAT 2
@@ -1262,7 +1277,7 @@ int createWindow(char *name, int idx, int enableLiveUpdate)
 
 
 
-		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+		res = DYN_JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 
 		if(res < 0)
 		{
@@ -1505,7 +1520,7 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 
 
 
-		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+		res = DYN_JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 
 		if(res < 0)
 		{
