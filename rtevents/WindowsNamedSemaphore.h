@@ -32,7 +32,7 @@ public:
 			throw new SystemException("Error waiting Semaphore", GetLastError());
 	}
 	
-	int timedWait(Timeout &timeout)
+	int timedWait(MdsTimeout &timeout)
 	{
         int status = WaitForSingleObject( 
             semHandle,   // handle to semaphore
