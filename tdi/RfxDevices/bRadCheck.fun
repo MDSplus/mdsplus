@@ -47,6 +47,7 @@ public fun bRadCheck(in _save, optional _debug)
 	/*
 	_PrMaxCurrent = 330;
 	*/
+
 	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 9];
 	_level = _PrMaxCurrent * 0.9;
 	_satDuration = 0.01;
@@ -101,9 +102,12 @@ public fun bRadCheck(in _save, optional _debug)
             		_val = sum( ( _yRef > 1. ) * 1.0 );
             		if( _val > 100 )
             		{
+
                			if ( sum( ( _y > 20. ) * 1.0 ) < 10 )
                			{
+/*
 					   		if( PRESENT( _debug ) )
+*/
 						   	write(*, "Probabile saddle coil con corrente nulla  "//_sigName);
  
  					   		_prNullCurrent = [_prNullCurrent,  _sigName];
