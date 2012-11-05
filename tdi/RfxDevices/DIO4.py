@@ -914,10 +914,17 @@ class DIO4(Device):
                 return 0
         recEvents = Data.execute("_DIO4_rec_events")
         recTimes = Data.execute("_DIO4_rec_times")
-        print recEvents
-        print recTimes
-        if recEvents[0] != -1:
-            setattr(self,'rec_events', recEvents)
+	recEventNum  = Data.execute("size(_DIO4_rec_times)")
+        print "EVENTS ",recEvents
+        print "TIMES ", recTimes
+        print "NUM   ", recEventNum
+
+        #if recEvents[0] != -1:
+        if recEventNum > 0 :
+            #setattr(self,'rec_events', recEvents)
+            print "rec_data ", self.rec_events.getFullPath()
+            #self.rec_events.putData(recEvents)
+
             try:
                 recStartEv = getattr(self, 'rec_start_ev').data()
             except:
@@ -926,7 +933,9 @@ class DIO4(Device):
                 recStartTime = Data.execute('TimingGetEventTime($1)', recStartEv)
             else:
                 recStartTime = 0
-            setattr(self,'rec_times', recTimes + recStartTime)
+            #setattr(self,'rec_times', recTimes + recStartTime)
+            print "rec_times ", self.rec_times.getFullPath()
+            #self.rec_times.putData(recTimes + recStartTime)
 
         channelMask = 0
         for c in range(8):
@@ -961,9 +970,6 @@ class DIO4(Device):
                     except:
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write trigger parameters for channel %d'%(c+1))
                         return 0
-
-
-
 
         return 1
 

@@ -17,6 +17,7 @@ public fun DIO4HWSetPulseChan(in _nid, in _board_id, in _channel, in _trig_mode,
 	private _DIO4_TC_IO_TRIGGER_RISING = 0x01;
 	private _DIO4_TC_IO_TRIGGER_FALLING = 0x02;
 	private _DIO4_TC_SOURCE_IO = 0x01;
+	private _DIO4_TC_IDLE_LEVEL_0 = 0x0;
 	private _DIO4_EC_GENERAL_TRIGGER = 0x00;
 
 	private _DIO4_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
@@ -102,6 +103,7 @@ write(*, 'event size: ', _s);
 	else
 		_mode = byte(_DIO4_TC_SINGLE_SHOT);
 
+		_mode = _mode | _DIO4_TC_IDLE_LEVEL_0;
 
 	_status = DIO4->DIO4_TC_SetPhaseSettings(val(_handle), val(byte(_channel + 1)), val(_mode), 
 		val(byte(_DIO4_TC_INT_DISABLE)), _levels);
