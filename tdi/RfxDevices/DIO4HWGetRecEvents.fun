@@ -35,7 +35,7 @@ public fun DIO4HWGetRecEvents(in _nid, in _board_id)
 	}
 
 
-	_rec_events = [-1];
+	_rec_events = [];
         _rec_times  = [0];
 	_found_event = 0;
 
@@ -66,6 +66,10 @@ public fun DIO4HWGetRecEvents(in _nid, in _board_id)
 
         public _DIO4_rec_events = _rec_events[_found_event : size(_rec_events) ];
         public _DIO4_rec_times  = _rec_times[_found_event : size(_rec_times) ];
+
+	write(*, _DIO4_rec_events);
+	write(*, _DIO4_rec_times);
+
 
 	write(*, 'DIO4HWGetRecEvents OK');
 
