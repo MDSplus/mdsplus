@@ -2034,12 +2034,12 @@ EXPORT StringArray *TreeNodeArray::getUsage()
 
 
 
-void MDSplus::setActiveTree(Tree *tree)
+EXPORT void MDSplus::setActiveTree(Tree *tree)
 {
 	TreeSwitchDbid(tree->getCtx());
 }
 
-Tree *MDSplus::getActiveTree()
+EXPORT Tree *MDSplus::getActiveTree()
 {
 	char name[1024];
 	int shot;

@@ -15,6 +15,9 @@ extern "C" {
 	int MDSUdpEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 	int MDSUdpEventCan(int id);
 	int MDSUdpEvent(char *eventNameIn, int bufLen, char *buf);
+	int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
+	int MDSEventCan(int id);
+	int MDSEvent(char *eventNameIn, int bufLen, char *buf);
 	void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
 	void MdsEventRemoveListener(void *eventId);
 	int MdsEventTrigger(char *name, char *buf, int size);
@@ -38,11 +41,13 @@ extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
 	
 void Event::connectToEvents()
 {
-	MDSUdpEventAst(eventName, eventAst, this, &eventId);
+	//MDSUdpEventAst(eventName, eventAst, this, &eventId);
+	MDSEventAst(eventName, eventAst, this, &eventId);
 }
 void Event::disconnectFromEvents()
 {
-	MDSUdpEventCan(eventId);
+//	MDSUdpEventCan(eventId);
+	MDSEventCan(eventId);
 }
 
 Data *Event::getData()
@@ -97,11 +102,13 @@ void Event::setEvent(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
-	MDSUdpEvent(evName, bufLen, buf);
+//	MDSUdpEvent(eventId);
+	MDSEvent(evName, bufLen, buf);
 }
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
 {
-	MDSUdpEvent(evName, bufLen, buf);
+//	MDSUdpEvent(evName, bufLen, buf);
+	MDSEvent(evName, bufLen, buf);
 }
 
 void REvent::setEvent(char *evName, Data *evData)
