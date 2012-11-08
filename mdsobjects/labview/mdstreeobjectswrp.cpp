@@ -205,7 +205,7 @@ DLLEXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArray
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-/*
+
 DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *error)
 {
 	Tree *treePtrOut = NULL;
@@ -231,7 +231,7 @@ DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *err
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-*/
+
 DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
@@ -575,7 +575,7 @@ DLLEXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagName
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-/*DLLEXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster *error)
 {
 	Tree *treePtrIn = NULL;
 	MgErr errorCode = noErr;
@@ -593,7 +593,7 @@ DLLEXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagName
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-*/
+
 DLLEXPORT void mdsplus_tree_setCurrent(const char *treeNameIn, int shotIn, ErrorCluster *error)
 {
 	MgErr errorCode = noErr;
