@@ -151,8 +151,8 @@ EXPORT void deleteNativeArray(Data **array);
 	
 EXPORT void deleteString(char *str);
 class Tree;
-void setActiveTree(Tree *tree);
-Tree *getActiveTree();
+EXPORT void setActiveTree(Tree *tree);
+EXPORT Tree *getActiveTree();
 /////Exceptions//////////////
 
 	class EXPORT MdsException
@@ -2242,6 +2242,7 @@ protected:
 		char *eventBuf;
 		int eventBufSize;
 		int eventId;
+		bool waitingEvent;
 		_int64 eventTime;
 		Event(){sem.initialize(0);}
 		Event(char *evName);
@@ -2259,12 +2260,41 @@ protected:
 	    Data *getData();
 		void wait()
 		{
+			waitingEvent = true;
 			sem.wait();
+			waitingEvent = false;
+		}
+		void wait(int secs)
+		{
+			waitingEvent = true;
+			MdsTimeout timeout(secs, 0);
+			int status = sem.timedWait(timeout);
+			waitingEvent = false;
+			if(status)
+				throw new MdsException("Timeout Occurred");
 		}
 		Data *waitData()
 		{
+			waitingEvent = true;
 			sem.wait();
+			waitingEvent = false;
 			return getData();
+		}
+		Data *waitData(int secs)
+		{
+			waitingEvent = true;
+			MdsTimeout timeout(secs, 0);
+			//timedWait returns 0 if no timeout, 1 otherwise
+			int status = sem.timedWait(timeout);
+			waitingEvent = false;
+			if(status)
+				throw new MdsException("Timeout Occurred");
+			return getData();
+		}
+		void abort()
+		{
+			if(waitingEvent)
+				sem.post();
 		}
 		char *waitRaw(int *size)
 		{
@@ -2278,7 +2308,6 @@ protected:
 		static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEvent(char *evName, Data *evData);
-		static void waitEvent(char *eventName);
 //To keep them compatible with python
 		static void setevent(char *evName) {setEvent(evName); }
 		static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}

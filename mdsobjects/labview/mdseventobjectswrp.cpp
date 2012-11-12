@@ -32,23 +32,19 @@ DLLEXPORT void mdsplus_event_destructor(void **lvEventPtr)
 	delete eventPtr;
 	*lvEventPtr = NULL;
 }
-
-DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
-	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
-		dataPtrOut = eventPtr->waitData();
-		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
+		eventPtr->abort();
 	}
 	catch (MdsException *mdsE)
 	{
-		deleteData(dataPtrOut);
 		errorCode = bogusError;
 		errorMessage = const_cast<char *>(mdsE->what());
 	}
@@ -58,22 +54,58 @@ DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOu
 		errorMessage = const_cast<char *>(e->what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+
 }
-DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, ErrorCluster *error)
+
+DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error)
+{
+	Event *eventPtr = NULL;
+	Data *dataPtrOut = NULL;
+	MgErr errorCode = noErr;
+	const char *errorSource = __FUNCTION__;
+	char *errorMessage = "";
+	*timeoutOccurred = 0;
+	try
+	{
+		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
+//1 Second timeout
+		dataPtrOut = eventPtr->waitData(1);
+		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
+	}
+	catch (MdsException *mdsE)
+	{
+		deleteData(dataPtrOut);
+		*timeoutOccurred = 1;
+//		errorCode = bogusError;
+//		errorMessage = const_cast<char *>(mdsE->what());
+	}
+	catch (exception *e)
+	{
+		errorCode = bogusError;
+		errorMessage = const_cast<char *>(e->what());
+	}
+	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+
+DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred, ErrorCluster *error)
 {
 	Event *eventPtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
+	*timeoutOccurred = 0;
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
-		eventPtr->wait();
+
+		// 1 Sec timeout
+		eventPtr->wait(1);
 	}
 	catch (MdsException *mdsE)
 	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
+		*timeoutOccurred = 1;
+		//errorCode = bogusError;
+		//errorMessage = const_cast<char *>(mdsE->what());
 	}
 	catch (exception *e)
 	{

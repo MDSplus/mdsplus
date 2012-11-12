@@ -166,8 +166,9 @@ DLLEXPORT void mdsplus_empty_destructor(void **lvEmptyPtr);
 /********** EVENT **********/
 DLLEXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNameIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_destructor(void **lvEventPtr);
-DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, ErrorCluster *error);
+DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error);
+DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred, ErrorCluster *error);
+DLLEXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error);
