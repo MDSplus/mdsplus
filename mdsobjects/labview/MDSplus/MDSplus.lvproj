@@ -83,67 +83,31 @@
 			</Item>
 		</Item>
 		<Item Name="Build Specifications" Type="Build">
-			<Item Name="MDSplusExecutable" Type="EXE">
-				<Property Name="App_copyErrors" Type="Bool">true</Property>
-				<Property Name="App_INI_aliasGUID" Type="Str">{1FE8393C-43AF-4E2C-A168-2FED76ED2B82}</Property>
-				<Property Name="App_INI_GUID" Type="Str">{B132631E-4613-4C0D-BB86-864CEAB68911}</Property>
-				<Property Name="Bld_buildSpecName" Type="Str">MDSplusExecutable</Property>
-				<Property Name="Bld_excludeLibraryItems" Type="Bool">true</Property>
-				<Property Name="Bld_excludePolymorphicVIs" Type="Bool">true</Property>
-				<Property Name="Bld_localDestDir" Type="Path">../builds/MDSplus/MDSplusExecutable</Property>
+			<Item Name="MDSplus" Type="Source Distribution">
+				<Property Name="Bld_buildSpecName" Type="Str">MDSplus</Property>
+				<Property Name="Bld_excludedDirectory[0]" Type="Path">..</Property>
+				<Property Name="Bld_excludedDirectory[0].pathType" Type="Str">relativeToCommon</Property>
+				<Property Name="Bld_excludedDirectory[1]" Type="Path">instr.lib</Property>
+				<Property Name="Bld_excludedDirectory[1].pathType" Type="Str">relativeToAppDir</Property>
+				<Property Name="Bld_excludedDirectory[2]" Type="Path">user.lib</Property>
+				<Property Name="Bld_excludedDirectory[2].pathType" Type="Str">relativeToAppDir</Property>
+				<Property Name="Bld_excludedDirectory[3]" Type="Path">resource/objmgr</Property>
+				<Property Name="Bld_excludedDirectory[3].pathType" Type="Str">relativeToAppDir</Property>
+				<Property Name="Bld_excludedDirectory[4]" Type="Path">/C/Documents and Settings/AI_admin/My Documents/LabVIEW Data/InstCache</Property>
+				<Property Name="Bld_excludedDirectoryCount" Type="Int">5</Property>
+				<Property Name="Bld_localDestDir" Type="Path">../builds/MDSplus/MDSplus</Property>
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
-				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
-				<Property Name="Destination[0].destName" Type="Str">MDSplusExecutable.exe</Property>
-				<Property Name="Destination[0].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplusExecutable/MDSplusExecutable.exe</Property>
-				<Property Name="Destination[0].preserveHierarchy" Type="Bool">true</Property>
-				<Property Name="Destination[0].type" Type="Str">App</Property>
+				<Property Name="Destination[0].destName" Type="Str">Destination Directory</Property>
+				<Property Name="Destination[0].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplus</Property>
 				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
-				<Property Name="Destination[1].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplusExecutable/data</Property>
+				<Property Name="Destination[1].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplus/data</Property>
 				<Property Name="DestinationCount" Type="Int">2</Property>
-				<Property Name="Source[0].itemID" Type="Str">{88574180-D7A5-4590-99C5-52D353F3B79D}</Property>
-				<Property Name="Source[0].type" Type="Str">Container</Property>
-				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
-				<Property Name="Source[1].itemID" Type="Ref">/My Computer/MDSplus.lvlib</Property>
-				<Property Name="Source[1].Library.allowMissingMembers" Type="Bool">true</Property>
-				<Property Name="Source[1].sourceInclusion" Type="Str">Include</Property>
-				<Property Name="Source[1].type" Type="Str">Library</Property>
-				<Property Name="Source[2].Container.applyInclusion" Type="Bool">true</Property>
-				<Property Name="Source[2].destinationIndex" Type="Int">0</Property>
-				<Property Name="Source[2].itemID" Type="Ref">/My Computer/Sample and Utility VIs</Property>
-				<Property Name="Source[2].sourceInclusion" Type="Str">TopLevel</Property>
-				<Property Name="Source[2].type" Type="Str">Container</Property>
-				<Property Name="SourceCount" Type="Int">3</Property>
-				<Property Name="TgtF_fileDescription" Type="Str">MDSplusExecutable</Property>
-				<Property Name="TgtF_fileVersion.major" Type="Int">1</Property>
-				<Property Name="TgtF_internalName" Type="Str">MDSplusExecutable</Property>
-				<Property Name="TgtF_legalCopyright" Type="Str">Copyright © 2012 </Property>
-				<Property Name="TgtF_productName" Type="Str">MDSplusExecutable</Property>
-				<Property Name="TgtF_targetfileGUID" Type="Str">{8ECE1E9A-8197-49D6-AEE4-D604B11FA9E8}</Property>
-				<Property Name="TgtF_targetfileName" Type="Str">MDSplusExecutable.exe</Property>
-			</Item>
-			<Item Name="MDSplusExecutable1" Type="EXE">
-				<Property Name="App_copyErrors" Type="Bool">true</Property>
-				<Property Name="App_INI_aliasGUID" Type="Str">{68976F07-9D1D-46FA-B868-486B7D3A7BF9}</Property>
-				<Property Name="App_INI_GUID" Type="Str">{37235187-492E-4A9B-A673-8B20CF1550DC}</Property>
-				<Property Name="Bld_buildSpecName" Type="Str">MDSplusExecutable1</Property>
-				<Property Name="Bld_excludeLibraryItems" Type="Bool">true</Property>
-				<Property Name="Bld_excludePolymorphicVIs" Type="Bool">true</Property>
-				<Property Name="Bld_localDestDir" Type="Path">../builds/MDSplus/MDSplusExecutable1</Property>
-				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
-				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
-				<Property Name="Destination[0].destName" Type="Str">MDSplusExecutable.exe</Property>
-				<Property Name="Destination[0].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplusExecutable1/MDSplusExecutable.exe</Property>
-				<Property Name="Destination[0].preserveHierarchy" Type="Bool">true</Property>
-				<Property Name="Destination[0].type" Type="Str">App</Property>
-				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
-				<Property Name="Destination[1].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplusExecutable1/data</Property>
-				<Property Name="DestinationCount" Type="Int">2</Property>
-				<Property Name="Source[0].itemID" Type="Str">{88574180-D7A5-4590-99C5-52D353F3B79D}</Property>
+				<Property Name="Source[0].itemID" Type="Str">{703BFC97-CAB3-4C90-8CEE-41AEDA390400}</Property>
 				<Property Name="Source[0].type" Type="Str">Container</Property>
 				<Property Name="Source[1].Container.applyInclusion" Type="Bool">true</Property>
 				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
 				<Property Name="Source[1].itemID" Type="Ref">/My Computer/Sample and Utility VIs</Property>
-				<Property Name="Source[1].sourceInclusion" Type="Str">TopLevel</Property>
+				<Property Name="Source[1].sourceInclusion" Type="Str">Include</Property>
 				<Property Name="Source[1].type" Type="Str">Container</Property>
 				<Property Name="Source[2].destinationIndex" Type="Int">0</Property>
 				<Property Name="Source[2].itemID" Type="Ref">/My Computer/MDSplus.lvlib</Property>
@@ -151,13 +115,6 @@
 				<Property Name="Source[2].sourceInclusion" Type="Str">Include</Property>
 				<Property Name="Source[2].type" Type="Str">Library</Property>
 				<Property Name="SourceCount" Type="Int">3</Property>
-				<Property Name="TgtF_fileDescription" Type="Str">MDSplusExecutable1</Property>
-				<Property Name="TgtF_fileVersion.major" Type="Int">1</Property>
-				<Property Name="TgtF_internalName" Type="Str">MDSplusExecutable1</Property>
-				<Property Name="TgtF_legalCopyright" Type="Str">Copyright © 2012 </Property>
-				<Property Name="TgtF_productName" Type="Str">MDSplusExecutable1</Property>
-				<Property Name="TgtF_targetfileGUID" Type="Str">{2D98A408-45F9-431B-B04D-50955801B322}</Property>
-				<Property Name="TgtF_targetfileName" Type="Str">MDSplusExecutable.exe</Property>
 			</Item>
 		</Item>
 	</Item>

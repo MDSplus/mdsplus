@@ -94,13 +94,13 @@ Static method setevent is used to generate events.</Property>
 		<Property Name="NI.ClassItem.State" Type="Int">1350574608</Property>
 	</Item>
 	<Item Name="Wait Data.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Event_Class/Wait Data.vi">
-		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!&amp;.!!!!#A!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!"!!!!$"!=!!?!!!=$5V%5X"M&gt;8-O&lt;(:M;7)-2'&amp;U93ZM&gt;G.M98.T!!!)2'&amp;U93"P&gt;81!!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!*28:F&lt;H1A&lt;X6U!#"!5!!$!!!!!1!#%W6S=G^S)'FO)#BO&lt;S"F=H*P=CE!-%"Q!"Y!!"U.4524='RV=SZM&gt;GRJ9AV&amp;&gt;G6O&gt;#ZM&gt;G.M98.T!!B&amp;&gt;G6O&gt;#"J&lt;A!!6!$Q!!Q!!Q!%!!5!"A!%!!1!"!!%!!=!"!!%!!A$!!"Y!!!.#!!!!!!!!!E!!!#.#Q!!!!!!!!!!!!!!!!!!!!!!!!I!!!!!!!!!!!!!!*)!!!!!!1!*!!!!!!</Property>
+		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!&amp;D!!!!#Q!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!&amp;E!B%&amp;2J&lt;76P&gt;81A4W.D&gt;8*S:71!!$"!=!!?!!!=$5V%5X"M&gt;8-O&lt;(:M;7)-2'&amp;U93ZM&gt;G.M98.T!!!)2'&amp;U93"P&gt;81!!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!*28:F&lt;H1A&lt;X6U!!1!!!!A1&amp;!!!Q!!!!%!!B.F=H*P=C"J&lt;C!I&lt;G]A:8*S&lt;X)J!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!)28:F&lt;H1A;7Y!!&amp;1!]!!-!!-!"!!&amp;!!9!"Q!(!!=!"Q!)!!=!"Q!*!Q!!?!!!#1!!!!E!!!!*!!!!D1M!!!!!!!!!!!!!!!!!!!!!!!!)!!!!!!!!!!!!!!#3!!!!!!%!#A!!!!!</Property>
 		<Property Name="NI.ClassItem.ExecutionSystem" Type="Int">-1</Property>
 		<Property Name="NI.ClassItem.Flags" Type="Int">0</Property>
 		<Property Name="NI.ClassItem.IsStaticMethod" Type="Bool">false</Property>
 		<Property Name="NI.ClassItem.MethodScope" Type="UInt">1</Property>
 		<Property Name="NI.ClassItem.Priority" Type="Int">1</Property>
-		<Property Name="NI.ClassItem.State" Type="Int">1350574608</Property>
+		<Property Name="NI.ClassItem.State" Type="Int">1082130960</Property>
 	</Item>
 	<Item Name="Get Name.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Event_Class/Get Name.vi">
 		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!%P!!!!#A!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!"!!!!"*!-0````])4G&amp;N:3"P&gt;81!!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!*28:F&lt;H1A&lt;X6U!#"!5!!$!!!!!1!#%W6S=G^S)'FO)#BO&lt;S"F=H*P=CE!-%"Q!"Y!!"U.4524='RV=SZM&gt;GRJ9AV&amp;&gt;G6O&gt;#ZM&gt;G.M98.T!!B&amp;&gt;G6O&gt;#"J&lt;A!!6!$Q!!Q!!Q!%!!5!"A!%!!1!"!!%!!=!"!!%!!A$!!"Y!!!.#!!!!!!!!!E!!!#.#Q!!!!!!!!!!!!!!!!!!!!!!!!I!!!!!!!!!!!!!!*)!!!!!!1!*!!!!!!</Property>
@@ -112,13 +112,13 @@ Static method setevent is used to generate events.</Property>
 		<Property Name="NI.ClassItem.State" Type="Int">1350574608</Property>
 	</Item>
 	<Item Name="Wait.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Event_Class/Wait.vi">
-		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!%&gt;!!!!#1!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!"!!!!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!*28:F&lt;H1A&lt;X6U!#"!5!!$!!!!!1!#%W6S=G^S)'FO)#BO&lt;S"F=H*P=CE!-%"Q!"Y!!"U.4524='RV=SZM&gt;GRJ9AV&amp;&gt;G6O&gt;#ZM&gt;G.M98.T!!B&amp;&gt;G6O&gt;#"J&lt;A!!6!$Q!!Q!!Q!%!!1!"1!%!!1!"!!%!!9!"!!%!!=$!!"Y!!!.#!!!!!!!!!!!!!#.#Q!!!!!!!!!!!!!!!!!!!!!!!!I!!!!!!!!!!!!!!*)!!!!!!1!)!!!!!!</Property>
+		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!%T!!!!#A!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!&amp;E!B%&amp;2J&lt;76P&gt;81A4W.D&gt;8*S:71!!!1!!!!Q1(!!(A!!(1V.2&amp;.Q&lt;(6T,GRW&lt;'FC$56W:7ZU,GRW9WRB=X-!#56W:7ZU)'^V&gt;!!A1&amp;!!!Q!!!!%!!B.F=H*P=C"J&lt;C!I&lt;G]A:8*S&lt;X)J!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!)28:F&lt;H1A;7Y!!&amp;1!]!!-!!-!"!!&amp;!!9!"1!&amp;!!5!"1!(!!5!"1!)!Q!!?!!!#1!!!!E!!!!!!!!!D1M!!!!!!!!!!!!!!!!!!!!!!!!)!!!!!!!!!!!!!!#3!!!!!!%!#1!!!!!</Property>
 		<Property Name="NI.ClassItem.ExecutionSystem" Type="Int">-1</Property>
 		<Property Name="NI.ClassItem.Flags" Type="Int">0</Property>
 		<Property Name="NI.ClassItem.IsStaticMethod" Type="Bool">false</Property>
 		<Property Name="NI.ClassItem.MethodScope" Type="UInt">1</Property>
 		<Property Name="NI.ClassItem.Priority" Type="Int">1</Property>
-		<Property Name="NI.ClassItem.State" Type="Int">1342710288</Property>
+		<Property Name="NI.ClassItem.State" Type="Int">1107821072</Property>
 	</Item>
 	<Item Name="Set Event.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Event_Class/Set Event.vi">
 		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!%_!!!!#A!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!"!!!!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!*28:F&lt;H1A&lt;X6U!#"!5!!$!!!!!1!#%W6S=G^S)'FO)#BO&lt;S"F=H*P=CE!&amp;%!Q`````QJ&amp;&gt;G6O&gt;#"O97VF!!!Q1(!!(A!!(1V.2&amp;.Q&lt;(6T,GRW&lt;'FC$56W:7ZU,GRW9WRB=X-!#%6W:7ZU)'FO!!"B!0!!$!!$!!1!"!!&amp;!!1!"!!%!!1!"A!%!!=!#!-!!(A!!!U)!!!!!!!!!!!!!!5,!!!!!!!!!!!!!!!!!!!!!!!!#A!!!!!!!!!3!!!!!!!!$1!!!!Q!!!!!!!!!!!!!!1!*!!!!!!</Property>
@@ -137,5 +137,14 @@ Static method setevent is used to generate events.</Property>
 		<Property Name="NI.ClassItem.MethodScope" Type="UInt">1</Property>
 		<Property Name="NI.ClassItem.Priority" Type="Int">1</Property>
 		<Property Name="NI.ClassItem.State" Type="Int">1082401296</Property>
+	</Item>
+	<Item Name="Abort.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Event_Class/Abort.vi">
+		<Property Name="NI.ClassItem.ConnectorPane" Type="Bin">%!#!!!!!!!)!"1!&amp;!!!-!%!!!@````]!!!!"!!%!!!%&gt;!!!!#1!-1#%'=X2B&gt;(6T!!!,1!-!"'.P:'5!!""!-0````]'=W^V=G.F!!!71&amp;!!!Q!!!!%!!AFF=H*P=C"P&gt;81!"!!!!$"!=!!?!!!&gt;$5V%5X"M&gt;8-O&lt;(:M;7).28:F&lt;H1O&lt;(:D&lt;'&amp;T=Q!*28:F&lt;H1A&lt;X6U!#"!5!!$!!!!!1!#%W6S=G^S)'FO)#BO&lt;S"F=H*P=CE!-%"Q!"Y!!"U.4524='RV=SZM&gt;GRJ9AV&amp;&gt;G6O&gt;#ZM&gt;G.M98.T!!B&amp;&gt;G6O&gt;#"J&lt;A!!6!$Q!!Q!!Q!%!!1!"1!%!!1!"!!%!!9!"!!%!!=$!!"Y!!!.#!!!!!!!!!!!!!#.#Q!!!!!!!!!!!!!!!!!!!!!!!!I!!!!!!!!!!!!!!*)!!!!!!1!)!!!!!!</Property>
+		<Property Name="NI.ClassItem.ExecutionSystem" Type="Int">-1</Property>
+		<Property Name="NI.ClassItem.Flags" Type="Int">2</Property>
+		<Property Name="NI.ClassItem.IsStaticMethod" Type="Bool">false</Property>
+		<Property Name="NI.ClassItem.MethodScope" Type="UInt">1</Property>
+		<Property Name="NI.ClassItem.Priority" Type="Int">1</Property>
+		<Property Name="NI.ClassItem.State" Type="Int">1082929680</Property>
 	</Item>
 </LVClass>
