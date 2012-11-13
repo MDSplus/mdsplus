@@ -283,26 +283,10 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
 		retSignalDsc.dimensions[1] = (struct descriptor *)&endTimesApd;
 	}
 
-	printf("START TIMES:\n");
-	printDecompiled(&startTimesArray);
-
-	printf("\n\n\nEND TIMES:\n");
-	printDecompiled(&endTimesArray);
-
-	printf("IDXS:\n");
-	printDecompiled(&idxDsc);
-
-	printf("RET SIGNAL:\n");
-	printDecompiled(&retSignalDsc);
-
-
 
 
 	MdsCopyDxXd((struct descriptor *)&retSignalDsc, (struct descriptor *)outSignalXd);
 	//Free stuff
-	printf("ROSULTATO:\n");
-	printDecompiled(outSignalXd);
-
 	freeResources(startTimeXds, endTimeXds, numSegments);
 	free(startTimesBuf);
 	free(endTimesBuf);
