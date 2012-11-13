@@ -23,7 +23,7 @@ COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a 
 
 clean:
 	@ $(RM) $(COBJECTS)
@@ -46,7 +46,12 @@ install:
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMDSobjectsLVShr.a @libdir@; \
 	fi;
-
+	if [ ! -d @MDSPLUS@/labview ] ; then \
+                mkdir @MDSPLUS@/labview; \
+                chmod 755 @MDSPLUS@/labview; \
+        fi;
+	cp @MDSPLUS@/mdsobjects/labview/library/* @MDSPLUS@/labview
+	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
 
