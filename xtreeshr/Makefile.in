@@ -14,7 +14,8 @@ SOURCES = \
 	XTreeConvertToLongTime.c\
 	XTreeDefaultSquish.c \
 	XTreeDefaultResample.c \
-	XTreeGetTimedRecord.c
+	XTreeGetTimedRecord.c \
+	XTreeGetSegmentList.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = XXTreeShr.exports
