@@ -12,13 +12,13 @@
 		<Property Name="server.vi.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Sample and Utility VIs" Type="Folder">
-			<Item Name="PutGetTreeNode Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNode Example.vi"/>
-			<Item Name="SetEventData Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/SetEventData Example.vi"/>
+			<Item Name="PutGetTreeNodeExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExample.vi"/>
+			<Item Name="SetEventDataExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/SetEventDataExample.vi"/>
 			<Item Name="MakeSegmentUtility.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/MakeSegmentUtility.vi"/>
-			<Item Name="MakeSegment Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/MakeSegment Example.vi"/>
-			<Item Name="PutRow Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRow Example.vi"/>
-			<Item Name="WaitEventData Examplevi.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/WaitEventData Examplevi.vi"/>
-			<Item Name="PutGetTreeNodeExpression Example.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExpression Example.vi"/>
+			<Item Name="MakeSegmentExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/MakeSegmentExample.vi"/>
+			<Item Name="PutRowExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRowExample.vi"/>
+			<Item Name="WaitEventDataExamplevi.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/WaitEventDataExamplevi.vi"/>
+			<Item Name="PutGetTreeNodeExpressionExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExpressionExample.vi"/>
 		</Item>
 		<Item Name="MDSplus.lvlib" Type="Library" URL="/&lt;vilib&gt;/MDSplus/Library/MDSplus.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
