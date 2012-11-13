@@ -46,11 +46,11 @@ install:
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMDSobjectsLVShr.a @libdir@; \
 	fi;
-	if [ ! -d @MDSPLUS@/labview ] ; then \
-                mkdir @MDSPLUS@/labview; \
-                chmod 755 @MDSPLUS@/labview; \
+	if [ ! -d @MDSPLUS@/LabView/mdsobjects ] ; then \
+                mkdir @MDSPLUS@/LabView/mdsobjects; \
+                chmod 755 @MDSPLUS@/LabView/mdsobjects; \
         fi;
-	cp @MDSPLUS@/mdsobjects/labview/library/* @MDSPLUS@/labview
+	cp @MDSPLUS@/mdsobjects/labview/library/* @MDSPLUS@/LabView/mdsobjects
 	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
