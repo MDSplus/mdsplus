@@ -38,19 +38,21 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
+	if [ ! -d ../../LabView/mdsobjects ] ; then \
+                mkdir ../../LabView/mdsobjects; \
+                chmod 755 ../../LabView/mdsobjects; \
+        fi;
+	@ cp library/*.vi ../../LabView/mdsobjects
+	@ cp library/*.lvlib ../../LabView/mdsobjects
 	if [ ! -d @libdir@ ] ; then \
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
+
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMDSobjectsLVShr.a @libdir@; \
 	fi;
-	if [ ! -d @MDSPLUS@/LabView/mdsobjects ] ; then \
-                mkdir @MDSPLUS@/LabView/mdsobjects; \
-                chmod 755 @MDSPLUS@/LabView/mdsobjects; \
-        fi;
-	cp @MDSPLUS@/mdsobjects/labview/library/* @MDSPLUS@/LabView/mdsobjects
 	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
