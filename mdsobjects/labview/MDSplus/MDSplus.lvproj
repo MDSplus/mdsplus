@@ -14,7 +14,7 @@
 		<Item Name="Sample and Utility VIs" Type="Folder">
 			<Item Name="PutGetTreeNodeExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExample.vi"/>
 			<Item Name="SetEventDataExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/SetEventDataExample.vi"/>
-			<Item Name="MakeSegmentUtility.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Event/MakeSegmentUtility.vi"/>
+			<Item Name="MakeSegmentUtility.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/MakeSegmentUtility.vi"/>
 			<Item Name="MakeSegmentExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/MakeSegmentExample.vi"/>
 			<Item Name="PutRowExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRowExample.vi"/>
 			<Item Name="WaitEventDataExamplevi.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/WaitEventDataExamplevi.vi"/>
@@ -76,6 +76,7 @@
 				<Item Name="sub2ShouldUseDefSigName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/sub2ShouldUseDefSigName.vi"/>
 				<Item Name="subGetSignalName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/subGetSignalName.vi"/>
 				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
+				<Item Name="Range.lvclass" Type="LVClass" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/Compound_Class/Range_Class/Range.lvclass"/>
 			</Item>
 			<Item Name="lvanlys.dll" Type="Document" URL="../../../resource/lvanlys.dll"/>
 			<Item Name="MDSobjectsLVShr" Type="VI" URL="MDSobjectsLVShr">
@@ -102,7 +103,7 @@
 				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
 				<Property Name="Destination[1].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplus/data</Property>
 				<Property Name="DestinationCount" Type="Int">2</Property>
-				<Property Name="Source[0].itemID" Type="Str">{703BFC97-CAB3-4C90-8CEE-41AEDA390400}</Property>
+				<Property Name="Source[0].itemID" Type="Str">{8A06D4B7-C408-41D0-B4C2-B64819146443}</Property>
 				<Property Name="Source[0].type" Type="Str">Container</Property>
 				<Property Name="Source[1].Container.applyInclusion" Type="Bool">true</Property>
 				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
