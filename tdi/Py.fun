@@ -1,4 +1,4 @@
-public fun Py(in _cmd, optional in _nolock) {
+public fun Py(in _cmd, optional in _varname) {
    fun PyCall(in _routine,_locked, optional in _arg) {
       if (_locked) {
         _GIL=build_call(51,getenv("PyLib"),"PyGILState_Ensure"); 
@@ -26,7 +26,7 @@ public fun Py(in _cmd, optional in _nolock) {
        abort();
      }
      if (MdsShr->LibFindImageSymbol(descr('MdsMisc'),descr('PyCall'),ref(_sym)) == 1) {
-       MdsMisc->PyCall("from MDSplus import Tree as ___TDI___Tree",val(1));
+       MdsMisc->PyCall("from MDSplus import Tree as ___TDI___Tree,execPy as ___TDI___execPy",val(1));
        public _PyInit=2;
      } else {
        if (MdsShr->LibFindImageSymbol(descr('dl'),descr('dlopen'),ref(_sym)) == 1) {
@@ -35,23 +35,30 @@ public fun Py(in _cmd, optional in _nolock) {
        PyCall("Py_Initialize",0);
        PyCall("PyEval_InitThreads",0);
        public _PyInit=1;
-       PyCall("PyRun_SimpleString",1,"from MDSplus import Tree as ___TDI___Tree");
+       PyCall("PyRun_SimpleString",1,"from MDSplus import Tree as ___TDI___Tree,execPy as ___TDI___execPy");
      }
    }
-   for (_i=0;_i<size(_cmd);_i++) {
-       _locked=!present(_nolock);
-       public _py_exception="";
-       if (public _PyInit==1) {
-         PyCall("PyRun_SimpleString",_locked,"try:\n    "//_cmd[_i]//"\nexcept Exception,___TDI___exception:\n    from MDSplus import String as ___TDI___String\n    ___TDI___String(___TDI___exception).setTdiVar(\"_py_exception\")");
-       } else {
-         MdsMisc->PyCall("try:\n    "//_cmd[_i]//"\nexcept Exception,___TDI___exception:\n    from MDSplus import String as ___TDI___String\n    ___TDI___String(___TDI___exception).setTdiVar(\"_py_exception\")",val(_locked));
-         if (ALLOCATED(public _PyReleaseThreadLock)) {
-           MdsMisc->PyReleaseThreadLock();
-           deallocate(public _PyReleaseThreadLock);
-         }
-       }
-       if (public _py_exception != "") return(0);
+   public ___TDI___cmds=_cmd;
+   if (present(_varname))
+	_execCall="___TDI___execPy('"//_varname//"')";
+    else
+        _execCall="___TDI___execPy()";
+   _locked=!present(_nolock);
+   if (public _PyInit==1) {
+     PyCall("PyRun_SimpleString",_locked,_execCall);
+   } else {
+     MdsMisc->PyCall(_execCall,val(_locked));
+     if (ALLOCATED(public _PyReleaseThreadLock)) {
+       MdsMisc->PyReleaseThreadLock();
+       deallocate(public _PyReleaseThreadLock);
+     }
    }
-   return(1);
+   if (allocated(public ___TDI___exception)) {
+     public _py_exception=public ___TDI___exception;
+     return(1);
+   } else {
+     public _py_exception="";
+     return(public ___TDI___answer);
+   }
 }
 
