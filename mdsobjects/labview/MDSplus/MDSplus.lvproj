@@ -76,7 +76,6 @@
 				<Item Name="sub2ShouldUseDefSigName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/sub2ShouldUseDefSigName.vi"/>
 				<Item Name="subGetSignalName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/subGetSignalName.vi"/>
 				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
-				<Item Name="Range.lvclass" Type="LVClass" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/Compound_Class/Range_Class/Range.lvclass"/>
 			</Item>
 			<Item Name="lvanlys.dll" Type="Document" URL="../../../resource/lvanlys.dll"/>
 			<Item Name="MDSobjectsLVShr" Type="VI" URL="MDSobjectsLVShr">
