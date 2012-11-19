@@ -167,7 +167,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Mapping:"/>
                     <Property name="numCols" type="int" value="1"/>
-                    <Property name="numRows" type="int" value="24"/>
+                    <Property name="numRows" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="1339"/>
                     <Property name="preferredColumnWidth" type="int" value="60"/>
                     <Property name="preferredHeight" type="int" value="200"/>

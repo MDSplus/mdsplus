@@ -116,7 +116,7 @@ public class MARTE_EDA1_OUTSetup extends DeviceSetup {
         deviceTable3.setIdentifier("");
         deviceTable3.setLabelString("Mapping:");
         deviceTable3.setNumCols(1);
-        deviceTable3.setNumRows(24);
+        deviceTable3.setNumRows(20);
         deviceTable3.setOffsetNid(1339);
         deviceTable3.setPreferredColumnWidth(60);
         deviceTable3.setPreferredHeight(200);
