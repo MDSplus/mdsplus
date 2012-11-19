@@ -131,7 +131,7 @@ public class MARTE_EDA1_OUTSetup extends DeviceSetup {
         deviceTable1.setDisplayRowNumber(true);
         deviceTable1.setIdentifier("");
         deviceTable1.setNumCols(2);
-        deviceTable1.setNumRows(24);
+        deviceTable1.setNumRows(20);
         deviceTable1.setOffsetNid(11);
         deviceTable1.setUseExpressions(true);
         jPanel10.add(deviceTable1, java.awt.BorderLayout.CENTER);

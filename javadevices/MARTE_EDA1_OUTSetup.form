@@ -198,7 +198,7 @@
                     <Property name="displayRowNumber" type="boolean" value="true"/>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="numCols" type="int" value="2"/>
-                    <Property name="numRows" type="int" value="24"/>
+                    <Property name="numRows" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="11"/>
                     <Property name="useExpressions" type="boolean" value="true"/>
                   </Properties>
