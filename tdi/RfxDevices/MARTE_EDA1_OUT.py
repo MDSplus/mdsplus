@@ -3,8 +3,8 @@ import MARTE_GENERIC
 
 class MARTE_EDA1_OUT(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe EDA1_OUT'
-    parNames = []
-    parValues = []
+    parNames = ['OutputMapping']
+    parValues = [0]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
