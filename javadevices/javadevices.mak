@@ -42,6 +42,9 @@ MARTE_MHD_BTSetup.java\
 MARTE_MHD_AC_BCSetup.java\
 MARTE_DEQUSetup.java\
 MARTE_EDA1Setup.java\
+MARTE_EDA1_OUTSetup.java\
+MARTE_EDA3Setup.java\
+MARTE_EDA3_OUTSetup.java\
 MARTE_WAVEGENSetup.java\
 MARTE_BREAKDOWNSetup.java\
 MCUSetup.java\
