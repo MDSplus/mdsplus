@@ -197,7 +197,7 @@ old array is same size.
     /*****
 	  If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment.
     ****/
-    if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
+    if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT && local_nci.flags & NciM_COMPRESS_SEGMENTS)) {
       int deleted;
       EMPTYXD(xd_data);
       EMPTYXD(xd_dim);
@@ -1789,7 +1789,7 @@ old array is same size.
      /*****
 	  If not the first segment, see if we can reuse the previous segment storage space and compress the previous segment.
      ****/
-     if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT)) {
+     if ((segment_header.idx % SEGMENTS_PER_INDEX) > 0 && previous_length == add_length && (local_nci.flags & NciM_COMPRESS_ON_PUT && local_nci.flags & NciM_COMPRESS_SEGMENTS)) {
        int deleted;
        EMPTYXD(xd_data);
        EMPTYXD(xd_dim);
