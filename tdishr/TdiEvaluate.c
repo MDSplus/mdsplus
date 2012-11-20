@@ -163,7 +163,7 @@ WARNING falls through if an XD but not DSC of usable data (no known examples).
 		status = -1;
 		break;
 	case CLASS_APD :
-	  if (list[0]->dtype == DTYPE_DICTIONARY || list[0]->dtype == DTYPE_TUPLE || list[0]->dtype == DTYPE_LIST) {
+	  if (list[0]->dtype == DTYPE_DICTIONARY || list[0]->dtype == DTYPE_TUPLE || list[0]->dtype == DTYPE_LIST || list[0]->dtype == DTYPE_OPAQUE) {
 	    status = -1;
 	  } else {
 		status = Tdi1Vector(0, (int)((struct descriptor_a *)list[0])->arsize/(int)list[0]->length,

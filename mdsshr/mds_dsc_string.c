@@ -77,6 +77,10 @@ char  *MdsDtypeString( int  id )
     checkString(DTYPE_BPV)
     checkString(DTYPE_BLV)
     checkString(DTYPE_ADT)
+    checkString(DTYPE_LIST)
+    checkString(DTYPE_TUPLE)
+    checkString(DTYPE_DICTIONARY)
+    checkString(DTYPE_OPAQUE)
     sprintf(dtypeString,"DTYPE_?_0x%02X",id);
     return(dtypeString);
    }

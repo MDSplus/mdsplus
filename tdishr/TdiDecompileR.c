@@ -96,6 +96,10 @@ STATIC_CONSTANT char *bname[] = {
 	"With_Units",	/*211*/
 	"Call",		/*212*/
 	"With_Error",	/*213*/
+        "",             /*214 NOT CLASS_R but need placeholder*/
+        "",             /*215 NOT CLASS_R but need placeholder*/
+        "",             /*216 NOT CLASS_R but need placeholder*/
+        "Opaque",       /*217*/
 };
 STATIC_ROUTINE int		Append(
 char			*pstr,
@@ -234,6 +238,7 @@ enum OpcOpcodes        opcode;
 	case DTYPE_CONDITION :
 	case DTYPE_WITH_UNITS :
 	case DTYPE_WITH_ERROR :
+        case DTYPE_OPAQUE :
 build:		status = Append("Build_", pout);
 		if (status&1)	status = Append(bname[pin->dtype - DTYPE_PARAM], pout);
 		if (status&1)	status = Append("(", pout);

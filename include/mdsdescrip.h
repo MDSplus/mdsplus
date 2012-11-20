@@ -646,6 +646,18 @@ struct descriptor_with_error {	RECORD_HEAD
 	struct descriptor_with_error name = {0,DTYPE_WITH_ERROR,CLASS_R,0,2, __fill_value__\
 	(struct descriptor *)data, (struct descriptor *)error}
 
+#define DTYPE_OPAQUE 217
+
+struct descriptor_opaque {  RECORD_HEAD
+                                        struct descriptor *_DSCA_(data);
+                                        struct descriptor *_DSCA_(opaque_type);
+                                };
+
+#define DESCRIPTOR_OPAQUE(name, data, opaque_type) \
+        struct descriptor_opaque name = {0,DTYPE_OPAQUE,CLASS_R,0,2, __fill_value__\
+        (struct descriptor *)data, (struct descriptor *)opaque_type}
+
+
 #define	 DESCRIPTOR_FLOAT(name, _float) struct descriptor name = {sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char *)_float}
 
 #define	 DESCRIPTOR_LONG(name, _long) struct descriptor name = {sizeof(int), DTYPE_L, CLASS_S, (char *)_long}

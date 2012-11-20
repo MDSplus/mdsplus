@@ -583,6 +583,7 @@ TdiRefStandard(Tdi1MethodOf)
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
+        DTYPE_OPAQUE,
 	0};
 
 	status=TdiGetData(omits, list[0], &tmp);
@@ -590,6 +591,8 @@ STATIC_CONSTANT unsigned char omits[] = {
 	case DTYPE_METHOD :
 		status=MdsCopyDxXd(((struct descriptor_method *)tmp.pointer)->method, out_ptr);
 		break;
+        case DTYPE_OPAQUE :
+                status=MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->opaque_type, out_ptr);
 	default : status=TdiINVDTYDSC; break;
 	}
 	MdsFree1Dx(&tmp,NULL);
@@ -1023,6 +1026,7 @@ STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_SIGNAL,
 	DTYPE_WINDOW,
 	DTYPE_WITH_UNITS,
+        DTYPE_OPAQUE,
 	0};
 
 	status=TdiGetData(omits, list[0], &tmp);
@@ -1042,6 +1046,8 @@ STATIC_CONSTANT unsigned char omits[] = {
 	case DTYPE_WITH_UNITS :
 		status=MdsCopyDxXd(((struct descriptor_with_units *)tmp.pointer)->data, out_ptr);
 		break;
+        case DTYPE_OPAQUE :
+                status=MdsCopyDxXd(((struct descriptor_opaque *)tmp.pointer)->data, out_ptr);
 	default :
 		MdsFree1Dx(out_ptr,NULL);
 		*out_ptr = tmp;

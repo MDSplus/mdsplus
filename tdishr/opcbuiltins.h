@@ -476,5 +476,7 @@ OPC (	FS_float,	FS_FLOAT ,	Same,	Keep,		undef,		FS,FS,	FS,FS,	1,1,	CAST+N+I )/*;
 OPC (	FS_complex,	FS_COMPLEX ,	Same,	Cmplx,		Complex,	FS,FS,	FSC,FSC, 1,2,	CAST+N+I )/*;%	(x,y)			*/
 OPC (	FT_float,	FT_FLOAT ,	Same,	Keep,		undef,		FT,FT,	FT,FT,	1,1,	CAST+N+I )/*;%	(a)			*/
 OPC (	FT_complex,	FT_COMPLEX ,	Same,	Cmplx,		Complex,	FT,FT,	FTC,FTC, 1,2,	CAST+N+I )/*;%	(x,y)			*/
+OPC (   BuildOpaque, BUILD_OPAQUE ,Build, undef,         undef, XX,YY,OPAQUE,OPAQUE,2,2, OK+I    )/*;mds (data,type_string)            */
+OPC (   MakeOpaque,     MAKE_OPAQUE ,   Make,   undef,          undef, XX,YY,OPAQUE,OPAQUE,     2,2,OK+I )/*;mds (data,type_string)     */
 COM/*
 	.endm	;*/
