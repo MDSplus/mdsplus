@@ -11,6 +11,8 @@ public fun getBradErrorSignal(in _path, in _upDown, in _id)
 	
 	_i = 0;
 	_sigs = data( _path );
+
+
 	_numSigsTot = size( _sigs );
 	
 	for( _i = 0; _i < _numSigsTot; _i++)
@@ -21,9 +23,6 @@ public fun getBradErrorSignal(in _path, in _upDown, in _id)
 	
 	_numSigInOut = _numSigsTot - _i - 1;	
 
-
-	_pos = execute(extract(16,1,  _sigs[ _id ] ));
-	
 	
 	if( _upDown == 1 )
 	{	
@@ -33,6 +32,7 @@ public fun getBradErrorSignal(in _path, in _upDown, in _id)
 /*		
  			write(*, "Calcola ", _id);
 */		
+
 
 			_dim = dim_of ( build_path( _sigs[ _id ] ) );
 /*
@@ -45,6 +45,9 @@ public fun getBradErrorSignal(in _path, in _upDown, in _id)
 
 			_Bv = resample( _m0Sig, minval( _dim ), maxval( _dim ), 0.001 );
 			_d  = resample( build_path( _sigs[ _id ] ), minval( _dim ), maxval( _dim ), 0.001 );
+
+			_pos = execute(extract(16,1,  _sigs[ _id ] ));
+
 
 			if( ( _pos & 1 ) == 0 )
 			{
@@ -62,7 +65,7 @@ public fun getBradErrorSignal(in _path, in _upDown, in _id)
 	else
 	{
 		if( _id <= _numSigInOut )
-			return ( build_path( _sigs[ _i + 1 + _id ] ) );		
+			return ( build_path( _sigs[ _i + _id ] ) );		
 		else
 			return ( build_signal( [0, 0],, [-2, 6]) );	
 	}

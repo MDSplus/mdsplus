@@ -1,6 +1,8 @@
 public fun bRadCheck(in _save, optional _debug)
 {
+
 	_PLASMA_CURRENT_LEVEL = 100000;
+
 
 	_START_TIME = -1.0;
 	_END_TIME = 1.0;
@@ -9,7 +11,7 @@ public fun bRadCheck(in _save, optional _debug)
 	_CORRENTI_PR_SATURATE = 2;
 	_WARNING_CAMPO_RADIALE = 4;
 	_FAULT_CAMPO_RADIALE = 8;
-   _CORRENTI_NULL_PR =  16;
+    _CORRENTI_NULL_PR =  16;
 
 	_error = 0;
 	
@@ -95,11 +97,15 @@ public fun bRadCheck(in _save, optional _debug)
 					_error = _CORRENTI_PR_SATURATE;
 				}
 
+
 				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) ) )
+
 				{
 					_signalRef = execute(_sigNameRef);
   					_yRef = abs( data(_signalRef) );
             		_val = sum( ( _yRef > 1. ) * 1.0 );
+
+
             		if( _val > 100 )
             		{
 
@@ -108,7 +114,7 @@ public fun bRadCheck(in _save, optional _debug)
 /*
 					   		if( PRESENT( _debug ) )
 */
-						   	write(*, "Probabile saddle coil con corrente nulla  "//_sigName);
+						   	write(*, "ATTENZIONE: Probabile saddle coil con corrente nulla  "//_sigName);
  
  					   		_prNullCurrent = [_prNullCurrent,  _sigName];
 					   		_error = _error | _CORRENTI_NULL_PR;
