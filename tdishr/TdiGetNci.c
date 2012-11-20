@@ -67,6 +67,7 @@ STATIC_CONSTANT struct item {
 {"CLASS_STR",		0,			0,			NciCLASS_STR,		DTYPE_T,	0},
 {"COMPRESSIBLE",	NciM_COMPRESSIBLE,	NciM_COMPRESSIBLE,	NciGET_FLAGS,		DTYPE_BU,	1},
 {"COMPRESS_ON_PUT",	NciM_COMPRESS_ON_PUT,	NciM_COMPRESS_ON_PUT,	NciGET_FLAGS,		DTYPE_BU,	1},
+{"COMPRESS_SEGMENTS",   NciM_COMPRESS_SEGMENTS, NciM_COMPRESS_SEGMENTS, NciGET_FLAGS,           DTYPE_BU,       1},
 {"CONGLOMERATE_ELT",	0,			0,			NciCONGLOMERATE_ELT,	DTYPE_WU,	2},
 {"CONGLOMERATE_NIDS",	0,			NciNUMBER_OF_ELTS,	NciCONGLOMERATE_NIDS,	DTYPE_NID,0},
 {"DATA_IN_NCI",		0,			0,			NciDATA_IN_NCI,	DTYPE_BU,	1},
@@ -346,20 +347,26 @@ more:		switch (dtype) {
 		Logical results for bit or value.
 		********************************/
 		else if (key_ptr->item_mask) {
+                flag=0;
 		NCI_ITM masked[2] = {{sizeof(flag),0,0,0},EOL};
                         masked[0].code = key_ptr->item_code;
                         masked[0].pointer = (unsigned char *)&flag;
 			masked[0].return_length_address = &retlen;
 			if (status & 1) status = TreeGetNci(nid, masked);
-			if (status & 1) 
+                        if (status & 1)
+/*
                         {
+                          char ans=0;
                           switch (retlen)
 			  {
 			  case 1: flag = (int)(*(char *)&flag); break;
                           case 2: flag = (int)(*(short *)&flag); break;
+                          case 4: flag = (int)(*(int *)&flag); break;
                           }
                           *(char *)hold_ptr = (char)((unsigned short)(flag & key_ptr->item_mask) == key_ptr->item_test);
                         }
+*/
+                          *(char *)hold_ptr = (char)((flag & key_ptr->item_mask) == key_ptr->item_test);
 		}
 		/*************************
 		Only nid arrays are here.
