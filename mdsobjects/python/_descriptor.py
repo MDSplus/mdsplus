@@ -400,7 +400,7 @@ class descriptor(_C.Structure):
                         arglist.append(None)
                 return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](args=tuple(arglist),opcode=opcode)
             if self.dtype in (DTYPE_ACTION,DTYPE_PROCEDURE,DTYPE_DISPATCH,DTYPE_DIMENSION,DTYPE_METHOD,DTYPE_CONGLOM,DTYPE_SIGNAL,DTYPE_PROGRAM,
-                              DTYPE_ROUTINE,DTYPE_WINDOW):
+                              DTYPE_ROUTINE,DTYPE_WINDOW,DTYPE_OPAQUE):
                 arglist=list()
                 for i in range(ans.ndesc):
                     if (bool(ans.dscptrs[i]) == True):

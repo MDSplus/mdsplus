@@ -401,4 +401,14 @@ class Window(Compound):
     """
     fields=('startIdx','endIdx','timeAt0')
     __metaclass__=MetaClass
-    
+
+class Opaque(Compound):
+    """An Opaque object containing a binary uint8 array and a string identifying the type.
+    """
+    fields=('data','otype')
+    __metaclass__=MetaClass
+   
+    def getImage(self):
+      import Image
+      from StringIO import StringIO
+      return Image.open(StringIO(self.getData().data().data)) 

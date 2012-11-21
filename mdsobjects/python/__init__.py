@@ -15,7 +15,7 @@ Information about the B{I{MDSplus Data System}} can be found at U{the MDSplus Ho
 
 from apd import Apd,Dictionary,List
 from mdsarray import makeArray,Float32Array,Float64Array,Int128Array,Int16Array,Int32Array,Int64Array,Int8Array,StringArray,Uint128Array,Uint16Array,Uint32Array,Uint64Array,Uint8Array
-from compound import Action,Conglom,Dependency,Dimension,Dispatch,Function,Method,Procedure,Program,Range,Routine,Signal,Window
+from compound import Action,Conglom,Dependency,Dimension,Dispatch,Function,Method,Procedure,Program,Range,Routine,Signal,Window,Opaque
 from mdsdata import Data,EmptyData,getUnits,getError,getValuePart,getDimension,data,decompile,evaluate,rawPart,makeData
 from ident import Ident
 from treenode import TreeNode,TreePath,TreeNodeArray
@@ -28,3 +28,4 @@ from _tdishr import TdiException
 from scope import Scope
 from _mdsshr import MdsException,MdsTimeout,MdsNoMoreEvents,MdsInvalidEvent
 from _treeshr import TreeException,TreeNoDataException
+from tdipy import execPy
