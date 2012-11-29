@@ -1,5 +1,6 @@
 /* Version 2.2000.05.1
 /* CREATE_MEX_FILE for making this mex and HELPER_FILES below to use mex, BPD, May 2000 */
+#pragma comment(lib, "Wsock32.lib")
 #ifdef MAKE_DISTRIBUTION
 tar -T mdsipmex.T -czf mdsipmex.tar.gz
 mkdir MDSIPMEXTEMP
