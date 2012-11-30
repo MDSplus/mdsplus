@@ -1,5 +1,11 @@
+
+
+
 public fun HMSPECTRO__init(as_is _nid, optional _method)
 {
+
+	private _connected = 0;
+
     private _K_CONG_NODES = 16;
     private _N_HEAD = 0;
     private _N_NAME = 1;
@@ -172,16 +178,35 @@ write(*, "_trig_time ", _trig_time);
 write(*, "_num_scan ", _num_scan);
 
 
-
 	if(_remote != 0)
 	{
-		_cmd = 'MdsConnect("'//_ip_addr//'")';
-		_status = execute(_cmd);
-		if( _status == 0 )
+
+		_connected = if_error(Mdsvalue( "_connected == 1") , 1, 0);
+
+		if( ! _connected )
 		{
-			DevLogErr(_nid,  "Could not open connection to MDS server" );	
-			abort();
+
+			_cmd = 'MdsConnect("'//_ip_addr//'")';
+			_status = execute(_cmd);
+			if( _status == 0 )
+			{
+				DevLogErr(_nid,  "Could not open connection to MDS server" );	
+				abort();
+			}
+
+			MdsValue("public _connected = 1" );
+			_connected = 1;
+
+write(*, " connected ", allocated( _connected ), _connected );
+
+
+
+/*
+			MdsDisconnect();
+			_connected = 0;
+*/
 		}
+
 
 		 _status = _HMSPECTRO_SUCCESS;
 
@@ -193,17 +218,19 @@ write(*, "_num_scan ", _num_scan);
 		}
 
 		
-		write(*, " INIZIALIZZAZIONE ");
+		write(*, " INIZIALIZZAZIONE ", _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, _trig_mode );
 
 		if( _status == _HMSPECTRO_SUCCESS )
-			_status = MdsValue('HMSPECTRO->HMSpectroInit( $1 , val( $2 ), val( $3 ), val( $4 ), val( $5 ), val( $6 ), val( $7 ) )', 
+			_status = MdsValue('HMSPECTRO->HMSpectroInit( $ , val( $ ), val( $ ), val( $ ), val( $ ), val( $ ), val( $ ) )', 
 		                                          _dev_name, _type, _num_scan, _integration_time, _gain, _trig_edge, _trig_mode);
 		
 		if( _status != _HMSPECTRO_SUCCESS )
 		{
 			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
 		}
+/*
 		MdsDisconnect();
+*/
 	}
 	else
 	{

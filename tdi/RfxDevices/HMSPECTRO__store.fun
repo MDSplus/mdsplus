@@ -1,5 +1,9 @@
 public fun HMSPECTRO__store(as_is _nid, optional _method)
 {
+
+	private _connected = 0;
+
+
     private _K_CONG_NODES = 16;
     private _N_HEAD = 0;
     private _N_NAME = 1;
@@ -179,6 +183,16 @@ write(*, "_bufSize ", _bufSize);
 
 	if(_remote != 0)
 	{
+		_connected = if_error(Mdsvalue( "_connected" ) == 1, 1, 0);
+
+		if( _connected == 0  )
+		{
+			DevLogErr(_nid,  "Connection to MDS server is not established by the init operation" );	
+			abort();
+		}
+
+/*
+
 		_cmd = 'MdsConnect("'//_ip_addr//'")';
 		_status = execute(_cmd);
 		if( _status == 0 )
@@ -186,7 +200,7 @@ write(*, "_bufSize ", _bufSize);
 			DevLogErr(_nid,  "Could not open connection to MDS server" );	
 			abort();
 		}
-
+*/
 	    _lambda = MdsValue('HMSPECTROReadLambda( $1,  $2 )',  _dev_name ,  _hwPixel);
 
 		_status = _HMSPECTRO_SUCCESS;
@@ -219,9 +233,9 @@ write(*, "_bufSize ", _bufSize);
 
 		MdsValue( 'HMSPECTRO->HMSpectroClose($1)', _dev_name );
 
-
+/*
 		MdsDisconnect();
-
+*/
 	}
 	else
 	{
