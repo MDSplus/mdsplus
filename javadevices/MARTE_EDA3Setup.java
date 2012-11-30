@@ -883,7 +883,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
         deviceField122.setIdentifier("");
         deviceField122.setLabelString("X: ");
         deviceField122.setNumCols(30);
-        deviceField122.setOffsetNid(2875);
+        deviceField122.setOffsetNid(2930);
         jPanel121.add(deviceField122);
 
         jPanel51.add(jPanel121);

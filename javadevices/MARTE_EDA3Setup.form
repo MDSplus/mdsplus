@@ -1432,7 +1432,7 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="X: "/>
                                 <Property name="numCols" type="int" value="30"/>
-                                <Property name="offsetNid" type="int" value="2875"/>
+                                <Property name="offsetNid" type="int" value="2930"/>
                               </Properties>
                             </Component>
                           </SubComponents>
