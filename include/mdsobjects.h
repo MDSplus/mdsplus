@@ -623,7 +623,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_T;
 			length = strlen(val);
-			ptr = new char[length];
+			ptr = new char[length+1];
 			memcpy(ptr, val, length);
 			setAccessory(units, error, help, validation);
 		}
