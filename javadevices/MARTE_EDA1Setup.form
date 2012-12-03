@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -187,31 +187,17 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                   <SubComponents>
-                    <Component class="DeviceChoice" name="deviceChoice2">
+                    <Component class="DeviceField" name="deviceField92">
                       <Properties>
-                        <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                          <PropertyValue value="[0, 1, 2, 3]"/>
-                        </Property>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="4">
-                            <StringItem index="0" value="None"/>
-                            <StringItem index="1" value="Tokamak"/>
-                            <StringItem index="2" value="RFP 1"/>
-                            <StringItem index="3" value="RFP 2"/>
-                          </StringArray>
-                        </Property>
-                        <Property name="convert" type="boolean" value="true"/>
                         <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Control Type: "/>
+                        <Property name="labelString" type="java.lang.String" value="Control: "/>
                         <Property name="offsetNid" type="int" value="1339"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField9">
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Kp: "/>
-                        <Property name="numCols" type="int" value="4"/>
                         <Property name="offsetNid" type="int" value="1351"/>
                       </Properties>
                     </Component>
@@ -219,7 +205,6 @@
                       <Properties>
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="T End: "/>
-                        <Property name="numCols" type="int" value="4"/>
                         <Property name="offsetNid" type="int" value="1357"/>
                       </Properties>
                     </Component>
@@ -249,7 +234,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="T Start: "/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1363"/>
                           </Properties>
                         </Component>
@@ -257,7 +241,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="V Max:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1369"/>
                           </Properties>
                         </Component>
@@ -278,7 +261,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="IPStar:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1375"/>
                           </Properties>
                         </Component>
@@ -286,7 +268,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="DeltaIpStar:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1381"/>
                           </Properties>
                         </Component>
@@ -294,7 +275,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="DeltaTRampDown:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1387"/>
                           </Properties>
                         </Component>
@@ -302,7 +282,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="POhmMax:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1393"/>
                           </Properties>
                         </Component>
@@ -310,7 +289,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="TauZ:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1399"/>
                           </Properties>
                         </Component>
@@ -318,7 +296,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="TauP:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1405"/>
                           </Properties>
                         </Component>
@@ -326,7 +303,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="DeltaTBumpless:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1411"/>
                           </Properties>
                         </Component>
@@ -334,7 +310,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="VrtStar:"/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1429"/>
                           </Properties>
                         </Component>
@@ -342,7 +317,6 @@
                           <Properties>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="PCATMaxOnTime: "/>
-                            <Property name="numCols" type="int" value="4"/>
                             <Property name="offsetNid" type="int" value="1435"/>
                           </Properties>
                         </Component>
