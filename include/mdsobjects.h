@@ -624,6 +624,7 @@ protected:
 			dtype = DTYPE_T;
 			length = strlen(val);
 			ptr = new char[length+1];
+			ptr[length] = 0;
 			memcpy(ptr, val, length);
 			setAccessory(units, error, help, validation);
 		}
