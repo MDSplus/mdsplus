@@ -258,9 +258,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField183 = new DeviceField();
         deviceField184 = new DeviceField();
         deviceField185 = new DeviceField();
+        jTabbedPane4 = new javax.swing.JTabbedPane();
+        jScrollPane8 = new javax.swing.JScrollPane();
         deviceTable6 = new DeviceTable();
+        jScrollPane9 = new javax.swing.JScrollPane();
         deviceTable7 = new DeviceTable();
+        jScrollPane10 = new javax.swing.JScrollPane();
         deviceTable8 = new DeviceTable();
+        jScrollPane11 = new javax.swing.JScrollPane();
         deviceTable9 = new DeviceTable();
         jPanel39 = new javax.swing.JPanel();
         jPanel40 = new javax.swing.JPanel();
@@ -268,9 +273,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField192 = new DeviceField();
         deviceField193 = new DeviceField();
         deviceField194 = new DeviceField();
+        jTabbedPane7 = new javax.swing.JTabbedPane();
+        jScrollPane20 = new javax.swing.JScrollPane();
         deviceTable18 = new DeviceTable();
+        jScrollPane21 = new javax.swing.JScrollPane();
         deviceTable19 = new DeviceTable();
+        jScrollPane22 = new javax.swing.JScrollPane();
         deviceTable20 = new DeviceTable();
+        jScrollPane23 = new javax.swing.JScrollPane();
         deviceTable21 = new DeviceTable();
         jPanel30 = new javax.swing.JPanel();
         jPanel31 = new javax.swing.JPanel();
@@ -278,9 +288,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField170 = new DeviceField();
         deviceField171 = new DeviceField();
         deviceField172 = new DeviceField();
+        jTabbedPane3 = new javax.swing.JTabbedPane();
+        jScrollPane4 = new javax.swing.JScrollPane();
         deviceTable2 = new DeviceTable();
+        jScrollPane5 = new javax.swing.JScrollPane();
         deviceTable3 = new DeviceTable();
+        jScrollPane6 = new javax.swing.JScrollPane();
         deviceTable4 = new DeviceTable();
+        jScrollPane7 = new javax.swing.JScrollPane();
         deviceTable5 = new DeviceTable();
         jPanel35 = new javax.swing.JPanel();
         jPanel36 = new javax.swing.JPanel();
@@ -288,9 +303,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField186 = new DeviceField();
         deviceField187 = new DeviceField();
         deviceField188 = new DeviceField();
+        jTabbedPane5 = new javax.swing.JTabbedPane();
+        jScrollPane12 = new javax.swing.JScrollPane();
         deviceTable10 = new DeviceTable();
+        jScrollPane13 = new javax.swing.JScrollPane();
         deviceTable11 = new DeviceTable();
+        jScrollPane14 = new javax.swing.JScrollPane();
         deviceTable12 = new DeviceTable();
+        jScrollPane15 = new javax.swing.JScrollPane();
         deviceTable13 = new DeviceTable();
         jPanel37 = new javax.swing.JPanel();
         jPanel38 = new javax.swing.JPanel();
@@ -298,9 +318,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField189 = new DeviceField();
         deviceField190 = new DeviceField();
         deviceField191 = new DeviceField();
+        jTabbedPane6 = new javax.swing.JTabbedPane();
+        jScrollPane16 = new javax.swing.JScrollPane();
         deviceTable14 = new DeviceTable();
+        jScrollPane17 = new javax.swing.JScrollPane();
         deviceTable15 = new DeviceTable();
+        jScrollPane18 = new javax.swing.JScrollPane();
         deviceTable16 = new DeviceTable();
+        jScrollPane19 = new javax.swing.JScrollPane();
         deviceTable17 = new DeviceTable();
         jPanel41 = new javax.swing.JPanel();
         jPanel42 = new javax.swing.JPanel();
@@ -308,9 +333,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField195 = new DeviceField();
         deviceField196 = new DeviceField();
         deviceField197 = new DeviceField();
+        jTabbedPane8 = new javax.swing.JTabbedPane();
+        jScrollPane24 = new javax.swing.JScrollPane();
         deviceTable22 = new DeviceTable();
+        jScrollPane25 = new javax.swing.JScrollPane();
         deviceTable23 = new DeviceTable();
+        jScrollPane26 = new javax.swing.JScrollPane();
         deviceTable24 = new DeviceTable();
+        jScrollPane27 = new javax.swing.JScrollPane();
         deviceTable25 = new DeviceTable();
         jPanel43 = new javax.swing.JPanel();
         jPanel44 = new javax.swing.JPanel();
@@ -318,9 +348,14 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField198 = new DeviceField();
         deviceField199 = new DeviceField();
         deviceField200 = new DeviceField();
+        jTabbedPane9 = new javax.swing.JTabbedPane();
+        jScrollPane28 = new javax.swing.JScrollPane();
         deviceTable26 = new DeviceTable();
+        jScrollPane29 = new javax.swing.JScrollPane();
         deviceTable27 = new DeviceTable();
+        jScrollPane30 = new javax.swing.JScrollPane();
         deviceTable28 = new DeviceTable();
+        jScrollPane31 = new javax.swing.JScrollPane();
         deviceTable29 = new DeviceTable();
         jPanel45 = new javax.swing.JPanel();
         jPanel46 = new javax.swing.JPanel();
@@ -328,10 +363,145 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField201 = new DeviceField();
         deviceField202 = new DeviceField();
         deviceField203 = new DeviceField();
+        jTabbedPane10 = new javax.swing.JTabbedPane();
+        jScrollPane32 = new javax.swing.JScrollPane();
         deviceTable30 = new DeviceTable();
+        jScrollPane33 = new javax.swing.JScrollPane();
         deviceTable31 = new DeviceTable();
+        jScrollPane34 = new javax.swing.JScrollPane();
         deviceTable32 = new DeviceTable();
+        jScrollPane35 = new javax.swing.JScrollPane();
         deviceTable33 = new DeviceTable();
+        jPanel13 = new javax.swing.JPanel();
+        jTabbedPane11 = new javax.swing.JTabbedPane();
+        jPanel47 = new javax.swing.JPanel();
+        jPanel48 = new javax.swing.JPanel();
+        deviceField204 = new DeviceField();
+        deviceField205 = new DeviceField();
+        deviceField206 = new DeviceField();
+        jTabbedPane12 = new javax.swing.JTabbedPane();
+        jScrollPane36 = new javax.swing.JScrollPane();
+        deviceTable34 = new DeviceTable();
+        jScrollPane37 = new javax.swing.JScrollPane();
+        deviceTable35 = new DeviceTable();
+        jScrollPane38 = new javax.swing.JScrollPane();
+        deviceTable36 = new DeviceTable();
+        jScrollPane39 = new javax.swing.JScrollPane();
+        deviceTable37 = new DeviceTable();
+        jScrollPane40 = new javax.swing.JScrollPane();
+        deviceTable38 = new DeviceTable();
+        jPanel49 = new javax.swing.JPanel();
+        jPanel50 = new javax.swing.JPanel();
+        deviceField207 = new DeviceField();
+        deviceField208 = new DeviceField();
+        deviceField209 = new DeviceField();
+        jTabbedPane13 = new javax.swing.JTabbedPane();
+        jScrollPane41 = new javax.swing.JScrollPane();
+        deviceTable39 = new DeviceTable();
+        jScrollPane42 = new javax.swing.JScrollPane();
+        deviceTable40 = new DeviceTable();
+        jScrollPane43 = new javax.swing.JScrollPane();
+        deviceTable41 = new DeviceTable();
+        jScrollPane44 = new javax.swing.JScrollPane();
+        deviceTable42 = new DeviceTable();
+        jScrollPane45 = new javax.swing.JScrollPane();
+        deviceTable43 = new DeviceTable();
+        jPanel51 = new javax.swing.JPanel();
+        jPanel52 = new javax.swing.JPanel();
+        deviceField210 = new DeviceField();
+        deviceField211 = new DeviceField();
+        deviceField212 = new DeviceField();
+        jTabbedPane14 = new javax.swing.JTabbedPane();
+        jScrollPane46 = new javax.swing.JScrollPane();
+        deviceTable44 = new DeviceTable();
+        jScrollPane47 = new javax.swing.JScrollPane();
+        deviceTable45 = new DeviceTable();
+        jScrollPane48 = new javax.swing.JScrollPane();
+        deviceTable46 = new DeviceTable();
+        jScrollPane49 = new javax.swing.JScrollPane();
+        deviceTable47 = new DeviceTable();
+        jScrollPane50 = new javax.swing.JScrollPane();
+        deviceTable48 = new DeviceTable();
+        jPanel53 = new javax.swing.JPanel();
+        jPanel54 = new javax.swing.JPanel();
+        deviceField213 = new DeviceField();
+        deviceField214 = new DeviceField();
+        deviceField215 = new DeviceField();
+        jTabbedPane15 = new javax.swing.JTabbedPane();
+        jScrollPane51 = new javax.swing.JScrollPane();
+        deviceTable49 = new DeviceTable();
+        jScrollPane52 = new javax.swing.JScrollPane();
+        deviceTable50 = new DeviceTable();
+        jScrollPane53 = new javax.swing.JScrollPane();
+        deviceTable51 = new DeviceTable();
+        jScrollPane54 = new javax.swing.JScrollPane();
+        deviceTable52 = new DeviceTable();
+        jScrollPane55 = new javax.swing.JScrollPane();
+        deviceTable53 = new DeviceTable();
+        jPanel55 = new javax.swing.JPanel();
+        jPanel56 = new javax.swing.JPanel();
+        deviceField216 = new DeviceField();
+        deviceField217 = new DeviceField();
+        deviceField218 = new DeviceField();
+        jTabbedPane16 = new javax.swing.JTabbedPane();
+        jScrollPane56 = new javax.swing.JScrollPane();
+        deviceTable54 = new DeviceTable();
+        jScrollPane57 = new javax.swing.JScrollPane();
+        deviceTable55 = new DeviceTable();
+        jScrollPane58 = new javax.swing.JScrollPane();
+        deviceTable56 = new DeviceTable();
+        jScrollPane59 = new javax.swing.JScrollPane();
+        deviceTable57 = new DeviceTable();
+        jScrollPane60 = new javax.swing.JScrollPane();
+        deviceTable58 = new DeviceTable();
+        jPanel57 = new javax.swing.JPanel();
+        jPanel58 = new javax.swing.JPanel();
+        deviceField219 = new DeviceField();
+        deviceField220 = new DeviceField();
+        deviceField221 = new DeviceField();
+        jTabbedPane17 = new javax.swing.JTabbedPane();
+        jScrollPane61 = new javax.swing.JScrollPane();
+        deviceTable59 = new DeviceTable();
+        jScrollPane62 = new javax.swing.JScrollPane();
+        deviceTable60 = new DeviceTable();
+        jScrollPane63 = new javax.swing.JScrollPane();
+        deviceTable61 = new DeviceTable();
+        jScrollPane64 = new javax.swing.JScrollPane();
+        deviceTable62 = new DeviceTable();
+        jScrollPane65 = new javax.swing.JScrollPane();
+        deviceTable63 = new DeviceTable();
+        jPanel59 = new javax.swing.JPanel();
+        jPanel60 = new javax.swing.JPanel();
+        deviceField222 = new DeviceField();
+        deviceField223 = new DeviceField();
+        deviceField224 = new DeviceField();
+        jTabbedPane18 = new javax.swing.JTabbedPane();
+        jScrollPane66 = new javax.swing.JScrollPane();
+        deviceTable64 = new DeviceTable();
+        jScrollPane67 = new javax.swing.JScrollPane();
+        deviceTable65 = new DeviceTable();
+        jScrollPane68 = new javax.swing.JScrollPane();
+        deviceTable66 = new DeviceTable();
+        jScrollPane69 = new javax.swing.JScrollPane();
+        deviceTable67 = new DeviceTable();
+        jScrollPane70 = new javax.swing.JScrollPane();
+        deviceTable68 = new DeviceTable();
+        jPanel61 = new javax.swing.JPanel();
+        jPanel62 = new javax.swing.JPanel();
+        deviceField225 = new DeviceField();
+        deviceField226 = new DeviceField();
+        deviceField227 = new DeviceField();
+        jTabbedPane19 = new javax.swing.JTabbedPane();
+        jScrollPane71 = new javax.swing.JScrollPane();
+        deviceTable69 = new DeviceTable();
+        jScrollPane72 = new javax.swing.JScrollPane();
+        deviceTable70 = new DeviceTable();
+        jScrollPane73 = new javax.swing.JScrollPane();
+        deviceTable71 = new DeviceTable();
+        jScrollPane74 = new javax.swing.JScrollPane();
+        deviceTable72 = new DeviceTable();
+        jScrollPane75 = new javax.swing.JScrollPane();
+        deviceTable73 = new DeviceTable();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe Setup");
@@ -640,19 +810,19 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField34.setIdentifier("");
         deviceField34.setLabelString("Phase: ");
         deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(1537);
+        deviceField34.setOffsetNid(1543);
         jPanel16.add(deviceField34);
 
         deviceField35.setIdentifier("");
         deviceField35.setLabelString("Start time: ");
         deviceField35.setNumCols(4);
-        deviceField35.setOffsetNid(1543);
+        deviceField35.setOffsetNid(1549);
         jPanel16.add(deviceField35);
 
         deviceField36.setIdentifier("");
         deviceField36.setLabelString("Rise time: ");
         deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(1549);
+        deviceField36.setOffsetNid(1555);
         jPanel16.add(deviceField36);
 
         deviceField37.setIdentifier("");
@@ -987,7 +1157,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField91.setIdentifier("");
         deviceField91.setLabelString("N: ");
         deviceField91.setNumCols(4);
-        deviceField91.setOffsetNid(1849);
+        deviceField91.setOffsetNid(1855);
         jPanel22.add(deviceField91);
 
         deviceField92.setIdentifier("");
@@ -1051,7 +1221,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
 
         jScrollPane2.setViewportView(jPanel14);
 
-        jTabbedPane1.addTab("Rot. Pert. FB", jScrollPane2);
+        jTabbedPane1.addTab("Reference", jScrollPane2);
 
         jPanel11.setLayout(new java.awt.GridLayout(8, 0));
 
@@ -1641,11 +1811,11 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
 
         jScrollPane3.setViewportView(jPanel11);
 
-        jTabbedPane1.addTab("Rot. Pert. FF", jScrollPane3);
+        jTabbedPane1.addTab("FF Reference", jScrollPane3);
 
         jPanel12.setLayout(new java.awt.BorderLayout());
 
-        jPanel33.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel33.setLayout(new java.awt.BorderLayout());
 
         deviceChoice25.setChoiceIntValues(new int[] {0, 1});
         deviceChoice25.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -1674,55 +1844,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField185.setOffsetNid(2479);
         jPanel34.add(deviceField185);
 
-        jPanel33.add(jPanel34);
+        jPanel33.add(jPanel34, java.awt.BorderLayout.NORTH);
 
         deviceTable6.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable6.setDisplayRowNumber(true);
         deviceTable6.setIdentifier("");
-        deviceTable6.setLabelString("Kp Amp.");
         deviceTable6.setNumCols(48);
         deviceTable6.setNumRows(4);
         deviceTable6.setOffsetNid(2443);
         deviceTable6.setRefMode(1);
-        deviceTable6.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable6);
+        jScrollPane8.setViewportView(deviceTable6);
+
+        jTabbedPane4.addTab("Kp Amp.", jScrollPane8);
 
         deviceTable7.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable7.setDisplayRowNumber(true);
         deviceTable7.setIdentifier("");
-        deviceTable7.setLabelString("Kp Phase");
         deviceTable7.setNumCols(48);
         deviceTable7.setNumRows(4);
         deviceTable7.setOffsetNid(2449);
-        deviceTable7.setRefMode(2);
-        deviceTable7.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable7);
+        deviceTable7.setRefMode(1);
+        jScrollPane9.setViewportView(deviceTable7);
+
+        jTabbedPane4.addTab("Kp Phs.", jScrollPane9);
 
         deviceTable8.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable8.setDisplayRowNumber(true);
         deviceTable8.setIdentifier("");
-        deviceTable8.setLabelString("Ki");
         deviceTable8.setNumCols(48);
         deviceTable8.setNumRows(4);
         deviceTable8.setOffsetNid(2455);
         deviceTable8.setRefMode(1);
-        deviceTable8.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable8);
+        jScrollPane10.setViewportView(deviceTable8);
+
+        jTabbedPane4.addTab("Ki", jScrollPane10);
 
         deviceTable9.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable9.setDisplayRowNumber(true);
         deviceTable9.setIdentifier("");
-        deviceTable9.setLabelString("Kd");
         deviceTable9.setNumCols(48);
         deviceTable9.setNumRows(4);
         deviceTable9.setOffsetNid(2461);
         deviceTable9.setRefMode(1);
-        deviceTable9.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable9);
+        jScrollPane11.setViewportView(deviceTable9);
+
+        jTabbedPane4.addTab("Kd", jScrollPane11);
+
+        jPanel33.add(jTabbedPane4, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("1", jPanel33);
 
-        jPanel39.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel39.setLayout(new java.awt.BorderLayout());
 
         deviceChoice28.setChoiceIntValues(new int[] {0, 1});
         deviceChoice28.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -1751,55 +1923,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField194.setOffsetNid(2527);
         jPanel40.add(deviceField194);
 
-        jPanel39.add(jPanel40);
+        jPanel39.add(jPanel40, java.awt.BorderLayout.NORTH);
 
         deviceTable18.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable18.setDisplayRowNumber(true);
         deviceTable18.setIdentifier("");
-        deviceTable18.setLabelString("Kp Amp.");
         deviceTable18.setNumCols(48);
         deviceTable18.setNumRows(4);
         deviceTable18.setOffsetNid(2491);
         deviceTable18.setRefMode(1);
-        deviceTable18.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable18);
+        jScrollPane20.setViewportView(deviceTable18);
+
+        jTabbedPane7.addTab("Kp Amp.", jScrollPane20);
 
         deviceTable19.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable19.setDisplayRowNumber(true);
         deviceTable19.setIdentifier("");
-        deviceTable19.setLabelString("Kp Phase");
         deviceTable19.setNumCols(48);
         deviceTable19.setNumRows(4);
         deviceTable19.setOffsetNid(2497);
-        deviceTable19.setRefMode(2);
-        deviceTable19.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable19);
+        deviceTable19.setRefMode(1);
+        jScrollPane21.setViewportView(deviceTable19);
+
+        jTabbedPane7.addTab("Kp Phs.", jScrollPane21);
 
         deviceTable20.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable20.setDisplayRowNumber(true);
         deviceTable20.setIdentifier("");
-        deviceTable20.setLabelString("Ki");
         deviceTable20.setNumCols(48);
         deviceTable20.setNumRows(4);
         deviceTable20.setOffsetNid(2503);
         deviceTable20.setRefMode(1);
-        deviceTable20.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable20);
+        jScrollPane22.setViewportView(deviceTable20);
+
+        jTabbedPane7.addTab("Ki", jScrollPane22);
 
         deviceTable21.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable21.setDisplayRowNumber(true);
         deviceTable21.setIdentifier("");
-        deviceTable21.setLabelString("Kd");
         deviceTable21.setNumCols(48);
         deviceTable21.setNumRows(4);
         deviceTable21.setOffsetNid(2509);
         deviceTable21.setRefMode(1);
-        deviceTable21.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable21);
+        jScrollPane23.setViewportView(deviceTable21);
+
+        jTabbedPane7.addTab("Kd", jScrollPane23);
+
+        jPanel39.add(jTabbedPane7, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("2", jPanel39);
 
-        jPanel30.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel30.setLayout(new java.awt.BorderLayout());
 
         deviceChoice23.setChoiceIntValues(new int[] {0, 1});
         deviceChoice23.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -1828,55 +2002,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField172.setOffsetNid(2575);
         jPanel31.add(deviceField172);
 
-        jPanel30.add(jPanel31);
+        jPanel30.add(jPanel31, java.awt.BorderLayout.NORTH);
 
         deviceTable2.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable2.setDisplayRowNumber(true);
         deviceTable2.setIdentifier("");
-        deviceTable2.setLabelString("Kp Amp.");
         deviceTable2.setNumCols(48);
         deviceTable2.setNumRows(4);
         deviceTable2.setOffsetNid(2539);
         deviceTable2.setRefMode(1);
-        deviceTable2.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable2);
+        jScrollPane4.setViewportView(deviceTable2);
+
+        jTabbedPane3.addTab("Kp Amp.", jScrollPane4);
 
         deviceTable3.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable3.setDisplayRowNumber(true);
         deviceTable3.setIdentifier("");
-        deviceTable3.setLabelString("Kp Phase");
         deviceTable3.setNumCols(48);
         deviceTable3.setNumRows(4);
         deviceTable3.setOffsetNid(2545);
-        deviceTable3.setRefMode(2);
-        deviceTable3.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable3);
+        deviceTable3.setRefMode(1);
+        jScrollPane5.setViewportView(deviceTable3);
+
+        jTabbedPane3.addTab("Kp Phs.", jScrollPane5);
 
         deviceTable4.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable4.setDisplayRowNumber(true);
         deviceTable4.setIdentifier("");
-        deviceTable4.setLabelString("Ki");
         deviceTable4.setNumCols(48);
         deviceTable4.setNumRows(4);
         deviceTable4.setOffsetNid(2551);
         deviceTable4.setRefMode(1);
-        deviceTable4.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable4);
+        jScrollPane6.setViewportView(deviceTable4);
+
+        jTabbedPane3.addTab("Ki", jScrollPane6);
 
         deviceTable5.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable5.setDisplayRowNumber(true);
         deviceTable5.setIdentifier("");
-        deviceTable5.setLabelString("Kd");
         deviceTable5.setNumCols(48);
         deviceTable5.setNumRows(4);
         deviceTable5.setOffsetNid(2557);
         deviceTable5.setRefMode(1);
-        deviceTable5.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable5);
+        jScrollPane7.setViewportView(deviceTable5);
+
+        jTabbedPane3.addTab("Kd", jScrollPane7);
+
+        jPanel30.add(jTabbedPane3, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("3", jPanel30);
 
-        jPanel35.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel35.setLayout(new java.awt.BorderLayout());
 
         deviceChoice26.setChoiceIntValues(new int[] {0, 1});
         deviceChoice26.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -1905,55 +2081,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField188.setOffsetNid(2623);
         jPanel36.add(deviceField188);
 
-        jPanel35.add(jPanel36);
+        jPanel35.add(jPanel36, java.awt.BorderLayout.NORTH);
 
         deviceTable10.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable10.setDisplayRowNumber(true);
         deviceTable10.setIdentifier("");
-        deviceTable10.setLabelString("Kp Amp.");
         deviceTable10.setNumCols(48);
         deviceTable10.setNumRows(4);
         deviceTable10.setOffsetNid(2587);
         deviceTable10.setRefMode(1);
-        deviceTable10.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable10);
+        jScrollPane12.setViewportView(deviceTable10);
+
+        jTabbedPane5.addTab("Kp Amp.", jScrollPane12);
 
         deviceTable11.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable11.setDisplayRowNumber(true);
         deviceTable11.setIdentifier("");
-        deviceTable11.setLabelString("Kp Phase");
         deviceTable11.setNumCols(48);
         deviceTable11.setNumRows(4);
         deviceTable11.setOffsetNid(2593);
-        deviceTable11.setRefMode(2);
-        deviceTable11.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable11);
+        deviceTable11.setRefMode(1);
+        jScrollPane13.setViewportView(deviceTable11);
+
+        jTabbedPane5.addTab("Kp Phs.", jScrollPane13);
 
         deviceTable12.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable12.setDisplayRowNumber(true);
         deviceTable12.setIdentifier("");
-        deviceTable12.setLabelString("Ki");
         deviceTable12.setNumCols(48);
         deviceTable12.setNumRows(4);
         deviceTable12.setOffsetNid(2599);
         deviceTable12.setRefMode(1);
-        deviceTable12.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable12);
+        jScrollPane14.setViewportView(deviceTable12);
+
+        jTabbedPane5.addTab("Ki", jScrollPane14);
 
         deviceTable13.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable13.setDisplayRowNumber(true);
         deviceTable13.setIdentifier("");
-        deviceTable13.setLabelString("Kd");
         deviceTable13.setNumCols(48);
         deviceTable13.setNumRows(4);
         deviceTable13.setOffsetNid(2605);
         deviceTable13.setRefMode(1);
-        deviceTable13.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable13);
+        jScrollPane15.setViewportView(deviceTable13);
+
+        jTabbedPane5.addTab("Kd", jScrollPane15);
+
+        jPanel35.add(jTabbedPane5, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("4", jPanel35);
 
-        jPanel37.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel37.setLayout(new java.awt.BorderLayout());
 
         deviceChoice27.setChoiceIntValues(new int[] {0, 1});
         deviceChoice27.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -1982,55 +2160,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField191.setOffsetNid(2671);
         jPanel38.add(deviceField191);
 
-        jPanel37.add(jPanel38);
+        jPanel37.add(jPanel38, java.awt.BorderLayout.NORTH);
 
         deviceTable14.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable14.setDisplayRowNumber(true);
         deviceTable14.setIdentifier("");
-        deviceTable14.setLabelString("Kp Amp.");
         deviceTable14.setNumCols(48);
         deviceTable14.setNumRows(4);
         deviceTable14.setOffsetNid(2635);
         deviceTable14.setRefMode(1);
-        deviceTable14.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable14);
+        jScrollPane16.setViewportView(deviceTable14);
+
+        jTabbedPane6.addTab("Kp Amp.", jScrollPane16);
 
         deviceTable15.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable15.setDisplayRowNumber(true);
         deviceTable15.setIdentifier("");
-        deviceTable15.setLabelString("Kp Phase");
         deviceTable15.setNumCols(48);
         deviceTable15.setNumRows(4);
         deviceTable15.setOffsetNid(2641);
-        deviceTable15.setRefMode(2);
-        deviceTable15.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable15);
+        deviceTable15.setRefMode(1);
+        jScrollPane17.setViewportView(deviceTable15);
+
+        jTabbedPane6.addTab("Kp Phs.", jScrollPane17);
 
         deviceTable16.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable16.setDisplayRowNumber(true);
         deviceTable16.setIdentifier("");
-        deviceTable16.setLabelString("Ki");
         deviceTable16.setNumCols(48);
         deviceTable16.setNumRows(4);
         deviceTable16.setOffsetNid(2647);
         deviceTable16.setRefMode(1);
-        deviceTable16.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable16);
+        jScrollPane18.setViewportView(deviceTable16);
+
+        jTabbedPane6.addTab("Ki", jScrollPane18);
 
         deviceTable17.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable17.setDisplayRowNumber(true);
         deviceTable17.setIdentifier("");
-        deviceTable17.setLabelString("Kd");
         deviceTable17.setNumCols(48);
         deviceTable17.setNumRows(4);
         deviceTable17.setOffsetNid(2653);
         deviceTable17.setRefMode(1);
-        deviceTable17.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable17);
+        jScrollPane19.setViewportView(deviceTable17);
+
+        jTabbedPane6.addTab("Kd", jScrollPane19);
+
+        jPanel37.add(jTabbedPane6, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("5", jPanel37);
 
-        jPanel41.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel41.setLayout(new java.awt.BorderLayout());
 
         deviceChoice29.setChoiceIntValues(new int[] {0, 1});
         deviceChoice29.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -2059,55 +2239,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField197.setOffsetNid(2719);
         jPanel42.add(deviceField197);
 
-        jPanel41.add(jPanel42);
+        jPanel41.add(jPanel42, java.awt.BorderLayout.NORTH);
 
         deviceTable22.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable22.setDisplayRowNumber(true);
         deviceTable22.setIdentifier("");
-        deviceTable22.setLabelString("Kp Amp.");
         deviceTable22.setNumCols(48);
         deviceTable22.setNumRows(4);
         deviceTable22.setOffsetNid(2683);
         deviceTable22.setRefMode(1);
-        deviceTable22.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable22);
+        jScrollPane24.setViewportView(deviceTable22);
+
+        jTabbedPane8.addTab("Kp Amp.", jScrollPane24);
 
         deviceTable23.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable23.setDisplayRowNumber(true);
         deviceTable23.setIdentifier("");
-        deviceTable23.setLabelString("Kp Phase");
         deviceTable23.setNumCols(48);
         deviceTable23.setNumRows(4);
         deviceTable23.setOffsetNid(2689);
-        deviceTable23.setRefMode(2);
-        deviceTable23.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable23);
+        deviceTable23.setRefMode(1);
+        jScrollPane25.setViewportView(deviceTable23);
+
+        jTabbedPane8.addTab("Kp Phs.", jScrollPane25);
 
         deviceTable24.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable24.setDisplayRowNumber(true);
         deviceTable24.setIdentifier("");
-        deviceTable24.setLabelString("Ki");
         deviceTable24.setNumCols(48);
         deviceTable24.setNumRows(4);
         deviceTable24.setOffsetNid(2695);
         deviceTable24.setRefMode(1);
-        deviceTable24.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable24);
+        jScrollPane26.setViewportView(deviceTable24);
+
+        jTabbedPane8.addTab("Ki", jScrollPane26);
 
         deviceTable25.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable25.setDisplayRowNumber(true);
         deviceTable25.setIdentifier("");
-        deviceTable25.setLabelString("Kd");
         deviceTable25.setNumCols(48);
         deviceTable25.setNumRows(4);
         deviceTable25.setOffsetNid(2701);
         deviceTable25.setRefMode(1);
-        deviceTable25.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable25);
+        jScrollPane27.setViewportView(deviceTable25);
+
+        jTabbedPane8.addTab("Kd", jScrollPane27);
+
+        jPanel41.add(jTabbedPane8, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("6", jPanel41);
 
-        jPanel43.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel43.setLayout(new java.awt.BorderLayout());
 
         deviceChoice30.setChoiceIntValues(new int[] {0, 1});
         deviceChoice30.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -2136,55 +2318,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField200.setOffsetNid(2767);
         jPanel44.add(deviceField200);
 
-        jPanel43.add(jPanel44);
+        jPanel43.add(jPanel44, java.awt.BorderLayout.NORTH);
 
         deviceTable26.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable26.setDisplayRowNumber(true);
         deviceTable26.setIdentifier("");
-        deviceTable26.setLabelString("Kp Amp.");
         deviceTable26.setNumCols(48);
         deviceTable26.setNumRows(4);
         deviceTable26.setOffsetNid(2731);
         deviceTable26.setRefMode(1);
-        deviceTable26.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable26);
+        jScrollPane28.setViewportView(deviceTable26);
+
+        jTabbedPane9.addTab("Kp Amp.", jScrollPane28);
 
         deviceTable27.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable27.setDisplayRowNumber(true);
         deviceTable27.setIdentifier("");
-        deviceTable27.setLabelString("Kp Phase");
         deviceTable27.setNumCols(48);
         deviceTable27.setNumRows(4);
         deviceTable27.setOffsetNid(2737);
-        deviceTable27.setRefMode(2);
-        deviceTable27.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable27);
+        deviceTable27.setRefMode(1);
+        jScrollPane29.setViewportView(deviceTable27);
+
+        jTabbedPane9.addTab("Kp Phs.", jScrollPane29);
 
         deviceTable28.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable28.setDisplayRowNumber(true);
         deviceTable28.setIdentifier("");
-        deviceTable28.setLabelString("Ki");
         deviceTable28.setNumCols(48);
         deviceTable28.setNumRows(4);
         deviceTable28.setOffsetNid(2743);
         deviceTable28.setRefMode(1);
-        deviceTable28.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable28);
+        jScrollPane30.setViewportView(deviceTable28);
+
+        jTabbedPane9.addTab("Ki", jScrollPane30);
 
         deviceTable29.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable29.setDisplayRowNumber(true);
         deviceTable29.setIdentifier("");
-        deviceTable29.setLabelString("Kd");
         deviceTable29.setNumCols(48);
         deviceTable29.setNumRows(4);
         deviceTable29.setOffsetNid(2749);
         deviceTable29.setRefMode(1);
-        deviceTable29.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable29);
+        jScrollPane31.setViewportView(deviceTable29);
+
+        jTabbedPane9.addTab("Kd", jScrollPane31);
+
+        jPanel43.add(jTabbedPane9, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("7", jPanel43);
 
-        jPanel45.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel45.setLayout(new java.awt.BorderLayout());
 
         deviceChoice31.setChoiceIntValues(new int[] {0, 1});
         deviceChoice31.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
@@ -2213,51 +2397,53 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField203.setOffsetNid(2815);
         jPanel46.add(deviceField203);
 
-        jPanel45.add(jPanel46);
+        jPanel45.add(jPanel46, java.awt.BorderLayout.NORTH);
 
         deviceTable30.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable30.setDisplayRowNumber(true);
         deviceTable30.setIdentifier("");
-        deviceTable30.setLabelString("Kp Amp.");
         deviceTable30.setNumCols(48);
         deviceTable30.setNumRows(4);
         deviceTable30.setOffsetNid(2779);
         deviceTable30.setRefMode(1);
-        deviceTable30.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable30);
+        jScrollPane32.setViewportView(deviceTable30);
+
+        jTabbedPane10.addTab("Kp Amp.", jScrollPane32);
 
         deviceTable31.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable31.setDisplayRowNumber(true);
         deviceTable31.setIdentifier("");
-        deviceTable31.setLabelString("Kp Phase");
         deviceTable31.setNumCols(48);
         deviceTable31.setNumRows(4);
         deviceTable31.setOffsetNid(2785);
-        deviceTable31.setRefMode(2);
-        deviceTable31.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable31);
+        deviceTable31.setRefMode(1);
+        jScrollPane33.setViewportView(deviceTable31);
+
+        jTabbedPane10.addTab("Kp Phs.", jScrollPane33);
 
         deviceTable32.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable32.setDisplayRowNumber(true);
         deviceTable32.setIdentifier("");
-        deviceTable32.setLabelString("Ki");
         deviceTable32.setNumCols(48);
         deviceTable32.setNumRows(4);
         deviceTable32.setOffsetNid(2791);
         deviceTable32.setRefMode(1);
-        deviceTable32.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable32);
+        jScrollPane34.setViewportView(deviceTable32);
+
+        jTabbedPane10.addTab("Ki", jScrollPane34);
 
         deviceTable33.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
         deviceTable33.setDisplayRowNumber(true);
         deviceTable33.setIdentifier("");
-        deviceTable33.setLabelString("Kd");
         deviceTable33.setNumCols(48);
         deviceTable33.setNumRows(4);
         deviceTable33.setOffsetNid(2797);
         deviceTable33.setRefMode(1);
-        deviceTable33.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable33);
+        jScrollPane35.setViewportView(deviceTable33);
+
+        jTabbedPane10.addTab("Kd", jScrollPane35);
+
+        jPanel45.add(jTabbedPane10, java.awt.BorderLayout.CENTER);
 
         jTabbedPane2.addTab("8", jPanel45);
 
@@ -2265,7 +2451,637 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("ModeControl", jPanel12);
 
-        jPanel1.add(jTabbedPane1, java.awt.BorderLayout.PAGE_START);
+        jPanel13.setLayout(new java.awt.BorderLayout());
+
+        jPanel47.setLayout(new java.awt.BorderLayout());
+
+        deviceField204.setIdentifier("");
+        deviceField204.setLabelString("Start Time: ");
+        deviceField204.setNumCols(4);
+        deviceField204.setOffsetNid(2851);
+        jPanel48.add(deviceField204);
+
+        deviceField205.setIdentifier("");
+        deviceField205.setLabelString("End Time: ");
+        deviceField205.setNumCols(4);
+        deviceField205.setOffsetNid(2857);
+        jPanel48.add(deviceField205);
+
+        deviceField206.setIdentifier("");
+        deviceField206.setLabelString("Cutoff Freq.: ");
+        deviceField206.setNumCols(4);
+        deviceField206.setOffsetNid(2863);
+        jPanel48.add(deviceField206);
+
+        jPanel47.add(jPanel48, java.awt.BorderLayout.NORTH);
+
+        deviceTable34.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable34.setDisplayRowNumber(true);
+        deviceTable34.setIdentifier("");
+        deviceTable34.setNumCols(48);
+        deviceTable34.setNumRows(4);
+        deviceTable34.setOffsetNid(2821);
+        deviceTable34.setRefMode(1);
+        jScrollPane36.setViewportView(deviceTable34);
+
+        jTabbedPane12.addTab("Mode Amp.", jScrollPane36);
+
+        deviceTable35.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable35.setDisplayRowNumber(true);
+        deviceTable35.setIdentifier("");
+        deviceTable35.setNumCols(48);
+        deviceTable35.setNumRows(4);
+        deviceTable35.setOffsetNid(2827);
+        deviceTable35.setRefMode(1);
+        jScrollPane37.setViewportView(deviceTable35);
+
+        jTabbedPane12.addTab("Mode Phs.", jScrollPane37);
+
+        deviceTable36.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable36.setDisplayRowNumber(true);
+        deviceTable36.setIdentifier("");
+        deviceTable36.setNumCols(48);
+        deviceTable36.setNumRows(4);
+        deviceTable36.setOffsetNid(2833);
+        jScrollPane38.setViewportView(deviceTable36);
+
+        jTabbedPane12.addTab("Kp", jScrollPane38);
+
+        deviceTable37.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable37.setDisplayRowNumber(true);
+        deviceTable37.setIdentifier("");
+        deviceTable37.setNumCols(48);
+        deviceTable37.setNumRows(4);
+        deviceTable37.setOffsetNid(2839);
+        jScrollPane39.setViewportView(deviceTable37);
+
+        jTabbedPane12.addTab("Ki", jScrollPane39);
+
+        deviceTable38.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable38.setDisplayRowNumber(true);
+        deviceTable38.setIdentifier("");
+        deviceTable38.setNumCols(48);
+        deviceTable38.setNumRows(4);
+        deviceTable38.setOffsetNid(2845);
+        jScrollPane40.setViewportView(deviceTable38);
+
+        jTabbedPane12.addTab("Kd", jScrollPane40);
+
+        jPanel47.add(jTabbedPane12, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("1", jPanel47);
+
+        jPanel49.setLayout(new java.awt.BorderLayout());
+
+        deviceField207.setIdentifier("");
+        deviceField207.setLabelString("Start Time: ");
+        deviceField207.setNumCols(4);
+        deviceField207.setOffsetNid(2899);
+        jPanel50.add(deviceField207);
+
+        deviceField208.setIdentifier("");
+        deviceField208.setLabelString("End Time: ");
+        deviceField208.setNumCols(4);
+        deviceField208.setOffsetNid(2905);
+        jPanel50.add(deviceField208);
+
+        deviceField209.setIdentifier("");
+        deviceField209.setLabelString("Cutoff Freq.: ");
+        deviceField209.setNumCols(4);
+        deviceField209.setOffsetNid(2911);
+        jPanel50.add(deviceField209);
+
+        jPanel49.add(jPanel50, java.awt.BorderLayout.NORTH);
+
+        deviceTable39.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable39.setDisplayRowNumber(true);
+        deviceTable39.setIdentifier("");
+        deviceTable39.setNumCols(48);
+        deviceTable39.setNumRows(4);
+        deviceTable39.setOffsetNid(2869);
+        deviceTable39.setRefMode(1);
+        jScrollPane41.setViewportView(deviceTable39);
+
+        jTabbedPane13.addTab("Mode Amp.", jScrollPane41);
+
+        deviceTable40.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable40.setDisplayRowNumber(true);
+        deviceTable40.setIdentifier("");
+        deviceTable40.setNumCols(48);
+        deviceTable40.setNumRows(4);
+        deviceTable40.setOffsetNid(2875);
+        deviceTable40.setRefMode(1);
+        jScrollPane42.setViewportView(deviceTable40);
+
+        jTabbedPane13.addTab("Mode Phs.", jScrollPane42);
+
+        deviceTable41.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable41.setDisplayRowNumber(true);
+        deviceTable41.setIdentifier("");
+        deviceTable41.setNumCols(48);
+        deviceTable41.setNumRows(4);
+        deviceTable41.setOffsetNid(2881);
+        jScrollPane43.setViewportView(deviceTable41);
+
+        jTabbedPane13.addTab("Kp", jScrollPane43);
+
+        deviceTable42.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable42.setDisplayRowNumber(true);
+        deviceTable42.setIdentifier("");
+        deviceTable42.setNumCols(48);
+        deviceTable42.setNumRows(4);
+        deviceTable42.setOffsetNid(2887);
+        jScrollPane44.setViewportView(deviceTable42);
+
+        jTabbedPane13.addTab("Ki", jScrollPane44);
+
+        deviceTable43.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable43.setDisplayRowNumber(true);
+        deviceTable43.setIdentifier("");
+        deviceTable43.setNumCols(48);
+        deviceTable43.setNumRows(4);
+        deviceTable43.setOffsetNid(2893);
+        jScrollPane45.setViewportView(deviceTable43);
+
+        jTabbedPane13.addTab("Kd", jScrollPane45);
+
+        jPanel49.add(jTabbedPane13, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("2", jPanel49);
+
+        jPanel51.setLayout(new java.awt.BorderLayout());
+
+        deviceField210.setIdentifier("");
+        deviceField210.setLabelString("Start Time: ");
+        deviceField210.setNumCols(4);
+        deviceField210.setOffsetNid(2947);
+        jPanel52.add(deviceField210);
+
+        deviceField211.setIdentifier("");
+        deviceField211.setLabelString("End Time: ");
+        deviceField211.setNumCols(4);
+        deviceField211.setOffsetNid(2953);
+        jPanel52.add(deviceField211);
+
+        deviceField212.setIdentifier("");
+        deviceField212.setLabelString("Cutoff Freq.: ");
+        deviceField212.setNumCols(4);
+        deviceField212.setOffsetNid(2959);
+        jPanel52.add(deviceField212);
+
+        jPanel51.add(jPanel52, java.awt.BorderLayout.NORTH);
+
+        deviceTable44.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable44.setDisplayRowNumber(true);
+        deviceTable44.setIdentifier("");
+        deviceTable44.setNumCols(48);
+        deviceTable44.setNumRows(4);
+        deviceTable44.setOffsetNid(2917);
+        deviceTable44.setRefMode(1);
+        jScrollPane46.setViewportView(deviceTable44);
+
+        jTabbedPane14.addTab("Mode Amp.", jScrollPane46);
+
+        deviceTable45.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable45.setDisplayRowNumber(true);
+        deviceTable45.setIdentifier("");
+        deviceTable45.setNumCols(48);
+        deviceTable45.setNumRows(4);
+        deviceTable45.setOffsetNid(2923);
+        deviceTable45.setRefMode(1);
+        jScrollPane47.setViewportView(deviceTable45);
+
+        jTabbedPane14.addTab("Mode Phs.", jScrollPane47);
+
+        deviceTable46.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable46.setDisplayRowNumber(true);
+        deviceTable46.setIdentifier("");
+        deviceTable46.setNumCols(48);
+        deviceTable46.setNumRows(4);
+        deviceTable46.setOffsetNid(2929);
+        jScrollPane48.setViewportView(deviceTable46);
+
+        jTabbedPane14.addTab("Kp", jScrollPane48);
+
+        deviceTable47.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable47.setDisplayRowNumber(true);
+        deviceTable47.setIdentifier("");
+        deviceTable47.setNumCols(48);
+        deviceTable47.setNumRows(4);
+        deviceTable47.setOffsetNid(2935);
+        jScrollPane49.setViewportView(deviceTable47);
+
+        jTabbedPane14.addTab("Ki", jScrollPane49);
+
+        deviceTable48.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable48.setDisplayRowNumber(true);
+        deviceTable48.setIdentifier("");
+        deviceTable48.setNumCols(48);
+        deviceTable48.setNumRows(4);
+        deviceTable48.setOffsetNid(2941);
+        jScrollPane50.setViewportView(deviceTable48);
+
+        jTabbedPane14.addTab("Kd", jScrollPane50);
+
+        jPanel51.add(jTabbedPane14, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("3", jPanel51);
+
+        jPanel53.setLayout(new java.awt.BorderLayout());
+
+        deviceField213.setIdentifier("");
+        deviceField213.setLabelString("Start Time: ");
+        deviceField213.setNumCols(4);
+        deviceField213.setOffsetNid(2995);
+        jPanel54.add(deviceField213);
+
+        deviceField214.setIdentifier("");
+        deviceField214.setLabelString("End Time: ");
+        deviceField214.setNumCols(4);
+        deviceField214.setOffsetNid(3001);
+        jPanel54.add(deviceField214);
+
+        deviceField215.setIdentifier("");
+        deviceField215.setLabelString("Cutoff Freq.: ");
+        deviceField215.setNumCols(4);
+        deviceField215.setOffsetNid(3007);
+        jPanel54.add(deviceField215);
+
+        jPanel53.add(jPanel54, java.awt.BorderLayout.NORTH);
+
+        deviceTable49.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable49.setDisplayRowNumber(true);
+        deviceTable49.setIdentifier("");
+        deviceTable49.setNumCols(48);
+        deviceTable49.setNumRows(4);
+        deviceTable49.setOffsetNid(2965);
+        deviceTable49.setRefMode(1);
+        jScrollPane51.setViewportView(deviceTable49);
+
+        jTabbedPane15.addTab("Mode Amp.", jScrollPane51);
+
+        deviceTable50.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable50.setDisplayRowNumber(true);
+        deviceTable50.setIdentifier("");
+        deviceTable50.setNumCols(48);
+        deviceTable50.setNumRows(4);
+        deviceTable50.setOffsetNid(2971);
+        deviceTable50.setRefMode(1);
+        jScrollPane52.setViewportView(deviceTable50);
+
+        jTabbedPane15.addTab("Mode Phs.", jScrollPane52);
+
+        deviceTable51.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable51.setDisplayRowNumber(true);
+        deviceTable51.setIdentifier("");
+        deviceTable51.setNumCols(48);
+        deviceTable51.setNumRows(4);
+        deviceTable51.setOffsetNid(2977);
+        jScrollPane53.setViewportView(deviceTable51);
+
+        jTabbedPane15.addTab("Kp", jScrollPane53);
+
+        deviceTable52.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable52.setDisplayRowNumber(true);
+        deviceTable52.setIdentifier("");
+        deviceTable52.setNumCols(48);
+        deviceTable52.setNumRows(4);
+        deviceTable52.setOffsetNid(2983);
+        jScrollPane54.setViewportView(deviceTable52);
+
+        jTabbedPane15.addTab("Ki", jScrollPane54);
+
+        deviceTable53.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable53.setDisplayRowNumber(true);
+        deviceTable53.setIdentifier("");
+        deviceTable53.setNumCols(48);
+        deviceTable53.setNumRows(4);
+        deviceTable53.setOffsetNid(2989);
+        jScrollPane55.setViewportView(deviceTable53);
+
+        jTabbedPane15.addTab("Kd", jScrollPane55);
+
+        jPanel53.add(jTabbedPane15, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("4", jPanel53);
+
+        jPanel55.setLayout(new java.awt.BorderLayout());
+
+        deviceField216.setIdentifier("");
+        deviceField216.setLabelString("Start Time: ");
+        deviceField216.setNumCols(4);
+        deviceField216.setOffsetNid(3043);
+        jPanel56.add(deviceField216);
+
+        deviceField217.setIdentifier("");
+        deviceField217.setLabelString("End Time: ");
+        deviceField217.setNumCols(4);
+        deviceField217.setOffsetNid(3049);
+        jPanel56.add(deviceField217);
+
+        deviceField218.setIdentifier("");
+        deviceField218.setLabelString("Cutoff Freq.: ");
+        deviceField218.setNumCols(4);
+        deviceField218.setOffsetNid(3055);
+        jPanel56.add(deviceField218);
+
+        jPanel55.add(jPanel56, java.awt.BorderLayout.NORTH);
+
+        deviceTable54.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable54.setDisplayRowNumber(true);
+        deviceTable54.setIdentifier("");
+        deviceTable54.setNumCols(48);
+        deviceTable54.setNumRows(4);
+        deviceTable54.setOffsetNid(3013);
+        deviceTable54.setRefMode(1);
+        jScrollPane56.setViewportView(deviceTable54);
+
+        jTabbedPane16.addTab("Mode Amp.", jScrollPane56);
+
+        deviceTable55.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable55.setDisplayRowNumber(true);
+        deviceTable55.setIdentifier("");
+        deviceTable55.setNumCols(48);
+        deviceTable55.setNumRows(4);
+        deviceTable55.setOffsetNid(3019);
+        deviceTable55.setRefMode(1);
+        jScrollPane57.setViewportView(deviceTable55);
+
+        jTabbedPane16.addTab("Mode Phs.", jScrollPane57);
+
+        deviceTable56.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable56.setDisplayRowNumber(true);
+        deviceTable56.setIdentifier("");
+        deviceTable56.setNumCols(48);
+        deviceTable56.setNumRows(4);
+        deviceTable56.setOffsetNid(3025);
+        jScrollPane58.setViewportView(deviceTable56);
+
+        jTabbedPane16.addTab("Kp", jScrollPane58);
+
+        deviceTable57.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable57.setDisplayRowNumber(true);
+        deviceTable57.setIdentifier("");
+        deviceTable57.setNumCols(48);
+        deviceTable57.setNumRows(4);
+        deviceTable57.setOffsetNid(3031);
+        jScrollPane59.setViewportView(deviceTable57);
+
+        jTabbedPane16.addTab("Ki", jScrollPane59);
+
+        deviceTable58.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable58.setDisplayRowNumber(true);
+        deviceTable58.setIdentifier("");
+        deviceTable58.setNumCols(48);
+        deviceTable58.setNumRows(4);
+        deviceTable58.setOffsetNid(3037);
+        jScrollPane60.setViewportView(deviceTable58);
+
+        jTabbedPane16.addTab("Kd", jScrollPane60);
+
+        jPanel55.add(jTabbedPane16, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("5", jPanel55);
+
+        jPanel57.setLayout(new java.awt.BorderLayout());
+
+        deviceField219.setIdentifier("");
+        deviceField219.setLabelString("Start Time: ");
+        deviceField219.setNumCols(4);
+        deviceField219.setOffsetNid(3091);
+        jPanel58.add(deviceField219);
+
+        deviceField220.setIdentifier("");
+        deviceField220.setLabelString("End Time: ");
+        deviceField220.setNumCols(4);
+        deviceField220.setOffsetNid(3097);
+        jPanel58.add(deviceField220);
+
+        deviceField221.setIdentifier("");
+        deviceField221.setLabelString("Cutoff Freq.: ");
+        deviceField221.setNumCols(4);
+        deviceField221.setOffsetNid(3103);
+        jPanel58.add(deviceField221);
+
+        jPanel57.add(jPanel58, java.awt.BorderLayout.NORTH);
+
+        deviceTable59.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable59.setDisplayRowNumber(true);
+        deviceTable59.setIdentifier("");
+        deviceTable59.setNumCols(48);
+        deviceTable59.setNumRows(4);
+        deviceTable59.setOffsetNid(3061);
+        deviceTable59.setRefMode(1);
+        jScrollPane61.setViewportView(deviceTable59);
+
+        jTabbedPane17.addTab("Mode Amp.", jScrollPane61);
+
+        deviceTable60.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable60.setDisplayRowNumber(true);
+        deviceTable60.setIdentifier("");
+        deviceTable60.setNumCols(48);
+        deviceTable60.setNumRows(4);
+        deviceTable60.setOffsetNid(3067);
+        deviceTable60.setRefMode(1);
+        jScrollPane62.setViewportView(deviceTable60);
+
+        jTabbedPane17.addTab("Mode Phs.", jScrollPane62);
+
+        deviceTable61.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable61.setDisplayRowNumber(true);
+        deviceTable61.setIdentifier("");
+        deviceTable61.setNumCols(48);
+        deviceTable61.setNumRows(4);
+        deviceTable61.setOffsetNid(3073);
+        jScrollPane63.setViewportView(deviceTable61);
+
+        jTabbedPane17.addTab("Kp", jScrollPane63);
+
+        deviceTable62.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable62.setDisplayRowNumber(true);
+        deviceTable62.setIdentifier("");
+        deviceTable62.setNumCols(48);
+        deviceTable62.setNumRows(4);
+        deviceTable62.setOffsetNid(3079);
+        jScrollPane64.setViewportView(deviceTable62);
+
+        jTabbedPane17.addTab("Ki", jScrollPane64);
+
+        deviceTable63.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable63.setDisplayRowNumber(true);
+        deviceTable63.setIdentifier("");
+        deviceTable63.setNumCols(48);
+        deviceTable63.setNumRows(4);
+        deviceTable63.setOffsetNid(3085);
+        jScrollPane65.setViewportView(deviceTable63);
+
+        jTabbedPane17.addTab("Kd", jScrollPane65);
+
+        jPanel57.add(jTabbedPane17, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("6", jPanel57);
+
+        jPanel59.setLayout(new java.awt.BorderLayout());
+
+        deviceField222.setIdentifier("");
+        deviceField222.setLabelString("Start Time: ");
+        deviceField222.setNumCols(4);
+        deviceField222.setOffsetNid(3139);
+        jPanel60.add(deviceField222);
+
+        deviceField223.setIdentifier("");
+        deviceField223.setLabelString("End Time: ");
+        deviceField223.setNumCols(4);
+        deviceField223.setOffsetNid(3145);
+        jPanel60.add(deviceField223);
+
+        deviceField224.setIdentifier("");
+        deviceField224.setLabelString("Cutoff Freq.: ");
+        deviceField224.setNumCols(4);
+        deviceField224.setOffsetNid(3151);
+        jPanel60.add(deviceField224);
+
+        jPanel59.add(jPanel60, java.awt.BorderLayout.NORTH);
+
+        deviceTable64.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable64.setDisplayRowNumber(true);
+        deviceTable64.setIdentifier("");
+        deviceTable64.setNumCols(48);
+        deviceTable64.setNumRows(4);
+        deviceTable64.setOffsetNid(3109);
+        deviceTable64.setRefMode(1);
+        jScrollPane66.setViewportView(deviceTable64);
+
+        jTabbedPane18.addTab("Mode Amp.", jScrollPane66);
+
+        deviceTable65.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable65.setDisplayRowNumber(true);
+        deviceTable65.setIdentifier("");
+        deviceTable65.setNumCols(48);
+        deviceTable65.setNumRows(4);
+        deviceTable65.setOffsetNid(3115);
+        deviceTable65.setRefMode(1);
+        jScrollPane67.setViewportView(deviceTable65);
+
+        jTabbedPane18.addTab("Mode Phs.", jScrollPane67);
+
+        deviceTable66.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable66.setDisplayRowNumber(true);
+        deviceTable66.setIdentifier("");
+        deviceTable66.setNumCols(48);
+        deviceTable66.setNumRows(4);
+        deviceTable66.setOffsetNid(3121);
+        jScrollPane68.setViewportView(deviceTable66);
+
+        jTabbedPane18.addTab("Kp", jScrollPane68);
+
+        deviceTable67.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable67.setDisplayRowNumber(true);
+        deviceTable67.setIdentifier("");
+        deviceTable67.setNumCols(48);
+        deviceTable67.setNumRows(4);
+        deviceTable67.setOffsetNid(3127);
+        jScrollPane69.setViewportView(deviceTable67);
+
+        jTabbedPane18.addTab("Ki", jScrollPane69);
+
+        deviceTable68.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable68.setDisplayRowNumber(true);
+        deviceTable68.setIdentifier("");
+        deviceTable68.setNumCols(48);
+        deviceTable68.setNumRows(4);
+        deviceTable68.setOffsetNid(3133);
+        jScrollPane70.setViewportView(deviceTable68);
+
+        jTabbedPane18.addTab("Kd", jScrollPane70);
+
+        jPanel59.add(jTabbedPane18, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("7", jPanel59);
+
+        jPanel61.setLayout(new java.awt.BorderLayout());
+
+        deviceField225.setIdentifier("");
+        deviceField225.setLabelString("Start Time: ");
+        deviceField225.setNumCols(4);
+        deviceField225.setOffsetNid(3187);
+        jPanel62.add(deviceField225);
+
+        deviceField226.setIdentifier("");
+        deviceField226.setLabelString("End Time: ");
+        deviceField226.setNumCols(4);
+        deviceField226.setOffsetNid(3193);
+        jPanel62.add(deviceField226);
+
+        deviceField227.setIdentifier("");
+        deviceField227.setLabelString("Cutoff Freq.: ");
+        deviceField227.setNumCols(4);
+        deviceField227.setOffsetNid(3199);
+        jPanel62.add(deviceField227);
+
+        jPanel61.add(jPanel62, java.awt.BorderLayout.NORTH);
+
+        deviceTable69.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable69.setDisplayRowNumber(true);
+        deviceTable69.setIdentifier("");
+        deviceTable69.setNumCols(48);
+        deviceTable69.setNumRows(4);
+        deviceTable69.setOffsetNid(3157);
+        deviceTable69.setRefMode(1);
+        jScrollPane71.setViewportView(deviceTable69);
+
+        jTabbedPane19.addTab("Mode Amp.", jScrollPane71);
+
+        deviceTable70.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable70.setDisplayRowNumber(true);
+        deviceTable70.setIdentifier("");
+        deviceTable70.setNumCols(48);
+        deviceTable70.setNumRows(4);
+        deviceTable70.setOffsetNid(3163);
+        deviceTable70.setRefMode(1);
+        jScrollPane72.setViewportView(deviceTable70);
+
+        jTabbedPane19.addTab("Mode Phs.", jScrollPane72);
+
+        deviceTable71.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable71.setDisplayRowNumber(true);
+        deviceTable71.setIdentifier("");
+        deviceTable71.setNumCols(48);
+        deviceTable71.setNumRows(4);
+        deviceTable71.setOffsetNid(3169);
+        jScrollPane73.setViewportView(deviceTable71);
+
+        jTabbedPane19.addTab("Kp", jScrollPane73);
+
+        deviceTable72.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable72.setDisplayRowNumber(true);
+        deviceTable72.setIdentifier("");
+        deviceTable72.setNumCols(48);
+        deviceTable72.setNumRows(4);
+        deviceTable72.setOffsetNid(3175);
+        jScrollPane74.setViewportView(deviceTable72);
+
+        jTabbedPane19.addTab("Ki", jScrollPane74);
+
+        deviceTable73.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+        deviceTable73.setDisplayRowNumber(true);
+        deviceTable73.setIdentifier("");
+        deviceTable73.setNumCols(48);
+        deviceTable73.setNumRows(4);
+        deviceTable73.setOffsetNid(3181);
+        jScrollPane75.setViewportView(deviceTable73);
+
+        jTabbedPane19.addTab("Kd", jScrollPane75);
+
+        jPanel61.add(jTabbedPane19, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane11.addTab("8", jPanel61);
+
+        jPanel13.add(jTabbedPane11, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("VirtualShell", jPanel13);
+
+        jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
@@ -2420,8 +3236,32 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     private DeviceField deviceField201;
     private DeviceField deviceField202;
     private DeviceField deviceField203;
+    private DeviceField deviceField204;
+    private DeviceField deviceField205;
+    private DeviceField deviceField206;
+    private DeviceField deviceField207;
+    private DeviceField deviceField208;
+    private DeviceField deviceField209;
     private DeviceField deviceField21;
+    private DeviceField deviceField210;
+    private DeviceField deviceField211;
+    private DeviceField deviceField212;
+    private DeviceField deviceField213;
+    private DeviceField deviceField214;
+    private DeviceField deviceField215;
+    private DeviceField deviceField216;
+    private DeviceField deviceField217;
+    private DeviceField deviceField218;
+    private DeviceField deviceField219;
     private DeviceField deviceField22;
+    private DeviceField deviceField220;
+    private DeviceField deviceField221;
+    private DeviceField deviceField222;
+    private DeviceField deviceField223;
+    private DeviceField deviceField224;
+    private DeviceField deviceField225;
+    private DeviceField deviceField226;
+    private DeviceField deviceField227;
     private DeviceField deviceField23;
     private DeviceField deviceField24;
     private DeviceField deviceField25;
@@ -2521,16 +3361,57 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     private DeviceTable deviceTable31;
     private DeviceTable deviceTable32;
     private DeviceTable deviceTable33;
+    private DeviceTable deviceTable34;
+    private DeviceTable deviceTable35;
+    private DeviceTable deviceTable36;
+    private DeviceTable deviceTable37;
+    private DeviceTable deviceTable38;
+    private DeviceTable deviceTable39;
     private DeviceTable deviceTable4;
+    private DeviceTable deviceTable40;
+    private DeviceTable deviceTable41;
+    private DeviceTable deviceTable42;
+    private DeviceTable deviceTable43;
+    private DeviceTable deviceTable44;
+    private DeviceTable deviceTable45;
+    private DeviceTable deviceTable46;
+    private DeviceTable deviceTable47;
+    private DeviceTable deviceTable48;
+    private DeviceTable deviceTable49;
     private DeviceTable deviceTable5;
+    private DeviceTable deviceTable50;
+    private DeviceTable deviceTable51;
+    private DeviceTable deviceTable52;
+    private DeviceTable deviceTable53;
+    private DeviceTable deviceTable54;
+    private DeviceTable deviceTable55;
+    private DeviceTable deviceTable56;
+    private DeviceTable deviceTable57;
+    private DeviceTable deviceTable58;
+    private DeviceTable deviceTable59;
     private DeviceTable deviceTable6;
+    private DeviceTable deviceTable60;
+    private DeviceTable deviceTable61;
+    private DeviceTable deviceTable62;
+    private DeviceTable deviceTable63;
+    private DeviceTable deviceTable64;
+    private DeviceTable deviceTable65;
+    private DeviceTable deviceTable66;
+    private DeviceTable deviceTable67;
+    private DeviceTable deviceTable68;
+    private DeviceTable deviceTable69;
     private DeviceTable deviceTable7;
+    private DeviceTable deviceTable70;
+    private DeviceTable deviceTable71;
+    private DeviceTable deviceTable72;
+    private DeviceTable deviceTable73;
     private DeviceTable deviceTable8;
     private DeviceTable deviceTable9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;
@@ -2566,15 +3447,120 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel44;
     private javax.swing.JPanel jPanel45;
     private javax.swing.JPanel jPanel46;
+    private javax.swing.JPanel jPanel47;
+    private javax.swing.JPanel jPanel48;
+    private javax.swing.JPanel jPanel49;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel50;
+    private javax.swing.JPanel jPanel51;
+    private javax.swing.JPanel jPanel52;
+    private javax.swing.JPanel jPanel53;
+    private javax.swing.JPanel jPanel54;
+    private javax.swing.JPanel jPanel55;
+    private javax.swing.JPanel jPanel56;
+    private javax.swing.JPanel jPanel57;
+    private javax.swing.JPanel jPanel58;
+    private javax.swing.JPanel jPanel59;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel60;
+    private javax.swing.JPanel jPanel61;
+    private javax.swing.JPanel jPanel62;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane10;
+    private javax.swing.JScrollPane jScrollPane11;
+    private javax.swing.JScrollPane jScrollPane12;
+    private javax.swing.JScrollPane jScrollPane13;
+    private javax.swing.JScrollPane jScrollPane14;
+    private javax.swing.JScrollPane jScrollPane15;
+    private javax.swing.JScrollPane jScrollPane16;
+    private javax.swing.JScrollPane jScrollPane17;
+    private javax.swing.JScrollPane jScrollPane18;
+    private javax.swing.JScrollPane jScrollPane19;
     private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane20;
+    private javax.swing.JScrollPane jScrollPane21;
+    private javax.swing.JScrollPane jScrollPane22;
+    private javax.swing.JScrollPane jScrollPane23;
+    private javax.swing.JScrollPane jScrollPane24;
+    private javax.swing.JScrollPane jScrollPane25;
+    private javax.swing.JScrollPane jScrollPane26;
+    private javax.swing.JScrollPane jScrollPane27;
+    private javax.swing.JScrollPane jScrollPane28;
+    private javax.swing.JScrollPane jScrollPane29;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane30;
+    private javax.swing.JScrollPane jScrollPane31;
+    private javax.swing.JScrollPane jScrollPane32;
+    private javax.swing.JScrollPane jScrollPane33;
+    private javax.swing.JScrollPane jScrollPane34;
+    private javax.swing.JScrollPane jScrollPane35;
+    private javax.swing.JScrollPane jScrollPane36;
+    private javax.swing.JScrollPane jScrollPane37;
+    private javax.swing.JScrollPane jScrollPane38;
+    private javax.swing.JScrollPane jScrollPane39;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane40;
+    private javax.swing.JScrollPane jScrollPane41;
+    private javax.swing.JScrollPane jScrollPane42;
+    private javax.swing.JScrollPane jScrollPane43;
+    private javax.swing.JScrollPane jScrollPane44;
+    private javax.swing.JScrollPane jScrollPane45;
+    private javax.swing.JScrollPane jScrollPane46;
+    private javax.swing.JScrollPane jScrollPane47;
+    private javax.swing.JScrollPane jScrollPane48;
+    private javax.swing.JScrollPane jScrollPane49;
+    private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane50;
+    private javax.swing.JScrollPane jScrollPane51;
+    private javax.swing.JScrollPane jScrollPane52;
+    private javax.swing.JScrollPane jScrollPane53;
+    private javax.swing.JScrollPane jScrollPane54;
+    private javax.swing.JScrollPane jScrollPane55;
+    private javax.swing.JScrollPane jScrollPane56;
+    private javax.swing.JScrollPane jScrollPane57;
+    private javax.swing.JScrollPane jScrollPane58;
+    private javax.swing.JScrollPane jScrollPane59;
+    private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane60;
+    private javax.swing.JScrollPane jScrollPane61;
+    private javax.swing.JScrollPane jScrollPane62;
+    private javax.swing.JScrollPane jScrollPane63;
+    private javax.swing.JScrollPane jScrollPane64;
+    private javax.swing.JScrollPane jScrollPane65;
+    private javax.swing.JScrollPane jScrollPane66;
+    private javax.swing.JScrollPane jScrollPane67;
+    private javax.swing.JScrollPane jScrollPane68;
+    private javax.swing.JScrollPane jScrollPane69;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane70;
+    private javax.swing.JScrollPane jScrollPane71;
+    private javax.swing.JScrollPane jScrollPane72;
+    private javax.swing.JScrollPane jScrollPane73;
+    private javax.swing.JScrollPane jScrollPane74;
+    private javax.swing.JScrollPane jScrollPane75;
+    private javax.swing.JScrollPane jScrollPane8;
+    private javax.swing.JScrollPane jScrollPane9;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTabbedPane jTabbedPane10;
+    private javax.swing.JTabbedPane jTabbedPane11;
+    private javax.swing.JTabbedPane jTabbedPane12;
+    private javax.swing.JTabbedPane jTabbedPane13;
+    private javax.swing.JTabbedPane jTabbedPane14;
+    private javax.swing.JTabbedPane jTabbedPane15;
+    private javax.swing.JTabbedPane jTabbedPane16;
+    private javax.swing.JTabbedPane jTabbedPane17;
+    private javax.swing.JTabbedPane jTabbedPane18;
+    private javax.swing.JTabbedPane jTabbedPane19;
     private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JTabbedPane jTabbedPane4;
+    private javax.swing.JTabbedPane jTabbedPane5;
+    private javax.swing.JTabbedPane jTabbedPane6;
+    private javax.swing.JTabbedPane jTabbedPane7;
+    private javax.swing.JTabbedPane jTabbedPane8;
+    private javax.swing.JTabbedPane jTabbedPane9;
     // End of variables declaration//GEN-END:variables
 
 }

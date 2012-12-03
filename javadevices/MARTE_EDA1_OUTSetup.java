@@ -4,7 +4,7 @@
  */
 
 /*
- * MARTE_MHD_BRSetup.java
+ * MARTE_EDA1_OUTSetup.java
  *
  * Created on Mar 2, 2011, 1:07:35 PM
  */
@@ -13,10 +13,10 @@
  *
  * @author manduchi
  */
-public class MARTE_DEQUSetup extends DeviceSetup {
+public class MARTE_EDA1_OUTSetup extends DeviceSetup {
 
-    /** Creates new form MARTE_MHD_BRSetup */
-    public MARTE_DEQUSetup() {
+    /** Creates new form MARTE_EDA1_OUTSetup */
+    public MARTE_EDA1_OUTSetup() {
         initComponents();
     }
 
@@ -36,9 +36,6 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         jPanel6 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        deviceField5 = new DeviceField();
         jPanel8 = new javax.swing.JPanel();
         deviceChoice1 = new DeviceChoice();
         deviceField6 = new DeviceField();
@@ -49,18 +46,17 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         deviceTable3 = new DeviceTable();
-        deviceTable4 = new DeviceTable();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
 
         setDeviceProvider("localhost");
-        setDeviceTitle("MARTe Dequ Setup");
-        setDeviceType("MARTE_DEQU");
+        setDeviceTitle("MARTe Eda1 Out Setup");
+        setDeviceType("MARTE_EDA1_OUT");
         setHeight(400);
         setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel2.setLayout(new java.awt.GridLayout(5, 0));
+        jPanel2.setLayout(new java.awt.GridLayout(4, 0));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Comment: ");
@@ -83,19 +79,7 @@ public class MARTE_DEQUSetup extends DeviceSetup {
 
         jPanel2.add(jPanel6);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Start Offset Comp(s).:");
-        deviceField4.setOffsetNid(6);
-        jPanel7.add(deviceField4);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("End Offset Comp.(s):");
-        deviceField5.setOffsetNid(7);
-        jPanel7.add(deviceField5);
-
-        jPanel2.add(jPanel7);
-
-        deviceChoice1.setChoiceItems(new String[] {"DequControl"});
+        deviceChoice1.setChoiceItems(new String[] {"Eda1DacControl"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Control: ");
         deviceChoice1.setOffsetNid(12);
@@ -126,31 +110,20 @@ public class MARTE_DEQUSetup extends DeviceSetup {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jPanel3.setLayout(new java.awt.GridLayout(1, 2));
+        jPanel3.setLayout(new java.awt.GridLayout(1, 1));
 
         deviceTable3.setDisplayRowNumber(true);
         deviceTable3.setIdentifier("");
         deviceTable3.setLabelString("Mapping:");
         deviceTable3.setNumCols(1);
-        deviceTable3.setNumRows(128);
+        deviceTable3.setNumRows(20);
         deviceTable3.setOffsetNid(1339);
         deviceTable3.setPreferredColumnWidth(60);
         deviceTable3.setPreferredHeight(200);
         deviceTable3.setUseExpressions(true);
         jPanel3.add(deviceTable3);
 
-        deviceTable4.setBinary(true);
-        deviceTable4.setDisplayRowNumber(true);
-        deviceTable4.setIdentifier("");
-        deviceTable4.setLabelString("Autozero Mask");
-        deviceTable4.setNumCols(1);
-        deviceTable4.setNumRows(128);
-        deviceTable4.setOffsetNid(1345);
-        deviceTable4.setPreferredColumnWidth(4);
-        deviceTable4.setPreferredHeight(200);
-        jPanel3.add(deviceTable4);
-
-        jTabbedPane1.addTab("Mapping&Offset", jPanel3);
+        jTabbedPane1.addTab("Mapping", jPanel3);
 
         jPanel10.setLayout(new java.awt.BorderLayout());
 
@@ -158,12 +131,12 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         deviceTable1.setDisplayRowNumber(true);
         deviceTable1.setIdentifier("");
         deviceTable1.setNumCols(2);
-        deviceTable1.setNumRows(192);
-        deviceTable1.setOffsetNid(10);
+        deviceTable1.setNumRows(20);
+        deviceTable1.setOffsetNid(11);
         deviceTable1.setUseExpressions(true);
         jPanel10.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("In Calibration", jPanel10);
+        jTabbedPane1.addTab("Out Calibration", jPanel10);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -177,21 +150,17 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private DeviceField deviceField1;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
-    private DeviceField deviceField4;
-    private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable3;
-    private DeviceTable deviceTable4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;

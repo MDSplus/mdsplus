@@ -49,7 +49,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel3 = new javax.swing.JPanel();
         jPanel10 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
+        deviceField92 = new DeviceField();
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
         jTabbedPane2 = new javax.swing.JTabbedPane();
@@ -305,24 +305,18 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jPanel3.setLayout(new java.awt.BorderLayout());
 
-        deviceChoice2.setChoiceIntValues(new int[] {0, 1, 2, 3});
-        deviceChoice2.setChoiceItems(new String[] {"None", "Tokamak", "RFP 1", "RFP 2"});
-        deviceChoice2.setConvert(true);
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Control Type: ");
-        deviceChoice2.setOffsetNid(1339);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice2);
+        deviceField92.setIdentifier("");
+        deviceField92.setLabelString("Control: ");
+        deviceField92.setOffsetNid(1339);
+        jPanel10.add(deviceField92);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Kp: ");
-        deviceField9.setNumCols(4);
         deviceField9.setOffsetNid(1351);
         jPanel10.add(deviceField9);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("T End: ");
-        deviceField10.setNumCols(4);
         deviceField10.setOffsetNid(1357);
         jPanel10.add(deviceField10);
 
@@ -330,13 +324,11 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("T Start: ");
-        deviceField11.setNumCols(4);
         deviceField11.setOffsetNid(1363);
         jPanel11.add(deviceField11);
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("V Max:");
-        deviceField12.setNumCols(4);
         deviceField12.setOffsetNid(1369);
         jPanel11.add(deviceField12);
 
@@ -344,55 +336,46 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("IPStar:");
-        deviceField13.setNumCols(4);
         deviceField13.setOffsetNid(1375);
         jPanel12.add(deviceField13);
 
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("DeltaIpStar:");
-        deviceField14.setNumCols(4);
         deviceField14.setOffsetNid(1381);
         jPanel12.add(deviceField14);
 
         deviceField15.setIdentifier("");
         deviceField15.setLabelString("DeltaTRampDown:");
-        deviceField15.setNumCols(4);
         deviceField15.setOffsetNid(1387);
         jPanel12.add(deviceField15);
 
         deviceField16.setIdentifier("");
         deviceField16.setLabelString("POhmMax:");
-        deviceField16.setNumCols(4);
         deviceField16.setOffsetNid(1393);
         jPanel12.add(deviceField16);
 
         deviceField17.setIdentifier("");
         deviceField17.setLabelString("TauZ:");
-        deviceField17.setNumCols(4);
         deviceField17.setOffsetNid(1399);
         jPanel12.add(deviceField17);
 
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("TauP:");
-        deviceField18.setNumCols(4);
         deviceField18.setOffsetNid(1405);
         jPanel12.add(deviceField18);
 
         deviceField19.setIdentifier("");
         deviceField19.setLabelString("DeltaTBumpless:");
-        deviceField19.setNumCols(4);
         deviceField19.setOffsetNid(1411);
         jPanel12.add(deviceField19);
 
         deviceField20.setIdentifier("");
         deviceField20.setLabelString("VrtStar:");
-        deviceField20.setNumCols(4);
         deviceField20.setOffsetNid(1429);
         jPanel12.add(deviceField20);
 
         deviceField21.setIdentifier("");
         deviceField21.setLabelString("PCATMaxOnTime: ");
-        deviceField21.setNumCols(4);
         deviceField21.setOffsetNid(1435);
         jPanel12.add(deviceField21);
 
@@ -1128,7 +1111,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
@@ -1221,6 +1203,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField9;
     private DeviceField deviceField90;
     private DeviceField deviceField91;
+    private DeviceField deviceField92;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
     private javax.swing.JPanel jPanel1;

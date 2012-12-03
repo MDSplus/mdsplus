@@ -11,7 +11,6 @@ RMIC = @RMIC@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 DEVICES = ParameterSetting.java \
-ParameterSettingOld.java\
 DIO4Setup.java\
 TRCHSetup.java\
 ADC265Setup.java\
@@ -124,24 +123,10 @@ FEMTOSetup.java\
 CAENDT5720Setup.java\
 RFXVConfigSetup.java\
 MARTESetup.java\
-MARTE_MHD_BRSetup.java\
-MARTE_MHD_CTRLSetup.java\
-MARTE_MHD_ISetup.java\
-MARTE_MHD_AC_BCSetup.java\
-MARTE_MHD_BTSetup.java\
-MARTE_DEQUSetup.java\
-MARTE_EDA1Setup.java\
-MARTE_WAVEGENSetup.java\
-MARTE_BREAKDOWNSetup.java\
 LASER_YAGSetup.java\
 SPIDER_SMSetup.java\
-SPIDERSetup.java\
 ZELOS2150GVSetup.java\
-NI6259AISetup.java\
-FAKECAMERASetup.java\
-AWG2021Setup.java\
-RFXWAVESETUPSetup.java\
-FLIRSC65XSetup.java
+NI6259AISetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar

@@ -11,7 +11,7 @@
 
 /**
  *
- * @author F.Molon
+ * @author manduchi
  */
 public class ZELOS2150GVSetup extends DeviceSetup {
 

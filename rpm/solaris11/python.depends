@@ -1,4 +1,0 @@
-P mdsplus<PKGFLAVOR>-kernel mdsplus<PKGFLAVOR>-kernel
-P python-extra-26 library/python-2/python-extra-26
-P python-26 /runtime/python-26
-P setuptools-26 library/python-2/setuptools-26

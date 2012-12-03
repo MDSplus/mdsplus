@@ -34,16 +34,6 @@ L5613Setup.java\
 L6810Setup.java\
 LASER_NDSetup.java\
 LASER_RUSetup.java\
-MARTESetup.java\
-MARTE_MHD_BRSetup.java\
-MARTE_MHD_CTRLSetup.java\
-MARTE_MHD_ISetup.java\
-MARTE_MHD_BTSetup.java\
-MARTE_MHD_AC_BCSetup.java\
-MARTE_DEQUSetup.java\
-MARTE_EDA1Setup.java\
-MARTE_WAVEGENSetup.java\
-MARTE_BREAKDOWNSetup.java\
 MCUSetup.java\
 MHD_BR_TESTSetup.java\
 MPBDecoderSetup.java\
@@ -80,8 +70,6 @@ RFXVIConfigSetup.java\
 RFXVISetupSetup.java\
 ST133Setup.java\
 SXCSetup.java\
-SPIDERSetup.java\
-SPIDER_SMSetup.java\
 T2ControlSetup.java\
 TOMOSetupSetup.java\
 TR10Setup.java\

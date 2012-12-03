@@ -1,2 +1,0 @@
-#!/bin/bash
-easy_install /usr/local/mdsplus/mdsobjects/python/dist/*.egg

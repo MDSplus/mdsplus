@@ -392,8 +392,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 01"));
         jPanel21.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice48.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice48.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice48.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice48.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice48.setIdentifier("");
         deviceChoice48.setLabelString("Scale (V/div):");
         deviceChoice48.setOffsetNid(44);
@@ -405,8 +405,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 02"));
         jPanel22.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice52.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice52.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice52.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice52.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice52.setIdentifier("");
         deviceChoice52.setLabelString("Scale (V/div):");
         deviceChoice52.setOffsetNid(47);
@@ -418,8 +418,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 03"));
         jPanel23.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice56.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice56.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice56.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice56.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice56.setIdentifier("");
         deviceChoice56.setLabelString("Scale (V/div):");
         deviceChoice56.setOffsetNid(50);
@@ -431,8 +431,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 04"));
         jPanel24.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice60.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice60.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice60.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice60.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice60.setIdentifier("");
         deviceChoice60.setLabelString("Scale (V/div):");
         deviceChoice60.setOffsetNid(53);
@@ -478,8 +478,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 01"));
         jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice21.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice21.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice21.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice21.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Scale (V/div):");
         deviceChoice21.setOffsetNid(62);
@@ -491,8 +491,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 02"));
         jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice24.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice24.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice24.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice24.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Scale (V/div):");
         deviceChoice24.setOffsetNid(65);
@@ -504,8 +504,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 03"));
         jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice27.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice27.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice27.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice27.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("Scale (V/div):");
         deviceChoice27.setOffsetNid(68);
@@ -517,8 +517,8 @@ public class DPO7054Setup extends DeviceSetup {
         jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("CH 04"));
         jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 0, 0));
 
-        deviceChoice30.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05,(float)0.01,(float)0.0050,(float)0.0040,(float)0.0030,(float)0.0020,(float)0.0010});
-        deviceChoice30.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05", ".01", ".005", ".004", ".003", ".002", ".001"});
+        deviceChoice30.setChoiceFloatValues(new float[] {(float)10.0,(float)5.0,(float)2.0,(float)1.0,(float)0.5,(float)0.2,(float)0.1,(float)0.05});
+        deviceChoice30.setChoiceItems(new String[] {"10", "5", "2", "1", ".5", ".2", ".1", ".05"});
         deviceChoice30.setIdentifier("");
         deviceChoice30.setLabelString("Scale (V/div):");
         deviceChoice30.setOffsetNid(71);
