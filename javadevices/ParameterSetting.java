@@ -1807,8 +1807,10 @@ public class ParameterSetting
         try
         {
             nids[0] = timesRoot = rfx.resolve(new PathData("\\RFX_TIMES"), 0);
+//            nids[1] = poloidalControlRoot = rfx.resolve(new PathData(
+//                "\\EDA1::CONTROL"), 0);
             nids[1] = poloidalControlRoot = rfx.resolve(new PathData(
-                "\\EDA1::CONTROL"), 0);
+                "\\EDA1::MARTE"), 0);
             nids[2] = axiSetupRoot = rfx.resolve(new PathData("\\AXI_CONTROL"),
                                                  0);
             nids[3] = pcSetupRoot = rfx.resolve(new PathData("\\PC_SETUP"), 0);
