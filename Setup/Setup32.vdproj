@@ -27,12 +27,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_005C3F93522E481EB75D923091E8F9EB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_006ECB845CF24435BDCB434783A8BC05"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -136,12 +130,6 @@
         "Entry"
         {
         "MsmKey" = "8:_040E76C4E68548079B52EB305BBF9C81"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_0463E3FC031D477990ED5A380EBE7642"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -478,12 +466,6 @@
         "Entry"
         {
         "MsmKey" = "8:_10AD4F75548342958B910352CC574769"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_116E53ED0D7A486B9108C01276FDB118"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -999,12 +981,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_206375B3753C44FBB30F1485AAE2CA5E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_20694C28A4BE4CE09102B4A4BC0F34E1"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -1408,12 +1384,6 @@
         "Entry"
         {
         "MsmKey" = "8:_2C22CE70D9FE4743A1902423B26B6E3B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_2C7DEC57CBD8497B93F0C3813B796396"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -1875,19 +1845,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_39C913BEFF3447B8ADBDCB70F60822FB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_3A04C8B1310945369372AF7BE64BFC86"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3A3E655B8BD64B668297650BF4556D79"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -2415,6 +2373,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_4B16A7F8CF2C4F73B21BCEF6219FDE75"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_4B4A3F27320C4D859B053F01DC31C2CB"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2799,12 +2763,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_54E83B1F4B024509A6280EDA828FE848"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_54F7EBE134154B19B8D88A174E4985F6"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -2914,6 +2872,12 @@
         "Entry"
         {
         "MsmKey" = "8:_59AEF5EC61CA416590177D32E4392C57"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_59BB1F4D1B9241A995223F9B702F8A78"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3387,12 +3351,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_6B3CF7D2BF6D4A6C9EE437834A4CDE4A"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_6B5471444CA24C4192D6B976302D8B49"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -3466,12 +3424,6 @@
         "Entry"
         {
         "MsmKey" = "8:_6CD782C7018E47D28D1A8D0D99A20262"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6D1D94C866064D53BA2379D7EC2F9436"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -3736,12 +3688,6 @@
         "Entry"
         {
         "MsmKey" = "8:_749FC114E9854DC18FE7E8A6133C5200"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_74B41BECBA53483E91FF96A51D772AA4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4023,7 +3969,19 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_7BA51B8CDB8B4503BFC05499F78E984E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_7BF75BB7610E4B2DB8E5EACE9D4EDA71"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_7C679BB5CA894B73B5B754FDBA210111"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4222,12 +4180,6 @@
         "Entry"
         {
         "MsmKey" = "8:_83E6C0108E6C466B858DF8F1863F1CFD"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_8465E1CBDA5B4A438FA0020D71945EA4"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -4665,6 +4617,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_8F989A5C9B9A46F7BA4C9ED280E80C3E"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_9061285CD98041BC94D99AF7AA245D58"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -4870,12 +4828,6 @@
         "Entry"
         {
         "MsmKey" = "8:_96BB7E3F98EA4EFCB87DB93EE37B4554"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_96E39DF2139948288B04CAF4E4907552"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5265,12 +5217,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A0D790F6877E45388A74DC96F42FC498"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A0D9213755E54AE2860BCB00EB7A4A14"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -5313,19 +5259,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A24F46989DB844728A4C5CFD63171A90"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A25A8266BF14437AB4C59D7A179E8ADC"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A2B1DA31A4DB4CBF88F802A509318059"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5577,12 +5511,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_A785CB057BDE4A8DADE555358F953739"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_A7B4AF3546B742968B9AD85998203971"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -5608,12 +5536,6 @@
         "Entry"
         {
         "MsmKey" = "8:_A7EA2B254F384D59812B5CDDC2CB8440"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_A86259B981B841049D4E1F94B3C34E67"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -5806,12 +5728,6 @@
         "Entry"
         {
         "MsmKey" = "8:_AD4BEEE32D5246F4B2D1A1F103579CA1"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_AD874D1D75384168BFC58BEA4B73520E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -6987,12 +6903,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_D15D0A7E3F45420B825A218341668F9E"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_D18B9A430F024CAD9307DB7372C79D0E"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -7305,12 +7215,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_DA555D85934D4BBBBF2260844146F7C9"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_DA5D33A6D5914DA3B7F663A72FD3D391"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -7396,12 +7300,6 @@
         "Entry"
         {
         "MsmKey" = "8:_DD2D617CC4184F7F986A19B2B4BCF0C9"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_DD35BDBA03FC4D039EA40555527D8112"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -8415,12 +8313,6 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_FAF2D3A800F64EFEB11B47D61C98226B"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_FB8B84C7E7474199A99413161AAA006D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -8440,6 +8332,12 @@
         "Entry"
         {
         "MsmKey" = "8:_FBFF74485AF9406D9EA21685359DAF73"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FC14C7A3E47B468F935247DF78A5505C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -8494,12 +8392,6 @@
         "Entry"
         {
         "MsmKey" = "8:_FD59043CF77C4850A0071F5B586C60AB"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_FD61D5E0DFA1463DB2E62C42C4FD8F27"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -8739,26 +8631,6 @@
             "TargetName" = "8:TreePutRecord.fun"
             "Tag" = "8:"
             "Folder" = "8:_128CC173632D4448865B35A7273D93B7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_005C3F93522E481EB75D923091E8F9EB"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\String Test.vi"
-            "TargetName" = "8:String Test.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -9099,26 +8971,6 @@
             "TargetName" = "8:Set Delta Val.vi"
             "Tag" = "8:"
             "Folder" = "8:_BBA07B1E2E4A4F90A5B9747B661A7D28"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0463E3FC031D477990ED5A380EBE7642"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Get Long.vi"
-            "TargetName" = "8:Get Long.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -10221,26 +10073,6 @@
             "Folder" = "8:_BDBBDC473F014D219DAEC3E5C5CF871F"
             "Condition" = "8:INCLUDE_IDL"
             "Transitive" = "11:TRUE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_116E53ED0D7A486B9108C01276FDB118"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\Dynamic Dispatching.vi"
-            "TargetName" = "8:Dynamic Dispatching.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
@@ -11913,26 +11745,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_206375B3753C44FBB30F1485AAE2CA5E"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\PutRow Example.vi"
-            "TargetName" = "8:PutRow Example.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_20694C28A4BE4CE09102B4A4BC0F34E1"
             {
             "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Library\\Data\\Scalar\\Int32\\Int32 Create.vi"
@@ -13259,26 +13071,6 @@
             "TargetName" = "8:chs_a14__part_name.fun"
             "Tag" = "8:"
             "Folder" = "8:_CC21950F1ED6461490F1FCAE51F125C7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_2C7DEC57CBD8497B93F0C3813B796396"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\DVR test.vi"
-            "TargetName" = "8:DVR test.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -14753,52 +14545,12 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_39C913BEFF3447B8ADBDCB70F60822FB"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Int32.lvclass"
-            "TargetName" = "8:Int32.lvclass"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A04C8B1310945369372AF7BE64BFC86"
             {
             "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Library\\Data\\TreeNode\\TreeNode Get Data.vi"
             "TargetName" = "8:TreeNode Get Data.vi"
             "Tag" = "8:"
             "Folder" = "8:_D008F848AC7A43BEB8517AEBBCB5EE80"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_3A3E655B8BD64B668297650BF4556D79"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\WaitEventData Examplevi.vi"
-            "TargetName" = "8:WaitEventData Examplevi.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -16493,6 +16245,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B16A7F8CF2C4F73B21BCEF6219FDE75"
+            {
+            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\PutGetTreeNodeExample.vi"
+            "TargetName" = "8:PutGetTreeNodeExample.vi"
+            "Tag" = "8:"
+            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_4B4A3F27320C4D859B053F01DC31C2CB"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\b5910a$chan.fun"
@@ -17713,26 +17485,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_54E83B1F4B024509A6280EDA828FE848"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\By Value Behaviour.vi"
-            "TargetName" = "8:By Value Behaviour.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_54F7EBE134154B19B8D88A174E4985F6"
             {
             "SourcePath" = "8:..\\idl\\PreIDL52\\lon64arr.pro"
@@ -18079,6 +17831,26 @@
             "TargetName" = "8:Uint64Array Create.vi"
             "Tag" = "8:"
             "Folder" = "8:_7D4AE895E5244751BAE25659467D86C7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_59BB1F4D1B9241A995223F9B702F8A78"
+            {
+            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\WaitEventDataExamplevi.vi"
+            "TargetName" = "8:WaitEventDataExamplevi.vi"
+            "Tag" = "8:"
+            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -19613,26 +19385,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6B3CF7D2BF6D4A6C9EE437834A4CDE4A"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\CompileDecompile.vi"
-            "TargetName" = "8:CompileDecompile.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6B5471444CA24C4192D6B976302D8B49"
             {
             "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Library\\Tree\\Tree Is Open For Edit.vi"
@@ -19859,26 +19611,6 @@
             "TargetName" = "8:Create.vi"
             "Tag" = "8:"
             "Folder" = "8:_609311F48A674809975902B2B91862B7"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_6D1D94C866064D53BA2379D7EC2F9436"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Get Double.vi"
-            "TargetName" = "8:Get Double.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -20753,26 +20485,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_74B41BECBA53483E91FF96A51D772AA4"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Delete Int32 DVR.vi"
-            "TargetName" = "8:Delete Int32 DVR.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_74C4CA84177644F8906141B1D0DF3EC5"
             {
             "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Library\\Data\\Array\\Array Destroy.vi"
@@ -21633,12 +21345,52 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7BA51B8CDB8B4503BFC05499F78E984E"
+            {
+            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\MakeSegmentExample.vi"
+            "TargetName" = "8:MakeSegmentExample.vi"
+            "Tag" = "8:"
+            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7BF75BB7610E4B2DB8E5EACE9D4EDA71"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\Dt200GetVoltOffset.fun"
             "TargetName" = "8:Dt200GetVoltOffset.fun"
             "Tag" = "8:"
             "Folder" = "8:_CC21950F1ED6461490F1FCAE51F125C7"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_7C679BB5CA894B73B5B754FDBA210111"
+            {
+            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\CompileDecompile.vi"
+            "TargetName" = "8:CompileDecompile.vi"
+            "Tag" = "8:"
+            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -22299,26 +22051,6 @@
             "TargetName" = "8:ptdata2.fun"
             "Tag" = "8:"
             "Folder" = "8:_09CFB24C83744E2F82354DC27AE216C5"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8465E1CBDA5B4A438FA0020D71945EA4"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\MakeSegment Example.vi"
-            "TargetName" = "8:MakeSegment Example.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -23773,6 +23505,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8F989A5C9B9A46F7BA4C9ED280E80C3E"
+            {
+            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\PutGetTreeNodeExpressionExample.vi"
+            "TargetName" = "8:PutGetTreeNodeExpressionExample.vi"
+            "Tag" = "8:"
+            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_9061285CD98041BC94D99AF7AA245D58"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\TR10_GetActPostSamples.fun"
@@ -24419,26 +24171,6 @@
             "TargetName" = "8:step_resample.fun"
             "Tag" = "8:"
             "Folder" = "8:_38BDB0DD0EDB41A4B24922615849C282"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_96E39DF2139948288B04CAF4E4907552"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Get Short.vi"
-            "TargetName" = "8:Get Short.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -25713,26 +25445,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A0D790F6877E45388A74DC96F42FC498"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Get Byte.vi"
-            "TargetName" = "8:Get Byte.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A0D9213755E54AE2860BCB00EB7A4A14"
             {
             "SourcePath" = "8:..\\tdi\\MitDevices\\job_que.fun"
@@ -25873,26 +25585,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A24F46989DB844728A4C5CFD63171A90"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Get Float.vi"
-            "TargetName" = "8:Get Float.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A25A8266BF14437AB4C59D7A179E8ADC"
             {
             "SourcePath" = "8:..\\LabView\\MdsGetSingle1D.vi"
@@ -25901,26 +25593,6 @@
             "Folder" = "8:_61D925DB7136434B886FC0E51F2ACA93"
             "Condition" = "8:INCLUDE_LABVIEW"
             "Transitive" = "11:TRUE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A2B1DA31A4DB4CBF88F802A509318059"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\Demo (Reference).vi"
-            "TargetName" = "8:Demo (Reference).vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
@@ -26753,26 +26425,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A785CB057BDE4A8DADE555358F953739"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\Test Array.vi"
-            "TargetName" = "8:Test Array.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A7B4AF3546B742968B9AD85998203971"
             {
             "SourcePath" = "8:..\\tdi\\RfxDevices\\Amplitude_M2.fun"
@@ -26839,26 +26491,6 @@
             "TargetName" = "8:remove_run_string.fun"
             "Tag" = "8:"
             "Folder" = "8:_6B0027B98BB34E03ACB4D6B67AE987D6"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_A86259B981B841049D4E1F94B3C34E67"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\New Int32 DVR.vi"
-            "TargetName" = "8:New Int32 DVR.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -27481,26 +27113,6 @@
             "Folder" = "8:_F5B7E037D5614EE3B12809035AA8B85C"
             "Condition" = "8:INCLUDE_MATLAB"
             "Transitive" = "11:TRUE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD874D1D75384168BFC58BEA4B73520E"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\PutGetTreeNode Example.vi"
-            "TargetName" = "8:PutGetTreeNode Example.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
             "ReadOnly" = "11:FALSE"
             "Hidden" = "11:FALSE"
@@ -31293,26 +30905,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D15D0A7E3F45420B825A218341668F9E"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Create.vi"
-            "TargetName" = "8:Create.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D18B9A430F024CAD9307DB7372C79D0E"
             {
             "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Int8_Class\\New Int8 DVR.vi"
@@ -32273,26 +31865,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DA555D85934D4BBBBF2260844146F7C9"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\PutGetTreeNodeExpression Example.vi"
-            "TargetName" = "8:PutGetTreeNodeExpression Example.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DA5D33A6D5914DA3B7F663A72FD3D391"
             {
             "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Library\\Data\\Scalar\\Int64\\Int64 Get Long.vi"
@@ -32579,26 +32151,6 @@
             "TargetName" = "8:TreeFileName.fun"
             "Tag" = "8:"
             "Folder" = "8:_38BDB0DD0EDB41A4B24922615849C282"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_DD35BDBA03FC4D039EA40555527D8112"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Get Int.vi"
-            "TargetName" = "8:Get Int.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -35853,26 +35405,6 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FAF2D3A800F64EFEB11B47D61C98226B"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\StringArray Test.vi"
-            "TargetName" = "8:StringArray Test.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FB8B84C7E7474199A99413161AAA006D"
             {
             "SourcePath" = "8:..\\tdi\\KbsiDevices\\E1429__init.fun"
@@ -35939,6 +35471,26 @@
             "TargetName" = "8:Get Long.vi"
             "Tag" = "8:"
             "Folder" = "8:_7261CCA25A22407B84D279513A3EFB57"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FC14C7A3E47B468F935247DF78A5505C"
+            {
+            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Sample VIs\\PutRowExample.vi"
+            "TargetName" = "8:PutRowExample.vi"
+            "Tag" = "8:"
+            "Folder" = "8:_E059AAA50631431D8B86B89DFBEE5B3B"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -36099,26 +35651,6 @@
             "TargetName" = "8:AAGain.fun"
             "Tag" = "8:"
             "Folder" = "8:_88B5AA2464C84040A6971D51E77E198C"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FD61D5E0DFA1463DB2E62C42C4FD8F27"
-            {
-            "SourcePath" = "8:..\\mdsobjects\\labview\\MDSplus\\Classes\\Data_Class\\Scalar_Class\\Copy of Int32_Class\\Destroy.vi"
-            "TargetName" = "8:Destroy.vi"
-            "Tag" = "8:"
-            "Folder" = "8:_4EAAC4FDB8F24B47988926A05FC64D79"
             "Condition" = "8:"
             "Transitive" = "11:FALSE"
             "Vital" = "11:TRUE"
@@ -37316,17 +36848,6 @@
                                                                     "Condition" = "8:"
                                                                     "Transitive" = "11:FALSE"
                                                                     "Property" = "8:_DCE9BCA3B35948C6ACA61AF704D5DD16"
-                                                                        "Folders"
-                                                                        {
-                                                                        }
-                                                                    }
-                                                                    "{9EF0B969-E518-4E46-987F-47570745A589}:_4EAAC4FDB8F24B47988926A05FC64D79"
-                                                                    {
-                                                                    "Name" = "8:Copy of Int32_Class"
-                                                                    "AlwaysCreate" = "11:FALSE"
-                                                                    "Condition" = "8:"
-                                                                    "Transitive" = "11:FALSE"
-                                                                    "Property" = "8:_101E7EEA3E0F4891B4FF5A06B497B3E1"
                                                                         "Folders"
                                                                         {
                                                                         }
@@ -39890,7 +39411,7 @@
             }
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_E4CD3FAD1AD84BAE8692829C4C15C268"
             {
-            "SourcePath" = "8:..\\java\\classes\\MDSplus.jar"
+            "SourcePath" = "8:..\\java\\classes\\jDispatcher.jar"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_4CCC903E933D485DB9B3ED6AF0CC9B1F"
