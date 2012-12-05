@@ -103,6 +103,7 @@ OctaData.java\
 ParameterData.java\
 ParameterEditor.java\
 PathData.java\
+PythonEditor.java\
 ProcedureData.java\
 ProcedureEditor.java\
 ProgramData.java\

@@ -76,6 +76,10 @@ public abstract class Data implements Serializable
     {
 	throw new IllegalDataException("Conversion to String not supported", this);
     }
+    public String []getStringArray() throws IllegalDataException
+    {
+	throw new IllegalDataException("Conversion to String array not supported", this);
+    }
     abstract boolean isAtomic();
 
 

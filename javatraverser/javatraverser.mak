@@ -140,6 +140,7 @@ NodeModifyData.java\
 NodePropertyEditor.java\
 OctaArray.java\
 ParameterEditor.java\
+PythonEditor.java\
 ProcedureEditor.java\
 ProgramEditor.java\
 QuadArray.java\
