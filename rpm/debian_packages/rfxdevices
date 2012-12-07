@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---rfxdevices
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---kernel,mdsplus--FLAVOR---java
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: MDSplus support for data acquisition devices used at the RFX experiment in Padova, Italy.
