@@ -10,7 +10,7 @@ CFLAGS=@CFLAGS@ @LV_INC@ -fPIC
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@ @LV_INC@
 LDFLAGS=@LDFLAGS@
 CLIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr -lLV @LIBS@ 
+CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr -lMdsObjectsCppShr -lLV @LIBS@ 
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CSOURCES = lv.c
