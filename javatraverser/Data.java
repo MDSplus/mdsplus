@@ -95,6 +95,7 @@ public abstract class Data implements Serializable
     public static final int DTYPE_O = 26;
     public static final int DTYPE_FLOAT = 52;
     public static final int DTYPE_DOUBLE = 53;
+    public static final int DTYPE_FTC = 55;
     public static final int DTYPE_T = 14;
     public static final int DTYPE_IDENT = 191;
     public static final int DTYPE_NID = 192;

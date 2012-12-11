@@ -8,6 +8,7 @@ ArrayData.java\
 AtomicData.java\
 ByteData.java\
 CallData.java\
+ComplexData.java\
 CompoundData.java\
 ConditionData.java\
 ConglomData.java\
