@@ -179,7 +179,6 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
         case DTYPE_FS :
         case DTYPE_F:
-		case DTYPE_FSC:
 			cls = (*env)->FindClass(env, "FloatData");
 		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(FI)LData;");
 		  if(desc->dtype != DTYPE_FS)
@@ -188,16 +187,31 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 			args[0].f = *(float *)desc->pointer;
 		  args[1].i = desc->dtype;
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-		case DTYPE_FTC:
-		case DTYPE_FT:
 		case DTYPE_D :
 		case DTYPE_G :
+		case DTYPE_FT:
 		  cls = (*env)->FindClass(env, "DoubleData");
 		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(DI)LData;");
 		  CvtConvertFloat(desc->pointer, desc->dtype, &args[0].d, DTYPE_DOUBLE, 0);
 		  args[0].d = *(double *)desc->pointer;
 		  args[1].i = desc->dtype;
 		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		case DTYPE_FTC:
+		  cls = (*env)->FindClass(env, "ComplexData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(DDI)LData;");
+		  args[0].d = ((double *)desc->pointer)[0];
+		  args[1].d = ((double *)desc->pointer)[1];
+		  args[2].i = desc->dtype;
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+		case DTYPE_FSC:
+		  cls = (*env)->FindClass(env, "ComplexData");
+		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(DDI)LData;");
+		  args[0].d = ((float *)desc->pointer)[0];
+		  args[1].d = ((float *)desc->pointer)[1];
+		  args[2].i = desc->dtype;
+		  printf("DESCRIPTOR TO OBJECT: Re: %f Im %f\n", args[0].d, args[1].d);
+		  return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+
         case DTYPE_T :
 		  cls = (*env)->FindClass(env, "StringData");
 		  constr = (*env)->GetStaticMethodID(env, cls, "getData", "(Ljava/lang/String;)LData;");
@@ -322,10 +336,9 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 				args[1].z = is_unsigned;
 				if(is_ca) MdsFree1Dx(&ca_xd, 0);
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-
 	        case DTYPE_FS :
+	        case DTYPE_FSC :
 			case DTYPE_F:
-			case DTYPE_FSC:
 				float_buf = malloc(sizeof(float) * length);
 				if(array_d->dtype == DTYPE_FS)
 					memcpy(float_buf, array_d->pointer, sizeof(float) * length);
@@ -505,6 +518,8 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
     jclass cls;
     jfieldID
       datum_fid,
+      re_fid,
+      im_fid,
       descs_fid,
       opcode_fid,
       dtype_fid,
@@ -630,6 +645,16 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 				flags_fid = (*env)->GetFieldID(env, cls, "flags", "I");
 				desc->dtype = (unsigned char)(*env)->GetIntField(env, obj, flags_fid);
 				CvtConvertFloat(desc->pointer, DTYPE_DOUBLE, desc->pointer, desc->dtype, 0);
+			    return desc;
+		  case DTYPE_FTC:
+			    re_fid = (*env)->GetFieldID(env, cls, "re", "D");
+			    im_fid = (*env)->GetFieldID(env, cls, "im", "D");
+			    desc->length = 2 * sizeof(double);
+			    desc->pointer = (char *)malloc(desc->length);
+				((double *)desc->pointer)[0] = (*env)->GetDoubleField(env, obj, re_fid);
+				((double *)desc->pointer)[1] = (*env)->GetDoubleField(env, obj, im_fid);
+				flags_fid = (*env)->GetFieldID(env, cls, "flags", "I");
+				desc->dtype = DTYPE_FTC;
 			    return desc;
 		default:
 		  printf("\nUnsupported type for CLASS_S: %d\n", dtype);
