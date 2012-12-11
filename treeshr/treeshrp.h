@@ -89,7 +89,7 @@ typedef struct extended_attributes {
 #define NAMED_ATTRIBUTES_FACILITY 2
 
 typedef struct segment_header {
-  char     dtype;
+  unsigned char     dtype;
   char     dimct;
   int      dims[8];
   short    length;

@@ -63,6 +63,8 @@ class Compound(Data):
             return 0
         if name == 'opcode':
             return self._opcode
+        if name == 'dtype':
+            return self._dtype
         if name == self._opcode_name:
             return self._opcode
         if name in self._fields:

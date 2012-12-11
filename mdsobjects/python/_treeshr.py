@@ -85,6 +85,9 @@ __TreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.PO
 __TreeMakeSegment=__TreeShr._TreeMakeSegment
 __TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
                             _C.POINTER(descriptor_a),_C.c_int32,_C.c_int32]
+__TreeMakeSegmentOpq=__TreeShr._TreeMakeSegment
+__TreeMakeSegmentOpq.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
+                            _C.POINTER(descriptor),_C.c_int32,_C.c_int32]
 __TreeBeginTimestampedSegment=__TreeShr._TreeBeginTimestampedSegment
 __TreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor_a),_C.c_int32]
 __TreeMakeTimestampedSegment=__TreeShr._TreeMakeTimestampedSegment
@@ -580,10 +583,16 @@ def TreeBeginTimestampedSegment(n,value,idx):
 
 def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
     try:
+        from compound import Compound
         n.tree.lock()
-        status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
-                                 _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx,
-                                 initialValue.shape[0])
+        if isinstance(initialValue,Compound):
+            status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
+                                     _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),idx,
+                                     1)
+        else:
+            status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
+                                     _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx,
+                                     initialValue.shape[0])
     finally:
         n.tree.unlock()
     if (status & 1):

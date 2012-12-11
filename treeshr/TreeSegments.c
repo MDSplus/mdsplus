@@ -33,7 +33,6 @@ int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
 		     struct descriptor_a *initialValue, int idx) {
   return  _TreeBeginSegment(*TreeCtx(), nid, start, end, dimension, initialValue, idx);
 }
-
 int _TreeMakeSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
 		      struct descriptor *dimension,
 		      struct descriptor_a *initialValue, int idx, int rows_filled) {
@@ -78,7 +77,10 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
 
   while (initialValue && initialValue->dtype == DTYPE_DSC)
     initialValue = (struct descriptor_a *)initialValue->pointer;
-  if (initialValue == NULL || initialValue->class != CLASS_A || initialValue->dimct < 1 || initialValue->dimct > 8)
+  if (initialValue == NULL || 
+      !((initialValue->class == CLASS_R && initialValue->dtype == DTYPE_OPAQUE) || 
+        (initialValue->class == CLASS_A && (initialValue->dimct > 0 || initialValue->dimct <= 8)))
+      )
     return TreeINVDTPUSG;
   if (dblist->remote) {
     printf("Segmented records are not supported using thick client mode\n");
@@ -146,8 +148,10 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
       segment_header.index_offset=-1;
       segment_header.idx = -1;
       update_attributes=1;
-    } else if (initialValue->dtype != segment_header.dtype || initialValue->dimct != segment_header.dimct ||
-	       (initialValue->dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(initialValue->dimct-1)*sizeof(int)) != 0)) {
+    } else if (initialValue->dtype != segment_header.dtype || 
+	       (initialValue->class == CLASS_A && 
+		(initialValue->dimct != segment_header.dimct ||
+		 (initialValue->dimct > 1 && memcmp(segment_header.dims,a_coeff->m,(initialValue->dimct-1)*sizeof(int)) != 0)))) {
       TreeUnLockNci(info_ptr,0,nidx);
       return TreeFAILURE;
     }
@@ -163,7 +167,7 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
     if (idx == -1) {
       segment_header.idx++;
       idx=segment_header.idx;
-      add_length=initialValue->arsize;
+      add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0;
     } else if (idx < -1 || idx > segment_header.idx) {
       TreeUnLockNci(info_ptr,0,nidx);
       return TreeBUFFEROVF;
@@ -179,17 +183,20 @@ old array is same size.
     segment_header.data_offset=-1;
     segment_header.dim_offset=-1;
     segment_header.dtype=initialValue->dtype;
-    segment_header.dimct=initialValue->dimct;
-    segment_header.length=initialValue->length;
-    if (segment_header.idx > 0) {
+    segment_header.dimct=(initialValue->class == CLASS_A) ? initialValue->dimct : 0;
+    segment_header.length=(initialValue->class == CLASS_A) ? initialValue->length : 0;
+    previous_length = -1;
+    if (segment_header.idx > 0 && segment_header.length != 0) {
       previous_length=segment_header.length;
       for (d=0;d<segment_header.dimct;d++)
 	previous_length *= segment_header.dims[d];
     }
-    if (initialValue->dimct == 1)
-      segment_header.dims[0]=initialValue->arsize/initialValue->length;
-    else {
-      memcpy(segment_header.dims,a_coeff->m,initialValue->dimct*sizeof(int));
+    if (initialValue->class == CLASS_A) {
+      if (initialValue->dimct == 1)
+        segment_header.dims[0]=initialValue->arsize/initialValue->length;
+      else {
+        memcpy(segment_header.dims,a_coeff->m,initialValue->dimct*sizeof(int));
+      }
     }
     //    rows_filled=(rows_filled < 0) ? 0 : 
     //  ((rows_filled > segment_header.dims[initialValue->dimct]) ? segment_header.dims[initialValue->dimct] : rows_filled);
@@ -215,7 +222,6 @@ old array is same size.
       MdsFree1Dx(&xd_data,0);
       MdsFree1Dx(&xd_dim,0);
     }
-    status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
     if (idx >= segment_index.first_idx+SEGMENTS_PER_INDEX) {
       memset(&segment_index,-1,sizeof(segment_index));
       segment_index.previous_offset=segment_header.index_offset;
@@ -223,6 +229,13 @@ old array is same size.
       segment_index.first_idx=idx;
     }
     sinfo=&segment_index.segment[idx % SEGMENTS_PER_INDEX];
+    if (initialValue->dtype == DTYPE_OPAQUE) {
+      int length;
+      status = TreePutDsc(info_ptr,nid,(struct descriptor *)initialValue,&sinfo->data_offset,&length);
+      segment_header.data_offset=sinfo->data_offset;
+      sinfo->rows = length | 0x80000000;
+    } else
+      status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
     for (dsc=start;dsc != 0 && dsc->pointer != 0 && dsc->dtype == DTYPE_DSC;dsc=(struct descriptor *)dsc->pointer);
     if (dsc != 0 && dsc->pointer != 0 && (dsc->dtype == DTYPE_Q || dsc->dtype == DTYPE_QU)) {
       sinfo->start=*(_int64 *)dsc->pointer;
@@ -246,8 +259,10 @@ old array is same size.
     if (dimension != 0) {
       status = TreePutDsc(info_ptr,nid,dimension,&sinfo->dimension_offset,&sinfo->dimension_length);
     }
-    sinfo->data_offset=segment_header.data_offset;
-    sinfo->rows=segment_header.dims[segment_header.dimct-1];
+    if (initialValue->dtype != DTYPE_OPAQUE) {
+      sinfo->data_offset=segment_header.data_offset;
+      sinfo->rows=segment_header.dims[segment_header.dimct-1];
+    }
     status = PutSegmentIndex(info_ptr,&segment_index,&segment_header.index_offset);
     status = PutSegmentHeader(info_ptr,&segment_header,&attributes.facility_offset[SEGMENTED_RECORD_FACILITY]);
     if (update_attributes) {
