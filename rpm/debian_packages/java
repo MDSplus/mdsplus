@@ -1,0 +1,8 @@
+Package: mdsplus--FLAVOR---java
+Version: --VERSION--.--RELEASE--
+Section: admin
+Priority: optional
+Architecture: --ARCH--
+Depends: mdsplus--FLAVOR---kernel,openjdk-7-jdk
+Maintainer: Tom Fredian <twf@www.mdsplus.org>
+Description: MDSplus java classes and java based utilities such as jScope and jTraverser.
