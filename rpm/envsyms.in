@@ -1,3 +1,13 @@
+#
+# DO NOT MODIFY THIS FILE
+#
+# To add site customization use a separate configuration
+# file which is included below such as:
+#
+# $MDSPLUS_DIR/local/envsyms
+# /etc/mdsplus.conf
+# $HOME/.mdsplus
+#
 MDS_PATH	$MDSPLUS_DIR/tdi
 MATLABPATH      $MDSPLUS_DIR/matlab <:
 UIDPATH		$MDSPLUS_DIR/uid/%U <:
@@ -9,6 +19,16 @@ MDS_LIB_PS	$MDSPLUS_DIR/lib/dwscope_setup.ps
 @LIBPATH@       $MDSPLUS_DIR/lib >:
 MDSMSG_PATH     $MDSPLUS_DIR/lib >;
 UDP_EVENTS      yes
+# Define mdsevent_address as compat when using UDP_EVENTS for compatibility with older releases.
+# The old default addresses used reserved address space which are not forwarded by modern switches.
+#    mdsevent_address compat
+#
+# The default address is now 224.0.0.175
+#
+# To use a different address use:
+#    mdsevent_address n.n.n.n
+# or mdsevent_address n.n.n.nl-nu to use addresses in the range n.n.n.nl through n.n.n.nu
+# 
 include         $MDSPLUS_DIR/local/envsyms
 include         /etc/mdsplus.conf
 include         $HOME/.mdsplus
