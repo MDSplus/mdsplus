@@ -413,4 +413,21 @@ class Opaque(Compound):
     def getImage(self):
       import Image
       from StringIO import StringIO
-      return Image.open(StringIO(self.getData().data().data)) 
+      return Image.open(StringIO(self.getData().data().data))
+
+    def fromFile(filename,typestring):
+      """Read a file and return an Opaque object
+         @param filename: Name of file to read in
+         @type filename: str
+         @param typestring: String to denote the type of file being stored
+         @type typestring: str
+         @rtype: Opaque instance
+      """
+      import numpy as _N
+      f = open(filename,'rb')
+      try:
+        opq=Opaque(_N.fromstring(f.read(),dtype="uint8"),typestring)
+      finally:
+        f.close()
+      return opq
+    fromFile=staticmethod(fromFile)
