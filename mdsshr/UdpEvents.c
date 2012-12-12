@@ -269,16 +269,31 @@ static int getPort()
 	return udpPort;
 }
 
-static char *getMulticastAddressFormat() {
+static char *getMulticastAddressFormat(unsigned char *arange) {
   char *addrStr = getenv("mdsevent_address");
   char *ans=(char *)malloc(50);
-  unsigned int num,p1,p2,p3,p4;
-  if (addrStr && ((num=sscanf(addrStr,"%d.%d.%d.%d",&p1,&p2,&p3,&p4)) == 4) && (p1 < 256) && (p2 < 256) && (p3 < 256) && p4 == 0) {
-    sprintf(ans,"%d.%d.%d.",p1,p2,p3);
-    strcat(ans,"%d");
+  unsigned int num,p1=256,p2=256,p3=256,p4=256,p5=9999;
+  arange[0]=0;
+  arange[1]=255;
+  if (addrStr) {
+    if (strcmp(addrStr,"compat")==0) {
+	strcpy(ans,"225.0.0.%d");
+    }
+    else if (((num=sscanf(addrStr,"%d.%d.%d.%d-%d",&p1,&p2,&p3,&p4,&p5)) > 3) && (p1 < 256) && (p2 < 256) && (p3 < 256) && (p4 < 256) && (p5 >= p4)){
+      sprintf(ans,"%d.%d.%d.",p1,p2,p3);
+      strcat(ans,"%d");
+      arange[0]=p4;
+      arange[1]=p5;
+    }
+    else {
+      fprintf(stderr,"Invalid address format specified. Specify either n.n.n.n or n.n.n.n-n format.\nDefaulting to 225.0.0.0");
+      strcpy(ans,"255.0.0.%d");
+    }
   } else {
     //strcpy(ans,"255.0.0.%d");
-    strcpy(ans,"225.0.0.%d");
+    strcpy(ans,"224.0.0.%d");
+    arange[0]=175;
+    arange[1]=175;
   }
   return ans;
 }
@@ -288,12 +303,14 @@ static void getMulticastAddr(char *eventName, char *retIp)
         static char *multicast_address_format=0;
 	int i;
 	int len = strlen(eventName);
-	unsigned int hash = 0;
+        static unsigned char arange[2];
+	unsigned int hash = 0,hashnew;
         if (multicast_address_format==0)
-          multicast_address_format=getMulticastAddressFormat();
+          multicast_address_format=getMulticastAddressFormat(arange);
 	for(i = 0; i < len; i++)
 		hash += eventName[i];
-	sprintf(retIp, multicast_address_format, hash%256);
+        hashnew = (unsigned int)((float)arange[0] + ((float)(hash%256)/256.) * ((float)arange[1]-(float)arange[0]+1.));
+	sprintf(retIp, multicast_address_format, hashnew);
 }
 
 
