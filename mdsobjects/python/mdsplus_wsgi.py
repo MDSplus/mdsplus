@@ -373,7 +373,7 @@ class application:
         response_headers.append(('YDTYPE',y.__class__.__name__))
         response_headers.append(('XLENGTH',str(len(x))))
         response_headers.append(('YLENGTH',str(len(y))))
-        response_headers.append(('Content-type','text/xml'))
+        response_headers.append(('Content-type','image/svg+xml'))
         if self.tree is not None:
            response_headers.append(('TREE',self.tree))
            response_headers.append(('SHOT',self.shot))
