@@ -1,8 +1,8 @@
 function  result = NATIVEvalue( mdsthing )
 %NATIVEvalue - returns a Native Matlab object from an MDSplus object
-%
+%   
 % This Function takes an argument that is one of native scalar, native
-% array, mdsplus scalar, or mdsplus array.  It returns a Native matlab
+% array, mdsplus scalar, or mdsplus array.  It returns a Native matlab 
 % object of the corresponding type and shape.
 %
 % syntax:
@@ -13,11 +13,13 @@ if  isa(mdsthing, 'MDSplus.Data') == 0
     result = mdsthing;
 else
     if isa (mdsthing, 'MDSplus.Array')
-       shape = mdsthing.getShape';
-       sz = size(shape);
-       if length(sz) == 2 && sz(1) == 1 && sz(2) == 1
-           shape = [1,shape];
-       end
+        shape = mdsthing.getShape;
+        if numel(shape) == 1
+            shape = [1, shape];
+        else
+            shape = shape';
+        end
+            
         switch class(mdsthing)
             case 'MDSplus.Int64Array'
                 result = reshape(mdsthing.getLongArray, shape);
@@ -28,7 +30,7 @@ else
             case 'MDSplus.Int8Array'
                 result = reshape(mdsthing.getByteArray, shape);
             case 'MDSplus.Float64Array'
-                result = reshape(mdsthing.getDoubleArray,  shape);
+                result = reshape(mdsthing.getDoubleArray, shape);
             case 'MDSplus.Float32Array'
                 result = reshape(mdsthing.getFloatArray,  shape);
             otherwise
@@ -49,13 +51,13 @@ else
             case 'MDSplus.Float32'
                 result = mdsthing.getFloat;
             case 'MDSplus.String'
-                result = String(mdsthing);
+                result = mdsthing.getString;
             otherwise
                 throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
         end
-
+        
     else
         throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
-
+        
     end
 end

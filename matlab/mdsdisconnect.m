@@ -1,7 +1,17 @@
-function status = mdsdisconnect()
-% function to close communication with remote mds server
-% eg : mdsdisconnect;
-% Basil P. DUVAL, Oct 1998
+function [ status ] = mdsdisconnect( )
+%mdsdisconnect - disconnect from  a remote mdsplus data server. 
+%   
+%      mdsdisconnect will destroy this connection, reverting the above
+%      described routines to their local behaviors
+%
+  
+  import MDSplus.*
+  global connection
+   
+   status = 1;
+   if isa(connection, 'char')
+       status = mdsvalue('mdsdisconnect()');
+       clearvars -global connection;
+   end
+end
 
-%status = mdsremote(4);
-status = mdsipmex(4);

@@ -1,25 +1,25 @@
-function [shoto,status] = mdsopen(server, shot)
-% function to open remote server server
-% eg : mdsopen('tcv_shot',12345);
-% defaults to mdsopen('eltca1::tcv_shot',shot);
-% To open a remote server only, use mdsopen ( no arguments )
-% If first parameter is not a string, will open 'tcv_shot' tree
+function [ status ] = mdsopen( tree, shot )
+%mdsconnect - connect to a remote mdsplus data server. 
+%   
+%      This routine will make a thin client connection to the specified
+%      mdsplus data server.  It will cause subsequent invocations of 
+%      mdsopen, mdsvalue, mdsput, and mdsclose to be executed remotely
+%      on the specified host.
 %
-% Basil P. DUVAL, Oct 1998
-
-if(nargin < 1);server='';shot='none';
-elseif(nargin< 2 & ~isstr(server));shot=server;server='tcv_shot';
-elseif(nargin< 2 & isstr(server));shot='none';
-elseif(nargin >2 | ~isstr(server) | isstr(shot));error('Incorrect arguments to mdsopen');end
-
-% open the shot
-
-	status = mdsipmex(1,server,shot);
-
-%status  = mdsipmex('MDSLIB->MDS$OPEN($,int($))',server,shot);
-% return the open shot number if successful
-if(rem(status,2) == 1 & nargin > 1)
-   shoto = mdsipmex(2,'$SHOT');
-else
-	if(nargout > 0);shoto=[];end
+%      mdsdisconnect will destroy this connection, reverting the above
+%      described routines to their local behaviors
+%
+   status = 1;
+   idx=strfind(tree, '::');
+   if ~isempty(idx)
+       host = tree(1:idx-1);
+       ltree = tree(idx+2:end);
+       status = mdsconnect(host);
+   else
+       ltree=tree;
+   end
+   if status
+       status = mdsvalue('TreeOpen($,$)', ltree, shot);
+   end
 end
+
