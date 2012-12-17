@@ -195,7 +195,7 @@ dnl Look for labview include file
 AC_ARG_WITH(labview,
         [ --with-labview=labview-top-dir        specify location of idl such as /usr/local/natinst/Labview],
         LV_DIR="$withval",
-        LV_DIR="")
+        LV_DIR="$LABVIEW_DIR")
 AC_MSG_CHECKING(for labview)
 if test "$LV_DIR" != "" -a -r "$LV_DIR"
 then

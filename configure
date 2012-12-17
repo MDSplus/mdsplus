@@ -6782,7 +6782,7 @@ fi
 if test "${with_labview+set}" = set; then
   withval=$with_labview; LV_DIR="$withval"
 else
-  LV_DIR=""
+  LV_DIR="$LABVIEW_DIR"
 fi
 
 { $as_echo "$as_me:$LINENO: checking for labview" >&5
