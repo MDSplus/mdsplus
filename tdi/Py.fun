@@ -55,7 +55,7 @@ public fun Py(in _cmd, optional in _varname) {
    }
    if (allocated(public ___TDI___exception)) {
      public _py_exception=public ___TDI___exception;
-     return(1);
+     return(0);
    } else {
      public _py_exception="";
      return(public ___TDI___answer);
