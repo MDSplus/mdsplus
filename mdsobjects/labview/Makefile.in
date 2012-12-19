@@ -23,12 +23,14 @@ COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a @MAKESHLIBDIR@MDSobjectsLVShr @MAKESHLIBDIR@libMDSobjectsLVShr
 
 clean:
 	@ $(RM) $(COBJECTS)
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
+	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr
+	@ $(RM) @MAKESHLIBDIR@MDSobjectsLVShr
 	@ $(RM) @MAKESHLIBDIR@libLV@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libLV.a
 	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@
@@ -38,11 +40,25 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	if [ ! -d @prefix@/mdsplus/LabView ] ; then \
-                mkdir @prefix@/mdsplus/LabView; \
-                chmod 755 @prefix@/mdsplus/LabView; \
+	if [ ! -d @prefix@/LabView ] ; then \
+                mkdir @prefix@/LabView; \
+                chmod 755 @prefix@/LabView; \
         fi;
-	tar cf - --exclude="CVS" MDSplus | (cd ${prefix}/mdsplus/LabView; tar xf -)
+	tar cf - --exclude="CVS" MDSplus | (cd ${prefix}/LabView; tar xf -)
+	if [ ! -d @libdir@ ] ; then \
+		mkdir @libdir@; \
+		chmod 755 @libdir@; \
+	fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libLV@SHARETYPE@ @libdir@
+
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKESHLIBDIR@libLV.a @libdir@;\
+	fi;
+
 	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
@@ -61,4 +77,10 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR@libMDSobjectsLVShr :
+	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
+
+@MAKESHLIBDIR@MDSobjectsLVShr :
+	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
 
