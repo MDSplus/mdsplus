@@ -35,7 +35,6 @@ Core applications, libraries and configuration files
 %exclude /usr/local/mdsplus/lib??/libJava*
 
 %exclude /usr/local/mdsplus/LabView
-%exclude /usr/local/mdsplus/mdsobjects/labview
 %exclude /usr/local/mdsplus/lib??/*LV*
 
 %exclude /usr/local/mdsplus/bin??/mdsccl
