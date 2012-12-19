@@ -8,7 +8,7 @@ def execPy(varname=None):
     is an exception then set public variable ___TDI___exception to be the
     exception string.
     """
-    from MDSplus import Data as ___TDI___Data,makeData as ___TDI___makeData,String as ___TDI___String,Tree as ___TDI___Tree
+    from MDSplus import Data as ___TDI___Data,makeData as ___TDI___makeData,String as ___TDI___String
     ___TDI___Data.execute("deallocate(public ___TDI___answer)")
     ___TDI___Data.execute("deallocate(public ___TDI___exception)")
     try:
