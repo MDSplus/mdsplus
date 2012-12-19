@@ -16,8 +16,10 @@ def execPy(varname=None):
         for cmd in ___TDI___Data.getTdiVar('___TDI___cmds'):
             cmds.append(str(cmd))
         cmds="\n".join(cmds)
-        ns={}
-        exec cmds in ns
+        if int(___TDI___Data.execute('allocated(public ___TDI___global_ns)')) == 0:
+          exec cmds in {}
+        else:
+          exec cmds in globals()
         if varname is not None:
             ans=ns[varname]
         else:
