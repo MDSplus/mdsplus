@@ -23,7 +23,7 @@ COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a 
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a
 
 clean:
 	@ $(RM) $(COBJECTS)
@@ -38,21 +38,11 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	if [ ! -d ../../LabView/mdsobjects ] ; then \
-                mkdir ../../LabView/mdsobjects; \
-                chmod 755 ../../LabView/mdsobjects; \
+	if [ ! -d @prefix@/mdsplus/LabView ] ; then \
+                mkdir @prefix@/mdsplus/LabView; \
+                chmod 755 @prefix@/mdsplus/LabView; \
         fi;
-	@ cp library/*.vi ../../LabView/mdsobjects
-	@ cp library/*.lvlib ../../LabView/mdsobjects
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
-	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMDSobjectsLVShr.a @libdir@; \
-	fi;
+	tar cf - --exclude="CVS" MDSplus | (cd ${prefix}/mdsplus/LabView; tar xf -)
 	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
@@ -71,3 +61,4 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
