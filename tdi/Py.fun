@@ -1,4 +1,4 @@
-public fun Py(in _cmd, optional in _varname) {
+public fun Py(in _cmd, optional in _varname, optional in _global_namespace) {
    fun PyCall(in _routine,_locked, optional in _arg) {
       if (_locked) {
         _GIL=build_call(51,getenv("PyLib"),"PyGILState_Ensure"); 
@@ -44,6 +44,9 @@ public fun Py(in _cmd, optional in _varname) {
     else
         _execCall="___TDI___execPy()";
    _locked=!present(_nolock);
+   deallocate(public ___TDI___exception);
+   deallocate(public ___TDI___global_ns);
+   if (present(_global_namespace)) public ___TDI___global_ns=1;
    if (public _PyInit==1) {
      PyCall("PyRun_SimpleString",_locked,_execCall);
    } else {
