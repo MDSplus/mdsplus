@@ -25,12 +25,7 @@ public fun DevAddDevice(in _path, in _type, optional out _nidout)
     	_module = extract(0, len(_module)-1, _module);
 	_model = extract(0,len(_model)-1, _model);
     	_nidout = 0l;
-	_command = '_stat = Py("from '//_module//' import '//_model//' as ___TDI___'//_model//'")';
-	execute(_command);
-        if (_stat == 0) abort();
-	_command = '_stat = Py("___TDI___'//_model//'.Add(___TDI___Tree(),\\\"'//_path//'\\\")")';
-	execute(_command);
-        Py("del ___TDI___"//_model);
+        _stat = Py(["from MDSplus import Tree","from "//_module//" import "//_model,_model//".Add(Tree(),'"//_path//"')"]);
         if (_stat == 0) abort();
 	return(_stat);
      }
