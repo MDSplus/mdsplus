@@ -9,11 +9,11 @@ Main libraries and programs to get MDSplus operational
 if [ "%_target" != "i686-linux" ]
 then
   cd ${WORKSPACE}/x86_64/mdsplus
-  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug --enable-mdsip_connections --with-gsi=/usr:gcc64
+  ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug --enable-mdsip_connections --with-gsi=/usr:gcc64
   env LANG=en_US.UTF-8 make
 else
   cd ${WORKSPACE}/i686/mdsplus
-  ./configure --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --enable-mdsip_connections --with-gsi=/usr:gcc32
+  ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --enable-mdsip_connections --with-gsi=/usr:gcc32
   env LANG=en_US.UTF-8 make
 fi
 
