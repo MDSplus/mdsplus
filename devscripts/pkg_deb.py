@@ -109,7 +109,7 @@ def makeDebsCommand(args):
         cmd='rm -Rf DEBS/* SOURCES;' +\
              'ln -sf $(pwd) ../mdsplus%s-%s;' % (debflavor,VERSION) +\
              'rm -f ../mdsplus%s-%s;' % (debflavor,VERSION) +\
-             './configure --enable-mdsip_connections --enable-nodebug --prefix=%s/BUILDROOT/usr/local/mdsplus --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,BITS) +\
+             './configure --enable-mdsip_connections --enable-nodebug --prefix=%s/BUILDROOT/usr/local/mdsplus --exec_prefix=%s/BUILDROOT/usr/local/mdsplus --with-gsi=/usr:gcc%d;' % (WORKSPACE,WORKSPACE,BITS) +\
              'if (! make ); then exit 1; fi;if (! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
