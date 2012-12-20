@@ -40,11 +40,11 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	if [ ! -d @prefix@/LabView ] ; then \
-                mkdir @prefix@/LabView; \
-                chmod 755 @prefix@/LabView; \
+	if [ ! -d @exec_prefix@/LabView ] ; then \
+                mkdir @exec_prefix@/LabView; \
+                chmod 755 @exec_prefix@/LabView; \
         fi;
-	tar cf - --exclude="CVS" MDSplus | (cd ${prefix}/LabView; tar xf -)
+	tar cf - --exclude="CVS" MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
 	if [ ! -d @libdir@ ] ; then \
 		mkdir @libdir@; \
 		chmod 755 @libdir@; \
