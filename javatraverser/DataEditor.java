@@ -239,6 +239,17 @@ public class DataEditor
     {
       if(data instanceof ParameterData)
         mode_idx = 2;
+      else if(data instanceof FunctionData && ((FunctionData)data).opcode == PythonEditor.OPC_FUN)
+      {
+          Data[] args = ((FunctionData)data).getArgs();
+          try {
+          if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
+            args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
+                mode_idx = 3;
+            else
+                mode_idx = 1;
+          }catch(Exception exc){mode_idx = 1;}
+      } 
       else
         mode_idx = 1;
       if (data.dtype == Data.DTYPE_WITH_UNITS)
