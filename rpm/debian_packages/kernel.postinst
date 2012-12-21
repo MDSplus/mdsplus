@@ -18,7 +18,7 @@ then
   ln -sf /usr/local/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
   ln -sf /usr/local/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
 fi
-if [ ! -r /etx/xinetd.d/mdsip ]
+if [ ! -r /etc/xinetd.d/mdsip ]
 then
   cp /usr/local/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
   if ( ! grep '^mdsip[[:space:]]' /etc/services >/dev/null 2>&1)
