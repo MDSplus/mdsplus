@@ -3,9 +3,9 @@ if [ "$1" == "copy_it" ]
 then
   ddn=${WORKSPACE}/debian/$2
   fn=${3:1}
-  dn=$(dirname $fn)
+  dn=$(dirname "$fn")
   mkdir -p ${ddn}${dn}
-  rsync -a ${WORKSPACE}/BUILDROOT${fn} ${ddn}${dn}
+  rsync -a "${WORKSPACE}/BUILDROOT${fn}" ${ddn}${dn}
 else
   flavor=$1
   pkg=$2
