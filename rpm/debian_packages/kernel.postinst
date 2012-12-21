@@ -20,7 +20,10 @@ then
 fi
 if [ ! -r /etc/xinetd.d/mdsip ]
 then
-  cp /usr/local/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+  if [ -r /usr/local/mdsplus/rpm/mdsipd.xinstd ]
+  then
+    cp /usr/local/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+  fi
   if ( ! grep '^mdsip[[:space:]]' /etc/services >/dev/null 2>&1)
   then
     echo 'mdsip 8000/tcp # MDSplus mdsip service' >> /etc/services
