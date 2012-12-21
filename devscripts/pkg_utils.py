@@ -144,7 +144,7 @@ def checkRelease(package):
             elif "Repository revision" in line:
                 if "/Attic/" not in line:
                     sl=line.split()
-                    F=sl[3][23:-2]
+                    F=' '.join(sl[3:])[23:-2]
                     CURREV=sl[2]
             elif "pkg_%s" % package in line:
                 if F != "":
