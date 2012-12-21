@@ -296,7 +296,9 @@ def newRelease(pkg,flavor,version,release,dist):
                 if not sys.platform.startswith('win'):
                     F=F.replace('$','\\$')
                 p=subprocess.Popen('cvs -Q tag -F "%s" "%s"' % (newtag,F),shell=True,cwd=getTopDir())
-                p.wait()
+                stat=p.wait()
+		if stat != 0:
+		    print "Error tagging with command: %s" % ('cvs -Q tag -F "%s" "%s"' % (newtag,F),)
 
 def getPackages(includeEmpty=False):
     pkgs=list()
