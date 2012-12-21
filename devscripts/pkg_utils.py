@@ -287,7 +287,7 @@ def newRelease(pkg,flavor,version,release,dist):
         if "Repository revision" in line:
             if "/Attic/" not in line:
                 sl=line.split()
-                F=sl[3][23:-2]
+                F=' '.join(sl[3:])[23:-2]
                 PKG="None"
         if 'pkg_' in line:
             ls=line.split()
