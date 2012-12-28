@@ -135,7 +135,7 @@ int mdsdcl_do_command(
             sts = cli_dispatch(ctrl);
             if (sts != CLI_STS_INVROUT)
                {
-                if (ctrl->verify)
+                if (ctrl->verify && sts != 3)
                     displayCmdline(dsc_cmd.dscA_pointer);
                 if (~sts & 1)
                    {

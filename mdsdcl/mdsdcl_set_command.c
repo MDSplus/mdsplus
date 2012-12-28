@@ -89,5 +89,5 @@ int   mdsdcl_set_command(		/* Return: status		*/
     if (cli_present("DEF_FILE") & 1)
         cli_get_value("DEF_FILE",&ctrl->def_file);
 
-    return(1);
+    return(3);
    }
