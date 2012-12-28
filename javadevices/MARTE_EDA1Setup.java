@@ -56,6 +56,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jPanel11 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
         deviceField12 = new DeviceField();
+        deviceField93 = new DeviceField();
+        deviceField94 = new DeviceField();
         jPanel12 = new javax.swing.JPanel();
         deviceField13 = new DeviceField();
         deviceField14 = new DeviceField();
@@ -331,6 +333,16 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField12.setLabelString("V Max:");
         deviceField12.setOffsetNid(1369);
         jPanel11.add(deviceField12);
+
+        deviceField93.setIdentifier("");
+        deviceField93.setLabelString("ccVLoopThreshold: ");
+        deviceField93.setOffsetNid(1537);
+        jPanel11.add(deviceField93);
+
+        deviceField94.setIdentifier("");
+        deviceField94.setLabelString("ccVRogThresholdt: ");
+        deviceField94.setOffsetNid(1543);
+        jPanel11.add(deviceField94);
 
         jTabbedPane2.addTab("Tokamak", jPanel11);
 
@@ -1204,6 +1216,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField90;
     private DeviceField deviceField91;
     private DeviceField deviceField92;
+    private DeviceField deviceField93;
+    private DeviceField deviceField94;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
     private javax.swing.JPanel jPanel1;

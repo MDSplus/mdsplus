@@ -244,6 +244,20 @@
                             <Property name="offsetNid" type="int" value="1369"/>
                           </Properties>
                         </Component>
+                        <Component class="DeviceField" name="deviceField93">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="ccVLoopThreshold: "/>
+                            <Property name="offsetNid" type="int" value="1537"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField94">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="ccVRogThresholdt: "/>
+                            <Property name="offsetNid" type="int" value="1543"/>
+                          </Properties>
+                        </Component>
                       </SubComponents>
                     </Container>
                     <Container class="javax.swing.JPanel" name="jPanel12">
