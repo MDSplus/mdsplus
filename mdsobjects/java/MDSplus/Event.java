@@ -7,6 +7,7 @@ public class Event
     byte[] dataBuf;
     java.lang.String name;
     boolean disposed = false;
+    boolean timeout;
     long eventId;
     static {
         try {
@@ -29,12 +30,26 @@ public class Event
     public Uint64 getTime() {return new Uint64(time);}
     public Data getData() { return data;}
     public byte []  getRaw() { return dataBuf;}
-    public synchronized void run(){notifyAll();}
+    public synchronized void run()
+    {
+        timeout = false;
+        notifyAll();
+    }
     public synchronized Data waitData()
     {
         try {
             wait();
         }catch(InterruptedException exc){return null;}
+        return getData();
+    }
+    public synchronized Data waitData(int milliseconds) throws MdsException
+    {
+        timeout = true;
+        try {
+            wait(milliseconds);
+        }catch(InterruptedException exc){return null;}
+        if(timeout)
+            throw new MdsException("Timeout occurred in Event wait");
         return getData();
     }
     public void dispose()
