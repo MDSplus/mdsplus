@@ -2,6 +2,7 @@
 Summary: Mathworks MATLAB extensions
 Group: Applications/Acquisition
 Release: --RELEASE--
+Requires: mdsplus--RPMFLAVOR---java
 
 %description matlab
 Mathworks MATLAB extensions
