@@ -1,6 +1,7 @@
 public fun Tcl(in _command, optional out _output)
 {
-  Mdsdcl->mdsdcl_do_command('set command tcl_commands/def_file="*.tcl"');
+  if (!allocated(public _tcl_commands_init))
+    public _tcl_commands_init = Mdsdcl->mdsdcl_do_command('set command tcl_commands/def_file="*.tcl"');
   if (present(_output))
   {
     tcl_commands->TclSaveOut();
