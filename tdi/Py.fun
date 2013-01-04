@@ -45,8 +45,9 @@ public fun Py(in _cmd, optional in _varname, optional in _global_namespace) {
         _execCall="___TDI___execPy()";
    _locked=!present(_nolock);
    deallocate(public ___TDI___exception);
-   deallocate(public ___TDI___global_ns);
-   if (present(_global_namespace)) public ___TDI___global_ns=1;
+   deallocate(public ___TDI___answer);
+
+   public ___TDI___global_ns= present(_global_namespace) ? 1 : 0;
    if (public _PyInit==1) {
      PyCall("PyRun_SimpleString",_locked,_execCall);
    } else {
