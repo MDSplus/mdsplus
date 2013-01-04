@@ -293,7 +293,8 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
 		   (nci->dtype == DTYPE_PARAM) ||
 		   (nci->dtype == DTYPE_RANGE) ||
 		   (nci->dtype == DTYPE_WITH_UNITS) || 
-                   (nci->dtype == DTYPE_WITH_ERROR) || is_expression);
+                   (nci->dtype == DTYPE_WITH_ERROR) || 
+                   (nci->dtype == DTYPE_OPAQUE) == is_expression);
     break;
    case TreeUSAGE_SIGNAL:
     status = check(is_numeric ||
@@ -302,7 +303,8 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
 		   (nci->dtype == DTYPE_PARAM) ||
 		   (nci->dtype == DTYPE_RANGE) ||
 		   (nci->dtype == DTYPE_WITH_UNITS) || 
-                   (nci->dtype == DTYPE_WITH_ERROR) || is_expression);
+                   (nci->dtype == DTYPE_WITH_ERROR) || 
+                   (nci->dtype == DTYPE_OPAQUE) || is_expression);
     break;
    case TreeUSAGE_TASK:
     status = check((nci->dtype == DTYPE_PROGRAM) ||
@@ -313,7 +315,8 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
    case TreeUSAGE_TEXT:
     status = check((nci->dtype == DTYPE_T) ||
 		   (nci->dtype == DTYPE_PARAM) ||
-		   (nci->dtype == DTYPE_WITH_UNITS) || is_expression);
+		   (nci->dtype == DTYPE_WITH_UNITS) || 
+                   (nci->dtype == DTYPE_OPAQUE) || is_expression);
     break;
    case TreeUSAGE_WINDOW:
     status = check((nci->dtype == DTYPE_WINDOW) || is_expression);
