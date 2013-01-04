@@ -480,7 +480,8 @@ class Tree(object):
         @rtype: Tree
         """
         old = cls._setActiveTree(tree)
-        tree.restoreContext()
+        if tree is not None:
+          tree.restoreContext()
         return old
     setActiveTree=classmethod(setActiveTree)
 
