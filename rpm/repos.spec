@@ -19,8 +19,13 @@ mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 cp ${WORKSPACE}/x86_64/mdsplus/rpm/RPM-GPG-KEY-MDSplus $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 outfile=$RPM_BUILD_ROOT/etc/yum.repos.d/mdsplus-%flavor.repo
-cat - > $outfile <<EOF
-[MDSplus%{rpmflavor}]
+if [ "%flavor" == "stable" ]
+then
+  echo [MDSplus] > $outfile
+else
+  echo [MDSplus-%flavor] > $outfile
+fi
+cat - >> $outfile <<EOF
 name=MDSplus-%flavor 
 baseurl=http://www.mdsplus.org/dist/%{s_dist}/%{flavor}/RPMS
 enabled=1
