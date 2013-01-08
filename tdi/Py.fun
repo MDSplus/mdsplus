@@ -26,7 +26,7 @@ public fun Py(in _cmd, optional in _varname, optional in _global_namespace) {
        abort();
      }
      if (MdsShr->LibFindImageSymbol(descr('MdsMisc'),descr('PyCall'),ref(_sym)) == 1) {
-       MdsMisc->PyCall("from MDSplus import Tree as ___TDI___Tree,execPy as ___TDI___execPy",val(1));
+       MdsMisc->PyCall("from MDSplus import execPy as ___TDI___execPy",val(1));
        public _PyInit=2;
      } else {
        if (MdsShr->LibFindImageSymbol(descr('dl'),descr('dlopen'),ref(_sym)) == 1) {
@@ -35,7 +35,7 @@ public fun Py(in _cmd, optional in _varname, optional in _global_namespace) {
        PyCall("Py_Initialize",0);
        PyCall("PyEval_InitThreads",0);
        public _PyInit=1;
-       PyCall("PyRun_SimpleString",1,"from MDSplus import Tree as ___TDI___Tree,execPy as ___TDI___execPy");
+       PyCall("PyRun_SimpleString",1,"from MDSplus import execPy as ___TDI___execPy");
      }
    }
    public ___TDI___cmds=_cmd;

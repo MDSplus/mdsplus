@@ -8,9 +8,8 @@ def execPy(varname=None):
     is an exception then set public variable ___TDI___exception to be the
     exception string.
     """
-    from MDSplus import Data as ___TDI___Data,makeData as ___TDI___makeData,String as ___TDI___String,Tree as ___TDI___Tree
+    from MDSplus import Data as ___TDI___Data,makeData as ___TDI___makeData,String as ___TDI___String
     try:
-        ___TDI___Tree.setActiveTree(None)
         cmds=list()
         for cmd in ___TDI___Data.getTdiVar('___TDI___cmds'):
             cmds.append(str(cmd))
