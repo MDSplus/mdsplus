@@ -125,6 +125,12 @@ class FLIRSC65X(Device):
         burstNframe = burstDuration * float(frameRate)
         burstFrameCount = 0
 
+        autoCalib = self.device.calib_auto.data()
+        if autoCalib == 'NO':
+          self.flirLib.setCalibMode(self.device.handle, c_int(0))   #disable auto calibration
+        else:
+          self.flirLib.setCalibMode(self.device.handle, c_int(1))   #enable auto calibration
+
         startStoreTrg = 0
         tcpStreamHandle=c_int(-1)
         frameTime=0
@@ -140,7 +146,7 @@ class FLIRSC65X(Device):
         while not self.stopReq:
 
           self.flirLib.getFrame(self.device.handle, byref(status), frameBuffer, metaData)
-          print 'get frame status:', status
+          #print 'get frame status:', status
 
           if isExternal==1:        #external clock source
             if (status.value==4):     #start data storing @ 1st trigger seen
@@ -170,16 +176,15 @@ class FLIRSC65X(Device):
               self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, byref(c_int64(frameTime)), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx)) 
 
               self.idx = self.idx + 1
-              print 'saved frame idx:', self.idx
+              #print 'saved frame idx:', self.idx
 
-              burstFrameCount = burstFrameCount + 1
-              if (burstFrameCount == burstNframe):        #execute calibration action @ every burst of frames
-                startStoreTrg=0
-                burstFrameCount = 0
-                self.device.calib(0)   #self.device.calib(self)
-              
-
-         
+              if autoCalib == 'NO':                          #only if NO auto calibration
+                burstFrameCount = burstFrameCount + 1
+                if (burstFrameCount == burstNframe):        #execute calibration action @ every burst of frames
+                  startStoreTrg=0
+                  burstFrameCount = 0
+                  self.device.calib(0)   #self.device.calib(self)
+                       
 
           if ( (isStreaming==1) and (tcpStreamHandle.value==-1) ):   
             self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
@@ -196,13 +201,17 @@ class FLIRSC65X(Device):
         #endwhile
         self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
         #print 'Stream Tcp Connection Closed'
+
+
     
         status = self.flirLib.stopAcquisition(self.device.handle)
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot stop camera acquisition')
 
-        #close device and remove from info
-        self.flirLib.flirClose(self.device.handle)
+        if autoCalib == 'NO':
+          self.flirLib.setCalibMode(self.device.handle, c_int(1))  #re-enable auto calibration
+       
+        self.flirLib.flirClose(self.device.handle)   #close device and remove from info
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot close camera')
 
