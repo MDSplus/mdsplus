@@ -5,10 +5,8 @@ RfxDevices
 @authors: Gabriele Manduchi (IGI Padova)
 @copyright: 2008
 @license: GNU GPL
-
-
-
 """
+
 from CAENV1740 import CAENV1740
 from CAENDT5720 import CAENDT5720
 from DEMOADC import DEMOADC
@@ -30,9 +28,11 @@ from MARTE_DEQU import MARTE_DEQU
 from MARTE_WAVEGEN import MARTE_WAVEGEN
 from MARTE_BREAKDOWN import MARTE_BREAKDOWN
 from SPIDER_SM import SPIDER_SM
-from ZELOS2150GV import ZELOS2150GV
-from NI6259AI import NI6259AI
 from SPIDER import SPIDER
+from ZELOS2150GV import ZELOS2150GV
+from FAKECAMERA import FAKECAMERA
 from FLIRSC65X import FLIRSC65X
+from NI6259AI import NI6259AI
 from RFXWAVESETUP import RFXWAVESETUP
+
 
