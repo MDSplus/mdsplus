@@ -200,7 +200,6 @@ write(*,_bitPerPixel);
 			} 
 			else 
 			{
-
 				_trig_time = _trig_time + 1./( 2 * _frame_rate );
 			
 				_dim = make_dim(make_window(0, _n_frames - 1, _trig_time), make_range(*,*,(1./_frame_rate)) );
@@ -208,25 +207,6 @@ write(*,_bitPerPixel);
 				
 				_video_nid =  DevHead(_nid) + _head_chan_nid + _K_VIDEO;
 				_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
-
-/***********************************
-				_trig_time = _trig_time + 1./( 2 * _frame_rate );
-
-				_dim = compile('[1 , `_x_pixel, `_y_pixel ]');
-
-				_video = compile('set_range(`_x_pixel, `_y_pixel, `_n_frames, `_img)');
-
-				_time = _trig_time;
-
-				for ( _k = 0; _k < _n_frames; k++ )
-				{
-
-				 	 MakeSegment( _video_nid, _time, _time  ,   _dim,   _video[1][*][*] , ,  0);
-					_time += 1./_frame_rate;
-
-				}
-************************************/
-			
 				if(! (_status & 1))
 				{
 					_globalErrorMessage = _globalErrorMessage//"Camera "//trim(adjustl(_i))//" Error writing data in pulse file\n";

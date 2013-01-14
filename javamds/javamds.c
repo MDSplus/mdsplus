@@ -14,21 +14,6 @@ extern int TdiCompile(), TdiData(), TdiFloat();
 
 static char error_message[512];
 
-static jint DYN_JNI_CreateJavaVM(JavaVM **jvm, void **env, JavaVMInitArgs *vm_args) {
-  int status;
-  static jint (*JNI_CreateJavaVM)(JavaVM **, void **, JavaVMInitArgs *) = 0;
-  if (JNI_CreateJavaVM == 0) {
-    static DESCRIPTOR(javalib_d,"java");
-    static DESCRIPTOR(javasym_d,"JNI_CreateJavaVM");
-    status = LibFindImageSymbol(&javalib_d,&javasym_d,&JNI_CreateJavaVM);
-    if (!(status & 1)) {
-      JNI_CreateJavaVM = 0;
-      return -1;
-    } 
-  }
-  return (*JNI_CreateJavaVM)(jvm,env,vm_args);
-}
-
 
 #define BYTE 1
 #define FLOAT 2
@@ -624,11 +609,7 @@ JNIEXPORT jboolean JNICALL Java_jScope_LocalDataProvider_isSegmentedNode
 	return 0;
 }
 
-static int needSwap()
-{
-	static char intg[] = {1, 0, 0, 0};
-	return 1 & *((int *)intg);
-}
+
 /*
  * Class:     jScope_LocalDataProvider
  * Method:    getSegment
@@ -637,7 +618,7 @@ static int needSwap()
 JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
   (JNIEnv *env, jclass cls, jstring jNodeName, jint segmentIdx, jint segmentOffset)
 {
-    int status, nid, i, nSamples;
+    int status, nid, i;
 	int numSegments;
 	jbyteArray jarr;
 	const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
@@ -646,8 +627,6 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
 	EMPTYXD(dimXd);
 	ARRAY_COEFF(char, 3) *arrPtr;
 	int frameSize;
-	char tmp;
-	char *buf;
 
 	status = TreeFindNode((char *)nodeName, &nid);
 	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -680,34 +659,6 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
 		return NULL;
 	}
 	frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
-	if(needSwap())
-	{
-		buf = arrPtr->pointer;
-		nSamples = arrPtr->arsize/arrPtr->length;
-		switch (arrPtr->length)
-		{
-			case 2:
-				for (i = 0; i < nSamples; i++)
-				{
-					tmp = buf[2*i];
-					buf[2*i] = buf[2*i+1];
-					buf[2*i+1] = tmp;
-				}
-				break;
-			case 4:
-				for (i = 0; i < nSamples; i++)
-				{
-					tmp = buf[2*i];
-					buf[2*i] = buf[2*i+3];
-					buf[2*i+3] = tmp;
-					tmp = buf[2*i+1];
-					buf[2*i+1] = buf[2*i+2];
-					buf[2*i+2] = tmp;
-				}
-				break;
-		}
-	}
-	
 
 	jarr = (*env)->NewByteArray(env, frameSize);
     (*env)->SetByteArrayRegion(env, jarr, 0, frameSize, (char *)arrPtr->pointer + (int)segmentOffset * frameSize);
@@ -874,12 +825,9 @@ static int getStartEndIdx(int nid, float startTime, float endTime, int *retStart
    			strncpy(error_message, MdsGetMsg(status), 512);
 			return status;
 		}
-    		status = TdiData(&endXd, &endXd MDS_END_ARG);
+    	status = TdiData(&endXd, &endXd MDS_END_ARG);
 		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-		if(endXd.pointer->length == sizeof(float))
-			currEnd = *(float *)endXd.pointer->pointer;
-		else
-			currEnd = *(double *)endXd.pointer->pointer;
+		currEnd = *(float *)endXd.pointer->pointer;
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		if(currEnd >= startTime)
@@ -893,12 +841,9 @@ static int getStartEndIdx(int nid, float startTime, float endTime, int *retStart
    			strncpy(error_message, MdsGetMsg(status), 512);
 			return status;
 		}
-    		status = TdiData(&startXd, &startXd MDS_END_ARG);
+    	status = TdiData(&startXd, &startXd MDS_END_ARG);
 		if(status & 1) status = TdiFloat(&endXd, &endXd MDS_END_ARG);
-		if(endXd.pointer->length == sizeof(float))
-			currEnd = *(float *)endXd.pointer->pointer;
-		else
-			currEnd = *(double *)endXd.pointer->pointer;
+		currEnd = *(float *)endXd.pointer->pointer;
 		MdsFree1Dx(&startXd, 0);
 		MdsFree1Dx(&endXd, 0);
 		if(currEnd >= endTime)
@@ -908,35 +853,6 @@ static int getStartEndIdx(int nid, float startTime, float endTime, int *retStart
 	*retEndIdx = endIdx;
 	return 1;
 }
-
-static int isSingleFramePerSegment(int nid)
-{
-	EMPTYXD(xd);
-	EMPTYXD(dimXd);
-	ARRAY_COEFF(char *, 3) *arrPtr;
-	int isSingle;
-	int status;
-
-	status = TreeGetSegment(nid, 0, &xd, &dimXd);
-	if(!(status & 1))
-		return 0;
-	arrPtr = (void *)xd.pointer;
-	if(arrPtr->dimct != 3)
-	{
-		printf("INTERNAL ERROR IN LOCAL DATA PROVIDER: unexpected number of dimensions per segment: %d\n", arrPtr->dimct);
-		return 0;
-	}
-	printf("Segment dimensions: %d %d %d\n", arrPtr->m[0], arrPtr->m[1], arrPtr->m[2]);
-	isSingle = (arrPtr->m[2] == 1);
-	MdsFree1Dx(&xd, 0);
-	MdsFree1Dx(&dimXd, 0);
-	return isSingle;
-}
-
-
-
-
-
 
 /*
  * Class:     jScope_LocalDataProvider
@@ -957,7 +873,6 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
 	struct descriptor_xd *timesXds;
 	struct descriptor_a *arrPtr;
 	jfloatArray jarr;
-	float *farr;
 		
 	status = TreeFindNode((char *)nodeName, &nid);
 	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
@@ -971,70 +886,45 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
 	actSegments = endIdx - startIdx;
 	timesXds = malloc(sizeof(struct descriptor_xd) * actSegments);
 	nTimes = 0;
-	if(isSingleFramePerSegment(nid))
+	for(idx = 0; idx < actSegments ; idx++)
 	{
-		farr = malloc(actSegments * sizeof(float));
-		for(idx = 0; idx < actSegments; idx++)
+		timesXds[idx] = emptyXd;
+		status = TreeGetSegment(nid, idx + startIdx, &segXd, &timesXds[idx]);
+    	if(status & 1) status = TdiData(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
+    	if(status & 1) status = TdiFloat(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
+		if(!(status & 1))
 		{
-			status = TreeGetSegmentLimits(nid, idx, &startXd, &endXd);
-    		if(status & 1) status = TdiData(&startXd, &startXd MDS_END_ARG);
-    		if(status & 1) status = TdiFloat(&startXd, &startXd MDS_END_ARG);
-			if(!startXd.pointer)
-				return NULL;
-			if(startXd.pointer->length == sizeof(float))
-				farr[idx] = *(float *)startXd.pointer->pointer;
-			else
-				farr[idx] = *(double *)startXd.pointer->pointer;
-			MdsFree1Dx(&startXd, 0);
-			MdsFree1Dx(&endXd, 0);
+   			strncpy(error_message, MdsGetMsg(status), 512);
+			return NULL;
 		}
-		jarr = (*env)->NewFloatArray(env, actSegments);
-		(*env)->SetFloatArrayRegion(env, jarr, 0, actSegments, farr);
-		free((char *)farr);
-		return jarr;
+		if(timesXds[idx].pointer->class == CLASS_S)
+			nTimes  = nTimes + 1;
+		else
+		{
+			arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
+			nTimes += arrPtr->arsize/arrPtr->length;
+		}
+		MdsFree1Dx(&segXd, 0);
 	}
-	else
+    jarr = (*env)->NewFloatArray(env, nTimes);
+	currIdx = 0;
+	for(idx = 0; idx < actSegments ; idx++)
 	{
-		for(idx = 0; idx < actSegments ; idx++)
+		if(timesXds[idx].pointer->class == CLASS_S)
 		{
-			timesXds[idx] = emptyXd;
-			status = TreeGetSegment(nid, idx + startIdx, &segXd, &timesXds[idx]);
-    		if(status & 1) status = TdiData(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
-    		if(status & 1) status = TdiFloat(&timesXds[idx], &timesXds[idx] MDS_END_ARG);
-			if(!(status & 1))
-			{
-   				strncpy(error_message, MdsGetMsg(status), 512);
-				return NULL;
-			}
-			if(timesXds[idx].pointer->class == CLASS_S)
-				nTimes  = nTimes + 1;
-			else
-			{
-				arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
-				nTimes += arrPtr->arsize/arrPtr->length;
-			}
-			MdsFree1Dx(&segXd, 0);
+			(*env)->SetFloatArrayRegion(env, jarr, currIdx, 1, (float *)timesXds[idx].pointer->pointer);
+			currIdx++;
 		}
-		jarr = (*env)->NewFloatArray(env, nTimes);
-		currIdx = 0;
-		for(idx = 0; idx < actSegments ; idx++)
+		else
 		{
-			if(timesXds[idx].pointer->class == CLASS_S)
-			{
-				(*env)->SetFloatArrayRegion(env, jarr, currIdx, 1, (float *)timesXds[idx].pointer->pointer);
-				currIdx++;
-			}
-			else
-			{
-				arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
-				(*env)->SetFloatArrayRegion(env, jarr, currIdx, arrPtr->arsize/arrPtr->length, (float *)arrPtr->pointer);
-				currIdx+=arrPtr->arsize/arrPtr->length;
-			}
-			MdsFree1Dx(&timesXds[idx], 0);
+			arrPtr = (struct descriptor_a *)timesXds[idx].pointer;
+			(*env)->SetFloatArrayRegion(env, jarr, currIdx, arrPtr->arsize/arrPtr->length, (float *)arrPtr->pointer);
+			currIdx+=arrPtr->arsize/arrPtr->length;
 		}
-		free((char *)timesXds);
-		return jarr;
+		MdsFree1Dx(&timesXds[idx], 0);
 	}
+	free((char *)timesXds);
+	return jarr;
 }
 
 
@@ -1277,7 +1167,7 @@ int createWindow(char *name, int idx, int enableLiveUpdate)
 
 
 
-		res = DYN_JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 
 		if(res < 0)
 		{
@@ -1360,13 +1250,12 @@ int clearWindow(char *name, int idx)
 	}
 }
 
-int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
+int addSignalWithParam(int obj_idx, float *x, float *y, int num_points, int row, int column,
 			   char *colour, char *name, int inter, int marker)
 {
 	jstring jname, jcolour;
 	jobject jobj = jobjects[obj_idx];
 	jfloatArray jx, jy;
-	jdoubleArray jxDouble;
 	jclass cls;
 	jmethodID mid;
 	jboolean jinter;
@@ -1377,18 +1266,10 @@ int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_point
 		return -1;
 	}
 	jinter = inter;
+	jx = (*env)->NewFloatArray(env,  num_points);
 	jy = (*env)->NewFloatArray(env,  num_points);
+	(*env)->SetFloatArrayRegion(env,  jx, 0, num_points, (jfloat *)x);
 	(*env)->SetFloatArrayRegion(env,  jy, 0, num_points, (jfloat *)y);
-	if(xType == DTYPE_FLOAT)
-	{	
-	    jx = (*env)->NewFloatArray(env,  num_points);
-	    (*env)->SetFloatArrayRegion(env,  jx, 0, num_points, (jfloat *)x);
-	}
-	else
-	{	
-	    jxDouble = (*env)->NewDoubleArray(env,  num_points);
-	    (*env)->SetDoubleArrayRegion(env,  jxDouble, 0, num_points, (jdouble *)x);
-	}
 	if(name)
 		jname = (*env)->NewStringUTF(env,  name);
 	else
@@ -1403,30 +1284,21 @@ int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_point
 		printf("\nCannot find CompositeWaveDisplay classes!\n");
 		return -1;
 	}
-	if(xType == DTYPE_FLOAT)
-	    mid = (*env)->GetMethodID(env,  cls, "addSignal",
+	mid = (*env)->GetMethodID(env,  cls, "addSignal",
 		"([F[FIILjava/lang/String;Ljava/lang/String;ZI)V");
-	else if(xType == DTYPE_DOUBLE)
-	    mid = (*env)->GetMethodID(env,  cls, "addSignal",
-		"([D[FIILjava/lang/String;Ljava/lang/String;ZI)V");
-	else
-	{
-		printf("\nUnsupported type for X array in CompositeWaveDisplay: %d!\n", xType);
-		return -1;
-	}
-
-    	if (mid == 0)
+    if (mid == 0)
 	{
 		printf("\nCannot find method addSignal in CompositeWaveDisplay classes!\n");
 		return -1;
 	}
-        (*env)->CallVoidMethod(env, jobj, mid, (xType == DTYPE_FLOAT)?jx:jxDouble, jy, row, column, jname, jcolour, jinter, marker);
-        return 0;
+
+    (*env)->CallVoidMethod(env, jobj, mid, jx, jy, row, column, jname, jcolour, jinter, marker);
+    return 0;
 }
-void addSignal(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
+void addSignal(int obj_idx, float *x, float *y, int num_points, int row, int column,
 			   char *colour, char *name)
 {
-   addSignalWithParam(obj_idx, x, y, xType, num_points, row, column, name, colour, 1, 0);
+   addSignalWithParam(obj_idx, x, y, num_points, row, column, name, colour, 1, 0);
 }
 
 int showWindow(int obj_idx, int x, int y, int width, int height)
@@ -1520,7 +1392,7 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 
 
 
-		res = DYN_JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
+		res = JNI_CreateJavaVM(&jvm, (void **)&env, &vm_args);
 
 		if(res < 0)
 		{

@@ -37,31 +37,11 @@ EXPORT void EventReset()
 	ev.reset();
 }
 
-//Callback Management
-extern "C" {
-    struct CallbackInfo{
-      void (*callback)(char *, char *, int, void *, bool, int, char *, int);
-	  void *callbackArg;
-    };
-	void intCallbackC(char *c1, char *c2, int i1, void *ciPtr, bool b, int i2, char *c3, int i3)
-	{
-		CallbackInfo *ci = (CallbackInfo *)ciPtr;
-		ci->callback(c1, c2, i1, ci->callbackArg, b, i2, c3, i3);
-	}
-}
-//Indirect call to make SUN compiler happy
-static void intCallbackCPP(char *c1, char *c2, int i1, void *ciPtr, bool b, int i2, char *c3, int i3)
-{
-	intCallbackC(c1,c2,i1,ciPtr, b,i2,c3, i3);
-}
-extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
+EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg)
 {
 	Event ev;
 	try {
-		CallbackInfo *ci = new CallbackInfo;
-		ci->callback = callback;
-		ci->callbackArg = callbackArg;
-		void *handl = ev.addListenerGlobal(name, intCallbackCPP, (void *)ci);
+		void *handl = ev.addListenerGlobal(name, callback, callbackArg);
 		return handl;
 	}
 	catch(SystemException *exc)
@@ -70,14 +50,11 @@ extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(ch
 		return NULL;
 	}
 }
-extern "C" EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
+EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
 {
 	Event ev;
 	try {
-		CallbackInfo *ci = new CallbackInfo;
-		ci->callback = callback;
-		ci->callbackArg = callbackArg;
-		void *handl = ev.addListener(name, intCallbackCPP, (void *)ci);
+		void *handl = ev.addListener(name, callback, callbackArg);
 		return handl;
 	}
 	catch(SystemException *exc)
@@ -126,13 +103,13 @@ EXPORT int EventTriggerAndWait(char *name, char *buf, int size)
 		return -1;
 	}
 }
-//	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, MdsTimeout *timeout = 0)
+//	bool triggerAndWait(const char *eventName, char *buf, int size, bool copyBuf = true, Timeout *timeout = 0)
 
 EXPORT int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs)
 {
 	Event ev;
 	try {
-		MdsTimeout *timout = new MdsTimeout(millisecs);
+		Timeout *timout = new Timeout(millisecs);
 		ev.triggerAndWait(name,  buf, size, true, timout);
 		delete timout;
 		return 0;

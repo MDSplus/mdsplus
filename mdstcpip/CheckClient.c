@@ -153,8 +153,7 @@ int CheckClient(char *username, int num, char **matchString) {
       fclose(f);
     }
     else {
-        perror("CheckClient");
-	printf("Unable to open hostfile one: %s\n",GetHostfile());
+	printf("Unable to open hostfile: %s\n",GetHostfile());
 	exit(1);
     }
   } else {

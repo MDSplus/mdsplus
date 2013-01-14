@@ -24,8 +24,8 @@
 			OutputDirectory="..\..\Win32\Debug"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="2"
-			ManagedExtensions="1"
+			CharacterSet="1"
+			ManagedExtensions="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -50,7 +50,7 @@
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				AssemblerListingLocation=".\Debug/"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 				CompileAs="0"
 			/>
 			<Tool
@@ -68,7 +68,7 @@
 				AdditionalOptions="..\..\win32\debug\mdsipshr.lib ..\..\win32\debug\RtEventsShr.lib"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
-				AssemblyDebug="1"
+				AssemblyDebug="0"
 				ProgramDatabaseFile="$(IntDir)\$(TargetName).pdb"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
@@ -101,7 +101,7 @@
 			OutputDirectory="..\$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="2"
+			CharacterSet="1"
 			ManagedExtensions="1"
 			>
 			<Tool
@@ -174,7 +174,7 @@
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="2"
+			CharacterSet="1"
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
@@ -197,7 +197,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalIncludeDirectories="$(SolutionDir)\tdishr;$(SolutionDir)\mdsobjects\cpp;$(SolutionDir)\include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CRT_SECURE_NO_WARNINGS"
-				RuntimeLibrary="3"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				DebugInformationFormat="3"
 			/>
@@ -212,10 +212,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				IgnoreImportLibrary="false"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
-				AssemblyDebug="1"
 				RandomizedBaseAddress="1"
 				DataExecutionPrevention="0"
 				TargetMachine="0"
@@ -247,7 +245,7 @@
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			CharacterSet="2"
+			CharacterSet="1"
 			ManagedExtensions="1"
 			WholeProgramOptimization="1"
 			>
@@ -453,6 +451,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\include\cacheshr.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\include\mdsobjects.h"
 				>

@@ -451,14 +451,9 @@ Data *Data::getDimensionAt(int dimIdx)
 			args[i] = currArg->convertToDsc();
 		}
 		int status;
-		Tree *actTree = 0;
-		try {
-			actTree = getActiveTree();
-		}catch(MdsException *exc){actTree = 0;}
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
+		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, getActiveTree(), &status);
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
-		if(actTree) delete actTree;
 		if(!(status & 1))
 			throw new MdsException(status);
 		return res;
@@ -889,7 +884,8 @@ double *Array::getDoubleArray(int *numElements)
 
 char **Array::getStringArray(int *numElements)
 {
-	int size = (length > 0)? arsize/length : 0;
+printf("ARRAY GET STRING ARRAY\n");
+	int size = arsize/length;
 	char **retArr = new char*[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
@@ -1009,9 +1005,6 @@ EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
-#if (SIZEOF_LONG != 8)
-EXPORT void MDSplus::deleteNativeArray(_int64 *array){delete [] array;}
-#endif
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}

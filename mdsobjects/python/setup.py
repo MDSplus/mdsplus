@@ -1,18 +1,9 @@
 #!/usr/bin/env python
-import sys
+
 
 def getRelease():
     try:
       import os
-      if len(sys.argv) > 2 and 'version=' in sys.argv[2]:
-        ans=sys.argv[2].split('=')[1]
-        sys.argv=sys.argv[0:-1]
-        return ans
-      try:
-        from mdsplus_version import mdsplus_version
-        return mdsplus_version
-      except:
-        pass
       if 'MDSPLUS_PYTHON_VERSION' in os.environ:
 	return os.environ['MDSPLUS_PYTHON_VERSION']
       for flavor in ['','-beta','-alpha']:
@@ -45,7 +36,7 @@ setup(name='MDSplus',
       author='Tom Fredian,Josh Stillerman,Gabriele Manduchi',
       author_email='twf@www.mdsplus.org',
       url='http://www.mdsplus.org/',
-      download_url = 'http://www.mdsplus.org/mdsplus_download/python',
+      download_url = 'http://www.mdsplus.org/binaries/python/',
       package_dir = {'MDSplus':'.','MDSplus._opcodes':'./_opcodes','MDSplus.tests':'./tests','MDSplus.doc':'./doc','MDSplus.widgets':'./widgets'},
       packages = ['MDSplus','MDSplus._opcodes','MDSplus.tests','MDSplus.widgets'],
       package_data = {'':['doc/*.*','widgets/*.glade']},

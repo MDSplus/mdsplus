@@ -6,9 +6,6 @@ public class TestMdsObjects
    static void testRows()
    {
        try {
-
-
-
             Tree tree = new Tree("test",1);
             TreeNode sig=tree.getNode("\\sig_1");
             sig.deleteData();
@@ -43,19 +40,22 @@ public class TestMdsObjects
    static void testRowsMem()
    {
        try {
-            Tree tree = new Tree("test",1);
-            TreeNode sig=tree.getNode("\\sig_1");
+            CachedTree tree = new CachedTree("test",1);
+            CachedTreeNode sig=tree.getCachedNode("\\sig_1");
             sig.deleteData();
             float []data = new float[10]; //Use a small row
             for(int i = 1; i <=4020; i++)
             {
 		for(int j=0;j<10;j++)
                     data[j] = i*10000 + j;
-                //if(i < 4020 - 1)
+                if(i < 4020 - 1)
                     sig.putRow(new Float32Array(data), (long)i);
+                else
+                    sig.putLastRow(new Float32Array(data), (long)i);
 //The last time it is necessary to call putLastRow method                
             }
 //This method must be called before exiting in order to allow all pending data to be written on disk            
+            tree.synch();
        }catch(Exception exc)
        {
            System.err.println("Error in testRow: " + exc);
@@ -104,16 +104,6 @@ public class TestMdsObjects
     public static void main(java.lang.String args[])
     {
         try {
-           int m[][];
-           m = new int[2][2];
-           m[0][0] = 0;
-           m[0][1] = 1;
-           m[1][0] = 2;
-           m[1][1] = 3;
-
-           Int32Array ia = new Int32Array(m);
-           System.out.println(ia);
-           System.exit(0);
         Tree tree = new Tree("test", 1);
         long size = tree.getDatafileSize();
         System.out.println(size);

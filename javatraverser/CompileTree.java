@@ -16,7 +16,7 @@ public class CompileTree extends Thread
     Vector newNames = new Vector();
     Vector unresolvedExprV = new Vector();
     Vector unresolvedNidV = new Vector();
-    Vector subtreeNids = new Vector();
+
 
     public static void main(String args[])
     {
@@ -144,19 +144,6 @@ public class CompileTree extends Thread
 
         }
 
-//Set subtrees (apparently this must be done at the end....
- /*       for(int i = 0; i < subtreeNids.size(); i++)
-        {
-            try {
-                tree.setSubtree((NidData)subtreeNids.elementAt(i), 0);
-            }
-            catch (Exception exc) {
-            System.out.println("Error setting subtree: " + exc);
-          }
-      }
-*/
-
-
 
         try {
             tree.write(0);
@@ -250,7 +237,7 @@ public class CompileTree extends Thread
                     if(name.length() > 12) name = name.substring(0,12);
                     nid = tree.addNode("."+name, NodeInfo.USAGE_STRUCTURE, 0);
                     if(usageStr != null && usageStr.equals("SUBTREE"))
-                        subtreeNids.addElement(nid);
+                        tree.setSubtree(nid, 0);
                     tree.setDefault(nid, 0);
                     success = true;
                 }catch(Exception exc)

@@ -7,7 +7,7 @@ exec_prefix=@exec_prefix@
 RM=$(top_srcdir)/devscripts/rm_if
 CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBDL@ @GCCLIB@ @SOCKETLIB@ @NSLLIB@
+LIBS=@LIBS@ -lrt @LIBDL@ @GCCLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
@@ -56,7 +56,7 @@ install:
 	fi;
 
 @MAKESHLIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libMdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

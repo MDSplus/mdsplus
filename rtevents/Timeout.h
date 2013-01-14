@@ -1,17 +1,17 @@
 #ifndef TIMEOUT_H_
 #define TIMEOUT_H_
 #include "SystemSpecific.h"
-class EXPORT MdsTimeout
+class EXPORT Timeout
 {
 	long secs;
 	long nanoSecs;
 public:
-	MdsTimeout(long secs, long nanoSecs)
+	Timeout(long secs, long nanoSecs)
 	{
 		this->secs = secs + nanoSecs / 1000000000;	
 		this->nanoSecs = nanoSecs % 1000000000;
 	}
-	MdsTimeout(long milliSecs)
+	Timeout(long milliSecs)
 	{
 		this->secs = milliSecs / 1000;	
 		this->nanoSecs = (milliSecs % 1000) * 1000000;

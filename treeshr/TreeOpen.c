@@ -861,15 +861,12 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     TranslateLogicalFree(path);
     path = npath;
     pathlen = strlen(path);
-    if (shot > 999)
-      sprintf(name,"%s_%d",tree_lower,shot);
-    else if (shot > 0)
-      sprintf(name,"%s_%03d",tree_lower,shot);
-    else if (shot == -1)
+    if (shot < 0)
       sprintf(name,"%s_model",tree_lower);
+    else if (shot < 1000)
+      sprintf(name,"%s_%03d",tree_lower,shot);
     else
-      return TreeINVSHOT;
-
+      sprintf(name,"%s_%d",tree_lower,shot);
     for (i=0,part=path;i<pathlen+1 && fd==-1;i++)
     {
       if (*part == ' ') 

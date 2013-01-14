@@ -20,7 +20,7 @@ from mdsdata import Data,EmptyData,getUnits,getError,getValuePart,getDimension,d
 from ident import Ident
 from treenode import TreeNode,TreePath,TreeNodeArray
 from mdsscalar import Scalar,Float32,Float64,Int128,Int16,Int32,Int64,Int8,String,Uint128,Uint16,Uint32,Uint64,Uint8
-from tree import Tree
+from tree import Tree,CachedTree
 from mdsdevice import Device
 from connection import Connection
 from event import Event

@@ -87,15 +87,7 @@ class jDispatcherIp
             if (first_part.equals("DISPATCH")) {
                 String second_part = st.nextToken();
                 if (second_part.equals("BUILD"))
-                {
-                    if(!st.hasMoreTokens())
-                        dispatcher.collectDispatchInformation();
-                    else
-                    {
-                        String buildRoot = st.nextToken();
-                        dispatcher.collectDispatchInformation(buildRoot);
-                    }
-                }
+                    dispatcher.collectDispatchInformation();
                 else if (second_part.equals("PHASE")) {
                     String third_part = st.nextToken();
                     dispatcher.startPhase(third_part);

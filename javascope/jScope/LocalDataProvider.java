@@ -215,7 +215,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
         try {
             Calendar cal = Calendar.getInstance();
-//            cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+            cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
             //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
             Date date = df.parse(in + " GMT");

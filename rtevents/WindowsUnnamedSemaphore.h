@@ -45,7 +45,7 @@ public:
 		//CloseHandle(semHandle);
 	}
 	
-	int timedWait(MdsTimeout &timeout)
+	int timedWait(Timeout &timeout)
 	{
 		HANDLE semHandle = OpenSemaphore(SEMAPHORE_ALL_ACCESS, NULL, (LPSTR)semName);
 		if(semHandle == 0)

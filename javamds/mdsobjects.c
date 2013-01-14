@@ -1,6 +1,8 @@
 #include "MDSplus_Data.h"
 #include "MDSplus_Tree.h"
 #include "MDSplus_TreeNode.h"
+#include "MDSplus_CachedTreeNode.h"
+#include "MDSplus_CachedTree.h"
 #include "MDSplus_Event.h"
 #include "MDSplus_REvent.h"
 #include "MDSplus_Connection.h"
@@ -15,6 +17,7 @@
 #include <ncidef.h>
 #include <dbidef.h>
 #include <treeshr.h>
+#include <cacheshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <rtevents.h>
@@ -2070,7 +2073,7 @@ JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_isOn
  * Signature: (IIIZI)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jboolean isCached, jint policy)
 {
 	int status;
 	EMPTYXD(xd);
@@ -2078,7 +2081,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
 
 	void *ctx = getCtx(ctx1, ctx2);
 
-	status = _TreeGetRecord(ctx, nid, &xd);
+	if(!isCached)
+		status = _TreeGetRecord(ctx, nid, &xd);
+	else
+		status = _RTreeGetRecord(ctx, nid, &xd);
 	if(!(status & 1))
 		throwMdsException(env, status);
 
@@ -2094,14 +2100,17 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
  * Signature: (IIILMDSplus/Data;ZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
 
 	dataD = ObjectToDescrip(env, jdata);
-	status = _TreePutRecord(ctx, nid, dataD, 0);
+	if(!isCached)
+		status = _TreePutRecord(ctx, nid, dataD, 0);
+	else
+		status = _RTreePutRecord(ctx, nid, dataD, policy);
 	if(!(status & 1))
 		throwMdsException(env, status);
 	FreeDescrip(dataD);
@@ -2116,12 +2125,15 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData
  * Signature: (IIIZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_deleteData
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jboolean isCached, jint policy)
 {
 	EMPTYXD(emptyXd);
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
-	status = _TreePutRecord(ctx, nid, (struct descriptor *)&emptyXd, 0);
+	if(!isCached)
+		status = _TreePutRecord(ctx, nid, (struct descriptor *)&emptyXd, 0);
+	else
+		status = _RTreePutRecord(ctx, nid, (struct descriptor *)&emptyXd, policy);
 	if(!(status & 1))
 		throwMdsException(env, status);
 }
@@ -2194,7 +2206,7 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_TreeNode_getTags
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
   (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend, jobject jdim, 
-	jobject jdata, jint filledRows)
+	jobject jdata, jint filledRows, jboolean isCached, jint policy)
 {
 	struct descriptor *startD, *endD, *dimD, *dataD;
 	int status;
@@ -2206,7 +2218,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
 	dataD = ObjectToDescrip(env, jdata);
 
 
-	status = _TreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
+	if(!isCached)
+		status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, filledRows);
+	else
+		status = _RTreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, policy);
 
 	FreeDescrip(startD);
 	FreeDescrip(endD);
@@ -2222,7 +2237,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
   (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend, jobject jdim, 
-	jobject jdata)
+	jobject jdata, jboolean isCached, jint policy)
 {
 	struct descriptor *startD, *endD, *dimD, *dataD;
 	int status;
@@ -2234,7 +2249,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
 	dataD = ObjectToDescrip(env, jdata);
 
 
-	status = _TreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
+	if(!isCached)
+		status = _TreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
+	else
+		status = _RTreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, policy);
 
 	FreeDescrip(startD);
 	FreeDescrip(endD);
@@ -2251,14 +2269,17 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
  * Signature: (IIILMDSplus/Data;IZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jint offset)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jint offset, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
 
 	dataD = ObjectToDescrip(env, jdata);
-	status = _TreePutSegment(ctx, nid, offset, (struct descriptor_a *)dataD);
+	if(!isCached)
+		status = _TreePutSegment(ctx, nid, offset, (struct descriptor_a *)dataD);
+	else
+		status = _RTreePutSegment(ctx, nid, offset, (struct descriptor_a *)dataD, policy);
 	FreeDescrip(dataD);
 	if(!(status & 1))
 		throwMdsException(env, status);
@@ -2271,7 +2292,8 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment
  * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend, jobject jdim)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend, jobject jdim, 
+	jboolean isCached, jint policy)
 {
 	struct descriptor *startD, *endD, *dimD;
 	int status;
@@ -2282,7 +2304,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
 	dimD = ObjectToDescrip(env, jdim);
 
 
-	status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD,  -1);
+	if(!isCached)
+		status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD,  -1);
+	else
+		status = _RTreeUpdateSegment(ctx, nid, startD, endD, dimD,  -1, policy);
 
 	FreeDescrip(startD);
 	FreeDescrip(endD);
@@ -2297,7 +2322,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
  * Signature: (IIILMDSplus/Data;ZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
@@ -2306,7 +2331,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
 	dataD = ObjectToDescrip(env, jdata);
 
 	printDecompiled(dataD);
-	status = _TreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1);
+	if(isCached)
+		status = _RTreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1, policy);
+	else
+		status = _TreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1);
 	FreeDescrip(dataD);
 	if(!(status & 1))
 		throwMdsException(env, status);
@@ -2320,7 +2348,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
  * Signature: (IIILMDSplus/Data;[JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
@@ -2334,7 +2362,11 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
 
 	//printDecompiled(dataD);
 
-	status = _TreeMakeTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, -1, numTimes);
+	if(isCached)
+		status = _RTreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1, policy);
+		if(status & 1) status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
+	else
+		status = _TreeMakeTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, -1, numTimes);
 	FreeDescrip(dataD);
 	(*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
 	if(!(status & 1))
@@ -2346,7 +2378,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
  * Signature: (IIILMDSplus/Data;[JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jdata, jlongArray jtimes, jboolean isCached, jint policy)
 {
 	struct descriptor *dataD;
 	int status;
@@ -2360,7 +2392,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
 
 	printDecompiled(dataD);
 
-	status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
+	if(isCached)
+		status = _RTreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, policy);
+	else
+		status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
 
 	FreeDescrip(dataD);
 	(*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
@@ -2378,7 +2413,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
  * Signature: (IIILMDSplus/Data;JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jrow, jlong jtime, jint size)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jobject jrow, jlong jtime, jint size, jboolean isCached, jint policy)
 
 {
 	struct descriptor *rowD;
@@ -2387,7 +2422,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
 	ctx = getCtx(ctx1, ctx2);
 
 	rowD = ObjectToDescrip(env, jrow);
-	status = _TreePutRow(ctx, nid, size, (_int64*)&jtime, (struct descriptor_a *)rowD);
+	if(isCached)
+		status = _RTreePutRow(ctx, nid, size, (_int64*)&jtime, (struct descriptor_a *)rowD, policy);
+	else
+		status = _TreePutRow(ctx, nid, size, (_int64*)&jtime, (struct descriptor_a *)rowD);
 	
 	FreeDescrip(rowD);
 	if(!(status & 1))
@@ -2400,12 +2438,15 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
  * Signature: (IIIZI)I
  */
 JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNumSegments
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jboolean isCached, jint policy)
 {
 	int status, numSegments;
 	void *ctx = getCtx(ctx1, ctx2);
 
-	status = _TreeGetNumSegments(ctx, nid, &numSegments);
+	if(isCached)
+		status = _RTreeGetNumSegments(ctx, nid, &numSegments);
+	else
+		status = _TreeGetNumSegments(ctx, nid, &numSegments);
 	if(!(status & 1))
 		throwMdsException(env, status);
 	return numSegments;
@@ -2418,7 +2459,7 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNumSegments
  * Signature: (IIIIZI)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentStart
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx, jboolean isCached, jint policy)
 {
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
@@ -2426,7 +2467,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentStart
 	EMPTYXD(endXd);
 	jobject retObj;
 
-	status = _TreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
+  	if(isCached)
+		status =  _RTreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
+	else
+		status = _TreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
 	if(!(status & 1))
 		throwMdsException(env, status);
 
@@ -2443,7 +2487,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentStart
  * Signature: (IIIIZI)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentEnd
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx, jboolean isCached, jint policy)
   {
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
@@ -2451,7 +2495,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentEnd
 	EMPTYXD(endXd);
 	jobject retObj;
 
-	status = _TreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
+  	if(isCached)
+		status =  _RTreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
+	else
+		status = _TreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
 	if(!(status & 1))
 		throwMdsException(env, status);
 
@@ -2468,7 +2515,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentEnd
  * Signature: (IIIIZI)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentDim
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx, jboolean isCached, jint policy)
 {
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
@@ -2476,7 +2523,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentDim
 	EMPTYXD(timeXd);
 	jobject retObj;
 
-	status = _TreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
+	if(isCached)
+		status = _RTreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
+	else
+		status = _TreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
 	if(!(status & 1))
 		throwMdsException(env, status);
 
@@ -2494,7 +2544,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentDim
  * Signature: (IIIIZI)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegment
-  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx)
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint idx, jboolean isCached, jint policy)
 {
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
@@ -2502,7 +2552,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegment
 	EMPTYXD(timeXd);
 	jobject retObj;
 
-	status = _TreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
+	if(isCached)
+		status = _RTreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
+	else
+		status = _TreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
 	if(!(status & 1))
 		throwMdsException(env, status);
 
@@ -2700,6 +2753,78 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_moveNode
 
 
 
+
+//////////////CachedTreeNode Stuff////////////////////
+ 
+JNIEXPORT void JNICALL Java_MDSplus_CachedTreeNode_treeCacheFlush
+  (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2)
+{
+	void *ctx = getCtx(ctx1, ctx2);
+	int status = _RTreeFlushNode(ctx, nid);
+	if(!(status & 1))
+		throwMdsException(env, status);
+}
+
+
+
+
+ //////////////CachedTree Stuff////////////////////
+
+ /*
+ * Class:     MDSplus_CachedTree
+ * Method:    cachedTreeOpen
+ * Signature: (Ljava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_CachedTree_cachedTreeOpen
+  (JNIEnv *env, jobject jobj, jstring jname, jint shot)
+{
+	int status, ctx1, ctx2;
+	const char *name;
+	void *ctx = 0;		   
+	jfieldID ctx1Fid, ctx2Fid;
+	jclass cls;
+	
+
+	name = (*env)->GetStringUTFChars(env, jname, 0);
+	status = _RTreeOpen(&ctx, (char *)name, shot);
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+	if(!(status & 1))
+	{
+		throwMdsException(env, status);
+		return;
+	}
+	ctx1 = getCtx1(ctx);
+	ctx2 = getCtx2(ctx);
+    cls = (*env)->GetObjectClass(env, jobj);
+	ctx1Fid = (*env)->GetFieldID(env, cls, "ctx1", "I");
+	ctx2Fid = (*env)->GetFieldID(env, cls, "ctx2", "I");
+	(*env)->SetIntField(env, jobj, ctx1Fid, ctx1);
+	(*env)->SetIntField(env, jobj, ctx2Fid, ctx2);
+
+}
+/*
+ * Class:     MDSplus_CachedTree
+ * Method:    cacheConfigure
+ * Signature: (ZI)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_CachedTree_cacheConfigure
+  (JNIEnv *env, jclass cls, jboolean isShared, jint cacheSize)
+{
+	RTreeConfigure(isShared, cacheSize);
+}
+
+
+
+/*
+ * Class:     MDSplus_CachedTree
+ * Method:    cacheSynch
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_CachedTree_cacheSynch
+  (JNIEnv *env, jclass cls)
+{
+	RTreeSynch();
+}
 
 
 static JavaVM *jvm;

@@ -23,8 +23,6 @@ def makeScalar(value):
         return String(value)
     if isinstance(value,bool):
         return Int8(int(value))
-    if isinstance(value,complex):
-	return Complex64(value)
     raise TypeError,'Cannot make Scalar out of '+str(type(value))
 
 class Scalar(Data):
@@ -96,7 +94,7 @@ class Scalar(Data):
                 'Int8':DTYPE_B,'Int16':DTYPE_W,'Int32':DTYPE_L,'Int64':DTYPE_Q,
                 'String':DTYPE_T,
                 'Float32':DTYPE_FS,
-                'Float64':DTYPE_FT,'Complex64':DTYPE_FSC,'Complex128':DTYPE_FTC}[self.__class__.__name__]
+                'Float64':DTYPE_FT}[self.__class__.__name__]
     mdsdtype=property(_getMdsDtypeNum)
 
 
@@ -162,15 +160,9 @@ class Uint64(Scalar):
 class Float32(Scalar):
     """32-bit floating point number"""
 
-class Complex64(Scalar):
-    """32-bit complex number"""
-
 class Float64(Scalar):
     """64-bit floating point number"""
-
-class Complex128(Scalar):
-    """64-bit complex number"""    
-
+    
 class String(Scalar):
     """String"""
     def __radd__(self,y):

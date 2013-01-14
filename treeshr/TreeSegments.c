@@ -2218,19 +2218,6 @@ old array is same size.
    }
    return status;
  }
-int TreeResetTimeContext()
-{
-    EMPTYXD(emptyXd);
-    int status = MdsCopyDxXd((struct descriptor *)&emptyXd, &TREE_START_CONTEXT);
-    if (status & 1) {
-        status = MdsCopyDxXd((struct descriptor *)&emptyXd, &TREE_END_CONTEXT);
-        if (status & 1) {
-           status = MdsCopyDxXd((struct descriptor *)&emptyXd, &TREE_DELTA_CONTEXT);
-        }
-   }
-   return status;
- }
-
 
 
 int TreeGetSegmentedRecord(int nid, struct descriptor_xd *data) {

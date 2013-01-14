@@ -11,12 +11,12 @@ __MdsIpShr=_load_library('MdsIpShr')
 ConnectToMds=__MdsIpShr.ConnectToMds
 ConnectToMds.argtypes=[_C.c_char_p]
 GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
-GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
+GetAnswerInfoTS.argtypes=[_C.c_int,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
                             _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
 MdsIpFree=__MdsIpShr.MdsIpFree
 MdsIpFree.argtypes=[_C.c_void_p]
 SendArg=__MdsIpShr.SendArg
-SendArg.argtypes=[_C.c_int32,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_ubyte,_C.c_void_p, _C.c_void_p]
+SendArg.argtypes=[_C.c_int,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_ubyte,_C.c_void_p, _C.c_void_p]
 
 class Connection(object):
     """Implements an MDSip connection to an MDSplus server"""

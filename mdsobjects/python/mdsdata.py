@@ -65,7 +65,7 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str) or isinstance(value,complex):
+    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str):
         from mdsscalar import makeScalar
         return makeScalar(value)
     if isinstance(value,tuple) or isinstance(value,list):
@@ -741,9 +741,6 @@ class Data(object):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        from _mdsshr import MdsSerializeDscOut
-        from mdsarray import Uint8Array
-        return Uint8Array(MdsSerializeDscOut(self))
         return Data.execute('SerializeOut($)',self)
 
     def deserialize(data):
@@ -752,8 +749,6 @@ class Data(object):
         @type data: Uint8Array
         @rtype: Data
         """
-        from _mdsshr import MdsSerializeDscIn
-        return MdsSerializeDscIn(data)
         return Data.execute('SerializeIn($)',data)
     deserialize=staticmethod(deserialize)
 

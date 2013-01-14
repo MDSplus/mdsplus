@@ -77,8 +77,8 @@ DTYPE_FLOAT_COMPLEX=DTYPE_FSC
 DTYPE_FLOAT=DTYPE_NATIVE_FLOAT
 
 class mdsdtypes:
-    ctypes={2:_C.c_ubyte,3:_C.c_ushort,4:_C.c_uint,5:_C.c_ulonglong,6:_C.c_byte,7:_C.c_short,8:_C.c_int32,9:_C.c_longlong,14:_C.c_void_p,52:_C.c_float,53:_C.c_double,54:None,55:None}
-    numpytypes={2:_N.uint8,3:_N.uint16,4:_N.uint32,5:_N.uint64,6:_N.int8,7:_N.int16,8:_N.int32,9:_N.int64,14:_N.string_,DTYPE_NATIVE_FLOAT:_N.float32,DTYPE_NATIVE_DOUBLE:_N.float64,DTYPE_FLOAT_COMPLEX:_N.complex64,DTYPE_DOUBLE_COMPLEX:_N.complex128}
+    ctypes={2:_C.c_ubyte,3:_C.c_ushort,4:_C.c_uint,5:_C.c_ulonglong,6:_C.c_byte,7:_C.c_short,8:_C.c_int,9:_C.c_longlong,14:_C.c_void_p,52:_C.c_float,53:_C.c_double}
+    numpytypes={2:_N.uint8,3:_N.uint16,4:_N.uint32,5:_N.uint64,6:_N.int8,7:_N.int16,8:_N.int32,9:_N.int64,14:_N.string_,DTYPE_NATIVE_FLOAT:_N.float32,DTYPE_NATIVE_DOUBLE:_N.float64}
     dtypenames={0:'DTYPE_Z',1:'DTYPE_V',2:'DTYPE_BU',3:'DTYPE_WU',4:'DTYPE_LU',5:'DTYPE_QU',6:'DTYPE_B',7:'DTYPE_W',8:'DTYPE_L',9:'DTYPE_Q',
            10:'DTYPE_F',11:'DTYPE_D',12:'DTYPE_FC',13:'DTYPE_DC',14:'DTYPE_T',15:'DTYPE_NU',16:'DTYPE_NL',17:'DTYPE_NLO',18:'DTYPE_NR',
            19:'DTYPE_NRO',20:'DTYPE_NZ',21:'DTYPE_P',22:'DTYPE_ZI',23:'DTYPE_ZEM',24:'DTYPE_DSC',25:'DTYPE_OU',26:'DTYPE_O',27:'DTYPE_G',
@@ -116,12 +116,13 @@ class mdsdtypes:
     def fromNumpy(cls,value):
         if not mdsdtypes.m_to_n_types:
             for d in mdsdtypes.numpytypes:
-               mdsdtypes.m_to_n_types.setdefault(str((mdsdtypes.numpytypes[d])().dtype),d)
+                mdsdtypes.m_to_n_types.setdefault(str((mdsdtypes.numpytypes[d])().dtype),d)
         if str(value.dtype)[1:2]=='S':
             return DTYPE_T
         try:
             return mdsdtypes.m_to_n_types[str(value.dtype)]
         except KeyError:
+            print mdsdtypes.m_to_n_types
             raise TypeError, 'Cannot convert '+str(value.dtype)+' to mdsplus type'
     fromNumpy=classmethod(fromNumpy)
 

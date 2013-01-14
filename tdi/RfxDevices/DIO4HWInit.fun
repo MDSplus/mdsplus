@@ -3,7 +3,6 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 	private _DIO4_CLOCK_SOURCE_TIMING_HIGHWAY =	0x3;
 	private _DIO4_CLOCK_SOURCE_INTERNAL	=	0x0;
-	private _DIO4_CLOCK_SOURCE_IO =	0x1;
 	private _DIO4_TH_ASYNCHRONOUS  =  0;
 	private _DIO4_TH_SYNCHRONOUS   =  1;
 	private _DIO4_TH_OUTPUT_DISABLE  = 0;
@@ -31,12 +30,11 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 
-	/* private _NO_EVENT = -1; */
+	private _NO_EVENT = -1;
 
-	 /* if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = []; */
+	if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
 
 	write(*, 'DIO4HWInit');
-
 
 /* Initialize Library if the first time */
     _first = 0;
@@ -51,72 +49,20 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		DevLogErr(_nid, "Error opening DIO4 device, board ID = "// _board_id);
 		return(0);
 	}
-
-
-
 /* Reset module */
 /*******
        if(_first) 
 		DIO4->DIO4_Reset(val(_handle));
 *******/
 	_status = DIO4->DIO4_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
-		if(_status != 0)
-		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error disarming channel in DIO4 device, board ID = "// _board_id);
-			else
-				write(*, "Error disarming channel in DIO4 device, board ID = "// _board_id);
-			return(0);
-		}
-
-	_status = DIO4->DIO4_EC_ClearAllEventChannels(val(_handle));
-		if(_status != 0)
-		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error clearing event DIO4 device, board ID = "// _board_id);
-			else
-				write(*, "Error clearing event in DIO4 device, board ID = "// _board_id);
-			return(0);
-		}
-
 
 
 /* Set clock functions */
-
-	_clock_source = byte(_DIO4_CLOCK_SOURCE_INTERNAL);
-	_out = byte(_DIO4_TH_OUTPUT_DISABLE);
-/*
-	if(_ext_clock==1)
+	if(_ext_clock)
 	{
-		_clock_source = byte(_DIO4_CLOCK_SOURCE_TIMING_HIGHWAY);
-	}
-
-	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
-			val(_out), val(byte(_DIO4_TH_INT_DISABLE)));
-		if(_status != 0)
-		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
-			else
-				write(*, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
-			return(0);
-		}
-*/
-
-
-	if(_ext_clock==1)
-	{
-	write(*, 'HIGHWAY');
-
 	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
 			val(byte(_DIO4_TH_OUTPUT_DISABLE)), val(byte(_DIO4_TH_INT_DISABLE)));
-
-
-
-
-
 		_clock_source = byte(_DIO4_CLOCK_SOURCE_TIMING_HIGHWAY);
-
 		if(_status != 0)
 		{
 			if(_nid != 0)
@@ -126,19 +72,13 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 
-
 	}
-	else 	if(_ext_clock==0 || _ext_clock==2)
+	else
 	{
-
-
 	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
 			val(byte(_DIO4_TH_OUTPUT_ENABLE)), val(byte(_DIO4_TH_INT_DISABLE)));
-
 		_clock_source = byte(_DIO4_CLOCK_SOURCE_INTERNAL);
 	}	
-
-
 
 		
 	_status = DIO4->DIO4_CS_SetClockSource(val(_handle), val(_clock_source), val(byte(0)), val(byte(_DIO4_CLOCK_SOURCE_RISING_EDGE)));
@@ -151,19 +91,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		return(0);
 	}
 
-
-
-
-
-
-
-
-
 /* Set recorder start event and arm recorder */
-/*
-	if(_rec_event != -1)
-*/
-
 	if(_rec_event != 0)
 	{
 		write(*, '_rec_event: ', _rec_event);
@@ -176,7 +104,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 				write(*, "Error setting recorder start event in DIO4 device, board ID = "// _board_id);
 			return(0);
 		}
-
+		write(*, '_rec_event: ', _rec_event);
 		_status = DIO4->DIO4_Cmd_FlushEventRecorder(val(_handle));
 		if(_status != 0)
 		{
@@ -197,10 +125,6 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}
-
-
-
-
 
 
 /* Set synch event if defined */
@@ -239,9 +163,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
     
 
 
-
 /* Configure Outputs: channel i: output, channel i + 1 corresponding trigger */
-/*
 	for(_c = 0; _c < 8; _c++)
 	{
 
@@ -269,7 +191,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 			return(0);
 		}
 	}
-*/
+
 
 
 /* Close device */

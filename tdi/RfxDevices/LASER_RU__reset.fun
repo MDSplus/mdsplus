@@ -106,7 +106,7 @@ public fun LASER_RU__reset(as_is _nid, optional _method)
 		
 			if( size( _data )  == 1)
 			{
-				DevLogErr(_nid, "Faild reset operation on ruby Laser");
+				DevLogErr(_nid, "Error Initializing ruby Laser");
 				abort();
 			}
 		}
@@ -120,12 +120,8 @@ public fun LASER_RU__reset(as_is _nid, optional _method)
 	else
 	{
 		_data = LASER_RU_HWreset(_port, _bit_states);
-		if(size ( _data ) == 1)
-		{
-			DevLogErr(_nid, "Faild reset operation on ruby Laser");
-			abort();
-		}
-
+		if(_status == 0)
+			_data();
 	} 
 
 	DevPut(_nid, _N_DATA, _data);

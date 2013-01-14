@@ -32,150 +32,6 @@ public class MdsDataProvider
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 2000;
 
-    class SegmentedFrameData
-        implements FrameData
-    {
-        String inX, inY;
-        float timeMax, timeMin;
-        int framesPerSegment;
-        int numSegments;
-        int startSegment, endSegment, actSegments;
-        int mode;
-        Dimension dim;
-        float times[];
-        int bytesPerPixel;
-
-        public SegmentedFrameData(String inY, String inX, float timeMin, float timeMax, int numSegments) throws IOException
-        {
-            //Find out frames per segment and frame min and max based on time min and time max
-            this.inX = inX;
-            this.inY = inY;
-            this.timeMin = timeMin;
-            this.timeMax = timeMax;
-            this.numSegments = numSegments;
-            startSegment = -1;
-            float startTimes[] = new float[numSegments];
- //Get segment window corresponding to the passed time window
-            for(int i = 0; i < numSegments; i++)
-            {
-                float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+i+")");
-                startTimes[i] = limits[0];
-                if(limits[1] > timeMin)
-                {
-                    startSegment = i;
-                    break;
-                }
-            }
-            if(startSegment == -1)
-                throw new IOException("Frames outside defined time window");
-//Check first if endTime is greated than the end of the last segment, to avoid rolling over all segments
-            float endLimits[] = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
-//Throw away spurious frames at the end
-            while(endLimits == null || endLimits.length != 2)
-            {
-                numSegments--;
-                if(numSegments == 0)
-                    break;
-                endLimits = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
-            }
-            if(numSegments > 100 && endLimits[0] < timeMax)
-            {
-                endSegment = numSegments - 1;
-                for(int i = startSegment; i < numSegments; i++)
-                      startTimes[i] = startTimes[0] + i*(endLimits[0] - startTimes[0])/numSegments;
-            }
-            else
-            {
-                for(endSegment = startSegment; endSegment < numSegments; endSegment++)
-                {
-                    try {
-                        float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
-                        startTimes[endSegment] = limits[0];
-                        if(limits[0] > timeMax)
-                            break;
-                    }catch(Exception exc){break;}
-                }
-            }
-
-            actSegments = endSegment - startSegment;
-//Get Frame Dimension and frames per segment
-            int dims[] = GetIntArray("shape(GetSegment("+inY+", 0))");
-            if(dims.length != 3)
-                throw new IOException("Invalid number of segment dimensions: "+ dims.length);
-            dim = new Dimension(dims[0], dims[1]);
-            framesPerSegment = dims[2];
-//Get Frame element length in bytes
-            int len[] = GetIntArray("len(GetSegment("+inY+", 0))");
-            bytesPerPixel = len[0];
-            switch (len[0])
-            {
-                case 1:
-                    mode = BITMAP_IMAGE_8;
-                    break;
-                case 2:
-                    mode = BITMAP_IMAGE_16;
-                    break;
-                case 4:
-                    mode = BITMAP_IMAGE_32;
-                    break;
-                default:
-                    throw new IOException("Unexpected length for frame data: "+ len[0]);
-             }
-//Get Frame times
-             if(framesPerSegment == 1) //We assume in this case that start time is the same of the frame time
-             {
-                 times = new float[actSegments];
-                 for(int i = 0; i < actSegments; i++)
-                     times[i] = startTimes[startSegment + i];
-             }
-             else //Get segment times. We assume that the same number of frames is contained in every segment
-             {
-                times = new float[actSegments * framesPerSegment];
-                for(int i = 0; i < actSegments; i++)
-                {
-                    float segTimes [] = GetFloatArray("dim_of(GetSegment("+inY+","+i+"))");
-                    if(segTimes.length != framesPerSegment)
-                        throw new IOException("Inconsistent definition of time in frame + "+i+": read "+ segTimes.length+
-                                " times, expected "+ framesPerSegment );
-                    for(int j = 0; j < framesPerSegment; j++)
-                        times[i * framesPerSegment + j] = segTimes[j];
-                 }
-             }
-        }
-        public int GetFrameType() throws IOException
-        {
-            return mode;
-        }
-
-        public int GetNumFrames()
-        {
-            return actSegments * framesPerSegment;
-        }
-
-        public Dimension GetFrameDimension()
-        {
-            return dim;
-        }
-
-        public float[] GetFrameTimes()
-        {
-            return times;
-        }
-        public byte[] GetFrameAt(int idx) throws IOException
-        {
-            //System.out.println("GET FRAME AT " + idx);
-            int segmentIdx = startSegment + idx / framesPerSegment;
-            int segmentOffset = (idx % framesPerSegment) * dim.width * dim.height * bytesPerPixel;
-            byte[] segment = GetByteArray("GetSegment("+ inY+","+segmentIdx+")");
-            if(framesPerSegment == 1)
-                return segment;
-            byte []outFrame = new byte[dim.width * dim.height * bytesPerPixel];
-            System.arraycopy(segment, segmentOffset, outFrame, 0, dim.width * dim.height * bytesPerPixel);
-            return outFrame;
-        }
-    }
-
-
     class SimpleFrameData
         implements FrameData
     {
@@ -375,112 +231,32 @@ public class MdsDataProvider
         String in_x, in_y;
         double xmax, xmin;
         int n_points;
-        double waveMin, waveMax;
         boolean resample = false;
         boolean _jscope_set = false;
-        static final int SEGMENTED_YES = 1, SEGMENTED_NO = 2, SEGMENTED_UNKNOWN = 3;
-        static final int UNKNOWN = -1;
-        int numDimensions = UNKNOWN;
-        int segmentMode = SEGMENTED_UNKNOWN;
         int v_idx;
 
         public SimpleWaveData(String in_y)
         {
             this.in_y = in_y;
             v_idx = var_idx;
-            if(segmentMode == SEGMENTED_UNKNOWN)
-            {
-                try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
-                        segmentMode = SEGMENTED_YES;
-                    else
-                        segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
-                {
-                    segmentMode = SEGMENTED_UNKNOWN;
-                }
-            }
-         }
+        }
 
         public SimpleWaveData(String in_y, String in_x)
         {
             this.in_y = in_y;
             this.in_x = in_x;
             v_idx = var_idx;
-            if(segmentMode == SEGMENTED_UNKNOWN)
-            {
-                try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
-                        segmentMode = SEGMENTED_YES;
-                    else
-                        segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
-                {
-                    segmentMode = SEGMENTED_UNKNOWN;
-                }
-            }
         }
 
         public SimpleWaveData(String in_y, double xmin, double xmax, int n_points)
         {
-            resample = true;
-            if(xmin == -1E8 && xmax == 1E8) //If no limits explicitly set
-            {
-                try {
-                    int limits[];
-                    if(in_y.startsWith("\\"))
-                        limits = GetIntArray("JavaGetMinMax(\"\\"+in_y+"\")");
-                    else
-                        limits = GetIntArray("JavaGetMinMax(\""+in_y+"\")");
-                    this.xmin = this.waveMin = limits[0];
-                    this.xmax = this.waveMax = limits[1];
-                    
-                }catch(IOException exc){System.out.println("Cannot get Min and Max of for signel " + in_y);}
-            }
-            else
-            {
-                try {
-                    int limits[];
-                    if(in_y.startsWith("\\"))
-                        limits = GetIntArray("JavaGetMinMax(\"\\"+in_y+"\")");
-                    else
-                        limits = GetIntArray("JavaGetMinMax(\""+in_y+"\")");
-                    this.waveMin = limits[0];
-                    this.waveMax = limits[1];
-                }catch(IOException exc)
-                {
-                    System.out.println("Cannot get Min and Max of for signel " + in_y);
-                    this.waveMin = xmin;
-                    this.waveMax = xmax;
-                }
-                if(xmin >= waveMin)
-                    this.xmin = xmin;
-                else
-                    this.xmin = waveMin;
-                if(xmax <= waveMax)
-                    this.xmax = xmax;
-                else
-                    this.xmax = waveMax;
-            }
+          resample = true;
             this.in_y = in_y;
+            this.xmin = xmin;
+            this.xmax = xmax;
             this.n_points = n_points;
             v_idx = var_idx;
-            if(segmentMode == SEGMENTED_UNKNOWN)
-            {
-                try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
-                        segmentMode = SEGMENTED_YES;
-                    else
-                        segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
-                {
-                    segmentMode = SEGMENTED_UNKNOWN;
-                }
-            }
- //            setResampleLimits(this.xmin, this.xmax);
+            setResampleLimits(xmin, xmax);
         }
 
         public SimpleWaveData(String in_y, String in_x, double xmin, double xmax,
@@ -493,81 +269,66 @@ public class MdsDataProvider
             this.xmax = xmax;
             this.n_points = n_points;
             v_idx = var_idx;
-            if(segmentMode == SEGMENTED_UNKNOWN)
-            {
-                try {
-                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-                    if(numSegments[0] > 0)
-                        segmentMode = SEGMENTED_YES;
-                    else
-                        segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
-                {
-                    segmentMode = SEGMENTED_UNKNOWN;
-                }
-            }
-//            setResampleLimits(xmin, xmax);
+            setResampleLimits(xmin, xmax);
         }
 
         public int GetNumDimension() throws IOException
         {
-            if(numDimensions != UNKNOWN)
-                return numDimensions;
-//            if(resample)
-//                setResampleLimits(this.xmin, this.xmax, in_y);
+
             String expr;
             if (_jscope_set)
                 expr = "shape(_jscope_" + v_idx + ")";
             else
             {
-                if(segmentMode == SEGMENTED_YES)
-                    expr = "shape(GetSegment(" + in_y +",0))";
-                else
-                {
-                    _jscope_set = true;
-                    expr = "( _jscope_" + v_idx + " = (" + in_y +"), shape(_jscope_" + v_idx + "))";
-                    var_idx+=2;
-                }
+                _jscope_set = true;
+                expr = "( _jscope_" + v_idx + " = (" + in_y +
+                    "), shape(_jscope_" + v_idx + "))";
+                var_idx+=2;
             }
             int shape[] = GetNumDimensions(expr);
 
-            if (error != null || shape == null)
+            if (error != null)
             {
                 _jscope_set = false;
                 error = null;
                 return 1;
             }
-//            if(resample)
-//                resetResampleLimits();
-            numDimensions = shape.length;
             return shape.length;
         }
 
         public float[] GetFloatData() throws IOException
         {
-            boolean useResample = false;
-            if(resample)
-                useResample = setResampleLimits(this.xmin, this.xmax, in_y);
-
+            // _jscope_set = true;
             String in_y_expr = "_jscope_" + v_idx;
             String set_tdivar = "";
-            if (!_jscope_set)// || resample)
+            if (!_jscope_set || resample)
             {
                 _jscope_set = true;
-//Classic resampling is carried out by
-//MDSplus itself (works also for expressions)
-// JavaResample will provide min-max pairs. Still experimental, not used now.
-                //if(resample && segmentMode == SEGMENTED_YES && useResample)
-                //    set_tdivar = "_jscope_" + v_idx + " = JavaResample(" + in_y + "), ";
-                //else
-                    set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
+                set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
                 var_idx+=2;
             }
 
-            float[] res = GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
+
             if(resample)
-                resetResampleLimits();
-            return res;
+            {
+                setResampleLimits(xmin, xmax);
+            }
+
+
+
+            if (resample && in_x == null)
+            {
+                String limits = "FLOAT(" + xmin + "), " + "FLOAT(" + xmax + ")";
+                String resampledExpr = "_jscope_" + (v_idx+1) + " = " + "JavaResample(" + "FLOAT(" + in_y_expr +
+                   "), " + "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
+
+                //String expr = set_tdivar + "fs_float("+resampledExpr+ ")";
+                String expr = set_tdivar + resampledExpr;
+
+                return GetFloatArray(expr);
+            }
+            else
+                return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
         }
 
         private double[] encodeTimeBase(String expr)
@@ -695,16 +456,26 @@ public class MdsDataProvider
             boolean isCoded = false;
             double tBaseOut[] = null;
 
-
-
-
             if (in_x == null)
             {
 
                 if (_jscope_set)
                 {
-                    expr = "dim_of(_jscope_" + v_idx + ")";
-                 }
+                   if(resample && in_x == null)
+                    {
+                        //expr = "dim_of(_jscope_" + (v_idx + 1) + ")";
+                        expr = "JavaDImOf(_jscope_" + v_idx + ", _jscope_"+(v_idx+1)+")";
+          //            tBaseOut = encodeTimeBase("_jscope_" + (v_idx + 1));
+                    }
+                    else
+                   {
+                        expr = "dim_of(_jscope_" + v_idx + ")";
+              //          tBaseOut = encodeTimeBase("_jscope_" + v_idx);
+                    }
+
+                    // expr = "JavaDim(dim_of(_jscope_"+v_idx + "), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
+                    // isCoded = true;
+                }
                 else
                 {
                     _jscope_set = true;
@@ -712,8 +483,26 @@ public class MdsDataProvider
                     String set_tdivar = "( _jscope_" + v_idx + " = (" + in_y +
                         "), ";
                     var_idx+=2;
-                    expr = set_tdivar + "dim_of(" + in_y_expr + ")";
-                    tBaseOut = encodeTimeBase(in_y);
+
+ /*                   if (resample)
+                    {
+                        String limits = "FLOAT(" + xmin + "), " + "FLOAT(" +
+                            xmax + ")";
+                        //expr = "DIM_OF(JavaResample("+ "FLOAT("+in_y+ "), "+
+                        //       "FLOAT(DIM_OF("+in_y+")), "+ limits + "))";
+                        expr = set_tdivar + "JavaResample(" + "FLOAT(" +
+                            in_y_expr + "), " +
+                            "FLOAT(DIM_OF(" + in_y_expr + ")), " + limits + ")";
+                    }
+                    else
+*/                    {
+                        //expr = "dim_of("+in_y+")";
+                        expr = set_tdivar + "dim_of(" + in_y_expr + ")";
+                        tBaseOut = encodeTimeBase(in_y);
+                        // expr = "JavaDim(dim_of("+in_y+"), FLOAT("+(-Float.MAX_VALUE)+"), " + "FLOAT("+Float.MAX_VALUE+"))";
+                        // isCoded = true;
+
+                    }
                 }
                 if (tBaseOut != null)
                     return new RealArray(tBaseOut);
@@ -737,38 +526,30 @@ public class MdsDataProvider
                 var_idx+=2;
             }
             return GetFloatArray(expr);
-       }
+
+            //return GetFloatArray("DIM_OF("+in_y+", 1)");
+        }
 
         public String GetTitle() throws IOException
         {
             String expr;
-            String out;
             if (_jscope_set)
-            {
                 expr = "help_of(_jscope_" + v_idx + ")";
-                out = GetStringValue(expr);
-            }
             else
             {
-                if(segmentMode == SEGMENTED_YES)
-                {
-                    expr = "help_of(" + in_y + ")";
-                }
-                else
-                {
-                    _jscope_set = true;
-                    expr = "( _jscope_" + v_idx + " = (" + in_y +
-                        "), help_of(_jscope_" + v_idx + "))";
-                    var_idx+=2;
-                }
- //               if(resample)
- //                   setResampleLimits(xmin, xmax, in_y);
-                out = GetStringValue(expr);
-//                if(resample)
-//                    resetResampleLimits();
-
+                _jscope_set = true;
+                expr = "( _jscope_" + v_idx + " = (" + in_y +
+                    "), help_of(_jscope_" + v_idx + "))";
+                var_idx+=2;
             }
-           return out;
+
+            //String out = GetDefaultTitle(expr);
+            String out = GetStringValue(expr);
+
+            if (out == null)
+                _jscope_set = false;
+
+            return out;
             //return GetDefaultTitle(in_y);
         }
 
@@ -780,34 +561,41 @@ public class MdsDataProvider
             {
                 String expr;
                 if (_jscope_set)
-                {
-                    expr = "Units(dim_of(_jscope_" + v_idx + "))";
-                    out = GetStringValue(expr);
-                }
+                 //   expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+                      expr = "Units(dim_of(_jscope_" + v_idx + "))";
                 else
                 {
-                    if(segmentMode == SEGMENTED_YES)
-                    {
-                        expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
-                        out = GetStringValue(expr);
-                   }
-                    else
-                    {
-                        _jscope_set = true;
-//                        if(resample)
-//                            setResampleLimits(xmin, xmax, in_y);
-                        expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
-                        var_idx+=2;
-                        out = GetStringValue(expr);
-//                        if(resample)
-//                            resetResampleLimits();
-                    }
+                    _jscope_set = true;
+                    //expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+                    expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
+                    var_idx+=2;
                 }
+
+//                out = GetDefaultXLabel(expr);
+                out = GetStringValue(expr);
+                //return GetDefaultXLabel(in_y);
             }
             else
             {
+                /*
+                                 String expr;
+                                 if(_jscope_set)
+                    expr = "Units(_jscope_"+v_idx+")";
+                                 else
+                                 {
+                    _jscope_set = true;
+                     expr = "( _jscope_"+v_idx+" = ("+in_x+"), Units(_jscope_"+v_idx+")";
+                    var_idx++;
+                                 }
+                                 return GetDefaultYLabel(expr);
+                 */
+                //out = GetDefaultYLabel("Units(" + in_x + ")");
                 out = GetStringValue("Units(" + in_x + ")");
             }
+
+            if (out == null)
+                _jscope_set = false;
+
             return out;
         }
 
@@ -816,62 +604,43 @@ public class MdsDataProvider
         {
                         
             String expr;
-            String out;
-           
+            
             if( GetNumDimension() > 1)
-            {
-                if(segmentMode == SEGMENTED_YES)
-                {
-                    expr = "Units(dim_of(GetSegment(" + in_y + ", 1)))";
-                    out = GetStringValue(expr);
-                 }
-                else
-                {
-                    if (_jscope_set)
-                    {
-                        expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
-                        out = GetStringValue(expr);
-                    }
-                    else
-                    {
-                        _jscope_set = true;
-                        expr = "( _jscope_" + v_idx + " = (" + in_y +
-                        "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
-                        var_idx+=2;
-//                        if(resample)
-//                            setResampleLimits(xmin, xmax, in_y);
-                        out = GetStringValue(expr);
-//                        if(resample)
-//                            resetResampleLimits();
-                    }
-                }
-               return out;
-            }
-            if(segmentMode == SEGMENTED_YES)
-            {
-                expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
-                out = GetStringValue(expr);
-            }
-            else
-            {
+            {                
                 if (_jscope_set)
-                {
-                    expr = "Units(_jscope_" + v_idx + ")";
-                    out = GetStringValue(expr);
-                }
+                    expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
                 else
                 {
                     _jscope_set = true;
                     expr = "( _jscope_" + v_idx + " = (" + in_y +
-                        "), Units(_jscope_" + v_idx + "))";
+                        "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
                     var_idx+=2;
-//                    if(resample)
-//                        setResampleLimits(xmin, xmax, in_y);
-                    out = GetStringValue(expr);
-//                    if(resample)
-//                        resetResampleLimits();
                 }
+
+                //String out = GetDefaultZLabel(expr);
+                String out = GetStringValue(expr);
+                if (out == null)
+                    _jscope_set = false;
+
+                return out;
             }
+            
+            if (_jscope_set)
+                expr = "Units(_jscope_" + v_idx + ")";
+            else
+            {
+                _jscope_set = true;
+                expr = "( _jscope_" + v_idx + " = (" + in_y +
+                    "), Units(_jscope_" + v_idx + "))";
+                var_idx+=2;
+            }
+            //String out = GetDefaultYLabel(expr);
+            String out = GetStringValue(expr);
+
+
+            if (out == null)
+                _jscope_set = false;
+
             return out;
             //return GetDefaultYLabel(in_y);
         }
@@ -984,11 +753,7 @@ public class MdsDataProvider
     public FrameData GetFrameData(String in_y, String in_x, float time_min,
                                   float time_max) throws IOException
     {
-        int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-        if(numSegments != null && numSegments[0] > 0)
-            return new SegmentedFrameData(in_y, in_x, time_min, time_max, numSegments[0]);
-        else
-            return (new SimpleFrameData(in_y, in_x, time_min, time_max));
+        return (new SimpleFrameData(in_y, in_x, time_min, time_max));
     }
 
     public synchronized byte[] GetAllFrames(String in_frame) throws IOException
@@ -1107,14 +872,12 @@ public class MdsDataProvider
         return GetByteArray(in);
     }
 
-    public synchronized byte[] GetByteArray(String in) throws IOException
+    protected synchronized byte[] GetByteArray(String in) throws IOException
     {
         byte out_byte[] = null;
         ByteArrayOutputStream dosb = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(dosb);
 
-        if (!CheckOpen())
-            return null;
         Descriptor desc = mds.MdsValue(in);
         switch (desc.dtype)
         {
@@ -1304,7 +1067,7 @@ public class MdsDataProvider
             seconds = -seconds;
         }
         Calendar cal = Calendar.getInstance();
-        //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+        cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
         cal.setTime(new Date());
         cal.add(Calendar.HOUR, hours);
         cal.add(Calendar.MINUTE, minutes);
@@ -1321,7 +1084,7 @@ public class MdsDataProvider
         //First check Whether this is a date
         try {
             Calendar cal = Calendar.getInstance();
-            //cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+            cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
             DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm Z");
             //DateFormat df = new SimpleDateFormat("d-MMM-yyyy HH:mm");-
             Date date = df.parse(in + " GMT");
@@ -1566,11 +1329,9 @@ public class MdsDataProvider
     }
 
 
-    boolean setResampleLimits(double min, double max, String inY)
+    void setResampleLimits(double min, double max)
     {
         String limitsExpr;
-        boolean useResample;
-//November 2011
         if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)
         {
             long maxSpecific = jScopeFacade.convertToSpecificTime((long)max);
@@ -1578,38 +1339,13 @@ public class MdsDataProvider
 
             long dt = ((long)maxSpecific - (long)minSpecific)/MAX_PIXELS;
             limitsExpr = "JavaSetResampleLimits("+minSpecific+"UQ,"+maxSpecific+"UQ,"+dt+"UQ)";
-            useResample = true;
         }
         else
         {
             double dt = (max - min) / MAX_PIXELS;
-            String numPointsExpr;
-            if(inY.startsWith("\\"))
-                numPointsExpr = "JavaGetNumPoints(\"\\"+inY+"\","+min+","+max+","+MAX_PIXELS+")";
-            else
-                numPointsExpr = "JavaGetNumPoints(\""+inY+"\","+min+","+max+","+MAX_PIXELS+")";
-            int numPoints[];
-            try {
-                numPoints = GetIntArray(numPointsExpr);
-            }catch(Exception exc){numPoints = new int[0];}
-            if(numPoints.length > 0 && numPoints[0] < MAX_PIXELS)
-            {
-               limitsExpr = "JavaSetResampleLimits("+min + "," +max+",0Q)";
-               useResample = false;
-            }
-            else
-            {
-               limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
-               useResample = true;
-            }
+            limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
         }
         mds.MdsValue(limitsExpr);
-        return useResample;
-    }
-    void resetResampleLimits()
-    {
-       //mds.MdsValue("TreeShr->TreeResetTimeContext()");
-       mds.MdsValue("JavaSetResampleLimits(0,0,0)");
     }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException

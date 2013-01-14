@@ -69,13 +69,6 @@ class ACQ196AO(ACQ):
         fitfun = scipy.interpolate.interp1d(x,y, bounds_error=False, fill_value=0.0, kind=type.lower()) 
         return fitfun(newx)
     
-    def getDelta(self, thing):
-        import MDSplus
-        if isinstance(thing, MDSplus.TreeNode) :
-	    return self.getDelta(thing.record)
-        else :
-	    return thing.delta
- 
     def init(self, auto_store=None):
         import tempfile
         import time
@@ -118,8 +111,7 @@ class ACQ196AO(ACQ):
             if fawg_div <= 0:
                 raise Exception(message)
             message = "Could not retrieve the slope from the specified clock"
-            delta = self.getDelta(clock.record)
-            slope = delta*fawg_div
+            slope = clock.record.getDelta()*fawg_div
 
             msg="Could not read cycle type"
             cycle_type = str(self.cycle_type.record)

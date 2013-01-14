@@ -176,10 +176,7 @@ public class jScopeFacade
         if (timeMode == VMS_TIME)
                 return (inTime - VMS_BASE) / 10000L;
         else if(timeMode == EPICS_TIME)
-        {
-            long currTime =  inTime/1000000L + EPICS_BASE;
-            return currTime;
-        }
+            return inTime/1000000L + EPICS_BASE;  
         else 
             return inTime;
     }

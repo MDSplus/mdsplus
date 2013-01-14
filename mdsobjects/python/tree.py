@@ -12,9 +12,12 @@ class Tree(object):
         @rtype: None
         """
         try:
-            from _treeshr import TreeCloseAll,TreeFreeDbid,TreeRestoreContext
+            from _treeshr import RTreeCloseAll,TreeCloseAll,TreeFreeDbid,TreeRestoreContext
             if self.close:
-                status=TreeCloseAll(self.ctx)
+                if isinstance(self,CachedTree):
+                    status=RtreeCloseAll(self.ctx)
+                else:
+                    status=TreeCloseAll(self.ctx)
                 if (status & 1):
                     TreeFreeDbid(ctx)
                 if Tree.getActiveTree() == self:
@@ -598,3 +601,64 @@ class Tree(object):
         finally:
             Tree.unlock()
 
+class CachedTree(Tree):
+    """MDSplus tree with cached data updating"""
+
+    initialized=False
+
+
+    def __init__(self,tree,shot):
+        """Initialize CachedTree instance.
+        @param tree: Tree name
+        @type tree: str
+        @param shot: Shot number
+        @type shot: int
+        """
+        from _treeshr import RTreeOpen
+        try:
+            Tree.lock()
+            self.ctx=RTreeOpen(tree,shot)
+            self.close=True
+            Tree.setActiveTree(self)
+        finally:
+            Tree.unlock()
+        return
+
+    def getCachedNode(self,name):
+        """Locate node in tree. Returns CachedTreeNode if found. Use double backslashes in node names.
+        @param name: Relative or absolute tree path
+        @type name: str
+        @return: node found
+        @rtype: CachedTreeNode
+        """
+        from treenode import CachedTreeNode
+        node=self.getNode(name)
+        return CachedTreeNode(node.nid,self)
+
+    def initialize(cachesize,shared):
+        """ Configure the cachesize and shared settings. Must be called
+        before creating any instance of CachedTree.
+        @param cachesize: Size of cache
+        @type cachesize: int
+        @param shared: Flag indicating whether cache is shared or not.
+        @type shared: bool
+        @rtype: None
+        """
+        if CachedTree.initialized is False:
+            from _treeshr import RTreeConfigure
+            if shared is True:
+                is_shared=1
+            else:
+                is_shared=0
+            RTreeConfigure(is_shared,cachesize)
+            CachedTree.initialized=True
+    initialize=staticmethod(initialize)
+
+    def synch():
+        """Wait for all pending write operations in WRITE_THOUGH policy
+        @rtype: None
+        """
+        from _treeshr import RTreeSynch
+        RTreeSynch()
+    synch=staticmethod(synch)
+    

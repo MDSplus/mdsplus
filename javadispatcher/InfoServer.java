@@ -48,26 +48,6 @@ class InfoServer implements Server
         }catch(Exception exc) {System.out.println("Error closing " + tree + " shot " + shot + "\n" + exc);}
     }
 
-    public Action[] collectActions(String rootPath)
-    {
-        if(model_database == null)
-        {
-            try {
-                model_database = new Database(tree, shot);
-                model_database.open();
-            }catch(Exception exc){return null; }
-        }
-        try {
-            NidData rootNid = model_database.resolve(new PathData(rootPath), 0);
-            NidData prevDef = model_database.getDefault(0);
-            model_database.setDefault(rootNid, 0);
-            Action [] actions = collectActions();
-            model_database.setDefault(prevDef, 0);
-            return actions;
-        }catch(Exception exc){return null; }
-    }
-
-
     public synchronized Action[] collectActions()
     {
         Action action;

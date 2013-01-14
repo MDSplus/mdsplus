@@ -315,8 +315,7 @@ public class ColorMapDialog
         colorMap = wave.getColorMap();
         cmComboBox.setSelectedItem(colorMap);
         
- //       if( wave.frames != null && wave.frames.frame_type.length > 0 && wave.frames.frame_type[0] == FrameData.BITMAP_IMAGE_16 )
-       if( wave.frames != null && wave.frames.getFrameType() == FrameData.BITMAP_IMAGE_16 )
+        if( wave.frames != null && wave.frames.frame_type.length > 0 && wave.frames.frame_type[0] == FrameData.BITMAP_IMAGE_16 )
         {
             if(!is16BitImage)
             {

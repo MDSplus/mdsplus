@@ -147,7 +147,7 @@ void EventHandler::clean(SharedMemManager *memManager)
 	
 }
 
-EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, MdsTimeout *timeout)
+EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, EventAnswer *inAnsw, Timeout *timeout)
 {
 	waitLock.lock();
 	//Count 
@@ -188,7 +188,7 @@ EventAnswer *EventHandler::triggerAndCollect(char *buf, int size, int type, Shar
 
 
 
-bool EventHandler::triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, MdsTimeout *timeout)
+bool EventHandler::triggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf, Timeout *timeout)
 {
 	waitLock.lock();
 	bool ans = intTriggerAndWait(buf, size, type, memManager, false, copyBuf, timeout);
@@ -197,7 +197,7 @@ bool EventHandler::triggerAndWait(char *buf, int size, int type, SharedMemManage
 }
 
 #define MAX_NOTIFIERS 100
-bool EventHandler::intTriggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool isCollect, bool copyBuf, MdsTimeout *timeout)
+bool EventHandler::intTriggerAndWait(char *buf, int size, int type, SharedMemManager *memManager, bool isCollect, bool copyBuf, Timeout *timeout)
 {
 	Notifier *autoNotifiers[MAX_NOTIFIERS];
 

@@ -16,7 +16,7 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.22
  */
-public abstract class Array extends Data
+public abstract class Array extends Data 
 {
     int [] dims = new int[0];
     public Array(){}
@@ -31,7 +31,7 @@ public abstract class Array extends Data
     {
         return dims;
     }
-    public void setShape(int []newDims) throws MdsException
+    protected void setShape(int []newDims) throws MdsException
     {
         int size = 1;
         for(int i = 0; i < newDims.length; i++)
@@ -131,5 +131,4 @@ public abstract class Array extends Data
                 setElementAt(startIdx + i, data);
         }
     }
-
 }

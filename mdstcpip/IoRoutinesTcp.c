@@ -8,15 +8,13 @@
 #include <stdio.h>
 #include <config.h>
 #include <time.h>
-#ifdef HAVE_SYS_FILIO_H
-#include <sys/filio.h>
-#endif
 #ifdef HAVE_WINDOWS_H
 typedef int socklen_t;
 #define snprintf _snprintf
+#define MSG_NOSIGNAL 0
 #define MSG_DONTWAIT 0
 #include <io.h>
-#define close closesocket
+#define close _close
 #include <process.h>
 #define getpid _getpid
 extern int pthread_mutex_init();
@@ -33,9 +31,7 @@ extern int pthread_mutex_unlock();
 #endif
 #define SEND_BUF_SIZE 32768
 #define RECV_BUF_SIZE 32768
-#ifndef MSG_NOSIGNAL
-#define MSG_NOSIGNAL 0
-#endif
+
 static ssize_t tcp_send(int conid, const void *buffer, size_t buflen, int nowait);
 static ssize_t tcp_recv(int conid, void *buffer, size_t len);
 static int tcp_disconnect(int conid);
@@ -245,10 +241,9 @@ static int tcp_disconnect(int conid) {
       free(c->username);
       free(c);
     }
-    status = close(s);
     status = shutdown(s,2);
   }
-  fflush(stdout);
+  fflush(stdin);
   fflush(stderr);
   return status;
 }
@@ -484,7 +479,7 @@ VOID CALLBACK ShutdownEvent(PVOID arg,BOOLEAN fired) {
 
 static int GetSocketHandle(char *name) {
   char logfile[1024];
-  HANDLE h;
+  int sock;
   int ppid;
   int psock;
   char shutdownEventName[120];
@@ -497,7 +492,7 @@ static int GetSocketHandle(char *name) {
   freopen(logfile,"a",stdout);
   freopen(logfile,"a",stderr);
   if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS,TRUE,ppid), 
-		       (HANDLE)psock,GetCurrentProcess(),(HANDLE *)&h,
+		       (HANDLE)psock,GetCurrentProcess(),(HANDLE *)&sock,
 		       PROCESS_ALL_ACCESS, TRUE,DUPLICATE_CLOSE_SOURCE|DUPLICATE_SAME_ACCESS)) {
     fprintf(stderr,"Attempting to duplicate socket from pid %d socket %d\n",ppid,psock);
     perror("Error duplicating socket from parent");
@@ -507,7 +502,7 @@ static int GetSocketHandle(char *name) {
   shutdownEvent = CreateEvent(NULL,FALSE,FALSE,shutdownEventName);
   if (!RegisterWaitForSingleObject(&waitHandle,shutdownEvent,ShutdownEvent,NULL,INFINITE,0))
     perror("Error registering for shutdown event");
-  return *(int *)&h;
+  return sock;
 }
 #else
 static void ChildSignalHandler(int num) {

@@ -9,14 +9,12 @@ public fun bRadCheck(in _save, optional _debug)
 	_CORRENTI_PR_SATURATE = 2;
 	_WARNING_CAMPO_RADIALE = 4;
 	_FAULT_CAMPO_RADIALE = 8;
-   _CORRENTI_NULL_PR =  16;
 
 	_error = 0;
 	
 	_warningSignal = [];
 	_faultSignal = [];
 	_prSatCurrent = [];
-	_prNullCurrent = [];
 	
 	_signals = [ ];
 
@@ -32,6 +30,7 @@ public fun bRadCheck(in _save, optional _debug)
 	_currentSignalW = "none";
 	
 	
+	
 	_faultSigs = [];
 	_faultSigs_updown = [];
 	_faultSigs_inout = [];
@@ -41,13 +40,12 @@ public fun bRadCheck(in _save, optional _debug)
 
 	_warningSigs_inout = [];
 
-	write(*, "CHECK Saturazioni correnti PR & Corrente nulla su bobina");
+	write(*, "CHECK Saturazioni correnti PR");
 
 	
 	/*
 	_PrMaxCurrent = 330;
 	*/
-
 	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 9];
 	_level = _PrMaxCurrent * 0.9;
 	_satDuration = 0.01;
@@ -65,15 +63,10 @@ public fun bRadCheck(in _save, optional _debug)
 				_h = _j + ( _i - 1 ) * 12;
 	
 				if( _h < 10)
-            {
 					_sigName = "\\PR"//trim(adjustl(_i))//"G_I0"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
-					_sigNameRef = "\\PR"//trim(adjustl(_i))//"G_R0"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
-            }
 				else
-            {
+			
 					_sigName = "\\PR"//trim(adjustl(_i))//"G_I"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
-					_sigNameRef = "\\PR"//trim(adjustl(_i))//"G_R"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
-            }
 
 				_signal = execute(_sigName);
 			
@@ -95,26 +88,6 @@ public fun bRadCheck(in _save, optional _debug)
 					_error = _CORRENTI_PR_SATURATE;
 				}
 
-				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) ) )
-				{
-					_signalRef = execute(_sigNameRef);
-  					_yRef = abs( data(_signalRef) );
-            		_val = sum( ( _yRef > 1. ) * 1.0 );
-            		if( _val > 100 )
-            		{
-
-               			if ( sum( ( _y > 20. ) * 1.0 ) < 10 )
-               			{
-/*
-					   		if( PRESENT( _debug ) )
-*/
-						   	write(*, "Probabile saddle coil con corrente nulla  "//_sigName);
- 
- 					   		_prNullCurrent = [_prNullCurrent,  _sigName];
-					   		_error = _error | _CORRENTI_NULL_PR;
-               			}
-            		}
-				}       
 			}
 		}
 	}
@@ -146,14 +119,12 @@ public fun bRadCheck(in _save, optional _debug)
     Calcolo il campo verticale		
 */
 
-/*
 	_mod = data(build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2"));
 	_phs = data(build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_PHS_2"));
-	_m0 = ( 2./192. ) * _mod * sin( _phs );
-	_m0Sig = make_signal( _m0, ,dim_of( build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2")) );
-*/
-   _m0Sig = MarteGetUserArray(\MHD_BR::MARTE, 'br', 1);
 
+	_m0 = ( 2./192. ) * _mod * sin( _phs );
+
+	_m0Sig = make_signal( _m0, ,dim_of( build_path("\\MHD_BR::CONTROL.SIGNALS:MODE_MOD_2")) );
 
 	_Bv = resample( _m0Sig, _START_TIME, _END_TIME, _PERIOD );
 			
@@ -209,7 +180,7 @@ public fun bRadCheck(in _save, optional _debug)
 			
 			if( ( _j & 1 ) == 0 )
 			{
-			   _y = _y - _Bv;			
+			   _y = _y + _Bv;			
 			}
 			
 			_signals = [ _signals, _y ];

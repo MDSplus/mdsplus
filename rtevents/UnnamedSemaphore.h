@@ -12,39 +12,10 @@
 #include <time.h>
 #include "SystemException.h"
 #include "Timeout.h"
-#include <pthread.h>
-
-struct TimeoutStruct {
-    struct timespec waitTimeout;    
-    sem_t *sem;
-    bool *timeoutOccurred;
-    bool waitPending;
-};
-
-static void *handleTimeout(void *arg)
-{
-    struct TimeoutStruct *infoPtr = (struct TimeoutStruct *)arg;
-    nanosleep(&infoPtr->waitTimeout, NULL);
-    if(infoPtr->waitPending)
-    {
-	*infoPtr->timeoutOccurred = true;
-	sem_post(infoPtr->sem);
-    }
-    else
-    	delete infoPtr;
-    return NULL;
-}
-    
-    
-
-
 
 class EXPORT UnnamedSemaphore
 {
 	sem_t semStruct;
-
-	
-
 public:
 	void initialize(int initVal)
 	{
@@ -62,27 +33,25 @@ public:
 				throw new SystemException("Error waiting semaphore", errno);
 		}
 	}
-
-	int timedWait(MdsTimeout &timeout)
+	
+	int timedWait(Timeout &timeout)
 	{
 		struct timespec waitTimeout;
-		waitTimeout.tv_sec = timeout.getSecs();
-		waitTimeout.tv_nsec = timeout.getNanoSecs();
+		time(&waitTimeout.tv_sec);
+		waitTimeout.tv_sec += timeout.getSecs();
+		waitTimeout.tv_nsec += timeout.getNanoSecs();
+		if(waitTimeout.tv_nsec >= 1000000000)
+		{
+			waitTimeout.tv_nsec %= 1000000000;
+			waitTimeout.tv_sec++;
+		}
 		bool timeoutOccurred = false;
-		struct TimeoutStruct *timout = new TimeoutStruct;
-		timout->sem = &semStruct;
-		timout->waitTimeout = waitTimeout;
-		timout->waitPending = true;
-		timout->timeoutOccurred = &timeoutOccurred;
-		pthread_t pid;
-		pthread_create(&pid, NULL, handleTimeout,  (void *)timout);
-		int status = sem_wait(&semStruct);
-		if(timeoutOccurred)
-		    delete timout;
-		else
-		    timout->waitPending = false;
+		int status = sem_timedwait(&semStruct, &waitTimeout);
+		if(errno != ETIMEDOUT)
+			throw new SystemException("Error in UnnamedSemaphore::timedWait", errno);
 		return status;
 	}
+	
 	void  post() //return 0 if seccessful
 	{
 		int status = sem_post(&semStruct);

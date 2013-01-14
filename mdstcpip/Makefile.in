@@ -12,9 +12,9 @@ top_srcdir=@top_srcdir@
 RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH)
+CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH) @GLOBUS_CFLAGS@
 LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
+LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
@@ -55,7 +55,8 @@ ifneq "@GLOBUS_FLAVOR@" ""
 
 MdsIpGSI = @MAKESHLIBDIR@libMdsIpGSI@SHARETYPE@
 ALL_SOURCES = $(ALL_SOURCES) $(GSI_SOURCES)
-CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS) IoRoutinesGsi.o 
+CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS) IoRoutinesGsi.o makefile-header
+MAKEFILE_HEADER = makefile-header
 MDSIPSD = @MAKEBINDIR@mdsipsd
 
 endif
@@ -186,10 +187,10 @@ endif
 
 ifdef MDSIP_CONNECTIONS
 @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) 
 else
 @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) $(LIBS) $(LDFLAGS) 
+	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) $(LIBS) 
 endif
 @MAKELIBDIR@libMdsIpShr.a : $(LIB_OBJECTS)
 	$(AR) -cr $@ $(LIB_OBJECTS)
@@ -197,7 +198,7 @@ endif
 
 ifdef modules
 @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
 endif
 
 $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJECTS)
@@ -217,13 +218,13 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 	cp mkdirhier @MAKEBINDIR@mkdirhier
 
 @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@ : $(SERVER_LIB_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(SERVER_LIB_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ $(SERVER_LIB_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
 @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@ : $(TUNNEL_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(TUNNEL_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ $(TUNNEL_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
 
 @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@ : $(TCP_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(TCP_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ $(TCP_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
 
 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ :
 	ln -sf libMdsIpTunnel@SHARETYPE@ $@
@@ -234,15 +235,15 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 @MAKEBINDIR@mdsip-server-ssh : mdsip-server-ssh
 	cp mdsip-server-ssh $@
 
-#makefile-header:  
-#	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header
+makefile-header:  
+	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header
 
 ifdef MdsIpGSI
 
-#include makefile-header
+include makefile-header
 
 $(MdsIpGSI) :  IoRoutinesGsi.c
-	$(CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $$(pkg-config --cflags globus-xio) -I$(top_srcdir)/include  @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
+	$(GLOBUS_CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include  @LINKSHARED@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) -L@MAKESHLIBDIR@ -lMdsIpShr
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp mdsipsd $@

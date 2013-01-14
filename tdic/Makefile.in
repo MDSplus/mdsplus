@@ -41,7 +41,7 @@ install:
 	$(INSTALL) -m 755  @MAKEBINDIR@tdic @bindir@
 
 @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libTdiShrExt.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

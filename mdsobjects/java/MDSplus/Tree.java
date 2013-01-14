@@ -79,7 +79,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
         public java.lang.String toString()
         {
-            return("Tree("+ name + ", " +getShot() + ", " + mode + ")");
+            return("Tree("+ name + ", " +shot + ", " + mode + ")");
         }
 
 	/**
@@ -101,15 +101,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 * Returns the currently opened and active tree
 	 */
         public java.lang.String getName(){return name;}
-        public int getShot()
-        {
-            if(shot != 0)
-                return shot;
-            else
-                try {
-                    return getCurrent();
-                }catch(Exception exc){return 0;}
-        }
+        public int getShot() {return shot;}
         public java.lang.String getMode() { return mode;}
  	public native static Tree getActiveTree() throws MdsException;
         native void openTree(java.lang.String name, int shot, boolean readonly) throws MdsException;

@@ -155,7 +155,7 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
 #endif
-#ifndef xxxx__sun
+#ifndef __sun
 #ifdef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
     pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE);
 #else

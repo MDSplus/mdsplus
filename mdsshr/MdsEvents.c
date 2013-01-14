@@ -2058,12 +2058,7 @@ int MDSWfeventTimed(char *evname, int buflen, char *data, int *datlen,int timeou
     pthread_mutex_lock(&t.mutex);
     if (timeout>0) {
       static struct timespec abstime;
-#ifdef HAVE_CLOCK_GETTIME
       clock_gettime(CLOCK_REALTIME,&abstime);
-#else
-      abstime.tv_sec=time(0);
-      abstime.tv_nsec=0;
-#endif
       abstime.tv_sec+=timeout;
       status=pthread_cond_timedwait(&t.cond,&t.mutex,&abstime);
     } else {
@@ -2131,7 +2126,7 @@ static void MDSEventQueue_ast(void *qh_in, int data_len, char *data) {
   struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
   thisEvent->data_len=data_len;
   thisEvent->next=0;
-  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : (void *)0;
+  thisEvent->data= (data_len > 0) ? memcpy(malloc(data_len),data,data_len) : 0;
   LockMdsShrMutex(&eqMutex,&eqMutex_initialized);
   for (q=qh->event;q && q->next; q=q->next);
   if (q)
@@ -2191,12 +2186,7 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
 	pthread_mutex_lock(&qh->mutex);
 	if (timeout>0) {
 	  static struct timespec abstime;
-#ifdef HAVE_CLOCK_GETTIME
 	  clock_gettime(CLOCK_REALTIME,&abstime);
-#else
-          abstime.tv_sec=time(0);
-          abstime.tv_nsec=0;
-#endif
 	  abstime.tv_sec+=timeout;
 	  status=pthread_cond_timedwait(&qh->cond,&qh->mutex,&abstime);
 	} else {

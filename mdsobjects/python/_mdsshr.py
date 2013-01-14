@@ -22,16 +22,16 @@ def _load_library(name):
 
 MdsShr=_load_library('MdsShr')
 __MdsGetMsg=MdsShr.MdsGetMsg
-__MdsGetMsg.argtypes=[_C.c_int32]
+__MdsGetMsg.argtypes=[_C.c_int]
 __MdsGetMsg.restype=_C.c_char_p
 __LibConvertDateString=MdsShr.LibConvertDateString
 __LibConvertDateString.argtypes=[_C.c_char_p,_C.POINTER(_C.c_ulonglong)]
 __MDSWfeventTimed=MdsShr.MDSWfeventTimed
-__MDSWfeventTimed.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p,_C.POINTER(_C.c_int32),_C.c_int32]
+__MDSWfeventTimed.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p,_C.POINTER(_C.c_int),_C.c_int]
 __MDSEventCan=MdsShr.MDSEventCan
-__MDSEventCan.argtypes=[_C.c_int32,]
+__MDSEventCan.argtypes=[_C.c_int,]
 __MDSEvent=MdsShr.MDSEvent
-__MDSEvent.argtypes=[_C.c_char_p,_C.c_int32,_C.c_void_p]
+__MDSEvent.argtypes=[_C.c_char_p,_C.c_int,_C.c_void_p]
 
 class MdsException(Exception):
     pass
@@ -56,15 +56,12 @@ def MDSEventCan(eventid):
 
 def MDSWfeventTimed(event,timeout):
     import numpy as _N
-    from mdsarray import makeArray,Uint8Array
+    from mdsarray import makeArray
     buffer=_N.uint8(0).repeat(repeats=4096)
-    numbytes=_C.c_int32(0)
+    numbytes=_C.c_int(0)
     status=__MDSWfeventTimed(event,len(buffer),buffer.ctypes.data,numbytes,timeout)
     if (status & 1) == 1:
-	if numbytes.value == 0:
-	  return makeArray(Uint8Array([]))
-        else:
-          return makeArray(buffer[range(numbytes.value)])
+        return makeArray(buffer[range(numbytes.value)])
     elif (status == 0):
         raise MdsTimeout,"Event %s timed out." % (str(event),)
     else:
@@ -80,26 +77,6 @@ def MdsGetMsg(status,default=None):
     if status==0 and not default is None:
         return default
     return __MdsGetMsg(status)
-
-def MdsSerializeDscOut(desc):
-    from _descriptor import descriptor_xd,descriptor
-    xd=descriptor_xd()
-    if not isinstance(desc,descriptor):
-        desc=descriptor(desc)
-    status=MdsShr.MdsSerializeDscOut(_C.pointer(desc),_C.pointer(xd))
-    if (status & 1) == 1:
-      return xd.value
-    else:
-      raise MdsException,MdsGetMsg(status)
-
-def MdsSerializeDscIn(bytes):
-    from _descriptor import descriptor_xd
-    xd=descriptor_xd()
-    status=MdsShr.MdsSerializeDscIn(bytes.ctypes.data,_C.pointer(xd))
-    if (status & 1) == 1:
-      return xd.value
-    else:
-      raise MdsException,MdsGetMsg(status)
 
 def MdsDecompress(value):
     from _descriptor import descriptor_xd
@@ -143,9 +120,9 @@ def DateToQuad(date):
 
 try:
     __MDSQueueEvent=MdsShr.MDSQueueEvent
-    __MDSQueueEvent.argtypes=[_C.c_char_p,_C.POINTER(_C.c_int32)]
+    __MDSQueueEvent.argtypes=[_C.c_char_p,_C.POINTER(_C.c_int)]
     __MDSGetEventQueue=MdsShr.MDSGetEventQueue
-    __MDSGetEventQueue.argtypes=[_C.c_int32,_C.c_int32,_C.POINTER(_C.c_int32),_C.POINTER(_C.c_void_p)]
+    __MDSGetEventQueue.argtypes=[_C.c_int,_C.c_int,_C.POINTER(_C.c_int),_C.POINTER(_C.c_void_p)]
     def MDSQueueEvent(event):
         """Establish an event queue for an MDSplus event. Event occurrences will be monitored and accumulate
         until calls to MDSGetEventQueue retrieves the events occurences.
@@ -154,7 +131,7 @@ try:
         @return: eventid used in MDSGetEventQueue, and MDSEventCan
         @rtype: int
         """
-        eventid=_C.c_int32(0)
+        eventid=_C.c_int(0)
         status = __MDSQueueEvent(event,eventid)
         if status&1 == 1:
             return eventid.value
@@ -175,7 +152,7 @@ try:
         """
         from mdsarray import makeArray
         import numpy as _N
-        dlen=_C.c_int32(0)
+        dlen=_C.c_int(0)
         bptr=_C.c_void_p(0)
         status=__MDSGetEventQueue(eventid,timeout,dlen,bptr)
         if status==1:

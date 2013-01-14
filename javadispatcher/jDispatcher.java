@@ -375,10 +375,6 @@ class jDispatcher
 
     public void setTree(String tree, int shot)
     {
-	Database mdsTree = new Database(tree, shot);
-	try {
-		mdsTree.open();
-	}catch(Exception exc) {System.err.println("Cannot open tree " + tree + " " + shot);} 
         this.tree = tree;
         this.shot = shot;
         Enumeration server_list = servers.elements();
@@ -397,26 +393,6 @@ class jDispatcher
         while (server_list.hasMoreElements()) {
             Server curr_server = (Server) server_list.nextElement();
             Action[] curr_actions = curr_server.collectActions();
-            if (curr_actions != null) {
-                for (int i = 0; i < curr_actions.length; i++)
-                    insertAction(curr_actions[i], i == 0,
-                                 i == curr_actions.length - 1);
-            }
-        }
-        buildDependencies();
-        //fireMonitorEvent(null, MONITOR_BUILD_END);
-    }
-    public synchronized void collectDispatchInformation(String rootPath)
-    /**
-         request actions to each server and insert them into hashtables
-     */
-    {
-        clearTables();
-        //fireMonitorEvent(null, MONITOR_BUILD_BEGIN);
-        Enumeration server_list = servers.elements();
-        while (server_list.hasMoreElements()) {
-            Server curr_server = (Server) server_list.nextElement();
-            Action[] curr_actions = curr_server.collectActions(rootPath);
             if (curr_actions != null) {
                 for (int i = 0; i < curr_actions.length; i++)
                     insertAction(curr_actions[i], i == 0,

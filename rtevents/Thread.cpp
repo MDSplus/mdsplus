@@ -37,13 +37,11 @@ void handlerWithArg(WithArg *withArg)
 		if(status == -1)
 			printf("Failed to set Thread affinity\n");
 		*/
-#ifdef HAVE_SCHED_SETSCHEDULER
 		struct sched_param param;
 		param.sched_priority = withArg->priority;
 		status = sched_setscheduler(pid, withArg->policy, &param);
 		if(status == -1)
 			printf("Failed to set Thread attributes\n");
-#endif
 	}
 	
 		

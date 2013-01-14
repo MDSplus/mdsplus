@@ -16,6 +16,8 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 SOURCES = MDSplus/Action.java\
 MDSplus/Apd.java\
 MDSplus/Array.java\
+MDSplus/CachedTree.java\
+MDSplus/CachedTreeNode.java\
 MDSplus/Call.java\
 MDSplus/Compound.java\
 MDSplus/Condition.java\

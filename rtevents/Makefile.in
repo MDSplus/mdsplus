@@ -45,7 +45,7 @@ install:
 
 
 @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS)
+	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) 
 
 @MAKELIBDIR@libRtEventsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
@@ -55,7 +55,7 @@ install:
 	mkdir @MAKELIBDIR@
 
 @MAKEBINDIR@EventConnector : @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ 
-	$(CXX) -o $@ $(CXXFLAGS)  EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
+	$(CXX) -o $@ $(CXXFLAGS)  EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS)
 	
 
 RtEventsShr.exports: RtEventsShr.def

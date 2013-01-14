@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---idl
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---motif,mdsplus--FLAVOR---kernel
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: MDSplus integration into IDL (Interactive Data Language) from ITT.

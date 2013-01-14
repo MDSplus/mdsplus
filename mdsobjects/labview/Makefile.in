@@ -10,7 +10,7 @@ CFLAGS=@CFLAGS@ @LV_INC@ -fPIC
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@ @LV_INC@
 LDFLAGS=@LDFLAGS@
 CLIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr -lLV @LIBS@ 
+CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr -lMdsObjectsCppShr -lLV @LIBS@ 
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 CSOURCES = lv.c
@@ -23,12 +23,14 @@ COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a 
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a @MAKESHLIBDIR@MDSobjectsLVShr @MAKESHLIBDIR@libMDSobjectsLVShr
 
 clean:
 	@ $(RM) $(COBJECTS)
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
+	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr
+	@ $(RM) @MAKESHLIBDIR@MDSobjectsLVShr
 	@ $(RM) @MAKESHLIBDIR@libLV@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libLV.a
 	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@
@@ -38,21 +40,25 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	if [ ! -d ../../LabView/mdsobjects ] ; then \
-                mkdir ../../LabView/mdsobjects; \
-                chmod 755 ../../LabView/mdsobjects; \
+	if [ ! -d @exec_prefix@/LabView ] ; then \
+                mkdir @exec_prefix@/LabView; \
+                chmod 755 @exec_prefix@/LabView; \
         fi;
-	@ cp library/*.vi ../../LabView/mdsobjects
-	@ cp library/*.lvlib ../../LabView/mdsobjects
+	tar cf - --exclude="CVS" MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
 	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
-	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMDSobjectsLVShr.a @libdir@; \
+		mkdir @libdir@; \
+		chmod 755 @libdir@; \
 	fi;
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libLV@SHARETYPE@ @libdir@
+
+	if test @SHARETYPE@ != .a ; then \
+		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKESHLIBDIR@libLV.a @libdir@;\
+	fi;
+
 	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
@@ -71,3 +77,10 @@ install:
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
+
+@MAKESHLIBDIR@libMDSobjectsLVShr :
+	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
+
+@MAKESHLIBDIR@MDSobjectsLVShr :
+	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
+

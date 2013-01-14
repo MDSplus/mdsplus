@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="9,00"
 	Name="MDSobjectsLVShr"
 	ProjectGUID="{EDB86082-C257-4799-A4A6-8A18B2CDFB6F}"
 	RootNamespace="MDSobjectsLVShr"
@@ -127,7 +127,7 @@
 				EnableIntrinsicFunctions="true"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)\tdishr&quot;;&quot;$(SolutionDir)\mdsobjects\cpp&quot;;&quot;$(SolutionDir)\include&quot;;&quot;$(LABVIEW_DIR)\cintools&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MDSOBJECTSLVSHR_EXPORTS"
-				RuntimeLibrary="2"
+				RuntimeLibrary="3"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"

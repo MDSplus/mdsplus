@@ -48,9 +48,7 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 	
 	_status = 1;
 
-	
     write(*, 'FASTCAM store');
-
 /*
 
     _camera_id = if_error(data(DevNodeRef(_nid, _N_CAMERA_ID)), _INVALID);
@@ -214,50 +212,50 @@ public fun FASTCAM__store(as_is _nid, optional _method)
  /*
 		 write(*, "frame range ", _frameRange);
  */
-
 		_totalFrame = size( _frameRange );
-		_frameIndexes = [];
-		for(_n = 0, _k=0;  _n < _totalFrame - 1 && _k < size( _resample_source ); _n++ )
+	
+		_frameTimes = [];
+		_imgs = [];
+	    _k = 0;
+
+
+
+		_k = 0;
+
+		for(_n = 0;  _n < _totalFrame - 1 && _k < size( _resample_source ); _n++ )
 		{			
-			for(;	_k < (size( _resample_source ) - 1) &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ );
+							
 
-		    if( _frameRange[ _n ] <= _resample_source[ _k ]  && _frameRange[ _n + 1] > _resample_source[ _k ] ) _frameIndexes = [ _frameIndexes, _n];
+		     for(;	_k < (size( _resample_source ) - 1) &&  _resample_source[ _k ] < _frameRange[ _n ]  ; _k++ )
+				;
+
+		    if( _frameRange[ _n ] <= _resample_source[ _k ]  && _frameRange[ _n + 1] > _resample_source[ _k ] )
+			{
+/*			
+				write(*, "Leggo frame ", _n, _k , _frameRange[ _n ], _resample_source[ _k ] , _frameRange[ _n + 1 ],( _frameRange[ _n + 1] > _resample_source[ _k ] ) );
+*/			
+				_frameTimes = [ _frameTimes, _frameRange[ _n ]];
+
+				if(_remote != 0)
+					_data = MdsValue('FastCamHWReadFrame($, $, $)', _n, _v_res, _h_res);
+				else
+					_data = FastCamHWReadFrame( _startFrameIdx, _n, _v_res, _h_res);
+				
+				if( esize( _data ) < 0)
+				{
+					write(*, "Interroto");
+					break;
+				}
+
+				_imgs = [ _imgs, _data ];
+				_k++;
+			}
+			
 		}
 
-		_frameTimes = _frameRange[ _frameIndexes ];
-		_n_frames   = size( _frameIndexes );
+		_n_frames = size( _frameTimes );
+		write(*, "Num frames ", _n_frames);
 
-		_max_frames = 25*(1024/_v_res)*(1024/_h_res);
-		_imgs	    = [];
-		for(_idx_start = 0;  _idx_start < _n_frames; _idx_start = _idx_start + _max_frames)
-		{
-			_idx_end = _idx_start + _max_frames -1;
-			if( _idx_end >= _n_frames)
-			{
-				_idx_end    = _n_frames - 1;
-				_num_frames = _idx_end - _idx_start + 1;
-			}
-			else _num_frames = _max_frames;
-			
-			_startFrames = _frameIndexes[ _idx_start : _idx_end ];
-			
-			write(*, "Leggo dal frame ", _frameIndexes[ _idx_start ]);
-			write(*, "       al Frame ", _frameIndexes[ _idx_end ]);
-			if(_remote != 0)
-				_data = MdsValue('FastCamHWReadFrames($, $, $, $)', _startFrames, _num_frames, _v_res, _h_res);
-			else
-				_data = FastCamHWReadFrames( _startFrames, _num_frames, _v_res, _h_res);
-			
-			
-			if( esize( _data ) < 0)
-			{
-				write(*, "Interroto");
-				break;
-			}
-			_imgs = [ _imgs, _data ];
-		}
-		
-		write(*, "Letti num frames ", _n_frames);
 		if( _n_frames > 0 )
 		{
 			_y_pixel = _v_res;
@@ -269,9 +267,8 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 			_dim = make_dim(make_window(0, _n_frames - 1, _frameRange[0]), _frameRange );
 	*/
 			_video = compile('build_signal(($VALUE), set_range(`_x_pixel, `_y_pixel, `_n_frames, `_imgs), (`_frameTimes))');
+			
 			_video_nid =  DevHead(_nid) + _N_VIDEO;
-			
-			
 			_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
 			if( !(_status & 1) )
 			{
@@ -336,8 +333,6 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 		_signal_nid =  DevHead(_nid) + _N_DATA;
 		_dim = make_dim(make_window(0, _num_samples - 1, _trigs[0]+_deltaFrameTime), make_range(*,*,_period));
 		_signal = compile('build_param(build_signal(($VALUE), (`_data), (`_dim)),(`_help),)');
-
-			
 		_status = TreeShr->TreePutRecord(val(_signal_nid),xd(_signal),val(0));
 		if(! _status)
 		{

@@ -40,7 +40,6 @@ class CAENDT5720(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
 	  'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'store',head))",
 	  'options':('no_write_shot',)})
-    parts.append({'path':':NUM_CHANNELS', 'type':'numeric','value':0})
     cvV1718 = 0L                    # CAEN V1718 USB-VME bridge    
     cvV2718 = 1L                    # V2718 PCI-VME bridge with optical link       
     cvA2818 = 2L                    # PCI board with optical link                  
@@ -125,9 +124,8 @@ class CAENDT5720(Device):
         currStartIdx = self.segmentSamples - self.pts + self.startIdx
         currEndIdx = self.segmentSamples - self.pts + self.endIdx
         currChanSamples = currEndIdx - currStartIdx
-	numChannels = self.device.num_channels.data()
         channels = [] 
-        for chan in range(0,numChannels):
+        for chan in range(0,4):
           channels.append([])
 
         segmentCounter = 0
@@ -147,7 +145,7 @@ class CAENDT5720(Device):
             Data.execute('DevLogErr($1,$2)', self.nid, 'Error reading number of acquired segments' )
             return 0
           actSegments = actSegments.value
-          for chan in range(0,numChannels):
+          for chan in range(0,4):
             channels[chan] = ndarray(currChanSamples * actSegments)
           for segmentIdx in range(0,actSegments):
             segment= DT5720Data()
@@ -165,16 +163,16 @@ class CAENDT5720(Device):
             chanSizeInShorts = chanSizeInInts * 2
             startTime = self.trigTime + (counter + self.startIdx) * self.dt
             endTime = startTime + currChanSamples * self.dt
-            for chan in range(0,numChannels):
+            for chan in range(0,4):
               if (self.chanMask & (1 << chan)) != 0:
                 channels[chan][segmentIdx*currChanSamples : segmentIdx*currChanSamples + currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
-            #endfor  chan in range(0,numChannels)
+            #endfor  chan in range(0,4)
           #endfor segmentIdx in range(0,actSegments):
 ##############################################
           if actSegments > 0:
             dim = Range(Float64(segmentCounter * currChanSamples), Float64((segmentCounter + actSegments) * currChanSamples - 1), Float64(1.))
 #            print 'DIM: ', dim
-            for chan in range(0,numChannels):
+            for chan in range(0,4):
               if (self.chanMask & (1 << chan)) != 0:
                 data = Int16Array(channels[chan])
                 try:
@@ -183,7 +181,7 @@ class CAENDT5720(Device):
                   Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot write Segment in tree')		  
                   return 0
             #endif actSegments > 0
-          #endfor chan in range(0,numChannels) 
+          #endfor chan in range(0:4) 
           segmentCounter = segmentCounter + actSegments
 ###################################################
           if(self.stopReq):
@@ -259,7 +257,6 @@ class CAENDT5720(Device):
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
           return 0
         self.handle = c_long(0)
-        print 'HANDLE NON TROVATO ADESSO INIZIA:IZZO DRIVER'
         status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(boardId), byref(self.handle))
         if status != 0:
           print 'Error initializing CAENVME' 
@@ -319,8 +316,7 @@ class CAENDT5720(Device):
       status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8120), byref(chanMask), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       nActChans = 0
       chanMask = chanMask.value
-      numChannels = self.num_channels.data()
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
         if (chanMask & (1 << chan)) != 0:
           nActChans = nActChans + 1
       if nActChans == 0:
@@ -330,7 +326,7 @@ class CAENDT5720(Device):
       acqMode = self.acq_mode.data()
       
       
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
         if (chanMask & (1 << chan)) != 0:
           try:        
             offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()	  
@@ -352,7 +348,7 @@ class CAENDT5720(Device):
           except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error Writing data' )
             return 0
-      #endfor chan in range(0,numChannels):
+      #endfor chan in range(0,4):
       
 
       self.worker = self.AsynchStore()        
@@ -383,17 +379,7 @@ class CAENDT5720(Device):
         return 0
 	
     #give some time
-      time.sleep(0.1)
-
-#Module type
-      devType = c_int(0)
-      status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8140), byref(devType), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-      if status != 0:
-        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing group configuration')
-        return 0
-      numChannels = devType.value >> 16
-      print 'NUM CHANNELS: ', numChannels
-      self.num_channels.putData(numChannels)
+      time.sleep(0.01)
 
 #number of segments
       segmentDict = {1:0, 2:1, 4:2, 8:3, 16:4, 32:5, 64:6, 128:7, 256:8, 512:9, 1024:10}
@@ -426,8 +412,7 @@ class CAENDT5720(Device):
       trigEnableCode = 0L
       chanEnableCode = 0L
       enabledDict = {'ENABLED':1, 'DISABLED':0}
-      numChannels = self.num_channels.data()
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
 #threshold level
         threshold = getattr(self, 'channel_%d_thresh_level'%(chan+1)).data()
         status = caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1080 + chan * 0x100), byref(c_int(threshold)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -457,7 +442,7 @@ class CAENDT5720(Device):
         trigState = getattr(self, 'channel_%d_trig_state'%(chan+1)).data()
         trigEnableCode = trigEnableCode | (enabledDict[trigState] << chan)
 
-#endfor chan in range(0,numChannels)
+#endfor chan in range(0,4)
       
 #Set channel enabled mask
       status = caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8120), byref(c_int(chanEnableCode)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -675,8 +660,7 @@ class CAENDT5720(Device):
       status = caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x8120), byref(chanMask), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       nActChans = 0
       chanMask = chanMask.value
-      numChannels = self.num_channels.data()
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
         if (chanMask & (1 << chan)) != 0:
           nActChans = nActChans + 1
       if nActChans == 0:
@@ -694,9 +678,9 @@ class CAENDT5720(Device):
       triggers = []
       deltas = []
       channels = [] 
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
         channels.append([])
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
         channels[chan] = ndarray(currChanSamples * actSegments)
       for segmentIdx in range(0,actSegments):
         segment= DT5720Data()
@@ -717,17 +701,17 @@ class CAENDT5720(Device):
         chanSizeInInts = sizeInInts/nActChans
         chanSizeInShorts = chanSizeInInts * 2
         chanOffset = 0
-        for chan in range(0,numChannels):
+        for chan in range(0,4):
           if (chanMask & (1 << chan)) != 0:
             channels[chan][segmentIdx * currChanSamples : segmentIdx * currChanSamples + currEndIdx - currStartIdx] = segment.data[chan*chanSizeInShorts+currStartIdx:chan*chanSizeInShorts+currEndIdx]
-        #endfor  chan in range(0,numChannels)
+        #endfor  chan in range(0,4)
       #endfor segmentIdx in range(0,actSegments):
       if len(self.trig_source.getShape()) > 0:
         dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig[0]),Range(Float64Array(trig) + Float64(startIdx * dt),  Float64Array(trig) + Float64(endIdx * dt), Float64Array(deltas)))
       else:
         dim = Dimension(Window(startIdx,endIdx+(actSegments - 1) * (endIdx - startIdx), trig),Range(Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(startIdx * dt),  Float64Array(triggers) - Float64(triggers[0]) + Float64(trig) + Float64(endIdx * dt), Float64Array(deltas)))
       dim.setUnits("s");
-      for chan in range(0,numChannels):
+      for chan in range(0,4):
         if (chanMask & (1 << chan)) != 0:
           try:        
             offset = getattr(self, 'channel_%d_offset'%(chan+1))	  
@@ -744,7 +728,7 @@ class CAENDT5720(Device):
           except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot write Signal in tree')		  
             return 0
-      #endfor chan in range(0,numChannels)
+      #endfor chan in range(0,4)
       return 1
     
 

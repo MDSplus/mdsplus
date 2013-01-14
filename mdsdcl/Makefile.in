@@ -58,7 +58,7 @@ mdsdcl_tables.c:	mdsdcl_tables.ocld
 		@RANLIB@ $@
 
 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lCdu -L@MAKESHLIBDIR@ -lMdsShr  $(LIBS) $(LDFLAGS)
+	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ -lCdu -L@MAKESHLIBDIR@ -lMdsShr  $(LIBS)
 
 @MAKEBINDIR@mdsdcl:	mdsdcl.o
 	$(CC) $(CFLAGS) @CC_LDFLAGS@ -o $@ mdsdcl.o -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -L@MAKELIBDIR@ -lCdu

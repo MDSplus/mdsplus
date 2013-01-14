@@ -59,7 +59,6 @@ static int lock_file(int fd, _int64 offset,  int size, int mode_in, int *deleted
 #if defined (_WIN32)
   OVERLAPPED overlapped;
   int flags;
-  *deleted=0;
   offset = ((offset >= 0) && (nowait==0)) ? offset : (lseek(fd,0,SEEK_END));
   overlapped.Offset=(int) (offset & 0xffffffff);
   overlapped.OffsetHigh=(int)(offset >> 32);

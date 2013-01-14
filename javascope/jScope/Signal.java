@@ -324,12 +324,6 @@ public class Signal
         setAxis(_x, _y, _n_points);
         CheckIncreasingX();
     }
-    public Signal(double _x[], float _y[])
-    {
-        error = asym_error = false;
-        setAxis(_x, _y,_x.length);
-        CheckIncreasingX();
-    }
 
     public Signal(long _x[], float _y[], int _n_points)
     {

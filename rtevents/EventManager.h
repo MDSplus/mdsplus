@@ -24,8 +24,8 @@ public:
 	void *addListener(const char *eventName, ThreadAttributes *threadAttr, void (*callback)(char *, char *, int, void *, bool, int, char *, int), SharedMemManager *memManager, void *callbackArg = 0, bool copyBuf = false, int retDataSize = 0);
 	void removeListener(void *eventAddr,  SharedMemManager *memManager);
 	void trigger(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true);
-	bool triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, MdsTimeout *timeout = 0);
-	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, EventAnswer *inAnsw = 0, MdsTimeout *timeout = 0);
+	bool triggerAndWait(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, Timeout *timeout = 0);
+	EventAnswer *triggerAndCollect(const char *eventName, char *buf, int size, int type, SharedMemManager *memManager, bool copyBuf = true, EventAnswer *inAnsw = 0, Timeout *timeout = 0);
 	void clean(int milliSecs, SharedMemManager *memManager);
 	void clean(const char *eventName, int milliSecs, SharedMemManager *memManager);
 	char *getSharedBuffer(int size);

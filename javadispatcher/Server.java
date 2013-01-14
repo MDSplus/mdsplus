@@ -12,9 +12,6 @@ Abstracts Server functionality
     If no such action is found return null
     */
 
-    public Action[] collectActions(String rootPath);
-    /** Collects action information to be used by the dispatcher, starting from specified subtree
-    */
     public Action[] collectActions();
     /** Collects action information to be used by the dispatcher
     */

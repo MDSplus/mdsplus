@@ -22,8 +22,6 @@ FUN PUBLIC JavaAddSignal(in _idx, in _y, optional _opt_x, optional _opt_row, opt
         _label = _opt_label;
     else
         _label = '';
-
-write(*, 'SONO LA AD SIGNAL ', kind(_x));
     
-    RETURN(JavaMds->addSignal(val(_idx), float(_x), fs_float(_y), val(long(kind(_x))),  val(SIZE(_x)), val(long(_row)), val(long(_col)), _color, _label));
+    RETURN(JavaMds->addSignal(val(_idx), float(_x), float(_y), val(SIZE(_x)), val(long(_row)), val(long(_col)), _color, _label));
 }

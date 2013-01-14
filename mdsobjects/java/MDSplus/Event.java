@@ -29,14 +29,7 @@ public class Event
     public Uint64 getTime() {return new Uint64(time);}
     public Data getData() { return data;}
     public byte []  getRaw() { return dataBuf;}
-    public synchronized void run(){notifyAll();}
-    public synchronized Data waitData()
-    {
-        try {
-            wait();
-        }catch(InterruptedException exc){return null;}
-        return getData();
-    }
+    public void run(){}
     public void dispose()
     {   
         if(disposed) return;
@@ -78,21 +71,4 @@ public class Event
     static public native void setEventRaw(java.lang.String evName, byte[] buf);
     native long registerEvent(java.lang.String name);
     native void unregisterEvent(long eventId);
-    public static void main(java.lang.String args[])
-    {
-        if(args.length == 1)
-        {
-            try {
-                Event ev = new Event(args[0]);
-                Data data = ev.waitData();
-                System.out.println(data);
-            }catch(MdsException exc){System.out.println(exc);}
-        }
-        else if(args.length == 2)
-        {
-           try {
-               Event.setEvent(args[0], Data.compile(args[1]));
-            } catch(Exception exc){System.out.println(exc);}
-        }
-    }
 }

@@ -1,4 +1,0 @@
-P gcc-45-runtime gcc-45-runtime
-P math system/library/math
-P library system/library
-P linker system/linker

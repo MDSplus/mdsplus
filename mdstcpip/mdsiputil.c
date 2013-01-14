@@ -1,4 +1,4 @@
-#include <string.h>
+
 #include "mdsip.h"
 #ifdef BUFSIZ
 #undef BUFSIZ

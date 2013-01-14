@@ -15,9 +15,6 @@ extern "C" {
 	int MDSUdpEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 	int MDSUdpEventCan(int id);
 	int MDSUdpEvent(char *eventNameIn, int bufLen, char *buf);
-	int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
-	int MDSEventCan(int id);
-	int MDSEvent(char *eventNameIn, int bufLen, char *buf);
 	void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, int, void *), void *callbackArg);
 	void MdsEventRemoveListener(void *eventId);
 	int MdsEventTrigger(char *name, char *buf, int size);
@@ -41,13 +38,11 @@ extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
 	
 void Event::connectToEvents()
 {
-	//MDSUdpEventAst(eventName, eventAst, this, &eventId);
-	MDSEventAst(eventName, eventAst, this, &eventId);
+	MDSUdpEventAst(eventName, eventAst, this, &eventId);
 }
 void Event::disconnectFromEvents()
 {
-//	MDSUdpEventCan(eventId);
-	MDSEventCan(eventId);
+	MDSUdpEventCan(eventId);
 }
 
 Data *Event::getData()
@@ -70,7 +65,6 @@ void REvent::disconnectFromEvents()
 
 Event::Event(char *evName)
 {
-	sem.initialize(0);
 	eventBufSize = 0;
 	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
@@ -102,13 +96,11 @@ void Event::setEvent(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
-//	MDSUdpEvent(eventId);
-	MDSEvent(evName, bufLen, buf);
+	MDSUdpEvent(evName, bufLen, buf);
 }
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
 {
-//	MDSUdpEvent(evName, bufLen, buf);
-	MDSEvent(evName, bufLen, buf);
+	MDSUdpEvent(evName, bufLen, buf);
 }
 
 void REvent::setEvent(char *evName, Data *evData)
@@ -117,21 +109,13 @@ void REvent::setEvent(char *evName, Data *evData)
 	char *buf = evData->serialize(&bufLen);
 	MdsEventTrigger(evName, buf, bufLen);
 }
-
 void REvent::setEventAndWait(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
 	MdsEventTriggerAndWait(evName, buf, bufLen);
 }
-
-void REvent::setEventRaw(char *evName, int bufLen, char *buf)
-{
-	MdsEventTrigger(evName, buf, bufLen);
-}
-
 void REvent::setEventRawAndWait(char *evName, int bufLen, char *buf)
 {
 	MdsEventTriggerAndWait(evName, buf, bufLen);
 }
-

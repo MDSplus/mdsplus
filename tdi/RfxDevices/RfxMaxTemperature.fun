@@ -16,7 +16,7 @@
 
 */
 
-public fun RfxMaxTemperature(in _sonda, in _pol,  optional in _last)
+public fun RfxMaxTemperature(in _sonda, in _pol)
 {	
 	_x = [];
 	_y = [];
@@ -32,15 +32,11 @@ public fun RfxMaxTemperature(in _sonda, in _pol,  optional in _last)
 		_data = if_error( data(build_path(_tag)), _error = 1);
 		if( !_error)
 		{
-
 /*
 write(*, "Tags ", _tag);
 */
 		   _x = [ _x, ( _i - 1 ) * 5 ];
-		  if( present( _last ) )
-		       _y = [ _y,  _data[ size(_data) - 1 ]  ];	
-		  else
-		       _y = [ _y,  maxval( _data ) ];
+		   _y = [ _y, maxval( _data ) ];
 		}
 
 	}

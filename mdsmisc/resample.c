@@ -49,8 +49,8 @@ struct descriptor *Resample(struct descriptor *in_sig,struct descriptor *in_x)
 { 
 
 #define return_on_error(func,error) if (!((status = func)&1)) return error
-//#define interp(x1,y1,x2,y2,x) (((y2)-(y1))/((x2)-(x1)) * (x) + (((y1)*(x2))-((y2)*(x1)))/((x2)-(x1)))
-#define interp(x1,y1,x2,y2,x) (y1)+((y2)-(y1))/((x2)-(x1))*((x)-(x1))
+#define interp(x1,y1,x2,y2,x) (((y2)-(y1))/((x2)-(x1)) * (x) + (((y1)*(x2))-((y2)*(x1)))/((x2)-(x1)))
+
 
 int status;
 static EMPTYXD(sig_x_xd);
@@ -114,10 +114,7 @@ int sig_elements;
     else
     {
       for (;j<sig_elements;j++) if (new_x_f[i] <= sig_x_f[j]) break;
-//      if (new_x_f[i]==sig_x_f[j])
-//        new_y_f[i]=sig_y_f[j];
-//      else
-        new_y_f[i] = interp(sig_x_f[j-1],sig_y_f[j-1],sig_x_f[j],sig_y_f[j],new_x_f[i]);
+      new_y_f[i] = interp(sig_x_f[j-1],sig_y_f[j-1],sig_x_f[j],sig_y_f[j],new_x_f[i]);
     }
   }
   {

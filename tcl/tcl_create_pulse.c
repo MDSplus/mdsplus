@@ -499,8 +499,6 @@ int   TclCreatePulse()
         else
             status = TreeCreatePulseFile(shot,0,0);
        }
-    else
-      status = sts;
 #ifdef vms
     if (~status & 1)
         lib$signal(status,0,0);

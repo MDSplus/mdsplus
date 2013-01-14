@@ -150,7 +150,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
           free(node_name);
 	  new_ptr->INFO.TREE_INFO.child = 0;
 	  LoadShort(idx,&new_ptr->conglomerate_elt);
-	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE)
+	  if (node_type == BROTHER_TYPE_NOWILD)
 	  {
 	    status = TreeInsertChild(parent, new_ptr, dblist->tree_info->header->sort_children);
 	    new_ptr->usage = TreeUSAGE_STRUCTURE;

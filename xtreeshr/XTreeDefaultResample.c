@@ -578,7 +578,7 @@ EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct desc
 
 
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
-						 struct descriptor *inDeltaD, char mode, struct descriptor_xd *outSignalXd)
+						 struct descriptor *deltaD, char mode, struct descriptor_xd *outSignalXd)
 {
 	char resampleExpr[64];
 	struct descriptor resampleExprD = {0, DTYPE_T, CLASS_S, resampleExpr};
@@ -603,9 +603,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 	DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0); 
 	DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
 	DESCRIPTOR_SIGNAL_1(outSignalD, &outDataArray, 0, &outDimArray);
-	struct descriptor *deltaD;
 
-	deltaD = inDeltaD;
 //Removed Range management due to the inaccurate reconstruction of TDISHR
 
 /*	if(inSignalD->dimensions[0]->class == CLASS_R && inSignalD->dimensions[0]->dtype == DTYPE_RANGE && 
@@ -635,8 +633,6 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 		status = XTreeConvertToLongDelta(deltaD, &delta64);
 		if(!(status & 1))
 			return status;
-		if(delta64 == 0)
-			deltaD = 0;
 	}
 
 

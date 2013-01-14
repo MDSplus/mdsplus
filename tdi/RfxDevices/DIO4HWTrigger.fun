@@ -1,6 +1,5 @@
 public fun DIO4HWTrigger(in _nid, in _board_id, in _channel_mask)
 {
-	write(*, 'DIO4HWTrigger', _board_id, _channel_mask);
 
 
 /* Initialize Library if the first time */

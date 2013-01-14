@@ -1183,7 +1183,7 @@ public class WaveInterface
                 curr_error = dp.ErrorString();
                 evaluated[0] = false;
             }
-            //frames.WaitLoadFrame();
+            frames.WaitLoadFrame();
 
             this.wave.SetMode(mode);
 
@@ -1569,17 +1569,14 @@ public class WaveInterface
             }
             else
             {
-//GAB 2011: Apparently the check wd == null waforgotten
-                if(wd == null)
-                {
+//                if(xmin != -HUGE || !full_flag) //If we actually have some limit
                     if(!full_flag) //If we actually have some limit
-                    {
-                        wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
-                                                     Waveform.MAX_POINTS);
-                    }
-                    else
-                        wd = dp.GetWaveData(in_y[curr_wave]);
+                {
+                    wd = dp.GetResampledWaveData(in_y[curr_wave], xmin, xmax,
+                                                 Waveform.MAX_POINTS);
                 }
+                else
+                    wd = dp.GetWaveData(in_y[curr_wave]);
             }
             if (wd == null)
                 curr_data = null;
