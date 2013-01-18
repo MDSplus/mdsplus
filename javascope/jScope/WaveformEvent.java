@@ -49,7 +49,7 @@ public class WaveformEvent
     float data_value = Float.NaN;
     boolean is_mb2 = false;
 
-    long dateValue;
+    private long dateValue;
     boolean showXasDate = false;
 
     public WaveformEvent(Object source, int event_id, String status_info)
@@ -89,12 +89,14 @@ public class WaveformEvent
         point_value = val;
     }
 
+
     public void setDateValue(long date)
     {
         long dayMilliSeconds = 24 * 60 * 60 * 1000;
         dateValue = date - (date % dayMilliSeconds );
         showXasDate = true;
     }
+
 
     public float getPointValue()
     {
@@ -182,6 +184,25 @@ public class WaveformEvent
         return (new String(sb));
     }
 
+    private String getFormattedDate(long d, String format)
+    {
+        DateFormat dateFormat = new SimpleDateFormat(format);
+        Date date = new Date();
+
+
+        date.setTime(Math.abs(d));
+        if( d <= 86400000 )
+        {
+           // if the date to convert is in the date 1 Jan 1970
+           // is whown only the huor and the time xone must be set
+           // to GTM to avoid to add the hours of the time zone
+            dateFormat = new SimpleDateFormat("H:mm:ss.SSS");
+            dateFormat.setTimeZone(new SimpleTimeZone(0, "GMT") );
+            return dateFormat.format(date).toString();
+
+        }
+        return dateFormat.format(date).toString();
+    }
     public String toString()
     {
         String s = null;
@@ -200,6 +221,7 @@ public class WaveformEvent
 
                 if(showXasDate)
                 {
+                    /*
                     DateFormat format = new SimpleDateFormat("d-MMM-yyyy HH:mm:ss");
                     DateFormat format1 = new SimpleDateFormat("HHH:mm:ss");
                     //format.setTimeZone(new SimpleTimeZone(0, "GMT") );
@@ -208,12 +230,12 @@ public class WaveformEvent
                     date.setTime(dateValue + (long)point_x);
                     Date date1 = new Date();
                     date1.setTime((long)delta_x);
-
-                    s = SetStrSize("[" +  format.format(date).toString() +
+                    */
+                    s = SetStrSize("[" +  getFormattedDate( dateValue + (long)point_x , "d-MMM-yyyy HH:mm:ss" ) + //format.format(date).toString() +
                                     ", "
                                     + Waveform.ConvertToString(point_y, false) +
                                     "; dx "
-                                    + format1.format(date1).toString() +
+                                    + getFormattedDate( (long)delta_x , "HHH:mm:ss" ) + //format1.format(date1).toString() +
                                     "; dy "
                                     + Waveform.ConvertToString(delta_y, false) +
                                     "]", 80);
@@ -251,11 +273,14 @@ public class WaveformEvent
                         if (!tf.equals(nan_f))
                             if(showXasDate)
                             {
+                                /*
                                 DateFormat format = new SimpleDateFormat("d-MMM-yyyy HH:mm:ss");
                                 //format.setTimeZone(new SimpleTimeZone(0, "GMT"));
                                 Date date = new Date();
                                 date.setTime(dateValue + (long)time_value);
-                                xt_string = ", T = " + format.format(date).toString();
+                                 * 
+                                 */
+                                xt_string = ", T = " + getFormattedDate( /*dateValue*/ + (long)time_value , "d-MMM-yyyy HH:mm:ss" );// format.format(date).toString();
                                 showXasDate = false;
                             }
                             else
@@ -270,11 +295,14 @@ public class WaveformEvent
                         int string_size = 30;
                         if(showXasDate)
                         {
+                            /*
                             DateFormat format = new SimpleDateFormat("d-MMM-yyyy HH:mm:ss");
                             //format.setTimeZone(new SimpleTimeZone(0, "GMT"));
                             Date date = new Date();
                             date.setTime(dateValue + (long)point_x);
-                            x_string = format.format(date).toString();
+                            //x_string = format.format(date).toString();
+                             */
+                            x_string = getFormattedDate( /*dateValue*/ + (long)point_x , "d-MMM-yyyy HH:mm:ss" );
                             string_size = 35;
                         }
                         else

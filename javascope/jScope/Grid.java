@@ -526,6 +526,16 @@ public class Grid
                         //--dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
                         //GABdfSubSec.setTimeZone(TimeZone.getDefault());
 
+                        if( datel <= 86400000 )
+                        {
+                           // if the date to convert is in the date 1 Jan 1970
+                           // is whown only the huor and the time xone must be set
+                           // to GTM to avoid to add the hours of the time zone
+                            df.setTimeZone(new SimpleTimeZone(0, "GMT"));
+                            dfSubSec.setTimeZone(new SimpleTimeZone(0, "GMT"));
+
+                        }
+
                         Date date = new Date();
                         date.setTime(datel);
                         currStringSubSec = dfSubSec.format(date).toString();
@@ -540,8 +550,7 @@ public class Grid
 
                         if(i == 0 || !new_date_string.equals(prev_date_string))
                         {
-                            curr_date_string = prev_date_string =
-                                new_date_string;
+                            curr_date_string = prev_date_string = new_date_string;
                         }
                         else
                             curr_date_string = null;
