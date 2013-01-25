@@ -44,9 +44,9 @@ else
                 result = mdsthing.getInt;
             case 'MDSplus.Int16'
                 result = mdsthing.getShort;
-            case 'MDSplus.Int8Array'
+            case 'MDSplus.Int8'
                 result = mdsthing.getByte;
-            case 'MDSplus.Float64Array'
+            case 'MDSplus.Float64'
                 result = mdsthing.getDouble;
             case 'MDSplus.Float32'
                 result = mdsthing.getFloat;

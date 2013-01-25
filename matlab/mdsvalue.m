@@ -31,7 +31,11 @@ function [ result, status ] = mdsvalue( expression, varargin)
            args(k+1) = MDSarg(cell2mat(varargin(k)));
        end
        status = 0;
-       expr = strcat('mdsvalue($',repmat(',$', 1,size(varargin, 2)),')');
+       if size(varargin, 2) > 0
+         expr = strcat('mdsvalue($',repmat(',$', 1,size(varargin, 2)),')');
+       else
+           expr = 'mdsvalue($)';
+       end
        result = Data.execute(expr, args);
        result = NATIVEvalue(result);
    end

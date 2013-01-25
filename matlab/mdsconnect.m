@@ -21,7 +21,7 @@ function [ status ] = mdsconnect( host )
    end
    if status == 0
        status = Data.execute(strcat('mdsconnect("',host, '")'), javaArray('MDSplus.Data', 1));
-       if status == 0
+       if status == 1
            connection = host;
        else
            clearvars -global connection;
