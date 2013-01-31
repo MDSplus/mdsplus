@@ -57,7 +57,7 @@ extern int   MdsIpFree();
 #define MAX(a,b) (((a) > (b)) ? (a) : (b))
 
 #define LOCAL "local"
-#define STRLEN 128
+#define STRLEN 4096
 
 /* Variables that stay set between calls */
 static SOCKET sock = INVALID_SOCKET;   /* Mark the socket as unopen */
@@ -262,7 +262,7 @@ int rMdsConnect(char *hostin)
    }
 /* If no socket, or server name has changed */
    if((sock == INVALID_SOCKET) || strcmp(host,serv) ) {
-      if((sock = AddConnection(host)) == INVALID_SOCKET)  {
+      if((sock = AddConnection(hostin)) == INVALID_SOCKET)  {
         *serv = '\0';
 	      return(0);		       /* no connection obtained */
       } else  {
