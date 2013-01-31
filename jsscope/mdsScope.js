@@ -587,11 +587,11 @@ function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
     {
         var xPixel = Math.round(this.marginPix + this.xfact * (xVal - this.xmin));
 	return xPixel;
-/*        if(xPixel >= 0 && xPixel <= this.width)
+        if(xPixel >= 0 && xPixel <= this.width)
             return xPixel;
         else
             return undefined;
-*/    }
+    }
     this.getXPixel = getXPixel;
     function getYPixel(yVal)
     {
@@ -833,7 +833,7 @@ function Wave(signals, color, g, metrics)
                 for (idx=0; idx < this.signals[signalIdx].size; idx++) {
                     var xs=this.metrics.getXPixel(this.signals[signalIdx].x[idx]);
                     var ys=this.metrics.getYPixel(this.signals[signalIdx].y[idx]);
-		    if(ys == undefined) continue;
+		    if(ys == undefined || xs == undefined) continue;
 		    if(idx > 0 && xs == prevXs)
 		    {
 			if(ys < minYs) minYs = ys;
