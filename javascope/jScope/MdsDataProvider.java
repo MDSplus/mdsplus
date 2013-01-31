@@ -396,8 +396,10 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_YES;
                     else
                         segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
+                }
+                catch(Exception exc)
                 {
+                    error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
                 }
             }
@@ -418,6 +420,7 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_NO;
                 }catch(Exception exc)
                 {
+                    error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
                 }
             }
@@ -477,6 +480,7 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_NO;
                 }catch(Exception exc)
                 {
+                    error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
                 }
             }
@@ -503,6 +507,7 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_NO;
                 }catch(Exception exc)
                 {
+                    error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
                 }
             }
