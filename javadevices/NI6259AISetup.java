@@ -37,15 +37,23 @@ public class NI6259AISetup extends DeviceSetup {
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
+        deviceChoice99 = new DeviceChoice();
         deviceChoice1 = new DeviceChoice();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceChoice2 = new DeviceChoice();
         deviceField5 = new DeviceField();
-        deviceField7 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
+        deviceChoice100 = new DeviceChoice();
+        deviceField8 = new DeviceField();
+        jPanel40 = new javax.swing.JPanel();
+        deviceChoice101 = new DeviceChoice();
+        deviceField9 = new DeviceField();
+        deviceField10 = new DeviceField();
+        deviceField11 = new DeviceField();
+        deviceField7 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel39 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
@@ -181,10 +189,10 @@ public class NI6259AISetup extends DeviceSetup {
         setDeviceTitle("National Instruments 6259 ADC");
         setDeviceType("NI6259AI");
         setHeight(600);
-        setWidth(700);
+        setWidth(860);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(5, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(6, 1));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Board Id: ");
@@ -197,12 +205,17 @@ public class NI6259AISetup extends DeviceSetup {
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Comment: ");
-        deviceField2.setNumCols(30);
+        deviceField2.setNumCols(70);
         deviceField2.setOffsetNid(2);
         deviceField2.setTextOnly(true);
         jPanel3.add(deviceField2);
 
         jPanel1.add(jPanel3);
+
+        deviceChoice99.setChoiceItems(new String[] {"TRANSIENT REC.", "CONTINUOUS"});
+        deviceChoice99.setLabelString("Acq. Mode");
+        deviceChoice99.setOffsetNid(174);
+        jPanel4.add(deviceChoice99);
 
         deviceChoice1.setChoiceItems(new String[] {"RSE", "NRSE", "DIFFERENTIAL"});
         deviceChoice1.setIdentifier("");
@@ -234,25 +247,57 @@ public class NI6259AISetup extends DeviceSetup {
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Frequency(Hz): ");
-        deviceField5.setNumCols(4);
+        deviceField5.setNumCols(8);
         deviceField5.setOffsetNid(5);
         jPanel5.add(deviceField5);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Num Samples (-1 for continuous): ");
-        deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(169);
-        jPanel5.add(deviceField7);
-
-        jPanel1.add(jPanel5);
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Ext. Clock: ");
         deviceField6.setNumCols(30);
         deviceField6.setOffsetNid(8);
-        jPanel6.add(deviceField6);
+        jPanel5.add(deviceField6);
+
+        jPanel1.add(jPanel5);
+
+        deviceChoice100.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice100.setLabelString("Trig. Mode:");
+        deviceChoice100.setOffsetNid(175);
+        jPanel6.add(deviceChoice100);
+
+        deviceField8.setLabelString("Trig. Source:");
+        deviceField8.setNumCols(50);
+        deviceField8.setOffsetNid(176);
+        jPanel6.add(deviceField8);
 
         jPanel1.add(jPanel6);
+
+        deviceChoice101.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice101.setLabelString("Use Time:");
+        deviceChoice101.setOffsetNid(177);
+        jPanel40.add(deviceChoice101);
+
+        deviceField9.setLabelString("Start Time (s):");
+        deviceField9.setNumCols(6);
+        deviceField9.setOffsetNid(178);
+        jPanel40.add(deviceField9);
+
+        deviceField10.setLabelString("End Time (s):");
+        deviceField10.setNumCols(6);
+        deviceField10.setOffsetNid(179);
+        jPanel40.add(deviceField10);
+
+        deviceField11.setLabelString("Start Idx:");
+        deviceField11.setNumCols(6);
+        deviceField11.setOffsetNid(173);
+        jPanel40.add(deviceField11);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("End Idx: ");
+        deviceField7.setOffsetNid(169);
+        deviceField7.setNumCols(6);
+        jPanel40.add(deviceField7);
+
+        jPanel1.add(jPanel40);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
@@ -1068,6 +1113,8 @@ public class NI6259AISetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice10;
+    private DeviceChoice deviceChoice100;
+    private DeviceChoice deviceChoice101;
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice12;
     private DeviceChoice deviceChoice13;
@@ -1164,14 +1211,19 @@ public class NI6259AISetup extends DeviceSetup {
     private DeviceChoice deviceChoice96;
     private DeviceChoice deviceChoice97;
     private DeviceChoice deviceChoice98;
+    private DeviceChoice deviceChoice99;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
@@ -1206,6 +1258,7 @@ public class NI6259AISetup extends DeviceSetup {
     private javax.swing.JPanel jPanel38;
     private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel40;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
