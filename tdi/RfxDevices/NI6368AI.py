@@ -9,7 +9,6 @@ class NI6368AI(Device):
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """NI PXI-6368 X-series multi functional data acquisition card"""
 
-
     parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},
         {'path':':INPUT_MODE', 'type':'text', 'value':'RSE'},
@@ -118,6 +117,9 @@ class NI6368AI(Device):
         global ni6368Nids
         global niLib
         global niInterfaceLib
+
+        print 'Ciao Prova'
+
         try:
             niLib
         except:
@@ -318,14 +320,19 @@ class NI6368AI(Device):
 
 #############End Inner class AsynchStore      
     
-##########init############################################################################    
-    def init(self,arg):
+##########init############################################################################ 
+   
+    def init(self, arg):
+
+        print 'OK Init'
+
+        """
         global niLib
         global niInterfaceLib
         self.restoreInfo()
         aiConf = c_void_p(0)
 
-        """
+        """"""
         try:
             inputMode = self.inputModeDict[self.input_mode.data()]
         except: 
@@ -335,7 +342,10 @@ class NI6368AI(Device):
             numChannels = 16
         else:
             numChannels = 32
-        """
+        """"""
+
+
+        print 'OK Init'
 
         device_info = XSERIEX_DEV_INFO(0,"",0,0,0,0,0,0)
 
@@ -344,6 +354,9 @@ class NI6368AI(Device):
         if status:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading card information')
             return 0
+
+        print 'OK xseries_get_device_info'
+
 
         #Stop the segment TODO is this necessary since the reset is next 
         status = niLib.xseries_stop_ai(c_int(self.fd))
@@ -491,13 +504,13 @@ class NI6368AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 return 0
             if(enabled):
-                """
+                """"""
                     I canali sono in differenziale
                     if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
                         currChan = self.diffChanMap[chan]
                     else:
                         currChan = chan
-                """
+                """"""
                 #print 'POLARITY: ' + str(polarity) + ' GAIN: ' + str(gain) + ' INPUT MODE: ' + str(inputMode)
                 status = niLib.xseries_add_ai_channel(aiConf, c_short(currChan), gain, inputMode, c_byte(1))
                 if(status != 0):
@@ -566,19 +579,19 @@ class NI6368AI(Device):
                 return 0
 
 
-        """
+        """"""
         status = niLib.pxi6368_set_ai_convert_clk(aiConf, c_int(20), c_int(3), self.AI_CONVERT_SELECT_SI2TC, self.AI_CONVERT_POLARITY_RISING_EDGE)
         if(status != 0):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Convert Clock')
             return 0
-        """
+        """"""
         status = niLib.xseries_load_ai_conf(c_int(self.fd), aiConf)
         if(status != 0):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load configuration')
             return 0
 
 
-        """
+        """"""
         if acqMode == 'TRANSIENT REC.':
             status = niLib.pxi6368_start_ai(c_int(self.fd))
             #status = 0
@@ -586,9 +599,10 @@ class NI6368AI(Device):
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
                 return
-        """
+        """"""
 
         self.saveInfo()
+        """
         return 1
 
 ##########StartStore
