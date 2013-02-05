@@ -2,9 +2,7 @@ from MDSplus import *
 import time
 import os
 import sys
-
 from cgi import parse_qs
-
 """Use as a mod_wsgi handler in apache.
 
 This module provide access to MDSplus events and data and is designed for use with AJAX web based
@@ -130,7 +128,6 @@ Currently the following request-types are supported:
 
 """
 
-
 class application:
 
     def __init__(self, environ, start_response):
@@ -146,10 +143,11 @@ class application:
 	self.args=parse_qs(self.environ['QUERY_STRING'],keep_blank_values=1)
 	self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
         doername='do'+self.path_parts[0].capitalize()
-	if doername in vars(application):
-          self.doer=vars(application)[doername]
-        else:
-          self.doer=None
+        try:
+            exec ('from wsgi import '+doername,globals())
+            self.doer=eval(doername)
+        except Exception,e:
+            self.doer=None
 
     def __iter__(self):
       try:
@@ -166,115 +164,6 @@ class application:
         self.start('500 BAD REQUEST',[('Content-Type','text/xml')])
 	yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(e),) 
 
-    def doEvent(self):
-
-        class myevent(Event):
-            def run(self):
-                self.cancel()
-
-        status = '200 OK'
-    	response_headers=list()
-        response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
-        response_headers.append(('Pragma','no-cache'))
-        output=''
-        try:
-	  event=self.path_parts[1]
-        except:
-	  raise Exception("No event string provided, use: /event/event-name-to-waitfor[?timeout=n-secs[&handler=handler]]")
-        timeout=60
-        try:
-          timeout=int(self.args['timeout'][-1])
-        except:
-          pass
-        if 'handler' in self.args:
-          specialHandler=__import__(self.args['handler'][-1])
-          if hasattr(specialHandler,'handler'):
-            specialHandler=specialHandler.handler
-          else:
-            raise Exception("No handler function found in handler module")
-        else:
-          specialHandler=None
-        e=myevent(event,timeout)
-        e.join()
-        if e.exception is None:
-          if specialHandler is not None:
-            status,sresponse_headers,output = specialHandler(e)
-	    for h in sresponse_headers:
-	      response_headers.append(h)
-          else:
-            t=time.ctime(e.time)
-            data=e.getRaw()
-            response_headers.append(('Content-type','text/xml'))
-            output='<?xml version="1.0" encoding="ISO-8859-1" ?>'+"<event><name>%s</name><time>%s</time>" % (event,t)
-            if data is not None:
-              dtext=""
-              for c in data:
-                dtext = dtext+chr(int(c))
-              output += "<data><bytes>%s</bytes><text>%s</text></data>" % (data.tolist(),dtext)
-            output += "</event>"
-            status = '200 OK'
-        else:
-          if 'Timeout' in str(e.exception):
-	    status = '204 NO_CONTENT'
-	  else:
-            raise e.exception
- 	return status,response_headers,output
-
-    def do1darray(self):
-        if len(self.path_parts) > 2:
-           self.openTree(self.path_parts[1],self.path_parts[2])
-        expr=self.args['expr'][-1]
-        try:
-           a=makeData(Data.execute(expr).data())
-        except Exception,e:
-           raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
-    	response_headers=list()
-        response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
-        response_headers.append(('Pragma','no-cache'))
-        response_headers.append(('DTYPE',a.__class__.__name__))
-        response_headers.append(('LENGTH',str(len(a))))
-        if self.tree is not None:
-           response_headers.append(('TREE',self.tree))
-           response_headers.append(('SHOT',self.shot))
-        output=str(a.data().data)
-        status = '200 OK'
-	return (status, response_headers, output)
-
-    def do1dsignal(self):
-        if len(self.path_parts) > 2:
-           self.openTree(self.path_parts[1],self.path_parts[2])
-        expr=self.args['expr'][-1]
-        try:
-           sig=Data.execute(expr)
-           y=makeData(sig.data())
-           x=makeData(sig.dim_of().data())
-        except Exception,e:
-           raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
-    	response_headers=list()
-        response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
-        response_headers.append(('Pragma','no-cache'))
-        response_headers.append(('XDTYPE',x.__class__.__name__))
-        response_headers.append(('YDTYPE',y.__class__.__name__))
-        response_headers.append(('XLENGTH',str(len(x))))
-        response_headers.append(('YLENGTH',str(len(y))))
-        if self.tree is not None:
-           response_headers.append(('TREE',self.tree))
-           response_headers.append(('SHOT',self.shot))
-        output=str(x.data().data)+str(y.data().data)
-        status = '200 OK'
-	return (status, response_headers, output)
-
-    def doTreepath(self):
-        tree=self.path_parts[1].lower()
-        if tree+'_path' in os.environ:
-          return ('200 OK', [('Content-type','text/text')],os.environ[tree+'_path'])
-        else:
-          return ('400 BAD_REQUEST',[('Content-type','text/text')],'No path defined for '+tree)
-
-    def doGetnid(self):
-        self.openTree(self.path_parts[1],self.path_parts[2])
-        output=str(self.treeObj.getNode(self.args['node'][-1]).nid)
-        return ('200 OK',[('Content-type','text/text')],output)
 
     def openTree(self,tree,shot):
         try:
@@ -288,144 +177,4 @@ class application:
             self.treeObj=t
         except Exception,e:
             raise Exception("Error opening tree named %s for shot %d<br /><br />Error: %s" % (tree,shot,e))
-
-    def doImage(self):
-        if len(self.path_parts) > 2:
-           self.openTree(self.path_parts[1],self.path_parts[2])
-        expr=self.args['expr'][-1]
-        try:
-           d=Data.execute(expr)
-           try:
-             im=d.getImage()
-           except:
-             raise Exception("Expression does not evaluate to an image type")
-           if im.format == "MPEG":
-             response_headers=[('Content-type','video/mpeg'),('Content-Disposition','inline; filename="%s.mpeg"' % (expr,))]
-           elif im.format == "GIF":
-             response_headers=[('Content-type','image/gif'),('Content-Disposition','inline; filename="%s.gif"' % (expr,))]
-           elif im.format == "JPEG":
-             response_headers=[('Content-type','image/jpeg'),('Content-Disposition','inline; filename="%s.jpeg"' % (expr,))]
-           else:
-             raise Exception("not an known image type")
-           output=str(d.getData().data().data)
-        except Exception,e:
-           raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
-        status = '200 OK'
-        return (status, response_headers, output)
-
-    def doPlot(self):
-
-        viewbox=[0,0,10000,10000];
-        def scale(xmin,ymin,xmax,ymax,xmin_s,ymin_s,xmax_s,ymax_s,x,y):
-          px=(x-xmin)*(xmax_s-xmin_s)/(xmax-xmin)
-          py=(y-ymin)*(ymax_s-ymin_s)/(ymax-ymin)
-          return " %d %d" % (int(round(px)),int(round(py)))
-
-        def gridScaling(min_in,max_in,divisions,span):
-          from math import log10,pow,fabs,ceil,floor,modf
-          resdivlog = log10(fabs(max_in-min_in))
-          if resdivlog < 0:
-            res = pow(10,ceil(resdivlog) - 4)
-          else:
-            res = pow(10,floor(resdivlog) - 4)
-          divlog = log10(fabs(max_in - min_in) / divisions)
-          fractpart,wholepart = modf(divlog)
-          intinc = pow(10,fabs(fractpart))
-          if intinc < 1.3333333:
-            intinc=1
-          elif intinc < 2.857:
-            intinc=2
-          else:
-            intinc=10
-          if divlog < 0:
-            val_inc = pow(10,-log10(intinc) + wholepart)
-          else:
-            val_inc = pow(10,log10(intinc) + wholepart)
-          grid=ceil(min_in/val_inc) * val_inc
-          divs_out = floor((max_in - grid + val_inc) / val_inc)
-          if max_in > min_in:
-            first_pix = span * ((grid - min_in) / (max_in - min_in))
-            pix_inc = span * val_inc / (max_in - min_in);
-            first_val = (first_pix * ((max_in - min_in)/span)) + min_in
-          else:
-            divs_out = 2
-            first_pix = 0
-            pix_inc = span
-            val_inc = 0
-          return {"divisions":divs_out,
-                  "first_pixel":first_pix, "pixel_increment":pix_inc, 
-                  "first_value":first_val, "value_increment":val_inc,
-                  "resolution":res}
-          
-        if len(self.path_parts) > 2:
-           self.openTree(self.path_parts[1],self.path_parts[2])
-        expr=self.args['expr'][-1]
-        try:
-           sig=Data.execute(expr)
-           y=makeData(sig.data()).data()
-           x=makeData(sig.dim_of().data()).data()
-        except Exception,e:
-           raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
-        response_headers=list()
-        response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
-        response_headers.append(('Pragma','no-cache'))
-        response_headers.append(('XDTYPE',x.__class__.__name__))
-        response_headers.append(('YDTYPE',y.__class__.__name__))
-        response_headers.append(('XLENGTH',str(len(x))))
-        response_headers.append(('YLENGTH',str(len(y))))
-        response_headers.append(('Content-type','image/svg+xml'))
-        if self.tree is not None:
-           response_headers.append(('TREE',self.tree))
-           response_headers.append(('SHOT',self.shot))
-        output="""<?xml version="1.0" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" 
-"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg viewBox="%d %d %d %d"
-     xmlns="http://www.w3.org/2000/svg" version="1.1">
-""" % (viewbox[0],viewbox[1],viewbox[2],viewbox[3])
-        output += "<title>Plot of %s </title>" % (expr,)
-        output += """
-  <path fill="none" stroke="black" stroke-width="30" d="M """
-        xmin=float(min(x))
-        xmax=float(max(x))
-        ymin=float(min(y))
-        ymax=float(max(y))
-        xmin_s=float(viewbox[0])
-        ymin_s=float(viewbox[1])
-        xmax_s=float(viewbox[2])
-        ymax_s=float(viewbox[3])
-        for i in range(len(x)):
-          output += scale(xmin-(xmax-xmin)*.1,
-                          ymin-(ymax-ymin)*.1,
-                          xmax+(xmax-xmin)*.1,
-                          ymax+(ymax-ymin)*.1,xmin_s,ymin_s,xmax_s,ymax_s,x[i],y[i])
-        output +=""" " />
-"""
-        scaling=gridScaling(xmin,xmax,5,viewbox[2]-viewbox[0])
-        for i in range(scaling['divisions']):
-          output +="""<text text-anchor="middle" x="%d" y="%d" font-size="300" >%g</text>
-<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d" />
-""" % (scaling["first_pixel"]+i*scaling["pixel_increment"],
-       viewbox[2]-200,
-       round(scaling['first_value']+i*scaling["value_increment"],scaling["resolution"]),
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       viewbox[2],
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       viewbox[0])
-        
-        scaling=gridScaling(ymin,ymax,5,viewbox[3]-viewbox[1])
-        for i in range(scaling['divisions']):
-          output +="""<text text-anchor="left" x="%d" y="%d" font-size="300" >%g</text>
-<path fill="none" stroke="black" stroke-width="5" stroke-dasharray="200,100,50,50,50,100" d="M%d %d %d %d" />
-""" % (100,
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       round(scaling['first_value']+i*scaling["value_increment"],scaling["resolution"]),
-       0,
-       scaling["first_pixel"]+i*scaling["pixel_increment"],
-       10000,
-       scaling["first_pixel"]+i*scaling["pixel_increment"])
-        output +="""</svg>
-"""
-        status = '200 OK'
-        return (status, response_headers, output)
 
