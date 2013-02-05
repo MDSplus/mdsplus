@@ -992,7 +992,7 @@ bool TreeNode::isChild()
 	if(!(status & 1))
 		throw new MdsException(status);
 	
-	return  (par & NciK_IS_MEMBER)?true:false;
+	return  (par & NciK_IS_CHILD)?true:false;
 }
 
 void TreeNode::setIncludedInPulse(bool flag)
@@ -1305,7 +1305,7 @@ int TreeNode::getConglomerateElt()
 {
 
 	int eltLen;
-	int elt;
+	int elt = 0;
 	struct nci_itm nciList[] = 
 		{{1, NciCONGLOMERATE_ELT, (char *)&elt, &eltLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
