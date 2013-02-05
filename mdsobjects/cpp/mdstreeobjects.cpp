@@ -1305,7 +1305,7 @@ int TreeNode::getConglomerateElt()
 {
 
 	int eltLen;
-	int elt = 0;
+	int elt = -1;
 	struct nci_itm nciList[] = 
 		{{1, NciCONGLOMERATE_ELT, (char *)&elt, &eltLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
@@ -1314,7 +1314,8 @@ int TreeNode::getConglomerateElt()
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
 		throw new MdsException(status);
-
+	if(elt == -1)
+		throw new MdsException("Not a conglomerate element");
 	return elt;
 }
 int TreeNode::getNumElts()
