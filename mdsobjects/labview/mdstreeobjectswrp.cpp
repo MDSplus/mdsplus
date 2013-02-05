@@ -1175,7 +1175,7 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		//deleteString(strOut);
 	}
 	catch (MdsException *mdsE)
 	{
@@ -1373,7 +1373,7 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		//deleteString(strOut);
 	}
 	catch (MdsException *mdsE)
 	{
@@ -2044,7 +2044,7 @@ DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle l
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		//deleteString(strOut);
 	}
 	catch (MdsException *mdsE)
 	{
