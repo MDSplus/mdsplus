@@ -25,8 +25,8 @@ var bottomLine =
     '<label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
     '<label for="Crosshair"> <input type="radio" name="Mode" id="Crosshair" onclick="setMode(CROSSHAIR);"/>Crosshair</label>'+
     '<label for="Pan"><input type="radio" name="Mode" id="Pan" onclick="setMode(PAN);"/> Pan</label>'+
-    '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots" />'+
-    '<button type="button" onclick="updateGlobalShots()">Update</button><br>'+
+    '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots"  onkeydown="if (event.keyCode == 13) {event.preventDefault(); updateGlobalShots();}"/>'+
+    '<button type="button"  autofocus id = "UpdateGlobal" onclick="updateGlobalShots()">Update</button><br>'+
     '<label id="Value" />'+
     '</form>';
 
