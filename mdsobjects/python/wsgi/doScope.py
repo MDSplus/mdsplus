@@ -75,7 +75,10 @@ def doScope(self):
         color = getValue(lines, 'Scope.color_'+str(idx))
         if(color == None):
             break
-        outStr = outStr+'<color>'+color.split(',')[0]+'</color>'
+	color = color.split(',')[0]
+	if color == 'Blak':
+	    color = 'Black'
+        outStr = outStr+'<color>'+color+'</color>'
         idx = idx + 1
     outStr = outStr+'</palette>'
     globalTree = getValue(lines, 'Scope.global_1_1.experiment')
