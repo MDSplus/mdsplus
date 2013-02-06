@@ -25,9 +25,9 @@ var bottomLine =
     '<label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
     '<label for="Crosshair"> <input type="radio" name="Mode" id="Crosshair" onclick="setMode(CROSSHAIR);"/>Crosshair</label>'+
     '<label for="Pan"><input type="radio" name="Mode" id="Pan" onclick="setMode(PAN);"/> Pan</label>'+
-    '<label id="Value" />'+
     '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots" />'+
-    '<button type="button" onclick="updateGlobalShots()">Update</button>'+
+    '<button type="button" onclick="updateGlobalShots()">Update</button><br>'+
+    '<label id="Value" />'+
     '</form>';
 
 ////////////////Global mouse callback functions///////////////////////
