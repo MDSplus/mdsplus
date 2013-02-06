@@ -24,35 +24,67 @@ def encodeUrl(inStr):
     urlStr = urlStr.replace(" ", "%20");
     return urlStr.replace("|||", "")
 
+def getConfigFiles(user,jScope,subdir):
+    file_list=[]
+    homedir=os.path.expanduser('~'+user)
+    if jScope:
+        dirspec=homedir+"/jScope/configurations"
+    else:
+        dirspec=homedir+"/scopes"
+    if len(subdir) > 0:
+        dirspec+=subdir
+    try:
+        files=os.listdir(dirspec)
+        for f in files:
+            filespec=dirspec+'/'+f
+            isdir=os.path.isdir(filespec)
+            if f.endswith('.jscp') or f.endswith('.dat') or f.endswith('.scope') or isdir:
+                file_list.append({'file':f,'filespec':filespec,'jScope':jScope,'notdir':not isdir,'subdir':subdir})
+    except:
+        pass
+    return file_list
+
+def file_list_cmp(x,y):
+    ans=0
+    for part in ('notdir','jScope','filespec'):
+        ans=cmp(x[part],y[part])
+        if ans != 0:
+            break
+    return ans
+
 def doScope(self):
   response_headers=list()
   response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
   response_headers.append(('Pragma','no-cache'))
   if 'user' in self.args:
-      subdir=''
-      dirspec=os.path.expanduser('~'+self.args['user'][-1])+"/jScope/configurations"
-      if 'dir' in self.args and '..' not in self.args['dir']:
-          subdir=self.args['dir'][-1]
-          dirspec+=subdir
+      user=self.args['user'][-1]
       response_headers.append(('Content-type','text/html'))
       outStr='<html><head><title>Scope Selection</title><body>'
-      try:
-          files=os.listdir(dirspec)
-      except:
-          files=''
-      if(len(files) == 0):
-          outStr = outStr+'No Scope configuration file found in '+dirspec+'</body></html>'            
+      subdir=''
+      if 'dir' in self.args and '..' not in self.args['dir'][-1]:
+          file_list=getConfigFiles(user,'jScope' in self.args,self.args['dir'][-1])
+      else:
+          file_list=getConfigFiles(user,True,'')
+          file_list.extend(getConfigFiles(user,False,''))
+      if(len(file_list) == 0):
+          outStr = outStr+'No Scope configuration file found</body></html>'            
           status = '200 OK'
           return (status, response_headers, outStr)
-#list first directories
-      for currFileName in files:
-          if(os.path.isdir(dirspec+'/'+currFileName)):
-              outStr = outStr + '<a href="?user='+self.args['user'][-1]+'&dir='+subdir+'/'+currFileName+'">'+currFileName+'</a><br>'
-      outStr = outStr + '<br>'
-#list actual configurations            
-      for currFileName in files:
-          if(not(os.path.isdir(dirspec+'/'+currFileName))):
-              outStr = outStr + '<a href="scope?config='+ dirspec+'/'+currFileName +'" target="_blank">'+currFileName+'</a><br>'
+      file_list.sort(file_list_cmp)
+      last_is_dir=False
+      for f in file_list:
+          if not f['notdir']:
+              last_is_dir=True
+              if f['jScope']:
+                  jscope='&jScope=yes'
+              else:
+                  jscope=''
+              outStr = outStr + '<a href="?user='+user+'&dir='+f['subdir']+'/'+f['file']+jscope+'">'+f['filespec']+'</a><br>'
+          else:
+              if last_is_dir:
+                  outStr = outStr + '<br>'
+              last_is_dir=False
+              outStr = outStr + '<a href="scope?config='+f['filespec'] +'" target="_blank">'+f['filespec']+'</a><br>'
       outStr = outStr + '</body></html>'
       status = '200 OK'
       return (status, response_headers, outStr)
