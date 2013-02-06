@@ -149,7 +149,7 @@ def doScope(self):
           color = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.color_'+str(exprIdx)+'_1')
           if(color != None):
             if color == 'Blak':
-              color == 'Black'  #fix old config file typo
+              color = 'Black'  #fix old config file typo
             outStr = outStr+' color="'+color+'"'
           mode = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.mode_1D_'+str(exprIdx)+'_1')
           marker = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.marker_'+str(exprIdx)+'_1')
