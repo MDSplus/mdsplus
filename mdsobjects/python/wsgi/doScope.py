@@ -138,6 +138,7 @@ def doScope(self):
 
         title = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.title') 
         if(title != None):
+          title = encodeUrl(title)
           title = title.replace('"', "'")
           outStr = outStr+' title = "'+title+'"'
 

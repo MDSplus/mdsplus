@@ -255,6 +255,7 @@ class Tree(object):
         c=top.record
         q=c.qualifiers
         model=c.model
+
         for i in range(len(q)):
             exec str(q[0])
         try:
@@ -278,6 +279,7 @@ class Tree(object):
             TreeOpenEdit(self)
         finally:
             Tree.unlock()
+
 
     def findTags(self,wild):
         """Find tags matching wildcard expression
