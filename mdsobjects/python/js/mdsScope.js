@@ -2190,7 +2190,7 @@ function startMdsScope(configName)
             if (this.getResponseHeader('ERROR'))
                 alert('Error getting Scope configuration');
             else {
-                alert(this.response);
+                //alert(this.response);
                 var isConfig = this.getResponseHeader('IS_CONFIG');
                 if(isConfig == 'YES')
                     mdsScope(this.response);
