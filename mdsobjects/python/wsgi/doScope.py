@@ -112,6 +112,9 @@ def doScope(self):
 	    color = 'Black'
         outStr = outStr+'<color>'+color+'</color>'
         idx = idx + 1
+#Handle missing color palette
+    if (idx == 0):
+        outStr = outStr+'<color>Black</color>'
     outStr = outStr+'</palette>'
     globalTree = getValue(lines, 'Scope.global_1_1.experiment')
     globalShot = getValue(lines, 'Scope.global_1_1.shot')
@@ -178,7 +181,11 @@ def doScope(self):
           outStr = outStr+' title = "'+title+'"'
 
         outStr = outStr + '>'
-        numExpr = int(getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.num_expr')) 
+        numExprStr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.num_expr')
+        if(numExprStr == None):
+            numExpr = 1
+        else: 
+            numExpr = int(numExprStr) 
         for exprIdx in range(1, numExpr+1):
           outStr = outStr+'<signal'
           color = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.color_'+str(exprIdx)+'_1')
@@ -186,6 +193,8 @@ def doScope(self):
             if color == 'Blak':
               color = 'Black'  #fix old config file typo
             outStr = outStr+' color="'+color+'"'
+          else:
+            outStr = outStr + ' color="Black"'
           mode = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.mode_1D_'+str(exprIdx)+'_1')
           marker = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.marker_'+str(exprIdx)+'_1')
           if(mode == 'Line' and marker == '0'):
@@ -196,7 +205,11 @@ def doScope(self):
             outStr = outStr+ ' mode="2"'
           outStr = outStr+'>'
           yExpr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.y_expr_'+str(exprIdx))
+          if(yExpr == None):
+              yExpr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.y')
           xExpr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.x_expr_'+str(exprIdx))
+          if(xExpr == None):
+              xExpr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.x')
           if(xExpr == None):
             outStr = outStr+encodeUrl(yExpr)+'</signal>'
           else:

@@ -43,6 +43,7 @@ function setMode(inMode)
 }
 
 var startZoomX, startZoomY;
+var currZoomX, currZoomY;
 
 function contextMenu(e)
 {
@@ -132,6 +133,9 @@ function mouseMove(svg, e)
         {
             switch(mode) {
                 case ZOOM: 
+                    // Used in case mouse button is released in a different target 
+                    currZoomX = e.offsetX;
+                    currZoomY = e.offsetY;
                     wavePanels[idx].dragZoom(e.offsetX, e.offsetY);
                     break;
                 case CROSSHAIR:
@@ -154,7 +158,10 @@ function mouseUp(svg, e)
         {
             switch(mode) {
                 case ZOOM: 
-                    wavePanels[idx].endZoom(e.offsetX, e.offsetY);
+                    if(e.target == mouseTarget) //If released within the same target
+                        wavePanels[idx].endZoom(e.offsetX, e.offsetY);
+                    else
+                        wavePanels[idx].endZoom(currZoomX, currZoomY);
                     break;
                 case CROSSHAIR:
                     wavePanels[idx].endCrosshair();
@@ -2183,7 +2190,7 @@ function startMdsScope(configName)
             if (this.getResponseHeader('ERROR'))
                 alert('Error getting Scope configuration');
             else {
-                //alert(this.response);
+                alert(this.response);
                 var isConfig = this.getResponseHeader('IS_CONFIG');
                 if(isConfig == 'YES')
                     mdsScope(this.response);
