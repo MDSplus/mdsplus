@@ -1585,23 +1585,12 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
                       <SubComponents>
-                        <Component class="DeviceChoice" name="deviceChoice3">
+                        <Component class="DeviceField" name="deviceField95">
                           <Properties>
-                            <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                              <PropertyValue value="[0, 1, 2]"/>
-                            </Property>
-                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="3">
-                                <StringItem index="0" value="4-4-4"/>
-                                <StringItem index="1" value="8-3-1"/>
-                                <StringItem index="2" value="8-2-2"/>
-                              </StringArray>
-                            </Property>
-                            <Property name="convert" type="boolean" value="true"/>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Configuration: "/>
+                            <Property name="numCols" type="int" value="15"/>
                             <Property name="offsetNid" type="int" value="1345"/>
-                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                         <Component class="DeviceField" name="deviceField22">

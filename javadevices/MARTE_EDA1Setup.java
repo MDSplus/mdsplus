@@ -208,7 +208,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jPanel13 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         jPanel43 = new javax.swing.JPanel();
-        deviceChoice3 = new DeviceChoice();
+        deviceField95 = new DeviceField();
         deviceField22 = new DeviceField();
         deviceField23 = new DeviceField();
         deviceField24 = new DeviceField();
@@ -977,14 +977,11 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jPanel14.setLayout(new java.awt.GridLayout(4, 1));
 
-        deviceChoice3.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice3.setChoiceItems(new String[] {"4-4-4", "8-3-1", "8-2-2"});
-        deviceChoice3.setConvert(true);
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Configuration: ");
-        deviceChoice3.setOffsetNid(1345);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel43.add(deviceChoice3);
+        deviceField95.setIdentifier("");
+        deviceField95.setLabelString("Configuration: ");
+        deviceField95.setNumCols(15);
+        deviceField95.setOffsetNid(1345);
+        jPanel43.add(deviceField95);
 
         deviceField22.setIdentifier("");
         deviceField22.setLabelString("aaGain: ");
@@ -1123,7 +1120,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice3;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
@@ -1218,6 +1214,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField92;
     private DeviceField deviceField93;
     private DeviceField deviceField94;
+    private DeviceField deviceField95;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
     private javax.swing.JPanel jPanel1;
