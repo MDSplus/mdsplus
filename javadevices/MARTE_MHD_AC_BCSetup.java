@@ -48,6 +48,9 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
         deviceTable3 = new DeviceTable();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
+        jPanel4 = new javax.swing.JPanel();
+        deviceField4 = new DeviceField();
+        deviceField5 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe MhdAcBc Setup");
@@ -138,6 +141,20 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Out Calibration", jPanel10);
 
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("Start Freeze Time: ");
+        deviceField4.setNumCols(4);
+        deviceField4.setOffsetNid(1345);
+        jPanel4.add(deviceField4);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("End Freeze Time: ");
+        deviceField5.setNumCols(4);
+        deviceField5.setOffsetNid(1351);
+        jPanel4.add(deviceField5);
+
+        jTabbedPane1.addTab("Freeze", jPanel4);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -150,6 +167,8 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
     private DeviceField deviceField1;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
+    private DeviceField deviceField4;
+    private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
@@ -159,6 +178,7 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel8;
