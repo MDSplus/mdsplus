@@ -22,12 +22,12 @@ var LIMITS_YMAX = 4;
 
 var bottomLine = 
     '<form name="scopeMode" >'+
-    '<label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
+    '<table cellpadding="20"><tr><td><label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
     '<label for="Crosshair"> <input type="radio" name="Mode" id="Crosshair" onclick="setMode(CROSSHAIR);"/>Crosshair</label>'+
-    '<label for="Pan"><input type="radio" name="Mode" id="Pan" onclick="setMode(PAN);"/> Pan</label>'+
+    '<label for="Pan"><input type="radio" name="Mode" id="Pan" onclick="setMode(PAN);"/> Pan</label></td><td>'+
     '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots"  onkeydown="if (event.keyCode == 13) {event.preventDefault(); updateGlobalShots();}"/>'+
     '<button type="button"  autofocus id = "UpdateGlobal" onclick="updateGlobalShots()">Update</button><br>'+
-    '<label id="Value" />'+
+    '<label id="Value" /></td></tr></table>'+
     '</form>';
 
 ////////////////Global mouse callback functions///////////////////////
@@ -68,8 +68,8 @@ function mouseDown(svg, e)
         contextMenuSvg = svg;
         var popupMenu = document.getElementById("ScopePopup"); 
         popupMenu.style.display = 'inherit';
-        popupMenu.style.left = event.pageX+'px';
-        popupMenu.style.top = event.pageY + 'px';
+        popupMenu.style.left = (event.pageX-120)+'px';
+        popupMenu.style.top = (event.pageY-70) + 'px';
         popupMenu.style.display = 'flex-box';
         e.stopPropagation();
         return false;

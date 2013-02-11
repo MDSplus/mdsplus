@@ -14,7 +14,7 @@ table {
 }
 
 button {
-  padding = 0;
+  padding:0;
 }
 </style>
 
@@ -24,17 +24,17 @@ button {
 </head>
 <body>
 
-
-<div id = "ScopePopup" style="display: none; position: absolute;">
+<div id = "ScopePopup" style="display:none; background-color:gold; opacity:.6; position: absolute;">
 <table border="0" style = "padding='0'"><tr><th><button type="button" onclick="autoscale()">Autoscale</button></th>
-<th><button type="button" onclick="autoscaleY()">Autoscale Y</button></th></tr>
-<tr><th><button type="button" onclick="autoscaleAll()">Autoscale All</button></th>
-<th><button type="button" onclick="allSameScale()">All same scale</button></th></tr>
-<tr><th><button type="button" onclick="allSameXScale()">All same X scale</button></th>
-<th><button type="button" onclick="allSameXScaleAutoY()">All same X scale auto Y</button></th></tr>
-<tr><th><button type="button" onclick="allSameYScale()">All same Y scale</button></th>
-<th><button type="button" onclick="resetScales()">Reset scales</button></th></tr>
-<tr><th><button type="button" onclick="resetAllScales()">Reset all scales</button></th></tr>
+<th><button type="button" onclick="autoscaleY()" style="width:100%">Autoscale Y</button></th></tr>
+<tr><th><button type="button" onclick="autoscaleAll()" style="width:100%">Autoscale All</button></th>
+<th><button type="button" onclick="allSameScale()" style="width:100%">All same scale</button></th></tr>
+<tr><th><button type="button" onclick="allSameXScale()" style="width:100%">All same X scale</button></th>
+<th><button type="button" onclick="allSameXScaleAutoY()" style="width:100%">All same X scale auto Y</button></th></tr>
+<tr><th><button type="button" onclick="allSameYScale()" style="width:100%">All same Y scale</button></th>
+<th><button type="button" onclick="resetScales()" style="width:100%">Reset scales</button></th></tr>
+<tr><th><button type="button" onclick="resetAllScales()" style="width:100%">Reset all scales</button></th>
+<th><button type="button" onclick="document.getElementById('ScopePopup').style.display='none'" style="width:100%">Dismiss</button></ht></tr>
 </table>
 </div>
 <div id = "ScopeArea" />
