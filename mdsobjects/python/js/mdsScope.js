@@ -7,6 +7,7 @@ var mode = ZOOM;
 var alreadyClicked = false;
 var alreadyDoubleClicked = false;
 
+var stopRightMouse=false;
 var colorPalette;
 var contextMenuSvg; //svg above which righ button has been clicked
 var globalShotPanels = new Array(); //Array containing information required for wave panels taking global shot number
@@ -47,14 +48,19 @@ var currZoomX, currZoomY;
 
 function contextMenu(e)
 {
-    e.stopPropagation();
-    return false;
+    if (stopRightMouse) {
+      stopRightMouse=false;
+      e.stopPropagation();
+      return false;
+    } else
+      return true;
 }
 
 function mouseDown(svg, e)
 {
-     var idx;
+    var idx;
     e.preventDefault();
+    e.stopPropagation();
     var popupMenu = document.getElementById("ScopePopup"); 
     popupMenu.style.display = 'none';
     e.preventDefault();
@@ -62,6 +68,7 @@ function mouseDown(svg, e)
     if(event.button == 2) //MB3 (right) button pressed
     {
     // IE is evil and doesn't pass the event object
+        stopRightMouse=true;
         if (event == null)
             event = window.event;
 
@@ -2095,6 +2102,7 @@ function mdsScope(configXml)
         xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
         xmlDoc.async=false;
         xmlDoc.loadXML(configXml);
+
     }
 //Get Color palette
     var paletteXml = xmlDoc.getElementsByTagName('palette');
