@@ -233,6 +233,7 @@ old array is same size.
       int length;
       status = TreePutDsc(info_ptr,nid,(struct descriptor *)initialValue,&sinfo->data_offset,&length);
       segment_header.data_offset=sinfo->data_offset;
+      add_length=length;
       sinfo->rows = length | 0x80000000;
     } else
       status = PutInitialValue(info_ptr,segment_header.dims,initialValue,&segment_header.data_offset);
@@ -270,7 +271,10 @@ old array is same size.
       SeekToRfa(attributes_offset,local_nci.DATA_INFO.DATA_LOCATION.rfa);
       local_nci.flags2 |= NciM_EXTENDED_NCI;
     }
-    local_nci.length += add_length;
+    if (((_int64)local_nci.length + (_int64)add_length) < 2^31)
+      local_nci.length += add_length;
+    else
+      local_nci.length = 2^31;
     TreePutNci(info_ptr,nidx,&local_nci,0);
     TreeUnLockNci(info_ptr,0,nidx);
   }
