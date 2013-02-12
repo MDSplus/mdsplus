@@ -159,23 +159,41 @@ function mouseUp(svg, e)
 {
     var idx;
  //   e.preventDefault();
-    for(idx = 0; idx < wavePanels.length; idx++)
+
+    //Handle the possibility that the mouse button is released on another panel
+    if(mode == ZOOM)
     {
-        if(wavePanels[idx].svg == svg)
+        for(idx = 0; idx < wavePanels.length; idx++)
         {
-            switch(mode) {
-                case ZOOM: 
-                    if(e.target == mouseTarget) //If released within the same target
-                        wavePanels[idx].endZoom(e.offsetX, e.offsetY);
-                    else
-                        wavePanels[idx].endZoom(currZoomX, currZoomY);
-                    break;
-                case CROSSHAIR:
-                    wavePanels[idx].endCrosshair();
-                    break;
-                case PAN:
-                    wavePanels[idx].endPan();
-                    break;
+            if(wavePanels[idx].isZooming())
+            {
+                if(e.target == mouseTarget) //If released within the same target
+                    wavePanels[idx].endZoom(e.offsetX, e.offsetY);
+                else
+                    wavePanels[idx].endZoom(currZoomX, currZoomY);
+            }
+        }
+    }
+    else
+    {
+        for(idx = 0; idx < wavePanels.length; idx++)
+        {
+            if(wavePanels[idx].svg == svg)
+            {
+                switch(mode) {
+/*                    case ZOOM: 
+                        if(e.target == mouseTarget) //If released within the same target
+                            wavePanels[idx].endZoom(e.offsetX, e.offsetY);
+                        else
+                            wavePanels[idx].endZoom(currZoomX, currZoomY);
+                        break;
+*/                    case CROSSHAIR:
+                        wavePanels[idx].endCrosshair();
+                        break;
+                    case PAN:
+                        wavePanels[idx].endPan();
+                        break;
+                }
             }
         }
     }
@@ -1404,6 +1422,11 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         }
     }
     this.dragZoom = dragZoom;
+    function isZooming()
+    {
+        return (this.zoomState == this.ZOOMING);
+    }
+    this.isZooming = isZooming;
     function endZoom(x, y)
     {
         if(this.zoomState != this.ZOOMING)
