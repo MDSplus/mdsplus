@@ -26,7 +26,7 @@ var bottomLine =
     '<table cellpadding="20"><tr><td><label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
     '<label for="Crosshair"> <input type="radio" name="Mode" id="Crosshair" onclick="setMode(CROSSHAIR);"/>Crosshair</label>'+
     '<label for="Pan"><input type="radio" name="Mode" id="Pan" onclick="setMode(PAN);"/> Pan</label></td><td>'+
-    '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots"  onkeydown="if (event.keyCode == 13) {event.preventDefault(); updateGlobalShots();}"/>'+
+    '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots"  onkeydown="if (evt.keyCode == 13) {evt.preventDefault(); updateGlobalShots();}"/>'+
     '<button type="button"  autofocus id = "UpdateGlobal" onclick="updateGlobalShots()">Update</button><br>'+
     '<label id="Value" /></td></tr></table>'+
     '</form>';
@@ -56,27 +56,41 @@ function contextMenu(e)
       return true;
 }
 
-function mouseDown(svg, e)
+function fixEvent(e) {
+  if (! e.hasOwnProperty('offsetX')) {
+    var curleft = curtop = 0;
+    if (e.offsetParent) {
+      var obj=e;
+      do {
+        curleft += obj.offsetLeft;
+        curtop += obj.offsetTop;
+      } while (obj = obj.offsetParent);
+    } 
+    e.offsetX=e.layerX-curleft;
+    e.offsetY=e.layerY-curtop;
+  }
+  return e;
+}
+ 
+function mouseDown(e)
 {
     var idx;
+    if (e == null)
+      e=window.event;
     e.preventDefault();
     e.stopPropagation();
     var popupMenu = document.getElementById("ScopePopup"); 
     popupMenu.style.display = 'none';
     e.preventDefault();
 
-    if(event.button == 2) //MB3 (right) button pressed
+    if(e.button == 2) //MB3 (right) button pressed
     {
-    // IE is evil and doesn't pass the event object
         stopRightMouse=true;
-        if (event == null)
-            event = window.event;
-
-        contextMenuSvg = svg;
+        contextMenuSvg = e.target;
         var popupMenu = document.getElementById("ScopePopup"); 
         popupMenu.style.display = 'inherit';
-        popupMenu.style.left = (event.pageX-120)+'px';
-        popupMenu.style.top = (event.pageY-70) + 'px';
+        popupMenu.style.left = (e.pageX-120)+'px';
+        popupMenu.style.top = (e.pageY-70) + 'px';
         popupMenu.style.display = 'flex-box';
         e.stopPropagation();
         return false;
@@ -93,7 +107,7 @@ function mouseDown(svg, e)
         //alert("DOUBLE CLICK");
         for(idx = 0; idx < wavePanels.length; idx++)
         {
-            if(wavePanels[idx].svg == svg)
+            if(wavePanels[idx].svg == e.target)
             {
                 switch(mode) {
                     case PAN:
@@ -108,8 +122,9 @@ function mouseDown(svg, e)
     mouseTarget = e.target;
     for(idx = 0; idx < wavePanels.length; idx++)
     {
-        if(wavePanels[idx].svg == svg)
+        if(wavePanels[idx].svg == e.target)
         {
+            e=fixEvent(e);
             switch(mode) {
                 case ZOOM: 
                     startZoomX = e.offsetX;
@@ -128,16 +143,20 @@ function mouseDown(svg, e)
     }
     return true;
 }
-function mouseMove(svg, e)
+
+function mouseMove(e)
 {
     var idx;
+    if ( e == null )
+      e=window.event;
     e.preventDefault();
     if(mouseTarget != e.target)
         return;
     for(idx = 0; idx < wavePanels.length; idx++)
     {
-        if(wavePanels[idx].svg == svg)
+        if(wavePanels[idx].svg == e.target)
         {
+            e=fixEvent(e);
             switch(mode) {
                 case ZOOM: 
                     // Used in case mouse button is released in a different target 
@@ -155,9 +174,11 @@ function mouseMove(svg, e)
         }
     }
 }
-function mouseUp(svg, e)
+function mouseUp(e)
 {
     var idx;
+    if (e == null)
+      e=window.event;
  //   e.preventDefault();
 
     //Handle the possibility that the mouse button is released on another panel
@@ -167,6 +188,7 @@ function mouseUp(svg, e)
         {
             if(wavePanels[idx].isZooming())
             {
+                e=fixEvent(e);
                 if(e.target == mouseTarget) //If released within the same target
                     wavePanels[idx].endZoom(e.offsetX, e.offsetY);
                 else
@@ -178,8 +200,9 @@ function mouseUp(svg, e)
     {
         for(idx = 0; idx < wavePanels.length; idx++)
         {
-            if(wavePanels[idx].svg == svg)
+            if(wavePanels[idx].svg == e.target)
             {
+                e=fixEvent(e);
                 switch(mode) {
 /*                    case ZOOM: 
                         if(e.target == mouseTarget) //If released within the same target
@@ -201,10 +224,12 @@ function mouseUp(svg, e)
 
 //Touch event management 
 var touchMoved;
-function touchStart(svg, e)
+function touchStart(e)
 {
+    if (e == null)
+      e=window.event;
     var idx;
-    contextMenuSvg = svg;
+    contextMenuSvg = e.target;
     e.preventDefault();
     touchMoved = false;
     if(!alreadyClicked)
@@ -229,10 +254,10 @@ function touchStart(svg, e)
     for(idx = 0; idx < wavePanels.length; idx++)
     {
         
-        if(wavePanels[idx].svg == svg)
+        if(wavePanels[idx].svg == e.target)
         {
-            var touchX = e.touches[0].clientX - wavePanels[idx].col*svg.clientWidth;
-            var touchY = e.touches[0].clientY - wavePanels[idx].row*svg.clientHeight;
+            var touchX = e.touches[0].clientX - wavePanels[idx].col*e.target.clientWidth;
+            var touchY = e.touches[0].clientY - wavePanels[idx].row*e.target.clientHeight;
             switch(mode) {
                 case ZOOM: 
                     wavePanels[idx].startZoom(touchX, touchY);
@@ -250,18 +275,20 @@ function touchStart(svg, e)
 }
 
 var touchMoveX, touchMoveY;
-function touchMove(svg, e)
+function touchMove(e)
 {
+    if (e == null) 
+      e=window.event;
     var idx;
     e.preventDefault();
     touchMoved = true;
-    var node = event.target;
+    var node = e.target;
     for(idx = 0; idx < wavePanels.length; idx++)
     {
-        if(wavePanels[idx].svg == svg)
+        if(wavePanels[idx].svg == e.target)
         {
-            touchMoveX = e.touches[0].clientX - wavePanels[idx].col*svg.clientWidth;
-            touchMoveY = e.touches[0].clientY- wavePanels[idx].row*svg.clientHeight;
+            touchMoveX = e.touches[0].clientX - wavePanels[idx].col*e.target.clientWidth;
+            touchMoveY = e.touches[0].clientY- wavePanels[idx].row*e.target.clientHeight;
             switch(mode) {
                 case ZOOM: 
                     wavePanels[idx].dragZoom(touchMoveX, touchMoveY);
@@ -276,13 +303,15 @@ function touchMove(svg, e)
         }
     }
 }
-function touchEnd(svg, e)
+function touchEnd(e)
 {
+    if (e == null)
+      e=window.event;
     var idx;
     e.preventDefault();
     for(idx = 0; idx < wavePanels.length; idx++)
     {
-        if(wavePanels[idx].svg == svg)
+        if(wavePanels[idx].svg == e.target)
         {
             switch(mode) {
                 case ZOOM: 
@@ -1697,7 +1726,7 @@ function getScopeSignal(tree,shot,expr,color, mode, success_cb,failure_cb,svg, s
         col, row, labels, limits) {
   var req = new XMLHttpRequest();
 // var req = getXmlHttpRequestObject(); 
-  req.responseType = 'arraybuffer';
+//  req.responseType = 'arraybuffer';
   req.scb=success_cb;
   req.fcb=failure_cb;
   req.tree=tree;
@@ -1794,6 +1823,7 @@ function getScopeSignal(tree,shot,expr,color, mode, success_cb,failure_cb,svg, s
     req.open('POST','1dsignal/'+tree+'/'+shot+'?expr='+encodeUrl(expr),true);
   else
     req.open('POST','1dsignal?expr='+encodeUrl(expr),true);
+  req.responseType = 'arraybuffer';
   req.send();
 }
 
@@ -1914,14 +1944,14 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
   var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
   
   //svg.setAttribute("ontouchstart", "alert('touchstart');");
-    svg.addEventListener('touchstart', function(event) {
+    svg.addEventListener('touchstart', function(evt) {
         touchStart(this, event);
     }, false);
-    svg.addEventListener('touchmove', function(event) {
-        touchMove(this, event);
+    svg.addEventListener('touchmove', function(evt) {
+        touchMove(evt);
     }, false);
-    svg.addEventListener('touchend', function(event) {
-        touchEnd(this, event);
+    svg.addEventListener('touchend', function(evt) {
+        touchEnd(evt);
     }, false);
     svg.setAttribute("version","1.1");
     svg.setAttributeNS(null,"preserveAspectRatio","none");
@@ -1929,12 +1959,12 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
     svg.setAttributeNS(null,"width",width);
     svg.setAttributeNS(null,"height",height);
     svg.setAttributeNS(null,"animatable","no");
-    svg.setAttribute("onmousedown", "return mouseDown(this, event)");
-    svg.setAttribute("onmousemove", "mouseMove(this, event)");
-    svg.setAttribute("onmouseup", "return mouseUp(this, event)");
-    //svg.setAttribute("onmouseclick", "return mouseClick(this, event)");
-    svg.setAttribute("ontouchmove", "mouseMove(this, event)");
-    svg.setAttribute("ontouchup", "mouseUp(this, event)");
+    svg.setAttribute("onmousedown", "return mouseDown(evt)");
+    svg.setAttribute("onmousemove", "mouseMove(evt)");
+    svg.setAttribute("onmouseup", "return mouseUp(evt)");
+    //svg.setAttribute("onmouseclick", "return mouseClick(evt)");
+    svg.setAttribute("ontouchmove", "mouseMove(evt)");
+    svg.setAttribute("ontouchup", "mouseUp(evtt)");
     svg.setAttribute("viewBox","0 0 "+width +" " +height);
     div.appendChild(svg);
 
@@ -2149,7 +2179,7 @@ function mdsScope(configXml)
         var rows = columns[colIdx].getElementsByTagName('panel');
         for(var rowIdx = 0; rowIdx < rows.length; rowIdx++)
         {
-            htmlText += '<tr><td style="height=100%" id="scope_'+rowIdx+'_'+colIdx+'">'+'</td></tr>';
+            htmlText += '<tr><td style="height:100%" id="scope_'+rowIdx+'_'+colIdx+'">'+'</td></tr>';
         }
         htmlText += '</table></td>';
     }
