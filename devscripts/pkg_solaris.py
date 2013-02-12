@@ -100,7 +100,7 @@ def makeSolarisPkgsCommand(args):
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
             './configure --enable-mdsip_connections --enable-nodebug ' +\
             '--with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix32,prefix32) +\
-             'if ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
+             'if (! make clean ); then exit 1; fi; ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
              'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
