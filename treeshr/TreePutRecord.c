@@ -294,7 +294,7 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
 		   (nci->dtype == DTYPE_RANGE) ||
 		   (nci->dtype == DTYPE_WITH_UNITS) || 
                    (nci->dtype == DTYPE_WITH_ERROR) || 
-                   (nci->dtype == DTYPE_OPAQUE) || == is_expression);
+                   (nci->dtype == DTYPE_OPAQUE) || is_expression);
     break;
    case TreeUSAGE_SIGNAL:
     status = check(is_numeric ||
