@@ -454,7 +454,7 @@ public class DeviceTable extends DeviceComponent
                            String retItem = items[row * numCols + col - 1];
                            if(!binary)
                             return retItem;
-                          else if (retItem.trim().equals("0"))
+                          else if (retItem.trim().equals("0")||retItem.trim().equals("0."))
                             return new Boolean(false);
                           else return new Boolean(true);
                         }
@@ -472,7 +472,7 @@ public class DeviceTable extends DeviceComponent
                       String retItem = items[row * numCols + col - 1];
                       if(!binary)
                         return retItem;
-                      else if (retItem.trim().equals("0"))
+                      else if (retItem.trim().equals("0")||retItem.trim().equals("0."))
                         return new Boolean(false);
                       else return new Boolean(true);
                     }
@@ -488,7 +488,7 @@ public class DeviceTable extends DeviceComponent
                       String retItem = items[row * numCols + col];
                       if(!binary)
                         return retItem;
-                      else if (retItem.trim().equals("0"))
+                      else if (retItem.trim().equals("0")||retItem.trim().equals("0."))
                         return new Boolean(false);
                       else return new Boolean(true);
                      }catch(Exception exc) {return null; }
