@@ -405,6 +405,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FORLD="$F77";
+       LD="gcc"
        if ( uname -m | grep 64 > /dev/null ) 
        then
          if ( echo $target | grep 64 > /dev/null )
@@ -417,7 +418,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            fi
            SYB64=$D64
            CFLAGS="$CFLAGS -m64"
-           LD="ld -m elf_x86_64 --oformat elf64-x86-64 --no-warn-mismatch"
+           LD="gcc -m64"
            FFLAGS="$FFLAGS -m64"
            FORLD="$F77 -m64"
            UILCMD=uil
@@ -429,7 +430,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
          else
            CFLAGS="$CFLAGS -m32";
-           LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
+           LD="gcc -m32"
            FFLAGS="$FFLAGS -m32"
            FORLD="$F77 -m32"
            UILCMD=uil32
@@ -791,7 +792,9 @@ else
   CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
   AC_DEFINE(HAVE_CLOCK_GETTIME)
 fi
+OLDLIBS="$LIBS"
 AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'],,,)
+LIBS="$OLDLIBS"
 if test "$ac_cv_search_readline" = "no"
 then
   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
@@ -989,7 +992,9 @@ then
    SYBASE=""
    AC_MSG_RESULT(no sybase open/client)
 else
+    OLDLIBS="$LIBS"
     AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
+    LIBS="$OLDLIBS"
     if test "$SYBASE_LIB" = ""
     then
       AC_MSG_CHECKING(for SYBASE open/client or freetds)

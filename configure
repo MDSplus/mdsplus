@@ -7010,6 +7010,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FORLD="$F77";
+       LD="gcc"
        if ( uname -m | grep 64 > /dev/null )
        then
          if ( echo $target | grep 64 > /dev/null )
@@ -7022,7 +7023,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            fi
            SYB64=$D64
            CFLAGS="$CFLAGS -m64"
-           LD="ld -m elf_x86_64 --oformat elf64-x86-64 --no-warn-mismatch"
+           LD="gcc -m64"
            FFLAGS="$FFLAGS -m64"
            FORLD="$F77 -m64"
            UILCMD=uil
@@ -7034,7 +7035,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
          else
            CFLAGS="$CFLAGS -m32";
-           LD="ld -m elf_i386 --oformat elf32-i386 --no-warn-mismatch"
+           LD="gcc -m32"
            FFLAGS="$FFLAGS -m32"
            FORLD="$F77 -m32"
            UILCMD=uil32
@@ -9098,6 +9099,7 @@ else
 _ACEOF
 
 fi
+OLDLIBS="$LIBS"
 { $as_echo "$as_me:$LINENO: checking for library containing readline" >&5
 $as_echo_n "checking for library containing readline... " >&6; }
 if test "${ac_cv_search_readline+set}" = set; then
@@ -9185,6 +9187,7 @@ if test "$ac_res" != no; then
 
 fi
 
+LIBS="$OLDLIBS"
 if test "$ac_cv_search_readline" = "no"
 then
   { $as_echo "$as_me:$LINENO: result: \"libreadline is not available so the build of tdic will be skipped\"" >&5
@@ -12187,6 +12190,7 @@ then
    { $as_echo "$as_me:$LINENO: result: no sybase open/client" >&5
 $as_echo "no sybase open/client" >&6; }
 else
+    OLDLIBS="$LIBS"
     { $as_echo "$as_me:$LINENO: checking for library containing dbsqlexec" >&5
 $as_echo_n "checking for library containing dbsqlexec... " >&6; }
 if test "${ac_cv_search_dbsqlexec+set}" = set; then
@@ -12276,6 +12280,7 @@ else
   SYBASE_LIB=""
 fi
 
+    LIBS="$OLDLIBS"
     if test "$SYBASE_LIB" = ""
     then
       { $as_echo "$as_me:$LINENO: checking for SYBASE open/client or freetds" >&5
