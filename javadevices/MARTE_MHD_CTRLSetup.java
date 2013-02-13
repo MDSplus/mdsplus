@@ -2290,7 +2290,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
 
         jPanel17.setLayout(new java.awt.GridLayout(3, 1));
 
-        deviceTable34.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13"});
+        deviceTable34.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24"});
         deviceTable34.setIdentifier("");
         deviceTable34.setLabelString("Reconfigured Modes: ");
         deviceTable34.setNumCols(48);

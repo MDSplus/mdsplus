@@ -5034,7 +5034,7 @@
                         <Component class="DeviceTable" name="deviceTable34">
                           <Properties>
                             <Property name="columnNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="14">
+                              <StringArray count="25">
                                 <StringItem index="0" value="0"/>
                                 <StringItem index="1" value="-1"/>
                                 <StringItem index="2" value="-2"/>
@@ -5049,6 +5049,17 @@
                                 <StringItem index="11" value="-11"/>
                                 <StringItem index="12" value="-12"/>
                                 <StringItem index="13" value="-13"/>
+                                <StringItem index="14" value="-14"/>
+                                <StringItem index="15" value="-15"/>
+                                <StringItem index="16" value="-16"/>
+                                <StringItem index="17" value="-17"/>
+                                <StringItem index="18" value="-18"/>
+                                <StringItem index="19" value="-19"/>
+                                <StringItem index="20" value="-20"/>
+                                <StringItem index="21" value="-21"/>
+                                <StringItem index="22" value="-22"/>
+                                <StringItem index="23" value="-23"/>
+                                <StringItem index="24" value="-24"/>
                               </StringArray>
                             </Property>
                             <Property name="identifier" type="java.lang.String" value=""/>
