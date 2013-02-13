@@ -1982,7 +1982,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
   
   //svg.setAttribute("ontouchstart", "alert('touchstart');");
     svg.addEventListener('touchstart', function(evt) {
-        touchStart(this, event);
+        touchStart(evt);
     }, false);
     svg.addEventListener('touchmove', function(evt) {
         touchMove(evt);
