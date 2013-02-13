@@ -1965,9 +1965,7 @@ function resizeWaves(width, height)
 
 function resizeScope()
 {
-    var w=Math.round(window.innerWidth*0.9);
-    var h=Math.round(window.innerHeight*0.9);
-    resizeWaves(w,h);
+    resizeWaves(window.innerWidth-40,window.innerHeight-100);
 }
 
 
@@ -2265,8 +2263,8 @@ function mdsScope(xmlDoc)
                 var expression = signals[signalIdx].childNodes[0].nodeValue;
                 expressions.push(expression);
             }
-            mdsScopePanel(document.getElementById('scope_'+panelIdx+'_'+colIdx),Math.round(window.innerWidth * 0.9/columns.length),
-                    Math.round(window.innerHeight * 0.9/panels.length),columns.length, panels.length, colIdx, panelIdx, experiment,shot,
+            mdsScopePanel(document.getElementById('scope_'+panelIdx+'_'+colIdx),Math.round((window.innerWidth-40) /columns.length),
+                    Math.round((window.innerHeight-100) /panels.length),columns.length, panels.length, colIdx, panelIdx, experiment,shot,
                     expressions, colors, modes, limits, labels);
     
         }
