@@ -71,6 +71,16 @@ function fixEvent(e) {
   }
   return e;
 }
+
+function anyZooming()
+{
+    for(idx = 0; idx < wavePanels.length; idx++)
+    {
+        if(wavePanels[idx].isZooming())
+            return true;
+    }
+    return false;
+}
  
 function mouseDown(e)
 {
@@ -85,6 +95,8 @@ function mouseDown(e)
 
     if(e.button == 2) //MB3 (right) button pressed
     {
+        if(anyZooming())
+            return false;
         stopRightMouse=true;
         contextMenuSvg = e.target;
         var popupMenu = document.getElementById("ScopePopup"); 
@@ -144,6 +156,7 @@ function mouseDown(e)
     return true;
 }
 
+
 function mouseMove(e)
 {
     var idx;
@@ -152,6 +165,11 @@ function mouseMove(e)
     e.preventDefault();
     if(mouseTarget != e.target)
         return;
+    if(e.button == 2) //MB3 (right) button pressed
+    {
+        if(anyZooming())
+            return;
+    }
     for(idx = 0; idx < wavePanels.length; idx++)
     {
         if(wavePanels[idx].svg == e.target)
@@ -1395,6 +1413,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.svg.style.cursor = "crosshair";
         if(this.zoomRect)
             this.g.removeChild(this.zoomRect);
+	this.zoomRect = undefined;
         this.zoomX = x;
         this.zoomY = y;
         var zoomRect = document.createElementNS("http://www.w3.org/2000/svg","rect");
