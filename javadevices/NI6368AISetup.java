@@ -68,10 +68,12 @@ public class NI6368AISetup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
+        deviceField11 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
         deviceChoice52 = new DeviceChoice();
         deviceField7 = new DeviceField();
         deviceField8 = new DeviceField();
@@ -155,7 +157,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceButtons1.setMethods(new String[] {"init", "start_store", "stop_store"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(5, 1));
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Comment: ");
@@ -192,13 +194,6 @@ public class NI6368AISetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Clock Mode: ");
-        deviceChoice2.setOffsetNid(4);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice2);
-
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Frequency (Hz): ");
         deviceField5.setOffsetNid(5);
@@ -212,34 +207,49 @@ public class NI6368AISetup extends DeviceSetup {
 
         jPanel1.add(jPanel4);
 
+        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Trigger Mode: ");
+        deviceChoice2.setOffsetNid(10);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel5.add(deviceChoice2);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("Ext. Trigger: ");
+        deviceField11.setNumCols(30);
+        deviceField11.setOffsetNid(11);
+        jPanel5.add(deviceField11);
+
+        jPanel1.add(jPanel5);
+
         deviceChoice52.setChoiceItems(new String[] {"YES", "NO"});
         deviceChoice52.setIdentifier("");
         deviceChoice52.setLabelString("Use Time: ");
         deviceChoice52.setOffsetNid(12);
         deviceChoice52.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice52);
+        jPanel6.add(deviceChoice52);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Start Time (s): ");
         deviceField7.setOffsetNid(13);
-        jPanel5.add(deviceField7);
+        jPanel6.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("End Time (s): ");
         deviceField8.setOffsetNid(14);
-        jPanel5.add(deviceField8);
+        jPanel6.add(deviceField8);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Start Idx: ");
         deviceField9.setOffsetNid(15);
-        jPanel5.add(deviceField9);
+        jPanel6.add(deviceField9);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("End Idx:");
         deviceField10.setOffsetNid(16);
-        jPanel5.add(deviceField10);
+        jPanel6.add(deviceField10);
 
-        jPanel1.add(jPanel5);
+        jPanel1.add(jPanel6);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
@@ -648,6 +658,7 @@ public class NI6368AISetup extends DeviceSetup {
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
+    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -691,6 +702,7 @@ public class NI6368AISetup extends DeviceSetup {
     private javax.swing.JPanel jPanel39;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
