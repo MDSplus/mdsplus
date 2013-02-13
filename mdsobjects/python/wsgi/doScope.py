@@ -92,6 +92,8 @@ def doScope(self):
 
 #Handle direct configuration
     response_headers.append(('IS_CONFIG','YES'))
+    response_headers.append(('Content-type','text/xml'))
+
     f = open(self.args['configxml'][-1],'r')
     lines = f.readlines()
     f.close()

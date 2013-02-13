@@ -101,8 +101,14 @@ function mouseDown(e)
         contextMenuSvg = e.target;
         var popupMenu = document.getElementById("ScopePopup"); 
         popupMenu.style.display = 'inherit';
-        popupMenu.style.left = (e.pageX-120)+'px';
-        popupMenu.style.top = (e.pageY-70) + 'px';
+        var left=e.pageX-120;
+        var top=e.pageY-70;
+        if (left < 0)
+          left=0;
+        if (top < 0)
+          top=0;
+        popupMenu.style.left = left+'px';
+        popupMenu.style.top = top + 'px';
         popupMenu.style.display = 'flex-box';
         e.stopPropagation();
         return false;
@@ -2079,7 +2085,13 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
         }
         else //Global shots not yet defined        
         {
-            scopeTitleSuccess("Global Shot not yet defined", svg, scopeIdx, numCols, numRows, col, row, labels);
+              for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
+              {
+                    getScopeSignal(tree,'',exprArray[exprIdx],
+                        colorPalette[(shotIdx * exprArray.length + exprIdx)%colorPalette.length], modes[exprIdx],
+                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits);
+                }
+ 
         }
     }       
     scopeIdx++;
@@ -2171,24 +2183,12 @@ function updateGlobalShots()
 }
 
 
-function mdsScope(configXml)
+function mdsScope(xmlDoc)
 {
-    var parser;
-      document.oncontextmenu = contextMenu;
+    document.oncontextmenu = contextMenu;
 
-    if (window.DOMParser)
-    {
-        parser=new DOMParser();
-        xmlDoc=parser.parseFromString(configXml,"text/xml");
-    }
-    else // Internet Explorer
-    {
-        xmlDoc=new ActiveXObject("Microsoft.XMLDOM");
-        xmlDoc.async=false;
-        xmlDoc.loadXML(configXml);
-
-    }
 //Get Color palette
+
     var paletteXml = xmlDoc.getElementsByTagName('palette');
     if(paletteXml != undefined)
     {
@@ -2230,34 +2230,35 @@ function mdsScope(configXml)
             var modes = new Array();
             var expressions = new Array();
             var limits = new Object();
-            if(panels[panelIdx].hasAttribute("xmin"))
-                limits.xmin = panels[panelIdx].getAttribute("xmin");
-            if(panels[panelIdx].hasAttribute("xmax"))
-                limits.xmax = panels[panelIdx].getAttribute("xmax");
-            if(panels[panelIdx].hasAttribute("ymin"))
-                limits.ymin = panels[panelIdx].getAttribute("ymin");
-            if(panels[panelIdx].hasAttribute("ymax"))
-                limits.ymax = panels[panelIdx].getAttribute("ymax");
+            var setting;
+            if(setting=panels[panelIdx].xmin)
+                limits.xmin = setting;
+            if(setting=panels[panelIdx].xmax)
+                limits.xmax = setting;
+            if(setting=panels[panelIdx].ymin)
+                limits.ymin = setting;
+            if(setting=panels[panelIdx].ymax)
+                limits.ymax = setting;
             var labels = new Object();
             {
-                if(panels[panelIdx].hasAttribute("title"))
-                    labels.title = panels[panelIdx].getAttribute("title")
-                if(panels[panelIdx].hasAttribute("xlabel"))
-                    labels.xlabel = panels[panelIdx].getAttribute("xlabel")
-                if(panels[panelIdx].hasAttribute("ylabel"))
-                    labels.ylabel = panels[panelIdx].getAttribute("ylabel")
+                if(setting=panels[panelIdx].title)
+                    labels.title = setting;
+                if(setting=panels[panelIdx].xlabel)
+                    labels.xlabel = setting;
+                if(setting=panels[panelIdx].ylabel)
+                    labels.ylabel = setting;
             }
             for(var signalIdx = 0; signalIdx < signals.length; signalIdx++)
             {
                 var color;
-                if(signals[signalIdx].hasAttribute("color"))
-                    color = parseInt(signals[signalIdx].getAttribute("color"));
+                if(setting=signals[signalIdx].color)
+                    color = setting;
                 else
                     color = 0;
                 colors.push(this.colorPalette[color % this.colorPalette.length]);
                 var mode;
-                if(signals[signalIdx].hasAttribute("mode"))
-                    mode = parseInt(signals[signalIdx].getAttribute("mode"));
+                if(setting=signals[signalIdx].mode)
+                    mode = parseInt(setting);
                 else
                     mode = PLOT_LINE;
                 modes.push(mode);
@@ -2285,7 +2286,7 @@ function startMdsScope(configName)
                 //alert(this.response);
                 var isConfig = this.getResponseHeader('IS_CONFIG');
                 if(isConfig == 'YES')
-                    mdsScope(this.response);
+                    mdsScope(this.responseXML);
                 else
                     document.getElementById("ScopeArea").innerHTML = this.response;
             }
