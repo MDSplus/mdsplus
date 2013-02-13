@@ -1065,6 +1065,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     {
         this.signals.push(signal);
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1117,6 +1118,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     {
         this.signals = new Array();
         this.svg.removeChild(this.g);
+        this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1140,6 +1142,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     {
         this.labels.title = title;
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1188,6 +1191,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
             ymax = this.actYMax;
         
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1222,6 +1226,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.borderRect.setAttribute("stroke","black");
         svg.appendChild(this.borderRect);
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1376,6 +1381,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
           this.originalPanMetrics.xmin + deltaX, this.originalPanMetrics.xmax + deltaX, 
           this.originalPanMetrics.ymin + deltaY,  this.originalPanMetrics.ymax + deltaY);
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1511,6 +1517,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
             yMax = this.metrics.getYValue(y);
         }
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1525,6 +1532,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     function autoscale()
     {
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1565,6 +1573,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     function autoscaleY()
     {
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1582,6 +1591,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     function setScale(xmin, xmax, ymin, ymax)
     {
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1596,6 +1606,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     function setScaleAutoY(xmin, xmax)
     {
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1613,6 +1624,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     function resetScales()
     {
         this.svg.removeChild(this.g);
+	this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
