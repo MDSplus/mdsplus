@@ -68,6 +68,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
+        deviceChoice4 = new DeviceChoice();
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
@@ -147,7 +148,7 @@ public class NI6368AISetup extends DeviceSetup {
         jLabel16 = new javax.swing.JLabel();
 
         setDeviceProvider("localhost");
-        setDeviceTitle("National Instruments 6259 ADC");
+        setDeviceTitle("National Instruments PXIe 6368 16 ch 2MS/s  ADC");
         setDeviceType("NI6368AI");
         setHeight(900);
         setWidth(900);
@@ -193,6 +194,13 @@ public class NI6368AISetup extends DeviceSetup {
         jPanel3.add(deviceField4);
 
         jPanel1.add(jPanel3);
+
+        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("Trigger Mode: ");
+        deviceChoice4.setOffsetNid(10);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel4.add(deviceChoice4);
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Frequency (Hz): ");
@@ -645,6 +653,7 @@ public class NI6368AISetup extends DeviceSetup {
     private DeviceChoice deviceChoice33;
     private DeviceChoice deviceChoice36;
     private DeviceChoice deviceChoice39;
+    private DeviceChoice deviceChoice4;
     private DeviceChoice deviceChoice42;
     private DeviceChoice deviceChoice45;
     private DeviceChoice deviceChoice48;

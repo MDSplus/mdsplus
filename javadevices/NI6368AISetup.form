@@ -3,7 +3,7 @@
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
-    <Property name="deviceTitle" type="java.lang.String" value="National Instruments 6259 ADC"/>
+    <Property name="deviceTitle" type="java.lang.String" value="National Instruments PXIe 6368 16 ch 2MS/s  ADC"/>
     <Property name="deviceType" type="java.lang.String" value="NI6368AI"/>
     <Property name="height" type="int" value="900"/>
     <Property name="width" type="int" value="900"/>
@@ -123,6 +123,20 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
           <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice4">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="INTERNAL"/>
+                    <StringItem index="1" value="EXTERNAL"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Trigger Mode: "/>
+                <Property name="offsetNid" type="int" value="10"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
             <Component class="DeviceField" name="deviceField5">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
