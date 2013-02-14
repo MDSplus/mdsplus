@@ -900,6 +900,7 @@ function Wave(signals, color, g, metrics)
     {
         var idx;
         var signalIdx;
+        this.g.setAttribute("clip-path","url(#clippath)");
         for(signalIdx = 0; signalIdx < this.signals.length; signalIdx++)
         {
             if(this.signals[signalIdx].mode == PLOT_LINE || this.signals[signalIdx].mode == PLOT_LINE_POINT)
@@ -2001,6 +2002,12 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
     svg.setAttribute("ontouchmove", "mouseMove(evt)");
     svg.setAttribute("ontouchup", "mouseUp(evtt)");
     svg.setAttribute("viewBox","0 0 "+width +" " +height);
+    var clippath=document.createElementNS("http://www.w3.org/2000/svg","clipPath");
+    clippath.setAttribute("id","clippath");
+    var path=document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d","M 0 0 0 " + height + " " + width + " " + height + " " + width + " 0");
+    clippath.appendChild(path);
+    svg.appendChild(clippath);
     div.appendChild(svg);
 
 
