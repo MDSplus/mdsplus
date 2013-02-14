@@ -125,7 +125,8 @@ def doScope(self):
     globalXMax = getValue(lines, 'Scope.global_1_1.xmax')
     globalYMin = getValue(lines, 'Scope.global_1_1.ymin')
     globalYMax = getValue(lines, 'Scope.global_1_1.ymax')
-      
+    globalXLabel = getValue(lines, 'Scope.global_1_1.x_label')
+    globalYLabel = getValue(lines, 'Scope.global_1_1.y_label')  
     numCols = int(getValue(lines, 'Scope.columns'))
     outStr = outStr+'<columns>'
     for colIdx in range(1, numCols+1):
@@ -181,6 +182,21 @@ def doScope(self):
           title = encodeUrl(title)
           title = title.replace('"', "'")
           outStr = outStr+' title = "'+title+'"'
+        xlabel = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.x_label')
+        if (xlabel == None):
+          xlabel = globalXLabel
+        if (xlabel != None):
+          xlabel = encodeUrl(xlabel)
+          xlabel = xlabel.replace('"',"'")
+          outStr = outStr+' xlabel = "'+xlabel+'"'
+        ylabel = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.y_label')
+        if (ylabel == None):
+          ylabel = globalYLabel
+        if (ylabel != None):
+          ylabel = encodeUrl(ylabel)
+          ylabel = ylabel.replace('"',"'")
+          outStr = outStr+' ylabel = "'+ylabel+'"'
+
 
         outStr = outStr + '>'
         numExprStr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.num_expr')

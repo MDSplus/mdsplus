@@ -2055,41 +2055,41 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
                         scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits);
                 }
             }
-            if(labels.title != undefined)
-            {
-                 getScopeTitle(tree, globalShots[0], labels.title, scopeTitleSuccess, mdsPlotFailure, svg, scopeIdx, 
-                         numCols, numRows, col, row, labels);
-            }
-            if(limits.xmin != undefined)
-             {
-                  getScopeLimits(tree, shot, limits.xmin, LIMITS_XMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                          numCols, numRows, col, row, labels);
-             }
-             if(limits.xmax != undefined)
-             {
-                  getScopeLimits(tree, shot, limits.xmax, LIMITS_XMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                          numCols, numRows, col, row, labels);
-             }
-             if(limits.ymin != undefined)
-             {
-                  getScopeLimits(tree, shot, limits.ymin, LIMITS_YMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                          numCols, numRows, col, row, labels);
-             }
-             if(limits.ymax != undefined)
-             {
-                  getScopeLimits(tree, shot, limits.ymax, LIMITS_YMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                          numCols, numRows, col, row, labels);
-             }
         }
         else //Global shots not yet defined        
         {
               for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
               {
                     getScopeSignal(tree,'',exprArray[exprIdx],
-                        colorPalette[(shotIdx * exprArray.length + exprIdx)%colorPalette.length], modes[exprIdx],
+                        colorPalette[exprIdx%colorPalette.length], modes[exprIdx],
                         scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits);
                 }
  
+        }
+        if(labels.title != undefined)
+        {
+             getScopeTitle(tree, globalShots[0], labels.title, scopeTitleSuccess, mdsPlotFailure, svg, scopeIdx,
+                         numCols, numRows, col, row, labels);
+        }
+        if(limits.xmin != undefined)
+        {
+                  getScopeLimits(tree, shot, limits.xmin, LIMITS_XMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
+                          numCols, numRows, col, row, labels);
+        }
+        if(limits.xmax != undefined)
+        {
+                  getScopeLimits(tree, shot, limits.xmax, LIMITS_XMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
+                          numCols, numRows, col, row, labels);
+        }
+        if(limits.ymin != undefined)
+        {
+                  getScopeLimits(tree, shot, limits.ymin, LIMITS_YMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
+                          numCols, numRows, col, row, labels);
+        }
+        if(limits.ymax != undefined)
+        {
+           getScopeLimits(tree, shot, limits.ymax, LIMITS_YMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
+                          numCols, numRows, col, row, labels);
         }
     }       
     scopeIdx++;
@@ -2229,33 +2229,34 @@ function mdsScope(xmlDoc)
             var expressions = new Array();
             var limits = new Object();
             var setting;
-            if(setting=panels[panelIdx].xmin)
+            var panel=panels[panelIdx];
+            if((setting=panel.getAttribute('xmin')) != null)
                 limits.xmin = setting;
-            if(setting=panels[panelIdx].xmax)
+            if((setting=panel.getAttribute('xmax')) != null)
                 limits.xmax = setting;
-            if(setting=panels[panelIdx].ymin)
+            if((setting=panel.getAttribute('ymin')) != null)
                 limits.ymin = setting;
-            if(setting=panels[panelIdx].ymax)
+            if((setting=panel.getAttribute('ymax')) != null)
                 limits.ymax = setting;
             var labels = new Object();
             {
-                if(setting=panels[panelIdx].title)
+                if((setting=panel.getAttribute('title')) != null)
                     labels.title = setting;
-                if(setting=panels[panelIdx].xlabel)
+                if((setting=panel.getAttribute('xlabel')) != null)
                     labels.xlabel = setting;
-                if(setting=panels[panelIdx].ylabel)
+                if((setting=panel.getAttribute('ylabel')) != null)
                     labels.ylabel = setting;
             }
             for(var signalIdx = 0; signalIdx < signals.length; signalIdx++)
             {
                 var color;
-                if(setting=signals[signalIdx].color)
+                if((setting=signals[signalIdx].getAttribute('color')) != null)
                     color = setting;
                 else
                     color = 0;
                 colors.push(this.colorPalette[color % this.colorPalette.length]);
                 var mode;
-                if(setting=signals[signalIdx].mode)
+                if((setting=signals[signalIdx].getAttribute('mode')) != null)
                     mode = parseInt(setting);
                 else
                     mode = PLOT_LINE;
