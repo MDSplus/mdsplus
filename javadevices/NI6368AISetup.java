@@ -197,8 +197,8 @@ public class NI6368AISetup extends DeviceSetup {
 
         deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
         deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Trigger Mode: ");
-        deviceChoice4.setOffsetNid(10);
+        deviceChoice4.setLabelString("Clock Mode: ");
+        deviceChoice4.setOffsetNid(4);
         deviceChoice4.setUpdateIdentifier("");
         jPanel4.add(deviceChoice4);
 

@@ -132,8 +132,8 @@
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Trigger Mode: "/>
-                <Property name="offsetNid" type="int" value="10"/>
+                <Property name="labelString" type="java.lang.String" value="Clock Mode: "/>
+                <Property name="offsetNid" type="int" value="4"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
