@@ -825,14 +825,16 @@ Fix bug : shot expression must be always evaluated.
             WaveInterface.WriteLine(out, prompt + "palette: ",
                                 "" + colorMap.name);
             WaveInterface.WriteLine(out, prompt + "bitShift: ",
-                                "" + colorMap.bitShift);            
+                                "" + colorMap.bitShift);
             WaveInterface.WriteLine(out, prompt + "bitClip: ",
                                 "" + colorMap.bitClip);
-            
+
         }
+
         WaveInterface.WriteLine(out, prompt + "experiment: ", cexperiment);
         WaveInterface.WriteLine(out, prompt + "event: ", cin_upd_event);
         WaveInterface.WriteLine(out, prompt + "default_node: ", cin_def_node);
+        WaveInterface.WriteLine(out, prompt + "num_shot: ", "" + cnum_shot);
 
         if (cnum_shot != 0)
         {
@@ -844,9 +846,14 @@ Fix bug : shot expression must be always evaluated.
                                     "" + num_waves / eval_shot);
         }
         else
+        {
             WaveInterface.WriteLine(out, prompt + "num_expr: ", "" + num_waves);
+            //Shot is not defined in the pannel.
+            //cnum_shot must be set to 1 to save, in the configuration file,
+            //signal view parameters
+            cnum_shot = 1;
+        }
 
-        WaveInterface.WriteLine(out, prompt + "num_shot: ", "" + cnum_shot);
         WaveInterface.WriteLine(out, prompt + "shot: ", cin_shot);
         WaveInterface.WriteLine(out, prompt + "ymin: ", cin_ymin);
         WaveInterface.WriteLine(out, prompt + "ymax: ", cin_ymax);
@@ -880,9 +887,10 @@ Fix bug : shot expression must be always evaluated.
                                         prompt + "low_error" + "_" + exp_n + ": ",
                                         in_low_err[exp]);
 
+
                 for (sht = 0, sht_n = 1; sht < cnum_shot; sht++, sht_n++)
                 {
-                    // WaveInterface.WriteLine(out,prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);
+                  //WaveInterface.WriteLine(out,prompt + "interpolate"+"_"+exp_n+"_"+sht_n+": ",""+interpolates[exp + sht]);
                     WaveInterface.WriteLine(out,
                                             prompt + "mode_1D" + "_" + exp_n +
                                             "_" + sht_n + ": ",
