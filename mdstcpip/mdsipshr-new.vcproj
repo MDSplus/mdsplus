@@ -461,6 +461,10 @@
 			>
 		</File>
 		<File
+			RelativePath=".\IdlApi.c"
+			>
+		</File>
+		<File
 			RelativePath=".\infblock.c"
 			>
 		</File>
