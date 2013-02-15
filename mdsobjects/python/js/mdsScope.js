@@ -151,6 +151,11 @@ function mouseDown(e)
                     wavePanels[idx].startZoom(e.offsetX, e.offsetY);
                     break;
                 case CROSSHAIR:
+                    for(var currIdx = 0; currIdx < wavePanels.length; currIdx++)
+                    {
+                        if(currIdx != idx)
+                            wavePanels[currIdx].endCrosshair();
+                    }
                     wavePanels[idx].startCrosshair(e.offsetX, e.offsetY);
                     break;
                 case PAN:
@@ -660,14 +665,39 @@ function Signal(x, y, color, mode)
 **/
 function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
 {
-   
-    this.width = width;
+     this.width = width;
     this.height = height;
     this.marginPix = marginPix;
     this.xmin = xMin;
     this.xmax = xMax;
     this.ymin = yMin;
     this.ymax = yMax;
+    
+   //if no limuts passed provide default limits
+    if (this.xmin == undefined && this.xmax == undefined)
+    {
+        this.xmin = 0.; 
+        this.xmax = 1;    
+    } 
+    else
+    {
+         if(this.xmax == undefined)
+            this.xmax = this.xmin + 1.;
+        if(this.xmin == undefined)
+            this.xmin = this.xmax - 1.;
+    }
+    if (this.ymin == undefined && this.ymax == undefined)
+    {
+        this.ymin = 0.; 
+        this.ymax = 1;    
+    } 
+    else
+    {
+        if(this.ymax == undefined)
+            this.ymax = this.ymin + 1.;
+        if(this.ymin == undefined)
+            this.ymin = this.ymax - 1.;
+    }
     if(this.ymin >= this.ymax)
         this.ymax = this.ymin + 1E-3;
     this.xfact = (this.width - 2 * this.marginPix)/(this.xmax - this.xmin);
@@ -689,7 +719,7 @@ function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
         var yPixel = Math.round(this.height -this.marginPix - this.yfact * (yVal - this.ymin));
         
         if(isNaN(yPixel))
-             alert('getYPixel ha dato NaN: '+this.yfact+' '+yVal+' '+this.ymin+' '+this.ymin + ' '+this.ymax);
+             alert('getYPixel ha dato NaN: '+this.yfact+' '+yVal+' '+this.ymin+' '+this.ymax);
 	return yPixel;
 /*        if(yPixel >= 0 && yPixel <= this.height)
             return yPixel;
@@ -1041,6 +1071,8 @@ function Wave(signals, color, g, metrics, clippath)
     this.getCrosshairY = getCrosshairY;
     function getCrosshairColor(sigIdx)
     {
+        if(signals == undefined || sigIdx >= signals.length)
+            return "Black";
         return this.signals[sigIdx].color;
     }
     this.getCrosshairColor = getCrosshairColor;
@@ -1119,6 +1151,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
         this.svg.appendChild(this.g);
 
         var currXMin = signal.getMinX();
+        
         if(this.xMin == undefined || currXMin < this.xMin)
             this.xMin = currXMin;
         var currXMax = signal.getMaxX();
@@ -1244,6 +1277,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
+        
         this.metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
             xmin, xmax, ymin, ymax);
         this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
@@ -1788,7 +1822,8 @@ function getScopeLimits(tree, shot, limit, limitId, success_cb,failure_cb,svg, s
             case LIMITS_XMAX: limits.xmax = limit; break;
             case LIMITS_YMIN: limits.ymin = limit; break;
             case LIMITS_YMAX: limits.ymax = limit; break;
-        }  
+         }  
+        
         this.scb(this.svg, this.scopeIdx, 
             this.numCols, this.numRows, this.col, this.row, this.labels, limits);
       }
