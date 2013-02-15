@@ -132,6 +132,7 @@ def doScope(self):
     globalYMax = getValue(lines, 'Scope.global_1_1.ymax')
     globalXLabel = getValue(lines, 'Scope.global_1_1.x_label')
     globalYLabel = getValue(lines, 'Scope.global_1_1.y_label')  
+    globalEvent = getValue(lines, 'Scope.global_1_1.event')
     numCols = int(getValue(lines, 'Scope.columns'))
     outStr = outStr+'<columns>'
     for colIdx in range(1, numCols+1):
@@ -201,7 +202,11 @@ def doScope(self):
           ylabel = encodeUrl(ylabel)
           ylabel = ylabel.replace('"',"'")
           outStr = outStr+' ylabel = "'+ylabel+'"'
-
+        event = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.event')
+        if (event == None):
+          event = globalEvent
+        if (event != None):
+          outStr = outStr+' event = "'+event+'"'
 
         outStr = outStr + '>'
         numExprStr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.num_expr')
