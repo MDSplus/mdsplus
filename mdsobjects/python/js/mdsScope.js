@@ -19,6 +19,7 @@ var LIMITS_XMAX = 2;
 var LIMITS_YMIN = 3;
 var LIMITS_YMAX = 4;
 
+var METRICS_BORDER = 2;
 
 
 var bottomLine = 
@@ -548,6 +549,8 @@ function Signal(x, y, color, mode)
         this.color = 'black';
     else
         this.color = color;
+    if(this.color == 'MediumSlate')  //Supported by X11 but not by SVG
+        this.color = 'blue';
     if(mode == undefined)
         this.mode = PLOT_LINE;
     else
@@ -579,7 +582,7 @@ function Signal(x, y, color, mode)
         for(idx = 0; idx < this.size; idx++)
         {
             if(this.x[idx] < xmin)
-                xmin = this.x[idx]
+                xmin = this.x[idx]+0.;
         }
         return xmin;
     }
@@ -591,7 +594,7 @@ function Signal(x, y, color, mode)
         for(idx = 0; idx < this.size; idx++)
         {
             if(this.x[idx] > xmax)
-                xmax = this.x[idx]
+                xmax = this.x[idx]+0.;
         }
         return xmax;
     }
@@ -603,7 +606,7 @@ function Signal(x, y, color, mode)
         for(idx = 0; idx < this.size; idx++)
         {
             if(this.y[idx] < ymin)
-                ymin = this.y[idx]
+                ymin = this.y[idx]+0.;
         }
         return ymin;
     }
@@ -615,7 +618,7 @@ function Signal(x, y, color, mode)
         for(idx = 0; idx < this.size; idx++)
         {
             if(this.y[idx] > ymax)
-                ymax = this.y[idx]
+                ymax = this.y[idx]+0.;
         }
         return ymax;
     }
@@ -629,7 +632,7 @@ function Signal(x, y, color, mode)
         for(; idx < this.size && this.x[idx] <= x2; idx++)
         {
             if(this.y[idx] < ymin)
-                ymin = this.y[idx]
+                ymin = this.y[idx];
         }
         return ymin;
         
@@ -644,7 +647,7 @@ function Signal(x, y, color, mode)
         for(; idx < this.size && this.x[idx] <= x2; idx++)
         {
             if(this.y[idx] > ymax)
-                ymax = this.y[idx]
+                ymax = this.y[idx];
         }
         return ymax;
         
@@ -657,6 +660,7 @@ function Signal(x, y, color, mode)
 **/
 function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
 {
+   
     this.width = width;
     this.height = height;
     this.marginPix = marginPix;
@@ -664,6 +668,8 @@ function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
     this.xmax = xMax;
     this.ymin = yMin;
     this.ymax = yMax;
+    if(this.ymin >= this.ymax)
+        this.ymax = this.ymin + 1E-3;
     this.xfact = (this.width - 2 * this.marginPix)/(this.xmax - this.xmin);
     this.yfact = (this.height - 2 * this.marginPix)/(this.ymax - this.ymin);
 
@@ -681,6 +687,9 @@ function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
     function getYPixel(yVal)
     {
         var yPixel = Math.round(this.height -this.marginPix - this.yfact * (yVal - this.ymin));
+        
+        if(isNaN(yPixel))
+             alert('getYPixel ha dato NaN: '+this.yfact+' '+yVal+' '+this.ymin+' '+this.ymin + ' '+this.ymax);
 	return yPixel;
 /*        if(yPixel >= 0 && yPixel <= this.height)
             return yPixel;
@@ -702,7 +711,6 @@ function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
 
 function Grid(g, metrics, labels)
 {
-    this.numSteps = 8;
     this.xmin = metrics.xmin;
     this.xmax = metrics.xmax;
     this.ymin = metrics.ymin;
@@ -713,7 +721,7 @@ function Grid(g, metrics, labels)
     this.labels = labels;
     this.g = g;
     
-    function buildGrid(minValue, maxValue)
+    function buildGrid(minValue, maxValue, numSteps)
     {
         var i;
         if (maxValue < minValue)
@@ -725,7 +733,7 @@ function Grid(g, metrics, labels)
 
         var currMaxValue = maxValue;// + 0.1 * range;
         var currMinValue = minValue;// - 0.1 * range;
-        var step = (maxValue - minValue) / this.numSteps;
+        var step = (maxValue - minValue) / numSteps;
 
         var greater;
         var count = 0;
@@ -773,15 +781,19 @@ function Grid(g, metrics, labels)
         return retVals;
     }
     this.buildGrid = buildGrid;
-    this.xVals = this.buildGrid(this.xmin, this.xmax);
-    this.yVals = this.buildGrid(this.ymin, this.ymax);
+    this.xVals = this.buildGrid(this.xmin, this.xmax, 8);
+    this.yVals = this.buildGrid(this.ymin, this.ymax, 5);
     
     function roundLabel(label)
     {
  //       var dotPos = label.indexOf(".");
  //       if(dotPos == -1 || (label.length - dotPos) < 8)
  //           return label;
-        var rounded = Math.round(parseFloat(label)*100000)/100000;
+        var rounded;
+        if(Math.abs(label) < 1E10)
+             rounded = Math.round(parseFloat(label)*100000)/100000;
+        else
+             rounded = Math.round(parseFloat(label)*10)/10;
         if((Math.abs(rounded) > 0.0001 && Math.abs(rounded) < 10000)||rounded == 0)
             return ''+rounded;
         else
@@ -833,7 +845,13 @@ function Grid(g, metrics, labels)
             else
                 label.setAttributeNS(null,"x",10);
             label.setAttributeNS(null,"y",this.metrics.getYPixel(this.yVals[idx]));
-            label.setAttributeNS(null,"font-size","16px");
+            fontSize = this.height / this.yVals.length;
+            if(fontSize > 16)
+                fontSize = 16;
+            if(fontSize < 2)
+                fontSize = 2;
+            label.setAttributeNS(null,"font-size",fontSize+"px");
+//            label.setAttributeNS(null,"font-size","16px");
             label.setAttribute("alignment-baseline", "middle");
             //var value=Round(this.yScaling[3]+idx * this.yScaling[4], this.yScaling[5]);
             var textNode=document.createTextNode(this.roundLabel(this.yVals[idx]+''));
@@ -890,17 +908,18 @@ function Grid(g, metrics, labels)
 }
 
 
-function Wave(signals, color, g, metrics)
+function Wave(signals, color, g, metrics, clippath)
 {
     this.signals = signals;
     this.g = g;
     this.color = color;
     this.metrics = metrics;
+    this.clippath = clippath;
     function plot()
     {
         var idx;
         var signalIdx;
-        this.g.setAttribute("clip-path","url(#clippath)");
+        this.g.setAttribute("clip-path",this.clippath);
         for(signalIdx = 0; signalIdx < this.signals.length; signalIdx++)
         {
             if(this.signals[signalIdx].mode == PLOT_LINE || this.signals[signalIdx].mode == PLOT_LINE_POINT)
@@ -916,6 +935,8 @@ function Wave(signals, color, g, metrics)
 		var prevXs = this.metrics.getXPixel(this.signals[signalIdx].x[0]);
 		var minYs = this.metrics.getYPixel(this.signals[signalIdx].y[0]);
 		var maxYs = minYs;
+                var lastYs;
+                var firstYs = minYs;
                 for (idx=0; idx < this.signals[signalIdx].size; idx++) {
                     var xs=this.metrics.getXPixel(this.signals[signalIdx].x[idx]);
                     var ys=this.metrics.getYPixel(this.signals[signalIdx].y[idx]);
@@ -924,23 +945,33 @@ function Wave(signals, color, g, metrics)
 		    {
 			if(ys < minYs) minYs = ys;
 			if(ys > maxYs) maxYs = ys;
+                        lastYs = ys;
 		    }
 		    else
 		    {
 		        if(minYs == undefined)
 			{
 			    minYs = ys;
-			    maxYs = us;
+			    maxYs = ys;
 			}
-//			ans = ans + ' ' + xs + ' ' +minYs;
-			ans = ans + ' ' + xs + ' ' +ys;
+                        if(firstYs != minYs)
+                               ans = ans + ' ' + prevXs + ' ' +firstYs;
+			ans = ans + ' ' + prevXs + ' ' +minYs;
 			if (maxYs > minYs)
 			{
-			   ans = ans + ' ' + xs + ' ' +maxYs;
+ 			   ans = ans + ' ' + prevXs + ' ' +maxYs;
+                           if(lastYs != maxYs)
+                               ans = ans + ' ' + prevXs + ' ' +lastYs;
 			}
 			minYs = ys;
 			maxYs = ys;
+                        firstYs = ys;
+                        lastYs = ys;
 			prevXs = xs;
+                        
+                        //Draw last point 
+                        if(signalIdx == this.signals.length - 1)
+                            ans = ans + ' ' + xs + ' ' +ys;
 		    } 
 
 /*                    if((xs == undefined) || (ys == undefined))
@@ -1009,7 +1040,7 @@ function Wave(signals, color, g, metrics)
     this.getCrosshairColor = getCrosshairColor;
 }    
 
-function WavePanel(signals,svg, numCols, numRows, col, row, labels)
+function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
 {
     this.STARTING_ZOOM = 1;
     this.ZOOMING = 2;
@@ -1022,6 +1053,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     this.col = col;
     this.row = row;
     this.labels = labels;
+    this.clippath = clippath;
     var g=document.createElementNS("http://www.w3.org/2000/svg","g");
     g.setAttribute("id","viewport");
     svg.appendChild(g);
@@ -1038,10 +1070,10 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
     svg.appendChild(this.borderRect);
   
     //default limits wehn no signal
-    this.xMin = 0;
-    this.xMax = 1;
-    this.yMin = 0;
-    this.yMax = 1;
+    this.xMin = 0.;
+    this.xMax = 1.;
+    this.yMin = 0.;
+    this.yMax = 1.;
     //find min and max X and Y values of the set of signals
     var sigIdx;
     
@@ -1060,9 +1092,11 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         if(this.yMax == undefined || currYMax > this.yMax)
             this.yMax = currYMax;
     }
-    var metrics = new Metrics(30, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
+//    var metrics = new Metrics(30, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
+//        this.xMin, this.xMax, this.yMin, this.yMax);
+    var metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
         this.xMin, this.xMax, this.yMin, this.yMax);
-    var wave = new Wave(this.signals, 0, this.g, metrics);
+    var wave = new Wave(this.signals, 0, this.g, metrics, this.clippath);
     var grid = new Grid(g, metrics, this.labels);
     this.metrics = metrics;
     this.wave = wave;
@@ -1110,9 +1144,9 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         else
             ymax = this.actYMax;
         
-         var metrics = new Metrics(30, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
+         var metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
             xmin, xmax, ymin, ymax);
-        var wave = new Wave(this.signals, 0, this.g, metrics);
+        var wave = new Wave(this.signals, 0, this.g, metrics, this.clippath);
         var grid = new Grid(this.g, metrics, this.labels);
         this.metrics = metrics;
         this.wave = wave;
@@ -1134,9 +1168,9 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.xMax = undefined;
         this.yMin = undefined;
         this.yMax = undefined;
-        var metrics = new Metrics(30, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
+        var metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
             0., 1. ,0., 1.);
-        var wave = new Wave(signals, 0, this.g, metrics);
+        var wave = new Wave(signals, 0, this.g, metrics, this.clippath);
         var grid = new Grid(this.g, metrics, this.labels);
         this.metrics = metrics;
         this.wave = wave;
@@ -1157,7 +1191,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.svg.appendChild(this.g);
         //this.metrics = new Metrics(30, width/this.numCols, height/this.numRows, this.metrics.xmin, 
         //        this.metrics.xmax, this.metrics.ymin, this.metrics.ymax);
-        this.wave = new Wave(this.signals, this.colors, this.g, this.metrics);
+        this.wave = new Wave(this.signals, this.colors, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
      }
@@ -1204,9 +1238,9 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
+        this.metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
             xmin, xmax, ymin, ymax);
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels);
     }
     this.setLimits = setLimits;
@@ -1239,9 +1273,9 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, width/this.numCols, height/this.numRows, this.metrics.xmin, 
+        this.metrics = new Metrics(METRICS_BORDER, width/this.numCols, height/this.numRows, this.metrics.xmin, 
                 this.metrics.xmax, this.metrics.ymin, this.metrics.ymax);
-        this.wave = new Wave(this.signals, this.colors, this.g, this.metrics);
+        this.wave = new Wave(this.signals, this.colors, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1384,7 +1418,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         var currYVal = this.originalPanMetrics.getYValue(y);
         var deltaX = this.startPanXVal - currXVal;
         var deltaY = this.startPanYVal - currYVal;
-        this.metrics = new Metrics(30, this.originalPanMetrics.width, this.originalPanMetrics.height, 
+        this.metrics = new Metrics(METRICS_BORDER, this.originalPanMetrics.width, this.originalPanMetrics.height, 
           this.originalPanMetrics.xmin + deltaX, this.originalPanMetrics.xmax + deltaX, 
           this.originalPanMetrics.ymin + deltaY,  this.originalPanMetrics.ymax + deltaY);
         this.svg.removeChild(this.g);
@@ -1394,7 +1428,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.wave = new Wave(this.wave.signals, 0, this.g, this.metrics);
+        this.wave = new Wave(this.wave.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1530,8 +1564,8 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, this.metrics.width, this.metrics.height, xMin, xMax, yMin, yMax);
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, xMin, xMax, yMin, yMax);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1545,9 +1579,9 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, this.metrics.width, this.metrics.height, this.xMin, 
+        this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, this.xMin, 
             this.xMax, this.yMin, this.yMax);
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1586,10 +1620,10 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, this.metrics.width, this.metrics.height, this.metrics.xmin, 
+        this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, this.metrics.xmin, 
             this.metrics.xmax, this.getMinYInRange(this.metrics.xmin,this.metrics.xmax),
             this.getMaxYInRange(this.metrics.xmin,this.metrics.xmax));
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1604,8 +1638,8 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, this.metrics.width, this.metrics.height, xmin, xmax, ymin, ymax);
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, xmin, xmax, ymin, ymax);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1619,10 +1653,10 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(30, this.metrics.width, this.metrics.height, xmin, xmax, 
+        this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, xmin, xmax, 
              this.getMinYInRange(xmin,xmax),
              this.getMaxYInRange(xmin,xmax));
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1654,8 +1688,8 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels)
             ymax = this.actYMax;
         else
             ymax = this.yMax;
-        this.metrics = new Metrics(30, this.metrics.width, this.metrics.height, xmin, xmax, ymin, ymax);
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics);
+        this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, xmin, xmax, ymin, ymax);
+        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels)
         this.plot();
     }
@@ -1761,7 +1795,7 @@ function getScopeLimits(tree, shot, limit, limitId, success_cb,failure_cb,svg, s
 
 
 function getScopeSignal(tree,shot,expr,color, mode, success_cb,failure_cb,svg, scopeIdx, numCols, numRows, 
-        col, row, labels, limits) {
+        col, row, labels, limits, clippath) {
   var req = new XMLHttpRequest();
 // var req = getXmlHttpRequestObject(); 
 //  req.responseType = 'arraybuffer';
@@ -1784,14 +1818,15 @@ function getScopeSignal(tree,shot,expr,color, mode, success_cb,failure_cb,svg, s
   req.col = col;
   req.row = row;
   req.labels = labels;
+  req.clippath = clippath;
   
   //alert('Preparo richiesta per: '+ expr +' '+tree + ' '+shot);
   req.onreadystatechange = function() {
     if (req.readyState == 4) {
       var contType = req.getResponseHeader ("Content-Type");
-      if (req.getResponseHeader('ERROR'))
+      if (req.status == 500 || req.getResponseHeader('ERROR'))
       {
-        alert("Error in get ScopeSignal: "+' '+req.expr);
+        //alert("Error in get ScopeSignal: "+' '+req.expr);
         req.fcb(req.tree,req.shot,req.expr,req.getResponseHeader('ERROR'),req.svg, req.scopeIdx, 
             req.numCols, req.numRows, req.col, req.row);
       }
@@ -1805,7 +1840,7 @@ function getScopeSignal(tree,shot,expr,color, mode, success_cb,failure_cb,svg, s
         var tree=req.getResponseHeader('TREE');
         var shot=req.getResponseHeader('SHOT');
         this.scb(tree,shot,req.expr,x,y,req.color,req.mode,req.svg, req.scopeIdx, 
-            req.numCols, req.numRows, req.col, req.row, req.labels);
+            req.numCols, req.numRows, req.col, req.row, req.labels, req.clippath);
         //alert("LETTO!!!"+xlength);
       }
   }
@@ -1873,7 +1908,7 @@ var wavePanelCount = 0;
 
 function mdsPlotFailure(tree,shot,expr,error,svg, scopeIdx, numCols, numRows, col, row) 
 {
-alert('ERRORE in '+expr+': '+error);
+//alert('ERRORE in '+expr+': '+error);
   if(wavePanelsSvg[scopeIdx] == undefined)
   {
       wavePanelCount++;
@@ -1933,7 +1968,7 @@ function scopeLimitsSuccess(svg, scopeIdx, numCols, numRows, col, row, labels, l
     wavePanel.plot();
 }
 
-function scopePlotSuccess(tree,shot,expr,x,y,color, mode, svg, scopeIdx, numCols, numRows, col, row, labels) 
+function scopePlotSuccess(tree,shot,expr,x,y,color, mode, svg, scopeIdx, numCols, numRows, col, row, labels, clippath) 
 {
     
   var signals = new Array();
@@ -1942,7 +1977,7 @@ function scopePlotSuccess(tree,shot,expr,x,y,color, mode, svg, scopeIdx, numCols
   if(wavePanelsSvg[scopeIdx] == undefined)
   {
       wavePanelCount++;
-      wavePanel = new WavePanel(signals,svg, numCols, numRows, col, row, labels);
+      wavePanel = new WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath);
       wavePanelsSvg[scopeIdx] = wavePanel;
       wavePanels.push(wavePanel);
   }
@@ -2003,7 +2038,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
     svg.setAttribute("ontouchup", "mouseUp(evtt)");
     svg.setAttribute("viewBox","0 0 "+width +" " +height);
     var clippath=document.createElementNS("http://www.w3.org/2000/svg","clipPath");
-    clippath.setAttribute("id","clippath");
+    //clippath.setAttribute("id","clippath");
     var path=document.createElementNS("http://www.w3.org/2000/svg","path");
     path.setAttribute("d","M 0 0 0 " + height + " " + width + " " + height + " " + width + " 0");
     clippath.appendChild(path);
@@ -2017,7 +2052,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
         for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
         {
             getScopeSignal(tree,shot,exprArray[exprIdx],colors[exprIdx], modes[exprIdx], scopePlotSuccess,mdsPlotFailure,svg, 
-                scopeIdx, numCols, numRows, col, row, labels, limits);
+                scopeIdx, numCols, numRows, col, row, labels, limits, clippath);
         }
         if(labels.title != undefined)
         {
@@ -2059,7 +2094,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
                 {
                     getScopeSignal(tree,''+globalShots[shotIdx],exprArray[exprIdx],
                         colorPalette[(shotIdx * exprArray.length + exprIdx)%colorPalette.length], modes[exprIdx], 
-                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits);
+                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits, clippath);
                 }
             }
         }
@@ -2069,7 +2104,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
               {
                     getScopeSignal(tree,'',exprArray[exprIdx],
                         colorPalette[exprIdx%colorPalette.length], modes[exprIdx],
-                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits);
+                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits, clippath);
                 }
  
         }
