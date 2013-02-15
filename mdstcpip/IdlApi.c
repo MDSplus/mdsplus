@@ -1,4 +1,5 @@
 #include <STATICdef.h>
+#include <config.h>
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)
 #define UnBlockSig(arg) 
@@ -57,7 +58,7 @@ void main () {}
 #endif
 #ifndef HAVE_VXWORKS_H
 
-int  IdlMdsClose(int lArgc, void * * lpvArgv)
+EXPORT int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlMdsClose', connection, value=[1b])
 */
@@ -68,7 +69,7 @@ int  IdlMdsClose(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int  IdlConnectToMds(int lArgc, void * * lpvArgv)
+EXPORT int  IdlConnectToMds(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlConnectToMds', 'host-name')
 */
@@ -79,7 +80,7 @@ int  IdlConnectToMds(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
+EXPORT int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlDisconnectFromMds', connection, value=[1b])
 */
@@ -90,7 +91,7 @@ int  IdlDisconnectFromMds(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int  IdlMdsOpen(int lArgc, void * * lpvArgv)
+EXPORT int  IdlMdsOpen(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlMdsOpen', connection, 'tree-name', shot, value = [1b,0b,1b]) 
 */
@@ -101,7 +102,7 @@ int  IdlMdsOpen(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
+EXPORT int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlMdsSetDefault', connection, 'node', value = [1b,0b]) 
 */
@@ -112,18 +113,8 @@ int  IdlMdsSetDefault(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int  IdlMdsLogin(int lArgc, void * * lpvArgv)
-{
-/*  status = call_external('mdsipshr','IdlMdsLogin', connection, 'user', 'passwd', value = [1b,0b,0b]) 
-*/
-  int status;
-  BlockSig(SIGALRM);
-  status = MdsLogin((int)((char *)lpvArgv[0] - (char *)0),(char *)lpvArgv[1],(char *)lpvArgv[2]);
-  UnBlockSig(SIGALRM);
-  return status;
-}
 
-int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
+EXPORT int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlGetAnsInfo', connection_l, dtype_b, length_w, ndims_b, dims_l[7], numbytes_l, 
                                value=[1b,0b,0b,0b,0b,0b,0b])
@@ -136,7 +127,7 @@ int  IdlGetAnsInfo(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int  Idlmemcpy(int lArgc, void * * lpvArgv)
+EXPORT int  Idlmemcpy(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','Idlmemcpy', answer, answer_ptr, nbytes, value=[0b,1b,1b])
 */
@@ -148,7 +139,7 @@ int  Idlmemcpy(int lArgc, void * * lpvArgv)
   return 1;
 }
 
-int  IdlSendArg(int lArgc, void * * lpvArgv)
+EXPORT int  IdlSendArg(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlSendArg', connection_l, idx_l, dtype_b, nargs_w, length_w, ndims_b, dims_l[7], 
 			    bytes, value=[1b,1b,1b,1b,1b,1b,1b,0b,0b])
@@ -165,7 +156,7 @@ int  IdlSendArg(int lArgc, void * * lpvArgv)
   return status;
 }
 
-int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
+EXPORT int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
 {
 /*  status = call_external('mdsipshr','IdlSetCompressionLevel', connection_l, level_l, value=[1b,1b])
 */
