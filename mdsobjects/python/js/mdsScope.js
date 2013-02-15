@@ -955,13 +955,17 @@ function Wave(signals, color, g, metrics, clippath)
 			    maxYs = ys;
 			}
                         if(firstYs != minYs)
+                        {
                                ans = ans + ' ' + prevXs + ' ' +firstYs;
+                        }
 			ans = ans + ' ' + prevXs + ' ' +minYs;
 			if (maxYs > minYs)
 			{
  			   ans = ans + ' ' + prevXs + ' ' +maxYs;
                            if(lastYs != maxYs)
+                           {
                                ans = ans + ' ' + prevXs + ' ' +lastYs;
+                           }
 			}
 			minYs = ys;
 			maxYs = ys;
@@ -969,11 +973,13 @@ function Wave(signals, color, g, metrics, clippath)
                         lastYs = ys;
 			prevXs = xs;
                         
-                        //Draw last point 
-                        if(signalIdx == this.signals.length - 1)
-                            ans = ans + ' ' + xs + ' ' +ys;
 		    } 
 
+                    //Draw last point 
+                    if(idx == this.signals[signalIdx].size - 1)
+                    {
+                        ans = ans + ' ' + xs + ' ' +ys;
+                    }
 /*                    if((xs == undefined) || (ys == undefined))
                         prevSkipped = true;
                     else
@@ -1704,7 +1710,7 @@ function getScopeTitle(tree, shot, title, success_cb,failure_cb,svg, scopeIdx, n
             
   var req = new XMLHttpRequest();
   var getStr;
-  if (tree)
+  if (tree != undefined && shot != undefined)
     getStr = '1darray/'+tree+'/'+shot+'?expr='+encodeUrl(title);
   else
     getStr = '1darray?expr='+encodeUrl(title);
@@ -1741,7 +1747,7 @@ function getScopeLimits(tree, shot, limit, limitId, success_cb,failure_cb,svg, s
              
   var req = new XMLHttpRequest();
   var getStr;
-  if (tree)
+  if (tree != undefined && shot != undefined)
     getStr = '1darray/'+tree+'/'+shot+'?expr='+encodeUrl(limit);
   else
     getStr = '1darray?expr='+encodeUrl(limit);

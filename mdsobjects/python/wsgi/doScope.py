@@ -24,6 +24,9 @@ def encodeUrl(inStr):
     urlStr = urlStr.replace(" ", "%20");
     urlStr = urlStr.replace(">", "%3E");
     urlStr = urlStr.replace("<", "%3C");
+    urlStr = urlStr.replace(":", "%3A");
+    urlStr = urlStr.replace("[", "%5B");
+    urlStr = urlStr.replace("]", "%5D");
     return urlStr.replace("|||", "")
 
 def getConfigFiles(user,jScope,subdir):
