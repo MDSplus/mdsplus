@@ -333,8 +333,6 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable32 = new DeviceTable();
         deviceTable33 = new DeviceTable();
         jPanel7 = new javax.swing.JPanel();
-        jPanel13 = new javax.swing.JPanel();
-        deviceChoice10 = new DeviceChoice();
         jPanel17 = new javax.swing.JPanel();
         jPanel47 = new javax.swing.JPanel();
         deviceTable34 = new DeviceTable();
@@ -2277,17 +2275,6 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
 
         jPanel7.setLayout(new java.awt.BorderLayout());
 
-        deviceChoice10.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice10.setChoiceItems(new String[] {"No", "Yes"});
-        deviceChoice10.setConvert(true);
-        deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString("Enable Reconfiguration: ");
-        deviceChoice10.setOffsetNid(3211);
-        deviceChoice10.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice10);
-
-        jPanel7.add(jPanel13, java.awt.BorderLayout.NORTH);
-
         jPanel17.setLayout(new java.awt.GridLayout(3, 1));
 
         deviceTable34.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24"});
@@ -2295,7 +2282,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable34.setLabelString("Reconfigured Modes: ");
         deviceTable34.setNumCols(48);
         deviceTable34.setNumRows(4);
-        deviceTable34.setOffsetNid(3229);
+        deviceTable34.setOffsetNid(3223);
         deviceTable34.setRefMode(1);
         deviceTable34.setRowNames(new String[] {"0", "1", "2", "-1"});
         jPanel47.add(deviceTable34);
@@ -2307,7 +2294,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable35.setLabelString("Coil Enabled: ");
         deviceTable35.setNumCols(48);
         deviceTable35.setNumRows(4);
-        deviceTable35.setOffsetNid(3217);
+        deviceTable35.setOffsetNid(3211);
         jPanel48.add(deviceTable35);
 
         jPanel17.add(jPanel48);
@@ -2316,7 +2303,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceTable36.setLabelString("Supercoild indexes: ");
         deviceTable36.setNumCols(48);
         deviceTable36.setNumRows(4);
-        deviceTable36.setOffsetNid(3223);
+        deviceTable36.setOffsetNid(3217);
         jPanel49.add(deviceTable36);
 
         jPanel17.add(jPanel49);
@@ -2334,7 +2321,6 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice10;
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice12;
     private DeviceChoice deviceChoice13;
@@ -2595,7 +2581,6 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
-    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;

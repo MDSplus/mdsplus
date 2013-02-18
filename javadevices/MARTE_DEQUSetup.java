@@ -52,6 +52,8 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         deviceTable4 = new DeviceTable();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
+        jPanel4 = new javax.swing.JPanel();
+        deviceTable2 = new DeviceTable();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe Dequ Setup");
@@ -165,6 +167,16 @@ public class MARTE_DEQUSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("In Calibration", jPanel10);
 
+        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32"});
+        deviceTable2.setIdentifier("");
+        deviceTable2.setLabelString("Bp Correction Coefficients: ");
+        deviceTable2.setNumCols(32);
+        deviceTable2.setNumRows(1);
+        deviceTable2.setOffsetNid(1351);
+        jPanel4.add(deviceTable2);
+
+        jTabbedPane1.addTab("Bp Correction", jPanel4);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -183,12 +195,14 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceTable deviceTable1;
+    private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
