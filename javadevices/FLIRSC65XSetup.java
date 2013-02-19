@@ -74,11 +74,17 @@ public class FLIRSC65XSetup extends DeviceSetup {
         deviceField32 = new DeviceField();
         deviceChoice7 = new DeviceChoice();
         jPanel9 = new javax.swing.JPanel();
+        jPanel10 = new javax.swing.JPanel();
         deviceChoice5 = new DeviceChoice();
         deviceField18 = new DeviceField();
+        jPanel21 = new javax.swing.JPanel();
+        deviceField21 = new DeviceField();
+        jPanel20 = new javax.swing.JPanel();
+        deviceChoice8 = new DeviceChoice();
+        deviceField19 = new DeviceField();
+        deviceField20 = new DeviceField();
         deviceButtons1 = new DeviceButtons();
 
-        setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setDeviceProvider("localhost:8000");
         setDeviceTitle("FLIR SC65X Camera Device");
         setDeviceType("FLIRSC65X");
@@ -309,20 +315,57 @@ public class FLIRSC65XSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Timing", jPanel4);
 
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        jPanel9.setLayout(new java.awt.GridLayout(3, 1));
+
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
 
         deviceChoice5.setChoiceItems(new String[] {"Stream and Store", "Only Stream", "Only Store"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Enable:");
         deviceChoice5.setOffsetNid(26);
         deviceChoice5.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice5);
+        jPanel10.add(deviceChoice5);
 
         deviceField18.setIdentifier("");
         deviceField18.setLabelString("Localhost Port:");
         deviceField18.setNumCols(4);
         deviceField18.setOffsetNid(27);
-        jPanel9.add(deviceField18);
+        jPanel10.add(deviceField18);
+
+        jPanel9.add(jPanel10);
+
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Frames Decimation for Storing"));
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Save one frame and skip:");
+        deviceField21.setNumCols(4);
+        deviceField21.setOffsetNid(31);
+        jPanel21.add(deviceField21);
+
+        jPanel9.add(jPanel21);
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Dynamic Range for Streaming"));
+
+        deviceChoice8.setBorder(null);
+        deviceChoice8.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice8.setLabelString("Auto Adjustment:");
+        deviceChoice8.setOffsetNid(28);
+        jPanel20.add(deviceChoice8);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("Manual Low Limit [°C]:");
+        deviceField19.setNumCols(4);
+        deviceField19.setOffsetNid(29);
+        jPanel20.add(deviceField19);
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("Manual High Limit [°C]:");
+        deviceField20.setNumCols(4);
+        deviceField20.setOffsetNid(30);
+        jPanel20.add(deviceField20);
+
+        jPanel9.add(jPanel20);
 
         jTabbedPane1.addTab("Storage & Streaming", jPanel9);
 
@@ -334,7 +377,7 @@ public class FLIRSC65XSetup extends DeviceSetup {
 
         deviceButtons1.setCheckExpressions(new String[] {});
         deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"calib"});
+        deviceButtons1.setMethods(new String[] {"calib", "autofocus"});
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -348,12 +391,16 @@ public class FLIRSC65XSetup extends DeviceSetup {
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
     private DeviceChoice deviceChoice7;
+    private DeviceChoice deviceChoice8;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
     private DeviceField deviceField18;
+    private DeviceField deviceField19;
     private DeviceField deviceField2;
+    private DeviceField deviceField20;
+    private DeviceField deviceField21;
     private DeviceField deviceField22;
     private DeviceField deviceField23;
     private DeviceField deviceField24;
@@ -370,6 +417,7 @@ public class FLIRSC65XSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
@@ -380,6 +428,8 @@ public class FLIRSC65XSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;

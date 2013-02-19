@@ -1,10 +1,7 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="cursor" type="java.awt.Cursor" editor="org.netbeans.modules.form.editors2.CursorEditor">
-      <Color id="Default Cursor"/>
-    </Property>
     <Property name="deviceProvider" type="java.lang.String" value="localhost:8000"/>
     <Property name="deviceTitle" type="java.lang.String" value="FLIR SC65X Camera Device"/>
     <Property name="deviceType" type="java.lang.String" value="FLIRSC65X"/>
@@ -522,7 +519,7 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Data Storage and Streaming"/>
+                        <TitledBorder/>
                       </Border>
                     </Property>
                   </Properties>
@@ -534,31 +531,112 @@
                     </Constraint>
                   </Constraints>
 
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                    <Property name="columns" type="int" value="1"/>
+                    <Property name="rows" type="int" value="3"/>
+                  </Layout>
                   <SubComponents>
-                    <Component class="DeviceChoice" name="deviceChoice5">
+                    <Container class="javax.swing.JPanel" name="jPanel10">
                       <Properties>
-                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                          <StringArray count="3">
-                            <StringItem index="0" value="Stream and Store"/>
-                            <StringItem index="1" value="Only Stream"/>
-                            <StringItem index="2" value="Only Store"/>
-                          </StringArray>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Data Storage and Streaming"/>
+                          </Border>
                         </Property>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Enable:"/>
-                        <Property name="offsetNid" type="int" value="26"/>
-                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
                       </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField18">
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceChoice" name="deviceChoice5">
+                          <Properties>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="3">
+                                <StringItem index="0" value="Stream and Store"/>
+                                <StringItem index="1" value="Only Stream"/>
+                                <StringItem index="2" value="Only Store"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Enable:"/>
+                            <Property name="offsetNid" type="int" value="26"/>
+                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField18">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Localhost Port:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="27"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel21">
                       <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="Localhost Port:"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="27"/>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Frames Decimation for Storing"/>
+                          </Border>
+                        </Property>
                       </Properties>
-                    </Component>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField21">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Save one frame and skip:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="31"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel20">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="Dynamic Range for Streaming"/>
+                          </Border>
+                        </Property>
+                      </Properties>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceChoice" name="deviceChoice8">
+                          <Properties>
+                            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                              <Border info="null"/>
+                            </Property>
+                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                              <StringArray count="2">
+                                <StringItem index="0" value="YES"/>
+                                <StringItem index="1" value="NO"/>
+                              </StringArray>
+                            </Property>
+                            <Property name="labelString" type="java.lang.String" value="Auto Adjustment:"/>
+                            <Property name="offsetNid" type="int" value="28"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField19">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Manual Low Limit [&#xb0;C]:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="29"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField20">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="Manual High Limit [&#xb0;C]:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="30"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
                   </SubComponents>
                 </Container>
               </SubComponents>
@@ -576,8 +654,9 @@
           <StringArray count="0"/>
         </Property>
         <Property name="methods" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-          <StringArray count="1">
+          <StringArray count="2">
             <StringItem index="0" value="calib"/>
+            <StringItem index="1" value="autofocus"/>
           </StringArray>
         </Property>
       </Properties>
