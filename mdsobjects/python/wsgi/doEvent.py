@@ -1,3 +1,4 @@
+from MDSplus import Event
 def doEvent(self):
 
     class myevent(Event):
