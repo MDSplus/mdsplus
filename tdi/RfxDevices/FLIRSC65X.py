@@ -25,18 +25,22 @@ class FLIRSC65X(Device):
       {'path':':FRAME_WIDTH', 'type':'numeric', 'value':640},
       {'path':':FRAME_HEIGHT', 'type':'numeric', 'value':480},  
       {'path':':CAM_F_LENGTH', 'type':'text', 'value':'50'}, 
-      {'path':':CAM_MS_RANGE', 'type':'text', 'value':'0...150'},                         
-      {'path':':IMG_TEMP', 'type':'text', 'value':'Radiometric'},            
+      {'path':':CAM_MS_RANGE', 'type':'text', 'value':'0...650'},                         
+      {'path':':IMG_TEMP', 'type':'text', 'value':'LinearTemperature10mK'},            
       {'path':':FRAME_SYNC', 'type':'text', 'value':'INT. TRIGGER'},
-      {'path':':FRAME_TBASE', 'type':'text'},
+      {'path':':FRAME_TBASE', 'type':'numeric'},
       {'path':':FRAME_RATE', 'type':'text', 'value':'50'},   
       {'path':':FRAME_TSTART', 'type':'numeric', 'value':0}, 
-      {'path':':FRAME_BRST_D', 'type':'numeric', 'value':100E-3},    
+      {'path':':FRAME_BRST_D', 'type':'numeric', 'value':5},    
       {'path':':FRAME_NR_TRG', 'type':'numeric', 'value':3},    
-      {'path':':CALIB_AUTO', 'type':'text', 'value':'YES'},   
-      {'path':':CALIB_TIME', 'type':'numeric', 'value':5},            
+      {'path':':CALIB_AUTO', 'type':'text', 'value':'NO'},   
+      {'path':':CALIB_TIME', 'type':'numeric', 'value':4},            
       {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
       {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
+      {'path':':STREAM_AUTOS', 'type':'text', 'value':'YES'},  
+      {'path':':STREAM_LOLIM', 'type':'numeric', 'value':15},
+      {'path':':STREAM_HILIM', 'type':'numeric', 'value':50},
+      {'path':':SKP_FR_STORE', 'type':'numeric', 'value':0},    
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
@@ -69,7 +73,7 @@ class FLIRSC65X(Device):
 
 
       def run(self):
-        frameType = c_short * (self.height.value * self.width.value) #used for acquired frame
+        frameType = c_short * (self.height.value * self.width.value) #used for acquiring frame
         frameBuffer = frameType()
 
         frameType = c_byte * (self.height.value * self.width.value)  #used for streaming frame
@@ -78,16 +82,13 @@ class FLIRSC65X(Device):
         frameType = c_byte * (self.payloadSize.value - (sizeof(c_short) * self.height.value * self.width.value) )  #used for metadata
         metaData = frameType()
 
-        self.idx = 0
-
-        treePtr = c_void_p(0);
+        treePtr = c_void_p(0)
         status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
-
         if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
           return 0
 
-        if self.device.frame_sync.data() == 'EXT. TRIGGER': 
+        if self.device.frame_sync.data() == 'EXT. TRIGGER':       #internal/external trigger
           isExternal = 1
           timebaseNid=self.device.frame_tbase.getNid()
         else:
@@ -104,114 +105,126 @@ class FLIRSC65X(Device):
           isStreaming = 0
           isStorage = 1
 
-
-        frameRate = self.device.frame_rate.data()
+        frameRate = self.device.frame_rate.data()                  #preserve 25fps in streaming
         if frameRate == '200':
-          skipFrame=8
+          skipFrameStream=4
         elif frameRate == '100': 
-          skipFrame=4
+          skipFrameStream=2
         elif frameRate == '50': 
-          skipFrame=2
+          skipFrameStream=1
         elif frameRate == '25': 
-          skipFrame=1
+          skipFrameStream=0
         elif frameRate == '12.5': 
-          skipFrame=1
+          skipFrameStream=0
         elif frameRate == '6.25': 
-          skipFrame=1
+          skipFrameStream=0
         elif frameRate == '3.12': 
-          skipFrame=1
+          skipFrameStream=0
 
-        burstDuration = self.device.frame_brst_d.data()
-        burstNframe = burstDuration * float(frameRate)
-        burstFrameCount = 0
-
-        autoCalib = self.device.calib_auto.data()
-        if autoCalib == 'NO':
-          self.flirLib.setCalibMode(self.device.handle, c_int(0))   #disable auto calibration
-        else:
-          self.flirLib.setCalibMode(self.device.handle, c_int(1))   #enable auto calibration
-
-        startStoreTrg = 0
+        streamPort=c_int(self.device.stream_port.data())            #streaming vars
         tcpStreamHandle=c_int(-1)
-        frameTime=0
-        prevFrameTime=0
-        framePeriod = 40 #40ms=25Hz   int(self.device.frame_period.data()/1E-3)
-        status=c_int(-1)
-        streamPort=c_int(self.device.stream_port.data())
 
-        lowLim=c_int(0)
-        highLim=c_int(32767)
-        counter = 0
+        autoCalib = self.device.calib_auto.data()                   #enable/disable auto calibration
+        if autoCalib == 'NO':
+          self.flirLib.setCalibMode(self.device.handle, c_int(0))   
+        else:
+          self.flirLib.setCalibMode(self.device.handle, c_int(1))   
+        
+        autoScale = self.device.stream_autos.data()                 #autoscaling pixel grey depth for streaming operation
+        if autoScale == 'YES':
+          autoScale=c_int(1)
+        else:
+          autoScale=c_int(0)
+        #scaling limits depends on img_temperature
+        #for flir minLim=2000   =200K=-73C
+        #for flir maxLim=62000  =6200K=5927C
+
+        img_temperature = self.device.img_temp.data()               #modify limits according to image temperature precision
+        if img_temperature == 'LinearTemperature10mK':
+          img_temperature=c_int(10)
+          lowLim=c_int(self.device.stream_lolim.data()*100)
+          highLim=c_int(self.device.stream_hilim.data()*100)
+          minLim=c_int(0)            
+          maxLim=c_int(62000-27315)      #346.85°C  
+        if img_temperature == 'LinearTemperature100mK':
+          img_temperature=c_int(100)
+          lowLim=c_int(self.device.stream_lolim.data()*10)
+          highLim=c_int(self.device.stream_hilim.data()*10)
+          minLim=c_int(0)         
+          maxLim=c_int(62000-27315)      #3468.5°C 
+     
+        skipFrameStore = self.device.skp_fr_store.data()           #frames store decimation
+        frameStoreCounter = skipFrameStore
+        frameStreamCounter = skipFrameStream                       #frames stream decimation
+
+        burstDuration = self.device.frame_brst_d.data()            #external trigger timing
+        burstNframe = burstDuration * float(frameRate) + 1
+        burstFrameCount = 0
+        Ntrigger = self.device.frame_nr_trg.data()
+        NtriggerCount = 0
+
+        frameTime=0                                        #relative frame time used only in internal trigger
+        startStoreTrg = 0                                  #software trigger / hardware trigger mask     
+        status=c_int(-1)                                   #operation status                             
+        self.idx = 0                                       #frame index passed to saving frames on mdsplus
+        frameTotalCounter = 0
 
         while not self.stopReq:
 
-          self.flirLib.getFrame(self.device.handle, byref(status), frameBuffer, metaData)
-          #print 'get frame status:', status
+          self.flirLib.getFrame(self.device.handle, byref(status), frameBuffer, metaData)                    #get the frame
+          self.flirLib.frameConv(self.device.handle, frameBuffer, self.width, self.height, img_temperature)  #convert kelvin in Celsius
 
-          if isExternal==1:        #external clock source
-            if (status.value==4):     #start data storing @ 1st trigger seen
+          frameStoreCounter = frameStoreCounter + 1     #reset according to Store decimation
+          frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
+          frameTotalCounter = frameTotalCounter + 1     #never resetted     
+          
+          if isExternal==1:                          #external clock source
+            burstFrameCount = burstFrameCount + 1
+            if (burstFrameCount == burstNframe):        
+              startStoreTrg=0                           #disable storing
+              burstFrameCount = 0
+              NtriggerCount = NtriggerCount + 1
+              if autoCalib == 'NO':                     #execute calibration action @ every burst of frames (only if NO auto calibration)
+                self.device.calib(0)
+            if NtriggerCount==Ntrigger:                 #stop store when all trigger are received              
+              self.device.stop_store(0)   
+            if (status.value==4):                       #start data storing @ 1st trigger seen (trigger is on image header!)
               startStoreTrg=1
-          else:                    #internal clock source -> S.O. timestamp
-            startStoreTrg=1           #start data storing
-            timestamp=datetime.datetime.now()
-            prevFrameTime=frameTime
-            frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
-            deltaT=frameTime-prevFrameTime
-#            if (deltaT)<framePeriod:
-#              time.sleep((framePeriod-deltaT)/1E3)  #in internal mode never go faster then 25Hz
+          else:                                      #internal clock source
+            startStoreTrg=1           
+            frameTime = (frameTotalCounter-1) * 1./float(frameRate)
 
-              #print 'sleep di ', (framePeriod-deltaT)
-            #print 'timestamp 64bit: ', frameTime
-            #ts=datetime.datetime.now()
-            #ft=int(time.mktime(ts.timetuple())*1000)+int(ts.microsecond/1000)
-            #print 'timestamp 64bit post wait: ', ft
+          if(isStorage==1 and startStoreTrg==1):                              #is a frame to be saved?
+            if ((status.value==1) or (status.value==2) or (status.value==4)): #is the frame complete, incomplete or triggered?
+              if (frameStoreCounter == skipFrameStore+1):                       #is a frame NOT to be skipped for decimation?
+                #self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx))
+                savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1)) 
+                frameStoreCounter=0
+                self.idx = self.idx + 1
 
-            
-          counter = counter + 1            #used to send TCP frames @ 25Hz or less
-          sendFrame = counter % skipFrame
+          if(isStreaming==1):
+            if(tcpStreamHandle.value==-1): 
+              fede=self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
+              if(fede!=-1):
+                print '\nConnected to FFMPEG on localhost:',streamPort.value
+            if(frameStreamCounter == skipFrameStream+1):
+              frameStreamCounter=0
+            if(frameStreamCounter == 0 and tcpStreamHandle.value!=-1):
+              self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, autoScale, byref(lowLim), byref(highLim), minLim, maxLim)
+              self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit)             
 
-          if(isStorage==1 and startStoreTrg==1):
-            if ((status.value==1) or (status.value==2) or (status.value==4)): #frame complete, incomplete, triggered
-
-              self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, byref(c_int64(frameTime)), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx)) 
-
-              self.idx = self.idx + 1
-              #print 'saved frame idx:', self.idx
-
-              if autoCalib == 'NO':                          #only if NO auto calibration
-                burstFrameCount = burstFrameCount + 1
-                if (burstFrameCount == burstNframe):        #execute calibration action @ every burst of frames
-                  startStoreTrg=0
-                  burstFrameCount = 0
-                  self.device.calib(0)   #self.device.calib(self)
-                       
-
-          if ( (isStreaming==1) and (tcpStreamHandle.value==-1) ):   
-            self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
-            #print 'Stream Tcp Connection Opened. Handle:',tcpStreamHandle.value
-
-          if ( (isStreaming==1) and (tcpStreamHandle.value!=-1) ): 
-            #self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, c_int(14), frame8bit);
-            #print 'sendFrame=', sendFrame 
-            if(sendFrame==0):
-              self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, c_int(1), byref(lowLim), byref(highLim), c_int(2000), c_int(62000));
-              self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit);
-            #else:
-              #print 'skipped frame in streaming'  
         #endwhile
-        self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
-        #print 'Stream Tcp Connection Closed'
 
-
+        self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))  
     
-        status = self.flirLib.stopAcquisition(self.device.handle)
+        status = self.flirLib.stopAcquisition(self.device.handle)  #stop camera acquisition
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot stop camera acquisition')
 
         if autoCalib == 'NO':
           self.flirLib.setCalibMode(self.device.handle, c_int(1))  #re-enable auto calibration
        
-        self.flirLib.flirClose(self.device.handle)   #close device and remove from info
+        self.flirLib.flirClose(self.device.handle)                 #close device and remove from info
         if status < 0:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot close camera')
 
@@ -312,7 +325,7 @@ class FLIRSC65X(Device):
         if status < 0:  
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
           return 0
-      return
+      return 1
 
 ###remove info###    
     def removeInfo(self):
@@ -329,7 +342,10 @@ class FLIRSC65X(Device):
 ##########init############################################################################    
     def init(self,arg):
       global flirLib
-      self.restoreInfo()
+      
+      if  self.restoreInfo() == 0:
+          return 0      
+  
       self.frames.setCompressOnPut(False)	
 
 ###Object Parameters
@@ -340,7 +356,7 @@ class FLIRSC65X(Device):
 
 
 ###Frame Rate
-      skipFrame = c_int(1);
+      skipFrameStream = c_int(1)
       frameRate = self.frame_rate.data()
 
       if frameRate == '200':
@@ -358,7 +374,7 @@ class FLIRSC65X(Device):
       elif frameRate == '3.12': 
         frInt=c_int(6)
 
-      status = flirLib.setFrameRate(self.handle, frInt, byref(skipFrame))
+      status = flirLib.setFrameRate(self.handle, frInt, byref(skipFrameStream))
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Frame Rate')
         return 0
@@ -425,48 +441,67 @@ class FLIRSC65X(Device):
 
 
 ###Auto Calibration
-      status = flirLib.executeAutoCalib(self.handle);
+      status = flirLib.executeAutoCalib(self.handle)
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Calibration')
         return 0
 
 ###Auto Focus
-      status = flirLib.executeAutoFocus(self.handle);
+      status = flirLib.executeAutoFocus(self.handle)
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Focus')
         return 0
         
 
-      print 'init completed...'
+      print 'Init action completed.'
       self.saveInfo()
       return 1
 
 ####################MANUAL CALIBRATION ACTION
     def calib(self,arg):
       global flirLib
-      self.restoreInfo()
 
-      status = flirLib.executeAutoCalib(self.handle);
+      if self.restoreInfo() == 0:
+          return 0  
 
+      status = flirLib.executeAutoCalib(self.handle)
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Calibration')
         return 0
-      else:
-        print 'Calibration Action Executed...'
 
       self.saveInfo()
       return 1
+
+
+####################MANUAL AUTOFOCUS ACTION
+    def autofocus(self,arg):
+      global flirLib
+
+      if self.restoreInfo() == 0:
+          return 0  
+
+      status = flirLib.executeAutoFocus(self.handle)
+      if status < 0:
+        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Focus')
+        return 0
+
+      self.saveInfo()
+      return 1
+
 		
 ##########start store############################################################################   
     def start_store(self, arg):
       global flirLib
       global mdsLib
       global streamLib
-      self.restoreInfo()
+
+      if self.restoreInfo() == 0:
+          return 0      
+
       self.worker = self.AsynchStore()        
       self.worker.daemon = True 
       self.worker.stopReq = False
-#      hBuffers = c_void_p(0)
+#     hBuffers = c_void_p(0)
       width = c_int(0)
       height = c_int(0)
       payloadSize = c_int(0)
