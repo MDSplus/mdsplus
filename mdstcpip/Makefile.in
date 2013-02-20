@@ -48,8 +48,11 @@ MdsIpSrvShr = @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@
 MdsIpTunnel = @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@
 MdsIpTCP    = @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@
 MdsIpSSH    = @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@
+MdsIpHTTP   = @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@
 MDSIP_CLIENT_SSH = @MAKEBINDIR@mdsip-client-ssh
+MDSIP_CLIENT_HTTP = @MAKEBINDIR@mdsip-client-http
 MDSIP_SERVER_SSH = @MAKEBINDIR@mdsip-server-ssh
+MDSIP_SERVER_HTTP = @MAKEBINDIR@mdsip-server-http
 
 ifneq "@GLOBUS_FLAVOR@" ""
 
@@ -84,8 +87,11 @@ all : $(MAKEFILE_HEADER) \
       $(MdsIpTCP) \
       $(MdsIpGSI) \
       $(MdsIpSSH) \
+      $(MdsIpHTTP) \
       $(MDSIP_CLIENT_SSH) \
       $(MDSIP_SERVER_SSH) \
+      $(MDSIP_CLIENT_HTTP) \
+      $(MDSIP_SERVER_HTTP) \
       $(MDSIPSD) \
       @MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@ \
       @MAKEBINDIR@mdsiptest \
@@ -117,8 +123,11 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsIpTunnel@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpTCP@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpSSH@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@libMdsIpHTTP@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsip-client-ssh
 	@ $(RM) @MAKEBINDIR@mdsip-server-ssh
+	@ $(RM) @MAKEBINDIR@mdsip-client-http
+	@ $(RM) @MAKEBINDIR@mdsip-server-http
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
@@ -156,8 +165,11 @@ endif
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ @libdir@
+		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-client-ssh @bindir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-ssh @bindir@
+		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-client-http @bindir@
+		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-http @bindir@
           ifdef MdsIpGSI
 		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpGSI@SHARETYPE@ @libdir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsipsd @bindir@
@@ -228,11 +240,22 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ :
 	ln -sf libMdsIpTunnel@SHARETYPE@ $@
 
+@MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@ :
+	ln -sf libMdsIpTunnel@SHARETYPE@ $@
+
+
 @MAKEBINDIR@mdsip-client-ssh : mdsip-client-ssh
 	cp mdsip-client-ssh $@
 
 @MAKEBINDIR@mdsip-server-ssh : mdsip-server-ssh
 	cp mdsip-server-ssh $@
+
+@MAKEBINDIR@mdsip-client-http : mdsip-client-http
+	cp mdsip-client-http $@
+
+@MAKEBINDIR@mdsip-server-http : mdsip-server-http
+	cp mdsip-server-http $@
+
 
 #makefile-header:  
 #	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header

@@ -1,0 +1,101 @@
+#!/usr/bin/python -u
+import struct
+import os
+import sys
+import select
+import httplib
+import urllib
+import signal
+
+def shutdownConnection(signum,frame):
+  conn=httplib.HTTPConnection(host,timeout=10)
+  conn.putrequest('POST',url+"/msg")
+  conn.putheader('Content-type','application/octet-stream')
+  conn.putheader('Content-length',str(len(msg)))
+  conn.putheader('TMPDIR',tmpdir)
+  conn.putheader('FINISHED','yes')
+  conn.endheaders()
+  conn.send('bye')
+  conn.close()
+  sys.exit(0)
+
+signal.signal(signal.SIGABRT,shutdownConnection)
+
+def getmsg(fd):
+  header=fd.read(48)
+  if len(header) == 0:
+    sys.exit(0)
+  if len(header) != 48:
+    raise Exception('short read')
+  hdr=struct.unpack('Iihbbbbbbiiiiiiii',header)
+  if hdr[0] > 48:
+    bytes=fd.read(hdr[0]-48)
+    if len(bytes) != (hdr[0]-48):
+      raise Exception('short read')
+    return (header+bytes,hdr[3],hdr[4])
+  else:
+    return (header,hdr[3],hdr[4])
+
+
+url=sys.argv[1]
+host=url.split('/')[0]
+url='/'+'/'.join(url.split('/')[1:])
+#print >> sys.stderr,url+"/connect"
+stdout=sys.stdout
+stdin=sys.stdin
+sys.stdout=sys.stderr
+conn=httplib.HTTPConnection(host,timeout=10)
+#conn.set_debuglevel(2)
+conn.request("GET",url+"/connect")
+r1=conn.getresponse()
+#print >> sys.stderr,r1.status,r1.reason
+tmpdir=r1.read()
+#print 'tmpdir=%s' % (tmpdir,)
+conn.close()
+import time
+while 1:
+  stdin_data=''
+  while 1:
+    s=select.select([stdin],[],[],1)
+    if stdin in s[0]:
+#      print 'input available on stdin'
+      msg,nargs,idx=getmsg(stdin)
+#      print repr(msg)
+#      print 'got msg of %d bytes, nargs=%d, idx=%d' % (len(msg),nargs,idx)
+      stdin_data=stdin_data+msg
+      if idx >= (nargs-1):
+        break
+    else:
+      s=select.select([],[stdout],[],.1)
+      if stdout not in s[1]:
+        print 'stdout not writable, sending finish'
+        sys.stdout.flush()
+        shutdownConnection(0,0)
+        
+  conn=httplib.HTTPConnection(host,timeout=60)
+#  conn.set_debuglevel(2)
+  conn.putrequest('POST',url+"/msg")
+  conn.putheader('Content-type','application/octet-stream')
+  conn.putheader('Content-length',str(len(stdin_data)))
+  conn.putheader('TMPDIR',tmpdir)
+  conn.endheaders()
+#  print 'sending %d bytes in the request' % (len(stdin_data),)
+  conn.send(stdin_data)
+  stdin_data=''
+  try:
+    r1=conn.getresponse()
+  except Exception,e:
+    print >> sys.stderr,'getresponse error: '+str(e)
+    continue
+  if r1.status == 500:
+    print >> sys.stderr,r1.read()
+    conn.close()
+    continue
+  else:
+#    print 'request status = %d' % (r1.status,)
+    msg=r1.read()
+    conn.close()
+#    print >> sys.stderr,'Recv %d bytes' % (len(msg),)
+    if len(msg) > 0:
+      stdout.write(msg)
+      stdout.flush()
