@@ -1,4 +1,6 @@
 from MDSplus import Event
+import time
+
 def doEvent(self):
 
     class myevent(Event):
