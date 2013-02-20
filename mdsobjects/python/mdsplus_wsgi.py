@@ -1,8 +1,3 @@
-from MDSplus import *
-import time
-import os
-import sys
-from cgi import parse_qs
 """Use as a mod_wsgi handler in apache.
 
 This module provide access to MDSplus events and data and is designed for use with AJAX web based
@@ -127,6 +122,11 @@ Currently the following request-types are supported:
        example: http://mywebserver-host/mdsplusWsgi/cmod/-1?node=\ip
 
 """
+from MDSplus import *
+import time
+import os
+import sys
+from cgi import parse_qs
 
 class application:
 
@@ -170,6 +170,7 @@ class application:
 
 
     def openTree(self,tree,shot):
+	Tree.usePrivateCtx()
         try:
             shot=int(shot)
     	except Exception,e:
