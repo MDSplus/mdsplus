@@ -162,11 +162,8 @@ class application:
 	yield output
       except Exception,e:
         import traceback
-        f=open('/var/log/httpd/mdsplus_wsgi.log','a')
-        f.write(traceback.format_exc())
-        f.close()
         self.start('500 BAD REQUEST',[('Content-Type','text/xml')])
-	yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(e),) 
+	yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(traceback.format_exec()),) 
 
 
     def openTree(self,tree,shot):
