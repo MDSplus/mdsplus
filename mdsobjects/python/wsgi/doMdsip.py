@@ -2,6 +2,7 @@ import struct
 import select
 from subprocess import Popen
 from tempfile import mkdtemp
+import os,sys
 
 class DisconnectException(Exception):
     pass
@@ -66,7 +67,11 @@ def doMdsip(self):
     op=self.path_parts[1].lower()
     if op == 'connect':
         tmpdir=mkdtemp(prefix='mdsip_http_')
-        p=Popen('setsid mdsip-server-http %s' % (tmpdir,),preexec_fn=os.setsid,shell=True)
+        if 'MDSPLUS_DIR' in os.environ:
+          mdsplus_dir=os.environ['MDSPLUS_DIR']
+        else:
+          mdsplus_dir='/usr/local/mdsplus'
+        p=Popen('setsid %s/bin/mdsip-server-http %s' % (mdsplus_dir,tmpdir),preexec_fn=os.setsid,shell=True)
         if p.wait() == 0:
             ans = ('200 OK',[('Content-type','text/text')],tmpdir)
         else:
