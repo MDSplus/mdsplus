@@ -20,7 +20,7 @@ then
 fi
 if [ ! -r /etc/xinetd.d/mdsip ]
 then
-  if [ -r /usr/local/mdsplus/rpm/mdsipd.xinstd ]
+  if [ -r /usr/local/mdsplus/rpm/mdsipd.xinetd ]
   then
     cp /usr/local/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
   fi
