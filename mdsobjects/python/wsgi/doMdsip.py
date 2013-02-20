@@ -66,7 +66,7 @@ def doMdsip(self):
     op=self.path_parts[1].lower()
     if op == 'connect':
         tmpdir=mkdtemp(prefix='mdsip_http_')
-        p=Popen('setsid /home/twf/wsgi/mdsip-server-http %s' % (tmpdir,),preexec_fn=os.setsid,shell=True)
+        p=Popen('setsid mdsip-server-http %s' % (tmpdir,),preexec_fn=os.setsid,shell=True)
         if p.wait() == 0:
             ans = ('200 OK',[('Content-type','text/text')],tmpdir)
         else:
