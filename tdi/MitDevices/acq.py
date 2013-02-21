@@ -110,13 +110,24 @@ class ACQ(MDSplus.Device):
 	self.data_socket.close()
 	self.data_socket=-1
 
+    def connectAndFlushData(self):
+        import select
+        if self.data_socket == -1 :
+            self.data_socket = socket.socket()
+            self.data_socket.connect((self.getBoardIp(), 54547))
+        rr, rw, ie = select.select([self.data_socket], [], [], 0)
+        if len(rr) > 0 :
+            if self.debugging():
+                print "flushing old data from socket"
+            self.data_socket.close()
+            self.data_socket = -1
+            self.connectAndFlushData()
+
     def readRawData(self, chan, pre, start, end, inc, retrying) :
 	if self.debugging():
 	    print " starting readRawData(chan=%d, pre=%d. start=%d, end=%d, inc=%d)\n" %(chan,pre, start, end, inc,)
 	try:
-	    if self.data_socket == -1 :
-                self.data_socket = socket.socket()
-                self.data_socket.connect((self.getBoardIp(), 54547))
+            self.connectAndFlushData()
 	    self.data_socket.settimeout(10.)
             self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
 	    f=self.data_socket.makefile("r",32768)
@@ -128,7 +139,7 @@ class ACQ(MDSplus.Device):
                                 dtype=numpy.int16,
                                 offset=(pre+start)*2,
                                 strides=(inc*2),
-                                shape=((end-start+1)-(pre+start)))
+                                shape=((end-start+1)/inc))
 
 	except socket.timeout, e:
 	    if not retrying :
