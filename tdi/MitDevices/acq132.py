@@ -12,7 +12,7 @@ class ACQ132(acq.ACQ):
     from copy import copy
     parts=copy(acq.ACQ.acq_parts)
 
-    for i in range(96):
+    for i in range(32):
         parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',)})
         parts.append({'path':':INPUT_%2.2d:STARTIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
         parts.append({'path':':INPUT_%2.2d:ENDIDX'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
@@ -21,7 +21,7 @@ class ACQ132(acq.ACQ):
     parts.extend(acq.ACQ.action_parts)
     for part in parts:                
         if part['path'] == ':ACTIVE_CHAN' :
-            part['value']=96                 
+            part['value']=32                 
     del part
     
     def initftp(self, auto_store=None):
@@ -147,7 +147,7 @@ class ACQ132(acq.ACQ):
             print "Begining store\n"
 
         if not self.triggered():
-            print "ACQ196 Device not triggered\n"
+            print "ACQ132 Device not triggered\n"
             return MitDevices.DevNotTriggered
 
         complete = 0
@@ -225,7 +225,7 @@ class ACQ132(acq.ACQ):
 #
 # now store each channel
 #
-        for chan in range(96):
+        for chan in range(32):
             self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
 
         self.dataSocketDone()
