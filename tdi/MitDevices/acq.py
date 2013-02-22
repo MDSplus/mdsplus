@@ -112,6 +112,7 @@ class ACQ(MDSplus.Device):
 
     def connectAndFlushData(self):
         import select
+	import time
         if self.data_socket == -1 :
             self.data_socket = socket.socket()
             self.data_socket.connect((self.getBoardIp(), 54547))
@@ -119,8 +120,10 @@ class ACQ(MDSplus.Device):
         if len(rr) > 0 :
             if self.debugging():
                 print "flushing old data from socket"
-            self.data_socket.close()
-            self.data_socket = -1
+            dummy = self.data_socket.recv(99999, socket.MSG_DONTWAIT)
+#            self.data_socket.close()
+#            self.data_socket = -1
+	    time.sleep(.01)
             self.connectAndFlushData()
 
     def readRawData(self, chan, pre, start, end, inc, retrying) :
@@ -129,6 +132,7 @@ class ACQ(MDSplus.Device):
 	try:
             self.connectAndFlushData()
 	    self.data_socket.settimeout(10.)
+#            self.data_socket.send("/dev/acq200/data/%02d %d\n" % (chan,end,))
             self.data_socket.send("/dev/acq200/data/%02d\n" % (chan,))
 	    f=self.data_socket.makefile("r",32768)
             bytes_to_read = 2*(end+pre+1)
@@ -306,7 +310,7 @@ class ACQ(MDSplus.Device):
                     if inc == 1:
                         dim = MDSplus.Dimension(MDSplus.Window(start, end, self.trig_src ), clock)
                     else:
-                        dim = MDSplus.Data.compile('Map($,$)', MDSplus.Dimension(MDSplus.Window(start/inc, end/inc, self.trig_src), clock), MDSplus.Range(start, end, inc))
+                        dim = MDSplus.Dimension(MDSplus.Window(start/inc, end/inc, self.trig_src ), MDSplus.Range(None, None, clock.evaluate().getDelta()*inc))
                     dat = MDSplus.Data.compile(
                         'build_signal(build_with_units((($1+ ($2-$1)*($value - -32768)/(32767 - -32768 ))), "V") ,build_with_units($3,"Counts"),$4)',
                         vins[chan*2], vins[chan*2+1], buf,dim) 
