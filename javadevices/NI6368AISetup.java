@@ -239,21 +239,25 @@ public class NI6368AISetup extends DeviceSetup {
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Start Time (s): ");
+        deviceField7.setNumCols(8);
         deviceField7.setOffsetNid(13);
         jPanel6.add(deviceField7);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("End Time (s): ");
+        deviceField8.setNumCols(8);
         deviceField8.setOffsetNid(14);
         jPanel6.add(deviceField8);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Start Idx: ");
+        deviceField9.setNumCols(8);
         deviceField9.setOffsetNid(15);
         jPanel6.add(deviceField9);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("End Idx:");
+        deviceField10.setNumCols(8);
         deviceField10.setOffsetNid(16);
         jPanel6.add(deviceField10);
 
@@ -292,7 +296,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice6.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("State: ");
-        deviceChoice6.setOffsetNid(23);
+        deviceChoice6.setOffsetNid(24);
         deviceChoice6.setUpdateIdentifier("");
         jPanel8.add(deviceChoice6);
 
@@ -300,7 +304,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice17.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Range: +/-");
-        deviceChoice17.setOffsetNid(24);
+        deviceChoice17.setOffsetNid(25);
         deviceChoice17.setUpdateIdentifier("");
         jPanel8.add(deviceChoice17);
 
@@ -314,7 +318,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice9.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("State: ");
-        deviceChoice9.setOffsetNid(28);
+        deviceChoice9.setOffsetNid(30);
         deviceChoice9.setUpdateIdentifier("");
         jPanel9.add(deviceChoice9);
 
@@ -322,7 +326,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice7.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Range: +/-");
-        deviceChoice7.setOffsetNid(29);
+        deviceChoice7.setOffsetNid(31);
         deviceChoice7.setUpdateIdentifier("");
         jPanel9.add(deviceChoice7);
 
@@ -336,7 +340,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("State: ");
-        deviceChoice12.setOffsetNid(33);
+        deviceChoice12.setOffsetNid(35);
         deviceChoice12.setUpdateIdentifier("");
         jPanel10.add(deviceChoice12);
 
@@ -344,7 +348,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice19.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Range: +/-");
-        deviceChoice19.setOffsetNid(34);
+        deviceChoice19.setOffsetNid(37);
         deviceChoice19.setUpdateIdentifier("");
         jPanel10.add(deviceChoice19);
 
@@ -358,7 +362,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("State: ");
-        deviceChoice15.setOffsetNid(38);
+        deviceChoice15.setOffsetNid(42);
         deviceChoice15.setUpdateIdentifier("");
         jPanel11.add(deviceChoice15);
 
@@ -366,7 +370,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Range: +/-");
-        deviceChoice8.setOffsetNid(39);
+        deviceChoice8.setOffsetNid(43);
         deviceChoice8.setUpdateIdentifier("");
         jPanel11.add(deviceChoice8);
 
@@ -380,7 +384,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("State: ");
-        deviceChoice18.setOffsetNid(43);
+        deviceChoice18.setOffsetNid(48);
         deviceChoice18.setUpdateIdentifier("");
         jPanel12.add(deviceChoice18);
 
@@ -388,7 +392,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice20.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Range: +/-");
-        deviceChoice20.setOffsetNid(44);
+        deviceChoice20.setOffsetNid(49);
         deviceChoice20.setUpdateIdentifier("");
         jPanel12.add(deviceChoice20);
 
@@ -402,7 +406,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice21.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("State: ");
-        deviceChoice21.setOffsetNid(48);
+        deviceChoice21.setOffsetNid(54);
         deviceChoice21.setUpdateIdentifier("");
         jPanel13.add(deviceChoice21);
 
@@ -410,7 +414,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice10.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Range: +/-");
-        deviceChoice10.setOffsetNid(49);
+        deviceChoice10.setOffsetNid(55);
         deviceChoice10.setUpdateIdentifier("");
         jPanel13.add(deviceChoice10);
 
@@ -424,7 +428,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice24.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("State: ");
-        deviceChoice24.setOffsetNid(53);
+        deviceChoice24.setOffsetNid(60);
         deviceChoice24.setUpdateIdentifier("");
         jPanel14.add(deviceChoice24);
 
@@ -432,7 +436,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice22.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Range: +/-");
-        deviceChoice22.setOffsetNid(54);
+        deviceChoice22.setOffsetNid(51);
         deviceChoice22.setUpdateIdentifier("");
         jPanel14.add(deviceChoice22);
 
@@ -446,7 +450,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice27.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("State: ");
-        deviceChoice27.setOffsetNid(58);
+        deviceChoice27.setOffsetNid(66);
         deviceChoice27.setUpdateIdentifier("");
         jPanel15.add(deviceChoice27);
 
@@ -454,7 +458,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice11.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Range: +/-");
-        deviceChoice11.setOffsetNid(59);
+        deviceChoice11.setOffsetNid(67);
         deviceChoice11.setUpdateIdentifier("");
         jPanel15.add(deviceChoice11);
 
@@ -468,7 +472,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice30.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice30.setIdentifier("");
         deviceChoice30.setLabelString("State: ");
-        deviceChoice30.setOffsetNid(63);
+        deviceChoice30.setOffsetNid(72);
         deviceChoice30.setUpdateIdentifier("");
         jPanel16.add(deviceChoice30);
 
@@ -476,7 +480,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice23.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice23.setIdentifier("");
         deviceChoice23.setLabelString("Range: +/-");
-        deviceChoice23.setOffsetNid(64);
+        deviceChoice23.setOffsetNid(73);
         deviceChoice23.setUpdateIdentifier("");
         jPanel16.add(deviceChoice23);
 
@@ -490,7 +494,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice33.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice33.setIdentifier("");
         deviceChoice33.setLabelString("State: ");
-        deviceChoice33.setOffsetNid(68);
+        deviceChoice33.setOffsetNid(78);
         deviceChoice33.setUpdateIdentifier("");
         jPanel17.add(deviceChoice33);
 
@@ -498,7 +502,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice13.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Range: +/-");
-        deviceChoice13.setOffsetNid(69);
+        deviceChoice13.setOffsetNid(79);
         deviceChoice13.setUpdateIdentifier("");
         jPanel17.add(deviceChoice13);
 
@@ -512,7 +516,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice36.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice36.setIdentifier("");
         deviceChoice36.setLabelString("State: ");
-        deviceChoice36.setOffsetNid(73);
+        deviceChoice36.setOffsetNid(84);
         deviceChoice36.setUpdateIdentifier("");
         jPanel18.add(deviceChoice36);
 
@@ -520,7 +524,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice25.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Range: +/-");
-        deviceChoice25.setOffsetNid(74);
+        deviceChoice25.setOffsetNid(85);
         deviceChoice25.setUpdateIdentifier("");
         jPanel18.add(deviceChoice25);
 
@@ -534,7 +538,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice39.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice39.setIdentifier("");
         deviceChoice39.setLabelString("State: ");
-        deviceChoice39.setOffsetNid(78);
+        deviceChoice39.setOffsetNid(90);
         deviceChoice39.setUpdateIdentifier("");
         jPanel19.add(deviceChoice39);
 
@@ -542,7 +546,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice14.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Range: +/-");
-        deviceChoice14.setOffsetNid(79);
+        deviceChoice14.setOffsetNid(91);
         deviceChoice14.setUpdateIdentifier("");
         jPanel19.add(deviceChoice14);
 
@@ -556,7 +560,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice42.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice42.setIdentifier("");
         deviceChoice42.setLabelString("State: ");
-        deviceChoice42.setOffsetNid(83);
+        deviceChoice42.setOffsetNid(96);
         deviceChoice42.setUpdateIdentifier("");
         jPanel20.add(deviceChoice42);
 
@@ -564,7 +568,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice26.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice26.setIdentifier("");
         deviceChoice26.setLabelString("Range: +/-");
-        deviceChoice26.setOffsetNid(84);
+        deviceChoice26.setOffsetNid(97);
         deviceChoice26.setUpdateIdentifier("");
         jPanel20.add(deviceChoice26);
 
@@ -578,7 +582,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice45.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice45.setIdentifier("");
         deviceChoice45.setLabelString("State: ");
-        deviceChoice45.setOffsetNid(88);
+        deviceChoice45.setOffsetNid(102);
         deviceChoice45.setUpdateIdentifier("");
         jPanel21.add(deviceChoice45);
 
@@ -586,7 +590,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice16.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Range: +/-");
-        deviceChoice16.setOffsetNid(89);
+        deviceChoice16.setOffsetNid(103);
         deviceChoice16.setUpdateIdentifier("");
         jPanel21.add(deviceChoice16);
 
@@ -600,7 +604,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice48.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice48.setIdentifier("");
         deviceChoice48.setLabelString("State: ");
-        deviceChoice48.setOffsetNid(93);
+        deviceChoice48.setOffsetNid(108);
         deviceChoice48.setUpdateIdentifier("");
         jPanel22.add(deviceChoice48);
 
@@ -608,7 +612,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice28.setChoiceItems(new String[] {"10.", "5.", "2.", "1."});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Range: +/-");
-        deviceChoice28.setOffsetNid(94);
+        deviceChoice28.setOffsetNid(109);
         deviceChoice28.setUpdateIdentifier("");
         jPanel22.add(deviceChoice28);
 
