@@ -3,7 +3,7 @@ import java.util.concurrent.*;
 import gov.aps.jca.*;
 import gov.aps.jca.dbr.*;
 import gov.aps.jca.event.*;
-
+import java.io.*;
 import MDSplus.*;
 
 
@@ -12,6 +12,7 @@ public class ChannelArchiver
     static int SEGMENT_SIZE = 300;
     static int MAX_QUEUE_LEN  = 10000;
     static boolean debug = false;
+    static Hashtable monitorInfo = new Hashtable();
     static Data DBR2Data(DBR dbr) throws Exception
     {
         Data data = null;
@@ -468,6 +469,7 @@ public class ChannelArchiver
         long prevTime = 0;
         int ignFuture;
 	int prevSeverity = -1;
+
         public DataMonitor(TreeManager treeManager, java.lang.String treeNodeName, java.lang.String severityNodeName, int ignFuture, 
               java.lang.String chanName, boolean isCheckChan, GroupHandler gh)
         {
@@ -490,7 +492,17 @@ public class ChannelArchiver
         }
  	public synchronized void monitorChanged(MonitorEvent e)
 	{
-System.out.println("Monitor: "+treeNodeName);
+	    Integer currCount = (Integer)monitorInfo.get(treeNodeName);
+	    if(currCount == null)
+	    {
+		currCount = new Integer(1);
+		monitorInfo.put(treeNodeName, currCount);
+	    }
+	    else
+	    {
+		currCount = new Integer(currCount.intValue()+1);
+		monitorInfo.put(treeNodeName, currCount);
+	    }
             DBR dbr = e.getDBR();
             try {
                 Data data = DBR2Data(dbr);
@@ -703,6 +715,7 @@ System.out.println("Monitor: "+treeNodeName);
             TreeNodeArray treeNodeArr = tree.getNodeWild("***");
             java.lang.String []nodeNames = treeNodeArr.getPath();
             int[] nids = treeNodeArr.getNid();
+	    System.out.println("Ci sono " + nodeNames.length + " PVs");
             for(int i = 0; i < nodeNames.length; i++)
             {
                 if(nodeNames[i].endsWith(":REC_NAME"))
@@ -713,12 +726,14 @@ System.out.println("Monitor: "+treeNodeName);
                     
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();
-                        System.out.println(recName);
+			recName = recName.trim();
+                        System.out.println("Adesso mi smazzolo "+recName);
                         //Get VAL channel. It will remain open thorough the whole program execution
                         Channel valChan = ctxt.createChannel(recName+".VAL");
                         ctxt.pendIO(5.);
                         DBR valDbr = valChan.get();
                         ctxt.pendIO(5.);
+			System.out.println("Canale creato...");
                         //valDbr.printInfo(System.out);
                         if(!valDbr.isENUM() && !valDbr.isCTRL()&&! valDbr.isINT())
                         {
@@ -799,6 +814,7 @@ System.out.println("Monitor: "+treeNodeName);
                         TreeNode scanNode = tree.getNode(nodeName+":SCAN_MODE");
                         TreeNode severityNode = tree.getNode(nodeName+":ALARM");
                         java.lang.String scanMode = scanNode.getString().toUpperCase();
+System.out.println("Configuazione letta, adesso collego....");
                         if(scanMode.equals("MONITOR"))
                         {
                             if(valDbr.isENUM() || valDbr.isCTRL() || valDbr.isINT())
@@ -827,7 +843,7 @@ System.out.println("Monitor: "+treeNodeName);
                                         ignFuture, chanName, isDisable, gh))).start();
 
                             }
-                        } 
+                        }
                     }catch(Exception exc)
                     {
                         System.err.println("Error handling record "+ recName + ": " + exc);
@@ -836,7 +852,27 @@ System.out.println("Monitor: "+treeNodeName);
             }
         }catch(Exception exc)
         {
-            System.err.println("Genenric error: "+ exc);
+            System.err.println("Generic error: "+ exc);
+	    System.exit(0);
         }
+	BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	while(true)
+	{
+	    try {
+	    	java.lang.String cmd = br.readLine();
+	    	if(cmd.equals("q"))
+		    System.exit(0);
+	    	if(cmd.equals("i"))
+	    	{
+		    Enumeration vars = monitorInfo.keys();
+		    while(vars.hasMoreElements())
+		    {
+		    	java.lang.String var = (java.lang.String)vars.nextElement();
+		    	int count = ((Integer)monitorInfo.get(var)).intValue();
+		    	System.out.println(var+ "\t" + count);
+		    }
+		}
+	    }catch(Exception exc){}	
+	}
     }
 }
