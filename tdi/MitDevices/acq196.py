@@ -41,6 +41,8 @@ class ACQ196(acq.ACQ):
             path = self.local_path
             tree = self.local_tree
             shot = self.tree.shot
+            if self.debugging():
+               print 'ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
             msg="Must specify active chans as int in (32,64,96)"
 
             active_chan = int(self.active_chan)
@@ -89,7 +91,10 @@ class ACQ196(acq.ACQ):
 #
 # now create the post_shot ftp command file
 #
-            fd = tempfile.TemporaryFile()
+#            fd = tempfile.TemporaryFile()
+	    fd = tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
+	    if self.debugging():
+		print 'opened temporary file %s\n'% fd.name
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             if clock_src == 'INT_CLOCK':
@@ -265,7 +270,8 @@ class ACQ196(acq.ACQ):
 		if self.debugging():
 		    print "divided clock stored\n"
 
-        clock = self.clock.record
+#        clock = self.clock.record
+        clock = self.clock
 #
 # now store each channel
 #
