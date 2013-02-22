@@ -340,7 +340,7 @@ public class NI6368AISetup extends DeviceSetup {
         deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("State: ");
-        deviceChoice12.setOffsetNid(35);
+        deviceChoice12.setOffsetNid(36);
         deviceChoice12.setUpdateIdentifier("");
         jPanel10.add(deviceChoice12);
 
