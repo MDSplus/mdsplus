@@ -123,7 +123,7 @@ class ACQ(MDSplus.Device):
             dummy = self.data_socket.recv(99999, socket.MSG_DONTWAIT)
 #            self.data_socket.close()
 #            self.data_socket = -1
-	    time.sleep(.01)
+	    time.sleep(.05)
             self.connectAndFlushData()
 
     def readRawData(self, chan, pre, start, end, inc, retrying) :
