@@ -52,7 +52,7 @@ def doScopepanel(self):
                 try:
                     t=Tree(self.args['tree'][-1],int(shot))
                     response_headers.append(('SHOT'+sig_idx_s,str(t.shot)))
-                except:
+                except Exception,e:
                     response_headers.append(('ERROR'+sig_idx_s,'Error opening tree %s, shot %s, error: %s' % (self.args['tree'][-1],shot,e)))
                     continue
                 if 'default_node' in self.args:
