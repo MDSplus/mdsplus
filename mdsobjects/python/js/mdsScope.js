@@ -1133,7 +1133,7 @@ function Wave(signals, color, g, metrics, clippath)
             if(this.shots.length > 0)
             {
                 getStr = getStr+'shot='+this.shots[0];
-                for(var i = 1; i < shots.length; i++)
+                for(var i = 1; i < this.shots.length; i++)
                 {
                     getStr = getStr + ','+this.shots[i];
                 }
