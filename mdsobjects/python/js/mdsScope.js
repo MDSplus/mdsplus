@@ -12,6 +12,7 @@ var colorPalette;
 var contextMenuSvg; //svg above which righ button has been clicked
 var globalShotPanels = new Array(); //Array containing information required for wave panels taking global shot number
 var globalShots = new Array(); //Array containing global shot numbers (as defined in the bottom form)
+var wavePanels = new Array();
 
 //Limit costants used for  limits management
 var LIMITS_XMIN = 1;
@@ -1077,26 +1078,25 @@ function Wave(signals, color, g, metrics, clippath)
     }
     this.getCrosshairColor = getCrosshairColor;
 }    
-
-function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
+ 
+ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, shots, colors, modes, signalExprs, limitExprs, labelExprs, defaultNodeExpr)
 {
     this.STARTING_ZOOM = 1;
     this.ZOOMING = 2;
     this.NOT_ZOOMING = 3;
     this.zoomState = this.NOT_ZOOMING;
     this.svg = svg;
-    this.signals = signals;
     this.numCols = numCols;
     this.numRows = numRows;
     this.col = col;
     this.row = row;
-    this.labels = labels;
+    this.panelIdx = panelIdx;
     this.clippath = clippath;
-    var g=document.createElementNS("http://www.w3.org/2000/svg","g");
+/*    var g=document.createElementNS("http://www.w3.org/2000/svg","g");
     g.setAttribute("id","viewport");
     svg.appendChild(g);
     this.g = g;
-
+*/
 
     this.borderRect=document.createElementNS("http://www.w3.org/2000/svg","rect");
     this.borderRect.setAttribute("x","0");
@@ -1107,92 +1107,212 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
     this.borderRect.setAttribute("stroke","black");
     svg.appendChild(this.borderRect);
   
-    //default limits wehn no signal
-    this.xMin = 0.;
-    this.xMax = 1.;
-    this.yMin = 0.;
-    this.yMax = 1.;
-    //find min and max X and Y values of the set of signals
-    var sigIdx;
-    
-    for(sigIdx = 0; sigIdx < signals.length; sigIdx++)
-    {
-        var currXMin = this.signals[sigIdx].getMinX();
-        if(this.xMin == undefined || currXMin < this.xMin)
-            this.xMin = currXMin;
-        var currXMax = this.signals[sigIdx].getMaxX();
-        if(this.xMax == undefined || currXMax > this.xMax)
-            this.xMax = currXMax;
-        var currYMin = this.signals[sigIdx].getMinY();
-        if(this.yMin == undefined || currYMin < this.yMin)
-            this.yMin = currYMin;
-        var currYMax = this.signals[sigIdx].getMaxY();
-        if(this.yMax == undefined || currYMax > this.yMax)
-            this.yMax = currYMax;
-    }
-//    var metrics = new Metrics(30, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
-//        this.xMin, this.xMax, this.yMin, this.yMax);
-    var metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
-        this.xMin, this.xMax, this.yMin, this.yMax);
-    var wave = new Wave(this.signals, 0, this.g, metrics, this.clippath);
-    var grid = new Grid(g, metrics, this.labels);
-    this.metrics = metrics;
-    this.wave = wave;
-    this.grid = grid;
+  //Configuration definition
+    this.tree = tree;
+    this.shots = shots;
+    this.colors = colors;
+    this.modes = modes;
+    this.signalExprs = signalExprs;
+    this.limitExprs = limitExprs;
+    this.labelExprs = labelExprs;
+    this.defaultNodeExpr = defaultNodeExpr;
 
-    function pushSignal(signal)
+    function update()
     {
-        this.signals.push(signal);
-        this.svg.removeChild(this.g);
-	this.zoomRect = undefined;
+        var req = new XMLHttpRequest();
+//        var getStr = 'GET /mdsplusWsgi/scopePanel?y1='+this.signalExprs[0];
+        var getStr = '/mdsplusWsgi/scopePanel?y1='+this.signalExprs[0];
+         for(var i = 1; i < signalExprs.length; i++)
+        {
+            getStr = getStr + '&y'+(i+1)+'='+this.signalExprs[i];
+        }
+        if (this.tree != undefined)
+            getStr = getStr+'&tree='+this.tree+'&';
+        if(this.shots != undefined)
+        {
+            if(this.shots.length > 0)
+            {
+                getStr = getStr+'shot='+this.shots[0];
+                for(var i = 1; i < shots.length; i++)
+                {
+                    getStr = getStr + ','+this.shots[i];
+                }
+            }
+        }
+        if(this.labelExprs.title != undefined)
+             getStr = getStr + '&title='+labelExprs.title;
+        if(this.labelExprs.xLabel != undefined)
+             getStr = getStr + '&xlabel='+labelExprs.xLabel;
+        if(this.labelExprs.yLabel != undefined)
+             getStr = getStr + '&ylabel='+labelExprs.yLabel;
+        if(this.limitExprs.xMin != undefined)
+             getStr = getStr + '&xmin='+this.limitExprs.xMin;
+        if(this.limitExprs.xMax != undefined)
+             getStr = getStr + '&xmax='+this.limitExprs.xMax;
+        if(this.limitExprs.yMin != undefined)
+             getStr = getStr + '&ymin='+this.limitExprs.yMin;
+        if(this.limitExprs.yMax != undefined)
+             getStr = getStr + '&ymax='+this.limitExprs.yMax;
+
+//alert(getStr);
+        req.open('GET', getStr, true);
+//        req.open('POST', getStr, true);
+        req.col = this.col;
+        req.row = this.row;
+        req.colors = this.colors;
+        req.modes = this.modes;
+        req.numSignals = this.signalExprs.length;
+        req.limitExprs = this.limitExprs;
+        req.labelExprs = this.labelExprs;
+        req.panelIdx = this.panelIdx;
+        if(this.shots == undefined)
+            req.numShots = 0;
+        else
+            req.numShots = this.shots.length;
+        req.onreadystatechange = function() {
+            if (req.readyState == 4) 
+            {
+                if (this.getResponseHeader('ERROR'))
+                    updateFailure(this.col, this.row, this.getResponseHeader('ERROR'));
+                else
+                {
+                    var signals = new Array();
+                    if(this.numShots <= 1)
+                    {
+                        var currOffset = 0;
+                        for(var sigIdx = 0; sigIdx < this.numSignals; sigIdx++)
+                        {
+                            var xdtype=this.getResponseHeader('X'+(sigIdx + 1)+'_DATATYPE');
+                            var ydtype=this.getResponseHeader('Y'+(sigIdx + 1)+'_DATATYPE');
+                            var xlength=parseInt(this.getResponseHeader('X'+(sigIdx + 1)+'_LENGTH'));
+                            var ylength=parseInt(this.getResponseHeader('Y'+(sigIdx + 1)+'_LENGTH'));
+                            var x=eval('new '+xdtype+'(this.response,currOffset,xlength)');
+                            var y=eval('new '+ydtype+'(this.response,currOffset + xlength*x.BYTES_PER_ELEMENT,ylength)');
+                            currOffset = currOffset + xlength*x.BYTES_PER_ELEMENT+ylength*y.BYTES_PER_ELEMENT;
+                            signals.push(new Signal(x, y, this.colors[sigIdx], this.modes[sigIdx]));
+                        }
+                    }  
+                    else
+                    {
+                        var currSigIdx = 0;
+                        var currOffset = 0;
+                        for(var shotIdx = 0; shotIdx < this.numShots; shotIdx++)
+                        {
+                            for(var sigIdx = 0; sigIdx < this.numSignals; sigIdx++)
+                            {
+                                var xdtype=this.getResponseHeader('X'+(currSigIdx + 1)+'_DATATYPE');
+                                var ydtype=this.getResponseHeader('Y'+(currSigIdx + 1)+'_DATATYPE');
+                                var xlength=parseInt(this.getResponseHeader('X'+(currSigIdx + 1)+'_LENGTH'));
+                                var ylength=parseInt(this.getResponseHeader('Y'+(currSigIdx + 1)+'_LENGTH'));
+                                var x=eval('new '+xdtype+'(this.response,currOffset,xlength)');
+                                var y=eval('new '+ydtype+'(this.response,currOffset + xlength*x.BYTES_PER_ELEMENT,ylength)');
+                                currOffset = currOffset + xlength*x.BYTES_PER_ELEMENT+ylength*y.BYTES_PER_ELEMENT;
+                                signals.push(new Signal(x, y, colorPalette[currSigIdx%colorPalette.length], this.modes[sigIdx]));
+                                currSigIdx++;
+                            }
+                        }
+                    }
+                    var limits = new Object();
+                    if(this.limitExprs.xMin != undefined)
+                        limits.xmin = parseFloat(this.getResponseHeader('xmin'));
+                    if(this.limitExprs.xMax != undefined)
+                        limits.xmax = parseFloat(this.getResponseHeader('xmax'));
+                    if(this.limitExprs.yMin != undefined)
+                        limits.ymin = parseFloat(this.getResponseHeader('ymin'));
+                    if(this.limitExprs.yMax != undefined)
+                        limits.ymax = parseFloat(this.getResponseHeader('ymax'));
+                    
+                    var labels = new Object();
+                    if(this.labelExprs.title != undefined)
+                        labels.title = this.getResponseHeader('title');
+                    if(this.labelExprs.xLabel != undefined)
+                        labels.xlabel = this.getResponseHeader('xlabel');
+                    if(this.labelExprs.yLabel != undefined)
+                        labels.ylabel = this.getResponseHeader('ylabel');
+                    
+                    updateSuccess(this.panelIdx, signals, labels, limits);
+                }
+            }
+        }
+        req.responseType='arraybuffer';
+        req.send();
+    }
+    this.update = update;
+    
+    function plot()
+    {
+        this.grid.plot();
+        this.wave.plot();
+    }
+    this.plot = plot;
+
+    function setPanel(signals, labels, limits)
+    {
+    
+        if(this.g != undefined)
+            this.svg.removeChild(this.g);
+        this.zoomRect = undefined;
 	this.crosshairVertLine = undefined;
 	this.crosshairHorLine = undefined;
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.svg.appendChild(this.g);
 
-        var currXMin = signal.getMinX();
-        
-        if(this.xMin == undefined || currXMin < this.xMin)
-            this.xMin = currXMin;
-        var currXMax = signal.getMaxX();
-        if(this.xMax == undefined || currXMax > this.xMax)
-            this.xMax = currXMax;
-        var currYMin = signal.getMinY();
-        if(this.yMin == undefined || currYMin < this.yMin)
-            this.yMin = currYMin;
-        var currYMax = signal.getMaxY();
-        if(this.yMax == undefined || currYMax > this.yMax)
-            this.yMax = currYMax;
-
-        var xmin, xmax, ymin, ymax;
-         
-        if(this.actXMin == undefined)
-            xmin = this.xMin;
-        else
-            xmin = this.actXMin;
-        if(this.actXMax == undefined)
-            xmax = this.xMax;
-        else
-            xmax = this.actXMax;
-        if(this.actYMin == undefined)
-            ymin = this.yMin;
-        else
-            ymin = this.actYMin;
-        if(this.actYMax == undefined)
-            ymax = this.yMax;
-        else
-            ymax = this.actYMax;
-        
-         var metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
-            xmin, xmax, ymin, ymax);
+        this.signals = signals;
+        this.limits = limits;
+        this.labels = labels;
+    //default limits when no signal
+        this.xMin = 0.;
+        this.xMax = 1.;
+        this.yMin = 0.;
+        this.yMax = 1.;
+    //find min and max X and Y values of the set of signals
+        var sigIdx;
+    
+        for(sigIdx = 0; sigIdx < signals.length; sigIdx++)
+        {
+            var currXMin = this.signals[sigIdx].getMinX();
+            if(this.xMin == undefined || currXMin < this.xMin)
+                this.xMin = currXMin;
+            var currXMax = this.signals[sigIdx].getMaxX();
+            if(this.xMax == undefined || currXMax > this.xMax)
+                this.xMax = currXMax;
+            var currYMin = this.signals[sigIdx].getMinY();
+            if(this.yMin == undefined || currYMin < this.yMin)
+                this.yMin = currYMin;
+            var currYMax = this.signals[sigIdx].getMaxY();
+            if(this.yMax == undefined || currYMax > this.yMax)
+                this.yMax = currYMax;
+        }
+   //Override default limits with given ones
+        if(this.limits.xmin != undefined)
+            this.xMin = this.limits.xmin;
+        if(this.limits.xmax != undefined)
+            this.xMax = this.limits.xmax;
+        if(this.limits.ymin != undefined)
+            this.yMin = this.limits.ymin;
+        if(this.limits.ymax != undefined)
+            this.yMax = this.limits.ymax;
+ 
+        var metrics = new Metrics(METRICS_BORDER, this.svg.viewBox.baseVal.width, this.svg.viewBox.baseVal.height, 
+                this.xMin, this.xMax, this.yMin, this.yMax);
         var wave = new Wave(this.signals, 0, this.g, metrics, this.clippath);
         var grid = new Grid(this.g, metrics, this.labels);
         this.metrics = metrics;
         this.wave = wave;
         this.grid = grid;
-
+        this.plot();
     }
-    this.pushSignal = pushSignal;
+    this.setPanel = setPanel;
+
+    if(shots != undefined && shots[0] < -1) //No global shot defined yet
+    {
+        var currLabels = new Array();
+        currLabels.title = 'Global shot not yet defined';
+        this.setPanel(new Array(), currLabels, new Object()); 
+    }
+    else
+        this.update();
+    
 
     function removeAllSignals()
     {
@@ -1218,79 +1338,7 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
     }
     this.removeAllSignals = removeAllSignals;
 
-    function setTitle(title)
-    {
-        this.labels.title = title;
-        this.svg.removeChild(this.g);
-	this.zoomRect = undefined;
-	this.crosshairVertLine = undefined;
-	this.crosshairHorLine = undefined;
-        this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
-        this.g.setAttribute("id","viewport");
-        this.svg.appendChild(this.g);
-        //this.metrics = new Metrics(30, width/this.numCols, height/this.numRows, this.metrics.xmin, 
-        //        this.metrics.xmax, this.metrics.ymin, this.metrics.ymax);
-        this.wave = new Wave(this.signals, this.colors, this.g, this.metrics, this.clippath);
-        this.grid = new Grid(this.g, this.metrics, this.labels)
-        this.plot();
-     }
-     this.setTitle = setTitle;
-
-    
-    function setLimits(limits)
-    {
-        if(limits.xmin != undefined)
-            this.actXMin = limits.xmin;
-        if(limits.xmax != undefined)
-            this.actXMax = limits.xmax;
-        if(this.actXMax != undefined && this.actXMax != undefined && this.actXMax < this.actXMin)
-            this.actXMax = this.actXMin + 1E-9;
-        if(limits.ymin != undefined)
-            this.actYMin = limits.ymin;
-        if(limits.ymax != undefined)
-            this.actYMax = limits.ymax;
-        if(this.actYMax != undefined && this.actYMax != undefined && this.actYMax < this.actYMin)
-            this.axtYMax = this.actYMin + 1E-9;
-
-        var xmin, xmax, ymin, ymax;
-        if(this.actXMin == undefined)
-            xmin = this.xMin;
-        else
-            xmin = this.actXMin;
-        if(this.actXMax == undefined)
-            xmax = this.xMax;
-        else
-            xmax = this.actXMax;
-        if(this.actYMin == undefined)
-            ymin = this.yMin;
-        else
-            ymin = this.actYMin;
-        if(this.actYMax == undefined)
-            ymax = this.yMax;
-        else
-            ymax = this.actYMax;
-        
-        this.svg.removeChild(this.g);
-	this.zoomRect = undefined;
-	this.crosshairVertLine = undefined;
-	this.crosshairHorLine = undefined;
-        this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
-        this.g.setAttribute("id","viewport");
-        this.svg.appendChild(this.g);
-        
-        this.metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
-            xmin, xmax, ymin, ymax);
-        this.wave = new Wave(this.signals, 0, this.g, this.metrics, this.clippath);
-        this.grid = new Grid(this.g, this.metrics, this.labels);
-    }
-    this.setLimits = setLimits;
-
-    function plot()
-    {
-        this.grid.plot();
-        this.wave.plot();
-    }
-    this.plot = plot;
+ 
     
     function resize(width, height)
     {
@@ -1712,20 +1760,20 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
         var xmin, xmax, ymin, ymax;
-        if(this.actXMin != undefined)
-            xmin = this.actXMin;
+        if(this.limits.xMin != undefined)
+            xmin = this.limits.xMin;
         else
             xmin = this.xMin;
-        if(this.actXMax != undefined)
-            xmax = this.actXMax;
+        if(this.limits.xMax != undefined)
+            xmax = this.limits.xMax;
         else
             xmax = this.xMax;
-        if(this.actYMin != undefined)
-            ymin = this.actYMin;
+        if(this.limits.yMin != undefined)
+            ymin = this.limits.yMin;
         else
             ymin = this.yMin;
-        if(this.actYMax != undefined)
-            ymax = this.actYMax;
+        if(this.limits.yMax != undefined)
+            ymax = this.limits.yMax;
         else
             ymax = this.yMax;
         this.metrics = new Metrics(METRICS_BORDER, this.metrics.width, this.metrics.height, xmin, xmax, ymin, ymax);
@@ -1735,300 +1783,21 @@ function WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath)
     }
     this.resetScales = resetScales;
 
-    
 }
 
 
-function getScopeTitle(tree, shot, title, success_cb,failure_cb,svg, scopeIdx, numCols, numRows, 
-        col, row, labels) {
-            
-  var req = new XMLHttpRequest();
-  var getStr;
-  if (tree != undefined && shot != undefined)
-    getStr = '1darray/'+tree+'/'+shot+'?expr='+encodeUrl(title);
-  else
-    getStr = '1darray?expr='+encodeUrl(title);
-  
-  req.open('GET', getStr, true);
-  req.scb=success_cb;
-  req.fcb=failure_cb;
-  req.svg=svg;
-  req.scopeIdx = scopeIdx;
-  req.numCols = numCols;
-  req.numRows = numRows;
-  req.col = col;
-  req.row = row;
-  req.labels = labels;
-  req.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      if (this.getResponseHeader('ERROR'))
-        this.fcb(this.tree,this.shot,this.expr,this.getResponseHeader('ERROR'),this.svg, this.scopeIdx, 
-            this.numCols, this.numRows, this.col, this.row);
-      else {
-        this.scb(this.response, this.svg, this.scopeIdx, 
-            this.numCols, this.numRows, this.col, this.row, this.labels);
-      }
-      //this.onreadystatechange = function() {};
-    }
-  };
-  
-  req.send();
-}
-
-function getScopeLimits(tree, shot, limit, limitId, success_cb,failure_cb,svg, scopeIdx, numCols, numRows, 
-        col, row, labels) {
-            
-             
-  var req = new XMLHttpRequest();
-  var getStr;
-  if (tree != undefined && shot != undefined)
-    getStr = '1darray/'+tree+'/'+shot+'?expr='+encodeUrl(limit);
-  else
-    getStr = '1darray?expr='+encodeUrl(limit);
-  
-  req.open('GET', getStr, true);
-  req.scb=success_cb;
-  req.fcb=failure_cb;
-  req.svg=svg;
-  req.scopeIdx = scopeIdx;
-  req.numCols = numCols;
-  req.numRows = numRows;
-  req.col = col;
-  req.row = row;
-  req.labels = labels;
-  req.limitId = limitId;
-  req.responseType = 'arraybuffer';
-  req.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      if (this.getResponseHeader('ERROR'))
-       this.fcb(this.tree,this.shot,this.expr,this.getResponseHeader('ERROR'),this.svg, this.scopeIdx, 
-            this.numCols, this.numRows, this.col, this.row);
-      else {
-        var limit;
-        var dtype = this.getResponseHeader('DTYPE');
-        //Convert in any case to an array
-        if(dtype == 'Int8') dtype = 'Int8Array';
-        if(dtype == 'Int16') dtype = 'Int16Array';
-        if(dtype == 'Int32') dtype = 'Int32Array';
-        if(dtype == 'Float32') dtype = 'Float32Array';
-        if(dtype == 'Float64') dtype = 'Float64Array';
-        var length = this.getResponseHeader('LENGTH');
- //       var data=eval('new '+dtype+'(this.response,0,length)');
-        var data=eval('new '+dtype+'(this.response,0,1)');
-        limit = data[0];
-        limits = new Object();
-        switch(this.limitId) {
-            case LIMITS_XMIN: limits.xmin = limit; break;
-            case LIMITS_XMAX: limits.xmax = limit; break;
-            case LIMITS_YMIN: limits.ymin = limit; break;
-            case LIMITS_YMAX: limits.ymax = limit; break;
-         }  
-        
-        this.scb(this.svg, this.scopeIdx, 
-            this.numCols, this.numRows, this.col, this.row, this.labels, limits);
-      }
-      //this.onreadystatechange = function() {};
-    }
-  };
-  req.send();
-}
-
-
-
-function getScopeSignal(tree,shot,expr,color, mode, success_cb,failure_cb,svg, scopeIdx, numCols, numRows, 
-        col, row, labels, limits, clippath) {
-  var req = new XMLHttpRequest();
-// var req = getXmlHttpRequestObject(); 
-//  req.responseType = 'arraybuffer';
-  req.scb=success_cb;
-  req.fcb=failure_cb;
-  req.tree=tree;
-  req.shot=shot;
-/*  if(limits.xmin != undefined && limits.xmax != undefined) Possible management of segmented waeforms.......
-  {
-      req.expr = 'SetTimeContext('+limits.xmin+','+limits.xmax+',(('+limits.xmax+')-('+limits.xmin+'))/1000.);'+expr+';';
-  }
-  else
-*/    req.expr=expr;
-  req.color = color;
-  req.mode = mode;
-  req.svg=svg;
-  req.scopeIdx = scopeIdx;
-  req.numCols = numCols;
-  req.numRows = numRows;
-  req.col = col;
-  req.row = row;
-  req.labels = labels;
-  req.clippath = clippath;
-  
-  //alert('Preparo richiesta per: '+ expr +' '+tree + ' '+shot);
-  req.onreadystatechange = function() {
-    if (req.readyState == 4) {
-      var contType = req.getResponseHeader ("Content-Type");
-      if (req.status == 500 || req.getResponseHeader('ERROR'))
-      {
-        //alert("Error in get ScopeSignal: "+' '+req.expr);
-        req.fcb(req.tree,req.shot,req.expr,req.getResponseHeader('ERROR'),req.svg, req.scopeIdx, 
-            req.numCols, req.numRows, req.col, req.row);
-      }
-      else {
-        var xdtype=req.getResponseHeader('XDTYPE');
-        var ydtype=req.getResponseHeader('YDTYPE');
-        var xlength=req.getResponseHeader('XLENGTH');
-        var ylength=req.getResponseHeader('YLENGTH');
-        var x=eval('new '+xdtype+'(this.response,0,xlength)');
-        var y=eval('new '+ydtype+'(this.response,xlength*x.BYTES_PER_ELEMENT,ylength)');
-        var tree=req.getResponseHeader('TREE');
-        var shot=req.getResponseHeader('SHOT');
-        this.scb(tree,shot,req.expr,x,y,req.color,req.mode,req.svg, req.scopeIdx, 
-            req.numCols, req.numRows, req.col, req.row, req.labels, req.clippath);
-        //alert("LETTO!!!"+xlength);
-      }
-  }
-  else
-  {
-      //if (this.getResponseHeader('ERROR'))
-      {
-        //alert("ScopeSignal: "+' '+req.readyState+' '+req.expr);
-      }
-  }
-  };
-
-
-
-
-/*  req.onreadystatechange = function() {
-    if (this.readyState == 4) {
-      var contType = this.getResponseHeader ("Content-Type");
-      if (this.getResponseHeader('ERROR'))
-      {
-        alert("Error in get ScopeSignal: "+' '+this.expr);
-        this.fcb(this.tree,this.shot,this.expr,this.getResponseHeader('ERROR'),this.svg, this.scopeIdx, 
-            this.numCols, this.numRows, this.col, this.row);
-      }
-      else {
-        var xdtype=this.getResponseHeader('XDTYPE');
-        var ydtype=this.getResponseHeader('YDTYPE');
-        var xlength=this.getResponseHeader('XLENGTH');
-        var ylength=this.getResponseHeader('YLENGTH');
-        var x=eval('new '+xdtype+'(this.response,0,xlength)');
-        var y=eval('new '+ydtype+'(this.response,xlength*x.BYTES_PER_ELEMENT,ylength)');
-        var tree=this.getResponseHeader('TREE');
-        var shot=this.getResponseHeader('SHOT');
-        this.scb(tree,shot,this.expr,x,y,this.color,this.mode,this.svg, this.scopeIdx, 
-            this.numCols, this.numRows, this.col, this.row, this.labels);
-        //alert("LETTO!!!"+xlength);
-      }
-      //this.onreadystatechange = function() {};
-      alert("ScopeSignal Received: "+this.readyState + ' '+this.expr);
-  }
-  else
-  {
-      //if (this.getResponseHeader('ERROR'))
-      {
-        alert("ScopeSignal: "+' '+this.readyState+' '+this.expr);
-      }
-  }
-  };
-*/
-  //alert('GetScopeSignal for ' + req.expr);
-  
- if (tree)
-    req.open('POST','1dsignal/'+tree+'/'+shot+'?expr='+encodeUrl(expr),true);
-  else
-    req.open('POST','1dsignal?expr='+encodeUrl(expr),true);
-  req.responseType = 'arraybuffer';
-  req.send();
-}
-
-var wavePanels = new Array();
-var wavePanelsSvg = new Array();
-
-var wavePanelCount = 0;
-
-
-function mdsPlotFailure(tree,shot,expr,error,svg, scopeIdx, numCols, numRows, col, row) 
-{
-//alert('ERRORE in '+expr+': '+error);
-  if(wavePanelsSvg[scopeIdx] == undefined)
-  {
-      wavePanelCount++;
-      var signals = new Array();
-      var labels = new Object();
-      labels.title = error;
-      wavePanel = new WavePanel(signals,svg, numCols, numRows, col, row, labels);
-      wavePanelsSvg[scopeIdx] = wavePanel;
-      wavePanels.push(wavePanel);
-  }
-  else
-  {
-      wavePanel = wavePanelsSvg[scopeIdx];
-      wavePanel.setTitle(error);
-  }
-  wavePanel.plot();
-}
-
-
-function scopeTitleSuccess(title, svg, scopeIdx, numCols, numRows, col, row, labels) 
-{
-  var wavePanel;
-  if(wavePanelsSvg[scopeIdx] == undefined)
-  {
-      wavePanelCount++;
-      var signals = new Array();
-      labels.title = title;
-      wavePanel = new WavePanel(signals,svg, numCols, numRows, col, row, labels);
-      wavePanelsSvg[scopeIdx] = wavePanel;
-      wavePanels.push(wavePanel);
-  }
-  else
-  {
-      wavePanel = wavePanelsSvg[scopeIdx];
-      wavePanel.setTitle(title);
-  }
-  wavePanel.plot();
-}
-
-function scopeLimitsSuccess(svg, scopeIdx, numCols, numRows, col, row, labels, limits) 
+function updateSuccess(panelIdx, signals, labels, limits)
 {
     var wavePanel;
-    if(wavePanelsSvg[scopeIdx] == undefined)
-    {
-        wavePanelCount++;
-        var signals = new Array();
-        wavePanel = new WavePanel(signals,svg, numCols, numRows, col, row, labels);
-        wavePanelsSvg[scopeIdx] = wavePanel;
-        wavePanel.setLimits(limits);
-        wavePanels.push(wavePanel);
-    }
-    else
-    {
-        wavePanel = wavePanelsSvg[scopeIdx];
-        wavePanel.setLimits(limits);
-    }
-    wavePanel.plot();
+    wavePanel = wavePanels[panelIdx];
+    wavePanel.setPanel(signals, labels, limits);
 }
 
-function scopePlotSuccess(tree,shot,expr,x,y,color, mode, svg, scopeIdx, numCols, numRows, col, row, labels, clippath) 
+function updateFailure(col, row, error)
 {
-    
-  var signals = new Array();
-  signals.push(new Signal(x, y, color, mode));
-  var wavePanel;
-  if(wavePanelsSvg[scopeIdx] == undefined)
-  {
-      wavePanelCount++;
-      wavePanel = new WavePanel(signals,svg, numCols, numRows, col, row, labels, clippath);
-      wavePanelsSvg[scopeIdx] = wavePanel;
-      wavePanels.push(wavePanel);
-  }
-  else
-  {
-      wavePanel = wavePanelsSvg[scopeIdx];
-      wavePanel.pushSignal(new Signal(x,y,color, mode));
-  }
-  wavePanel.plot();
+    alert('Error getting signals for panel ('+row+', '+col+'): '+error);
 }
+
 
 function resizeWaves(width, height)
 {
@@ -2044,12 +1813,6 @@ function resizeScope()
 {
     resizeWaves(window.innerWidth-40,window.innerHeight-100);
 }
-
-
-
-var scopeIdx = 0;
-
-
 
 
 function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,exprArray, colors, modes, limits, labels) {
@@ -2086,97 +1849,9 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
     svg.appendChild(clippath);
     div.appendChild(svg);
 
-
-    var shotInt = parseInt(shot);
-    if(shotInt >= -1 && tree != undefined)  //Not taking from global shots
-    {
-        for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
-        {
-            getScopeSignal(tree,shot,exprArray[exprIdx],colors[exprIdx], modes[exprIdx], scopePlotSuccess,mdsPlotFailure,svg, 
-                scopeIdx, numCols, numRows, col, row, labels, limits, clippath);
-        }
-        if(labels.title != undefined)
-        {
-             getScopeTitle(tree, shot, labels.title, scopeTitleSuccess, mdsPlotFailure, svg, scopeIdx, 
-                     numCols, numRows, col, row, labels);
-        }
-        if(limits.xmin != undefined)
-        {
-             getScopeLimits(tree, shot, limits.xmin, LIMITS_XMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                     numCols, numRows, col, row, labels);
-        }
-        if(limits.xmax != undefined)
-        {
-             getScopeLimits(tree, shot, limits.xmax, LIMITS_XMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                     numCols, numRows, col, row, labels);
-        }
-        if(limits.ymin != undefined)
-        {
-             getScopeLimits(tree, shot, limits.ymin, LIMITS_YMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                     numCols, numRows, col, row, labels);
-        }
-        if(limits.ymax != undefined)
-        {
-             getScopeLimits(tree, shot, limits.ymax, LIMITS_YMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx, 
-                     numCols, numRows, col, row, labels);
-        }
-    }
-    else //taking from global shots
-    {
-        //Add information to gloablShotPanels
-        globalShotPanels.push({tree: tree, exprArray: exprArray, modes: modes, svg: svg, scopeIdx: scopeIdx, 
-                numCols: numCols, numRows: numRows, col: col, row: row, limits: limits, labels: labels, 
-                colors: colors, originalTitle: labels.title, limits: limits});
-        if(globalShots.length > 0) //Global shots already defined
-        {
-            for(var shotIdx = 0; shotIdx < globalShots.length; shotIdx++)
-            {
-                for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
-                {
-                    getScopeSignal(tree,''+globalShots[shotIdx],exprArray[exprIdx],
-                        colorPalette[(shotIdx * exprArray.length + exprIdx)%colorPalette.length], modes[exprIdx], 
-                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits, clippath);
-                }
-            }
-        }
-        else //Global shots not yet defined        
-        {
-              for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
-              {
-                    getScopeSignal(tree,'',exprArray[exprIdx],
-                        colorPalette[exprIdx%colorPalette.length], modes[exprIdx],
-                        scopePlotSuccess,mdsPlotFailure,svg, scopeIdx, numCols, numRows, col, row, labels, limits, clippath);
-                }
- 
-        }
-        if(labels.title != undefined)
-        {
-             getScopeTitle(tree, globalShots[0], labels.title, scopeTitleSuccess, mdsPlotFailure, svg, scopeIdx,
-                         numCols, numRows, col, row, labels);
-        }
-        if(limits.xmin != undefined)
-        {
-                  getScopeLimits(tree, shot, limits.xmin, LIMITS_XMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
-                          numCols, numRows, col, row, labels);
-        }
-        if(limits.xmax != undefined)
-        {
-                  getScopeLimits(tree, shot, limits.xmax, LIMITS_XMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
-                          numCols, numRows, col, row, labels);
-        }
-        if(limits.ymin != undefined)
-        {
-                  getScopeLimits(tree, shot, limits.ymin, LIMITS_YMIN, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
-                          numCols, numRows, col, row, labels);
-        }
-        if(limits.ymax != undefined)
-        {
-           getScopeLimits(tree, shot, limits.ymax, LIMITS_YMAX, scopeLimitsSuccess, mdsPlotFailure, svg, scopeIdx,
-                          numCols, numRows, col, row, labels);
-        }
-    }       
-    scopeIdx++;
-}
+    wavePanel = new WavePanel(svg, wavePanels.length, numCols, numRows, col, row, clippath, tree, shot, colors, modes, exprArray, limits, labels);
+    wavePanels.push(wavePanel);
+ }
 
 function updateGlobalShots()
 {
@@ -2187,79 +1862,10 @@ function updateGlobalShots()
     //First step: erase scopePanels
     
     var shots = shotList.trim().split(',');
-    for(var shotIdx = 0; shotIdx < shots.length; shotIdx++)
+    for(var panelIdx = 0; panelIdx < wavePanels.length; panelIdx++)
     {
-        var shot = parseInt(shots[shotIdx]);
-        for(var panelIdx = 0; panelIdx < globalShotPanels.length; panelIdx++)
-        {
-            var wavePanel = wavePanels[globalShotPanels[panelIdx].scopeIdx];
-            if(wavePanel != undefined)
-                wavePanel.removeAllSignals();
-            var exprArray = globalShotPanels[panelIdx].exprArray;
-            for(var exprIdx = 0; exprIdx < exprArray.length; exprIdx++)
-            {
-                var color;
-                if(shots.length == 1)
-                    color = globalShotPanels[panelIdx].colors[exprIdx];
-                else
-                    color = colorPalette[(shotIdx * exprArray.length + exprIdx)%colorPalette.length];
-                getScopeSignal(globalShotPanels[panelIdx].tree,shot,exprArray[exprIdx], color, 
-                    globalShotPanels[panelIdx].modes[exprIdx], 
-                    scopePlotSuccess,mdsPlotFailure,globalShotPanels[panelIdx].svg, globalShotPanels[panelIdx].scopeIdx,
-                    globalShotPanels[panelIdx].numCols, globalShotPanels[panelIdx].numRows, globalShotPanels[panelIdx].col,
-                    globalShotPanels[panelIdx].row, globalShotPanels[panelIdx].labels, globalShotPanels[panelIdx].limits);
-            }
-        }
-    }
-    if(shots.length > 0)
-    {
-        var shot = parseInt(shots[0]);
-        for(var panelIdx = 0; panelIdx < globalShotPanels.length; panelIdx++)
-        {
-            var title;
-            if(globalShotPanels[panelIdx].originalTitle != undefined)
-                title = globalShotPanels[panelIdx].originalTitle;
-            else
-                title = '""';
-            getScopeTitle(globalShotPanels[panelIdx].tree, shot, title, scopeTitleSuccess, 
-                mdsPlotFailure, globalShotPanels[panelIdx].svg, globalShotPanels[panelIdx].scopeIdx, 
-                globalShotPanels[panelIdx].numCols, globalShotPanels[panelIdx].numRows, globalShotPanels[panelIdx].col, 
-                globalShotPanels[panelIdx].row, globalShotPanels[panelIdx].labels);
-            
-
-            if(globalShotPanels[panelIdx].limits.xmin != undefined)
-            {
-                  getScopeLimits(globalShotPanels[panelIdx].tree, shot, globalShotPanels[panelIdx].limits.xmin, LIMITS_XMIN, 
-                        scopeLimitsSuccess, mdsPlotFailure, globalShotPanels[panelIdx].svg, 
-                        globalShotPanels[panelIdx].scopeIdx, globalShotPanels[panelIdx].numCols, 
-                        globalShotPanels[panelIdx].numRows, globalShotPanels[panelIdx].col, 
-                        globalShotPanels[panelIdx].row, globalShotPanels[panelIdx].labels);
-            }
-            if(globalShotPanels[panelIdx].limits.xmax != undefined)
-            {
-                  getScopeLimits(globalShotPanels[panelIdx].tree, shot, globalShotPanels[panelIdx].limits.xmax, LIMITS_XMAX,
-                        scopeLimitsSuccess, mdsPlotFailure, globalShotPanels[panelIdx].svg, 
-                        globalShotPanels[panelIdx].scopeIdx, globalShotPanels[panelIdx].numCols, 
-                        globalShotPanels[panelIdx].numRows, globalShotPanels[panelIdx].col, 
-                        globalShotPanels[panelIdx].row, globalShotPanels[panelIdx].labels);
-            }
-            if(globalShotPanels[panelIdx].limits.ymin != undefined)
-            {
-                  getScopeLimits(globalShotPanels[panelIdx].tree, shot, globalShotPanels[panelIdx].limits.ymin, LIMITS_YMIN,
-                        scopeLimitsSuccess, mdsPlotFailure, globalShotPanels[panelIdx].svg, 
-                        globalShotPanels[panelIdx].scopeIdx, globalShotPanels[panelIdx].numCols, 
-                        globalShotPanels[panelIdx].numRows, globalShotPanels[panelIdx].col, 
-                        globalShotPanels[panelIdx].row, globalShotPanels[panelIdx].labels);
-            }
-            if(globalShotPanels[panelIdx].limits.ymax != undefined)
-            {
-                  getScopeLimits(globalShotPanels[panelIdx].tree, shot, globalShotPanels[panelIdx].limits.ymax, LIMITS_YMAX,
-                        scopeLimitsSuccess, mdsPlotFailure, globalShotPanels[panelIdx].svg, 
-                        globalShotPanels[panelIdx].scopeIdx, globalShotPanels[panelIdx].numCols, 
-                        globalShotPanels[panelIdx].numRows, globalShotPanels[panelIdx].col, 
-                        globalShotPanels[panelIdx].row, globalShotPanels[panelIdx].labels);
-            }
-        }
+        wavePanels[panelIdx].shots = shots;
+        wavePanels[panelIdx].update();
     }
 }
 
@@ -2306,6 +1912,8 @@ function mdsScope(xmlDoc)
         {
             var experiment = panels[panelIdx].getAttribute("tree");
             var shot = panels[panelIdx].getAttribute("shot");
+            var shots = new Array();
+            shots.push(parseInt(shot));
             var signals = panels[panelIdx].getElementsByTagName("signal");
             var colors = new Array();
             var modes = new Array();
@@ -2314,21 +1922,21 @@ function mdsScope(xmlDoc)
             var setting;
             var panel=panels[panelIdx];
             if((setting=panel.getAttribute('xmin')) != null)
-                limits.xmin = setting;
+                limits.xMin = setting;
             if((setting=panel.getAttribute('xmax')) != null)
-                limits.xmax = setting;
+                limits.xMax = setting;
             if((setting=panel.getAttribute('ymin')) != null)
-                limits.ymin = setting;
+                limits.yMin = setting;
             if((setting=panel.getAttribute('ymax')) != null)
-                limits.ymax = setting;
+                limits.yMax = setting;
             var labels = new Object();
             {
                 if((setting=panel.getAttribute('title')) != null)
                     labels.title = setting;
                 if((setting=panel.getAttribute('xlabel')) != null)
-                    labels.xlabel = setting;
+                    labels.xLabel = setting;
                 if((setting=panel.getAttribute('ylabel')) != null)
-                    labels.ylabel = setting;
+                    labels.yLabel = setting;
             }
             for(var signalIdx = 0; signalIdx < signals.length; signalIdx++)
             {
@@ -2348,7 +1956,7 @@ function mdsScope(xmlDoc)
                 expressions.push(expression);
             }
             mdsScopePanel(document.getElementById('scope_'+panelIdx+'_'+colIdx),Math.round((window.innerWidth-40) /columns.length),
-                    Math.round((window.innerHeight-100) /panels.length),columns.length, panels.length, colIdx, panelIdx, experiment,shot,
+                    Math.round((window.innerHeight-100) /panels.length),columns.length, panels.length, colIdx, panelIdx, experiment,shots,
                     expressions, colors, modes, limits, labels);
     
         }
