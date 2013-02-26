@@ -42,7 +42,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="0"/>
-        <Property name="rows" type="int" value="8"/>
+        <Property name="rows" type="int" value="9"/>
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel8">
@@ -361,6 +361,50 @@
                 <Property name="labelString" type="java.lang.String" value="Localhost Port:"/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="25"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel20">
+          <Properties>
+            <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+              <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                <TitledBorder title="Dynamic Range for Streaming"/>
+              </Border>
+            </Property>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice8">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="null"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="YES"/>
+                    <StringItem index="1" value="NO"/>
+                  </StringArray>
+                </Property>
+                <Property name="labelString" type="java.lang.String" value="Auto Adjustment:"/>
+                <Property name="offsetNid" type="int" value="26"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField19">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Manual Low Limit:"/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="27"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField20">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Manual High Limit:"/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="28"/>
               </Properties>
             </Component>
           </SubComponents>

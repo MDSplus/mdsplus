@@ -34,7 +34,10 @@ class ZELOS2150GV(Device):
       {'path':':FRAME_CLOCK', 'type':'numeric'},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
       {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
-      {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},]
+      {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
+      {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},  
+      {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
+      {'path':':STREAM_HILIM', 'type':'numeric', 'value':255},]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
@@ -98,6 +101,16 @@ class ZELOS2150GV(Device):
           isStreaming = 0
           isStorage = 1
 
+        autoScale = self.device.stream_autos.data()                 #autoscaling pixel grey depth for streaming operation
+        if autoScale == 'YES':
+          autoScale=c_int(1)
+        else:
+          autoScale=c_int(0)
+
+        lowLim=c_int(self.device.stream_lolim.data())
+        highLim=c_int(self.device.stream_hilim.data())
+        minLim=c_int(0)            
+        maxLim=c_int(32767)     
 
         tcpStreamHandle=c_int(-1)
         frameTime=0
@@ -105,42 +118,45 @@ class ZELOS2150GV(Device):
         framePeriod = int(self.device.frame_period.data()/1E-3)
         status=c_int(-1)
         streamPort=c_int(self.device.stream_port.data())
-
-        lowLim=c_int(0)
-        highLim=c_int(32767)
+        frameTotalCounter = 0
 
         while not self.stopReq:
 
           self.kappaLib.kappaGetFrame(self.device.handle, byref(status), frameBuffer)
           print 'get frame status:', status
 
-          if isExternal==0:  #internal clock source -> S.O. timestamp
+          frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
+          frameTotalCounter = frameTotalCounter + 1     #never resetted     
+
+          if isExternal==0:  #internal clock source -> S.O. timestamp 
             timestamp=datetime.datetime.now()
-            prevFrameTime=frameTime
-            frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
-            deltaT=frameTime-prevFrameTime
+            if frameTotalCounter==1:
+              firstFrameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)          
+            prevFrameTime=frameTimeInt
+            frameTimeInt=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
+            deltaT=frameTimeInt-prevFrameTime
             #print 'delta T: ', deltaT
             if (deltaT)<framePeriod:
               time.sleep((framePeriod-deltaT)/1E3)
               #print 'sleep di ', (framePeriod-deltaT)
-            #print 'timestamp 64bit: ', frameTime
-            #ts=datetime.datetime.now()
-            #ft=int(time.mktime(ts.timetuple())*1000)+int(ts.microsecond/1000)
-            #print 'timestamp 64bit post wait: ', ft
+           frameTime=float((frameTime-firstFrameTime)/1000000)
 
           if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
-            self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, byref(c_int64(frameTime)), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx)) 
+            savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1)) 
             self.idx = self.idx + 1
             print 'saved frame idx:', self.idx
 
-          if ( (isStreaming==1) and (tcpStreamHandle.value==-1) ):   
-            self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
-            #print 'Stream Tcp Connection Opened. Handle:',tcpStreamHandle.value
+          if(isStreaming==1):
+            if(tcpStreamHandle.value==-1): 
+              fede=self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
+              if(fede!=-1):
+                print '\nConnected to FFMPEG on localhost:',streamPort.value
+            if(frameStreamCounter == skipFrameStream+1):
+              frameStreamCounter=0
+            if(frameStreamCounter == 0 and tcpStreamHandle.value!=-1):
+              self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, autoScale, byref(lowLim), byref(highLim), minLim, maxLim)
+              self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit)  
 
-          if ( (isStreaming==1) and (tcpStreamHandle.value!=-1) ): 
-            #self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, c_int(14), frame8bit);
-            self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, c_int(0), byref(lowLim), byref(highLim), c_int(0), c_int(32767));
-            self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit);
    
         #endwhile
         self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
