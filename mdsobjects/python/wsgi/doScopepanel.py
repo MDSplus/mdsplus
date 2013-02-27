@@ -90,8 +90,6 @@ def doScopepanel(self):
     else:            
         y_idx=1
         y_idx_s='%d' % (y_idx,)
-        sig_idx=sig_idx+1
-        sig_idx_s='%d' % (sig_idx,)
         while 'y'+y_idx_s in self.args:
             x_idx_s = y_idx_s
             expr=self.args['y'+y_idx_s][-1]

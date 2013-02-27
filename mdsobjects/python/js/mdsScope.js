@@ -1120,23 +1120,23 @@ function Wave(signals, color, g, metrics, clippath)
     function update()
     {
         var req = new XMLHttpRequest();
-//        var getStr = 'GET /mdsplusWsgi/scopePanel?y1='+this.signalExprs[0];
-        var getStr = '/mdsplusWsgi/scopePanel?y1='+this.signalExprs[0];
-         for(var i = 1; i < signalExprs.length; i++)
+        var getStr = 'scopePanel?y1='+this.signalExprs[0];
+        for(var i = 1; i < signalExprs.length; i++)
         {
             getStr = getStr + '&y'+(i+1)+'='+this.signalExprs[i];
         }
-        if (this.tree != undefined)
+        if (this.tree != undefined) {
             getStr = getStr+'&tree='+this.tree+'&';
-        if(this.shots != undefined)
-        {
-            if(this.shots.length > 0)
+            if(this.shots != undefined)
             {
+              if(this.shots.length > 0)
+              {
                 getStr = getStr+'shot='+this.shots[0];
                 for(var i = 1; i < this.shots.length; i++)
                 {
                     getStr = getStr + ','+this.shots[i];
                 }
+              }
             }
         }
         if(this.labelExprs.title != undefined)
@@ -1814,6 +1814,46 @@ function resizeScope()
     resizeWaves(window.innerWidth-40,window.innerHeight-100);
 }
 
+function eventUpdate(event,response,panel) {
+  panel.update();
+  panel.plot();
+}
+
+function eventUpdateFail(event,response,panel) {}
+
+function mdsplusEvent(event,repeat,success_cb,error_cb,userarg) {
+  var req = new XMLHttpRequest();
+  req.url='event/'+event;
+  req.open('GET',req.url,true);
+  req.responseType = 'text';
+  req.scb=success_cb;
+  req.fcb=error_cb;
+  req.event=event;
+  req.userarg=userarg;
+  req.repeat=repeat;
+  req.onreadystatechange = function() {
+    if (this.readyState == 4) {
+       if (this.status == 200) {
+          this.scb(this.event,this.response,this.userarg);
+          if (this.repeat != 0) {
+             this.open('GET',this.url,true);
+             this.send();
+             return;
+          }
+       }
+       else if (req.status == 204) {
+          this.open('GET',this.url,true);
+          this.send();
+          return;
+       } else if (req.status != 0) {
+          this.fcb(this.event,req.response,this.userarg);
+       }
+       this.onreadystatechange = function() {}
+    }
+  };
+  req.send();
+  return req;
+}
 
 function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,exprArray, colors, modes, limits, labels) {
   var svg=document.createElementNS("http://www.w3.org/2000/svg","svg");
@@ -1851,6 +1891,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
 
     wavePanel = new WavePanel(svg, wavePanels.length, numCols, numRows, col, row, clippath, tree, shot, colors, modes, exprArray, limits, labels);
     wavePanels.push(wavePanel);
+    return wavePanel;
  }
 
 function updateGlobalShots()
@@ -1911,15 +1952,20 @@ function mdsScope(xmlDoc)
         for(var panelIdx = 0; panelIdx < panels.length; panelIdx++)
         {
             var experiment = panels[panelIdx].getAttribute("tree");
-            var shot = panels[panelIdx].getAttribute("shot");
-            var shots = new Array();
-            shots.push(parseInt(shot));
+            if ( experiment != null ) {
+              var shot = panels[panelIdx].getAttribute("shot");
+              if (shot != null) {
+                var shots = new Array();
+                shots.push(parseInt(shot));
+              }
+            }
             var signals = panels[panelIdx].getElementsByTagName("signal");
             var colors = new Array();
             var modes = new Array();
             var expressions = new Array();
             var limits = new Object();
             var setting;
+	    var event=null;
             var panel=panels[panelIdx];
             if((setting=panel.getAttribute('xmin')) != null)
                 limits.xMin = setting;
@@ -1929,6 +1975,8 @@ function mdsScope(xmlDoc)
                 limits.yMin = setting;
             if((setting=panel.getAttribute('ymax')) != null)
                 limits.yMax = setting;
+            if((setting=panel.getAttribute('event')) != null)
+	        event=setting;
             var labels = new Object();
             {
                 if((setting=panel.getAttribute('title')) != null)
@@ -1955,9 +2003,11 @@ function mdsScope(xmlDoc)
                 var expression = signals[signalIdx].childNodes[0].nodeValue;
                 expressions.push(expression);
             }
-            mdsScopePanel(document.getElementById('scope_'+panelIdx+'_'+colIdx),Math.round((window.innerWidth-40) /columns.length),
+            var scopePanel=mdsScopePanel(document.getElementById('scope_'+panelIdx+'_'+colIdx),Math.round((window.innerWidth-40) /columns.length),
                     Math.round((window.innerHeight-100) /panels.length),columns.length, panels.length, colIdx, panelIdx, experiment,shots,
                     expressions, colors, modes, limits, labels);
+            if (event)
+               mdsplusEvent(event,true,eventUpdate,eventUpdateFail,scopePanel);
     
         }
     }
