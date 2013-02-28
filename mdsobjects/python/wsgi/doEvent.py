@@ -9,7 +9,8 @@ def doEvent(self):
 
     status = '200 OK'
     response_headers=list()
-    response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
+    response_headers.append(('Cache-Control','private,no-store, no-cache, must-revalidate, max-age=0,pre-check=0,post-check=0'))
+    response_headers.append(('expires','Sat, 26 Jul 1997 09:00:00 GMT'))
     response_headers.append(('Pragma','no-cache'))
     output=''
     try:
