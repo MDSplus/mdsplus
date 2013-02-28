@@ -37,7 +37,7 @@ class ZELOS2150GV(Device):
       {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
       {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},  
       {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
-      {'path':':STREAM_HILIM', 'type':'numeric', 'value':255},]
+      {'path':':STREAM_HILIM', 'type':'numeric', 'value':32767}]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
@@ -77,9 +77,8 @@ class ZELOS2150GV(Device):
 
         self.idx = 0
 
-        treePtr = c_void_p(0);
+        treePtr = c_void_p(0)
         status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
-
         if status == -1:
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open tree')
           return 0
@@ -90,7 +89,7 @@ class ZELOS2150GV(Device):
         else:
           isExternal = 0
           timebaseNid=c_int(-1)
-       
+
         if self.device.streaming.data() == 'Stream and Store': 
           isStreaming = 1
           isStorage = 1
@@ -139,10 +138,10 @@ class ZELOS2150GV(Device):
             if (deltaT)<framePeriod:
               time.sleep((framePeriod-deltaT)/1E3)
               #print 'sleep di ', (framePeriod-deltaT)
-           frameTime=float((frameTime-firstFrameTime)/1000000)
+            frameTime=float((frameTime-firstFrameTime)/1000000)
 
           if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
-            savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1)) 
+            savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0) 
             self.idx = self.idx + 1
             print 'saved frame idx:', self.idx
 
@@ -284,7 +283,7 @@ class ZELOS2150GV(Device):
       self.restoreInfo()
       self.frames.setCompressOnPut(False)	
 
-      status = kappaLib.kappaSetColorCoding(self.handle, c_int(6));  #Y14
+      status = kappaLib.kappaSetColorCoding(self.handle, c_int(6))   #Y14
       if status < 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
         return 0
@@ -373,7 +372,7 @@ class ZELOS2150GV(Device):
       global kappaLib
       self.restoreInfo()
 
-      synch = self.frame_sync.data();  ###Synchronization
+      synch = self.frame_sync.data()   ###Synchronization
       if synch == 'INTERNAL':
         timeMs = int(self.frame_period.data()/1E-3)
         status = kappaLib.kappaSetTriggerTimer(self.handle, c_int(timeMs))		
