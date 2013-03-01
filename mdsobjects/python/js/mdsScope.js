@@ -1192,7 +1192,7 @@ function Wave(signals, color, g, metrics, clippath)
     function update()
     {
         var req = new XMLHttpRequest();
-        var getStr = 'scopePanel?y1='+this.signalExprs[0];
+        var getStr = 'scope?panel=yes&y1='+this.signalExprs[0];
         for(var i = 1; i < signalExprs.length; i++)
         {
             getStr = getStr + '&y'+(i+1)+'='+this.signalExprs[i];
