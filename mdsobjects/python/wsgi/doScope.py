@@ -1,4 +1,6 @@
 import os
+from doEvent import noCache
+from MDSplus import Data
 
 def getValue(lines, key):
     i = 0;
@@ -59,8 +61,7 @@ def file_list_cmp(x,y):
 
 def doScope(self):
   response_headers=list()
-  response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
-  response_headers.append(('Pragma','no-cache'))
+  noCache(response_headers)
   if 'user' in self.args:
       user=self.args['user'][-1]
       response_headers.append(('Content-type','text/html'))
@@ -102,7 +103,15 @@ def doScope(self):
     f = open(self.args['configxml'][-1],'r')
     lines = f.readlines()
     f.close()
-    outStr = '<scope><palette>'
+    outStr = '<scope>'
+    title=getValue(lines, 'Scope.title')
+    if title:
+      outStr = outStr + '<title><expression>'+encodeUrl(title)+'</expression>'
+      event=getValue(lines,'Scope.update_event')
+      if event:
+        outStr = outStr + '<event>'+event+'</event>'
+      outStr = outStr + '</title>'
+    outStr = outStr + '<palette>'
     idx = 0
     GLOBAL_SHOT_IDX = 8
     GLOBAL_TREE_IDX = 7
@@ -248,6 +257,13 @@ def doScope(self):
     output=str(outStr)
     status = '200 OK'
     return (status, response_headers, output)
+  elif 'title' in self.args:
+    response_headers.append(('Content-type','text/text'))
+    try:
+      output = str(Data.execute(self.args['title'][0]))
+    except Exception,e:
+      output = str(e)+' expression was '+self.args['title'][0]
+    return ('200 OK',response_headers, output)
   else:
     ans=('400 NOT FOUND',[('Content-type','text/text'),],'')
     try:

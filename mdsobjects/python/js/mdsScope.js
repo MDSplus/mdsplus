@@ -1918,6 +1918,20 @@ function eventUpdate(event,response,panel) {
   panel.plot();
 }
 
+function updateTitle(expression) {
+  var req = new XMLHttpRequest();
+  req.url = 'Scope?title='+expression;
+  req.open('GET',req.url,true);
+  req.responseType='text';
+  req.onreadystatechange = function() {
+    if (this.readyState == 4) {
+       if (this.status == 200) document.title=decodeUrl(this.response);
+       this.onreadystatechange = function() {};
+    }
+  };
+  req.send();
+}
+    
 function eventUpdateFail(event,response,panel) {}
 
 function mdsplusEvent(event,repeat,success_cb,error_cb,userarg) {
@@ -2009,11 +2023,28 @@ function updateGlobalShots()
     }
 }
 
+function titleEvent(event,response,expression) {
+  updateTitle(expression);
+}
+
+function titleEventFailure(event,response,expression) {}
 
 function mdsScope(xmlDoc)
 {
     document.oncontextmenu = contextMenu;
-
+    var titleXml = xmlDoc.getElementsByTagName('title');
+    if (titleXml != undefined)
+    {
+      var expressionXml=titleXml[0].getElementsByTagName('expression');
+      var expression=expressionXml[0].childNodes[0].nodeValue;
+      updateTitle(expression);
+      var eventXml=titleXml[0].getElementsByTagName('event');
+      if (eventXml != undefined)
+      {
+        var event=eventXml[0].childNodes[0].nodeValue;
+        mdsplusEvent(event,true,titleEvent,titleEventFailure,expression);
+      }
+    }
 //Get Color palette
 
     var paletteXml = xmlDoc.getElementsByTagName('palette');
