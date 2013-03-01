@@ -257,6 +257,8 @@ def doScope(self):
     output=str(outStr)
     status = '200 OK'
     return (status, response_headers, output)
+  elif 'panel' in self.args:
+    return doScopepanel(self)
   elif 'title' in self.args:
     response_headers.append(('Content-type','text/text'))
     try:
@@ -264,8 +266,6 @@ def doScope(self):
     except Exception,e:
       output = str(e)+' expression was '+self.args['title'][0]
     return ('200 OK',response_headers, output)
-  elif 'panel' in self.args:
-    return doScopepanel(self)
   else:
     ans=('400 NOT FOUND',[('Content-type','text/text'),],'')
     try:
