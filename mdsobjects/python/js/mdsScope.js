@@ -21,16 +21,16 @@ var LIMITS_YMIN = 3;
 var LIMITS_YMAX = 4;
 
 var METRICS_BORDER = 2;
-
+var mouseMovingPanel; //The WaevPanel into which the mouse is being moved
 
 var bottomLine = 
     '<form name="scopeMode" >'+
-    '<table cellpadding="20"><tr><td><label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
+    '<table cellpadding="20" cellspacing="0" ><tr><td><label for="Zoom"><input type="radio" checked = "yes" name="Mode" id="Zoom" onclick="setMode(ZOOM);"/>Zoom</label>'+
     '<label for="Crosshair"> <input type="radio" name="Mode" id="Crosshair" onclick="setMode(CROSSHAIR);"/>Crosshair</label>'+
     '<label for="Pan"><input type="radio" name="Mode" id="Pan" onclick="setMode(PAN);"/> Pan</label></td><td>'+
     '<label for="GlobalShots">Shots</label><input type = "text" id="GlobalShots"  onkeydown="if (event.keyCode == 13) {event.preventDefault(); updateGlobalShots();}"/>'+
-    '<button type="button"  autofocus id = "UpdateGlobal" onclick="updateGlobalShots()">Update</button><br>'+
-    '<label id="Value" /></td></tr></table>'+
+    '<button type="button"  autofocus id = "UpdateGlobal" onclick="updateGlobalShots()">Update</button></td><td><label id="XValue" /></td><td><label id="YValue" /></td><td>'+
+    '<label id="Expr" /></td><td align = "top"><label id="Shot" /></td></tr></table>'+
     '</form>';
 
 ////////////////Global mouse callback functions///////////////////////
@@ -46,7 +46,6 @@ function setMode(inMode)
 }
 
 var startZoomX, startZoomY;
-var currZoomX, currZoomY;
 
 function contextMenu(e)
 {
@@ -124,7 +123,6 @@ function mouseDown(e)
     }
     else //it is a double click
     {
-        //alert("DOUBLE CLICK");
         for(idx = 0; idx < wavePanels.length; idx++)
         {
             if(wavePanels[idx].svg == e.target)
@@ -142,25 +140,40 @@ function mouseDown(e)
     mouseTarget = e.target;
     for(idx = 0; idx < wavePanels.length; idx++)
     {
-        if(wavePanels[idx].svg == e.target)
+        if(e.target.localName == 'text')
         {
+            downX = e.target.offsetLeft + e.offsetX;
+            downY = e.target.offsetTop + e.offsetY;
+        }
+        else
+        {
+            downX = e.offsetX;
+            downY = e.offsetY;
+        }
+//        if(wavePanels[idx].svg == e.target)
+        if(wavePanels[idx].svg == e.currentTarget)
+        {
+            mouseMovingPanel = wavePanels[idx];
             e=fixEvent(e);
             switch(mode) {
                 case ZOOM: 
-                    startZoomX = e.offsetX;
-                    startZoomY = e.offsetY;
-                    wavePanels[idx].startZoom(e.offsetX, e.offsetY);
+                    wavePanels[idx].enableMouseMove();
+                    startZoomX = downX;
+                    startZoomY = downY;
+                    wavePanels[idx].startZoom(downX, downY);
                     break;
                 case CROSSHAIR:
+                    wavePanels[idx].enableMouseMove();
                     for(var currIdx = 0; currIdx < wavePanels.length; currIdx++)
                     {
                         if(currIdx != idx)
                             wavePanels[currIdx].endCrosshair();
                     }
-                    wavePanels[idx].startCrosshair(e.offsetX, e.offsetY);
+                    wavePanels[idx].startCrosshair(downX, downY);
                     break;
                 case PAN:
-                    wavePanels[idx].startPan(e.offsetX, e.offsetY);
+                    wavePanels[idx].enableMouseMove();
+                    wavePanels[idx].startPan(downX, downY);
                     break;
 
             }
@@ -176,30 +189,39 @@ function mouseMove(e)
     if ( e == null )
       e=window.event;
     e.preventDefault();
-    if(mouseTarget != e.target)
-        return;
+ //   if(mouseTarget != e.target)
+ //       return;
     if(e.button == 2) //MB3 (right) button pressed
     {
         if(anyZooming())
             return;
     }
-    for(idx = 0; idx < wavePanels.length; idx++)
+    if(mouseMovingPanel != undefined)
     {
-        if(wavePanels[idx].svg == e.target)
+        //if(mouseMovingPanel.svg == e.target)
         {
             e=fixEvent(e);
+            var moveX, moveY;
+            if(e.target.localName == 'text')
+            {
+                moveX = e.target.offsetLeft + e.offsetX;
+                moveY = e.target.offsetTop + e.offsetY;
+            }
+            else
+            {
+                moveX = e.offsetX;
+                moveY = e.offsetY;
+            }
             switch(mode) {
                 case ZOOM: 
                     // Used in case mouse button is released in a different target 
-                    currZoomX = e.offsetX;
-                    currZoomY = e.offsetY;
-                    wavePanels[idx].dragZoom(e.offsetX, e.offsetY);
+                    mouseMovingPanel.dragZoom(moveX, moveY);
                     break;
                 case CROSSHAIR:
-                    wavePanels[idx].dragCrosshair(e.offsetX, e.offsetY);
+                    mouseMovingPanel.dragCrosshair(moveX, moveY);
                     break;
                 case PAN:
-                    wavePanels[idx].dragPan(e.offsetX, e.offsetY);
+                    mouseMovingPanel.dragPan(moveX, moveY);
                     break;
             }
         }
@@ -211,44 +233,43 @@ function mouseUp(e)
     if (e == null)
       e=window.event;
  //   e.preventDefault();
+    var upX, upY;
+    if(e.target.localName == 'text')
+    {
+        upX = e.target.offsetLeft + e.offsetX;
+        upY = e.target.offsetTop + e.offsetY;
+    }
+    else
+    {
+        upX = e.offsetX;
+        upY = e.offsetY;
+    }
 
     //Handle the possibility that the mouse button is released on another panel
     if(mode == ZOOM)
     {
-        for(idx = 0; idx < wavePanels.length; idx++)
+        mouseMovingPanel.disableMouseMove();
+        if(mouseMovingPanel.isZooming())
         {
-            if(wavePanels[idx].isZooming())
-            {
-                e=fixEvent(e);
-                if(e.target == mouseTarget) //If released within the same target
-                    wavePanels[idx].endZoom(e.offsetX, e.offsetY);
-                else
-                    wavePanels[idx].endZoom(currZoomX, currZoomY);
-            }
+            e=fixEvent(e);
+            mouseMovingPanel.endZoom(upX, upY);
         }
     }
     else
     {
         for(idx = 0; idx < wavePanels.length; idx++)
         {
-            if(wavePanels[idx].svg == e.target)
-            {
-                e=fixEvent(e);
-                switch(mode) {
-/*                    case ZOOM: 
-                        if(e.target == mouseTarget) //If released within the same target
-                            wavePanels[idx].endZoom(e.offsetX, e.offsetY);
-                        else
-                            wavePanels[idx].endZoom(currZoomX, currZoomY);
-                        break;
-*/                    case CROSSHAIR:
-                        wavePanels[idx].endCrosshair();
-                        break;
-                    case PAN:
-                        wavePanels[idx].endPan();
-                        break;
+            e=fixEvent(e);
+            switch(mode) {
+                case CROSSHAIR:
+                    wavePanels[idx].disableMouseMove();
+                    wavePanels[idx].endCrosshair();
+                    break;
+                case PAN:
+                    wavePanels[idx].disableMouseMove();
+                    wavePanels[idx].endPan();
+                    break;
                 }
-            }
         }
     }
 }
@@ -519,22 +540,42 @@ function resetScales()
     popupMenu.style.display = 'none';
 }
 
-//////////////Utility function fopr sending expressions in URL encoding
-function encodeUrl(inStr)
-{   
-   return inStr;
- 
-   var urlStr = inStr.replace("%", "%25"); 
-   urlStr = urlStr.replace("/", "%2F"); 
-   urlStr = urlStr.replace("#", "%23"); 
-   urlStr = urlStr.replace("?", "%3F"); 
-   urlStr = urlStr.replace("&", "%24"); 
-   urlStr = urlStr.replace("@", "%40"); 
-   urlStr = urlStr.replace(":", "%3B"); 
-   urlStr = urlStr.replace("+", "%2B"); 
-   urlStr = urlStr.replace(" ", "%20");
-   return urlStr;
+function replaceAll(source,stringToFind,stringToReplace)
+{
+    var temp = source;
+    var index = temp.indexOf(stringToFind);
+    while(index != -1)
+    {
+        temp = temp.replace(stringToFind,stringToReplace);
+        index = temp.indexOf(stringToFind);
+    }
+    return temp;
 }
+
+function decodeUrl(inStr)
+{
+    var urlStr = replaceAll(inStr, "%25", "%"); 
+    urlStr = replaceAll(urlStr, "%2F", "/"); 
+    urlStr = replaceAll(urlStr, "%23", "#"); 
+    urlStr = replaceAll(urlStr, "%3F", "?"); 
+    urlStr = replaceAll(urlStr, "%26", "&"); 
+    urlStr = replaceAll(urlStr, "%2C", ","); 
+    urlStr = replaceAll(urlStr, "%3D", "="); 
+    urlStr = replaceAll(urlStr, "%40", "@"); 
+    urlStr = replaceAll(urlStr, "%3B", ";"); 
+    urlStr = replaceAll(urlStr, "%24", "$"); 
+    urlStr = replaceAll(urlStr, "%2B", "+"); 
+    urlStr = replaceAll(urlStr, "%20", " ");
+    urlStr = replaceAll(urlStr, "%3E", ">");
+    urlStr = replaceAll(urlStr, "%3C", "<");
+    urlStr = replaceAll(urlStr, "%3A", ":");
+    urlStr = replaceAll(urlStr, "%5B", "[");
+    return replaceAll(urlStr, "%5D", "]");
+}
+
+
+
+
 
  //////////////////////////////////////////////////////////////////////////
 /**
@@ -544,10 +585,12 @@ var PLOT_LINE = 1;
 var PLOT_POINT = 2;
 var PLOT_LINE_POINT = 3;
 
-function Signal(x, y, color, mode)
+function Signal(x, y, color, mode, expr, shot)
 {
     this.x = x;
     this.y = y;
+    this.expr = expr;
+    this.shot = shot;
     this.size = x.length;
     if(this.size > y.length)
         this.size = y.length;
@@ -907,7 +950,12 @@ function Grid(g, metrics, labels)
             title.setAttributeNS(null,"text-anchor","middle");
             title.setAttributeNS(null,"x",this.metrics.width/2);
             title.setAttributeNS(null,"y",18);
-            title.setAttributeNS(null,"font-size","18px");
+            title.setAttributeNS(null,"font-size","14px");
+            /*if(this.labels.title.length < 20)
+             else if(this.labels.title.length < 40)
+             title.setAttributeNS(null,"font-size","12px");
+            else
+             title.setAttributeNS(null,"font-size","8px"); */
             //title.setAttributeNS(null,"alignment-baseline", "text-after-edge");
             title.appendChild(document.createTextNode(this.labels.title));
         }
@@ -1072,11 +1120,22 @@ function Wave(signals, color, g, metrics, clippath)
     this.getCrosshairY = getCrosshairY;
     function getCrosshairColor(sigIdx)
     {
-        if(signals == undefined || sigIdx >= signals.length)
+        if(this.signals == undefined || sigIdx >= this.signals.length)
             return "Black";
         return this.signals[sigIdx].color;
     }
     this.getCrosshairColor = getCrosshairColor;
+    function getCrosshairExpr(sigIdx)
+    {
+        return signals[sigIdx].expr;
+    }
+    this.getCrosshairExpr = getCrosshairExpr;
+    function getCrosshairShot(sigIdx)
+    {
+        return signals[sigIdx].shot;
+    }
+    this.getCrosshairShot = getCrosshairShot;
+    
 }    
  
  function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, shots, colors, modes, signalExprs, limitExprs, labelExprs, defaultNodeExpr)
@@ -1092,11 +1151,6 @@ function Wave(signals, color, g, metrics, clippath)
     this.row = row;
     this.panelIdx = panelIdx;
     this.clippath = clippath;
-/*    var g=document.createElementNS("http://www.w3.org/2000/svg","g");
-    g.setAttribute("id","viewport");
-    svg.appendChild(g);
-    this.g = g;
-*/
 
     this.borderRect=document.createElementNS("http://www.w3.org/2000/svg","rect");
     this.borderRect.setAttribute("x","0");
@@ -1117,6 +1171,24 @@ function Wave(signals, color, g, metrics, clippath)
     this.labelExprs = labelExprs;
     this.defaultNodeExpr = defaultNodeExpr;
 
+    function enableMouseMove()
+    {
+        this.svg.addEventListener('mousemove', this.mouseMove = function(evt) {
+            mouseMove(evt);
+        }, false);
+        //var childNodes = this.g.childNodes;
+        //for(var i = 0; i < childNodes.length; i++)
+        //    childNodes[i].addEventListener('mousemove', this.mouseMove = function(evt) {
+        //        }, true);
+    }
+    this.enableMouseMove = enableMouseMove;
+    
+    function disableMouseMove()
+    {
+        this.g.removeEventListener('mousemove', this.mouseMove, false);
+    }
+    this.disableMouseMove = disableMouseMove;
+     
     function update()
     {
         var req = new XMLHttpRequest();
@@ -1165,6 +1237,8 @@ function Wave(signals, color, g, metrics, clippath)
         req.limitExprs = this.limitExprs;
         req.labelExprs = this.labelExprs;
         req.panelIdx = this.panelIdx;
+        req.shots = this.shots;
+        req.signalExprs = this.signalExprs;
         if(this.shots == undefined)
             req.numShots = 0;
         else
@@ -1177,19 +1251,29 @@ function Wave(signals, color, g, metrics, clippath)
                 else
                 {
                     var signals = new Array();
+                    var errors = '';
                     if(this.numShots <= 1)
                     {
                         var currOffset = 0;
                         for(var sigIdx = 0; sigIdx < this.numSignals; sigIdx++)
                         {
-                            var xdtype=this.getResponseHeader('X'+(sigIdx + 1)+'_DATATYPE');
-                            var ydtype=this.getResponseHeader('Y'+(sigIdx + 1)+'_DATATYPE');
-                            var xlength=parseInt(this.getResponseHeader('X'+(sigIdx + 1)+'_LENGTH'));
-                            var ylength=parseInt(this.getResponseHeader('Y'+(sigIdx + 1)+'_LENGTH'));
-                            var x=eval('new '+xdtype+'(this.response,currOffset,xlength)');
-                            var y=eval('new '+ydtype+'(this.response,currOffset + xlength*x.BYTES_PER_ELEMENT,ylength)');
-                            currOffset = currOffset + xlength*x.BYTES_PER_ELEMENT+ylength*y.BYTES_PER_ELEMENT;
-                            signals.push(new Signal(x, y, this.colors[sigIdx], this.modes[sigIdx]));
+                            var currError = this.getResponseHeader('ERROR'+(sigIdx + 1));
+                            if(currError != undefined)
+                                errors = errors + '\n'+currError;
+                            else
+                            {
+                                var xdtype=this.getResponseHeader('X'+(sigIdx + 1)+'_DATATYPE');
+                                var ydtype=this.getResponseHeader('Y'+(sigIdx + 1)+'_DATATYPE');
+                                var xlength=parseInt(this.getResponseHeader('X'+(sigIdx + 1)+'_LENGTH'));
+                                var ylength=parseInt(this.getResponseHeader('Y'+(sigIdx + 1)+'_LENGTH'));
+                                var x=eval('new '+xdtype+'(this.response,currOffset,xlength)');
+                                var y=eval('new '+ydtype+'(this.response,currOffset + xlength*x.BYTES_PER_ELEMENT,ylength)');
+                                currOffset = currOffset + xlength*x.BYTES_PER_ELEMENT+ylength*y.BYTES_PER_ELEMENT;
+                                var shotStr = '';
+                                if(this.numShots == 1)
+                                    shotStr = ''+this.shots[0];
+                                signals.push(new Signal(x, y, this.colors[sigIdx], this.modes[sigIdx], decodeUrl(this.signalExprs[sigIdx]), shotStr));
+                            }
                         }
                     }  
                     else
@@ -1200,14 +1284,21 @@ function Wave(signals, color, g, metrics, clippath)
                         {
                             for(var sigIdx = 0; sigIdx < this.numSignals; sigIdx++)
                             {
-                                var xdtype=this.getResponseHeader('X'+(currSigIdx + 1)+'_DATATYPE');
-                                var ydtype=this.getResponseHeader('Y'+(currSigIdx + 1)+'_DATATYPE');
-                                var xlength=parseInt(this.getResponseHeader('X'+(currSigIdx + 1)+'_LENGTH'));
-                                var ylength=parseInt(this.getResponseHeader('Y'+(currSigIdx + 1)+'_LENGTH'));
-                                var x=eval('new '+xdtype+'(this.response,currOffset,xlength)');
-                                var y=eval('new '+ydtype+'(this.response,currOffset + xlength*x.BYTES_PER_ELEMENT,ylength)');
-                                currOffset = currOffset + xlength*x.BYTES_PER_ELEMENT+ylength*y.BYTES_PER_ELEMENT;
-                                signals.push(new Signal(x, y, colorPalette[currSigIdx%colorPalette.length], this.modes[sigIdx]));
+                                var currError = this.getResponseHeader('ERROR'+(currSigIdx + 1));
+                                if(currError != undefined)
+                                    errors = errors + '\n'+currError;
+                                else
+                                {
+                                    var xdtype=this.getResponseHeader('X'+(currSigIdx + 1)+'_DATATYPE');
+                                    var ydtype=this.getResponseHeader('Y'+(currSigIdx + 1)+'_DATATYPE');
+                                    var xlength=parseInt(this.getResponseHeader('X'+(currSigIdx + 1)+'_LENGTH'));
+                                    var ylength=parseInt(this.getResponseHeader('Y'+(currSigIdx + 1)+'_LENGTH'));
+                                    var x=eval('new '+xdtype+'(this.response,currOffset,xlength)');
+                                    var y=eval('new '+ydtype+'(this.response,currOffset + xlength*x.BYTES_PER_ELEMENT,ylength)');
+                                    currOffset = currOffset + xlength*x.BYTES_PER_ELEMENT+ylength*y.BYTES_PER_ELEMENT;
+                                    var shotStr = ''+this.shots[shotIdx];
+                                    signals.push(new Signal(x, y, colorPalette[currSigIdx%colorPalette.length], this.modes[sigIdx], decodeUrl(this.signalExprs[sigIdx]), shotStr));
+                                }
                                 currSigIdx++;
                             }
                         }
@@ -1224,7 +1315,12 @@ function Wave(signals, color, g, metrics, clippath)
                     
                     var labels = new Object();
                     if(this.labelExprs.title != undefined)
-                        labels.title = this.getResponseHeader('title');
+                        labels.title = this.getResponseHeader('title') + errors;
+                    else 
+                    {
+                        if(errors != '')
+                            labels.title = errors;
+                    }    
                     if(this.labelExprs.xLabel != undefined)
                         labels.xlabel = this.getResponseHeader('xlabel');
                     if(this.labelExprs.yLabel != undefined)
@@ -1329,7 +1425,7 @@ function Wave(signals, color, g, metrics, clippath)
         this.yMax = undefined;
         var metrics = new Metrics(METRICS_BORDER, svg.viewBox.baseVal.width, svg.viewBox.baseVal.height, 
             0., 1. ,0., 1.);
-        var wave = new Wave(signals, 0, this.g, metrics, this.clippath);
+        var wave = new Wave(this.signals, 0, this.g, metrics, this.clippath);
         var grid = new Grid(this.g, metrics, this.labels);
         this.metrics = metrics;
         this.wave = wave;
@@ -1433,7 +1529,10 @@ function Wave(signals, color, g, metrics, clippath)
         this.crosshairHorLine.setAttribute("x2", this.svg.viewBox.baseVal.width);
         this.crosshairHorLine.setAttribute("y1", yPixel);
         this.crosshairHorLine.setAttribute("y2", yPixel);
-        document.getElementById("Value").innerHTML = 'X: '+(Math.round(xVal * 100000)/100000) +'   Y: '+Math.round(yVal * 100000)/100000;
+        document.getElementById("XValue").innerHTML = 'X:'+(Math.round(xVal * 100000)/100000);
+        document.getElementById("YValue").innerHTML ='Y:'+Math.round(yVal * 100000)/100000;
+        document.getElementById("Expr").innerHTML ='Expr:'+this.wave.getCrosshairExpr(this.crosshairIdx);
+        document.getElementById("Shot").innerHTML ='Shot:'+this.wave.getCrosshairShot(this.crosshairIdx);
         dragOtherCrosshairs(this, xVal, yVal);  
     }
     this.dragCrosshair = dragCrosshair;
@@ -1677,7 +1776,7 @@ function Wave(signals, color, g, metrics, clippath)
     function getMinYInRange(x1, x2)
     {
         var ymin = this.signals[0].getMinYInRange(x1, x2);
-        for(var sigIdx = 1; sigIdx < signals.length; sigIdx++)
+        for(var sigIdx = 1; sigIdx < this.signals.length; sigIdx++)
         {
             var currMin = this.signals[sigIdx].getMinYInRange(x1, x2);
             if(currMin < ymin)
@@ -1689,7 +1788,7 @@ function Wave(signals, color, g, metrics, clippath)
     function getMaxYInRange(x1, x2)
     {
         var ymax = this.signals[0].getMaxYInRange(x1, x2);
-        for(var sigIdx = 1; sigIdx < signals.length; sigIdx++)
+        for(var sigIdx = 1; sigIdx < this.signals.length; sigIdx++)
         {
             var currMax = this.signals[sigIdx].getMaxYInRange(x1, x2);
             if(currMax > ymax)
@@ -1875,7 +1974,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
     svg.setAttributeNS(null,"height",height);
     svg.setAttributeNS(null,"animatable","no");
     svg.setAttribute("onmousedown", "return mouseDown(evt)");
-    svg.setAttribute("onmousemove", "mouseMove(evt)");
+//    svg.setAttribute("onmousemove", "mouseMove(evt)");
     svg.setAttribute("onmouseup", "return mouseUp(evt)");
     //svg.setAttribute("onmouseclick", "return mouseClick(evt)");
     svg.setAttribute("ontouchmove", "mouseMove(evt)");
