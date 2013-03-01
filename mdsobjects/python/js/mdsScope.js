@@ -760,16 +760,12 @@ function Metrics(marginPix, width, height, xMin, xMax, yMin, yMax)
     this.getXPixel = getXPixel;
     function getYPixel(yVal)
     {
-        var yPixel = Math.round(this.height -this.marginPix - this.yfact * (yVal - this.ymin));
-        
+        var yPixel = Math.round(this.height -this.marginPix - this.yfact * (yVal - this.ymin)); 
         if(isNaN(yPixel))
-             alert('getYPixel ha dato NaN: '+this.yfact+' '+yVal+' '+this.ymin+' '+this.ymax);
-	return yPixel;
-/*        if(yPixel >= 0 && yPixel <= this.height)
-            return yPixel;
+          return undefined;
         else
-            return undefined;
-*/    }
+	  return yPixel;
+    }
     this.getYPixel = getYPixel;
     function getXValue(xPixel)
     {
@@ -998,7 +994,8 @@ function Wave(signals, color, g, metrics, clippath)
     {
         var idx;
         var signalIdx;
-        this.g.setAttribute("clip-path",this.clippath);
+        var clip_path_id=this.clippath.getAttribute("id");
+        this.g.setAttribute("clip-path","url(#"+clip_path_id+")");
         for(signalIdx = 0; signalIdx < this.signals.length; signalIdx++)
         {
             if(this.signals[signalIdx].mode == PLOT_LINE || this.signals[signalIdx].mode == PLOT_LINE_POINT)
@@ -1995,7 +1992,7 @@ function mdsScopePanel(div,width,height,numCols, numRows, col, row, tree,shot,ex
     svg.setAttribute("ontouchup", "mouseUp(evtt)");
     svg.setAttribute("viewBox","0 0 "+width +" " +height);
     var clippath=document.createElementNS("http://www.w3.org/2000/svg","clipPath");
-    //clippath.setAttribute("id","clippath");
+    clippath.setAttribute("id","clippath"+Math.random());
     var path=document.createElementNS("http://www.w3.org/2000/svg","path");
     path.setAttribute("d","M 0 0 0 " + height + " " + width + " " + height + " " + width + " 0");
     clippath.appendChild(path);
@@ -2033,13 +2030,13 @@ function mdsScope(xmlDoc)
 {
     document.oncontextmenu = contextMenu;
     var titleXml = xmlDoc.getElementsByTagName('title');
-    if (titleXml != undefined)
+    if (titleXml.length != 0)
     {
       var expressionXml=titleXml[0].getElementsByTagName('expression');
       var expression=expressionXml[0].childNodes[0].nodeValue;
       updateTitle(expression);
       var eventXml=titleXml[0].getElementsByTagName('event');
-      if (eventXml != undefined)
+      if (eventXml.length != 0)
       {
         var event=eventXml[0].childNodes[0].nodeValue;
         mdsplusEvent(event,true,titleEvent,titleEventFailure,expression);
@@ -2048,7 +2045,7 @@ function mdsScope(xmlDoc)
 //Get Color palette
 
     var paletteXml = xmlDoc.getElementsByTagName('palette');
-    if(paletteXml != undefined)
+    if(paletteXml.length != 0)
     {
         this.colorPalette = new Array();
         colorsXml = paletteXml[0].getElementsByTagName('color'); 
