@@ -198,7 +198,7 @@ function mouseMove(e)
     }
     if(mouseMovingPanel != undefined)
     {
-        //if(mouseMovingPanel.svg == e.target)
+        if(mouseMovingPanel.svg == e.currentTarget)
         {
             e=fixEvent(e);
             var moveX, moveY;
