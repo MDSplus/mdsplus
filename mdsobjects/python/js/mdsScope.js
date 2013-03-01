@@ -90,6 +90,7 @@ function mouseDown(e)
       e=window.event;
     e.preventDefault();
     e.stopPropagation();
+    fixEvent(e);
     var popupMenu = document.getElementById("ScopePopup"); 
     popupMenu.style.display = 'none';
     e.preventDefault();
@@ -189,6 +190,7 @@ function mouseMove(e)
     if ( e == null )
       e=window.event;
     e.preventDefault();
+    fixEvent(e);
  //   if(mouseTarget != e.target)
  //       return;
     if(e.button == 2) //MB3 (right) button pressed
@@ -233,6 +235,7 @@ function mouseUp(e)
     if (e == null)
       e=window.event;
  //   e.preventDefault();
+    fixEvent(e);
     var upX, upY;
     if(e.target.localName == 'text')
     {
