@@ -345,6 +345,7 @@
 		<Item Name="Tree Versions In Model Enabled.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Versions In Model Enabled.vi"/>
 		<Item Name="Tree Versions In Pulse Enabled.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Versions In Pulse Enabled.vi"/>
 		<Item Name="Tree Write.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Write.vi"/>
+		<Item Name="Tree Has Node.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Tree/Tree Has Node.vi"/>
 	</Item>
 	<Item Name="TreeNodeArray" Type="Folder">
 		<Property Name="NI.SortType" Type="Int">3</Property>
