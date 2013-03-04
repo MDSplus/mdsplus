@@ -1,3 +1,191 @@
+2013-03-04 10:59  twf
+
+	* Setup/Setup32.vdproj (1.34):
+	
+	Fix labview signal vi references
+
+2013-03-04 10:17  twf
+
+	* Setup/: Setup32.vdproj (1.33), Setup64.vdproj (1.36):
+	
+	Fix labview signal vi references
+
+2013-03-04 04:51  manduchi
+
+	* tdi/RfxDevices/ZELOS2150GV.py (1.9):
+	
+	important fixes in timestamp and dynamic range
+
+2013-03-04 02:26  manduchi
+
+	* mdsobjects/labview/: MDSobjectsLVShr.vcproj (1.10),
+	mdsobjectswrp.h (1.4), mdstreeobjectswrp.cpp (1.6):
+	
+	Added VIs
+
+2013-03-03 14:08  manduchi
+
+	* mdsobjects/labview/MDSplus/:
+	Classes/Data_Class/TreeNode_Class/Get Class.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get ConglomerateElt.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Descendants.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Dtype.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Fullpath.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Length.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Minpath.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get NID.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get NodeName.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get NumChildren.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get NumDescendants.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get NumMembers.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get NumSegments.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get TimeInserted.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Tree.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/Get Usage.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/IsChild.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/IsMember.vi (1.1),
+	Classes/Data_Class/TreeNode_Class/IsOn.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Class.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get ConglomerateElt.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get DType.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Descendants.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Fullpath.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Length.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Minpath.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get NID.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get NodeName.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get NumChildren.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get NumDescendants.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get NumMembers.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get NumSegments.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get TimeInserted.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Tree.vi (1.1),
+	Library/Data/TreeNode/TreeNode Get Usage.vi (1.1),
+	Library/Data/TreeNode/TreeNode IsChild.vi (1.1),
+	Library/Data/TreeNode/TreeNode IsMember.vi (1.1),
+	Library/Data/TreeNode/TreeNode IsOn.vi (1.1):
+	
+	More VIs
+
+2013-03-03 14:02  manduchi
+
+	* mdsobjects/labview/MDSplus/: Classes/Tree_Class/Has Node.vi
+	(1.1), Library/Tree/Tree Has Node.vi (1.1):
+	
+	Added VI
+
+2013-03-03 14:00  manduchi
+
+	* mdsobjects/labview/MDSplus/: MDSplus.aliases (1.6), MDSplus.lvlps
+	(1.7), MDSplus.lvproj (1.9),
+	Classes/Data_Class/Compound_Class/Signal_Class/Create.vi (1.1),
+	Classes/Data_Class/Compound_Class/Signal_Class/Delete Signal DVR.vi
+	(1.1), Classes/Data_Class/Compound_Class/Signal_Class/Destroy.vi
+	(1.1), Classes/Data_Class/Compound_Class/Signal_Class/Get Data.vi
+	(1.1), Classes/Data_Class/Compound_Class/Signal_Class/Get
+	Dimension.vi (1.1),
+	Classes/Data_Class/Compound_Class/Signal_Class/Get Raw.vi (1.1),
+	Classes/Data_Class/Compound_Class/Signal_Class/New Signal DVR.vi
+	(1.1), Classes/Data_Class/Compound_Class/Signal_Class/Set Data.vi
+	(1.1), Classes/Data_Class/Compound_Class/Signal_Class/Set
+	Dimension.vi (1.1),
+	Classes/Data_Class/Compound_Class/Signal_Class/Set Raw.vi (1.1),
+	Classes/Data_Class/Compound_Class/Signal_Class/Signal.lvclass
+	(1.2), Classes/Data_Class/TreeNode_Class/TreeNode.lvclass (1.2),
+	Classes/Tree_Class/Get Node.vi (1.3), Classes/Tree_Class/Is
+	Readonly.vi (1.3), Classes/Tree_Class/Tree.lvclass (1.3),
+	Library/MDSplus.lvlib (1.2), Library/Data/Compound/Signal/Signal
+	Create.vi (1.2):
+	
+	New VIs
+
+2013-03-01 16:51  twf
+
+	* mdsobjects/python/js/mdsScope.js (1.30):
+	
+	Fix events to have offsetX and offsetY
+
+2013-03-01 14:49  twf
+
+	* mdsobjects/python/html/scope.html (1.8):
+	
+	fix standardization problems for IE
+
+2013-03-01 14:48  twf
+
+	* mdsobjects/python/wsgi/doScope.py (1.15):
+	
+	Need to look for panel before title because of panel titles
+
+2013-03-01 14:47  twf
+
+	* mdsobjects/python/js/mdsScope.js (1.29):
+	
+	Avoid alerts because of xOffset/yOffset problems on IE
+
+2013-03-01 10:46  twf
+
+	* mdsobjects/python/: js/mdsScope.js (1.28), wsgi/doScope.py
+	(1.14), wsgi/doScopepanel.py (1.4):
+	
+	Incorporate doscopepanel into doScope.py
+
+2013-03-01 10:35  twf
+
+	* mdsobjects/python/html/scope.html (1.7):
+	
+	Change default title
+
+2013-03-01 10:34  twf
+
+	* mdsobjects/python/: wsgi/doScope.py (1.13), js/mdsScope.js
+	(1.27):
+	
+	Add webscope title and title event
+
+2013-03-01 10:34  twf
+
+	* mdsobjects/python/wsgi/doEvent.py (1.5):
+	
+	Add noCache function used by other wsgis as well
+
+2013-03-01 08:38  manduchi
+
+	* mdsobjects/python/js/mdsScope.js (1.26):
+	
+	Mouse move fixed
+
+2013-03-01 07:56  manduchi
+
+	* mdsobjects/python/js/mdsScope.js (1.25):
+	
+	Mouse move fixed
+
+2013-02-28 14:31  twf
+
+	* mdsobjects/python/wsgi/doEvent.py (1.4):
+	
+	Add more cache control for chrome
+
+2013-02-28 11:08  manduchi
+
+	* tdi/RfxDevices/ZELOS2150GV.py (1.8):
+	
+	minor fix
+
+2013-02-27 15:13  twf
+
+	* mdsobjects/python/js/mdsScope.js (1.24):
+	
+	remove carriagecontrol
+
+2013-02-27 13:28  twf
+
+	* mdsobjects/python/: js/mdsScope.js (1.23), wsgi/doScopepanel.py
+	(1.3):
+	
+	Add events
+
 2013-02-26 08:27  manduchi
 
 	* javadevices/ZELOS2150GVSetup.form (1.3),
@@ -1657,16 +1845,7 @@
 	(1.2), Classes/Data_Class/Compound_Class/Range_Class/Set Begin.vi
 	(1.2), Classes/Data_Class/Compound_Class/Range_Class/Set Delta
 	Val.vi (1.2), Classes/Data_Class/Compound_Class/Range_Class/Set
-	Ending.vi (1.2), Classes/Data_Class/Compound_Class/Signal
-	Folder/Create.vi (1.2), Classes/Data_Class/Compound_Class/Signal
-	Folder/Destroy.vi (1.2), Classes/Data_Class/Compound_Class/Signal
-	Folder/Get Data.vi (1.2), Classes/Data_Class/Compound_Class/Signal
-	Folder/Get Dimension.vi (1.2),
-	Classes/Data_Class/Compound_Class/Signal Folder/Get Raw.vi (1.2),
-	Classes/Data_Class/Compound_Class/Signal Folder/Set Data.vi (1.2),
-	Classes/Data_Class/Compound_Class/Signal Folder/Set Dimension.vi
-	(1.2), Classes/Data_Class/Compound_Class/Signal Folder/Set Raw.vi
-	(1.2), Classes/Data_Class/Scalar_Class/Destroy.vi (1.2),
+	Ending.vi (1.2), Classes/Data_Class/Scalar_Class/Destroy.vi (1.2),
 	Classes/Data_Class/Scalar_Class/Get Info.vi (1.2),
 	Classes/Data_Class/Scalar_Class/Float32_Class/Create.vi (1.2),
 	Classes/Data_Class/Scalar_Class/Float32_Class/Destroy.vi (1.2),
@@ -2478,21 +2657,6 @@
 	MDSplus/Classes/Data_Class/Compound_Class/Range_Class/Set Delta
 	Val.vi (1.1),
 	MDSplus/Classes/Data_Class/Compound_Class/Range_Class/Set Ending.vi
-	(1.1), MDSplus/Classes/Data_Class/Compound_Class/Signal
-	Folder/Create.vi (1.1),
-	MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Delete
-	Signal DVR.vi (1.1),
-	MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Destroy.vi
-	(1.1), MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Get
-	Data.vi (1.1), MDSplus/Classes/Data_Class/Compound_Class/Signal
-	Folder/Get Dimension.vi (1.1),
-	MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Get Raw.vi
-	(1.1), MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/New
-	Signal DVR.vi (1.1),
-	MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Set Data.vi
-	(1.1), MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Set
-	Dimension.vi (1.1),
-	MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Set Raw.vi
 	(1.1),
 	MDSplus/Classes/Data_Class/Compound_Class/Signal_Class/Signal.lvcla
 	ss (1.1), MDSplus/Classes/Data_Class/Scalar_Class/Delete Scalar
