@@ -341,6 +341,7 @@ DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, 
 DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, _int64 *sizeOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodePtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *pathIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeOut, const char *pathIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvStringPtrIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getNode_treepath(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvTreePathPtrIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getNodeWild(const void *lvTreePtr, void **lvTreeNodeArrayPtrOut, const char *pathIn, ErrorCluster *error);

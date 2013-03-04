@@ -315,6 +315,7 @@ DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	catch (MdsException *mdsE)
 	{
 		errorCode = bogusError;
+		*lvTreeNodePtrOut = 0;
 		errorMessage = const_cast<char *>(mdsE->what());
 	}
 	catch (exception *e)
@@ -324,6 +325,33 @@ DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
+
+DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeOut, const char *pathIn, ErrorCluster *error)
+{
+	Tree *treePtr = NULL;
+	MgErr errorCode = noErr;
+	const char *errorSource = __FUNCTION__;
+	char *errorMessage = "";
+	*lvhasNodeOut = LVBooleanTrue;
+	try
+	{
+		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
+		TreeNode *node = treePtr->getNode(const_cast<char *>(pathIn));
+		delete node;
+
+	}
+	catch (MdsException *mdsE)
+	{
+		*lvhasNodeOut = LVBooleanFalse;
+	}
+	catch (exception *e)
+	{
+		errorCode = bogusError;
+		errorMessage = const_cast<char *>(e->what());
+	}
+	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+
 
 DLLEXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeNodePtrOut, const void *lvStringPtrIn, ErrorCluster *error)
 {
