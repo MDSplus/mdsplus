@@ -75,8 +75,6 @@ class ZELOS2150GV(Device):
         frameType = c_byte * (self.height.value * self.width.value)  #used for streaming frame
         frame8bit = frameType()
 
-        self.idx = 0
-
         treePtr = c_void_p(0)
         status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
         if status == -1:
@@ -112,36 +110,44 @@ class ZELOS2150GV(Device):
         maxLim=c_int(32767)     
 
         tcpStreamHandle=c_int(-1)
-        frameTime=0
+        streamPort=c_int(self.device.stream_port.data()) 
+        frameTimeInt=0
         prevFrameTime=0
-        framePeriod = int(self.device.frame_period.data()/1E-3)
-        status=c_int(-1)
-        streamPort=c_int(self.device.stream_port.data())
+        framePeriod = int(self.device.frame_period.data()*1000)
+        skipFrameStream=int(float(1/self.device.frame_period.data())/25.0)-1
+        print 'skipFrameStream:',skipFrameStream
+        if(skipFrameStream<0):
+          skipFrameStream=0
+	frameStreamCounter = skipFrameStream
         frameTotalCounter = 0
+        status=c_int(-1)
+        self.idx = 0
 
         while not self.stopReq:
 
           self.kappaLib.kappaGetFrame(self.device.handle, byref(status), frameBuffer)
-          print 'get frame status:', status
+          if status.value==3:
+            print 'get frame timeout!'
 
           frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
           frameTotalCounter = frameTotalCounter + 1     #never resetted     
 
           if isExternal==0:  #internal clock source -> S.O. timestamp 
-            timestamp=datetime.datetime.now()
-            if frameTotalCounter==1:
-              firstFrameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)          
-            prevFrameTime=frameTimeInt
-            frameTimeInt=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
-            deltaT=frameTimeInt-prevFrameTime
-            #print 'delta T: ', deltaT
-            if (deltaT)<framePeriod:
-              time.sleep((framePeriod-deltaT)/1E3)
-              #print 'sleep di ', (framePeriod-deltaT)
-            frameTime=float((frameTime-firstFrameTime)/1000000)
+             timestamp=datetime.datetime.now()
+             frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)  #ms                        
+             if frameTotalCounter==1:
+               prevFrameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
+               deltaT=frameTime-prevFrameTime
+               totFrameTime=0
+             else:
+               deltaT=frameTime-prevFrameTime
+               prevFrameTime=frameTime
+               totFrameTime=totFrameTime+deltaT
+             if (deltaT<framePeriod) and (deltaT>5):
+               time.sleep(float(framePeriod-deltaT)/1000.0)
 
           if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
-            savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0) 
+            savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0) 
             self.idx = self.idx + 1
             print 'saved frame idx:', self.idx
 
@@ -156,7 +162,6 @@ class ZELOS2150GV(Device):
               self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, autoScale, byref(lowLim), byref(highLim), minLim, maxLim)
               self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit)  
 
-   
         #endwhile
         self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
         #print 'Stream Tcp Connection Closed'
