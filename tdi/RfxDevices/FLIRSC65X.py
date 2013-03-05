@@ -41,7 +41,8 @@ class FLIRSC65X(Device):
       {'path':':STREAM_LOLIM', 'type':'numeric', 'value':15},
       {'path':':STREAM_HILIM', 'type':'numeric', 'value':50},
       {'path':':SKP_FR_STORE', 'type':'numeric', 'value':0},    
-      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
+      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
+      {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
@@ -81,6 +82,7 @@ class FLIRSC65X(Device):
 
         frameType = c_byte * (self.payloadSize.value - (sizeof(c_short) * self.height.value * self.width.value) )  #used for metadata
         metaData = frameType()
+        metaSize=c_int(self.payloadSize.value - (sizeof(c_short) * self.height.value * self.width.value))
 
         treePtr = c_void_p(0)
         status = self.mdsLib.camOpenTree(c_char_p(self.device.getTree().name), c_int(self.device.getTree().shot), byref(treePtr))
@@ -198,7 +200,8 @@ class FLIRSC65X(Device):
             if ((status.value==1) or (status.value==2) or (status.value==4)): #is the frame complete, incomplete or triggered?
               if (frameStoreCounter == skipFrameStore+1):                       #is a frame NOT to be skipped for decimation?
                 #self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx))
-                savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1)) 
+                savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), metaData, metaSize,self.device.frames_metad.getNid()) 
+
                 frameStoreCounter=0
                 self.idx = self.idx + 1
 
