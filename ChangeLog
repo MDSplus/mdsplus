@@ -1,3 +1,9 @@
+2013-03-05 03:01  manduchi
+
+	* tdi/RfxDevices/FLIRSC65X.py (1.4):
+	
+	added frame metadata
+
 2013-03-04 10:59  twf
 
 	* Setup/Setup32.vdproj (1.34):
