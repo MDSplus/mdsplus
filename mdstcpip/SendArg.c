@@ -8,7 +8,7 @@ int  SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short l
   int i;
   int nbytes = length;
   Message *m;
-  int msgid = idx == 0 ? IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
+  int msgid = (idx == 0 || nargs == 0) ? IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
   if (msgid < 1)
     return 0;
   if (idx > nargs) {
