@@ -1,3 +1,22 @@
+2013-03-06 13:51  twf
+
+	* treeshr/TreeVerify.c (1.9):
+	
+	Do not count subtrees in verify
+
+2013-03-06 12:36  twf
+
+	* javamds/mdsobjects.c (1.35):
+	
+	Fix IsOn
+
+2013-03-06 11:28  twf
+
+	* mdstcpip/SendArg.c (1.2):
+	
+	Fix a bug when mixing thick and distrubuted client modes in the
+	same process
+
 2013-03-05 03:01  manduchi
 
 	* tdi/RfxDevices/FLIRSC65X.py (1.4):
