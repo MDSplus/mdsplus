@@ -2061,7 +2061,7 @@ JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_isOn
   (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2)
 {
 	void *ctx = getCtx(ctx1, ctx2);
-	return _TreeIsOn(ctx, nid);
+	return _TreeIsOn(ctx, nid) == TreeON;
 }
 
 /*
