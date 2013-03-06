@@ -32,6 +32,7 @@ int TreeVerify( )
 #include <mdsdescrip.h>
 #include <ncidef.h>
 #include <treeshr.h>
+#include <usagedef.h>
 #include "treeshrp.h"
 
 static int maxnodes;
@@ -84,13 +85,15 @@ static int countnodes(NODE *node)
     {
       if (parent_of(member_of(node)) != node)
 	printf("Bad node linkage\n");
-      countnodes(member_of(node));
+      if (node->usage != TreeUSAGE_SUBTREE || node->parent == 0)
+        countnodes(member_of(node));
     }
     if (node->INFO.TREE_INFO.child)
     {
       if (parent_of(child_of(node)) != node)
 	printf("Bad node linkage\n");
-      countnodes(child_of(node));
+      if (node->usage != TreeUSAGE_SUBTREE || node->parent == 0)
+        countnodes(child_of(node));
     }
     if (node->INFO.TREE_INFO.brother)
     {
