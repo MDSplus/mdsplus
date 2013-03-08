@@ -13,6 +13,13 @@ Python interface to MDSplus
 
 %post python
 pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python >/dev/null 2>&1
-python setup.py install >/dev/null 2>&1
+python setup.py install --record=$RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove >/dev/null 2>&1
 popd >/dev/null 2>&1
+
+%preun python
+if [ -r $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove ]
+then
+  awk '{system("rm -fv \""$0"\"");system("rm -fv $(dirname \""$0"\")") }' $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove
+fi
+
 
