@@ -2,19 +2,23 @@ import sys,os
 
 def addMDSplusToSysPath():
   try:
-    f=open('/usr/local/mdsplus/.python_install_files_do_not_remove','r')
+    f=open('/usr/local/mdsplus/.python_rpm_files_do_not_remove','r')
     line=readline(f)
     f.close()
     sys.path.insert(0,os.path.dirname(line))
+    print "Added %s to sys.path" % (sys.path[0],)
     return
-  except:
+  except Exception,e:
+    print "Error processing recorded file list: %s\nTrying to find installed module next." % (str(e),)
     pass
   try:
     from distutils.sysconfig import get_python_lib
     for d in os.listdir(get_python_lib()):
 	if d.startswith('MDSplus'):
 	   sys.path.insert(0,d)
-  except:
+           print "Added %s to sys.path" % (d,)
+  except Exception,e:
+    print "Error finding installed module. %s" % (str(e),)
     pass
 
 
