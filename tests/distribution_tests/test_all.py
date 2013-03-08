@@ -1,6 +1,6 @@
 import sys,os
 
-def addMDSplusToSysPath()
+def addMDSplusToSysPath():
   try:
     f=open('/usr/local/mdsplus/.python_install_files_do_not_remove','r')
     line=readline(f)
