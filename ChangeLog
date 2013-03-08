@@ -1,3 +1,57 @@
+2013-03-08 15:25  twf
+
+	* tests/distribution_tests/test_all.py (1.12):
+	
+	Fix addtopath
+
+2013-03-08 15:18  twf
+
+	* rpm/subpackages/python (1.12):
+	
+	Clean up after remove
+
+2013-03-08 14:55  twf
+
+	* rpm/subpackages/python (1.11):
+	
+	clean empty directories
+
+2013-03-08 13:38  twf
+
+	* rpm/subpackages/python (1.10):
+	
+	Cleanup during remove
+
+2013-03-08 13:36  twf
+
+	* tests/distribution_tests/test_all.py (1.11):
+	
+	Add MDSplus to sys.path
+
+2013-03-08 13:10  twf
+
+	* tests/distribution_tests/test_all.py (1.10):
+	
+	Add MDSplus to sys.path
+
+2013-03-08 12:01  twf
+
+	* rpm/subpackages/python (1.9):
+	
+	Remove files during package removal
+
+2013-03-08 10:20  jas
+
+	* matlab/: mdsArg.m (1.2), nativeValue.m (1.2):
+	
+	creates name conflicts
+
+2013-03-07 10:19  jas
+
+	* matlab/: mdsArg.m (1.1), nativeValue.m (1.1):
+	
+	a different spelling (case) as per request
+
 2013-03-06 13:51  twf
 
 	* treeshr/TreeVerify.c (1.9):
