@@ -20,7 +20,7 @@ popd >/dev/null 2>&1
 if [ -r $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove ]
 then
   awk '{system("rm -fv \""$0"\"")}' $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove
-  awk '{system("find $(dirname \""$0"\") -type d -empty -delete")}' $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove
+  awk '{system("find $(dirname \""$0"\") -type d -empty -delete");exit}' $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove
   rm -f $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove
 fi
 
