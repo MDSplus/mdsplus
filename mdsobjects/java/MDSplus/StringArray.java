@@ -34,8 +34,8 @@ public class StringArray extends Array
         super(dims, help, units, error, validation);
         clazz = CLASS_A;
         dtype = DTYPE_T;
-        if(inDatum.length != getSize())
-            throw new MdsException("Invalid array size in Uint8 Array constructor");
+//        if(inDatum.length != getSize())
+//            throw new MdsException("Invalid array size in Uint8 Array constructor");
         datum = new java.lang.String[inDatum.length];
         System.arraycopy(inDatum, 0, datum, 0, inDatum.length);
         setShape(dims);
@@ -61,7 +61,10 @@ public class StringArray extends Array
     {
         try {
             return new StringArray(datum, dims, help, units, error, validation);
-        }catch(Exception exc){return null;}
+        }catch(Exception exc)
+        {
+            return null;
+        }
     }
     public Data getElementAt(int idx)
     {
