@@ -202,7 +202,11 @@ class NI6368AI(Device):
 ########################AsynchStore class
     class AsynchStore(Thread):
         stopReq = False
-        stopAcq = c_void_p(0)            
+        stopAcq = c_void_p(0)
+        #chanFd = []
+        #chanNid = []
+        #saveList = c_void_p(0)
+            
 
         def configure(self, device, niLib, niInterfaceLib, ai_fd, chanMap, hwChanMap, treePtr):
             self.device = device
@@ -224,7 +228,8 @@ class NI6368AI(Device):
             sampleToSkip = self.device.start_idx.data()
             transientRec = False
             startTime = float( self.device.start_time.data() )
-            trigSource = self.device.trig_source.data() 
+            trigSource = self.device.trig_source.data()
+ 
             try:
                 #In multi trigger acquisition acquired data from trigger_time[i]+start_time up to trigger_time[i] + end_time
                 #Time value to be associted at the first sample of the i-esima acquisition must be trigger_time[i]+start_time
@@ -238,13 +243,14 @@ class NI6368AI(Device):
                 timesIdx0 = []
                 timesIdx0.append(0)     
 
-
-
             if( acqMode == 'TRANSIENT REC.'):
                 transientRec = True
 
+
             chanFd = []
             chanNid = []
+            saveList = c_void_p(0)
+
 
             self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
 
@@ -262,15 +268,17 @@ class NI6368AI(Device):
                     gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                     gain_code = self.device.gainDict[gain]
                     status = self.niInterfaceLib.getCalibrationParams(currFd, gain_code, coeff)
+                    status = 0
                     if( status < 0 ):
-                        Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration  values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536'%(str(self.chanMap[chan])) )
+                        Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536'%(str(self.chanMap[chan])) )
                         coeff[0] = coeff[2] = coeff[3] = 0  
                         coeff[1] = c_float( gain / 65536. )
 
-                    getattr(self, 'channel_%d_calib_param'%(chan)).putData(Float32Array(coeff))
+                    getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
 
                 except:
-                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan]))
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan] + 1) )
+                    self.closeAll(chanFd, saveList)
                     return 
 
 
@@ -289,17 +297,13 @@ class NI6368AI(Device):
             else:
                 self.niInterfaceLib.setStopAcqFlag(self.stopAcq);
                 try:
-                    numSamples = self.device.end_idx.data() - self.device.start_idx.data() 
+                    numSamples = self.device.end_idx.data() - self.device.start_idx.data() - 1
                 except:
                     numSamples = 0
-
-
-
 
             #print "--+++ NUM SAMPLES ", numSamples
             #print "--+++ Segment Size ", segmentSize
                         
-            saveList = c_void_p(0)
             self.niInterfaceLib.startSave(byref(saveList))
 
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
@@ -307,7 +311,9 @@ class NI6368AI(Device):
              
             trigCount = 0
 
-            print "Start device in acquisition thread"
+            time.sleep(1)
+
+            print "Start device in acquisition thread %d"%(self.ai_fd)
             status = self.niLib.xseries_start_ai(c_int(self.ai_fd))
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
@@ -317,31 +323,52 @@ class NI6368AI(Device):
                 status = self.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timesIdx0[trigCount] + startTime ), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
    ##Check termination
                 trigCount += 1
-                print "Trigger count %d num %d num smp %d" %(trigCount , numTrigger, numSamples) 
-                if ( (numSamples > 0 and trigCount == numTrigger)  or ( status == -1 ) ):
+                print "Trigger count %d num %d num smp %d status %d" %(trigCount , numTrigger, numSamples, status) 
+                if ( (numSamples > 0 and trigCount == numTrigger)  or ( status < 0 ) ):
                     self.stopReq = True
 
-            if( transientRec and status == -1 ):
+            #if( transientRec and status == -1 ):
+            if( status < 0 ):
                 if( status == -1 ):
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Module is not in stop state')
-                else:
+                if( status == -2 ):
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'DMA overflow')
 
 
             status = self.niLib.xseries_stop_ai(c_int(self.ai_fd))
+
+            print "OK"
+
+            """
             for chan in range(len(self.chanMap)):
-                os.close(chanFd[chan])
+                    os.close(chanFd[chan])
             print 'ASYNCH WORKER TERMINATED'
             self.niInterfaceLib.stopSave(saveList)
             self.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
+            """
+
+            self.closeAll(chanFd, saveList)
+
+            print "OK"
+
             return
 
         def stop(self):
             self.stopReq = True
             self.niInterfaceLib.setStopAcqFlag(self.stopAcq);
 
-
+        def closeAll(self, chanFd, saveList):
+            for chan in range(len(self.chanMap)):
+                try:
+                    os.close(chanFd[chan])
+                except:
+                    print 'Exception'
+                    pass
+            print 'ASYNCH WORKER TERMINATED'
+            self.niInterfaceLib.stopSave(saveList)
+            self.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
+            self.device.closeInfo()
 
 #############End Inner class AsynchStore      
     
@@ -588,18 +615,6 @@ class NI6368AI(Device):
             period = int( 100000000/frequency ) #TB3 clock 100MHz 
             print "Internal CLOCK TB3 period ", period
 
-            #Program the START signal (sample clock) to start on a rising edge
-            #status = niLib.xseries_set_ai_sample_clock(aiConf, self.XSERIES_AI_SAMPLE_CONVERT_CLOCK_LOW, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE, c_int(1));
-            #if(status): 
-            #    printf("Cannot set start trigger!\n");
-            #    return 0
-
-            #Program the convert to be the same as START.
-            #status = niLib.xseries_set_ai_convert_clock(aiConf, self.XSERIES_AI_SAMPLE_CONVERT_CLOCK_LOW, self.XSERIES_AI_POLARITY_ACTIVE_HIGH_OR_RISING_EDGE);
-            #if(status != 0):
-            #    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set internal Sample Clock')
-            #    return 0
-
             status = niLib.xseries_set_ai_scan_interval_counter(aiConf, self.XSERIES_SCAN_INTERVAL_COUNTER_TB3, self.XSERIES_SCAN_INTERVAL_COUNTER_POLARITY_RISING_EDGE, c_int(period), c_int(2));
             if(status != 0):
                 errno = niInterfaceLib.getErrno();
@@ -632,7 +647,7 @@ class NI6368AI(Device):
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan)).data()]
                 #data = Data.compile("2 * build_path($) / 65536. * build_path($)", getattr(self, 'channel_%d_range'%(chan)).getPath(),  getattr(self, 'channel_%d_data_raw'%(chan)).getPath() );
 
-                data = Data.compile("xseriesAIScaled( build_path($), build_path($) )", getattr(self, 'channel_%d_data_raw'%(chan)).getPath(),  getattr(self, 'channel_%d_calib_param'%(chan)).getPath() );
+                data = Data.compile("NIanalogInputScaled( build_path($), build_path($) )", getattr(self, 'channel_%d_data_raw'%(chan)).getPath(),  getattr(self, 'channel_%d_calib_param'%(chan)).getPath() );
 
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan)).putData(data)
@@ -645,10 +660,10 @@ class NI6368AI(Device):
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(chan))
                     return 0
-                print 'CHAN '+ str(chan) + ' CONFIGURED'
+                #print 'CHAN '+ str(chan) + ' CONFIGURED'
                 activeChan = chan
-            else:
-                print 'CHAN '+ str(chan) + ' DISABLED'
+            #else:
+                #print 'CHAN '+ str(chan) + ' DISABLED'
         
 
         #endfor        
