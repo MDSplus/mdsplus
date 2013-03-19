@@ -107,11 +107,16 @@ public fun DIO2__init(as_is _nid, optional _method)
 	}
 	else
 	{
+        write(*, _board_id, _ext_clock, _rec_event, _synch_event );
 		_status = DIO2HWInit(_nid, _board_id, _ext_clock, _rec_event, _synch_event);
 
-write("HWINIT: ", _status);
+
+write(*, "HWINIT: ", _status);
 		if(_status == 0)
 			abort();
+
+
+
 	}
 
 	_channel_mask = 0;
