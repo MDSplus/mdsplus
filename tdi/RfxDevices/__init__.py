@@ -5,6 +5,9 @@ RfxDevices
 @authors: Gabriele Manduchi (IGI Padova)
 @copyright: 2008
 @license: GNU GPL
+
+
+=======
 """
 
 from CAENV1740 import CAENV1740
@@ -35,5 +38,6 @@ from FAKECAMERA import FAKECAMERA
 from FLIRSC65X import FLIRSC65X
 from NI6259AI import NI6259AI
 from RFXWAVESETUP import RFXWAVESETUP
+from NI6368AI import NI6368AI
 
 
