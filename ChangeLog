@@ -1,3 +1,33 @@
+2013-03-19 13:08  manduchi
+
+	* mdsobjects/java/MDSplus/StringArray.java (1.4):
+	
+	Fix creator
+
+2013-03-19 11:02  manduchi
+
+	* tdi/MdsDevices.fun (1.22):
+	
+	Add Device
+
+2013-03-19 10:59  manduchi
+
+	* tdi/RfxDevices/__init__.py (1.35):
+	
+	Add device
+
+2013-03-19 10:57  manduchi
+
+	* tdi/RfxDevices/NI6368AI.py (1.5):
+	
+	Mod
+
+2013-03-19 05:39  manduchi
+
+	* tdi/RfxDevices/DIO2__init.fun (1.19):
+	
+	Fix call to TDI WRITE function without unit parameter
+
 2013-03-08 15:25  twf
 
 	* tests/distribution_tests/test_all.py (1.12):
