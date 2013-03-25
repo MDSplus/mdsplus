@@ -1993,7 +1993,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="TStartEllipticyIntegralAction: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="477"/>
+                            <Property name="offsetNid" type="int" value="1591"/>
                           </Properties>
                         </Component>
                         <Component class="DeviceField" name="deviceField107">
@@ -2009,7 +2009,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="KiElli: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="485"/>
+                            <Property name="offsetNid" type="int" value="1603"/>
                           </Properties>
                         </Component>
                         <Component class="DeviceField" name="deviceField109">
@@ -2033,7 +2033,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="TaudElli: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="497"/>
+                            <Property name="offsetNid" type="int" value="1681"/>
                           </Properties>
                         </Component>
                       </SubComponents>

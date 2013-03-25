@@ -1236,7 +1236,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField106.setIdentifier("");
         deviceField106.setLabelString("TStartEllipticyIntegralAction: ");
         deviceField106.setNumCols(4);
-        deviceField106.setOffsetNid(477);
+        deviceField106.setOffsetNid(1591);
         jPanel109.add(deviceField106);
 
         deviceField107.setIdentifier("");
@@ -1248,7 +1248,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField108.setIdentifier("");
         deviceField108.setLabelString("KiElli: ");
         deviceField108.setNumCols(4);
-        deviceField108.setOffsetNid(485);
+        deviceField108.setOffsetNid(1603);
         jPanel109.add(deviceField108);
 
         deviceField109.setIdentifier("");
@@ -1266,7 +1266,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField111.setIdentifier("");
         deviceField111.setLabelString("TaudElli: ");
         deviceField111.setNumCols(4);
-        deviceField111.setOffsetNid(497);
+        deviceField111.setOffsetNid(1681);
         jPanel109.add(deviceField111);
 
         jTabbedPane3.addTab("Feedback", jPanel109);
