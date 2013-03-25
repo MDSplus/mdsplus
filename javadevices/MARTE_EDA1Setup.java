@@ -1223,6 +1223,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceTable3.setNumCols(8);
         deviceTable3.setNumRows(1);
         deviceTable3.setOffsetNid(1573);
+        deviceTable3.setPreferredColumnWidth(60);
         jPanel108.add(deviceTable3);
 
         jPanel107.add(jPanel108, java.awt.BorderLayout.NORTH);

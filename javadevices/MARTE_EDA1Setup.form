@@ -1956,6 +1956,7 @@
                         <Property name="numCols" type="int" value="8"/>
                         <Property name="numRows" type="int" value="1"/>
                         <Property name="offsetNid" type="int" value="1573"/>
+                        <Property name="preferredColumnWidth" type="int" value="60"/>
                       </Properties>
                     </Component>
                   </SubComponents>
