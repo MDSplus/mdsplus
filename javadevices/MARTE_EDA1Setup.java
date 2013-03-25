@@ -1267,7 +1267,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField111.setIdentifier("");
         deviceField111.setLabelString("TaudElli: ");
         deviceField111.setNumCols(4);
-        deviceField111.setOffsetNid(1681);
+        deviceField111.setOffsetNid(1621);
         jPanel109.add(deviceField111);
 
         jTabbedPane3.addTab("Feedback", jPanel109);

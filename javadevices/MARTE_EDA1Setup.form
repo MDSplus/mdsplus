@@ -2034,7 +2034,7 @@
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="TaudElli: "/>
                             <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1681"/>
+                            <Property name="offsetNid" type="int" value="1621"/>
                           </Properties>
                         </Component>
                       </SubComponents>
