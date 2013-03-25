@@ -145,7 +145,7 @@ public class CompileTree extends Thread
         }
 
 //Set subtrees (apparently this must be done at the end....
- /*       for(int i = 0; i < subtreeNids.size(); i++)
+      for(int i = 0; i < subtreeNids.size(); i++)
         {
             try {
                 tree.setSubtree((NidData)subtreeNids.elementAt(i), 0);
@@ -154,7 +154,7 @@ public class CompileTree extends Thread
             System.out.println("Error setting subtree: " + exc);
           }
       }
-*/
+
 
 
 
