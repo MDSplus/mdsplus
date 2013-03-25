@@ -68,6 +68,32 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField19 = new DeviceField();
         deviceField20 = new DeviceField();
         deviceField21 = new DeviceField();
+        jPanel13 = new javax.swing.JPanel();
+        jPanel14 = new javax.swing.JPanel();
+        jPanel43 = new javax.swing.JPanel();
+        deviceField95 = new DeviceField();
+        deviceField22 = new DeviceField();
+        deviceField23 = new DeviceField();
+        deviceField24 = new DeviceField();
+        jPanel44 = new javax.swing.JPanel();
+        deviceField25 = new DeviceField();
+        deviceField26 = new DeviceField();
+        deviceField27 = new DeviceField();
+        deviceField28 = new DeviceField();
+        jPanel45 = new javax.swing.JPanel();
+        deviceField29 = new DeviceField();
+        deviceField30 = new DeviceField();
+        deviceField31 = new DeviceField();
+        deviceField32 = new DeviceField();
+        jPanel46 = new javax.swing.JPanel();
+        deviceField33 = new DeviceField();
+        deviceField34 = new DeviceField();
+        deviceField35 = new DeviceField();
+        deviceField36 = new DeviceField();
+        deviceField37 = new DeviceField();
+        jPanel15 = new javax.swing.JPanel();
+        deviceTable1 = new DeviceTable();
+        deviceTable2 = new DeviceTable();
         jScrollPane2 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
@@ -205,32 +231,39 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField90 = new DeviceField();
         jPanel100 = new javax.swing.JPanel();
         deviceField91 = new DeviceField();
-        jPanel13 = new javax.swing.JPanel();
-        jPanel14 = new javax.swing.JPanel();
-        jPanel43 = new javax.swing.JPanel();
-        deviceField95 = new DeviceField();
-        deviceField22 = new DeviceField();
-        deviceField23 = new DeviceField();
-        deviceField24 = new DeviceField();
-        jPanel44 = new javax.swing.JPanel();
-        deviceField25 = new DeviceField();
-        deviceField26 = new DeviceField();
-        deviceField27 = new DeviceField();
-        deviceField28 = new DeviceField();
-        jPanel45 = new javax.swing.JPanel();
-        deviceField29 = new DeviceField();
-        deviceField30 = new DeviceField();
-        deviceField31 = new DeviceField();
-        deviceField32 = new DeviceField();
-        jPanel46 = new javax.swing.JPanel();
-        deviceField33 = new DeviceField();
-        deviceField34 = new DeviceField();
-        deviceField35 = new DeviceField();
-        deviceField36 = new DeviceField();
-        deviceField37 = new DeviceField();
-        jPanel15 = new javax.swing.JPanel();
-        deviceTable1 = new DeviceTable();
-        deviceTable2 = new DeviceTable();
+        jPanel101 = new javax.swing.JPanel();
+        jPanel102 = new javax.swing.JPanel();
+        deviceField96 = new DeviceField();
+        jPanel103 = new javax.swing.JPanel();
+        deviceField97 = new DeviceField();
+        jPanel104 = new javax.swing.JPanel();
+        jPanel105 = new javax.swing.JPanel();
+        deviceField98 = new DeviceField();
+        jPanel106 = new javax.swing.JPanel();
+        deviceField99 = new DeviceField();
+        jPanel107 = new javax.swing.JPanel();
+        jPanel108 = new javax.swing.JPanel();
+        deviceField100 = new DeviceField();
+        deviceField101 = new DeviceField();
+        deviceField102 = new DeviceField();
+        deviceField103 = new DeviceField();
+        deviceField104 = new DeviceField();
+        deviceTable3 = new DeviceTable();
+        jTabbedPane3 = new javax.swing.JTabbedPane();
+        jPanel109 = new javax.swing.JPanel();
+        deviceField105 = new DeviceField();
+        deviceField106 = new DeviceField();
+        deviceField107 = new DeviceField();
+        deviceField108 = new DeviceField();
+        deviceField109 = new DeviceField();
+        deviceField110 = new DeviceField();
+        deviceField111 = new DeviceField();
+        jPanel110 = new javax.swing.JPanel();
+        deviceField112 = new DeviceField();
+        deviceField113 = new DeviceField();
+        deviceField114 = new DeviceField();
+        deviceField115 = new DeviceField();
+        deviceField116 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA1Setup");
@@ -397,10 +430,148 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jTabbedPane1.addTab("Current Control", jPanel3);
 
+        jPanel13.setLayout(new java.awt.BorderLayout());
+
+        jPanel14.setLayout(new java.awt.GridLayout(4, 1));
+
+        deviceField95.setIdentifier("");
+        deviceField95.setLabelString("Configuration: ");
+        deviceField95.setNumCols(15);
+        deviceField95.setOffsetNid(1345);
+        jPanel43.add(deviceField95);
+
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("aaGain: ");
+        deviceField22.setNumCols(20);
+        deviceField22.setOffsetNid(1417);
+        jPanel43.add(deviceField22);
+
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("invAAGain: ");
+        deviceField23.setNumCols(20);
+        deviceField23.setOffsetNid(1423);
+        jPanel43.add(deviceField23);
+
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("bvGain: ");
+        deviceField24.setNumCols(20);
+        deviceField24.setOffsetNid(1441);
+        jPanel43.add(deviceField24);
+
+        jPanel14.add(jPanel43);
+
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("maxPVATCurr: ");
+        deviceField25.setNumCols(20);
+        deviceField25.setOffsetNid(1447);
+        jPanel44.add(deviceField25);
+
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("DecouplerGain: ");
+        deviceField26.setNumCols(4);
+        deviceField26.setOffsetNid(1453);
+        jPanel44.add(deviceField26);
+
+        deviceField27.setIdentifier("");
+        deviceField27.setLabelString("compResGain: ");
+        deviceField27.setNumCols(4);
+        deviceField27.setOffsetNid(1459);
+        jPanel44.add(deviceField27);
+
+        deviceField28.setIdentifier("");
+        deviceField28.setLabelString("Kp:");
+        deviceField28.setNumCols(4);
+        deviceField28.setOffsetNid(1465);
+        jPanel44.add(deviceField28);
+
+        jPanel14.add(jPanel44);
+
+        deviceField29.setIdentifier("");
+        deviceField29.setLabelString("Ki:");
+        deviceField29.setNumCols(4);
+        deviceField29.setOffsetNid(1471);
+        jPanel45.add(deviceField29);
+
+        deviceField30.setIdentifier("");
+        deviceField30.setLabelString("tStartEquilIntegralAction: ");
+        deviceField30.setNumCols(20);
+        deviceField30.setOffsetNid(1477);
+        jPanel45.add(deviceField30);
+
+        deviceField31.setIdentifier("");
+        deviceField31.setLabelString("minIpCurr ");
+        deviceField31.setNumCols(4);
+        deviceField31.setOffsetNid(1483);
+        jPanel45.add(deviceField31);
+
+        deviceField32.setIdentifier("");
+        deviceField32.setLabelString("equilNonLinarFactorSaturation: ");
+        deviceField32.setNumCols(4);
+        deviceField32.setOffsetNid(1489);
+        jPanel45.add(deviceField32);
+
+        jPanel14.add(jPanel45);
+
+        deviceField33.setIdentifier("");
+        deviceField33.setLabelString("ffwdOn: ");
+        deviceField33.setNumCols(4);
+        deviceField33.setOffsetNid(1507);
+        jPanel46.add(deviceField33);
+
+        deviceField34.setIdentifier("");
+        deviceField34.setLabelString("fdbkOn: ");
+        deviceField34.setNumCols(4);
+        deviceField34.setOffsetNid(1513);
+        jPanel46.add(deviceField34);
+
+        deviceField35.setIdentifier("");
+        deviceField35.setLabelString("voltageControl");
+        deviceField35.setNumCols(4);
+        deviceField35.setOffsetNid(1519);
+        jPanel46.add(deviceField35);
+
+        deviceField36.setIdentifier("");
+        deviceField36.setLabelString("equiFlux: ");
+        deviceField36.setNumCols(4);
+        deviceField36.setOffsetNid(1525);
+        jPanel46.add(deviceField36);
+
+        deviceField37.setIdentifier("");
+        deviceField37.setLabelString("strainAlarmLatchTime: ");
+        deviceField37.setNumCols(4);
+        deviceField37.setOffsetNid(1531);
+        jPanel46.add(deviceField37);
+
+        jPanel14.add(jPanel46);
+
+        jPanel13.add(jPanel14, java.awt.BorderLayout.NORTH);
+
+        jPanel15.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable1.setIdentifier("");
+        deviceTable1.setLabelString("fsMMFRT");
+        deviceTable1.setNumCols(8);
+        deviceTable1.setNumRows(1);
+        deviceTable1.setOffsetNid(1495);
+        jPanel15.add(deviceTable1);
+
+        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable2.setIdentifier("");
+        deviceTable2.setLabelString("fsBvRT");
+        deviceTable2.setNumCols(8);
+        deviceTable2.setNumRows(1);
+        deviceTable2.setOffsetNid(1501);
+        jPanel15.add(deviceTable2);
+
+        jPanel13.add(jPanel15, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Simulink", jPanel13);
+
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         jPanel4.setPreferredSize(new java.awt.Dimension(200, 3000));
-        jPanel4.setLayout(new java.awt.GridLayout(27, 1));
+        jPanel4.setLayout(new java.awt.GridLayout(29, 1));
 
         jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("bvAddRef"));
         jPanel16.setLayout(new java.awt.GridLayout(2, 1));
@@ -969,147 +1140,172 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jPanel4.add(jPanel42);
 
+        jPanel101.setBorder(javax.swing.BorderFactory.createTitledBorder("RPlaCos2Ref"));
+        jPanel101.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField96.setIdentifier("");
+        deviceField96.setLabelString("Y: ");
+        deviceField96.setNumCols(30);
+        deviceField96.setOffsetNid(3011);
+        jPanel102.add(deviceField96);
+
+        jPanel101.add(jPanel102);
+
+        deviceField97.setIdentifier("");
+        deviceField97.setLabelString("X: ");
+        deviceField97.setNumCols(30);
+        deviceField97.setOffsetNid(3010);
+        jPanel103.add(deviceField97);
+
+        jPanel101.add(jPanel103);
+
+        jPanel4.add(jPanel101);
+
+        jPanel104.setBorder(javax.swing.BorderFactory.createTitledBorder("RplaCos3Ref"));
+        jPanel104.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField98.setIdentifier("");
+        deviceField98.setLabelString("Y: ");
+        deviceField98.setNumCols(30);
+        deviceField98.setOffsetNid(3016);
+        jPanel105.add(deviceField98);
+
+        jPanel104.add(jPanel105);
+
+        deviceField99.setIdentifier("");
+        deviceField99.setLabelString("X: ");
+        deviceField99.setNumCols(30);
+        deviceField99.setOffsetNid(3015);
+        jPanel106.add(deviceField99);
+
+        jPanel104.add(jPanel106);
+
+        jPanel4.add(jPanel104);
+
         jScrollPane2.setViewportView(jPanel4);
 
         jTabbedPane1.addTab("Waveforms", jScrollPane2);
 
-        jPanel13.setLayout(new java.awt.BorderLayout());
+        jPanel107.setLayout(new java.awt.BorderLayout());
 
-        jPanel14.setLayout(new java.awt.GridLayout(4, 1));
+        deviceField100.setIdentifier("");
+        deviceField100.setLabelString("EllipticyControl_ON:");
+        deviceField100.setNumCols(3);
+        deviceField100.setOffsetNid(1549);
+        jPanel108.add(deviceField100);
 
-        deviceField95.setIdentifier("");
-        deviceField95.setLabelString("Configuration: ");
-        deviceField95.setNumCols(15);
-        deviceField95.setOffsetNid(1345);
-        jPanel43.add(deviceField95);
+        deviceField101.setIdentifier("");
+        deviceField101.setLabelString("TStartEllipticyControl:");
+        deviceField101.setNumCols(4);
+        deviceField101.setOffsetNid(1555);
+        jPanel108.add(deviceField101);
 
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("aaGain: ");
-        deviceField22.setNumCols(20);
-        deviceField22.setOffsetNid(1417);
-        jPanel43.add(deviceField22);
+        deviceField102.setIdentifier("");
+        deviceField102.setLabelString("TEndEllipticyControl:");
+        deviceField102.setNumCols(4);
+        deviceField102.setOffsetNid(1561);
+        jPanel108.add(deviceField102);
 
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("invAAGain: ");
-        deviceField23.setNumCols(20);
-        deviceField23.setOffsetNid(1423);
-        jPanel43.add(deviceField23);
+        deviceField103.setIdentifier("");
+        deviceField103.setLabelString("ElliRefDerLimit");
+        deviceField103.setNumCols(4);
+        deviceField103.setOffsetNid(1567);
+        jPanel108.add(deviceField103);
 
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("bvGain: ");
-        deviceField24.setNumCols(20);
-        deviceField24.setOffsetNid(1441);
-        jPanel43.add(deviceField24);
+        deviceField104.setIdentifier("");
+        deviceField104.setLabelString("ElliIfsCos2RefSat:");
+        deviceField104.setNumCols(4);
+        deviceField104.setOffsetNid(1579);
+        jPanel108.add(deviceField104);
 
-        jPanel14.add(jPanel43);
+        deviceTable3.setIdentifier("");
+        deviceTable3.setLabelString("IfsCos2:");
+        deviceTable3.setNumCols(8);
+        deviceTable3.setNumRows(1);
+        deviceTable3.setOffsetNid(1573);
+        jPanel108.add(deviceTable3);
 
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("maxPVATCurr: ");
-        deviceField25.setNumCols(20);
-        deviceField25.setOffsetNid(1447);
-        jPanel44.add(deviceField25);
+        jPanel107.add(jPanel108, java.awt.BorderLayout.NORTH);
 
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("DecouplerGain: ");
-        deviceField26.setNumCols(4);
-        deviceField26.setOffsetNid(1453);
-        jPanel44.add(deviceField26);
+        deviceField105.setIdentifier("");
+        deviceField105.setLabelString("ElliFBON:");
+        deviceField105.setNumCols(2);
+        deviceField105.setOffsetNid(1585);
+        jPanel109.add(deviceField105);
 
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("compResGain: ");
-        deviceField27.setNumCols(4);
-        deviceField27.setOffsetNid(1459);
-        jPanel44.add(deviceField27);
+        deviceField106.setIdentifier("");
+        deviceField106.setLabelString("TStartEllipticyIntegralAction: ");
+        deviceField106.setNumCols(4);
+        deviceField106.setOffsetNid(477);
+        jPanel109.add(deviceField106);
 
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("Kp:");
-        deviceField28.setNumCols(4);
-        deviceField28.setOffsetNid(1465);
-        jPanel44.add(deviceField28);
+        deviceField107.setIdentifier("");
+        deviceField107.setLabelString("ElliIfsCos2IntSat:");
+        deviceField107.setNumCols(4);
+        deviceField107.setOffsetNid(1597);
+        jPanel109.add(deviceField107);
 
-        jPanel14.add(jPanel44);
+        deviceField108.setIdentifier("");
+        deviceField108.setLabelString("KiElli: ");
+        deviceField108.setNumCols(4);
+        deviceField108.setOffsetNid(485);
+        jPanel109.add(deviceField108);
 
-        deviceField29.setIdentifier("");
-        deviceField29.setLabelString("Ki:");
-        deviceField29.setNumCols(4);
-        deviceField29.setOffsetNid(1471);
-        jPanel45.add(deviceField29);
+        deviceField109.setIdentifier("");
+        deviceField109.setLabelString("KpElli: ");
+        deviceField109.setNumCols(4);
+        deviceField109.setOffsetNid(1609);
+        jPanel109.add(deviceField109);
 
-        deviceField30.setIdentifier("");
-        deviceField30.setLabelString("tStartEquilIntegralAction: ");
-        deviceField30.setNumCols(20);
-        deviceField30.setOffsetNid(1477);
-        jPanel45.add(deviceField30);
+        deviceField110.setIdentifier("");
+        deviceField110.setLabelString("KdElli:");
+        deviceField110.setNumCols(4);
+        deviceField110.setOffsetNid(1615);
+        jPanel109.add(deviceField110);
 
-        deviceField31.setIdentifier("");
-        deviceField31.setLabelString("minIpCurr ");
-        deviceField31.setNumCols(4);
-        deviceField31.setOffsetNid(1483);
-        jPanel45.add(deviceField31);
+        deviceField111.setIdentifier("");
+        deviceField111.setLabelString("TaudElli: ");
+        deviceField111.setNumCols(4);
+        deviceField111.setOffsetNid(497);
+        jPanel109.add(deviceField111);
 
-        deviceField32.setIdentifier("");
-        deviceField32.setLabelString("equilNonLinarFactorSaturation: ");
-        deviceField32.setNumCols(4);
-        deviceField32.setOffsetNid(1489);
-        jPanel45.add(deviceField32);
+        jTabbedPane3.addTab("Feedback", jPanel109);
 
-        jPanel14.add(jPanel45);
+        deviceField112.setIdentifier("");
+        deviceField112.setLabelString("ElliFFON: ");
+        deviceField112.setNumCols(4);
+        deviceField112.setOffsetNid(1627);
+        jPanel110.add(deviceField112);
 
-        deviceField33.setIdentifier("");
-        deviceField33.setLabelString("ffwdOn: ");
-        deviceField33.setNumCols(4);
-        deviceField33.setOffsetNid(1507);
-        jPanel46.add(deviceField33);
+        deviceField113.setIdentifier("");
+        deviceField113.setLabelString("ElliFFGAIN:");
+        deviceField113.setNumCols(4);
+        deviceField113.setOffsetNid(1633);
+        jPanel110.add(deviceField113);
 
-        deviceField34.setIdentifier("");
-        deviceField34.setLabelString("fdbkOn: ");
-        deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(1513);
-        jPanel46.add(deviceField34);
+        deviceField114.setIdentifier("");
+        deviceField114.setLabelString("LeadLagElliOn:");
+        deviceField114.setNumCols(4);
+        deviceField114.setOffsetNid(1639);
+        jPanel110.add(deviceField114);
 
-        deviceField35.setIdentifier("");
-        deviceField35.setLabelString("voltageControl");
-        deviceField35.setNumCols(4);
-        deviceField35.setOffsetNid(1519);
-        jPanel46.add(deviceField35);
+        deviceField115.setIdentifier("");
+        deviceField115.setLabelString("tauzElliFF:");
+        deviceField115.setNumCols(4);
+        deviceField115.setOffsetNid(1645);
+        jPanel110.add(deviceField115);
 
-        deviceField36.setIdentifier("");
-        deviceField36.setLabelString("equiFlux: ");
-        deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(1525);
-        jPanel46.add(deviceField36);
+        deviceField116.setIdentifier("");
+        deviceField116.setLabelString("taupElliFF:");
+        deviceField116.setNumCols(4);
+        deviceField116.setOffsetNid(1651);
+        jPanel110.add(deviceField116);
 
-        deviceField37.setIdentifier("");
-        deviceField37.setLabelString("strainAlarmLatchTime: ");
-        deviceField37.setNumCols(4);
-        deviceField37.setOffsetNid(1531);
-        jPanel46.add(deviceField37);
+        jTabbedPane3.addTab("Feedforward", jPanel110);
 
-        jPanel14.add(jPanel46);
+        jPanel107.add(jTabbedPane3, java.awt.BorderLayout.CENTER);
 
-        jPanel13.add(jPanel14, java.awt.BorderLayout.NORTH);
-
-        jPanel15.setLayout(new java.awt.GridLayout(2, 1));
-
-        deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
-        deviceTable1.setIdentifier("");
-        deviceTable1.setLabelString("fsMMFRT");
-        deviceTable1.setNumCols(8);
-        deviceTable1.setNumRows(1);
-        deviceTable1.setOffsetNid(1495);
-        jPanel15.add(deviceTable1);
-
-        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
-        deviceTable2.setIdentifier("");
-        deviceTable2.setLabelString("fsBvRT");
-        deviceTable2.setNumCols(8);
-        deviceTable2.setNumRows(1);
-        deviceTable2.setOffsetNid(1501);
-        jPanel15.add(deviceTable2);
-
-        jPanel13.add(jPanel15, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Simulink", jPanel13);
+        jTabbedPane1.addTab("Ellipticy", jPanel107);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -1122,7 +1318,24 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceChoice deviceChoice1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
+    private DeviceField deviceField100;
+    private DeviceField deviceField101;
+    private DeviceField deviceField102;
+    private DeviceField deviceField103;
+    private DeviceField deviceField104;
+    private DeviceField deviceField105;
+    private DeviceField deviceField106;
+    private DeviceField deviceField107;
+    private DeviceField deviceField108;
+    private DeviceField deviceField109;
     private DeviceField deviceField11;
+    private DeviceField deviceField110;
+    private DeviceField deviceField111;
+    private DeviceField deviceField112;
+    private DeviceField deviceField113;
+    private DeviceField deviceField114;
+    private DeviceField deviceField115;
+    private DeviceField deviceField116;
     private DeviceField deviceField12;
     private DeviceField deviceField13;
     private DeviceField deviceField14;
@@ -1215,12 +1428,27 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField93;
     private DeviceField deviceField94;
     private DeviceField deviceField95;
+    private DeviceField deviceField96;
+    private DeviceField deviceField97;
+    private DeviceField deviceField98;
+    private DeviceField deviceField99;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
+    private DeviceTable deviceTable3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel100;
+    private javax.swing.JPanel jPanel101;
+    private javax.swing.JPanel jPanel102;
+    private javax.swing.JPanel jPanel103;
+    private javax.swing.JPanel jPanel104;
+    private javax.swing.JPanel jPanel105;
+    private javax.swing.JPanel jPanel106;
+    private javax.swing.JPanel jPanel107;
+    private javax.swing.JPanel jPanel108;
+    private javax.swing.JPanel jPanel109;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel110;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
@@ -1320,6 +1548,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTabbedPane jTabbedPane3;
     // End of variables declaration//GEN-END:variables
 
 }
