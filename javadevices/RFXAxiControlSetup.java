@@ -41,6 +41,8 @@ public class RFXAxiControlSetup extends DeviceSetup
     DeviceWave deviceWave17 = new DeviceWave();
     DeviceWave deviceWave18 = new DeviceWave();
     DeviceWave deviceWave19 = new DeviceWave();
+    DeviceWave deviceWave20 = new DeviceWave();
+    DeviceWave deviceWave21 = new DeviceWave();
     DeviceField deviceField3 = new DeviceField();
     public RFXAxiControlSetup()
     {
@@ -122,7 +124,7 @@ public class RFXAxiControlSetup extends DeviceSetup
         jPanel1.setLayout(gridLayout1);
         gridLayout1.setColumns(1);
         gridLayout1.setRows(2);
-        deviceField2.setOffsetNid(116);
+        deviceField2.setOffsetNid(116+12);
         deviceField2.setLabelString("Bv_Gain");
         deviceField2.setIdentifier("");
         deviceWave12.setUpdateExpression("");
@@ -157,7 +159,18 @@ public class RFXAxiControlSetup extends DeviceSetup
         deviceWave19.setIdentifier("");
         deviceWave19.setMinYVisible(true);
         deviceWave19.setOffsetNid(111);
-        deviceField3.setOffsetNid(117);
+
+        deviceWave20.setUpdateExpression("");
+        deviceWave20.setIdentifier("");
+        deviceWave20.setMinYVisible(true);
+        deviceWave20.setOffsetNid(111+6);
+        
+        deviceWave21.setUpdateExpression("");
+        deviceWave21.setIdentifier("");
+        deviceWave21.setMinYVisible(true);
+        deviceWave21.setOffsetNid(111+12);
+        
+        deviceField3.setOffsetNid(117+12);
         deviceField3.setLabelString("T Start Int. Action");
         deviceField3.setIdentifier("");
         this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
@@ -181,6 +194,8 @@ public class RFXAxiControlSetup extends DeviceSetup
         jTabbedPane1.add(deviceWave17,    "delta_I_FS6");
         jTabbedPane1.add(deviceWave18,   "delta_I_FS7");
         jTabbedPane1.add(deviceWave19,   "delta_I_FS8");
+        jTabbedPane1.add(deviceWave20,   "RplaCos2Ref");
+        jTabbedPane1.add(deviceWave21,   "RplaCos3Ref");
         this.getContentPane().add(jPanel1, BorderLayout.NORTH);
         jPanel1.add(jPanel2, null);
         jPanel2.add(deviceField1, null);

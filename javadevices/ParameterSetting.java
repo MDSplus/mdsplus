@@ -3740,7 +3740,7 @@ System.out.println("SAVE SETUP: " + fullPath);
                 return false;
             if(!checkVersionVme("\\MHD_BR::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BR", "MHD_BR", true))
                 return false;
-*/            if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", true))
+            if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", true))
                 return false;
             if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", true))
                 return false;
@@ -3748,7 +3748,7 @@ System.out.println("SAVE SETUP: " + fullPath);
                 return false;
             if(!checkVersionVme("\\DFLU_RAW::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", true))
                 return false;
-            return true;
+*/            return true;
         }
 
 
@@ -3760,7 +3760,7 @@ System.out.println("SAVE SETUP: " + fullPath);
                 return "Incompatible major version number for MHD_BC";
             if(!checkVersionVme("\\MHD_BR::CONTROL:VERSION", "\\VERSIONS:VME_MHD_BR", "MHD_BR", false))
                  return "Incompatible major version number for MHD_BR";
-*/           if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", false))
+           if(!checkVersionVme("\\EDA1::CONTROL:VERSION", "\\VERSIONS:VME_EDA1", "EDA1", false))
                  return "Incompatible major version number for EDA1";
            if(!checkVersionVme("\\EDA3::CONTROL:VERSION", "\\VERSIONS:VME_EDA3", "EDA3", false))
                 return "Incompatible major version number for EDA3";
@@ -3768,7 +3768,7 @@ System.out.println("SAVE SETUP: " + fullPath);
                 return "Incompatible major version number for DEQU";
             if(!checkVersionVme("\\DFLU_RAW::CONTROL:VERSION", "\\VERSIONS:VME_DFLU", "DFLU", false))
                 return "Incompatible major version number for DFLU";
-            return null;
+*/            return null;
         }
 
 
