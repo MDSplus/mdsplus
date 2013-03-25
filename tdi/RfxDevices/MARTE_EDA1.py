@@ -13,8 +13,8 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
         'TStartEllipticityIntegralAction','ElliIfsCos2IntSat','KiElli','KpElli','KdElli','TaudElli','ElliFFON ','ElliFFGAIN ','LeadLagElliON ',
         'tauzElliFF','taupElliFF']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),0,0,0,0,0,0,0,
-        0,0.3,1.5,100.,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1.5e5/1000,1.5e5*50e-3/1000,
-        0, 1e-3, 0, 1/1.77e-4, 0, 50e-3, 20e-3] 
+        0,0.3,1.5,100.,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,
+        0, 1e-3, 0, 5.649E-5, 0, 50e-3, 20e-3] 
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
