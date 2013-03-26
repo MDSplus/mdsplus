@@ -9,7 +9,7 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
     	'rfpccPOhmMax','rfpccTauz','rfpccTaup','rfpccDeltaTBumpless','aaGain','invAAGain','rfpcc2VrtStar','rfpcc2PCATMaxOnTime','bvGain',
 	'maxPVATCurr','decouplerGain','compResGain','Kp','Ki','tStartEquilIntegralAction','minIpCurr','equilNonlinearFactorSaturation',
 	'fsMMFRT','fsBvRT','ffwdOn','fdbkOn','voltageControl','equiFlux','strainAlarmLatchTime','tokccVLoopThreshold ','tokccVRogThreshold ',
-        'EllipticityControl_ON', 'TStartEllipticityControl','TEndEllipticityControl','ElliRefDerLim','IfsCos2','ElliIfsCos2RefSat', 'ElliFBON',
+        'EllipticityControl_ON', 'TStartEllipticityControl','TEndEllipticityControl','ElliRefDerLim','IfsCos2_distr','ElliIfsCos2RefSat', 'ElliFBON',
         'TStartEllipticityIntegralAction','ElliIfsCos2IntSat','KiElli','KpElli','KdElli','TaudElli','ElliFFON ','ElliFFGAIN ','LeadLagElliON ',
         'tauzElliFF','taupElliFF']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),0,0,0,0,0,0,0,
