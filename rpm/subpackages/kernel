@@ -88,6 +88,11 @@ then
   done
   ldconfig > /dev/null 2>&1
 fi
+if [ -d /etc/profile.d ]
+then
+  ln -sf $RPM_INSTALL_PREFIX/setup.sh /etc/profile.d/mdsplus.sh
+  ln -sf $RPM_INSTALL_PREFIX/setup.csh /etc/profile.d/mdsplus.csh
+fi
 if [ "$(uname -i)" == "i386" ]
 then
   bits=32
