@@ -1,3 +1,99 @@
+2013-03-26 09:28  twf
+
+	* rpm/subpackages/python (stable.1):
+	
+	Clean out python module during uninstall
+
+2013-03-26 09:28  twf
+
+	* rpm/subpackages/kernel (stable.1):
+	
+	Put profile.d symlinks in during install
+
+2013-03-26 09:22  twf
+
+	* rpm/subpackages/python (beta.1):
+	
+	Clean out python module during uninstall
+
+2013-03-26 09:22  twf
+
+	* rpm/subpackages/kernel (beta.1):
+	
+	Put profile.d symlinks in during install
+
+2013-03-26 09:18  twf
+
+	* rpm/subpackages/kernel (1.27):
+	
+	Put profile.d symlinks in during install
+
+2013-03-26 07:16  manduchi
+
+	* tdi/RfxDevices/MARTE_EDA1.py (1.8):
+	
+	Parameter change
+
+2013-03-25 12:44  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.10), MARTE_EDA1Setup.java
+	(1.10):
+	
+	More fixes
+
+2013-03-25 12:42  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.9), MARTE_EDA1Setup.java
+	(1.9):
+	
+	larger fields
+
+2013-03-25 12:40  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.8), MARTE_EDA1Setup.java
+	(1.8):
+	
+	Fix parameters
+
+2013-03-25 12:33  manduchi
+
+	* tdi/RfxDevices/MARTE_EDA1.py (1.7):
+	
+	Fix numbers
+
+2013-03-25 12:26  manduchi
+
+	* tdi/RfxDevices/MARTE_EDA1.py (1.6):
+	
+	Fix parameters
+
+2013-03-25 12:09  manduchi
+
+	* tdi/RfxDevices/MARTE_EDA1.py (1.5):
+	
+	New Fields
+
+2013-03-25 12:09  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.7), MARTE_EDA1Setup.java
+	(1.7):
+	
+	New fields
+
+2013-03-25 10:38  manduchi
+
+	* javatraverser/CompileTree.java (1.12):
+	
+	Remove forgotten comments on subtree code
+
+2013-03-25 10:15  manduchi
+
+	* tdi/RfxDevices/RFXAxiControl__add.fun (1.4),
+	javadevices/ParameterSetting.java (1.20),
+	javadevices/RFXAxiControlSetup.java (1.2):
+	
+	New Waveforms
+
 2013-03-19 13:08  manduchi
 
 	* mdsobjects/java/MDSplus/StringArray.java (1.4):
