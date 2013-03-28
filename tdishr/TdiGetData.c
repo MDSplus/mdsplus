@@ -79,8 +79,9 @@ int	in_size, out_size, dimct, status = 1;
 			/*******************************
 			For CA it is a relative pointer.
 			*******************************/
-			if (in_ptr->class == CLASS_CA) 
-                          arr.a0 = pout->pointer + ((char *)arr.a0 - (char *)0);
+			if (in_ptr->class == CLASS_CA) { 
+                          arr.a0 = pout->pointer + (((char *)arr.a0 - (char *)0) & 0xffff);
+                        }
 			else arr.a0 = pout->pointer + (arr.a0 - arr.pointer);
 		}
 		arr.pointer = pout->pointer;
