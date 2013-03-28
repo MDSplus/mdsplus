@@ -1,3 +1,11 @@
+2013-03-28 15:19  twf
+
+	* tdishr/: TdiGetData.c (beta.1), TdiGetData.c (stable.[1,1]),
+	TdiGetData.c (1.14):
+	
+	Handle bounded compressed arrays on 64-bit platforms correctly
+	(very subtle)
+
 2013-03-26 09:28  twf
 
 	* rpm/subpackages/python (stable.1):
