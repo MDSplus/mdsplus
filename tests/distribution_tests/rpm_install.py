@@ -56,7 +56,7 @@ def rpm_remove(pkg,FLAVOR):
 def rpm_install_tests(WORKSPACE,FLAVOR):
   print "Testing package installation"
   sys.stdout.flush()
-  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean all 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
+  p=subprocess.Popen('sudo x86_64/mdsplus/devscripts/rpmYum clean all 2>&1;sudo x86_64/mdsplus/devscripts/rpmYum remove 2>&1',stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
     print "Error doing yum clean all"
