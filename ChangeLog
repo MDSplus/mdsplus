@@ -1,3 +1,17 @@
+2013-03-29 15:35  twf
+
+	* tests/distribution_tests/test_all.py (1.13):
+	
+	Do not need to muck with syspath
+
+2013-03-29 13:44  twf
+
+	* tdishr/: TdiGetData.c, TdiSubscript.c (beta.[2,1]), TdiGetData.c,
+	TdiSubscript.c (stable.[2,1,2,1]), TdiGetData.c (1.15),
+	TdiSubscript.c (1.13):
+	
+	Fix subscripting with bounded arrays
+
 2013-03-28 15:19  twf
 
 	* tdishr/: TdiGetData.c (beta.1), TdiGetData.c (stable.[1,1]),
