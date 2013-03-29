@@ -65,9 +65,12 @@ int	in_size, out_size, dimct, status = 1;
 	case CLASS_CA :
 		dimct = in_ptr->dimct;
 		if (dimct > MAXDIM) return TdiNDIM_OVER;
-		in_size = sizeof(struct descriptor_a)
-			+ ((in_ptr->aflags.coeff ? 1 + dimct : 0)
-			+ (in_ptr->aflags.bounds ? dimct : 0)) * sizeof(int);
+		in_size = sizeof(struct descriptor_a);
+                if (in_ptr->aflags.coeff) {
+                  in_size+=sizeof(void *)+dimct*sizeof(int);
+                  if (in_ptr->aflags.bounds)
+                    in_size+=dimct*sizeof(int);
+                }
 		dimct = pout->dimct;
 		_MOVC3((short)in_size, (char *)in_ptr, (char *)&arr);
 		if (in_ptr->class == CLASS_APD) {
@@ -85,9 +88,12 @@ int	in_size, out_size, dimct, status = 1;
 			else arr.a0 = pout->pointer + (arr.a0 - arr.pointer);
 		}
 		arr.pointer = pout->pointer;
-		out_size = sizeof(struct descriptor_a)
-			+ ((pout->aflags.coeff ? 1 + dimct : 0)
-			+ (pout->aflags.bounds ? dimct : 0)) * sizeof(int);
+		out_size = sizeof(struct descriptor_a);
+                if (pout->aflags.coeff) {
+                  out_size+=sizeof(void *)+dimct*sizeof(int);
+                  if (pout->aflags.bounds)
+                    out_size+=dimct*sizeof(int);
+                }
 		if (in_size <= out_size && pout->class == CLASS_A)
 			_MOVC3((short)in_size, (char *)&arr, (char *)pout);
 		else {

@@ -177,7 +177,7 @@ struct TdiCatStruct		cats[2];
                                   MdsFree1Dx(&xd, NULL);
                                 }
 			TdiThreadStatic()->TdiSELF_PTR = keeps;
-				if (status & 1 && bounded) pin += pdat->m[dim*2+dimct] * stride[dim];
+				if (status & 1 && bounded) pin += *(int *)&pdat->m[dim*2+dimct] * stride[dim];
 				highdim = dim + 1;
 			}
 			else if (pdim && pdim->dtype == DTYPE_DIMENSION && dim+1 < narg && list[dim+1]) {
