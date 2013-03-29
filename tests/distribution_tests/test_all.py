@@ -1,31 +1,7 @@
 import sys,os
 
-def addMDSplusToSysPath():
-  try:
-    f=open('/usr/local/mdsplus/.python_rpm_files_do_not_remove','r')
-    line=readline(f)
-    f.close()
-    sys.path.insert(0,os.path.dirname(line))
-    print "Added %s to sys.path" % (sys.path[0],)
-    return
-  except Exception,e:
-    print "Error processing recorded file list: %s\nTrying to find installed module next." % (str(e),)
-    pass
-  try:
-    from distutils.sysconfig import get_python_lib
-    for d in os.listdir(get_python_lib()):
-	if d.startswith('MDSplus'):
-	   sys.path.insert(0,d)
-           print "Added %s to sys.path" % (d,)
-  except Exception,e:
-    print "Error finding installed module. %s" % (str(e),)
-    pass
-
-
 def python_test():
-  addMDSplusToSysPath()
   import MDSplus
-  sys.path.insert(0,MDSplus.__path__[0])
   from unittest import TextTestRunner
   from MDSplus.tests import test_all
   t=TextTestRunner()
@@ -70,15 +46,6 @@ def test_solaris(WORKSPACE,FLAVOR):
     print "Error %s" % (e,)
   if not ok:
     sys.exit(1)
-
-def addMdsplusToSyspath():
-  try:
-    f=open('/usr/local/mdsplus/.python_install_files_do_not_remove','r')
-    line=readline(f)
-    f.close()
-    sys.path.insert(0,os.path.dirname(line))
-  except:
-    pass
 
 def test_rpms(WORKSPACE,FLAVOR):
   from rpm_install import rpm_install_tests,rpm_install,rpm_remove,initYum,cleanYum
