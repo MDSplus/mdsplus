@@ -2,6 +2,7 @@ import sys,os
 
 def python_test():
   import MDSplus
+  sys.path.insert(0,MDSplus.__path__[0])
   from unittest import TextTestRunner
   from MDSplus.tests import test_all
   t=TextTestRunner()
