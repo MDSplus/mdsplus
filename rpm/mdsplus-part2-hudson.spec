@@ -32,7 +32,7 @@ then
   rsync -a ${WORKSPACE}/i686/mdsplus/mdsobjects/python/dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
 else
   cd ${WORKSPACE}/i686/mdsplus
-  make install
+  env MDSPLUS_VERSION="--PYTHONFLAVOR----VERSION--.--RELEASE--" make install
   pushd mdsobjects/python
   python setup.py bdist_egg
   rsync -a dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
@@ -40,7 +40,7 @@ else
 fi
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+#rm -rf $RPM_BUILD_ROOT
 
 
 
