@@ -1,3 +1,15 @@
+2013-04-01 11:14  twf
+
+	* mdsobjects/python/setup.py (1.18):
+	
+	Fix getRelease logic
+
+2013-04-01 10:01  twf
+
+	* rpm/mdsplus-part2-hudson.spec (1.14):
+	
+	Fix python install
+
 2013-03-30 13:38  twf
 
 	* tests/distribution_tests/: test_all.py (beta.2), test_all.py
