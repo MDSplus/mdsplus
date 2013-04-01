@@ -1,3 +1,23 @@
+2013-03-30 13:38  twf
+
+	* tests/distribution_tests/: test_all.py (beta.2), test_all.py
+	(stable.[2,2]), test_all.py (1.14):
+	
+	Put back in path for tests
+
+2013-03-29 16:04  twf
+
+	* tests/distribution_tests/rpm_install.py (1.9):
+	
+	remove all MDSplus packages before doing tests
+
+2013-03-29 15:59  twf
+
+	* tests/distribution_tests/: test_all.py (beta.1), test_all.py
+	(stable.[1,1]):
+	
+	Do not need to muck with syspath
+
 2013-03-29 15:35  twf
 
 	* tests/distribution_tests/test_all.py (1.13):
