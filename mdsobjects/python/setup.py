@@ -1,45 +1,44 @@
 #!/usr/bin/env python
 import sys
+import os
 
 def getRelease():
+    if 'MDSPLUS_PYTHON_VERSION' in os.environ:
+	return (os.environ['MDSPLUS_PYTHON_VERSION'],'MDSplus')
     try:
-      import os
-      name='MDSplus'
-      release=None
-      while (len(sys.argv)) > 2:
-          if 'name=' in sys.argv[-1]:
-              name=sys.argv[-1].split('=')[1]
-              sys.argv=sys.argv[0:-1]
-          elif 'version=' in sys.argv[-1]:
-              release=sys.argv[2].split('=')[1]
-              sys.argv=sys.argv[0:-1]
-          else:
-              raise Exception('Unknown option: '+sys.argv[-1])
-      if release is not None:
-          return (release,name)
-      try:
         from mdsplus_version import mdsplus_version
         return (mdsplus_version,'MDSplus')
-      except:
+    except:
         pass
-      if 'MDSPLUS_PYTHON_VERSION' in os.environ:
-	return (os.environ['MDSPLUS_PYTHON_VERSION'],'MDSplus')
-      for flavor in ['','-beta','-alpha']:
-          f=os.popen("/bin/rpm -q mdsplus%s-python;echo $?" % (flavor,))
-          l=f.readlines()
-          f.close()
-          if l[1]=='0\n':
-              p=l[0].split('-')
-              for i in range(len(p)):
-                  if p[i]=='python':
-                      if p[i-1] != 'mdsplus':
-                          release=p[i-1]+'-'
-                      else:
-                          release=""
-                      release=release+p[i+1]+'-'+p[i+2][0:-1]
-                      return (release,'MDSplus')
-    except Exception,e:
-        print e
+    name='MDSplus'
+    remove_args=list()
+    release=None
+
+    for arg in sys.argv:
+        if arg.startswith('name='):
+            name=arg.split('=')[1]
+            remove_args.append(arg)
+        if arg.startswith('version='):
+            release=arg.split('=')[1]
+            remove_args.append(arg)
+    for arg in remove_args:
+        sys.argv.remove(arg)
+    if release is not None:
+        return (release,name)
+#      for flavor in ['','-beta','-alpha']:
+#          f=os.popen("/bin/rpm -q mdsplus%s-python;echo $?" % (flavor,))
+#          l=f.readlines()
+#          f.close()
+#          if l[1]=='0\n':
+#              p=l[0].split('-')
+#              for i in range(len(p)):
+#                  if p[i]=='python':
+#                      if p[i-1] != 'mdsplus':
+#                          release=p[i-1]+'-'
+#                      else:
+#                          release=""
+#                      release=release+p[i+1]+'-'+p[i+2][0:-1]
+#                      return (release,'MDSplus')
     return ('1.0','MDSplus')
 
 
