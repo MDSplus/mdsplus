@@ -1,3 +1,15 @@
+2013-04-01 14:57  twf
+
+	* rpm/subpackages/: python (beta.2), python (stable.[2,2]):
+	
+	Fix cleanup
+
+2013-04-01 14:06  twf
+
+	* rpm/subpackages/python (1.13):
+	
+	Fix file removal
+
 2013-04-01 11:14  twf
 
 	* mdsobjects/python/setup.py (1.18):
