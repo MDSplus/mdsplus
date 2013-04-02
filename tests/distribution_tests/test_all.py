@@ -1,8 +1,8 @@
 import sys,os
 from subprocess import Popen
 
-def python_test():
-   return Popen('./regression_test',shell=True).wait() == 0
+def python_test(cwd):
+   return Popen('./regression_test' % (WORKSPACE,),shell=True,cwd=cwd).wait() == 0
 
 def test_debian(WORKSPACE,FLAVOR):
   from debian_install import debian_install_tests,debian_install,debian_remove,initApt,cleanApt
@@ -13,7 +13,7 @@ def test_debian(WORKSPACE,FLAVOR):
     sys.stdout.flush()
     debian_install('mitdevices',FLAVOR)
     sys.stdout.flush()
-    ok=python_test()
+    ok=python_test(WORKSPACE+'/tests/distribution_tests')
     sys.stdout.flush()
     debian_remove('mitdevices',FLAVOR)
   except Exception,e:
@@ -33,7 +33,7 @@ def test_solaris(WORKSPACE,FLAVOR):
     for pkg in pkgs:
        install(pkg,FLAVOR)
     sys.stdout.flush()
-    ok=python_test()
+    ok=python_test(WORKSPACE+'/tests/distribution_tests')
     sys.stdout.flush()
     pkgs=list(pkgs)
     pkgs.reverse()
@@ -53,7 +53,7 @@ def test_rpms(WORKSPACE,FLAVOR):
     sys.stdout.flush()
     rpm_install('mitdevices',FLAVOR)
     sys.stdout.flush()
-    ok=python_test()
+    ok=python_test(WORKSPACE+'/x86_64/mdsplus/tests/distribution_tests')
     sys.stdout.flush()
     rpm_remove('mitdevices',FLAVOR)
     cleanYum()
