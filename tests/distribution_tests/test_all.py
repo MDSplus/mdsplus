@@ -2,7 +2,7 @@ import sys,os
 from subprocess import Popen
 
 def python_test(cwd):
-   return Popen('./regression_test' % (WORKSPACE,),shell=True,cwd=cwd).wait() == 0
+   return Popen('./regression_test',shell=True,cwd=cwd).wait() == 0
 
 def test_debian(WORKSPACE,FLAVOR):
   from debian_install import debian_install_tests,debian_install,debian_remove,initApt,cleanApt
