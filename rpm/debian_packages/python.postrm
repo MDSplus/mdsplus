@@ -1,0 +1,9 @@
+#!/bin/sh
+if [ -r /usr/local/mdsplus/.python_rpm_files_do_not_remove ]
+then
+  awk '{system("rm -f \""$0"\"")}' /usr/local/mdsplus/.python_rpm_files_do_not_remove
+  awk -F/ '{dir=""; for (i=2;i<NF-1;i++) {dir=dir "/" $i;} system("find " dir " -type d -empty -delete");exit}' /usr/local/mdsplus/.python_rpm_files_do_not_remove
+  rm -f /usr/local/mdsplus/.python_rpm_files_do_not_remove
+fi
+
+

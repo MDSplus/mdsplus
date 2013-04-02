@@ -1,2 +1,5 @@
 #!/bin/bash
-easy_install /usr/local/mdsplus/mdsobjects/python/dist/*.egg
+pushd /usr/local/mdsplus/mdsobjects/python >/dev/null 2>&1
+python setup.py install --record=/usr/local/mdsplus/.python_rpm_files_do_not_remove >/dev/null 2>&1
+popd >/dev/null 2>&1
+
