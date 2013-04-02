@@ -1,3 +1,103 @@
+2013-04-02 11:30  twf
+
+	* mdsobjects/python/: mdsplus_wsgi.py, tdipy.py, tree.py,
+	html/scope.html, js/mdsScope.js, wsgi/__init__.py,
+	wsgi/do1darray.py, wsgi/do1dsignal.py, wsgi/doEvent.py,
+	wsgi/doGetnid.py, wsgi/doImage.py, wsgi/doJavascripts.py,
+	wsgi/doMdsip.py, wsgi/doPlot.py, wsgi/doScope.py,
+	wsgi/doTreepath.py (stable.[1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]):
+	
+	Add wsgi support
+
+2013-04-02 11:28  twf
+
+	* mdsobjects/python/: mdsplus_wsgi.py, tdipy.py, tree.py,
+	html/scope.html, js/mdsScope.js, wsgi/__init__.py,
+	wsgi/do1darray.py, wsgi/do1dsignal.py, wsgi/doEvent.py,
+	wsgi/doGetnid.py, wsgi/doImage.py, wsgi/doJavascripts.py,
+	wsgi/doMdsip.py, wsgi/doPlot.py, wsgi/doScope.py,
+	wsgi/doTreepath.py (beta.[1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]):
+	
+	Add wsgi modules
+
+2013-04-02 10:48  twf
+
+	* tests/distribution_tests/: test_all.py (beta.4), test_all.py
+	(1.19):
+	
+	Fix regression test again
+
+2013-04-02 10:45  twf
+
+	* tests/distribution_tests/test_all.py (stable.4):
+	
+	Fix regression test again
+
+2013-04-02 10:27  twf
+
+	* tests/distribution_tests/regression_test (stable.2):
+	
+	Add regression test script
+
+2013-04-02 10:25  twf
+
+	* tests/distribution_tests/: regression_test, test_all.py
+	(beta.[2,3]), test_all.py (stable.[2,3,3]):
+	
+	Add regrestion test script
+
+2013-04-02 10:21  twf
+
+	* rpm/subpackages/python (1.14):
+	
+	no verify on rm
+
+2013-04-02 10:18  twf
+
+	* tests/distribution_tests/test_all.py (1.18):
+	
+	Fix location of regression test script
+
+2013-04-02 09:25  twf
+
+	* tests/distribution_tests/test_all.py (1.17):
+	
+	Always clean the apt directory
+
+2013-04-02 09:10  twf
+
+	* tests/distribution_tests/test_all.py (1.16):
+	
+	Add regression test
+
+2013-04-02 09:05  twf
+
+	* mdsobjects/python/: setup.py (beta.1), setup.py (stable.[1,1]),
+	setup.py (1.19):
+	
+	Fix getRelease
+
+2013-04-02 08:31  twf
+
+	* tests/distribution_tests/regression_test (stable.1):
+	
+	file regression_test was added on branch stable on 2013-04-02
+	14:27:04 +0000
+
+2013-04-02 08:31  twf
+
+	* tests/distribution_tests/regression_test (beta.1):
+	
+	file regression_test was added on branch beta on 2013-04-02
+	14:25:24 +0000
+
+2013-04-02 08:31  twf
+
+	* tests/distribution_tests/: regression_test (1.1), test_all.py
+	(1.15):
+	
+	Fix regression test
+
 2013-04-01 14:57  twf
 
 	* rpm/subpackages/: python (beta.2), python (stable.[2,2]):
@@ -372,9 +472,30 @@
 
 2013-03-01 16:51  twf
 
+	* mdsobjects/python/js/mdsScope.js (beta.1):
+	
+	file mdsScope.js was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-03-01 16:51  twf
+
+	* mdsobjects/python/js/mdsScope.js (stable.1):
+	
+	file mdsScope.js was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-03-01 16:51  twf
+
 	* mdsobjects/python/js/mdsScope.js (1.30):
 	
 	Fix events to have offsetX and offsetY
+
+2013-03-01 14:49  twf
+
+	* mdsobjects/python/html/scope.html (beta.1):
+	
+	file scope.html was added on branch beta on 2013-04-02 15:28:39
+	+0000
 
 2013-03-01 14:49  twf
 
@@ -382,11 +503,32 @@
 	
 	fix standardization problems for IE
 
+2013-03-01 14:49  twf
+
+	* mdsobjects/python/html/scope.html (stable.1):
+	
+	file scope.html was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
 2013-03-01 14:48  twf
 
 	* mdsobjects/python/wsgi/doScope.py (1.15):
 	
 	Need to look for panel before title because of panel titles
+
+2013-03-01 14:48  twf
+
+	* mdsobjects/python/wsgi/doScope.py (beta.1):
+	
+	file doScope.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-03-01 14:48  twf
+
+	* mdsobjects/python/wsgi/doScope.py (stable.1):
+	
+	file doScope.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
 
 2013-03-01 14:47  twf
 
@@ -419,6 +561,20 @@
 	* mdsobjects/python/wsgi/doEvent.py (1.5):
 	
 	Add noCache function used by other wsgis as well
+
+2013-03-01 10:34  twf
+
+	* mdsobjects/python/wsgi/doEvent.py (stable.1):
+	
+	file doEvent.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-03-01 10:34  twf
+
+	* mdsobjects/python/wsgi/doEvent.py (beta.1):
+	
+	file doEvent.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
 
 2013-03-01 08:38  manduchi
 
@@ -562,9 +718,23 @@
 
 2013-02-20 15:11  twf
 
+	* mdsobjects/python/wsgi/doMdsip.py (stable.1):
+	
+	file doMdsip.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-02-20 15:11  twf
+
 	* mdsobjects/python/wsgi/doMdsip.py (1.3):
 	
 	Import os and sys
+
+2013-02-20 15:11  twf
+
+	* mdsobjects/python/wsgi/doMdsip.py (beta.1):
+	
+	file doMdsip.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
 
 2013-02-20 14:56  twf
 
@@ -1055,6 +1225,104 @@
 
 2013-02-05 09:12  twf
 
+	* mdsobjects/python/wsgi/__init__.py (beta.1):
+	
+	file __init__.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doPlot.py (stable.1):
+	
+	file doPlot.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doPlot.py (beta.1):
+	
+	file doPlot.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/do1darray.py (beta.1):
+	
+	file do1darray.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doTreepath.py (beta.1):
+	
+	file doTreepath.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/do1dsignal.py (stable.1):
+	
+	file do1dsignal.py was added on branch stable on 2013-04-02
+	15:30:19 +0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doJavascripts.py (stable.1):
+	
+	file doJavascripts.py was added on branch stable on 2013-04-02
+	15:30:19 +0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doGetnid.py (stable.1):
+	
+	file doGetnid.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doGetnid.py (beta.1):
+	
+	file doGetnid.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doImage.py (stable.1):
+	
+	file doImage.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/do1dsignal.py (beta.1):
+	
+	file do1dsignal.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/do1darray.py (stable.1):
+	
+	file do1darray.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/__init__.py (stable.1):
+	
+	file __init__.py was added on branch stable on 2013-04-02 15:30:19
+	+0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doJavascripts.py (beta.1):
+	
+	file doJavascripts.py was added on branch beta on 2013-04-02
+	15:28:39 +0000
+
+2013-02-05 09:12  twf
+
 	* mdsobjects/python/: mdsplus_wsgi.py (1.5), setup.py (1.17),
 	html/scope.html (1.1), js/mdsScope.js (1.1), wsgi/__init__.py
 	(1.1), wsgi/do1darray.py (1.1), wsgi/do1dsignal.py (1.1),
@@ -1064,6 +1332,20 @@
 	(1.1):
 	
 	Add new wsgi request method support
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doTreepath.py (stable.1):
+	
+	file doTreepath.py was added on branch stable on 2013-04-02
+	15:30:19 +0000
+
+2013-02-05 09:12  twf
+
+	* mdsobjects/python/wsgi/doImage.py (beta.1):
+	
+	file doImage.py was added on branch beta on 2013-04-02 15:28:39
+	+0000
 
 2013-02-05 04:48  manduchi
 
