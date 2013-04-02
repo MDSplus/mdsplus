@@ -1,3 +1,10 @@
+2013-04-02 12:15  twf
+
+	* tests/distribution_tests/: test_all.py (beta.5), test_all.py
+	(stable.[5,5]), test_all.py (1.20):
+	
+	always cleanApt
+
 2013-04-02 11:30  twf
 
 	* mdsobjects/python/: mdsplus_wsgi.py, tdipy.py, tree.py,
