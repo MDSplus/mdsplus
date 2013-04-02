@@ -1,3 +1,21 @@
+2013-04-02 15:55  twf
+
+	* tests/distribution_tests/test_all.py (1.21):
+	
+	Fix regression testing
+
+2013-04-02 14:10  twf
+
+	* rpm/debian_packages/: python.postinst (1.4), python.postrm (1.1):
+	
+	Add cleanup
+
+2013-04-02 14:10  twf
+
+	* rpm/subpackages/python (1.15):
+	
+	Fix remove
+
 2013-04-02 12:15  twf
 
 	* tests/distribution_tests/: test_all.py (beta.5), test_all.py
