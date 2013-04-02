@@ -16,9 +16,10 @@ def test_debian(WORKSPACE,FLAVOR):
     ok=python_test()
     sys.stdout.flush()
     debian_remove('mitdevices',FLAVOR)
-    cleanApt()
   except Exception,e:
     print "Error %s" % (e,)
+  finally:
+    cleanApt()
   if not ok:
     sys.exit(1)
  
