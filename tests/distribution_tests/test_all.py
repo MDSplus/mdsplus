@@ -2,15 +2,7 @@ import sys,os
 from subprocess import Popen
 
 def python_test():
-   return Popen('%s/tests/distribution_tests/regression_test' % (WORKSPACE),shell=True).wait() == 0
-   return status == 0
-#  import MDSplus
-#  sys.path.insert(0,MDSplus.__path__[0])
-#  from unittest import TextTestRunner
-#  from MDSplus.tests import test_all
-#  t=TextTestRunner()
-#  result=t.run(test_all())
-#  return result.wasSuccessful()
+   return Popen('./regression_test',shell=True).wait() == 0
 
 def test_debian(WORKSPACE,FLAVOR):
   from debian_install import debian_install_tests,debian_install,debian_remove,initApt,cleanApt
