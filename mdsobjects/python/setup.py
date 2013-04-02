@@ -3,16 +3,9 @@ import sys
 import os
 
 def getRelease():
-    if 'MDSPLUS_PYTHON_VERSION' in os.environ:
-	return (os.environ['MDSPLUS_PYTHON_VERSION'],'MDSplus')
-    try:
-        from mdsplus_version import mdsplus_version
-        return (mdsplus_version,'MDSplus')
-    except:
-        pass
     name='MDSplus'
     remove_args=list()
-    release=None
+    release='1.0'
 
     for arg in sys.argv:
         if arg.startswith('name='):
@@ -23,23 +16,15 @@ def getRelease():
             remove_args.append(arg)
     for arg in remove_args:
         sys.argv.remove(arg)
-    if release is not None:
-        return (release,name)
-#      for flavor in ['','-beta','-alpha']:
-#          f=os.popen("/bin/rpm -q mdsplus%s-python;echo $?" % (flavor,))
-#          l=f.readlines()
-#          f.close()
-#          if l[1]=='0\n':
-#              p=l[0].split('-')
-#              for i in range(len(p)):
-#                  if p[i]=='python':
-#                      if p[i-1] != 'mdsplus':
-#                          release=p[i-1]+'-'
-#                      else:
-#                          release=""
-#                      release=release+p[i+1]+'-'+p[i+2][0:-1]
-#                      return (release,'MDSplus')
-    return ('1.0','MDSplus')
+
+    if 'MDSPLUS_PYTHON_VERSION' in os.environ:
+        release=os.environ['MDSPLUS_PYTHON_VERSION']
+    try:
+        from mdsplus_version import mdsplus_version
+        release=mdsplus_version
+    except:
+        pass
+    return (release,name)
 
 
 from setuptools import setup, Extension, find_packages
