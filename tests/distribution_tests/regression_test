@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 import MDSplus
 import sys
 sys.path.insert(0,MDSplus.__path__[0])
