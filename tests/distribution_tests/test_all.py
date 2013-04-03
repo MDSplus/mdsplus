@@ -33,7 +33,7 @@ def test_solaris(WORKSPACE,FLAVOR):
     for pkg in pkgs:
        install(pkg,FLAVOR)
     sys.stdout.flush()
-    ok=python_test(WORKSPACE+'/tests/distribution_tests')
+    ok=python_test(WORKSPACE+'/x86_64/mdsplus/tests/distribution_tests')
     sys.stdout.flush()
     pkgs=list(pkgs)
     pkgs.reverse()
