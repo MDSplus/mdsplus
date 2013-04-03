@@ -20,6 +20,7 @@ def test_debian(WORKSPACE,FLAVOR):
     print "Error %s" % (e,)
   cleanApt()
   if not ok:
+    print "Regression tests failed. Aborting build."
     sys.exit(1)
  
 def test_solaris(WORKSPACE,FLAVOR):
