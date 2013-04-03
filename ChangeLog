@@ -1,3 +1,41 @@
+2013-04-03 16:29  twf
+
+	* tests/distribution_tests/: test_all.py (beta.6), test_all.py
+	(stable.[6,7]):
+	
+	Fix solaris
+
+2013-04-03 14:31  twf
+
+	* tests/distribution_tests/test_all.py (1.23):
+	
+	Fix solaris tests
+
+2013-04-03 11:07  twf
+
+	* tests/distribution_tests/test_all.py (stable.6):
+	
+	fix solaris test
+
+2013-04-03 08:19  twf
+
+	* tests/distribution_tests/regression_test (stable.3):
+	
+	use /usr/bin/env
+
+2013-04-03 08:16  twf
+
+	* tests/distribution_tests/: regression_test (beta.3),
+	regression_test (1.2):
+	
+	use /usr/bin/env
+
+2013-04-03 08:07  twf
+
+	* tests/distribution_tests/test_all.py (1.22):
+	
+	Add test error message
+
 2013-04-02 15:55  twf
 
 	* tests/distribution_tests/test_all.py (1.21):
