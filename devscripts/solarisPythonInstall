@@ -9,6 +9,6 @@ else
   echo got here
   gawk '{system("rm -f \""$0"\"")}' $filelist
   gawk -F/ '{dir=""; for (i=2;i<NF-1;i++) {dir=dir "/" $i;} system("gfind " dir " -type d -empty -delete");exit}' $filelist
-  #rm -f $filelist
+  rm -f $filelist
 fi
 
