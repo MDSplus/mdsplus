@@ -1,0 +1,13 @@
+#!/bin/sh
+filelist=/tmp/python_installed_files
+if [ "$1" = "install" ]
+then
+  cd /usr/local/mdsplus/mdsobjects/python
+  python setup.py install --record=$filelist >/dev/null 2>&1
+  exit $?
+else
+  awk '{system("rm -f \""$0"\"")}' $filelist
+  awk -F/ '{dir=""; for (i=2;i<NF-1;i++) {dir=dir "/" $i;} system("find " dir " -type d -empty -delete");exit}' $filelist
+  rm -f $filelist
+fi
+
