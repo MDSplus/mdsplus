@@ -25,11 +25,7 @@ def install(pkg,FLAVOR):
       p.wait()
       os.environ['MDS_PATH']="/usr/local/mdsplus/tdi"
     elif pkg == "python":
-      for d1,d2,fn in os.walk('/usr/local/mdsplus/mdsobjects/python/dist'):
-	for f in fn:
-           if f.endswith('.egg'):
-             sys.path.insert(0,'/usr/local/mdsplus/mdsobjects/python/dist/'+f)
-             break
+      p=subprocess.Popen('sudo %s/x86_64/mdsplus/devscriptors/solarisPythonInstall install' % (WORKSPACE),shell=True)
     print "Successfully installed package %s" % (package,)
 
 def remove(pkg,FLAVOR):
@@ -41,6 +37,9 @@ def remove(pkg,FLAVOR):
     package='mdsplus%s' % (flav,)
   else:
     package='mdsplus%s-%s' % (flav,pkg)
+  if pkg == 'python':
+    p=subprocess.Popen('sudo %s/x86_64/mdsplus/devscriptors/solarisPythonInstall' % (WORKSPACE),shell=True)
+
   p=subprocess.Popen('sudo /usr/bin/pkg uninstall %s 2>&1' % (package,),stdout=subprocess.PIPE,shell=True,cwd=WORKSPACE)
   if p.wait() != 0:
     print p.stdout.read()
