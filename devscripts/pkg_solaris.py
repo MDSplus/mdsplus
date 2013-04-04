@@ -98,12 +98,12 @@ def makeSolarisPkgsCommand(args):
               pass
         prefix32="%s/i686/BUILDROOT/usr/local/mdsplus" %(WORKSPACE,)
         cmd='echo $PATH; cd ${WORKSPACE}/i686/mdsplus;' +\
+             'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
             './configure --enable-mdsip_connections --enable-nodebug ' +\
             '--with-jdk=$JDK_DIR --with-idl=$IDL_DIR --exec-prefix=%s --prefix=%s;' % (prefix32,prefix32) +\
              'if (! make clean ); then exit 1; fi; if ( ! make ); then exit 1; fi; if ( ! make install ); then exit 1; fi;' +\
              'olddir=$(pwd);' +\
              'cd mdsobjects/python;' +\
-             'export MDSPLUS_PYTHON_VERSION="%s%s-%s";' % (pythonflavor,VERSION,updates['python']['Release']) +\
              'rm -Rf dist;' +\
              'if ( ! python setup.py bdist_egg); then exit 1; fi;' +\
              'mkdir -p %s/mdsobjects/python;' % (prefix32,) +\
