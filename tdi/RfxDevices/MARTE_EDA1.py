@@ -9,12 +9,13 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
     	'rfpccPOhmMax','rfpccTauz','rfpccTaup','rfpccDeltaTBumpless','aaGain','invAAGain','rfpcc2VrtStar','rfpcc2PCATMaxOnTime','bvGain',
 	'maxPVATCurr','decouplerGain','compResGain','Kp','Ki','tStartEquilIntegralAction','minIpCurr','equilNonlinearFactorSaturation',
 	'fsMMFRT','fsBvRT','ffwdOn','fdbkOn','voltageControl','equiFlux','strainAlarmLatchTime','tokccVLoopThreshold ','tokccVRogThreshold ',
-        'EllipticityControl_ON', 'TStartEllipticityControl','TEndEllipticityControl','ElliRefDerLim','IfsCos2_distr','ElliIfsCos2RefSat', 'ElliFBON',
-        'TStartEllipticityIntegralAction','ElliIfsCos2IntSat','KiElli','KpElli','KdElli','TaudElli','ElliFFON ','ElliFFGAIN ','LeadLagElliON ',
-        'tauzElliFF','taupElliFF']
+        'EllipticityControl_ON', 'TStartEllipticityControl','TEndEllipticityControl','IfsCos2_distr','ElliIfsCos2RefSat', 'ElliFBON',
+        'TStartEllipticityIntegralAction','ElliIfsCos2IntSat','KiElli','KpElli','KdElli','ElliFFON','ElliFFGAIN','LeadLagElliON','TriangularityControl_ON',
+        'TStartTriangularityControl', 'TEndTriangularityControl','IfsCos3_distr','TriangIfsCos3RefSat','TriangFBON','TStartTriangularityIntegralAction',
+        'TriangIfsCos3IntSat','KiTriang','KpTriang','KdTriang','TriangFFON','TriangFFGAIN','LeadLagTriangON']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),0,0,0,0,0,0,0,
-        0,0.3,1.5,100.,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,
-        0, 1e-3, 0, 5.649E-5, 0, 50e-3, 20e-3] 
+        0,0.3,1.5,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,
+        0, 0, 5.649E-5, 0,   0,0.3,1.5,Data.compile('[0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315]'),500,0,0.3,300,150,7.5,0,0,5950,0] 
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
