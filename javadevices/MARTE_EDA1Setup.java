@@ -246,7 +246,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField100 = new DeviceField();
         deviceField101 = new DeviceField();
         deviceField102 = new DeviceField();
-        deviceField103 = new DeviceField();
         deviceField104 = new DeviceField();
         deviceTable3 = new DeviceTable();
         jTabbedPane3 = new javax.swing.JTabbedPane();
@@ -257,13 +256,29 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField108 = new DeviceField();
         deviceField109 = new DeviceField();
         deviceField110 = new DeviceField();
-        deviceField111 = new DeviceField();
         jPanel110 = new javax.swing.JPanel();
         deviceField112 = new DeviceField();
         deviceField113 = new DeviceField();
         deviceField114 = new DeviceField();
-        deviceField115 = new DeviceField();
-        deviceField116 = new DeviceField();
+        jPanel111 = new javax.swing.JPanel();
+        jPanel112 = new javax.swing.JPanel();
+        deviceField117 = new DeviceField();
+        deviceField118 = new DeviceField();
+        deviceField119 = new DeviceField();
+        deviceTable4 = new DeviceTable();
+        deviceField120 = new DeviceField();
+        jTabbedPane4 = new javax.swing.JTabbedPane();
+        jPanel113 = new javax.swing.JPanel();
+        deviceField121 = new DeviceField();
+        deviceField122 = new DeviceField();
+        deviceField123 = new DeviceField();
+        deviceField124 = new DeviceField();
+        deviceField125 = new DeviceField();
+        deviceField126 = new DeviceField();
+        jPanel114 = new javax.swing.JPanel();
+        deviceField127 = new DeviceField();
+        deviceField128 = new DeviceField();
+        deviceField129 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA1Setup");
@@ -1206,23 +1221,17 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField102.setOffsetNid(1561);
         jPanel108.add(deviceField102);
 
-        deviceField103.setIdentifier("");
-        deviceField103.setLabelString("ElliRefDerLimit");
-        deviceField103.setNumCols(4);
-        deviceField103.setOffsetNid(1567);
-        jPanel108.add(deviceField103);
-
         deviceField104.setIdentifier("");
         deviceField104.setLabelString("ElliIfsCos2RefSat:");
         deviceField104.setNumCols(4);
-        deviceField104.setOffsetNid(1579);
+        deviceField104.setOffsetNid(1573);
         jPanel108.add(deviceField104);
 
         deviceTable3.setIdentifier("");
         deviceTable3.setLabelString("IfsCos2:");
         deviceTable3.setNumCols(8);
         deviceTable3.setNumRows(1);
-        deviceTable3.setOffsetNid(1573);
+        deviceTable3.setOffsetNid(1567);
         deviceTable3.setPreferredColumnWidth(60);
         jPanel108.add(deviceTable3);
 
@@ -1231,82 +1240,162 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField105.setIdentifier("");
         deviceField105.setLabelString("ElliFBON:");
         deviceField105.setNumCols(2);
-        deviceField105.setOffsetNid(1585);
+        deviceField105.setOffsetNid(1579);
         jPanel109.add(deviceField105);
 
         deviceField106.setIdentifier("");
         deviceField106.setLabelString("TStartEllipticyIntegralAction: ");
         deviceField106.setNumCols(4);
-        deviceField106.setOffsetNid(1591);
+        deviceField106.setOffsetNid(1585);
         jPanel109.add(deviceField106);
 
         deviceField107.setIdentifier("");
         deviceField107.setLabelString("ElliIfsCos2IntSat:");
         deviceField107.setNumCols(4);
-        deviceField107.setOffsetNid(1597);
+        deviceField107.setOffsetNid(1591);
         jPanel109.add(deviceField107);
 
         deviceField108.setIdentifier("");
         deviceField108.setLabelString("KiElli: ");
         deviceField108.setNumCols(4);
-        deviceField108.setOffsetNid(1603);
+        deviceField108.setOffsetNid(1597);
         jPanel109.add(deviceField108);
 
         deviceField109.setIdentifier("");
         deviceField109.setLabelString("KpElli: ");
         deviceField109.setNumCols(4);
-        deviceField109.setOffsetNid(1609);
+        deviceField109.setOffsetNid(1603);
         jPanel109.add(deviceField109);
 
         deviceField110.setIdentifier("");
         deviceField110.setLabelString("KdElli:");
         deviceField110.setNumCols(4);
-        deviceField110.setOffsetNid(1615);
+        deviceField110.setOffsetNid(1609);
         jPanel109.add(deviceField110);
-
-        deviceField111.setIdentifier("");
-        deviceField111.setLabelString("TaudElli: ");
-        deviceField111.setNumCols(4);
-        deviceField111.setOffsetNid(1621);
-        jPanel109.add(deviceField111);
 
         jTabbedPane3.addTab("Feedback", jPanel109);
 
         deviceField112.setIdentifier("");
         deviceField112.setLabelString("ElliFFON: ");
         deviceField112.setNumCols(4);
-        deviceField112.setOffsetNid(1627);
+        deviceField112.setOffsetNid(1615);
         jPanel110.add(deviceField112);
 
         deviceField113.setIdentifier("");
         deviceField113.setLabelString("ElliFFGAIN:");
         deviceField113.setNumCols(4);
-        deviceField113.setOffsetNid(1633);
+        deviceField113.setOffsetNid(1621);
         jPanel110.add(deviceField113);
 
         deviceField114.setIdentifier("");
         deviceField114.setLabelString("LeadLagElliOn:");
         deviceField114.setNumCols(4);
-        deviceField114.setOffsetNid(1639);
+        deviceField114.setOffsetNid(1627);
         jPanel110.add(deviceField114);
-
-        deviceField115.setIdentifier("");
-        deviceField115.setLabelString("tauzElliFF:");
-        deviceField115.setNumCols(4);
-        deviceField115.setOffsetNid(1645);
-        jPanel110.add(deviceField115);
-
-        deviceField116.setIdentifier("");
-        deviceField116.setLabelString("taupElliFF:");
-        deviceField116.setNumCols(4);
-        deviceField116.setOffsetNid(1651);
-        jPanel110.add(deviceField116);
 
         jTabbedPane3.addTab("Feedforward", jPanel110);
 
         jPanel107.add(jTabbedPane3, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Ellipticy", jPanel107);
+
+        jPanel111.setLayout(new java.awt.BorderLayout());
+
+        deviceField117.setIdentifier("");
+        deviceField117.setLabelString("TriangularityControl_ON:");
+        deviceField117.setNumCols(3);
+        deviceField117.setOffsetNid(1633);
+        jPanel112.add(deviceField117);
+
+        deviceField118.setIdentifier("");
+        deviceField118.setLabelString("TStartTriangularityControl");
+        deviceField118.setNumCols(4);
+        deviceField118.setOffsetNid(1639);
+        jPanel112.add(deviceField118);
+
+        deviceField119.setIdentifier("");
+        deviceField119.setLabelString("TEndTriangularityControl: ");
+        deviceField119.setNumCols(4);
+        deviceField119.setOffsetNid(1645);
+        jPanel112.add(deviceField119);
+
+        deviceTable4.setIdentifier("");
+        deviceTable4.setLabelString("IfsCos3:");
+        deviceTable4.setNumCols(8);
+        deviceTable4.setNumRows(1);
+        deviceTable4.setOffsetNid(1651);
+        deviceTable4.setPreferredColumnWidth(60);
+        jPanel112.add(deviceTable4);
+
+        deviceField120.setIdentifier("");
+        deviceField120.setLabelString("TriangIfsCos3RefSat");
+        deviceField120.setNumCols(4);
+        deviceField120.setOffsetNid(1657);
+        jPanel112.add(deviceField120);
+
+        jPanel111.add(jPanel112, java.awt.BorderLayout.NORTH);
+
+        deviceField121.setIdentifier("");
+        deviceField121.setLabelString("TriangFBON");
+        deviceField121.setNumCols(4);
+        deviceField121.setOffsetNid(1663);
+        jPanel113.add(deviceField121);
+
+        deviceField122.setIdentifier("");
+        deviceField122.setLabelString("TStartTriangularityIntegralAction: ");
+        deviceField122.setNumCols(4);
+        deviceField122.setOffsetNid(1669);
+        jPanel113.add(deviceField122);
+
+        deviceField123.setIdentifier("");
+        deviceField123.setLabelString("TriangIfsCos3IntSat: ");
+        deviceField123.setNumCols(4);
+        deviceField123.setOffsetNid(1675);
+        jPanel113.add(deviceField123);
+
+        deviceField124.setIdentifier("");
+        deviceField124.setLabelString("KiTriang");
+        deviceField124.setNumCols(4);
+        deviceField124.setOffsetNid(1681);
+        jPanel113.add(deviceField124);
+
+        deviceField125.setIdentifier("");
+        deviceField125.setLabelString("KpTriang: ");
+        deviceField125.setNumCols(4);
+        deviceField125.setOffsetNid(1687);
+        jPanel113.add(deviceField125);
+
+        deviceField126.setIdentifier("");
+        deviceField126.setLabelString("KdTriang: ");
+        deviceField126.setNumCols(4);
+        deviceField126.setOffsetNid(1693);
+        jPanel113.add(deviceField126);
+
+        jTabbedPane4.addTab("Feedback", jPanel113);
+
+        deviceField127.setIdentifier("");
+        deviceField127.setLabelString("TriangFFON: ");
+        deviceField127.setNumCols(4);
+        deviceField127.setOffsetNid(1699);
+        jPanel114.add(deviceField127);
+
+        deviceField128.setIdentifier("");
+        deviceField128.setLabelString("TriangFFGAIN");
+        deviceField128.setNumCols(4);
+        deviceField128.setOffsetNid(1705);
+        jPanel114.add(deviceField128);
+
+        deviceField129.setIdentifier("");
+        deviceField129.setLabelString("LeadLagTriangON: ");
+        deviceField129.setNumCols(4);
+        deviceField129.setOffsetNid(1711);
+        jPanel114.add(deviceField129);
+
+        jTabbedPane4.addTab("FeedForward", jPanel114);
+
+        jPanel111.add(jTabbedPane4, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Triangularity", jPanel111);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -1322,7 +1411,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField100;
     private DeviceField deviceField101;
     private DeviceField deviceField102;
-    private DeviceField deviceField103;
     private DeviceField deviceField104;
     private DeviceField deviceField105;
     private DeviceField deviceField106;
@@ -1331,13 +1419,23 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField109;
     private DeviceField deviceField11;
     private DeviceField deviceField110;
-    private DeviceField deviceField111;
     private DeviceField deviceField112;
     private DeviceField deviceField113;
     private DeviceField deviceField114;
-    private DeviceField deviceField115;
-    private DeviceField deviceField116;
+    private DeviceField deviceField117;
+    private DeviceField deviceField118;
+    private DeviceField deviceField119;
     private DeviceField deviceField12;
+    private DeviceField deviceField120;
+    private DeviceField deviceField121;
+    private DeviceField deviceField122;
+    private DeviceField deviceField123;
+    private DeviceField deviceField124;
+    private DeviceField deviceField125;
+    private DeviceField deviceField126;
+    private DeviceField deviceField127;
+    private DeviceField deviceField128;
+    private DeviceField deviceField129;
     private DeviceField deviceField13;
     private DeviceField deviceField14;
     private DeviceField deviceField15;
@@ -1436,6 +1534,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
+    private DeviceTable deviceTable4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel100;
@@ -1450,6 +1549,10 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel109;
     private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel110;
+    private javax.swing.JPanel jPanel111;
+    private javax.swing.JPanel jPanel112;
+    private javax.swing.JPanel jPanel113;
+    private javax.swing.JPanel jPanel114;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
@@ -1550,6 +1653,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
+    private javax.swing.JTabbedPane jTabbedPane4;
     // End of variables declaration//GEN-END:variables
 
 }
