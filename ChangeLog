@@ -1,3 +1,77 @@
+2013-04-08 08:21  manduchi
+
+	* tdi/RfxDevices/MARTE_EDA1.py (1.9):
+	
+	Added trangularity control
+
+2013-04-08 08:16  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.11), MARTE_EDA1Setup.java
+	(1.11):
+	
+	Added triangularity control
+
+2013-04-08 03:53  manduchi
+
+	* tdi/RfxDevices/: MarteAbortAllarmeSforzi.fun (1.1),
+	MarteAbortBrad.fun (1.1), MarteAbortI2t.fun (1.1),
+	MarteAbortRequestOPC.fun (1.1):
+	
+	Support function for MARTe abort request logging
+
+2013-04-04 15:49  twf
+
+	* devscripts/: pkg_solaris.py, solarisPythonInstall (beta.[3,3]),
+	pkg_solaris.py, solarisPythonInstall (stable.[3,3,3,3]):
+	
+	Fix solaris python handling
+
+2013-04-04 15:48  twf
+
+	* devscripts/pkg_solaris.py (1.46):
+	
+	set MDSPLUS_PYTHON_VERSION earlier for make install
+
+2013-04-04 15:23  twf
+
+	* devscripts/: solarisPythonInstall (1.2), solarisPythonInstall
+	(1.3):
+	
+	Use gawk and gfind
+
+2013-04-04 13:40  twf
+
+	* tests/distribution_tests/solaris_install.py (1.8):
+	
+	Fix python install
+
+2013-04-04 11:42  twf
+
+	* tests/distribution_tests/solaris_install.py (1.7):
+	
+	Fix regression test on solaris
+
+2013-04-04 11:29  twf
+
+	* devscripts/: solarisPythonInstall (beta.2), solarisPythonInstall
+	(stable.[2,2]), solarisPythonInstall (1.1):
+	
+	Fix regresion testing on solaris
+
+2013-04-04 11:29  twf
+
+	* devscripts/solarisPythonInstall (beta.1):
+	
+	file solarisPythonInstall was added on branch beta on 2013-04-04
+	15:29:51 +0000
+
+2013-04-04 11:29  twf
+
+	* devscripts/solarisPythonInstall (stable.1):
+	
+	file solarisPythonInstall was added on branch stable on 2013-04-04
+	15:30:10 +0000
+
 2013-04-03 16:29  twf
 
 	* tests/distribution_tests/: test_all.py (beta.6), test_all.py
