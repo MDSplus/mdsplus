@@ -104,11 +104,13 @@ STATIC_ROUTINE  int       compress(
     switch (pwork->class)
     {
      case CLASS_APD:
-      pd1 = (struct descriptor *) pwork->pointer;
+//      pd1 = (struct descriptor *) pwork->pointer;
+      ppd = (struct descriptor **) pwork->pointer;
       j = (long) ((struct descriptor_a *) pwork)->arsize / (long) pwork->length;
       for (; --j >= 0 && status & 1;)
-	if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
-	  status = stat1;
+//	if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
+		if ((stat1 = compress(pcimage, pcentry, delta, ppd++)) != 1)
+			status = stat1;
       break;
      case CLASS_CA:
       if (pwork->pointer)
