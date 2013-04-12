@@ -1,7 +1,8 @@
 public fun bRadCheck(in _save, optional _debug)
 {
 
-	_PLASMA_CURRENT_LEVEL = 100000;
+	 _PLASMA_CURRENT_LEVEL = 100000;
+
 
 
 	_START_TIME = -1.0;
@@ -43,12 +44,25 @@ public fun bRadCheck(in _save, optional _debug)
 
 	_warningSigs_inout = [];
 
-	write(*, "CHECK Saturazioni correnti PR & Corrente nulla su bobina");
 
+	_prIsOn = (getnci(\RFX::T_START_PR, "STATE") == 0 );
+
+
+	if( ! _prIsOn ) 
+	{
+		write(*, "PR trigger off check correnti e saturazione non eseguiti");
+		return ( _error );	
+	}
+
+
+	write(*, "CHECK Saturazioni correnti PR & Corrente nulla su bobina");
 	
 	/*
 	_PrMaxCurrent = 330;
 	*/
+
+
+
 
 	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 9];
 	_level = _PrMaxCurrent * 0.9;
@@ -68,13 +82,13 @@ public fun bRadCheck(in _save, optional _debug)
 	
 				if( _h < 10)
             {
-					_sigName = "\\PR"//trim(adjustl(_i))//"G_I0"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
-					_sigNameRef = "\\PR"//trim(adjustl(_i))//"G_R0"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
+					_sigName = "\\PR"//trim(adjustl(_i))//"G_I0"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA[\\T_START_PR:\\T_STOP_PR:*]";
+					_sigNameRef = "\\PR"//trim(adjustl(_i))//"G_R0"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA[\\T_START_PR:\\T_STOP_PR:*]";
             }
 				else
             {
-					_sigName = "\\PR"//trim(adjustl(_i))//"G_I"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
-					_sigNameRef = "\\PR"//trim(adjustl(_i))//"G_R"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA";
+					_sigName = "\\PR"//trim(adjustl(_i))//"G_I"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA[\\T_START_PR:\\T_STOP_PR:*]";
+					_sigNameRef = "\\PR"//trim(adjustl(_i))//"G_R"//trim(adjustl(_h))//trim(adjustl( _k ))//"VA[\\T_START_PR:\\T_STOP_PR:*]";
             }
 
 				_signal = execute(_sigName);
@@ -98,19 +112,26 @@ public fun bRadCheck(in _save, optional _debug)
 				}
 
 
-				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) ) )
-
+				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) || ( _h == 22 && _k == 3 ) ) )
 				{
 					_signalRef = execute(_sigNameRef);
   					_yRef = abs( data(_signalRef) );
-            		_val = sum( ( _yRef > 1. ) * 1.0 );
-
+            		_val = sum( ( _yRef > .8 ) * 1.0 );
+			
 
             		if( _val > 100 )
             		{
 
-               			if ( sum( ( _y > 20. ) * 1.0 ) < 10 )
+/*
+write(*,  " signal "//_sigName//" "//sum( ( _y > 20. ) * 1.0 )//" ref "//( _val - 400 ) );
+*/
+               			if ( sum( ( _y > 20. ) * 1.0 ) < ( _val - 400 ) ) 
                			{
+
+/*
+write(*,  " signal "//sum( ( _y > 20. ) * 1.0 )//" ref "//( _val - 400 ) );
+*/
+
 /*
 					   		if( PRESENT( _debug ) )
 */
@@ -131,7 +152,7 @@ public fun bRadCheck(in _save, optional _debug)
 	_pCurrX = fs_float( dim_of( _pcurr ) );
 	
 	if( maxval( _pCurrY ) < _PLASMA_CURRENT_LEVEL )
-		return ( 1 );
+		return ( int( _error ) );
 
 /*
 	_st = fs_float( _pCurrX[0] );
