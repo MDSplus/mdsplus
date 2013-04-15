@@ -196,6 +196,68 @@ public class MARTE_EDA3Setup extends DeviceSetup {
         deviceField147 = new DeviceField();
         jPanel147 = new javax.swing.JPanel();
         deviceField148 = new DeviceField();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        jPanel10 = new javax.swing.JPanel();
+        jPanel65 = new javax.swing.JPanel();
+        jPanel101 = new javax.swing.JPanel();
+        deviceField149 = new DeviceField();
+        jPanel102 = new javax.swing.JPanel();
+        deviceField150 = new DeviceField();
+        jPanel66 = new javax.swing.JPanel();
+        jPanel103 = new javax.swing.JPanel();
+        deviceField151 = new DeviceField();
+        jPanel148 = new javax.swing.JPanel();
+        deviceField152 = new DeviceField();
+        jPanel67 = new javax.swing.JPanel();
+        jPanel149 = new javax.swing.JPanel();
+        deviceField153 = new DeviceField();
+        jPanel150 = new javax.swing.JPanel();
+        deviceField154 = new DeviceField();
+        jPanel68 = new javax.swing.JPanel();
+        jPanel151 = new javax.swing.JPanel();
+        deviceField155 = new DeviceField();
+        jPanel152 = new javax.swing.JPanel();
+        deviceField156 = new DeviceField();
+        jPanel69 = new javax.swing.JPanel();
+        jPanel153 = new javax.swing.JPanel();
+        deviceField157 = new DeviceField();
+        jPanel154 = new javax.swing.JPanel();
+        deviceField158 = new DeviceField();
+        jPanel70 = new javax.swing.JPanel();
+        jPanel155 = new javax.swing.JPanel();
+        deviceField159 = new DeviceField();
+        jPanel156 = new javax.swing.JPanel();
+        deviceField160 = new DeviceField();
+        jPanel71 = new javax.swing.JPanel();
+        jPanel157 = new javax.swing.JPanel();
+        deviceField161 = new DeviceField();
+        jPanel158 = new javax.swing.JPanel();
+        deviceField162 = new DeviceField();
+        jPanel72 = new javax.swing.JPanel();
+        jPanel159 = new javax.swing.JPanel();
+        deviceField163 = new DeviceField();
+        jPanel160 = new javax.swing.JPanel();
+        deviceField164 = new DeviceField();
+        jPanel73 = new javax.swing.JPanel();
+        jPanel161 = new javax.swing.JPanel();
+        deviceField165 = new DeviceField();
+        jPanel162 = new javax.swing.JPanel();
+        deviceField166 = new DeviceField();
+        jPanel74 = new javax.swing.JPanel();
+        jPanel163 = new javax.swing.JPanel();
+        deviceField167 = new DeviceField();
+        jPanel164 = new javax.swing.JPanel();
+        deviceField168 = new DeviceField();
+        jPanel75 = new javax.swing.JPanel();
+        jPanel165 = new javax.swing.JPanel();
+        deviceField169 = new DeviceField();
+        jPanel166 = new javax.swing.JPanel();
+        deviceField170 = new DeviceField();
+        jPanel76 = new javax.swing.JPanel();
+        jPanel167 = new javax.swing.JPanel();
+        deviceField171 = new DeviceField();
+        jPanel168 = new javax.swing.JPanel();
+        deviceField172 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA3Setup");
@@ -914,6 +976,267 @@ public class MARTE_EDA3Setup extends DeviceSetup {
 
         jTabbedPane2.addTab("F Ref", jPanel64);
 
+        jScrollPane4.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        jPanel10.setPreferredSize(new java.awt.Dimension(200, 3000));
+        jPanel10.setLayout(new java.awt.GridLayout(12, 1));
+
+        jPanel65.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
+        jPanel65.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField149.setIdentifier("");
+        deviceField149.setLabelString("Y: ");
+        deviceField149.setNumCols(30);
+        deviceField149.setOffsetNid(3001);
+        jPanel101.add(deviceField149);
+
+        jPanel65.add(jPanel101);
+
+        deviceField150.setIdentifier("");
+        deviceField150.setLabelString("X: ");
+        deviceField150.setNumCols(30);
+        deviceField150.setOffsetNid(3000);
+        jPanel102.add(deviceField150);
+
+        jPanel65.add(jPanel102);
+
+        jPanel10.add(jPanel65);
+
+        jPanel66.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
+        jPanel66.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField151.setIdentifier("");
+        deviceField151.setLabelString("Y: ");
+        deviceField151.setNumCols(30);
+        deviceField151.setOffsetNid(3006);
+        jPanel103.add(deviceField151);
+
+        jPanel66.add(jPanel103);
+
+        deviceField152.setIdentifier("");
+        deviceField152.setLabelString("X: ");
+        deviceField152.setNumCols(30);
+        deviceField152.setOffsetNid(3005);
+        jPanel148.add(deviceField152);
+
+        jPanel66.add(jPanel148);
+
+        jPanel10.add(jPanel66);
+
+        jPanel67.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
+        jPanel67.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField153.setIdentifier("");
+        deviceField153.setLabelString("Y: ");
+        deviceField153.setNumCols(30);
+        deviceField153.setOffsetNid(3011);
+        jPanel149.add(deviceField153);
+
+        jPanel67.add(jPanel149);
+
+        deviceField154.setIdentifier("");
+        deviceField154.setLabelString("X: ");
+        deviceField154.setNumCols(30);
+        deviceField154.setOffsetNid(3010);
+        jPanel150.add(deviceField154);
+
+        jPanel67.add(jPanel150);
+
+        jPanel10.add(jPanel67);
+
+        jPanel68.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
+        jPanel68.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField155.setIdentifier("");
+        deviceField155.setLabelString("Y: ");
+        deviceField155.setNumCols(30);
+        deviceField155.setOffsetNid(3016);
+        jPanel151.add(deviceField155);
+
+        jPanel68.add(jPanel151);
+
+        deviceField156.setIdentifier("");
+        deviceField156.setLabelString("X: ");
+        deviceField156.setNumCols(30);
+        deviceField156.setOffsetNid(3015);
+        jPanel152.add(deviceField156);
+
+        jPanel68.add(jPanel152);
+
+        jPanel10.add(jPanel68);
+
+        jPanel69.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
+        jPanel69.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField157.setIdentifier("");
+        deviceField157.setLabelString("Y: ");
+        deviceField157.setNumCols(30);
+        deviceField157.setOffsetNid(3021);
+        jPanel153.add(deviceField157);
+
+        jPanel69.add(jPanel153);
+
+        deviceField158.setIdentifier("");
+        deviceField158.setLabelString("X: ");
+        deviceField158.setNumCols(30);
+        deviceField158.setOffsetNid(3020);
+        jPanel154.add(deviceField158);
+
+        jPanel69.add(jPanel154);
+
+        jPanel10.add(jPanel69);
+
+        jPanel70.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
+        jPanel70.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField159.setIdentifier("");
+        deviceField159.setLabelString("Y: ");
+        deviceField159.setNumCols(30);
+        deviceField159.setOffsetNid(3026);
+        jPanel155.add(deviceField159);
+
+        jPanel70.add(jPanel155);
+
+        deviceField160.setIdentifier("");
+        deviceField160.setLabelString("X: ");
+        deviceField160.setNumCols(30);
+        deviceField160.setOffsetNid(3025);
+        jPanel156.add(deviceField160);
+
+        jPanel70.add(jPanel156);
+
+        jPanel10.add(jPanel70);
+
+        jPanel71.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
+        jPanel71.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField161.setIdentifier("");
+        deviceField161.setLabelString("Y: ");
+        deviceField161.setNumCols(30);
+        deviceField161.setOffsetNid(3031);
+        jPanel157.add(deviceField161);
+
+        jPanel71.add(jPanel157);
+
+        deviceField162.setIdentifier("");
+        deviceField162.setLabelString("X: ");
+        deviceField162.setNumCols(30);
+        deviceField162.setOffsetNid(3030);
+        jPanel158.add(deviceField162);
+
+        jPanel71.add(jPanel158);
+
+        jPanel10.add(jPanel71);
+
+        jPanel72.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
+        jPanel72.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField163.setIdentifier("");
+        deviceField163.setLabelString("Y: ");
+        deviceField163.setNumCols(30);
+        deviceField163.setOffsetNid(3036);
+        jPanel159.add(deviceField163);
+
+        jPanel72.add(jPanel159);
+
+        deviceField164.setIdentifier("");
+        deviceField164.setLabelString("X: ");
+        deviceField164.setNumCols(30);
+        deviceField164.setOffsetNid(3035);
+        jPanel160.add(deviceField164);
+
+        jPanel72.add(jPanel160);
+
+        jPanel10.add(jPanel72);
+
+        jPanel73.setBorder(javax.swing.BorderFactory.createTitledBorder("9"));
+        jPanel73.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField165.setIdentifier("");
+        deviceField165.setLabelString("Y: ");
+        deviceField165.setNumCols(30);
+        deviceField165.setOffsetNid(3041);
+        jPanel161.add(deviceField165);
+
+        jPanel73.add(jPanel161);
+
+        deviceField166.setIdentifier("");
+        deviceField166.setLabelString("X: ");
+        deviceField166.setNumCols(30);
+        deviceField166.setOffsetNid(3040);
+        jPanel162.add(deviceField166);
+
+        jPanel73.add(jPanel162);
+
+        jPanel10.add(jPanel73);
+
+        jPanel74.setBorder(javax.swing.BorderFactory.createTitledBorder("10"));
+        jPanel74.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField167.setIdentifier("");
+        deviceField167.setLabelString("Y: ");
+        deviceField167.setNumCols(30);
+        deviceField167.setOffsetNid(3046);
+        jPanel163.add(deviceField167);
+
+        jPanel74.add(jPanel163);
+
+        deviceField168.setIdentifier("");
+        deviceField168.setLabelString("X: ");
+        deviceField168.setNumCols(30);
+        deviceField168.setOffsetNid(3045);
+        jPanel164.add(deviceField168);
+
+        jPanel74.add(jPanel164);
+
+        jPanel10.add(jPanel74);
+
+        jPanel75.setBorder(javax.swing.BorderFactory.createTitledBorder("11"));
+        jPanel75.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField169.setIdentifier("");
+        deviceField169.setLabelString("Y: ");
+        deviceField169.setNumCols(30);
+        deviceField169.setOffsetNid(3051);
+        jPanel165.add(deviceField169);
+
+        jPanel75.add(jPanel165);
+
+        deviceField170.setIdentifier("");
+        deviceField170.setLabelString("X: ");
+        deviceField170.setNumCols(30);
+        deviceField170.setOffsetNid(3050);
+        jPanel166.add(deviceField170);
+
+        jPanel75.add(jPanel166);
+
+        jPanel10.add(jPanel75);
+
+        jPanel76.setBorder(javax.swing.BorderFactory.createTitledBorder("12"));
+        jPanel76.setLayout(new java.awt.GridLayout(2, 1));
+
+        deviceField171.setIdentifier("");
+        deviceField171.setLabelString("Y: ");
+        deviceField171.setNumCols(30);
+        deviceField171.setOffsetNid(3056);
+        jPanel167.add(deviceField171);
+
+        jPanel76.add(jPanel167);
+
+        deviceField172.setIdentifier("");
+        deviceField172.setLabelString("X: ");
+        deviceField172.setNumCols(30);
+        deviceField172.setOffsetNid(3055);
+        jPanel168.add(deviceField172);
+
+        jPanel76.add(jPanel168);
+
+        jPanel10.add(jPanel76);
+
+        jScrollPane4.setViewportView(jPanel10);
+
+        jTabbedPane2.addTab("FeedForward Refs", jScrollPane4);
+
         jPanel1.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -974,6 +1297,30 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField146;
     private DeviceField deviceField147;
     private DeviceField deviceField148;
+    private DeviceField deviceField149;
+    private DeviceField deviceField150;
+    private DeviceField deviceField151;
+    private DeviceField deviceField152;
+    private DeviceField deviceField153;
+    private DeviceField deviceField154;
+    private DeviceField deviceField155;
+    private DeviceField deviceField156;
+    private DeviceField deviceField157;
+    private DeviceField deviceField158;
+    private DeviceField deviceField159;
+    private DeviceField deviceField160;
+    private DeviceField deviceField161;
+    private DeviceField deviceField162;
+    private DeviceField deviceField163;
+    private DeviceField deviceField164;
+    private DeviceField deviceField165;
+    private DeviceField deviceField166;
+    private DeviceField deviceField167;
+    private DeviceField deviceField168;
+    private DeviceField deviceField169;
+    private DeviceField deviceField170;
+    private DeviceField deviceField171;
+    private DeviceField deviceField172;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -997,7 +1344,11 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField98;
     private DeviceField deviceField99;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel100;
+    private javax.swing.JPanel jPanel101;
+    private javax.swing.JPanel jPanel102;
+    private javax.swing.JPanel jPanel103;
     private javax.swing.JPanel jPanel104;
     private javax.swing.JPanel jPanel105;
     private javax.swing.JPanel jPanel106;
@@ -1044,8 +1395,29 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel145;
     private javax.swing.JPanel jPanel146;
     private javax.swing.JPanel jPanel147;
+    private javax.swing.JPanel jPanel148;
+    private javax.swing.JPanel jPanel149;
     private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel150;
+    private javax.swing.JPanel jPanel151;
+    private javax.swing.JPanel jPanel152;
+    private javax.swing.JPanel jPanel153;
+    private javax.swing.JPanel jPanel154;
+    private javax.swing.JPanel jPanel155;
+    private javax.swing.JPanel jPanel156;
+    private javax.swing.JPanel jPanel157;
+    private javax.swing.JPanel jPanel158;
+    private javax.swing.JPanel jPanel159;
     private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel160;
+    private javax.swing.JPanel jPanel161;
+    private javax.swing.JPanel jPanel162;
+    private javax.swing.JPanel jPanel163;
+    private javax.swing.JPanel jPanel164;
+    private javax.swing.JPanel jPanel165;
+    private javax.swing.JPanel jPanel166;
+    private javax.swing.JPanel jPanel167;
+    private javax.swing.JPanel jPanel168;
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
@@ -1077,7 +1449,19 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel62;
     private javax.swing.JPanel jPanel63;
     private javax.swing.JPanel jPanel64;
+    private javax.swing.JPanel jPanel65;
+    private javax.swing.JPanel jPanel66;
+    private javax.swing.JPanel jPanel67;
+    private javax.swing.JPanel jPanel68;
+    private javax.swing.JPanel jPanel69;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel70;
+    private javax.swing.JPanel jPanel71;
+    private javax.swing.JPanel jPanel72;
+    private javax.swing.JPanel jPanel73;
+    private javax.swing.JPanel jPanel74;
+    private javax.swing.JPanel jPanel75;
+    private javax.swing.JPanel jPanel76;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JPanel jPanel95;
@@ -1087,6 +1471,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel99;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JTabbedPane jTabbedPane2;
     // End of variables declaration//GEN-END:variables
 

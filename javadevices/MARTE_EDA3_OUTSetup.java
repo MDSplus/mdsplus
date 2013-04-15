@@ -116,7 +116,7 @@ public class MARTE_EDA3_OUTSetup extends DeviceSetup {
         deviceTable3.setIdentifier("");
         deviceTable3.setLabelString("Mapping:");
         deviceTable3.setNumCols(1);
-        deviceTable3.setNumRows(24);
+        deviceTable3.setNumRows(36);
         deviceTable3.setOffsetNid(1339);
         deviceTable3.setPreferredColumnWidth(60);
         deviceTable3.setPreferredHeight(200);
@@ -131,7 +131,7 @@ public class MARTE_EDA3_OUTSetup extends DeviceSetup {
         deviceTable1.setDisplayRowNumber(true);
         deviceTable1.setIdentifier("");
         deviceTable1.setNumCols(2);
-        deviceTable1.setNumRows(24);
+        deviceTable1.setNumRows(36);
         deviceTable1.setOffsetNid(11);
         deviceTable1.setUseExpressions(true);
         jPanel10.add(deviceTable1, java.awt.BorderLayout.CENTER);
