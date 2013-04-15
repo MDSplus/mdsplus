@@ -42,7 +42,10 @@ class MARTE_EDA3(MARTE_GENERIC.MARTE_GENERIC):
 		'ppTorInvCurrentRefs_11','ppTorInvCurrentRefs_12','capacitorsVoltageRefs_1','capacitorsVoltageRefs_2','capacitorsVoltageRefs_3',
 		'capacitorsVoltageRefs_4','capacitorsVoltageRefs_5',
 		'capacitorsVoltageRefs_6','capacitorsVoltageRefs_7','capacitorsVoltageRefs_8','capacitorsVoltageRefs_9','capacitorsVoltageRefs_10',
-		'capacitorsVoltageRefs_11','capacitorsVoltageRefs_12', 'fRef']  
+		'capacitorsVoltageRefs_11','capacitorsVoltageRefs_12', 'fRef',
+                'ppTorInvVoltageRefs_1','ppTorInvVoltageRefs_2','ppTorInvVoltageRefs_3','ppTorInvVoltageRefs_4','ppTorInvVoltageRefs_5',
+		'ppTorInvVoltageRefs_6','ppTorInvVoltageRefs_7','ppTorInvVoltageRefs_8','ppTorInvVoltageRefs_9','ppTorInvVoltageRefs_10',
+		'ppTorInvVoltageRefs_11','ppTorInvVoltageRefs_12']  
  
     parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(waveParNames)})
     print i, ' WAVES'
