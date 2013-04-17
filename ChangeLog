@@ -1,3 +1,23 @@
+2013-04-17 16:50  twf
+
+	* mdsobjects/python/: _descriptor.py (1.29), _mdsdtypes.py (1.8),
+	_mdsshr.py (1.15), _tdishr.py (1.11), _treeshr.py (1.30), apd.py
+	(1.11), compound.py (1.16), connection.py (1.11), event.py (1.11),
+	mdsarray.py (1.7), mdsdata.py (1.17), mdsdevice.py (1.16),
+	mdsscalar.py (1.8), setup.py (1.20), tdipy.py (1.6), tree.py
+	(1.24), treenode.py (1.34), _opcodes/__init__.py (1.3),
+	_opcodes/opcodes.py (1.7), tests/__init__.py (1.12),
+	tests/dataUnitTest.py (1.7), tests/threadsUnitTest.py (1.4),
+	tests/treeUnitTest.py (1.9):
+	
+	Make it work with python3
+
+2013-04-17 12:14  manduchi
+
+	* javatraverser/DeviceTable.java (1.37):
+	
+	Fix parsing of arrays
+
 2013-04-15 09:16  manduchi
 
 	* javadevices/: MARTE_EDA3Setup.form (1.3), MARTE_EDA3Setup.java
