@@ -389,7 +389,9 @@ class dataTests(TestCase):
         try:
             Data.execute('abort()')
             self.fail("Abort did not signal an error")
-        except Exception,e:
+        except Exception:
+            import sys
+            e=sys.exc_info()[1]
             self.assertEqual(str(e),'%TDI-E-TdiABORT, Program requested abort')
 
         """Test abs"""
@@ -503,86 +505,86 @@ def suite():
 
 def test():
     """Exercise data operations"""
-    print abs(makeData(-10))
+    print (abs(makeData(-10)))
     x=makeDataArray([29,30,31])
     y=makeDataArray([2,4,8])
-    print x+y
-    print x-y
-    print x&y
-    print x==y
-    print x>y
-    print x>=y
-    print x<y
-    print x<=y
-    print x%y
-    print x!=y
-    print -x
-    print x!=0
-    print x|y
-    print +x
-    print x*y
-    print x/y
-    print x//y
-    print x<<y
-    print x>>y
-    print abs(makeData(-10))
-    print float(x)
-    print int(x)
-    print x.getDouble()
-    print x.decompile()
-    print x
-    print x.evaluate()
-    print x.getByte()
-    print x.getInt()
-    print x.getShape()
-    print x.getByteArray()
-    print x.getShortArray()
-    print x.getIntArray()
-    print x.getLongArray()
-    print x.getString()
-    print x.getUnits()
+    print (x+y)
+    print (x-y)
+    print (x&y)
+    print (x==y)
+    print (x>y)
+    print (x>=y)
+    print (x<y)
+    print (x<=y)
+    print (x%y)
+    print (x!=y)
+    print (-x)
+    print (x!=0)
+    print (x|y)
+    print (+x)
+    print (x*y)
+    print (x/y)
+    print (x//y)
+    print (x<<y)
+    print (x>>y)
+    print (abs(makeData(-10)))
+    print (float(x))
+    print (int(x))
+    print (x.getDouble())
+    print (x.decompile())
+    print (x)
+    print (x.evaluate())
+    print (x.getByte())
+    print (x.getInt())
+    print (x.getShape())
+    print (x.getByteArray())
+    print (x.getShortArray())
+    print (x.getIntArray())
+    print (x.getLongArray())
+    print (x.getString())
+    print (x.getUnits())
     x.setUnits('amps')
-    print x.getUnits()
+    print (x.getUnits())
     x.setError(42)
-    print x.getError()
+    print (x.getError())
     x.setHelp('This is help')
-    print x.getHelp()
+    print (x.getHelp())
     x=Data.execute('data(1:100.)')
-    print x+y
-    print x-y
-    print x&y
-    print x==y
-    print x>y
-    print x>=y
-    print x<y
-    print x<=y
-    print x%y
-    print x!=y
-    print -x
-    print x!=0
-    print x|y
-    print +x
-    print x*y
-    print x/y
-    print x//y
-    print x<<y
-    print x>>y
-    print abs(makeData(-10))
-    print float(x)
-    print x.decompile()
-    print x
-    print x.evaluate()
-    print x.getShape()
-    print x.getByteArray()
-    print x.getShortArray()
-    print x.getIntArray()
-    print x.getLongArray()
-    print x.getString()
-    print x.getUnits()
+    print (x+y)
+    print (x-y)
+    print (x&y)
+    print (x==y)
+    print (x>y)
+    print (x>=y)
+    print (x<y)
+    print (x<=y)
+    print (x%y)
+    print (x!=y)
+    print (-x)
+    print (x!=0)
+    print (x|y)
+    print (+x)
+    print (x*y)
+    print (x/y)
+    print (x//y)
+    print (x<<y)
+    print (x>>y)
+    print (abs(makeData(-10)))
+    print (float(x))
+    print (x.decompile())
+    print (x)
+    print (x.evaluate())
+    print (x.getShape())
+    print (x.getByteArray())
+    print (x.getShortArray())
+    print (x.getIntArray())
+    print (x.getLongArray())
+    print (x.getString())
+    print (x.getUnits())
     x.setUnits('amps')
-    print x.getUnits()
+    print (x.getUnits())
     x.setError(42)
-    print x.getError()
+    print (x.getError())
     x.setHelp('This is help')
-    print x.getHelp()
+    print (x.getHelp())
 

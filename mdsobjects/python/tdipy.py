@@ -21,13 +21,15 @@ def execPy(varname=None):
         except:
             pass
         if isglobal:
-          exec cmds in globals()
+          exec( cmds) in globals()
         else:
-          exec cmds in {}
+          exec( cmds) in {}
         if varname is not None:
             ans=ns[varname]
         else:
             ans=1
         ___TDI___makeData(ans).setTdiVar("___TDI___answer")
-    except Exception,e:
+    except Exception:
+        import sys
+        e=sys.exc_info()[1]    
         ___TDI___String("Error: "+str(e)).setTdiVar("___TDI___exception")

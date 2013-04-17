@@ -5,7 +5,6 @@ import time
 from mdsdata import makeData
 from mdsscalar import Uint64
 from threading import Thread
-import thread
 from _mdsshr import DateToQuad,MDSWfeventTimed,MDSEvent
 
 class Event(Thread):
@@ -98,8 +97,9 @@ try:
                 self.exception=None
             except MdsInvalidEvent:
                 return
-            except Exception,e:
-                self.exception=e
+            except Exception:
+                import sys
+                self.exception=sys.exc_info()[1]
             self.time=time.time()
             self.qtime=DateToQuad("now")
             self.subclass_run()
@@ -138,8 +138,9 @@ except:
             self.exception=None
             try:
                 self.raw=MDSWfeventTimed(self.event,self.timeout)
-            except Exception,e:
-                self.exception=e
+            except Exception:
+                import sys
+                self.exception=sys.exc_info()[1]
             if self.__active__:
                 self.time=time.time()
                 self.qtime=DateToQuad("now")
@@ -164,5 +165,5 @@ except:
         self.__active__=True
         self.subclass_run=self.run
         self.run=self._event_run
-	self.start()
+        self.start()
     Event.__init__=__init__

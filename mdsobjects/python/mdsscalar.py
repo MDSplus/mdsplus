@@ -1,5 +1,4 @@
 import numpy,copy
-from types import NotImplementedType
 from mdsdata import *
 from _mdsdtypes import *
 
@@ -9,23 +8,33 @@ def makeScalar(value):
     if isinstance(value,numpy.generic):
         if isinstance(value,numpy.string_):
             return String(value)
+        try:
+            if isinstance(value,numpy.bytes_):
+              return String(str(value,encoding='utf8'))
+        except:
+            pass
         if isinstance(value,numpy.bool_):
             return makeScalar(int(value))
-        else:
-	    return globals()[value.__class__.__name__.capitalize()](value)
-    if isinstance(value,int):
-        return Int32(value)
-    if isinstance(value,long):
-        return Int64(value)
+        return globals()[value.__class__.__name__.capitalize()](value)
+    try:
+        if isinstance(value,long):
+            return Int64(value)
+        if isinstance(value,int):
+            return Int32(value)
+    except:
+        if isinstance(value,int):
+            return Int64(value)
     if isinstance(value,float):
         return Float32(value)
     if isinstance(value,str):
         return String(value)
+    if isinstance(value,bytes):
+        return String(value.decode())
     if isinstance(value,bool):
         return Int8(int(value))
     if isinstance(value,complex):
-	return Complex64(value)
-    raise TypeError,'Cannot make Scalar out of '+str(type(value))
+        return Complex64(value)
+    raise TypeError('Cannot make Scalar out of '+str(type(value)))
 
 class Scalar(Data):
    
@@ -34,7 +43,7 @@ class Scalar(Data):
             import numpy
             import mdsarray
             if (isinstance(value,mdsarray.Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
-		return mdsarray.__dict__[cls.__name__+'Array'](value)
+               return mdsarray.__dict__[cls.__name__+'Array'](value)
         except:
             pass
 
@@ -42,7 +51,7 @@ class Scalar(Data):
         
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Scalar':
-            raise TypeError,"cannot create 'Scalar' instances"
+            raise TypeError("cannot create 'Scalar' instances")
         if self.__class__.__name__ == 'String':
             self._value=numpy.string_(value)
             return
@@ -73,21 +82,19 @@ class Scalar(Data):
     def _binop(self,op,y):
         try:
             y=y.value
-        except (AttributeError),e:
+        except AttributeError:
             pass
         ans=getattr(self.value,op)(y)
-        if isinstance(ans,NotImplementedType):
-            raise AttributeError,op+' is not supported for types '+str(type(self.value))+' and '+str(type(y))
         return makeData(ans)
 
     def _triop(self,op,y,z):
         try:
             y=y.value
-        except (AttributeError),e:
+        except AttributeError:
             pass
         try:
             z=z.value
-        except (AttributeError),e:
+        except AttributeError:
             pass
         return makeData(getattr(self.value,op)(y,z))
 
@@ -184,14 +191,17 @@ class String(Scalar):
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
-        return self.value
+        if isinstance(self.value,str):
+            return self.value
+        else:
+            return self.value.decode()
 
 class Int128(Scalar):
     """128-bit number"""
     def __init__(self):
-        raise TypeError,"Int128 is not yet supported"
+        raise TypeError("Int128 is not yet supported")
 
 class Uint128(Scalar):
     """128-bit unsigned number"""
     def __init__(self):
-        raise TypeError,"Uint128 is not yet supported"
+        raise TypeError("Uint128 is not yet supported")

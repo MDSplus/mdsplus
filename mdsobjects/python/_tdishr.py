@@ -35,7 +35,7 @@ def TdiCompile(expression,args=None):
                     exp=exp+',pointer(xd),c_void_p(-1))'
                     status=eval(exp)
             else:
-                raise TypeError,'Arguments must be passed as a tuple'
+                raise TypeError('Arguments must be passed as a tuple')
     finally:
         Tree.unlock()
     if done:
@@ -43,7 +43,7 @@ def TdiCompile(expression,args=None):
     if (status & 1 != 0):
             return xd.value
     else:
-        raise TdiException,MdsGetMsg(status,"Error compiling expression")
+        raise TdiException(MdsGetMsg(status,"Error compiling expression"))
 
 def TdiExecute(expression,args=None):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
@@ -69,7 +69,7 @@ def TdiExecute(expression,args=None):
                     exp=exp+',pointer(xd),c_void_p(-1))'
                     status=eval(exp)
             else:
-                raise TypeError,'Arguments must be passed as a tuple'
+                raise TypeError('Arguments must be passed as a tuple')
     finally:
         Tree.unlock()
     if done:
@@ -77,7 +77,7 @@ def TdiExecute(expression,args=None):
     if (status & 1 != 0):
             return xd.value
     else:
-        raise TdiException,MdsGetMsg(status,"Error compiling expression")
+        raise TdiException(MdsGetMsg(status,"Error compiling expression"))
 
 def TdiDecompile(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
@@ -91,9 +91,12 @@ def TdiDecompile(value):
     finally:
         Tree.unlock()
     if (status & 1 != 0):
-        return str(xd.value.value)
+        try:
+            return xd.value.value.decode()
+        except:
+            return str(xd.value.value)
     else:
-        raise TdiException,MdsGetMsg(status,"Error decompiling value")
+        raise TdiException(MdsGetMsg(status,"Error decompiling value"))
 
 def TdiEvaluate(value):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
@@ -109,7 +112,7 @@ def TdiEvaluate(value):
     if (status & 1 != 0):
         return xd.value
     else:
-        raise TdiException,MdsGetMsg(status,"Error evaluating value")
+        raise TdiException(MdsGetMsg(status,"Error evaluating value"))
 
 def TdiData(value):
     """Return primiitive data type. Format: TdiData(value)"""
@@ -125,6 +128,6 @@ def TdiData(value):
     if (status & 1 != 0):
         return xd.value
     else:
-        raise TdiException,MdsGetMsg(status,"Error converting value to data")
+        raise TdiException(MdsGetMsg(status,"Error converting value to data"))
 
 CvtConvertFloat=TdiShr.CvtConvertFloat

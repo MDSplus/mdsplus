@@ -106,24 +106,24 @@ class mdsdtypes:
         if self.dtype in mdsdtypes.ctypes:
             return mdsdtypes.ctypes[self.dtype]
         else:
-            raise TypeError,'Cannot convert '+str(self.dtype)+' to ctype'
+            raise TypeError('Cannot convert '+str(self.dtype)+' to ctype')
 
     def toNumpy(self):
         if self.dtype in mdsdtypes.numpytypes:
             return mdsdtypes.numpytypes[self.dtype]
         else:
-            raise TypeError,'Cannot convert '+str(self.dtype)+' to numpy type'
+            raise TypeError('Cannot convert '+str(self.dtype)+' to numpy type')
 
     def fromNumpy(cls,value):
         if not mdsdtypes.m_to_n_types:
             for d in mdsdtypes.numpytypes:
                mdsdtypes.m_to_n_types.setdefault(str((mdsdtypes.numpytypes[d])().dtype),d)
-        if str(value.dtype)[1:2]=='S':
+        if str(value.dtype)[1:2]=='S' or str(value.dtype)[1:2]=='U':
             return DTYPE_T
         try:
             return mdsdtypes.m_to_n_types[str(value.dtype)]
         except KeyError:
-            raise TypeError, 'Cannot convert '+str(value.dtype)+' to mdsplus type'
+            raise TypeError('Cannot convert '+str(value.dtype)+' to mdsplus type')
     fromNumpy=classmethod(fromNumpy)
 
     def fromName(name):

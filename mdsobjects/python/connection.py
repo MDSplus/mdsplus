@@ -42,7 +42,7 @@ class Connection(object):
                 dimct=a.dimct
                 pointer=a.pointer
             else:
-                raise MdsException,"Error handling argument of type %s" % (type(value),)
+                raise MdsException("Error handling argument of type %s" % (type(value),))
         else:
             length=d.length
             dtype=d.dtype
@@ -103,9 +103,9 @@ class Connection(object):
             if mem.value is not None:
                 MdsIpFree(mem)
             if isinstance(ans,String):
-                raise MdsException,str(ans)
+                raise MdsException(str(ans))
             else:
-                raise MdsException,MdsGetMsg(status)
+                raise MdsException(MdsGetMsg(status))
         if mem.value is not None:
             MdsIpFree(mem)
         return ans
@@ -113,22 +113,26 @@ class Connection(object):
     def __init__(self,hostspec):
         self.socket=ConnectToMds(hostspec)
         if self.socket == -1:
-            raise Exception,"Error connecting to %s" % (hostspec,)
+            raise Exception("Error connecting to %s" % (hostspec,))
         self.hostspec=hostspec
 
     def __processGetMany__(cls):
         try:
             cls.GetMany(value=Data.getTdiVar("__getManyIn__").deserialize()).execute().serialize().setTdiVar("__getManyOut__")
-        except Exception,e:
-            print e
+        except Exception:
+            import sys
+            e=sys.exc_info()[1]
+            print(e)
             raise
     __processGetMany__=classmethod(__processGetMany__)
 
     def __processPutMany__(cls):
         try:
             cls.PutMany(value=Data.getTdiVar("__putManyIn__").deserialize()).execute().serialize().setTdiVar("__putManyOut__")
-        except Exception,e:
-            print e
+        except Exception:
+            import sys
+            e=sys.exc_info()[1]
+            print(e)
             raise
     __processPutMany__=classmethod(__processPutMany__)
 
@@ -141,7 +145,7 @@ class Connection(object):
         valInfo=self.__inspect__(val)
         status=SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
 
     def closeAllTrees(self):
         """Close all open MDSplus trees
@@ -149,7 +153,7 @@ class Connection(object):
         """
         status=self.get("TreeClose()")
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
 
     def closeTree(self,tree,shot):
         """Close an MDSplus tree on the remote server
@@ -161,7 +165,7 @@ class Connection(object):
         """
         status=self.get("TreeClose($,$)",arglist=(tree,shot))
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
 
     def getMany(self):
         """Return instance of a Connection.GetMany class. See the Connection.GetMany documentation for further information."""
@@ -177,7 +181,7 @@ class Connection(object):
         """
         status=self.get("TreeOpen($,$)",tree,shot)
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
 
     def put(self,node,exp,*args):
         """Put data into a node in an MDSplus tree
@@ -199,7 +203,7 @@ class Connection(object):
         putexp=putexp+")"
         status=self.get(putexp,arglist=pargs)
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
 
     def putMany(self):
         """Return an instance of a Connection.PutMany class. See the Connection.PutMany documentation for further information."""
@@ -221,7 +225,7 @@ class Connection(object):
         idx=0
         status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp))
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
         #self.__sendArg__(exp,idx,num)
         for arg in args:
             idx=idx+1
@@ -237,7 +241,7 @@ class Connection(object):
         """
         status=self.get("TreeSetDefault($)",path)
         if not ((status & 1)==1):
-            raise MdsException,MdsGetMsg(status)
+            raise MdsException(MdsGetMsg(status))
 
 
     class GetMany(List):
@@ -292,13 +296,15 @@ class Connection(object):
                     name=val['name']
                     try:
                         self.result[name]=Dictionary({'value':Data.execute('data('+val['exp']+')',tuple(val['args']))})
-                    except Exception,e:
+                    except Exception:
+                        import sys
+                        e=sys.exc_info()[1]
                         self.result[name]=Dictionary({'error':str(e)})
                 return self.result
             else:
                 ans=self.connection.get("GetManyExecute($)",self.serialize())
-	    if isinstance(ans,str):
-		raise Exception("Error fetching data: "+ans)
+            if isinstance(ans,str):
+                raise Exception("Error fetching data: "+ans)
             self.result=ans.deserialize(ans)
 #            self.result=ans.deserialize()
             return self.result
@@ -311,11 +317,11 @@ class Connection(object):
             @rtype: Scalar or Array
             """
             if self.result is None:
-                raise Exception,"GetMany has not yet been executed. Use the execute() method on this object first."
+                raise Exception("GetMany has not yet been executed. Use the execute() method on this object first.")
             if 'value' in self.result[name]:
                 return self.result[name]['value']
             else:
-                raise Exception,self.result[name]['error']
+                raise Exception(self.result[name]['error'])
 
         def insert(self,beforename, name,exp,*args):
             """Insert an expression in the list before the one named in the beforename argument.
@@ -337,7 +343,7 @@ class Connection(object):
                     return
                 else:
                     n=n+1
-            raise Exception,"Item %s not found in list" % (beforename,)
+            raise Exception("Item %s not found in list" % (beforename,))
                 
         def remove(self,name):
             """Remove first occurrence of expression identified by its name from the list.
@@ -349,7 +355,7 @@ class Connection(object):
                 if item['name'] == name:
                     super(Connection.GetMany,self).remove(item)
                     return
-            raise Exception,"Item %s not found in list" % (name,)
+            raise Exception("Item %s not found in list" % (name,))
 
     class PutMany(List):
         """Build list of put instructions."""
@@ -381,9 +387,9 @@ class Connection(object):
             @rtype: str
             """
             if self.result is None:
-                raise Exception,"PutMany has not yet been executed. Use the execute() method on this object first."
+                raise Exception("PutMany has not yet been executed. Use the execute() method on this object first.")
             if self.result[node] != "Success":
-                raise MdsException,self.result[node]
+                raise MdsException(self.result[node])
             else:
                 return self.result[node]
             
@@ -408,13 +414,15 @@ class Connection(object):
                             self.result[node]='Success'
                         else:
                             self.result[node]=MdsGetMsg(status)
-                    except Exception,e:
+                    except Exception:
+                        import sys
+                        e=sys.exc_info()[1]
                         self.result[node]=str(e)
                 return self.result
             else:
                 ans=self.connection.get("PutManyExecute($)",self.serialize())
-	    if isinstance(ans,str):
-		raise Exception("Error putting any data: "+ans)
+            if isinstance(ans,str):
+                raise Exception("Error putting any data: "+ans)
 #            self.result=ans.deserialize()
             self.result=ans.deserialize(ans)
             return self.result
@@ -439,7 +447,7 @@ class Connection(object):
                     return
                 else:
                     n=n+1
-            raise Exception,"Node %s not found in list" % (str(beforenode),)
+            raise Exception("Node %s not found in list" % (str(beforenode),))
                 
         def remove(self,node):
             """Remove the node from the list.
@@ -451,4 +459,4 @@ class Connection(object):
                 if item['node'] == node:
                     super(Connection.PutMany,self).remove(item)
                     return
-            raise Exception,"Node %s not found in list" % (node,)
+            raise Exception("Node %s not found in list" % (node,))

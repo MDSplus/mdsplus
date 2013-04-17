@@ -65,7 +65,13 @@ def makeData(value):
         return EmptyData()
     if isinstance(value,Data):
         return value
-    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,long) or isinstance(value,float) or isinstance(value,str) or isinstance(value,complex):
+    try:
+        if isinstance(value,long):
+           from mdsscalar import makeScalar
+           return makeScalar(value)
+    except:
+        pass
+    if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,float) or isinstance(value,str) or isinstance(value,complex):
         from mdsscalar import makeScalar
         return makeScalar(value)
     if isinstance(value,tuple) or isinstance(value,list):
@@ -79,7 +85,7 @@ def makeData(value):
         from apd import Dictionary
         return Dictionary(value)
     else:
-        raise TypeError,'Cannot make MDSplus data type from type: %s' % (str(type(value)),)
+        raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
 
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
@@ -90,7 +96,7 @@ class Data(object):
         @raise TypeError: Raised if attempting to create an instance of Data
         @rtype: Data
         """
-        raise TypeError,'Cannot create \'Data\' instances'
+        raise TypeError('Cannot create \'Data\' instances')
 
     def __function(self,name,default):
         found = False
@@ -223,11 +229,12 @@ class Data(object):
         from compound import Compound
         if isinstance(self,Array):
             return self._value!=0
-        elif isinstance(self,Compound) and hasattr(self,'value'):
-            return self.value.bool()
+        elif isinstance(self,Compound) and hasattr(self,'value_of'):
+            return self.value_of().bool()
         else:
             ans=int(self)
             return (ans & 1) == 1
+    __bool__=bool
 
     def __add__(self,y):
         """
@@ -247,6 +254,8 @@ class Data(object):
         """Divide: x.__div__(y) <==> x/y
         @rtype: Data"""
         return Data.execute('$/$',self,y)
+
+    __truediv__=__div__
 
     def __eq__(self,y):
         """Equals: x.__eq__(y) <==> x==y
@@ -535,7 +544,7 @@ class Data(object):
         """
         ans=Data.execute('byte($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar, %s' % str(type(self))
+            raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getShort(self):
@@ -547,7 +556,7 @@ class Data(object):
         """
         ans=Data.execute('word($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar, %s' % str(type(self))
+            raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
     
     def getInt(self):
@@ -559,7 +568,7 @@ class Data(object):
         """
         ans=Data.execute('long($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar, %s' % str(type(self))
+            raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getLong(self):
@@ -571,7 +580,7 @@ class Data(object):
         """
         ans=Data.execute('quadword($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar, %s' % str(type(self))
+            raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getFloat(self):
@@ -583,7 +592,7 @@ class Data(object):
         """
         ans=Data.execute('float($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar, %s' % str(type(self))
+            raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getDouble(self):
@@ -595,7 +604,7 @@ class Data(object):
         """
         ans=Data.execute('ft_float($)',self)
         if not Data._isScalar(ans):
-            raise TypeError,'Value not a scalar, %s' % str(type(self))
+            raise TypeError('Value not a scalar, %s' % str(type(self)))
         return ans
 
     def getFloatArray(self):

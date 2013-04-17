@@ -1,7 +1,7 @@
 from unittest import TestCase,TestSuite,TextTestRunner,TestResult
 from threading import Thread,enumerate
 from tree import Tree
-import treeUnitTest
+import tests.treeUnitTest
 
 
 class threadJob(Thread):

@@ -9,7 +9,7 @@ def _load_library(name):
     elif os.name == "posix" and sys.platform == "darwin":
         lib=_find_library(name)
         if lib is None:
-            raise Exception,"Error finding library: "+name
+            raise Exception("Error finding library: "+name)
         else:
             return _C.CDLL(lib)
     else:
@@ -18,7 +18,7 @@ def _load_library(name):
         
         except:
             return _C.CDLL('lib'+name+'.sl')
-    raise Exception,"Error finding library: "+name
+    raise Exception("Error finding library: "+name)
 
 MdsShr=_load_library('MdsShr')
 __MdsGetMsg=MdsShr.MdsGetMsg
@@ -52,7 +52,7 @@ def MDSEventCan(eventid):
     """
     status=__MDSEventCan(eventid)
     if ((status & 1)==0):
-        raise MdsException,MdsGetMsg(status)
+        raise MdsException(MdsGetMsg(status))
 
 def MDSWfeventTimed(event,timeout):
     import numpy as _N
@@ -61,25 +61,28 @@ def MDSWfeventTimed(event,timeout):
     numbytes=_C.c_int32(0)
     status=__MDSWfeventTimed(event,len(buffer),buffer.ctypes.data,numbytes,timeout)
     if (status & 1) == 1:
-	if numbytes.value == 0:
-	  return makeArray(Uint8Array([]))
+        if numbytes.value == 0:
+          return makeArray(Uint8Array([]))
         else:
           return makeArray(buffer[range(numbytes.value)])
     elif (status == 0):
-        raise MdsTimeout,"Event %s timed out." % (str(event),)
+        raise MdsTimeout("Event %s timed out." % (str(event),))
     else:
-        raise MdsException,MdsGetMsg(status)
+        raise MdsException(MdsGetMsg(status))
 
 def MDSEvent(event,buffer):
     status=__MDSEvent(event,len(buffer),buffer.ctypes.data)
     if not ((status & 1) == 1):
-        raise MdsException,MdsGetMsg(status)
+        raise MdsException(MdsGetMsg(status))
     
 def MdsGetMsg(status,default=None):
     status=int(status)
     if status==0 and not default is None:
         return default
-    return __MdsGetMsg(status)
+    try:
+        return __MdsGetMsg(status).decode()
+    except:
+        return __MdsGetMsg(status)
 
 def MdsSerializeDscOut(desc):
     from _descriptor import descriptor_xd,descriptor
@@ -90,7 +93,7 @@ def MdsSerializeDscOut(desc):
     if (status & 1) == 1:
       return xd.value
     else:
-      raise MdsException,MdsGetMsg(status)
+      raise MdsException(MdsGetMsg(status))
 
 def MdsSerializeDscIn(bytes):
     from _descriptor import descriptor_xd
@@ -99,7 +102,7 @@ def MdsSerializeDscIn(bytes):
     if (status & 1) == 1:
       return xd.value
     else:
-      raise MdsException,MdsGetMsg(status)
+      raise MdsException(MdsGetMsg(status))
 
 def MdsDecompress(value):
     from _descriptor import descriptor_xd
@@ -109,7 +112,7 @@ def MdsDecompress(value):
     if (status & 1) == 1:
         return makeArray(xd.value)
     else:
-        raise MdsException,MdsGetMsg(status)
+        raise MdsException(MdsGetMsg(status))
 
 def MdsCopyDxXd(desc):
     from _descriptor import descriptor,descriptor_xd
@@ -120,7 +123,7 @@ def MdsCopyDxXd(desc):
     if (status & 1) == 1:
         return xd
     else:
-        raise MdsException,MdsGetMsg(status)
+        raise MdsException(MdsGetMsg(status))
 
 def MdsCompareXd(value1,value2):
     from _descriptor import descriptor
@@ -138,7 +141,7 @@ def DateToQuad(date):
     ans=_C.c_ulonglong(0)
     status = __LibConvertDateString(date,ans)
     if not (status & 1):
-        raise MdsException,"Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,)
+        raise MdsException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
     return makeData(_N.uint64(ans.value))
 
 try:
@@ -159,7 +162,7 @@ try:
         if status&1 == 1:
             return eventid.value
         else:
-            raise MdsException,"Error queuing the event %s, status=%d" % (event,status)
+            raise MdsException("Error queuing the event %s, status=%d" % (event,status))
 
     def MDSGetEventQueue(eventid,timeout=0):
         """Retrieve event occurrence.
@@ -187,12 +190,12 @@ try:
                 return makeArray([])
         elif status==0:
             if timeout > 0:
-                raise MdsTimeout,"Timeout"
+                raise MdsTimeout("Timeout")
             else:
-                raise MdsNoMoreEvents,"No more events"
+                raise MdsNoMoreEvents("No more events")
         elif status==2:
-            raise MdsInvalidEvent,"Invalid eventid"
+            raise MdsInvalidEvent("Invalid eventid")
         else:
-            raise MdsException,"Unknown error - status=%d" % (status,)
+            raise MdsException("Unknown error - status=%d" % (status,))
 except:
     pass

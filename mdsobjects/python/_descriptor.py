@@ -11,7 +11,10 @@ from _mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
 import numpy as _N
 
 import ctypes as _C
-import os
+import os,sys
+
+if sys.version > '3':
+    buffer = memoryview
 
 class descriptor(_C.Structure):
     __cached_values={}
@@ -66,18 +69,27 @@ class descriptor(_C.Structure):
             self.pointer=_C.cast(_C.c_void_p(a.ctypes.data),_C.POINTER(descriptor))
             self.addToCache(a)
             return
-        if isinstance(value,int):
-            self.length=4
-            self.dtype=DTYPE_L
-            self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),_C.POINTER(descriptor))
-            self.addToCache(value)
-            return
-        if isinstance(value,long):
-            self.length=8
-            self.dtype=DTYPE_Q
-            self.pointer=_C.cast(_C.pointer(_C.c_long(value)),_C.POINTER(descriptor))
-            self.addToCache(value)
-            return
+        try:
+            if isinstance(value,long):
+                self.length=8
+                self.dtype=DTYPE_Q
+                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),_C.POINTER(descriptor))
+                self.addToCache(value)
+                return
+
+            if isinstance(value,int):
+                self.length=4
+                self.dtype=DTYPE_L
+                self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),_C.POINTER(descriptor))
+                self.addToCache(value)
+                return
+        except:
+            if isinstance(value,int):
+                self.length=8
+                self.dtype=DTYPE_Q
+                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),_C.POINTER(descriptor))
+                self.addToCache(value)
+                return
         if isinstance(value,str):
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
@@ -96,8 +108,8 @@ class descriptor(_C.Structure):
             self.length=8
             self.dtype=DTYPE_FLOAT_COMPLEX
             self.pointer=_C.cast(_C.pointer((_C.c_float*2)(value.real,value.imag)),_C.POINTER(descriptor))
-	    self.addToCache(value)
-	    return
+            self.addToCache(value)
+            return
         
         if isinstance(value,dict) or isinstance(value,list) or isinstance(value,tuple):
             value=makeData(value)
@@ -276,7 +288,7 @@ class descriptor(_C.Structure):
             self.addToCache(apd_a)
             self.addToCache(apd)
             return
-        raise TypeError,'Cannot make descriptor of '+str(type(value))
+        raise TypeError('Cannot make descriptor of '+str(type(value)))
         return
 
     def __str__(self):
@@ -308,7 +320,7 @@ class descriptor(_C.Structure):
         if ((self.dtype == DTYPE_DSC) & (self.dclass != CLASS_APD)):
             try:
                 return self.pointer.contents.value
-            except ValueError,e:
+            except ValueError:
                 return makeData(None)
             
         if (self.dclass == CLASS_S or self.dclass == CLASS_D):
@@ -316,10 +328,11 @@ class descriptor(_C.Structure):
                 if self.length == 0:
                     return makeScalar('')
                 else:
-                    return makeScalar(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
+                    ans=_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value
+                    return makeScalar(ans)
             if (self.dtype == DTYPE_FSC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
-		return makeScalar(complex(ans[0],ans[1]))
+                return makeScalar(complex(ans[0],ans[1]))
             if (self.dtype == DTYPE_FTC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_double*2))).contents
                 return makeScalar(complex(ans[0],ans[1]))
@@ -348,10 +361,10 @@ class descriptor(_C.Structure):
                     CvtConvertFloat.argtypes=[_C.POINTER(_C.c_float),_C.c_int32,_C.POINTER(_C.c_float),_C.c_int32]
                     val=_C.c_float(0)
                     CvtConvertFloat(_C.cast(self.pointer,_C.POINTER(_C.c_float)),DTYPE_F,_C.pointer(val),DTYPE_NATIVE_FLOAT)
-                    raise "DTYPE_FC is not yet supported"
+                    raise Exception("DTYPE_FC is not yet supported")
                     return makeScalar(_N.float32(val.value))
                 if (self.dtype == DTYPE_DC):
-                    raise "DTYPE_DC is not yet supported"
+                    raise Exception("DTYPE_DC is not yet supported")
                     return None
                 if (self.dtype == DTYPE_NID):
                     return TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
@@ -359,7 +372,7 @@ class descriptor(_C.Structure):
                     return TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == DTYPE_IDENT):
                     return Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
-                raise TypeError,'Unsupported data type: (%s,%d)' % (str(mdsdtypes(self.dtype)),self.dtype)
+                raise TypeError('Unsupported data type: (%s,%d)' % (str(mdsdtypes(self.dtype)),self.dtype))
         if (self.dclass == CLASS_R):
             ans = _C.cast(_C.pointer(self),_C.POINTER(descriptor_r)).contents
             if self.dtype == DTYPE_WITH_UNITS:
@@ -381,7 +394,7 @@ class descriptor(_C.Structure):
                 elif (ans.ndesc == 3):
                    return Range(d_contents(ans.dscptrs[0]),d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]))
                 else:
-                    raise Exception,"Range has must have two or three fields, this range has %d fields" % ans.ndesc
+                    raise Exception("Range has must have two or three fields, this range has %d fields" % ans.ndesc)
             if self.dtype == DTYPE_SLOPE:
                 return Range(d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]),d_contents(ans.dscptrs[0]))
             if self.dtype in  (DTYPE_FUNCTION,DTYPE_CALL,DTYPE_DEPENDENCY):
@@ -408,8 +421,8 @@ class descriptor(_C.Structure):
                     else:
                         arglist.append(None)
                 arglist=tuple(arglist)
-		return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](arglist)
-            raise Exception,"%s is not yet supported" % str(mdsdtypes(ans.dtype))
+                return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](arglist)
+            raise Exception("%s is not yet supported" % str(mdsdtypes(ans.dtype)))
         if self.dclass == CLASS_A:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_a)).contents
             if descr.coeff:
@@ -417,38 +430,41 @@ class descriptor(_C.Structure):
                 for i in range(descr.dimct):
                     shape.append(descr.coeff_and_bounds[descr.dimct-i-1])
             else:
-                shape=[descr.arsize/descr.length,]
+                shape=[int(descr.arsize/descr.length),]
             if self.dtype == DTYPE_T:
-                return StringArray(_N.chararray(shape,itemsize=descr.length,buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_char*descr.arsize)).contents.value)))
+                return StringArray(_N.ndarray(shape=shape,dtype=_N.dtype(('S',descr.length)),buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_byte*descr.arsize)).contents)))
+#                return StringArray(_N.chararray(shape,itemsize=descr.length,buffer=buffer(_C.cast(self.pointer,_C.POINTER(_C.c_char*descr.arsize)).contents.value)))
             if self.dtype == DTYPE_NID:
                 self.dtype=DTYPE_L
                 nids=makeArray(_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
-                                          buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents)))
+                                          buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents)))
                 return TreeNodeArray(nids)
             if self.dtype == DTYPE_F:
                 return makeArray(Data.execute("float($)",(descr,)))
             if self.dtype == DTYPE_D or self.dtype == DTYPE_G:
                 return makeArray(Data.execute("FT_FLOAT($)",(descr,)))
             if self.dtype == DTYPE_FSC:
-		return makeArray(_N.ndarray(shape=shape,
+                return makeArray(_N.ndarray(shape=shape,
                                             dtype=_N.complex64,
-                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_float * (descr.arsize*2/descr.length))).contents)))
+                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_float * int(descr.arsize*2/descr.length))).contents)))
             if self.dtype == DTYPE_FTC:
                 return makeArray(_N.ndarray(shape=shape,
                                             dtype=_N.complex128,
-                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_double * (descr.arsize*2/descr.length))).contents)))
+                                            buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_C.c_double * int(descr.arsize*2/descr.length))).contents)))
             try:
                 a=_N.ndarray(shape=shape,dtype=mdsdtypes(self.dtype).toCtype(),
-                                  buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * (descr.arsize/descr.length))).contents))
+                                  buffer=buffer(_C.cast(descr.pointer,_C.POINTER(mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents))
                 return makeArray(a)
-            except TypeError,e:
-                raise TypeError,'Arrays of type %s are unsupported. Error message was: %s' % (str(mdsdtypes(self.dtype)),str(e))
-            raise Exception,'Unsupported array type'
+            except TypeError:
+                import sys
+                e=sys.exc_info()[1]
+                raise TypeError('Arrays of type %s are unsupported. Error message was: %s' % (str(mdsdtypes(self.dtype)),str(e)))
+            raise Exception('Unsupported array type')
         if self.dclass == CLASS_APD:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_apd)).contents
-            apd_a=_C.cast(descr.pointer,_C.POINTER(_C.POINTER(descriptor)*(descr.arsize/descr.length))).contents
+            apd_a=_C.cast(descr.pointer,_C.POINTER(_C.POINTER(descriptor)*int(descr.arsize/descr.length))).contents
             descs=list()
-            for i in range(descr.arsize/descr.length):
+            for i in range(int(descr.arsize/descr.length)):
                 descs.append(apd_a[i].contents.value)
             ans=Apd(tuple(descs),descr.dtype)
             if descr.dtype == DTYPE_DICTIONARY:
@@ -460,7 +476,7 @@ class descriptor(_C.Structure):
 
         if self.dclass == CLASS_CA:
             return MdsDecompress(self)
-        raise Exception,'Unsupported class: '+str(mdsclasses(self.dclass))
+        raise Exception('Unsupported class: '+str(mdsclasses(self.dclass)))
     value = property(_getValue)
 
     def toXd(self):
@@ -495,15 +511,15 @@ class descriptor_xd(_C.Structure):
         return str(_C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents)+" l_length="+str(self.l_length)
 
     def _getValue(self):
-	if self.l_length==0:
-	  return None
+        if self.l_length==0:
+          return None
         else:
           return _C.cast(_C.pointer(self),_C.POINTER(descriptor)).contents.value
 
     value=property(_getValue)
 
     def __del__(self):
-	try:
+        try:
           MdsFree1Dx(self)
         except:
           pass
@@ -543,7 +559,10 @@ class descriptor_string(_C.Structure):
         self.length=len(string)
         self.dtype=DTYPE_T
         self.dclass=CLASS_S
-        self.pointer=string
+        try:
+            self.pointer=string
+        except:
+            self.pointer=str.encode(string)
 
 class descriptor_apd(_C.Structure):
     if os.name=='nt':

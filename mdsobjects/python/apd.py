@@ -31,7 +31,7 @@ class Apd(Data):
             self.descs=descs
             self.dtype=dtype
         else:
-            raise TypeError,"must provide tuple of items when creating ApdData"
+            raise TypeError("must provide tuple of items when creating ApdData")
         return
 
     def __len__(self):
@@ -79,7 +79,7 @@ class Apd(Data):
         if isinstance(descs,tuple):
             self.descs=descs
         else:
-            raise TypeError,"must provide tuple"
+            raise TypeError("must provide tuple")
         return
 
     def setDescAt(self,idx,value):
@@ -139,13 +139,13 @@ class Dictionary(dict,Data):
                 for key,val in value.items():
                     self.setdefault(key,val)
             else:
-                raise TypeError,'Cannot create Dictionary from type: '+str(type(value))
+                raise TypeError('Cannot create Dictionary from type: '+str(type(value)))
 
     def __getattr__(self,name):
         if name in self.keys():
             return self[name]
         else:
-            raise AttributeError,'No such attribute: '+name
+            raise AttributeError('No such attribute: '+name)
 
     def __setattr__(self,name,value):
         if name in self.keys():
@@ -195,7 +195,7 @@ class List(list,Data):
                 for idx in range(len(value)):
                     super(List,self).append(value[idx])
             else:
-                raise TypeError,'Cannot create List from type: '+str(type(value))
+                raise TypeError('Cannot create List from type: '+str(type(value)))
 
     def toApd(self):
         apd=Apd(tuple(),DTYPE_LIST)

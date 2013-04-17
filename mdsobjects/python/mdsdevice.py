@@ -105,7 +105,7 @@ class Device(TreeNode):
         @rtype: Device subclass instance
         """
         if cls.__name__ == 'Device':
-            raise TypeError,"Cannot create instances of Device class"
+            raise TypeError("Cannot create instances of Device class")
         cls.__class_init__();
         return super(Device,cls).__new__(cls)
 
@@ -118,7 +118,7 @@ class Device(TreeNode):
         try:
             self.nids=node.conglomerate_nids.nid_number
             self.head=int(self.nids[0])
-        except Exception,e:
+        except Exception:
             self.head=node.nid
         super(Device,self).__init__(node.nid,node.tree)
 
@@ -197,7 +197,7 @@ class Device(TreeNode):
                 node.record=eval(elt['valueExpr'])
             if 'options' in elt:
                 for option in elt['options']:
-                    exec 'node.'+option+'=True'
+                    exec('node.'+option+'=True')
         TreeEndConglomerate(tree)
     Add=classmethod(Add)
 
@@ -238,9 +238,11 @@ class Device(TreeNode):
             window.device_node=self
             window.set_title(window.get_title()+' - '+str(self)+' - '+str(self.tree))
             MDSplusWidget.doToAll(window,"reset")
-        except Exception,e:
-            print e
-            raise Exception,"No setup available, %s" % (str(e),)
+        except Exception:
+            import sys
+            e=sys.exc_info()[1]
+            print( e)
+            raise Exception("No setup available, %s" % (str(e),))
 
         window.connect("destroy",self.onSetupWindowClose)
         window.show_all()

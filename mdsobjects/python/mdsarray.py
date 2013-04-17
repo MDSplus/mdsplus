@@ -1,5 +1,4 @@
 import numpy,copy,ctypes
-from types import NotImplementedType
 from mdsdata import Data,makeData
 from _mdsdtypes import *
 from mdsscalar import Scalar
@@ -16,7 +15,10 @@ def makeArray(value):
             pass
     if isinstance(value,tuple) | isinstance(value,list):
         try:
-            return makeArray(numpy.array(value))
+            ans=numpy.array(value)
+            if str(ans.dtype)[1:2]=='U':
+              ans=ans.astype('S')
+            return makeArray(ans)
         except ValueError:
             newlist=list()
             for i in value:
@@ -28,17 +30,17 @@ def makeArray(value):
         if str(value.dtype) == 'bool':
             return makeArray(value.__array__(numpy.uint8))
         if str(value.dtype) == 'object':
-            raise TypeError,'cannot make Array out of an numpy.ndarray of dtype object'
+            raise TypeError('cannot make Array out of an numpy.ndarray of dtype object')
         return globals()[str(value.dtype).capitalize()+'Array'](value)
     if isinstance(value,numpy.generic) | isinstance(value,int) | isinstance(value,long) | isinstance(value,float) | isinstance(value,str) | isinstance(value,bool):
         return makeArray(numpy.array(value).reshape(1))
-    raise TypeError,'Cannot make Array out of '+str(type(value))
+    raise TypeError('Cannot make Array out of '+str(type(value)))
                         
 
 class Array(Data):
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Array':
-            raise TypeError,"cannot create 'Array' instances"
+            raise TypeError("cannot create 'Array' instances")
         if self.__class__.__name__ == 'StringArray':
             self._value=numpy.array(value).__array__(numpy.string_)
             return
@@ -66,18 +68,18 @@ class Array(Data):
     def _binop(self,op,y):
         try:
             y=y._value
-        except (AttributeError),e:
+        except AttributeError:
             pass
         return makeData(getattr(self._value,op)(y))
 
     def _triop(self,op,y,z):
         try:
             y=y._value
-        except (AttributeError),e:
+        except AttributeError:
             pass
         try:
             z=z._value
-        except (AttributeError),e:
+        except AttributeError:
             pass
         return makeData(getattr(self._value,op)(y,z))
 
@@ -91,7 +93,7 @@ class Array(Data):
     mdsdtype=property(_getMdsDtypeNum)
     
     def __array__(self):
-        raise TypeError,'__array__ not yet supported'
+        raise TypeError('__array__ not yet supported')
 
     def __copy__(self):
         return type(self)(self._value)
@@ -195,10 +197,10 @@ class StringArray(Array):
 class Int128Array(Array):
     """128-bit signed number"""
     def __init__(self):
-        raise TypeError,"Int128Array is not yet supported"
+        raise TypeError("Int128Array is not yet supported")
 
 class Uint128Array(Array):
     """128-bit unsigned number"""
     def __init__(self):
-        raise TypeError,"Uint128Array is not yet supported"
+        raise TypeError("Uint128Array is not yet supported")
 

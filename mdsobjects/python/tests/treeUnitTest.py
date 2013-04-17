@@ -37,7 +37,7 @@ class treeTests(TestCase):
             node.addNode('child','structure')
         pytreesub=Tree('pytreesub',self.shot,'new')
         if pytreesub.shot != self.shot:
-            raise Exception,"Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, self.shot)
+            raise Exception("Shot number changed! tree.shot=%d, thread.shot=%d" % (pytreesub.shot, self.shot))
         pytreesub_top=pytreesub.default
         node=pytreesub_top.addNode('.rog','structure')
         for i in range(10):
@@ -148,8 +148,8 @@ class treeTests(TestCase):
         self.assertEqual(ip.getUsage(),'SIGNAL')
         self.assertEqual(ip.usage,ip.getUsage())
         if ip.getClass() != 'CLASS_R':
-            print "ip.nid=%d" % (ip.nid,)
-            print "Error with ip in %s" % (str(ip.tree),)
+            print( "ip.nid=%d" % (ip.nid,))
+            print( "Error with ip in %s" % (str(ip.tree),))
             from os import _exit
             _exit(1)
         self.assertEqual(ip.getClass(),'CLASS_R')

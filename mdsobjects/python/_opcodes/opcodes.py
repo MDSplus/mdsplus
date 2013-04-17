@@ -54,7 +54,7 @@ class opcode(object):
             exp=exp+'$)",args)'
             return eval(exp)
         else:
-            print "xxxxxx----"+str(self.name)
+            print("xxxxxx----"+str(self.name))
             return eval(self.evaluate_code)
     def check_args(self,args):
         if self.min_args != None and self.min_args > len(args):
@@ -586,7 +586,7 @@ def find_opcode(name):
             
 def f_float(*args):
     import sys
-    print "Name = %s" %__name__
-    print "Dict = %s" % sys.modules[__name__].__dict__
+    print( "Name = %s" %__name__)
+    print( "Dict = %s" % sys.modules[__name__].__dict__)
     return find_opcode('f_float').evaluate(args)
 

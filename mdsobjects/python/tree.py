@@ -59,7 +59,7 @@ class Tree(object):
                 try:
                     ans = self.__dict__[name]
                 except:
-                    raise AttributeError,'No such attribute: '+name
+                    raise AttributeError('No such attribute: '+name)
         return ans
 
     def usePrivateCtx(cls,on=True):
@@ -92,7 +92,7 @@ class Tree(object):
                 try:
                     self.ctx=Tree.getActiveTree().ctx
                 except:
-                    raise TreeException,'tree not open'
+                    raise TreeException('tree not open')
         else:
             self.close=True
             if mode.upper() == 'NORMAL':
@@ -105,7 +105,7 @@ class Tree(object):
             elif mode.upper() == 'READONLY':
                 self.ctx=TreeOpenReadOnly(tree,shot)
             else:
-                raise TreeException,'Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".'
+                raise TreeException('Invalid mode specificed, use "Normal","Edit","New" or "ReadOnly".')
         Tree.setActiveTree(self)
         return
 
@@ -129,7 +129,7 @@ class Tree(object):
         @rtype: None
         """
         if name.lower() in ('modified','name','open_for_edit','open_readonly','shot','shotid','tree'):
-            raise AttributeError,'Read only attribute: '+name
+            raise AttributeError('Read only attribute: '+name)
         elif name == 'default':
             self.setDefault(value)
         else:
@@ -213,7 +213,7 @@ class Tree(object):
             pass
             Tree.unlock()
         if not (status & 1):
-            raise TreeException,"Error creating pulse: %s" % (MdsGetMsg(status),)
+            raise TreeException("Error creating pulse: %s" % (MdsGetMsg(status),))
 
     def deleteNode(self,wild):
         """Delete nodes (and all their descendants) from the tree. Note: If node is a member of a device,
@@ -257,15 +257,15 @@ class Tree(object):
         model=c.model
 
         for i in range(len(q)):
-            exec str(q[0])
+            exec( str(q[0]))
         try:
-            exec str('makeData('+model+'(n).'+method+'(Data.getTdiVar("__do_method_arg__"))).setTdiVar("_result")')
+            exec( str('makeData('+model+'(n).'+method+'(Data.getTdiVar("__do_method_arg__"))).setTdiVar("_result")'))
             makeData(1).setTdiVar("_method_status")
             
-        except AttributeError,e:
+        except AttributeError:
             makeData(0xfd180b0).setTdiVar("_method_status")
-        except Exception,e:
-            print "Error doing %s on node %s" % (str(method),str(n))
+        except Exception:
+            print("Error doing %s on node %s" % (str(method),str(n)))
             makeData(0).setTdiVar("_method_status")
             raise
         return Data.getTdiVar("_result")
@@ -321,11 +321,11 @@ class Tree(object):
         from _treeshr import TreeGetCurrentShotId,TreeException
         try:
             Tree.lock()
-            shot=TreeGetCurrentShotId(treename)
+            shot=TreeGetCurrentShotId(str.encode(treename))
         finally:
             Tree.unlock()
         if shot==0:
-            raise TreeException,"Error obtaining current shot of %s" % (treename,)
+            raise TreeException("Error obtaining current shot of %s" % (treename,))
         return shot
     getCurrent=staticmethod(getCurrent)
 
@@ -379,18 +379,20 @@ class Tree(object):
                 from numpy import array
                 for i in range(len(usage)):
                     if not isinstance(usage[i],str):
-                        raise TypeError,'Usage arguments must be strings'
-                    usage=array(usage)
+                        raise TypeError('Usage arguments must be strings')
+                    usage=array(usage,dtype='S')
                     nids=Data.compile('getnci($,"NID_NUMBER",$)',name,usage).evaluate()
             else:
                 nids=Data.compile('getnci($,"NID_NUMBER")',(name,)).evaluate()
-        except Exception,e:
-	    if 'TreeNNF' in str(e):
+        except Exception:
+            import sys
+            e=sys.exc_info()[1]
+            if 'TreeNNF' in str(e):
                 from mdsarray import makeArray
-		nids=makeArray([])
-	    else:
+                nids=makeArray([])
+            else:
                 Tree.unlock()
-	        raise
+                raise
         Tree.unlock()
         return TreeNodeArray(nids,self)
 
@@ -498,11 +500,11 @@ class Tree(object):
         from _mdsshr import MdsGetMsg
         try:
             Tree.lock()
-            status=TreeSetCurrentShotId(treename,shot)
+            status=TreeSetCurrentShotId(str.encode(treename),shot)
         finally:
             Tree.unlock()
         if not (status & 1):
-            raise TreeException,'Error setting current shot of %s: %s' % (treename,MdsGetMsg(status))
+            raise TreeException('Error setting current shot of %s: %s' % (treename,MdsGetMsg(status)))
     setCurrent=staticmethod(setCurrent)
 
     def setDefault(self,node):
@@ -519,9 +521,9 @@ class Tree(object):
             if node.tree is self:
                 TreeSetDefault(self.ctx,node.nid)
             else:
-                raise TypeError,'TreeNode must be in same tree'
+                raise TypeError('TreeNode must be in same tree')
         else:
-            raise TypeError,'default node must be a TreeNode'
+            raise TypeError('default node must be a TreeNode')
         return old
     
     def setTimeContext(begin,end,delta):
