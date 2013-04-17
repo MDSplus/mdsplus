@@ -379,7 +379,7 @@ public class DeviceTable extends DeviceComponent
         int idx = 0;
         for(int i = 0; i < items.length; i++)
            items[i] = "";
-        if(decompiled != null)
+/*        if(decompiled != null)
         {
             StringTokenizer st = new StringTokenizer(decompiled, ",[]");
             if (!decompiled.startsWith("["))
@@ -387,6 +387,37 @@ public class DeviceTable extends DeviceComponent
             while (idx < numCols * numRows && st.hasMoreTokens())
             {
                 items[idx] += st.nextToken();
+                if(balancedParenthesis(items[idx]))
+                    idx++;
+                else
+                    items[idx]+=",";
+            }
+        }
+*/        if(decompiled != null)
+        {
+         // Remove surrounding [
+            decompiled = decompiled.trim();
+            while(decompiled.startsWith("[")&& decompiled.endsWith("]") && balancedSquareParenthesis(decompiled))
+            {
+                decompiled = decompiled.substring(1, decompiled.length() - 1);
+                decompiled = decompiled.trim();
+            }
+            StringTokenizer st = new StringTokenizer(decompiled, ",");
+            while (idx < numCols * numRows && st.hasMoreTokens())
+            {
+                String currToken = st.nextToken();
+                currToken = currToken.trim();
+                while(currToken.startsWith("[") && !balancedSquareParenthesis(currToken))
+                    currToken = currToken.substring(1);
+                while(currToken.endsWith("]") && !balancedSquareParenthesis(currToken))
+                    currToken = currToken.substring(0, currToken.length() - 1);
+                while(currToken.startsWith("[") && currToken.endsWith("]") && balancedSquareParenthesis(currToken))
+                {
+                   currToken = currToken.substring(1, currToken.length() - 1);
+                   currToken = currToken.trim();
+                }
+               
+                items[idx] += currToken;
                 if(balancedParenthesis(items[idx]))
                     idx++;
                 else
@@ -810,6 +841,18 @@ public class DeviceTable extends DeviceComponent
             }
         }
         return(roundCount == 0 && squareCount == 0 && braceCount == 0);
+    }
+     private boolean balancedSquareParenthesis(String inStr)
+    {
+        int squareCount = 0;
+         for(int i = 0; i < inStr.length(); i++)
+        {
+            switch(inStr.charAt(i)) {
+                case '[': squareCount++; break;
+                case ']': squareCount--; break;
+            }
+        }
+        return(squareCount == 0);
     }
     public void setHighlight(boolean highlighted)
     {
