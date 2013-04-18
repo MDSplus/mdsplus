@@ -1,3 +1,9 @@
+2013-04-18 09:07  twf
+
+	* mdsobjects/python/tests/__init__.py (1.13):
+	
+	Fix for regression tests during builds
+
 2013-04-17 16:50  twf
 
 	* mdsobjects/python/: _descriptor.py (1.29), _mdsdtypes.py (1.8),
