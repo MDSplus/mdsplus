@@ -6,9 +6,9 @@ Tests of MDSplus
 
 """
 from unittest import TestCase,TestSuite,TextTestRunner,TestResult
-import tests.treeUnitTest
-import tests.threadsUnitTest
-import tests.dataUnitTest
+from tests.treeUnitTest import treeTests
+from tests.threadsUnitTest import suite as threadsSuite
+from tests.dataUnitTest import suite as dataSuite
 import os
 import time
 import warnings
@@ -58,15 +58,10 @@ def test_all(*arg):
     Data.execute('setenv("pytreesub_path='+hostpart+dir.replace('\\','\\\\')+'")')
     print (Data.execute('getenv("pytree_path")'))
     tests=list()
-    tests.append(treeUnitTest.suite())
-    #tests=TestSuite()
-    #tests.addTest(treeUnitTest.treeTests())
+    tests.append(treeTests())
     if os.getenv('TEST_THREADS') is not None:
-        tests.append(threadsUnitTest.suite())
-	#tests.addTest(threadsUnitTest.threadTest())
-    tests.append(dataUnitTest.suite())
-    #tests.addTest(dataUnitTest.dataTests())
+        tests.append(threadsSuite())
+    tests.append(dataSuite())
     tests.append(TestSuite([cleanup('cleanup')]))
-    #tests.addTest(cleanup())
     return TestSuite(tests)
 
