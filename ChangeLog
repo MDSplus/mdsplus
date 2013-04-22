@@ -1,3 +1,29 @@
+2013-04-22 09:41  twf
+
+	* mdsobjects/python/: _descriptor.py, _mdsdtypes.py, _mdsshr.py,
+	_tdishr.py, _treeshr.py, apd.py, compound.py, connection.py,
+	event.py, mdsarray.py, mdsdata.py, mdsdevice.py, mdsscalar.py,
+	setup.py, tdipy.py, tree.py, treenode.py, _opcodes/__init__.py,
+	_opcodes/opcodes.py, tests/__init__.py, tests/dataUnitTest.py,
+	tests/threadsUnitTest.py, tests/treeUnitTest.py
+	(beta.[1,1,1,1,1,1,1,1,1,1,1,1,1,2,3,3,1,1,1,1,1,1,1]),
+	_descriptor.py, _mdsdtypes.py, _mdsshr.py, _tdishr.py, _treeshr.py,
+	apd.py, compound.py, connection.py, event.py, mdsarray.py,
+	mdsdata.py, mdsdevice.py, mdsscalar.py, setup.py, tdipy.py,
+	tree.py, treenode.py, _opcodes/__init__.py, _opcodes/opcodes.py,
+	tests/__init__.py, tests/dataUnitTest.py, tests/threadsUnitTest.py,
+	tests/treeUnitTest.py
+	(stable.[1,1,1,1,1,1,1,1,1,1,1,1,1,2,3,3,1,1,1,1,1,1,1,1,1,1,1,1,1,
+	1,1,1,1,1,1,1,2,3,3,1,1,1,1,1,1,1]):
+	
+	python3 support and fix getDescendants
+
+2013-04-22 09:34  twf
+
+	* mdsobjects/python/treenode.py (1.35):
+	
+	Fix getDescendants
+
 2013-04-18 09:07  twf
 
 	* mdsobjects/python/tests/__init__.py (1.13):
