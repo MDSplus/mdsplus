@@ -469,23 +469,21 @@ class TreeNode(Data):
         @return: First level descendants of this node
         @rtype: TreeNodeArray
         """
-        try:
-            members=self.member_nids
-            try:
-                children=self.children_nids
-                ans=list()
-                for i in range(len(members)):
-                    ans.append(members.nids[i].value)
-                for i in range(len(children)):
-                    ans.append(children.nids[i].value)
-                return TreeNodeArray(Int32Array(ans))
-            except:
-                return members
-        except:
-            try:
-                return self.children_nids
-            except:
-                return None
+        ans=None
+        members=self.member_nids
+        children=self.children_nids
+        if members is None:
+          ans=children
+        elif children is None:
+          ans=members
+        else:
+          nids=list()
+          for node in members:
+            nids.append(node.nid)
+          for node in children:
+            nids.append(node.nid)
+          ans=TreeNodeArray(Int32Array(nids))
+        return ans
             
     def getDtype(self):
         """Return the name of the data type stored in this node
