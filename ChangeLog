@@ -1,3 +1,66 @@
+2013-04-23 16:09  twf
+
+	* rpm/subpackages/python (1.18):
+	
+	Fix the uninstall so it doesn't wipe out the new install during
+	updates
+
+2013-04-23 16:05  twf
+
+	* rpm/subpackages/: python (beta.4), python (stable.[4,4]):
+	
+	Fix the uninstall so it doesn't wipe out the new install during
+	updates
+
+2013-04-23 15:40  twf
+
+	* rpm/subpackages/python (1.17):
+	
+	Fix the uninstall so it doesn't wipe out the new install during
+	updates
+
+2013-04-23 15:32  twf
+
+	* rpm/subpackages/python (stable.3):
+	
+	preun was removing the new install during update
+
+2013-04-23 15:29  twf
+
+	* rpm/subpackages/: python (beta.3), python (1.16):
+	
+	preun was removing the new install during update
+
+2013-04-23 14:47  twf
+
+	* mdsobjects/python/: __init__.py, _opcodes/__init__.py
+	(stable.[2,2]):
+	
+	Fix for python3
+
+2013-04-23 13:51  twf
+
+	* tests/distribution_tests/: solaris_install.py (beta.1),
+	solaris_install.py (stable.[1,1]):
+	
+	Fix regression testing
+
+2013-04-23 13:01  twf
+
+	* mdsobjects/python/: _opcodes/__init__.py (beta.2), __init__.py
+	(stable.[2,1]), _opcodes/__init__.py (1.4):
+	
+	Fix for python3
+
+2013-04-23 05:08  manduchi
+
+	* javascope/jScope/: CompositeWaveDisplay.java (1.4),
+	LocalDataProvider.java (1.4), MdsAccess.java (1.2),
+	MdsConnection.java (1.4), MdsDataProvider.java (1.17),
+	Waveform.java (1.4), jScopeWaveContainer.java (1.2):
+	
+	Fix LocalDataProvider Unsatisfied Link Error with JavaMds library
+
 2013-04-22 09:41  twf
 
 	* mdsobjects/python/: _descriptor.py, _mdsdtypes.py, _mdsshr.py,
