@@ -73,7 +73,7 @@ public class MdsConnection
             public ProcessUdpEvent()
             {
 
-		System.out.println("START ProcessUdpEvent " + provider);
+		//System.out.println("START ProcessUdpEvent " + provider);
 
                 String portStr = System.getenv("mdsevent_port");
                 if( portStr != null )

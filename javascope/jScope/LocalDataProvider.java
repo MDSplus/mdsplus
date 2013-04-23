@@ -185,16 +185,15 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
      static {
         try
         {
-//          System.loadLibrary("MdsShr");
-//          System.loadLibrary("MdsIpShr");
-//          System.loadLibrary("TreeShr");
-//          System.loadLibrary("TdiShr");
           System.loadLibrary("JavaMds");
         }
-        catch(Throwable e)
+        catch(UnsatisfiedLinkError  e)
         {
-          System.out.println("Load library "+e);
-          e.printStackTrace();
+          //System.out.println("Load library "+e);
+          javax.swing.JOptionPane.showMessageDialog(null, "Can't load data provider class LocalDataProvider : " + e, "Alert LocalDataProvider",
+                                          javax.swing.JOptionPane.ERROR_MESSAGE);
+
+          //e.printStackTrace();
         }
     }
 
@@ -257,10 +256,15 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
             for(int i = 0; i < shots.length; i++)
                 lshots[i] = shots[i];
             return lshots;
-        }catch(Exception exc)
+        }
+        catch(UnsatisfiedLinkError e)
+        {
+            System.err.println("Error in GetIntArray: " + e);
+            return null;
+        }
+        catch(Exception exc)
         {
             System.err.println("Error in GetIntArray: " + exc);
-
             return null;
         }
     }

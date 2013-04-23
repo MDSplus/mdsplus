@@ -1,6 +1,5 @@
 package jScope;
 
-/* $Id$ */
 import jScope.ConnectionEvent;
 import jScope.ConnectionListener;
 import java.io.*;
@@ -22,7 +21,7 @@ public class MdsDataProvider
     long shot;
     boolean open, connected;
     MdsConnection mds;
-    public String error;
+    String error;
     private boolean use_compression = false;
     int var_idx = 0;
 
@@ -534,6 +533,7 @@ public class MdsDataProvider
                     var_idx+=2;
                 }
             }
+            error = null;
             int shape[] = GetNumDimensions(expr);
 
             if (error != null || shape == null)
@@ -1176,6 +1176,22 @@ public class MdsDataProvider
             shot = s;
             open = false;
             //  System.out.println("Open "+experiment+ " "+s);
+        }
+    }
+
+    public synchronized void Update(String experiment, long shot, boolean resetExperiment)
+    {
+        this.error = null;
+        this.var_idx = 0;
+
+        if (resetExperiment) {
+          this.experiment = null;
+        }
+        if ((shot != this.shot) || (shot == 0L) || (this.experiment == null) || (this.experiment.length() == 0) || (!this.experiment.equals(experiment)))
+        {
+          this.experiment = ((experiment != null) && (experiment.trim().length() > 0) ? experiment : null);
+          this.shot = shot;
+          this.open = false;
         }
     }
 

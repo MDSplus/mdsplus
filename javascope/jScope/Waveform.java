@@ -1490,8 +1490,11 @@ public class Waveform
         we.setXValue(s.getYinXZplot());
         we.setDataValue(s.getZValue());
         we.setIsMB2(is_mb2);
+        
+        
         if(s.isLongX())
             we.setDateValue(0);
+        
 
         dispatchWaveformEvent(we);
       }

@@ -872,7 +872,115 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             w.Update();
         }
     }
+	
+  private String getExpression(String paramString, boolean infoFlag) throws IOException
+  {
+    StringTokenizer st = new StringTokenizer(paramString, "/");
+    String str1 = st.nextToken();
+    String ipAddress = st.nextToken();
+    String expAndRegion = st.nextToken();
+    String experiment = expAndRegion.substring(0, expAndRegion.indexOf('~'));
+    String region = expAndRegion.substring(expAndRegion.indexOf('~') + 1);
+    String str6 = st.nextToken();
+    String str7 = st.nextToken();
 
+    String str8 = str1 + "/" + ipAddress + "/" + expAndRegion + "/" + str6 + "/";
+
+    String str9 = "Experimet : " + experiment + " Source : " + region + " Shot = " + str6;
+
+    if (str7.startsWith("vexpr"))
+    {
+      Object localObject = null;
+      String str10 = null;
+      StringTokenizer localStringTokenizer2 = new StringTokenizer(paramString, ",");
+
+      localObject = paramString.substring(paramString.lastIndexOf(',') + 1, paramString.lastIndexOf(')'));
+      str10 = paramString.substring(paramString.indexOf('(') + 1, paramString.lastIndexOf(','));
+
+      str8 = str8 + "vexpr(decompile(`getnci(" + str10 + ",\"record\"))," + (String)localObject + ")";
+
+      str9 = str9 + " uRun = " + (String)localObject + "\n    Data Path : " + str10;
+    }
+    else
+    {
+      str8 = str8 + "decompile(`getnci(" + str7 + ",\"record\"))";
+      str9 = str9 + "\n    Data path : " + str7;
+    }
+
+    if (infoFlag) {
+      return str9;
+    }
+
+    Object localObject = (MdsAccess)DataAccessURL.getDataAccess(str8);
+
+    return str9 + "\n Value : " + ((MdsAccess)localObject).getExpression(str8);
+  }
+
+    public String addSignal(String paramString1, int paramInt1, int paramInt2, String paramString2, String paramString3, boolean paramBoolean, int paramInt3, String paramString4)
+  {
+    String str1 = null;
+    Object localObject1 = null;
+    Object localObject2 = null;
+    Object localObject3 = null;
+    Object localObject4 = null;
+
+    Signal localSignal = null;
+    String str2 = null;
+
+    int i = paramString1.indexOf("/") + 2;
+    i = paramString1.indexOf("/", i) + 1;
+    str2 = paramString1.substring(i, paramString1.length());
+    try
+    {
+      localSignal = DataAccessURL.getSignal(paramString1, paramString4);
+      if (localSignal != null)
+      {
+        if (paramString2 != null)
+        {
+          localSignal.setColor(new Color(Integer.decode(paramString2).intValue()));
+          this.automatic_color = false;
+        } else {
+          this.automatic_color = true;
+        }
+        localSignal.setMarker(paramInt3);
+
+        if (paramString3 != null)
+          localSignal.setName(paramString3);
+        else {
+          localSignal.setName(str2);
+        }
+        addSignal(localSignal, paramInt1, paramInt2);
+
+        str1 = getExpression(paramString1, true);
+      }
+
+    }
+    catch (Exception localException)
+    {
+      if (localException.toString().indexOf("TdiINVCLADSC") != -1)
+      {
+        try
+        {
+          return getExpression(paramString1, false);
+        }
+        catch (IOException localIOException)
+        {
+          JOptionPane.showMessageDialog(this, localIOException.toString(), "alert", 0);
+        }
+      }
+      else
+      {
+        JOptionPane.showMessageDialog(this, localException.toString(), "alert", 0);
+      }
+
+    }
+
+    return str1;
+  }
+
+  
+  
+  
     public void addFrames(String url, int row, int column)
     {
         Component c = null;
