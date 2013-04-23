@@ -1,5 +1,9 @@
 import sys
-from _opcodes.opcodes import *
+try:
+  from _opcodes.opcodes import *
+except:
+  from opcodes import *
+
 find_opcode('$')
 for o in opcodes_by_name:
     try:
