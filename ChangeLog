@@ -1,3 +1,27 @@
+2013-04-24 15:43  twf
+
+	* rpm/subpackages/python (1.20):
+	
+	Fix cleanup
+
+2013-04-24 08:52  twf
+
+	* rpm/subpackages/kernel (1.29):
+	
+	Fix profile.d links
+
+2013-04-24 08:48  twf
+
+	* rpm/subpackages/kernel (1.28):
+	
+	Fix bin,lib and uid symlinks
+
+2013-04-24 08:28  twf
+
+	* rpm/subpackages/python (1.19):
+	
+	Fix updates
+
 2013-04-23 16:09  twf
 
 	* rpm/subpackages/python (1.18):
