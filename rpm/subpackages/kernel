@@ -90,8 +90,8 @@ then
 fi
 if [ -d /etc/profile.d ]
 then
-  ln -sf $RPM_INSTALL_PREFIX/setup.sh /etc/profile.d/mdsplus.sh
-  ln -sf $RPM_INSTALL_PREFIX/setup.csh /etc/profile.d/mdsplus.csh
+  ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
+  ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
 fi
 if [ "$(uname -i)" == "i386" ]
 then
