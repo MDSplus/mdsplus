@@ -13,15 +13,17 @@ Python interface to MDSplus
 
 %post python
 pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python >/dev/null 2>&1
-python setup.py install --record=$RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE-- >/dev/null 2>&1
+file_list=$RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE--
+python setup.py install --record=$file_list >/dev/null 2>&1
 popd >/dev/null 2>&1
 
 %preun python
-if [ -r $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE-- ]
+file_list=$RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE--
+if [ -r $file_list ]
 then
-  awk '{system("rm -f \""$0"\"")}' $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE--
-  awk -F/ '{dir=""; for (i=2;i<NF-1;i++) {dir=dir "/" $i;} system("find " dir " -type d -empty -delete");exit}' $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove
-  rm -f $RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE--
+  awk '{system("rm -f \""$0"\"")}' $file_list
+  awk -F/ '{dir=""; for (i=2;i<NF-1;i++) {dir=dir "/" $i;} system("find " dir " -type d -empty -delete");exit}' $file_list
+  rm -f $file_list
 fi
 
 
