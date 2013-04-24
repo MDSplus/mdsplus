@@ -99,9 +99,14 @@ then
 else
   bits=64
 fi
-ln -sf bin${bits} $RPM_INSTALL_PREFIX/mdsplus/bin
-ln -sf lib${bits} $RPM_INSTALL_PREFIX/mdsplus/lib
-ln -sf uil${bits} $RPM_INSTALL_PREFIX/mdsplus/uil
+if [ -d $RPM_INSTALL_PREFIX/mdsplus/bin${bits} ]
+then
+  ln -sf bin${bits} $RPM_INSTALL_PREFIX/mdsplus/bin
+fi
+if [ -d $RPM_INSTALL_PREFIX/mdsplus/lib${bits} ]
+then
+  ln -sf lib${bits} $RPM_INSTALL_PREFIX/mdsplus/lib
+fi
 if [ -d /etc/xdg/menus/applications-merged ]
 then
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/mdsplus.menu /etc/xdg/menus/applications-merged/
