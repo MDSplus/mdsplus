@@ -12,18 +12,15 @@ Python interface to MDSplus
 /usr/local/mdsplus/mdsobjects/python
 
 %post python
+rm -Rf $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")/MDSplus-*
 pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python >/dev/null 2>&1
-file_list=$RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE--
-python setup.py install --record=$file_list >/dev/null 2>&1
+python setup.py install >/dev/null 2>&1
 popd >/dev/null 2>&1
 
 %preun python
-file_list=$RPM_INSTALL_PREFIX/mdsplus/.python_rpm_files_do_not_remove--RPMFLAVOR------RELEASE--
-if [ -r $file_list ]
+if [ "$1" == "0" ]
 then
-  awk '{system("rm -f \""$0"\"")}' $file_list
-  awk -F/ '{dir=""; for (i=2;i<NF-1;i++) {dir=dir "/" $i;} system("find " dir " -type d -empty -delete");exit}' $file_list
-  rm -f $file_list
+  rm -Rf $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")/MDSplus-*
 fi
 
 
