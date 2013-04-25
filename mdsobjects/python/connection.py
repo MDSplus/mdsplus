@@ -9,6 +9,7 @@ from _mdsdtypes import *
 from apd import List,Dictionary
 __MdsIpShr=_load_library('MdsIpShr')
 ConnectToMds=__MdsIpShr.ConnectToMds
+DisconnectFromMds=__MdsIpShr.DisconnectFromMds
 ConnectToMds.argtypes=[_C.c_char_p]
 GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
 GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
@@ -115,6 +116,9 @@ class Connection(object):
         if self.socket == -1:
             raise Exception("Error connecting to %s" % (hostspec,))
         self.hostspec=hostspec
+
+    def __del__(self):
+        DisconnectFromMds(self.socket)
 
     def __processGetMany__(cls):
         try:
