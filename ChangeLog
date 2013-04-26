@@ -1,3 +1,21 @@
+2013-04-26 14:15  twf
+
+	* mdsobjects/python/_descriptor.py (1.30):
+	
+	Fix descriptor returned when one of the dimensions has 0 elements
+
+2013-04-26 14:11  twf
+
+	* mdsobjects/python/mdsdata.py (1.18):
+	
+	return None for value of empty data
+
+2013-04-26 13:12  twf
+
+	* mdsshr/MdsGet1DxA.c (1.15):
+	
+	User 64-bit arithmetic on offsets
+
 2013-04-25 11:35  twf
 
 	* mdsobjects/python/wsgi/doScope.py (stable.4):
