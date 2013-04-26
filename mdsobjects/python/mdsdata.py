@@ -782,5 +782,11 @@ class EmptyData(Data):
     
     def __str__(self):
         return "<no-data>"
+
+    def _getValue(self):
+       return None
+
+    value=property(_getValue)
+
     pass
 
