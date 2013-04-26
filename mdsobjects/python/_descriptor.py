@@ -426,9 +426,13 @@ class descriptor(_C.Structure):
         if self.dclass == CLASS_A:
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_a)).contents
             if descr.coeff:
+                descr.arsize=0
                 shape=list()
                 for i in range(descr.dimct):
-                    shape.append(descr.coeff_and_bounds[descr.dimct-i-1])
+                    dim=descr.coeff_and_bounds[descr.dimct-i-1]
+                    if dim > 0:
+                        descr.arsize=descr.arsize+dim*descr.length
+                        shape.append(dim)
             else:
                 shape=[int(descr.arsize/descr.length),]
             if self.dtype == DTYPE_T:
