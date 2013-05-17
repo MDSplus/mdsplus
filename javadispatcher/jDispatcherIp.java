@@ -166,12 +166,17 @@ class jDispatcherIp
                 String second_part = st.nextToken();
                 int nid;
                 try {
-                    nid = Integer.parseInt(second_part);
-                }
+                    if(second_part.toUpperCase().equals("PHASE"))
+                        dispatcher.abortPhase();
+                    else
+                    {
+                        nid = Integer.parseInt(second_part);
+                        dispatcher.abortAction(nid);
+                    }
+                 }
                 catch (Exception ex) {
                     throw new Exception("Invalid command");
                 }
-                dispatcher.abortAction(nid);
             }
             else if (first_part.equals("REDISPATCH")) {
                 String second_part = st.nextToken();
