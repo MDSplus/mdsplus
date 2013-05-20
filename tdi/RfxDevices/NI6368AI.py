@@ -229,6 +229,9 @@ class NI6368AI(Device):
             transientRec = False
             startTime = float( self.device.start_time.data() )
             trigSource = self.device.trig_source.data()
+	    clockSource = self.device.clock_source.evaluate()
+
+	    frequency = float( clockSource.getDelta() )
  
             try:
                 #In multi trigger acquisition acquired data from trigger_time[i]+start_time up to trigger_time[i] + end_time
@@ -320,7 +323,7 @@ class NI6368AI(Device):
                 return
            
             while not self.stopReq:
-                status = self.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timesIdx0[trigCount] + startTime ), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
+                status = self.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timesIdx0[trigCount] + startTime ), c_float(frequency), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
    ##Check termination
                 trigCount += 1
                 print "Trigger count %d num %d num smp %d status %d" %(trigCount , numTrigger, numSamples, status) 
@@ -330,7 +333,7 @@ class NI6368AI(Device):
             #if( transientRec and status == -1 ):
             if( status < 0 ):
                 if( status == -1 ):
-                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Module is not in stop state')
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Module is not triggered')
                 if( status == -2 ):
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'DMA overflow')
 
@@ -477,13 +480,16 @@ class NI6368AI(Device):
                     self.clock_source.putData(frequency)
                   
                 clockSource = Range(None,None, Float64(1./frequency))
-                print 'CLOCK: ', clockSource
                 self.clock_source.putData(clockSource)
             else:
+                print 'External'
                 clockSource = self.clock_source.evaluate()
+                print 'External CLOCK: ', clockSource
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid clock definition')
             return 0
+
+        print 'CLOCK: ', clockSource
 
 #Time management
 
