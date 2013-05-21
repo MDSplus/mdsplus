@@ -1,3 +1,41 @@
+2013-05-20 10:20  manduchi
+
+	* tdi/RfxDevices/NI6368AI.py (1.6):
+	
+	Mod
+
+2013-05-17 08:00  manduchi
+
+	* javadispatcher/jDispatcherIp.java (1.34):
+	
+	Added ABORT PHASE command
+
+2013-05-02 19:11  twf
+
+	* mdsobjects/python/: _descriptor.py (beta.3), _descriptor.py
+	(stable.[3,3]):
+	
+	Fix 2d handling
+
+2013-05-02 11:17  twf
+
+	* mdsobjects/python/_descriptor.py (1.31):
+	
+	Fix multiple dimension handling
+
+2013-05-01 14:28  twf
+
+	* tdi/dev_support/PyDoMethod.fun (1.8):
+	
+	Fix to support doing methods on the model
+
+2013-04-30 12:04  twf
+
+	* mdsobjects/python/: _descriptor.py, mdsdata.py (beta.[2,2]),
+	_descriptor.py, mdsdata.py (stable.[2,2,2,2]):
+	
+	Fix 2d subscripting results
+
 2013-04-26 14:15  twf
 
 	* mdsobjects/python/_descriptor.py (1.30):
