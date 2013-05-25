@@ -1,3 +1,9 @@
+2013-05-24 12:02  twf
+
+	* mdsobjects/python/__init__.py (1.19):
+	
+	Add Call to MDSplus
+
 2013-05-20 10:20  manduchi
 
 	* tdi/RfxDevices/NI6368AI.py (1.6):
