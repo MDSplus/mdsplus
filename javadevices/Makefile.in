@@ -145,7 +145,8 @@ NI6259AISetup.java\
 FAKECAMERASetup.java\
 AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
-FLIRSC65XSetup.java
+FLIRSC65XSetup.java\
+NI6368AISetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar
