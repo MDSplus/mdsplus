@@ -1,3 +1,15 @@
+2013-05-27 08:31  manduchi
+
+	* tdi/RfxDevices/NIanalogInputScaled.fun (1.1):
+	
+	National Instruments ADC calibration function
+
+2013-05-27 08:12  manduchi
+
+	* javadevices/Makefile.in (1.41):
+	
+	Add NI6368AI device setup
+
 2013-05-24 12:02  twf
 
 	* mdsobjects/python/__init__.py (1.19):
