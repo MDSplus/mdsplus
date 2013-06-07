@@ -1,3 +1,9 @@
+2013-06-07 11:06  manduchi
+
+	* javadispatcher/: ActionServer.java (1.34), jServer.java (1.18):
+	
+	Try to make abort phase more robust
+
 2013-05-27 08:31  manduchi
 
 	* tdi/RfxDevices/NIanalogInputScaled.fun (1.1):
