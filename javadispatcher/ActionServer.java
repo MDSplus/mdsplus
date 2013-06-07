@@ -381,6 +381,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
     public /* OCT 2008 synchronized */ void abort(boolean flush)
     {
+        enqueued_actions.removeAllElements();
         if(mds_server == null) return;
         try {
             mds_server.abort(flush);

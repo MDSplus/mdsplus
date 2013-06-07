@@ -105,7 +105,10 @@ public class jServer
             actionV.addElement(actionDescr);
             notify();
         }
-
+        void dequeueAllActions()
+        {
+            actionV.removeAllElements();
+        }
         synchronized ActionDescriptor nextAction()
         {
             while (actionV.size() == 0) {
@@ -341,6 +344,10 @@ public class jServer
                         boolean flush = (flushInt != 0);
 
                         // System.out.println("SrvAbort " + id + " " + flush);
+                        if(flush)
+                        {
+                            actionQueue.dequeueAllActions();
+                         }
                         worker.abortCurrentAction();
 
                         //answer = "" + id + " " + SrvJobABORTED + " 1 0";
@@ -555,7 +562,7 @@ public class jServer
                 nid = mdsTree.resolve(new PathData(name), 0);
             }
             catch (Exception exc) {
-                System.err.println("Cannot Find Node " + name);
+                System.err.println("Cannot Find Node " + name + ": "+exc);
                 return 0;
             }
 
