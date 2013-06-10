@@ -3,8 +3,8 @@ import MARTE_GENERIC
 
 class MARTE_MHD_AC_BC(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe MHD_AC_BC'
-    parNames = ['OutputMapping', 'statFreezeTime', 'endFreezeTime']
-    parValues = [0, 10000., 10000.]
+    parNames = ['OutputMapping', 'statFreezeTime', 'endFreezeTime', 'currentLimit']
+    parValues = [0, 10000., 10000., 400.]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
