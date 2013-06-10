@@ -1,3 +1,16 @@
+2013-06-10 11:46  manduchi
+
+	* tdi/MdsDevices.fun (1.23):
+	
+	Added device RFX_PROTECTIONS
+
+2013-06-10 11:43  manduchi
+
+	* tdi/RfxDevices/: MARTE_MHD_AC_BC.py (1.4), RFX_PROTECTIONS.py
+	(1.1), __init__.py (1.36):
+	
+	Added RFX_PROTECTIONS device
+
 2013-06-07 11:06  manduchi
 
 	* javadispatcher/: ActionServer.java (1.34), jServer.java (1.18):
