@@ -1,3 +1,9 @@
+2013-06-11 12:59  twf
+
+	* mdsobjects/python/: _descriptor.py (1.32), _treeshr.py (1.31):
+	
+	Fix string handling with \000(nulls) in it
+
 2013-06-10 11:46  manduchi
 
 	* tdi/MdsDevices.fun (1.23):
