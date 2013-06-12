@@ -25,9 +25,14 @@ public fun RFXshotsDate(in _shotsList, optional in _tabel)
 			if( present( _tabel ) )
 			{
 /* aggiungo una correzione stimata di 22 seconfi */
-				_date = _date - 22 * 1000 * 10000q ;
+				_date1 = _date - 22 * 1000 * 10000q ;				
+				write(*, " Shot =  "//_s//" Date = "//date_time(_date1) );
 
-				write(*, " Shot =  "//_s//" Date = "//date_time(_date) );
+				_date = ( _date -  0x7c95674beb4000q ) / 10000q ;
+/* aggiungo una correzione stimata di 22 seconfi */
+				_date = _date - 22 * 1000;
+				_dates = [ _dates, _date];
+
 			}
 			else
 			{
@@ -57,7 +62,7 @@ dell'ora legale.
 
 
 	if( present( _tabel ) )
-		return ( 1 ) ;
+		return ( _dates ) ;
 	else
 		return ( make_signal( _values,,_dates ) );
 
