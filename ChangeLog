@@ -1,3 +1,21 @@
+2013-06-12 13:32  twf
+
+	* mdsobjects/python/_treeshr.py (1.32):
+	
+	remove the erroneous transpose
+
+2013-06-12 11:30  manduchi
+
+	* javascope/jScope/MdsDataProvider.java (1.18):
+	
+	Handle array management carried out by tdishr
+
+2013-06-12 09:12  manduchi
+
+	* tdi/RfxDevices/RFXshotsDate.fun (1.3):
+	
+	Return array of pulse date in millisecond
+
 2013-06-11 12:59  twf
 
 	* mdsobjects/python/: _descriptor.py (1.32), _treeshr.py (1.31):
