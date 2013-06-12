@@ -1975,8 +1975,25 @@ public class MdsDataProvider
 */
     protected int[] GetNumDimensions(String in_y) throws IOException
     {
-        return GetIntArray(in_y);
-        //return GetIntArray("shape("+in_y+")");
+        //return GetIntArray(in_y);
+        //Gabriele June 2013: reduce dimension if one component is 1
+        int [] fullDims = GetIntArray(in_y);
+        if(fullDims.length == 1) return fullDims;
+        //count dimensions == 1
+        int numDimensions = 0;
+        for(int i = 0; i < fullDims.length; i++)
+        {
+            if(fullDims[i] != 1)
+                numDimensions++;
+        }
+        int [] retDims = new int[numDimensions];
+        int j = 0;
+        for(int i = 0; i < fullDims.length; i++)
+        {
+            if(fullDims[i] != 1)
+                retDims[j++] = fullDims[i];
+         }
+         return retDims;
     }
 
     static class RealArray
