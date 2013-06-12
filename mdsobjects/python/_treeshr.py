@@ -533,7 +533,6 @@ def TreeMakeTimestampedSegment(n,timestamps,value,idx,rows_filled):
     """Put a segment"""
     from mdsarray import makeArray,Int64Array
     timestamps=Int64Array(timestamps)
-    value=makeArray(value).data().transpose()
     try:
         n.tree.lock()
         status=__TreeMakeTimestampedSegment(n.tree.ctx,n.nid,descriptor_a(timestamps).pointer,_C.pointer(descriptor_a(value)),idx,rows_filled)
