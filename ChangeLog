@@ -1,3 +1,9 @@
+2013-06-13 14:47  twf
+
+	* mdsobjects/python/_descriptor.py (1.33):
+	
+	Convert DTYPE_Z 0 element arrays to DTYPE_L
+
 2013-06-12 13:32  twf
 
 	* mdsobjects/python/_treeshr.py (1.32):
