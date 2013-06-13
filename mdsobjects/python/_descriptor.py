@@ -423,6 +423,8 @@ class descriptor(_C.Structure):
                 return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](arglist)
             raise Exception("%s is not yet supported" % str(mdsdtypes(ans.dtype)))
         if self.dclass == CLASS_A:
+            if self.dtype == DTYPE_Z:
+                self.dtype = DTYPE_L
             descr = _C.cast(_C.pointer(self),_C.POINTER(descriptor_a)).contents
             if descr.coeff:
                 descr.arsize=descr.length
