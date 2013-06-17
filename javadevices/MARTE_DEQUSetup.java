@@ -54,6 +54,8 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         deviceTable1 = new DeviceTable();
         jPanel4 = new javax.swing.JPanel();
         deviceTable2 = new DeviceTable();
+        jPanel11 = new javax.swing.JPanel();
+        deviceField9 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe Dequ Setup");
@@ -177,6 +179,14 @@ public class MARTE_DEQUSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Bp Correction", jPanel4);
 
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Toroidal I2T Limit (A2s): ");
+        deviceField9.setNumCols(6);
+        deviceField9.setOffsetNid(1357);
+        jPanel11.add(deviceField9);
+
+        jTabbedPane1.addTab("Limits", jPanel11);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -194,12 +204,14 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

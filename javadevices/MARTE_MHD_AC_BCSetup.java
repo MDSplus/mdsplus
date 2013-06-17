@@ -51,6 +51,8 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        jPanel7 = new javax.swing.JPanel();
+        deviceField9 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe MhdAcBc Setup");
@@ -155,6 +157,14 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Freeze", jPanel4);
 
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("Max PR current(A): ");
+        deviceField9.setNumCols(4);
+        deviceField9.setOffsetNid(1357);
+        jPanel7.add(deviceField9);
+
+        jTabbedPane1.addTab("Limits", jPanel7);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -172,6 +182,7 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
     private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
+    private DeviceField deviceField9;
     private DeviceTable deviceTable1;
     private DeviceTable deviceTable3;
     private javax.swing.JPanel jPanel1;
@@ -181,6 +192,7 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     private javax.swing.JTabbedPane jTabbedPane1;
