@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="Protezioni di Macchina RFX"/>
     <Property name="deviceType" type="java.lang.String" value="RFX_PROTECTIONS"/>
     <Property name="height" type="int" value="500"/>
-    <Property name="width" type="int" value="550"/>
+    <Property name="width" type="int" value="600"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>

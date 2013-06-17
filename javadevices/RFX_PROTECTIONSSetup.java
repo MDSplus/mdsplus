@@ -47,7 +47,7 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
         setDeviceTitle("Protezioni di Macchina RFX");
         setDeviceType("RFX_PROTECTIONS");
         setHeight(500);
-        setWidth(550);
+        setWidth(600);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 1));
