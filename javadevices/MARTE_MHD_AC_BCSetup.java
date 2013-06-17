@@ -159,7 +159,7 @@ public class MARTE_MHD_AC_BCSetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Max PR current(A): ");
-        deviceField9.setNumCols(4);
+        deviceField9.setNumCols(20);
         deviceField9.setOffsetNid(1357);
         jPanel7.add(deviceField9);
 

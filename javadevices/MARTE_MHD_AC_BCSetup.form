@@ -254,7 +254,7 @@
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Max PR current(A): "/>
-                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="numCols" type="int" value="20"/>
                     <Property name="offsetNid" type="int" value="1357"/>
                   </Properties>
                 </Component>

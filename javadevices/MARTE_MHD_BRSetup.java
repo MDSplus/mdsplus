@@ -158,19 +158,19 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Max. Br Horizontal Probes (T): ");
-        deviceField9.setNumCols(6);
+        deviceField9.setNumCols(20);
         deviceField9.setOffsetNid(1351);
         jPanel4.add(deviceField9);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Max. Br Vertical Probes (T): ");
-        deviceField10.setNumCols(6);
+        deviceField10.setNumCols(20);
         deviceField10.setOffsetNid(1357);
         jPanel4.add(deviceField10);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Max time period above threshold (s):");
-        deviceField11.setNumCols(6);
+        deviceField11.setNumCols(20);
         deviceField11.setOffsetNid(1363);
         jPanel4.add(deviceField11);
 
