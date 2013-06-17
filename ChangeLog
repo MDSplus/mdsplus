@@ -1,3 +1,52 @@
+2013-06-17 10:37  manduchi
+
+	* tdi/RfxDevices/bRadCheck.fun (1.12):
+	
+	Check parameters read from pulse file
+
+2013-06-17 07:50  manduchi
+
+	* javadevices/: MARTE_MHD_AC_BCSetup.form (1.4),
+	MARTE_MHD_AC_BCSetup.java (1.4), MARTE_MHD_BRSetup.form (1.2),
+	MARTE_MHD_BRSetup.java (1.9):
+	
+	Larger text fields
+
+2013-06-17 07:38  manduchi
+
+	* javadevices/: RFX_PROTECTIONSSetup.form (1.3),
+	RFX_PROTECTIONSSetup.java (1.3):
+	
+	Fix dimension
+
+2013-06-17 07:35  manduchi
+
+	* javadevices/: RFX_PROTECTIONSSetup.form (1.2),
+	RFX_PROTECTIONSSetup.java (1.2):
+	
+	Better legends
+
+2013-06-17 06:08  manduchi
+
+	* javadevices/: Makefile.in (1.43), javadevices.mak (1.23):
+	
+	Wrong filename
+
+2013-06-17 06:06  manduchi
+
+	* javadevices/: MARTE_DEQUSetup.form (1.6), MARTE_DEQUSetup.java
+	(1.6), MARTE_MHD_AC_BCSetup.form (1.3), MARTE_MHD_AC_BCSetup.java
+	(1.3), Makefile.in (1.42), RFX_PROTECTIONSSetup.form (1.1),
+	RFX_PROTECTIONSSetup.java (1.1), javadevices.mak (1.22):
+	
+	Protections added
+
+2013-06-17 06:00  manduchi
+
+	* tdi/RfxDevices/MARTE_DEQU.py (1.4):
+	
+	Added I2T limit
+
 2013-06-13 14:47  twf
 
 	* mdsobjects/python/_descriptor.py (1.33):
