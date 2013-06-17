@@ -82,7 +82,7 @@ RFXTimingSetup.java\
 RFXToroidalSetup.java\
 RFXVIConfigSetup.java\
 RFXVISetupSetup.java\
-RFXPROTECTIONSSetup.java\
+RFX_PROTECTIONSSetup.java\
 ST133Setup.java\
 SXCSetup.java\
 SPIDERSetup.java\
