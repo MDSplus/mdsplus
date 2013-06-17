@@ -56,7 +56,7 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
         jPanel3.setLayout(new java.awt.GridLayout(4, 2));
 
         deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Max Br Orizzontale (Warning): ");
+        deviceField1.setLabelString("Max Br Orizzontale (T) (Warning): ");
         deviceField1.setNumCols(4);
         deviceField1.setOffsetNid(2);
         jPanel3.add(deviceField1);
@@ -68,7 +68,7 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
         jPanel3.add(deviceField2);
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Max Br verticale(Warning): ");
+        deviceField3.setLabelString("Max Br verticale (T) (Warning): ");
         deviceField3.setNumCols(4);
         deviceField3.setOffsetNid(4);
         jPanel3.add(deviceField3);
@@ -80,13 +80,13 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
         jPanel3.add(deviceField4);
 
         deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Max tempo fuori soglia (Warning):");
+        deviceField5.setLabelString("Max tempo fuori soglia (s)  (Warning):");
         deviceField5.setNumCols(4);
         deviceField5.setOffsetNid(6);
         jPanel3.add(deviceField5);
 
         deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Max tempo fuori soglia (T)(Fault):");
+        deviceField6.setLabelString("Max tempo fuori soglia (s)(Fault):");
         deviceField6.setNumCols(4);
         deviceField6.setOffsetNid(7);
         jPanel3.add(deviceField6);
@@ -121,7 +121,7 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Bobile Toroidali"));
 
         deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Limite I2T Bobine Toroidali (MA2s): ");
+        deviceField9.setLabelString("Limite I2T Bobine Toroidali (A2s): ");
         deviceField9.setNumCols(4);
         deviceField9.setOffsetNid(10);
         jPanel4.add(deviceField9);

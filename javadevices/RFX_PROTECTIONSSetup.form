@@ -65,7 +65,7 @@
             <Component class="DeviceField" name="deviceField1">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Max Br Orizzontale (Warning): "/>
+                <Property name="labelString" type="java.lang.String" value="Max Br Orizzontale (T) (Warning): "/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="2"/>
               </Properties>
@@ -81,7 +81,7 @@
             <Component class="DeviceField" name="deviceField3">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Max Br verticale(Warning): "/>
+                <Property name="labelString" type="java.lang.String" value="Max Br verticale (T) (Warning): "/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="4"/>
               </Properties>
@@ -97,7 +97,7 @@
             <Component class="DeviceField" name="deviceField5">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Max tempo fuori soglia (Warning):"/>
+                <Property name="labelString" type="java.lang.String" value="Max tempo fuori soglia (s)  (Warning):"/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="6"/>
               </Properties>
@@ -105,7 +105,7 @@
             <Component class="DeviceField" name="deviceField6">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Max tempo fuori soglia (T)(Fault):"/>
+                <Property name="labelString" type="java.lang.String" value="Max tempo fuori soglia (s)(Fault):"/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="7"/>
               </Properties>
@@ -181,7 +181,7 @@
             <Component class="DeviceField" name="deviceField9">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Limite I2T Bobine Toroidali (MA2s): "/>
+                <Property name="labelString" type="java.lang.String" value="Limite I2T Bobine Toroidali (A2s): "/>
                 <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="10"/>
               </Properties>
