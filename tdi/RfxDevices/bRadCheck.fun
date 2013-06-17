@@ -4,7 +4,6 @@ public fun bRadCheck(in _save, optional _debug)
 	 _PLASMA_CURRENT_LEVEL = 100000;
 
 
-
 	_START_TIME = -1.0;
 	_END_TIME = 1.0;
 	_PERIOD = 0.001;
@@ -112,7 +111,7 @@ public fun bRadCheck(in _save, optional _debug)
 				}
 
 
-				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) || ( _h == 22 && _k == 3 ) ) )
+				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) || ( _h == 22 && _k == 3 ) || ( _h == 26 && _k == 4 )  ) )
 				{
 					_signalRef = execute(_sigNameRef);
   					_yRef = abs( data(_signalRef) );
@@ -181,9 +180,22 @@ write(*,  " signal "//sum( ( _y > 20. ) * 1.0 )//" ref "//( _val - 400 ) );
 */
    _m0Sig = MarteGetUserArray(\MHD_BR::MARTE, 'br', 1);
 
+	_max_br_hor_f = data(build_path("\\RFX::TOP.RFX.SETUP:PROTECTIONS:MAX_BR_HOR_F"));
+	_max_br_hor_w = data(build_path("\\RFX::TOP.RFX.SETUP:PROTECTIONS:MAX_BR_HOR_W"));
+	_max_br_ver_w = data(build_path("\\RFX::TOP.RFX.SETUP:PROTECTIONS:MAX_BR_VER_W"));
+	_max_br_ver_f = data(build_path("\\RFX::TOP.RFX.SETUP:PROTECTIONS:MAX_BR_VER_F"));
+    _br_time_f  = data(build_path("\\RFX::TOP.RFX.SETUP:PROTECTIONS:MAX_BR_TIM_F"));
+    _br_time_w  = data(build_path("\\RFX::TOP.RFX.SETUP:PROTECTIONS:MAX_BR_TIM_W"));
 
 	_Bv = resample( _m0Sig, _START_TIME, _END_TIME, _PERIOD );
 			
+    write(*, "_max_br_hor_w", _max_br_hor_w);
+    write(*, "_max_br_hor_f", _max_br_hor_f);
+    write(*, "_max_br_ver_w", _max_br_ver_w);
+    write(*, "_max_br_ver_f", _max_br_ver_f);
+    write(*, "_br_time_f", _br_time_f);
+    write(*, "_br_time_w", _br_time_w);
+
 		
 	for( _j = 1 ; _j <= 4 ; _j++)
 	{		
@@ -192,21 +204,31 @@ write(*,  " signal "//sum( ( _y > 20. ) * 1.0 )//" ref "//( _val - 400 ) );
 /*
     Sonde esterno-interno: 5mT (allarme) e 9 mT (intervento).
 */
+/*
 			_lW = 0.005; 
 			_lF = 0.009;
 			_dW = _dF = 0.03;
-
+*/
+			_lW = _max_br_hor_w; 
+			_lF = _max_br_hor_f;
+			_dW = _br_time_w;
+			_dF = _br_time_f;
 		}
 		else
 		{
 		
 /*
 	Sonde alto-basso: 5mT (allarme) e 9 mT (intervento).
-**/
+*/
+/*
 			_lW = 0.005; 
 			_lF = 0.009;
 			_dW = _dF = 0.03;
-	
+*/	
+			_lW = _max_br_ver_w; 
+			_lF = _max_br_ver_f;
+			_dW = _br_time_w;
+			_dF = _br_time_f;
 		}
 
 
