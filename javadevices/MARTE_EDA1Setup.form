@@ -977,14 +977,6 @@
                         <Property name="offsetNid" type="int" value="1729"/>
                       </Properties>
                     </Component>
-                    <Component class="DeviceField" name="deviceField133">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TriangIfsCos3RefSat"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1657"/>
-                      </Properties>
-                    </Component>
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JTabbedPane" name="jTabbedPane5">

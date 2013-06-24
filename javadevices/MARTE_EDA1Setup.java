@@ -137,7 +137,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField130 = new DeviceField();
         deviceField131 = new DeviceField();
         deviceField132 = new DeviceField();
-        deviceField133 = new DeviceField();
         jTabbedPane5 = new javax.swing.JTabbedPane();
         jPanel123 = new javax.swing.JPanel();
         deviceField134 = new DeviceField();
@@ -827,12 +826,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField132.setNumCols(4);
         deviceField132.setOffsetNid(1729);
         jPanel122.add(deviceField132);
-
-        deviceField133.setIdentifier("");
-        deviceField133.setLabelString("TriangIfsCos3RefSat");
-        deviceField133.setNumCols(4);
-        deviceField133.setOffsetNid(1657);
-        jPanel122.add(deviceField133);
 
         jPanel121.add(jPanel122, java.awt.BorderLayout.NORTH);
 
@@ -1611,7 +1604,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField130;
     private DeviceField deviceField131;
     private DeviceField deviceField132;
-    private DeviceField deviceField133;
     private DeviceField deviceField134;
     private DeviceField deviceField135;
     private DeviceField deviceField136;
