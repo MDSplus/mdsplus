@@ -1,3 +1,27 @@
+2013-06-24 12:01  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.14), MARTE_EDA1Setup.java
+	(1.14):
+	
+	One parameter more
+
+2013-06-24 11:58  manduchi
+
+	* javadevices/: MARTE_EDA1Setup.form (1.13), MARTE_EDA1Setup.java
+	(1.13):
+	
+	New Parameters
+
+2013-06-24 10:55  manduchi
+
+	* javadevices/MARTE_EDA1Setup.form (1.12),
+	javadevices/MARTE_EDA1Setup.java (1.12),
+	javadevices/RFXAxiControlSetup.java (1.3),
+	tdi/RfxDevices/MARTE_EDA1.py (1.10),
+	tdi/RfxDevices/RFXAxiControl__add.fun (1.5):
+	
+	More parameters
+
 2013-06-17 10:37  manduchi
 
 	* tdi/RfxDevices/bRadCheck.fun (1.12):
