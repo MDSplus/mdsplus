@@ -933,6 +933,179 @@
                 </Container>
               </SubComponents>
             </Container>
+            <Container class="javax.swing.JPanel" name="jPanel121">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Vertical Shift">
+                    <Property name="tabTitle" type="java.lang.String" value="Vertical Shift"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel122">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="North"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField130">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="VerticalShiftControl_ON:"/>
+                        <Property name="numCols" type="int" value="3"/>
+                        <Property name="offsetNid" type="int" value="1717"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField131">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TStartVerticalShiftControl"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1723"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField132">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TEndVerticalShoftControl: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1729"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField133">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TriangIfsCos3RefSat"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1657"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JTabbedPane" name="jTabbedPane5">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel123">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="Feedback">
+                            <Property name="tabTitle" type="java.lang.String" value="Feedback"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField134">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="VertShoftFBON"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1735"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField135">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="VertShoftSel: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1741"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField136">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TStartVertShiftIntegralAction:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1747"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField137">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="VerShiftIntSat:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1753"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField138">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KiVertShift:  "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1759"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField139">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KpVertShift:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1765"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField143">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KdVertShift:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1771"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel124">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="FeedForward">
+                            <Property name="tabTitle" type="java.lang.String" value="FeedForward"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField140">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="VerShiftFFON: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1777"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField141">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="VerShoftFFGAIN"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1783"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField142">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="LeadLagVertShiftON: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1789"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane2">
               <Properties>
                 <Property name="horizontalScrollBarPolicy" type="int" value="31"/>

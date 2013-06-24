@@ -132,6 +132,25 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField127 = new DeviceField();
         deviceField128 = new DeviceField();
         deviceField129 = new DeviceField();
+        jPanel121 = new javax.swing.JPanel();
+        jPanel122 = new javax.swing.JPanel();
+        deviceField130 = new DeviceField();
+        deviceField131 = new DeviceField();
+        deviceField132 = new DeviceField();
+        deviceField133 = new DeviceField();
+        jTabbedPane5 = new javax.swing.JTabbedPane();
+        jPanel123 = new javax.swing.JPanel();
+        deviceField134 = new DeviceField();
+        deviceField135 = new DeviceField();
+        deviceField136 = new DeviceField();
+        deviceField137 = new DeviceField();
+        deviceField138 = new DeviceField();
+        deviceField139 = new DeviceField();
+        deviceField143 = new DeviceField();
+        jPanel124 = new javax.swing.JPanel();
+        deviceField140 = new DeviceField();
+        deviceField141 = new DeviceField();
+        deviceField142 = new DeviceField();
         jScrollPane2 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         jPanel16 = new javax.swing.JPanel();
@@ -788,6 +807,102 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jPanel111.add(jTabbedPane4, java.awt.BorderLayout.CENTER);
 
         jTabbedPane1.addTab("Triangularity", jPanel111);
+
+        jPanel121.setLayout(new java.awt.BorderLayout());
+
+        deviceField130.setIdentifier("");
+        deviceField130.setLabelString("VerticalShiftControl_ON:");
+        deviceField130.setNumCols(3);
+        deviceField130.setOffsetNid(1717);
+        jPanel122.add(deviceField130);
+
+        deviceField131.setIdentifier("");
+        deviceField131.setLabelString("TStartVerticalShiftControl");
+        deviceField131.setNumCols(4);
+        deviceField131.setOffsetNid(1723);
+        jPanel122.add(deviceField131);
+
+        deviceField132.setIdentifier("");
+        deviceField132.setLabelString("TEndVerticalShoftControl: ");
+        deviceField132.setNumCols(4);
+        deviceField132.setOffsetNid(1729);
+        jPanel122.add(deviceField132);
+
+        deviceField133.setIdentifier("");
+        deviceField133.setLabelString("TriangIfsCos3RefSat");
+        deviceField133.setNumCols(4);
+        deviceField133.setOffsetNid(1657);
+        jPanel122.add(deviceField133);
+
+        jPanel121.add(jPanel122, java.awt.BorderLayout.NORTH);
+
+        deviceField134.setIdentifier("");
+        deviceField134.setLabelString("VertShoftFBON");
+        deviceField134.setNumCols(4);
+        deviceField134.setOffsetNid(1735);
+        jPanel123.add(deviceField134);
+
+        deviceField135.setIdentifier("");
+        deviceField135.setLabelString("VertShoftSel: ");
+        deviceField135.setNumCols(4);
+        deviceField135.setOffsetNid(1741);
+        jPanel123.add(deviceField135);
+
+        deviceField136.setIdentifier("");
+        deviceField136.setLabelString("TStartVertShiftIntegralAction:");
+        deviceField136.setNumCols(4);
+        deviceField136.setOffsetNid(1747);
+        jPanel123.add(deviceField136);
+
+        deviceField137.setIdentifier("");
+        deviceField137.setLabelString("VerShiftIntSat:");
+        deviceField137.setNumCols(4);
+        deviceField137.setOffsetNid(1753);
+        jPanel123.add(deviceField137);
+
+        deviceField138.setIdentifier("");
+        deviceField138.setLabelString("KiVertShift:  ");
+        deviceField138.setNumCols(4);
+        deviceField138.setOffsetNid(1759);
+        jPanel123.add(deviceField138);
+
+        deviceField139.setIdentifier("");
+        deviceField139.setLabelString("KpVertShift:");
+        deviceField139.setNumCols(4);
+        deviceField139.setOffsetNid(1765);
+        jPanel123.add(deviceField139);
+
+        deviceField143.setIdentifier("");
+        deviceField143.setLabelString("KdVertShift:");
+        deviceField143.setNumCols(4);
+        deviceField143.setOffsetNid(1771);
+        jPanel123.add(deviceField143);
+
+        jTabbedPane5.addTab("Feedback", jPanel123);
+
+        deviceField140.setIdentifier("");
+        deviceField140.setLabelString("VerShiftFFON: ");
+        deviceField140.setNumCols(4);
+        deviceField140.setOffsetNid(1777);
+        jPanel124.add(deviceField140);
+
+        deviceField141.setIdentifier("");
+        deviceField141.setLabelString("VerShoftFFGAIN");
+        deviceField141.setNumCols(4);
+        deviceField141.setOffsetNid(1783);
+        jPanel124.add(deviceField141);
+
+        deviceField142.setIdentifier("");
+        deviceField142.setLabelString("LeadLagVertShiftON: ");
+        deviceField142.setNumCols(4);
+        deviceField142.setOffsetNid(1789);
+        jPanel124.add(deviceField142);
+
+        jTabbedPane5.addTab("FeedForward", jPanel124);
+
+        jPanel121.add(jTabbedPane5, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Vertical Shift", jPanel121);
 
         jScrollPane2.setHorizontalScrollBarPolicy(javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
@@ -1493,7 +1608,21 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField128;
     private DeviceField deviceField129;
     private DeviceField deviceField13;
+    private DeviceField deviceField130;
+    private DeviceField deviceField131;
+    private DeviceField deviceField132;
+    private DeviceField deviceField133;
+    private DeviceField deviceField134;
+    private DeviceField deviceField135;
+    private DeviceField deviceField136;
+    private DeviceField deviceField137;
+    private DeviceField deviceField138;
+    private DeviceField deviceField139;
     private DeviceField deviceField14;
+    private DeviceField deviceField140;
+    private DeviceField deviceField141;
+    private DeviceField deviceField142;
+    private DeviceField deviceField143;
     private DeviceField deviceField15;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
@@ -1616,6 +1745,10 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel119;
     private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel120;
+    private javax.swing.JPanel jPanel121;
+    private javax.swing.JPanel jPanel122;
+    private javax.swing.JPanel jPanel123;
+    private javax.swing.JPanel jPanel124;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
@@ -1716,6 +1849,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JTabbedPane jTabbedPane2;
     private javax.swing.JTabbedPane jTabbedPane3;
     private javax.swing.JTabbedPane jTabbedPane4;
+    private javax.swing.JTabbedPane jTabbedPane5;
     // End of variables declaration//GEN-END:variables
 
 }
