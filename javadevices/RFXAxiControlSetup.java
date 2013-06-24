@@ -43,6 +43,8 @@ public class RFXAxiControlSetup extends DeviceSetup
     DeviceWave deviceWave19 = new DeviceWave();
     DeviceWave deviceWave20 = new DeviceWave();
     DeviceWave deviceWave21 = new DeviceWave();
+    DeviceWave deviceWave22 = new DeviceWave();
+    DeviceWave deviceWave23 = new DeviceWave();
     DeviceField deviceField3 = new DeviceField();
     public RFXAxiControlSetup()
     {
@@ -170,7 +172,17 @@ public class RFXAxiControlSetup extends DeviceSetup
         deviceWave21.setMinYVisible(true);
         deviceWave21.setOffsetNid(111+12);
         
-        deviceField3.setOffsetNid(117+12);
+        deviceWave22.setUpdateExpression("");
+        deviceWave22.setIdentifier("");
+        deviceWave22.setMinYVisible(true);
+        deviceWave22.setOffsetNid(111+18);
+        
+        deviceWave23.setUpdateExpression("");
+        deviceWave23.setIdentifier("");
+        deviceWave23.setMinYVisible(true);
+        deviceWave23.setOffsetNid(111+24);
+        
+        deviceField3.setOffsetNid(117+12+12);
         deviceField3.setLabelString("T Start Int. Action");
         deviceField3.setIdentifier("");
         this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
@@ -196,6 +208,8 @@ public class RFXAxiControlSetup extends DeviceSetup
         jTabbedPane1.add(deviceWave19,   "delta_I_FS8");
         jTabbedPane1.add(deviceWave20,   "RplaCos2Ref");
         jTabbedPane1.add(deviceWave21,   "RplaCos3Ref");
+        jTabbedPane1.add(deviceWave22,   "avgRplasmaRef");
+        jTabbedPane1.add(deviceWave23,   "REF_DELTA_V");
         this.getContentPane().add(jPanel1, BorderLayout.NORTH);
         jPanel1.add(jPanel2, null);
         jPanel2.add(deviceField1, null);

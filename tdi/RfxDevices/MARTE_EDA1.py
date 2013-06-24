@@ -12,10 +12,12 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
         'EllipticityControl_ON', 'TStartEllipticityControl','TEndEllipticityControl','IfsCos2_distr','ElliIfsCos2RefSat', 'ElliFBON',
         'TStartEllipticityIntegralAction','ElliIfsCos2IntSat','KiElli','KpElli','KdElli','ElliFFON','ElliFFGAIN','LeadLagElliON','TriangularityControl_ON',
         'TStartTriangularityControl', 'TEndTriangularityControl','IfsCos3_distr','TriangIfsCos3RefSat','TriangFBON','TStartTriangularityIntegralAction',
-        'TriangIfsCos3IntSat','KiTriang','KpTriang','KdTriang','TriangFFON','TriangFFGAIN','LeadLagTriangON']
+        'TriangIfsCos3IntSat','KiTriang','KpTriang','KdTriang','TriangFFON','TriangFFGAIN','LeadLagTriangON','VerticalShiftControl_ON','TStartVerticalShiftControl',
+        'TEndVerticalShiftControl','VertShiftFBON','VertShiftSel','TStartVertShiftIntegralAction','VertShiftIntSat','KiVertShift','KpVertShift','KdVertShift','VertShiftFFON',
+        'VertShiftFFGAIN','LeadLagVertShiftON']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),0,0,0,0,0,0,0,
         0,0.3,1.5,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,
-        0, 0, 5.649E-5, 0,   0,0.3,1.5,Data.compile('[0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315]'),500,0,0.3,300,150,7.5,0,0,5950,0] 
+        0, 0, 5.649E-5, 0,   0,0.3,1.5,Data.compile('[0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315]'),500,0,0.3,300,150,7.5,0,0,5950,0,0,0,0,0,0,0,0,0,0,0,0,0,0] 
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
@@ -43,7 +45,7 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
     waveParNames = ['bvAddRef','deltaIpRef','ipRef','normIpRef','iFSAddRef_1','iFSAddRef_2','iFSAddRef_3','iFSAddRef_4','iFSAddRef_5',
         'iFSAddRef_6','iFSAddRef_7','iFSAddRef_8','deltaIFSAddRef_1','deltaIFSAddRef_2','deltaIFSAddRef_3','deltaIFSAddRef_4',
 	'deltaIFSAddRef_5','deltaIFSAddRef_6','deltaIFSAddRef_7','deltaIFSAddRef_8','deltaHRef','pmatRef','pcatRef','tfatRef',
-	'fRef','btwRef','qRef', 'RplaCos2Ref', 'RplaCos3Ref']  
+	'fRef','btwRef','qRef', 'RplaCos2Ref', 'RplaCos3Ref', 'avgRplasmaRef', 'REF_DELTA_V']  
     parts.append({'path':'.WAVE_PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(waveParNames)})
     print i, ' WAVES'
     for i in range(len(waveParNames)):

@@ -583,6 +583,356 @@
                 </Container>
               </SubComponents>
             </Container>
+            <Container class="javax.swing.JPanel" name="jPanel107">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Ellipticy">
+                    <Property name="tabTitle" type="java.lang.String" value="Ellipticy"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel108">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="North"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField100">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="EllipticyControl_ON:"/>
+                        <Property name="numCols" type="int" value="3"/>
+                        <Property name="offsetNid" type="int" value="1549"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField101">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TStartEllipticyControl:"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1555"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField102">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TEndEllipticyControl:"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1561"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField104">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="ElliIfsCos2RefSat:"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1573"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceTable" name="deviceTable3">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="IfsCos2:"/>
+                        <Property name="numCols" type="int" value="8"/>
+                        <Property name="numRows" type="int" value="1"/>
+                        <Property name="offsetNid" type="int" value="1567"/>
+                        <Property name="preferredColumnWidth" type="int" value="60"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JTabbedPane" name="jTabbedPane3">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel109">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="Feedback">
+                            <Property name="tabTitle" type="java.lang.String" value="Feedback"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField105">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="ElliFBON:"/>
+                            <Property name="numCols" type="int" value="2"/>
+                            <Property name="offsetNid" type="int" value="1579"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField106">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TStartEllipticyIntegralAction: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1585"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField107">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="ElliIfsCos2IntSat:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1591"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField108">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KiElli: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1597"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField109">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KpElli: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1603"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField110">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KdElli:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1609"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel110">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="Feedforward">
+                            <Property name="tabTitle" type="java.lang.String" value="Feedforward"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField112">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="ElliFFON: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1615"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField113">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="ElliFFGAIN:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1621"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField114">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="LeadLagElliOn:"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1627"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel111">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Triangularity">
+                    <Property name="tabTitle" type="java.lang.String" value="Triangularity"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel112">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="North"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField117">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TriangularityControl_ON:"/>
+                        <Property name="numCols" type="int" value="3"/>
+                        <Property name="offsetNid" type="int" value="1633"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField118">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TStartTriangularityControl"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1639"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField119">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TEndTriangularityControl: "/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1645"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceTable" name="deviceTable4">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="IfsCos3:"/>
+                        <Property name="numCols" type="int" value="8"/>
+                        <Property name="numRows" type="int" value="1"/>
+                        <Property name="offsetNid" type="int" value="1651"/>
+                        <Property name="preferredColumnWidth" type="int" value="60"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField120">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="TriangIfsCos3RefSat"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1657"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JTabbedPane" name="jTabbedPane4">
+                  <Constraints>
+                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                      <BorderConstraints direction="Center"/>
+                    </Constraint>
+                  </Constraints>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+                  <SubComponents>
+                    <Container class="javax.swing.JPanel" name="jPanel113">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="Feedback">
+                            <Property name="tabTitle" type="java.lang.String" value="Feedback"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField121">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TriangFBON"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1663"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField122">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TStartTriangularityIntegralAction: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1669"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField123">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TriangIfsCos3IntSat: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1675"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField124">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KiTriang"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1681"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField125">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KpTriang: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1687"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField126">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="KdTriang: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1693"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                    <Container class="javax.swing.JPanel" name="jPanel114">
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                          <JTabbedPaneConstraints tabName="FeedForward">
+                            <Property name="tabTitle" type="java.lang.String" value="FeedForward"/>
+                          </JTabbedPaneConstraints>
+                        </Constraint>
+                      </Constraints>
+
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <SubComponents>
+                        <Component class="DeviceField" name="deviceField127">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TriangFFON: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1699"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField128">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="TriangFFGAIN"/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1705"/>
+                          </Properties>
+                        </Component>
+                        <Component class="DeviceField" name="deviceField129">
+                          <Properties>
+                            <Property name="identifier" type="java.lang.String" value=""/>
+                            <Property name="labelString" type="java.lang.String" value="LeadLagTriangON: "/>
+                            <Property name="numCols" type="int" value="4"/>
+                            <Property name="offsetNid" type="int" value="1711"/>
+                          </Properties>
+                        </Component>
+                      </SubComponents>
+                    </Container>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane2">
               <Properties>
                 <Property name="horizontalScrollBarPolicy" type="int" value="31"/>
@@ -606,7 +956,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
                     <Property name="columns" type="int" value="1"/>
-                    <Property name="rows" type="int" value="29"/>
+                    <Property name="rows" type="int" value="31"/>
                   </Layout>
                   <SubComponents>
                     <Container class="javax.swing.JPanel" name="jPanel16">
@@ -1885,354 +2235,92 @@
                         </Container>
                       </SubComponents>
                     </Container>
-                  </SubComponents>
-                </Container>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel107">
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Ellipticy">
-                    <Property name="tabTitle" type="java.lang.String" value="Ellipticy"/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
+                    <Container class="javax.swing.JPanel" name="jPanel115">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="avgRplasmaRef"/>
+                          </Border>
+                        </Property>
+                      </Properties>
 
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
-              <SubComponents>
-                <Container class="javax.swing.JPanel" name="jPanel108">
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                      <BorderConstraints direction="North"/>
-                    </Constraint>
-                  </Constraints>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField100">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="EllipticyControl_ON:"/>
-                        <Property name="numCols" type="int" value="3"/>
-                        <Property name="offsetNid" type="int" value="1549"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField101">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TStartEllipticyControl:"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1555"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField102">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TEndEllipticyControl:"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1561"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField104">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="ElliIfsCos2RefSat:"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1573"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceTable" name="deviceTable3">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="IfsCos2:"/>
-                        <Property name="numCols" type="int" value="8"/>
-                        <Property name="numRows" type="int" value="1"/>
-                        <Property name="offsetNid" type="int" value="1567"/>
-                        <Property name="preferredColumnWidth" type="int" value="60"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JTabbedPane" name="jTabbedPane3">
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                      <BorderConstraints direction="Center"/>
-                    </Constraint>
-                  </Constraints>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
-                  <SubComponents>
-                    <Container class="javax.swing.JPanel" name="jPanel109">
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="Feedback">
-                            <Property name="tabTitle" type="java.lang.String" value="Feedback"/>
-                          </JTabbedPaneConstraints>
-                        </Constraint>
-                      </Constraints>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                        <Property name="columns" type="int" value="1"/>
+                        <Property name="rows" type="int" value="2"/>
+                      </Layout>
                       <SubComponents>
-                        <Component class="DeviceField" name="deviceField105">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="ElliFBON:"/>
-                            <Property name="numCols" type="int" value="2"/>
-                            <Property name="offsetNid" type="int" value="1579"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField106">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="TStartEllipticyIntegralAction: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1585"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField107">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="ElliIfsCos2IntSat:"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1591"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField108">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="KiElli: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1597"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField109">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="KpElli: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1603"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField110">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="KdElli:"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1609"/>
-                          </Properties>
-                        </Component>
+                        <Container class="javax.swing.JPanel" name="jPanel116">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField103">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Y: "/>
+                                <Property name="numCols" type="int" value="30"/>
+                                <Property name="offsetNid" type="int" value="3021"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel117">
+
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField111">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="X: "/>
+                                <Property name="numCols" type="int" value="30"/>
+                                <Property name="offsetNid" type="int" value="3020"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
                       </SubComponents>
                     </Container>
-                    <Container class="javax.swing.JPanel" name="jPanel110">
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="Feedforward">
-                            <Property name="tabTitle" type="java.lang.String" value="Feedforward"/>
-                          </JTabbedPaneConstraints>
-                        </Constraint>
-                      </Constraints>
+                    <Container class="javax.swing.JPanel" name="jPanel118">
+                      <Properties>
+                        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                            <TitledBorder title="REF_DELTA_V"/>
+                          </Border>
+                        </Property>
+                      </Properties>
 
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                        <Property name="columns" type="int" value="1"/>
+                        <Property name="rows" type="int" value="2"/>
+                      </Layout>
                       <SubComponents>
-                        <Component class="DeviceField" name="deviceField112">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="ElliFFON: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1615"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField113">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="ElliFFGAIN:"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1621"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField114">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="LeadLagElliOn:"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1627"/>
-                          </Properties>
-                        </Component>
-                      </SubComponents>
-                    </Container>
-                  </SubComponents>
-                </Container>
-              </SubComponents>
-            </Container>
-            <Container class="javax.swing.JPanel" name="jPanel111">
-              <Constraints>
-                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                  <JTabbedPaneConstraints tabName="Triangularity">
-                    <Property name="tabTitle" type="java.lang.String" value="Triangularity"/>
-                  </JTabbedPaneConstraints>
-                </Constraint>
-              </Constraints>
+                        <Container class="javax.swing.JPanel" name="jPanel119">
 
-              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
-              <SubComponents>
-                <Container class="javax.swing.JPanel" name="jPanel112">
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                      <BorderConstraints direction="North"/>
-                    </Constraint>
-                  </Constraints>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField115">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Y: "/>
+                                <Property name="numCols" type="int" value="30"/>
+                                <Property name="offsetNid" type="int" value="3026"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
+                        <Container class="javax.swing.JPanel" name="jPanel120">
 
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                  <SubComponents>
-                    <Component class="DeviceField" name="deviceField117">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TriangularityControl_ON:"/>
-                        <Property name="numCols" type="int" value="3"/>
-                        <Property name="offsetNid" type="int" value="1633"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField118">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TStartTriangularityControl"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1639"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField119">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TEndTriangularityControl: "/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1645"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceTable" name="deviceTable4">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="IfsCos3:"/>
-                        <Property name="numCols" type="int" value="8"/>
-                        <Property name="numRows" type="int" value="1"/>
-                        <Property name="offsetNid" type="int" value="1651"/>
-                        <Property name="preferredColumnWidth" type="int" value="60"/>
-                      </Properties>
-                    </Component>
-                    <Component class="DeviceField" name="deviceField120">
-                      <Properties>
-                        <Property name="identifier" type="java.lang.String" value=""/>
-                        <Property name="labelString" type="java.lang.String" value="TriangIfsCos3RefSat"/>
-                        <Property name="numCols" type="int" value="4"/>
-                        <Property name="offsetNid" type="int" value="1657"/>
-                      </Properties>
-                    </Component>
-                  </SubComponents>
-                </Container>
-                <Container class="javax.swing.JTabbedPane" name="jTabbedPane4">
-                  <Constraints>
-                    <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
-                      <BorderConstraints direction="Center"/>
-                    </Constraint>
-                  </Constraints>
-
-                  <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
-                  <SubComponents>
-                    <Container class="javax.swing.JPanel" name="jPanel113">
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="Feedback">
-                            <Property name="tabTitle" type="java.lang.String" value="Feedback"/>
-                          </JTabbedPaneConstraints>
-                        </Constraint>
-                      </Constraints>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                      <SubComponents>
-                        <Component class="DeviceField" name="deviceField121">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="TriangFBON"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1663"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField122">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="TStartTriangularityIntegralAction: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1669"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField123">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="TriangIfsCos3IntSat: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1675"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField124">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="KiTriang"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1681"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField125">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="KpTriang: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1687"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField126">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="KdTriang: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1693"/>
-                          </Properties>
-                        </Component>
-                      </SubComponents>
-                    </Container>
-                    <Container class="javax.swing.JPanel" name="jPanel114">
-                      <Constraints>
-                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="FeedForward">
-                            <Property name="tabTitle" type="java.lang.String" value="FeedForward"/>
-                          </JTabbedPaneConstraints>
-                        </Constraint>
-                      </Constraints>
-
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
-                      <SubComponents>
-                        <Component class="DeviceField" name="deviceField127">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="TriangFFON: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1699"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField128">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="TriangFFGAIN"/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1705"/>
-                          </Properties>
-                        </Component>
-                        <Component class="DeviceField" name="deviceField129">
-                          <Properties>
-                            <Property name="identifier" type="java.lang.String" value=""/>
-                            <Property name="labelString" type="java.lang.String" value="LeadLagTriangON: "/>
-                            <Property name="numCols" type="int" value="4"/>
-                            <Property name="offsetNid" type="int" value="1711"/>
-                          </Properties>
-                        </Component>
+                          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                          <SubComponents>
+                            <Component class="DeviceField" name="deviceField116">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="X: "/>
+                                <Property name="numCols" type="int" value="30"/>
+                                <Property name="offsetNid" type="int" value="3025"/>
+                              </Properties>
+                            </Component>
+                          </SubComponents>
+                        </Container>
                       </SubComponents>
                     </Container>
                   </SubComponents>
