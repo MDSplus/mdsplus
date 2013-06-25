@@ -383,6 +383,23 @@ class TreeNode(Data):
         self.putData(None)
         return
 
+    def dispatch(self,wait=True):
+        """Dispatch an action node
+        @rtype: None
+        """
+        from compound import Action
+        a=self.record
+        if not isinstance(a,Action):
+            raise Exception("Node does not contain an action description")
+        else:
+            if wait:
+                status=Data.execute("tcl('dispatch/wait "+str(self.fullpath).replace('\\','\\\\')+"')")
+            else:
+                status=Data.execute("tcl('dispatch/nowait "+str(self.fullpath).replace('\\','\\\\')+"')")
+            if not (status & 1):
+                from _descriptor import MdsGetMsg
+                raise Exception(MdsGetMsg(status,"Error dispatching node"))
+
     def doMethod(self,method,arg=None):
         """Execute method on conglomerate element
         @param method: method name to perform
