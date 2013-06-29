@@ -147,7 +147,8 @@ AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
 RFX_PROTECTIONSSetup.java\
 FLIRSC65XSetup.java\
-NI6368AISetup.java
+NI6368AISetup.java\
+ACQIPPSETUPSetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar
