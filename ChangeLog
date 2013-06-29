@@ -1,3 +1,23 @@
+2013-06-29 13:04  manduchi
+
+	* javadevices/Makefile.in (1.44):
+	
+	Add ACQIPPSETUPSetup.java
+
+2013-06-29 13:01  manduchi
+
+	* javadevices/: ACQIPPSETUPSetup.form (1.1), ACQIPPSETUPSetup.java
+	(1.1):
+	
+	User interface to setup Probe an thermocouples acquisition in
+	BATMAN at IPP
+
+2013-06-29 10:53  manduchi
+
+	* tdi/RfxDevices/ACQIPPSETUP.py (1.1):
+	
+	HMI setup for acquisition test in BATMAN at IPP
+
 2013-06-25 09:00  twf
 
 	* mdsobjects/python/treenode.py (1.36):
