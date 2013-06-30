@@ -35,16 +35,16 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        deviceField7 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
         jPanel5 = new javax.swing.JPanel();
         deviceField8 = new DeviceField();
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
         deviceChoice3 = new DeviceChoice();
+        jPanel4 = new javax.swing.JPanel();
+        deviceField5 = new DeviceField();
+        deviceField6 = new DeviceField();
+        deviceField7 = new DeviceField();
+        deviceChoice2 = new DeviceChoice();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Probes & TC  Acquisition Setup");
@@ -95,32 +95,6 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Sweep Voltage Configuration"));
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Min Value (V):");
-        deviceField5.setOffsetNid(11);
-        jPanel4.add(deviceField5);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Max Value (V):");
-        deviceField6.setOffsetNid(12);
-        jPanel4.add(deviceField6);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Frequency (Hz):");
-        deviceField7.setOffsetNid(13);
-        jPanel4.add(deviceField7);
-
-        deviceChoice2.setChoiceItems(new String[] {"EXTERNAL", "INTERNAL"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Trig. Mode:");
-        deviceChoice2.setOffsetNid(14);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice2);
-
-        jPanel1.add(jPanel4);
-
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Thermocouples Acquisition"));
 
         deviceField8.setIdentifier("");
@@ -146,6 +120,32 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
         jPanel5.add(deviceChoice3);
 
         jPanel1.add(jPanel5);
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Sweep Voltage Configuration"));
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Min Value (V):");
+        deviceField5.setOffsetNid(11);
+        jPanel4.add(deviceField5);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Max Value (V):");
+        deviceField6.setOffsetNid(12);
+        jPanel4.add(deviceField6);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("Frequency (Hz):");
+        deviceField7.setOffsetNid(13);
+        jPanel4.add(deviceField7);
+
+        deviceChoice2.setChoiceItems(new String[] {"EXTERNAL", "INTERNAL"});
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Trig. Mode:");
+        deviceChoice2.setOffsetNid(14);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel4.add(deviceChoice2);
+
+        jPanel1.add(jPanel4);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
