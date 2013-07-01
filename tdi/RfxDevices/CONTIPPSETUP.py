@@ -33,32 +33,34 @@ class CONTIPPSETUP(Device):
         'options':('no_write_shot',)})
         
 
-    isRunning = False
 
     class AsynchWaveGen(Thread):            
+	
 
-        def configure(self, device, niInterfaceLib, board_id, ai_chan_list, ai_fdch_idx,  clock_freq, aoch_id, doch_id, temp_ref  ):
+        def configure(self, device, niInterfaceLib, board_id, ai_chan_list, ai_fdch_idx, clock_freq, aoch_id, doch_id, temp_ref  ):
             self.device = device
             self.niInterfaceLib = niInterfaceLib
             self.board_id = board_id
             self.ai_chan_list = ai_chan_list
             self.ai_fdch_idx = ai_fdch_idx
-            self.clock_freq = clock_freq
+            self.clock_freq = clock_freq 
             self.aoch_id = aoch_id
             self.doch_id = doch_id
             self.temp_ref = temp_ref
 
-        #  set tree ipp_probes/shot=2
-        #  do/method :ACQIPPSETUP start_wave_gen
+        #  set tree ipp_tc_trend /shot=-1
+        #  do/method :CONTR_SETUP start
 
         def run(self):
+            global threadActive	 	
 		
-            ai_num_chan = len(ai_chan_list)
-            ai_chan_list_c = (c_uint * len(ai_chan_list) )(*ai_chan_list)
+            ai_num_chan = len(self.ai_chan_list)
+            ai_chan_list_c = (c_uint * len(self.ai_chan_list) )(*self.ai_chan_list)
 
-            niInterfaceLib.temperatureProbeControl(c_uint(board_id), ai_chan_list_c, c_int(ai_num_chan), c_int(ai_fdch_idx), c_double(clock_freq), c_int(aoch_id), c_int(doch_id), c_float(temp_ref) );
+            niInterfaceLib.temperatureProbeControl(c_uint(self.board_id), ai_chan_list_c, c_int(ai_num_chan), c_int(self.ai_fdch_idx), c_double(self.clock_freq), c_int(self.aoch_id), c_int(self.doch_id), c_double(self.temp_ref) );
 
             print "Thread STOP"
+            threadActive = False
 
             return
 
@@ -66,41 +68,37 @@ class CONTIPPSETUP(Device):
     def restoreInfo(self):
 
         global niInterfaceLib
+	global threadActive	
 
         try:
             niInterfaceLib
         except:
             niInterfaceLib = CDLL("libNiInterface.so")
 
+        try:
+            threadActive
+        except:
+            threadActive = False
 
     def start(self, arg):
 
         print 'OK Init'
 
         global niInterfaceLib
-        global isRunning
+        global threadActive
 
-        try:
-           isRunning
-        except:
-           isRunning = False
+        self.restoreInfo()
+        if niInterfaceLib == 0 :
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
+            return 0
 
-        if isRunning :
-            print "Probs temperature control process is running"
+        if threadActive :
+	    niInterfaceLib.temperatureCtrlCommand(c_char_p("start"))
             return 1
 
         self.worker = self.AsynchWaveGen()
         self.worker.daemon = True        
-
-        print "Is running ", isRunning
-
-        self.restoreInfo()
-
-    
-        if niInterfaceLib == 0 :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            return 0
-    
+        
         try: 
             board_id = self.board_id.data();
         except:
@@ -108,7 +106,7 @@ class CONTIPPSETUP(Device):
             return 0
 
         try: 
-            ai_chans_id = self.ai_chans_id.data();
+            ai_chan_list = self.ai_chan_list.data();
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing analog input channels list' )
             return 0
@@ -144,46 +142,54 @@ class CONTIPPSETUP(Device):
             return 0
                  
         print "Start new thread"
-        isRunning = True
+
+	print "ai_chan_list ",ai_chan_list
+	print "ai_fdch_idx ",ai_fdch_idx
+	print "clock_freq ", clock_freq
+	print "aoch_id ",aoch_id
+	print "doch_id ", doch_id
+	print "temp_ref",temp_ref
+
                 
-        self.worker.configure(self, niInterfaceLib, board_id, ai_chan_list, ai_num_chan, ai_fdch_idx, ai_fdch_idx, aoch_id, doch_id, temp_ref);
+        self.worker.configure(self, niInterfaceLib, board_id, ai_chan_list, ai_fdch_idx, clock_freq, aoch_id, doch_id, temp_ref);
         self.worker.start()
 
         print "End Initialization"
+        threadActive = True
 
         return 1  
+
+
+    def exit(self, arg):
+        print "End Initialization"
+
+        global niInterfaceLib
+        global threadActive
+
+        self.restoreInfo()
+        if niInterfaceLib == 0 :
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
+            return 0
+
+        threadActive = False
+        niInterfaceLib.temperatureCtrlCommand(c_char_p("exit"))
+
+        time.sleep(2)
+	
+        return 1        
 
 
     def stop(self, arg):
 
         global niInterfaceLib
-        global isRunning
-
-        try:
-           isRunning
-        except:
-           isRunning = False
-
-        if( isRunning == False ) :
-            print "Probe temperature control process is NOT running"
-            return 1
-        
         self.restoreInfo()
-        isRunning = False
+        if niInterfaceLib == 0 :
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
+            return 0
+        
         niInterfaceLib.temperatureCtrlCommand(c_char_p("stop"))
         time.sleep(2)
 
         return 1        
 
-    def exit(self, arg):
-
-        global niInterfaceLib
-        global isRunning
-
-        self.restoreInfo()
-        isRunning = False
-        niInterfaceLib.temperatureCtrlCommand(c_char_p("exit"))
-        time.sleep(2)
- 
-        return 1        
 

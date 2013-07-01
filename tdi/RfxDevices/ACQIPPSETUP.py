@@ -96,12 +96,12 @@ class ACQIPPSETUP(Device):
             level  = ( maxValue - minValue ) /2.;
             offset = ( maxValue + minValue ) / 2.;
     
-            print "Offset  ", offset, " Vpp level ", level
+            print "Offset  ", offset, " Vpp level ", level * 2
 
             offset = offset / 10.;
             level = level / 10.;
 
-            print "Reference Offset  ", offset, " Vpp level ", level
+            print "Reference Offset  ", offset, " Vpp level ", level * 2
 
             if(trigMode == 'EXTERNAL'):
                  softwareTrigger = 0;
@@ -119,7 +119,7 @@ class ACQIPPSETUP(Device):
                 print " %s" % (  time.ctime(time.time()) )
  	    """
 
-            print "Thread STOP"
+            #print "Thread STOP"
 
             return
 
@@ -136,7 +136,7 @@ class ACQIPPSETUP(Device):
 
     def start_wave_gen(self, arg):
 
-        print 'OK Init'
+        print '======= Initialize waveform generation ========'
 
         global niInterfaceLib
  	global isRunning
@@ -155,7 +155,7 @@ class ACQIPPSETUP(Device):
         self.worker.daemon = True        
 
 
-	print "Is running ", isRunning
+	#print "Is running ", isRunning
 
 
 
@@ -165,19 +165,20 @@ class ACQIPPSETUP(Device):
         #niInterfaceLib.generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel, double offset, double level, uint32_t waverate, char softwareTrigger);
         #niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
      
-	print "Start new thread"
+	#print "Start new thread"
 	isRunning = True
 	self.worker.configure(self, niInterfaceLib);
 	self.worker.start()
 
-        print "End Initialization"
+        #print "End Initialization"
+        print "==============================================="
 
         return 1  
 
 
     def stop_wave_gen(self, arg):
 
-        print 'OK Stop'
+        print '========= Stop waveform generation ============'
         global niInterfaceLib
  	global isRunning
 
@@ -185,8 +186,7 @@ class ACQIPPSETUP(Device):
         isRunning = False
         niInterfaceLib.stopWaveGeneration()
         time.sleep(2)
-
-        print "Stop Wave gen"
+        print "==============================================="
 
         return 1        
 
