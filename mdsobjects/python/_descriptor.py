@@ -371,6 +371,9 @@ class descriptor(_C.Structure):
                     return TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == DTYPE_IDENT):
                     return Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
+                if (self.dtype == DTYPE_Z):
+                    from compound import Function
+                    return Function('$MISSING',tuple())
                 raise TypeError('Unsupported data type: (%s,%d)' % (str(mdsdtypes(self.dtype)),self.dtype))
         if (self.dclass == CLASS_R):
             ans = _C.cast(_C.pointer(self),_C.POINTER(descriptor_r)).contents
