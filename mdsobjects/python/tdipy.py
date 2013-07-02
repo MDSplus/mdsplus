@@ -20,14 +20,23 @@ def execPy(varname=None):
             isglobal=True
         except:
             pass
+        ans=1
         if isglobal:
           exec( cmds) in globals()
+          if varname is not None:
+            if varname in globals():
+              ans=globals()[varname]
+            else:
+              ans=None
         else:
-          exec( cmds) in {}
-        if varname is not None:
-            ans=ns[varname]
-        else:
-            ans=1
+	  ns={}
+          exec( cmds) in ns
+          if varname is not None:
+            if varname in ns:
+              ans=ns[varname]
+            else:
+              ans=None
+
         ___TDI___makeData(ans).setTdiVar("___TDI___answer")
     except Exception:
         import sys
