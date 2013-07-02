@@ -29,3 +29,4 @@ from scope import Scope
 from _mdsshr import MdsException,MdsTimeout,MdsNoMoreEvents,MdsInvalidEvent
 from _treeshr import TreeException,TreeNoDataException
 from tdipy import execPy
+from tdicompile import tdiCompile
