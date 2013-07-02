@@ -1,3 +1,69 @@
+2013-07-02 15:00  twf
+
+	* mdsobjects/python/__init__.py (1.21):
+	
+	Make tdiCompile optional for now
+
+2013-07-02 14:55  twf
+
+	* mdsobjects/python/: __init__.py (1.20), tdicompile.py (1.1),
+	tdilextab.py (1.1), tdiparsetab.py (1.1):
+	
+	Add tdiCompile
+
+2013-07-02 13:30  twf
+
+	* tdi/: Py.fun (beta.2), Py.fun (stable.[2,2]):
+	
+	update from alpha
+
+2013-07-02 13:29  twf
+
+	* mdsobjects/python/: __init__.py, _descriptor.py, _treeshr.py,
+	tdipy.py, treenode.py (beta.[1,4,2,4,2]), __init__.py,
+	_descriptor.py, _treeshr.py, tdipy.py, treenode.py, wsgi/doScope.py
+	(stable.[1,4,2,4,2,3,4,2,4,2,5]):
+	
+	Update from alpha
+
+2013-07-02 10:36  twf
+
+	* mdsobjects/python/tdipy.py (1.7):
+	
+	Fix return using varname
+
+2013-07-01 17:01  twf
+
+	* mdsobjects/python/_descriptor.py (1.34):
+	
+	Handle
+
+2013-07-01 02:41  manduchi
+
+	* tdi/RfxDevices/: ACQIPPSETUP.py (1.2), CONTIPPSETUP.py (1.2):
+	
+	Update
+
+2013-06-30 14:19  manduchi
+
+	* javadevices/: CONTIPPSETUPSetup.form (1.1),
+	CONTIPPSETUPSetup.java (1.1):
+	
+	Langmuir probes temperature control setup
+
+2013-06-30 14:15  manduchi
+
+	* tdi/RfxDevices/CONTIPPSETUP.py (1.1):
+	
+	Langmuir probes temperature control device
+
+2013-06-30 02:38  manduchi
+
+	* javadevices/: ACQIPPSETUPSetup.form (1.2), ACQIPPSETUPSetup.java
+	(1.2):
+	
+	Mod
+
 2013-06-29 13:04  manduchi
 
 	* javadevices/Makefile.in (1.44):
