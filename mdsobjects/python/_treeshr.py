@@ -83,11 +83,6 @@ __TreeGetViewDate.argtypes=[_C.POINTER(_C.c_ulonglong)]
 __TreeBeginSegment=__TreeShr._TreeBeginSegment
 __TreeBeginSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor_a),_C.c_int32]
 __TreeMakeSegment=__TreeShr._TreeMakeSegment
-__TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
-                            _C.POINTER(descriptor_a),_C.c_int32,_C.c_int32]
-__TreeMakeSegmentOpq=__TreeShr._TreeMakeSegment
-__TreeMakeSegmentOpq.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
-                            _C.POINTER(descriptor),_C.c_int32,_C.c_int32]
 __TreeBeginTimestampedSegment=__TreeShr._TreeBeginTimestampedSegment
 __TreeBeginTimestampedSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor_a),_C.c_int32]
 __TreeMakeTimestampedSegment=__TreeShr._TreeMakeTimestampedSegment
@@ -589,10 +584,14 @@ def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
         from compound import Compound
         n.tree.lock()
         if isinstance(initialValue,Compound):
+            __TreeMakeSegmentOpq.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
+                            _C.POINTER(descriptor),_C.c_int32,_C.c_int32]
             status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
                                      _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),idx,
                                      1)
         else:
+            __TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
+                            _C.POINTER(descriptor_a),_C.c_int32,_C.c_int32]
             status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
                                      _C.pointer(descriptor(dimension)),_C.pointer(descriptor_a(initialValue)),idx,
                                      initialValue.shape[0])
