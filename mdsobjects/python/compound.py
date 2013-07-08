@@ -426,7 +426,7 @@ class Opaque(Compound):
       import numpy as _N
       f = open(filename,'rb')
       try:
-        opq=Opaque(_N.fromstring(f.read(),dtype="uint8"),typestring)
+        opq=Opaque(makeData(_N.fromstring(f.read(),dtype="uint8")),typestring)
       finally:
         f.close()
       return opq
