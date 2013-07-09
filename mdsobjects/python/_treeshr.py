@@ -584,7 +584,7 @@ def TreeMakeSegment(n,start,end,dimension,initialValue,idx):
         from compound import Compound
         n.tree.lock()
         if isinstance(initialValue,Compound):
-            __TreeMakeSegmentOpq.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
+            __TreeMakeSegment.argtypes=[_C.c_void_p,_C.c_int32,_C.POINTER(descriptor),_C.POINTER(descriptor),_C.POINTER(descriptor),
                             _C.POINTER(descriptor),_C.c_int32,_C.c_int32]
             status=__TreeMakeSegment(n.tree.ctx,n.nid,_C.pointer(descriptor(start)),_C.pointer(descriptor(end)),
                                      _C.pointer(descriptor(dimension)),_C.pointer(descriptor(initialValue)),idx,
