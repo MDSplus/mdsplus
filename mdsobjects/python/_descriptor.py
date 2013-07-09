@@ -328,7 +328,7 @@ class descriptor(_C.Structure):
                 if self.length == 0:
                     return makeScalar('')
                 else:
-                    return(makeScalar(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents,dtype=_N.uint8).tostring()))
+                    return(makeScalar(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring()))
             if (self.dtype == DTYPE_FSC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
                 return makeScalar(complex(ans[0],ans[1]))
