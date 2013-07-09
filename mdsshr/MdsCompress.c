@@ -109,7 +109,7 @@ STATIC_ROUTINE  int       compress(
       j = (long) ((struct descriptor_a *) pwork)->arsize / (long) pwork->length;
       for (; --j >= 0 && status & 1;)
 //	if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
-		if ((stat1 = compress(pcimage, pcentry, delta, ppd++)) != 1)
+		if ((stat1 = compress(pcimage, pcentry, delta, *ppd++)) != 1)
 			status = stat1;
       break;
      case CLASS_CA:
