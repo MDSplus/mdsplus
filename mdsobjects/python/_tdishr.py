@@ -92,8 +92,8 @@ def TdiDecompile(value):
         Tree.unlock()
     if (status & 1 != 0):
         try:
-            return xd.value.value.decode()
-        except:
+            return str(xd.value.value.decode())
+        except Exception,e:
             return str(xd.value.value)
     else:
         raise TdiException(MdsGetMsg(status,"Error decompiling value"))
