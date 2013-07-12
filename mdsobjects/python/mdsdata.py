@@ -43,7 +43,7 @@ def data(item):
 def decompile(item):
     """Returns the item converted to a string
     @rtype: string"""
-    return str(item)
+    return item.decompile()
 
 def evaluate(item,):
     """Return evaluation of mdsplus object"""
