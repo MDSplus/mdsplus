@@ -33,7 +33,11 @@ def makeScalar(value):
     if isinstance(value,bool):
         return Int8(int(value))
     if isinstance(value,complex):
+        return Complex128(numpy.complex128(value))
+    if isinstance(value,numpy.complex64):
         return Complex64(value)
+    if isinstance(value,numpy.complex128):
+        return Complex128(value)
     raise TypeError('Cannot make Scalar out of '+str(type(value)))
 
 class Scalar(Data):
@@ -63,8 +67,13 @@ class Scalar(Data):
     def _getValue(self):
         """Return the numpy scalar representation of the scalar"""
         return self._value
-
     value=property(_getValue)
+
+    def __str__(self):
+        formats={'Int8':'%dB','Int16':'%dW','Int32':'%d','Int64':'0X%0xQ',
+                 'Uint8':'%uBU','Uint16':'%uWU','Uint32':'%uLU','Uint64':'0X%0xQU',
+                 'Float32':'%g'}
+        return formats[self.__class__.__name__] % (self._value)
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -167,16 +176,22 @@ class Uint64(Scalar):
     date=property(_getDate)
 
 class Float32(Scalar):
-    """32-bit floating point number"""
+    """32-bit floating point number"""    
 
 class Complex64(Scalar):
     """32-bit complex number"""
+    def __str__(self):
+        return "Cmplx(%g,%g)" % (self._value.real,self._value.imag)
 
 class Float64(Scalar):
     """64-bit floating point number"""
+    def __str__(self):
+        return ("%E" % self._value).replace("E","D")
 
 class Complex128(Scalar):
-    """64-bit complex number"""    
+    """64-bit complex number"""
+    def __str__(self):
+        return "Cmplx(%s,%s)" % (str(Float64(self._value.real)),str(Float64(self._value.imag)))
 
 class String(Scalar):
     """String"""

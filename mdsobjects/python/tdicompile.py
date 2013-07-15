@@ -1,6 +1,10 @@
-from MDSplus import *
-from MDSplus.compound import Call
-from MDSplus.mdsarray import Array
+from compound import *
+from mdsarray import *
+from mdsscalar import *
+from tree import *
+from ident import *
+from treenode import *
+from event import *
 import sys,os
 optimized=1
 def tdiCompile(text):
@@ -513,7 +517,6 @@ def tdiCompile(text):
 ### retain original node specifiers when building a using function
             def buildUsing(args_in):
                 def restoreTreePaths(arg):
-                    from MDSplus.compound import Compound
                     if isinstance(arg,Compound):
                         args=list()
                         for a in arg.args:
@@ -594,7 +597,6 @@ def tdiCompile(text):
 
     def p_call(t):
         """operation : NAME ARROW NAME arglist\n| NAME ARROW NAME rettype arglist"""
-        from MDSplus.compound import Call
         if len(t)==5:
             t[0]=Call(tuple([t[1],t[3]]+t[4]))
         else:
@@ -881,7 +883,6 @@ if __name__ == '__main__':
     t=Tree('test',-1)
 
     def compareAnswers(new_ans,tdi_ans):
-        from MDSplus.compound import Compound
         if type(makeData(new_ans)) != type(makeData(tdi_ans)):
             raise Exception("new type=%s but old type was %s, value was %s" %(str(type(new_ans)),str(type(tdi_ans)),str(new_ans)))
         if isinstance(new_ans,Function):
