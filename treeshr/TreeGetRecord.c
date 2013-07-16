@@ -245,7 +245,7 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
       break;
 
      case CLASS_CA:
-      status = MakeNidsLocal((struct descriptor *) dsc_ptr->pointer, tree);
+      status = 1;
       break;
 
      case CLASS_APD:
