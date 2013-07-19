@@ -50,7 +50,6 @@ def remove(pkg,FLAVOR):
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
-    sys.exit(1)
   else:
     print "Successfully removed package %s" % (package,)
 
