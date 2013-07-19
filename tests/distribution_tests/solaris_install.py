@@ -58,5 +58,6 @@ def solaris_install_tests(WORKSPACE,FLAVOR):
   remove('mdsplus*',None)
   pkgs=getPackages()
   for pkg in pkgs:
-    install(pkg,FLAVOR)
-    remove(pkg,FLAVOR)
+    if pkg != 'gsi':
+      install(pkg,FLAVOR)
+      remove(pkg,FLAVOR)
