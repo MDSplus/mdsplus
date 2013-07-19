@@ -32,14 +32,17 @@ def install(pkg,FLAVOR):
     print "Successfully installed package %s" % (package,)
 
 def remove(pkg,FLAVOR):
-  if FLAVOR=='stable':
-	flav=""
+  if '*' in pkg:
+	package=pkg
   else:
+    if FLAVOR=='stable':
+        flav=""
+    else:
         flav="-"+FLAVOR
-  if pkg == 'mdsplus':
-    package='mdsplus%s' % (flav,)
-  else:
-    package='mdsplus%s-%s' % (flav,pkg)
+    if pkg == 'mdsplus':
+      package='mdsplus%s' % (flav,)
+    else:
+      package='mdsplus%s-%s' % (flav,pkg)
   if pkg == 'python':
     p=subprocess.Popen('sudo %s/x86_64/mdsplus/devscripts/solarisPythonInstall' % (WORKSPACE),shell=True)
 
@@ -53,6 +56,7 @@ def remove(pkg,FLAVOR):
 
 def solaris_install_tests(WORKSPACE,FLAVOR):
   print "Testing package installation"
+  remove('mdsplus*',None)
   pkgs=getPackages()
   for pkg in pkgs:
     install(pkg,FLAVOR)
