@@ -26,6 +26,7 @@ def debian_install(pkg,FLAVOR):
   if p.wait() != 0:
     print p.stdout.read()
     print "Error installing package %s" % (package,)
+    cleanApt()
     sys.exit(1)
   else:
     print "Successfully installed package %s" % (package,)
@@ -43,6 +44,7 @@ def debian_remove(pkg,FLAVOR):
   if p.wait() != 0:
     print p.stdout.read()
     print "Error removing package %s" % (package,)
+    cleanApt()
     sys.exit(1)
   else:
     print "Successfully removed package %s" % (package,)
@@ -55,6 +57,7 @@ def debian_install_tests(WORKSPACE,FLAVOR):
   if p.wait() != 0:
     print p.stdout.read()
     print "Error doing apt-get update command"
+    cleanApt()
     sys.exit(1)
   else:
     print "Successfully did apt-get update command"
