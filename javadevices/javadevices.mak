@@ -48,6 +48,7 @@ MARTE_EDA3_OUTSetup.java\
 MARTE_CONFIGSetup.java\
 MARTE_WAVEGENSetup.java\
 MARTE_BREAKDOWNSetup.java\
+MARTE_RTSMSetup.java\
 MCUSetup.java\
 MHD_BR_TESTSetup.java\
 MPBDecoderSetup.java\
