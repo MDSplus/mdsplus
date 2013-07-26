@@ -1138,7 +1138,14 @@ int doAction(int nid)
 		}
 		if(method_d_ptr->object->dtype == DTYPE_NID)
 		{
-			status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+			if(method_d_ptr->ndesc == 3)
+				status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+			else if(method_d_ptr->ndesc == 4)
+				status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method,  method_d_ptr->arguments[0], 
+					&retStatus_d MDS_END_ARG);
+			else
+				status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method,  method_d_ptr->arguments[0], 
+					 method_d_ptr->arguments[1], &retStatus_d MDS_END_ARG);
 		}
 		else if(method_d_ptr->object->dtype == DTYPE_PATH)
 		{
@@ -1147,7 +1154,19 @@ int doAction(int nid)
 			path[method_d_ptr->object->length] = 0;
 			status = TreeFindNode(path, &method_nid);
 			free(path);
-			if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+			if(method_d_ptr->ndesc == 3)
+			{
+				if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+			}
+			else if(method_d_ptr->ndesc == 4)
+			{
+				if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method, method_d_ptr->arguments[0], &retStatus_d MDS_END_ARG);
+			}
+			else //no more than 2 arguments....
+			{
+				if(status & 1) status = TreeDoMethod(&nid_d, method_d_ptr->method, method_d_ptr->arguments[0], 
+						method_d_ptr->arguments[1], &retStatus_d MDS_END_ARG);
+			}
 		} else status = 0;
 		break;
 		
