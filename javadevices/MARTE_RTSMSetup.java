@@ -378,7 +378,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Y: ");
         deviceField5.setNumCols(30);
-        deviceField5.setOffsetNid(2881);
+        deviceField5.setOffsetNid(2876);
         jPanel6.add(deviceField5);
 
         jPanel5.add(jPanel6);
