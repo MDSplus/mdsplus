@@ -116,7 +116,8 @@ define verb dispatch												       ! 79
 	qualifier command,syntax=dispatch_command								       ! 81 
 define syntax dispatch_build											       ! 79 
 	Routine TclDispatch_build										       ! 79
-        qualifier monitor,value(required)									       ! 86 
+        qualifier monitor,value(required)									       ! 86
+!        qualifier event,value(required)
 define syntax dispatch_check											       ! 99 
 	Routine TclDispatch_check										       ! 99
         qualifier reset												       ! 100
@@ -127,7 +128,8 @@ define syntax dispatch_phase											       ! 79
 	qualifier noaction											       ! 79 
         qualifier synch,default,nonnegatable,value(default=1,type=$NUMBER)					       ! 80 
         qualifier log,default											       ! 85 
-        qualifier monitor,value(required)									       ! 85 
+        qualifier monitor,value(required)									       ! 85
+!        qualifier event,value(required) 
 define syntax dispatch_close											       ! 79 
 	Routine TclDispatch_close										       ! 79
 	qualifier close												       ! 79 
@@ -262,7 +264,8 @@ Define syntax set_node
         qualifier OFF												       ! 53 
 	qualifier WRITE_ONCE											       ! 53 
 	qualifier CACHED											       ! 53 
-        qualifier COMPRESS_ON_PUT										       ! 53 
+        qualifier COMPRESS_ON_PUT										       ! 53
+        qualifier COMPRESS_SEGMENTS 
         qualifier DO_NOT_COMPRESS										       ! 53 
 	qualifier SHOT_WRITE											       ! 55 
 	qualifier MODEL_WRITE											       ! 55 
