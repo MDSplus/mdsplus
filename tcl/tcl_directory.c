@@ -395,7 +395,7 @@ static int doFull(nid,nodeUsage,version)
 	{
 	  sprintf(textLine,fmtConglom1,conglomerate_elt);
 	  TclTextOut(textLine);
-	  
+	  partlen = 0;  
 	  TreeGetNci(nid,cong_list);
 	  if (partlen)
 	    {
