@@ -107,6 +107,15 @@ int TclSetNode()
                   clear_flags |= NciM_COMPRESS_ON_PUT;
                   break;
                }
+            switch (cli_present("COMPRESS_SEGMENTS"))
+               {
+                  case CLI_STS_PRESENT:
+                    set_flags |= NciM_COMPRESS_SEGMENTS;
+                    break;
+                  case CLI_STS_NEGATED:
+                    clear_flags |= NciM_COMPRESS_SEGMENTS;
+                    break;
+               }
             switch (cli_present("DO_NOT_COMPRESS"))
                {
                 case CLI_STS_PRESENT:
