@@ -41,6 +41,7 @@ public class FAKECAMERASetup extends DeviceSetup {
         deviceField14 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
+        deviceChoice6 = new DeviceChoice();
         jPanel9 = new javax.swing.JPanel();
         deviceChoice5 = new DeviceChoice();
         deviceField18 = new DeviceField();
@@ -99,6 +100,13 @@ public class FAKECAMERASetup extends DeviceSetup {
         deviceField4.setOffsetNid(6);
         jPanel4.add(deviceField4);
 
+        deviceChoice6.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice6.setIdentifier("");
+        deviceChoice6.setLabelString("Infinite Loop:");
+        deviceChoice6.setOffsetNid(7);
+        deviceChoice6.setUpdateIdentifier("");
+        jPanel4.add(deviceChoice6);
+
         jPanel1.add(jPanel4);
 
         jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
@@ -125,6 +133,7 @@ public class FAKECAMERASetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice5;
+    private DeviceChoice deviceChoice6;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField14;
