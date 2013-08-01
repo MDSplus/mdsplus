@@ -16,7 +16,7 @@ class _replacementArgs(object):
         self.idx=1
 
 def tdiCompile(text,replacementArgs=_replacementArgs(())):
-    import ply.lex as lex
+    import lex
     if isinstance(replacementArgs,tuple):
         return tdiCompile(text,_replacementArgs(replacementArgs))
     elif not isinstance(replacementArgs,_replacementArgs):
@@ -897,7 +897,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         else:
             print("Syntax error")
 
-    import ply.yacc as yacc
+    import yacc
     yacc.yacc(write_tables=optimized,debug=0,optimize=optimized,tabmodule='tdiparsetab')
     return yacc.parse(text)
 
