@@ -1,4 +1,4 @@
-from builtins.builtin import Builtin
+from builtin import Builtin
 
 class dPLACEHOLDER(Builtin):
     min_args=0
