@@ -73,7 +73,15 @@ class Scalar(Data):
         formats={'Int8':'%dB','Int16':'%dW','Int32':'%d','Int64':'0X%0xQ',
                  'Uint8':'%uBU','Uint16':'%uWU','Uint32':'%uLU','Uint64':'0X%0xQU',
                  'Float32':'%g'}
-        return formats[self.__class__.__name__] % (self._value)
+        ans=formats[self.__class__.__name__] % (self._value,)
+        if ans=='nan':
+            ans="$ROPRAND"
+        elif isinstance(self,Float32) and ans.find('.')==-1:
+            ans=ans+"."
+        return ans
+
+    def decompile(self):
+        return str(self)
 
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
@@ -206,10 +214,12 @@ class String(Scalar):
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
-        if isinstance(self.value,str):
-            return self.value
+        return self.value.tostring()
+    def decompile(self):
+        if len(self._value) > 0:
+            return repr(self._value.tostring())
         else:
-            return self.value.decode()
+            return "''"
 
 class Int128(Scalar):
     """128-bit number"""

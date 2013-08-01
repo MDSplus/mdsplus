@@ -5,16 +5,27 @@ from tree import *
 from ident import *
 from treenode import *
 from event import *
+from builtins import Builtin
+from _tdishr import TdiDecompile
 import sys,os
 optimized=1
-def tdiCompile(text):
+
+class _replacementArgs(object):
+    def __init__(self,args):
+        self.args=args
+        self.idx=1
+
+def tdiCompile(text,replacementArgs=_replacementArgs(())):
     import ply.lex as lex
+    if isinstance(replacementArgs,tuple):
+        return tdiCompile(text,_replacementArgs(replacementArgs))
+    elif not isinstance(replacementArgs,_replacementArgs):
+        raise Exception("Second argument to tdiCompile, if suppied, must by a tupple")
 
 ### Lexical Tokens
-
     tokens=['PLUS','MINUS','TIMES','DIVIDE','EQUAL','EQUALS',
             'LPAREN','RPAREN','LBRACE','RBRACE','LBRACKET','RBRACKET','COMMA',
-            'BU','B','WU','W','LU','L','QU','Q','FloatNum','T','T2','IDENT',
+            'BU','B','WU','W','LU','L','QU','Q','FloatNum','T','T2','IDENT','PLACEHOLDER',
             'NAME','ARROW','GREATER','LESS','RAISE','GREATER_EQUAL',
             'LESS_EQUAL','NOT_EQUAL','QUESTION','COLON','LSHIFT','RSHIFT',
             'SEMICOLON','IAND','AND','NOT','PLUSPLUS','MINUSMINUS',
@@ -144,17 +155,31 @@ def tdiCompile(text):
         t.value=Int32(int(t.lexer.lexmatch.group('number1') or t.lexer.lexmatch.group('number2'),0))
         return t
 
-### Ident or builtin constant converted to either Ident() instance or a Function() instance for a constants such as $PI
-    @lex.TOKEN(r'(?i)(\$[a-z0-9_\$]+)|(_[a-z0-9_\$]*)')
+### Ident or builtin constant converted to either Ident() instance or a Builtin() instance for constants such as $PI
+    @lex.TOKEN(r'(?i)(\$([a-z]+[a-z0-9_\$]*)|([0-9]+[a-z_\$]+[a-z0-9_\$]*))|(_[a-z0-9_\$]*)')
     def t_IDENT(t):
         if t.value.lower()=="$roprand":
-            from numpy import nan
-            t.value=Float32(nan)
+            import numpy as np
+            t.value=np.frombuffer(np.getbuffer(np.int32(2147483647)),dtype=np.float32)[0]
         else:
             try:
-                t.value=Function(t.value,())
-            except:
+                t.value=Builtin(t.value,())
+            except Exception,e:
                 t.value=Ident(t.value)
+        return t
+
+### Placeholders
+    @lex.TOKEN(r'\$[1-9]*[0-9]*')
+    def t_PLACEHOLDER(t):
+        if len(t.value)==1:
+            idx=replacementArgs.idx
+        else:
+            idx=int(t.value[1:])
+        if idx <= len(replacementArgs.args):
+            t.value=makeData(replacementArgs.args[idx-1])
+        else:
+            raise Exception('%TDI-E-TdiMISS_ARG, Missing argument is required for function')
+        replacementArgs.idx=idx+1
         return t
 
 ### Tree path \[treename::]tagname[.|:]node[.|:]node...
@@ -282,7 +307,7 @@ def tdiCompile(text):
         """compilation : statements\n| operand\n | operand SEMICOLON
         """
         t[0]=t[1]
-        if isinstance(t[0],Function) and len(t[0].args)==2 and isinstance(t[0].args[0],String) and isinstance(t[0].args[1],String):
+        if isinstance(t[0],Builtin) and len(t[0].args)==2 and isinstance(t[0].args[0],String) and isinstance(t[0].args[1],String):
             t[0]=String(str(t[0].args[0])+str(t[0].args[1]))
 
 ### operands can be arguments to operators
@@ -297,13 +322,13 @@ def tdiCompile(text):
             t[0]=t[1]
         else:
             args=[t[1],]
-            if isinstance(t[2],Function):
+            if isinstance(t[2],Builtin):
                 for arg in t[2].args:
                     args.append(arg)
             else:
                 for arg in t[2]:
                     args.append(arg)
-            t[0]=Function('subscript',tuple(args))
+            t[0]=Builtin('subscript',tuple(args))
 
 ### parenthisized operands such as (1+2) for specifying things like (1+2)*10
     def p_parenthisized_operand(t):
@@ -317,11 +342,11 @@ def tdiCompile(text):
 
 ### Ken variable (i.e. _gub or public _gub)
     def p_ident(t):
-        """ident : IDENT\n| IDENTTYPE IDENT"""
+        """ident : IDENT\n| PLACEHOLDER\n| IDENTTYPE IDENT"""
         if len(t) == 2:
             t[0]=t[1]
         else:
-            t[0]=Function(t[1],(str(t[2]),))
+            t[0]=Builtin(t[1],(str(t[2]),))
 
 ### Missing value specified by asterisk
     def p_missing(t):
@@ -344,7 +369,7 @@ def tdiCompile(text):
 ### Loop control operations (i.e. break, continue)
     def p_loop_control(t):
         'operation : BREAK\n| CONTINUE'
-        t[0]=Function(t[1],tuple())
+        t[0]=Builtin(t[1],tuple())
 
 ### Unary arithmetic operations such as ~a, -a
     def p_unaryop(t):
@@ -356,7 +381,7 @@ def tdiCompile(text):
         elif t[1]=='+' and isinstance(t[2],Scalar):
             t[0]=t[2]
         else:
-            t[0]=Function(ops[t[1].lower()],(t[2],))
+            t[0]=Builtin(ops[t[1].lower()],(t[2],))
 
 ### Binary arithmetic operations such as a+b a>=b a^b a&&b
     def p_binop(t):
@@ -378,9 +403,9 @@ def tdiCompile(text):
                '|':'ior','||':'or','and':'and','or':'or','nor':'nor','mod':'MOD',
                'gt':'gt','ge':'ge','lt':'lt','le':'le','eq':'eq','ne':'ne'}
         if len(t)==4:
-            t[0]=Function(ops[t[2].lower()],(t[1],t[3]))
+            t[0]=Builtin(ops[t[2].lower()],(t[1],t[3]))
         else:
-            t[0]=Function(ops[t[1].lower()],(t[3],t[5]))
+            t[0]=Builtin(ops[t[1].lower()],(t[3],t[5]))
 
 ### Concatenation operator a // b [// c]
 ### Jump through hoops to emulate weird tdi behavior which concatenates string types at compile time except for the
@@ -388,7 +413,7 @@ def tdiCompile(text):
 ### then make a concat function that concats the first n-1 with the nth, other wise concat them all. If any of the
 ### items being concatenated is not a string then don't concat anything at run time.
     class Concat(list):
-        def getFunction(self):
+        def get(self):
             compile_time_concat=True
             for arg in self:
                 if not isinstance(arg,(str,String)):
@@ -405,11 +430,11 @@ def tdiCompile(text):
                     for arg in self[1:]:
                         c[-1]=String(str(c[-1])+str(arg))
                 if len(c)>1:
-                    return Function('concat',tuple(c))
+                    return Builtin('concat',tuple(c))
                 else:
                     return c[0]
             else:
-                return Function('concat',tuple(self))
+                return Builtin('concat',tuple(self))
 
     def p_concat(t):
         'concat : operand SLASHSLASH operand\n| concat SLASHSLASH operand\n operation : concat'
@@ -420,28 +445,28 @@ def tdiCompile(text):
             else:
                 t[0]=Concat([t[1],t[3]])
         else:
-            t[0]=t[1].getFunction()
+            t[0]=t[1].get()
             if isinstance(t[0],String):
                 t.type='scalar'
 
 ### Conditional operation (i.e. a ? b : c)
     def p_conditional(t):
         'operation : operand QUESTION operand COLON operand'
-        t[0]=Function('conditional',(t[3],t[5],t[1]))
+        t[0]=Builtin('conditional',(t[3],t[5],t[1]))
 
 ### Ident increment/decrement (i.e. _i++, _i--, ++_i, --_i)
     def p_inc_dec(t):
         """operation : ident PLUSPLUS\n| ident MINUSMINUS\n| PLUSPLUS ident\n| MINUSMINUS ident"""
         op={'++':'_inc','--':'_dec'}
         if isinstance(t[1],str):
-            t[0]=Function('pre'+op[t[1]],(t[2],))
+            t[0]=Builtin('pre'+op[t[1]],(t[2],))
         else:
-            t[0]=Function('post'+op[t[2]],(t[1],))
+            t[0]=Builtin('post'+op[t[2]],(t[1],))
 
 ### Ken variable assignment (i.e. _i=1)
     def p_assignment(t):
         'operation : operand EQUAL operand %prec EQUAL'
-        t[0]=Function('EQUALS',(t[1],t[3]))
+        t[0]=Builtin('EQUALS',(t[1],t[3]))
 
 ### Argument list for function calls (i.e. ([a[,b[,c]]])  )
     def p_arglist(t):
@@ -452,7 +477,7 @@ def tdiCompile(text):
             t[0]=list()
         else:
             if len(t)==6:
-                t[2]=Function(t[2],(t[4],))
+                t[2]=Builtin(t[2],(t[4],))
             if isinstance(t[2],str):
                 if len(t[1])==0:
                     t[1].append(None)
@@ -506,7 +531,7 @@ def tdiCompile(text):
                         name=name[1:]
                     ans = TreePath(name)
                 else:
-                    ans = Function('build_path',args)
+                    ans = Builtin('build_path',args)
                 return ans
             
             def buildCall(args):
@@ -532,7 +557,7 @@ def tdiCompile(text):
                 args=list()
                 for arg in args_in:
                     args.append(restoreTreePaths(arg))
-                ans = Function('using',tuple(args))
+                ans = Builtin('using',tuple(args))
                 return ans
 
             known_builds={'BUILD_ACTION':Action,
@@ -542,7 +567,7 @@ def tdiCompile(text):
                           'BUILD_DIM':Dimension,
                           'BUILD_DISPATCH':Dispatch,
                           'BUILD_EVENT':Event,
-                          'BUILD_FUNCTION':Function,
+                          'BUILD_FUNCTION':Builtin,
                           'BUILD_METHOD':Method,
                           'BUILD_PARAM':build_param,
                           'BUILD_PROCEDURE':Procedure,
@@ -581,11 +606,11 @@ def tdiCompile(text):
                              'long','long_unsigned','unsigned_long','quadword','quadword_unsigned','unsigned_quadword',
                              'float','double','f_float','g_float','d_float','fs_float','ft_float']
                     if t[1].lower() in numbers and (isinstance(t[2][0],Scalar) or isinstance(t[2][0],Array)):
-                        t[0]=Data.evaluate(Function(t[1],tuple(t[2])))
+                        t[0]=Data.evaluate(Builtin(t[1],tuple(t[2])))
                     else:
-                        t[0]=Function(t[1],tuple(t[2]))
+                        t[0]=Builtin(t[1],tuple(t[2]))
                 except Exception,e:
-                   t[0]=Function('ext_function',tuple([None,t[1]]+t[2]))
+                    t[0]=Builtin('ext_function',tuple([None,t[1]]+t[2]))
 
 ### call library (i.e. library->gub(a,b,c))
     def p_rettype(t):
@@ -608,8 +633,8 @@ def tdiCompile(text):
         pass
 
     class CommaList(list):
-        def getFunction(self):
-            return Function('comma',tuple(self))
+        def get(self):
+            return Builtin('comma',tuple(self))
 
     def p_statement(t):
         """statement : operand SEMICOLON\n| comma_list SEMICOLON\n| comma_list\n| operand\n| SEMICOLON
@@ -617,14 +642,14 @@ def tdiCompile(text):
         if isinstance(t[1],str):
             pass
         elif isinstance(t[1],CommaList):
-            t[0]=t[1].getFunction()
+            t[0]=t[1].get()
         else:
             t[0]=t[1]
 
     def p_statements(t):
         """statements : statement\n| statements statement\n| statements braced_statements"""
         if len(t)==2:
-            t[0]=Function('statement',(t[1],))
+            t[0]=Builtin('statement',(t[1],))
         else:
             if t[2] is None:
                 t[0]=t[1]
@@ -632,7 +657,7 @@ def tdiCompile(text):
                 t[1].args=tuple(list(t[1].args)+[t[2]])
                 t[0]=t[1]
             else:
-                t[0]=Function('statement',(t[1],t[2]))
+                t[0]=Builtin('statement',(t[1],t[2]))
 
     def p_braced_statements(t):
         """braced_statements : LBRACE statements RBRACE optional_semicolon\n | LBRACE RBRACE optional_semicolon"""
@@ -675,7 +700,7 @@ def tdiCompile(text):
 ### comma operation as in (_a=1,_b=2,3)
     def p_comma_list_operation(t):
         'operation : LPAREN comma_list RPAREN'
-        t[0]=t[2].getFunction()
+        t[0]=t[2].get()
 
     def p_empty(t):
         'empty :'
@@ -685,14 +710,14 @@ def tdiCompile(text):
     def p_optional_comma_list(t):
         """optional_operand : comma_list\n| operand\n| empty"""
         if isinstance(t[1],CommaList):
-            t[0]=t[1].getFunction()
+            t[0]=t[1].get()
         else:
             t[0]=t[1]
 
     def p_for(t):
         """operation : FOR LPAREN optional_operand SEMICOLON operand SEMICOLON optional_operand RPAREN braced_statements
         | FOR LPAREN optional_operand SEMICOLON operand SEMICOLON optional_operand RPAREN statement"""
-        t[0]=Function('for',(t[3],t[5],t[7],t[9]))
+        t[0]=Builtin('for',(t[3],t[5],t[7],t[9]))
 
 ### If statement (i.e. if (_x<10) {_x=42;} else {_x=43;})
     def p_if_begin(t):
@@ -708,13 +733,13 @@ def tdiCompile(text):
         args=[t[1],t[2]]
         if len(t) > 3:
             args.append(t[4])
-        t[0]=Function('if',tuple(args))
+        t[0]=Builtin('if',tuple(args))
 
 ### While statement (i.e. while(expression){statements;} )
     def p_while(t):
         """operation : WHILE LPAREN operand RPAREN braced_statements
         | WHILE LPAREN operand RPAREN statement"""
-        t[0]=Function('while',(t[3],t[5]))
+        t[0]=Builtin('while',(t[3],t[5]))
 
 ### FUN definition (i.e. public fun gub(args){statements} )
     def p_fun_arg(t):
@@ -722,13 +747,13 @@ def tdiCompile(text):
         if len(t) == 2:
             t[0]=t[1]
         elif len(t) == 3:
-            t[0]=Function(t[1],(str(t[2]),))
+            t[0]=Builtin(t[1],(str(t[2]),))
         elif len(t) == 4:
-            t[0]=Function(t[1],(Function(t[2],(str(t[3]),)),))
+            t[0]=Builtin(t[1],(Builtin(t[2],(str(t[3]),)),))
         elif len(t) == 5:
-            t[0]=Function(t[1],(t[3],))
+            t[0]=Builtin(t[1],(t[3],))
         else:
-            t[0]=Function(t[1],(Function(t[2],(t[4],)),))
+            t[0]=Builtin(t[1],(Builtin(t[2],(t[4],)),))
 
     def p_fun_args(t):
         """fun_args : LPAREN\n| fun_args fun_arg\n| fun_args COMMA\n| fun_args RPAREN"""
@@ -750,7 +775,7 @@ def tdiCompile(text):
                 itype=t[2]
             else:
                 itype=t[1]
-            args.append(Function(itype,(t[3],)))
+            args.append(Builtin(itype,(t[3],)))
             args.append(t[5])
             for arg in t[4]:
                 args.append(arg)
@@ -759,7 +784,7 @@ def tdiCompile(text):
             args.append(t[4])
             for arg in t[3]:
                 args.append(arg)
-        t[0]=Function('fun',tuple(args))
+        t[0]=Builtin('fun',tuple(args))
 
 ### Vector/Array declarations (i.e. [_a,_b,_c] or [1,2,3,])
     def p_vector(t):
@@ -769,15 +794,15 @@ def tdiCompile(text):
         vector : vector_part RBRACKET"""
         if isinstance(t[1],str):
             if len(t)==2:
-                t[0]=Function('vector',tuple())
+                t[0]=Builtin('vector',tuple())
                 t[0].isarray=True
             else:
-                t[0]=Function('vector',(t[2],))
+                t[0]=Builtin('vector',(t[2],))
                 t[0].isarray = isinstance(t[2],Scalar) or isinstance(t[2],Array)
         elif t[2] == ',':
             args=list(t[1].args)
             if len(args) > 250:
-                args=[Function('vector',tuple(args)),t[3]]
+                args=[Builtin('vector',tuple(args)),t[3]]
             else:
                 args.append(t[3])
             t[1].args=tuple(args)
@@ -787,7 +812,7 @@ def tdiCompile(text):
             if t[1].isarray:
                 t[0]=Data.evaluate(t[1])
             else:
-                t[0]=Function('vector',t[1].args)
+                t[0]=Builtin('vector',t[1].args)
 
 ### Switch statement (i.e. switch(_a) {case(42) {statements} case(43) {statements}} )
     def p_case(t):
@@ -795,13 +820,13 @@ def tdiCompile(text):
         | CASE LPAREN operand RPAREN\n| CASE DEFAULT braced_statements
         | CASE DEFAULT statement\n| statement"""
         if len(t)==4:
-            t[0]=Function('default',(t[3],))
+            t[0]=Builtin('default',(t[3],))
         elif len(t)==5:
-            t[0]=Function('case',(None,None))
+            t[0]=Builtin('case',(None,None))
             t[0].args=(t[3],)
             t[0].doAppendCase=True
         elif len(t)==6:
-            t[0]=Function('case',(t[3],t[5]))
+            t[0]=Builtin('case',(t[3],t[5]))
         else:
             t[0]=t[1]
 
@@ -810,8 +835,8 @@ def tdiCompile(text):
 
         def findCaseWithNoStatements(case,parent=None,argidx=0):
             ans=None
-            if isinstance(case,Function):
-                if case.opc.name=='CASE' and len(case.args)==1:
+            if isinstance(case,Builtin):
+                if case.name=='CASE' and len(case.args)==1:
                     ans = {'case':case,'parent':parent,'argidx':argidx}
                 else:
                     for idx in range(len(case.args)):
@@ -830,7 +855,7 @@ def tdiCompile(text):
                 appendTo['case'].args=tuple(list(appendTo['case'].args)+[case,])
                 return cases
             else:
-                statement = Function('statement',(appendTo['case'],case))
+                statement = Builtin('statement',(appendTo['case'],case))
                 if appendTo['parent']==None:
                     return statement
                 else:
@@ -845,7 +870,7 @@ def tdiCompile(text):
 
     def p_switch(t):
         """operation : SWITCH LPAREN operand RPAREN LBRACE cases RBRACE"""
-        t[0]=Function('switch',(t[3],t[6]))
+        t[0]=Builtin('switch',(t[3],t[6]))
 
 ### "Equals First" statement (i.e. _gub+=42)
     def p_operand_equal_first(t):
@@ -858,7 +883,7 @@ def tdiCompile(text):
         ef_dict=dict()
         for itm in items:
             ef_dict.setdefault(itm[0]+'=',itm[1])
-        t[0]=Function('equals_first',(Function(ef_dict[t[2]],(t[1],t[3])),))
+        t[0]=Builtin('equals_first',(Builtin(ef_dict[t[2]],(t[1],t[3])),))
 
 ### BACKQUOTED expression (i.e. `getnci(gub,"RECORD")
     def p_operand_backquote(t):
@@ -876,110 +901,5 @@ def tdiCompile(text):
     yacc.yacc(write_tables=optimized,debug=0,optimize=optimized,tabmodule='tdiparsetab')
     return yacc.parse(text)
 
-################################################################################################
-
-
-if __name__ == '__main__':
-    t=Tree('test',-1)
-
-    def compareAnswers(new_ans,tdi_ans):
-        if type(makeData(new_ans)) != type(makeData(tdi_ans)):
-            raise Exception("new type=%s but old type was %s, value was %s" %(str(type(new_ans)),str(type(tdi_ans)),str(new_ans)))
-        if isinstance(new_ans,Function):
-            if new_ans.opc != tdi_ans.opc:
-                raise Exception("new opcode=%s but old opcode was %s value was %s\n\n\n%s" % (str(new_ans.opc),str(tdi_ans.opc),str(new_ans),str(tdi_ans)))
-        if isinstance(new_ans,Compound):
-            if len(new_ans.args) != len(tdi_ans.args):
-                for idx in range(len(new_ans.args)):
-                    print "New args[%d]=%s" % (idx,str(new_ans.args[idx]))
-                for idx in range(len(tdi_ans.args)):
-                    print "Old args[%d]=%s" % (idx,str(tdi_ans.args[idx]))
-                raise Exception("new contains %d args but old contains %d args" % (len(new_ans.args),len(tdi_ans.args)))
-            for idx in range(len(new_ans.args)):
-                compareAnswers(new_ans.args[idx],tdi_ans.args[idx])
-        else:
-            if str(new_ans) != str(tdi_ans):
-                if tdi_ans is None and isinstance(new_ans,EmptyData):
-                    pass
-                else:
-                    raise Exception("new value is %s but old value is %s" % (str(new_ans),str(tdi_ans)))
-
-    def compileFile(filename,debug=0,numfiles=[0,]):
-        try:
-            files=os.listdir(filename)
-            isDirectory=True
-        except OSError:
-            isDirectory=False
-        if isDirectory:
-            files.sort()
-            for f in files:
-                compileFile(filename+'/'+f,debug=debug,numfiles=numfiles)
-        else:
-            numfiles[0]=numfiles[0]+1
-            tdistr=''.join(open(filename,'r').readlines()).replace('\r\n','\n')
-            if debug > 0:
-                filedelim='*'.rjust(80,'*')+'\n'
-            else:
-                filedelim=''
-            print "%s%3d: Compiling file: %s" %(filedelim,numfiles[0],filename,)
-            if debug > 0:
-                print "Contents:\n%s\n%s%s" % ('-'.rjust(80,'-'),tdistr,'-'.rjust(80,'-'))
-                print "Compiling with old tdi"
-            try:
-                tdi_ans = Data.compile(tdistr)
-                tdi_decompiled_ans=str(tdi_ans)
-                if tdi_ans is None:
-                    raise Exception('TDI Compile returned None')
-                if debug > 0:
-                    print "Decompile:"
-                    print tdi_decompiled_ans
-                    if debug > 1:
-                        print "Evaluate:"
-                        try:
-                            print repr(Data.evaluate(tdi_ans))
-                        except Exception,e:
-                            print "Error: ",e
-            except Exception,e:
-                print "Error compiling with tdi:",e
-                return
-            if debug > 0:
-                print "Compiling with new tdi"
-            try:
-                new_ans = tdiCompile(tdistr)
-                tmp=str(new_ans)
-            except:
-                print "Error compiling with mdi"
-                import traceback
-                traceback.print_exc()
-                return
-            if debug > 0:
-                print "Decompile:"
-                print new_ans
-                if debug > 1:
-                    print "Evaluate:"
-                    try:
-                        print repr(Data.evaluate(new_ans))
-                    except Exception,e:
-                        print "Error: ",e
-            compareAnswers(new_ans,tdi_ans)
-            print "Ok"
-
-    if len(sys.argv) > 1:
-        if len(sys.argv) == 2:
-            debug=0
-        else:
-            debug=int(sys.argv[2])
-        compileFile(sys.argv[1],debug=debug,numfiles=[0,])
-    else:
-        while True:
-            try:
-                s=raw_input('TDI> ')
-            except EOFError:
-                break
-            try:
-                ans=tdiCompile(s)
-                if ans is not None:
-                    print Data.decompile(ans)
-                    print Data.evaluate(ans)
-            except TdiException,e:
-                print e
+def compileFile(filename):
+    return tdiCompile('\n'.join(open(filename,'r').readlines()).replace('\r\n','\n'))

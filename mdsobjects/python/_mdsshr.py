@@ -114,6 +114,10 @@ def MdsDecompress(value):
     else:
         raise MdsException(MdsGetMsg(status))
 
+def MdsCompareXd(value1,value2):
+    return MdsShr.MdsCompareXd(_C.pointer(descriptor(value1)),_C.pointer(descriptor(value2)))
+
+
 def MdsCopyDxXd(desc):
     from _descriptor import descriptor,descriptor_xd
     xd=descriptor_xd()

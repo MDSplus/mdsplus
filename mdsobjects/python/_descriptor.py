@@ -8,6 +8,7 @@ from ident import Ident
 from apd import Apd,Dictionary,List
 from compound import *
 from _mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
+from builtins import Builtin
 import numpy as _N
 
 import ctypes as _C
@@ -205,6 +206,10 @@ class descriptor(_C.Structure):
                 c_d.pointer=_C.cast(_C.c_void_p(0),_C.POINTER(descriptor))
             else:
                 c_d.length=2
+                try:
+                    x=_C.c_ushort(value.opcode)
+                except:
+                    print "Wrong opcode! ",type(value.opcode),value.opcode
                 c_d.pointer=_C.cast(_C.pointer(_C.c_ushort(value.opcode)),_C.POINTER(descriptor))
             arglist=list()
             for i in range(len(value.args)):
@@ -372,8 +377,7 @@ class descriptor(_C.Structure):
                 if (self.dtype == DTYPE_IDENT):
                     return Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == DTYPE_Z):
-                    from compound import Function
-                    return Function('$MISSING',tuple())
+                    return Builtin('$MISSING',tuple())
                 raise TypeError('Unsupported data type: (%s,%d)' % (str(mdsdtypes(self.dtype)),self.dtype))
         if (self.dclass == CLASS_R):
             ans = _C.cast(_C.pointer(self),_C.POINTER(descriptor_r)).contents
@@ -413,7 +417,10 @@ class descriptor(_C.Structure):
                         arglist.append(ans.dscptrs[i].contents.value)
                     else:
                         arglist.append(None)
-                return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](args=tuple(arglist),opcode=opcode)
+                if self.dtype == DTYPE_FUNCTION:
+                    return Builtin(opcode,tuple(arglist))
+                else:
+                    return globals()[str(mdsdtypes(self.dtype))[6:].lower().capitalize()](args=tuple(arglist),opcode=opcode)
             if self.dtype in (DTYPE_ACTION,DTYPE_PROCEDURE,DTYPE_DISPATCH,DTYPE_DIMENSION,DTYPE_METHOD,DTYPE_CONGLOM,DTYPE_SIGNAL,DTYPE_PROGRAM,
                               DTYPE_ROUTINE,DTYPE_WINDOW,DTYPE_OPAQUE):
                 arglist=list()

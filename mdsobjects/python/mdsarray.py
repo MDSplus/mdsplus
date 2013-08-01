@@ -1,7 +1,7 @@
 import numpy,copy,ctypes
 from mdsdata import Data,makeData
 from _mdsdtypes import *
-from mdsscalar import Scalar
+from mdsscalar import *
 
 def makeArray(value):
     if isinstance(value,Array):
@@ -36,6 +36,27 @@ def makeArray(value):
         return makeArray(numpy.array(value).reshape(1))
     raise TypeError('Cannot make Array out of '+str(type(value)))
                         
+
+def arrayDecompile(a,cl):
+    if len(a.shape)==1:
+        ans='['
+        for idx in range(len(a)):
+            sval=cl(a[idx])
+            if idx < len(a)-1:
+                ending=','
+            else:
+                ending=']'
+            ans=ans+sval.decompile()+ending
+        return ans
+    else:
+        ans='['
+        for idx in range(a.shape[0]):
+            if idx < a.shape[0]-1:
+                ending=', '
+            else:
+                ending=']'
+            ans=ans+arrayDecompile(a[idx],cl)+ending
+        return ans
 
 class Array(Data):
     def __init__(self,value=0):
@@ -137,6 +158,13 @@ class Array(Data):
     def clip(self,y,z):
         return self._triop('clip',y,z)
 
+
+    def decompile(self):
+        if str(self._value.dtype).startswith('|S'):
+            cl=String
+        else:
+            cl=globals()[str(self._value.dtype).capitalize()]
+        return arrayDecompile(self._value,cl)
 
 class Int8Array(Array):
     """8-bit signed number"""

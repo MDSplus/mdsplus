@@ -43,7 +43,8 @@ def data(item):
 def decompile(item):
     """Returns the item converted to a string
     @rtype: string"""
-    return item.decompile()
+    return TdiDecompile(item)
+    return makeData(item).decompile()
 
 def evaluate(item,):
     """Return evaluation of mdsplus object"""
@@ -188,6 +189,10 @@ class Data(object):
         else:
             self._validation=validation
         return
+
+    def setValidation(self,validation):
+        self._setValidation(validation)
+        return self
 
     validation=property(_getValidation,_setValidation)
     """
@@ -697,23 +702,45 @@ class Data(object):
         """
         return self.error
 
+    def hasNodeReference(self):
+        """Return True if data item contains a tree reference
+        @rtype: Bool
+        """
+        from compound import Compound
+        from treenode import TreeNode,TreePath
+        from apd import Apd
+        if isinstance(self,TreeNode) or isinstance(self,TreePath):
+            return True
+        elif isinstance(self,Compound):
+            for arg in self.args:
+                if isinstance(arg,Data) and arg.hasNodeReference():
+                    return True
+        elif isinstance(self,Apd):
+            for arg in self.getDescs():
+                if isinstance(arg,Data) and arg.hasNodeReference():
+                    return True
+        return False
+
     def setUnits(self,units):
         """Set units
-        @rtype: None
+        @rtype: original type
         """
         self.units=units
+        return self
 
     def setHelp(self,help):
         """Set the Help  field for this Data instance.
-        @rtype: None
+        @rtype: original type
         """
         self.help=help
+        return self
 
     def setError(self,error):
         """Set the Error field for this Data instance.
-        @rtype: None
+        @rtype: original type
         """
         self.error=error
+        return self
 
     def mayHaveChanged(self):
         """return true if the represented data could have been changed since the last time

@@ -30,6 +30,7 @@ from _mdsshr import MdsException,MdsTimeout,MdsNoMoreEvents,MdsInvalidEvent
 from _treeshr import TreeException,TreeNoDataException
 from tdipy import execPy
 try:
-  from tdicompile import tdiCompile
+  from tdicompile import tdiCompile,compileFile
 except:
   pass
+#from builtins import *

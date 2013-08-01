@@ -3,7 +3,6 @@ from _mdsdtypes import *
 
 
 class Compound(Data):
-
     def __init__(self,*args, **params):
         """MDSplus compound data.
         """
@@ -13,7 +12,8 @@ class Compound(Data):
             args=params['args']
         if 'params' in params:
             params=params['params']
-        self._dtype=mdsdtypes.fromName('DTYPE_'+self.__class__.__name__.upper())
+        if not hasattr(self,'_dtype'):
+            self._dtype=mdsdtypes.fromName('DTYPE_'+self.__class__.__name__.upper())
         if 'opcode' in params:
             self._opcode=params['opcode']
         try:
@@ -120,6 +120,11 @@ class Compound(Data):
             self.args=tuple(tmp)
         return
 
+#    def decompile(self):
+#        arglist=list()
+#        for arg in self.args:
+#            arglist.append(makeData(arg).decompile())
+#        return 'Build_'+self.__class__.__name__+'('+','.join(arglist)+')'
 
     def getArgumentAt(self,idx):
         """Return argument at index idx (indexes start at 0)
@@ -181,17 +186,18 @@ class MetaClass(type):
         newClassDict=classDict
         newClassDict['_fields']=dict()
         idx=0
-        for f in classDict['fields']:
-            name=f[0:1].upper()+f[1:]
-            exec ("def get"+name+"(self): return self.__getattr__('"+f+"')")
-            exec ("newClassDict['get'+name]=get"+name)
-            newClassDict['get'+name].__doc__='Get the '+f+' field\n@rtype: Data'
-            exec ('def set'+name+'(self,value): return self.__setattr__("'+f+'",value)')
-            exec ("newClassDict['set'+name]=set"+name)
-            newClassDict['set'+name].__doc__='Set the '+f+' field\n@type value: Data\n@rtype: None'
-            exec ("newClassDict['_dtype']=DTYPE_"+classname.upper())
-            newClassDict['_fields'][f]=idx
-            idx=idx+1
+        if 'fields' in classDict:
+            for f in classDict['fields']:
+                name=f[0:1].upper()+f[1:]
+                exec ("def get"+name+"(self): return self.__getattr__('"+f+"')")
+                exec ("newClassDict['get'+name]=get"+name)
+                newClassDict['get'+name].__doc__='Get the '+f+' field\n@rtype: Data'
+                exec ('def set'+name+'(self,value): return self.__setattr__("'+f+'",value)')
+                exec ("newClassDict['set'+name]=set"+name)
+                newClassDict['set'+name].__doc__='Set the '+f+' field\n@type value: Data\n@rtype: None'
+                exec ("newClassDict['_dtype']=DTYPE_"+classname.upper())
+                newClassDict['_fields'][f]=idx
+                idx=idx+1
         c=type.__new__(meta,classname,bases,newClassDict)
         return c
 
@@ -260,27 +266,27 @@ class Function(Compound):
         """Create a compiled MDSplus function reference.
         Number of arguments allowed depends on the opcode supplied.
         """
-        from _opcodes.opcodes import find_opcode
+#        from _opcodes.opcodes import find_opcode
         super(Function,self).__init__(args=args,opcode=opcode)
-        opc=find_opcode(self._opcode)
-        if opc:
-            opc.check_args(args)
-            self._opcode=opc.number
-        else:
-            raise Exception("Invalid opcode - "+str(self._opcode))
-        self.__dict__['opc']=opc
+#        opc=find_opcode(self._opcode)
+#        if opc:
+#            opc.check_args(args)
+#            self._opcode=opc.number
+#        else:
+#            raise Exception("Invalid opcode - "+str(self._opcode))
+#        self.__dict__['opc']=opc
 
-    def setOpcode(self,opcode):
-        """Set opcode
-        @param opcode: either a string or a index number of the builtin operation
-        @type opcode: str,int
-        """
-        from _opcodes.opcodes import find_opcode
-        opc=find_opcode(opcode)
-        if not opc:
-            raise Exception("Invalid opcode - "+str(opcode))
-        self.opcode=opcode
-        self.__dict__['opc']=opc
+#    def setOpcode(self,opcode):
+#        """Set opcode
+#        @param opcode: either a string or a index number of the builtin operation
+#        @type opcode: str,int
+#        """
+#        from _opcodes.opcodes import find_opcode
+#        opc=find_opcode(opcode)
+#        if not opc:
+#            raise Exception("Invalid opcode - "+str(opcode))
+#        self.opcode=opcode
+#        self.__dict__['opc']=opc
         
 #
 # The following code can be used if we want to implement TDI opcodes in python code using the opcodes.py module.
@@ -290,6 +296,9 @@ class Function(Compound):
 #        """Returns the answer when the function is evaluated."""
 #        return self.opc.evaluate(self.args)
 #
+#    def decompile(self):
+#            return self.opc.str(self.args)
+
 #    def __str__(self):
 #        """Returns the string representation of the function."""
 #        return self.opc.str(self.args)
@@ -328,6 +337,13 @@ class Range(Compound):
     begin, ending, and delta fields specified as arrays to indicate a multi-speed clock.
     """
     fields=('begin','ending','delta')
+
+    def decompile(self):
+        parts=list()
+        for arg in self.args:
+            parts.append(makeData(arg).decompile())
+        return ' : '.join(parts)
+        
     __metaclass__=MetaClass
     
 class Routine(Compound):
@@ -348,6 +364,12 @@ class Signal(Compound):
     dims=property(_getDims)
     """The dimensions of the signal"""
         
+#    def decompile(self):
+#        arglist=list()
+#        for arg in self.args:
+#            arglist.append(makeData(arg).decompile())
+#        return 'Build_Signal('+','.join(arglist)+')'
+
     def dim_of(self,idx=0):
         """Return the signals dimension
         @rtype: Data
@@ -402,12 +424,20 @@ class Window(Compound):
     Dimension to construct the independent axis of a signal.
     """
     fields=('startIdx','endIdx','timeAt0')
+
+#    def decompile(self):
+#        return 'Build_Window('+makeData(self.startIdx).decompile()+','+makeData(self.endIdx).decompile()+','+makeData(self.timeAt0)+')'
+
     __metaclass__=MetaClass
 
 class Opaque(Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
     """
     fields=('data','otype')
+
+#    def decompile(self):
+#        return 'Build_Opaque('+makeData(self.data).decompile()+','+makeData(self.otype).decompile()+')'
+
     __metaclass__=MetaClass
    
     def getImage(self):
