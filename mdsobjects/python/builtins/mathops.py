@@ -1,5 +1,5 @@
-from mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128
-from mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array
+from mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32
+from mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array
 from mdsdata import makeData as _makeData
 from compound import Signal as _Signal
 from builtins.builtin import Builtin
@@ -30,9 +30,7 @@ class ABS(Builtin):
             else:
                 ans = _makeData(abs(args[0]))
         elif isinstance(args[0],_Signal):
-            sig_args=list(args[0].args)
-            sig_args[0]=ABS((sig_args[0],)).evaluate()
-            args[0].args=tuple(sig_args)
+            args[0].value=ABS(args[0].value).evaluate()
             ans = args[0]
         else:
             raise Exception("Invalid argument type for ABS function: %s" % (str(type(args[0])),))
@@ -50,9 +48,7 @@ class ABS1(Builtin):
             if hasattr(args[0],'_units'):
                 ans=ans.setUnits(args[0].units)
         elif isinstance(args[0],_Signal):
-            sig_args=list(args[0].args)
-            sig_args[0]=ABS1((sig_args[0],)).evaluate()
-            args[0].args=tuple(sig_args)
+            args[0].value=ABS1(args[0].value).evaluate()
             ans=args[0]
         else:
             raise Exception("Invalid argument type for ABS function: %s" % (str(type(args[0])),))
@@ -68,21 +64,19 @@ class ABSSQ(Builtin):
         if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
             ans=_makeData(abs(args[0].real)**2+abs(args[0].imag)**2)
             if isinstance(args[0],_Complex64):
-                ans=Float32(ans)
+                ans=_Float32(ans)
             elif isinstance(args[0],_Complex128):
-                ans=Float64(ans)
+                ans=_Float64(ans)
             elif isinstance(args[0],_Complex64Array):
-                ans=Float32Array(ans)
+                ans=_Float32Array(ans)
             elif isinstance(args[0],_Complex128Array):
-                ans=Float64Array(ans)
+                ans=_Float64Array(ans)
             else:
                 ans=type(args[0])(ans)
             if hasattr(args[0],'_units'):
                 ans=ans.setUnits(args[0].units+"*"+args[0].units)
         elif isinstance(args[0],_Signal):
-            sig_args=list(args[0].args)
-            sig_args[0]=ABSSQ((sig_args[0],)).evaluate()
-            args[0].args=tuple(sig_args)
+            args[0].value=ABSSQ(args[0].value).evaluate()
             ans=args[0]
         else:
             raise Exception("Invalid argument type for ABS function: %s" % (str(type(args[0])),))
@@ -96,12 +90,10 @@ class ACOS(Builtin):
     def evaluate(self):
         from numpy import arccos
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],Scalar) or isinstance(args[0],Array):
+        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
             ans = _makeData(arccos(args[0].value))
         elif isinstance(args[0],_Signal):
-            sig_args=list(args[0].args)
-            sig_args[0]=ACOS((sig_args[0],)).evaluate()
-            args[0].args=tuple(sig_args)
+            args[0].value=ACOS(args[0].value).evaluate()
             ans = args[0]
         else:
             raise Exception("Invalid argument type for ABS function: %s" % (str(type(args[0])),))
@@ -115,12 +107,10 @@ class ACOSD(Builtin):
     def evaluate(self):
         from numpy import arccos,pi
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],Scalar) or isinstance(args[0],Array):
+        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
             ans = type(args[0])(arccos(args[0].value)/pi*180.)
         elif isinstance(args[0],_Signal):
-            sig_args=list(args[0].args)
-            sig_args[0]=ACOSD((sig_args[0],)).evaluate()
-            args[0].args=tuple(sig_args)
+            args[0].value=ACOSD(args[0].value).evaluate()
             ans = args[0]
         else:
             raise Exception("Invalid argument type for ABS function: %s" % (str(type(args[0])),))
