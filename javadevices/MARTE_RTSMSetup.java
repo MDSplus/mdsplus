@@ -258,7 +258,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         setDeviceTitle("MARTe Real Time State Machine");
         setDeviceType("MARTE_RTSM");
         setHeight(600);
-        setWidth(800);
+        setWidth(1200);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 1));
@@ -289,6 +289,8 @@ public class MARTE_RTSMSetup extends DeviceSetup {
 
         jPanel4.setLayout(new java.awt.GridLayout(3, 1));
 
+        jPanel77.setLayout(new java.awt.GridLayout(1, 3));
+
         deviceChoice1.setChoiceIntValues(new int[] {1, 2, 3, 4, 5, 6, 7, 8});
         deviceChoice1.setChoiceItems(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceChoice1.setIdentifier("");
@@ -297,7 +299,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceChoice1.setUpdateIdentifier("");
         jPanel77.add(deviceChoice1);
 
-        deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable1.setColumnNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
         deviceTable1.setIdentifier("");
         deviceTable1.setLabelString("Dead times: ");
         deviceTable1.setNumCols(8);
@@ -305,7 +307,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable1.setOffsetNid(1345);
         jPanel77.add(deviceTable1);
 
-        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable2.setColumnNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
         deviceTable2.setIdentifier("");
         deviceTable2.setLabelString("Num Next states: ");
         deviceTable2.setNumCols(8);
@@ -315,7 +317,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
 
         jPanel4.add(jPanel77);
 
-        jPanel78.setLayout(new java.awt.BorderLayout());
+        jPanel78.setLayout(new java.awt.GridLayout());
 
         deviceTable3.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable3.setIdentifier("");
@@ -323,7 +325,8 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable3.setNumCols(8);
         deviceTable3.setNumRows(8);
         deviceTable3.setOffsetNid(1357);
-        jPanel78.add(deviceTable3, java.awt.BorderLayout.WEST);
+        deviceTable3.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        jPanel78.add(deviceTable3);
 
         deviceTable4.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable4.setIdentifier("");
@@ -331,7 +334,8 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable4.setNumCols(8);
         deviceTable4.setNumRows(8);
         deviceTable4.setOffsetNid(1363);
-        jPanel78.add(deviceTable4, java.awt.BorderLayout.CENTER);
+        deviceTable4.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        jPanel78.add(deviceTable4);
 
         deviceTable5.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable5.setIdentifier("");
@@ -339,11 +343,12 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable5.setNumCols(8);
         deviceTable5.setNumRows(8);
         deviceTable5.setOffsetNid(1369);
-        jPanel78.add(deviceTable5, java.awt.BorderLayout.EAST);
+        deviceTable5.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        jPanel78.add(deviceTable5);
 
         jPanel4.add(jPanel78);
 
-        jPanel79.setLayout(new java.awt.BorderLayout());
+        jPanel79.setLayout(new java.awt.GridLayout(1, 3));
 
         deviceTable6.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable6.setIdentifier("");
@@ -351,15 +356,16 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable6.setNumCols(8);
         deviceTable6.setNumRows(8);
         deviceTable6.setOffsetNid(1375);
-        jPanel79.add(deviceTable6, java.awt.BorderLayout.WEST);
+        deviceTable6.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        jPanel79.add(deviceTable6);
 
-        deviceTable7.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable7.setColumnNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
         deviceTable7.setIdentifier("");
         deviceTable7.setLabelString("Out Bits: ");
         deviceTable7.setNumCols(8);
         deviceTable7.setNumRows(1);
         deviceTable7.setOffsetNid(1381);
-        jPanel79.add(deviceTable7, java.awt.BorderLayout.EAST);
+        jPanel79.add(deviceTable7);
 
         jPanel4.add(jPanel79);
 
@@ -1445,6 +1451,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getAccessibleContext().setAccessibleName("");
+        getAccessibleContext().setAccessibleDescription("");
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
