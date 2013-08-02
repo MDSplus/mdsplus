@@ -527,6 +527,15 @@ class Data(object):
         """
         return self.execute("data($)",(self,)).value
 
+    def _getDescrPtr(self):
+        """Return pointer to descriptor of inself as an int
+        @rtype: int
+        """
+        from ctypes import addressof
+        return addressof(self.descriptor)
+
+    descrPtr=property(_getDescrPtr)
+
     def evaluate(self):
         """Return the result of TDI evaluate(this).
         @rtype: Data
