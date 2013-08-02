@@ -333,6 +333,7 @@ cannot:			status = Append(fun_ptr->name, pout);
 		***********************/
 		case OpcEqualsFirst :
 			r_ptr = (struct descriptor_r *)pin->dscptrs[0];
+                        while (r_ptr && r_ptr->dtype == DTYPE_DSC) r_ptr=(struct descriptor_r *)r_ptr->pointer;
 			newone = *(unsigned short *)r_ptr->pointer;
 			narg = r_ptr->ndesc;
 			goto first;
