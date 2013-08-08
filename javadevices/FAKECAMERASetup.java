@@ -45,6 +45,10 @@ public class FAKECAMERASetup extends DeviceSetup {
         jPanel9 = new javax.swing.JPanel();
         deviceChoice5 = new DeviceChoice();
         deviceField18 = new DeviceField();
+        jPanel20 = new javax.swing.JPanel();
+        deviceChoice8 = new DeviceChoice();
+        deviceField19 = new DeviceField();
+        deviceField20 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Fake Camera Device");
@@ -126,6 +130,27 @@ public class FAKECAMERASetup extends DeviceSetup {
 
         jPanel1.add(jPanel9);
 
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Dynamic Range for Streaming"));
+
+        deviceChoice8.setChoiceItems(new String[] {"YES", "NO"});
+        deviceChoice8.setLabelString("Auto Adjustment:");
+        deviceChoice8.setOffsetNid(10);
+        jPanel20.add(deviceChoice8);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("Manual Low Limit:");
+        deviceField19.setNumCols(4);
+        deviceField19.setOffsetNid(11);
+        jPanel20.add(deviceField19);
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("Manual High Limit:");
+        deviceField20.setNumCols(4);
+        deviceField20.setOffsetNid(12);
+        jPanel20.add(deviceField20);
+
+        jPanel1.add(jPanel20);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
@@ -134,16 +159,20 @@ public class FAKECAMERASetup extends DeviceSetup {
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice5;
     private DeviceChoice deviceChoice6;
+    private DeviceChoice deviceChoice8;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField14;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
     private DeviceField deviceField18;
+    private DeviceField deviceField19;
     private DeviceField deviceField2;
+    private DeviceField deviceField20;
     private DeviceField deviceField4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
