@@ -17,6 +17,17 @@ import os,sys
 if sys.version > '3':
     buffer = memoryview
 
+def pointerToObject(pointer):
+    if pointer == 0:
+        return None
+    else:
+        d=descriptor()
+        d.dtype=DTYPE_DSC
+        d.dclass=CLASS_S
+        d.length=100000
+        d.pointer=_C.cast(pointer,_C.POINTER(descriptor))
+        return d.value
+
 class descriptor(_C.Structure):
     __cached_values={}
     indentation=0
@@ -35,6 +46,7 @@ class descriptor(_C.Structure):
         return descriptor.__next_idx
     
     def __init__(self,value=None):
+
         if isinstance(value,descriptor):
             self.dtype=value.dtype
             self.dclass=value.dclass
