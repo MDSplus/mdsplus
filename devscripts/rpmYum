@@ -21,7 +21,8 @@ then
   rm -f /etc/yum.repos.d/mdsplus.repo
 elif [ "$1" = "remove" ]
 then
-  yum remove -y "mdsplus*"
+  yum remove -y "mdsplus*" > /dev/null 2>&1
+  exit 0
 else
   if [ -z "$3" ]
   then
