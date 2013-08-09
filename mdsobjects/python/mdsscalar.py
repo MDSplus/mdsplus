@@ -3,6 +3,8 @@ from mdsdata import *
 from _mdsdtypes import *
 
 def makeScalar(value):
+    if isinstance(value,str):
+	return String(value)
     if isinstance(value,Scalar):
         return copy.deepcopy(value)
     if isinstance(value,numpy.generic):
@@ -214,7 +216,12 @@ class String(Scalar):
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
-        return self.value.tostring()
+	if len(self._value) > 0:
+            return self.value.tostring()
+        else:
+            return ''
+    def __len__(self):
+	return len(str(self))
     def decompile(self):
         if len(self._value) > 0:
             return repr(self._value.tostring())
