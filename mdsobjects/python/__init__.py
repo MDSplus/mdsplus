@@ -19,7 +19,7 @@ from compound import Action,Call,Conglom,Dependency,Dimension,Dispatch,Function,
 from mdsdata import Data,EmptyData,getUnits,getError,getValuePart,getDimension,data,decompile,evaluate,rawPart,makeData
 from ident import Ident
 from treenode import TreeNode,TreePath,TreeNodeArray
-from mdsscalar import Scalar,Float32,Float64,Int128,Int16,Int32,Int64,Int8,String,Uint128,Uint16,Uint32,Uint64,Uint8
+from mdsscalar import makeScalar,Scalar,Float32,Float64,Int128,Int16,Int32,Int64,Int8,String,Uint128,Uint16,Uint32,Uint64,Uint8
 from tree import Tree
 from mdsdevice import Device
 from connection import Connection
@@ -29,6 +29,7 @@ from scope import Scope
 from _mdsshr import MdsException,MdsTimeout,MdsNoMoreEvents,MdsInvalidEvent
 from _treeshr import TreeException,TreeNoDataException
 from tdipy import execPy
+from _descriptor import pointerToObject
 try:
   from tdicompile import tdiCompile,compileFile
 except:
