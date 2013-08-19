@@ -29,6 +29,7 @@ int IsRoprand(int dtype,void *value)
     case DTYPE_D  :  ans = IsRoprandD(value); break;
     case DTYPE_G  :  ans = IsRoprandG(value); break;
     case DTYPE_FS :  ans = IsRoprandS(value); break;
+    case DTYPE_FT :  ans = IsRoprandT(value); break;
     case DTYPE_T  :  ans = IsRoprandT(value); break;
   }
   return ans;
