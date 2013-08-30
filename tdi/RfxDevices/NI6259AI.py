@@ -21,7 +21,7 @@ class NI6259AI(Device):
         parts.append({'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'})
         parts.append({'path':'.CHANNEL_%d:POLARITY'%(i+1), 'type':'text', 'value':'BIPOLAR'})
         parts.append({'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'text', 'value':'10V'})
-        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'})
+        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal','options':('no_write_model', 'no_compress_on_put')})
     del i
     parts.append({'path':':END_IDX', 'type':'numeric'})
     parts.append({'path':':INIT_ACTION','type':'action',
@@ -90,7 +90,7 @@ class NI6259AI(Device):
       try:
         idx = ni6259Nids.index(self.getNid())
       except:
-        print 'SAVE INFO: SAVING HANDLE'
+        #print 'SAVE INFO: SAVING HANDLE'
         ni6259Fds.append(self.fd)
         ni6259Nids.append(self.getNid())
         return
@@ -109,9 +109,9 @@ class NI6259AI(Device):
         try:
             idx = ni6259Nids.index(self.getNid())
             self.fd = ni6259Fds[idx]
-            print 'RESTORE INFO HANDLE FOUND'
+            #print 'RESTORE INFO HANDLE FOUND'
         except:
-            print 'RESTORE INFO HANDLE NOT FOUND'
+            #print 'RESTORE INFO HANDLE NOT FOUND'
             try: 
                 boardId = self.board_id.data();
             except:
@@ -120,7 +120,7 @@ class NI6259AI(Device):
             try:
                 fileName = '/dev/pxi6259.'+str(boardId)+'.ai';
                 self.fd = os.open(fileName, os.O_RDWR);
-                print 'Open fd: ', self.fd
+                #print 'Open fd: ', self.fd
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
                 return 0
@@ -136,7 +136,8 @@ class NI6259AI(Device):
             ni6259Nids.remove(self.getNid())
             os.close(self.fd)
         except:
-            print 'CLOSE INFO: HANDLE NOT FOUND'
+            print ' '
+#            print 'CLOSE INFO: HANDLE NOT FOUND'
         return 1
 
 ################################### Worker Management
@@ -149,13 +150,13 @@ class NI6259AI(Device):
         ni6259WorkerNids = []
         ni6259Workers = []
       try:
-        print 'Find worker'
+        #print 'Find worker'
         idx = ni6259WorkerNids.index(self.getNid())
-        print 'Find worker ', idx
+        #print 'Find worker ', idx
         ni6259Workers[idx] = self.worker
-        print 'Find worker ', self.worker
+        #print 'Find worker ', self.worker
       except:
-        print 'SAVE WORKER: NEW WORKER'
+        #print 'SAVE WORKER: NEW WORKER'
         ni6259WorkerNids.append(self.getNid())
         ni6259Workers.append(self.worker)
         return
@@ -166,11 +167,11 @@ class NI6259AI(Device):
       global ni6259Workers
       
       try:
-        print "restoreWorker"
+        #print "restoreWorker"
         idx = ni6259WorkerNids.index(self.getNid())
-        print "restoreWorker idx ", idx
+        #print "restoreWorker idx ", idx
         self.worker = ni6259Workers[idx]
-        print "restoreWorker worker ", self.worker
+        #print "restoreWorker worker ", self.worker
       except:
         print 'Cannot restore worker!!'
 
@@ -198,11 +199,25 @@ class NI6259AI(Device):
             acqMode = self.device.acq_mode.data()
             transientRec = False
 
+            sampleToSkip = self.device.start_idx.data()
+            endIdx = self.device.end_idx.data()
+
+            startTime = float( self.device.start_time.data() )
+            trigSource = self.device.trig_source.data()
+	    clockSource = self.device.clock_source.evaluate()
+
+	    frequency = float( clockSource.getDelta() )
+
+
             if( acqMode == 'TRANSIENT REC.'):
                 transientRec = True
 
             chanFd = []
             chanNid = []
+
+            coeff_array = c_float*4
+            coeff = coeff_array();
+
 
             self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
 
@@ -214,13 +229,24 @@ class NI6259AI(Device):
                     chanFd.append(currFd)
 
                     chanNid.append( getattr(self.device, 'channel_%d_data'%(self.chanMap[chan]+1)).getNid() )
+                    #print "chanFd "+'channel_%d_data'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]  
 
-		   	
-                    print "chanFd "+'channel_%d_data'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]   
+
+                    gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
+                    gain_code = self.device.gainDict[gain]
+
+                    #status = self.niInterfaceLib.pxi6259_getCalibrationParams(currFd, gain_code, coeff)
+                    status = 0
+                    if( status < 0 ):
+                        Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536'%(str(self.chanMap[chan])) )
+                        coeff[0] = coeff[2] = coeff[3] = 0  
+                        coeff[1] = c_float( gain / 65536. )
+
+                    #print "coeff ", coeff
 
                 except:
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan]))
-                    returnsegmentSize
+                    return
 
             if( not transientRec ):
 
@@ -233,17 +259,18 @@ class NI6259AI(Device):
                     segmentSize = c*bufSize
 
                 numSamples  = -1
-                print "-- CONTINUOUS ", numSamples 
+                print "PXI 6259 CONTINUOUS ", numSamples 
 
             else:
                 self.niInterfaceLib.setStopAcqFlag(self.stopAcq);
+                
                 try:
-                    numSamples = self.device.end_idx.data() - self.device.start_idx.data() + 1 
+                    numSamples = self.device.end_idx.data() - self.device.start_idx.data()
                 except:
                     numSamples = 0
 
-	            print "-- NUM SAMPLES ", numSamples
-
+	            print "PXI 6259 NUM SAMPLES ", numSamples
+                
 
             status = self.niLib.pxi6259_start_ai(c_int(self.fd))
        
@@ -258,38 +285,27 @@ class NI6259AI(Device):
 
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
-                        
+
+	    #timeAt0 = trigSource + startTime
+            timeAt0 = startTime           
+             
             while not self.stopReq:
-                """
-                allFinished = True
-                for chan in range(len(self.chanMap)):
-                    if(numSamples < 0 or counters[chan] < numSamples):
-                        readSamples = self.niInterfaceLib.readAndSave(c_int(chanFd[chan]), c_int(bufSize), c_int(segmentSize), c_int(counters[chan]), getattr(self.device, 'channel_%d_data'%(chan+1)).getNid(), self.device.clock_source.getNid(), self.treePtr, saveList)
-                        counters[chan] = counters[chan] + readSamples
-                        allFinished = False
-    ##Check termination
-                if allFinished:
-                    self.stopReq = True
-    ##endwhile                
+                status = self.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
 
-                print 'READ', count
-                count = count+readSamples
-                """
 
-                status = self.niInterfaceLib.readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(numSamples), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
    ##Check termination
                 if ( numSamples > 0 or (transientRec and status == -1) ):
                     self.stopReq = True
                 
 
             if( transientRec and status == -1 ):
-                Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Module is not in stop state')
+                Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6259 Module is not in stop state')
 
             status = self.niLib.pxi6259_stop_ai(c_int(self.fd))
 
             for chan in range(len(self.chanMap)):
                 os.close(chanFd[chan])
-            print 'ASYNCH WORKER TERMINATED'
+            #print 'ASYNCH WORKER TERMINATED'
             self.niInterfaceLib.stopSave(saveList)
             self.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
@@ -305,6 +321,9 @@ class NI6259AI(Device):
     
 ##########init############################################################################    
     def init(self,arg):
+
+        print '================= PXI 6259 Init ==============='
+
         global niLib
         global niInterfaceLib
         self.restoreInfo()
@@ -340,7 +359,7 @@ class NI6259AI(Device):
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot add channel '+str(currChan + 1))
                     return 0
-                print 'CHAN '+ str(currChan+1) + ' CONFIGURED'
+                print 'PXI 6259 CHAN '+ str(currChan+1) + ' CONFIGURED'
                 activeChan = activeChan + 1
         #endfor
 
@@ -362,12 +381,12 @@ class NI6259AI(Device):
         try:
             trigMode = self.trig_mode.data()
             if(trigMode == 'EXTERNAL'):
-                print "AI_START_SELECT ", self.AI_START_SELECT
-                print "aiConf ", aiConf
-                print "AI_START_SELECT_PFI1 ", self.AI_START_SELECT_PFI1
-                print "niLib ", niLib
-                print "AI_START_POLARITY ", self.AI_START_POLARITY
-                print "AI_START_POLARITY_RISING_EDGE ", self.AI_START_POLARITY_RISING_EDGE
+                #print "AI_START_SELECT ", self.AI_START_SELECT
+                #print "aiConf ", aiConf
+                #print "AI_START_SELECT_PFI1 ", self.AI_START_SELECT_PFI1
+                #print "niLib ", niLib
+                #print "AI_START_POLARITY ", self.AI_START_POLARITY
+                #print "AI_START_POLARITY_RISING_EDGE ", self.AI_START_POLARITY_RISING_EDGE
                 
                 if(acqMode == 'TRANSIENT REC.'):
                     """
@@ -395,13 +414,13 @@ class NI6259AI(Device):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
                         return 0
 	    else:
-                print "AI_START_SELECT ", self.AI_START_SELECT
-                print "aiConf ", aiConf
-                print "AI_START_SELECT_PFI1 ", self.AI_START_SELECT_PFI1
-                print "niLib ", niLib
-                print "AI_START_POLARITY ", self.AI_START_POLARITY
-                print "AI_START_POLARITY_RISING_EDGE ", self.AI_START_POLARITY_RISING_EDGE
-		print "acqMode ", acqMode
+                #print "AI_START_SELECT ", self.AI_START_SELECT
+                #print "aiConf ", aiConf
+                #print "AI_START_SELECT_PFI1 ", self.AI_START_SELECT_PFI1
+                #print "niLib ", niLib
+                #print "AI_START_POLARITY ", self.AI_START_POLARITY
+                #print "AI_START_POLARITY_RISING_EDGE ", self.AI_START_POLARITY_RISING_EDGE
+		#print "acqMode ", acqMode
 
                 if(acqMode == 'TRANSIENT REC.'):
                     #status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PULSE)
@@ -426,7 +445,7 @@ class NI6259AI(Device):
                 trigSource = self.trig_source.data()
             else:
                 trigSource = 0
-            print 'Trigger source: ', trigSource
+            print 'PXI 6259 Trigger source: ', trigSource
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')          
             return 0
@@ -437,7 +456,7 @@ class NI6259AI(Device):
             if(clockMode == 'INTERNAL'):
                 frequency = self.clock_freq.data()
                 if( ( activeChan == 1 and frequency > 1250000 ) or ( activeChan > 1 and frequency > 1000000./activeChan ) ):
-                    print 'Frequency out of limits'
+                    print 'PXI 6259 Frequency out of limits'
                     if( activeChan == 1 ):
                         frequency = 1250000.
                     else:
@@ -446,7 +465,7 @@ class NI6259AI(Device):
                   
     
                 divisions = int(20000000./frequency)
-                print 'Division = ', divisions
+                #print 'PXI 6259 Division = ', divisions
                 status = niLib.pxi6259_set_ai_sample_clk(aiConf, c_int(divisions), c_int(3), self.AI_SAMPLE_SELECT_SI_TC, self.AI_SAMPLE_POLARITY_RISING_EDGE)
                 if(status != 0):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Sample Clock')
@@ -458,7 +477,7 @@ class NI6259AI(Device):
                     clockSource = Range(Float64(0), Float64(3600), Float64(divisions/20000000.))
                 """
                 clockSource = Range(None, None, Float64(divisions/20000000.))
-                print 'CLOCK: ', clockSource
+                print 'PXI 6259 CLOCK: ', clockSource
                 self.clock_source.putData(clockSource)
             else:
                 clockSource = self.clock_source.evaluate()
@@ -489,15 +508,22 @@ class NI6259AI(Device):
                     startTime = self.start_time.data()
                     endTime = self.end_time.data()
 
-                    print 'startTime = ', startTime 
-                    print 'endTime   = ', endTime
-                    print 'trigSource   = ', trigSource
+                    print 'PXI 6259 startTime = ', startTime 
+                    print 'PXI 6259 endTime   = ', endTime
+                    print 'PXI 6259 trigSource   = ', trigSource
 
 
                 except:
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Start or End time')          
                     return 0
 
+
+                startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), startTime)
+
+                endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), endTime)
+
+  
+		"""
                 if endTime > 0:
                     endIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), endTime + trigSource)
                 else:
@@ -510,9 +536,12 @@ class NI6259AI(Device):
                     startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigSource), clockSource), startTime + trigSource)
                 else:
                     startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigSource + startTime), clockSource), trigSource)
+		"""
+                print 'PXI 6259 startIdx = ', Int32(int(startIdx + 0.5))
+                self.start_idx.putData(Int32(int(startIdx + 0.5)))
 
-                print 'startIdx = ', Int32(int(startIdx))
-                self.start_idx.putData(Int32(int(startIdx)))
+                print 'PXI 6259 endIdx   = ', Int32(int(endIdx + 0.5))
+                self.end_idx.putData(Int32(int(endIdx + 0.5)))
 
                 
                 #self.prts.putData(Int32(int(preTrigger)))
@@ -531,17 +560,35 @@ class NI6259AI(Device):
                     preTrigger = 0	     
             	nSamples =  postTrigger + preTrigger
                 """    
-	        
+
 
             nSamples = endIdx - startIdx + 1
 
             postTrigger = nSamples + startIdx
-            preTrigger = nSamples - endIdx
+            preTrigger  = nSamples - endIdx
 
-            print 'nSamples   = ', Int32(int(nSamples))
+            if startIdx >= 0:
+            	status = niLib.pxi6259_set_ai_number_of_samples(aiConf, c_int(startIdx + nSamples), 0, 0)
+            else:
+		if trigSource > startTime: 
+                    print 'PXI 6259 Acquire only post trigger'
+                    nSamples = postTrigger
+		    startIdx = 0
+                    self.start_idx.putData(Int32(int(0)))
+                    self.start_time.putData(Float32(trigSource))
+            	status = niLib.pxi6259_set_ai_number_of_samples(aiConf, c_int(nSamples), 0, 0)
+
+            #print 'numSamples     = ', Int32(int(numSamples))
+
+            """
+            nSamples = endIdx - startIdx + 1
+            postTrigger = nSamples + startIdx
+            preTrigger = nSamples - endIdx
+            """
+            print 'PXI 6259 nSamples   = ', Int32(int(nSamples))
             self.seg_length.putData(Int32(int(nSamples)))
 	             
-            status = niLib.pxi6259_set_ai_number_of_samples(aiConf, c_int(postTrigger), c_int(preTrigger), 0)
+#           status = niLib.pxi6259_set_ai_number_of_samples(aiConf, c_int(postTrigger), c_int(preTrigger), 0)
 
         else: #Continuous Acquisition
             nSamples = -1
@@ -570,6 +617,8 @@ class NI6259AI(Device):
         """
 
         self.saveInfo()
+        
+        print "==============================================="
         return 1
 
 ##########StartStore
@@ -611,10 +660,10 @@ class NI6259AI(Device):
         return 1
 
     def stop_store(self,arg):
-      print "stop_store"
+      print "PXI 6259 stop_store"
       self.restoreWorker()
       if self.worker.isAlive():
-          print "stop_worker"
+          print "PXI 6259 stop_worker"
           self.worker.stop()
       return 1
                
