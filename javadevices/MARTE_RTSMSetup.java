@@ -317,7 +317,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
 
         jPanel4.add(jPanel77);
 
-        jPanel78.setLayout(new java.awt.GridLayout());
+        jPanel78.setLayout(new java.awt.GridLayout(1, 0));
 
         deviceTable3.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable3.setIdentifier("");
