@@ -362,6 +362,21 @@ class Tree(object):
                 Tree.unlock()
             return ans
         
+    def getNodes(self, name, *usage):
+        """An iterator for the nodes in a tree given a wildcard specification.
+        @param name: Node name. May include wildcards.
+        @type name: str
+        @param usage: Optional list of node usages (i.e. "Numeric","Signal",...). Reduces return set by including only nodes with these usages.
+        @type usage: str
+        @return: iterator of TreeNodes that match the wildcard and usage specifications
+        @rtype: iterator
+        """
+        from treenode import TreeNode
+        from _treeshr import TreeFindNodeWild
+
+        for n in TreeFindNodeWild(self.ctx, name, *usage):
+            yield TreeNode(n,self)
+
     def getNodeWild(self,name,*usage):
         """Find nodes in tree using a wildcard specification. Returns TreeNodeArray if nodes found.
         @param name: Node name. May include wildcards.
