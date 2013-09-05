@@ -21,9 +21,17 @@ TreeFreeDbid.argtypes=[_C.c_void_p]
 __TreeGetPath=__TreeShr._TreeGetPath
 __TreeGetPath.argtypes=[_C.c_void_p,_C.c_int32]
 __TreeGetPath.restype=_C.c_void_p
+
+__TreeFindNodeWild=__TreeShr._TreeFindNodeWild
+__TreeFindNodeWild.argtpes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int32),_C.POINTER(_C.c_void_p),_C.c_int32]
+__TreeFindNodeWild.restype=_C.c_void_p
+__TreeFindNodeEnd=__TreeShr._TreeFindNodeEnd
+__TreeFindNodeEnd.argtypes=[_C.c_void_p,_C.POINTER(_C.c_void_p)]
+
 __TreeFindTagWild=__TreeShr._TreeFindTagWild
 __TreeFindTagWild.argtpes=[_C.c_void_p,_C.c_char_p,_C.POINTER(_C.c_int32),_C.POINTER(_C.c_void_p)]
 __TreeFindTagWild.restype=_C.c_void_p
+
 __TreeGetDbi=__TreeShr._TreeGetDbi
 __TreeGetDbi.argtypes=[_C.c_void_p,_C.c_void_p]
 __TreeSetDbi=__TreeShr._TreeSetDbi
@@ -187,6 +195,24 @@ def TreeFindNodeTags(n):
     else:
         tags=None
     return tags
+
+def TreeFindNodeWild(tree, wild, *usage):
+    from treenode import usage_table
+    if len(usage) == 0:
+        usage_mask=0xFFFF
+    else :
+	usage_mask=0
+	for u in usage:
+            usage_mask |= 1 << usage_table[u.upper()]
+
+    nid=_C.c_int32()
+    ctx=_C.c_void_p(0)
+    try:
+        while __TreeFindNodeWild(tree, str.encode(wild), _C.pointer(nid), _C.pointer(ctx), _C.c_int32(usage_mask)) & 1 != 0:
+            yield nid.value
+    except GeneratorExit:
+        pass
+    __TreeFindNodeEnd(tree, _C.pointer(ctx))
 
 def TreeFindTagWild(tree,wild):
     from mdsarray import makeArray
