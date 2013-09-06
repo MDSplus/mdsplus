@@ -14,6 +14,7 @@ Python interface to MDSplus
 %post python
 rm -Rf $(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")/MDSplus-*
 pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python >/dev/null 2>&1
+rm -Rf build
 python setup.py install >/dev/null 2>&1
 popd >/dev/null 2>&1
 
