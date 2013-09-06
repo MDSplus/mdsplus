@@ -280,6 +280,17 @@ class Tree(object):
         finally:
             Tree.unlock()
 
+    def findTagsIter(self, wild):
+        """An iterator for the tagnames from a tree given a wildcard specification.
+        @param wild: wildcard spec.
+        @type name: str
+        @return: iterator of tagnames (strings) that match the wildcard specification
+        @rtype: iterator
+        """
+        from _treeshr import TreeFindTagWild
+
+        for n in TreeFindTagWild(self.ctx, wild):
+            yield n
 
     def findTags(self,wild):
         """Find tags matching wildcard expression
@@ -288,13 +299,7 @@ class Tree(object):
         @return: Array of tag names matching wildcard expression
         @rtype: ndarray
         """
-        from _treeshr import TreeFindTagWild
-        try:
-            Tree.lock()
-            tags=TreeFindTagWild(self,wild)
-        finally:
-            Tree.unlock()
-        return tags
+        return tuple(self.findTagsIter(wild))
 
     def getActiveTree():
         """Get active tree.
@@ -362,7 +367,7 @@ class Tree(object):
                 Tree.unlock()
             return ans
         
-    def getNodes(self, name, *usage):
+    def getNodeWildIter(self, name, *usage):
         """An iterator for the nodes in a tree given a wildcard specification.
         @param name: Node name. May include wildcards.
         @type name: str
@@ -387,7 +392,7 @@ class Tree(object):
         @rtype: TreeNodeArray
         """
         from treenode import TreeNodeArray
-        return TreeNodeArray(tuple(self.getNodes(name,*usage)),self)
+        return TreeNodeArray(tuple(self.getNodeWildIter(name,*usage)),self)
 
     def getVersionDate():
         """Get date used for retrieving versions

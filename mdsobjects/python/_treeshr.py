@@ -218,23 +218,19 @@ def TreeFindNodeWild(tree, wild, *usage):
     __TreeFindNodeEnd(tree, _C.pointer(ctx))
 
 def TreeFindTagWild(tree,wild):
-    from mdsarray import makeArray
     nid=_C.c_int32(0)
     ctx=_C.c_void_p(0)
-    tags=list()
-    done=False
-    while not done:
-        tag_ptr=__TreeFindTagWild(tree.ctx,str.encode(wild),_C.pointer(nid),_C.pointer(ctx))
-        try:
-            tags.append(_C.cast(tag_ptr,_C.c_char_p).value.rstrip())
-        except:
-            TreeFindTagEnd(_C.pointer(ctx))
-            done=True
-    if len(tags) > 0:
-        tags=makeArray(tags).value
-    else:
-        tags=None
-    return tags
+    try:
+        while True:
+            tag_ptr = __TreeFindTagWild(tree,str.encode(wild),_C.pointer(nid),_C.pointer(ctx))
+            if  not tag_ptr:
+                break
+            ans = _C.cast(tag_ptr,_C.c_char_p).value.rstrip()
+            yield ans
+    except GeneratorExit:
+        pass
+    TreeFindTagEnd(_C.pointer(ctx))
+
 
 def TreeGetRecord(n):
     """Get record from MDSplus tree. Accepts path, TreeNode or integer and the value"""
