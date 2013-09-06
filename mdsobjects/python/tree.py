@@ -387,29 +387,7 @@ class Tree(object):
         @rtype: TreeNodeArray
         """
         from treenode import TreeNodeArray
-        try:
-            Tree.lock()
-            self.restoreContext()
-            if len(usage) > 0:
-                from numpy import array
-                for i in range(len(usage)):
-                    if not isinstance(usage[i],str):
-                        raise TypeError('Usage arguments must be strings')
-                    usage=array(usage,dtype='S')
-                    nids=Data.compile('getnci($,"NID_NUMBER",$)',name,usage).evaluate()
-            else:
-                nids=Data.compile('getnci($,"NID_NUMBER")',(name,)).evaluate()
-        except Exception:
-            import sys
-            e=sys.exc_info()[1]
-            if 'TreeNNF' in str(e):
-                from mdsarray import makeArray
-                nids=makeArray([])
-            else:
-                Tree.unlock()
-                raise
-        Tree.unlock()
-        return TreeNodeArray(nids,self)
+        return TreeNodeArray(tuple(self.getNodes(name,*usage)),self)
 
     def getVersionDate():
         """Get date used for retrieving versions
