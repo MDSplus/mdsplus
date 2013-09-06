@@ -30,10 +30,6 @@ dnl Check out the compiler
 AC_PROG_CC
 AC_PROG_CXX
 
-AC_CHECK_SIZEOF(long)
-AC_CHECK_SIZEOF(long long)
-AC_CHECK_SIZEOF(_int64)
-
 MDSIP_CONNECTIONS="yes";
 AC_ARG_ENABLE(mdsip_connections,
         [ --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.],MDSIP_CONNECTIONS="$enableval")
@@ -714,6 +710,11 @@ if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
 else
   DC1394_SUPPORT=""
 fi
+
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(_int64)
+
 
 dnl Checks for programs.
 AC_PROG_RANLIB

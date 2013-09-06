@@ -5508,6 +5508,935 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
+MDSIP_CONNECTIONS="yes";
+# Check whether --enable-mdsip_connections was given.
+if test "${enable_mdsip_connections+set}" = set; then
+  enableval=$enable_mdsip_connections; MDSIP_CONNECTIONS="$enableval"
+fi
+
+cat >>confdefs.h <<\_ACEOF
+#define MDSIP_CONNECTIONS 1
+_ACEOF
+
+
+# Check whether --enable-nodebug was given.
+if test "${enable_nodebug+set}" = set; then
+  enableval=$enable_nodebug; if test "$enableval" = yes; then
+               CFLAGS="";
+               FFLAGS="";
+	fi
+fi
+
+
+# Check whether --enable-perf was given.
+if test "${enable_perf+set}" = set; then
+  enableval=$enable_perf;
+fi
+
+	if test "$enableval" = yes; then
+		cat >>confdefs.h <<\_ACEOF
+#define USE_PERF 1
+_ACEOF
+
+	fi
+
+# Check whether --enable-java was given.
+if test "${enable_java+set}" = set; then
+  enableval=$enable_java; java_enable="$enableval"
+else
+  java_enable="yes"
+
+fi
+
+
+if test "$target_vendor" = "apple"
+then
+			java_enable="no"
+	# Check whether --enable-universal was given.
+if test "${enable_universal+set}" = set; then
+  enableval=$enable_universal; universal_build="$enableval"
+
+fi
+
+	if test "$universal_build" = yes; then
+		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+		F77=fort77
+	fi
+fi
+
+if test "$java_enable" = "yes"
+then
+  if test -z "$JDK_DIR"
+  then
+    JDK_DIR="/etc/alternatives/java_sdk"
+  fi
+
+# Check whether --with-jdk was given.
+if test "${with_jdk+set}" = set; then
+  withval=$with_jdk; jdk_dir="$withval"
+else
+  jdk_dir="$JDK_DIR"
+
+fi
+
+  { $as_echo "$as_me:$LINENO: checking for presence of Java Development Kit" >&5
+$as_echo_n "checking for presence of Java Development Kit... " >&6; }
+  if  test -r $jdk_dir/jre
+  then
+    { $as_echo "$as_me:$LINENO: result: found." >&5
+$as_echo "found." >&6; }
+  else
+	cat <<EOF
+
+
+YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA
+The jdk directory can be specified by either defining a JDK_DIR environment
+variable or by using the --with-jdk=jdk-directory option.
+You can disable java by using the --disable-java option.
+
+
+
+EOF
+	exit
+  fi
+fi
+
+JDK_DIR="$jdk_dir"
+
+
+# Check whether --with-xio was given.
+if test "${with_xio+set}" = set; then
+  withval=$with_xio; MDSTCPIP="mdsip_xio roam"
+          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
+          if test "$GLOBUS_FLAVOR" = ""
+	  then
+            cat <<EOF
+
+YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option
+Format:   --with-xio=globus-install-directory:flavor
+Example:  --with-xio=/usr/local/gt3:gcc32dbg
+
+Note do not include pthr in the flavor as it is automatically added.
+
+EOF
+            exit
+          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
+          then
+	    cat <<EOF
+
+Do NOT INCLUDE pthr in the globus flavor!
+
+EOF
+	    exit
+          fi
+
+else
+  MDSTCPIP="mdstcpip"
+
+fi
+
+
+
+# Check whether --with-gsi was given.
+if test "${with_gsi+set}" = set; then
+  withval=$with_gsi; MDSTCPIP="mdstcpip roam"
+          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
+          if test "$GLOBUS_FLAVOR" = ""
+	  then
+            cat <<EOF
+
+YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option
+Format:   --with-gsi=globus-install-directory:flavor
+Example:  --with-gsi=/usr/local/gt3:gcc32dbg
+
+Note do not include pthr in the flavor as it is automatically added.
+
+EOF
+            exit
+          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
+          then
+	    cat <<EOF
+
+Do NOT INCLUDE pthr in the globus flavor!
+
+EOF
+	    exit
+          fi
+
+else
+  MDSTCPIP="mdstcpip"
+
+fi
+
+
+
+# Check whether --with-srb was given.
+if test "${with_srb+set}" = set; then
+  withval=$with_srb; SRB_LOCATION=$withval
+          if test "$SRB_LOCATION" = yes
+	  then
+		cat <<EOF
+
+YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation
+when using the --with-srb option
+
+Format:   --with-srb=srb-install-directory
+Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO
+
+EOF
+	    exit
+          fi
+	  SRBLIB="-L${SRB_LOCATION} -lsrbUio"
+          SRBINCLUDE="-I${SRB_LOCATION}"
+          cat >>confdefs.h <<\_ACEOF
+#define SRB 1
+_ACEOF
+
+
+fi
+
+
+
+# Check whether --with-labview was given.
+if test "${with_labview+set}" = set; then
+  withval=$with_labview; LV_DIR="$withval"
+else
+  LV_DIR="$LABVIEW_DIR"
+fi
+
+{ $as_echo "$as_me:$LINENO: checking for labview" >&5
+$as_echo_n "checking for labview... " >&6; }
+if test "$LV_DIR" != "" -a -r "$LV_DIR"
+then
+  LV_INC="-I$LV_DIR/cintools"
+  LV="mdsobjects/labview"
+  LV_LIB="-lLV"
+  { $as_echo "$as_me:$LINENO: result: have labview $LV_INC" >&5
+$as_echo "have labview $LV_INC" >&6; }
+else
+  LV_INC=""
+  LV=""
+  LV_LIB=""
+  { $as_echo "$as_me:$LINENO: result: no labview" >&5
+$as_echo "no labview" >&6; }
+fi
+
+
+# Check whether --enable-globus was given.
+if test "${enable_globus+set}" = set; then
+  enableval=$enable_globus; if test "$enableval" = yes; then
+               : ${GLOBUS_FLAVOR=gcc32dbg}
+               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
+               GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
+                            -lglobus_common_$GLOBUS_FLAVOR"
+        else
+               GLOBUS_CFLAGS=""
+               GLOBUS_LIBS=""
+	fi
+fi
+
+
+# Check whether --enable-memcheck was given.
+if test "${enable_memcheck+set}" = set; then
+  enableval=$enable_memcheck; if test "$enableval" = yes; then
+           MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
+           MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"
+        else
+           MEMCHK=""
+           MEMCHKLIB=""
+        fi
+fi
+
+
+# Check whether --enable-gcc_profiling was given.
+if test "${enable_gcc_profiling+set}" = set; then
+  enableval=$enable_gcc_profiling; if test "$enableval" = yes; then
+           GCCPROF="-pg"
+        else
+           GCCPROF=""
+        fi
+fi
+
+
+
+# Check whether --with-idl was given.
+if test "${with_idl+set}" = set; then
+  withval=$with_idl; IDL_DIR="$withval"
+else
+  IDL_DIR=""
+fi
+
+if test "$IDL_DIR" = ""
+then
+  if test -r /usr/local/itt/idl
+  then
+    IDL_DIR="/usr/local/itt/idl"
+  elif test -r /usr/local/rsi/idl
+  then
+    IDL_DIR="/usr/local/rsi/idl"
+  fi
+fi
+{ $as_echo "$as_me:$LINENO: checking for idl" >&5
+$as_echo_n "checking for idl... " >&6; }
+if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
+then
+  IDL_INC="-I$IDL_DIR/external"
+  IDLMDSEVENT="idlmdsevent"
+  IDLMDSWIDGETS="idlmdswidgets"
+  { $as_echo "$as_me:$LINENO: result: have idl $IDL_INC" >&5
+$as_echo "have idl $IDL_INC" >&6; }
+else
+  IDL_INC=""
+  IDLMDSEVENT=""
+  IDLMDSWIDGETS=""
+  { $as_echo "$as_me:$LINENO: result: no idl" >&5
+$as_echo "no idl" >&6; }
+fi
+
+FORLD=ld
+LD=ld
+LD_LDARC=""
+LD_LDSHARE=""
+IDL_LD=""
+MDSVME=""
+LOC="%loc"
+VAL="%val"
+
+CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
+FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
+
+if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
+then
+  : ${uiddir:=$ac_default_prefix/uid}
+elif test "$exec_prefix" = "NONE"
+then
+  : ${uiddir:=$prefix/uid}
+else
+  : ${uiddir:=$exec_prefix/uid}
+fi
+MAKEUIDDIR="\$(top_srcdir)/uid/"
+MAKESHLIBDIR="\$(top_srcdir)/lib/"
+MAKEBINDIR="\$(top_srcdir)/bin/"
+MAKELIBDIR="\$(top_srcdir)/lib/"
+EXPORTS_FILE=""
+JVM="-ljvm"
+JDK_LIVECONNECT="$jdk_dir/jre/lib/plugin.jar"
+TAR_EXCLUDE="-e"
+GROFF_MAN_FLAGS="-t -man -Tascii"
+GROFF=groff
+HUP_TO_XINETD=""
+HUP_TO_INETD=""
+UILCMD="uil"
+CC_LDFLAGS=""
+FOR_LDFLAGS=""
+RTEVENTS="rtevents"
+
+LIBPTHREAD=-lpthread
+IS_HP=0
+MITDEVICESIO_TARGETS=""
+case "$target" in
+hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
+       FFLAGS="$FFLAGS -O0 -g -fpic  -Wno-globals -fno-backslash";
+       D3D_FFLAGS="+U77 +E1 -K";
+       LDSHARE="-Wl,-a,shared_archive -Wl,+s";
+       LDARC="-Wl,-a,archive";
+       LD_LDSHARE="-a shared_archive";
+       LD_LDARC="-a archive";
+       LINKSHARED="-b +s +b /usr/lib:/usr/local/lib";
+       FOR_LINKSHARED="$LINKSHARED";
+       CC_LDFLAGS="-Wl,+s"
+       FOR_LDFLAGS="-Wl,+s";
+       LIBPATH="SHLIB_PATH";
+       IDL_LD="-L${IDL_DIR}/bin/bin.hp -lidl";
+       FEXECLIBDIR="-Wl,-L";
+       SHARETYPE=".sl";
+       IS_HP=1;
+       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
+mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
+       FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
+       LDSHARE="-B dynamic";
+       LDARC="-B static";
+       LD_LDSHARE="-B dynamic";
+       LD_LDARC="-B static";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       FOR_LDFLAGS="";
+       LIBPATH="LD_LIBRARY_PATH";
+       FEXECLIBDIR="-L";
+       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
+       SHARETYPE=".so";;
+*-solaris2*)
+       GROFF=nroff;
+       GROFF_MAN_FLAGS="-t -man ";
+       if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D_ILP32 "; else CFLAGS="$CFLAGS -D_LP64 "; fi;
+       if test $CC = gcc; then
+	 LD=gcc;
+	 FORLD=gcc;
+         LINKSHARED="-shared ";
+         FOR_LINKSHARED="$LINKSHARED"
+         LD_LDSHARE="-Wl,-B,dynamic";
+         LD_LDARC="-Wl,-B,static";
+         LDSHARE="-Wl,-B,dynamic";
+         LDARC="-Wl,-B,static";
+         CFLAGS="$CFLAGS -fPIC -D_POSIX_PTHREAD_SEMANTICS";
+         LDFLAGS="$CFLAGS";
+       else
+         LINKSHARED="-G ";
+         FOR_LINKSHARED="$LINKSHARED";
+         LD_LDARC="-B static ";
+         LD_LDSHARE="-B dynamic ";
+         LDSHARE="-B dynamic";
+         LDARC="-B static";
+         if test -n "`echo 'int main(){return 0;}' | cc -o /dev/null -E -c -Kpic - 2>&1`"; then
+           LDSHARE="-Wl,-B,dynamic";
+           LDARC="-Wl,-B,static";
+         else
+           CFLAGS="$CFLAGS -Kpic";
+         fi;
+       fi;
+       if test "$F77" = "gfortran"
+       then
+         FFLAGS="$FFLAGS -fPIC -fno-range-check"
+       else
+         FFLAGS="$FFLAGS -PIC";
+       fi
+       IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
+       LIBPATH="LD_LIBRARY_PATH";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";
+       JVM="";
+       jni_inc_dir="${JDK_DIR}/include";
+       jni_md_inc_dir="${JDK_DIR}/include/solaris";
+       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
+alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
+       FFLAGS="$FFLAGS -pthread";
+       GROFF_MAN_FLAGS="-t -mgan -Tascii";
+       IDL_LD="-expect_unresolved 'IDL_*'"
+       LDSHARE="-Wl,-so_archive ";
+       LDARC="-Wl,-no_so ";
+       LD_LDARC="-no_so ";
+       LD_LDSHARE="-so_archive ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="-lfor";
+       FEXECLIBDIR="-L";
+       MDSVME="mdsvme";
+       SHARETYPE=".so";
+       jni_inc_dir="/usr/include/java";
+       jni_md_inc_dir="/usr/include/java/`uname -m`";
+       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
+*86*linux*)
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       FORLD="$F77";
+       LD="gcc"
+       if ( uname -m | grep 64 > /dev/null )
+       then
+         if ( echo $target | grep 64 > /dev/null )
+         then
+           if  -d /usr/lib64
+           then
+             D64="64"
+           else
+             D64=""
+           fi
+           SYB64=$D64
+           CFLAGS="$CFLAGS -m64"
+           LD="gcc -m64"
+           FFLAGS="$FFLAGS -m64"
+           FORLD="$F77 -m64"
+           UILCMD=uil
+           uiddir="${uiddir}${D64}"
+	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
+           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
+           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
+	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
+           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
+         else
+           CFLAGS="$CFLAGS -m32";
+           LD="gcc -m32"
+           FFLAGS="$FFLAGS -m32"
+           FORLD="$F77 -m32"
+           UILCMD=uil32
+           uiddir="${uiddir}32"
+           MAKELIBDIR="\$(top_srcdir)/lib32/"
+           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
+           MAKEUIDDIR="\$(top_srcdir)/uid32/"
+           MAKEBINDIR="\$(top_srcdir)/bin32/"
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+         fi
+	 CC_LDFLAGS="$CFLAGS"
+       else
+           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+       fi
+       if (test "$F77" = "g77"); then
+         FFLAGS="$FFLAGS -Wno-globals"
+         LOC="%loc"
+       elif (test "$F77" = "gfortran"); then
+         FFLAGS="$FFLAGS -fno-range-check"
+         LOC="loc"
+       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
+         FFLAGS="$FFLAGS -fno-range-check"
+         LOC="loc"
+       fi
+       FOR_LDFLAGS="-lg2c"
+       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";
+       TAR_EXCLUDE="--exclude";
+       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
+       jni_inc_dir="$jdk_dir/include";
+       jni_md_inc_dir="$jdk_dir/include/linux";
+       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
+*arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
+       CC=arm-xilinx-linux-gnueabi-gcc;
+       LD=arm-xilinx-linux-gnueabi-ld;
+       AR=arm-xilinx-linux-gnueabi-ar;
+       RANLIB=arm-xilinx-linux-gnueabi-ranlib;
+       SIZEOF_LONG=4;
+       SIZEOF_LONG_LONG=8;
+       D64="";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       if (test "$F77" = "g77"); then
+         FFLAGS="$FFLAGS -Wno-globals"
+         FOR_LDFLAGS="-lg2c"
+         FORLD="$F77"
+         LOC="%loc"
+       elif (test "$F77" = "gfortran"); then
+         FFLAGS="$FFLAGS -fno-range-check";
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
+         FFLAGS="$FFLAGS -fno-range-check"
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       fi
+       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";
+       TAR_EXCLUDE="--exclude";
+       jni_inc_dir="$jdk_dir/include";
+       jni_md_inc_dir="$jdk_dir/include/linux";
+       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
+*linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       if (test "$F77" = "g77"); then
+         FFLAGS="$FFLAGS -Wno-globals"
+         FOR_LDFLAGS="-lg2c"
+         FORLD="$F77"
+         LOC="%loc"
+       elif (test "$F77" = "gfortran"); then
+         FFLAGS="$FFLAGS -fno-range-check";
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
+         FFLAGS="$FFLAGS -fno-range-check"
+         FORLD="$F77"
+         LOC="loc"
+         FOR_LDFLAGS="-lg2c"
+       fi
+       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";
+       TAR_EXCLUDE="--exclude";
+       jni_inc_dir="$jdk_dir/include";
+       jni_md_inc_dir="$jdk_dir/include/linux";
+       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
+*apple-darwin10*) echo "Configuring for MacOS X lion 10";
+       GCCLIB=""
+       MACOSX="macosx"
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
+       if (test "$F77" = "f77"); then
+          FFLAGS="$FFLAGS -w -f -V -W"
+		  FORLD="$F77"
+       elif (test "$F77" = "g77"); then
+          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
+          FOR_LDFLAGS="-lg2c";
+		  FORLD="$F77"
+       elif (test "$F77" = "fort77"); then
+          FFLAGS="$FFLAGS -!bs -Wf,-!it";
+          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
+		  FORLD="$CC"
+		  LOC="F2C_LOC"
+		  VAL="F2C_VAL"
+       elif (test "$F77" = "gfortran"); then
+          FFLAGS="$FFLAGS -fno-range-check"
+          FORLD="gcc"
+          FOR_LDFLAGS="-shared -arch x86_64 -arch i386 -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/ -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/i386 -lgfortranbegin /usr/local/gfortran/lib/libquadmath.a /usr/local/gfortran/lib/i386/libquadmath.a /usr/local/gfortran/lib/libgfortran.a /usr/local/gfortran/lib/i386/libgfortran.a"
+          LOC="loc"
+       fi;
+       FEXECLIBDIR="-L";
+       LD="$CC"
+       LDSHARE="";
+       LD_LDSHARE="";
+       LDARC="";
+       LD_LDARC="";
+       UILPATH=/usr/OpenMotif/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
+       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
+       	   	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64";
+           FOR_LINKSHARED="$LDFLAGS -shared";
+	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
+       IDL_LD="";
+       X_CFLAGS="-I/usr/OpenMotif/include"
+       LINKJNI="$LINKSHARED";
+       SHARETYPE=".dylib";
+       SHARETYPEJNI=".dylib";
+       SHARETYPEMOD=".dylib";
+       LIBPTHREAD="";
+       TAR_EXCLUDE="--exclude";
+       JDK_DIR=/Library/Java/Home
+       jni_inc_dir="$JDK_DIR/include";
+       jni_md_inc_dir="$jni_inc_dir";
+       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
+       JVM="-framework JavaVM";
+       java_enable="yes"
+       LIBPATH="DYLD_LIBRARY_PATH"
+       HUP_TO_XINETD="killall -HUP xinetd";
+       HUP_TO_INETD="killall -HUP inetd";
+                     X_EXTRA_LIBS="-lXmu";;
+*apple-darwin*) echo "Configuring for MacOS X...";
+       CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
+       if (test "$F77" = "f77"); then
+          FFLAGS="$FFLAGS -w -f -V -W";
+		  FORLD="$F77";
+       elif (test "$F77" = "g77"); then
+          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
+          FOR_LDFLAGS="-lg2c";
+		  FORLD="$F77"
+       elif (test "$F77" = "fort77"); then
+          FFLAGS="$FFLAGS -!bs -Wf,-!it";
+          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
+		  FORLD="$CC";
+		  LOC="F2C_LOC";
+		  VAL="F2C_VAL";
+       fi;
+       FEXECLIBDIR="-L";
+       LD="$CC"
+       LDSHARE="";
+       LD_LDSHARE="";
+       LDARC="";
+       LD_LDARC="";
+       UILPATH=/usr/OpenMotif/bin;
+       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib";
+       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib";
+       	   	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
+	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
+       IDL_LD="";
+       X_CFLAGS="-I/usr/OpenMotif/include";
+       LINKJNI="$LINKSHARED";
+       SHARETYPE=".dylib";
+       SHARETYPEJNI=".dylib";
+       SHARETYPEMOD=".so";
+       LIBPTHREAD="";
+       TAR_EXCLUDE="--exclude";
+       JDK_DIR=/Library/Java/Home;
+       jni_inc_dir="$JDK_DIR/include";
+       jni_md_inc_dir="$jni_inc_dir";
+       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar";
+       JVM="-framework JavaVM";
+       java_enable="yes";
+       LIBPATH="DYLD_LIBRARY_PATH";
+       HUP_TO_XINETD="killall -HUP xinetd";
+       HUP_TO_INETD="killall -HUP inetd";
+                     X_EXTRA_LIBS="-lXmu";;
+*aix*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
+       FFLAGS="$FFLAGS -qpic -qnoescape";
+       LDSHARE="";
+       LDARC="";
+       FOR_LDFLAGS="-lxlf90";
+       LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LIBPATH";
+       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
+       EXPORTS_FILE="\$(EXPORTS)";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".a";
+       LOC="loc";
+       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
+*windows*)     CFLAGS="$CFLAGS";
+       LDSHARE="";
+       LDARC="";
+       LINKSHARED="";
+       FEXECLIBDIR="-L";
+       SHARETYPE="";;
+*qnx*) CFLAGS="$CFLAGS -fpic";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";;
+*)     CFLAGS="$CFLAGS";
+       FFLAGS="$FFLAGS";
+       FOR_LDFLAGS="";
+       LDSHARE="";
+       LDARC="";
+       LINKSHARED="";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="LD_LIBRARY_PATH";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".so";;
+esac
+
+GCCLIB="`$CC -print-libgcc-file-name 2> /dev/null`";
+
+{ $as_echo "$as_me:$LINENO: checking for dc1394_new  in -ldc1394" >&5
+$as_echo_n "checking for dc1394_new  in -ldc1394... " >&6; }
+if test "${ac_cv_lib_dc1394_dc1394_new_+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldc1394  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char dc1394_new  ();
+int
+main ()
+{
+return dc1394_new  ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ac_cv_lib_dc1394_dc1394_new_=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_dc1394_dc1394_new_=no
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_dc1394_dc1394_new_" >&5
+$as_echo "$ac_cv_lib_dc1394_dc1394_new_" >&6; }
+if test "x$ac_cv_lib_dc1394_dc1394_new_" = x""yes; then
+  dc1394_v2=yes
+fi
+
+{ $as_echo "$as_me:$LINENO: checking for dc1394_get_camera_info  in -ldc1394" >&5
+$as_echo_n "checking for dc1394_get_camera_info  in -ldc1394... " >&6; }
+if test "${ac_cv_lib_dc1394_dc1394_get_camera_info_+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ldc1394  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char dc1394_get_camera_info  ();
+int
+main ()
+{
+return dc1394_get_camera_info  ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ac_cv_lib_dc1394_dc1394_get_camera_info_=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_dc1394_dc1394_get_camera_info_=no
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_dc1394_dc1394_get_camera_info_" >&5
+$as_echo "$ac_cv_lib_dc1394_dc1394_get_camera_info_" >&6; }
+if test "x$ac_cv_lib_dc1394_dc1394_get_camera_info_" = x""yes; then
+  dc1394_v1=yes
+fi
+
+{ $as_echo "$as_me:$LINENO: checking for raw1394_get_libversion  in -lraw1394" >&5
+$as_echo_n "checking for raw1394_get_libversion  in -lraw1394... " >&6; }
+if test "${ac_cv_lib_raw1394_raw1394_get_libversion_+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lraw1394  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char raw1394_get_libversion  ();
+int
+main ()
+{
+return raw1394_get_libversion  ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest$ac_exeext && {
+	 test "$cross_compiling" = yes ||
+	 $as_test_x conftest$ac_exeext
+       }; then
+  ac_cv_lib_raw1394_raw1394_get_libversion_=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_lib_raw1394_raw1394_get_libversion_=no
+fi
+
+rm -rf conftest.dSYM
+rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_raw1394_raw1394_get_libversion_" >&5
+$as_echo "$ac_cv_lib_raw1394_raw1394_get_libversion_" >&6; }
+if test "x$ac_cv_lib_raw1394_raw1394_get_libversion_" = x""yes; then
+  raw1394=yes
+fi
+
+if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
+  DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
+else
+  DC1394_SUPPORT2=""
+fi
+if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
+  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
+else
+  DC1394_SUPPORT=""
+fi
+
 # The cast to long int works around a bug in the HP C Compiler
 # version HP92453-01 B.11.11.23709.GP, which incorrectly rejects
 # declarations like `int a3[[(sizeof (unsigned char)) >= 0]];'.
@@ -6586,934 +7515,6 @@ _ACEOF
 
 
 
-MDSIP_CONNECTIONS="yes";
-# Check whether --enable-mdsip_connections was given.
-if test "${enable_mdsip_connections+set}" = set; then
-  enableval=$enable_mdsip_connections; MDSIP_CONNECTIONS="$enableval"
-fi
-
-cat >>confdefs.h <<\_ACEOF
-#define MDSIP_CONNECTIONS 1
-_ACEOF
-
-
-# Check whether --enable-nodebug was given.
-if test "${enable_nodebug+set}" = set; then
-  enableval=$enable_nodebug; if test "$enableval" = yes; then
-               CFLAGS="";
-               FFLAGS="";
-	fi
-fi
-
-
-# Check whether --enable-perf was given.
-if test "${enable_perf+set}" = set; then
-  enableval=$enable_perf;
-fi
-
-	if test "$enableval" = yes; then
-		cat >>confdefs.h <<\_ACEOF
-#define USE_PERF 1
-_ACEOF
-
-	fi
-
-# Check whether --enable-java was given.
-if test "${enable_java+set}" = set; then
-  enableval=$enable_java; java_enable="$enableval"
-else
-  java_enable="yes"
-
-fi
-
-
-if test "$target_vendor" = "apple"
-then
-			java_enable="no"
-	# Check whether --enable-universal was given.
-if test "${enable_universal+set}" = set; then
-  enableval=$enable_universal; universal_build="$enableval"
-
-fi
-
-	if test "$universal_build" = yes; then
-		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		F77=fort77
-	fi
-fi
-
-if test "$java_enable" = "yes"
-then
-  if test -z "$JDK_DIR"
-  then
-    JDK_DIR="/etc/alternatives/java_sdk"
-  fi
-
-# Check whether --with-jdk was given.
-if test "${with_jdk+set}" = set; then
-  withval=$with_jdk; jdk_dir="$withval"
-else
-  jdk_dir="$JDK_DIR"
-
-fi
-
-  { $as_echo "$as_me:$LINENO: checking for presence of Java Development Kit" >&5
-$as_echo_n "checking for presence of Java Development Kit... " >&6; }
-  if  test -r $jdk_dir/jre
-  then
-    { $as_echo "$as_me:$LINENO: result: found." >&5
-$as_echo "found." >&6; }
-  else
-	cat <<EOF
-
-
-YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA
-The jdk directory can be specified by either defining a JDK_DIR environment
-variable or by using the --with-jdk=jdk-directory option.
-You can disable java by using the --disable-java option.
-
-
-
-EOF
-	exit
-  fi
-fi
-
-JDK_DIR="$jdk_dir"
-
-
-# Check whether --with-xio was given.
-if test "${with_xio+set}" = set; then
-  withval=$with_xio; MDSTCPIP="mdsip_xio roam"
-          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-          if test "$GLOBUS_FLAVOR" = ""
-	  then
-            cat <<EOF
-
-YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option
-Format:   --with-xio=globus-install-directory:flavor
-Example:  --with-xio=/usr/local/gt3:gcc32dbg
-
-Note do not include pthr in the flavor as it is automatically added.
-
-EOF
-            exit
-          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
-          then
-	    cat <<EOF
-
-Do NOT INCLUDE pthr in the globus flavor!
-
-EOF
-	    exit
-          fi
-
-else
-  MDSTCPIP="mdstcpip"
-
-fi
-
-
-
-# Check whether --with-gsi was given.
-if test "${with_gsi+set}" = set; then
-  withval=$with_gsi; MDSTCPIP="mdstcpip roam"
-          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-          if test "$GLOBUS_FLAVOR" = ""
-	  then
-            cat <<EOF
-
-YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option
-Format:   --with-gsi=globus-install-directory:flavor
-Example:  --with-gsi=/usr/local/gt3:gcc32dbg
-
-Note do not include pthr in the flavor as it is automatically added.
-
-EOF
-            exit
-          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
-          then
-	    cat <<EOF
-
-Do NOT INCLUDE pthr in the globus flavor!
-
-EOF
-	    exit
-          fi
-
-else
-  MDSTCPIP="mdstcpip"
-
-fi
-
-
-
-# Check whether --with-srb was given.
-if test "${with_srb+set}" = set; then
-  withval=$with_srb; SRB_LOCATION=$withval
-          if test "$SRB_LOCATION" = yes
-	  then
-		cat <<EOF
-
-YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation
-when using the --with-srb option
-
-Format:   --with-srb=srb-install-directory
-Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO
-
-EOF
-	    exit
-          fi
-	  SRBLIB="-L${SRB_LOCATION} -lsrbUio"
-          SRBINCLUDE="-I${SRB_LOCATION}"
-          cat >>confdefs.h <<\_ACEOF
-#define SRB 1
-_ACEOF
-
-
-fi
-
-
-
-# Check whether --with-labview was given.
-if test "${with_labview+set}" = set; then
-  withval=$with_labview; LV_DIR="$withval"
-else
-  LV_DIR="$LABVIEW_DIR"
-fi
-
-{ $as_echo "$as_me:$LINENO: checking for labview" >&5
-$as_echo_n "checking for labview... " >&6; }
-if test "$LV_DIR" != "" -a -r "$LV_DIR"
-then
-  LV_INC="-I$LV_DIR/cintools"
-  LV="mdsobjects/labview"
-  LV_LIB="-lLV"
-  { $as_echo "$as_me:$LINENO: result: have labview $LV_INC" >&5
-$as_echo "have labview $LV_INC" >&6; }
-else
-  LV_INC=""
-  LV=""
-  LV_LIB=""
-  { $as_echo "$as_me:$LINENO: result: no labview" >&5
-$as_echo "no labview" >&6; }
-fi
-
-
-# Check whether --enable-globus was given.
-if test "${enable_globus+set}" = set; then
-  enableval=$enable_globus; if test "$enableval" = yes; then
-               : ${GLOBUS_FLAVOR=gcc32dbg}
-               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
-               GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
-                            -lglobus_common_$GLOBUS_FLAVOR"
-        else
-               GLOBUS_CFLAGS=""
-               GLOBUS_LIBS=""
-	fi
-fi
-
-
-# Check whether --enable-memcheck was given.
-if test "${enable_memcheck+set}" = set; then
-  enableval=$enable_memcheck; if test "$enableval" = yes; then
-           MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
-           MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"
-        else
-           MEMCHK=""
-           MEMCHKLIB=""
-        fi
-fi
-
-
-# Check whether --enable-gcc_profiling was given.
-if test "${enable_gcc_profiling+set}" = set; then
-  enableval=$enable_gcc_profiling; if test "$enableval" = yes; then
-           GCCPROF="-pg"
-        else
-           GCCPROF=""
-        fi
-fi
-
-
-
-# Check whether --with-idl was given.
-if test "${with_idl+set}" = set; then
-  withval=$with_idl; IDL_DIR="$withval"
-else
-  IDL_DIR=""
-fi
-
-if test "$IDL_DIR" = ""
-then
-  if test -r /usr/local/itt/idl
-  then
-    IDL_DIR="/usr/local/itt/idl"
-  elif test -r /usr/local/rsi/idl
-  then
-    IDL_DIR="/usr/local/rsi/idl"
-  fi
-fi
-{ $as_echo "$as_me:$LINENO: checking for idl" >&5
-$as_echo_n "checking for idl... " >&6; }
-if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
-then
-  IDL_INC="-I$IDL_DIR/external"
-  IDLMDSEVENT="idlmdsevent"
-  IDLMDSWIDGETS="idlmdswidgets"
-  { $as_echo "$as_me:$LINENO: result: have idl $IDL_INC" >&5
-$as_echo "have idl $IDL_INC" >&6; }
-else
-  IDL_INC=""
-  IDLMDSEVENT=""
-  IDLMDSWIDGETS=""
-  { $as_echo "$as_me:$LINENO: result: no idl" >&5
-$as_echo "no idl" >&6; }
-fi
-
-FORLD=ld
-LD=ld
-LD_LDARC=""
-LD_LDSHARE=""
-IDL_LD=""
-MDSVME=""
-LOC="%loc"
-VAL="%val"
-
-CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
-FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
-
-if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
-then
-  : ${uiddir:=$ac_default_prefix/uid}
-elif test "$exec_prefix" = "NONE"
-then
-  : ${uiddir:=$prefix/uid}
-else
-  : ${uiddir:=$exec_prefix/uid}
-fi
-MAKEUIDDIR="\$(top_srcdir)/uid/"
-MAKESHLIBDIR="\$(top_srcdir)/lib/"
-MAKEBINDIR="\$(top_srcdir)/bin/"
-MAKELIBDIR="\$(top_srcdir)/lib/"
-EXPORTS_FILE=""
-JVM="-ljvm"
-JDK_LIVECONNECT="$jdk_dir/jre/lib/plugin.jar"
-TAR_EXCLUDE="-e"
-GROFF_MAN_FLAGS="-t -man -Tascii"
-GROFF=groff
-HUP_TO_XINETD=""
-HUP_TO_INETD=""
-UILCMD="uil"
-CC_LDFLAGS=""
-FOR_LDFLAGS=""
-RTEVENTS="rtevents"
-
-LIBPTHREAD=-lpthread
-IS_HP=0
-MITDEVICESIO_TARGETS=""
-case "$target" in
-hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
-       FFLAGS="$FFLAGS -O0 -g -fpic  -Wno-globals -fno-backslash";
-       D3D_FFLAGS="+U77 +E1 -K";
-       LDSHARE="-Wl,-a,shared_archive -Wl,+s";
-       LDARC="-Wl,-a,archive";
-       LD_LDSHARE="-a shared_archive";
-       LD_LDARC="-a archive";
-       LINKSHARED="-b +s +b /usr/lib:/usr/local/lib";
-       FOR_LINKSHARED="$LINKSHARED";
-       CC_LDFLAGS="-Wl,+s"
-       FOR_LDFLAGS="-Wl,+s";
-       LIBPATH="SHLIB_PATH";
-       IDL_LD="-L${IDL_DIR}/bin/bin.hp -lidl";
-       FEXECLIBDIR="-Wl,-L";
-       SHARETYPE=".sl";
-       IS_HP=1;
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
-mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
-       FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
-       LDSHARE="-B dynamic";
-       LDARC="-B static";
-       LD_LDSHARE="-B dynamic";
-       LD_LDARC="-B static";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       FOR_LDFLAGS="";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
-       SHARETYPE=".so";;
-*-solaris2*)
-       GROFF=nroff;
-       GROFF_MAN_FLAGS="-t -man ";
-       if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D_ILP32 "; else CFLAGS="$CFLAGS -D_LP64 "; fi;
-       if test $CC = gcc; then
-	 LD=gcc;
-	 FORLD=gcc;
-         LINKSHARED="-shared ";
-         FOR_LINKSHARED="$LINKSHARED"
-         LD_LDSHARE="-Wl,-B,dynamic";
-         LD_LDARC="-Wl,-B,static";
-         LDSHARE="-Wl,-B,dynamic";
-         LDARC="-Wl,-B,static";
-         CFLAGS="$CFLAGS -fPIC -D_POSIX_PTHREAD_SEMANTICS";
-         LDFLAGS="$CFLAGS";
-       else
-         LINKSHARED="-G ";
-         FOR_LINKSHARED="$LINKSHARED";
-         LD_LDARC="-B static ";
-         LD_LDSHARE="-B dynamic ";
-         LDSHARE="-B dynamic";
-         LDARC="-B static";
-         if test -n "`echo 'int main(){return 0;}' | cc -o /dev/null -E -c -Kpic - 2>&1`"; then
-           LDSHARE="-Wl,-B,dynamic";
-           LDARC="-Wl,-B,static";
-         else
-           CFLAGS="$CFLAGS -Kpic";
-         fi;
-       fi;
-       if test "$F77" = "gfortran"
-       then
-         FFLAGS="$FFLAGS -fPIC -fno-range-check"
-       else
-         FFLAGS="$FFLAGS -PIC";
-       fi
-       IDL_LD="-L${IDL_DIR}/bin/bin.solaris2.sparc -lidl"
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";
-       JVM="";
-       jni_inc_dir="${JDK_DIR}/include";
-       jni_md_inc_dir="${JDK_DIR}/include/solaris";
-       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
-alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
-       FFLAGS="$FFLAGS -pthread";
-       GROFF_MAN_FLAGS="-t -mgan -Tascii";
-       IDL_LD="-expect_unresolved 'IDL_*'"
-       LDSHARE="-Wl,-so_archive ";
-       LDARC="-Wl,-no_so ";
-       LD_LDARC="-no_so ";
-       LD_LDSHARE="-so_archive ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="-lfor";
-       FEXECLIBDIR="-L";
-       MDSVME="mdsvme";
-       SHARETYPE=".so";
-       jni_inc_dir="/usr/include/java";
-       jni_md_inc_dir="/usr/include/java/`uname -m`";
-       HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
-*86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
-       FORLD="$F77";
-       LD="gcc"
-       if ( uname -m | grep 64 > /dev/null )
-       then
-         if ( echo $target | grep 64 > /dev/null )
-         then
-           if  -d /usr/lib64
-           then
-             D64="64"
-           else
-             D64=""
-           fi
-           SYB64=$D64
-           CFLAGS="$CFLAGS -m64"
-           LD="gcc -m64"
-           FFLAGS="$FFLAGS -m64"
-           FORLD="$F77 -m64"
-           UILCMD=uil
-           uiddir="${uiddir}${D64}"
-	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
-           MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
-	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
-           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
-         else
-           CFLAGS="$CFLAGS -m32";
-           LD="gcc -m32"
-           FFLAGS="$FFLAGS -m32"
-           FORLD="$F77 -m32"
-           UILCMD=uil32
-           uiddir="${uiddir}32"
-           MAKELIBDIR="\$(top_srcdir)/lib32/"
-           MAKESHLIBDIR="\$(top_srcdir)/lib32/"
-           MAKEUIDDIR="\$(top_srcdir)/uid32/"
-           MAKEBINDIR="\$(top_srcdir)/bin32/"
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
-         fi
-	 CC_LDFLAGS="$CFLAGS"
-       else
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
-       fi
-       if (test "$F77" = "g77"); then
-         FFLAGS="$FFLAGS -Wno-globals"
-         LOC="%loc"
-       elif (test "$F77" = "gfortran"); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         LOC="loc"
-       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         LOC="loc"
-       fi
-       FOR_LDFLAGS="-lg2c"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";
-       TAR_EXCLUDE="--exclude";
-       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
-       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
-       CC=arm-xilinx-linux-gnueabi-gcc;
-       LD=arm-xilinx-linux-gnueabi-ld;
-       AR=arm-xilinx-linux-gnueabi-ar;
-       RANLIB=arm-xilinx-linux-gnueabi-ranlib;
-       SIZEOF_LONG=4;
-       SIZEOF_LONG_LONG=8;
-       D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
-       if (test "$F77" = "g77"); then
-         FFLAGS="$FFLAGS -Wno-globals"
-         FOR_LDFLAGS="-lg2c"
-         FORLD="$F77"
-         LOC="%loc"
-       elif (test "$F77" = "gfortran"); then
-         FFLAGS="$FFLAGS -fno-range-check";
-         FORLD="$F77"
-         LOC="loc"
-         FOR_LDFLAGS="-lg2c"
-       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         FORLD="$F77"
-         LOC="loc"
-         FOR_LDFLAGS="-lg2c"
-       fi
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";
-       TAR_EXCLUDE="--exclude";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
-       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
-       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
-       if (test "$F77" = "g77"); then
-         FFLAGS="$FFLAGS -Wno-globals"
-         FOR_LDFLAGS="-lg2c"
-         FORLD="$F77"
-         LOC="%loc"
-       elif (test "$F77" = "gfortran"); then
-         FFLAGS="$FFLAGS -fno-range-check";
-         FORLD="$F77"
-         LOC="loc"
-         FOR_LDFLAGS="-lg2c"
-       elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
-         FFLAGS="$FFLAGS -fno-range-check"
-         FORLD="$F77"
-         LOC="loc"
-         FOR_LDFLAGS="-lg2c"
-       fi
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";
-       TAR_EXCLUDE="--exclude";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
-       HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
-       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*apple-darwin10*) echo "Configuring for MacOS X lion 10";
-       GCCLIB=""
-       MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
-       if (test "$F77" = "f77"); then
-          FFLAGS="$FFLAGS -w -f -V -W"
-		  FORLD="$F77"
-       elif (test "$F77" = "g77"); then
-          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
-          FOR_LDFLAGS="-lg2c";
-		  FORLD="$F77"
-       elif (test "$F77" = "fort77"); then
-          FFLAGS="$FFLAGS -!bs -Wf,-!it";
-          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC"
-		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
-       elif (test "$F77" = "gfortran"); then
-          FFLAGS="$FFLAGS -fno-range-check"
-          FORLD="gcc"
-          FOR_LDFLAGS="-shared -arch x86_64 -arch i386 -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/ -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/i386 -lgfortranbegin /usr/local/gfortran/lib/libquadmath.a /usr/local/gfortran/lib/i386/libquadmath.a /usr/local/gfortran/lib/libgfortran.a /usr/local/gfortran/lib/i386/libgfortran.a"
-          LOC="loc"
-       fi;
-       FEXECLIBDIR="-L";
-       LD="$CC"
-       LDSHARE="";
-       LD_LDSHARE="";
-       LDARC="";
-       LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib"
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib"
-       	   	   LINKSHARED="$LDFLAGS -shared -arch i386 -arch x86_64";
-           FOR_LINKSHARED="$LDFLAGS -shared";
-	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
-       IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
-       LINKJNI="$LINKSHARED";
-       SHARETYPE=".dylib";
-       SHARETYPEJNI=".dylib";
-       SHARETYPEMOD=".dylib";
-       LIBPTHREAD="";
-       TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home
-       jni_inc_dir="$JDK_DIR/include";
-       jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
-       JVM="-framework JavaVM";
-       java_enable="yes"
-       LIBPATH="DYLD_LIBRARY_PATH"
-       HUP_TO_XINETD="killall -HUP xinetd";
-       HUP_TO_INETD="killall -HUP inetd";
-                     X_EXTRA_LIBS="-lXmu";;
-*apple-darwin*) echo "Configuring for MacOS X...";
-       CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
-       if (test "$F77" = "f77"); then
-          FFLAGS="$FFLAGS -w -f -V -W";
-		  FORLD="$F77";
-       elif (test "$F77" = "g77"); then
-          FFLAGS="$FFLAGS -fno-backslash -Wno-globals";
-          FOR_LDFLAGS="-lg2c";
-		  FORLD="$F77"
-       elif (test "$F77" = "fort77"); then
-          FFLAGS="$FFLAGS -!bs -Wf,-!it";
-          FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
-		  FORLD="$CC";
-		  LOC="F2C_LOC";
-		  VAL="F2C_VAL";
-       fi;
-       FEXECLIBDIR="-L";
-       LD="$CC"
-       LDSHARE="";
-       LD_LDSHARE="";
-       LDARC="";
-       LD_LDARC="";
-       UILPATH=/usr/OpenMotif/bin;
-       MOTIF_LDARC="-Wl,-bind_at_load -multiply_defined suppress -L/usr/OpenMotif/lib";
-       MOTIF_LD_LDARC="-multiply_defined suppress -L/usr/OpenMotif/lib";
-       	   	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
-	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
-       IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include";
-       LINKJNI="$LINKSHARED";
-       SHARETYPE=".dylib";
-       SHARETYPEJNI=".dylib";
-       SHARETYPEMOD=".so";
-       LIBPTHREAD="";
-       TAR_EXCLUDE="--exclude";
-       JDK_DIR=/Library/Java/Home;
-       jni_inc_dir="$JDK_DIR/include";
-       jni_md_inc_dir="$jni_inc_dir";
-       JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar";
-       JVM="-framework JavaVM";
-       java_enable="yes";
-       LIBPATH="DYLD_LIBRARY_PATH";
-       HUP_TO_XINETD="killall -HUP xinetd";
-       HUP_TO_INETD="killall -HUP inetd";
-                     X_EXTRA_LIBS="-lXmu";;
-*aix*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
-       FFLAGS="$FFLAGS -qpic -qnoescape";
-       LDSHARE="";
-       LDARC="";
-       FOR_LDFLAGS="-lxlf90";
-       LINKSHARED="-bnoentry -bM:SRE -bE:\$(EXPORTS)";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LIBPATH";
-       MAKESHLIBDIR="\$(top_srcdir)/shlib/";
-       EXPORTS_FILE="\$(EXPORTS)";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".a";
-       LOC="loc";
-       HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
-*windows*)     CFLAGS="$CFLAGS";
-       LDSHARE="";
-       LDARC="";
-       LINKSHARED="";
-       FEXECLIBDIR="-L";
-       SHARETYPE="";;
-*qnx*) CFLAGS="$CFLAGS -fpic";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";;
-*)     CFLAGS="$CFLAGS";
-       FFLAGS="$FFLAGS";
-       FOR_LDFLAGS="";
-       LDSHARE="";
-       LDARC="";
-       LINKSHARED="";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";;
-esac
-
-GCCLIB="`$CC -print-libgcc-file-name 2> /dev/null`";
-
-{ $as_echo "$as_me:$LINENO: checking for dc1394_new  in -ldc1394" >&5
-$as_echo_n "checking for dc1394_new  in -ldc1394... " >&6; }
-if test "${ac_cv_lib_dc1394_dc1394_new_+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldc1394  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dc1394_new  ();
-int
-main ()
-{
-return dc1394_new  ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_dc1394_dc1394_new_=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_dc1394_dc1394_new_=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_dc1394_dc1394_new_" >&5
-$as_echo "$ac_cv_lib_dc1394_dc1394_new_" >&6; }
-if test "x$ac_cv_lib_dc1394_dc1394_new_" = x""yes; then
-  dc1394_v2=yes
-fi
-
-{ $as_echo "$as_me:$LINENO: checking for dc1394_get_camera_info  in -ldc1394" >&5
-$as_echo_n "checking for dc1394_get_camera_info  in -ldc1394... " >&6; }
-if test "${ac_cv_lib_dc1394_dc1394_get_camera_info_+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldc1394  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char dc1394_get_camera_info  ();
-int
-main ()
-{
-return dc1394_get_camera_info  ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_dc1394_dc1394_get_camera_info_=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_dc1394_dc1394_get_camera_info_=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_dc1394_dc1394_get_camera_info_" >&5
-$as_echo "$ac_cv_lib_dc1394_dc1394_get_camera_info_" >&6; }
-if test "x$ac_cv_lib_dc1394_dc1394_get_camera_info_" = x""yes; then
-  dc1394_v1=yes
-fi
-
-{ $as_echo "$as_me:$LINENO: checking for raw1394_get_libversion  in -lraw1394" >&5
-$as_echo_n "checking for raw1394_get_libversion  in -lraw1394... " >&6; }
-if test "${ac_cv_lib_raw1394_raw1394_get_libversion_+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lraw1394  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char raw1394_get_libversion  ();
-int
-main ()
-{
-return raw1394_get_libversion  ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_raw1394_raw1394_get_libversion_=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_raw1394_raw1394_get_libversion_=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_raw1394_raw1394_get_libversion_" >&5
-$as_echo "$ac_cv_lib_raw1394_raw1394_get_libversion_" >&6; }
-if test "x$ac_cv_lib_raw1394_raw1394_get_libversion_" = x""yes; then
-  raw1394=yes
-fi
-
-if test "$dc1394_v2" = "yes" -a "$raw1394"="yes"; then
-  DC1394_SUPPORT2="${MAKESHLIBDIR}libdc1394_support2$SHARETYPE"
-else
-  DC1394_SUPPORT2=""
-fi
-if test "$dc1394_v1" = "yes" -a "$raw1394"="yes"; then
-  DC1394_SUPPORT="${MAKESHLIBDIR}libdc1394_support$SHARETYPE"
-else
-  DC1394_SUPPORT=""
-fi
 
 if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}ranlib", so it can be a program name with args.
