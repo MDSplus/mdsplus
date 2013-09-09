@@ -378,6 +378,7 @@ class Tree(object):
         """
         from treenode import TreeNode
         from _treeshr import TreeFindNodeWild
+        from mdsscalar import Uint32
 
         for n in TreeFindNodeWild(self.ctx, name, *usage):
             yield TreeNode(n,self)
@@ -392,7 +393,10 @@ class Tree(object):
         @rtype: TreeNodeArray
         """
         from treenode import TreeNodeArray
-        return TreeNodeArray(tuple(self.getNodeWildIter(name,*usage)),self)
+        nids=list()
+        for n in self.getNodeWildIter(name,*usage):
+            nids.append(n.nid)
+        return TreeNodeArray(nids,self)
 
     def getVersionDate():
         """Get date used for retrieving versions

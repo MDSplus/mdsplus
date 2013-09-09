@@ -1154,7 +1154,8 @@ class TreePath(TreeNode):
 
 class TreeNodeArray(Data):
     def __init__(self,nids,tree=None):
-        self.nids=nids
+        from mdsarray import Uint32Array
+        self.nids=Int32Array(nids)
         if tree is None:
             self.tree=Tree.getActiveTree()
         else:
