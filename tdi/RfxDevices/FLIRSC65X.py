@@ -154,13 +154,18 @@ class FLIRSC65X(Device):
           highLim=c_int(self.device.stream_hilim.data()*10)
           minLim=c_int(0)         
           maxLim=c_int(62000-27315)      #3468.5°C 
+        if img_temperature == 'Radiometric':
+          lowLim=c_int(self.device.stream_lolim.data()) 
+          highLim=c_int(self.device.stream_hilim.data())           #dynamic range in Radiometric is the raw data itself!!!
+          minLim=c_int(0)            
+          maxLim=c_int(32767) 
      
         skipFrameStore = self.device.skp_fr_store.data()           #frames store decimation
         frameStoreCounter = skipFrameStore
         frameStreamCounter = skipFrameStream                       #frames stream decimation
 
         burstDuration = self.device.frame_brst_d.data()            #external trigger timing
-        burstNframe = burstDuration * float(frameRate) + 1
+        burstNframe = int ( burstDuration * float(frameRate) + 1 ) #CT Added type cast to int burstNframe must be integer
         burstFrameCount = 0
         Ntrigger = self.device.frame_nr_trg.data()
         NtriggerCount = 0
@@ -174,36 +179,57 @@ class FLIRSC65X(Device):
         while not self.stopReq:
 
           self.flirLib.getFrame(self.device.handle, byref(status), frameBuffer, metaData)                    #get the frame
-          self.flirLib.frameConv(self.device.handle, frameBuffer, self.width, self.height, img_temperature)  #convert kelvin in Celsius
+          if img_temperature != 'Radiometric':          
+            self.flirLib.frameConv(self.device.handle, frameBuffer, self.width, self.height, img_temperature)  #convert kelvin in Celsius
 
-          frameStoreCounter = frameStoreCounter + 1     #reset according to Store decimation
+          #frameStoreCounter = frameStoreCounter + 1     #Deve essere incrementato solo se e' settato il flag startStoreTrg reset according to Store decimation
           frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
           frameTotalCounter = frameTotalCounter + 1     #never resetted     
           
-          if isExternal==1:                          #external clock source
-            burstFrameCount = burstFrameCount + 1
-            if (burstFrameCount == burstNframe):        
+          if isExternal==1:                  #external clock source
+	    if ( startStoreTrg == 1 ):	         # CT Incremento burstFrameCount solo se il burst e' stato triggerato
+              burstFrameCount = burstFrameCount + 1
+              #print '\nPython ACQUIRED FRAMES: ', burstFrameCount, burstNframe
+
+            if NtriggerCount==Ntrigger:         #stop store when all trigger are received              
+              self.device.stop_store(0)		#CT deve essere incrementato dopo il controllo altrimenti si perde l'acquisizione dell'ultimo trigger
+
+            if (burstFrameCount == burstNframe + 1):  #CT Se incremento il  burstFrameCount prima di salvarlo il controllo deve essere eseguito su burstNframe + 1   
+	      print '\nPython ACQUIRED ALL TRIGGER FRAMES: ', burstNframe	
               startStoreTrg=0                           #disable storing
               burstFrameCount = 0
-              NtriggerCount = NtriggerCount + 1
+              NtriggerCount = NtriggerCount + 1 
               if autoCalib == 'NO':                     #execute calibration action @ every burst of frames (only if NO auto calibration)
                 self.device.calib(0)
-            if NtriggerCount==Ntrigger:                 #stop store when all trigger are received              
-              self.device.stop_store(0)   
-            if (status.value==4):                       #start data storing @ 1st trigger seen (trigger is on image header!)
+
+
+            if ( (status.value == 4) and (startStoreTrg == 0) ):       #start data storing @ 1st trigger seen (trigger is on image header!)
               startStoreTrg=1
-          else:                                      #internal clock source
+              burstFrameCount = 1                  #CT primo frame del burst acquisito
+	      print '\nPython TRIGGERED:'	
+          else:                               #internal clock source
             startStoreTrg=1           
             frameTime = (frameTotalCounter-1) * 1./float(frameRate)
+
+
+          if ( startStoreTrg == 1 ): #CT incremento l'indice dei frame salvato solo se l'acquisizione e' stata triggerata 
+              frameStoreCounter = frameStoreCounter + 1     
 
           if(isStorage==1 and startStoreTrg==1):                              #is a frame to be saved?
             if ((status.value==1) or (status.value==2) or (status.value==4)): #is the frame complete, incomplete or triggered?
               if (frameStoreCounter == skipFrameStore+1):                       #is a frame NOT to be skipped for decimation?
                 #self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx))
-                savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), metaData, metaSize,self.device.frames_metad.getNid()) 
+		#print '\nPython SAVE Frame :', self.idx
+		#
+		# CT la routine camSaveFrame utilizza il frame index in acquisizione con trigger esterno. L'indice viene
+                # utilizzato per individuare nell'arrei della base temporale il tempo associato al frame.
+		# 
+                #savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), metaData, metaSize,self.device.frames_metad.getNid()) 
+                savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(frameTime), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx), metaData, metaSize,self.device.frames_metad.getNid()) 
 
                 frameStoreCounter=0
-                self.idx = self.idx + 1
+                #self.idx = self.idx + 1
+              self.idx = self.idx + 1 # CT il frame index deve essere incrementato per ogni frame valido 
 
           if(isStreaming==1):
             if(tcpStreamHandle.value==-1): 
