@@ -1,6 +1,6 @@
 FUN PUBLIC TOMS510(IN _s,OPTIONAL _e) {
-	_xdata = FLOAT(DIM_OF(_s));
-	_ydata = FLOAT(DATA(_s));
+	_xdata = FLOAT(DIM_OF(_s),kind(0.0));
+	_ydata = FLOAT(DATA(_s), kind(0.0));
         _w = _xdata;
 	_n = SIZE(_ydata);
         _x = RAMP(_n,1.);
