@@ -94,6 +94,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jPanel15 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
         deviceTable2 = new DeviceTable();
+        deviceTable5 = new DeviceTable();
+        deviceTable6 = new DeviceTable();
         jPanel107 = new javax.swing.JPanel();
         jPanel108 = new javax.swing.JPanel();
         deviceField100 = new DeviceField();
@@ -589,7 +591,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jPanel13.add(jPanel14, java.awt.BorderLayout.NORTH);
 
-        jPanel15.setLayout(new java.awt.GridLayout(2, 1));
+        jPanel15.setLayout(new java.awt.GridLayout(4, 1));
 
         deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
         deviceTable1.setIdentifier("");
@@ -606,6 +608,22 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceTable2.setNumRows(1);
         deviceTable2.setOffsetNid(1501);
         jPanel15.add(deviceTable2);
+
+        deviceTable5.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable5.setIdentifier("");
+        deviceTable5.setLabelString("ResAddFcoil");
+        deviceTable5.setNumCols(8);
+        deviceTable5.setNumRows(1);
+        deviceTable5.setOffsetNid(1795);
+        jPanel15.add(deviceTable5);
+
+        deviceTable6.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
+        deviceTable6.setIdentifier("");
+        deviceTable6.setLabelString("I2tResFcoil");
+        deviceTable6.setNumCols(8);
+        deviceTable6.setNumRows(1);
+        deviceTable6.setOffsetNid(1801);
+        jPanel15.add(deviceTable6);
 
         jPanel13.add(jPanel15, java.awt.BorderLayout.CENTER);
 
@@ -1712,6 +1730,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
+    private DeviceTable deviceTable5;
+    private DeviceTable deviceTable6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel100;

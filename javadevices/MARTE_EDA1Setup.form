@@ -534,7 +534,7 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
                     <Property name="columns" type="int" value="1"/>
-                    <Property name="rows" type="int" value="2"/>
+                    <Property name="rows" type="int" value="4"/>
                   </Layout>
                   <SubComponents>
                     <Component class="DeviceTable" name="deviceTable1">
@@ -577,6 +577,48 @@
                         <Property name="numCols" type="int" value="8"/>
                         <Property name="numRows" type="int" value="1"/>
                         <Property name="offsetNid" type="int" value="1501"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceTable" name="deviceTable5">
+                      <Properties>
+                        <Property name="columnNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="8">
+                            <StringItem index="0" value="1"/>
+                            <StringItem index="1" value="2"/>
+                            <StringItem index="2" value="3"/>
+                            <StringItem index="3" value="4"/>
+                            <StringItem index="4" value="5"/>
+                            <StringItem index="5" value="6"/>
+                            <StringItem index="6" value="7"/>
+                            <StringItem index="7" value="8"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="ResAddFcoil"/>
+                        <Property name="numCols" type="int" value="8"/>
+                        <Property name="numRows" type="int" value="1"/>
+                        <Property name="offsetNid" type="int" value="1795"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceTable" name="deviceTable6">
+                      <Properties>
+                        <Property name="columnNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="8">
+                            <StringItem index="0" value="1"/>
+                            <StringItem index="1" value="2"/>
+                            <StringItem index="2" value="3"/>
+                            <StringItem index="3" value="4"/>
+                            <StringItem index="4" value="5"/>
+                            <StringItem index="5" value="6"/>
+                            <StringItem index="6" value="7"/>
+                            <StringItem index="7" value="8"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="I2tResFcoil"/>
+                        <Property name="numCols" type="int" value="8"/>
+                        <Property name="numRows" type="int" value="1"/>
+                        <Property name="offsetNid" type="int" value="1801"/>
                       </Properties>
                     </Component>
                   </SubComponents>
