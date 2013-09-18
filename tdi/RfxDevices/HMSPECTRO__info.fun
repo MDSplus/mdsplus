@@ -96,7 +96,9 @@ write(*, " connected ", allocated( _connected ), _connected );
 		{
 			_msg = MdsValue('HMSPECTROGetMsg( $1 )', _status );
 		}
+/*
 		MdsDisconnect();
+*/
 	}
 	else
 	{

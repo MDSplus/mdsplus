@@ -37,8 +37,11 @@ public fun DIO2EncoderHWInit(in _nid, in _board_id, in _ext_clock, in _events, i
 	private _DIO2_EC_SOURCE_PXI				=	0x02;
 
 
+	_err = fopen('/dev/stderr', 'w');
+	_out = fopen('/dev/stdout', 'w');
 
-	write(*, 'DIO2EncoderHWInit', _board_id, _ext_clock, _events, _terminations);
+
+	write(_out, 'DIO2EncoderHWInit', _board_id, _ext_clock, _events, _terminations);
 
 /* Initialize Library if the first time */
     if_error(_DIO2_initialized, (DIO2->DIO2_InitLibrary(); public _DIO2_initialized = 1;));
@@ -52,19 +55,19 @@ public fun DIO2EncoderHWInit(in _nid, in _board_id, in _ext_clock, in _events, i
 		if(_nid != 0)
 			DevLogErr(_nid, "Error opening DIO2 device, board ID = "// _board_id);
 		else
-			write(*, "Error opening DIO2 device, board ID = "// _board_id);
+			write(_err, "Error opening DIO2 device, board ID = "// _board_id);
 		return(0);
 	}
 
-write(*, 'OPEN');
+write(_out, 'OPEN');
 
 /* Reset module
 
 DIO2->DIO2_Reset(val(_handle));
 
-write(*, 'RESET');  */
+write(_out, 'RESET');  */
 
-write(*, '----> ', _events);
+write(_out, '----> ', _events);
 
 
 /* Set clock functions */
@@ -94,13 +97,13 @@ write(*, '----> ', _events);
 			if(_nid != 0)
 				DevLogErr(_nid, "Error setting clock source in DIO2Event device, board ID = "// _board_id);
 			else
-				write(*, "Error setting clock source in DIO2Event device, board ID = "// _board_id);
+				write(_err, "Error setting clock source in DIO2Event device, board ID = "// _board_id);
 			return(0);
 		}
 
 		if(_events[_c] != 0)
 		{
-write(*, 'Setting event ', _events[_c]);
+write(_out, 'Setting event ', _events[_c]);
 			_status = DIO2->DIO2_EC_SetEventEncoder(val(_handle), val(byte(_c + 1)), 
 				val(byte(_events[_c])), val(byte(_DIO2_EC_RISING_EDGE)), 
 				val(byte(_DIO2_EC_SOURCE_FRONT_REAR)), val(byte(_c + 1)));
@@ -109,7 +112,7 @@ write(*, 'Setting event ', _events[_c]);
 				if(_nid != 0)
 					DevLogErr(_nid, "Error setting event generation in DIO2Encoder device, board ID = "// _board_id);
 				else
-					write(*, "Error setting event generation in DIO2Encoder device, board ID = "// _board_id);
+					write(_err, "Error setting event generation in DIO2Encoder device, board ID = "// _board_id);
 				return(0);
 			}
 		}

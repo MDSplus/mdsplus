@@ -19,6 +19,9 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 		abort();
 	};
 
+	write(*,"do/method \\"//_dec//" init"); 
+	_status = tcl("do/method \\"//_dec//" init");
+
 
 	if( getnci( build_path("\\DEQU_RAW_T::CONTROL"), "STATE") == 0 )
 	{
@@ -26,6 +29,24 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 		_status = tcl("do/method \\DEQU_RAW_T::CONTROL init");	
 	}
 
+/*******************
+	if( getnci( build_path("\\DEQU_RAW_T::MARTE"), "STATE") == 0 )
+	{
+		write(*,"do/method \\DEQU_RAW_T::MARTE_BR seq_init_start"); 
+		_status = tcl("do/method \\\DEQU_RAW_T::MARTE_BR seq_init_start");	
+
+		wait(2.);
+
+		write(*,"do/method \\DEQU_RAW_T::MARTE init"); 
+		_status = tcl("do/method \\DEQU_RAW_T::MARTE init");	
+
+		wait(2.);
+
+		write(*,"do/method \\DEQU_RAW_T::MARTE_BR_I seq_init_stop"); 
+		_status = tcl("do/method \\\DEQU_RAW_T::MARTE_BR_I seq_init_stop");	
+
+	}
+*********************/
 
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
 	{
@@ -62,16 +83,13 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 	}
 
 
-	write(*,"do/method \\"//_dec//" init"); 
-	_status = tcl("do/method \\"//_dec//" init");
-
-
 	write(*,"do/method \\"//_dec//" trigger"); 
 	_status = tcl("do/method \\"//_dec//" trigger");
 	
 	
-	
-	wait(maxval([data(build_path("\\DEQU_RAW_T::CONTROL:POST_TIME")), data(build_path("\\DEQU_SETUP.TR10_ACQ:END_ACQ") )])  + 10. );
+	write(*, "WAIT for Initialization");
+	wait(maxval([data(build_path("\\DEQU_RAW_T::CONTROL:POST_TIME")), data(build_path("\\DEQU_SETUP.TR10_ACQ:END_ACQ") )])  + 20. );
+	write(*, "START acquisition");
 
 
 	for(_i = 0; _i < _K_NUM_CARD; _i++)
@@ -98,7 +116,27 @@ public fun EM_EQU_TEST_NEW__init(as_is _nid, optional _method)
 			}
 		}
 	}
-	
+
+/**************	
+	if( getnci( build_path("\\DEQU_RAW_T::MARTE"), "STATE") == 0 )
+	{
+		write(*,"do/method \\DEQU_RAW_T::MARTE_BR seq_store_start"); 
+		_status = tcl("do/method \\\DEQU_RAW_T::MARTE_BR seq_store_start");	
+
+		wait(2.);
+
+		write(*,"do/method \\DEQU_RAW_T::MARTE store"); 
+		_status = tcl("do/method \\DEQU_RAW_T::MARTE store");	
+
+		wait(2.);
+
+		write(*,"do/method \\DEQU_RAW_T::MARTE_BR_I seq_store_stop"); 
+		_status = tcl("do/method \\\DEQU_RAW_T::MARTE_BR_I seq_store_stop");	
+
+
+	}
+*****************/
+
 	if( getnci( build_path("\\DEQU_RAW_T::CONTROL"), "STATE") == 0 )
 	{
 		write(*,"do/method \\DEQU_RAW_T::CONTROL store"); 

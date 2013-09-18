@@ -15,22 +15,35 @@ public fun EM_EQU_TEST_NEW__report(as_is _nid, optional _method)
 
     private fun getOffsetCalibGain(in _ch, in _gain, in _adc, in _mode, in _npoints, in _value, out _name)
     {
+
+
 		if(_ch < 10)
 			_chan =  ".CHANNEL_0"//TEXT(_ch, 1);
 		else
 			_chan =  ".CHANNEL_"//TEXT(_ch, 2);
+write(*, 	"\\DEQU_RAW_T::"//_adc//_chan//":DATA" );
+write(*, 	"\\DEQU_RAW_T::"//_gain//_chan//":INT_NAME" );
+write(*, 	 "\\DEQU_RAW_T::"//_gain//_chan//":INT_GAIN" );
+write(*, 	 "\\DEQU_RAW_T::"//_gain//_chan//":LIN_NAME");
+write(*, 	 "\\DEQU_RAW_T::"//_gain//_chan//":LIN_GAIN" );
+
+
 		
 		if(_mode == "INTEGRAL")
 		{
-			_name     = execute("\\DEQU_RAW_T::"//_gain//_chan//":INT_NAME");						    
+			_name     = execute("\\DEQU_RAW_T::"//_gain//_chan//":INT_NAME");	
+write(*, "lin name ", _name);				    
 			_gain_val = execute("\\DEQU_RAW_T::"//_gain//_chan//":INT_GAIN");
+write(*, "lin gain ", _gain_val);				    
 		}
 		else
 		{
 			_name     = execute("\\DEQU_RAW_T::"//_gain//_chan//":LIN_NAME");
-			_gain_val = execute("\\DEQU_RAW_T::"//_gain//_chan//":LIN_GAIN");
+write(*, "Int name ", _name);				    
+			_gain_val = execute("\\DEQU_RAW_T::"//_gain//_chan//":LIN_CALIB");
+write(*, "Int gain ", _gain_val);				    
 		}
-		
+	
 		_out = DFLUTestValues("\\DEQU_RAW_T::"//_adc//_chan//":DATA", _npoints, _value,  _mode);
 		
 		return( _out );

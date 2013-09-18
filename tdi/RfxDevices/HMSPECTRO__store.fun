@@ -202,6 +202,7 @@ write(*, "_bufSize ", _bufSize);
 		}
 */
 	    _lambda = MdsValue('HMSPECTROReadLambda( $1,  $2 )',  _dev_name ,  _hwPixel);
+	    write(*, "lambda ", _lambda);
 
 		_status = _HMSPECTRO_SUCCESS;
 		if(size( _lambda ) == 1)

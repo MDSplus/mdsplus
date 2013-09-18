@@ -73,7 +73,7 @@ write(*,  _connected );
 		if( _status == 0 )
 		{
 			DevLogErr(_nid,  "Could not open connection to MDS server" );	
-			abort();
+			abort();MdsDisconnect
 		}
 */		
 	    _status = MdsValue('HMSPECTRO->HMSpectroArm( $1 )', _dev_name);

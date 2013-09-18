@@ -51,7 +51,8 @@ public fun EM_FLU_TEST__init_new(as_is _nid, optional _method)
 			abort();
 		};
 		_status = tcl("do/method \\"//_tor_dec_1//" reset");
-/*	
+
+/*
 		_tor_dec_2 = if_error(data(DevNodeRef(_nid, _N_TOR_DECODER_2)), "");;
 		if(_tor_dec_2 != "")
 		{
@@ -62,17 +63,17 @@ public fun EM_FLU_TEST__init_new(as_is _nid, optional _method)
 	}	
 
 
-	write(*,"do/method \\"//_pol_dec_1//" init"); 
-	_status = tcl("do/method \\"//_pol_dec_1//" init");
-	write(*,"do/method \\"//_pol_dec_2//" init"); 
-	_status = tcl("do/method \\"//_pol_dec_2//" init");
-
-
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
 
 write(*, "POLOIDAL init");
+ 	write(*,"do/method \\"//_pol_dec_1//" init"); 
+	_status = tcl("do/method \\"//_pol_dec_1//" init");
 
+/*
+	write(*,"do/method \\"//_pol_dec_2//" init"); 
+	_status = tcl("do/method \\"//_pol_dec_2//" init");
+*/
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
@@ -107,10 +108,10 @@ write(*, "POLOIDAL init");
 	{
 
 write(*, "TOROIDAL init");
-/*
+
 		write(*,"do/method \\"//_tor_dec_1//" init"); 
 		_status = tcl("do/method \\"//_tor_dec_1//" init");
-*/
+
 
 		for(_i = 0; _i < _K_NUM_CARD; _i++)
 		{
@@ -143,12 +144,15 @@ write(*, "TOROIDAL init");
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{
 
-write(*, "POLOIDAL Decoder init");
+write(*, "POLOIDAL DIO_2 trigger");
 
 		write(*,"do/method \\"//_pol_dec_1//" trigger"); 
 		_status = tcl("do/method \\"//_pol_dec_1//" trigger");
+
+/*
 		write(*,"do/method \\"//_pol_dec_2//" trigger"); 
 		_status = tcl("do/method \\"//_pol_dec_2//" trigger");
+*/
 	}
 
 	if( DevIsOn(DevNodeRef(_nid, _N_TOROIDAL)) )
@@ -162,11 +166,16 @@ write(*, "TOROIDAL DIO_2 trigger");
 	}
 
 /*
-	wait(maxval([\DFLU_TRAW::CPCI_1_STOP_ACQ, \DFLU_TRAW::DFLU_SETUP.TOROIDAL.CLOCK:STOP_ACQ - \DFLU_TRAW::DFLU_SETUP.TOROIDAL.CLOCK:START_ACQ]) + 2.0);
+	wait(maxval([\DFLU_TRAW::CPCI_1_STOP_ACQ, \DFLU_TRAW::DFLU_SETUP.TOROIDAL.CLOCK:STOP_ACQ, \DFLU_TRAW::DFLU_SETUP.TOROIDAL.CLOCK:START_ACQ]) + 2.0);
+	write(*, "ATTESA 5 secondi");
+	wait(5.0);
 */
 
-write(*, "ATTESA 5 secondi");
-	wait(5.0);
+    _waitTime = maxval( [ abs( \DFLU_SETUP.TOROIDAL.CLOCK:STOP_ACQ - \DFLU_SETUP.TOROIDAL.CLOCK:START_ACQ ) , abs(\DFLU_SETUP.POLOIDAL.CLOCK:STOP_ACQ - \DFLU_SETUP.POLOIDAL.CLOCK:START_ACQ ) ]) + 2.0;
+
+	write(*, "ATTESA " // _waitTime // " secondi");
+	wait( _waitTime );
+
 
 	if( DevIsOn(DevNodeRef(_nid, _N_POLOIDAL)) )
 	{

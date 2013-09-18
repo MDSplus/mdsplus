@@ -10,7 +10,7 @@ BIT 1  DEQU
 BIT 2  EDA3
 BIT 3  DFLU
 BIT 4  MHD_AC    ora EDA3  : MHD superato il limite di I2t 
-BIT 5  MHD_BC    ora EDA1  : Allarme sforzi su bobone F 
+BIT 5  MHD_BC    ora EDA1  : Allarme sforzi su bobine F 
 BIT 6  MHD_BR    ora SIGMA : Marte check fallito. MARTe thread in idle state
 BIT 7  MHD_BR_I  
 BIT 8  EDAV

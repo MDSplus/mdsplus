@@ -99,13 +99,13 @@ public fun OAM01__init ( as_is _nid, optional _method )
 	   	_gpib_id = GPIBGetId ( _gpib_addr ) ;
 	}
 
-    	if ( 0 == _gpib_id )
-    	{
+    if ( 0 == _gpib_id )
+    {
 		DevLogErr ( _nid, 'Invalid GPIB identifier' ) ; 
 		abort ( ) ;
-    	}
+    }
 
-
+	write(*, "ID: ", _gpib_id);
 
 
 	/* predispongo il controllo in remoto */
