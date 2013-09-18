@@ -1145,9 +1145,9 @@ public class MdsDataProvider
             case Descriptor.DTYPE_CSTRING:
                 if ( (desc.status & 1) == 0)
                     error = desc.error;
-                return null;
-        }
-        return null;
+                 throw new IOException(error);
+       }
+       throw new IOException(error);
     }
 
     public synchronized String ErrorString()
@@ -1215,14 +1215,14 @@ public class MdsDataProvider
                     return new String(desc.byte_data);
                 case Descriptor.DTYPE_FLOAT:
                     error = "Cannot convert a float to string";
-                    return null;
+                    throw new IOException(error);
                 case Descriptor.DTYPE_CSTRING:
                     if ( (desc.status & 1) == 1)
                         return desc.strdata;
                     else
                         return (error = desc.error);
             }
-            return null;
+           throw new IOException("Unexpected descriptor");
         }
         else
             return new String(in.getBytes(), 1, in.length() - 2);
@@ -1528,21 +1528,21 @@ public class MdsDataProvider
         //To shot evaluation don't execute check
         //if a pulse file is open
         CheckConnection();
-        try
+        //try
         {
 
             return GetLongArray(in);
         }
-        catch (Exception exc)
+ /*       catch (Exception exc)
         {
             return null;
         }
-    }
+*/    }
 
     public int[] GetIntArray(String in) throws IOException
     {
         if (!CheckOpen())
-            return null;
+            throw new IOException("Tree not open");
         return GetIntegerArray(in);
     }
 
@@ -1577,14 +1577,13 @@ public class MdsDataProvider
             case Descriptor.DTYPE_CSTRING:
                 if ( (desc.status & 1) == 0)
                     error = desc.error;
-                return null;
+                throw new IOException(error);
             default:
                 error = "Data type code : " + desc.dtype +
                     " not yet supported ";
         }
-
-        return null;
-    }
+        throw new IOException(error);
+     }
 
 
     boolean setResampleLimits(double min, double max, String inY)
@@ -1656,12 +1655,12 @@ public class MdsDataProvider
             case Descriptor.DTYPE_CSTRING:
                 if ( (desc.status & 1) == 0)
                     error = desc.error;
-                return null;
+                throw new IOException(error);
             default:
                 error = "Data type code : " + desc.dtype +
                     " not yet supported ";
         }
-        return null;
+        throw new IOException(error);
     }
 
     public synchronized void Dispose()
