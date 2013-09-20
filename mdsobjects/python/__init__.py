@@ -34,4 +34,3 @@ try:
   from tdicompile import tdiCompile,compileFile
 except:
   pass
-#from builtins import *

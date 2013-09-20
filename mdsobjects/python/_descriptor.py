@@ -8,7 +8,7 @@ from ident import Ident
 from apd import Apd,Dictionary,List
 from compound import *
 from _mdsshr import MdsGetMsg,MdsDecompress,MdsFree1Dx,MdsCopyDxXd
-from builtins import Builtin
+from tdibuiltins import Builtin
 import numpy as _N
 
 import ctypes as _C
