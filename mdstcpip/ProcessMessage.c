@@ -86,6 +86,7 @@ static int lock_file(int fd, _int64 offset,  int size, int mode_in, int *deleted
   flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
   flock_info.l_len = (mode == 0) ? 0 : size;
   status = (fcntl(fd,nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+  if (!(status & 1)) perror("Error in lock_file");
   fstat(fd, &stat);
   *deleted = stat.st_nlink <= 0;
 #endif
@@ -711,6 +712,7 @@ Message *ProcessMessage(Connection *c, Message *message) {
 #endif
         if (nbytes > 0) {
           DESCRIPTOR_A(ans_d,1,DTYPE_B,0,0);
+          if (nbytes != num) perror("READ_K wrong byte count");
           ans_d.pointer=buf;
           ans_d.arsize=nbytes;
           ans = BuildResponse(c->client_type, c->message_id, 1,(struct descriptor *)&ans_d);
@@ -729,6 +731,8 @@ Message *ProcessMessage(Connection *c, Message *message) {
 	TreePerfWrite(nbytes);
 #endif
         ans_d.pointer = (char *)&nbytes;
+        if (nbytes != (size_t)message->h.dims[0])
+	   perror("WRITE_K wrong byte count");
         ans = BuildResponse(c->client_type, c->message_id, 1,(struct descriptor *)&ans_d);
 	break;
       }
@@ -807,6 +811,7 @@ Message *ProcessMessage(Connection *c, Message *message) {
 	lock_file(fd, offset, num, 1, &deleted);
       	lseek(fd,offset,SEEK_SET);
       	nbytes = read(fd,buf,num);
+        if (nbytes != num) perror("READ_X wrong byte count");
 #ifdef USE_PERF
 	TreePerfRead(nbytes);
 #endif
