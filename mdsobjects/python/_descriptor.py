@@ -221,7 +221,7 @@ class descriptor(_C.Structure):
                 try:
                     x=_C.c_ushort(value.opcode)
                 except:
-                    print "Wrong opcode! ",type(value.opcode),value.opcode
+                    print("Wrong opcode! ",type(value.opcode),value.opcode)
                 c_d.pointer=_C.cast(_C.pointer(_C.c_ushort(value.opcode)),_C.POINTER(descriptor))
             arglist=list()
             for i in range(len(value.args)):

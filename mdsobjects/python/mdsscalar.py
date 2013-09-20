@@ -4,7 +4,7 @@ from _mdsdtypes import *
 
 def makeScalar(value):
     if isinstance(value,str):
-	return String(value)
+        return String(value)
     if isinstance(value,Scalar):
         return copy.deepcopy(value)
     if isinstance(value,numpy.generic):
@@ -216,12 +216,12 @@ class String(Scalar):
     def __str__(self):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
-	if len(self._value) > 0:
+        if len(self._value) > 0:
             return self.value.tostring()
         else:
             return ''
     def __len__(self):
-	return len(str(self))
+        return len(str(self))
     def decompile(self):
         if len(self._value) > 0:
             return repr(self._value.tostring())

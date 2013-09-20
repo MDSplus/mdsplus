@@ -202,8 +202,8 @@ def TreeFindNodeWild(tree, wild, *usage):
         usage_mask=0xFFFF
     else :
         try:
-	    usage_mask=0
-	    for u in usage:
+            usage_mask=0
+            for u in usage:
                 usage_mask |= 1 << usage_table[u.upper()]
         except KeyError:
             raise TreeException('Invalid usage must be one of: %s' % (str(usage_table.keys()),))

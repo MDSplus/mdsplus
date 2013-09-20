@@ -93,7 +93,7 @@ def TdiDecompile(value):
     if (status & 1 != 0):
         try:
             return str(xd.value.value)
-        except Exception,e:
+        except Exception:
             return str(xd.value.value)
     else:
         raise TdiException(MdsGetMsg(status,"Error decompiling value"))
