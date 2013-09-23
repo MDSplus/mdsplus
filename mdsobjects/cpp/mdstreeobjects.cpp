@@ -1138,8 +1138,8 @@ TreeNode **TreeNode::getDescendants(int *numDescendants)
 
 	int retLen = sizeof(int) * (numMembers+nChildren);
 	struct nci_itm nciList1[] = 
-		{{4, NciMEMBER_NIDS, &childrenNids[0], &retLen},
-		{4, NciCHILDREN_NIDS, &childrenNids[numMembers], &retLen},
+		{{sizeof(int) * numMembers, NciMEMBER_NIDS, &childrenNids[0], &retLen},
+		{sizeof(int) * nChildren, NciCHILDREN_NIDS, &childrenNids[numMembers], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
 	status = _TreeGetNci(tree->getCtx(), nid, nciList);
@@ -1215,7 +1215,7 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 
 	int retLen = sizeof(int) * (nMembers);
 	struct nci_itm nciList1[] = 
-		{{4, NciMEMBER_NIDS, &memberNids[0], &retLen},
+		{{retLen, NciMEMBER_NIDS, &memberNids[0], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
 	status = _TreeGetNci(tree->getCtx(), nid, nciList);
