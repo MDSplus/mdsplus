@@ -10,8 +10,7 @@ JAVA_APS = javamds \
 	   javadispatcher \
 	   javadevices \
 	   javaclient \
-	   mdsobjects/java \
-           mdsobjects/cpp
+	   mdsobjects/java 
 
 MOTIF_APS = xmdsshr \
 	    actions \
@@ -49,6 +48,7 @@ PARTS = \
         mdsmisc \
 	scripts \
 	rpm \
+	mdsobjects/cpp \
         manpages \
         @D3D_PACKAGE@ \
         @JAVA_APS@ \
