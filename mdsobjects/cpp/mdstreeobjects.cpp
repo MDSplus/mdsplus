@@ -1177,10 +1177,10 @@ TreeNode **TreeNode::getChildren(int *numChildren)
 
 	int retLen = sizeof(int) * (nChildren);
 	struct nci_itm nciList1[] = 
-		{{4, NciCHILDREN_NIDS, &childrenNids[0], &retLen},
+		{{retLen, NciCHILDREN_NIDS, &childrenNids[0], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = _TreeGetNci(tree->getCtx(), nid, nciList);
+	status = _TreeGetNci(tree->getCtx(), nid, nciList1);
 	if(!(status & 1))
 	{
 		delete [] childrenNids;
