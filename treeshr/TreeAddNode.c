@@ -780,6 +780,8 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
 		(*dblist)->modified = 0;
         status = TreeFAILURE;
       }
+      if (nfilenam)
+        free(nfilenam);
     }
   }
   return status;
