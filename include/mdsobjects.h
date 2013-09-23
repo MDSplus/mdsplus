@@ -770,14 +770,14 @@ protected:
 	{
 	friend Data *MDSplus::deserialize(Data *serializedData);
 	public:
-		Uint8Array(char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint8Array(unsigned char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific(data, 1, DTYPE_BU, nData);
+			setSpecific((char *)data, 1, DTYPE_BU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint8Array(char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint8Array(unsigned char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific(data, 1, DTYPE_BU, nDims, dims);
+			setSpecific((char *)data, 1, DTYPE_BU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 		Data* deserialize();
@@ -800,12 +800,12 @@ protected:
 	class Uint16Array: public Array
 	{
 	public:
-		Uint16Array(short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint16Array(unsigned short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 2, DTYPE_WU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint16Array(short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint16Array(unsigned short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 2, DTYPE_WU, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -828,12 +828,12 @@ protected:
 	class Uint32Array: public Array
 	{
 	public:
-		Uint32Array(int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint32Array(unsigned int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, sizeof(int), DTYPE_LU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint32Array(int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint32Array(unsigned int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, sizeof(int), DTYPE_LU, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -856,12 +856,12 @@ protected:
 	class Uint64Array: public Array
 	{
 	public:
-		Uint64Array(_int64 *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(unsigned _int64 *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 8, DTYPE_QU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint64Array(_int64 *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(unsigned _int64 *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 8, DTYPE_QU, nDims, dims);
 			setAccessory(units, error, help, validation);

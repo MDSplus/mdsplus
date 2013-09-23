@@ -379,7 +379,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new Int8Array((char *)ptr, nDims, retDims);
 				break;
 			case DTYPE_UCHAR_IP:
-				resData = new Uint8Array((char *)ptr, nDims, retDims);
+				resData = new Uint8Array((unsigned char *)ptr, nDims, retDims);
 				break;
 			case DTYPE_SHORT_IP:
 				resData = new Int16Array((short *)ptr, nDims, retDims);
@@ -388,13 +388,13 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new Int32Array((int *)ptr, nDims, retDims);
 				break;
 			case DTYPE_ULONG_IP:
-				resData = new Uint32Array((int *)ptr, nDims, retDims);
+				resData = new Uint32Array((unsigned int *)ptr, nDims, retDims);
 				break;
 			case DTYPE_LONGLONG_IP:
 				resData = new Int64Array((_int64 *)ptr, nDims, retDims);
 				break;
 			case DTYPE_ULONGLONG_IP:
-				resData = new Uint64Array((_int64 *)ptr, nDims, retDims);
+				resData = new Uint64Array((unsigned _int64 *)ptr, nDims, retDims);
 				break;
 			case DTYPE_FLOAT_IP:
 				resData = new Float32Array((float *)ptr, nDims, retDims);
@@ -565,7 +565,7 @@ void GetMany::execute()
 	int serSize;
 	char *ser = serialize(&serSize);
 
-	Data *serData = new Uint8Array(ser, serSize);
+	Data *serData = new Uint8Array((unsigned char *)ser, serSize);
 	Data *serEvalRes = (Uint8Array *)conn->get("GetManyExecute($)", &serData, 1);
 	delete [] ser;
 	deleteData(serData);
@@ -688,7 +688,7 @@ void PutMany::execute()
 	int serSize;
 	char *ser = serialize(&serSize);
 
-	Data *serData = new Uint8Array(ser, serSize);
+	Data *serData = new Uint8Array((unsigned char *)ser, serSize);
 	Data *serEvalRes = (Uint8Array *)conn->get("PutManyExecute($)", &serData, 1);
 	delete [] ser;
 	deleteData(serData);
