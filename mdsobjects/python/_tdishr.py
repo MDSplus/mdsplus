@@ -92,7 +92,7 @@ def TdiDecompile(value):
         Tree.unlock()
     if (status & 1 != 0):
         try:
-            return str(xd.value.value)
+            return str(xd.value)
         except Exception:
             return str(xd.value.value)
     else:

@@ -217,7 +217,7 @@ class String(Scalar):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
         if len(self._value) > 0:
-            return self.value.tostring()
+            return str(self.value.tostring().decode())
         else:
             return ''
     def __len__(self):

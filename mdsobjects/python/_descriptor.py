@@ -103,7 +103,7 @@ class descriptor(_C.Structure):
                 self.pointer=_C.cast(_C.pointer(_C.c_long(value)),_C.POINTER(descriptor))
                 self.addToCache(value)
                 return
-        if isinstance(value,str) or isinstance(value,unicode):
+        if isinstance(value,str) or ('unicode' in dir(__builtins__) and isinstance(value,unicode)):
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
             self.length=d.length
@@ -345,7 +345,7 @@ class descriptor(_C.Structure):
                 if self.length == 0:
                     return makeScalar('')
                 else:
-                    return(makeScalar(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring()))
+                    return(makeScalar(str(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring().decode())))
             if (self.dtype == DTYPE_FSC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
                 return makeScalar(_N.complex64(complex(ans[0],ans[1])))

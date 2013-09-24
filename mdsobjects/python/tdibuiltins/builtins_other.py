@@ -1,4 +1,4 @@
-from builtin import Builtin
+from tdibuiltins.builtin import Builtin
 
 class dPLACEHOLDER(Builtin):
     min_args=0
@@ -2968,8 +2968,8 @@ class MAKE_OPAQUE(Builtin):
     opcode=455
 MAKE_OPAQUE.__name__='MAKE_OPAQUE'
 
-c=None
-for c in globals().values():
+globs=list(globals().values())
+for c in globs:
     if hasattr(c,'__name__') and hasattr(c,'name'):
         try:
             del globals()[c.__name__]

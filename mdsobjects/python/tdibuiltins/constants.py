@@ -1,8 +1,5 @@
-from builtin import Builtin
-try:
-  from ..mdsscalar import Float32 as _Float32, Complex64 as _Complex64
-except:
-  from mdsscalar import Float32 as _Float32, Complex64 as _Complex64
+from tdibuiltins.builtin import Builtin
+from mdsscalar import Float32 as _Float32, Complex64 as _Complex64
 
 """TDI Constant evaluation such as $A0,$PI etc..."""
 
@@ -214,8 +211,8 @@ class dTRUE(_constant):
     def evaluate(self):
         return True
 
-c=None
-for c in globals().values():
+globs=list(globals().values())
+for c in globs:
     if hasattr(c,'__name__') and hasattr(c,'name'):
         del globals()[c.__name__]
         globals()[c.name]=c
