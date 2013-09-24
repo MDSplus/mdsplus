@@ -378,7 +378,10 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
   {
     int old_get = df_ptr->get; 
     size_t len = strlen(info->filespec)-4;
-    char *filename = strncpy(malloc(len+20),info->filespec,len);
+    size_t const filename_length = len + 20;
+    char filename[filename_length];
+//    char *filename = strncpy(malloc(len+20),info->filespec,len);
+    strncpy(filename,info->filespec,len);
     filename[len]='\0';
     strcat(filename,tmpfile ? "datafile#" : "datafile");
     df_ptr->get = MDS_IO_OPEN(filename,tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
