@@ -267,6 +267,7 @@ fi
 
 FORLD=ld
 LD=ld
+GCCLIB=""
 LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
@@ -546,7 +547,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin10*) echo "Configuring for MacOS X lion 10";
-       GCCLIB=""
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
@@ -694,7 +694,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPE=".so";;
 esac
 
-GCCLIB="`$CC -print-libgcc-file-name 2> /dev/null`";
+#GCCLIB="`$CC -print-libgcc-file-name 2> /dev/null`";
 
 dnl see if we have libdc1394 libraries and what version
 AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
