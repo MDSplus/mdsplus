@@ -458,10 +458,48 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 	return xdPtr;
 }
 
+ void * convertToByteUnsigned(void *dsc)
+{
+	int status;
+	unsigned short opcode = OpcByteUnsigned;
+	DESCRIPTOR_FUNCTION(funD, &opcode, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
  void * convertToShort(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcWord;
+	DESCRIPTOR_FUNCTION(funD, &opcode, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
+ void * convertToShortUnsigned(void *dsc)
+{
+	int status;
+	unsigned short opcode = OpcWordUnsigned;
 	DESCRIPTOR_FUNCTION(funD, &opcode, 1);
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	EMPTYXD(emptyXd);
@@ -496,10 +534,47 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 	return xdPtr;
 }
 
+void * convertToIntUnsigned(void *dsc)
+{
+	int status;
+	unsigned short opcode = OpcLongUnsigned;
+	DESCRIPTOR_FUNCTION(funD, &opcode, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+
  void * convertToLong(void *dsc)
 {
 	int status;
 	unsigned short opcode = OpcQuadword;
+	DESCRIPTOR_FUNCTION(funD, &opcode, 1);
+	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
+	EMPTYXD(emptyXd);
+
+	*xdPtr = emptyXd;
+	funD.arguments[0] = dsc;
+	status = TdiData(&funD, xdPtr MDS_END_ARG);
+	if(!(status & 1))
+	{
+		free((char *)xdPtr);
+		return 0;
+	}
+	return xdPtr;
+}
+ void * convertToLongUnsigned(void *dsc)
+{
+	int status;
+	unsigned short opcode = OpcQuadwordUnsigned;
 	DESCRIPTOR_FUNCTION(funD, &opcode, 1);
 	struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
 	EMPTYXD(emptyXd);

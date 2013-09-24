@@ -285,6 +285,14 @@ protected:
 		virtual _int64 * getLongArray(int *numElements);
 
 		virtual float * getFloatArray(int *numElements);
+		virtual unsigned char *getByteUnsignedArray(int *numElements);
+		virtual unsigned short *getShortUnsignedArray(int *numElements);
+		virtual unsigned int *getIntUnsignedArray(int *numElements);
+#ifdef HAVE_WINDOWS_H
+		virtual unsigned _int64 *getLongUnsignedArray(int *numElements);
+#else
+		virtual _int64u *getLongUnsignedArray(int *numElements);
+#endif
 
 		virtual double * getDoubleArray(int *numElements);
 		virtual char ** getStringArray(int *numElements)
@@ -746,6 +754,14 @@ protected:
 		short *getShortArray(int *numElements);
 		int *getIntArray(int *numElements);
 		_int64 *getLongArray(int *numElements);
+		unsigned char *getByteUnsignedArray(int *numElements);
+		unsigned short *getShortUnsignedArray(int *numElements);
+		unsigned int *getIntUnsignedArray(int *numElements);
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 *getLongUnsignedArray(int *numElements);
+#else
+		_int64u *getLongUnsignedArray(int *numElements);
+#endif
 		float *getFloatArray(int *numElements);
 		double *getDoubleArray(int *numElements);
 		virtual char **getStringArray(int *numElements);
