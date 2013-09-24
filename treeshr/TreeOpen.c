@@ -1223,7 +1223,9 @@ int TreeReopenNci(struct tree_info *info) {
 int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 {
   TREE_INFO *info;
-  char     *tree = malloc(strlen(tree_in)+1);
+  size_t const treesize = strlen(tree_in) + 1;
+  char     tree[treesize];
+//  char     *tree = malloc(strlen(tree_in)+1);
   int       shot;
   int       status = TreeFAILURE;
 
