@@ -856,6 +856,19 @@ protected:
 	class Uint64Array: public Array
 	{
 	public:
+#ifdef HAVE_WINDOWS_H
+		Uint64Array(unsigned _int64 *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		{
+			setSpecific((char *)data, 8, DTYPE_QU, nData);
+			setAccessory(units, error, help, validation);
+		}
+		Uint64Array(unsigned _int64 *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		{
+			setSpecific((char *)data, 8, DTYPE_QU, nDims, dims);
+			setAccessory(units, error, help, validation);
+		}
+	};
+#else
 		Uint64Array(_int64u *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 8, DTYPE_QU, nData);
@@ -867,6 +880,7 @@ protected:
 			setAccessory(units, error, help, validation);
 		}
 	};
+#endif
 	class Float32Array: public Array
 	{
 	public:
