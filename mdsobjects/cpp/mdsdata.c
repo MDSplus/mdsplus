@@ -271,7 +271,7 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 			{
 				ARRAY_COEFF(char , 64) *arrDscPtr;
 				if(isCa)
-					arrDscPtr = caXd.pointer;
+					arrDscPtr = (void *)caXd.pointer;
 				else
 					arrDscPtr = (void *)dscPtr;
 				if(arrDscPtr->dimct > 1)
