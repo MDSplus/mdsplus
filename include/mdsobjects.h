@@ -856,12 +856,12 @@ protected:
 	class Uint64Array: public Array
 	{
 	public:
-		Uint64Array(unsigned _int64 *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(_int64u *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 8, DTYPE_QU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint64Array(unsigned _int64 *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(_int64u *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific((char *)data, 8, DTYPE_QU, nDims, dims);
 			setAccessory(units, error, help, validation);

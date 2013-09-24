@@ -87,7 +87,7 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 		case DTYPE_L: return new Int32Array((int *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_LU: return new Uint32Array((unsigned int *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_Q: return new Int64Array((_int64 *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
-		case DTYPE_QU: return new Uint64Array((unsigned _int64 *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
+		case DTYPE_QU: return new Uint64Array((_int64u *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_T: return new StringArray((char *)ptr, dims[0], length);
