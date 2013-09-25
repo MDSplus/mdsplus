@@ -4450,7 +4450,7 @@ DLLEXPORT void mdsplus_uint8array_constructor(void **lvUint8ArrayPtrOut, const L
 DLLEXPORT void mdsplus_uint8array_constructor_dims(void **lvUint8ArrayPtrOut, const LUByteArrHdl lvUByteArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
 {
 	Uint8Array *uint8ArrayPtrOut = NULL;
-	char *uint8Arr = NULL;
+	unsigned char *uint8Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
@@ -4458,9 +4458,9 @@ DLLEXPORT void mdsplus_uint8array_constructor_dims(void **lvUint8ArrayPtrOut, co
 	try
 	{
 		int uint8ArrLen = static_cast<int>((*lvUByteArrHdlIn)->dimSize);
-		uint8Arr = new char[uint8ArrLen];
+		uint8Arr = new unsigned char[uint8ArrLen];
 		for (int i = 0; i < uint8ArrLen; i++)
-			uint8Arr[i] = static_cast<char>((*lvUByteArrHdlIn)->elt[i]);
+			uint8Arr[i] = static_cast<unsigned char>((*lvUByteArrHdlIn)->elt[i]);
 		int intArrLen = static_cast<int>((*lvIntArrHdlIn)->dimSize);
 		intArr = new int[intArrLen];
 		for (int i = 0; i < intArrLen; i++)
