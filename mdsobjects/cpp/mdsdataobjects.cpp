@@ -466,6 +466,83 @@ _int64 Data::getLong()
 	return res;
 }
 
+unsigned char Data::getByteUnsigned()
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToByte(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_S)
+		throw new MdsException("Cannot convert to Byte");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	unsigned char res = retData->getByteUnsigned();
+	deleteData(retData);
+	return res;
+}
+
+unsigned short Data::getShortUnsigned()
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToShort(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_S)
+		throw new MdsException("Cannot convert to Short");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	unsigned short res = retData->getShortUnsigned();
+	deleteData(retData);
+	return res;
+}
+
+unsigned int Data::getIntUnsigned()
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToInt(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_S)
+		throw new MdsException("Cannot convert to Int");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	unsigned int res = retData->getIntUnsigned();
+	deleteData(retData);
+	return res;
+}
+#ifdef HAVE_WINDOWS_H
+unsigned _int64 Data::getLongUnsigned()
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToLong(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_S)
+		throw new MdsException("Cannot convert to Long");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	unsigned _int64 res = retData->getLongUnsigned();
+	deleteData(retData);
+	return res;
+}
+#else
+_int64u Data::getLongUnsigned()
+{
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToLong(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != CLASS_S)
+		throw new MdsException("Cannot convert to Long");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+	
+	_int64u res = retData->getLongUnsigned();
+	deleteData(retData);
+	return res;
+}
+#endif
+
+
 float Data::getFloat()
 {
 	void *dscPtr = convertToDsc();
