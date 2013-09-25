@@ -272,6 +272,14 @@ protected:
 		virtual short getShort();
 		virtual int getInt();
 		virtual _int64 getLong();
+		virtual unsigned char getByteUnsigned(); 
+		virtual unsigned short getShortUnsigned();
+		virtual unsigned int getIntUnsigned();
+#ifdef HAVE_WINDOWS_H
+		virtual unsigned _int64 getLongUnsigned();
+#else
+		virtual _int64u getLongUnsigned();
+#endif
 		virtual float getFloat();
 		virtual double getDouble(); 
 		virtual char * getString(){return decompile();}
@@ -420,6 +428,14 @@ protected:
 		short getShort() {return (short)ptr[0];}
 		int getInt() {return (int)ptr[0];}
 		_int64 getLong() {return (_int64)ptr[0];}
+		unsigned char getByteUnsigned() {return (unsigned char)ptr[0];}
+		unsigned short getShortUnsigned() {return (unsigned short)ptr[0];}
+		unsigned int getIntUnsigned() {return (unsigned int)ptr[0];}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)ptr[0];}
+#else
+		_int64u getLongUnsigned() {return (_int64u)ptr[0];}
+#endif
 		float getFloat() {return (float)ptr[0];}
 		double getDouble() {return (double)ptr[0];}
 	};
@@ -440,6 +456,14 @@ protected:
 		short getShort() {return (short)ptr[0];}
 		int getInt() {return (int)ptr[0];}
 		_int64 getLong() {return (_int64)ptr[0];}
+		unsigned char getByteUnsigned() {return (unsigned char)ptr[0];}
+		unsigned short getShortUnsigned() {return (unsigned short)ptr[0];}
+		unsigned int getIntUnsigned() {return (unsigned int)ptr[0];}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)ptr[0];}
+#else
+		_int64u getLongUnsigned() {return (_int64u)ptr[0];}
+#endif
 		float getFloat() {return (float)ptr[0];}
 		double getDouble() {return (double)ptr[0];}
 	};
@@ -461,6 +485,14 @@ protected:
 		short getShort() {return (short)(*(short *)ptr);}
 		int getInt() {return (int)(*(short *)ptr);}
 		_int64 getLong() {return (_int64)(*(short *)ptr);}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(short *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(short *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(short *)ptr);}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)(*(short *)ptr);}
+#else
+		_int64u getLongUnsigned() {return (_int64u)(*(short *)ptr);}
+#endif
 		float getFloat() {return (float)(*(short *)ptr);}
 		double getDouble() {return (double)(*(short *)ptr);}
 	};
@@ -481,6 +513,14 @@ protected:
 		short getShort() {return (short)(*(short *)ptr);}
 		int getInt() {return (int)(*(short *)ptr);}
 		_int64 getLong() {return (_int64)(*(short *)ptr);}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned short *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned short *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned short *)ptr);}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)(*(unsigned short *)ptr);}
+#else
+		_int64u getLongUnsigned() {return (_int64u)(*(unsigned short *)ptr);}
+#endif
 		float getFloat() {return (float)(*(short *)ptr);}
 		double getDouble() {return (double)(*(short *)ptr);}
 	};
@@ -501,6 +541,14 @@ protected:
 		short getShort() {return (short)(*(int *)ptr);}
 		int getInt() {return (int)(*(int *)ptr);}
 		_int64 getLong() {return (_int64)(*(int *)ptr);}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(int *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(int *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(int *)ptr);}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)(*(int *)ptr);}
+#else
+		_int64u getLongUnsigned() {return (_int64u)(*(int *)ptr);}
+#endif
 		float getFloat() {return (float)(*(int *)ptr);}
 		double getDouble() {return (double)(*(int *)ptr);}
 	};
@@ -521,6 +569,14 @@ protected:
 		short getShort() {return (short)(*(int *)ptr);}
 		int getInt() {return (int)(*(int *)ptr);}
 		_int64 getLong() {return (_int64)(*(int *)ptr);}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned int *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned int *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned int *)ptr);}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)(*(unsigned int *)ptr);}
+#else
+		_int64u getLongUnsigned() {return (_int64u)(*(unsigned int *)ptr);}
+#endif
 		float getFloat() {return (float)(*(int *)ptr);}
 		double getDouble() {return (double)(*(int *)ptr);}
 	};
@@ -541,6 +597,14 @@ protected:
 		short getShort() {return (short)(*(_int64 *)ptr);}
 		int getInt() {return (int)(*(_int64 *)ptr);}
 		_int64 getLong() {return (_int64)(*(_int64 *)ptr);}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(_int64 *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(_int64 *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(_int64 *)ptr);}
+#ifdef HAVE_WINDOWS_H
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)(*(_int64 *)ptr);}
+#else
+		_int64u getLongUnsigned() {return (_int64u)(*(_int64 *)ptr);}
+#endif
 		float getFloat() {return (float)(*(_int64 *)ptr);}
 		double getDouble() {return (double)(*(_int64 *)ptr);}
 	};
@@ -559,6 +623,10 @@ protected:
 			*(unsigned _int64 *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned _int64 *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned _int64 *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned _int64 *)ptr);}
+		unsigned _int64 getLongUnsigned() {return (unsigned _int64)(*(unsigned _int64 *)ptr);}
 #else
 		Uint64(_int64u val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
@@ -569,6 +637,10 @@ protected:
 			*(_int64u *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
+		unsigned char getByteUnsigned() {return (unsigned char)(*(_int64u *)ptr);}
+		unsigned short getShortUnsigned() {return (unsigned short)(*(_int64u *)ptr);}
+		unsigned int getIntUnsigned() {return (unsigned int)(*(_int64u *)ptr);}
+		_int64u getLongUnsigned() {return (_int64u)(*(_int64u *)ptr);}
 #endif
 		char getByte() {return (char)(*(_int64 *)ptr);}
 		short getShort() {return (short)(*(_int64 *)ptr);}
