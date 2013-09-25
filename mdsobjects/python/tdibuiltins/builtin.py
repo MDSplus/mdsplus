@@ -1,7 +1,4 @@
-try:
-    from ..compound import Function as _Function
-except:
-    from compound import Function as _Function
+from compound import Function as _Function
 
 class Builtin(_Function):
     _dtype=199

@@ -1,7 +1,6 @@
 from mdsdata import Data,makeData
 from _mdsdtypes import *
 
-
 class Compound(Data):
     def __init__(self,*args, **params):
         """MDSplus compound data.
@@ -130,19 +129,19 @@ class Compound(Data):
         """Return argument at index idx (indexes start at 0)
         @rtype: Data,None
         """
-        return super(type(self),self).__getitem__(idx+self._argOffset)
+        return Compound.__getitem__(self,idx+self._argOffset)
     
     def getArguments(self):
         """Return arguments
         @rtype: Data,None
         """
-        return super(type(self),self).__getitem__(slice(self._argOffset,None))
+        return Compound.__getitem__(self,slice(self._argOffset,None))
 
     def getDescAt(self,idx):
         """Return descriptor with index idx (first descriptor is 0)
         @rtype: Data
         """
-        return super(type(self),self).__getitem__(idx)
+        return Compound.__getitem__(self,idx)
 
     def getDescs(self):
         """Return descriptors or None if no descriptors
@@ -183,69 +182,74 @@ class Compound(Data):
 class MetaClass(type):
 
     def __new__(meta,classname,bases,classDict):
-        newClassDict=classDict
-        newClassDict['_fields']=dict()
-        idx=0
-        if 'fields' in classDict:
-            for f in classDict['fields']:
-                name=f[0:1].upper()+f[1:]
-                exec ("def get"+name+"(self): return self.__getattr__('"+f+"')")
-                exec ("newClassDict['get'+name]=get"+name)
-                newClassDict['get'+name].__doc__='Get the '+f+' field\n@rtype: Data'
-                exec ('def set'+name+'(self,value): return self.__setattr__("'+f+'",value)')
-                exec ("newClassDict['set'+name]=set"+name)
-                newClassDict['set'+name].__doc__='Set the '+f+' field\n@type value: Data\n@rtype: None'
-                exec ("newClassDict['_dtype']=DTYPE_"+classname.upper())
-                newClassDict['_fields'][f]=idx
-                idx=idx+1
-        c=type.__new__(meta,classname,bases,newClassDict)
+        if len(classDict)==0:
+            classDict=dict(bases[0].__dict__)
+            newClassDict=classDict
+            newClassDict['_fields']=dict()
+            idx=0
+            if 'fields' in classDict:
+                for f in classDict['fields']:
+                    name=f[0:1].upper()+f[1:]
+                    exec ("def get"+name+"(self): return self.__getattr__('"+f+"')")
+                    exec ("newClassDict['get'+name]=get"+name)
+                    newClassDict['get'+name].__doc__='Get the '+f+' field\n@rtype: Data'
+                    exec ('def set'+name+'(self,value): return self.__setattr__("'+f+'",value)')
+                    exec ("newClassDict['set'+name]=set"+name)
+                    newClassDict['set'+name].__doc__='Set the '+f+' field\n@type value: Data\n@rtype: None'
+                    exec ("newClassDict['_dtype']=DTYPE_"+classname.upper())
+                    newClassDict['_fields'][f]=idx
+                    idx=idx+1
+                c=type.__new__(meta,classname,bases,newClassDict)
+        else:
+            c=type.__new__(meta,classname,bases,classDict)
         return c
 
-class Action(Compound):
+class _Action(Compound):
     """
-    An Action is used for describing an operation to be performed by an MDSplus action server. Actions are typically dispatched using the mdstcl DISPATCH command
+    An Action is used for describing an operation to be performed by an
+    MDSplus action server. Actions are typically dispatched using the 
+    mdstcl DISPATCH command
     """
     fields=('dispatch','task','errorLog','completionMessage','performance')
-    __metaclass__=MetaClass
+Action=MetaClass('Action',(_Action,),{})
     
-class Call(Compound):
+class _Call(Compound):
     """
     A Call is used to call routines in shared libraries.
     """
     fields=('image','routine')
     _opcode_name='retType'
-    __metaclass__=MetaClass
+Call=MetaClass('Call',(_Call,),{})
     
-class Conglom(Compound):
+class _Conglom(Compound):
     """A Conglom is used at the head of an MDSplus conglomerate. A conglomerate is a set of tree nodes used
     to define a device such as a piece of data acquisition hardware. A conglomerate is associated with some
     external code providing various methods which can be performed on the device. The Conglom class contains
     information used for locating the external code.
     """
     fields=('image','model','name','qualifiers')
-    __metaclass__=MetaClass
-    
-class Dependency(Compound):
+Conglom=MetaClass('Conglom',(_Conglom,),{})
+
+class _Dependency(Compound):
     """A Dependency object is used to describe action dependencies. This is a legacy class and may not be recognized by
     some dispatching systems
     """
     fields=('arg1','arg2')
-    __metaclass__=MetaClass
+Dependency=MetaClass('Dependency',(_Dependency,),{})
     
-class Dimension(Compound):
+class _Dimension(Compound):
     """A dimension object is used to describe a signal dimension, typically a time axis. It provides a compact description
     of the timing information of measurements recorded by devices such as transient recorders. It associates a Window
     object with an axis. The axis is generally a range with possibly no start or end but simply a delta. The Window
     object is then used to bracket the axis to resolve the appropriate timestamps.
     """
     fields=('window','axis')
-    __metaclass__=MetaClass
+Dimension=MetaClass('Dimension',(_Dimension,),{})
 
-class Dispatch(Compound):
+class _Dispatch(Compound):
     """A Dispatch object is used to describe when an where an action should be dispatched to an MDSplus action server.
     """
     fields=('ident','phase','when','completion')
-    __metaclass__=MetaClass
 
     def __init__(self,*args,**kwargs):
         if 'dispatch_type' not in kwargs:
@@ -254,13 +258,13 @@ class Dispatch(Compound):
         super(Dispatch,self).__init__(args=args,params=kwargs)
         if self.completion is None:
            self.completion = None
+Dispatch=MetaClass('Dispatch',(_Dispatch,),{})
     
-class Function(Compound):
+class _Function(Compound):
     """A Function object is used to reference builtin MDSplus functions. For example the expression 1+2
     is represented in as Function instance created by Function(opcode='ADD',args=(1,2))
     """
     fields=tuple()
-    __metaclass__=MetaClass
     
     def __init__(self,opcode,args):
         """Create a compiled MDSplus function reference.
@@ -313,25 +317,26 @@ class Function(Compound):
 #            return opc(opcode.number,*args)
 #    else:
 #        return opc('BUILD_CALL',None,*args)
+Function=MetaClass('Function',(_Function,),{})
 
-class Method(Compound):
+class _Method(Compound):
     """A Method object is used to describe an operation to be performed on an MDSplus conglomerate/device
     """
     fields=('timeout','method','object')
-    __metaclass__=MetaClass
+Method=MetaClass('Method',(_Method,),{})
     
-class Procedure(Compound):
+class _Procedure(Compound):
     """A Procedure is a deprecated object
     """
     fields=('timeout','language','procedure')
-    __metaclass__=MetaClass
+Procedure=MetaClass('Procedure',(_Procedure,),{})
     
-class Program(Compound):
+class _Program(Compound):
     """A Program is a deprecated object"""
     fields=('timeout','program')
-    __metaclass__=MetaClass
+Program=MetaClass('Program',(_Program,),{})
     
-class Range(Compound):
+class _Range(Compound):
     """A Range describes a ramp. When used as an axis in a Dimension object along with a Window object it can be
     used to describe a clock. In this context it is possible to have missing begin and ending values or even have the
     begin, ending, and delta fields specified as arrays to indicate a multi-speed clock.
@@ -343,20 +348,18 @@ class Range(Compound):
         for arg in self.args:
             parts.append(makeData(arg).decompile())
         return ' : '.join(parts)
-        
-    __metaclass__=MetaClass
+Range=MetaClass('Range',(_Range,),{})
     
-class Routine(Compound):
+class _Routine(Compound):
     """A Routine is a deprecated object"""
     fields=('timeout','image','routine')
-    __metaclass__=MetaClass
+Routine=MetaClass('Routine',(_Routine,),{})
     
-class Signal(Compound):
+class _Signal(Compound):
     """A Signal is used to describe a measurement, usually time dependent, and associated the data with its independent
     axis (Dimensions). When Signals are indexed using s[idx], the index is resolved using the dimension of the signal
     """
     fields=('value','raw')
-    __metaclass__=MetaClass
     
     def _getDims(self):
         return self.getArguments()
@@ -418,8 +421,9 @@ class Signal(Compound):
         @rtype: None
         """
         return self.setArguments(value)
+Signal=MetaClass('Signal',(_Signal,),{})
 
-class Window(Compound):
+class _Window(Compound):
     """A Window object can be used to construct a Dimension object. It brackets the axis information stored in the
     Dimension to construct the independent axis of a signal.
     """
@@ -427,18 +431,15 @@ class Window(Compound):
 
 #    def decompile(self):
 #        return 'Build_Window('+makeData(self.startIdx).decompile()+','+makeData(self.endIdx).decompile()+','+makeData(self.timeAt0)+')'
+Window=MetaClass('Window',(_Window,),{})
 
-    __metaclass__=MetaClass
-
-class Opaque(Compound):
+class _Opaque(Compound):
     """An Opaque object containing a binary uint8 array and a string identifying the type.
     """
     fields=('data','otype')
 
 #    def decompile(self):
 #        return 'Build_Opaque('+makeData(self.data).decompile()+','+makeData(self.otype).decompile()+')'
-
-    __metaclass__=MetaClass
    
     def getImage(self):
       import Image
@@ -461,3 +462,4 @@ class Opaque(Compound):
         f.close()
       return opq
     fromFile=staticmethod(fromFile)
+Opaque=MetaClass('Opaque',(_Opaque,),{})
