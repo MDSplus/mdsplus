@@ -1,5 +1,11 @@
-from tdibuiltins.builtin import Builtin
-from mdsscalar import Float32 as _Float32, Complex64 as _Complex64
+try:
+    from builtin import Builtin
+except:
+    from tdibuiltins.builtin import Builtin
+try:
+    exec("from ..mdsscalar import Float32 as _Float32, Complex64 as _Complex64")
+except:
+    from MDSplus import Float32 as _Float32, Complex64 as _Complex64
 
 """TDI Constant evaluation such as $A0,$PI etc..."""
 

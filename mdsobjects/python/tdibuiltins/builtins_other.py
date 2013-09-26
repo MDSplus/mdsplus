@@ -1,4 +1,7 @@
-from tdibuiltins.builtin import Builtin
+try:
+    from builtin import Builtin
+except:
+    from tdibuiltins.builtin import Builtin
 
 class dPLACEHOLDER(Builtin):
     min_args=0
