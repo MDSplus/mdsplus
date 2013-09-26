@@ -18,7 +18,7 @@ except:
 try:
     from builtin import Builtin
 except:
-    from tdibuiltin.builtin import Builtin
+    from tdibuiltins.builtin import Builtin
 
 def _evaluateArg(arg):
     try:
