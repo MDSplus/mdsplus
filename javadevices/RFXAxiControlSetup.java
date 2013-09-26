@@ -127,6 +127,7 @@ public class RFXAxiControlSetup extends DeviceSetup
         gridLayout1.setColumns(1);
         gridLayout1.setRows(2);
         deviceField2.setOffsetNid(116+12);
+        deviceField2.setOffsetNid(138+1+1);
         deviceField2.setLabelString("Bv_Gain");
         deviceField2.setIdentifier("");
         deviceWave12.setUpdateExpression("");
@@ -182,7 +183,8 @@ public class RFXAxiControlSetup extends DeviceSetup
         deviceWave23.setMinYVisible(true);
         deviceWave23.setOffsetNid(111+24);
         
-        deviceField3.setOffsetNid(117+12+12);
+        //deviceField3.setOffsetNid(117+12+12);
+        deviceField3.setOffsetNid(1+138+2);
         deviceField3.setLabelString("T Start Int. Action");
         deviceField3.setIdentifier("");
         this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
