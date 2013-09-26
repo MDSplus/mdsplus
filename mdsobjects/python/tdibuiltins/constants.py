@@ -5,7 +5,10 @@ except:
 try:
     exec("from ..mdsscalar import Float32 as _Float32, Complex64 as _Complex64")
 except:
-    from MDSplus import Float32 as _Float32, Complex64 as _Complex64
+    try:
+        from mdsscalar import Float32 as _Float32, Complex64 as _Complex64
+    except:
+        from MDSplus.mdsscalar import Float32 as _Float32, Complex64 as _Complex64
 
 """TDI Constant evaluation such as $A0,$PI etc..."""
 

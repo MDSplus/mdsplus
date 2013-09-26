@@ -4,10 +4,16 @@ try:
     exec("from ..mdsdata import makeData as _makeData")
     exec("from ..compound import Signal as _Signal")
 except:
-    from MDSplus.mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32
-    from MDSplus.mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array
-    from MDSplus.mdsdata import makeData as _makeData
-    from MDSplus.compound import Signal as _Signal
+    try:
+        from mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32
+        from mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array
+        from mdsdata import makeData as _makeData
+        from compound import Signal as _Signal
+    except:
+        from MDSplus.mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32
+        from MDSplus.mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array
+        from MDSplus.mdsdata import makeData as _makeData
+        from MDSplus.compound import Signal as _Signal
 
 try:
     from builtin import Builtin
