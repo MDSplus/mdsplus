@@ -113,6 +113,7 @@ class ZELOS2150GV(Device):
         streamPort=c_int(self.device.stream_port.data()) 
         frameTimeInt=0
         prevFrameTime=0
+        totFrameTime=0
         framePeriod = int(self.device.frame_period.data()*1000)
         skipFrameStream=int(float(1/self.device.frame_period.data())/25.0)-1
         print 'skipFrameStream:',skipFrameStream
@@ -128,9 +129,9 @@ class ZELOS2150GV(Device):
           self.kappaLib.kappaGetFrame(self.device.handle, byref(status), frameBuffer)
           if status.value==3:
             print 'get frame timeout!'
-
-          frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
-          frameTotalCounter = frameTotalCounter + 1     #never resetted     
+          else:	
+            frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
+            frameTotalCounter = frameTotalCounter + 1     #never resetted     
 
           if isExternal==0:  #internal clock source -> S.O. timestamp 
              timestamp=datetime.datetime.now()
@@ -145,8 +146,10 @@ class ZELOS2150GV(Device):
                totFrameTime=totFrameTime+deltaT
              if (deltaT<framePeriod) and (deltaT>5):
                time.sleep(float(framePeriod-deltaT)/1000.0)
+          
 
-          if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
+          #if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
+          if( (isStorage==1) and (status.value==1)  ):  #frame complete 
             savestatus=self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0) 
             self.idx = self.idx + 1
             print 'saved frame idx:', self.idx
@@ -370,6 +373,7 @@ class ZELOS2150GV(Device):
         return 0
 
       self.saveInfo()
+
       return 1
 
 ####################trigger###PER ORA NON FUNZIONA

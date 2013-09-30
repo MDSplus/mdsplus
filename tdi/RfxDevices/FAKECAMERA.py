@@ -16,9 +16,13 @@ class FAKECAMERA(Device):
       {'path':':EXP_SHOT', 'type':'text', 'value':'84'},
       {'path':':EXP_NODE', 'type':'text', 'value':'\CAMERATEST::FLIR:FRAMES'},
       {'path':':FRAME_RATE', 'type':'numeric', 'value':25},
-      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
+      {'path':':READ_LOOP', 'type':'text','value':'NO'},
       {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
-      {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},]
+      {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
+      {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},  
+      {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
+      {'path':':STREAM_HILIM', 'type':'numeric', 'value':32767},
+      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
@@ -73,6 +77,18 @@ class FAKECAMERA(Device):
           isStreaming = 0
           isStorage = 1
 
+        infiniteLoop = self.device.read_loop.data()                 #to loop throw finite number of input frames
+
+        autoScale = self.device.stream_autos.data()                 #autoscaling pixel grey depth for streaming operation
+        if autoScale == 'YES':
+          autoScale=c_int(1)
+        else:
+          autoScale=c_int(0)
+
+        lowLim=c_int(self.device.stream_lolim.data())
+        highLim=c_int(self.device.stream_hilim.data())
+        minLim=c_int(0)            
+        maxLim=c_int(32767)   
 
         tcpStreamHandle=c_int(-1)
         frameTime=0
@@ -80,40 +96,55 @@ class FAKECAMERA(Device):
         status=c_int(-1)
         streamPort=c_int(self.device.stream_port.data())
 
-        lowLim=c_int(0)
-        highLim=c_int(32767)
-        framecounter=0
+        framePeriod = int(self.device.frame_rate.data()*1000)
+        skipFrameStream=int(float(self.device.frame_rate.data())/25.0)-1
+        print 'skipFrameStream:',skipFrameStream
+        if(skipFrameStream<0):
+          skipFrameStream=0
+	frameStreamCounter = skipFrameStream
+        frameTotalCounter = 0
+
+        readFrameCounter=1
+        maxFramesToRead=self.FakeCamLib.fakeGetNumFrames(self.device.handle)
 
         while not self.stopReq:
+          if( (infiniteLoop=='YES') and (readFrameCounter == maxFramesToRead-1) ):     #to loop throw a finite num. of frames
+            readFrameCounter=1
 
-          self.FakeCamLib.fakeGetFrame(self.device.handle, byref(status), frameBuffer, c_int(framecounter))	
-          framecounter = framecounter + 1
+          self.FakeCamLib.fakeGetFrame(self.device.handle, byref(status), frameBuffer, c_int(readFrameCounter))	
+          readFrameCounter = readFrameCounter + 1       #reset if read_loop=YES 
 
+          frameStreamCounter = frameStreamCounter + 1   #reset according to Stream decimation
+          frameTotalCounter = frameTotalCounter + 1     #never resetted     
 
           timestamp=datetime.datetime.now()
-          prevFrameTime=frameTime
-          frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
-          deltaT=frameTime-prevFrameTime
-          #print 'delta T: ', deltaT
-          #print 'timestamp 64bit: ', frameTime
-          #ts=datetime.datetime.now()
-          #ft=int(time.mktime(ts.timetuple())*1000)+int(ts.microsecond/1000)
-          #print 'timestamp 64bit post wait: ', ft
+          frameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)  #ms                        
+          if frameTotalCounter==1:
+            prevFrameTime=int(time.mktime(timestamp.timetuple())*1000)+int(timestamp.microsecond/1000)
+            deltaT=frameTime-prevFrameTime
+            totFrameTime=0
+          else:
+            deltaT=frameTime-prevFrameTime
+            prevFrameTime=frameTime
+            totFrameTime=totFrameTime+deltaT
 
           if( (isStorage==1) and ((status.value==1) or (status.value==2)) ):    #frame complete or incomplete
-            self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, byref(c_int64(frameTime)), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(self.idx)) 
+            self.mdsLib.camSaveFrame(frameBuffer, self.width, self.height, c_float(float(totFrameTime)/1000.0), c_int(14), treePtr, self.device.frames.getNid(), timebaseNid, c_int(frameTotalCounter-1), 0, 0, 0)  
             self.idx = self.idx + 1
             print 'saved frame idx:', self.idx
 
-          if ( (isStreaming==1) and (tcpStreamHandle.value==-1) ):   
-            self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)   
-            #print 'Stream Tcp Connection Opened. Handle:',tcpStreamHandle.value
 
-          if ( (isStreaming==1) and (tcpStreamHandle.value!=-1) ): 
-            #self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, c_int(14), frame8bit);
-            self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, c_int(0), byref(lowLim), byref(highLim), c_int(0), c_int(32767));
-            self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit);
-   
+          if(isStreaming==1):
+            if(tcpStreamHandle.value==-1): 
+              fede=self.streamLib.camOpenTcpConnection(streamPort, byref(tcpStreamHandle), self.width, self.height)
+              if(fede!=-1):
+                print '\nConnected to FFMPEG on localhost:',streamPort.value
+            if(frameStreamCounter == skipFrameStream+1):
+              frameStreamCounter=0
+            if(frameStreamCounter == 0 and tcpStreamHandle.value!=-1):
+              self.streamLib.camFrameTo8bit(frameBuffer, self.width, self.height, frame8bit, autoScale, byref(lowLim), byref(highLim), minLim, maxLim)
+              self.streamLib.camSendFrameOnTcp(byref(tcpStreamHandle), self.width, self.height, frame8bit)  
+
         #endwhile
         self.streamLib.camCloseTcpConnection(byref(tcpStreamHandle))
         #print 'Stream Tcp Connection Closed'
@@ -242,10 +273,12 @@ class FAKECAMERA(Device):
           return 0
 
         self.handle = c_void_p(0)
+        print 'restoreInfo before fakeOpen'
         status = FakeCamLib.fakeOpen(c_char_p(exp_name), c_char_p(exp_shot), c_char_p(exp_node), c_float(frame_rate), byref(self.handle))
         if status < 0:  
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name)
           return 0
+        print 'restoreInfo ended'
 
       return
 
