@@ -1,6 +1,13 @@
-from mdsdata import Data
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
 
-class Scope(Data):
+_data=_mimport('mdsdata',1)
+
+class Scope(object):
     """The Scope class utilizes the jScope java implementation to generate plots of MDSplus data"""
 
     def __init__(self,title='',x=100,y=100,width=400,height=300):
@@ -17,7 +24,7 @@ class Scope(Data):
         @type height: int
         @rtype: None
         """
-        self.idx=Data.execute("JavaNewWindow($,-1)",title)
+        self.idx=_data.Data.execute("JavaNewWindow($,-1)",title)
         self.x=x
         self.y=y
         self.width=width
@@ -27,7 +34,7 @@ class Scope(Data):
         """Show the scope window
         @rtype: None
         """
-        Data.execute("JavaShowWindow($,$,$,$,$)",self.idx,self.x,self.y,self.width,self.height)
+        _data.Data.execute("JavaShowWindow($,$,$,$,$)",self.idx,self.x,self.y,self.width,self.height)
 
     def plot(self,y,x=None,row=1,col=1,color="black"):
         """Plot data in scope panel
@@ -44,8 +51,8 @@ class Scope(Data):
         @rtype: None
         """
         if x is None:
-            x=Data.dim_of(y)
-        Data.execute("JavaReplaceSignal($,$,$,$,$,$)",self.idx,y,x,row,col,color)
+            x=_data.Data.dim_of(y)
+        _data.Data.execute("JavaReplaceSignal($,$,$,$,$,$)",self.idx,y,x,row,col,color)
 
     def oplot(self,y,x=None,row=1,col=1,color="black"):
         """Overplot data in scope panel
@@ -62,7 +69,7 @@ class Scope(Data):
         @rtype: None
         """
         if x is None:
-            x=Data.dim_of(y)
-        Data.execute("JavaAddSignal($,$,$,$,$,$)",self.idx,y,x,row,col,color)
+            x=_data.Data.dim_of(y)
+        _data.Data.execute("JavaAddSignal($,$,$,$,$,$)",self.idx,y,x,row,col,color)
     
     

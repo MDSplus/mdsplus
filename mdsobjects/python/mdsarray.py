@@ -1,12 +1,20 @@
 import numpy,copy,ctypes
-from mdsdata import Data,makeData
-from _mdsdtypes import *
-from mdsscalar import *
+
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+_data=_mimport('mdsdata',1)
+_dtypes=_mimport('_mdsdtypes',1)
+_scalar=_mimport('mdsscalar',1)
 
 def makeArray(value):
     if isinstance(value,Array):
         return value
-    if isinstance(value,Scalar):
+    if isinstance(value,_scalar.Scalar):
         return makeArray((value._value,))
     if isinstance(value,ctypes.Array):
         try:
@@ -22,7 +30,7 @@ def makeArray(value):
         except ValueError:
             newlist=list()
             for i in value:
-                newlist.append(makeData(i).data())
+                newlist.append(_data.makeData(i).data())
             return makeArray(numpy.array(newlist))
     if isinstance(value,numpy.ndarray):
         if str(value.dtype)[0:2] == '|S':
@@ -58,7 +66,7 @@ def arrayDecompile(a,cl):
             ans=ans+arrayDecompile(a[idx],cl)+ending
         return ans
 
-class Array(Data):
+class Array(_data.Data):
     def __init__(self,value=0):
         if self.__class__.__name__ == 'Array':
             raise TypeError("cannot create 'Array' instances")
@@ -84,14 +92,14 @@ class Array(Data):
 
     
     def _unop(self,op):
-        return makeData(getattr(self._value,op)())
+        return _data.makeData(getattr(self._value,op)())
 
     def _binop(self,op,y):
         try:
             y=y._value
         except AttributeError:
             pass
-        return makeData(getattr(self._value,op)(y))
+        return _data.makeData(getattr(self._value,op)(y))
 
     def _triop(self,op,y,z):
         try:
@@ -102,14 +110,14 @@ class Array(Data):
             z=z._value
         except AttributeError:
             pass
-        return makeData(getattr(self._value,op)(y,z))
+        return _data.makeData(getattr(self._value,op)(y,z))
 
     def _getMdsDtypeNum(self):
-        return {'Uint8Array':DTYPE_BU,'Uint16Array':DTYPE_WU,'Uint32Array':DTYPE_LU,'Uint64Array':DTYPE_QU,
-                'Int8Array':DTYPE_B,'Int16Array':DTYPE_W,'Int32Array':DTYPE_L,'Int64Array':DTYPE_Q,
-                'StringArray':DTYPE_T,
-                'Float32Array':DTYPE_FS,
-                'Float64Array':DTYPE_FT}[self.__class__.__name__]
+        return {'Uint8Array':_dtypes.DTYPE_BU,'Uint16Array':_dtypes.DTYPE_WU,'Uint32Array':_dtypes.DTYPE_LU,'Uint64Array':_dtypes.DTYPE_QU,
+                'Int8Array':_dtypes.DTYPE_B,'Int16Array':_dtypes.DTYPE_W,'Int32Array':_dtypes.DTYPE_L,'Int64Array':_dtypes.DTYPE_Q,
+                'StringArray':_dtypes.DTYPE_T,
+                'Float32Array':_dtypes.DTYPE_FS,
+                'Float64Array':_dtypes.DTYPE_FT}[self.__class__.__name__[0:-6]]
 
     mdsdtype=property(_getMdsDtypeNum)
     
@@ -123,7 +131,7 @@ class Array(Data):
         return self.__copy__()
 
     def getElementAt(self,itm):
-        return makeData(self._value[itm])
+        return _data.makeData(self._value[itm])
 
     def setElementAt(self,i,y):
         self._value[i]=y
@@ -147,10 +155,10 @@ class Array(Data):
             return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
-        return makeData(self._value.argsort(axis,kind,order))
+        return _data.makeData(self._value.argsort(axis,kind,order))
 
     def astype(self,type):
-        return makeData(self._value.astype(type))
+        return _data.makeData(self._value.astype(type))
 
     def byteswap(self):
         return self._unop('byteswap')
@@ -184,7 +192,7 @@ class Uint8Array(Array):
         """Return data item if this array was returned from serialize.
         @rtype: Data
         """
-        return Data.deserialize(self)
+        return _data.Data.deserialize(self)
 
 class Uint16Array(Array):
     """16-bit unsigned number"""

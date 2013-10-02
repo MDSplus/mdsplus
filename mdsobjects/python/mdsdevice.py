@@ -1,9 +1,15 @@
-from treenode import TreeNode
-from compound import *
-from _treeshr import TreeStartConglomerate, TreeEndConglomerate
-from mdsarray import makeArray
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
 
-class Device(TreeNode):
+_treenode=_mimport('treenode',1)
+_treeshr=_mimport('_treeshr',1)
+
+
+class Device(_treenode.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
     Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
@@ -149,7 +155,7 @@ class Device(TreeNode):
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME(None)
         try:
-            return self.__class__(TreeNode(self.part_dict[name]+self.head,self.tree))
+            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
         except KeyError:
             return super(Device,self).__getattr__(name)
 
@@ -162,7 +168,7 @@ class Device(TreeNode):
         @rtype: None
         """
         try:
-            TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
@@ -178,7 +184,7 @@ class Device(TreeNode):
         on (i.e. write_once).
         """
         cls.__class_init__()
-        TreeStartConglomerate(tree,len(cls.parts)+1)
+        _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         head=tree.addNode(path,'DEVICE')
         head=cls(head)
         head.record=Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
@@ -198,7 +204,7 @@ class Device(TreeNode):
             if 'options' in elt:
                 for option in elt['options']:
                     exec('node.'+option+'=True')
-        TreeEndConglomerate(tree)
+        _treeshr.TreeEndConglomerate(tree)
     Add=classmethod(Add)
 
 

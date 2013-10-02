@@ -1,7 +1,14 @@
 import numpy
 import copy
-from _tdishr import TdiEvaluate,TdiCompile,TdiDecompile,TdiExecute
-from _mdsdtypes import DTYPE_LIST,DTYPE_TUPLE,DTYPE_DICTIONARY
+
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+_dtypes=_mimport('_mdsdtypes',1)
 
 def getUnits(item):
     """Return units of item. Evaluate the units expression if necessary.
@@ -38,12 +45,13 @@ def getDimension(item,idx=0):
 def data(item):
     """Return the data for an object converted into a primitive data type
     @rtype: Data"""
-    return TdiCompile('data($)',(item,)).evaluate().value
+    return _mimport('_tdishr',1).TdiCompile('data($)',(item,)).evaluate().value
 
 def decompile(item):
     """Returns the item converted to a string
     @rtype: string"""
-    return TdiDecompile(item)
+
+    return _mimport('_tdishr',1).TdiDecompile(item)
     return makeData(item).decompile()
 
 def evaluate(item,):
@@ -62,35 +70,34 @@ def rawPart(item):
 
 def makeData(value):
     """Convert a python object to a MDSobject Data object"""
+    _apd=_mimport('apd',1)
+    _array=_mimport('mdsarray',1)
+    _scalar=_mimport('mdsscalar',1)
     if value is None:
         return EmptyData()
     if isinstance(value,Data):
         return value
     try:
         if isinstance(value,long):
-           from mdsscalar import makeScalar
-           return makeScalar(value)
+           return _scalar.makeScalar(value)
     except:
         pass
     if isinstance(value,numpy.generic) or isinstance(value,int) or isinstance(value,float) or isinstance(value,str) or isinstance(value,complex):
-        from mdsscalar import makeScalar
-        return makeScalar(value)
+        return _scalar.makeScalar(value)
     if isinstance(value,tuple) or isinstance(value,list):
-        from apd import Apd,List
-        apd = Apd(tuple(value),DTYPE_LIST)
-        return List(apd)
+        apd = _apd.Apd(tuple(value),_dtypes.DTYPE_LIST)
+        return _apd.List(apd)
     if isinstance(value,numpy.ndarray):
-        from mdsarray import makeArray
-        return makeArray(value)
+        return _array.makeArray(value)
     if isinstance(value,dict):
-        from apd import Dictionary
-        return Dictionary(value)
+        return _apd.Dictionary(value)
     else:
         raise TypeError('Cannot make MDSplus data type from type: %s' % (str(type(value)),))
 
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
+
     
     def __init__(self,*value):
         """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
@@ -230,11 +237,11 @@ class Data(object):
         Return boolean
         @rtype: Bool
         """
-        from mdsarray import Array
-        from compound import Compound
-        if isinstance(self,Array):
+        _array=_mimport('mdsarray',1)
+        _compound=_mimport('compound',1)
+        if isinstance(self,_array.Array):
             return self._value!=0
-        elif isinstance(self,Compound) and hasattr(self,'value_of'):
+        elif isinstance(self,_compound.Compound) and hasattr(self,'value_of'):
             return self.value_of().bool()
         else:
             ans=int(self)
@@ -291,12 +298,12 @@ class Data(object):
     def __getitem__(self,y):
         """Subscript: x.__getitem__(y) <==> x[y]
         @rtype: Data"""
-        from mdsarray import Array
-        from compound import Range
+        _array=_mimport('mdsarray',1)
+        _compound=_mimport("compound",1)
         if isinstance(y,slice):
-            y=Range(y.start,y.stop,y.step)
+            y=_compound.Range(y.start,y.stop,y.step)
         ans = Data.execute('$[$]',self,y)
-        if isinstance(ans,Array):
+        if isinstance(ans,_array.Array):
             if ans.shape[0]==0:
                 raise IndexError
         return ans
@@ -325,7 +332,7 @@ class Data(object):
         """Length: x.__len__() <==> len(x)
         @rtype: Data
         """
-        return int(TdiCompile('size($)',(self,)).data())
+        return int(_mimport('_tdishr',1).TdiCompile('size($)',(self,)).data())
 
     def __long__(self):
         """Convert this object to python long
@@ -448,8 +455,8 @@ class Data(object):
         """Return descriptor for passing data to MDSplus library routines.
         @rtype: descriptor
         """
-        from _descriptor import descriptor
-        return descriptor(self)
+        _descriptor=_mimport('_descriptor',1)
+        return _descriptor.descriptor(self)
 
     descriptor=property(_getDescriptor)
     """Descriptor of data.
@@ -463,8 +470,7 @@ class Data(object):
         @return: Return True if the value and this Data object contain the same data
         @rtype: Bool
         """
-        from _mdsshr import MdsCompareXd
-        status = MdsCompareXd(self,value)
+        status = _mimport('_mdsshr',1).MdsCompareXd(self,value)
         if status == 1:
             return True
         else:
@@ -475,13 +481,13 @@ class Data(object):
         and returns the object instance correspondind to the compiled expression.
         @rtype: Data
         """
-        return TdiCompile(expr,args)
+        return _mimport('_tdishr',1).TdiCompile(expr,args)
     compile=staticmethod(compile)
 
     def execute(expr,*args):
         """Execute and expression inserting optional arguments into the expression before evaluating
         @rtype: Data"""
-        return TdiExecute(expr,args)
+        return _mimport('_tdishr',1).TdiExecute(expr,args)
     execute=staticmethod(execute)
 
     def setTdiVar(self,tdivarname):
@@ -491,8 +497,6 @@ class Data(object):
         @rtype: Data
         @return: Returns new value of the tdi variable
         """
-        #from compound import Function
-        #return Function(opcode='equals',args=(Function(opcode='public',args=(str(tdivarname),)),self)).evaluate()
         return self.execute("`public "+str(tdivarname)+"=$",self)
 
     def getTdiVar(tdivarname):
@@ -500,9 +504,9 @@ class Data(object):
         @param tdivarname: The name of the publi tdi variable
         @type tdivarname: string
         @rtype: Data"""
-        from compound import Function
         try:
-            return Function(opcode='public',args=(str(tdivarname),)).evaluate()
+            _compound=_mimport('compound',1)
+            return _compound.Function(opcode='public',args=(str(tdivarname),)).evaluate()
         except:
             return None
     getTdiVar=staticmethod(getTdiVar)
@@ -511,7 +515,7 @@ class Data(object):
         """Return string representation
         @rtype: string
         """
-        return TdiDecompile(self)
+        return _mimport('_tdishr',1).TdiDecompile(self)
 
     __str__=decompile
     """String: x.__str__() <==> str(x)
@@ -540,13 +544,13 @@ class Data(object):
         """Return the result of TDI evaluate(this).
         @rtype: Data
         """
-        return TdiEvaluate(self)
+        return _mimport('_tdishr',1).TdiEvaluate(self)
 
     def _isScalar(x):
         """Is item a Scalar
         @rtype: Bool"""
-        from mdsscalar import Scalar
-        return isinstance(x,Scalar)
+        _scalar=_mimport('mdsscalar',1)
+        return isinstance(x,_scalar.Scalar)
     _isScalar=staticmethod(_isScalar)
     
     def getByte(self):
@@ -715,16 +719,16 @@ class Data(object):
         """Return True if data item contains a tree reference
         @rtype: Bool
         """
-        from compound import Compound
-        from treenode import TreeNode,TreePath
-        from apd import Apd
-        if isinstance(self,TreeNode) or isinstance(self,TreePath):
+        _compound=_mimport('compound',1)
+        _apd=_mimport('apd',1)
+        _treenode=_mimport('treenode',1)
+        if isinstance(self,_treenode.TreeNode) or isinstance(self,_treenode.TreePath):
             return True
-        elif isinstance(self,Compound):
+        elif isinstance(self,_compound.Compound):
             for arg in self.args:
                 if isinstance(arg,Data) and arg.hasNodeReference():
                     return True
-        elif isinstance(self,Apd):
+        elif isinstance(self,_apd.Apd):
             for arg in self.getDescs():
                 if isinstance(arg,Data) and arg.hasNodeReference():
                     return True
@@ -770,9 +774,8 @@ class Data(object):
         @type col: int
         @rtype: None
         """
-        from scope import Scope
         if scope is None:
-            scope=Scope(title)
+            scope=_mimport('scope',1).Scope(title)
         scope.plot(self,self.dim_of(0),row,col)
         scope.show()
 
@@ -786,9 +789,8 @@ class Data(object):
         """Return Uint8Array binary representation.
         @rtype: Uint8Array
         """
-        from _mdsshr import MdsSerializeDscOut
-        from mdsarray import Uint8Array
-        return Uint8Array(MdsSerializeDscOut(self))
+        _array=_mimport('mdsarray',1)
+        return _array.Uint8Array(_mimport('_mdsshr',1).MdsSerializeDscOut(self))
         return Data.execute('SerializeOut($)',self)
 
     def deserialize(data):
@@ -797,9 +799,7 @@ class Data(object):
         @type data: Uint8Array
         @rtype: Data
         """
-        from _mdsshr import MdsSerializeDscIn
-        return MdsSerializeDscIn(data)
-        return Data.execute('SerializeIn($)',data)
+        return _mimport('_mdsshr',1).MdsSerializeDscIn(data)
     deserialize=staticmethod(deserialize)
 
     def makeData(value):

@@ -1,8 +1,15 @@
-from mdsdata import Data
-from mdsscalar import String
-from _mdsdtypes import DTYPE_LIST,DTYPE_DICTIONARY
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
 
-class Apd(Data):
+_data=_mimport('mdsdata',1)
+_scalar=_mimport('mdsscalar',1)
+_dtypes=_mimport('_mdsdtypes',1)
+
+class Apd(_data.Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
@@ -10,7 +17,7 @@ class Apd(Data):
 
     def __hasBadTreeReferences__(self,tree):
         for desc in self.descs:
-            if isinstance(desc,Data) and desc.__hasBadTreeReferences__(tree):
+            if isinstance(desc,_data.Data) and desc.__hasBadTreeReferences__(tree):
                 return True
         return False
     
@@ -19,7 +26,7 @@ class Apd(Data):
         ans=deepcopy(self)
         descs=list(ans.descs)
         for idx in range(len(descs)):
-            if isinstance(descs[idx],Data) and descs[idx].__hasBadTreeReferences__(tree):
+            if isinstance(descs[idx],_data.Data) and descs[idx].__hasBadTreeReferences__(tree):
                 descs[idx]=descs[idx].__fixTreeReferences__(tree)
         ans.descs=tuple(descs)
         return ans
@@ -99,12 +106,12 @@ class Apd(Data):
             l.append(d.data())
         return l
 
-class Dictionary(dict,Data):
+class Dictionary(dict,_data.Data):
     """dictionary class"""
 
     def __hasBadTreeReferences__(self,tree):
         for v in self.itervalues():
-            if isinstance(v,Data) and v.__hasBadTreeReferences__(tree):
+            if isinstance(v,_data.Data) and v.__hasBadTreeReferences__(tree):
                 return True
         return False
 
@@ -112,18 +119,17 @@ class Dictionary(dict,Data):
         from copy import deepcopy
         ans = deepcopy(self)
         for key,value in ans.iteritems():
-            if isinstance(value,Data) and value.__hasBadTreeReferences__(tree):
+            if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(tree):
                 ans[key]=value.__fixTreeReferences__(tree)
         return ans
     
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd):
-                from mdsscalar import Scalar
                 import numpy
                 for idx in range(0,len(value),2):
                     key=value[idx]
-                    if isinstance(key,Scalar):
+                    if isinstance(key,_scalar.Scalar):
                         key=key.value
                     if isinstance(key,numpy.string_):
                         key=str(key)
@@ -163,7 +169,7 @@ class Dictionary(dict,Data):
         return d
         
     def toApd(self):
-        apd=Apd(tuple(),DTYPE_DICTIONARY)
+        apd=Apd(tuple(),_dtypes.DTYPE_DICTIONARY)
         for key,val in self.items():
             apd.append(key)
             apd.append(val)
@@ -172,12 +178,12 @@ class Dictionary(dict,Data):
     def __str__(self):
         return dict.__str__(self)
  
-class List(list,Data):
+class List(list,_data.Data):
     """list class"""
 
     def __hasBadTreeReferences__(self,tree):
         for v in self:
-            if isinstance(v,Data) and v.__hasBadTreeReferences__(tree):
+            if isinstance(v,_data.Data) and v.__hasBadTreeReferences__(tree):
                 return True
         return False
 
@@ -185,7 +191,7 @@ class List(list,Data):
         from copy import deepcopy
         ans = deepcopy(self)
         for idx in range(len(ans)):
-            if isinstance(ans[idx],Data) and ans[idx].__hasBadTreeReferences__(tree):
+            if isinstance(ans[idx],_data.Data) and ans[idx].__hasBadTreeReferences__(tree):
                 ans[idx]=ans[idx].__fixTreeReferences__(tree)
         return ans
     
@@ -198,7 +204,7 @@ class List(list,Data):
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 
     def toApd(self):
-        apd=Apd(tuple(),DTYPE_LIST)
+        apd=Apd(tuple(),_dtypes.DTYPE_LIST)
         for idx in range(len(self)):
             apd.append(self[idx])
         return apd

@@ -2,10 +2,25 @@ import numpy as _N
 import ctypes as _C
 import os
 import time
-from mdsdata import makeData
-from mdsscalar import Uint64
 from threading import Thread
-from _mdsshr import DateToQuad,MDSWfeventTimed,MDSEvent
+
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+_data=_mimport('mdsdata',1)
+makeData=_data.makeData
+
+_scalar=_mimport('mdsscalar',1)
+Uint64=_scalar.Uint64
+
+_mdsshr=_mimport('_mdsshr',1)
+DateToQuad=_mdsshr.DateToQuad
+MDSWfeventTimed=_mdsshr.MDSWfeventTimed
+MDSEvent=_mdsshr.MDSEvent
 
 class Event(Thread):
     """Thread to wait for event"""
@@ -16,8 +31,7 @@ class Event(Thread):
         """
         if len(self.raw) == 0:
             return None
-        from mdsarray import makeArray
-        return makeArray(self.getRaw()).deserialize()
+        return _mimport('mdsarray',1).makeArray(self.getRaw()).deserialize()
 
     def getRaw(self):
         """Return raw data transfered with the event.
@@ -89,7 +103,10 @@ class Event(Thread):
     wfeventRaw=staticmethod(wfeventRaw)
 
 try:
-    from _mdsshr import MDSQueueEvent,MDSGetEventQueue,MDSEventCan,MdsInvalidEvent
+    MDSQueueEvent=_mdsshr.MDSQueueEvent
+    MDSGetEventQueue=_mdsshr.MDSGetEventQueue
+    MDSEventCan=_mdsshr.MDSEventCan
+    MDSInvalidEvent=_mdsshr.MdsInvalidEvent
     def _event_run(self):
         while True:
             try:

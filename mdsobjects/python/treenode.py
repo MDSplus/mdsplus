@@ -1,7 +1,16 @@
-from mdsdata import Data,makeData
-from mdsscalar import Uint8
-from mdsarray import Int32Array
-from tree import Tree
+import sys
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+_data=_mimport('mdsdata',1)
+_scalar=_mimport('mdsscalar',1)
+_array=_mimport('mdsarray',1)
+_tree=_mimport('tree',1)
+_compound=_mimport('compound',1)
 import threading
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
@@ -20,7 +29,7 @@ nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR'
 usage_table={'ANY':0,'NONE':1,'STRUCTURE':1,'ACTION':2,'DEVICE':3,'DISPATCH':4,'NUMERIC':5,'SIGNAL':6,
              'TASK':7,'TEXT':8,'WINDOW':9,'AXIS':10,'SUBTREE':11,'COMPOUND_DATA':12,'SUBTREE':-1}
 
-class TreeNode(Data):
+class TreeNode(_data.Data):
     """Class to represent an MDSplus node reference (nid).
     @ivar nid: node index of this node.
     @type nid: int
@@ -110,7 +119,6 @@ class TreeNode(Data):
          @rtype: various
          """
 
-        from mdsscalar import String
         if name.lower() == 'nid':
             try:
                 return self.__dict__['nid']
@@ -129,7 +137,7 @@ class TreeNode(Data):
         if name.lower() == 'tags':
             return self.getTags()
         if name.lower() == 'usage':
-            return String(self.usage_str.value[10:])
+            return _scalar.String(self.usage_str.value[10:])
         if name.lower() == 'descendants':
             return self.getDescendants()
         if name.lower() == 'number_of_descendants':
@@ -141,28 +149,26 @@ class TreeNode(Data):
         if name.lower() == 'local_path':
             return self.getLocalPath()
         if name.upper() in nciAttributes:
-            from _tdishr import TdiException
             try:
                 if name.lower() == 'mclass':
                     name='class';
-                Tree.lock()
+                _tree.Tree.lock()
                 self.restoreContext()
                 try:
-                    ans = Data.execute('getnci($,$)',self,name)
-                    if isinstance(ans,Uint8):
+                    ans = _data.Data.execute('getnci($,$)',self,name)
+                    if isinstance(ans,_scalar.Uint8):
                         if name not in ('class','dtype'):
                             ans = bool(ans)
-                except TdiException:
-                    import sys
+                except _mimport('_tdishr',1).TdiException:
                     e=sys.exc_info()[1]
                     if 'TreeNNF' in str(e):
                         ans=None
                     else:
                         raise
             finally:
-                Tree.unlock()
-            if isinstance(ans,String):
-                return String(ans.rstrip())
+                _tree.Tree.unlock()
+            if isinstance(ans,_scalar.String):
+                return _scalar.String(ans.rstrip())
             return ans
         raise AttributeError('Attribute %s is not defined' % (name,))
 
@@ -176,7 +182,7 @@ class TreeNode(Data):
         self.__dict__['nid']=int(n);
         if tree is None:
             try:
-                self.tree=Tree.getActiveTree()
+                self.tree=_tree.Tree.getActiveTree()
             except:
                 self.tree=Tree()
         else:
@@ -249,29 +255,26 @@ class TreeNode(Data):
             else:
                 raise TypeError('Argument must be True or False')
         try:
-            Tree.lock()
+            _tree.Tree.lock()
             self.restoreContext()
             cmd='tcl("set node \\%s%s%s")'% (self.fullpath,switch,qualifier)
-            status = Data.compile(cmd).evaluate()
+            status = _data.Data.compile(cmd).evaluate()
             if not (status & 1):
-                from _descriptor import MdsGetMsg
-                from _treeshr import TreeException
-                msg="Error executing command: %s, returned error: %s" % (cmd,str(MdsGetMsg(int(status))))
+                msg="Error executing command: %s, returned error: %s" % (cmd,str(_mimport('_mdsshr',1).MdsGetMsg(int(status))))
                 if 'TreeFAILURE' in msg:
-                    raise TreeException('Error writing to tree, possibly file protection problem')
+                    raise _mimport('_treeshr',1).TreeException('Error writing to tree, possibly file protection problem')
                 else:
-                    raise TreeException(msg)
+                    raise _mimport('_treeshr',1).TreeException(msg)
         finally:
-            Tree.unlock()
+            _tree.Tree.unlock()
         return
 
     def __str__(self):
         """Convert TreeNode to string."""
-        from _treeshr import TreeGetPath
         if self.nid is None:
             ans="NODEREF(*)"
         else:
-            ans=TreeGetPath(self)
+            ans=_mimport('_treeshr',1).TreeGetPath(self)
         return ans
 
     def addDevice(self,name,model):
@@ -284,8 +287,7 @@ class TreeNode(Data):
         @rtype: TreeNode
         """
         if name.find(':') >=0 or name.find('.') >= 0:
-            from _treeshr import TreeException
-            raise TreeException("Invalid node name, do not include path delimiters in nodename")
+            raise _mimport('_treeshr',1).TreeException("Invalid node name, do not include path delimiters in nodename")
         return self.tree.addDevice(self.fullpath+":"+name.upper(),model)
 
     def addNode(self,name,usage='ANY'):
@@ -317,8 +319,7 @@ class TreeNode(Data):
         @type tag: str
         @rtype: None
         """
-        from _treeshr import TreeAddTag
-        TreeAddTag(self.tree,self.nid,str(tag))
+        _mimport('_treeshr',1).TreeAddTag(self.tree,self.nid,str(tag))
 
     def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
         """Begin a record segment
@@ -332,8 +333,7 @@ class TreeNode(Data):
         @type initialValueArray: Array
         @rtype: None
         """
-        from _treeshr import TreeBeginSegment
-        TreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
+        _mimport('_treeshr',1).TreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
 
     def beginTimestampedSegment(self,array,idx=-1):
         """Allocate space for a timestamped segment
@@ -343,8 +343,7 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        from _treeshr import TreeBeginTimestampedSegment
-        TreeBeginTimestampedSegment(self,array,idx)
+        _mimport('_tdishr',1).TreeBeginTimestampedSegment(self,array,idx)
 
     def compare(self,value):
         """Returns True if this node contains the same data as specified in the value argument
@@ -352,12 +351,12 @@ class TreeNode(Data):
         @type value: Data
         @rtype: Bool
         """
-        from _mdsshr import MdsCompareXd
+        _mdsshr=_mimport('_mdsshr',1)
         try:
             oldval=self.record
         except:
             oldval=None
-        status = MdsCompareXd(makeData(oldval),makeData(value))
+        status = _mdsshr.MdsCompareXd(_data.makeData(oldval),_data.makeData(value))
         if status == 1:
             return True
         else:
@@ -387,18 +386,16 @@ class TreeNode(Data):
         """Dispatch an action node
         @rtype: None
         """
-        from compound import Action
         a=self.record
-        if not isinstance(a,Action):
+        if not isinstance(a,_compound.Action):
             raise Exception("Node does not contain an action description")
         else:
             if wait:
-                status=Data.execute("tcl('dispatch/wait "+str(self.fullpath).replace('\\','\\\\')+"')")
+                status=_data.Data.execute("tcl('dispatch/wait "+str(self.fullpath).replace('\\','\\\\')+"')")
             else:
-                status=Data.execute("tcl('dispatch/nowait "+str(self.fullpath).replace('\\','\\\\')+"')")
+                status=_data.Data.execute("tcl('dispatch/nowait "+str(self.fullpath).replace('\\','\\\\')+"')")
             if not (status & 1):
-                from _descriptor import MdsGetMsg
-                raise Exception(MdsGetMsg(status,"Error dispatching node"))
+                raise Exception(_mimport('_mdsshr',1).MdsGetMsg(status,"Error dispatching node"))
 
     def doMethod(self,method,arg=None):
         """Execute method on conglomerate element
@@ -408,13 +405,12 @@ class TreeNode(Data):
         @type arg: Data
         @rtype: None
         """
-        from _treeshr import TreeDoMethod
         try:
-            Tree.lock()
+            _tree.Tree.lock()
             self.restoreContext()
-            TreeDoMethod(self,str(method),arg)
+            _mimport('_treeshr',1).TreeDoMethod(self,str(method),arg)
         finally:
-            Tree.unlock()
+            _tree.Tree.unlock()
         return
 
     def getBrother(self):
@@ -471,8 +467,7 @@ class TreeNode(Data):
         @return: data stored in this node
         @rtype: Data
         """
-        from _treeshr import TreeGetRecord
-        return TreeGetRecord(self)
+        return _mimport('_treeshr',1).TreeGetRecord(self)
 
     def getDepth(self):
         """Get depth of this node in the tree
@@ -499,7 +494,7 @@ class TreeNode(Data):
             nids.append(node.nid)
           for node in children:
             nids.append(node.nid)
-          ans=TreeNodeArray(Int32Array(nids))
+          ans=TreeNodeArray(_array.Int32Array(nids))
         return ans
             
     def getDtype(self):
@@ -647,8 +642,7 @@ class TreeNode(Data):
         """return number of segments contained in this node
         @rtype: int
         """
-        from _treeshr import TreeGetNumSegments
-        return makeData(TreeGetNumSegments(self))
+        return _data.makeData(_mimport('_treeshr',1).TreeGetNumSegments(self))
 
     def getOriginalPartName(self):
         """Return the original part name of node in conglomerate
@@ -687,8 +681,7 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            from _treeshr import TreeGetSegment
-            return TreeGetSegment(self,idx)
+            return _mimport('_treeshr',1).TreeGetSegment(self,idx)
         else:
             return None
 
@@ -713,8 +706,7 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            from _treeshr import TreeGetSegmentLimits
-            limits=TreeGetSegmentLimits(self,idx)
+            limits=_mimport('_treeshr',1).TreeGetSegmentLimits(self,idx)
             if limits is not None:
                 return limits[1]
             else:
@@ -730,8 +722,7 @@ class TreeNode(Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            from _treeshr import TreeGetSegmentLimits
-            limits=TreeGetSegmentLimits(self,idx)
+            limits=_mimport('_treeshr',1).TreeGetSegmentLimits(self,idx)
             if limits is not None:
                 return limits[0]
             else:
@@ -758,12 +749,11 @@ class TreeNode(Data):
         @return: Tag names pointing to this node
         @rtype: ndarray
         """
-        from _treeshr import TreeFindNodeTags
         try:
-            Tree.lock()
-            ans=TreeFindNodeTags(self)
+            _tree.Tree.lock()
+            ans=_mimport('_treeshr',1).TreeFindNodeTags(self)
         finally:
-            Tree.unlock()
+            _tree.Tree.unlock()
         return ans
 
     def getTree(self):
@@ -883,8 +873,7 @@ class TreeNode(Data):
         @type valueArray: Array
         @rtype: None
         """
-        from _treeshr import TreeMakeSegment
-        TreeMakeSegment(self,start,end,dimension,valueArray,idx)
+        _mimport('_treeshr',1).TreeMakeSegment(self,start,end,dimension,valueArray,idx)
 
     def move(self,parent,newname=None):
         """Move node to another location in the tree and optionally rename the node
@@ -894,13 +883,12 @@ class TreeNode(Data):
         @type newname: str
         @rtype: None
         """
-        from _treeshr import TreeRenameNode
         if newname is None:
             newname=str(self.node_name)
         if self.usage=='SUBTREE' or self.usage=='STRUCTURE':
-            TreeRenameNode(self,str(parent.fullpath)+"."+newname)
+            _mimport('_treeshr',1).TreeRenameNode(self,str(parent.fullpath)+"."+newname)
         else:
-            TreeRenameNode(self,str(parent.fullpath)+":"+newname)
+            _mimport('_treeshr',1).TreeRenameNode(self,str(parent.fullpath)+":"+newname)
         
     def putData(self,data):
         """Store data
@@ -908,14 +896,13 @@ class TreeNode(Data):
         @type data: Data
         @rtype: None
         """
-        from _treeshr import TreePutRecord
         try:
-            if isinstance(data,Data) and data.__hasBadTreeReferences__(self.tree):
+            if isinstance(data,_data.Data) and data.__hasBadTreeReferences__(self.tree):
                 data=data.__fixTreeReferences__(self.tree)
-            Tree.lock()
-            TreePutRecord(self,data)
+            _tree.Tree.lock()
+            _mimport('_treeshr',1).TreePutRecord(self,data)
         finally:
-            Tree.unlock()
+            _tree.Tree.unlock()
         return
 
     def putRow(self,bufsize,array,timestamp):
@@ -928,8 +915,7 @@ class TreeNode(Data):
         @type timestamp: Uint64
         @rtype: None
         """
-        from _treeshr import TreePutRow
-        TreePutRow(self,bufsize,array,timestamp)
+        _mimport('_treeshr',1).TreePutRow(self,bufsize,array,timestamp)
                 
     def putSegment(self,data,idx):
         """Load a segment in a node
@@ -939,8 +925,7 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        from _treeshr import TreePutSegment
-        TreePutSegment(self,data,idx)
+        _mimport('_treeshr',1).TreePutSegment(self,data,idx)
 
     def putTimestampedSegment(self,timestampArray,array):
         """Load a timestamped segment
@@ -950,8 +935,7 @@ class TreeNode(Data):
         @type array: Array
         @rtype: None
         """
-        from _treeshr import TreePutTimestampedSegment
-        TreePutTimestampedSegment(self,timestampArray,array)
+        _mimport('_treeshr',1).TreePutTimestampedSegment(self,timestampArray,array)
 
     def makeTimestampedSegment(self,timestampArray,array,idx,rows_filled):
         """Load a timestamped segment
@@ -965,8 +949,7 @@ class TreeNode(Data):
         @type rows_filled: int
         @rtype: None
         """
-        from _treeshr import TreeMakeTimestampedSegment
-        TreeMakeTimestampedSegment(self,timestampArray,array,idx,rows_filled)
+        _mimport('_treeshr',1).TreeMakeTimestampedSegment(self,timestampArray,array,idx,rows_filled)
 
     def removeTag(self,tag):
         """Remove a tagname from this node
@@ -974,16 +957,14 @@ class TreeNode(Data):
         @type tag: str
         @rtype: None
         """
-        from _treeshr import TreeException
         try:
             n=self.tree.getNode('\\'+str(tag))
             if n.nid != self.nid:
-                raise TreeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),str(tag),str(n)))
-        except TreeException:
-            import sys
+                raise _mimport('_treeshr',1).TreeException("Node %s does not have a tag called %s. That tag refers to %s" % (str(self),str(tag),str(n)))
+        except _mimport('_treeshr',1).TreeException:
             e=sys.exc_info()[1]
             if str(e).find('TreeNNF') > 0:
-                raise TreeException("Tag %s is not defined" % (str(tag),))
+                raise _mimport('_treeshr',1).TreeException("Tag %s is not defined" % (str(tag),))
             else:
                 raise
         self.tree.removeTag(tag)
@@ -994,15 +975,14 @@ class TreeNode(Data):
         @type newname: str
         @rtype: None
         """
-        from _treeshr import TreeRenameNode,TreeException
         if newname.find(':') >=0 or newname.find('.') >= 0:
-            raise TreeException("Invalid node name, do not include path delimiters in nodename")
+            raise _mimport('_treeshr',1).TreeException("Invalid node name, do not include path delimiters in nodename")
         try:
             olddefault=self.tree.default
             self.tree.setDefault(self.parent)
             if self.isChild():
                 newname="."+str(newname)
-            TreeRenameNode(self,str(newname))
+            _mimport('_treeshr',1).TreeRenameNode(self,str(newname))
         finally:
             self.tree.setDefault(olddefault)
 
@@ -1070,18 +1050,17 @@ class TreeNode(Data):
         @type flag: bool
         @rtype: None
         """
-        from _treeshr import TreeTurnOn,TreeTurnOff
         try:
-            Tree.lock()
+            _tree.Tree.lock()
             if flag is True:
-                TreeTurnOn(self)
+                _mimport('_treeshr',1).TreeTurnOn(self)
             else:
                 if flag is False:
-                    TreeTurnOff(self)
+                    _mimport('_treeshr',1).TreeTurnOff(self)
                 else:
                     raise TypeError('argument must be True or False')
         finally:
-            Tree.unlock()
+            _tree.Tree.unlock()
         return
 
     def setSubtree(self,flag):
@@ -1090,8 +1069,7 @@ class TreeNode(Data):
         @type flag: bool
         @rtype: None
         """
-        from _treeshr import TreeSetSubtree
-        TreeSetSubtree(self,flag)
+        _mimport('_treeshr',1).TreeSetSubtree(self,flag)
 
     def setUsage(self,usage):
         """Set the usage of a node
@@ -1099,12 +1077,11 @@ class TreeNode(Data):
         @type flag: str
         @rtype: None
         """
-        from _treeshr import TreeSetUsage
         try:
             usagenum=usage_table[usage.upper()]
         except KeyError:
             raise KeyError('Invalid usage specified. Use one of %s' % (str(usage_table.keys()),))
-        TreeSetUsage(self.tree.ctx,self.nid,usagenum)
+        _mimport('_treeshr',1).TreeSetUsage(self.tree.ctx,self.nid,usagenum)
     
     def setTree(self,tree):
         """Set Tree associated with this node
@@ -1135,15 +1112,14 @@ class TreeNode(Data):
         @type idx: int
         @rtype: None
         """
-        from _treeshr import TreeUpdateSegment
-        TreeUpdateSegment(self,start,end,dim,idx)
+        _mimport('_treeshr',1).TreeUpdateSegment(self,start,end,dim,idx)
 
 class TreePath(TreeNode):
     """Class to represent an MDSplus node reference (path)."""
     def __init__(self,path,tree=None):
-        self.tree_path=makeData(path);
+        self.tree_path=_data.makeData(path);
         if tree is None:
-            self.tree=Tree.getActiveTree()
+            self.tree=_tree.Tree.getActiveTree()
         else:
             self.tree=tree
         return
@@ -1152,12 +1128,11 @@ class TreePath(TreeNode):
         """Convert path to string."""
         return self.tree_path.value
 
-class TreeNodeArray(Data):
+class TreeNodeArray(_data.Data):
     def __init__(self,nids,tree=None):
-        from mdsarray import Uint32Array
-        self.nids=Int32Array(nids)
+        self.nids=_array.Int32Array(nids)
         if tree is None:
-            self.tree=Tree.getActiveTree()
+            self.tree=_tree.Tree.getActiveTree()
         else:
             self.tree=tree
 
@@ -1297,29 +1272,27 @@ class TreeNodeArray(Data):
         @return: Usage
         @rtype: StringArray
         """
-        from mdsarray import makeArray
         a=list()
         for nid in self:
             a.append(str(nid.usage))
-        return makeArray(a)
+        return _array.makeArray(a)
 
     
 
     def __getattr__(self,name):
         try:
-            Tree.lock()
+            _tree.Tree.lock()
             try:
                 self.restoreContext()
-                ans = Data.execute('getnci($,$)',self.nids,name)
+                ans = _data.Data.execute('getnci($,$)',self.nids,name)
             except Exception:
-                import sys
                 e=sys.exc_info()[1]
                 if 'TdiBAD_INDEX' in str(e):
                     raise AttributeError('Attribute %s is not defined' % (name,))
                 else:
                     raise
         finally:
-            Tree.unlock()
+            _tree.Tree.unlock()
         return ans
 
 
@@ -1330,13 +1303,11 @@ class CachedTreeNode(TreeNode):
 
     def getData(self):
         """Return data"""
-        from _treeshr import RTreeGetRecord
-        return RTreeGetRecord(self)
+        return _mimport('_treeshr',1).RTreeGetRecord(self)
 
     def getNumSegments(self):
         """return number of segments contained in this node"""
-        from _treeshr import RTreeGetNumSegments
-        return makeData(RTreeGetNumSegments(self))
+        return _data.makeData(_mimport('_treeshr',1).RTreeGetNumSegments(self))
 
     def getCachePolicy(self):
         """return cache policy for this node"""
@@ -1350,31 +1321,25 @@ class CachedTreeNode(TreeNode):
         self.cachePolicy=policy
 
     def flush(self):
-        from _treeshr import RTreeFlushNode
-        RTreeFlushNode(self.tree.ctx,self.nid)
+        _mimport('_treeshr',1).RTreeFlushNode(self.tree.ctx,self.nid)
 
     def putData(self,value):
-        from _treeshr import RTreePutRecord
-        return RTreePutRecord(self,value,self)
+        return _mimport('_treeshr',1).RTreePutRecord(self,value,self)
 
     def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
-        from _treeshr import RTreeBeginSegment
-        return RTreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
+        return _mimport('_treeshr',1).RTreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
 
     def putSegment(self,data,idx):
-        from _treeshr import RTreePutSegment
-        return RTreePutSegment(self,data,idx)
+        return _mimport('_treeshr',1).RTreePutSegment(self,data,idx)
 
     def putRow(self,bufsize,array,timestamp):
-        from _treeshr import RTreePutRow
-        return RTreePutRow(self,bufsize,array,timestamp)
+        return _mimport('_treeshr',1).RTreePutRow(self,bufsize,array,timestamp)
     
     def putLastRow(self,bufsize,array,timestamp):
-        from _treeshr import RTreePutRow
         try:
             if self.cachePolicy == 3:
                 self.cachePolicy = 4
-            status = RTreePutRow(self,bufsize,array,timestamp)
+            status = _mimport('_treeshr',1).RTreePutRow(self,bufsize,array,timestamp)
         finally:
             if self.cachePolicy == 4:
                 self.cachePolicy = 3
@@ -1382,24 +1347,21 @@ class CachedTreeNode(TreeNode):
     
     def updateSegment(self,start,end,dim,idx):
         """Update a segment"""
-        from _treeshr import RTreeUpdateSegment
-        return RTreeUpdateSegment(self,start,end,dim,idx)
+        return _mimport('_treeshr',1).RTreeUpdateSegment(self,start,end,dim,idx)
 
     def getNumSegments(self):
         """Get number of segments"""
-        from _treeshr import RTreeGetNumSegments
-        return RTreeGetNumSegments(self)
+        return _mimport('_treeshr',1).RTreeGetNumSegments(self)
     
     def putTimestampedSegment(self,array,timestampArray):
         """Put timestamped segment"""
-        from _treeshr import RTreePutTimestampedSegment
-        return RTreePutTimestampedSegment(self,array,timestampArray)
+        return _mimport(_treeshr,1).RTreePutTimestampedSegment(self,array,timestampArray)
 
     def getSegmentStart(self,idx):
         """return start of segment"""
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            l=RTreeGetSegmentStart(self,idx)
+            l=R_mimport('_treeshr',1).TreeGetSegmentStart(self,idx)
             return l[0]
         else:
             return None
@@ -1408,7 +1370,7 @@ class CachedTreeNode(TreeNode):
         """return end of segment"""
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            l=RTreeGetSegmentEnd(self,idx)
+            l=_mimport('_treeshr',1).TreeGetSegmentEnd(self,idx)
             return l[1]
         else:
             return None

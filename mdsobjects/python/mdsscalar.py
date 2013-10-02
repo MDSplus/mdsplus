@@ -1,6 +1,14 @@
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
 import numpy,copy
-from mdsdata import *
-from _mdsdtypes import *
+
+_dtypes=_mimport('_mdsdtypes',1)
+_data=_mimport('mdsdata',1)
 
 def makeScalar(value):
     if isinstance(value,str):
@@ -42,14 +50,13 @@ def makeScalar(value):
         return Complex128(value)
     raise TypeError('Cannot make Scalar out of '+str(type(value)))
 
-class Scalar(Data):
-   
+class Scalar(_data.Data):
     def __new__(cls,value=0):
         try:
             import numpy
-            import mdsarray
-            if (isinstance(value,mdsarray.Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
-               return mdsarray.__dict__[cls.__name__+'Array'](value)
+            _array=_mimport('mdsarray',1)
+            if (isinstance(value,_array.Array)) or isinstance(value,list) or isinstance(value,numpy.ndarray):
+               return _array.__dict__[cls.__name__+'Array'](value)
         except:
             pass
 
@@ -96,7 +103,7 @@ class Scalar(Data):
         return self.__value.__long__()
 
     def _unop(self,op):
-        return makeData(getattr(self.value,op)())
+        return _data.makeData(getattr(self.value,op)())
 
     def _binop(self,op,y):
         try:
@@ -104,7 +111,7 @@ class Scalar(Data):
         except AttributeError:
             pass
         ans=getattr(self.value,op)(y)
-        return makeData(ans)
+        return _data.makeData(ans)
 
     def _triop(self,op,y,z):
         try:
@@ -115,7 +122,7 @@ class Scalar(Data):
             z=z.value
         except AttributeError:
             pass
-        return makeData(getattr(self.value,op)(y,z))
+        return _data.makeData(getattr(self.value,op)(y,z))
 
     def _getMdsDtypeNum(self):
         return {'Uint8':DTYPE_BU,'Uint16':DTYPE_WU,'Uint32':DTYPE_LU,'Uint64':DTYPE_QU,
@@ -145,10 +152,10 @@ class Scalar(Data):
             return self._unop('argmin')
 
     def argsort(self,axis=-1,kind='quicksort',order=None):
-        return makeData(self.value.argsort(axis,kind,order))
+        return _data.makeData(self.value.argsort(axis,kind,order))
 
     def astype(self,type):
-        return makeData(self.value.astype(type))
+        return _data.makeData(self.value.astype(type))
 
     def byteswap(self):
         return self._unop('byteswap')
@@ -182,7 +189,7 @@ class Uint64(Scalar):
     """64-bit unsigned number"""
 
     def _getDate(self):
-        return Data.execute('date_time($)',self)
+        return _data.Data.execute('date_time($)',self)
     date=property(_getDate)
 
 class Float32(Scalar):

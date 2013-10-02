@@ -1,7 +1,12 @@
-try:
-    from builtin import Builtin
-except:
-    from tdibuiltins.builtin import Builtin
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+_builtin=_mimport('builtin',1)
+Builtin=_builtin.Builtin
 
 class dPLACEHOLDER(Builtin):
     min_args=0

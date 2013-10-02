@@ -1,30 +1,29 @@
-try:
-    exec("from ..mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32")
-    exec("from ..mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array")
-    exec("from ..mdsdata import makeData as _makeData")
-    exec("from ..compound import Signal as _Signal")
-except:
+import sys
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
     try:
-        from mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32
-        from mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array
-        from mdsdata import makeData as _makeData
-        from compound import Signal as _Signal
-    except:
-        from MDSplus.mdsscalar import Scalar as _Scalar, Complex64 as _Complex64, Complex128 as _Complex128, Float32 as _Float32
-        from MDSplus.mdsarray import Array as _Array, Complex64Array as _Complex64Array, Complex128Array as _Complex128Array, Float32Array as _Float32Array
-        from MDSplus.mdsdata import makeData as _makeData
-        from MDSplus.compound import Signal as _Signal
+      return __import__(name,globals(),{},[],level)
+    except ValueError:
+      return __import__(name,globals())
 
-try:
-    from builtin import Builtin
-except:
-    from tdibuiltins.builtin import Builtin
+_builtin=_mimport('builtin',1)
+Builtin=_builtin.Builtin
+
+_scalar=_mimport('mdsscalar',2)
+_array=_mimport('mdsarray',2)
+_compound=_mimport('compound',2)
+
+
+
 
 def _evaluateArg(arg):
     try:
         arg=arg.evaluate()
     except:
-        arg=_makeData(arg)
+        arg=_data.makeData(arg)
     return arg
 
 def _evaluateArgs(args):
@@ -40,12 +39,12 @@ class ABS(Builtin):
     opcode=32
     def evaluate(self):
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
+        if isinstance(args[0],_scalar.Scalar) or isinstance(args[0],_array.Array):
             if hasattr(args[0],'_units'):
-                ans = _makeData(abs(args[0])).setUnits(args[0]._units)
+                ans = _data.makeData(abs(args[0])).setUnits(args[0]._units)
             else:
-                ans = _makeData(abs(args[0]))
-        elif isinstance(args[0],_Signal):
+                ans = _data.makeData(abs(args[0]))
+        elif isinstance(args[0],_compound._Signal):
             args[0].value=ABS(args[0].value).evaluate()
             ans = args[0]
         else:
@@ -59,11 +58,11 @@ class ABS1(Builtin):
     opcode=33
     def evaluate(self):
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
-            ans=_makeData(abs(args[0].real)+abs(args[0].imag))
+        if isinstance(args[0],_scalar.Scalar) or isinstance(args[0],_array.Array):
+            ans=_data.makeData(abs(args[0].real)+abs(args[0].imag))
             if hasattr(args[0],'_units'):
                 ans=ans.setUnits(args[0].units)
-        elif isinstance(args[0],_Signal):
+        elif isinstance(args[0],_compound._Signal):
             args[0].value=ABS1(args[0].value).evaluate()
             ans=args[0]
         else:
@@ -77,21 +76,21 @@ class ABSSQ(Builtin):
     opcode=34
     def evaluate(self):
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
-            ans=_makeData(abs(args[0].real)**2+abs(args[0].imag)**2)
-            if isinstance(args[0],_Complex64):
+        if isinstance(args[0],_scalar.Scalar) or isinstance(args[0],_array.Array):
+            ans=_data.makeData(abs(args[0].real)**2+abs(args[0].imag)**2)
+            if isinstance(args[0],_scalar.Complex64):
                 ans=_Float32(ans)
-            elif isinstance(args[0],_Complex128):
+            elif isinstance(args[0],_scalar.Complex128):
                 ans=_Float64(ans)
-            elif isinstance(args[0],_Complex64Array):
-                ans=_Float32Array(ans)
-            elif isinstance(args[0],_Complex128Array):
-                ans=_Float64Array(ans)
+            elif isinstance(args[0],_array.Complex64Array):
+                ans=_array.Float32Array(ans)
+            elif isinstance(args[0],_array.Complex64Array):
+                ans=_array.Float64Array(ans)
             else:
                 ans=type(args[0])(ans)
             if hasattr(args[0],'_units'):
                 ans=ans.setUnits(args[0].units+"*"+args[0].units)
-        elif isinstance(args[0],_Signal):
+        elif isinstance(args[0],_compound._Signal):
             args[0].value=ABSSQ(args[0].value).evaluate()
             ans=args[0]
         else:
@@ -106,9 +105,9 @@ class ACOS(Builtin):
     def evaluate(self):
         from numpy import arccos
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
-            ans = _makeData(arccos(args[0].value))
-        elif isinstance(args[0],_Signal):
+        if isinstance(args[0],_scalar.Scalar) or isinstance(args[0],_array.Array):
+            ans = _data.makeData(arccos(args[0].value))
+        elif isinstance(args[0],_compound._Signal):
             args[0].value=ACOS(args[0].value).evaluate()
             ans = args[0]
         else:
@@ -123,9 +122,9 @@ class ACOSD(Builtin):
     def evaluate(self):
         from numpy import arccos,pi
         args=_evaluateArgs(self.args)
-        if isinstance(args[0],_Scalar) or isinstance(args[0],_Array):
+        if isinstance(args[0],_scalar.Scalar) or isinstance(args[0],_array.Array):
             ans = type(args[0])(arccos(args[0].value)/pi*180.)
-        elif isinstance(args[0],_Signal):
+        elif isinstance(args[0],_compound._Signal):
             args[0].value=ACOSD(args[0].value).evaluate()
             ans = args[0]
         else:

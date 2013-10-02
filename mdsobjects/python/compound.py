@@ -1,7 +1,14 @@
-from mdsdata import Data,makeData
-from _mdsdtypes import *
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
 
-class Compound(Data):
+_data=_mimport('mdsdata',1)
+_dtypes=_mimport('_mdsdtypes',1)
+
+class Compound(_data.Data):
     def __init__(self,*args, **params):
         """MDSplus compound data.
         """
@@ -12,7 +19,7 @@ class Compound(Data):
         if 'params' in params:
             params=params['params']
         if not hasattr(self,'_dtype'):
-            self._dtype=mdsdtypes.fromName('DTYPE_'+self.__class__.__name__.upper())
+            self._dtype=_dtypes.fromName('DTYPE_'+self.__class__.__name__.upper())
         if 'opcode' in params:
             self._opcode=params['opcode']
         try:
@@ -30,7 +37,7 @@ class Compound(Data):
 
     def __hasBadTreeReferences__(self,tree):
         for arg in self.args:
-            if isinstance(arg,Data) and arg.__hasBadTreeReferences__(tree):
+            if isinstance(arg,_data.Data) and arg.__hasBadTreeReferences__(tree):
                 return True
         return False
 
@@ -39,7 +46,7 @@ class Compound(Data):
         ans = deepcopy(self)
         newargs=list(ans.args)
         for idx in range(len(newargs)):
-            if isinstance(newargs[idx],Data) and newargs[idx].__hasBadTreeReferences__(tree):
+            if isinstance(newargs[idx],_data.Data) and newargs[idx].__hasBadTreeReferences__(tree):
                 newargs[idx]=newargs[idx].__fixTreeReferences__(tree)
         ans.args=tuple(newargs)
         return ans
@@ -196,7 +203,7 @@ class MetaClass(type):
                     exec ('def set'+name+'(self,value): return self.__setattr__("'+f+'",value)')
                     exec ("newClassDict['set'+name]=set"+name)
                     newClassDict['set'+name].__doc__='Set the '+f+' field\n@type value: Data\n@rtype: None'
-                    exec ("newClassDict['_dtype']=DTYPE_"+classname.upper())
+                    exec ("newClassDict['_dtype']=_dtypes.DTYPE_"+classname.upper())
                     newClassDict['_fields'][f]=idx
                     idx=idx+1
                 c=type.__new__(meta,classname,bases,newClassDict)
@@ -346,7 +353,7 @@ class _Range(Compound):
     def decompile(self):
         parts=list()
         for arg in self.args:
-            parts.append(makeData(arg).decompile())
+            parts.append(_data.makeData(arg).decompile())
         return ' : '.join(parts)
 Range=MetaClass('Range',(_Range,),{})
     
@@ -380,7 +387,7 @@ class _Signal(Compound):
         if idx < len(self.dims):
             return self.dims[idx]
         else:
-            return makeData(None)
+            return _data.makeData(None)
 
     def __getitem__(self,idx):
         """Subscripting <==> signal[subscript]. Uses the dimension information for subscripting
@@ -388,7 +395,7 @@ class _Signal(Compound):
         @type idx: Data
         @rtype: Signal
         """
-        return Data.execute('$[$]',self,idx)
+        return _data.Data.execute('$[$]',self,idx)
     
     def getDimensionAt(self,idx=0):
         """Return the dimension of the signal
@@ -444,7 +451,7 @@ class _Opaque(Compound):
     def getImage(self):
       import Image
       from StringIO import StringIO
-      return Image.open(StringIO(makeData(self.getData()).data().data))
+      return Image.open(StringIO(_data.makeData(self.getData()).data().data))
 
     def fromFile(filename,typestring):
       """Read a file and return an Opaque object
@@ -457,7 +464,7 @@ class _Opaque(Compound):
       import numpy as _N
       f = open(filename,'rb')
       try:
-        opq=Opaque(makeData(_N.fromstring(f.read(),dtype="uint8")),typestring)
+        opq=Opaque(_data.makeData(_N.fromstring(f.read(),dtype="uint8")),typestring)
       finally:
         f.close()
       return opq

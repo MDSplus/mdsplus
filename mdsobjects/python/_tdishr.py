@@ -1,20 +1,28 @@
 from ctypes import CDLL,pointer,c_void_p
-from _mdsshr import _load_library
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
 
-TdiShr=_load_library('TdiShr')
+_mdsshr=_mimport('_mdsshr',1)
+
+TdiShr=_mdsshr._load_library('TdiShr')
 class TdiException(Exception):
     pass
 
 def restoreContext():
-    from tree import Tree
-    t=Tree.getActiveTree()
+    t=_mimport('tree',1).Tree.getActiveTree()
     if t is not None:
       t.restoreContext()
         
 def TdiCompile(expression,args=None):
     """Compile a TDI expression. Format: TdiCompile('expression-string')"""
-    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from tree import Tree
+    _descriptor=_mimport('_descriptor',1)
+    descriptor_xd=_descriptor.descriptor_xd
+    descriptor=_descriptor.descriptor
+    Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     done=False
     try:
@@ -43,12 +51,14 @@ def TdiCompile(expression,args=None):
     if (status & 1 != 0):
             return xd.value
     else:
-        raise TdiException(MdsGetMsg(status,"Error compiling expression"))
+        raise TdiException(_mdsshr.MdsGetMsg(status,"Error compiling expression"))
 
 def TdiExecute(expression,args=None):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from tree import Tree
+    _descriptor=_mimport('_descriptor',1)
+    descriptor=_descriptor.descriptor
+    descriptor_xd=_descriptor.descriptor_xd
+    Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     done=False
     try:
@@ -77,12 +87,14 @@ def TdiExecute(expression,args=None):
     if (status & 1 != 0):
             return xd.value
     else:
-        raise TdiException(MdsGetMsg(status,"Error compiling expression"))
+        raise TdiException(_mdsshr.MdsGetMsg(status,"Error compiling expression"))
 
 def TdiDecompile(value):
     """Compile and execute a TDI expression. Format: TdiExecute('expression-string')"""
-    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from tree import Tree
+    _descriptor=_mimport('_descriptor',1)
+    descriptor_xd=_descriptor.descriptor_xd
+    descriptor=_descriptor.descriptor
+    Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     try:
         Tree.lock()
@@ -96,12 +108,14 @@ def TdiDecompile(value):
         except Exception:
             return str(xd.value.value)
     else:
-        raise TdiException(MdsGetMsg(status,"Error decompiling value"))
+        raise TdiException(_mdsshr.MdsGetMsg(status,"Error decompiling value"))
 
 def TdiEvaluate(value):
     """Evaluate and functions. Format: TdiEvaluate(data)"""
-    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from tree import Tree
+    _descriptor=_mimport('_descriptor',1)
+    descriptor=_descriptor.descriptor
+    descriptor_xd=_descriptor.descriptor_xd
+    Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     try:
         Tree.lock()
@@ -112,12 +126,14 @@ def TdiEvaluate(value):
     if (status & 1 != 0):
         return xd.value
     else:
-        raise TdiException(MdsGetMsg(status,"Error evaluating value"))
+        raise TdiException(_mdsshr.MdsGetMsg(status,"Error evaluating value"))
 
 def TdiData(value):
     """Return primiitive data type. Format: TdiData(value)"""
-    from _descriptor import descriptor_xd,descriptor,MdsGetMsg
-    from tree import Tree
+    _descriptor=_mimport('_descriptor',1)
+    descriptor=_descriptor.descriptor
+    descriptor_xd=_descriptor.descriptor_xd
+    Tree=_mimport('tree',1).Tree
     xd=descriptor_xd()
     try:
         Tree.lock()
@@ -128,6 +144,6 @@ def TdiData(value):
     if (status & 1 != 0):
         return xd.value
     else:
-        raise TdiException(MdsGetMsg(status,"Error converting value to data"))
+        raise TdiException(_mdsshr.MdsGetMsg(status,"Error converting value to data"))
 
 CvtConvertFloat=TdiShr.CvtConvertFloat

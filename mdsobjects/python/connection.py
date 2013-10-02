@@ -1,12 +1,35 @@
 import ctypes as _C
 import numpy as _N
-from _descriptor import descriptor,descriptor_a
-from _mdsshr import _load_library,MdsException,MdsGetMsg
-from mdsdata import makeData,Data
-from mdsscalar import *
-from mdsarray import *
-from _mdsdtypes import *
-from apd import List,Dictionary
+
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
+
+_descriptor=_mimport('_descriptor',1)
+descriptor=_descriptor.descriptor
+descriptor_a=_descriptor.descriptor_a
+
+_mdsshr=_mimport('_mdsshr',1)
+_load_library=_mdsshr._load_library
+MdsException=_mdsshr.MdsException
+MdsGetMsg=_mdsshr.MdsGetMsg
+
+_data=_mimport('mdsdata',1)
+makeData=_data.makeData
+Data=_data.Data
+
+_apd=_mimport('apd',1)
+List=_apd.List
+Dictionary=_apd.Dictionary
+
+_scalar=_mimport('mdsscalar',1)
+_array=_mimport('mdsarray',1)
+_dtypes=_mimport('_mdsdtypes',1)
+
+
 __MdsIpShr=_load_library('MdsIpShr')
 ConnectToMds=__MdsIpShr.ConnectToMds
 DisconnectFromMds=__MdsIpShr.DisconnectFromMds
@@ -22,13 +45,15 @@ SendArg.argtypes=[_C.c_int32,_C.c_ubyte,_C.c_ubyte,_C.c_ubyte,_C.c_ushort,_C.c_u
 class Connection(object):
     """Implements an MDSip connection to an MDSplus server"""
 
-    dtype_to_scalar={DTYPE_BU:Uint8,DTYPE_WU:Uint16,DTYPE_LU:Uint32,DTYPE_QU:Uint64,DTYPE_B:Int8,DTYPE_W:Int16,
-                     DTYPE_L:Int32,DTYPE_Q:Int64,DTYPE_FLOAT:Float32,DTYPE_DOUBLE:Float64,DTYPE_T:String}
+    dtype_to_scalar={_dtypes.DTYPE_BU:_scalar.Uint8,_dtypes.DTYPE_WU:_scalar.Uint16,_dtypes.DTYPE_LU:_scalar.Uint32,
+                     _dtypes.DTYPE_QU:_scalar.Uint64,_dtypes.DTYPE_B:_scalar.Int8,_dtypes.DTYPE_W:_scalar.Int16,
+                     _dtypes.DTYPE_L:_scalar.Int32,_dtypes.DTYPE_Q:_scalar.Int64,_dtypes.DTYPE_FLOAT:_scalar.Float32,
+                     _dtypes.DTYPE_DOUBLE:_scalar.Float64,_dtypes.DTYPE_T:_scalar.String}
 
     def __inspect__(self,value):
         """Internal routine used in determining characteristics of the value"""
         d=descriptor(value)
-        if d.dtype==DTYPE_DSC:
+        if d.dtype==_dtypes.DTYPE_DSC:
             if d.pointer.contents.dclass == 4:
                 a=_C.cast(d.pointer,_C.POINTER(descriptor_a)).contents
                 dims=list()
@@ -50,14 +75,14 @@ class Connection(object):
             dims=_N.array(0,dtype=_N.uint32)
             dimct=0
             pointer=d.pointer
-        if dtype == DTYPE_FLOAT:
-            dtype = DTYPE_F
-        elif dtype == DTYPE_DOUBLE:
-            dtype = DTYPE_D
-        elif dtype == DTYPE_FLOAT_COMPLEX:
-            dtype = DTYPE_FC
-        elif dtype == DTYPE_DOUBLE_COMPLEX:
-            dtype = DTYPE_DC
+        if dtype == _dtypes.DTYPE_FLOAT:
+            dtype = _dtypes.DTYPE_F
+        elif dtype == _dtypes.DTYPE_DOUBLE:
+            dtype = _dtypes.DTYPE_D
+        elif dtype == _dtypes.DTYPE_FLOAT_COMPLEX:
+            dtype = _dtypes.DTYPE_FC
+        elif dtype == _dtypes.DTYPE_DOUBLE_COMPLEX:
+            dtype = _dtypes.DTYPE_DC
         return {'dtype':dtype,'length':length,'dimct':dimct,'dims':dims,'address':pointer}
 
     def __getAnswer__(self):
@@ -70,16 +95,16 @@ class Connection(object):
         mem=_C.c_void_p(0)
         status=GetAnswerInfoTS(self.socket,dtype,length,ndims,dims.ctypes.data,numbytes,_C.pointer(ans),_C.pointer(mem))
         dtype=dtype.value
-        if dtype == DTYPE_F:
-            dtype = DTYPE_FLOAT
-        elif dtype == DTYPE_D:
-            dtype = DTYPE_DOUBLE
-        elif dtype == DTYPE_FC:
-            dtype = DTYPE_FLOAT_COMPLEX
-        elif dtype == DTYPE_DC:
-            dtype = DTYPE_DOUBLE_COMPLEX
+        if dtype == _dtypes.DTYPE_F:
+            dtype = _dtypes.DTYPE_FLOAT
+        elif dtype == _dtypes.DTYPE_D:
+            dtype = _dtypes.DTYPE_DOUBLE
+        elif dtype == _dtypes.DTYPE_FC:
+            dtype = _dtypes.DTYPE_FLOAT_COMPLEX
+        elif dtype == _dtypes.DTYPE_DC:
+            dtype = _dtypes.DTYPE_DOUBLE_COMPLEX
         if ndims.value == 0:
-            if dtype == DTYPE_T:
+            if dtype == _dtypes.DTYPE_T:
                 ans=String(_C.cast(ans,_C.POINTER(_C.c_char*length.value)).contents.value)
             else:
                 ans=Connection.dtype_to_scalar[dtype](_C.cast(ans,_C.POINTER(mdsdtypes.ctypes[dtype])).contents.value)
@@ -144,7 +169,7 @@ class Connection(object):
     def __sendArg__(self,value,idx,num):
         """Internal routine to send argument to mdsip server"""
         val=makeData(value)
-        if not isinstance(val,Scalar) and not isinstance(val,Array):
+        if not isinstance(val,Scalar) and not isinstance(val,_array.Array):
             val=makeData(val.data())
         valInfo=self.__inspect__(val)
         status=SendArg(self.socket,idx,valInfo['dtype'],num,valInfo['length'],valInfo['dimct'],valInfo['dims'].ctypes.data,valInfo['address'])
