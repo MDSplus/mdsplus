@@ -31,6 +31,11 @@
 #define EXPORT
 #endif
 
+#if __cplusplus >= 201103L
+#define NOEXCEPT noexcept
+#else
+#define NOEXCEPT throw()
+#endif
 
 #define DTYPE_BU 2 
 #define DTYPE_WU 3 
@@ -155,37 +160,28 @@ EXPORT void setActiveTree(Tree *tree);
 EXPORT Tree *getActiveTree();
 /////Exceptions//////////////
 
-	class EXPORT MdsException
+	class EXPORT MdsException: public std::exception
 	{
 	protected:
-		int status;
-		char *msg;
+		const char *msg;
 	public:
-		MdsException(){}
-		MdsException(const char *msg)
+		MdsException(const char *msg) : msg(msg)
 		{
-			this->msg = new char[strlen(msg) + 1];
-			strcpy(this->msg, msg);
-		}
-		MdsException(int status)
-		{
-			char *currMsg = MdsGetMsg(status);
-			this->msg = new char[strlen(currMsg) + 1];
-			strcpy(this->msg, currMsg);
 		}
 
-		virtual ~MdsException()
+		MdsException(int status) : msg(MdsGetMsg(status))
 		{
-			if(msg)
-				deleteNativeArray(msg);
 		}
 
-		virtual const char* what() const 
+		virtual ~MdsException() NOEXCEPT
 		{
-			if(msg)
-				return msg;
-			return MdsGetMsg(status);
 		}
+
+		virtual const char* what() const NOEXCEPT
+		{
+			return msg;
+		}
+
 		friend ostream & operator << (ostream &outStream, MdsException &exc)
 		{
 		    return outStream << exc.what();
@@ -2374,7 +2370,7 @@ protected:
 			int status = sem.timedWait(timeout);
 			waitingEvent = false;
 			if(status)
-				throw new MdsException("Timeout Occurred");
+				throw MdsException("Timeout Occurred");
 		}
 		Data *waitData()
 		{
@@ -2391,7 +2387,7 @@ protected:
 			int status = sem.timedWait(timeout);
 			waitingEvent = false;
 			if(status)
-				throw new MdsException("Timeout Occurred");
+				throw MdsException("Timeout Occurred");
 			return getData();
 		}
 		void abort()

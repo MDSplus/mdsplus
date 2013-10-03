@@ -97,9 +97,9 @@ void *getManyObj(char *serializedIn)
 
 			answDict->setItem(valueKey, currAnsw);
 			dataReported = true;
-		}catch(MdsException *exc)
+		}catch(MdsException const & exc)
 		{
-			String *errorData = new String((char *)exc->what());
+			String *errorData = new String(exc.what());
 			answDict->setItem(errorKey, errorData);
 			errorReported = true;
 		}
@@ -163,9 +163,9 @@ void *putManyObj(char *serializedIn)
 			String *successData = new String("Success");
 			result->setItem(nodeNameData, successData);
 			delete tree;
-		}catch(MdsException *exc)
+		}catch(MdsException const & exc)
 		{
-			String *errorData = new String((char *)exc->what());
+			String *errorData = new String(exc.what());
 			result->setItem(nodeNameData, errorData);
 		}
 		delete [] expr;
@@ -206,7 +206,7 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 #else
 	int status = sem_init(&semStruct, 0, 1);
 	if(status != 0)
-		throw new MdsException("Cannot create lock semaphore");
+		throw MdsException("Cannot create lock semaphore");
 #endif
 
 	sockId = ConnectToMds(mdsipAddr);
@@ -215,7 +215,7 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 		char currMsg[256];
 		strcpy(currMsg, "Cannot connect to ");
 		strncpy(&currMsg[strlen(currMsg)], mdsipAddr, 255 - strlen(currMsg));
-		throw new MdsException(currMsg);
+		throw MdsException(currMsg);
 	}
 }
 Connection::~Connection()
@@ -275,13 +275,13 @@ void Connection::openTree(char *tree, int shot)
 	int status = MdsOpen(sockId, tree, shot);
 printf("SOCK ID: %d\n", sockId);
 	if(!(status & 1))
-		throw new MdsException(status);
+		throw MdsException(status);
 }
 void Connection::closeAllTrees()
 {
 	int status = MdsClose(sockId);
 	if(!(status & 1))
-		throw new MdsException(status);
+		throw MdsException(status);
 }
 Data *Connection::get(const char *expr, Data **args, int nArgs)
 {
@@ -299,7 +299,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	{
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
-			throw new MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
+			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 	lock();
 	lockGlobal();
@@ -307,7 +307,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	if(!(status & 1))
 	{
 		unlock();
-		throw new MdsException(status);
+		throw MdsException(status);
 	}
 	for(argIdx = 0; argIdx < nArgs; argIdx++)
 	{
@@ -316,7 +316,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 		if(!(status & 1))
 		{
 			unlock();
-			throw new MdsException(status);
+			throw MdsException(status);
 		}
 	}
 	unlockGlobal();
@@ -325,7 +325,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	unlock();
 	if(!(status & 1))
 	{
-		throw new MdsException(status);
+		throw MdsException(status);
 	}
 	if(nDims == 0)
 	{
@@ -369,7 +369,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				break;
 			default: 
 				printf("Unexpected data type returned by mdsip: %d\n", dtype);
-				throw new MdsException("Unexpected data type returned by mdsip");
+				throw MdsException("Unexpected data type returned by mdsip");
 		}
 	}
 	else //nDims > 0
@@ -402,7 +402,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			case DTYPE_DOUBLE_IP:
 				resData = new Float64Array((double *)ptr, nDims, retDims);
 				break;
-			default: throw new MdsException("Unexpected data type returned by mdsip");
+			default: throw MdsException("Unexpected data type returned by mdsip");
 		}
 	}
 	if(mem) FreeMessage(mem);
@@ -435,7 +435,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	{
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
-			throw new MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
+			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 
 	char *putExpr = new char[strlen("TreePut(") + strlen(expr) +strlen(path) + 5 + nArgs * 2 + 2];
@@ -459,7 +459,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	if(!(status & 1))
 	{
 		unlock();
-		throw new MdsException(status);
+		throw MdsException(status);
 	}
 	for(argIdx = 0; argIdx < nArgs; argIdx++)
 	{
@@ -468,7 +468,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 		if(!(status & 1))
 		{
 			unlock();
-			throw new MdsException(status);
+			throw MdsException(status);
 		}
 	}
 
@@ -478,14 +478,14 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
       memcpy(&status,ptr,numBytes);
     if (mem) FreeMessage(mem);
 	if(!(status & 1))
-		throw new MdsException(status);
+		throw MdsException(status);
 }
 
 void Connection::setDefault(char *path)
 {
 	int status = MdsSetDefault(sockId, path);
 	if(!(status & 1))
-		throw new MdsException(status);
+		throw MdsException(status);
 }
 
 void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
@@ -577,12 +577,12 @@ void GetMany::execute()
 Data *GetMany::get(char *name)
 {
 	if(!evalRes)
-		throw new MdsException("Data have not been evaluated yet");
+		throw MdsException("Data have not been evaluated yet");
 	String *nameStr = new String(name);
 	Dictionary *resItem = (Dictionary *)evalRes->getItem(nameStr);
 	deleteData(nameStr);
 	if(!resItem)
-		throw new MdsException("Missing data item in evaluation list");
+		throw MdsException("Missing data item in evaluation list");
 	String *valueKey = new String("value");
 
 	Data *result = resItem->getItem(valueKey);
@@ -597,7 +597,7 @@ Data *GetMany::get(char *name)
 	deleteData(errorKey);
 	deleteData(resItem);
 	if(!error)
-		throw new MdsException("Unknown Error");
+		throw MdsException("Unknown Error");
 	else
 	{
 		char *errBuf = error->getString();
@@ -700,12 +700,12 @@ void PutMany::execute()
 void PutMany::checkStatus(char *nodeName)
 {
 	if(!evalRes)
-		throw new MdsException("Data have not written yet");
+		throw MdsException("Data have not written yet");
 	String *nodeNameStr = new String(nodeName);
 	String *resItem = (String *)evalRes->getItem(nodeNameStr);
 	deleteData(nodeNameStr);
 	if(!resItem)
-		throw new MdsException("Missing data item in evaluation list");
+		throw MdsException("Missing data item in evaluation list");
 
 	String *successStr = new String("Success");
 	if(!successStr->equals(resItem))
