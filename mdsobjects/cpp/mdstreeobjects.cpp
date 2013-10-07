@@ -1,6 +1,10 @@
 #include <mdsobjects.h>
 #include <usagedef.h>
 
+#include <algorithm>
+#include <string>
+#include <cctype>
+
 //#include "mdstree.h"
 using namespace MDSplus;
 
@@ -196,11 +200,8 @@ void Tree::unlock()
 }
 #endif
 
-
-		
-Tree::Tree(char *name, int shot)
+Tree::Tree(char *name, int shot): shot(shot)
 {
-	this->shot = shot;
 	ctx = 0;
 	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
@@ -212,44 +213,39 @@ Tree::Tree(char *name, int shot)
 	//setActiveTree(this);
 }
 
-Tree::Tree(void *dbid, char *name, int shot)
+Tree::Tree(void *dbid, char *name, int shot): shot(shot)
 {
-	this->shot = shot;
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
 	this->ctx = dbid;
 }
 
-Tree::Tree(char *name, int shot, char *mode)
+Tree::Tree(char *name, int shot, char *mode): shot(shot)
 {
-	this->shot = shot;
 	ctx = 0;
-	int len = strlen(mode);
-	char *upMode = new char[len+1];
-	for(int i = 0; i < len; i++)
-		upMode[i] = toupper(mode[i]);
-	upMode[len] = 0;
-	int status = 0;
-	if(!strcmp(upMode, "NORMAL"))
-		status = _TreeOpen(&ctx, name, shot, 0);
-	else if(!strcmp(upMode, "READONLY"))
-		status = _TreeOpen(&ctx, name, shot, 0);
-	else if(!strcmp(upMode, "NEW"))
-		status = _TreeOpenNew(&ctx, name, shot);
-	else if(!strcmp(upMode, "EDIT"))
-		status = _TreeOpenEdit(&ctx, name, shot);
+	std::string upMode(mode);
+	std::transform(upMode.begin(), upMode.end(), upMode.begin(), static_cast<int(*)(int)>(&std::toupper));
 
+	int status = 0;
+	if(upMode == "NORMAL")
+		status = _TreeOpen(&ctx, name, shot, 0);
+	else if(upMode == "READONLY")
+		status = _TreeOpen(&ctx, name, shot, 0);
+	else if(upMode == "NEW")
+		status = _TreeOpenNew(&ctx, name, shot);
+	else if(upMode == "EDIT")
+		status = _TreeOpenEdit(&ctx, name, shot);
 	else
 		throw MdsException("Invalid Open mode");
+
 	if(!(status & 1))
 	{
 		throw MdsException(status);
 	}
+
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
-	delete [] upMode;
 }
-
 
 Tree::~Tree()
 {
@@ -263,11 +259,11 @@ EXPORT void *Tree::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
+
 EXPORT void Tree::operator delete(void *p)
 {
 	::operator delete(p);
 }
-
 
 void Tree::edit()
 {
@@ -306,10 +302,8 @@ void Tree::quit()
 	}
 }
 
-
 TreeNode *Tree::addNode(char *name, char *usage)
 {
-
 	int newNid;
 	int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
 	if(!(status & 1))
@@ -327,8 +321,6 @@ TreeNode *Tree::addDevice(char *name, char *type)
 	return new TreeNode(newNid, this);
 }
 
-
-
 void Tree::remove(char *name)
 {
 	int count;
@@ -339,12 +331,6 @@ void Tree::remove(char *name)
 	if(!(status & 1))
 		throw MdsException(status);
 }
-
-
-
-
-
-
 
 TreeNode *Tree::getNode(char *path)
 {
@@ -579,8 +565,6 @@ void Tree::deletePulse(int shot)
 		throw MdsException(status);
 }
 
-
-
 StringArray *Tree::findTags(char *wild)
 {
 	const int MAX_TAGS = 1024;
@@ -602,7 +586,6 @@ StringArray *Tree::findTags(char *wild)
 }
 void Tree::removeTag(char *tagName)
 {
-
 	int status = _TreeRemoveTag(getCtx(), tagName);
 	if(!(status & 1))
 		throw MdsException(status);
