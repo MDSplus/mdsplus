@@ -1,6 +1,7 @@
 #include "mdsobjects.h"
 //#include "mdstree.h"
 using namespace MDSplus;
+using namespace std;
 
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)

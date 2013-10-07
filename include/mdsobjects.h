@@ -132,7 +132,6 @@ extern "C" {
 }
 
 */
-using namespace std;
 
 namespace MDSplus  {
 
@@ -182,7 +181,7 @@ EXPORT Tree *getActiveTree();
 			return msg;
 		}
 
-		friend ostream & operator << (ostream &outStream, MdsException &exc)
+		friend std::ostream & operator << (std::ostream &outStream, MdsException &exc)
 		{
 		    return outStream << exc.what();
 		}
@@ -368,7 +367,7 @@ protected:
 			validation = inValidation;
 			inValidation->refCount++;
 		}
-		friend ostream & operator << (ostream &outStream, Data *data)
+		friend std::ostream & operator << (std::ostream &outStream, Data *data)
 		{
 		    return outStream << data->decompile();
 		}
@@ -2015,16 +2014,13 @@ protected:
 /////////////////////////////////////////////////////////////////
 
 
-//using namespace std;
-
 	class Tree;
 	class TreeNode;
 	class TreeNodeArray;
 
-
 	class  EXPORT TreeNode: public Data
 	{
-	friend	ostream &operator<<(ostream &stream, TreeNode *treeNode);
+	friend	std::ostream &operator<<(std::ostream &stream, TreeNode *treeNode);
 	protected:
 		Tree *tree;
 		int nid;

@@ -10,6 +10,7 @@
 #include <semaphore.h>
 #endif
 using namespace MDSplus;
+using namespace std;
 
 extern "C"  void *getManyObj(char *serializedIn);
 extern "C"  void *putManyObj(char *serializedIn);
