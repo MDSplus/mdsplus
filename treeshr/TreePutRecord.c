@@ -49,6 +49,7 @@
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>
+#define alloca _alloca
 #else
 #ifdef HAVE_VXWORKS_H
 #include <time.h>
@@ -379,7 +380,7 @@ int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile)
     int old_get = df_ptr->get; 
     size_t len = strlen(info->filespec)-4;
     size_t const filename_length = len + 20;
-    char filename[filename_length];
+    char *filename=(char *)alloca(filename_length);
 //    char *filename = strncpy(malloc(len+20),info->filespec,len);
     strncpy(filename,info->filespec,len);
     filename[len]='\0';

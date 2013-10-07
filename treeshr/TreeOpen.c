@@ -14,6 +14,7 @@
 #ifdef _WIN32
 #include <io.h>
 extern char *index(char *str,char c);
+#define alloca _alloca
 #else
 #include <unistd.h>
 #include <sys/mman.h>
@@ -1224,7 +1225,7 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
 {
   TREE_INFO *info;
   size_t const treesize = strlen(tree_in) + 1;
-  char     tree[treesize];
+  char     *tree=(char *)alloca(treesize);
 //  char     *tree = malloc(strlen(tree_in)+1);
   int       shot;
   int       status = TreeFAILURE;
