@@ -169,7 +169,7 @@ class Array(_data.Data):
 
     def decompile(self):
         if str(self._value.dtype).startswith('|S'):
-            cl=String
+            cl=_scalar.String
         else:
             cl=globals()[str(self._value.dtype).capitalize()]
         return arrayDecompile(self._value,cl)

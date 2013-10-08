@@ -33,7 +33,7 @@ _dtypes=_mimport('_mdsdtypes',1)
 __MdsIpShr=_load_library('MdsIpShr')
 ConnectToMds=__MdsIpShr.ConnectToMds
 DisconnectFromMds=__MdsIpShr.DisconnectFromMds
-ConnectToMds.argtypes=[_C.c_char_p]
+#ConnectToMds.argtypes=[_C.c_char_p]
 GetAnswerInfoTS=__MdsIpShr.GetAnswerInfoTS
 GetAnswerInfoTS.argtypes=[_C.c_int32,_C.POINTER(_C.c_ubyte),_C.POINTER(_C.c_ushort),_C.POINTER(_C.c_ubyte),
                             _C.c_void_p,_C.POINTER(_C.c_ulong),_C.POINTER(_C.c_void_p),_C.POINTER(_C.c_void_p)]
@@ -107,7 +107,7 @@ class Connection(object):
             if dtype == _dtypes.DTYPE_T:
                 ans=String(_C.cast(ans,_C.POINTER(_C.c_char*length.value)).contents.value)
             else:
-                ans=Connection.dtype_to_scalar[dtype](_C.cast(ans,_C.POINTER(mdsdtypes.ctypes[dtype])).contents.value)
+                ans=Connection.dtype_to_scalar[dtype](_C.cast(ans,_C.POINTER(_dtypes.mdsdtypes.ctypes[dtype])).contents.value)
         else:
             val=descriptor_a()
             val.dtype=dtype
@@ -137,10 +137,10 @@ class Connection(object):
         return ans
         
     def __init__(self,hostspec):
-        self.socket=ConnectToMds(hostspec)
-        if self.socket == -1:
-            raise Exception("Error connecting to %s" % (hostspec,))
-        self.hostspec=hostspec
+      self.socket=ConnectToMds(hostspec.encode())
+      if self.socket == -1:
+        raise Exception("Error connecting to %s" % (hostspec,))
+      self.hostspec=hostspec
 
     def __del__(self):
         DisconnectFromMds(self.socket)
@@ -252,7 +252,7 @@ class Connection(object):
             args=kwargs['arglist']
         num=len(args)+1
         idx=0
-        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp))
+        status=SendArg(self.socket,idx,14,num,len(exp),0,0,_C.c_char_p(exp.encode()))
         if not ((status & 1)==1):
             raise MdsException(MdsGetMsg(status))
         #self.__sendArg__(exp,idx,num)
