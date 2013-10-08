@@ -89,10 +89,10 @@ write(*, "XRAY init");
        		{ 
 
 
-				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
+				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), -1 );
 				_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
 
-				if( TomoVMERack(_chan_id) == 0)
+				if( _chan_id != -1 && TomoVMERack(_chan_id) == 0)
 				{
 
 					if(TomoChanIsActive(_chan_id) && _error == 0 )
@@ -157,11 +157,11 @@ write(*, "XRAY init");
 		    if(DevIsOn(DevNodeRef(_nid, _chan_nid)))
        		{ 
 
-				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), 0 );
+				_chan_id = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_CHANNEL_ID)), -1 );
 				_error   = if_error( data(DevNodeRef(_nid, _chan_nid + _N_CHAN_STATUS)), 0 );
 
 
-				if( TomoVMERack(_chan_id) == 1)
+				if( _chan_id != -1 && TomoVMERack(_chan_id) == 1)
 				{
 					if(TomoChanIsActive(_chan_id) && _error == 0 )
 					{
