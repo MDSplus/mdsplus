@@ -1,7 +1,7 @@
 import gobject
 import traceback
 import os
-
+import sys
 from MDSplus import TreeNode
 
 try:
@@ -26,9 +26,9 @@ class MDSplusWidget(object):
                 if isinstance(child,MDSplusWidget):
                     try:
                         child.__getattribute__(method)()
-                    except Exception,e:
+                    except Exception:
                         traceback.print_exc()
-                        print "MDSplusWidget error: %s" % (e,)
+                        print("MDSplusWidget error: %s" % (sys.exc_info(),))
                         status = False
         return status
     doToAll=classmethod(doToAll)
@@ -70,8 +70,8 @@ class MDSplusWidget(object):
         except:
             try:
                 self.nidOffset=self.originalPartNames()[self.name.upper()]
-            except Exception,e:
-                raise AttributeError,"Was unable to find a node or original part name of /%s/ in the conglomerate" % (self.name.upper(),)
+            except Exception:
+                raise(AttributeError("Was unable to find a node or original part name of /%s/ in the conglomerate" % (self.name.upper(),)))
 
     def getDevNode(self):
         try:
@@ -83,7 +83,7 @@ class MDSplusWidget(object):
                 if guibuilder:
                     return None
                 else:
-                    raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
+                    raise(AttributeError("Top level window must have a device_node attribute of type TreeNode which is element of the device."))
     devnode=property(getDevNode)
 
     def getNode(self):
@@ -96,7 +96,7 @@ class MDSplusWidget(object):
                 if guibuilder:
                     return None
                 else:
-                    raise AttributeError,"Top level window must have a device_node attribute of type TreeNode which is element of the device."
+                    raise(AttributeError("Top level window must have a device_node attribute of type TreeNode which is element of the device."))
             if not hasattr(self,"nidOffset") or self.nidOffset is None or self.nidOffset < 0:
                 self.setNidOffset()
             self._node=TreeNode(devnode.nid_number-devnode.conglomerate_elt+1+self.nidOffset,devnode.tree)
@@ -111,7 +111,7 @@ class MDSplusWidget(object):
         if property.name in dir(self.props):
             self.__dict__[property.name]=value
         else:
-            raise AttributeError, 'unknown property %s' % property.name
+            raise(AttributeError( 'unknown property %s' % property.name))
 
     def apply(self):
         if self.putOnApply:
@@ -120,8 +120,8 @@ class MDSplusWidget(object):
                 if self.node.compare(value) != 1:
                     self.node.record=value
                 self.reset()
-            except Exception,e:
-                self.popupError(e)
+            except Exception:
+                self.popupError(sys.exc_info())
                 raise
         return True
 

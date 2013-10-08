@@ -4,6 +4,7 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdsplusxdbox import MDSplusXdBox
 from mdspluserrormsg import MDSplusErrorMsg
+import sys
 
 try:
     import glade
@@ -34,20 +35,20 @@ class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
             if self.node.on != self.node_state.get_active():
                 try:
                     self.node.on=self.node_state.get_active()
-                except Exception,e:
+                except Exception:
                     if self.node_state.get_active():
                         state='on'
                     else:
                         state='off'
-                    MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.node.minpath,state,e))
+                    MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.node.minpath,state,sys.exc_info()))
                     raise
             if hasattr(self,'xdbox'):
                 try:
                     if self.node.compare(self.xdbox.value) != 1:
                         self.node.record=self.xdbox.value
                     self.reset()
-                except Exception,e:
-                    MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,e))
+                except Exception:
+                    MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,sys.exc_info()))
 
     def xd_state_changed(self,button):
         self.node_state.set_active(self.xdbox.on.get_active())

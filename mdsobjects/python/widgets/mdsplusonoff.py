@@ -1,5 +1,6 @@
 import gtk
 import gobject
+import sys
 
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
@@ -28,8 +29,8 @@ class MDSplusOnOffWidget(props,MDSplusWidget,gtk.CheckButton):
             self.set_active(self.getNode().on)
             if self.showPath:
                 self.set_label(str(self.getNode().minpath))
-        except Exception,e:
-            print "onoff reset had  problem: %s" % (str(e),)
+        except Exception:
+            print("onoff reset had  problem: %s" % (str(sys.exc_info()),))
             raise
 
     def apply(self):
@@ -37,22 +38,22 @@ class MDSplusOnOffWidget(props,MDSplusWidget,gtk.CheckButton):
             if self.getNode().on != self.get_active():
                 try:
                     self.getNode().on=self.get_active()
-                except Exception,e:
+                except Exception:
                     if self.get_active():
                         state='on'
                     else:
                         state='off'
-                    MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.getNode.minpath,state,e))
+                    MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.getNode.minpath,state,sys.exc_info()))
                     raise
             if self.getNode().on != self.get_active():
                 try:
                     self.getNode().on=self.get_active()
-                except Exception,e:
+                except Exception:
                     if self.get_active():
                         state='on'
                     else:
                         state='off'
-                    MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.getNode.minpath,state,e))
+                    MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.getNode.minpath,state,sys.exc_info()))
                     raise
         
     def __init__(self):

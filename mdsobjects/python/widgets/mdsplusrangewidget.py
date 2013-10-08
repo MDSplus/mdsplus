@@ -1,4 +1,5 @@
 from gtk import HBox,Entry,Label,Table,EXPAND,FILL,SHRINK
+import sys
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Data,Range
 
@@ -26,8 +27,8 @@ class MDSplusRangeWidget(Table):
         else:
             try:
                 ans.begin=Data.compile(self.begin.get_text())
-            except Exception,e:
-                msg="Invalid begin specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid begin specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid Begin',msg)
                 raise
         t=self.ending.get_text()
@@ -36,16 +37,16 @@ class MDSplusRangeWidget(Table):
         else:
             try:
                 ans.ending=Data.compile(self.ending.get_text())
-            except Exception,e:
-                msg="Invalid ending specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid ending specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid Ending',msg)
                 raise
         t=self.delta.get_text()
         if t != '':
             try:
                 ans.delta=Data.compile(self.delta.get_text())
-            except Exception,e:
-                msg="Invalid delta specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid delta specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid Delta',msg)
                 raise
         return ans

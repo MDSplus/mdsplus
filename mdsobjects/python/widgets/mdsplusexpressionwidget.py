@@ -1,6 +1,7 @@
 import gtk
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Data
+import sys
 
 class MDSplusExpressionWidget(gtk.ScrolledWindow):
     
@@ -28,8 +29,8 @@ class MDSplusExpressionWidget(gtk.ScrolledWindow):
     def getValue(self):
         try:
             return Data.compile(self.get_text())
-        except Exception,e:
-            MDSplusErrorMsg('Invalid Expression','Invalid expression specified.\n\n%s\n\n%s' % (self.get_text(),e))
+        except Exception:
+            MDSplusErrorMsg('Invalid Expression','Invalid expression specified.\n\n%s\n\n%s' % (self.get_text(),sys.exc_info()))
             raise
         
     def setValue(self,d):

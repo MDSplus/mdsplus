@@ -1,5 +1,6 @@
 from gtk import Entry,ScrolledWindow,POLICY_AUTOMATIC,TextView,WRAP_WORD
 import gobject
+import sys
 
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
@@ -34,7 +35,7 @@ class MDSplusExprFieldWidget(propsExprField,MDSplusWidget,Entry):
     def reset(self):
         try:
             self.set_text(self.record.decompile())
-        except Exception,e:
+        except Exception:
             self.set_text("")
         
     def getValue(self):
@@ -43,8 +44,8 @@ class MDSplusExprFieldWidget(propsExprField,MDSplusWidget,Entry):
         else:
             try:
                 return self.node.compile(self.get_text())
-            except Exception,e:
-                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (self.get_text(),e))
+            except Exception:
+                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (self.get_text(),sys.exc_info()))
                 raise
 
     value=property(getValue)
@@ -65,7 +66,7 @@ class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
     def reset(self):
         try:
             self.set_text(self.record.decompile())
-        except Exception,e:
+        except Exception:
             self.set_text("")
         
     def getValue(self):
@@ -74,8 +75,8 @@ class MDSplusExprWidget(propsExpr,MDSplusWidget,ScrolledWindow):
         else:
             try:
                 return self.node.compile(self.get_text())
-            except Exception,e:
-                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (self.get_text(),e))
+            except Exception:
+                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (self.get_text(),sys.exc_info()))
                 raise
 
     value=property(getValue)

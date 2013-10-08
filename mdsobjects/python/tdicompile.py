@@ -164,7 +164,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
         else:
             try:
                 t.value=Builtin(t.value,())
-            except Exception,e:
+            except Exception:
                 t.value=Ident(t.value)
         return t
 
@@ -277,7 +277,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 
 # Error handling rule
     def t_ANY_error(t):
-        print "Illegal character '%s'(%d) at line %d around '%s'" % (t.value[0],ord(t.value[0]),t.lexer.lineno,t.lexer.lexdata[t.lexer.lexpos-10:t.lexer.lexpos+10])
+        print( "Illegal character '%s'(%d) at line %d around '%s'" % (t.value[0],ord(t.value[0]),t.lexer.lineno,t.lexer.lexdata[t.lexer.lexpos-10:t.lexer.lexpos+10]))
 #        t.lexer.skip(1)
 
 # A string containing ignored characters (spaces and tabs)
@@ -597,10 +597,10 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
 
         try:
             t[0]=doBuild(t[1],tuple(t[2]))
-        except Exception,e:
+        except Exception:
             try:
                 t[0]=doMake(t[1],tuple(t[2]))
-            except Exception,e:
+            except Exception:
                 try:
                     numbers=['byte','byte_unsigned','unsigned_byte','word','word_unsigned','unsigned_word',
                              'long','long_unsigned','unsigned_long','quadword','quadword_unsigned','unsigned_quadword',
@@ -609,7 +609,7 @@ def tdiCompile(text,replacementArgs=_replacementArgs(())):
                         t[0]=Data.evaluate(Builtin(t[1],tuple(t[2])))
                     else:
                         t[0]=Builtin(t[1],tuple(t[2]))
-                except Exception,e:
+                except Exception:
                     t[0]=Builtin('ext_function',tuple([None,t[1]]+t[2]))
 
 ### call library (i.e. library->gub(a,b,c))

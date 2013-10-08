@@ -1,6 +1,7 @@
 from gtk import Entry,Label,Table,EXPAND,FILL,SHRINK
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Data,Dispatch
+import os
 
 class MDSplusSequentialWidget(Table):
 
@@ -26,17 +27,17 @@ class MDSplusSequentialWidget(Table):
         ans.ident=self.ident.get_text()
         try:
             ans.ident=Data.compile(ans.ident)
-        except Exception,e:
+        except Exception:
             pass
         ans.phase=self.phase.get_text()
         try:
             ans.phase=Data.compile(ans.phase)
-        except Exception,e:
+        except Exception:
             pass
         try:
             ans.when=Data.compile(self.sequence.get_text())
-        except Exception,e:
-            msg="Invalid sequence specified.\n\n%s" % (e,)
+        except Exception:
+            msg="Invalid sequence specified.\n\n%s" % (sys.exc_info(),)
             MDSplusErrorMsg('Invalid Sequence',msg)
             raise
         ans.completion=self.event.get_text()
@@ -45,7 +46,7 @@ class MDSplusSequentialWidget(Table):
         else:
             try:
                 ans.completion=Data.compile(ans.event)
-            except Exception,e:
+            except Exception:
                 pass
         return ans
         

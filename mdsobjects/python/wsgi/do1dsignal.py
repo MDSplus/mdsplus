@@ -1,4 +1,5 @@
 from MDSplus import makeData,Data
+import sys
 
 def do1dsignal(self):
     if len(self.path_parts) > 2:
@@ -8,8 +9,8 @@ def do1dsignal(self):
         sig=Data.execute(expr)
         y=makeData(sig.data())
         x=makeData(sig.dim_of().data())
-    except Exception,e:
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
+    except Exception:
+        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))

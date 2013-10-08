@@ -10,9 +10,9 @@ class MDSplusDtypeSelWidget(object):
         if selection == 'window':
             selection='windoww'
         try:
-            exec 'self.%s.show()' % (selection,)
-            exec 'self.%s.set_no_show_all(False)' % (selection,)
-        except Exception,e:
+            exec('self.%s.show()' % (selection,))
+            exec('self.%s.set_no_show_all(False)' % (selection,))
+        except Exception:
             pass
         try:
             self.resize(1,1)
@@ -27,9 +27,9 @@ class MDSplusDtypeSelWidget(object):
         menu.append_text("Undefined")
         menu.set_active(len(itemlist)+1)
         menu.connect('changed',self.dtype_changed)
-        exec 'self.%s=menu' % (varname,)
+        exec('self.%s=menu' % (varname,))
         ans=HBox(homogeneous=False)
-        exec 'ans.pack_start(self.%s,False,False,0)' % (varname,)
+        exec('ans.pack_start(self.%s,False,False,0)' % (varname,))
         if no_show:
             menu.set_no_show_all(True)
         return ans

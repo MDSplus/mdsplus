@@ -1,4 +1,5 @@
 from MDSplus import Data,makeData
+import sys
 
 def doPlot(self):
 
@@ -51,8 +52,8 @@ def doPlot(self):
         sig=Data.execute(expr)
         y=makeData(sig.data()).data()
         x=makeData(sig.dim_of().data()).data()
-    except Exception,e:
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
+    except Exception:
+        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.get_info()))
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))

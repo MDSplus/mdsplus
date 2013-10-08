@@ -11,6 +11,7 @@ from mdsplusdtypeselwidget import MDSplusDtypeSelWidget
 from mdsplusrangewidget import MDSplusRangeWidget
 from mdspluswindowwidget import MDSplusWindowWidget
 from mdspluspathwidget import MDSplusPathWidget
+import sys
 
 class props(object):
     __gproperties__= {
@@ -99,8 +100,8 @@ class MDSplusXdBox(props,MDSplusDtypeSelWidget,MDSplusWidget,Window):
     def set_dtype(self):
         if hasattr(self,'_node'):
             try:
-                exec 'self.dtype=self.dtype_%s' % (self.node.usage.lower(),)
-            except Exception,e:
+                exec('self.dtype=self.dtype_%s' % (self.node.usage.lower(),))
+            except Exception:
                 self.dtype=self.dtype_expression
         else:
             self.dtype=self.dtype_any
@@ -115,8 +116,8 @@ class MDSplusXdBox(props,MDSplusDtypeSelWidget,MDSplusWidget,Window):
                 try:
                     self.node.record=value
                     self.hide()
-                except Exception,e:
-                    self.popupError(e)
+                except Exception:
+                    self.popupError(sys.exc_info())
             else:
                 self.value=value
                 self.hide()

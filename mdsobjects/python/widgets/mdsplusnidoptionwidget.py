@@ -4,6 +4,7 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
 from mdsplusexpr import MDSplusExprWidget
+import sys
 
 try:
     import glade
@@ -72,7 +73,7 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
             if value.find('<DEVTOP>') > -1:
                 try:
                     self.values[idx]=value.replace('<DEVTOP>',str(self.devnode))
-                except Exception,e:
+                except Exception:
                     pass
             idx=idx+1
 
@@ -129,8 +130,8 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
                         try:
                             newval=self.getNode().compile(val).decompile()
                             val=str(newval)
-                        except Exception,e:
-                            print "Invalid value specified for an option item. Value string was <%s>. \nError was %s." % (val,e)
+                        except Exception:
+                            print("Invalid value specified for an option item. Value string was <%s>. \nError was %s." % (val,sys.exc_info()))
                     if value == val:
                         self.set_active(idx)
                         break
@@ -150,8 +151,8 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
         else:
             try:
                 return self.node.compile(value)
-            except Exception,e:
-                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (value,e))
+            except Exception:
+                MDSplusErrorMsg('Invalid value','Invalid value specified.\n\n%s\n\n%s' % (value,sys.exc_info()))
                 raise
 
     value=property(getValue)

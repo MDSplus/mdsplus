@@ -1,4 +1,5 @@
 from MDSplus import Data
+import sys
 
 def doImage(self):
     if len(self.path_parts) > 2:
@@ -19,7 +20,7 @@ def doImage(self):
         else:
             raise Exception("not an known image type")
         output=str(d.getData().data().data)
-    except Exception,e:
-        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,e))
+    except Exception:
+        raise Exception("Error evaluating expression: '%s', error: %s" % (expr,sys.exc_info()))
     status = '200 OK'
     return (status, response_headers, output)

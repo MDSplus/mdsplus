@@ -1,5 +1,6 @@
 from gtk import ScrolledWindow,Table,Label,POLICY_NEVER,POLICY_ALWAYS,EXPAND,FILL,Entry,CheckButton
 import gobject
+import sys
 
 from mdspluswidget import MDSplusWidget
 from mdspluserrormsg import MDSplusErrorMsg
@@ -34,7 +35,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
     def resetPart(self,channel,field):
         try:
             channel[field].set_text(str(channel[field+'Node'].record.decompile()))
-        except Exception,e:
+        except Exception:
             channel[field].set_text('')
         
 
@@ -45,7 +46,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
             for channel in self.channels:
                 try:
                     channel['on'].set_active(channel['dataNode'].on)
-                except Exception,e:
+                except Exception:
                     channel['on'].set_active(True)
                 self.resetPart(channel,'startIdx')
                 self.resetPart(channel,'endIdx')
@@ -53,7 +54,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
                     self.resetPart(channel,'inc')
                 try:
                     channel['path'].set_label(str(channel['dataNode'].minpath))
-                except Exception,e:
+                except Exception:
                     channel['path'].set_label('')
 
     def applyPart(self,channel,field,idx):
@@ -63,14 +64,14 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
         else:
             try:
                 value=Data.compile(value)
-            except Exception,e:
-                MDSplusErrorMsg('Invalid value','Error compiling %s for channel %d\n\n%s\n\n%s' % (field,idx,value,e))
+            except Exception:
+                MDSplusErrorMsg('Invalid value','Error compiling %s for channel %d\n\n%s\n\n%s' % (field,idx,value,sys.exc_info()))
                 raise
         try:
             if channel[field+'Node'].compare(value) != 1:
                 channel[field+'Node'].record=value
-        except Exception,e:
-            MDSplusErrorMsg('Error storing value','Error storing value %s for channel %d\n\n\%s' % (field,idx,e))
+        except Exception:
+            MDSplusErrorMsg('Error storing value','Error storing value %s for channel %d\n\n\%s' % (field,idx,sys.exc_info()))
         
     def apply(self):
         if self.putOnApply:
@@ -80,12 +81,12 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
                 if channel['dataNode'].on != channel['on'].get_active():
                     try:
                         channel['dataNode'].on=channel['on'].get_active()
-                    except Exception,e:
+                    except Exception:
                         if channel['on'].get_active():
                             state='on'
                         else:
                             state='off'
-                        MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (channel['dataNode'].minpath,state,e))
+                        MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (channel['dataNode'].minpath,state,sys.exc_info()))
                         raise
                 self.applyPart(channel,'startIdx',idx)
                 self.applyPart(channel,'endIdx',idx)

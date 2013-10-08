@@ -1,6 +1,7 @@
 from gtk import Table,Label,Entry,ScrolledWindow,EXPAND,FILL,POLICY_NEVER,POLICY_ALWAYS
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Routine,Data
+import sys
 
 def adj_changed(adj):
     newstep=adj.upper/8
@@ -40,20 +41,20 @@ class MDSplusRoutineWidget(Table):
         ans.image=self.image.get_text()
         try:
             ans.image=Data.compile(ans.image)
-        except Exception,e:
+        except Exception:
             pass
         ans.routine=self.routine.get_text()
         try:
             ans.routine=Data.compile(ans.routine)
-        except Exception,e:
+        except Exception:
             pass
         if self.timeout.get_text() == '' or self.timeout.get_text() == '*':
             ans.timeout=None
         else:
             try:
                 ans.timeout=Data.compile(self.timeout.get_text())
-            except Exception,e:
-                msg="Invalid timeout specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid timeout specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid Timeout',msg)
                 raise
         idx=len(self.args)-1
@@ -66,8 +67,8 @@ class MDSplusRoutineWidget(Table):
             else:
                 try:
                     a=Data.compile(t)
-                except Exception,e:
-                    msg="Invalid argument specified.\n\n%s" % (e,)
+                except Exception:
+                    msg="Invalid argument specified.\n\n%s" % (sys.exc_info(),)
                     MDSplusErrorMsg('Invalid Argument',msg)
                     raise
                 ans.setArgumentAt(idx,a)

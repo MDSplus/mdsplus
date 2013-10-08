@@ -131,52 +131,52 @@ from cgi import parse_qs
 class application:
 
     def __init__(self, environ, start_response):
-    	sys.path.insert(0,os.path.dirname(environ['SCRIPT_FILENAME']))
-    	try:
-	  import mdsplus_wsgi_config
-	except:
-	  pass
+        sys.path.insert(0,os.path.dirname(environ['SCRIPT_FILENAME']))
+        try:
+            import mdsplus_wsgi_config
+        except:
+            pass
         self.environ = environ
         self.start = start_response
         self.tree=None
         self.shot=None
-	self.args=parse_qs(self.environ['QUERY_STRING'],keep_blank_values=1)
-	self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
+        self.args=parse_qs(self.environ['QUERY_STRING'],keep_blank_values=1)
+        self.path_parts=self.environ['PATH_INFO'].split('/')[1:]
         doername='do'+self.path_parts[0].capitalize()
         try:
             exec ('from wsgi import '+doername,globals())
             self.doer=eval(doername)
-        except Exception,e:
+        except Exception:
             self.doer=None
 
     def __iter__(self):
-      try:
-        if self.doer is None:
-          status = '500 BAD_REQUEST'
-          response_headers=[('Content-type','text/text')]
-	  self.start('500 BAD_REQUEST',[('Content-type','text/text')])
-          output="Unsupported request type: "+self.path_parts[0]
-        else:
-          status, response_headers,output = self.doer(self)
-	self.start(status,response_headers)
-	yield output
-      except Exception,e:
-        import traceback
-        self.start('500 BAD REQUEST',[('Content-Type','text/xml')])
-	yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(traceback.format_exc()),) 
+        try:
+            if self.doer is None:
+                status = '500 BAD_REQUEST'
+                response_headers=[('Content-type','text/text')]
+                self.start('500 BAD_REQUEST',[('Content-type','text/text')])
+                output="Unsupported request type: "+self.path_parts[0]
+            else:
+                status, response_headers,output = self.doer(self)
+            self.start(status,response_headers)
+            yield output
+        except Exception:
+            import traceback
+            self.start('500 BAD REQUEST',[('Content-Type','text/xml')])
+            yield '<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (str(traceback.format_exc()),) 
 
 
     def openTree(self,tree,shot):
-	Tree.usePrivateCtx()
+        Tree.usePrivateCtx()
         try:
             shot=int(shot)
-    	except Exception,e:
-            raise Exception("Invalid shot specified, must be an integer value: %s<br /><br />Error: %s" % (shot,e))
+        except Exception:
+            raise Exception("Invalid shot specified, must be an integer value: %s<br /><br />Error: %s" % (shot,sys.exc_info()))
         try:
-	    t=Tree(tree,shot)
+            t=Tree(tree,shot)
             self.tree=t.tree
             self.shot=str(t.shot)
             self.treeObj=t
-        except Exception,e:
-            raise Exception("Error opening tree named %s for shot %d<br /><br />Error: %s" % (tree,shot,e))
+        except Exception:
+            raise Exception("Error opening tree named %s for shot %d<br /><br />Error: %s" % (tree,shot,sys.exc_info()))
 

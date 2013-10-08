@@ -80,62 +80,62 @@ class myevent(Event):
         self.cancel()
 
 def handler(req):
-  try:
-    opts=req.get_options()
-    if "UDP_EVENTS" in opts:
-      value=opts["UDP_EVENTS"].upper()
-      if value=="YES":
-	os.putenv('UDP_EVENTS','yes')
-    if "EVENT_SERVER" in opts:
-      os.putenv("mds_event_server",opts['EVENT_SERVER'])
-  except:
-    pass
-  os.putenv('UDP_EVENTS','yes')
-  event=req.path_info.rsplit('/')[-1]
-  args=parse_qs(str(req.args))
-  timeout=60
-  try:
-      timeout=int(args['timeout'][-1])
-  except:
-      pass
-  try:
-      event=args['event'][-1]
-  except:
-      pass
-  if 'handler' in args:
-      specialHandler=__import__(args['handler'][-1])
-      if hasattr(specialHandler,'handler'):
-        specialHandler=specialHandler.handler
-      else:
-        raise Exception,str(dir(specialHandler))
-  else:
-      specialHandler=None
-  e=myevent(event,timeout)
-  e.join()
-  req.headers_out['Cache-Control']='no-store, no-cache, must-revalidate'
-  req.headers_out['Pragma']='no-cache'
-  req.content_type="text/xml"
-  if specialHandler is not None:
-      result = specialHandler(req,e)
-      if result is not None:
-          return result
-  if e.exception is None:
-      data=e.getRaw()
-      t=time.ctime(e.time)
-      req.write('<?xml version="1.0" encoding="ISO-8859-1" ?>'+"<event><name>%s</name><time>%s</time>" % (event,t))
-      if data is not None:
-          dtext=""
-          for c in data:
-              dtext = dtext+chr(int(c))
-          req.write("<data><bytes>%s</bytes><text>%s</text></data>" % (data.tolist(),dtext))
-      req.write("</event>")
-      return apache.OK
-  else:
-      if 'Timeout' in str(e.exception):
-          req.content_type="text/plain"
-          return apache.HTTP_NO_CONTENT
-      else:
-          req.exception=True
-          req.write('<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (e.exception,))
-          return apache.HTTP_BAD_REQUEST
+    try:
+        opts=req.get_options()
+        if "UDP_EVENTS" in opts:
+            value=opts["UDP_EVENTS"].upper()
+            if value=="YES":
+                os.putenv('UDP_EVENTS','yes')
+        if "EVENT_SERVER" in opts:
+            os.putenv("mds_event_server",opts['EVENT_SERVER'])
+    except:
+        pass
+    os.putenv('UDP_EVENTS','yes')
+    event=req.path_info.rsplit('/')[-1]
+    args=parse_qs(str(req.args))
+    timeout=60
+    try:
+        timeout=int(args['timeout'][-1])
+    except:
+        pass
+    try:
+        event=args['event'][-1]
+    except:
+        pass
+    if 'handler' in args:
+        specialHandler=__import__(args['handler'][-1])
+        if hasattr(specialHandler,'handler'):
+            specialHandler=specialHandler.handler
+        else:
+            raise(Exception(str(dir(specialHandler))))
+    else:
+        specialHandler=None
+        e=myevent(event,timeout)
+        e.join()
+    req.headers_out['Cache-Control']='no-store, no-cache, must-revalidate'
+    req.headers_out['Pragma']='no-cache'
+    req.content_type="text/xml"
+    if specialHandler is not None:
+        result = specialHandler(req,e)
+        if result is not None:
+            return result
+    if e.exception is None:
+        data=e.getRaw()
+        t=time.ctime(e.time)
+        req.write('<?xml version="1.0" encoding="ISO-8859-1" ?>'+"<event><name>%s</name><time>%s</time>" % (event,t))
+        if data is not None:
+            dtext=""
+            for c in data:
+                dtext = dtext+chr(int(c))
+            req.write("<data><bytes>%s</bytes><text>%s</text></data>" % (data.tolist(),dtext))
+        req.write("</event>")
+        return apache.OK
+    else:
+        if 'Timeout' in str(e.exception):
+            req.content_type="text/plain"
+            return apache.HTTP_NO_CONTENT
+        else:
+            req.exception=True
+            req.write('<?xml version="1.0" encoding="ISO-8859-1" ?>'+"\n<exception>%s</exception>" % (e.exception,))
+            return apache.HTTP_BAD_REQUEST
 

@@ -4,6 +4,7 @@ import gobject
 from mdspluswidget import MDSplusWidget
 from mdsplusxdbox import MDSplusXdBox
 from mdspluserrormsg import MDSplusErrorMsg
+import sys
 
 try:
     import glade
@@ -34,8 +35,8 @@ class MDSplusXdBoxButtonWidget(props,MDSplusWidget,Button):
                 if self.node.compare(self.xdbox.value) != 1:
                     self.node.record=self.xdbox.value
                 self.reset()
-            except Exception,e:
-                MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,e))
+            except Exception:
+                MDSplusErrorMsg('Error storing value','Error storing value in to %s\n\n%s' % (self.node.minpath,sys.exc_info()))
 
     def popupXd(self,button):
         try:

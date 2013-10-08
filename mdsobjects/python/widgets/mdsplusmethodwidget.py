@@ -1,6 +1,7 @@
 from gtk import Table,Label,Entry,ScrolledWindow,POLICY_NEVER,POLICY_ALWAYS,EXPAND,FILL
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Method,Data
+import sys
 
 def adj_changed(adj):
     newstep=adj.upper/8
@@ -40,12 +41,12 @@ class MDSplusMethodWidget(Table):
         ans.method=self.method.get_text()
         try:
             ans.method=Data.compile(ans.method)
-        except Exception,e:
+        except Exception:
             pass
         try:
             ans.object=Data.compile(self.device.get_text())
-        except Exception,e:
-            msg="Invalid device specified.\n\n%s" % (e,)
+        except Exception:
+            msg="Invalid device specified.\n\n%s" % (sys.exc_info(),)
             MDSplusErrorMsg('Invalid Device',msg)
             raise
         if self.timeout.get_text() == '' or self.timeout.get_text() == '*':
@@ -53,8 +54,8 @@ class MDSplusMethodWidget(Table):
         else:
             try:
                 ans.timeout=Data.compile(self.timeout.get_text())
-            except Exception,e:
-                msg="Invalid timeout specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid timeout specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid Timeout',msg)
                 raise
         idx=len(self.args)-1
@@ -67,8 +68,8 @@ class MDSplusMethodWidget(Table):
             else:
                 try:
                     a=Data.compile(t)
-                except Exception,e:
-                    msg="Invalid argument (%d) specified.\n\n%s" % (idx+1,e,)
+                except Exception:
+                    msg="Invalid argument (%d) specified.\n\n%s" % (idx+1,sys.exc_info(),)
                     MDSplusErrorMsg('Invalid Argument',msg)
                     raise
                 ans.setArgumentAt(idx,a)

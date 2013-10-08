@@ -123,9 +123,9 @@ def doScope(self):
         color = getValue(lines, 'Scope.color_'+str(idx))
         if(color == None):
             break
-	color = color.split(',')[0]
-	if color == 'Blak':
-	    color = 'Black'
+        color = color.split(',')[0]
+        if color == 'Blak':
+            color = 'Black'
         outStr = outStr+'<color>'+color+'</color>'
         idx = idx + 1
 #Handle missing color palette
@@ -263,8 +263,8 @@ def doScope(self):
     response_headers.append(('Content-type','text/text'))
     try:
       output = str(Data.execute(self.args['title'][0]))
-    except Exception,e:
-      output = str(e)+' expression was '+self.args['title'][0]
+    except Exception:
+      output = str(sys.exc_info())+' expression was '+self.args['title'][0]
     return ('200 OK',response_headers, output)
   else:
     ans=('400 NOT FOUND',[('Content-type','text/text'),],'')
@@ -297,14 +297,14 @@ def doScopepanel(self):
         if name in self.args:
             try:
                 response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
-            except Exception,e:
-                response_headers.append((name,str(e)))
+            except Exception:
+                response_headers.append((name,str(sys.exc_info())))
 
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
     response_headers.append(('Pragma','no-cache'))
     if 'tree' in self.args:
-	Tree.usePrivateCtx()
+        Tree.usePrivateCtx()
         try:
             t=Tree(self.args['tree'][-1],int(self.args['shot'][-1].split(',')[0]))
         except:
@@ -330,35 +330,35 @@ def doScopepanel(self):
                 try:
                     t=Tree(self.args['tree'][-1],int(shot))
                     response_headers.append(('SHOT'+sig_idx_s,str(t.shot)))
-                except Exception,e:
-                    response_headers.append(('ERROR'+sig_idx_s,'Error opening tree %s, shot %s, error: %s' % (self.args['tree'][-1],shot,e)))
+                except Exception:
+                    response_headers.append(('ERROR'+sig_idx_s,'Error opening tree %s, shot %s, error: %s' % (self.args['tree'][-1],shot,sys.exc_info())))
                     continue
                 if 'default_node' in self.args:
                     try:
                         t.setDefault(t.getNode(self.args['default_node'][-1]))
-                    except Exception,e:
+                    except Exception:
                         response_headers.append(('ERROR'+sig_idx_s,'Error setting default to %s in tree %s, shot %s, error: %s' % (self.args['default_node'][-1],
-                                                                                                                                    self.args['tree'][-1],shot,e)))
+                                                                                                                                    self.args['tree'][-1],shot,sys.exc_info())))
                         continue
                 try:
                     sig=Data.execute(expr)
                     y=makeData(sig.data())
-                except Exception,e:
-                    response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,e)))
+                except Exception:
+                    response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
                 if 'x'+x_idx_s in self.args:
                     expr=self.args['x'+x_idx_s][-1]
                     try:
                         x=Data.execute(expr)
                         x=makeData(x.data())
-                    except Exception,e:
-                        response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,e)))
+                    except Exception:
+                        response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                         continue
                 else:
                     try:
                         x=makeData(sig.dim_of().data())
-                    except Exception,e:
-                        response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,e)))
+                    except Exception:
+                        response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,sys.exc_info())))
                         continue
                 response_headers.append(('X'+sig_idx_s+'_DATATYPE',x.__class__.__name__))
                 response_headers.append(('Y'+sig_idx_s+'_DATATYPE',y.__class__.__name__))
@@ -378,22 +378,22 @@ def doScopepanel(self):
             try:
                 sig=Data.execute(expr)
                 y=makeData(sig.data())
-            except Exception,e:
-                response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,e)))
+            except Exception:
+                response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                 continue
             if 'x'+x_idx_s in self.args:
                 expr=self.args['x'+x_idx_s][-1]
                 try:
                     x=Data.execute(expr)
                     x=makeData(x.data())
-                except Exception,e:
-                    response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,e)))
+                except Exception:
+                    response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
             else:
                 try:
                     x=makeData(sig.dim_of().data())
-                except Exception,e:
-                    response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,e)))
+                except Exception:
+                    response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
             response_headers.append(('X'+sig_idx_s+'_DATATYPE',x.__class__.__name__))
             response_headers.append(('Y'+sig_idx_s+'_DATATYPE',y.__class__.__name__))

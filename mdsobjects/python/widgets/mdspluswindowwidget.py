@@ -1,6 +1,7 @@
 from gtk import Entry,Label,Table,EXPAND,FILL,SHRINK
 from mdspluserrormsg import MDSplusErrorMsg
 from MDSplus import Data,Window
+import sys
 
 class MDSplusWindowWidget(Table):
 
@@ -26,8 +27,8 @@ class MDSplusWindowWidget(Table):
         else:
             try:
                 ans.startIdx=Data.compile(self.startIdx.get_text())
-            except Exception,e:
-                msg="Invalid startIdx specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid startIdx specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid StartIdx',msg)
                 raise
         t=self.endIdx.get_text()
@@ -36,16 +37,16 @@ class MDSplusWindowWidget(Table):
         else:
             try:
                 ans.endIdx=Data.compile(self.endIdx.get_text())
-            except Exception,e:
-                msg="Invalid endIdx specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid endIdx specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid EndIdx',msg)
                 raise
         t=self.timeAt0.get_text()
         if t != '':
             try:
                 ans.timeAt0=Data.compile(self.timeAt0.get_text())
-            except Exception,e:
-                msg="Invalid timeAt0 specified.\n\n%s" % (e,)
+            except Exception:
+                msg="Invalid timeAt0 specified.\n\n%s" % (sys.exc_info(),)
                 MDSplusErrorMsg('Invalid TimeAt0',msg)
                 raise
         return ans

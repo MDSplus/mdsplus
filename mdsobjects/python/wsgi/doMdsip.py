@@ -57,8 +57,8 @@ def disconnectMdsip(fifodir):
         fifo_out.write('bye'.ljust(48,'-'))
         fifo_out.flush()
         fifo_out.close()
-    except Exception,e:
-        print 'got exception shutting down:',e
+    except Exception:
+        print('got exception shutting down:',sys.exec_info())
         sys.stdout.flush()
     raise Exception('mdsip disconnect')
 
@@ -90,7 +90,7 @@ def doMdsip(self):
         sys.stdout.flush()
         try:
             msg=getmsg(self.environ['wsgi.input'])
-        except DisconnectException,e:
+        except DisconnectException:
             disconnectMdsip(fifodir)
         #print 'got message of %d bytes' % (len(msg),)
         #sys.stdout.flush()
