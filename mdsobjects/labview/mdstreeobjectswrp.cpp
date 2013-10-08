@@ -19,15 +19,12 @@ DLLEXPORT void mdsplus_tree_addDevice(const void *lvTreePtr, void **lvTreeNodePt
 		treeNodePtrOut = treePtr->addDevice(const_cast<char *>(nameIn), const_cast<char *>(typeIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -45,15 +42,12 @@ DLLEXPORT void mdsplus_tree_addNode(const void *lvTreePtr, void **lvTreeNodePtrO
 		treeNodePtrOut = treePtr->addNode(const_cast<char *>(nameIn), const_cast<char *>(usageIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -69,15 +63,12 @@ DLLEXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn,
 		treePtrOut = new Tree(const_cast<char *>(nameIn), shotIn);
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -93,15 +84,12 @@ DLLEXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *na
 		treePtrOut = new Tree(const_cast<char *>(nameIn), shotIn, const_cast<char *>(modeIn));
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -117,15 +105,12 @@ DLLEXPORT void mdsplus_tree_createPulse(const void *lvTreePtr, int shotIn, Error
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->createPulse(shotIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -141,15 +126,12 @@ DLLEXPORT void mdsplus_tree_deletePulse(const void *lvTreePtr, int shotIn, Error
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->deletePulse(shotIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -172,15 +154,12 @@ DLLEXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error)
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->edit();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -198,10 +177,10 @@ DLLEXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArray
 		stringArrayPtrOut = treePtr->findTags(const_cast<char *>(wildIn));
 		*lvStringArrayPtrOut = reinterpret_cast<void *>(stringArrayPtrOut);
 	}
-	catch (exception *e)
+	catch (const MdsException &e)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(e.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -217,17 +196,13 @@ DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *err
 		treePtrOut = getActiveTree();
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		delete treePtrOut;
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		delete treePtrOut;
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -241,10 +216,10 @@ DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, 
 	{
 		*currentOut = Tree::getCurrent(const_cast<char *>(treeNameIn));
 	}
-	catch (exception *e)
+	catch (const MdsException &e)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(e.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -260,15 +235,12 @@ DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, _int64 *sizeO
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		*sizeOut = treePtr->getDatafileSize();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -286,15 +258,12 @@ DLLEXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodeP
 		treeNodePtrOut = treePtr->getDefault();
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -311,19 +280,14 @@ DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrO
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treeNodePtrOut = treePtr->getNode(const_cast<char *>(pathIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
 		*lvTreeNodePtrOut = 0;
-		errorMessage = const_cast<char *>(mdsE->what());
+		fillErrorCluster(errorCode, errorSource, const_cast<char *>(mdsE.what()), error);
 	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
-	}
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
 DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeOut, const char *pathIn, ErrorCluster *error)
@@ -340,14 +304,9 @@ DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeO
 		delete node;
 
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		*lvhasNodeOut = LVBooleanFalse;
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -367,15 +326,12 @@ DLLEXPORT void mdsplus_tree_getNode_string(const void *lvTreePtr, void **lvTreeN
 		treeNodePtrOut = treePtr->getNode(stringPtrIn);
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -394,15 +350,12 @@ DLLEXPORT void mdsplus_tree_getNode_treepath(const void *lvTreePtr, void **lvTre
 		treeNodePtrOut = treePtr->getNode(treePathPtrIn);
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -420,15 +373,12 @@ DLLEXPORT void mdsplus_tree_getNodeWild(const void *lvTreePtr, void **lvTreeNode
 		treeNodeArrayPtrOut = treePtr->getNodeWild(const_cast<char *>(pathIn));
 		*lvTreeNodeArrayPtrOut = reinterpret_cast<void *>(treeNodeArrayPtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -446,15 +396,12 @@ DLLEXPORT void mdsplus_tree_getNodeWild_usageMask(const void *lvTreePtr, void **
 		treeNodeArrayPtrOut = treePtr->getNodeWild(const_cast<char *>(pathIn), usageMaskIn);
 		*lvTreeNodeArrayPtrOut = reinterpret_cast<void *>(treeNodeArrayPtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -470,15 +417,12 @@ DLLEXPORT void mdsplus_tree_isModified(const void *lvTreePtr, LVBoolean *lvIsMod
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		*lvIsModifiedOut = (treePtr->isModified() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -494,15 +438,12 @@ DLLEXPORT void mdsplus_tree_isOpenForEdit(const void *lvTreePtr, LVBoolean *lvIs
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		*lvIsOpenForEditOut = (treePtr->isOpenForEdit() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -518,15 +459,12 @@ DLLEXPORT void mdsplus_tree_isReadOnly(const void *lvTreePtr, LVBoolean *lvIsRea
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		*lvIsReadOnlyOut = (treePtr->isReadOnly() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -542,15 +480,12 @@ DLLEXPORT void mdsplus_tree_quit(const void *lvTreePtr, ErrorCluster *error)
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->quit();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -566,15 +501,12 @@ DLLEXPORT void mdsplus_tree_remove(const void *lvTreePtr, const char *nameIn, Er
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->remove(const_cast<char *>(nameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -590,15 +522,12 @@ DLLEXPORT void mdsplus_tree_removeTag(const void *lvTreePtr, const char *tagName
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->removeTag(const_cast<char *>(tagNameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -614,10 +543,10 @@ DLLEXPORT void mdsplus_tree_setActiveTree(const void *lvTreePtrIn, ErrorCluster 
 		treePtrIn = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtrIn));
 		setActiveTree(treePtrIn);
 	}
-	catch (exception *e)
+	catch (const MdsException &e)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(e.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -631,15 +560,10 @@ DLLEXPORT void mdsplus_tree_setCurrent(const char *treeNameIn, int shotIn, Error
 	{
 		Tree::setCurrent(const_cast<char *>(treeNameIn), shotIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -657,15 +581,12 @@ DLLEXPORT void mdsplus_tree_setDefault(const void *lvTreePtr, const void *lvTree
 		treeNodePtrIn = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtrIn));
 		treePtr->setDefault(treeNodePtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -687,16 +608,14 @@ DLLEXPORT void mdsplus_tree_setTimeContext(const void *lvTreePtr, const void *lv
 		deltaDataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDeltaDataPtrIn));
 		treePtr->setTimeContext(startDataPtrIn, endDataPtrIn, deltaDataPtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
-	}
+
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
@@ -713,15 +632,12 @@ DLLEXPORT void mdsplus_tree_setVersionsInModel(const void *lvTreePtr, LVBoolean 
 		verEnabledIn = (*lvVerEnabledIn == LVBooleanTrue) ? true : false;
 		treePtr->setVersionsInModel(verEnabledIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -739,15 +655,12 @@ DLLEXPORT void mdsplus_tree_setVersionsInPulse(const void *lvTreePtr, LVBoolean 
 		verEnabledIn = (*lvVerEnabledIn == LVBooleanTrue) ? true : false;
 		treePtr->setVersionsInPulse(verEnabledIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -763,15 +676,12 @@ DLLEXPORT void mdsplus_tree_setViewDate(const void *lvTreePtr, const char *dateI
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->setViewDate(const_cast<char *>(dateIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -789,15 +699,12 @@ DLLEXPORT void mdsplus_tree_versionsInModelEnabled(const void *lvTreePtr, LVBool
 		verEnabledOut = treePtr->versionsInModelEnabled();
 		*lvVerEnabledOut = (verEnabledOut == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -815,15 +722,12 @@ DLLEXPORT void mdsplus_tree_versionsInPulseEnabled(const void *lvTreePtr, LVBool
 		verEnabledOut = treePtr->versionsInPulseEnabled();
 		*lvVerEnabledOut = (verEnabledOut == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -839,15 +743,12 @@ DLLEXPORT void mdsplus_tree_write(const void *lvTreePtr, ErrorCluster *error)
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treePtr->write();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -869,15 +770,12 @@ DLLEXPORT void mdsplus_treenode_addDevice(const void *lvTreeNodePtr, void **lvTr
 		treeNodePtrOut = treeNodePtr->addDevice(const_cast<char *>(nameIn), const_cast<char *>(typeIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -895,15 +793,12 @@ DLLEXPORT void mdsplus_treenode_addNode(const void *lvTreeNodePtr, void **lvTree
 		treeNodePtrOut = treeNodePtr->addNode(const_cast<char *>(nameIn), const_cast<char *>(usageIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -919,15 +814,12 @@ DLLEXPORT void mdsplus_treenode_addTag(const void *lvTreeNodePtr, const char *ta
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		treeNodePtr->addTag(const_cast<char *>(tagNameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -951,15 +843,12 @@ DLLEXPORT void mdsplus_treenode_beginSegment(const void *lvTreeNodePtr, const vo
 		initialDataArrayPtrIn = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtrIn));
 		treeNodePtr->beginSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn, initialDataArrayPtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -977,15 +866,12 @@ DLLEXPORT void mdsplus_treenode_beginTimestampedSegment(const void *lvTreeNodePt
 		initDataArrayPtrIn = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtrIn));
 		treeNodePtr->beginTimestampedSegment(initDataArrayPtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1001,15 +887,12 @@ DLLEXPORT void mdsplus_treenode_containsVersions(const void *lvTreeNodePtr, LVBo
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvContainsVersionsOut = (treeNodePtr->containsVersions() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1025,15 +908,12 @@ DLLEXPORT void mdsplus_treenode_deleteData(const void *lvTreeNodePtr, ErrorClust
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		treeNodePtr->deleteData();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1049,15 +929,12 @@ DLLEXPORT void mdsplus_treenode_doMethod(const void *lvTreeNodePtr, const char *
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		treeNodePtr->doMethod(const_cast<char *>(methodIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1082,11 +959,11 @@ DLLEXPORT void mdsplus_treenode_findTags(const void *lvTreeNodePtr, void **lvStr
 		stringArrayPtrOut = treeNodePtr->findTags();
 		*lvStringArrayPtrOut = reinterpret_cast<void *>(stringArrayPtrOut);
 	}
-	catch (exception *e)
+	catch (const MdsException &e)
 	{
 		delete stringArrayPtrOut;
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(e.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1104,15 +981,12 @@ DLLEXPORT void mdsplus_treenode_getBrother(const void *lvTreeNodePtr, void **lvT
 		treeNodePtrOut = treeNodePtr->getBrother();
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1130,15 +1004,12 @@ DLLEXPORT void mdsplus_treenode_getChild(const void *lvTreeNodePtr, void **lvTre
 		treeNodePtrOut = treeNodePtr->getChild();
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1169,16 +1040,12 @@ DLLEXPORT void mdsplus_treenode_getChildren(const void *lvTreeNodePtr, LPtrArrHd
 			errorMessage = "NumericArrayResize error";
 		deleteNativeArray(reinterpret_cast<Data **>(childrenArrOut));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		deleteNativeArray(reinterpret_cast<Data **>(childrenArrOut));
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1205,15 +1072,12 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 			errorMessage = "NumericArrayResize error";
 		//deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1229,15 +1093,12 @@ DLLEXPORT void mdsplus_treenode_getCompressedLength(const void *lvTreeNodePtr, i
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*compressedLengthOut = treeNodePtr->getCompressedLength();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1253,15 +1114,12 @@ DLLEXPORT void mdsplus_treenode_getConglomerateElt(const void *lvTreeNodePtr, in
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*conglomerateEltOut = treeNodePtr->getConglomerateElt();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1279,15 +1137,12 @@ DLLEXPORT void mdsplus_treenode_getConglomerateNodes(const void *lvTreeNodePtr, 
 		treeNodeArrayPtrOut = treeNodePtr->getConglomerateNodes();
 		*lvTreeNodeArrayPtrOut = reinterpret_cast<void *>(treeNodeArrayPtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1303,15 +1158,12 @@ DLLEXPORT void mdsplus_treenode_getDepth(const void *lvTreeNodePtr, int *depthOu
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*depthOut = treeNodePtr->getDepth();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1329,15 +1181,12 @@ DLLEXPORT void mdsplus_treenode_getData(const void *lvTreeNodePtr, void **lvData
 		dataPtrOut = treeNodePtr->getData();
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1368,15 +1217,12 @@ DLLEXPORT void mdsplus_treenode_getDescendants(const void *lvTreeNodePtr, LPtrAr
 			errorMessage = "NumericArrayResize error";
 		deleteNativeArray(reinterpret_cast<Data **>(descendantsArrOut));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1403,15 +1249,12 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 			errorMessage = "NumericArrayResize error";
 		//deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1438,15 +1281,12 @@ DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandl
 			errorMessage = "NumericArrayResize error";
 		deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1462,15 +1302,12 @@ DLLEXPORT void mdsplus_treenode_getLength(const void *lvTreeNodePtr, int *length
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lengthOut = treeNodePtr->getLength();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1488,15 +1325,12 @@ DLLEXPORT void mdsplus_treenode_getMember(const void *lvTreeNodePtr, void **lvTr
 		treeNodePtrOut = treeNodePtr->getMember();
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1527,15 +1361,12 @@ DLLEXPORT void mdsplus_treenode_getMembers(const void *lvTreeNodePtr, LPtrArrHdl
 			errorMessage = "NumericArrayResize error";
 		deleteNativeArray(reinterpret_cast<Data **>(membersArrOut));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1562,15 +1393,12 @@ DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle
 			errorMessage = "NumericArrayResize error";
 		deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1588,10 +1416,10 @@ DLLEXPORT void mdsplus_treenode_getNid(const void *lvTreeNodePtr, int *nidOut, E
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*nidOut = treeNodePtr->getNid();
 	}
-	catch (exception *e)
+	catch (const MdsException &e)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(e.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1609,15 +1437,12 @@ DLLEXPORT void mdsplus_treenode_getNode(const void *lvTreeNodePtr, void **lvTree
 		treeNodePtrOut = treeNodePtr->getNode(const_cast<char *>(relPathIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1637,15 +1462,12 @@ DLLEXPORT void mdsplus_treenode_getNode_string(const void *lvTreeNodePtr, void *
 		treeNodePtrOut = treeNodePtr->getNode(stringPtrIn);
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1672,15 +1494,12 @@ DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandl
 			errorMessage = "NumericArrayResize error";
 		deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1696,15 +1515,12 @@ DLLEXPORT void mdsplus_treenode_getNumChildren(const void *lvTreeNodePtr, int *n
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*numChildrenOut = treeNodePtr->getNumChildren();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1720,15 +1536,12 @@ DLLEXPORT void mdsplus_treenode_getNumDescendants(const void *lvTreeNodePtr, int
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*numDescendantsOut = treeNodePtr->getNumDescendants();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1744,15 +1557,12 @@ DLLEXPORT void mdsplus_treenode_getNumElts(const void *lvTreeNodePtr, int *numEl
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*numEltsOut = treeNodePtr->getNumElts();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1768,15 +1578,12 @@ DLLEXPORT void mdsplus_treenode_getNumMembers(const void *lvTreeNodePtr, int *nu
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*numMembersOut = treeNodePtr->getNumMembers();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1792,16 +1599,14 @@ DLLEXPORT void mdsplus_treenode_getNumSegments(const void *lvTreeNodePtr, int *n
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*numSegmentsOut = treeNodePtr->getNumSegments();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
-	}
+
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
@@ -1827,15 +1632,12 @@ DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, L
 			errorMessage = "NumericArrayResize error";
 		deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1851,15 +1653,12 @@ DLLEXPORT void mdsplus_treenode_getOwnerId(const void *lvTreeNodePtr, int *owner
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*ownerIdOut = treeNodePtr->getOwnerId();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1877,15 +1676,12 @@ DLLEXPORT void mdsplus_treenode_getParent(const void *lvTreeNodePtr, void **lvTr
 		treeNodePtrOut = treeNodePtr->getParent();
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1912,15 +1708,12 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 			errorMessage = "NumericArrayResize error";
 		deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1937,15 +1730,12 @@ DLLEXPORT void mdsplus_treenode_getSegment(const void *lvTreeNodePtr, void **lvA
 		arrayPtrOut = treeNodePtr->getSegment(segIdxIn);
 		*lvArrayPtrOut = reinterpret_cast<void *>(arrayPtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1965,15 +1755,12 @@ DLLEXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int 
 		*lvStartDataPtrOut = reinterpret_cast<void *>(startDataPtrOut);
 		*lvEndDataPtrOut = reinterpret_cast<void *>(endDataPtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -1989,15 +1776,12 @@ DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *status
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*statusOut = treeNodePtr->getStatus();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2013,15 +1797,12 @@ DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, _int6
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*timeInsertedOut = treeNodePtr->getTimeInserted();
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2039,15 +1820,12 @@ DLLEXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTree
 		treePtrOut = treeNodePtr->getTree();
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2074,15 +1852,12 @@ DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle l
 			errorMessage = "NumericArrayResize error";
 		//deleteString(strOut);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2097,15 +1872,12 @@ DLLEXPORT void mdsplus_treenode_isChild(const void *lvTreeNodePtr, LVBoolean *lv
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsChildOut = (treeNodePtr->isChild() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2121,15 +1893,12 @@ DLLEXPORT void mdsplus_treenode_isCompressOnPut(const void *lvTreeNodePtr, LVBoo
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsCompressOnPutOut = (treeNodePtr->isCompressOnPut() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2145,16 +1914,14 @@ DLLEXPORT void mdsplus_treenode_isEssential(const void *lvTreeNodePtr, LVBoolean
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsEssentialOut = (treeNodePtr->isEssential() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
-	}
+
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
@@ -2169,15 +1936,12 @@ DLLEXPORT void mdsplus_treenode_isIncludedInPulse(const void *lvTreeNodePtr, LVB
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsIncludedInPulseOut = (treeNodePtr->isIncludedInPulse() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2193,15 +1957,10 @@ DLLEXPORT void mdsplus_treenode_isMember(const void *lvTreeNodePtr, LVBoolean *l
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsMemberOut = (treeNodePtr->isMember() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2217,15 +1976,12 @@ DLLEXPORT void mdsplus_treenode_isNoWriteModel(const void *lvTreeNodePtr, LVBool
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsNoWriteModelOut = (treeNodePtr->isNoWriteModel() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2241,15 +1997,12 @@ DLLEXPORT void mdsplus_treenode_isNoWriteShot(const void *lvTreeNodePtr, LVBoole
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsNoWriteShotOut = (treeNodePtr->isNoWriteShot() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2265,15 +2018,12 @@ DLLEXPORT void mdsplus_treenode_isOn(const void *lvTreeNodePtr, LVBoolean *lvIsO
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsOnOut = (treeNodePtr->isOn() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2289,15 +2039,12 @@ DLLEXPORT void mdsplus_treenode_isSetup(const void *lvTreeNodePtr, LVBoolean *lv
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsSetupOut = (treeNodePtr->isSetup() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2313,15 +2060,12 @@ DLLEXPORT void mdsplus_treenode_isWriteOnce(const void *lvTreeNodePtr, LVBoolean
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*lvIsWriteOnceOut = (treeNodePtr->isWriteOnce() == true) ? LVBooleanTrue : LVBooleanFalse;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2345,15 +2089,12 @@ DLLEXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const voi
 		initialDataArrayPtrIn = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtrIn));
 		treeNodePtr->makeSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn, initialDataArrayPtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2377,15 +2118,12 @@ DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr
 		treeNodePtr->makeTimestampedSegment(arrayPtrIn, timesArrIn);
 		delete[] timesArrIn;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2403,15 +2141,12 @@ DLLEXPORT void mdsplus_treenode_move(const void *lvTreeNodePtr, const void *lvTr
 		treeNodeParentPtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtrIn));
 		treeNodePtr->move(treeNodeParentPtr);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2429,15 +2164,12 @@ DLLEXPORT void mdsplus_treenode_move_newName(const void *lvTreeNodePtr, const vo
 		treeNodeParentPtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtrIn));
 		treeNodePtr->move(treeNodeParentPtr, const_cast<char *>(newNameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2455,15 +2187,12 @@ DLLEXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *l
 		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
 		treeNodePtr->putData(dataPtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2482,15 +2211,12 @@ DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lv
 		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
 		treeNodePtr->putRow(dataPtrIn, timeIn, sizeIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2508,15 +2234,12 @@ DLLEXPORT void mdsplus_treenode_putSegment(const void *lvTreeNodePtr, const void
 		arrayPtrIn = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtrIn));
 		treeNodePtr->putSegment(arrayPtrIn, ofsIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2540,16 +2263,12 @@ DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr,
 		treeNodePtr->putTimestampedSegment(arrayPtrIn, timesArrIn);
 		delete[] timesArrIn;
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		delete[] timesArrIn;
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2565,15 +2284,12 @@ DLLEXPORT void mdsplus_treenode_remove(const void *lvTreeNodePtr, const char *na
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		treeNodePtr->remove(const_cast<char *>(nameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2589,15 +2305,12 @@ DLLEXPORT void mdsplus_treenode_removeTag(const void *lvTreeNodePtr, const char 
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		treeNodePtr->removeTag(const_cast<char *>(tagNameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2613,15 +2326,12 @@ DLLEXPORT void mdsplus_treenode_rename(const void *lvTreeNodePtr, const char *ne
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		treeNodePtr->rename(const_cast<char *>(newNameIn));
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2640,15 +2350,12 @@ DLLEXPORT void mdsplus_treenode_setCompressOnPut(const void *lvTreeNodePtr, LVBo
 		else
 			treeNodePtr->setCompressOnPut(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2667,15 +2374,12 @@ DLLEXPORT void mdsplus_treenode_setEssential(const void *lvTreeNodePtr, LVBoolea
 		else
 			treeNodePtr->setEssential(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2694,15 +2398,12 @@ DLLEXPORT void mdsplus_treenode_setIncludedInPulse(const void *lvTreeNodePtr, LV
 		else
 			treeNodePtr->setIncludedInPulse(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2721,15 +2422,12 @@ DLLEXPORT void mdsplus_treenode_setNoWriteModel(const void *lvTreeNodePtr, LVBoo
 		else
 			treeNodePtr->setNoWriteModel(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2748,20 +2446,17 @@ DLLEXPORT void mdsplus_treenode_setNoWriteShot(const void *lvTreeNodePtr, LVBool
 		else
 			treeNodePtr->setNoWriteShot(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOnIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_teenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOnIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2775,15 +2470,12 @@ DLLEXPORT void mdsplus_treenode_setOn(const void *lvTreeNodePtr, LVBoolean *lvOn
 		else
 			treeNodePtr->setOn(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2802,15 +2494,12 @@ DLLEXPORT void mdsplus_treenode_setSubTree(const void *lvTreeNodePtr, LVBoolean 
 		else
 			treeNodePtr->setSubtree(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2828,10 +2517,10 @@ DLLEXPORT void mdsplus_treenode_setTree(const void *lvTreeNodePtr, const void *l
 		treePtrIn = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtrIn));
 		treeNodePtr->setTree(treePtrIn);
 	}
-	catch (exception *e)
+	catch (const MdsException &e)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(e.what());
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2850,15 +2539,12 @@ DLLEXPORT void mdsplus_treenode_setWriteOnce(const void *lvTreeNodePtr, LVBoolea
 		else
 			treeNodePtr->setWriteOnce(false);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -2880,15 +2566,12 @@ DLLEXPORT void mdsplus_treenode_updateSegment(const void *lvTreeNodePtr, const v
 		timeDataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvTimeDataPtrIn));
 		treeNodePtr->updateSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn);
 	}
-	catch (MdsException *mdsE)
+	catch (const MdsException &mdsE)
 	{
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE->what());
-	}
-	catch (exception *e)
-	{
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e->what());
+		errorMessage = const_cast<char *>(mdsE.what());
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
