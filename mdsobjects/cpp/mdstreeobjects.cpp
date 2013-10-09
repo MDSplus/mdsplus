@@ -1,5 +1,6 @@
 #include <mdsobjects.h>
 #include <usagedef.h>
+#include <treeshr.h>
 
 #include <algorithm>
 #include <string>
@@ -72,38 +73,20 @@ static int convertUsage(std::string const & usage)
 		return TreeUSAGE_ANY;
 }
 
+// From treeshrp.h
+extern "C" int TreeFindTag(char *tagnam, char *treename, int *tagidx);
+
+// From CachedTreeshr.c
+extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
 extern "C" void RTreeSynch();
-extern "C" int _TreeOpen(void **dbid, char *tree, int shot, int readOnly);
-extern "C" int _TreeClose(void **dbid, char *tree, int shot);
 extern "C" int _RTreeOpen(void *dbid, char *tree, int shot);
 extern "C" int _RTreeClose(void *dbid, char *tree, int shot);
 extern "C" char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
-extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
-extern "C" int _TreeClose(void **dbid, char *tree, int shot);
-extern "C" int _TreeFindNode(void *dbid, char const *path, int *nid);
-extern "C" int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx, int mask);
-extern "C" int _TreeFindNodeEnd(void *dbid, void **ctx);
-extern "C" char *_TreeGetPath(void *dbid, int nid);
-extern "C" void TreeFree(void *ptr);
-extern "C" int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst);
-extern "C" int TreeGetDbi(struct dbi_itm *itmlst);
-extern "C" int _TreeSetDbi(void *dbid, struct dbi_itm *itmlst);
-extern "C" int TreeSetDbi(struct dbi_itm *itmlst);
-extern "C" int _TreeGetNci(void *dbid, int nid, struct nci_itm *itmlst);
-extern "C" int _TreeSetNci(void *dbid, int nid, struct nci_itm *itmlst);
-extern "C" int _TreeIsOn(void *dbid, int nid);
-extern "C" int _TreeTurnOff(void *dbid, int nid);
-extern "C" int _TreeTurnOn(void *dbid, int nid);
-extern "C" void convertTime(void *dbid, int *time, char *retTime);
-extern "C" int _TreeSetDefaultNid(void *dbid, int nid);
-extern "C" int _TreeGetDefaultNid(void *dbid, int *nid);
-extern "C" char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);
-extern "C" void TreeFindTagEnd(void **ctx);
-extern "C" int TreeFindTag(char *tagnam, char *treename, int *tagidx);
-extern "C" void *TreeSwitchDbid(void *dbid);
 extern "C" void RTreeConfigure(int shared, int size);
 extern "C" int _RTreeTerminateSegment(void *dbid, int nid);
 
+// From mdstree.c
+extern "C" void convertTime(void *dbid, int *time, char *retTime);
 extern "C" int getTreeData(void *dbid, int nid, void **data, void *tree);
 extern "C" int putTreeData(void *dbid, int nid, void *data);
 extern "C" int deleteTreeData(void *dbid, int nid);
@@ -123,34 +106,16 @@ extern "C" int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
 extern "C" int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times);
 extern "C" int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled);
 extern "C" int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size);
-extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
-extern "C" int TreeSetViewDate(_int64 *date);
 
+// From libroutines.h
+extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
+
+// From mdsshr.h
 extern "C" const char *MdsClassString(int id);
 extern "C" const char *MdsDtypeString(int id);
-extern "C" int  TreeSetCurrentShotId(char *experiment, int shot);
-extern "C" int  TreeGetCurrentShotId(char *experiment);
-extern "C" int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles);
-extern "C" int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in);
+
 extern "C" char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
-extern "C" int _TreeOpenEdit(void **dbid, char *tree_in, int shot_in);
-extern "C" int _TreeOpenNew(void **dbid, char *tree_in, int shot_in);
-extern "C" int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid);
-extern "C" int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid);
-extern "C" int _TreeAddNode(void *dbid, char *name, int *nid_out, char usage);
-extern "C" int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset);
-extern "C" void _TreeDeleteNodeExecute(void *dbid);
-extern "C" int _TreeSetDefaultNid(void *dbid, int nid_in);
-extern "C" int _TreeGetDefaultNid(void *dbid, int *nid_in);
-extern "C" int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid);
-extern "C" int _TreeRenameNode(void *dbid, int nid, char *newname);
-extern "C" int _TreeAddTag(void *dbid, int nid_in, char *tagnam);
-extern "C" int _TreeRemoveTag(void *dbid, char *name);
 extern "C" int _RTreeFlushNode(void *dbid, int nid);
-extern "C" int _TreeSetSubtree(void *dbid, int nid);
-extern "C" int _TreeSetNoSubtree(void *dbid, int nid);
-extern "C" _int64 _TreeGetDatafileSize(void *dbid);
-extern "C" void TreeFreeDbid(void *);
 
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
