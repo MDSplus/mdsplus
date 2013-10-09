@@ -40,42 +40,37 @@ extern "C" {
 	void * convertToShape(void *dcs);
 }
 
-static int convertUsage(char *usage)
+static int convertUsage(std::string const & usage)
 {
-	char usageCode;
-	if(!strcmp(usage, "ACTION"))
-		usageCode = TreeUSAGE_ACTION;
-	else if(!strcmp(usage, "ANY"))
-		usageCode = TreeUSAGE_ANY;
-	else if(!strcmp(usage, "AXIS"))
-		usageCode = TreeUSAGE_AXIS;
-	else if(!strcmp(usage, "COMPOUND_DATA"))
-		usageCode = TreeUSAGE_COMPOUND_DATA;
-	else if(!strcmp(usage, "DEVICE"))
-		usageCode = TreeUSAGE_DEVICE;
-	else if(!strcmp(usage, "DISPATCH"))
-		usageCode = TreeUSAGE_DISPATCH;
-	else if(!strcmp(usage, "STRUCTURE"))
-		usageCode = TreeUSAGE_STRUCTURE;
-	else if(!strcmp(usage, "NUMERIC"))
-		usageCode = TreeUSAGE_NUMERIC;
-	else if(!strcmp(usage, "SIGNAL"))
-		usageCode = TreeUSAGE_SIGNAL;
-	else if(!strcmp(usage, "SUBTREE"))
-		usageCode = TreeUSAGE_SUBTREE;
-	else if(!strcmp(usage, "TASK"))
-		usageCode = TreeUSAGE_TASK;
-	else if(!strcmp(usage, "TEXT"))
-		usageCode = TreeUSAGE_TEXT;
-	else if(!strcmp(usage, "WINDOW"))
-		usageCode = TreeUSAGE_WINDOW;
+	if (usage == "ACTION")
+		return TreeUSAGE_ACTION;
+	else if (usage == "ANY")
+		return TreeUSAGE_ANY;
+	else if (usage == "AXIS")
+		return TreeUSAGE_AXIS;
+	else if (usage == "COMPOUND_DATA")
+		return TreeUSAGE_COMPOUND_DATA;
+	else if (usage == "DEVICE")
+		return TreeUSAGE_DEVICE;
+	else if (usage == "DISPATCH")
+		return TreeUSAGE_DISPATCH;
+	else if (usage == "STRUCTURE")
+		return TreeUSAGE_STRUCTURE;
+	else if (usage == "NUMERIC")
+		return TreeUSAGE_NUMERIC;
+	else if (usage == "SIGNAL")
+		return TreeUSAGE_SIGNAL;
+	else if (usage == "SUBTREE")
+		return TreeUSAGE_SUBTREE;
+	else if (usage == "TASK")
+		return TreeUSAGE_TASK;
+	else if (usage == "TEXT")
+		return TreeUSAGE_TEXT;
+	else if (usage == "WINDOW")
+		return TreeUSAGE_WINDOW;
 	else
-		usageCode = TreeUSAGE_ANY;
-
-	return usageCode;
+		return TreeUSAGE_ANY;
 }
-
-
 
 extern "C" void RTreeSynch();
 extern "C" int _TreeOpen(void *dbid, char *tree, int shot, int readOnly);
