@@ -86,8 +86,8 @@ extern "C" char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*c
 extern "C" char _RTreeSetWarm(void *dbid, int nid, int warm);
 extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
 extern "C" int _TreeClose(void *dbid, char *tree, int shot);
-extern "C" int _TreeFindNode(void *dbid, char *path, int *nid);
-extern "C" int _TreeFindNodeWild(void *dbid, char *path, int *nid, void **ctx, int mask);
+extern "C" int _TreeFindNode(void *dbid, char const *path, int *nid);
+extern "C" int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx, int mask);
 extern "C" int _TreeFindNodeEnd(void *dbid, void **ctx);
 extern "C" char *_TreeGetPath(void *dbid, int nid);
 extern "C" void TreeFree(void *ptr);
@@ -333,11 +333,11 @@ void Tree::remove(char *name)
 		throw MdsException(status);
 }
 
-TreeNode *Tree::getNode(char *path)
+TreeNode *Tree::getNode(char const *path)
 {
-	int nid, status;
+	int nid;
 
-	status = _TreeFindNode(ctx, path, &nid);
+	int status = _TreeFindNode(ctx, path, &nid);
 	if(!(status & 1))
 	{
 		throw MdsException(status);
@@ -375,7 +375,7 @@ TreeNode *Tree::getNode(String *path)
 
 	
 
-TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
+TreeNodeArray *Tree::getNodeWild(char const *path, int usageMask)
 {
 	int currNid, status; 
 	int numNids = 0;
@@ -400,9 +400,8 @@ TreeNodeArray *Tree::getNodeWild(char *path, int usageMask)
 	return nodeArray;
 }
 
-TreeNodeArray *Tree::getNodeWild(char *path)
+TreeNodeArray *Tree::getNodeWild(char const *path)
 {
-
 	return getNodeWild(path, -1);
 }
 
