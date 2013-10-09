@@ -60,32 +60,37 @@ PARTS = \
 	@LV@ \
 	@MACOSX@
 
-all:
-	cdir=`pwd`;\
-	set -e; for dir in $(PARTS) ; do\
-	  echo Making $${dir}; cd $${dir}; $${MAKE:=make} all; cd $$cdir;\
-	done
+.PHONY: all $(PARTS)
+all: $(PARTS)
 
-clean:
-	cdir=`pwd`;\
-	set -e; for dir in $(PARTS) ; do\
-	  cd $${dir} && $${MAKE:=make} -i clean; cd $$cdir;\
-	done
+$(PARTS):
+	$(MAKE) -C $@
 
-full_clean:
-	$${MAKE:=make} clean
-	@ ./devscripts/rm_if bin
-	@ ./devscripts/rm_if etc
-	@ ./devscripts/rm_if lib
-	@ ./devscripts/rm_if java/classes
-	@ ./devscripts/rm_if java
-	@ ./devscripts/rm_if uid
-	@ ./devscripts/rm_if config.cache
-	@ ./devscripts/rm_if config.log
-	@ ./devscripts/rm_if `find . -name '*.in' | \
+
+clean_DIRS = $(addprefix clean_, $(PARTS))
+
+.PHONY: clean
+clean: $(clean_DIRS)
+
+.PHONY: $(clean_DIRS)
+$(clean_DIRS):
+	$(MAKE) -C $(@:clean_%=%) clean
+
+.PHONY: full_clean
+full_clean: ./devscripts/rm_if clean
+	@ $< bin
+	@ $< etc
+	@ $< lib
+	@ $< java/classes
+	@ $< java
+	@ $< uid
+	@ $< config.cache
+	@ $< config.log
+	@ $< `find . -name '*.in' | \
 	      grep -v configure.in | grep -v makekit.in | \
 	      awk '{print substr($$1,0,length($$1)-3)}'`
 
+.PHONY: depend
 depend:
 	cdir=`pwd`;\
 	set -e; for dir in $(PARTS) ; do\
