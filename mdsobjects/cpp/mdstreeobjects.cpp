@@ -24,7 +24,6 @@ extern "C" {
 	void freeDsc(void *dscPtr);
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
-	char *decompileDsc(void *dscPtr);
 	void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
 	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
