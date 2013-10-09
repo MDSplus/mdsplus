@@ -39,10 +39,7 @@ install:
 	$(INSTALL) -m 755  $(top_srcdir)/man/man5/mdsip.hosts.5.gz $(exec_prefix)/man/man5
 
 
-$(top_srcdir)/man/man1 :
-	$(INSTALL) -d $@
-
-$(top_srcdir)/man/man5 :
+$(directories):
 	$(INSTALL) -d $@
 
 $(top_srcdir)/man/man1/traverser.1.gz : traverser.groff
