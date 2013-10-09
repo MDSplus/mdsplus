@@ -62,5 +62,4 @@ extern int _RTreeFlushNode(void *dbid, int nid);
 extern int _RTreeFlushNodeShot(void *dbid, char *expName, int shot, int nid);
 extern char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
 extern int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
-extern int _RTreeSetWarm(void *dbid, int nid, int warm);
 extern int _RTreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);

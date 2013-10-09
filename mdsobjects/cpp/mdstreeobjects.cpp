@@ -78,7 +78,6 @@ extern "C" int _TreeClose(void **dbid, char *tree, int shot);
 extern "C" int _RTreeOpen(void *dbid, char *tree, int shot);
 extern "C" int _RTreeClose(void *dbid, char *tree, int shot);
 extern "C" char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
-extern "C" char _RTreeSetWarm(void *dbid, int nid, int warm);
 extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
 extern "C" int _TreeClose(void **dbid, char *tree, int shot);
 extern "C" int _TreeFindNode(void *dbid, char const *path, int *nid);
