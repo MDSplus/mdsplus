@@ -1,5 +1,10 @@
 #ifndef __TREESHR
 #define __TREESHR
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifdef HAVE_VXWORKS_H
 //typedef long long  _int64;
 #else
@@ -631,6 +636,10 @@ extern EXPORT int TreeSetDbiItm(int code, int value);
 extern EXPORT _int64 TreeGetDatafileSize();
 extern EXPORT _int64 _TreeGetDatafileSize(void *dbid);
 
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #endif
