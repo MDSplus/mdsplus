@@ -17,16 +17,20 @@ manpages = $(top_srcdir)/man/man1/mdsplus.1.gz \
 directories = $(top_srcdir)/man/man1 \
               $(top_srcdir)/man/man5
 
-all : $(directories) $(manpages)
+.PHONY: all
+all: $(directories) $(manpages)
 
+.PHONY: depend
 depend:
 	@ :
 
-clean :
+.PHONY: clean
+clean:
 	@ $(RM) $(manpages)
 	@ $(RM) $(directories)
 	@ $(RM) $(top_srcdir)/man
 
+.PHONY: install
 install:
 	$(INSTALL) -d $(exec_prefix)/man -m a+rx
 	$(INSTALL) -d $(exec_prefix)/man/man1 -m a+rx
