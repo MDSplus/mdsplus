@@ -75,10 +75,10 @@ static char *TreePath( char *tree, char *tree_lower_out )
   int len = strlen(tree);
   int i;
   char tree_lower[13] = {0};
-  for (i = 0; i < len && i < 12; ++i)
-    tree_lower[i] = tolower(tree[i]);
   char pathname[32];
   char *path;
+  for (i = 0; i < len && i < 12; ++i)
+    tree_lower[i] = tolower(tree[i]);
   strcpy(pathname,tree_lower);
   strcat(pathname,TREE_PATH_SUFFIX);
   if (tree_lower_out)
@@ -97,6 +97,7 @@ static char *ReplaceAliasTrees(char *tree_in)
   int buflen=strlen(tree_in)+1;
   char *ans=malloc(buflen);
   char *tree=strtok(tree_in,",");
+  int i;
   memset(ans,0,buflen);
   while(tree)
   {
@@ -120,7 +121,6 @@ static char *ReplaceAliasTrees(char *tree_in)
     tree=strtok(0,",");
   }
   free(tree_in);
-  int i;
   for (i = 0; i < buflen; ++i)
     ans[i] = toupper(ans[i]);
   return ans;
