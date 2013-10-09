@@ -434,7 +434,7 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
   return status;
 }
 
-STATIC_ROUTINE int LeadingBackslash(char *path)
+STATIC_ROUTINE int LeadingBackslash(char const *path)
 {
   int i;
   int len = strlen(path);
@@ -451,7 +451,7 @@ STATIC_ROUTINE int LeadingBackslash(char *path)
   return 0;
 }
       
-int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid)
+int FindNodeRemote(PINO_DATABASE *dblist, char const *path, int *outnid)
 {
   struct descrip ans = empty_ans;
   int status;
@@ -489,7 +489,7 @@ int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_inout)
   return 1;
 }
 
-int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **ctx_inout, int usage_mask)
+int FindNodeWildRemote(PINO_DATABASE *dblist, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   int status = TreeNORMAL;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;

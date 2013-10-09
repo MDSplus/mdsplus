@@ -730,9 +730,9 @@ extern int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_
 
 extern char *GetRegistryPath(char *pathname);
 
-extern int FindNodeRemote(PINO_DATABASE *dblist, char *path, int *outnid);
+extern int FindNodeRemote(PINO_DATABASE *dblist, char const *path, int *outnid);
 
-extern int FindNodeWildRemote(PINO_DATABASE *dblist, char *path, int *nid_out, void **ctx_inout, int usage_mask);
+extern int FindNodeWildRemote(PINO_DATABASE *dblist, char const *path, int *nid_out, void **ctx_inout, int usage_mask);
 
 extern int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_in);
 

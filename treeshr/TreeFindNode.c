@@ -63,7 +63,7 @@ int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
 ( (ctx[ctx->level+1].type != EOL) || \
   ((1<<node->usage) & usage_mask) )
 
-int _TreeFindNode(void *dbid, char *path, int *outnid)
+int _TreeFindNode(void *dbid, char const *path, int *outnid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID	    *nid = (NID *)outnid;
@@ -98,7 +98,7 @@ int _TreeFindNode(void *dbid, char *path, int *outnid)
   return status;
 }
 
-int _TreeFindNodeWild(void *dbid, char *path, int *nid_out, void **ctx_inout, int usage_mask)
+int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)nid_out;

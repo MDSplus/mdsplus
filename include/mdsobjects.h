@@ -2263,15 +2263,15 @@ protected:
 		void write();
 		void quit();
 
-		TreeNode *getNode(char *path);
+		TreeNode *getNode(char const *path);
 		TreeNode *getNode(TreePath *path);
 		TreeNode *getNode(String *path);
 		TreeNode *addNode(char *name, char *usage);
 		TreeNode *addDevice(char *name, char *type);
 		void remove(char *name);
 
-		TreeNodeArray *getNodeWild(char *path, int usageMask);
-		TreeNodeArray *getNodeWild(char *path);
+		TreeNodeArray *getNodeWild(char const *path, int usageMask);
+		TreeNodeArray *getNodeWild(char const *path);
 		void setDefault(TreeNode *treeNode);
 		TreeNode *getDefault();
 		bool versionsInModelEnabled();
