@@ -6,9 +6,76 @@
 #include <string>
 #include <cctype>
 
-//#include "mdstree.h"
 using namespace MDSplus;
 using namespace std;
+
+extern "C" {
+	// From treeshrp.h
+	int TreeFindTag(char *tagnam, char *treename, int *tagidx);
+
+	// From libroutines.h
+	int LibConvertDateString(char *asc_time, _int64 *qtime);
+
+	// From mdsshr.h
+	const char *MdsClassString(int id);
+	const char *MdsDtypeString(int id);
+
+	// From mdsdata.c
+	void freeChar(void *);
+	void freeDsc(void *dscPtr);
+	void * compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
+	void * evaluateData(void *dscPtr, int isEvaluate);
+	void * deserializeData(char *serialized, int size);
+	char * decompileDsc(void *dscPtr);
+	void * convertFromDsc(void *dscPtr);
+
+	void * convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
+	void * convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
+	void * convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
+	void * convertToApdDsc(int ndescs, void **ptr);
+	void * convertToByte(void *dsc); 
+	void * convertToShort(void *dsc); 
+	void * convertToInt(void *dsc); 
+	void * convertToLong(void *dsc); 
+	void * convertToFloat(void *dsc); 
+	void * convertToDouble(void *dsc); 
+	void * convertToShape(void *dcs);
+
+	// From mdstree.c
+	void convertTime(void *dbid, int *time, char *retTime);
+	int getTreeData(void *dbid, int nid, void **data, void *tree);
+	int putTreeData(void *dbid, int nid, void *data);
+	int deleteTreeData(void *dbid, int nid);
+	int doTreeMethod(void *dbid, int nid, char *method);
+	int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
+									void *timeDsc);
+	int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
+									void *timeDsc, int rowsFilled);
+	int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
+	int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc,
+									void *timeDsc);
+	int getTreeNumSegments(void *dbid, int nid, int *numSegments);
+	int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
+	int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc);
+	int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
+	int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
+	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times);
+	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled);
+	int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size);
+
+	// From CachedTreeshr.c
+	int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
+	int _RTreeClose(void *dbid, char *tree, int shot);
+	void RTreeConfigure(int shared, int size);
+	int _RTreeFlushNode(void *dbid, int nid);
+	int _RTreeOpen(void *dbid, char *tree, int shot);
+	char * _RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
+	void RTreeSynch();
+	int _RTreeTerminateSegment(void *dbid, int nid);
+
+	// From TreeFindTagWild.c
+	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
+}
 
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
@@ -17,28 +84,6 @@ using namespace std;
 #endif
 
 #define MAX_ARGS 512
-
-extern "C" {
-	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
-	void *evaluateData(void *dscPtr, int isEvaluate);
-	void freeDsc(void *dscPtr);
-	void *convertFromDsc(void *dscPtr);
-	char *decompileDsc(void *dscPtr);
-	void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
-	void freeChar(void *);
-	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
-	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
-	void *convertToApdDsc(int ndescs, void **ptr);
-	void *deserializeData(char *serialized, int size);
-
-	void * convertToByte(void *dsc); 
-	void * convertToShort(void *dsc); 
-	void * convertToInt(void *dsc); 
-	void * convertToLong(void *dsc); 
-	void * convertToFloat(void *dsc); 
-	void * convertToDouble(void *dsc); 
-	void * convertToShape(void *dcs);
-}
 
 static int convertUsage(std::string const & usage)
 {
@@ -72,50 +117,6 @@ static int convertUsage(std::string const & usage)
 		return TreeUSAGE_ANY;
 }
 
-// From treeshrp.h
-extern "C" int TreeFindTag(char *tagnam, char *treename, int *tagidx);
-
-// From CachedTreeshr.c
-extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
-extern "C" void RTreeSynch();
-extern "C" int _RTreeOpen(void *dbid, char *tree, int shot);
-extern "C" int _RTreeClose(void *dbid, char *tree, int shot);
-extern "C" char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
-extern "C" void RTreeConfigure(int shared, int size);
-extern "C" int _RTreeTerminateSegment(void *dbid, int nid);
-
-// From mdstree.c
-extern "C" void convertTime(void *dbid, int *time, char *retTime);
-extern "C" int getTreeData(void *dbid, int nid, void **data, void *tree);
-extern "C" int putTreeData(void *dbid, int nid, void *data);
-extern "C" int deleteTreeData(void *dbid, int nid);
-extern "C" int doTreeMethod(void *dbid, int nid, char *method);
-extern "C" int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, 
-								void *timeDsc);
-extern "C" int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, 
-								void *timeDsc, int rowsFilled);
-extern "C" int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
-extern "C" int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc, 
-								void *timeDsc);
-extern "C" int getTreeNumSegments(void *dbid, int nid, int *numSegments); 
-extern "C" int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
-extern "C" int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc);
-extern "C" int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc); 
-extern "C" int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
-extern "C" int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times);
-extern "C" int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled);
-extern "C" int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size);
-
-// From libroutines.h
-extern "C" int LibConvertDateString(char *asc_time, _int64 *qtime);
-
-// From mdsshr.h
-extern "C" const char *MdsClassString(int id);
-extern "C" const char *MdsDtypeString(int id);
-
-extern "C" char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
-extern "C" int _RTreeFlushNode(void *dbid, int nid);
-
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
 static HANDLE semH = 0;
@@ -141,7 +142,6 @@ void Tree::unlock()
 static 	sem_t semStruct;
 static bool semInitialized = false;
 
-
 void Tree::lock() 
 {
 	if(!semInitialized)
@@ -153,6 +153,7 @@ void Tree::lock()
 	}
 	sem_wait(&semStruct);
 }
+
 void Tree::unlock()
 {
 	sem_post(&semStruct);
