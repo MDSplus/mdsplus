@@ -1,7 +1,10 @@
 import sys
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
-    return __import__(name,globals())
+    try:
+        return __import__(name,globals())
+    except:
+        return __import__('MDSplus.'+name,globals())
 else:
   def _mimport(name,level):
     try:
