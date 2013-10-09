@@ -1,24 +1,28 @@
 import ctypes as _C
 from ctypes.util import find_library as _find_library
 import numpy as _N
-import os,sys
+import os as _os
+
+if '__package__' not in globals() or __package__ is None or len(__package__)==0:
+  def _mimport(name,level):
+    return __import__(name,globals())
+else:
+  def _mimport(name,level):
+    return __import__(name,globals(),{},[],level)
 
 def _load_library(name):
-    if os.name == 'nt':
-        return _C.CDLL(name)
-    elif os.name == "posix" and sys.platform == "darwin":
-        lib=_find_library(name)
-        if lib is None:
-            raise Exception("Error finding library: "+name)
-        else:
-            return _C.CDLL(lib)
+    libnam=_find_library(name)
+    if libnam is None:
+        raise Exception("Error finding library: "+name)
     else:
         try:
-            return _C.CDLL('lib'+name+'.so')
-        
+            lib=_C.CDLL(libnam)
         except:
-            return _C.CDLL('lib'+name+'.sl')
-    raise Exception("Error finding library: "+name)
+            try:
+                lib=_C.CDLL(name)
+            except:
+                lib=_C.CDLL(_os.path.basename(libnam))
+    return lib
 
 MdsShr=_load_library('MdsShr')
 __MdsGetMsg=MdsShr.MdsGetMsg
@@ -55,23 +59,22 @@ def MDSEventCan(eventid):
         raise MdsException(MdsGetMsg(status))
 
 def MDSWfeventTimed(event,timeout):
-    import numpy as _N
-    from mdsarray import makeArray,Uint8Array
+    _array=_mimport('mdsarray',1)
     buffer=_N.uint8(0).repeat(repeats=4096)
     numbytes=_C.c_int32(0)
-    status=__MDSWfeventTimed(event,len(buffer),buffer.ctypes.data,numbytes,timeout)
+    status=__MDSWfeventTimed(str.encode(event),len(buffer),buffer.ctypes.data,numbytes,timeout)
     if (status & 1) == 1:
         if numbytes.value == 0:
-          return makeArray(Uint8Array([]))
+          return _array.Uint8Array([])
         else:
-          return makeArray(buffer[range(numbytes.value)])
+          return _array.makeArray(buffer[0:numbytes.value])
     elif (status == 0):
         raise MdsTimeout("Event %s timed out." % (str(event),))
     else:
         raise MdsException(MdsGetMsg(status))
 
 def MDSEvent(event,buffer):
-    status=__MDSEvent(event,len(buffer),buffer.ctypes.data)
+    status=__MDSEvent(str.encode(event),len(buffer),buffer.ctypes.data)
     if not ((status & 1) == 1):
         raise MdsException(MdsGetMsg(status))
     
@@ -85,10 +88,10 @@ def MdsGetMsg(status,default=None):
         return __MdsGetMsg(status)
 
 def MdsSerializeDscOut(desc):
-    from _descriptor import descriptor_xd,descriptor
-    xd=descriptor_xd()
-    if not isinstance(desc,descriptor):
-        desc=descriptor(desc)
+    _desc=_mimport('_descriptor',1)
+    xd=_desc.descriptor_xd()
+    if not isinstance(desc,_desc.descriptor):
+        desc=_desc.descriptor(desc)
     status=MdsShr.MdsSerializeDscOut(_C.pointer(desc),_C.pointer(xd))
     if (status & 1) == 1:
       return xd.value
@@ -96,8 +99,8 @@ def MdsSerializeDscOut(desc):
       raise MdsException(MdsGetMsg(status))
 
 def MdsSerializeDscIn(bytes):
-    from _descriptor import descriptor_xd
-    xd=descriptor_xd()
+    _desc=_mimport('_descriptor',1)
+    xd=_desc.descriptor_xd()
     status=MdsShr.MdsSerializeDscIn(bytes.ctypes.data,_C.pointer(xd))
     if (status & 1) == 1:
       return xd.value
@@ -105,12 +108,11 @@ def MdsSerializeDscIn(bytes):
       raise MdsException(MdsGetMsg(status))
 
 def MdsDecompress(value):
-    from _descriptor import descriptor_xd
-    from mdsarray import makeArray
-    xd=descriptor_xd()
+    _desc=_mimport('_descriptor',1)
+    xd=_desc.descriptor_xd()
     status = MdsShr.MdsDecompress(_C.pointer(value),_C.pointer(xd))
     if (status & 1) == 1:
-        return makeArray(xd.value)
+        return xd.value
     else:
         raise MdsException(MdsGetMsg(status))
 
@@ -119,10 +121,10 @@ def MdsCompareXd(value1,value2):
 
 
 def MdsCopyDxXd(desc):
-    from _descriptor import descriptor,descriptor_xd
-    xd=descriptor_xd()
-    if not isinstance(desc,descriptor):
-        desc=descriptor(desc)
+    _desc=_mimport('_descriptor',1)
+    xd=_desc.descriptor_xd()
+    if not isinstance(desc,_desc.descriptor):
+        desc=_desc.descriptor(desc)
     status=MdsShr.MdsCopyDxXd(_C.pointer(desc),_C.pointer(xd))
     if (status & 1) == 1:
         return xd
@@ -130,23 +132,23 @@ def MdsCopyDxXd(desc):
         raise MdsException(MdsGetMsg(status))
 
 def MdsCompareXd(value1,value2):
-    from _descriptor import descriptor
-    if not isinstance(value1,descriptor):
-        value1=descriptor(value1)
-    if not isinstance(value2,descriptor):
-        value2=descriptor(value2)
+    _desc=_mimport('_descriptor',1)
+    if not isinstance(value1,_desc.descriptor):
+        value1=_desc.descriptor(value1)
+    if not isinstance(value2,_desc.descriptor):
+        value2=_desc.descriptor(value2)
     return MdsShr.MdsCompareXd(_C.pointer(value1),_C.pointer(value2))
 
 def MdsFree1Dx(value):
     MdsShr.MdsFree1Dx(_C.pointer(value),_C.c_void_p(0))
 
 def DateToQuad(date):
-    from mdsdata import makeData
+    _data=_mimport('mdsdata',1)
     ans=_C.c_ulonglong(0)
     status = __LibConvertDateString(date,ans)
     if not (status & 1):
         raise MdsException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
-    return makeData(_N.uint64(ans.value))
+    return _data.makeData(_N.uint64(ans.value))
 
 try:
     __MDSQueueEvent=MdsShr.MDSQueueEvent
@@ -162,7 +164,7 @@ try:
         @rtype: int
         """
         eventid=_C.c_int32(0)
-        status = __MDSQueueEvent(event,eventid)
+        status = __MDSQueueEvent(str.encode(event),eventid)
         if status&1 == 1:
             return eventid.value
         else:
@@ -180,18 +182,17 @@ try:
         @return: event data
         @rtype: Uint8Array
         """
-        from mdsarray import makeArray
-        import numpy as _N
+        _array=_mimport('mdsarray',1)
         dlen=_C.c_int32(0)
         bptr=_C.c_void_p(0)
         status=__MDSGetEventQueue(eventid,timeout,dlen,bptr)
         if status==1:
             if dlen.value>0:
-                ans = makeArray(_N.array(_C.cast(bptr,_C.POINTER(_C.c_uint8 * dlen.value)).contents,dtype=_N.uint8))
+                ans = _array.makeArray(_N.array(_C.cast(bptr,_C.POINTER(_C.c_uint8 * dlen.value)).contents,dtype=_N.uint8))
                 MdsShr.MdsFree(bptr)
                 return ans
             else:
-                return makeArray([])
+                return _array.Uint8Array([])
         elif status==0:
             if timeout > 0:
                 raise MdsTimeout("Timeout")
