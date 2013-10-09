@@ -2268,7 +2268,7 @@ protected:
 		TreeNode *getNode(String *path);
 		TreeNode *addNode(char *name, char *usage);
 		TreeNode *addDevice(char *name, char *type);
-		void remove(char *name);
+		void remove(char const *name);
 
 		TreeNodeArray *getNodeWild(char const *path, int usageMask);
 		TreeNodeArray *getNodeWild(char const *path);

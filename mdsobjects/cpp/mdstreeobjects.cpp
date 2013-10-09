@@ -317,7 +317,7 @@ TreeNode *Tree::addDevice(char *name, char *type)
 	return new TreeNode(newNid, this);
 }
 
-void Tree::remove(char *name)
+void Tree::remove(char const *name)
 {
 	int count;
 	TreeNode *delNode = getNode(name);
