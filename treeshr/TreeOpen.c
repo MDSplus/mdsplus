@@ -1,6 +1,7 @@
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
+#include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>
@@ -36,16 +37,6 @@ extern char *index(char *str,char c);
 #include <sys/resource.h>
 #endif
 #include "treeshrp.h"
-
-#ifdef __toupper
-#undef __toupper
-#endif
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
-#ifdef __tolower
-#undef __tolower
-#endif
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -83,11 +74,11 @@ static char *TreePath( char *tree, char *tree_lower_out )
 {
   int len = strlen(tree);
   int i;
-  char tree_lower[13];
+  char tree_lower[13] = {0};
+  for (i = 0; i < len && i < 12; ++i)
+    tree_lower[i] = tolower(tree[i]);
   char pathname[32];
   char *path;
-  for (i=0;i<len && i < 12;i++) tree_lower[i] = __tolower(tree[i]);
-  tree_lower[i]=0;
   strcpy(pathname,tree_lower);
   strcat(pathname,TREE_PATH_SUFFIX);
   if (tree_lower_out)
@@ -103,7 +94,6 @@ static char *TreePath( char *tree, char *tree_lower_out )
 
 static char *ReplaceAliasTrees(char *tree_in)
 {
-  int i;
   int buflen=strlen(tree_in)+1;
   char *ans=malloc(buflen);
   char *tree=strtok(tree_in,",");
@@ -130,7 +120,9 @@ static char *ReplaceAliasTrees(char *tree_in)
     tree=strtok(0,",");
   }
   free(tree_in);
-  for (i=0;i<buflen;i++) ans[i]=__toupper(ans[i]);
+  int i;
+  for (i = 0; i < buflen; ++i)
+    ans[i] = toupper(ans[i]);
   return ans;
 }
     
@@ -203,7 +195,7 @@ static void RemoveBlanksAndUpcase(char *out, char *in)
   {                          
   char c = *in++;
   if (c != (char)32 && c != (char)9)
-   *out++=__toupper(c);
+   *out++ = toupper(c);
  }
  *out=0;
 }
@@ -221,12 +213,11 @@ int _TreeClose(void **dbid, char *tree, int shot)
   {
     if (tree)
     {
-      char uptree[13];
       int i;
+      char uptree[13] = {0};
       int len = strlen(tree);
-      for (i=0;i<12 && i<len;i++)
-      uptree[i] = __toupper(tree[i]);
-      uptree[i]='\0';
+      for (i = 0; i < 12 && i < len; ++i)
+        uptree[i] = toupper(tree[i]);
       status = TreeNOT_OPEN;
       if (!shot)
         shot = TreeGetCurrentShotId(tree);
