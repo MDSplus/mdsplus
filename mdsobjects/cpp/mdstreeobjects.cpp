@@ -73,14 +73,14 @@ static int convertUsage(std::string const & usage)
 }
 
 extern "C" void RTreeSynch();
-extern "C" int _TreeOpen(void *dbid, char *tree, int shot, int readOnly);
-extern "C" int _TreeClose(void *dbid, char *tree, int shot);
+extern "C" int _TreeOpen(void **dbid, char *tree, int shot, int readOnly);
+extern "C" int _TreeClose(void **dbid, char *tree, int shot);
 extern "C" int _RTreeOpen(void *dbid, char *tree, int shot);
 extern "C" int _RTreeClose(void *dbid, char *tree, int shot);
 extern "C" char *_RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
 extern "C" char _RTreeSetWarm(void *dbid, int nid, int warm);
 extern "C" int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
-extern "C" int _TreeClose(void *dbid, char *tree, int shot);
+extern "C" int _TreeClose(void **dbid, char *tree, int shot);
 extern "C" int _TreeFindNode(void *dbid, char const *path, int *nid);
 extern "C" int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx, int mask);
 extern "C" int _TreeFindNodeEnd(void *dbid, void **ctx);
@@ -98,8 +98,8 @@ extern "C" int _TreeTurnOn(void *dbid, int nid);
 extern "C" void convertTime(void *dbid, int *time, char *retTime);
 extern "C" int _TreeSetDefaultNid(void *dbid, int nid);
 extern "C" int _TreeGetDefaultNid(void *dbid, int *nid);
-extern "C" char *_TreeFindNodeTags(void *dbid, int nid, void *ctx);
-extern "C" int TreeFindTagEnd(void *ctx);
+extern "C" char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);
+extern "C" void TreeFindTagEnd(void **ctx);
 extern "C" int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 extern "C" void *TreeSwitchDbid(void *dbid);
 extern "C" void RTreeConfigure(int shared, int size);
