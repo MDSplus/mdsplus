@@ -131,7 +131,7 @@ static int RegisterRead_(SOCKET sock) {
   if(!(status & 1))
   {
     printf("%s\n", MdsGetMsg(status));
-    return;
+    return status;
   }
   return ((*rtn)(sock));
 }
