@@ -45,19 +45,6 @@ EXPORT extern int dasmsg(
         char  fmt[],	/* <r> Format string for sprintf		*/
         ...		/* <r> Parameters, as required by fmt[]		*/
         );
-int   das_brkthru(
-    /* int   pid,		/* <r> pid of recipient			*/
-    /* char  fmt[],		/* <r> Format string, for sprintf	*/
-    /* ...			/* <r> Parameters, as required by fmt[]	*/
-   );
-int   ipcsmsg(
-/*        int   sts,	/* <r> Ipcs status code: 0=nomsg		*/
-/*        char  fmt[],	/* <r> Format string for sprintf		*/
-/*        ...		/* <r> Parameters, as required by fmt[]		*/
-        );
-char  *ipcsStatusText(
-    int   sts		/* <r> ipcs message status			*/
-   );
 
 		/*=======================================================
 		 * order ...
@@ -177,14 +164,14 @@ struct descriptor  {
             ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D
 #else
 #define ALIGN_MASK(x)  (sizeof(x) - 1)
-#define is_cdescr(d)  ((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
+#define is_cdescr(d)  (((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
             ((struct descriptor *)(d))->dscW_length<=1024) && \
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S
-#define is_ddescr(d)  ((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
+		       ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_S)
+#define is_ddescr(d)  (((d) && ((long)(d) & ALIGN_MASK(void *))==0 &&	\
             ((struct descriptor *)(d))->dscW_length<=1024) && \
             ((struct descriptor *)(d))->dscB_dtype==DSC_K_DTYPE_T && \
-            ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D
+		       ((struct descriptor *)(d))->dscB_class==DSC_K_CLASS_D)
 #endif
 #define dsc_descriptor  descriptor
 

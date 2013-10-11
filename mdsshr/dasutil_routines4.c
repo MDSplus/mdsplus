@@ -15,15 +15,6 @@
 ***********************************************************************/
 
 
-/*#ifdef vms
-/*extern noshare char  *sys_errlist[];
-/*extern noshare int  sys_nerr;
-/*#else
-/*extern char  *sys_errlist[];
-/*extern int  sys_nerr;
-/*#endif						/*  */
-
-
 	/***************************************************************
 	 * msgText:
 	 * Dummy routine, simulates routine in DASUTIL lib on VAX
@@ -54,18 +45,6 @@ int   dasmsg(			/* Return: status from user		*/
     char  text[33];
     unsigned int   i;
     va_list  ap;		/* argument ptr				*/
-/*    if (!nerr)
-/*#ifdef __ERRNO_MAX
-/*        nerr = __ERRNO_MAX;
-/*#elif vms
-/*       {
-/*        nerr = &(char  **)sys_nerr - sys_errlist;	/* ..strange..	*/
-/*        if (nerr != 36)
-/*            printf("\ndasmsg: nerr=%d\n\n",nerr);
-/*       }
-/*#else
-/*        nerr = sys_nerr;
-/*#endif						/*  */
 
     va_start(ap,fmt);		/* Initialize ap			*/
     i = vsprintf(txt,fmt,ap);
@@ -74,7 +53,6 @@ int   dasmsg(			/* Return: status from user		*/
 
     if (sts)
         fprintf(stderr,"\r%s:  %s\n    sts=%.70s\n",pgmname(),txt,
-/*            (sts>0 && sts<nerr) ? sys_errlist[sts] : msgText(sts,text)); /* */
             msgText(sts,text));
     else
         fprintf(stderr,"\r%s:  %s\n",pgmname(),txt);
@@ -113,7 +91,7 @@ char  *ptr;
     p = strrchr(ptr,'/');
 #endif
     p = p ? (p+1) : ptr;
-    if (p2 = strchr(p,'.'))
+    if ((p2 = strchr(p,'.'))!=0)
         k = p2 - p;
     else
         k = strlen(p);
@@ -493,7 +471,7 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
     nchar = 0;
     for (i=0 ; i<argc ; i++)
        {
-        if (is_cdescr(argList[i]) || is_ddescr(argList[i]))
+	 if (is_cdescr(argList[i]) || is_ddescr(argList[i]))
            {
             dsc = argList[i];
             p = dsc->dscA_pointer;
@@ -518,7 +496,7 @@ char  *str_concat(		/* Returns: ptr to null-terminated string*/
     ichar = 0;
     for (i=0 ; i<argc && ichar<nchar ; i++,ichar+=k)
        {
-        if (is_cdescr(argList[i]) || is_ddescr(argList[i]))
+	 if (is_cdescr(argList[i]) || is_ddescr(argList[i]))
            {
             dsc = argList[i];
             p = dsc->dscA_pointer;

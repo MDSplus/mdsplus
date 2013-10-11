@@ -11,6 +11,7 @@
 #elif !defined(HAVE_WINDOWS_H)
 #ifdef HAVE_GETTIMEOFDAY
 #include <sys/types.h>
+#include <sys/time.h>
 #endif
 #endif
 
@@ -20,6 +21,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <STATICdef.h>
+#include <ctype.h>
+#include "mdsshrthreadsafe.h"
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 int LibTimeToVMSTime(time_t *time_in,_int64 *time_out);  
@@ -1183,7 +1186,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   else 
   {
     char *tmp = dlerror();
-    if (tmp == "") tmp="";
+    if (tmp == 0) tmp="";
     sprintf((FIS_Error = (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n")+
       strlen(full_filename)*3+strlen(tmp)+strlen(tmp_error1)+strlen(tmp_error2)+10)),
       "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n",c_filename,tmp_error1,full_filename,tmp_error2,&full_filename[3],tmp);
@@ -1461,7 +1464,7 @@ int LibFreeVm(unsigned int *len, void **vm, ZoneList **zone)
       else
 	(*zone)->vm = list->next;
     }
-    UnlockMdsShrMutex(&VmMutex,&VmMutex_initialized);
+    UnlockMdsShrMutex(&VmMutex);
   }
   if (len && *len && vm && *vm)
     free(*vm);
@@ -1470,12 +1473,12 @@ int LibFreeVm(unsigned int *len, void **vm, ZoneList **zone)
   return 1;
 }
 
-int libfreevm_(int *len, void **vm, ZoneList **zone)
+int libfreevm_(unsigned int *len, void **vm, ZoneList **zone)
 {
   return(LibFreeVm(len, vm, zone));
 }
 
-int libfreevm(int *len, void **vm, ZoneList **zone)
+int libfreevm(unsigned int *len, void **vm, ZoneList **zone)
 {
   return(LibFreeVm(len, vm, zone));
 }
@@ -1496,7 +1499,7 @@ int LibGetVm(unsigned int *len, void **vm, ZoneList **zone)
       for (ptr = (*zone)->vm; ptr->next; ptr = ptr->next);
       ptr->next = list;
     } else (*zone)->vm = list;
-    UnlockMdsShrMutex(&VmMutex,&VmMutex_initialized);
+    UnlockMdsShrMutex(&VmMutex);
   }
   return (*vm != NULL);
 }
@@ -1507,7 +1510,7 @@ int libgetvm_(unsigned int *len, void **vm, ZoneList **zone)
 }
 
 
-int libgetvm(int *len, void **vm, ZoneList **zone)
+int libgetvm(unsigned int *len, void **vm, ZoneList **zone)
 {
   return(LibGetVm(len, vm, zone));
 }

@@ -59,9 +59,6 @@ struct _mdsdcl_ctrl  {
         struct descriptor parameter[7];
         int max_param;
        } macro;
-/*    int keyboard_id;		/* for VMS SMG routines		*/
-/*    int sys_input;		/* for VMS SMG routines		*/
-/*    int pasteboard_id;		/* for VMS SMG routines		*/
     int key_table_id;		/* for VMS SMG routines		*/
     struct  {
         struct descriptor name;
@@ -69,7 +66,6 @@ struct _mdsdcl_ctrl  {
         int lksb[2];
         int index;
        } library;
-/*    struct descriptor last_command;			/*  */
     struct  {
         int index;
         struct descriptor name;

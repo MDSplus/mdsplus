@@ -24,6 +24,7 @@
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
 #include <sys/types.h>
+#include <ctype.h>
 #define USE_PIPED_MESSAGING 1
 #include <limits.h>
 #endif
@@ -1518,7 +1519,8 @@ STATIC_ROUTINE void removeDeadMsg(int key)
 		shared_name[shared_info[i].nameid].first_id = shared_info[i].next_id;
 	    else
 	    {
-		for(curr = prev = shared_name[shared_info[i].nameid].first_id; curr != i && curr != -1; curr = shared_info[curr].next_id);
+		for(curr = prev = shared_name[shared_info[i].nameid].first_id; curr != i && curr != -1; curr = shared_info[curr].next_id)
+		  ;
                if (curr > -1 && prev > -1)
 		  shared_info[prev].next_id = shared_info[curr].next_id;
 	    }
@@ -2227,8 +2229,8 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
 
 int old_MDSEventAst(char *eventnam_in, void (*astadr)(), void *astprm, int *eventid)
 {
-  int status = 1;
-  unsigned int i, j, use_local;    
+  int status = 1,use_local;
+  unsigned int i, j;    
   int name_already_in_use;
   char *eventnam;
   *eventid = -1;

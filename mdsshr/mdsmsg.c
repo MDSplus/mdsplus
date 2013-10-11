@@ -25,6 +25,7 @@
 #include 	<time.h>
 #else
 #include        <sys/time.h>
+#include        <unistd.h>
 #endif
 
 #include        "clidef.h"
@@ -34,6 +35,7 @@
 #include        "tdimessages.h"
 #include        "treeshr.h"
 #include        "camdef.h"
+#include        "libroutines.h"
 
 
 		/*========================================================

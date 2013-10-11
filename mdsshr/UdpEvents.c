@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <netinet/tcp.h>
 #include <errno.h>
+#include <unistd.h>
 #endif
 
 #endif

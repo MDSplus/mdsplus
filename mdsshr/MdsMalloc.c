@@ -18,6 +18,15 @@
 #include <string.h>
 #include <signal.h>
 #include <STATICdef.h>
+#include <mdsshr.h>
+#include "mdsshrthreadsafe.h"
+
+#ifdef HAVE_WINDOWS_H
+static unsigned long *mutex;
+#else
+static pthread_mutex_t mutex;
+#endif
+static int mutexInitialized=0;
 
 struct vmlist { struct vmlist *next;
                 unsigned int len;
@@ -50,20 +59,20 @@ void *MdsMALLOC(unsigned int len)
   p->len = len;
   memcpy(p->pre,PRE,sizeof(PRE)-1);
   memcpy(p->vm+len,POST,sizeof(POST)-1);
-  pthread_lock_global_np();
+  LockMdsShrMutex(&mutex,&mutexInitialized);
   p->next = VM;
   VM = p;
   NumMalloc++;
   Allocated += len;
   CheckList();
-  pthread_unlock_global_np();
+  UnlockMdsShrMutex(&mutex);
   return p->vm;
 }
 
 void MdsFREE(void *ptr)
 {
   struct vmlist *n,*p;
-  pthread_lock_global_np();
+  LockMdsShrMutex(&mutex,&mutexInitialized);
   CheckList();
   NumFree++;
   for (p = 0, n=VM; n && n->vm != ptr; p=n,n=n->next);
@@ -81,7 +90,7 @@ void MdsFREE(void *ptr)
     MDSprintf("free called for unknown memory\n");
     raise(SIGUSR1);
   }
-  pthread_unlock_global_np();
+  UnlockMdsShrMutex(&mutex);
 }
 
 void *MdsREALLOC(void *ptr, unsigned int len)
@@ -90,10 +99,10 @@ void *MdsREALLOC(void *ptr, unsigned int len)
   struct vmlist *n;
   if (ptr)
   {
-    pthread_lock_global_np();
+    LockMdsShrMutex(&mutex,&mutexInitialized);
     CheckList();
     for (n=VM; n && n->vm != ptr; n=n->next);
-    pthread_unlock_global_np();
+    UnlockMdsShrMutex(&mutex);
     if (n)
     {
       memcpy(newmem,ptr,n->len > len ? len : n->len);
@@ -129,7 +138,7 @@ STATIC_ROUTINE void CheckList()
 void MdsShowVM(int full)
 {
   struct vmlist *n;
-  pthread_lock_global_np();
+  LockMdsShrMutex(&mutex,&mutexInitialized);
   MDSprintf("malloc %d times, free %d times, %d still allocated in %d chunks\n",
     NumMalloc,NumFree,Allocated,NumMalloc-NumFree);
   if (full)
@@ -145,7 +154,7 @@ void MdsShowVM(int full)
       free(p);
     }
   } 
-  pthread_unlock_global_np();
+  UnlockMdsShrMutex(&mutex);
 }    
 
 void *MdsCALLOC(int num, unsigned int len)

@@ -98,9 +98,6 @@ int errno = 0;
 #define bits32
 #define bits16
 #endif
-#ifndef __tolower
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-#endif
 
 typedef struct _msghdr { int msglen bits32;
 			 int status bits32;
@@ -160,7 +157,6 @@ typedef struct _io_routines {
 #define SUPPORTS_COMPRESSION 0x8000
 #endif
 #define SupportsCompression(c) (c & SUPPORTS_COMPRESSION)
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 #define FlipBytes(num,ptr) \
 {\
