@@ -39,7 +39,7 @@ int			o2)\
 /********************************
 Units must match or one be empty.
 ********************************/
-STATIC_ROUTINE either(struct descriptor_xd uni[2]) {
+STATIC_ROUTINE int either(struct descriptor_xd uni[2]) {
 
 	if (uni[0].pointer == 0) {
 		uni[0] = uni[1];
@@ -56,7 +56,7 @@ STATIC_ROUTINE either(struct descriptor_xd uni[2]) {
 /*******************************
 Discard units unless mismatched.
 *******************************/
-STATIC_ROUTINE only_mismatch(struct descriptor_xd uni[2]) {
+STATIC_ROUTINE int only_mismatch(struct descriptor_xd uni[2]) {
 
 	either(uni);
 	if (uni[0].pointer && uni[0].pointer != (struct descriptor *)&bad) MdsFree1Dx(&uni[0],NULL);

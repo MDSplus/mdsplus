@@ -50,6 +50,7 @@ extern int TdiGetData();
 extern int TdiData();
 extern int TdiUpcase();
 extern int Tdi1Vector();
+int TdiGetRecord(int nid, struct descriptor_xd *out);
 
 STATIC_CONSTANT struct item {
 	char		*item_name;

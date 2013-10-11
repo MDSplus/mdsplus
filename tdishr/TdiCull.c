@@ -274,7 +274,7 @@ STATIC_CONSTANT unsigned char omitd[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
 		************************************************************/
 				if (new[2]->dtype == DTYPE_RANGE
 				&& (new[2]->ndesc == 2
-				|| new[2]->ndesc == 3 && new[2]->deltaval == 0)) {
+				    || (new[2]->ndesc == 3 && new[2]->deltaval == 0))) {
 					fake_range = EMPTY_RANGEE;
 					fake_range.begin = new[2]->begin;
 					fake_range.ending = new[2]->ending;

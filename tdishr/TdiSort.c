@@ -67,10 +67,17 @@ STATIC_ROUTINE int GTR_WU(unsigned short *a, unsigned short *b) {return *a - *b;
 #define NEQ_LU NEQ_L
 STATIC_ROUTINE int GTR_LU(unsigned int *a, unsigned int *b)	{return *a > *b;}
 #define NEQ_QU NEQ_Q
-STATIC_ROUTINE int GTR_QU(unsigned int a[2], unsigned int b[2]) {return a[1] > b[1] || a[1] == b[1] && a[0] > b[0];}
+STATIC_ROUTINE int GTR_QU(unsigned int a[2], unsigned int b[2]) {
+  return a[1] > b[1] || (a[1] == b[1] && a[0] > b[0]);
+}
 #define NEQ_OU NEQ_O
-STATIC_ROUTINE int GTR_OU(unsigned int a[4], unsigned int b[4]) {return a[3] > b[3] || a[3] == b[3]
-	&& (a[2] > b[2] || (a[2] == b[2] && (a[1] > b[1] || (a[1] == b[1] && a[0] > b[0]))));}
+STATIC_ROUTINE int GTR_OU(unsigned int a[4], unsigned int b[4]) {
+  return a[3] > b[3] || 
+    (a[3] == b[3] && 
+     (a[2] > b[2] || 
+      (a[2] == b[2] &&
+       (a[1] > b[1] || (a[1] == b[1] && a[0] > b[0])))));
+}
 
 #define NEQ_B GTR_B
 STATIC_ROUTINE int GTR_B(char *a, char *b)	{return *a - *b;}
@@ -79,10 +86,15 @@ STATIC_ROUTINE int GTR_W(short *a, short *b)	{return *a - *b;}
 STATIC_ROUTINE int NEQ_L(int *a, int *b)	{return *a != *b;}
 STATIC_ROUTINE int GTR_L(int *a, int *b)	{return *a > *b;}
 STATIC_ROUTINE int NEQ_Q(unsigned int a[2], unsigned int b[2]) {return a[0] != b[0] || a[1] != a[1];}
-STATIC_ROUTINE int GTR_Q(unsigned int a[2], unsigned int b[2]) {return (int)a[1] > (int)b[1] || a[1] == b[1] && a[0] > b[0];}
+STATIC_ROUTINE int GTR_Q(unsigned int a[2], unsigned int b[2]) {
+  return (int)a[1] > (int)b[1] || (a[1] == b[1] && a[0] > b[0]);
+}
 STATIC_ROUTINE int NEQ_O(unsigned int a[4], unsigned int b[4]) {return a[0] != b[0] || a[1] != b[1] || a[2] != b[2] || a[3] != b[3];}
-STATIC_ROUTINE int GTR_O(unsigned int a[4], unsigned int b[4]) {return (int)a[3] > (int)b[3] || a[3] == b[3]
-	&& (a[2] > b[2] || (a[2] == b[2] && (a[1] > b[1] || (a[1] == b[1] && a[0] > b[0]))));}
+STATIC_ROUTINE int GTR_O(unsigned int a[4], unsigned int b[4]) {
+  return (int)a[3] > (int)b[3] || 
+    (a[3] == b[3]
+     && (a[2] > b[2] || (a[2] == b[2] && (a[1] > b[1] || (a[1] == b[1] && a[0] > b[0])))));
+}
 
 extern int CvtConvertFloat();
 
@@ -158,8 +170,8 @@ struct TdiCatStruct		cats[3];
 	if (narg > 2 && status & 1) status = TdiGetLong(list[2], &mode);
 	if (status & 1) status = Tdi2Bsearch(2, uni, dat, cats);
 	if (status & 1) status = TdiCvtArgs(2, dat, cats);
-	if (status & 1) N_ELEMENTS(dat[0].pointer, ni);
-	if (status & 1) N_ELEMENTS(dat[1].pointer, nt);
+if (status & 1) {N_ELEMENTS(dat[0].pointer, ni);}
+if (status & 1) {N_ELEMENTS(dat[1].pointer, nt);}
 	if (status & 1) status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
 	if (status & 1)
 	if (ni <= 0) ;					/* null output */
@@ -316,7 +328,7 @@ int				stack[64];
 	default : status = TdiINVDTYDSC; break;
 	}
 	if (status & 1) status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
-	if (status & 1) N_ELEMENTS(dat[0].pointer, n);
+if (status & 1) {N_ELEMENTS(dat[0].pointer, n);}
 	if (!(status & 1) || n <= 0) goto done;
 
 	len = dat[0].pointer->length;

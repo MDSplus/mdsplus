@@ -138,7 +138,7 @@ struct TdiCatStruct		cats[4];
           if (status & 1 && nelem.pointer->dtype != DTYPE_L)
             status = TdiLong(&nelem, &nelem MDS_END_ARG);
         }
-	if (status & 1) N_ELEMENTS(nelem.pointer, nseg);
+        if (status & 1) {N_ELEMENTS(nelem.pointer, nseg);}
 	if (status & 1) for (j = nseg, pl = (int *)nelem.pointer->pointer, tot = 0; --j >= 0;) tot += *pl++;
 
 	/**************************

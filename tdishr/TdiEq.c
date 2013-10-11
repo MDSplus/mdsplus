@@ -138,17 +138,17 @@ break;
   all long words are compared using unsigned except for top longword.
 */
 #define compare_n(type,op,longwords,signed) \
-  for (i=0;i<out_count;i++) { \
+  for (i=0;i<out_count;i++) {		    \
     l = longwords*i; \
     for (j=longwords-1;j>=0;j--) \
-      if (!j || in1[s1 ? j : l+j] != in2[s2 ? j : l+j]) \
+      if (!j || in1[s1 ? j : l+j] != in2[s2 ? j : l+j]) {	\
         if (!(signed) || !(j != longwords-1)) \
           {out[i] = (char)(in1[s1 ? j : l+j] op in2[s2 ? j : l+j]); break;} \
         else {i1 = (int *)(in1+(s1 ? j : l+j)), \
 	      i2 = (int *)(in2+(s2 ? j : l+j)); \
           out[i] = (char)(*i1 op *i2); break;} \
-  } \
-  break;
+      }}				       \
+   break;
 
 #define testn(type,longwords,signed) {\
   type *in1=(type *)(in1_ptr->pointer), \
@@ -224,7 +224,7 @@ int       Tdi3_Eq(struct descriptor *in1_ptr,
 {
   int out_count = 1;
   int status;
-  register i,j,k;
+  register int i,j,k;
   int l,minlen,maxlen,*i1,*i2;
   int s1 = (in1_ptr->class != CLASS_A);
   int s2 = (in2_ptr->class != CLASS_A);

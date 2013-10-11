@@ -293,9 +293,10 @@ cannot:			status = Append(fun_ptr->name, pout);
 			status = Append(fun_ptr->name, pout);
 			if (status & 1) status = Append(" ", pout);
 			r_ptr = (struct descriptor_r *)pin->dscptrs[0];
-			if (status & 1)
+			if (status & 1) {
 			if (r_ptr->dtype == DTYPE_T) status = StrAppend(pout, r_ptr);
 			else	status = Tdi0Decompile(r_ptr, P_SUBS, pout);
+			}
 			break;
 		case OpcExtFunction : /*_label(arg, ...)*/
 			if (pin->dscptrs[0] != 0

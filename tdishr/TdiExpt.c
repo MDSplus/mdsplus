@@ -103,7 +103,7 @@ char	string[15];
         lst[0].return_length_address = &retlen;
 	status = TreeGetDbi(lst);
 	if (value != -1) {
-		sprintf(string, "%ld", value);
+		sprintf(string, "%d", value);
 		dmodel.pointer = string;
 		dmodel.length = (unsigned short)strlen(string);
 	}

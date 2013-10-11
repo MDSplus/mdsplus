@@ -35,6 +35,7 @@
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
+int TdiGetRecord(int nid, struct descriptor_xd *out);
 
 
 extern unsigned short OpcDtypeRange;
@@ -219,20 +220,20 @@ redo:			if (status & 1) status = TdiGetData(omits, (struct descriptor *)&hold, &
 			goto redo;
 		case DTYPE_PARAM :
 			keep = (struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR;
-			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)pin;
+			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)pin;
 			status = TdiGetData(omits, 
                               (struct descriptor *)((struct descriptor_param *)pin)->value, &hold);
-			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)keep;
+			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)keep;
 			break;
 		case DTYPE_SIGNAL :
 			/******************************************
 			We must set up for reference to our $VALUE.
 			******************************************/
 			keep = (struct descriptor_signal *)TdiThreadStatic()->TdiSELF_PTR;
-			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)pin;
+			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)pin;
 			status = TdiGetData(omits, 
                               (struct descriptor *)((struct descriptor_signal *)pin)->data, &hold);
-			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)keep;
+			TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)keep;
 			break;
 		/***************
 		Windowless axis.
@@ -424,7 +425,7 @@ unsigned char	omits[] = {
 	WARNING: Use of $THIS or $VALUE can be infinitely recursive.
 */
 TdiRefStandard(Tdi1This)
-	if (TdiThreadStatic()->TdiSELF_PTR) status = MdsCopyDxXd(TdiThreadStatic()->TdiSELF_PTR, out_ptr);
+if (TdiThreadStatic()->TdiSELF_PTR) status = MdsCopyDxXd((struct descriptor *)(TdiThreadStatic()->TdiSELF_PTR), out_ptr);
 	else status = TdiNO_SELF_PTR;
 	return status;
 }
@@ -565,7 +566,7 @@ struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
 */
 TdiRefStandard(Tdi1Validation)
 struct descriptor_r		*rptr;
-struct descriptor		*keep;
+struct descriptor_xd		*keep;
 STATIC_CONSTANT unsigned char omits[] = {DTYPE_PARAM,0};
 STATIC_CONSTANT unsigned char noomits[] = {0};
 
@@ -577,7 +578,7 @@ STATIC_CONSTANT unsigned char noomits[] = {0};
 		We must set up for reference to our $VALUE.
 		******************************************/
 		keep = TdiThreadStatic()->TdiSELF_PTR;
-		TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)rptr;
+		TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)rptr;
 		status = TdiGetData(noomits, ((struct descriptor_param *)rptr)->validation, out_ptr);
 		TdiThreadStatic()->TdiSELF_PTR = keep;
 		break;
@@ -587,7 +588,7 @@ STATIC_CONSTANT unsigned char noomits[] = {0};
 }
 
 static int use_get_record_fun=1;
-int TdiGetRecord(int nid, struct descriptor *out) {
+int TdiGetRecord(int nid, struct descriptor_xd *out) {
   int status;
   static int use_fun=1;
   if (use_get_record_fun) {
@@ -598,7 +599,7 @@ int TdiGetRecord(int nid, struct descriptor *out) {
     DESCRIPTOR_LONG(nid_d,(char *)&nid);
     DESCRIPTOR(var_d,"_out");
     DESCRIPTOR_R(getrec,DTYPE_FUNCTION,4);
-    getrec.pointer=(char *)&opcode;
+    getrec.pointer=(unsigned char *)&opcode;
     getrec.dscptrs[0]=0;
     getrec.dscptrs[1]=(struct descriptor *)&getrec_d;
     getrec.dscptrs[2]=(struct descriptor *)&nid_d;

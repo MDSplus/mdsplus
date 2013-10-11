@@ -28,6 +28,8 @@ extern unsigned short OpcCompile;
 #else
 #undef select
 #endif
+extern void LockMdsShrMutex(pthread_mutex_t *, int *);
+extern void UnlockMdsShrMutex(pthread_mutex_t *);
 
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -108,7 +110,7 @@ TdiRefStandard(Tdi1Compile)
       MdsFree1Dx(out_ptr,NULL);
   }
   MdsFree1Dx(&tmp, NULL);
-  UnlockMdsShrMutex(&yacc_mutex,&yacc_mutex_initialized);
+  UnlockMdsShrMutex(&yacc_mutex);
   return(status);
 }
 /*-------------------------------------------------------

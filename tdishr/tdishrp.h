@@ -12,6 +12,7 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
 int TdiGetArgs( void *dbid, int opcode,	int narg, struct descriptor *list[], struct descriptor_xd sig[],
 		struct descriptor_xd uni[], struct descriptor_xd dat[], struct TdiCatStruct cats[]);
 int TdiGetFloat(struct descriptor *in_ptr, float *val_ptr);
+int TdiGetRecord(int nid, struct descriptor_xd *out);
 int TdiGetShape(int narg, struct descriptor_xd dat[1], unsigned short length, unsigned char dtype, int *cmode_ptr, struct descriptor_xd *out_ptr);
 int TdiHash(int len, char *pstring);
 int _TdiIntrinsic(void *dbid, int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);

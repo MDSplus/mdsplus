@@ -55,7 +55,7 @@ struct TdiCatStruct		cats[2];
 
 	status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
 	pv = (struct descriptor_a *)dat[0].pointer;
-	if (status & 1) N_ELEMENTS(pv, nside);
+if (status & 1) {N_ELEMENTS(pv, nside);}
 	if (status & 1) {
 		proto.m[0] = nside;
 		proto.m[1] = nside;

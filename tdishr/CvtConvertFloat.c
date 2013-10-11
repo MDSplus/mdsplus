@@ -3146,7 +3146,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
   */	  
   if (intermediate_value[U_R_FLAGS] & U_R_UNUSUAL)
   {
-    if (intermediate_value[U_R_FLAGS] & U_R_ZERO)
+    if (intermediate_value[U_R_FLAGS] & U_R_ZERO) {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
       {
 	memcpy(output_value, CRAY_NEG_ZERO, 8);
@@ -3155,7 +3155,7 @@ STATIC_ROUTINE CVT_STATUS pack_cray(UNPACKED_REAL  intermediate_value,
       {
 	memcpy(output_value, CRAY_POS_ZERO, 8);
       }
-
+    }
     if (intermediate_value[U_R_FLAGS] & U_R_INFINITY) 
     {
       if (intermediate_value[U_R_FLAGS] & U_R_NEGATIVE)
@@ -3472,11 +3472,15 @@ STATIC_ROUTINE void _round(UNPACKED_REAL  intermediate_value,
 		  */
 		  if (options & CVT_M_ROUND_TO_NEAREST) 
 		  {
-		    if ( ! ( roundup = more_bits ) )
-		      if ( bit_mask << 1 )
+		    if ( ! ( roundup = more_bits ) ) {
+		      if ( bit_mask << 1 ) {
 			roundup = intermediate_value[i] & (bit_mask << 1);
-		      else if (i != 1)
-			roundup = intermediate_value[i-1] & 1;
+		      }
+		      else {
+			if (i != 1)
+			  roundup = intermediate_value[i-1] & 1;
+		      }
+		    }
 		  } 
 
 		  /*

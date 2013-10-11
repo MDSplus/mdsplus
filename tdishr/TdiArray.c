@@ -31,6 +31,7 @@
 #ifdef HAVE_WINDOWS_H
 #include <process.h>
 #endif
+#include <unistd.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -56,7 +57,7 @@ int				j, ndim=0;
 	if (narg <= 0 || list[0] == 0) arr.class = CLASS_S;
 	else {
 		status = TdiData(list[0], &tmp MDS_END_ARG);
-		if (status & 1) N_ELEMENTS(tmp.pointer, ndim);
+		if (status & 1) {N_ELEMENTS(tmp.pointer, ndim)};
 		if (status & 1) {
 			arr.dimct = (unsigned char)ndim;
 			arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);

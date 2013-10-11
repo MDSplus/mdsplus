@@ -141,7 +141,7 @@ STATIC_ROUTINE int fixup_nid( int *pin, /* NID pointer */int	arg, struct descrip
 	return status;
 }
 
-STATIC_ROUTINE fixup_path(struct descriptor *pin, int	arg, struct descriptor_d *pout) {
+STATIC_ROUTINE int fixup_path(struct descriptor *pin, int	arg, struct descriptor_d *pout) {
 	int status = 0;
 	char *pathin = MdsDescrToCstring(pin);
 	char *path = TreeAbsPath(pathin);
@@ -205,7 +205,7 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 			if (status & 1) *def.pointer = '\\';
 		}
 	}
-	if ((narg > 2 && list[2] || narg > 3 && list[3]) && status & 1) {
+if ((narg > 2) && ((list[2] != 0) || ((narg > 3) && (list[3] != 0))) && ((status & 1) != 0)) {
 		if (list[2]) status = TdiGetLong(list[2], &shot);
 		else {
 		DBI_ITM shot_itm[] = {{sizeof(shot),DbiSHOTID,0,0},EOL};
@@ -213,7 +213,7 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 			status = TreeGetDbi(shot_itm);
 		}
 
-		if (status & 1)
+		if (status & 1) {
 		if (narg > 3 && list[3]) status = TdiData(list[3], &expt MDS_END_ARG);
 		else {
 		DBI_ITM expt_itm[] = {{0,DbiNAME,0,0},EOL};
@@ -224,6 +224,7 @@ unsigned char	omits[] = {DTYPE_PATH,0};
 				StrCopyR(&expt,&len,expt_itm[0].pointer);
 				TreeFree(expt_itm[0].pointer);
 			}
+		}
 		}
 		/*********************
 		Set new tree and path.

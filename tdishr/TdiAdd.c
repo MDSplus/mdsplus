@@ -460,9 +460,9 @@ int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
   _int64u *out=(_int64u *)ans;
   *out=*arg1 + *arg2;
 #if defined(_MSC_VER) && _MSC_VER <= 1300
-  return (*out && 0x800000000000000Ui64) != 0;
+  return (*out & 0x800000000000000Ui64) != 0;
 #else
-  return (*out && 0x800000000000000ULL) != 0;
+  return (*out & 0x800000000000000ULL) != 0;
 #endif
 }
 
