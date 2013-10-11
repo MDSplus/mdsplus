@@ -70,7 +70,8 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       {
 	int       count;
 	PINO_DATABASE *db_tmp;
-	for (count = 0, db_tmp = (PINO_DATABASE *)dbid; db ? db->open : 0; count++, db = db->next);
+	for (count = 0, db_tmp = (PINO_DATABASE *)dbid; db ? db->open : 0; count++, db = db->next)
+	  ;
         memset(lst->pointer,0,lst->buffer_length);
         memcpy(lst->pointer,&count,min(lst->buffer_length,sizeof(int)));
 	if (lst->return_length_address)

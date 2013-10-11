@@ -33,6 +33,7 @@
 #include <mdsdescrip.h>
 #include <treeshr.h>
 #include "treeshrp.h"
+#include <ctype.h>
 
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -47,7 +48,6 @@ extern void **TreeCtx();
 #undef max
 #endif
 #define max(a,b)  ( (a) >= (b) ? (a) : (b) )
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 int TreeAddTag(int nid, char *tagnam)
 {
@@ -86,7 +86,7 @@ the tag name specified does not already exist.
   if (len < 1 || len > 24)
     return TreeTAGNAMLEN;
 
-  for (i=0;i<(int)len;i++) tag[i] = __toupper(tagnam[i]);
+  for (i=0;i<(int)len;i++) tag[i] = toupper(tagnam[i]);
   for (i=len;i<24;i++) tag[i] = ' ';
 
   nid_to_node(dblist, nid_ptr, node_ptr);

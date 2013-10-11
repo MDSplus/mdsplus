@@ -35,6 +35,7 @@
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <dbidef.h>
+#include <libroutines.h>
 #ifndef O_BINARY
 #define O_BINARY 0x0
 #endif
@@ -66,8 +67,6 @@ struct descrip { char dtype;
 
 STATIC_CONSTANT struct descrip empty_ans;
 
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 extern int LibFindImageSymbol();
@@ -77,12 +76,19 @@ extern int LibFindImageSymbol();
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
-#endif
+#else
 #ifdef HAVE_VXWORKS_H
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
+#else
+extern void LockMdsShrMutex(pthread_mutex_t *, int *);
+extern void UnlockMdsShrMutex(pthread_mutex_t *);
 #endif
+#endif
+
+extern void TreePerfWrite(int);
+extern void TreePerfRead(int);
 
 
 
@@ -1237,7 +1243,7 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
   if (status & 1)
   {
     char dtype;
-    unsigned short length;
+    short length;
     char ndims;
     int dims[7];
     int numbytes;
@@ -1381,7 +1387,6 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
   info[1]=FDS[fd-1].fd;
   info[4]=count;
   *(_int64 *)(&info[2]) = offset;
-  info[5]=count;
 #ifdef _big_endian
   status = info[2];
   info[2]=info[3];

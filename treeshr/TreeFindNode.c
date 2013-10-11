@@ -5,6 +5,7 @@
 #include <strroutines.h>
 #include <treeshr.h>
 #include "treeshrp.h"
+#include <ctype.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
@@ -58,7 +59,6 @@ int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
 #define FirstChild(node) (member_of(node) ? member_of(node) : child_of(node))
 #define FirstChildOfParent(node) (parent_of(node) ? child_of(parent_of(node)) : child_of(node))
 #define SiblingOf(node) (brother_of(node) ? brother_of(node) : ((parent_of(node) && IsMember(node)) ? child_of(parent_of(node)) : 0))
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #define match_usage \
 ( (ctx[ctx->level+1].type != EOL) || \
   ((1<<node->usage) & usage_mask) )
@@ -82,7 +82,7 @@ int _TreeFindNode(void *dbid, char const *path, int *outnid)
   ctx->type = EOL;
   ctx->string = strcpy(malloc(len+1),path);
   for (i=0;i<len && path[i] != ' ';i++)
-    ctx->string[i] = __toupper(path[i]);
+    ctx->string[i] = toupper(path[i]);
   ctx->string[i]=0;
   status = Parse(ctx,0);
   if (status & 1)
@@ -128,7 +128,7 @@ int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_ino
       ctx->type = EOL;
       ctx->string = strcpy(malloc(len+1),path);
       for (i=0;i<len && path[i] != ' ';i++)
-        ctx->string[i] = __toupper(path[i]);
+        ctx->string[i] = toupper(path[i]);
       ctx->string[i]=0;
       status = Parse(ctx,1);
     }
@@ -328,6 +328,8 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, 
       }
       break;            
     }
+  default:
+    break;
   }
   *node_in_out = node;
   search->node = node;
@@ -1011,7 +1013,7 @@ STATIC_ROUTINE char *AbsPath(void *dbid, char *inpath, int nid_in)
   ctx->type = EOL;
   ctx->string = strcpy(malloc(len+1),pathptr);
   for (i=0;i<len && pathptr[i] != ' ';i++)
-    ctx->string[i] = __toupper(pathptr[i]);
+    ctx->string[i] = toupper(pathptr[i]);
   ctx->string[i]=0;
   if (Parse(ctx,0) & 1)
   {
@@ -1091,7 +1093,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
   struct tag_search tsearch;
   memset(tsearch.tag,32,sizeof(TAG_NAME));
   for (i=0;i<len;i++)
-    tsearch.tag[i] = __toupper(tagnam[i]);
+    tsearch.tag[i] = toupper(tagnam[i]);
   *nodeptr = NULL;
 /********************************************
  To locate a tag we must first find which tree
@@ -1189,7 +1191,7 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tre
 STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
 {
   struct tag_search *tsearch = (struct tag_search *)this_one;
-  unsigned char *tag = (tsearch->info->tag_info + swapint((char *)compare_one))->name;
+  char *tag = (tsearch->info->tag_info + swapint((char *)compare_one))->name;
 
 /******************************************
  This routine is called by bsearch during
@@ -1217,7 +1219,7 @@ int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, ch
   ctx->type = EOL;
   ctx->string = strcpy(malloc(len+1),path_ptr);
   for (i=0;i<len && path_ptr[i] != ' ';i++)
-    ctx->string[i] = __toupper(path_ptr[i]);
+    ctx->string[i] = toupper(path_ptr[i]);
   ctx->string[i]=0;
   status = Parse(ctx,0);
   if (status & 1)

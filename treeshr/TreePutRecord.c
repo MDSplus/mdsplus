@@ -51,6 +51,7 @@
 #include <io.h>
 #define alloca _alloca
 #else
+#include <unistd.h>
 #ifdef HAVE_VXWORKS_H
 #include <time.h>
 #else

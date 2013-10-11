@@ -40,6 +40,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #include <ncidef.h>
 #include "treeshrp.h"
 #include <treeshr.h>
+#include <ctype.h>
 
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
@@ -60,7 +61,6 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it);
 #endif
 #endif
 
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 extern void **TreeCtx();
 
@@ -153,7 +153,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   int itype;
   char *types[] = {".tree",".characteristics",".datafile"};
   for (i=0;i<len && i < 12;i++)
-    tree_lower[i] = __tolower(tree[i]);
+    tree_lower[i] = tolower(tree[i]);
   tree_lower[i]=0;
   strcpy(pathname,tree_lower);
   strcat(pathname,TREE_PATH_SUFFIX);

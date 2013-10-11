@@ -259,7 +259,7 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
   if (*(char *) tag_dsc.pointer == '\\')
   {
     tag_dsc.length--;
-    (char *) tag_dsc.pointer++;
+    tag_dsc.pointer++;
   }
   if ((cptr = strstr(tagnam_ptr,"::")) != 0)
   {

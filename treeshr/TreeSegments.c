@@ -6,11 +6,9 @@
 #include <libroutines.h>
 #include <mdsshr.h>
 #include "treeshrp.h"
+#include <unistd.h>
+#include <ctype.h>
 extern void **TreeCtx();
-#ifdef __tolower
-#undef __tolower
-#endif
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 typedef ARRAY_COEFF(char,8) A_COEFF_TYPE;
 static int PutNamedAttributesIndex(TREE_INFO *info, NAMED_ATTRIBUTES_INDEX *index, _int64 *offset);
@@ -248,7 +246,7 @@ old array is same size.
       status = TreePutDsc(info_ptr,nid,start,&sinfo->start_offset,&sinfo->start_length);
     }
     for (dsc=end;dsc != 0 && dsc->pointer != 0 && dsc->dtype==DTYPE_DSC;dsc=(struct descriptor *)dsc->pointer);
-    if (dsc != 0 && dsc->dtype == DTYPE_Q || dsc->dtype == DTYPE_QU) {
+    if (dsc != 0 && (dsc->dtype == DTYPE_Q || dsc->dtype == DTYPE_QU)) {
       sinfo->end=*(_int64 *)dsc->pointer;
       sinfo->end_offset=-1;
       sinfo->end_length=0;
@@ -271,10 +269,10 @@ old array is same size.
       SeekToRfa(attributes_offset,local_nci.DATA_INFO.DATA_LOCATION.rfa);
       local_nci.flags2 |= NciM_EXTENDED_NCI;
     }
-    if (((_int64)local_nci.length + (_int64)add_length) < 2^31)
+    if (((_int64)local_nci.length + (_int64)add_length) < (2^31))
       local_nci.length += add_length;
     else
-      local_nci.length = 2^31;
+      local_nci.length = (2^31);
     TreePutNci(info_ptr,nidx,&local_nci,0);
     TreeUnLockNci(info_ptr,0,nidx);
   }
@@ -400,7 +398,7 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
       status = TreePutDsc(info_ptr,nid,start,&sinfo->start_offset,&sinfo->start_length);
     }
     for (dsc=end;dsc != 0 && dsc->pointer != 0 && dsc->dtype==DTYPE_DSC;dsc=(struct descriptor *)dsc->pointer);
-    if (dsc != 0 && dsc->dtype == DTYPE_Q || dsc->dtype == DTYPE_QU) {
+    if (dsc != 0 && (dsc->dtype == DTYPE_Q || dsc->dtype == DTYPE_QU)) {
       sinfo->end=*(_int64 *)dsc->pointer;
       sinfo->end_offset=-1;
       sinfo->end_length=0;
@@ -1059,7 +1057,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
       for (i=0;i<NAMED_ATTRIBUTES_PER_INDEX;i++) {
 	int len=strlen(xnciname);
 	for (j=0;j<len;j++) {
-	  if (__tolower(xnciname[j]) !=  __tolower(index.attribute[i].name[j]))
+	  if (tolower(xnciname[j]) != tolower(index.attribute[i].name[j]))
 	    break;
 	}
 	if (j==len && index.attribute[i].name[j]==0)
@@ -1165,7 +1163,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     unsigned int len=strlen(xnciname);
     if (len == strlen(attnames)) {
       for (i=0;i<len;i++) {
-	if (__tolower(xnciname[i]) != attnames[i])
+	if (tolower(xnciname[i]) != attnames[i])
 	  break;
       }
       if (i==len) {
@@ -1208,7 +1206,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	  }
 	  else {
 	    for (j=0;j<len;j++) {
-	      if (__tolower(xnciname[j]) !=  __tolower(index.attribute[i].name[j]))
+	      if (tolower(xnciname[j]) !=  tolower(index.attribute[i].name[j]))
 		break;
 	    }
 	    if (j==len && index.attribute[i].name[j]==0)
@@ -1260,9 +1258,9 @@ int TreeSetRetrievalQuota(int quota) {
 int TreePutDsc(TREE_INFO *info, int nid_in, struct descriptor *dsc, _int64 *offset, int *length) {
   EMPTYXD(xd);
   int compressible;
-  int dlen;
-  int reclen;
-  char dtype,class;
+  unsigned int dlen;
+  unsigned int reclen;
+  unsigned char dtype,class;
   int data_in_altbuf;
   NID *nid = (NID *)&nid_in;
   unsigned char tree=nid->tree;

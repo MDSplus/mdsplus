@@ -39,8 +39,7 @@
 #include "treeshrp.h"
 #include <usagedef.h>
 #include <ncidef.h>
-
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
+#include <ctype.h>
 
 static int FixParentState(PINO_DATABASE *dblist, NODE *parent_ptr, NODE *child_ptr);
 
@@ -75,7 +74,7 @@ int       _TreeRenameNode(void *dbid, int nid, char *newname)
 ***************************/
   for (i=0;i<(int)strlen(newname);i++)
   {
-      upcase_name[i] = __toupper(newname[i]);
+      upcase_name[i] = toupper(newname[i]);
   }
   upcase_name[i] = 0;
 /****************************************************

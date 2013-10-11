@@ -136,7 +136,7 @@ EXPORT int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag
 
   RemoveBlanksAndUpcase(tree,tree_in);
   tree = ReplaceAliasTrees(tree);
-  if (comma_ptr = strchr(tree, ','))
+  if ((comma_ptr = strchr(tree, ','))!=0)
   {
     subtree_list = strcpy(malloc(strlen(tree)+1),tree);
     *comma_ptr='\0';

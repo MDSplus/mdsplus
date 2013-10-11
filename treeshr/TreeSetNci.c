@@ -720,6 +720,10 @@ static void UnlockMdsShrMutex(){}
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
+#else
+extern void LockMdsShrMutex(pthread_mutex_t *, int *);
+extern void UnlockMdsShrMutex(pthread_mutex_t *);
+
 #endif
 
 

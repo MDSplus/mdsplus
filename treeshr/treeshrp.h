@@ -347,7 +347,7 @@ typedef struct big_node_linkage {
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
 #define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
 #define link_it2(dblist,nodeptr,field,a,b)  \
-  if (((char *)(a) - (char *)(b)) >= 2^32) {\
+  if (((char *)(a) - (char *)(b)) >= (2^32)) {	\
     int i; \
     if (nodeptr->parent != -1) {\
       for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);\
@@ -365,7 +365,7 @@ typedef struct big_node_linkage {
     nodeptr->INFO.LINK_INFO.big_linkage->field = (NODE *)((swapint((char *)&nodeptr->INFO.LINK_INFO.big_linkage->field)) + (char *)0);\
   }
 #define link_parent(dblist,nodeptr,a,b)  \
-  if (((char *)(a) - (char *)(b)) >= 2^32) {\
+  if (((char *)(a) - (char *)(b)) >= (2^32)) {	\
     int i; \
     if (nodeptr->parent != -1) {\
       for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);\
@@ -411,7 +411,7 @@ node->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; 
    of the tag indexes
 *********************************************/
 
-typedef unsigned char TAG_NAME[24];
+typedef char TAG_NAME[24];
 
 typedef struct tag_info
 {
@@ -773,7 +773,10 @@ extern int TreeGetExtendedAttributes(TREE_INFO *info_ptr, _int64 offset, EXTENDE
 extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
 extern int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci);
 extern DATA_FILE *TreeGetVmDatafile();
+extern int TreeReopenDatafile(struct tree_info *info);
+extern int TreeReopenNci(struct tree_info *info);
 extern int TreeOpenDatafileR(TREE_INFO *info);
+extern int TreeOpenNciR(TREE_INFO *info);
 extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
 extern int TreePutDsc(TREE_INFO *info_ptr, int nid, struct descriptor *dsc, _int64 *offset, int *length);

@@ -21,6 +21,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include <usagedef.h>
 #include <libroutines.h>
 #include <strroutines.h>
+#include <ctype.h>
 
 
 #ifdef max
@@ -30,7 +31,6 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 
 #define node_to_node_number(node_ptr) node_ptr - dblist->tree_info->node
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 extern void **TreeCtx();
 STATIC_ROUTINE int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr);
@@ -101,7 +101,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
     return TreeNOEDIT;
 
   upcase_name = (char *)malloc(len+1);
-  for (i=0;i<len;i++) upcase_name[i] = __toupper(name[i]);
+  for (i=0;i<len;i++) upcase_name[i] = toupper(name[i]);
   upcase_name[len]='\0';
 
 /******************************************************
@@ -137,7 +137,7 @@ int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
       If OK so far so grab a new node, Fill in the name
       and insert it into the list of brothers.
     *************************************************/
-      if ((status & 1) && (node_type == BROTHER_TYPE_NOWILD) || (node_type == MEMBER_TYPE_NOWILD))
+      if ((status & 1) && ((node_type == BROTHER_TYPE_NOWILD) || (node_type == MEMBER_TYPE_NOWILD)))
       {
 	status = TreeNewNode(dblist, &new_ptr, &parent);
 	if (status & 1)
@@ -698,7 +698,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       int shot;
       int len = strlen(exp_ptr);
       for (i=0;i<12 && i<len;i++)
-      uptree[i] = __toupper(exp_ptr[i]);
+      uptree[i] = toupper(exp_ptr[i]);
       uptree[i]='\0';
       shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
       status = TreeNOT_OPEN;
@@ -1011,7 +1011,7 @@ int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid)
       int shot;
       int len = strlen(exp_ptr);
       for (i=0;i<12 && i<len;i++)
-      uptree[i] = __toupper(exp_ptr[i]);
+      uptree[i] = toupper(exp_ptr[i]);
       uptree[i]='\0';
       shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
       status = TreeNOT_OPEN;

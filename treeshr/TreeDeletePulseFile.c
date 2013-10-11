@@ -40,14 +40,13 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 #include "treeshrp.h"
 #include <ncidef.h>
 #include <sys/stat.h>
+#include <ctype.h>
 
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 extern char *MaskReplace();
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 extern void **TreeCtx();
 STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot);
@@ -126,7 +125,7 @@ STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot)
   int itype;
   char *types[] = {".tree",".characteristics",".datafile"};
   for (i=0;i<len && i < 12;i++)
-    tree_lower[i] = __tolower(tree[i]);
+    tree_lower[i] = tolower(tree[i]);
   tree_lower[i]=0;
   strcpy(pathname,tree_lower);
   strcat(pathname,TREE_PATH_SUFFIX);
