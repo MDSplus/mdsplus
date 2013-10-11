@@ -1,3 +1,6 @@
+import copy as _copy
+import numpy as _np
+
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
     return __import__(name,globals())
@@ -7,12 +10,13 @@ else:
 
 _data=_mimport('mdsdata',1)
 _scalar=_mimport('mdsscalar',1)
-_dtypes=_mimport('_mdsdtypes',1)
 
 class Apd(_data.Data):
     """The Apd class represents the Array of Pointers to Descriptors structure.
     This structure provides a mechanism for storing an array of non-primitive items.
     """
+
+    mdsclass=196
 
 
     def __hasBadTreeReferences__(self,tree):
@@ -22,8 +26,7 @@ class Apd(_data.Data):
         return False
     
     def __fixTreeReferences__(self,tree):
-        from copy import deepcopy
-        ans=deepcopy(self)
+        ans=_copy.deepcopy(self)
         descs=list(ans.descs)
         for idx in range(len(descs)):
             if isinstance(descs[idx],_data.Data) and descs[idx].__hasBadTreeReferences__(tree):
@@ -104,10 +107,12 @@ class Apd(_data.Data):
         l=list()
         for d in self.descs:
             l.append(d.data())
-        return l
+        return tuple(l)
 
-class Dictionary(dict,_data.Data):
+class Dictionary(dict,Apd):
     """dictionary class"""
+
+    mdsdtype=216
 
     def __hasBadTreeReferences__(self,tree):
         for v in self.itervalues():
@@ -116,8 +121,7 @@ class Dictionary(dict,_data.Data):
         return False
 
     def __fixTreeReferences__(self,tree):
-        from copy import deepcopy
-        ans = deepcopy(self)
+        ans = _copy.deepcopy(self)
         for key,value in ans.iteritems():
             if isinstance(value,_data.Data) and value.__hasBadTreeReferences__(tree):
                 ans[key]=value.__fixTreeReferences__(tree)
@@ -126,16 +130,15 @@ class Dictionary(dict,_data.Data):
     def __init__(self,value=None):
         if value is not None:
             if isinstance(value,Apd):
-                import numpy
                 for idx in range(0,len(value),2):
                     key=value[idx]
                     if isinstance(key,_scalar.Scalar):
                         key=key.value
-                    if isinstance(key,numpy.string_):
+                    if isinstance(key,_np.string_):
                         key=str(key)
-                    elif isinstance(key,numpy.int32):
+                    elif isinstance(key,_np.int32):
                         key=int(key)
-                    elif isinstance(key,numpy.float32) or isinstance(key,numpy.float64):
+                    elif isinstance(key,_np.float32) or isinstance(key,_np.float64):
                         key=float(key)
                     val=value[idx+1]
                     if isinstance(val,Apd):
@@ -169,7 +172,7 @@ class Dictionary(dict,_data.Data):
         return d
         
     def toApd(self):
-        apd=Apd(tuple(),_dtypes.DTYPE_DICTIONARY)
+        apd=Apd(tuple(),self.mdsdtype)
         for key,val in self.items():
             apd.append(key)
             apd.append(val)
@@ -178,8 +181,10 @@ class Dictionary(dict,_data.Data):
     def __str__(self):
         return dict.__str__(self)
  
-class List(list,_data.Data):
+class List(list,Apd):
     """list class"""
+
+    mdsdtype=214
 
     def __hasBadTreeReferences__(self,tree):
         for v in self:
@@ -188,8 +193,7 @@ class List(list,_data.Data):
         return False
 
     def __fixTreeReferences__(self,tree):
-        from copy import deepcopy
-        ans = deepcopy(self)
+        ans = _copy.deepcopy(self)
         for idx in range(len(ans)):
             if isinstance(ans[idx],_data.Data) and ans[idx].__hasBadTreeReferences__(tree):
                 ans[idx]=ans[idx].__fixTreeReferences__(tree)
@@ -204,7 +208,7 @@ class List(list,_data.Data):
                 raise TypeError('Cannot create List from type: '+str(type(value)))
 
     def toApd(self):
-        apd=Apd(tuple(),_dtypes.DTYPE_LIST)
+        apd=Apd(tuple(),self.mdsdtype)
         for idx in range(len(self)):
             apd.append(self[idx])
         return apd
