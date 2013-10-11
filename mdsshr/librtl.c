@@ -1526,7 +1526,6 @@ STATIC_ROUTINE time_t parsedate(char *asctim, void *dummy)
 {
   return time(0);
 }
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
 {
   int ans = -1;
@@ -1537,7 +1536,7 @@ STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
     ans = 0;
     for (i=0;i<len1;i++)
     {
-      if (__tolower(in1[i]) != __tolower(in2[i]))
+      if (tolower(in1[i]) != tolower(in2[i]))
       {
         ans = -1;
         break;
