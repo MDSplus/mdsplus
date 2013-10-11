@@ -23,7 +23,7 @@ extern int  sys$asctim();
 extern int LibSysAscTim();
 #endif
 
-static int doFull(nid,nodeUsage,version);
+static int doFull(int nid,unsigned char nodeUsage,int version);
 	/****************************************************************
 	 * MdsOwner:
 	 ****************************************************************/
@@ -253,7 +253,7 @@ int   TclDirectory()
    }
 
 
-static int doFull(nid,nodeUsage,version) 
+static int doFull(int nid,unsigned char nodeUsage,int version) 
 {
   static char  fmtConglom2[] = "      Original element name: %s%s";
   char  *pathnam;
