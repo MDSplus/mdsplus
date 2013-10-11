@@ -41,6 +41,7 @@
 #include <dvidef.h>	/*for line width*/
 #include <starlet.h>
 #endif
+#include <ctype.h>
 
 #ifdef  __ALPHA			/**---AXP---**/
 #undef   DTYPE_D
@@ -411,9 +412,9 @@ int 	rblob;
 						ddate[20] = '.';
 						ddate[3] = ddate[0];
 						ddate[0] = ddate[4];
-						ddate[4] = __toupper(ddate[1]);
+						ddate[4] = toupper(ddate[1]);
 						ddate[1] = ddate[5];
-						ddate[5] = __toupper(ddate[2]);
+						ddate[5] = toupper(ddate[2]);
 						ddate[2] = '-';
 						ddate[6] = '-';
 						if (status < 0) {buf = (char *)&d_null; break;}
