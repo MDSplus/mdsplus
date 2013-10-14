@@ -19,6 +19,7 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include "../tdishr/cvtdef.h"
+#include <ctype.h>
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
@@ -80,8 +81,6 @@ typedef void *pthread_mutex_t;
 #else
 #undef select
 #endif
-
-#define __tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -440,7 +439,7 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
     {
       int i;
       for (i=0;i<strlen(user);i++)
-        user[i] = __tolower(user[i]);
+        user[i] = tolower(user[i]);
       pwd = getpwnam(user);
     }
     if (pwd)

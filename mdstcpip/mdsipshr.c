@@ -1,5 +1,6 @@
 #include "mdsip.h"
 #include <STATICdef.h>
+#include <ctype.h>
 extern int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
 
 #if defined(__VMS) || defined(WIN32)
@@ -59,8 +60,6 @@ extern int Lgihpwd();
 extern Message *GetMdsMsg();
 extern Message *GetMdsMsgOOB();
 extern int SetCompressionLevel(int level);
-
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 
 #ifdef _USE_VARARGS
 int MdsValue(va_alist) va_dcl
@@ -287,9 +286,9 @@ STATIC_ROUTINE int MdsLoginVMS(SOCKET sock, char *username, char *password)
           userd.length = strlen(username);
           userd.pointer = strcpy((char *)malloc(userd.length+1),username);
           for (i=0;i<pwdd.length;i++)
-            ((char *)pwdd.pointer)[i] = __toupper(((char *)pwdd.pointer)[i]);
+            ((char *)pwdd.pointer)[i] = toupper(((char *)pwdd.pointer)[i]);
           for (i=0;i<userd.length;i++)
-            ((char *)userd.pointer)[i] = __toupper(((char *)userd.pointer)[i]);
+            ((char *)userd.pointer)[i] = toupper(((char *)userd.pointer)[i]);
           status = Lgihpwd(&hashd,&pwdd,alg,salt,&userd);
           if (status & 1)
           {

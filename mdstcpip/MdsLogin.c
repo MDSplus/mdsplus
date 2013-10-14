@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 STATIC_ROUTINE int MdsLoginVMS(int id, char *username, char *password)
 {
@@ -40,9 +41,9 @@ STATIC_ROUTINE int MdsLoginVMS(int id, char *username, char *password)
           userd.length = strlen(username);
           userd.pointer = strcpy((char *)malloc(userd.length+1),username);
           for (i=0;i<pwdd.length;i++)
-            ((char *)pwdd.pointer)[i] = __toupper(((char *)pwdd.pointer)[i]);
+            ((char *)pwdd.pointer)[i] = toupper(((char *)pwdd.pointer)[i]);
           for (i=0;i<userd.length;i++)
-            ((char *)userd.pointer)[i] = __toupper(((char *)userd.pointer)[i]);
+            ((char *)userd.pointer)[i] = toupper(((char *)userd.pointer)[i]);
           status = Lgihpwd(&hashd,&pwdd,alg,salt,&userd);
           if (status & 1)
           {

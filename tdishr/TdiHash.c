@@ -32,9 +32,6 @@ STATIC_ROUTINE int	TdiHashOne(int len, char *pstring) {
   return hash;
 }
 
-#   define ___IS_LOWER(c) (((c) >= 'a' && (c) <= 'z')?1:0)
-#           define __toupper(c)  (___IS_LOWER(c) ? (c) & 0xDF: (c))
-
 STATIC_ROUTINE int	TdiHashAll() {
   int	jf, jh;
   struct TdiFunctionStruct *pf = (struct TdiFunctionStruct *)TdiRefFunction;

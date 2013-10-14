@@ -5,6 +5,7 @@
 #include <treeshr.h>
 #include <strroutines.h>
 #include <libroutines.h>
+#include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -76,7 +77,7 @@ static int BecomeUser(char *remuser, struct descriptor *local_user) {
     if (!pwd && remuser == user) {
       int i;
       for (i=0;i<strlen(user);i++)
-        user[i] = __tolower(user[i]);
+        user[i] = tolower(user[i]);
       pwd = getpwnam(user);
     }
     if (pwd) {
