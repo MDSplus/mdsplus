@@ -2254,9 +2254,9 @@ protected:
 
 		static void lock();
 		static void unlock();
-		static void setCurrent(char *treeName, int shot);
-		static int getCurrent(char *treeName);
-		static Tree *create(char *treeName, int shot);
+		static void setCurrent(char const * treeName, int shot);
+		static int getCurrent(char const * treeName);
+		static Tree *create(char const * name, int shot);
 		
 		void *getCtx() {return ctx;}
 		void edit();
@@ -2266,8 +2266,8 @@ protected:
 		TreeNode *getNode(char const *path);
 		TreeNode *getNode(TreePath *path);
 		TreeNode *getNode(String *path);
-		TreeNode *addNode(char *name, char *usage);
-		TreeNode *addDevice(char *name, char *type);
+		TreeNode *addNode(char const * name, char *usage);
+		TreeNode *addDevice(char const * name, char *type);
 		void remove(char const *name);
 
 		TreeNodeArray *getNodeWild(char const *path, int usageMask);
@@ -2286,7 +2286,7 @@ protected:
 		void createPulse(int shot);
 		void deletePulse(int shot);
 		StringArray *findTags(char *wild);
-		void removeTag(char *tagName);
+		void removeTag(char const * tagName);
 		_int64 getDatafileSize();
 	};
 

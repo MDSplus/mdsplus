@@ -235,7 +235,7 @@ void Tree::edit()
 	}
 }
 
-Tree *Tree::create(char *name, int shot)
+Tree *Tree::create(char const * name, int shot)
 {
 	void *dbid;
 	int status = _TreeOpenNew(&dbid, name, shot);
@@ -263,7 +263,7 @@ void Tree::quit()
 	}
 }
 
-TreeNode *Tree::addNode(char *name, char *usage)
+TreeNode *Tree::addNode(char const * name, char *usage)
 {
 	int newNid;
 	int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
@@ -273,7 +273,7 @@ TreeNode *Tree::addNode(char *name, char *usage)
 }
 
 
-TreeNode *Tree::addDevice(char *name, char *type)
+TreeNode *Tree::addDevice(char const * name, char *type)
 {
 	int newNid;
 	int status = _TreeAddConglom(ctx, name, type, &newNid);
@@ -282,7 +282,7 @@ TreeNode *Tree::addDevice(char *name, char *type)
 	return new TreeNode(newNid, this);
 }
 
-void Tree::remove(char const *name)
+void Tree::remove(char const * name)
 {
 	int count;
 	TreeNode *delNode = getNode(name);
@@ -293,7 +293,7 @@ void Tree::remove(char const *name)
 		throw MdsException(status);
 }
 
-TreeNode *Tree::getNode(char const *path)
+TreeNode *Tree::getNode(char const * path)
 {
 	int nid;
 
@@ -335,7 +335,7 @@ TreeNode *Tree::getNode(String *path)
 
 	
 
-TreeNodeArray *Tree::getNodeWild(char const *path, int usageMask)
+TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
 {
 	int currNid, status; 
 	int numNids = 0;
@@ -498,14 +498,14 @@ void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 
 
 
-void Tree::setCurrent(char *treeName, int shot)
+void Tree::setCurrent(char const * treeName, int shot)
 {
 	int status = TreeSetCurrentShotId(treeName, shot);
 	if(!(status & 1))
 		throw MdsException(status);
 }
 
-int Tree::getCurrent(char *treeName)
+int Tree::getCurrent(char const * treeName)
 {
 	return TreeGetCurrentShotId(treeName);
 }
@@ -544,7 +544,7 @@ StringArray *Tree::findTags(char *wild)
 	    delete [] tagNames[i];
 	return stArr;
 }
-void Tree::removeTag(char *tagName)
+void Tree::removeTag(char const * tagName)
 {
 	int status = _TreeRemoveTag(getCtx(), tagName);
 	if(!(status & 1))

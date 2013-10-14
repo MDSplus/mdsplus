@@ -40,7 +40,7 @@ extern void **TreeCtx();
 
 static void      _RemoveTagIdx(PINO_DATABASE *dblist, int tagidx);
 
-int TreeRemoveTag(char *name) { return _TreeRemoveTag(*TreeCtx(), name); }
+int TreeRemoveTag(char const * name) { return _TreeRemoveTag(*TreeCtx(), name); }
 int TreeRemoveNodesTags(int nid) { return _TreeRemoveNodesTags(*TreeCtx(), nid);}
 
 int       _TreeRemoveNodesTags(void *dbid, int nid)
@@ -73,7 +73,7 @@ int       _TreeRemoveNodesTags(void *dbid, int nid)
  *  Routine to remove a tag from the tree given its name
  */
 
-int _TreeRemoveTag(void *dbid, char *name)
+int _TreeRemoveTag(void *dbid, char const * name)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int idx;
