@@ -47,7 +47,7 @@ int treeshr_errno = 0;
 #ifndef HAVE_VXWORKS_H
 extern int MDSEventCan();
 #endif
-static void RemoveBlanksAndUpcase(char *out, char *in);
+static void RemoveBlanksAndUpcase(char * out, char const * in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);
 static int CreateDbSlot(PINO_DATABASE **dblist, char *tree, int shot, int editting);
@@ -59,16 +59,16 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
 
 extern void **TreeCtx();
 
-int TreeClose(char *tree, int shot) { return _TreeClose(TreeCtx(),tree,shot); }
+int TreeClose(char const *tree, int shot) { return _TreeClose(TreeCtx(),tree,shot); }
 int TreeEditing() { return _TreeEditing(*TreeCtx());}
 int TreeGetStackSize() { return _TreeGetStackSize(*TreeCtx());}
 int TreeIsOpen() { return _TreeIsOpen(*TreeCtx());}
-int TreeOpen(char *tree, int shot, int read_only) { return _TreeOpen(TreeCtx(),tree,shot,read_only);}
+int TreeOpen(char const *tree, int shot, int read_only) { return _TreeOpen(TreeCtx(),tree,shot,read_only);}
 int TreeSetStackSize(int size) { return _TreeSetStackSize(TreeCtx(), size);}
 void TreeRestoreContext(void *ctx) { _TreeRestoreContext(TreeCtx(),ctx); }
 void *TreeSaveContext() { return _TreeSaveContext(*TreeCtx());}
-int TreeOpenEdit(char *tree, int shot) { return _TreeOpenEdit(TreeCtx(),tree,shot);}
-int TreeOpenNew(char *tree, int shot) { return _TreeOpenNew(TreeCtx(), tree, shot);}
+int TreeOpenEdit(char const *tree, int shot) { return _TreeOpenEdit(TreeCtx(),tree,shot);}
+int TreeOpenNew(char const *tree, int shot) { return _TreeOpenNew(TreeCtx(), tree, shot);}
 
 static char *TreePath( char *tree, char *tree_lower_out )
 {
@@ -126,7 +126,7 @@ static char *ReplaceAliasTrees(char *tree_in)
   return ans;
 }
     
-EXPORT int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag)
+EXPORT int _TreeOpen(void **dbid, char const * tree_in, int shot_in, int read_only_flag)
 {
   int       status = TreeFAILURE;
   int       shot;
@@ -189,18 +189,18 @@ EXPORT int _TreeOpen(void **dbid, char *tree_in, int shot_in, int read_only_flag
   return status;
 }
 
-static void RemoveBlanksAndUpcase(char *out, char *in)
+static void RemoveBlanksAndUpcase(char * out, char const * in)
 {
   while(*in)
   {                          
-  char c = *in++;
-  if (c != (char)32 && c != (char)9)
-   *out++ = toupper(c);
- }
- *out=0;
+    char c = *in++;
+    if (!isspace(c))
+      *out++ = toupper(c);
+  }
+  *out=0;
 }
 
-int _TreeClose(void **dbid, char *tree, int shot)
+int _TreeClose(void **dbid, char const * tree, int shot)
 {
   PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
   int       status;
@@ -1212,7 +1212,7 @@ int TreeReopenNci(struct tree_info *info) {
   return status;
 }
 
-int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
+int       _TreeOpenEdit(void **dbid, char const * tree_in, int shot_in)
 {
   TREE_INFO *info;
   size_t const treesize = strlen(tree_in) + 1;
@@ -1275,7 +1275,7 @@ int       _TreeOpenEdit(void **dbid, char *tree_in, int shot_in)
   return status;
 }
 
-int       _TreeOpenNew(void **dbid, char *tree_in, int shot_in)
+int       _TreeOpenNew(void **dbid, char const * tree_in, int shot_in)
 {
   TREE_INFO *info;
   char     *tree = malloc(strlen(tree_in)+1);

@@ -557,7 +557,7 @@ char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr)
   return tag;
 }
 
-char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath)
+char *AbsPathRemote(PINO_DATABASE *dblist, char const *inpath)
 {
   struct descrip ans = empty_ans;
   char *exp = (char *)malloc(strlen(inpath)+20);

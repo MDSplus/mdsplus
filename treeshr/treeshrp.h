@@ -738,7 +738,7 @@ extern int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_in);
 
 extern char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr);
 
-extern char *AbsPathRemote(PINO_DATABASE *dblist, char *inpath);
+extern char *AbsPathRemote(PINO_DATABASE *dblist, char const *inpath);
 
 extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
 

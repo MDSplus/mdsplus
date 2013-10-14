@@ -36,12 +36,12 @@ extern void **TreeCtx();
 STATIC_ROUTINE int       TreeNewNode(PINO_DATABASE *db_ptr, NODE **node_ptrptr, NODE **trn_node_ptrptr);
 STATIC_ROUTINE int TreeWriteNci(TREE_INFO *info);
 
-int TreeAddNode(char *name, int *nid_out, char usage)
+int TreeAddNode(char const *name, int *nid_out, char usage)
 {
   return _TreeAddNode(*TreeCtx(), name, nid_out, usage);
 }
 
-int TreeAddConglom(char *path, char *congtype, int *nid)
+int TreeAddConglom(char const *path, char *congtype, int *nid)
 {
   return _TreeAddConglom(*TreeCtx(), path, congtype, nid);
 }
@@ -80,7 +80,7 @@ _int64 TreeGetDatafileSize()
   return _TreeGetDatafileSize(*TreeCtx());
 }
 
-int       _TreeAddNode(void *dbid, char *name, int *nid_out, char usage)
+int       _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int       status;
@@ -478,7 +478,7 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
   return status;
 }
 
-int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid)
+int _TreeAddConglom(void *dbid, char const *path, char *congtype, int *nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int       status = 1;

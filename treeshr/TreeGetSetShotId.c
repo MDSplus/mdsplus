@@ -126,7 +126,7 @@ static int OpenShotIdFile(char *experiment,int mode)
 }
 
 
-int       TreeGetCurrentShotId(char *experiment)
+int       TreeGetCurrentShotId(char const * experiment)
 {
   int shot = 0;
   int status = 0;
@@ -169,7 +169,7 @@ int       TreeGetCurrentShotId(char *experiment)
   return (status & 1) ? shot : 0;
 }
 
-int       TreeSetCurrentShotId(char *experiment, int shot)
+int       TreeSetCurrentShotId(char const * experiment, int shot)
 {
   int status = 0;
   char *path = 0;

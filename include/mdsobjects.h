@@ -2233,7 +2233,7 @@ protected:
 	{
 		friend void setActiveTree(Tree *tree);
 		friend Tree *getActiveTree();
-		Tree(void *dbid, char *name, int shot);
+		Tree(void *dbid, char const * name, int shot);
 
 	protected:
 		Tree(){}
@@ -2244,8 +2244,8 @@ protected:
 	
 
 	public:
-		Tree(char *name, int shot);
-		Tree(char *name, int shot, char *mode);
+		Tree(char const * name, int shot);
+		Tree(char const * name, int shot, char const * mode);
 
 		~Tree();
 

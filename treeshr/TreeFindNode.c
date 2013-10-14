@@ -24,17 +24,17 @@ STATIC_ROUTINE void Push(SEARCH_CONTEXT *search, NODE *node);
 STATIC_ROUTINE int Parse(SEARCH_CONTEXT *ctx, int wild);
 STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param);
 STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out);
-STATIC_ROUTINE char *AbsPath(void *dbid, char *inpath, int nid_in);
+STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
 STATIC_ROUTINE char *Treename(PINO_DATABASE *dblist, int nidin);
 STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one);
 
 
-int TreeFindNode(char *path, int *outnid) { return _TreeFindNode(*TreeCtx(),path,outnid); }
-int TreeFindNodeWild(char *path, int *nid_out, void **ctx_inout, int usage_mask) {
+int TreeFindNode(char const * path, int *outnid) { return _TreeFindNode(*TreeCtx(),path,outnid); }
+int TreeFindNodeWild(char const * path, int *nid_out, void **ctx_inout, int usage_mask) {
   return _TreeFindNodeWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask); }
 int TreeFindNodeEnd(void **ctx_in) { return _TreeFindNodeEnd(*TreeCtx(), ctx_in); }
 char *TreeFindNodeTags(int nid_in, void **ctx_ptr) { return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr); }
-char *TreeAbsPath(char *inpath) { return _TreeAbsPath(*TreeCtx(), inpath); }
+char *TreeAbsPath(char const * inpath) { return _TreeAbsPath(*TreeCtx(), inpath); }
 int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
   PINO_DATABASE *dblist = (PINO_DATABASE *)*TreeCtx();
   NODE *nodeptr;
@@ -63,7 +63,7 @@ int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
 ( (ctx[ctx->level+1].type != EOL) || \
   ((1<<node->usage) & usage_mask) )
 
-int _TreeFindNode(void *dbid, char const *path, int *outnid)
+int _TreeFindNode(void *dbid, char const * path, int *outnid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID	    *nid = (NID *)outnid;
@@ -98,7 +98,7 @@ int _TreeFindNode(void *dbid, char const *path, int *outnid)
   return status;
 }
 
-int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+int _TreeFindNodeWild(void *dbid, char const * path, int *nid_out, void **ctx_inout, int usage_mask)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *)nid_out;
@@ -975,7 +975,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
   return answer;
 }
 
-char *_TreeAbsPath(void *dbid, char *inpath)
+char *_TreeAbsPath(void *dbid, char const *inpath)
 { 
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int nid;
@@ -990,12 +990,12 @@ char *_TreeAbsPath(void *dbid, char *inpath)
   return answer;
 }
 
-STATIC_ROUTINE char *AbsPath(void *dbid, char *inpath, int nid_in)
+STATIC_ROUTINE char * AbsPath(void *dbid, char const * inpath, int nid_in)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
   char *tmppath = NULL;
-  char *pathptr = inpath;
+  char const * pathptr = inpath;
   char *answer = NULL;
   int len;
   int i;

@@ -160,7 +160,8 @@ void Tree::unlock()
 }
 #endif
 
-Tree::Tree(char *name, int shot): shot(shot)
+
+Tree::Tree(char const *name, int shot) : shot(shot)
 {
 	ctx = 0;
 	int status = _TreeOpen(&ctx, name, shot, 0);
@@ -173,14 +174,14 @@ Tree::Tree(char *name, int shot): shot(shot)
 	//setActiveTree(this);
 }
 
-Tree::Tree(void *dbid, char *name, int shot): shot(shot)
+Tree::Tree(void *dbid, char const *name, int shot) : shot(shot)
 {
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
 	this->ctx = dbid;
 }
 
-Tree::Tree(char *name, int shot, char *mode): shot(shot)
+Tree::Tree(char const *name, int shot, char const *mode) : shot(shot)
 {
 	ctx = 0;
 	std::string upMode(mode);

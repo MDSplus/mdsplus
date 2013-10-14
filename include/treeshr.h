@@ -466,18 +466,18 @@ extern EXPORT int TreeSetDbiItm();
 
 #else
 
-extern EXPORT char *TreeAbsPath(char *in);             /********** Use TreeFree(result) *****/
-extern EXPORT char *_TreeAbsPath( void *dbid, char *in);  /********** Use TreeFree(result) *****/
-extern EXPORT int TreeAddConglom(char *path, char *congtype, int *nid);
-extern EXPORT int _TreeAddConglom(void *dbid, char *path, char *congtype, int *nid);
-extern EXPORT int TreeAddNode(char *name, int *nid_ret, char usage);
-extern EXPORT int _TreeAddNode(void *dbid, char *name, int *nid_ret, char usage);
+extern EXPORT char *TreeAbsPath(char const *in);             /********** Use TreeFree(result) *****/
+extern EXPORT char *_TreeAbsPath(void *dbid, char const *in);  /********** Use TreeFree(result) *****/
+extern EXPORT int TreeAddConglom(char const *path, char *congtype, int *nid);
+extern EXPORT int _TreeAddConglom(void *dbid, char const *path, char *congtype, int *nid);
+extern EXPORT int TreeAddNode(char const *name, int *nid_ret, char usage);
+extern EXPORT int _TreeAddNode(void *dbid, char const *name, int *nid_ret, char usage);
 extern EXPORT int TreeAddTag(int nid, char *tagnam);
 extern EXPORT int _TreeAddTag(void *dbid, int nid, char *tagnam);
 extern EXPORT int TreeCleanDatafile(char *tree, int shot);
 extern EXPORT int _TreeCleanDatafile(void **dbid, char *tree, int shot);
-extern EXPORT int TreeClose(char *tree, int shot);
-extern EXPORT int _TreeClose(void **dbid, char *tree, int shot);
+extern EXPORT int TreeClose(char const * tree, int shot);
+extern EXPORT int _TreeClose(void **dbid, char const * tree, int shot);
 extern EXPORT int TreeCompressDatafile(char *tree, int shot);
 extern EXPORT int _TreeCompressDatafile(void **dbid, char *tree, int shot);
 extern EXPORT int TreeCreatePulseFile( int shot, int numnids, int *nids);
@@ -498,14 +498,14 @@ extern EXPORT int TreeEditing();
 extern EXPORT int _TreeEditing(void *dbid);
 extern EXPORT int TreeEndConglomerate();
 extern EXPORT int _TreeEndConglomerate(void *dbid);
-extern EXPORT int TreeFindNode(char *path, int *nid);
+extern EXPORT int TreeFindNode(char const *path, int *nid);
 extern EXPORT int _TreeFindNode(void *dbid, char const *path, int *nid);
 extern EXPORT int TreeFindNodeEnd(void **ctx);
 extern EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
 extern EXPORT char *TreeFindNodeTags(int nid, void **ctx);   /********** Use TreeFree(result) *****/
 extern EXPORT char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);  /********** Use TreeFree(result) *****/
-extern EXPORT int TreeFindNodeWild(char *path, int *nid, void **ctx, int usage_mask);
-extern EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx, int usage_mask);
+extern EXPORT int TreeFindNodeWild(char const * path, int *nid, void **ctx, int usage_mask);
+extern EXPORT int _TreeFindNodeWild(void *dbid, char const * path, int *nid, void **ctx, int usage_mask);
 extern EXPORT void TreeFindTagEnd(void **ctx);
 extern EXPORT char *TreeFindTagWild(char *wild, int *nidout, void **search_ctx);
 extern EXPORT char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx);
@@ -537,15 +537,15 @@ extern EXPORT int _TreeIsOpen(void *dbid);
 extern EXPORT int TreeLink(struct descriptor *intree, struct descriptor *outtree);
 extern EXPORT int TreeMarkIncludes();
 extern EXPORT int TreeNodePresent(int *nid);
-extern EXPORT int TreeOpen(char *tree, int shot, int flags);
-extern EXPORT int _TreeOpen(void **dbid,char *tree, int shot, int flags);
-extern EXPORT int TreeOpenEdit(char *tree, int shot);
-extern EXPORT int _TreeOpenEdit(void **dbid, char *tree, int shot);
-extern EXPORT int TreeOpenNew(char *tree, int shot);
-extern EXPORT int _TreeOpenNew(void **dbid, char *tree, int shot);
+extern EXPORT int TreeOpen(char const *tree, int shot, int flags);
+extern EXPORT int _TreeOpen(void **dbid,char const * tree, int shot, int flags);
+extern EXPORT int TreeOpenEdit(char const * tree, int shot);
+extern EXPORT int _TreeOpenEdit(void **dbid, char const *tree, int shot);
+extern EXPORT int TreeOpenNew(char const * tree, int shot);
+extern EXPORT int _TreeOpenNew(void **dbid, char const * tree, int shot);
 extern EXPORT int TreePutRecord(int nid, struct descriptor *descriptor_ptr, int utility_update);
 extern EXPORT int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor, int utility_update);
-extern EXPORT int TreeQuitTree(char *tree, int shot);
+extern EXPORT int TreeQuitTree(char * tree, int shot);
 extern EXPORT int _TreeQuitTree(void **dbid, char *tree, int shot);
 extern EXPORT int TreeRemoveNodesTags(int nid);
 extern EXPORT int _TreeRemoveNodesTags(void *dbid, int nid);
@@ -628,8 +628,8 @@ extern EXPORT int TreeSetXNci(int nid, char *xnciname, struct descriptor *value)
 extern EXPORT int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value);
 extern EXPORT int TreeSetViewDate(_int64 *date);
 extern EXPORT int _TreeSetViewDate(void *dbid, _int64 *date);
-extern EXPORT int TreeSetCurrentShotId(char *experiment, int shot);
-extern EXPORT int TreeGetCurrentShotId(char *experiment);
+extern EXPORT int TreeSetCurrentShotId(char const * experiment, int shot);
+extern EXPORT int TreeGetCurrentShotId(char const * experiment);
 extern EXPORT int TreeSetDbiItm(int code, int value);
 extern EXPORT _int64 TreeGetDatafileSize();
 extern EXPORT _int64 _TreeGetDatafileSize(void *dbid);
