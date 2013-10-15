@@ -32,7 +32,7 @@ extern void set_hyphen(int);
 	/****************************************************************
 	 * mdsdcl_debug:
 	 ****************************************************************/
-mdsdcl_debug()
+int mdsdcl_debug()
    {
 #ifdef vms
     lib$signal(SS$_DEBUG);
@@ -49,7 +49,7 @@ mdsdcl_debug()
 	/****************************************************************
 	 * mdsdcl_exit:
 	 ****************************************************************/
-mdsdcl_exit()
+int mdsdcl_exit()
    {
     exit(0);
 	return 1;
@@ -61,14 +61,14 @@ mdsdcl_exit()
 	 * mdsdcl_init_timer:
 	 * mdsdcl_show_timer:
 	 ****************************************************************/
-mdsdcl_init_timer()
+int mdsdcl_init_timer()
    {
     init_timer();
     return(1);
    }
 
 
-mdsdcl_show_timer()
+int mdsdcl_show_timer()
    {
     show_timer();
     return(1);
@@ -107,7 +107,7 @@ int   mdsdcl_type()
         /****************************************************************
          * mdsdcl_set_hyphen:
          ****************************************************************/
-mdsdcl_set_hyphen(              /* Returns: status                      */
+int mdsdcl_set_hyphen(              /* Returns: status                      */
    struct _mdsdcl_ctrl  *ctrl   /* <m> the "ctrl" structure             */
    )
    {
@@ -118,7 +118,7 @@ mdsdcl_set_hyphen(              /* Returns: status                      */
 	/****************************************************************
 	 * mdsdcl_set_verify:
 	 ****************************************************************/
-mdsdcl_set_verify(		/* Returns: status			*/
+int mdsdcl_set_verify(		/* Returns: status			*/
    struct _mdsdcl_ctrl  *ctrl	/* <m> the "ctrl" structure		*/
    )
    {

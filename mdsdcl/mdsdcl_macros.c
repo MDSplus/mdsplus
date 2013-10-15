@@ -89,7 +89,7 @@ static struct _mdsdcl_macro  *get_macro( /* Return: addr of struct	*/
     struct _mdsdcl_macro  *m;
     struct _mdsdcl_ctrl  *ctrl = &MdsdclGetThreadStatic()->ctrl;
 
-    if (m = find_macro(name))
+    if ((m = find_macro(name)))
         return(m);			/*--------------------> return	*/
 
     if (ctrl->macro.numMacros >= ctrl->macro.maxMacros)

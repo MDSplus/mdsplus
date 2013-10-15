@@ -79,7 +79,7 @@ int   mdsdcl_dcl_parse(		/* Returns CLI_STS_xxx status	*/
     else
        {		/* else, p is start of command string ...	*/
         nbytes = 0;
-        if (indirect_flag = (*p == '@'))
+        if ((indirect_flag = (*p == '@')))
            {
             p = nonblank(p+1);		/* skip the '@'			*/
             nbytes = sizeof(doIndirect) - 1;

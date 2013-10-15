@@ -11,6 +11,8 @@
 #endif
 #include <STATICdef.h>
 #include "mdsdclthreadsafe.h"
+extern void LockMdsShrMutex();
+extern void UnlockMdsShrMutex();
 
 /*********************************************************************
 * MDSDCL_DO_COMMAND.C --
