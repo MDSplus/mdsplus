@@ -406,7 +406,9 @@ block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 /*--------------------------------------------------------------
 	Release variables.
 */
-TdiRefStandard(Tdi1Deallocate)
+int Tdi1Deallocate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 	if (narg == 0 && private->head) {
            status = free_all(&private->head); 
@@ -418,7 +420,9 @@ block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 /*--------------------------------------------------------------
 	Check for allocated variable, private only by default.
 */
-TdiRefStandard(Tdi1Allocated)
+int Tdi1Allocated(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor	key_dsc = EMPTDY_S;
 node_type		*node_ptr;
 block_type		*block_ptr;
@@ -437,7 +441,9 @@ int			found;
 /*--------------------------------------------------------------
 	Check for argument present.
 */
-TdiRefStandard(Tdi1Present)
+int Tdi1Present(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor	key_dsc = EMPTDY_S;
 node_type		*node_ptr;
 block_type		*block_ptr;
@@ -590,7 +596,9 @@ block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 /***************************************************************
 	Replace variable. Assumed called by INTRINSIC so that out_ptr is XD-DSC.
 */
-TdiRefStandard(Tdi1Equals)
+int Tdi1Equals(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
 	/************************************
@@ -603,7 +611,9 @@ TdiRefStandard(Tdi1Equals)
 /*--------------------------------------------------------------
 	Store in first argument of binary opertor.
 */
-TdiRefStandard(Tdi1EqualsFirst)
+int Tdi1EqualsFirst(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	if (list[0]->dtype != DTYPE_FUNCTION
 	|| ((struct descriptor_function *)list[0])->ndesc != 2) status = TdiINVDTYDSC;
@@ -613,7 +623,9 @@ TdiRefStandard(Tdi1EqualsFirst)
 /*--------------------------------------------------------------
 	Decrement a variable before use.
 */
-TdiRefStandard(Tdi1PreDec)
+int Tdi1PreDec(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiSubtract(list[0], &true_dsc, out_ptr MDS_END_ARG);
 	if (status & 1) status = TdiPutIdent((struct descriptor_r *)list[0], out_ptr);
@@ -622,7 +634,9 @@ TdiRefStandard(Tdi1PreDec)
 /*--------------------------------------------------------------
 	Increment a variable before use.
 */
-TdiRefStandard(Tdi1PreInc)
+int Tdi1PreInc(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiAdd(list[0], &true_dsc, out_ptr MDS_END_ARG);
 	if (status & 1) status = TdiPutIdent((struct descriptor_r *)list[0], out_ptr);
@@ -631,7 +645,9 @@ TdiRefStandard(Tdi1PreInc)
 /*--------------------------------------------------------------
 	Decrement a variable after use.
 */
-TdiRefStandard(Tdi1PostDec)
+int Tdi1PostDec(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status = TdiGetIdent(list[0], out_ptr);
@@ -643,7 +659,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 /*--------------------------------------------------------------
 	Increment a variable after use.
 */
-TdiRefStandard(Tdi1PostInc)
+int Tdi1PostInc(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status = TdiGetIdent(list[0], out_ptr);
@@ -657,7 +675,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 	PRIVATE and PUBLIC must have text argument, not expression.
 	They are keywords, not standard functions. NEED we change this?
 */
-TdiRefStandard(Tdi1Private)
+int Tdi1Private(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 node_type	*node_ptr;
 block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
@@ -670,7 +690,9 @@ block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 	Find by identifier.
 	PRIVATE and PUBLIC must have text argument, not expression.
 */
-TdiRefStandard(Tdi1Public)
+int Tdi1Public(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 node_type	*node_ptr;
   LockTdiMutex(&lock,&lock_initialized);
 
@@ -683,7 +705,9 @@ node_type	*node_ptr;
 /*--------------------------------------------------------------
 	Find by text expression.
 */
-TdiRefStandard(Tdi1Var)
+int Tdi1Var(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status = TdiData(list[0], &tmp MDS_END_ARG);
@@ -697,7 +721,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 /***************************************************************
 	Define a function by reconstruction.
 */
-TdiRefStandard(Tdi1Fun)
+int Tdi1Fun(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 DESCRIPTOR_FUNCTION(hold,0,255);
 int			j;
 unsigned short opcode_s = (unsigned short)opcode;
@@ -712,7 +738,9 @@ unsigned short opcode_s = (unsigned short)opcode;
 	Release the private variables.
 	This to be used by functions.
 */
-TdiRefStandard(Tdi1ResetPrivate)
+int Tdi1ResetPrivate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 
 	private->head = 0;
@@ -723,7 +751,9 @@ block_type *private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 /*--------------------------------------------------------------
 	Release the public variables.
 */
-TdiRefStandard(Tdi1ResetPublic)
+int Tdi1ResetPublic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
   LockTdiMutex(&lock,&lock_initialized);
 	_public.head = 0;
@@ -772,14 +802,18 @@ struct descriptor_r	*rptr = (struct descriptor_r *)node_ptr->xd.pointer;
 /*--------------------------------------------------------------
 	Display private variables.
 */
-TdiRefStandard(Tdi1ShowPrivate)
+int Tdi1ShowPrivate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 block_type *_private = (block_type *)&((TdiThreadStatic())->TdiVar_private);
 	return wild((int (*)())show_one, narg, list, _private, out_ptr);
 }
 /*--------------------------------------------------------------
 	Display public variables.
 */
-TdiRefStandard(Tdi1ShowPublic)
+int Tdi1ShowPublic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
   LockTdiMutex(&lock,&lock_initialized);
 	status = wild((int (*)())show_one, narg, list, &_public, out_ptr);
 	UnlockTdiMutex(&lock);

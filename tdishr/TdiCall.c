@@ -120,7 +120,9 @@ STATIC_ROUTINE int TdiInterlude  (int opcode, struct descriptor **newdsc, int (*
 }
 
 
-TdiRefStandard(TdiCall)
+int TdiCall(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_function	*pfun;
 struct descriptor_xd	image = EMPTY_XD, entry = EMPTY_XD, tmp[255];
 int				j, max, ntmp = 0, (*routine)(  );

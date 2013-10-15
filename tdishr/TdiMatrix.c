@@ -44,7 +44,9 @@ int	incy)
 	return 1;
 }
 
-TdiRefStandard(Tdi1Diagonal)
+int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int				cmode = -1, nside=0;
 struct descriptor_xd	fill = EMPTY_XD;
 struct descriptor *fillptr;

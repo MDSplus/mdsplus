@@ -27,7 +27,9 @@ extern int TdiTaskOf();
 		argument = ARG_OF(classR)
 	NEED to remember to use AS_IS to prevent FUNCTION evaluation.
 */
-TdiRefStandard(Tdi1ArgOf)
+int Tdi1ArgOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			iarg = 0;
 STATIC_CONSTANT unsigned char omits[] = {
@@ -78,7 +80,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		same = AXIS_OF(slope) !deprecated!
 		axis_field = AXIS_OF(DIM_OF(signal))
 */
-TdiRefStandard(Tdi1AxisOf)
+int Tdi1AxisOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,
@@ -107,7 +111,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		begin_field = BEGIN_OF(slope, [n]) !deprecated!
 		startidx_field = BEGIN_OF(window)
 */
-TdiRefStandard(Tdi1BeginOf)
+int Tdi1BeginOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			n = 0;
 STATIC_CONSTANT unsigned char omits[] = {
@@ -141,7 +147,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return the class of its argument, but not of the XD.
 		byte = CLASS_OF(any)
 */
-TdiRefStandard(Tdi1ClassOf)
+int Tdi1ClassOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor	*px = list[0];
 unsigned char	class;
 
@@ -155,7 +163,9 @@ unsigned char	class;
 	Evaluate and then return the class of an argument.
 		byte = CLASS(any)
 */
-TdiRefStandard(Tdi1Class)
+int Tdi1Class(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
 	if (status & 1) status = Tdi1ClassOf(opcode, narg, &out_ptr->pointer, out_ptr);
@@ -165,7 +175,9 @@ TdiRefStandard(Tdi1Class)
 	Return completion in dispatch information.
 		completion = COMPLETION_OF(dispatch)
 */
-TdiRefStandard(Tdi1CompletionOf)
+int Tdi1CompletionOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status=TdiDispatchOf(list[0], &tmp MDS_END_ARG);
@@ -177,7 +189,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 	Return completion message in action information.
 		completion_message = COMPLETION_MESSAGE_OF(action)
 */
-TdiRefStandard(Tdi1CompletionMessageOf)
+int Tdi1CompletionMessageOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
@@ -197,7 +211,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return record information.
 		condition = CONDITION_OF(condition)
 */
-TdiRefStandard(Tdi1ConditionOf)
+int Tdi1ConditionOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CONDITION,
@@ -220,7 +236,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		dimension_field = DIM_OF(signal, [dim_num])
 		same = DIM_OF(dimension)
 */
-TdiRefStandard(Tdi1DimOf)
+int Tdi1DimOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 array_bounds                    *pa;
 struct descriptor_xd	tmp = EMPTY_XD;
 int				dimct;
@@ -295,7 +313,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		dispatch = DISPATCH_OF(action)
 		same = DISPATCH_OF(dispatch)
 */
-TdiRefStandard(Tdi1DispatchOf)
+int Tdi1DispatchOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
@@ -321,7 +341,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		descriptor = DSCPTR_OF(classR, [number])
 		descriptor = DSCPTR_OF(classAPD, [number])
 */
-TdiRefStandard(Tdi1DscptrOf)
+int Tdi1DscptrOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_r	*pr = (struct descriptor_r *)list[0];
 unsigned int		iarg = 0;
 
@@ -348,7 +370,9 @@ unsigned int		iarg = 0;
 	Evaluate and then return a descriptor pointer of an argument.
 		byte = DSCPTR(any)
 */
-TdiRefStandard(Tdi1Dscptr)
+int Tdi1Dscptr(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd tmp = EMPTY_XD, *new[2];
         new[0] = &tmp;
         new[1] = narg>1 ? (struct descriptor_xd *)list[1] : (struct descriptor_xd *)0;
@@ -361,7 +385,9 @@ struct descriptor_xd tmp = EMPTY_XD, *new[2];
 	Return the data type of its argument, but not of the XD.
 		byte = KIND_OF(any)
 */
-TdiRefStandard(Tdi1KindOf)
+int Tdi1KindOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor	*px = list[0];
 unsigned char	dtype;
 
@@ -375,7 +401,9 @@ unsigned char	dtype;
 	Evaluate and then return the dtype of an argument.
 		byte = KIND(any)
 */
-TdiRefStandard(Tdi1Kind)
+int Tdi1Kind(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
 	if (status & 1) status = Tdi1KindOf(opcode, narg, &out_ptr->pointer, out_ptr);
@@ -387,7 +415,9 @@ TdiRefStandard(Tdi1Kind)
 		end_field = END_OF(&slope,[n]) !deprecated!
 		endidx_field = END_OF(&window)
 */
-TdiRefStandard(Tdi1EndOf)
+int Tdi1EndOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 unsigned int			n = 0;
 STATIC_CONSTANT unsigned char omits[] = {
@@ -421,7 +451,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return error bar associated with value.
 		error = ERROR_OF(with_error)
 */
-TdiRefStandard(Tdi1ErrorOf)
+int Tdi1ErrorOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_CONSTANT DESCRIPTOR(none, "");
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
@@ -444,7 +476,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return errorlog in action information.
 		errorlogs_field = ERRORLOGS_OF(action)
 */
-TdiRefStandard(Tdi1ErrorlogsOf)
+int Tdi1ErrorlogsOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
@@ -470,7 +504,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return help portion of a parameter.
 		help_field = HELP_OF(param)
 */
-TdiRefStandard(Tdi1HelpOf)
+int Tdi1HelpOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PARAM,
@@ -490,7 +526,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return dispatch identification information.
 		ident_field = IDENT_OF(dispatch)
 */
-TdiRefStandard(Tdi1IdentOf)
+int Tdi1IdentOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status=TdiDispatchOf(list[0], &tmp MDS_END_ARG);
@@ -504,7 +542,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 		text = IMAGE_OF(conglom)
 		text = IMAGE_OF(routine)
 */
-TdiRefStandard(Tdi1ImageOf)
+int Tdi1ImageOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CALL,
@@ -532,7 +572,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return interrupt in dispatch information, only allowed for asynchronous.
 		when = INTERRUPT_OF(action or from dispatch)
 */
-TdiRefStandard(Tdi1InterruptOf)
+int Tdi1InterruptOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 struct descriptor_dispatch	*pd;
 char	omits[] = {
@@ -559,7 +601,9 @@ char	omits[] = {
 	Return language used by procedure.
 		language_field = LANGUAGE_OF(procedure)
 */
-TdiRefStandard(Tdi1LanguageOf)
+int Tdi1LanguageOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PROCEDURE,
@@ -579,7 +623,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return method used on object.
 		method_field = METHOD_OF(method)
 */
-TdiRefStandard(Tdi1MethodOf)
+int Tdi1MethodOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
@@ -602,7 +648,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return conglomerate information.
 		model_field = MODEL_OF(conglom)
 */
-TdiRefStandard(Tdi1ModelOf)
+int Tdi1ModelOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CONGLOM,
@@ -622,7 +670,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return conglomerate information.
 		name_field = NAME_OF(conglom)
 */
-TdiRefStandard(Tdi1NameOf)
+int Tdi1NameOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CONGLOM,
@@ -642,7 +692,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return the number of class-R descriptor pointers.
 		byte = NDESC_OF(&classR)
 */
-TdiRefStandard(Tdi1NdescOf)
+int Tdi1NdescOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_r		*pr = (struct descriptor_r *)list[0];
 int				iarg = 0;
 unsigned char	ndesc;
@@ -663,7 +715,9 @@ unsigned char	ndesc;
 	WARNING, will not work for DTYPE_FUNCTION.
 		byte = NDESC(any)
 */
-TdiRefStandard(Tdi1Ndesc)
+int Tdi1Ndesc(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
 	if (status & 1) status = Tdi1NdescOf(opcode, narg, &out_ptr->pointer, out_ptr);
@@ -673,7 +727,9 @@ TdiRefStandard(Tdi1Ndesc)
 	Return object used by method.
 		object_field = OBJECT_OF(method)
 */
-TdiRefStandard(Tdi1ObjectOf)
+int Tdi1ObjectOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
@@ -693,7 +749,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return performance in action information.
 		performance_field = PERFORMANCE_OF(action)
 */
-TdiRefStandard(Tdi1PerformanceOf)
+int Tdi1PerformanceOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
@@ -714,7 +772,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return phase in dispatch information.
 		phase_field = PHASE_OF(dispatch)
 */
-TdiRefStandard(Tdi1PhaseOf)
+int Tdi1PhaseOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status=TdiDispatchOf(list[0], &tmp MDS_END_ARG);
@@ -726,7 +786,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 	Return procedure using a language.
 		procedure_field = PROCEDURE_OF(procedure)
 */
-TdiRefStandard(Tdi1ProcedureOf)
+int Tdi1ProcedureOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PROCEDURE,
@@ -746,7 +808,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return program used by program.
 		program_field = PROGRAM_OF(program)
 */
-TdiRefStandard(Tdi1ProgramOf)
+int Tdi1ProgramOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PROGRAM,
@@ -771,7 +835,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		type = QUALIFIERS_OF(dispatch)
 		opcode = QUALIFIERS_OF(function)
 */
-TdiRefStandard(Tdi1QualifiersOf)
+int Tdi1QualifiersOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 struct descriptor		*pd;
 STATIC_CONSTANT unsigned char omits[] = {
@@ -811,7 +877,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		raw_field = RAW_OF(signal)
 		data = RAW_OF(other)
 */
-TdiRefStandard(Tdi1RawOf)
+int Tdi1RawOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_SIGNAL,
@@ -835,7 +903,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		routine_field = ROUTINE_OF(call)
 		routine_field = ROUTINE_OF(routine)
 */
-TdiRefStandard(Tdi1RoutineOf)
+int Tdi1RoutineOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_CALL,
@@ -860,7 +930,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		step_field = SLOPE_OF(range)
 		slope_field = SLOPE_OF(slope,[n]) !deprecated!
 */
-TdiRefStandard(Tdi1SlopeOf)
+int Tdi1SlopeOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_CONSTANT unsigned char one_val = 1;
 STATIC_CONSTANT struct descriptor one = {sizeof(unsigned char),DTYPE_BU,CLASS_S,(char *)&one_val};
 
@@ -897,7 +969,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		same = TASK_OF(routine)
 		same = TASK_OF(method)
 */
-TdiRefStandard(Tdi1TaskOf)
+int Tdi1TaskOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_ACTION,
@@ -937,7 +1011,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		time_out_field = TIME_OUT_OF(routine)
 		time_out_field = TIME_OUT_OF(method)
 */
-TdiRefStandard(Tdi1TimeoutOf)
+int Tdi1TimeoutOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_METHOD,
@@ -971,7 +1047,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		" " = UNITS_OF(other)
 	NEED thought about rescale of units, parameters...
 */
-TdiRefStandard(Tdi1UnitsOf)
+int Tdi1UnitsOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_CONSTANT DESCRIPTOR(none, " ");
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
@@ -994,7 +1072,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return validation field of a parameter.
 		validation_field = VALIDATION_OF(param)
 */
-TdiRefStandard(Tdi1ValidationOf)
+int Tdi1ValidationOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_PARAM,
@@ -1018,7 +1098,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		data_field = VALUE_OF(with_units)
 		data = VALUE_OF(other)	
 */
-TdiRefStandard(Tdi1ValueOf)
+int Tdi1ValueOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,
@@ -1060,7 +1142,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 	Return dispatch information.
 		when_field = WHEN_OF(dispatch)
 */
-TdiRefStandard(Tdi1WhenOf)
+int Tdi1WhenOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status=TdiDispatchOf(list[0], &tmp MDS_END_ARG);
@@ -1073,7 +1157,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 		window_field = WINDOW_OF(dimension)
 		same = WINDOW_OF(window)
 */
-TdiRefStandard(Tdi1WindowOf)
+int Tdi1WindowOf(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 STATIC_CONSTANT unsigned char omits[] = {
 	DTYPE_DIMENSION,

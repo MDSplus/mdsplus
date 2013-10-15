@@ -68,7 +68,9 @@ char			c0;
 	}
 	return cmp;
 }
-TdiRefStandard(Tdi1GetDbi)
+int Tdi1GetDbi(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_d		string = {0,DTYPE_T,CLASS_D,0};
 struct descriptor_xd	tmp = EMPTY_XD;
 struct item			*key_ptr=0;
@@ -156,7 +158,9 @@ STATIC_ROUTINE int fixup_path(struct descriptor *pin, int	arg, struct descriptor
 	return status;
 }
 
-TdiRefStandard(Tdi1Using)
+int Tdi1Using(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 void *ctx;
 int reset_ctx=0;
 int nid, shot, stat1;

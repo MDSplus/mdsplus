@@ -29,7 +29,9 @@ extern int TdiGetShape();
 extern int TdiMasterData();
 extern int TdiFaultHandler();
 
-TdiRefStandard(Tdi1Same)
+int Tdi1Same(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	sig[3], uni[3], dat[3];
 struct TdiCatStruct		cats[4];
 struct TdiFunctionStruct	*fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];

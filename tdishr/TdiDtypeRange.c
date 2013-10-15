@@ -49,7 +49,9 @@ extern int TdiNint();
 
 extern struct descriptor *TdiItoXSpecial;
 
-TdiRefStandard(Tdi1DtypeRange)
+int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 unsigned short len;
 unsigned char dtype;
 int				cmode = -1, j, nseg=0, nnew = narg;

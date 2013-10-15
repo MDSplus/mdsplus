@@ -57,7 +57,9 @@ extern void TdiYyReset();
 */
 STATIC_THREADSAFE  int yacc_mutex_initialized = 0;
 STATIC_THREADSAFE  pthread_mutex_t yacc_mutex;
-TdiRefStandard(Tdi1Compile)
+int Tdi1Compile(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
   EMPTYXD(tmp);
   struct descriptor		*text_ptr;
   STATIC_CONSTANT DESCRIPTOR(compile_zone,"TDI Compile Zone");
@@ -117,7 +119,9 @@ TdiRefStandard(Tdi1Compile)
 	Compile and evaluate an expression.
 		result = EXECUTE(string, [arg1,...])
 */
-TdiRefStandard(Tdi1Execute)
+int Tdi1Execute(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status = TdiIntrinsic(OpcCompile, narg, list, &tmp);

@@ -34,7 +34,9 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
-TdiRefStandard(Tdi1Evaluate)
+int Tdi1Evaluate(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_function	*pfun;
 int				nid, *pnid;
 

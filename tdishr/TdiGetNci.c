@@ -178,7 +178,9 @@ char			c0;
 	}
 	return cmp;
 }
-TdiRefStandard(Tdi1GetNci)
+int Tdi1GetNci(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_CONSTANT struct descriptor_d	EMPTY_D = {0,DTYPE_T,CLASS_D,0};
 STATIC_CONSTANT DESCRIPTOR_A(arr0,1,DTYPE_B,0,960);
 struct descriptor_a		*holda_ptr=0;

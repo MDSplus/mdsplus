@@ -158,7 +158,9 @@ register int	n = len;
 	for (; --n >= 0;) if (*pa++ != *pb++) break;
 	return (*--pa - *--pb);}
 
-TdiRefStandard(Tdi1Bsearch)
+int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int				inc, hi, lo = -2, mid, *poutput;
 int				upcase = 0, cmode = -1, len, mode = 0, ni=0, nt=0;
 char				*pinput, *ptable;
@@ -285,7 +287,9 @@ if (status & 1) {N_ELEMENTS(dat[1].pointer, nt);}
 	Limitation: does not preserve order of equal values, no n*log2(n) does, I think.
 	It could be done by sorting indices of equal value elements.
 */
-TdiRefStandard(Tdi1Sort)
+int Tdi1Sort(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_THREADSAFE _int64			ran = 0;
 int				i, j, keep, l, r, jstack, *ndx;
 int				upcase = 0, cmode = -1, len, n=0;
@@ -418,7 +422,9 @@ done:
 	Sort in place.
 	Method: MAP(array, SORT(array, [upcase]))
 */
-TdiRefStandard(Tdi1SortVal)
+int Tdi1SortVal(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp = EMPTY_XD;
 
 	status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
@@ -432,7 +438,9 @@ struct descriptor_xd	tmp = EMPTY_XD;
 	There may any number or arguments.
 	The signality is removed and units are joined by VECTOR.
 */
-TdiRefStandard(Tdi1Union)
+int Tdi1Union(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	j, n, len;
 char	*pi, *po;
 
@@ -490,7 +498,9 @@ char	*pi, *po;
 	list	vector of valid values
 	upcase	compare in uppercase (for text only)
 */
-TdiRefStandard(Tdi1IsIn)
+int Tdi1IsIn(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor *pupcase = narg > 2 ? list[2] : 0;
 
 	status = TdiSortVal(list[1], pupcase, out_ptr MDS_END_ARG);

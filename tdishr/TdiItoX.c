@@ -96,7 +96,9 @@ STATIC_CONSTANT struct descriptor done = {sizeof(one),DTYPE_L,CLASS_S,(char *)&o
 STATIC_CONSTANT DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2*sizeof(int));
 STATIC_CONSTANT DESCRIPTOR_RANGE(fake0, 0, 0, 0);
 STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(vector0,&OpcVector);
-TdiRefStandard(Tdi1ItoX)
+int Tdi1ItoX(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int				j1, left, right, *pcnt=0, *ptest;
 int				k0,k1;
 int				special = narg > 1 && list[1] == TdiItoXSpecial;

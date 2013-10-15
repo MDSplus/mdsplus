@@ -14,7 +14,9 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiGetLong();
 
-TdiRefStandard(Tdi1ShowVm)
+int Tdi1ShowVm(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	code, contex = 0, j = 1, mask, zone_id = 0;
 
 	if (narg > 0 && list[0]) status = TdiGetLong(list[0], &code);

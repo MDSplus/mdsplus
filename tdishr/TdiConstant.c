@@ -13,7 +13,9 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-TdiRefStandard(Tdi1Constant)
+int Tdi1Constant(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 /*
      struct descriptor *(*fun)()=(struct descriptor *(*)())*TdiRefFunction[opcode].f3;

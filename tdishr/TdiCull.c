@@ -314,13 +314,17 @@ STATIC_CONSTANT unsigned char omitd[] = {DTYPE_WITH_UNITS,DTYPE_DIMENSION,0};
 	return status;
 }
 /***********************************************/
-TdiRefStandard(Tdi1Cull)
+int Tdi1Cull(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = work(rcull, opcode, narg, list, out_ptr);
 	return status;
 }
 /***********************************************/
-TdiRefStandard(Tdi1Extend)
+int Tdi1Extend(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = work(rextend, opcode, narg, list, out_ptr);
 	return status;

@@ -34,7 +34,9 @@ extern int TdiCvtArgs();
 extern int Tdi2Pack();
 extern int TdiConvert();
 
-TdiRefStandard(Tdi1Pack)
+int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int				lena, lenm, numa, numm, numv=0, bytes, j, cmode = -1;
 char				*pi, *pm, *po;
 struct descriptor_xd	sig[3], uni[3], dat[3];

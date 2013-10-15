@@ -108,7 +108,9 @@ STATIC_ROUTINE int Doit(struct descriptor_routine	*ptask, struct descriptor_xd *
 }
 
 
-TdiRefStandard(Tdi1DoTask)
+int Tdi1DoTask(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 quadw	dt = {0,0};
 float	timeout = (float)0.;
 DESCRIPTOR_FLOAT(timeout_dsc, 0);

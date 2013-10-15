@@ -16,7 +16,9 @@ extern int Tdi1Same();
 extern int TdiData();
 extern int TdiGetLong();
 
-TdiRefStandard(Tdi1MinMax)
+int Tdi1MinMax(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	tmp, *newlist[2];
 int				j;
 
@@ -39,7 +41,9 @@ int				j;
 	If the condition is not scalar use MERGE(true, false, cond).
 	Note that is cond is a scalar, the units and signality are not conformed.
 */
-TdiRefStandard(Tdi1Conditional)
+int Tdi1Conditional(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = TdiData(list[2], out_ptr MDS_END_ARG);
 	if (status & 1)

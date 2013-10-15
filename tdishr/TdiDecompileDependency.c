@@ -95,7 +95,9 @@ struct descriptor	*pwhich=0;
 	return status;
 }
 /*------------------------------------------------------------------*/
-TdiRefStandard(Tdi1DecompileDependency)
+int Tdi1DecompileDependency(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_d	answer = {0, DTYPE_T, CLASS_D, 0};
 struct descriptor	*pdep = list[0];
 

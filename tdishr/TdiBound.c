@@ -49,7 +49,9 @@ STATIC_CONSTANT DESCRIPTOR_A(adsc0,sizeof(int),DTYPE_L,0,0);
 STATIC_CONSTANT unsigned char dtype_l = DTYPE_L;
 STATIC_CONSTANT unsigned short size_l = sizeof(int);
 
-TdiRefStandard(Tdi1Bound)
+int Tdi1Bound(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status=1;
 array_bounds			*pa=0;
 struct descriptor_xd	sig[1], uni[1], dat[1];
 struct TdiCatStruct		cats[2];
@@ -196,7 +198,9 @@ int	dimct, j;
 /***************************************************************
 	Non-F90 inquiry for Effective bounds.
 */
-TdiRefStandard(Tdi1Ebound)
+int Tdi1Ebound(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status=1;
 array_bounds			*pa=0;
 struct descriptor_xd	sig[1], uni[1], dat[1];
 struct TdiCatStruct		cats[2];

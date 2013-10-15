@@ -37,7 +37,9 @@ extern int TdiPower();
 
 #define _factor ((float).30103)
 
-TdiRefStandard(Tdi1Scalar)
+int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	sig[2], uni[2], dat[2];
 struct TdiCatStruct		cats[3];
 struct TdiFunctionStruct	*fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];

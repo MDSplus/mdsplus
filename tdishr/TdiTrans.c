@@ -92,7 +92,9 @@ STATIC_CONSTANT unsigned char		one_val = 1;
 STATIC_CONSTANT struct descriptor	zero = {sizeof(zero_val),DTYPE_BU,CLASS_S,(char *)&zero_val};
 STATIC_CONSTANT struct descriptor	one = {sizeof(one_val),DTYPE_BU,CLASS_S,(char *)&one_val};
 
-TdiRefStandard(Tdi1Trans)
+int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor		*pmask = &one;
 struct descriptor_signal	*psig;
 signal_maxdim			tmpsig;

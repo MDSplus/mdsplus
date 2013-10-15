@@ -121,7 +121,9 @@ char	val[sizeof(blanks)], *pval;
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-TdiRefStandard(TdiTrace)
+int TdiTrace(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
   struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
 	if (message->length > MAXMESS) return 0;
 	add("%TDI Decompile text_length");
@@ -135,7 +137,9 @@ TdiRefStandard(TdiTrace)
 	return 1;
 }
 
-TdiRefStandard(TRACE)
+int TRACE(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	j;
 struct descriptor_d	text = {0,DTYPE_T,CLASS_D,0};
 struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);
@@ -212,7 +216,9 @@ struct descriptor_xd	*out_ptr)
 
 STATIC_CONSTANT EMPTYXD(emptyxd);
 
-TdiRefStandard(TdiIntrinsic)
+int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
   struct TdiFunctionStruct	*fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];	
   struct descriptor_xd	tmp;
   int				stat1 = 1;
@@ -374,7 +380,9 @@ done:	TdiThreadStatic()->TdiIntrinsic_recursion_count = 0;
 		2 to print the current message
 		4 to clear the message buffer
 */
-TdiRefStandard(Tdi1Debug)
+int Tdi1Debug(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	option = -1;
 int mess_stat = (TdiThreadStatic())->TdiIntrinsic_mess_stat;
 struct descriptor_d *message = &((TdiThreadStatic())->TdiIntrinsic_message);

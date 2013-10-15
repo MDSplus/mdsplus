@@ -96,7 +96,9 @@ STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE **unit)
 	System data and time as text string.
 		string = DATE_TIME([quadword time])
 */
-TdiRefStandard(Tdi1DateTime)
+int Tdi1DateTime(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	time[2] = {0,0}, *ptime;
 unsigned short len;
 STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
@@ -117,7 +119,9 @@ STATIC_CONSTANT unsigned short length = 23;
 /*----------------------------------------------
 	Close a C file unit. (0=OK, EOF=bad)
 */
-TdiRefStandard(Tdi1Fclose)
+int Tdi1Fclose(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 FILE	*unit;
 int	err;
 
@@ -131,7 +135,9 @@ int	err;
 	where offset is in bytes (to record for rec files.)
 	and origin: 0=absolute 1=relative 2=relative to end.
 */
-TdiRefStandard(Tdi1Fseek)
+int Tdi1Fseek(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 FILE	*unit;
 int	offset = 0, origin = 0, err;
         
@@ -148,7 +154,9 @@ int	offset = 0, origin = 0, err;
 	Find absolute position of file pointer.
 	offset = FTELL(unit)
 */
-TdiRefStandard(Tdi1Ftell)
+int Tdi1Ftell(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 FILE	*unit;
 int	pos;
 
@@ -163,7 +171,9 @@ int	pos;
 	Mode is a lowercase string and may include
 	r=read w=write a=append r+/w+/a+=update b=binary
 */
-TdiRefStandard(Tdi1Fopen)
+int Tdi1Fopen(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 FILE	*unit;
 struct descriptor_d dname = {0,DTYPE_T,CLASS_D,0};
 struct descriptor_d dmode = {0,DTYPE_T,CLASS_D,0};
@@ -184,7 +194,9 @@ struct descriptor_d dmode = {0,DTYPE_T,CLASS_D,0};
 	Spawn a subprocess.
 		status = SPAWN([command_string],[input_file],[output_file])
 */
-TdiRefStandard(Tdi1Spawn)
+int Tdi1Spawn(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	stat1;
 struct descriptor_d cmd = EMPTY_D;
 struct descriptor_d inp = EMPTY_D;
@@ -203,7 +215,9 @@ struct descriptor_d out = EMPTY_D;
 	WAIT a given number of seconds.
 		float = WAIT(wait-time)
 */
-TdiRefStandard(Tdi1Wait)
+int Tdi1Wait(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 float	time;
 
 	status = TdiGetFloat(list[0], &time);
@@ -222,7 +236,9 @@ float	time;
 	Other types (including signals and with units)
 	are decompiled and start and end with a new row.
 */
-TdiRefStandard(Tdi1Write)
+int Tdi1Write(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	j, stat1, bytes = 0, col = 0, len;
 FILE	*unit = 0;
 struct descriptor	*pd, *ptmp;
@@ -292,7 +308,9 @@ none:			stat1 = TdiDecompile(&tmp, &tmp MDS_END_ARG);
 	Unit * is standard input.
 
 */
-TdiRefStandard(Tdi1Read)
+int Tdi1Read(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int	bytes = 0;
 FILE	*unit = 0;
   status = TdiGetInUnit(list[0], &unit);

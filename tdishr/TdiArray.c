@@ -40,9 +40,9 @@ int Tdi_RandomSeed = 1234567;
 extern int TdiData();
 extern int TdiConvert();
 extern int Tdi3Add();
-extern int CvtConvertFloat();
-
-TdiRefStandard(Tdi1Array)
+extern int Tdi1Array(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 array_coeff arr = {1,DTYPE_B,CLASS_A,(char *)0,0,0,{0,1,1,1,0},MAXDIM,0};
 array_int cvt = {sizeof(int),DTYPE_L,CLASS_A,(int *)0,0,0,{0,1,1,0,0},1,0};
 struct TdiFunctionStruct	*fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];

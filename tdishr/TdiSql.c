@@ -570,7 +570,9 @@ ARGLIST 	*arg;
 }
 
 /*********************************************************/
-TdiRefStandard(Tdi1Dsql)
+int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 int		rows = 0;
 ARGLIST		user_args = {0};
 struct descriptor dtext = {0,DTYPE_T,CLASS_D,0};
@@ -638,7 +640,9 @@ STATIC_CONSTANT DESCRIPTOR(zero, "\0");
 	return status;
 }
 /*********************************************************/
-TdiRefStandard(Tdi1Isql)
+int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 ARGLIST		user_args = {0};
 int		rows = 0;
 struct descriptor dtext = {0,DTYPE_T,CLASS_D,0};
@@ -680,7 +684,9 @@ struct descriptor drows = {sizeof(rows),DTYPE_L,CLASS_S,0};
 	return status;
 }
 /*********************************************************/
-TdiRefStandard(Tdi1IsqlSet)
+int Tdi1IsqlSet(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 	if (narg >= 1 && list[0])		status = TdiGetLong(list[0], &width);
 	if (narg >= 2 && list[1] && status & 1) status = TdiGetLong(list[1], &head);
 	return status;
@@ -688,15 +694,21 @@ TdiRefStandard(Tdi1IsqlSet)
 #else /* no sybase support */
 STATIC_CONSTANT DESCRIPTOR(const msg, "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
 
-TdiRefStandard(Tdi1Dsql)
+int Tdi1Dsql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
      status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
      return status;
 }
-TdiRefStandard(Tdi1Isql)
+int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
      status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
      return status;
 }
-TdiRefStandard(Tdi1IsqlSet)
+int Tdi1IsqlSet(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
      status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
      return status;
 }

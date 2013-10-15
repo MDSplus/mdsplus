@@ -24,7 +24,9 @@ extern int TdiMasterData();
 	Return without evaluation. Passes paths, nids, and functions.
 		any = AS_IS(any)
 */
-TdiRefStandard(Tdi1AsIs)
+int Tdi1AsIs(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	status = MdsCopyDxXd(list[0], out_ptr);
 	return status;
@@ -49,7 +51,9 @@ TdiRefStandard(Tdi1AsIs)
 		No type checking at build time.
 		No arrays of descriptors.
 */
-TdiRefStandard(Tdi1Build)
+int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor	*ptr;
 struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 DESCRIPTOR_FUNCTION(build,0,255);
@@ -85,7 +89,9 @@ unsigned char modif_c;
 		BUILD_EVENT(string)
 	WARNING: BUILD_PATH and BUILD_EVENT should be called MAKE_xxx.
 */
-TdiRefStandard(Tdi1BuildPath)
+int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	sig[1], uni[1], dat[1];
 struct TdiCatStruct		cats[2];
 int				cmode = 0;
@@ -114,7 +120,9 @@ int				cmode = 0;
 	This can be used to pass back expressions evaluated in an outer FUN.
 	So BUILD_xxx(x,y,...) is the same as MAKE_xxx(AS_IS(x),AS_IS(y),...).
 */
-TdiRefStandard(Tdi1Make)
+int Tdi1Make(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor	*ptr;
 int			j, k, modif;
 struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];

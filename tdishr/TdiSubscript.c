@@ -70,7 +70,9 @@ extern int TdiGetLong();
 
 typedef struct {int x[2];} quadw;
 
-TdiRefStandard(Tdi1Subscript)
+int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_CONSTANT DESCRIPTOR_A_COEFF(coeff0, 1, DTYPE_B, 0, MAXDIM, 1);
 register char			*pin, *pout;
 int				bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
@@ -293,7 +295,9 @@ baddat:
 	Each B value out of range uses extreme values of A.
 	A is treated as a linear array and subscripting is to nearest integer.
 */
-TdiRefStandard(Tdi1Map)
+int Tdi1Map(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_xd	dwu = EMPTY_XD, sig[1], uni[1], dat[1];
 struct TdiCatStruct		cats[2];
 struct descriptor_with_units *pwu;

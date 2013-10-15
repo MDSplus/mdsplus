@@ -424,7 +424,9 @@ unsigned char	omits[] = {
 	WARNING: $THIS is only defined within the subexpressions.
 	WARNING: Use of $THIS or $VALUE can be infinitely recursive.
 */
-TdiRefStandard(Tdi1This)
+int Tdi1This(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 if (TdiThreadStatic()->TdiSELF_PTR) status = MdsCopyDxXd((struct descriptor *)(TdiThreadStatic()->TdiSELF_PTR), out_ptr);
 	else status = TdiNO_SELF_PTR;
 	return status;
@@ -435,7 +437,9 @@ if (TdiThreadStatic()->TdiSELF_PTR) status = MdsCopyDxXd((struct descriptor *)(T
 	This allows the data field of signals to reference the raw field of a signal
 	and the validation field of params to reference the value field of a param.
 */
-TdiRefStandard(Tdi1Value)
+int Tdi1Value(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
 	if (TdiThreadStatic()->TdiSELF_PTR) switch (TdiThreadStatic()->TdiSELF_PTR->dtype) {
 	case DTYPE_SIGNAL :
@@ -457,7 +461,9 @@ TdiRefStandard(Tdi1Value)
 	A major entry point for evaluation of the data of expressions.
 		status = TdiData(&in, &out MDS_END_ARG)
 */
-TdiRefStandard(Tdi1Data)
+int Tdi1Data(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 
         unsigned char omits[] = {0};
 	status = TdiGetData(omits, list[0], out_ptr);
@@ -472,7 +478,9 @@ TdiRefStandard(Tdi1Data)
 		UNITS(other)		UNITS(DATA(other) not stripping above)
 		UNITS(other)		" "	(single blank to keep IDL happy)
 */
-TdiRefStandard(Tdi1Units)
+int Tdi1Units(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_r		*rptr;
 struct descriptor_xd	tmp = EMPTY_XD, uni[2];
 struct TdiCatStruct		cats[3];
@@ -529,7 +537,9 @@ STATIC_CONSTANT unsigned char omits[] = {
 		status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
 STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(null,0,0);
-TdiRefStandard(Tdi1DataWithUnits)
+int Tdi1DataWithUnits(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 STATIC_CONSTANT unsigned char omits[] = {DTYPE_WITH_UNITS,0};
 struct descriptor_with_units dwu = null;
 struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
@@ -564,7 +574,9 @@ struct descriptor_xd data = EMPTY_XD, units = EMPTY_XD;
 	Note that $VALUE would not be defined in that form.
 	Need we check that result is logical scalar?
 */
-TdiRefStandard(Tdi1Validation)
+int Tdi1Validation(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+{
+    int status = 1;
 struct descriptor_r		*rptr;
 struct descriptor_xd		*keep;
 STATIC_CONSTANT unsigned char omits[] = {DTYPE_PARAM,0};
