@@ -203,7 +203,7 @@ class Tree(object):
                 included=subtrees.nid_number.compress(subtrees.include_in_pulse)
                 included=included.toList()
                 included.insert(0,0)
-                included=numpy(included)
+                included=array(included)
                 status = _treeshr.TreeCreatePulseFile(self.ctx,shot,len(included),_C.c_void_p(included.ctypes.data))
             except:
                 status = _treeshr.TreeCreatePulseFile(self.ctx,shot,0,_C.c_void_p(0))
