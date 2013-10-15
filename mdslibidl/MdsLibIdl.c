@@ -225,20 +225,22 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
 int IdlMdsValue(int argc, void **argv)
 {
   int status;
-  void *arglist[18];
+  int arglistlen=2+(argc/2);
+  void **arglist=(void **)alloca(arglistlen*sizeof(void *));
   struct descriptor expression = {0,DTYPE_T,CLASS_S,0};
   EMPTYXD(tmp);
   int argidx = 1;
   int i;
   static int clear=4;
   static DESCRIPTOR_LONG(clear_d,&clear);
+  memset(arglist,0,arglistlen*sizeof(void*));
   BlockSig(SIGALRM);
   expression.length = strlen((char *)argv[0]);
   expression.pointer = (char *)argv[0];
   arglist[argidx++] = (void *)&expression;
-  for (i=3;i < argc; i += 2)
+  for (i=3;i < argc; i += 2, argidx++)
   {
-    arglist[argidx++] = (void *)MakeDescr(argidx - 2,(int *)argv[i],argv[i+1]);
+    arglist[argidx] = (void *)MakeDescr(argidx - 2,(int *)argv[i],argv[i+1]);
   }
   arglist[argidx++] = (void *)&tmp;
   arglist[argidx++] = MdsEND_ARG;
@@ -377,12 +379,14 @@ int IdlMdsValue(int argc, void **argv)
 int IdlMdsPut(int argc, void **argv)
 {
   int status;
-  void *arglist[18];
+  int arglistlen=3+(argc/2);
+  void **arglist=(void **)alloca(arglistlen*sizeof(void *));
   struct descriptor expression = {0,DTYPE_T,CLASS_S,0};
   EMPTYXD(tmp);
   int argidx = 1;
   int i;
   int nid;
+  memset(arglist,0,arglistlen*sizeof(void *));
   BlockSig(SIGALRM);
   status = TreeFindNode((char *)argv[0],&nid);
   if (status & 1)
@@ -390,9 +394,9 @@ int IdlMdsPut(int argc, void **argv)
     expression.length = strlen((char *)argv[1]);
     expression.pointer = (char *)argv[1];
     arglist[argidx++] = (void *)&expression;
-    for (i=2;i < argc; i += 2)
+    for (i=2;i < argc; i += 2,argidx++)
     {
-      arglist[argidx++] = (void *)MakeDescr(argidx - 2,(int *)argv[i],argv[i+1]);
+      arglist[argidx] = (void *)MakeDescr(argidx - 2,(int *)argv[i],argv[i+1]);
     }
     arglist[argidx++] = (void *)&tmp;
     arglist[argidx++] = MdsEND_ARG;
