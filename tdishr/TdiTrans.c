@@ -161,11 +161,12 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[],
 	    if (rank > MAXDIM)
 		status = TdiNDIM_OVER;
 		/** Whole array. Unrestricted. Product of multipliers == size, unchecked **/
-	    else if (dim < 0)
+	    else if (dim < 0) {
 		count_dim = (int)pa->arsize / (int)pa->length;
+	    }
 		/** Array with multipliers **/
 	    else if (pa->aflags.coeff) {
-		if (dim < rank || dim <= rank && opcode == OpcSpread) {
+		if (dim < rank || (dim <= rank && opcode == OpcSpread)) {
 		    for (j = 0; j < dim; ++j)
 			count_bef *= pa->m[j];
 		    if (j < rank)
@@ -189,16 +190,18 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[],
 	case CLASS_S:
 	case CLASS_D:
 	    rank = 0;
-	    if (dim > 0 || dim > 1 && opcode == OpcSpread)
+	    if (dim > 0 || (dim > 1 && opcode == OpcSpread)) {
 		status = TdiBAD_INDEX;
+	    }
 	    break;
 	default:
 	    status = TdiINVCLADSC;
 	    break;
 	}
 
-    if (status & 1)
+    if (status & 1) {
 	N_ELEMENTS(pmask, mul);
+    }
     if (status & 1) {
 	if (pmask->class == CLASS_A && mul < count_bef * count_dim * count_aft)
 	    status = TdiMISMATCH;
