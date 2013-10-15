@@ -611,13 +611,13 @@ ARGLIST *arg;
 	    *pout++ = *pin++;
 	    break;
 	case '\'':		/* quoted string */
-	    while (*pout++ = *pin) {
+	    while ((*pout++ = *pin)!=0) {
 		bufchk if (*++pin == '\'')
 		    break;
 	    }
 	    break;
 	case '"':		/* quoted string */
-	    while (*pout++ = *pin) {
+	    while ((*pout++ = *pin)!=0) {
 		bufchk if (*++pin == '"')
 		    break;
 	    }
