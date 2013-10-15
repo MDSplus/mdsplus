@@ -68,7 +68,7 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
 	    break;
 	  }
 	} else if (options[opt].short_name && 
-		   arglen>=0 &&
+		   arglen>0 &&
 		   arg[0]==options[opt].short_name[0]) {
 	  option_found=options[opt].present=1;
 	  if (options[opt].expects_value) {

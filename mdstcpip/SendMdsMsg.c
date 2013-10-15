@@ -60,7 +60,7 @@ int SendMdsMsg(int id, Message *m, int oob) {
   }
   else
     m->h.client_type = ClientType();
-  if (clength && compress2(cm->bytes+4,&clength,m->bytes,len,GetCompressionLevel()) == 0 && clength < len)
+  if (clength && compress2((unsigned char *)cm->bytes+4,&clength,(unsigned char *)m->bytes,len,GetCompressionLevel()) == 0 && clength < len)
   {
     cm->h = m->h;
     cm->h.client_type |= COMPRESSED;

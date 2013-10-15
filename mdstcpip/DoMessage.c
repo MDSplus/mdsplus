@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <libroutines.h>
 #include "mdsip_connections.h"
 
 int DoMessage(int id) {

@@ -1,5 +1,6 @@
 #include <STATICdef.h>
 #include <config.h>
+#include <ipdesc.h>
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)
 #define UnBlockSig(arg) 
@@ -158,6 +159,7 @@ EXPORT int  IdlSendArg(int lArgc, void * * lpvArgv)
 
 EXPORT int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
 {
+  extern int MdsSetCompression(int conid, int level);
 /*  status = call_external('mdsipshr','IdlSetCompressionLevel', connection_l, level_l, value=[1b,1b])
 */
   return MdsSetCompression((int)((char *)lpvArgv[0] - (char *)0),(int)((char *)lpvArgv[1] - (char *)0));

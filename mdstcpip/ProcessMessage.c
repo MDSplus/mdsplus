@@ -34,6 +34,9 @@ typedef int mode_t;
 #include "cvtdef.h"
 
 extern int TdiExecute();
+extern int TdiRestoreContext();
+extern int TreePerfRead();
+extern int TreePerfWrite();
 extern int TdiDebug();
 extern int TdiSaveContext();
 extern int TdiData();

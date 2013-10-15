@@ -255,6 +255,9 @@ EXPORT int SetService(int setting);
 EXPORT int SetSocketHandle(int handle);
 EXPORT int SetWorker(int setting);
 EXPORT void UnlockAsts();
+EXPORT int   MdsSetCompression(int conid, int level);
+EXPORT int   GetConnectionCompression(int conid);
+extern int NewConnection(char *protocol);
 //Deprecated ipaddr routines
 EXPORT int MdsGetClientAddr();
 EXPORT void MdsSetClientAddr(int);

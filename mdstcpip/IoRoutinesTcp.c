@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <config.h>
 #include <time.h>
+#include <unistd.h>
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif
@@ -403,7 +404,7 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen) {
   struct sockaddr_in sin;
   int status = getHostAndPort(host,&sin);
   if (status == 1) {
-    unsigned char *addr=(char *)&sin.sin_addr;
+    char *addr=(char *)&sin.sin_addr;
     snprintf(unique,buflen,"tcp://%d.%d.%d.%d:%d",addr[0],addr[1],addr[2],addr[3],ntohs(sin.sin_port));
     return 0;
   } else {

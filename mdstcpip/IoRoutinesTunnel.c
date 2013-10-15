@@ -6,6 +6,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
+#include <unistd.h>
 #ifdef HAVE_WINDOWS_H
 #include <process.h>
 #include <winuser.h>
@@ -211,7 +212,7 @@ static int tunnel_connect(int id, char *protocol, char *host) {
   } else if (pid == -1) {
     fprintf(stderr,"Error %d from fork()\n",errno);
     close(pipe_fd1[0]);
-    close(pipe_fd1[2]);
+    close(pipe_fd1[1]);
     close(pipe_fd2[0]);
     close(pipe_fd2[1]);
     return(-1);

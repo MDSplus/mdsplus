@@ -4,8 +4,6 @@
 #include "mdsip_connections.h"
 #include <stdio.h>
 
-
-
 static Connection *ConnectionList=0;
 static int connection_mutex_initialized = 0;
 static pthread_mutex_t connection_mutex;
@@ -139,7 +137,7 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     }
     else
       *usr=0;
-    m_status = m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(id) << 1)) : 0;
+    m_status = m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0; 
     if (m_user)
       MdsIpFree(m_user);

@@ -2,6 +2,11 @@
 #include <stdlib.h>
 #include <treeshr.h>
 
+extern int TdiSaveContext();
+extern int TdiDeleteContext();
+extern int TdiRestoreContext();
+extern int MDSEventCan();
+
 int RemoveConnection(int conid) {
   int status = 0;
   Connection *c=FindConnection(conid,0);

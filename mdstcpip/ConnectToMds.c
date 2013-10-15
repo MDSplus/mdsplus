@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <unistd.h>
 #ifndef HAVE_WINDOWS_H
 #include <pwd.h>
 #endif

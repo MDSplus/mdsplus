@@ -12,6 +12,8 @@
 #include <signal.h>
 #include <config.h>
 #include <signal.h>
+#include <unistd.h>
+#include <ctype.h>
 #ifndef HAVE_WINDOWS_H
 #include <sys/types.h>
 #include <pwd.h>

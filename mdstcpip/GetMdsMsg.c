@@ -69,7 +69,7 @@ Message *GetMdsMsg(int id, int *status) {
       m = malloc(msglen);
       m->h = header;
       dlen = msglen - sizeof(MsgHdr);
-      *status = uncompress(m->bytes, &dlen, msg->bytes + 4, header.msglen - sizeof(MsgHdr) - 4) == 0;
+      *status = uncompress((unsigned char *)m->bytes, &dlen, (unsigned char *)msg->bytes + 4, header.msglen - sizeof(MsgHdr) - 4) == 0;
       if (*status & 1)
       {
 	m->h.msglen = msglen;
