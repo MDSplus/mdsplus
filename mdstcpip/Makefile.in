@@ -25,7 +25,7 @@ endif
 
 ifeq "@MDSIP_CONNECTIONS@" "yes"
 MDSIP_CONNECTIONS = yes
-LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsLogin.c MdsEventAst.c\
+LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventAst.c\
 	  MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
 	  IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c\
           MakeDescrip.c LoadIo.c vmshpwd.c ArgLen.c GetSetSettings.c DoMessage.c  \
