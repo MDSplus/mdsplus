@@ -599,7 +599,7 @@ void DevGenOperation(char *operation, InDescr *input_list, int is_operation)
 	fprintf(out_file, "\tmemset((char *)work_xd, \'\\0\', sizeof(struct descriptor_xd) * %d);\n", xd_count);
     }
     else
-	fprintf(out_file, "\tstruct descriptor_xd work_xd[1];\n", xd_count);
+	fprintf(out_file, "\tstruct descriptor_xd work_xd[1];\n");
 
 
     fprintf(out_file, "\tinitialize_variables(In%sStruct)\n", mixed_case_operation);

@@ -67,6 +67,7 @@ extern InDescr   *DevNewRange();
 extern InDescr   *DevNewSet();
 extern InDescr   *DevSetType();
 extern InDescr   *DevSkipExpr();
+extern int gen_devicelex();
 
 #define DEV_ADD_IN_SET DevAddInSet
 #define DEV_CONCAT DevConcat

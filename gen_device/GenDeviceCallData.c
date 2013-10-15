@@ -57,6 +57,7 @@ extern int TdiData();
 extern int TdiLong();
 extern int TdiCvt();
 extern int TdiEvaluate();
+extern int TdiConcat();
 
 
 int GenDeviceCallData(int mode, int cur_nid, struct descriptor_xd *setting_d_ptr)
@@ -128,7 +129,7 @@ DESCRIPTOR_RANGE(range_d, 0, 0, 0);	/* for debug */
 	    break;
 	case DevMODRAN :	
 	    status = TdiEvaluate(record_d.pointer, &temp_xd MDS_END_ARG);
-	    if (status & 1) 
+	    if (status & 1) {
 		if ((temp_xd.pointer)->dtype != DTYPE_RANGE) {
 		    MdsFree1Dx(&temp_xd,0);
 		    status = DEV$_BADPARAM;
@@ -150,10 +151,11 @@ DESCRIPTOR_RANGE(range_d, 0, 0, 0);	/* for debug */
 		    MdsFree1Dx(&end_xd, 0);
 		    MdsFree1Dx(&delta_xd, 0);
 		}
+	    }
 	    break;
 	case DevMODRANLON :	
 	    status = TdiEvaluate(record_d.pointer, &temp_xd MDS_END_ARG);
-	    if (status & 1) 
+	    if (status & 1) {
 		if ((temp_xd.pointer)->dtype != DTYPE_RANGE) {
 		    MdsFree1Dx(&temp_xd,0);
 		    status = DEV$_BADPARAM;
@@ -175,6 +177,7 @@ DESCRIPTOR_RANGE(range_d, 0, 0, 0);	/* for debug */
 		    MdsFree1Dx(&end_xd,0);
 		    MdsFree1Dx(&delta_xd,0);
 		}
+	    }
 	    break;
 	default:
 	    status = DEV$_BADPARAM;

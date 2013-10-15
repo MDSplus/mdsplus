@@ -1999,7 +1999,7 @@ char* DevSkipExpr(int *type)
 	do {	
 	   a = buffer[i++] = word[j++] = input();
 	   if(i >= 1024) Error("Expression buffer overflow");
-	} while(a && ((a <= 'z')&&(a >= 'A')||(a >= '0') && (a <= '9'))&&(a != ';'));
+	} while(a && (((a <= 'z')&&(a >= 'A'))||(((a >= '0') && (a <= '9'))&&(a != ';'))));
 	word[j-1] = '\0';
 	if(!a || !strcmp(word, "state")||!strcmp(word, "options")||!strcmp(word, "usage")||!strcmp(word, "tags")||(a == ';'))
 	{
