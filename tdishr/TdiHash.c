@@ -14,72 +14,90 @@
 
 STATIC_THREADSAFE int lock_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t lock;
-STATIC_THREADSAFE short TdiREF_HASH[1024];/*TdiHASH_MAX];*/
+STATIC_THREADSAFE short TdiREF_HASH[1024];	/*TdiHASH_MAX]; */
 #include "tdireffunction.h"
 #include <string.h>
 #include <stdio.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define upcase(ptr) ((*(char *)(ptr) >= 'a' && *(char *)(ptr) <= 'z') ? *(char *)(ptr) & 0xdf : *(char *)(ptr))
 
-STATIC_ROUTINE int	TdiHashOne(int len, char *pstring) {
-  int	hash = 0, n = len;
-  char	*ps = pstring;
-  while (--n >= 0 && *ps) { hash = hash * 11 + (upcase(ps) - ' '); ps++; }
-  hash %= TdiHASH_MAX;
-  if (hash < 0) hash += TdiHASH_MAX;
-  return hash;
+STATIC_ROUTINE int TdiHashOne(int len, char *pstring)
+{
+    int hash = 0, n = len;
+    char *ps = pstring;
+    while (--n >= 0 && *ps) {
+	hash = hash * 11 + (upcase(ps) - ' ');
+	ps++;
+    }
+    hash %= TdiHASH_MAX;
+    if (hash < 0)
+	hash += TdiHASH_MAX;
+    return hash;
 }
 
-STATIC_ROUTINE int	TdiHashAll() {
-  int	jf, jh;
-  struct TdiFunctionStruct *pf = (struct TdiFunctionStruct *)TdiRefFunction;
-  int	count = 0;
-  for (jh = TdiHASH_MAX; --jh >= 0;) TdiREF_HASH[jh] = -1;
-  for (jf = 0; jf < TdiFUNCTION_MAX; ++jf, pf++) {
-    if (pf->name)
-      {
-	int i;
-	int len = strlen(pf->name);
-	char temp[128];
-	strcpy(temp,pf->name);
-	for (i=0;i<len;i++) if (temp[i] >= 'a' && temp[i] <= 'z') temp[i] = (char)(temp[i] & 0xDF);
-	jh = TdiHashOne(63, temp);
-	while (TdiREF_HASH[jh] >= 0) {count++; if (++jh >= TdiHASH_MAX) jh = 0;}
-	TdiREF_HASH[jh] = (short)jf;
-      }
-    else
-      printf("Error in function table, function index = %d\n",jf);
-  }
-  return count;
+STATIC_ROUTINE int TdiHashAll()
+{
+    int jf, jh;
+    struct TdiFunctionStruct *pf = (struct TdiFunctionStruct *)TdiRefFunction;
+    int count = 0;
+    for (jh = TdiHASH_MAX; --jh >= 0;)
+	TdiREF_HASH[jh] = -1;
+    for (jf = 0; jf < TdiFUNCTION_MAX; ++jf, pf++) {
+	if (pf->name) {
+	    int i;
+	    int len = strlen(pf->name);
+	    char temp[128];
+	    strcpy(temp, pf->name);
+	    for (i = 0; i < len; i++)
+		if (temp[i] >= 'a' && temp[i] <= 'z')
+		    temp[i] = (char)(temp[i] & 0xDF);
+	    jh = TdiHashOne(63, temp);
+	    while (TdiREF_HASH[jh] >= 0) {
+		count++;
+		if (++jh >= TdiHASH_MAX)
+		    jh = 0;
+	    }
+	    TdiREF_HASH[jh] = (short)jf;
+	} else
+	    printf("Error in function table, function index = %d\n", jf);
+    }
+    return count;
 }
 
-int	TdiHash(int len, char *pstring) {
-  int	jh , jf;
+int TdiHash(int len, char *pstring)
+{
+    int jh, jf;
 
 	/**************
 	Self-initialize
 	**************/
-  LockTdiMutex(&lock,&lock_initialized);
-  jh = TdiHashOne(len,pstring);
-  if (TdiREF_HASH[0] == 0) TdiHashAll();
+    LockTdiMutex(&lock, &lock_initialized);
+    jh = TdiHashOne(len, pstring);
+    if (TdiREF_HASH[0] == 0)
+	TdiHashAll();
 
-  while ((jf = TdiREF_HASH[jh]) >= 0) {
-    int i;
-    char *name = TdiRefFunction[jf].name;
-    for (i=0;(i<len) && (name[i] != '\0') && (upcase(pstring + i) == name[i]) ;i++);
-    if (i == len && name[i] == '\0') break;
+    while ((jf = TdiREF_HASH[jh]) >= 0) {
+	int i;
+	char *name = TdiRefFunction[jf].name;
+	for (i = 0;
+	     (i < len) && (name[i] != '\0') && (upcase(pstring + i) == name[i]);
+	     i++) ;
+	if (i == len && name[i] == '\0')
+	    break;
 /*
 		if (strncmp(pstring, TdiRefFunction[jf].name, len) == 0) {
 			k = strlen(TdiRefFunction[jf].name);
 			if (k == len || *(pstring+k) == '\0') break;
 		}
 */
-    if (++jh >= TdiHASH_MAX) jh = 0;
-  }
-  UnlockTdiMutex(&lock);
-  return jf;
+	if (++jh >= TdiHASH_MAX)
+	    jh = 0;
+    }
+    UnlockTdiMutex(&lock);
+    return jf;
 }
 
 /*	test program for hashing

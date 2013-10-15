@@ -50,13 +50,14 @@
 #include <math.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiConvert();
 extern int TdiSubtractQuadword();
 extern int TdiSubtractOctaword();
-extern int TdiUnary(  );
-extern int Tdi3Multiply(  );
+extern int TdiUnary();
+extern int Tdi3Multiply();
 extern int CvtConvertFloat();
 
 #ifdef HAVE_VXWORKS_H
@@ -64,16 +65,23 @@ extern int CvtConvertFloat();
 #undef max
 #endif
 
-#define min(a,b) ((a)<(b)) ? (a) : (b) 
-#define max(a,b) ((a)<(b)) ? (b) : (a) 
+#define min(a,b) ((a)<(b)) ? (a) : (b)
+#define max(a,b) ((a)<(b)) ? (b) : (a)
 
-typedef struct { int int32[2]; } Int64;
-typedef struct { unsigned int int32[2]; } uInt64;
-typedef struct { Int64 longword[2]; } octaword;
+typedef struct {
+    int int32[2];
+} Int64;
+typedef struct {
+    unsigned int int32[2];
+} uInt64;
+typedef struct {
+    Int64 longword[2];
+} octaword;
 
 #define negate128 TdiSubtractOctaword(&octazero,&in[i],&out[i])
 
-STATIC_CONSTANT octaword octazero = {0,0,0,0};
+STATIC_CONSTANT octaword octazero = { 0, 0, 0, 0 };
+
 #define copy64 out[i].int32[0]=in[i].int32[0]; out[i].int32[1]=in[i].int32[1]
 #define zero64 out[i].int32[0]=0; out[i].int32[1]=0
 #define negate64 TdiSubtractQuadword(&octazero,&in[i],&out[i])
@@ -100,12 +108,12 @@ STATIC_CONSTANT const int roprand = 0x8000;
 #define start_operate(type) {\
   type *in=(type *)(in_ptr->pointer); \
   type *out=(type *)(out_ptr->pointer); \
-  for (i=0;i<out_count;i++) { 
+  for (i=0;i<out_count;i++) {
 
 #define start_operate1(itype,otype) {\
   itype *in=(itype *)(in_ptr->pointer); \
   otype *out=(otype *)(out_ptr->pointer); \
-  for (i=0;i<out_count;i++) { 
+  for (i=0;i<out_count;i++) {
 
 #define end_operate } break; }
 
@@ -237,800 +245,580 @@ STATIC_CONSTANT const int roprand = 0x8000;
 int MthJNINT();
 int MthJIGNNT();
 
-int       Tdi3Abs(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
-                                  
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate(unsigned char)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_WU: 
-     start_operate(unsigned short int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_LU: 
-     start_operate(unsigned int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_QU: 
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_OU: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_B:  
-     start_operate(char)
-     out[i] = (char) (in[i] > 0 ? in[i] : -in[i]);
-     end_operate
-   case DTYPE_W:  
-     start_operate(short int)
-     out[i] = (short int)(in[i] > 0 ? in[i] : -in[i]);
-     end_operate
-   case DTYPE_L:  
-     start_operate(int)
-     out[i] = in[i] > 0 ? in[i] : -in[i];
-     end_operate
-   case DTYPE_Q:  
-     start_operate(Int64)
-     abs64
-     end_operate
-   case DTYPE_O:  
-     start_operate(octaword)
-     abs128;
-     end_operate
-   case DTYPE_F:  
-     start_operate(float)
-     AbsFloat(DTYPE_F)
-     end_operate
-   case DTYPE_FS:  
-     start_operate(float)
-     AbsFloat(DTYPE_FS)
-     end_operate
-   case DTYPE_G:  
-     start_operate(double)
-     AbsFloat(DTYPE_G)
-     end_operate
-   case DTYPE_D:	
-     start_operate(double)
-     AbsFloat(DTYPE_D)
-     end_operate
-   case DTYPE_FT:	
-     start_operate(double)
-     AbsFloat(DTYPE_FT)
-     end_operate
-   case DTYPE_FC:	
-     start_operate(float)
-     AbsComplex(DTYPE_F)
-     end_operate
-   case DTYPE_FSC:	
-     start_operate(float)
-     AbsComplex(DTYPE_FS)
-     end_operate
-   case DTYPE_GC:	
-     start_operate(double)
-     AbsComplex(DTYPE_G)
-     end_operate
-   case DTYPE_DC:	
-     start_operate(double)
-     AbsComplex(DTYPE_D)
-     end_operate
-   case DTYPE_FTC:	
-     start_operate(double)
-     AbsComplex(DTYPE_FT)
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
-  return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
+
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate(unsigned char) out[i] = in[i];
+    end_operate case DTYPE_WU:
+	start_operate(unsigned short int) out[i] = in[i];
+    end_operate case DTYPE_LU:
+	start_operate(unsigned int) out[i] = in[i];
+    end_operate case DTYPE_QU:
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_OU:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_B:
+	start_operate(char) out[i] = (char)(in[i] > 0 ? in[i] : -in[i]);
+    end_operate case DTYPE_W:
+	start_operate(short int)
+	    out[i] = (short int)(in[i] > 0 ? in[i] : -in[i]);
+    end_operate case DTYPE_L:
+	start_operate(int) out[i] = in[i] > 0 ? in[i] : -in[i];
+    end_operate case DTYPE_Q:
+	start_operate(Int64)
+    abs64 end_operate case DTYPE_O:
+	start_operate(octaword)
+	    abs128;
+    end_operate case DTYPE_F:
+	start_operate(float)
+	    AbsFloat(DTYPE_F)
+	    end_operate
+	    case DTYPE_FS:start_operate(float)
+	    AbsFloat(DTYPE_FS)
+	    end_operate
+	    case DTYPE_G:start_operate(double)
+	    AbsFloat(DTYPE_G)
+	    end_operate
+	    case DTYPE_D:start_operate(double)
+	    AbsFloat(DTYPE_D)
+	    end_operate
+	    case DTYPE_FT:start_operate(double)
+	    AbsFloat(DTYPE_FT)
+	    end_operate
+	    case DTYPE_FC:start_operate(float)
+	    AbsComplex(DTYPE_F)
+	    end_operate
+	    case DTYPE_FSC:start_operate(float)
+	    AbsComplex(DTYPE_FS)
+	    end_operate
+	    case DTYPE_GC:start_operate(double)
+	    AbsComplex(DTYPE_G)
+	    end_operate
+	    case DTYPE_DC:start_operate(double)
+	    AbsComplex(DTYPE_D)
+	    end_operate
+	    case DTYPE_FTC:start_operate(double)
+	    AbsComplex(DTYPE_FT) end_operate default:status = TdiINVDTYDSC;
+    }
+    return status;
 }
 
-int       Tdi3Abs1(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3Abs1(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate(unsigned char)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_WU: 
-     start_operate(unsigned short int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_LU: 
-     start_operate(unsigned int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_QU: 
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_OU: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_B:  
-     start_operate(char)
-     out[i] = (char) (in[i] > 0 ? in[i] : -in[i]);
-     end_operate
-   case DTYPE_W:  
-     start_operate(short int)
-     out[i] = (short int)(in[i] > 0 ? in[i] : -in[i]);
-     end_operate
-   case DTYPE_L:  
-     start_operate(int)
-     out[i] = in[i] > 0 ? in[i] : -in[i];
-     end_operate
-   case DTYPE_Q:  
-     start_operate(Int64)
-     abs64
-     end_operate
-   case DTYPE_O:  
-     start_operate(octaword)
-     abs128;
-     end_operate
-   case DTYPE_F:  
-     start_operate(float)
-     AbsFloat(DTYPE_F)
-     end_operate
-   case DTYPE_FS:  
-     start_operate(float)
-     AbsFloat(DTYPE_FS)
-     end_operate
-   case DTYPE_G:  
-     start_operate(double)
-     AbsFloat(DTYPE_G)
-     end_operate
-   case DTYPE_D:	
-     start_operate(double)
-     AbsFloat(DTYPE_D)
-     end_operate
-   case DTYPE_FT:	
-     start_operate(double)
-     AbsFloat(DTYPE_FT)
-     end_operate
-   case DTYPE_FC:	
-     start_operate(float)
-     Abs1Complex(DTYPE_F)
-     end_operate
-   case DTYPE_FSC:	
-     start_operate(float)
-     Abs1Complex(DTYPE_FS)
-     end_operate
-   case DTYPE_GC:	
-     start_operate(double)
-     Abs1Complex(DTYPE_G)
-     end_operate
-   case DTYPE_DC:	
-     start_operate(double)
-     Abs1Complex(DTYPE_D)
-     end_operate
-   case DTYPE_FTC:	
-     start_operate(double)
-     Abs1Complex(DTYPE_FT)
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate(unsigned char) out[i] = in[i];
+    end_operate case DTYPE_WU:
+	start_operate(unsigned short int) out[i] = in[i];
+    end_operate case DTYPE_LU:
+	start_operate(unsigned int) out[i] = in[i];
+    end_operate case DTYPE_QU:
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_OU:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_B:
+	start_operate(char) out[i] = (char)(in[i] > 0 ? in[i] : -in[i]);
+    end_operate case DTYPE_W:
+	start_operate(short int)
+	    out[i] = (short int)(in[i] > 0 ? in[i] : -in[i]);
+    end_operate case DTYPE_L:
+	start_operate(int) out[i] = in[i] > 0 ? in[i] : -in[i];
+    end_operate case DTYPE_Q:
+	start_operate(Int64)
+    abs64 end_operate case DTYPE_O:
+	start_operate(octaword)
+	    abs128;
+    end_operate case DTYPE_F:
+	start_operate(float)
+	    AbsFloat(DTYPE_F)
+	    end_operate
+	    case DTYPE_FS:start_operate(float)
+	    AbsFloat(DTYPE_FS)
+	    end_operate
+	    case DTYPE_G:start_operate(double)
+	    AbsFloat(DTYPE_G)
+	    end_operate
+	    case DTYPE_D:start_operate(double)
+	    AbsFloat(DTYPE_D)
+	    end_operate
+	    case DTYPE_FT:start_operate(double)
+	    AbsFloat(DTYPE_FT)
+	    end_operate
+	    case DTYPE_FC:start_operate(float)
+	    Abs1Complex(DTYPE_F)
+	    end_operate
+	    case DTYPE_FSC:start_operate(float)
+	    Abs1Complex(DTYPE_FS)
+	    end_operate
+	    case DTYPE_GC:start_operate(double)
+	    Abs1Complex(DTYPE_G)
+	    end_operate
+	    case DTYPE_DC:start_operate(double)
+	    Abs1Complex(DTYPE_D)
+	    end_operate
+	    case DTYPE_FTC:start_operate(double)
+	    Abs1Complex(DTYPE_FT) end_operate default:status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3AbsSq(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3AbsSq(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-   case DTYPE_WU: 
-   case DTYPE_LU: 
-   case DTYPE_QU: 
-   case DTYPE_OU: 
-   case DTYPE_B:  
-   case DTYPE_W:	
-   case DTYPE_L:	
-   case DTYPE_Q:  
-   case DTYPE_O:	
-   case DTYPE_F:	
-   case DTYPE_FS:	
-   case DTYPE_G:	
-   case DTYPE_D:	
-   case DTYPE_FT:	
-     status = Tdi3Multiply(in_ptr, in_ptr, out_ptr);
-     break;
-   case DTYPE_FC:
-     start_operate(float)
-     AbssqComplex(DTYPE_F);
-     end_operate
-   case DTYPE_FSC:
-     start_operate(float)
-     AbssqComplex(DTYPE_FS);
-     end_operate
-   case DTYPE_GC:	
-     start_operate(double)
-     AbssqComplex(DTYPE_G);
-     end_operate
-   case DTYPE_DC:
-     start_operate(double)
-     AbssqComplex(DTYPE_D);
-     end_operate
-   case DTYPE_FTC:
-     start_operate(double)
-     AbssqComplex(DTYPE_FT);
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+    case DTYPE_WU:
+    case DTYPE_LU:
+    case DTYPE_QU:
+    case DTYPE_OU:
+    case DTYPE_B:
+    case DTYPE_W:
+    case DTYPE_L:
+    case DTYPE_Q:
+    case DTYPE_O:
+    case DTYPE_F:
+    case DTYPE_FS:
+    case DTYPE_G:
+    case DTYPE_D:
+    case DTYPE_FT:
+	status = Tdi3Multiply(in_ptr, in_ptr, out_ptr);
+	break;
+    case DTYPE_FC:
+	start_operate(float) AbssqComplex(DTYPE_F);
+    end_operate case DTYPE_FSC:
+	start_operate(float) AbssqComplex(DTYPE_FS);
+    end_operate case DTYPE_GC:
+	start_operate(double) AbssqComplex(DTYPE_G);
+    end_operate case DTYPE_DC:
+	start_operate(double) AbssqComplex(DTYPE_D);
+    end_operate case DTYPE_FTC:
+	start_operate(double) AbssqComplex(DTYPE_FT);
+    end_operate default:
+	status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3Aimag(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3Aimag(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_B: 
-   case DTYPE_BU: 
-     start_operate(char)
-     out[i] = 0;
-     end_operate
-   case DTYPE_W: 
-   case DTYPE_WU: 
-     start_operate(short int)
-     out[i] = 0;
-     end_operate
-   case DTYPE_L: 
-   case DTYPE_LU: 
-     start_operate(int)
-     out[i] = 0;
-     end_operate
-   case DTYPE_Q: 
-   case DTYPE_QU: 
-     start_operate(Int64)
-     zero64;
-     end_operate
-   case DTYPE_O:  
-   case DTYPE_OU: 
-     out_count = out_count * 2;
-     start_operate(Int64)
-     zero64;
-     end_operate
-   case DTYPE_F:  
-     start_operate(float)
-     float ans = (float)0.0;
-     CvtConvertFloat(&ans,DTYPE_NATIVE_FLOAT,&out[i],DTYPE_F,0);
-     end_operate
-   case DTYPE_FS:  
-     start_operate(float)
-     float ans = (float)0.0;
-     CvtConvertFloat(&ans,DTYPE_NATIVE_FLOAT,&out[i],DTYPE_FS,0);
-     end_operate
-   case DTYPE_G:  
-     start_operate(double)
-     double ans = 0.0;
-     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],DTYPE_G,0);
-     end_operate
-   case DTYPE_D:	
-     start_operate(double)
-     double ans = 0.0;
-     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],DTYPE_D,0);
-     end_operate
-   case DTYPE_FT:	
-     start_operate(double)
-     double ans = 0.0;
-     CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],DTYPE_FT,0);
-     end_operate
-   case DTYPE_FC:	
-   case DTYPE_FSC:	
-     start_operate(int)
-     out[i] = in[i*2+1];
-     end_operate
-   case DTYPE_GC:	
-   case DTYPE_DC:	
-   case DTYPE_FTC:	
-     start_operate(double)
-     memcpy(&out[i],&in[i*2+1],sizeof(double));
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_B:
+    case DTYPE_BU:
+	start_operate(char) out[i] = 0;
+    end_operate case DTYPE_W:
+    case DTYPE_WU:
+	start_operate(short int) out[i] = 0;
+    end_operate case DTYPE_L:
+    case DTYPE_LU:
+	start_operate(int) out[i] = 0;
+    end_operate case DTYPE_Q:
+    case DTYPE_QU:
+	start_operate(Int64)
+	    zero64;
+    end_operate case DTYPE_O:
+    case DTYPE_OU:
+	out_count = out_count * 2;
+	start_operate(Int64)
+	    zero64;
+    end_operate case DTYPE_F:
+	start_operate(float)
+	float ans = (float)0.0;
+	CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_F, 0);
+    end_operate case DTYPE_FS:
+	start_operate(float)
+	float ans = (float)0.0;
+	CvtConvertFloat(&ans, DTYPE_NATIVE_FLOAT, &out[i], DTYPE_FS, 0);
+    end_operate case DTYPE_G:
+	start_operate(double)
+	double ans = 0.0;
+	CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_G, 0);
+    end_operate case DTYPE_D:
+	start_operate(double)
+	double ans = 0.0;
+	CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_D, 0);
+    end_operate case DTYPE_FT:
+	start_operate(double)
+	double ans = 0.0;
+	CvtConvertFloat(&ans, DTYPE_NATIVE_DOUBLE, &out[i], DTYPE_FT, 0);
+    end_operate case DTYPE_FC:
+    case DTYPE_FSC:
+	start_operate(int) out[i] = in[i * 2 + 1];
+    end_operate case DTYPE_GC:
+    case DTYPE_DC:
+    case DTYPE_FTC:
+	start_operate(double) memcpy(&out[i], &in[i * 2 + 1], sizeof(double));
+    end_operate default:
+	status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3Conjg(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-   case DTYPE_B: 
-     start_operate(unsigned char)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_WU: 
-   case DTYPE_W: 
-     start_operate(unsigned short int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_LU: 
-   case DTYPE_L: 
-     start_operate(unsigned int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_QU: 
-   case DTYPE_Q: 
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_OU: 
-   case DTYPE_O: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_F:  
-   case DTYPE_FS:  
-     start_operate(int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_G:  
-   case DTYPE_D:	
-   case DTYPE_FT:	
-     start_operate(double)
-     memcpy(&out[i],&in[i],sizeof(double));
-     end_operate
-   case DTYPE_FC:	
-     start_operate(float)
-     ConjgComplex(DTYPE_F)
-     end_operate
-   case DTYPE_FSC:	
-     start_operate(float)
-     ConjgComplex(DTYPE_FS)
-     end_operate
-   case DTYPE_GC:	
-     start_operate(double)
-     ConjgComplex(DTYPE_G)
-     end_operate
-   case DTYPE_DC:	
-     start_operate(double)
-     ConjgComplex(DTYPE_D)
-     end_operate
-   case DTYPE_FTC:	
-     start_operate(double)
-     ConjgComplex(DTYPE_FT)
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+    case DTYPE_B:
+	start_operate(unsigned char) out[i] = in[i];
+    end_operate case DTYPE_WU:
+    case DTYPE_W:
+	start_operate(unsigned short int) out[i] = in[i];
+    end_operate case DTYPE_LU:
+    case DTYPE_L:
+	start_operate(unsigned int) out[i] = in[i];
+    end_operate case DTYPE_QU:
+    case DTYPE_Q:
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_OU:
+    case DTYPE_O:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_F:
+    case DTYPE_FS:
+	start_operate(int) out[i] = in[i];
+    end_operate case DTYPE_G:
+    case DTYPE_D:
+    case DTYPE_FT:
+	start_operate(double) memcpy(&out[i], &in[i], sizeof(double));
+    end_operate case DTYPE_FC:
+	start_operate(float)
+	    ConjgComplex(DTYPE_F)
+	    end_operate
+	    case DTYPE_FSC:start_operate(float)
+	    ConjgComplex(DTYPE_FS)
+	    end_operate
+	    case DTYPE_GC:start_operate(double)
+	    ConjgComplex(DTYPE_G)
+	    end_operate
+	    case DTYPE_DC:start_operate(double)
+	    ConjgComplex(DTYPE_D)
+	    end_operate
+	    case DTYPE_FTC:start_operate(double)
+	    ConjgComplex(DTYPE_FT) end_operate default:status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3Inot(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate(unsigned char)
-     out[i] = (unsigned char)~in[i];
-     end_operate
-   case DTYPE_WU: 
-     start_operate(unsigned short int)
-     out[i] = (unsigned short)~in[i];
-     end_operate
-   case DTYPE_LU: 
-     start_operate(unsigned int)
-     out[i] = ~in[i];
-     end_operate
-   case DTYPE_QU: 
-     start_operate(uInt64)
-     not64;
-     end_operate
-   case DTYPE_OU: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     not64;
-     end_operate
-   case DTYPE_B: 
-     start_operate(char)
-     out[i] = (char)~in[i];
-     end_operate
-   case DTYPE_W: 
-     start_operate(short int)
-     out[i] = (short int)~in[i];
-     end_operate
-   case DTYPE_L: 
-     start_operate(int)
-     out[i] = ~in[i];
-     end_operate
-   case DTYPE_Q: 
-     start_operate(Int64)
-     not64;
-     end_operate
-   case DTYPE_O: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     not64;
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate(unsigned char) out[i] = (unsigned char)~in[i];
+    end_operate case DTYPE_WU:
+	start_operate(unsigned short int) out[i] = (unsigned short)~in[i];
+    end_operate case DTYPE_LU:
+	start_operate(unsigned int) out[i] = ~in[i];
+    end_operate case DTYPE_QU:
+	start_operate(uInt64)
+	    not64;
+    end_operate case DTYPE_OU:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    not64;
+    end_operate case DTYPE_B:
+	start_operate(char) out[i] = (char)~in[i];
+    end_operate case DTYPE_W:
+	start_operate(short int) out[i] = (short int)~in[i];
+    end_operate case DTYPE_L:
+	start_operate(int) out[i] = ~in[i];
+    end_operate case DTYPE_Q:
+	start_operate(Int64)
+	    not64;
+    end_operate case DTYPE_O:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    not64;
+    end_operate default:
+	status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3Logical(struct descriptor *in_ptr,
-				struct descriptor *kind,
-                                struct descriptor *out_ptr)
+int Tdi3Logical(struct descriptor *in_ptr,
+		struct descriptor *kind, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
-  struct descriptor *dummy = kind;
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    int out_count = 1;
+    int status;
+    register int i;
+    struct descriptor *dummy = kind;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate1(unsigned char, unsigned char)
-     out[i] = (unsigned char)(1 & in[i]);
-     end_operate
-   case DTYPE_WU: 
-     start_operate1(unsigned short int, unsigned char)
-     out[i] = (unsigned char)(1 & in[i]);
-     end_operate
-   case DTYPE_LU: 
-     start_operate1(unsigned int, unsigned char)
-     out[i] = (unsigned char)(1 & in[i]);
-     end_operate
-   case DTYPE_QU: 
-     start_operate1(uInt64, unsigned char)
-     bool64;
-     end_operate
-   case DTYPE_OU: 
-     start_operate1(octaword, unsigned char)
-     bool128;
-     end_operate
-   case DTYPE_B: 
-     start_operate1(char, unsigned char)
-     out[i] = (unsigned char)(1 & in[i]);
-     end_operate
-   case DTYPE_W: 
-     start_operate1(short int, unsigned char)
-     out[i] = (unsigned char)(1 & in[i]);
-     end_operate
-   case DTYPE_L: 
-     start_operate1(int, unsigned char)
-     out[i] = (unsigned char)(1 & in[i]);
-     end_operate
-   case DTYPE_Q: 
-     start_operate1(Int64, unsigned char)
-     bool64;
-     end_operate
-   case DTYPE_O: 
-     start_operate1(octaword, unsigned char)
-     bool128;
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate1(unsigned char, unsigned char)
+	    out[i] = (unsigned char)(1 & in[i]);
+    end_operate case DTYPE_WU:
+	start_operate1(unsigned short int, unsigned char)
+	    out[i] = (unsigned char)(1 & in[i]);
+    end_operate case DTYPE_LU:
+	start_operate1(unsigned int, unsigned char)
+	    out[i] = (unsigned char)(1 & in[i]);
+    end_operate case DTYPE_QU:
+	start_operate1(uInt64, unsigned char) bool64;
+    end_operate case DTYPE_OU:
+	start_operate1(octaword, unsigned char) bool128;
+    end_operate case DTYPE_B:
+	start_operate1(char, unsigned char) out[i] = (unsigned char)(1 & in[i]);
+    end_operate case DTYPE_W:
+	start_operate1(short int, unsigned char)
+	    out[i] = (unsigned char)(1 & in[i]);
+    end_operate case DTYPE_L:
+	start_operate1(int, unsigned char) out[i] = (unsigned char)(1 & in[i]);
+    end_operate case DTYPE_Q:
+	start_operate1(Int64, unsigned char) bool64;
+    end_operate case DTYPE_O:
+	start_operate1(octaword, unsigned char) bool128;
+    end_operate default:
+	status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3Not(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    int out_count = 1;
+    int status;
+    register int i;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate1(unsigned char, unsigned char)
-     out[i] = (unsigned char)!(in[i] & 1);
-     end_operate
-   case DTYPE_WU: 
-     start_operate1(unsigned short int, unsigned char)
-     out[i] = (unsigned char)!(in[i] & 1);
-     end_operate
-   case DTYPE_LU: 
-     start_operate1(unsigned int, unsigned char)
-     out[i] = (unsigned char)!(in[i] & 1);
-     end_operate
-   case DTYPE_QU: 
-     start_operate1(uInt64, unsigned char)
-     bool64;
-     out[i] = (unsigned char)!out[i];
-     end_operate
-   case DTYPE_OU: 
-     start_operate1(octaword, unsigned char)
-     bool128;
-     out[i] = (unsigned char)!out[i];
-     end_operate
-   case DTYPE_B: 
-     start_operate1(char, unsigned char)
-     out[i] = (unsigned char)!(in[i] & 1);
-     end_operate
-   case DTYPE_W: 
-     start_operate1(short int, unsigned char)
-     out[i] = (unsigned char)!(in[i] & 1);
-     end_operate
-   case DTYPE_L: 
-     start_operate1(int, unsigned char)
-     out[i] = (unsigned char)!(in[i] & 1);
-     end_operate
-   case DTYPE_Q: 
-     start_operate1(Int64, unsigned char)
-     bool64;
-     out[i] = (unsigned char)!out[i];
-     end_operate
-   case DTYPE_O: 
-     start_operate1(octaword, unsigned char)
-     bool128;
-     out[i] = (unsigned char)!out[i];
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate1(unsigned char, unsigned char)
+	    out[i] = (unsigned char)!(in[i] & 1);
+    end_operate case DTYPE_WU:
+	start_operate1(unsigned short int, unsigned char)
+	    out[i] = (unsigned char)!(in[i] & 1);
+    end_operate case DTYPE_LU:
+	start_operate1(unsigned int, unsigned char)
+	    out[i] = (unsigned char)!(in[i] & 1);
+    end_operate case DTYPE_QU:
+	start_operate1(uInt64, unsigned char) bool64;
+	out[i] = (unsigned char)!out[i];
+    end_operate case DTYPE_OU:
+	start_operate1(octaword, unsigned char) bool128;
+	out[i] = (unsigned char)!out[i];
+    end_operate case DTYPE_B:
+	start_operate1(char, unsigned char)
+	    out[i] = (unsigned char)!(in[i] & 1);
+    end_operate case DTYPE_W:
+	start_operate1(short int, unsigned char)
+	    out[i] = (unsigned char)!(in[i] & 1);
+    end_operate case DTYPE_L:
+	start_operate1(int, unsigned char) out[i] = (unsigned char)!(in[i] & 1);
+    end_operate case DTYPE_Q:
+	start_operate1(Int64, unsigned char) bool64;
+	out[i] = (unsigned char)!out[i];
+    end_operate case DTYPE_O:
+	start_operate1(octaword, unsigned char) bool128;
+	out[i] = (unsigned char)!out[i];
+    end_operate default:
+	status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3Nint(struct descriptor *in_ptr,struct descriptor *kind,
-                                struct descriptor *out_ptr)
+int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind,
+	     struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
-  struct descriptor *dummy = kind;
+    int out_count = 1;
+    int status;
+    register int i;
+    struct descriptor *dummy = kind;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate(unsigned char)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_WU: 
-     start_operate(unsigned short int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_LU: 
-     start_operate(unsigned int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_QU: 
-     start_operate(Int64)
-     copy64;
-     end_operate
-   case DTYPE_OU: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_B: 
-     start_operate(char)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_W: 
-     start_operate(short int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_L: 
-     start_operate(int)
-     out[i] = in[i];
-     end_operate
-   case DTYPE_Q: 
-     start_operate(Int64)
-     copy64;
-     end_operate
-   case DTYPE_O: 
-     out_count = out_count * 2;
-     start_operate(uInt64)
-     copy64;
-     end_operate
-   case DTYPE_F:  
-     start_operate1(float,int)
-     NintFloat(DTYPE_F);
-     end_operate
-   case DTYPE_FS:  
-     start_operate1(float,int)
-     NintFloat(DTYPE_FS);
-     end_operate
-   case DTYPE_G:  
-     start_operate1(double,int)
-     NintFloat(DTYPE_G);
-     end_operate
-   case DTYPE_D:	
-     start_operate1(double,int)
-     NintFloat(DTYPE_D);
-     end_operate
-   case DTYPE_FT:	
-     start_operate1(double,int)
-     NintFloat(DTYPE_FT);
-     end_operate
-   case DTYPE_FC:	
-     start_operate1(float,int)
-     NintComplex(DTYPE_F);
-     end_operate
-   case DTYPE_FSC:	
-     start_operate1(float,int)
-     NintComplex(DTYPE_FS);
-     end_operate
-   case DTYPE_GC:	
-     start_operate1(double,int)
-     NintComplex(DTYPE_G);
-     end_operate
-   case DTYPE_DC:	
-     start_operate1(double,int)
-     NintComplex(DTYPE_D);
-     end_operate
-   case DTYPE_FTC:	
-     start_operate1(double,int)
-     NintComplex(DTYPE_FT);
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
- 
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate(unsigned char) out[i] = in[i];
+    end_operate case DTYPE_WU:
+	start_operate(unsigned short int) out[i] = in[i];
+    end_operate case DTYPE_LU:
+	start_operate(unsigned int) out[i] = in[i];
+    end_operate case DTYPE_QU:
+	start_operate(Int64)
+	    copy64;
+    end_operate case DTYPE_OU:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_B:
+	start_operate(char) out[i] = in[i];
+    end_operate case DTYPE_W:
+	start_operate(short int) out[i] = in[i];
+    end_operate case DTYPE_L:
+	start_operate(int) out[i] = in[i];
+    end_operate case DTYPE_Q:
+	start_operate(Int64)
+	    copy64;
+    end_operate case DTYPE_O:
+	out_count = out_count * 2;
+	start_operate(uInt64)
+	    copy64;
+    end_operate case DTYPE_F:
+	start_operate1(float, int) NintFloat(DTYPE_F);
+    end_operate case DTYPE_FS:
+	start_operate1(float, int) NintFloat(DTYPE_FS);
+    end_operate case DTYPE_G:
+	start_operate1(double, int) NintFloat(DTYPE_G);
+    end_operate case DTYPE_D:
+	start_operate1(double, int) NintFloat(DTYPE_D);
+    end_operate case DTYPE_FT:
+	start_operate1(double, int) NintFloat(DTYPE_FT);
+    end_operate case DTYPE_FC:
+	start_operate1(float, int) NintComplex(DTYPE_F);
+    end_operate case DTYPE_FSC:
+	start_operate1(float, int) NintComplex(DTYPE_FS);
+    end_operate case DTYPE_GC:
+	start_operate1(double, int) NintComplex(DTYPE_G);
+    end_operate case DTYPE_DC:
+	start_operate1(double, int) NintComplex(DTYPE_D);
+    end_operate case DTYPE_FTC:
+	start_operate1(double, int) NintComplex(DTYPE_FT);
+    end_operate default:
+	status = TdiINVDTYDSC;
+    }
+
+    return status;
 }
 
-int       Tdi3UnaryMinus(struct descriptor *in_ptr,
-                                struct descriptor *out_ptr)
+int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-  int out_count = 1;
-  int status;
-  register int i;
+    int out_count = 1;
+    int status;
+    register int i;
 
-  status = TdiUnary(in_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiUnary(in_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in_ptr->dtype)
-  {
-   case DTYPE_BU: 
-     start_operate(char)
-     out[i] = (char)-in[i];
-     end_operate
-   case DTYPE_WU: 
-     start_operate(short int)
-     out[i] = (short int)-in[i];
-     end_operate
-   case DTYPE_LU: 
-     start_operate(int)
-     out[i] = -in[i];
-     end_operate
-   case DTYPE_QU: 
-     start_operate(Int64)
-     negate64;
-     end_operate
-   case DTYPE_OU: 
-     start_operate(octaword)
-     TdiSubtractOctaword(&octazero,&in[i],&out[i]);
-     end_operate
-   case DTYPE_B:  
-     start_operate(char)
-     out[i] = (char)-in[i];
-     end_operate
-   case DTYPE_W:  
-     start_operate(short int)
-     out[i] = (short int)-in[i];
-     end_operate
-   case DTYPE_L:  
-     start_operate(int)
-     out[i] = -in[i];
-     end_operate
-   case DTYPE_Q:  
-     start_operate(Int64)
-     negate64;
-     end_operate
-   case DTYPE_O:  
-     start_operate(octaword)
-     TdiSubtractOctaword(&octazero,&in[i],&out[i]);
-     end_operate
-   case DTYPE_F:  
-     start_operate(float)
-     UnaryMinusFloat(DTYPE_F)
-     end_operate
-   case DTYPE_FS:  
-     start_operate(float)
-     UnaryMinusFloat(DTYPE_FS)
-     end_operate
-   case DTYPE_G:  
-     start_operate(double)
-     UnaryMinusFloat(DTYPE_G)
-     end_operate
-   case DTYPE_D:	
-     start_operate(double)
-     UnaryMinusFloat(DTYPE_D)
-     end_operate
-   case DTYPE_FT:	
-     start_operate(double)
-     UnaryMinusFloat(DTYPE_FT)
-     end_operate
-   case DTYPE_FC:	
-     start_operate(float)
-     UnaryMinusComplex(DTYPE_F)
-     end_operate
-   case DTYPE_FSC:	
-     start_operate(float)
-     UnaryMinusComplex(DTYPE_FS)
-     end_operate
-   case DTYPE_GC:	
-     start_operate(double)
-     UnaryMinusComplex(DTYPE_G)
-     end_operate
-   case DTYPE_DC:	
-     start_operate(double)
-     UnaryMinusComplex(DTYPE_D)
-     end_operate
-   case DTYPE_FTC:	
-     start_operate(double)
-     UnaryMinusComplex(DTYPE_FT)
-     end_operate
-   default:
-     status = TdiINVDTYDSC; 
-  }
-  return status;
+    switch (in_ptr->dtype) {
+    case DTYPE_BU:
+	start_operate(char) out[i] = (char)-in[i];
+    end_operate case DTYPE_WU:
+	start_operate(short int) out[i] = (short int)-in[i];
+    end_operate case DTYPE_LU:
+	start_operate(int) out[i] = -in[i];
+    end_operate case DTYPE_QU:
+	start_operate(Int64)
+	    negate64;
+    end_operate case DTYPE_OU:
+	start_operate(octaword)
+	    TdiSubtractOctaword(&octazero, &in[i], &out[i]);
+    end_operate case DTYPE_B:
+	start_operate(char) out[i] = (char)-in[i];
+    end_operate case DTYPE_W:
+	start_operate(short int) out[i] = (short int)-in[i];
+    end_operate case DTYPE_L:
+	start_operate(int) out[i] = -in[i];
+    end_operate case DTYPE_Q:
+	start_operate(Int64)
+	    negate64;
+    end_operate case DTYPE_O:
+	start_operate(octaword)
+	    TdiSubtractOctaword(&octazero, &in[i], &out[i]);
+    end_operate case DTYPE_F:
+	start_operate(float)
+	    UnaryMinusFloat(DTYPE_F)
+	    end_operate
+	    case DTYPE_FS:start_operate(float)
+	    UnaryMinusFloat(DTYPE_FS)
+	    end_operate
+	    case DTYPE_G:start_operate(double)
+	    UnaryMinusFloat(DTYPE_G)
+	    end_operate
+	    case DTYPE_D:start_operate(double)
+	    UnaryMinusFloat(DTYPE_D)
+	    end_operate
+	    case DTYPE_FT:start_operate(double)
+	    UnaryMinusFloat(DTYPE_FT)
+	    end_operate
+	    case DTYPE_FC:start_operate(float)
+	    UnaryMinusComplex(DTYPE_F)
+	    end_operate
+	    case DTYPE_FSC:start_operate(float)
+	    UnaryMinusComplex(DTYPE_FS)
+	    end_operate
+	    case DTYPE_GC:start_operate(double)
+	    UnaryMinusComplex(DTYPE_G)
+	    end_operate
+	    case DTYPE_DC:start_operate(double)
+	    UnaryMinusComplex(DTYPE_D)
+	    end_operate
+	    case DTYPE_FTC:start_operate(double)
+	    UnaryMinusComplex(DTYPE_FT)
+	    end_operate default:status = TdiINVDTYDSC;
+    }
+    return status;
 }
+
 /*  CMS REPLACEMENT HISTORY, Element Tdi3Abs.C */
 /*  *59   30-AUG-1996 14:56:28 TWF "Add another case to nint" */
 /*  *58   26-AUG-1996 17:04:37 TWF "Fix compile warnings" */

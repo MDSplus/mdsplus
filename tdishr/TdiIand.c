@@ -44,16 +44,15 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
-
 
 #include <STATICdef.h>
 #include <string.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 extern void DoubleToWideInt();
@@ -223,16 +222,16 @@ int Tdi3##name(struct descriptor *in1, struct descriptor *in2, struct descriptor
 }
 
 #define not ~
-common(Inand,&)
-common(InandNot,& ~)
-common(Inor,|)
-common(InorNot,| ~)
+common(Inand, &)
+    common(InandNot, &~)
+    common(Inor, |)
+    common(InorNot, |~)
 #undef not
 #define not
-common(Iand,&)
-common(IandNot,& ~)
-common(Ior,|)
-common(IorNot,| ~)
-common(Ieor,^)
-common(IeorNot,^ ~)
+    common(Iand, &)
+    common(IandNot, &~)
+    common(Ior, |)
+    common(IorNot, |~)
+    common(Ieor, ^)
+    common(IeorNot, ^~)
 #undef not

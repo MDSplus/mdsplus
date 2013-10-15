@@ -52,7 +52,6 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
  
 ------------------------------------------------------------------------------*/
 
-
 #include <stdlib.h>
 #include <string.h>
 
@@ -67,20 +66,25 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #define LONG_LONG_CONSTANT(value) value##ll
 #endif
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
-extern int TdiConvert(  ); 
-extern int Tdi3Subtract(  );
+extern int TdiConvert();
+extern int Tdi3Subtract();
 extern int CvtConvertFloat();
 
 STATIC_CONSTANT int roprand = 0x8000;
-typedef struct { int longword[2]; } quadword;
-typedef struct { int longword[4]; } octaword;
+typedef struct {
+    int longword[2];
+} quadword;
+typedef struct {
+    int longword[4];
+} octaword;
 
-extern int TdiGtO(  );
-extern int TdiLtO(  ); 
-extern int TdiLtQ(  ); 
-extern int TdiGtQ(  ); 
+extern int TdiGtO();
+extern int TdiLtO();
+extern int TdiLtQ();
+extern int TdiGtQ();
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -133,211 +137,329 @@ extern int TdiGtQ(  );
 #define _offset *in2p/8
 #endif
 
-int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Ibset(struct descriptor *in1, struct descriptor *in2,
+	      struct descriptor *out)
 {
-  int size;
-  SetupArgs
-  TdiConvert(in1,out);
-  switch (in1->dtype)
-  {
-    case DTYPE_B:  
-    case DTYPE_BU: size = sizeof(char); break;
-    case DTYPE_W:  
-    case DTYPE_WU: size = sizeof(short); break;
-    case DTYPE_L:  
-    case DTYPE_LU: size = sizeof(int); break;
-    case DTYPE_Q:  
-    case DTYPE_QU: size = sizeof(quadword); break;
+    int size;
+    SetupArgs TdiConvert(in1, out);
+    switch (in1->dtype) {
+    case DTYPE_B:
+    case DTYPE_BU:
+	size = sizeof(char);
+	break;
+    case DTYPE_W:
+    case DTYPE_WU:
+	size = sizeof(short);
+	break;
+    case DTYPE_L:
+    case DTYPE_LU:
+	size = sizeof(int);
+	break;
+    case DTYPE_Q:
+    case DTYPE_QU:
+	size = sizeof(quadword);
+	break;
     case DTYPE_O:
-    case DTYPE_OU: size = sizeof(octaword); break;
+    case DTYPE_OU:
+	size = sizeof(octaword);
+	break;
     case DTYPE_F:
-    case DTYPE_FS: size = sizeof(float); break;
+    case DTYPE_FS:
+	size = sizeof(float);
+	break;
     case DTYPE_D:
     case DTYPE_G:
-    case DTYPE_FT: size = sizeof(double); break;
+    case DTYPE_FT:
+	size = sizeof(double);
+	break;
     case DTYPE_FC:
-    case DTYPE_FSC: size = sizeof(float) * 2; break;
+    case DTYPE_FSC:
+	size = sizeof(float) * 2;
+	break;
     case DTYPE_DC:
     case DTYPE_GC:
-    case DTYPE_FTC: size = sizeof(double) * 2; break;
-    default: return TdiINVDTYDSC;
-  }
-
-  {
-    int *in2p = (int *)in2->pointer;
-    char *outp = (char *)out->pointer;
-    switch (scalars)
-    {
-      case 0:
-      case 1:
-	      while (nout--) {if (*in2p < size * 8)
-	      *(outp + _offset) |= 1 << (*in2p % 8);
-	      in2p++; outp += size;} break;
-      case 2: while (nout--) {if (*in2p < size * 8)
-	      *(outp + _offset) |= 1 << (*in2p % 8);
-	      outp += size;} break;
-      case 3: if (*in2p < size * 8) *(outp + _offset) |= 1 << (*in2p % 8);
-	      break;
+    case DTYPE_FTC:
+	size = sizeof(double) * 2;
+	break;
+    default:
+	return TdiINVDTYDSC;
     }
-  }
-  return 1;
+
+    {
+	int *in2p = (int *)in2->pointer;
+	char *outp = (char *)out->pointer;
+	switch (scalars) {
+	case 0:
+	case 1:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *(outp + _offset) |= 1 << (*in2p % 8);
+		in2p++;
+		outp += size;
+	    }
+	    break;
+	case 2:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *(outp + _offset) |= 1 << (*in2p % 8);
+		outp += size;
+	    }
+	    break;
+	case 3:
+	    if (*in2p < size * 8)
+		*(outp + _offset) |= 1 << (*in2p % 8);
+	    break;
+	}
+    }
+    return 1;
 }
- 
-int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+
+int Tdi3Ibclr(struct descriptor *in1, struct descriptor *in2,
+	      struct descriptor *out)
 {
-  int size;
-  SetupArgs
-  TdiConvert(in1,out);
-  switch (in1->dtype)
-  {
-    case DTYPE_B:  
-    case DTYPE_BU: size = sizeof(char); break;
-    case DTYPE_W:  
-    case DTYPE_WU: size = sizeof(short); break;
-    case DTYPE_L:  
-    case DTYPE_LU: size = sizeof(int); break;
-    case DTYPE_Q:  
-    case DTYPE_QU: size = sizeof(int)*2; break;
+    int size;
+    SetupArgs TdiConvert(in1, out);
+    switch (in1->dtype) {
+    case DTYPE_B:
+    case DTYPE_BU:
+	size = sizeof(char);
+	break;
+    case DTYPE_W:
+    case DTYPE_WU:
+	size = sizeof(short);
+	break;
+    case DTYPE_L:
+    case DTYPE_LU:
+	size = sizeof(int);
+	break;
+    case DTYPE_Q:
+    case DTYPE_QU:
+	size = sizeof(int) * 2;
+	break;
     case DTYPE_O:
-    case DTYPE_OU: size = sizeof(int) * 4; break;
+    case DTYPE_OU:
+	size = sizeof(int) * 4;
+	break;
     case DTYPE_F:
-    case DTYPE_FS: size = sizeof(float); break;
+    case DTYPE_FS:
+	size = sizeof(float);
+	break;
     case DTYPE_D:
     case DTYPE_G:
-    case DTYPE_FT: size = sizeof(double); break;
+    case DTYPE_FT:
+	size = sizeof(double);
+	break;
     case DTYPE_FC:
-    case DTYPE_FSC: size = sizeof(float) * 2; break;
+    case DTYPE_FSC:
+	size = sizeof(float) * 2;
+	break;
     case DTYPE_DC:
     case DTYPE_GC:
-    case DTYPE_FTC: size = sizeof(double) * 2; break;
-    default: return TdiINVDTYDSC;
-  }
-
-  {
-    int *in2p = (int *)in2->pointer;
-    char *outp = (char *)out->pointer;
-    switch (scalars)
-    {
-      case 0:
-      case 1:
-	      while (nout--) {if (*in2p < size * 8)
-	      *(outp + _offset) &= ~(1 << (*in2p % 8));
-	      in2p++; outp += size;} break;
-      case 2: while (nout--) {if (*in2p < size * 8)
-	      *(outp + _offset) &= ~(1 << (*in2p % 8));
-	      outp += size;} break;
-      case 3: if (*in2p < size * 8) *(outp + _offset) &= ~(1 << (*in2p % 8));
-	      break;
+    case DTYPE_FTC:
+	size = sizeof(double) * 2;
+	break;
+    default:
+	return TdiINVDTYDSC;
     }
-  }
-  return 1;
-}
- 
 
-int Tdi3Btest(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+    {
+	int *in2p = (int *)in2->pointer;
+	char *outp = (char *)out->pointer;
+	switch (scalars) {
+	case 0:
+	case 1:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *(outp + _offset) &= ~(1 << (*in2p % 8));
+		in2p++;
+		outp += size;
+	    }
+	    break;
+	case 2:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *(outp + _offset) &= ~(1 << (*in2p % 8));
+		outp += size;
+	    }
+	    break;
+	case 3:
+	    if (*in2p < size * 8)
+		*(outp + _offset) &= ~(1 << (*in2p % 8));
+	    break;
+	}
+    }
+    return 1;
+}
+
+int Tdi3Btest(struct descriptor *in1, struct descriptor *in2,
+	      struct descriptor *out)
 {
-  int size;
-  SetupArgs
-  switch (in1->dtype)
-  {
-    case DTYPE_B:  
-    case DTYPE_BU: size = sizeof(char); break;
-    case DTYPE_W:  
-    case DTYPE_WU: size = sizeof(short); break;
-    case DTYPE_L:  
-    case DTYPE_LU: size = sizeof(int); break;
-    case DTYPE_Q:  
-    case DTYPE_QU: size = sizeof(int)*2; break;
+    int size;
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_B:
+    case DTYPE_BU:
+	size = sizeof(char);
+	break;
+    case DTYPE_W:
+    case DTYPE_WU:
+	size = sizeof(short);
+	break;
+    case DTYPE_L:
+    case DTYPE_LU:
+	size = sizeof(int);
+	break;
+    case DTYPE_Q:
+    case DTYPE_QU:
+	size = sizeof(int) * 2;
+	break;
     case DTYPE_O:
-    case DTYPE_OU: size = sizeof(int) * 4; break;
+    case DTYPE_OU:
+	size = sizeof(int) * 4;
+	break;
     case DTYPE_F:
-    case DTYPE_FS: size = sizeof(float); break;
+    case DTYPE_FS:
+	size = sizeof(float);
+	break;
     case DTYPE_D:
     case DTYPE_G:
-    case DTYPE_FT: size = sizeof(double); break;
+    case DTYPE_FT:
+	size = sizeof(double);
+	break;
     case DTYPE_FC:
-    case DTYPE_FSC: size = sizeof(float) * 2; break;
+    case DTYPE_FSC:
+	size = sizeof(float) * 2;
+	break;
     case DTYPE_DC:
     case DTYPE_GC:
-    case DTYPE_FTC: size = sizeof(double) * 2; break;
-    default: return TdiINVDTYDSC;
-  }
-
-  {
-    char *in1p = (char *)in1->pointer;
-    int *in2p = (int *)in2->pointer;
-    char *outp = (char *)out->pointer;
-    switch (scalars)
-    {
-      case 0: while (nout--) {if (*in2p < size * 8)
-	      *outp = (char)((*(in1p + *in2p/8) &
-	      (1 << (*in2p % 8))) > 0);
-	      in1p += size; outp++; in2p++;} break;
-      case 1: while (nout--) {if (*in2p < size * 8)
-	      *outp = (char)((*(in1p + *in2p/8) &
-	      (1 << (*in2p % 8))) > 0);
-	      outp++; in2p++;} break;
-      case 2: while (nout--) {if (*in2p < size * 8)
-	      *outp = (char)((*(in1p + *in2p/8) &
-	      (1 << (*in2p % 8))) > 0);
-	      in1p++; outp++;} break;   
-      case 3: if (*in2p < size * 8)
-	      *outp = (char)((*(in1p + *in2p/8) &
-	      (1 << (*in2p % 8))) > 0); break;
+    case DTYPE_FTC:
+	size = sizeof(double) * 2;
+	break;
+    default:
+	return TdiINVDTYDSC;
     }
-  }
-  return 1;
+
+    {
+	char *in1p = (char *)in1->pointer;
+	int *in2p = (int *)in2->pointer;
+	char *outp = (char *)out->pointer;
+	switch (scalars) {
+	case 0:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *outp = (char)((*(in1p + *in2p / 8) &
+				    (1 << (*in2p % 8))) > 0);
+		in1p += size;
+		outp++;
+		in2p++;
+	    } break;
+	case 1:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *outp = (char)((*(in1p + *in2p / 8) &
+				    (1 << (*in2p % 8))) > 0);
+		outp++;
+		in2p++;
+	    } break;
+	case 2:
+	    while (nout--) {
+		if (*in2p < size * 8)
+		    *outp = (char)((*(in1p + *in2p / 8) &
+				    (1 << (*in2p % 8))) > 0);
+		in1p++;
+		outp++;
+	    } break;
+	case 3:
+	    if (*in2p < size * 8)
+		*outp = (char)((*(in1p + *in2p / 8) & (1 << (*in2p % 8))) > 0);
+	    break;
+	}
+    }
+    return 1;
 }
 
-int Tdi3Complex(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Complex(struct descriptor *in1, struct descriptor *in2,
+		struct descriptor *out)
 {
-  int size, isize;
-  SetupArgs
-  switch (in1->dtype)
-  {
-    case DTYPE_B:  
-    case DTYPE_BU: 
-    case DTYPE_W:  
-    case DTYPE_WU: 
-    case DTYPE_L:  
-    case DTYPE_LU: 
-    case DTYPE_Q:  
+    int size, isize;
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_B:
+    case DTYPE_BU:
+    case DTYPE_W:
+    case DTYPE_WU:
+    case DTYPE_L:
+    case DTYPE_LU:
+    case DTYPE_Q:
     case DTYPE_QU:
     case DTYPE_O:
-    case DTYPE_OU: return TdiINVDTYDSC;
+    case DTYPE_OU:
+	return TdiINVDTYDSC;
     case DTYPE_F:
-    case DTYPE_FS: size = sizeof(float); isize = size; break;
-    case DTYPE_D:  
+    case DTYPE_FS:
+	size = sizeof(float);
+	isize = size;
+	break;
+    case DTYPE_D:
     case DTYPE_G:
-    case DTYPE_FT: size = sizeof(double); isize = size; break;
+    case DTYPE_FT:
+	size = sizeof(double);
+	isize = size;
+	break;
     case DTYPE_FC:
-    case DTYPE_FSC: size = sizeof(float); isize = 2 * size; break;
+    case DTYPE_FSC:
+	size = sizeof(float);
+	isize = 2 * size;
+	break;
     case DTYPE_DC:
-    case DTYPE_GC: 
-    case DTYPE_FTC: size = sizeof(double); isize = 2 * size; break;
-    default: return TdiINVDTYDSC;
-  }
-
-  {
-    char *in1p = (char *)in1->pointer;
-    char *in2p = (char *)in2->pointer;
-    char *outp = (char *)out->pointer;
-    switch (scalars)
-    {
-      case 0: while (nout--) {memmove(outp,in1p,size); outp += size;
-	      memmove(outp,in2p,size); outp += size; in1p += isize;
-	      in2p += isize;} break;
-      case 1: while (nout--) {memmove(outp,in1p,size); outp += size;
-	      memmove(outp,in2p,size); outp += size;
-	      in2p += isize;} break;
-      case 2: while (nout--) {memmove(outp,in1p,size); outp += size;
-	      memmove(outp,in2p,size); outp += size; in1p += isize;
-	      } break;
-      case 3: memmove(outp,in1p,size); outp += size;
-	      memmove(outp,in2p,size); break;
+    case DTYPE_GC:
+    case DTYPE_FTC:
+	size = sizeof(double);
+	isize = 2 * size;
+	break;
+    default:
+	return TdiINVDTYDSC;
     }
-  }
-  return 1;
+
+    {
+	char *in1p = (char *)in1->pointer;
+	char *in2p = (char *)in2->pointer;
+	char *outp = (char *)out->pointer;
+	switch (scalars) {
+	case 0:
+	    while (nout--) {
+		memmove(outp, in1p, size);
+		outp += size;
+		memmove(outp, in2p, size);
+		outp += size;
+		in1p += isize;
+		in2p += isize;
+	    }
+	    break;
+	case 1:
+	    while (nout--) {
+		memmove(outp, in1p, size);
+		outp += size;
+		memmove(outp, in2p, size);
+		outp += size;
+		in2p += isize;
+	    }
+	    break;
+	case 2:
+	    while (nout--) {
+		memmove(outp, in1p, size);
+		outp += size;
+		memmove(outp, in2p, size);
+		outp += size;
+		in1p += isize;
+	    }
+	    break;
+	case 3:
+	    memmove(outp, in1p, size);
+	    outp += size;
+	    memmove(outp, in2p, size);
+	    break;
+	}
+    }
+    return 1;
 }
 
 #define Operate(type,testit) \
@@ -375,92 +497,107 @@ int Tdi3Complex(struct descriptor *in1, struct descriptor *in2, struct descripto
   break;\
 }
 
-int Tdi3Max(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Max(struct descriptor *in1, struct descriptor *in2,
+	    struct descriptor *out)
 {
-  SetupArgs
-  switch (in1->dtype)
-  {
-    case DTYPE_T:  return TdiINVDTYDSC;
-    case DTYPE_B:  Operate(char,*in1p > *in2p)
-    case DTYPE_BU: Operate(unsigned char,*in1p > *in2p)
-    case DTYPE_W:  Operate(short,*in1p > *in2p)
-    case DTYPE_WU: Operate(unsigned short,*in1p > *in2p)
-    case DTYPE_L:  Operate(int,*in1p > *in2p)
-    case DTYPE_LU: Operate(unsigned int,*in1p > *in2p)
-    case DTYPE_QU: Operate(quadword,TdiGtQ(in1p,in2p,0))
-    case DTYPE_Q: Operate(quadword,TdiGtQ(in1p,in2p,1))
-    case DTYPE_OU: Operate(octaword,TdiGtO(in1p,in2p,0))
-    case DTYPE_O: Operate(octaword,TdiGtO(in1p,in2p,1))
-    case DTYPE_F: OperateF(float,DTYPE_F,DTYPE_NATIVE_FLOAT,a > b)
-    case DTYPE_FS: OperateF(float,DTYPE_FS,DTYPE_NATIVE_FLOAT,a > b)
-    case DTYPE_G: OperateF(double,DTYPE_G,DTYPE_NATIVE_DOUBLE,a > b)
-    case DTYPE_D: OperateF(double,DTYPE_D,DTYPE_NATIVE_DOUBLE,a > b)
-    case DTYPE_FT: OperateF(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE,a > b)
-    default: return TdiINVDTYDSC;
-  }
-  return 1;
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_T:
+	return TdiINVDTYDSC;
+    case DTYPE_B:
+	Operate(char, *in1p > *in2p)
+	case DTYPE_BU:Operate(unsigned char, *in1p > *in2p)
+	case DTYPE_W:Operate(short, *in1p > *in2p)
+	case DTYPE_WU:Operate(unsigned short, *in1p > *in2p)
+	case DTYPE_L:Operate(int, *in1p > *in2p)
+	case DTYPE_LU:Operate(unsigned int, *in1p > *in2p)
+	case DTYPE_QU:Operate(quadword, TdiGtQ(in1p, in2p, 0))
+	case DTYPE_Q:Operate(quadword, TdiGtQ(in1p, in2p, 1))
+	case DTYPE_OU:Operate(octaword, TdiGtO(in1p, in2p, 0))
+	case DTYPE_O:Operate(octaword, TdiGtO(in1p, in2p, 1))
+	case DTYPE_F:OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a > b)
+	case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a > b)
+	case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a > b)
+	case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a > b)
+	case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a > b)
+	default:return TdiINVDTYDSC;
+    }
+    return 1;
 }
 
-int Tdi3Min(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Min(struct descriptor *in1, struct descriptor *in2,
+	    struct descriptor *out)
 {
-  SetupArgs
-  switch (in1->dtype)
-  {
-    case DTYPE_T:  return TdiINVDTYDSC;
-    case DTYPE_B:  Operate(char,*in1p < *in2p)
-    case DTYPE_BU: Operate(unsigned char,*in1p < *in2p)
-    case DTYPE_W:  Operate(short,*in1p < *in2p)
-    case DTYPE_WU: Operate(unsigned short,*in1p < *in2p)
-    case DTYPE_L:  Operate(int,*in1p < *in2p)
-    case DTYPE_LU: Operate(unsigned int,*in1p < *in2p)
-    case DTYPE_QU: Operate(quadword,TdiLtQ(in1p,in2p,0))
-    case DTYPE_Q:  Operate(quadword,TdiLtQ(in1p,in2p,1))
-    case DTYPE_OU: Operate(octaword,TdiLtO(in1p,in2p,0))
-    case DTYPE_O:  Operate(octaword,TdiLtO(in1p,in2p,1))
-    case DTYPE_F:  OperateF(float,DTYPE_F,DTYPE_NATIVE_FLOAT,a < b)
-    case DTYPE_FS: OperateF(float,DTYPE_FS,DTYPE_NATIVE_FLOAT,a < b)
-    case DTYPE_G:  OperateF(double,DTYPE_G,DTYPE_NATIVE_DOUBLE,a < b)
-    case DTYPE_D:  OperateF(double,DTYPE_D,DTYPE_NATIVE_DOUBLE,a < b)
-    case DTYPE_FT: OperateF(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE,a < b)
-    default: return TdiINVDTYDSC;
-  }
-  return 1;
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_T:
+	return TdiINVDTYDSC;
+    case DTYPE_B:
+	Operate(char, *in1p < *in2p)
+	case DTYPE_BU:Operate(unsigned char, *in1p < *in2p)
+	case DTYPE_W:Operate(short, *in1p < *in2p)
+	case DTYPE_WU:Operate(unsigned short, *in1p < *in2p)
+	case DTYPE_L:Operate(int, *in1p < *in2p)
+	case DTYPE_LU:Operate(unsigned int, *in1p < *in2p)
+	case DTYPE_QU:Operate(quadword, TdiLtQ(in1p, in2p, 0))
+	case DTYPE_Q:Operate(quadword, TdiLtQ(in1p, in2p, 1))
+	case DTYPE_OU:Operate(octaword, TdiLtO(in1p, in2p, 0))
+	case DTYPE_O:Operate(octaword, TdiLtO(in1p, in2p, 1))
+	case DTYPE_F:OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT, a < b)
+	case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, a < b)
+	case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, a < b)
+	case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, a < b)
+	case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, a < b)
+	default:return TdiINVDTYDSC;
+    }
+    return 1;
 }
 
-int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Dim(struct descriptor *in1, struct descriptor *in2,
+	    struct descriptor *out)
 {
-  int status;
-  typedef struct { double l[2]; } octaword_aligned;
-  STATIC_CONSTANT octaword_aligned zero = {0.,0.};
-  STATIC_CONSTANT struct descriptor dzero = {0, 0, CLASS_S, (void *)&zero};
+    int status;
+    typedef struct {
+	double l[2];
+    } octaword_aligned;
+    STATIC_CONSTANT octaword_aligned zero = { 0., 0. };
+    STATIC_CONSTANT struct descriptor dzero = { 0, 0, CLASS_S, (void *)&zero };
 
-  switch (in1->dtype)
-  {
+    switch (in1->dtype) {
     case DTYPE_FC:
     case DTYPE_FSC:
     case DTYPE_DC:
-    case DTYPE_GC: 
+    case DTYPE_GC:
     case DTYPE_FTC:
-    case DTYPE_H:  
-    case DTYPE_HC: return TdiINVDTYDSC;
-  }
-  status = Tdi3Subtract(in1,in2,out);
-   if (!(status & 1)) return status;
+    case DTYPE_H:
+    case DTYPE_HC:
+	return TdiINVDTYDSC;
+    }
+    status = Tdi3Subtract(in1, in2, out);
+    if (!(status & 1))
+	return status;
 
-  dzero.length = in1->length;
-  dzero.dtype = in1->dtype;
+    dzero.length = in1->length;
+    dzero.dtype = in1->dtype;
 
-  switch (in1->dtype)
-  {
-      case DTYPE_BU: out->dtype = DTYPE_B; break;
-      case DTYPE_WU: out->dtype = DTYPE_W; break;
-      case DTYPE_LU: out->dtype = DTYPE_L; break;
-      case DTYPE_QU: out->dtype = DTYPE_Q; break;
-      case DTYPE_OU: out->dtype = DTYPE_O; break;
-  }
-  status = Tdi3Max(out,&dzero,out);
-  out->dtype = in1->dtype;
-  return status;
+    switch (in1->dtype) {
+    case DTYPE_BU:
+	out->dtype = DTYPE_B;
+	break;
+    case DTYPE_WU:
+	out->dtype = DTYPE_W;
+	break;
+    case DTYPE_LU:
+	out->dtype = DTYPE_L;
+	break;
+    case DTYPE_QU:
+	out->dtype = DTYPE_Q;
+	break;
+    case DTYPE_OU:
+	out->dtype = DTYPE_O;
+	break;
+    }
+    status = Tdi3Max(out, &dzero, out);
+    out->dtype = in1->dtype;
+    return status;
 }
 
 #define char_min -128
@@ -522,24 +659,24 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   break;\
 }
 
-int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2,
+	      struct descriptor *out)
 {
-  SetupArgs
-  switch (in1->dtype)
-    {
-    case DTYPE_B:  Operate(char)
-    case DTYPE_BU: OperateU(unsigned char,char)
-    case DTYPE_W:  Operate(short)
-    case DTYPE_WU: OperateU(unsigned short,short)
-    case DTYPE_L:  Operate(int)
-    case DTYPE_LU: OperateU(unsigned int,int)
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_B:
+	Operate(char)
+	case DTYPE_BU:OperateU(unsigned char, char)
+	case DTYPE_W:Operate(short)
+	case DTYPE_WU:OperateU(unsigned short, short)
+	case DTYPE_L:Operate(int)
+	case DTYPE_LU:OperateU(unsigned int, int)
 #ifndef HAVE_VXWORKS_H
-    case DTYPE_Q:  Operate(_int64)
-    case DTYPE_QU: OperateU(_int64u,_int64)
+	case DTYPE_Q:Operate(_int64)
+	case DTYPE_QU:OperateU(_int64u, _int64)
 #endif
-    default: return TdiINVDTYDSC;
-  }
-  return 1;
+	default:return TdiINVDTYDSC;
+    }
+    return 1;
 }
 
 #undef Operate
@@ -561,42 +698,42 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2, struct descriptor 
   break;\
 }
 
-int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2,
+		   struct descriptor *out)
 {
-  SetupArgs
-  switch (in1->dtype)
-    {
-    case DTYPE_B:  Operate(char, >> )
-    case DTYPE_BU: Operate(unsigned char, >> )
-    case DTYPE_W:  Operate(short, >> )
-    case DTYPE_WU: Operate(unsigned short, >> )
-    case DTYPE_L:  Operate(int, >> )
-    case DTYPE_LU: Operate(unsigned int, >> )
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_B:
+	Operate(char, >>)
+	case DTYPE_BU:Operate(unsigned char, >>)
+	case DTYPE_W:Operate(short, >>)
+	case DTYPE_WU:Operate(unsigned short, >>)
+	case DTYPE_L:Operate(int, >>)
+	case DTYPE_LU:Operate(unsigned int, >>)
 #ifndef HAVE_VXWORKS_H
-    case DTYPE_Q:  Operate(_int64, >> )
-    case DTYPE_QU: Operate(_int64u, >> )
+	case DTYPE_Q:Operate(_int64, >>)
+	case DTYPE_QU:Operate(_int64u, >>)
 #endif
-    default: return TdiINVDTYDSC;
-  }
-  return 1;
+	default:return TdiINVDTYDSC;
+    }
+    return 1;
 }
 
-int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2,
+		  struct descriptor *out)
 {
-  SetupArgs
-  switch (in1->dtype)
-    {
-    case DTYPE_B:  Operate(char, << )
-    case DTYPE_BU: Operate(unsigned char, << )
-    case DTYPE_W:  Operate(short, << )
-    case DTYPE_WU: Operate(unsigned short, << )
-    case DTYPE_L:  Operate(int, << )
-    case DTYPE_LU: Operate(unsigned int, << )
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_B:
+	Operate(char, <<)
+	case DTYPE_BU:Operate(unsigned char, <<)
+	case DTYPE_W:Operate(short, <<)
+	case DTYPE_WU:Operate(unsigned short, <<)
+	case DTYPE_L:Operate(int, <<)
+	case DTYPE_LU:Operate(unsigned int, <<)
 #ifndef HAVE_VXWORKS_H
-    case DTYPE_Q:  Operate(_int64, << )
-    case DTYPE_QU: Operate(_int64u, << )
+	case DTYPE_Q:Operate(_int64, <<)
+	case DTYPE_QU:Operate(_int64u, <<)
 #endif
-    default: return TdiINVDTYDSC;
-  }
-  return 1;
+	default:return TdiINVDTYDSC;
+    }
+    return 1;
 }

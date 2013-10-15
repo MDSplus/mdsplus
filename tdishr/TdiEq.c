@@ -65,21 +65,22 @@
 #include <tdimessages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
-#define OP_EQ 0 
+#define OP_EQ 0
 #define OP_GE 1
-#define OP_GT 2 
-#define OP_LE 3 
-#define OP_LT 4 
-#define OP_NE 5 
+#define OP_GT 2
+#define OP_LE 3
+#define OP_LT 4
+#define OP_NE 5
 
 extern int CvtConvertFloat();
-extern int TdiBinary(  );
+extern int TdiBinary();
 extern int Tdi3Not();
 
-#define min(a,b) ((a)<(b)) ? (a) : (b) 
-#define max(a,b) ((a)<(b)) ? (b) : (a) 
+#define min(a,b) ((a)<(b)) ? (a) : (b)
+#define max(a,b) ((a)<(b)) ? (b) : (a)
 
 #define compare(type,op) \
   if (s1) \
@@ -217,90 +218,89 @@ break;
 } \
 break;
 
-int       Tdi3_Eq(struct descriptor *in1_ptr,
-		                struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr,
-				int op)
+int Tdi3_Eq(struct descriptor *in1_ptr,
+	    struct descriptor *in2_ptr, struct descriptor *out_ptr, int op)
 {
-  int out_count = 1;
-  int status;
-  register int i,j,k;
-  int l,minlen,maxlen,*i1,*i2;
-  int s1 = (in1_ptr->class != CLASS_A);
-  int s2 = (in2_ptr->class != CLASS_A);
+    int out_count = 1;
+    int status;
+    register int i, j, k;
+    int l, minlen, maxlen, *i1, *i2;
+    int s1 = (in1_ptr->class != CLASS_A);
+    int s2 = (in2_ptr->class != CLASS_A);
 
-  status = TdiBinary(in1_ptr,in2_ptr,out_ptr,&out_count);
-  if (status != 1) return status;
+    status = TdiBinary(in1_ptr, in2_ptr, out_ptr, &out_count);
+    if (status != 1)
+	return status;
 
-  switch (in1_ptr->dtype)
-  {
-   case DTYPE_T:	testc(unsigned char)
-   case DTYPE_BU:	test(unsigned char)
-   case DTYPE_WU:	test(unsigned short int)
-   case DTYPE_LU:	test(unsigned int)
-   case DTYPE_QU: testn(unsigned int,2,0)
-   case DTYPE_OU: testn(unsigned int,4,0)
-   case DTYPE_B:	test(char)
-   case DTYPE_W:	test(short int)
-   case DTYPE_L:	test(int)
-   case DTYPE_Q:  testn(unsigned int,2,1)
-   case DTYPE_O:	testn(unsigned int,4,1)
-   case DTYPE_F:	testf(float,DTYPE_F,DTYPE_NATIVE_FLOAT)
-   case DTYPE_FS:	testf(float,DTYPE_FS,DTYPE_NATIVE_FLOAT)
-   case DTYPE_G:	testf(double,DTYPE_G,DTYPE_NATIVE_DOUBLE)
-   case DTYPE_D:	testf(double,DTYPE_D,DTYPE_NATIVE_DOUBLE)
-   case DTYPE_FT:	testf(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE)
-   case DTYPE_FC:	
-   case DTYPE_FSC: if (op != OP_EQ && op != OP_NE) {status = TdiINVDTYDSC; break;} testn(int,2,0)
-   case DTYPE_GC:	
-   case DTYPE_DC:
-   case DTYPE_FTC: if (op != OP_EQ && op != OP_NE) {status = TdiINVDTYDSC; break;} testn(int,4,0)
-   default: status = TdiINVDTYDSC; 
- }
- return status;
+    switch (in1_ptr->dtype) {
+    case DTYPE_T:
+	testc(unsigned char)
+	case DTYPE_BU:test(unsigned char)
+	case DTYPE_WU:test(unsigned short int)
+	case DTYPE_LU:test(unsigned int)
+	case DTYPE_QU:testn(unsigned int, 2, 0)
+	case DTYPE_OU:testn(unsigned int, 4, 0)
+	case DTYPE_B:test(char)
+	case DTYPE_W:test(short int)
+	case DTYPE_L:test(int)
+	case DTYPE_Q:testn(unsigned int, 2, 1)
+	case DTYPE_O:testn(unsigned int, 4, 1)
+	case DTYPE_F:testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+	case DTYPE_FS:testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+	case DTYPE_G:testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+	case DTYPE_D:testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+	case DTYPE_FT:testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+	case DTYPE_FC:case DTYPE_FSC:if (op != OP_EQ && op != OP_NE) {
+	    status = TdiINVDTYDSC;
+	    break;
+	}
+	testn(int, 2, 0)
+	case DTYPE_GC:case DTYPE_DC:case DTYPE_FTC:if (op != OP_EQ
+						       && op != OP_NE) {
+	    status = TdiINVDTYDSC;
+	    break;
+	}
+	testn(int, 4, 0)
+	default:status = TdiINVDTYDSC;
+    }
+    return status;
 }
 
-int       Tdi3Eq(struct descriptor *in1_ptr,
-		                struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr)
+int Tdi3Eq(struct descriptor *in1_ptr,
+	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-	  return Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_EQ);
+    return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
 }
 
-int       Tdi3Ge(struct descriptor *in1_ptr,
-		                struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr)
+int Tdi3Ge(struct descriptor *in1_ptr,
+	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-	  return Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_GE);
+    return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_GE);
 }
 
-int       Tdi3Gt(struct descriptor *in1_ptr,
-				struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr)
+int Tdi3Gt(struct descriptor *in1_ptr,
+	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-	  return Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_GT);
+    return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_GT);
 }
 
-int       Tdi3Le(struct descriptor *in1_ptr,
-		                struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr)
+int Tdi3Le(struct descriptor *in1_ptr,
+	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-	  return Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_LE);
+    return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_LE);
 }
 
-int       Tdi3Lt(struct descriptor *in1_ptr,
-		                struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr)
+int Tdi3Lt(struct descriptor *in1_ptr,
+	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-	  return Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_LT);
+    return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_LT);
 }
 
-int       Tdi3Ne(struct descriptor *in1_ptr,
-		                struct descriptor *in2_ptr,
-		                struct descriptor *out_ptr)
+int Tdi3Ne(struct descriptor *in1_ptr,
+	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-	  int status = Tdi3_Eq(in1_ptr,in2_ptr,out_ptr,OP_EQ);
+    int status = Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
     if (status & 1)
-      status = Tdi3Not(out_ptr, out_ptr);
+	status = Tdi3Not(out_ptr, out_ptr);
     return status;
 }

@@ -13,9 +13,10 @@
 #include <libroutines.h>
 #include <tdimessages.h>
 #include <mdsdescrip.h>
-#define COM 
+#define COM
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiIntrinsic();
 #define MdsEND_ARG_64 (void *)-1
@@ -29,8 +30,8 @@ extern int TdiIntrinsic();
                (arg != MdsEND_ARG_64); \
                narg++,arg=va_arg(incrmtr, struct descriptor *)); \
 } else narg=0
-	
-#endif /* va_count */
+
+#endif				/* va_count */
 
 #define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) \
 int Tdi##name ( struct descriptor *first, ... ) \

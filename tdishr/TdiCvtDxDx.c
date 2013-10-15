@@ -11,39 +11,41 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiConvert();
 extern int TdiGetShape();
 
-int				TdiCvtDxDx(
-struct descriptor		*in_ptr,
-unsigned char			*dtype_ptr,
-struct descriptor_xd	*out_ptr)
+int TdiCvtDxDx(struct descriptor *in_ptr,
+	       unsigned char *dtype_ptr, struct descriptor_xd *out_ptr)
 {
-int	status;
+    int status;
 
 	/*********************************
 	No conversion needed, just memory.
 	*********************************/
-	if (in_ptr->dtype == *dtype_ptr)
-		status = MdsCopyDxXd(in_ptr, out_ptr);
+    if (in_ptr->dtype == *dtype_ptr)
+	status = MdsCopyDxXd(in_ptr, out_ptr);
 
 	/*******************
 	Remove a descriptor.
 	*******************/
-	else if (in_ptr->dtype == DTYPE_DSC)
-		status = TdiCvtDxDx((struct descriptor *)in_ptr->pointer, dtype_ptr, out_ptr);
+    else if (in_ptr->dtype == DTYPE_DSC)
+	status =
+	    TdiCvtDxDx((struct descriptor *)in_ptr->pointer, dtype_ptr,
+		       out_ptr);
 
 	/******************************
 	Make space and convert into it.
 	******************************/
-	else {
+    else {
 	int mode = -1;
-	struct descriptor_xd xs = {0,DTYPE_DSC,CLASS_XS,0,0};
-                xs.pointer = in_ptr;
-		status = TdiGetShape(1, &xs, 0, *dtype_ptr, &mode, out_ptr);
-		if (status & 1) status = TdiConvert(in_ptr, out_ptr->pointer);
-	}
-	return status;
+	struct descriptor_xd xs = { 0, DTYPE_DSC, CLASS_XS, 0, 0 };
+	xs.pointer = in_ptr;
+	status = TdiGetShape(1, &xs, 0, *dtype_ptr, &mode, out_ptr);
+	if (status & 1)
+	    status = TdiConvert(in_ptr, out_ptr->pointer);
+    }
+    return status;
 }

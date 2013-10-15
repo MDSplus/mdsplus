@@ -11,210 +11,258 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiConcat();
 extern int TdiTranslate();
 extern int TdiGetLong();
 
-
-STATIC_CONSTANT DESCRIPTOR(asterisk,"*");
-STATIC_CONSTANT DESCRIPTOR(slash,"/");
-STATIC_CONSTANT DESCRIPTOR(slash_star,"/*");
-STATIC_CONSTANT DESCRIPTOR(star_slash,"*/");
-STATIC_CONSTANT DESCRIPTOR(bad,"?");
-STATIC_CONSTANT struct descriptor_xd BAD = {0,DTYPE_DSC,CLASS_XS,(struct descriptor *)&bad,0};
+STATIC_CONSTANT DESCRIPTOR(asterisk, "*");
+STATIC_CONSTANT DESCRIPTOR(slash, "/");
+STATIC_CONSTANT DESCRIPTOR(slash_star, "/*");
+STATIC_CONSTANT DESCRIPTOR(star_slash, "*/");
+STATIC_CONSTANT DESCRIPTOR(bad, "?");
+STATIC_CONSTANT struct descriptor_xd BAD =
+    { 0, DTYPE_DSC, CLASS_XS, (struct descriptor *)&bad, 0 };
 
 /********************************
 Units must match or one be empty.
 ********************************/
-STATIC_ROUTINE int either(struct descriptor_xd uni[2]) {
+STATIC_ROUTINE int either(struct descriptor_xd uni[2])
+{
 
-	if (uni[0].pointer == 0) {
-		uni[0] = uni[1];
-		uni[1] = EMPTY_XD;
+    if (uni[0].pointer == 0) {
+	uni[0] = uni[1];
+	uni[1] = EMPTY_XD;
+    } else if (uni[1].pointer) {
+	if (StrCompare(uni[0].pointer, uni[1].pointer)) {
+	    MdsFree1Dx(&uni[0], NULL);
+	    uni[0] = BAD;
 	}
-	else if (uni[1].pointer) {
-		if (StrCompare(uni[0].pointer, uni[1].pointer)) {
-			MdsFree1Dx(&uni[0],NULL);
-			uni[0] = BAD;
-		}
-	}
-	return 1;
+    }
+    return 1;
 }
+
 /*******************************
 Discard units unless mismatched.
 *******************************/
-STATIC_ROUTINE int only_mismatch(struct descriptor_xd uni[2]) {
+STATIC_ROUTINE int only_mismatch(struct descriptor_xd uni[2])
+{
 
-	either(uni);
-	if (uni[0].pointer && uni[0].pointer != (struct descriptor *)&bad) MdsFree1Dx(&uni[0],NULL);
-	return 1;
+    either(uni);
+    if (uni[0].pointer && uni[0].pointer != (struct descriptor *)&bad)
+	MdsFree1Dx(&uni[0], NULL);
+    return 1;
 }
+
 /*****************
 Concatenate units.
 *****************/
-STATIC_ROUTINE void multiply(
-struct descriptor_xd *left_ptr,
-struct descriptor_xd *right_ptr) {
-int	status;
+STATIC_ROUTINE void multiply(struct descriptor_xd *left_ptr,
+			     struct descriptor_xd *right_ptr)
+{
+    int status;
 
-	if (left_ptr->pointer == 0) {
-		*left_ptr = *right_ptr;
-		*right_ptr = EMPTY_XD;
-	}
-	else if (right_ptr->pointer) {
-	/*NEED cleaver code here*/
-		status = TdiConcat(left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
-		if (!(status & 1)) *left_ptr = BAD;
-	}
+    if (left_ptr->pointer == 0) {
+	*left_ptr = *right_ptr;
+	*right_ptr = EMPTY_XD;
+    } else if (right_ptr->pointer) {
+	/*NEED cleaver code here */
+	status =
+	    TdiConcat(left_ptr, &asterisk, right_ptr, left_ptr MDS_END_ARG);
+	if (!(status & 1))
+	    *left_ptr = BAD;
+    }
 }
+
 /*****************
 Reciprocate units.
 *****************/
-STATIC_ROUTINE void divide(
-struct descriptor_xd *left_ptr,
-struct descriptor_xd *right_ptr) {
-int	status;
+STATIC_ROUTINE void divide(struct descriptor_xd *left_ptr,
+			   struct descriptor_xd *right_ptr)
+{
+    int status;
 
-	if (right_ptr->pointer) {
-	/*NEED cleaver code here*/
+    if (right_ptr->pointer) {
+	/*NEED cleaver code here */
 	/*NEED to fix up leading / or * */
-		status = TdiTranslate(right_ptr, &star_slash, &slash_star, right_ptr MDS_END_ARG);
-		if (status & 1) {
-			if (left_ptr->pointer) status = TdiConcat(left_ptr, &slash, right_ptr, left_ptr MDS_END_ARG);
-			else status = TdiConcat(&slash, right_ptr, left_ptr MDS_END_ARG);
-		}
-		if (!(status & 1)) *left_ptr = BAD;
+	status =
+	    TdiTranslate(right_ptr, &star_slash, &slash_star,
+			 right_ptr MDS_END_ARG);
+	if (status & 1) {
+	    if (left_ptr->pointer)
+		status =
+		    TdiConcat(left_ptr, &slash, right_ptr,
+			      left_ptr MDS_END_ARG);
+	    else
+		status = TdiConcat(&slash, right_ptr, left_ptr MDS_END_ARG);
 	}
+	if (!(status & 1))
+	    *left_ptr = BAD;
+    }
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: ABS and ABS1.
 	Unsigned integers are absolute.
 */
-int Tdi2Abs(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Abs(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	if ((cats[0].in_cat & TdiCAT_B) == TdiCAT_BU) *routine_ptr = NULL;
-	return 1;
+    if ((cats[0].in_cat & TdiCAT_B) == TdiCAT_BU)
+	*routine_ptr = NULL;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: ADD DIM MAX MIN SUBTRACT
 	Category is "or" of inputs setting length and type.
 	Example: f-complex with h-real makes h-complex.
 */
-int Tdi2Add(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Add(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	either(uni);
-	cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
-	return 1;
+    either(uni);
+    cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: ATAN2 ATAN2D
 	Category is "or" of inputs setting length and type.
 	Example: f-complex with h-real makes h-complex.
 */
-int Tdi2Atan2(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Atan2(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
-	only_mismatch(uni);
-	cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
-	return 1;
+    only_mismatch(uni);
+    cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes that accept any units and output none:
 	DIGITS DSIZE RANGE PRECISION ESIZE
 	LEN LEN_TRIM MAX_EXPONENT MIN_EXPONENT RADIX RANK SIZE_OF SORT?
 */
-int Tdi2Any(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Any(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	if (uni[0].pointer) MdsFree1Dx(&uni[0],NULL);
-	return 1;
+    if (uni[0].pointer)
+	MdsFree1Dx(&uni[0], NULL);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: ADJUSTL ADJUSTR TRANSLATE UPCASE.
 */
-int Tdi2Adjust(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Adjust(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
 
-	cats[narg].digits = cats[0].digits;
-	return 1;
+    cats[narg].digits = cats[0].digits;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: AINT ANINT CEILING FLOOR NINT.
 	Second argument is KIND.
 */
-int Tdi2Aint(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Aint(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
-int	status = 1;
+    int status = 1;
 
 	/**************************
 	Check for valid second arg.
 	Prevent its conversion.
 	**************************/
-	if (narg > 1) {
-	int	kind = -1;
-		status = TdiGetLong(dat[1].pointer, &kind);
-		if (kind < TdiCAT_MAX) cats[narg].out_cat = 
-                        (unsigned short)((TdiREF_CAT[cats[narg].out_dtype = (unsigned char)kind].cat
-			| TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
-		cats[1].out_dtype = cats[1].in_dtype;
-		cats[1].out_cat = cats[1].in_cat;
-		cats[1].digits = dat[1].pointer->length;
-	}
-	if ((cats[0].in_cat & (TdiCAT_FLOAT ^ TdiCAT_B ^ TdiCAT_BU)) == TdiCAT_BU) *routine_ptr = NULL;
-	return status;
+    if (narg > 1) {
+	int kind = -1;
+	status = TdiGetLong(dat[1].pointer, &kind);
+	if (kind < TdiCAT_MAX)
+	    cats[narg].out_cat =
+		(unsigned
+		 short)((TdiREF_CAT[cats[narg].out_dtype = (unsigned char)kind].
+			 cat | TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
+	cats[1].out_dtype = cats[1].in_dtype;
+	cats[1].out_cat = cats[1].in_cat;
+	cats[1].digits = dat[1].pointer->length;
+    }
+    if ((cats[0].in_cat & (TdiCAT_FLOAT ^ TdiCAT_B ^ TdiCAT_BU)) == TdiCAT_BU)
+	*routine_ptr = NULL;
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: BSEARCH, IS_IN.
 */
-int Tdi2Bsearch(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Bsearch(int narg, struct descriptor_xd uni[1],
+		struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+		int (**routine_ptr) (), int o1, int o2)
 {
 
-	either(uni);
-	cats[1].out_cat = cats[0].out_cat |= cats[1].out_cat;
-	if (cats[0].digits < cats[1].digits)	cats[0].digits = cats[1].digits;
-	else					cats[1].digits = cats[0].digits;
-	return 1;
+    either(uni);
+    cats[1].out_cat = cats[0].out_cat |= cats[1].out_cat;
+    if (cats[0].digits < cats[1].digits)
+	cats[0].digits = cats[1].digits;
+    else
+	cats[1].digits = cats[0].digits;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes, out=logical in1=any, in2..=long: BTEST
 */
-int Tdi2Btest(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Btest(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
-int	j;
+    int j;
 
-	for (j = narg ; --j > 0; ) {
-		cats[j].out_dtype = DTYPE_L;
-		cats[j].out_cat = TdiREF_CAT[DTYPE_L].cat;
-	}
-	return 1;
+    for (j = narg; --j > 0;) {
+	cats[j].out_dtype = DTYPE_L;
+	cats[j].out_cat = TdiREF_CAT[DTYPE_L].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes ACHAR and CHAR, length 1 text.
 */
-int Tdi2Char(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Char(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
-int	status = 1;
+    int status = 1;
 
 	/**************************
 	Check for valid second arg.
 	Prevent its conversion.
 	**************************/
-	if (narg > 1) {
-	int	kind = -1;
-		status = TdiGetLong(dat[1].pointer, &kind);
-		if (kind < TdiCAT_MAX) cats[narg].out_cat = 
-                        (unsigned short)((TdiREF_CAT[cats[narg].out_dtype = (unsigned char)kind].cat
-			| TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
-		cats[1].out_dtype = cats[1].in_dtype;
-		cats[1].out_cat = cats[1].in_cat;
-	}
-	cats[narg].digits = 1;
-	return status;
+    if (narg > 1) {
+	int kind = -1;
+	status = TdiGetLong(dat[1].pointer, &kind);
+	if (kind < TdiCAT_MAX)
+	    cats[narg].out_cat =
+		(unsigned
+		 short)((TdiREF_CAT[cats[narg].out_dtype = (unsigned char)kind].
+			 cat | TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
+	cats[1].out_dtype = cats[1].in_dtype;
+	cats[1].out_cat = cats[1].in_cat;
+    }
+    cats[narg].digits = 1;
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: CMPLX D_COMPLEX ... .
 	These expect arguments ([x],[y],[mold])
@@ -222,9 +270,11 @@ int	status = 1;
 	Array shapes must match if more than one array.
 	Data type is set by mold, else by larger.
 */
-int Tdi2Cmplx(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
-int	status = 1;
+    int status = 1;
 
 	/********************************
 	Omitted second arg just converts.
@@ -232,131 +282,176 @@ int	status = 1;
 	3 arg converts to type of third.
 	Prevent conversion for third arg.
 	********************************/
-	if (narg > 1) either(uni);
-	if (narg > 2) {
-	int	kind = -1;
-		status = TdiGetLong(dat[2].pointer, &kind);
-		if (kind < TdiCAT_MAX) {
-                        cats[narg].out_cat = (unsigned short)((TdiREF_CAT[cats[narg].out_dtype = (unsigned char)kind].cat 
-			| TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
-                }
-		cats[2].out_dtype = cats[2].in_dtype;
-		cats[2].out_cat = cats[2].in_cat;
-	        cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
+    if (narg > 1)
+	either(uni);
+    if (narg > 2) {
+	int kind = -1;
+	status = TdiGetLong(dat[2].pointer, &kind);
+	if (kind < TdiCAT_MAX) {
+	    cats[narg].out_cat =
+		(unsigned
+		 short)((TdiREF_CAT[cats[narg].out_dtype = (unsigned char)kind].
+			 cat | TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
 	}
-        else if (narg == 1)
-        {
-          switch (cats[0].out_dtype)
-          {                                                                                          
-	    case DTYPE_F:  cats[0].out_dtype = DTYPE_FC;  cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat; break;
-	    case DTYPE_FS: cats[0].out_dtype = DTYPE_FSC; cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat; break;
-	    case DTYPE_D:  cats[0].out_dtype = DTYPE_DC;  cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat; break;
-	    case DTYPE_G:  cats[0].out_dtype = DTYPE_GC;  cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat; break;
-	    case DTYPE_FT: cats[0].out_dtype = DTYPE_FTC; cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat; break;
-          }
-        }
-	if (narg < 2 || cats[1].in_dtype == DTYPE_MISSING) *routine_ptr = NULL;
-	else {
-		if (cats[0].in_cat != cats[0].out_cat) cats[0].out_cat &= ~TdiCAT_COMPLEX;
-		if (cats[1].in_cat != cats[1].out_cat) cats[1].out_cat &= ~TdiCAT_COMPLEX;
+	cats[2].out_dtype = cats[2].in_dtype;
+	cats[2].out_cat = cats[2].in_cat;
+	cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
+    } else if (narg == 1) {
+	switch (cats[0].out_dtype) {
+	case DTYPE_F:
+	    cats[0].out_dtype = DTYPE_FC;
+	    cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat;
+	    break;
+	case DTYPE_FS:
+	    cats[0].out_dtype = DTYPE_FSC;
+	    cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat;
+	    break;
+	case DTYPE_D:
+	    cats[0].out_dtype = DTYPE_DC;
+	    cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat;
+	    break;
+	case DTYPE_G:
+	    cats[0].out_dtype = DTYPE_GC;
+	    cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat;
+	    break;
+	case DTYPE_FT:
+	    cats[0].out_dtype = DTYPE_FTC;
+	    cats[0].out_cat = TdiREF_CAT[cats[0].out_dtype].cat;
+	    break;
 	}
-	return status;
+    }
+    if (narg < 2 || cats[1].in_dtype == DTYPE_MISSING)
+	*routine_ptr = NULL;
+    else {
+	if (cats[0].in_cat != cats[0].out_cat)
+	    cats[0].out_cat &= ~TdiCAT_COMPLEX;
+	if (cats[1].in_cat != cats[1].out_cat)
+	    cats[1].out_cat &= ~TdiCAT_COMPLEX;
+    }
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: CONCAT text concatenation.
 */
-int Tdi2Concat(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Concat(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
 
-	either(uni);
-	cats[2].digits = (unsigned short)(cats[0].digits + cats[1].digits);
-	return 1;
+    either(uni);
+    cats[2].digits = (unsigned short)(cats[0].digits + cats[1].digits);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for conversion by example.
 		out = CVT(input, example) converts input to dtype of example.
 */
-int Tdi2Cvt(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Cvt(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	cats[2].out_dtype	= cats[0].out_dtype	= cats[1].out_dtype;
-	cats[2].out_cat		= cats[0].out_cat	= cats[1].out_cat;
-	cats[2].digits		= cats[0].digits	= cats[1].digits;
-	return 1;
+    cats[2].out_dtype = cats[0].out_dtype = cats[1].out_dtype;
+    cats[2].out_cat = cats[0].out_cat = cats[1].out_cat;
+    cats[2].digits = cats[0].digits = cats[1].digits;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: DBLE.
 */
-int Tdi2Dble(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Dble(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat = 
-          (unsigned short)(cats[narg].out_cat + (cats[narg].out_cat & TdiCAT_LENGTH) + 1);
-	return 1;
+    cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat =
+	(unsigned short)(cats[narg].out_cat +
+			 (cats[narg].out_cat & TdiCAT_LENGTH) + 1);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: DIVIDE
 */
-int Tdi2Divide(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Divide(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
 
-	divide(&uni[0], &uni[1]);
-	cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
-	return 1;
+    divide(&uni[0], &uni[1]);
+    cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: DPROD.
 */
-int Tdi2Dprod(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Dprod(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
-	multiply(&uni[0], &uni[1]);
-	cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat = 
-          (unsigned short)(cats[narg].out_cat + (cats[narg].out_cat & TdiCAT_LENGTH) + 1);
-	return 1;
+    multiply(&uni[0], &uni[1]);
+    cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat =
+	(unsigned short)(cats[narg].out_cat +
+			 (cats[narg].out_cat & TdiCAT_LENGTH) + 1);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: EQ, GE, GT, LE, LT, NE, also LEQ etc.
 	Input category is "or" of inputs setting length and type.
 	Output category is logical.
 	Example: f-complex with h-real makes h-complex.
 */
-int Tdi2Eq(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Eq(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	   struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	only_mismatch(uni);
-	cats[0].out_cat = cats[1].out_cat = (unsigned short)(cats[1].out_cat | cats[0].out_cat);
-	return 1;
+    only_mismatch(uni);
+    cats[0].out_cat = cats[1].out_cat =
+	(unsigned short)(cats[1].out_cat | cats[0].out_cat);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: ELEMENT(number, delimiter, source)
 */
-int Tdi2Element(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Element(int narg, struct descriptor_xd uni[1],
+		struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+		int (**routine_ptr) (), int o1, int o2)
 {
 
-	MdsFree1Dx(&uni[0],NULL);
-	uni[0] = uni[2];
-	uni[2] = EMPTY_XD;
-	cats[narg].digits = cats[2].digits;
-	cats[0].out_cat = TdiREF_CAT[DTYPE_L].cat;
-	return 1;
+    MdsFree1Dx(&uni[0], NULL);
+    uni[0] = uni[2];
+    uni[2] = EMPTY_XD;
+    cats[narg].digits = cats[2].digits;
+    cats[0].out_cat = TdiREF_CAT[DTYPE_L].cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: EXTRACT(start, length, source)
 */
-int Tdi2Extract(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Extract(int narg, struct descriptor_xd uni[1],
+		struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+		int (**routine_ptr) (), int o1, int o2)
 {
-int	length, status;
+    int length, status;
 
-	MdsFree1Dx(&uni[0],NULL);
-	uni[0] = uni[2];
-	uni[2] = EMPTY_XD;
-	status = TdiGetLong(dat[1].pointer, &length);
-	if (length < 0) length = 0;
-	cats[narg].digits = (unsigned short)length;
-	cats[0].out_cat = cats[1].out_cat = TdiREF_CAT[DTYPE_L].cat;
-	return status;
+    MdsFree1Dx(&uni[0], NULL);
+    uni[0] = uni[2];
+    uni[2] = EMPTY_XD;
+    status = TdiGetLong(dat[1].pointer, &length);
+    if (length < 0)
+	length = 0;
+    cats[narg].digits = (unsigned short)length;
+    cats[0].out_cat = cats[1].out_cat = TdiREF_CAT[DTYPE_L].cat;
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: FIX_ROPRAND.
 	These expect arguments (old,replacement)
@@ -365,40 +460,54 @@ int	length, status;
 	Data type is set by highest, but complexity is kept.
 	Complexity of output is set by first argument.
 */
-int Tdi2Fix(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Fix(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
-int	cmplx, j;
+    int cmplx, j;
 
-	cmplx = cats[0].out_cat & TdiCAT_COMPLEX;
-	cats[narg].out_cat &= ~TdiCAT_COMPLEX;
-	for (j = narg; --j >= 0; ) cats[j].out_cat = (unsigned short)(cats[narg].out_cat | (cats[j].out_cat & TdiCAT_COMPLEX));
-	if (cmplx) cats[narg].out_cat |= TdiCAT_COMPLEX;
-	return 1;
+    cmplx = cats[0].out_cat & TdiCAT_COMPLEX;
+    cats[narg].out_cat &= ~TdiCAT_COMPLEX;
+    for (j = narg; --j >= 0;)
+	cats[j].out_cat =
+	    (unsigned short)(cats[narg].
+			     out_cat | (cats[j].out_cat & TdiCAT_COMPLEX));
+    if (cmplx)
+	cats[narg].out_cat |= TdiCAT_COMPLEX;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: IAND, IAND_NOT, IEOR, etc.
 */
-int Tdi2Iand(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Iand(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	either(uni);
-	cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
-	if (cats[0].out_cat == (cats[0].in_cat | TdiCAT_B)) cats[0].out_cat = (unsigned short)(cats[0].in_cat | TdiCAT_BU);
-	if (cats[1].out_cat == (cats[1].in_cat | TdiCAT_B)) cats[1].out_cat = (unsigned short)(cats[1].in_cat | TdiCAT_BU);
-	return 1;
+    either(uni);
+    cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
+    if (cats[0].out_cat == (cats[0].in_cat | TdiCAT_B))
+	cats[0].out_cat = (unsigned short)(cats[0].in_cat | TdiCAT_BU);
+    if (cats[1].out_cat == (cats[1].in_cat | TdiCAT_B))
+	cats[1].out_cat = (unsigned short)(cats[1].in_cat | TdiCAT_BU);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: INVERSE
 */
-int Tdi2Inverse(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Inverse(int narg, struct descriptor_xd uni[1],
+		struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+		int (**routine_ptr) (), int o1, int o2)
 {
-struct descriptor_xd tmp = uni[0];
+    struct descriptor_xd tmp = uni[0];
 
-	uni[0] = EMPTY_XD;
-	divide(&uni[0], &tmp);
-	MdsFree1Dx(&tmp,NULL);
-	return 1;
+    uni[0] = EMPTY_XD;
+    divide(&uni[0], &tmp);
+    MdsFree1Dx(&tmp, NULL);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes for most 1-argument conversions:
 	AIMAG CONJG INOT UNARY_MINUS UNARY_PLUS
@@ -407,388 +516,480 @@ struct descriptor_xd tmp = uni[0];
 	BYTE_UNSIGNED WORD_UNSIGNED LONG_UNSIGNED QUADWORD_UNSIGNED OCTAWORD_UNSIGNED INT_UNSIGNED UNSIGNED
 	D_FLOAT F_FLOAT G_FLOAT H_FLOAT
 */
-int Tdi2Keep(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Keep(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
-	return 1;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for logical opcodes: AND, AND_NOT, EQV etc.
 */
-int Tdi2Land(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Land(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	only_mismatch(uni);
-	if (cats[0].out_cat != DTYPE_BU) {
-		cats[0].out_dtype = DTYPE_BU;
-		cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-	}
-	if (cats[1].out_cat != DTYPE_BU) {
-		cats[1].out_dtype = DTYPE_BU;
-		cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-	}
-	return 1;
+    only_mismatch(uni);
+    if (cats[0].out_cat != DTYPE_BU) {
+	cats[0].out_dtype = DTYPE_BU;
+	cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+    }
+    if (cats[1].out_cat != DTYPE_BU) {
+	cats[1].out_dtype = DTYPE_BU;
+	cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes, out=in1, in2..=long:
 		IBCLR IBITS IBSET MEDIAN SCALE SET_EXPONENT SMOOTH.
 */
-int Tdi2Long2(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Long2(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
-int	j;
+    int j;
 
-	cats[narg].out_dtype = cats[0].out_dtype;
-	cats[narg].out_cat = cats[0].out_cat;
-	for (j = narg ; --j > 0; ) {
-		cats[j].out_dtype = DTYPE_L;
-		cats[j].out_cat = TdiREF_CAT[DTYPE_L].cat;
-	}
-	return 1;
+    cats[narg].out_dtype = cats[0].out_dtype;
+    cats[narg].out_cat = cats[0].out_cat;
+    for (j = narg; --j > 0;) {
+	cats[j].out_dtype = DTYPE_L;
+	cats[j].out_cat = TdiREF_CAT[DTYPE_L].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes, in1=any logical, in2=long-scalar out=logical:
 		ALL ANY COUNT FIRSTLOC LASTLOC.
 */
-int Tdi2Mask1(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Mask1(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
-	if (uni[0].pointer) MdsFree1Dx(&uni[0],NULL);
-	if (cats[0].out_cat != cats[0].in_cat) {
-		cats[0].out_dtype = DTYPE_BU;
-		cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-	}
-	return 1;
+    if (uni[0].pointer)
+	MdsFree1Dx(&uni[0], NULL);
+    if (cats[0].out_cat != cats[0].in_cat) {
+	cats[0].out_dtype = DTYPE_BU;
+	cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes, out=in1, in2..=any logical:
 		MAXLOC MINLOC.
 */
-int Tdi2Mask2(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Mask2(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
-int	j;
+    int j;
 
-	if (uni[0].pointer) MdsFree1Dx(&uni[0],NULL);
-	for (j = narg ; --j > 0; ) {
-		cats[j].out_cat = 
-                  (unsigned short)((cats[j].out_cat | TdiREF_CAT[DTYPE_BU].cat) & TdiREF_CAT[DTYPE_O].cat);
-		if (cats[j].out_cat != cats[j].in_cat) cats[j].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-	}
-	return 1;
+    if (uni[0].pointer)
+	MdsFree1Dx(&uni[0], NULL);
+    for (j = narg; --j > 0;) {
+	cats[j].out_cat =
+	    (unsigned short)((cats[j].out_cat | TdiREF_CAT[DTYPE_BU].cat) &
+			     TdiREF_CAT[DTYPE_O].cat);
+	if (cats[j].out_cat != cats[j].in_cat)
+	    cats[j].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes, out=in1=any numeric, in2=long-scalar in3=any logical:
 	MAXVAL MEAN MINVAL RMS STD_DEV SUM.
 	NEED code for PRODUCT.
 */
-int Tdi2Mask3(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Mask3(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
-	cats[narg] = cats[0];
-	if (narg > 2) {
-		cats[2].out_cat = 
-                   (unsigned short)((cats[2].in_cat | TdiREF_CAT[DTYPE_BU].cat) & TdiREF_CAT[DTYPE_O].cat);
-		if (cats[2].out_cat != cats[2].in_cat) {
-			cats[2].out_dtype = DTYPE_BU;
-			cats[2].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-		}
+    cats[narg] = cats[0];
+    if (narg > 2) {
+	cats[2].out_cat =
+	    (unsigned short)((cats[2].in_cat | TdiREF_CAT[DTYPE_BU].cat) &
+			     TdiREF_CAT[DTYPE_O].cat);
+	if (cats[2].out_cat != cats[2].in_cat) {
+	    cats[2].out_dtype = DTYPE_BU;
+	    cats[2].out_cat = TdiREF_CAT[DTYPE_BU].cat;
 	}
-	return 1;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
         Fix categories for opcodes, out=long-scalar, in1=any numeric, in2=long-scalar in3=any logical:
         MAXLOC MINLOC. 
 */
-int Tdi2Mask3L(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Mask3L(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
 
-        cats[narg].out_dtype = DTYPE_L;
-        cats[narg].out_cat = TdiREF_CAT[DTYPE_L].cat;
-        if (narg > 2) {
-                cats[2].out_cat =
-                   (unsigned short)((cats[2].in_cat | TdiREF_CAT[DTYPE_BU].cat) & TdiREF_CAT[DTYPE_O].cat);
-                if (cats[2].out_cat != cats[2].in_cat) {
-                        cats[2].out_dtype = DTYPE_BU;
-                        cats[2].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-                }
-        }
-        return 1;
+    cats[narg].out_dtype = DTYPE_L;
+    cats[narg].out_cat = TdiREF_CAT[DTYPE_L].cat;
+    if (narg > 2) {
+	cats[2].out_cat =
+	    (unsigned short)((cats[2].in_cat | TdiREF_CAT[DTYPE_BU].cat) &
+			     TdiREF_CAT[DTYPE_O].cat);
+	if (cats[2].out_cat != cats[2].in_cat) {
+	    cats[2].out_dtype = DTYPE_BU;
+	    cats[2].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+	}
+    }
+    return 1;
 }
 
 /*---------------------------------------------------
 	Fix categories for opcodes with input, same, logical:
 		any = MERGE(x,y,b).
 */
-int Tdi2Merge(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Merge(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
-	either(uni);
-	cats[narg].out_cat = cats[1].out_cat = cats[0].out_cat =
-		(unsigned short)((cats[0].out_cat | cats[1].out_cat) & cats[narg].out_cat);
-	if (cats[0].digits < cats[1].digits)	cats[0].digits = cats[1].digits;
-	else					cats[1].digits = cats[0].digits;
-	cats[narg].digits = cats[0].digits;
-	if (narg > 2) cats[2].out_cat = (unsigned short)((cats[2].out_cat | TdiCAT_BU) & TdiCAT_SIGNED);
-	return 1;
+    either(uni);
+    cats[narg].out_cat = cats[1].out_cat = cats[0].out_cat =
+	(unsigned short)((cats[0].out_cat | cats[1].out_cat) & cats[narg].
+			 out_cat);
+    if (cats[0].digits < cats[1].digits)
+	cats[0].digits = cats[1].digits;
+    else
+	cats[1].digits = cats[0].digits;
+    cats[narg].digits = cats[0].digits;
+    if (narg > 2)
+	cats[2].out_cat =
+	    (unsigned short)((cats[2].out_cat | TdiCAT_BU) & TdiCAT_SIGNED);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: MULTIPLY
 */
-int Tdi2Multiply(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Multiply(int narg, struct descriptor_xd uni[1],
+		 struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+		 int (**routine_ptr) (), int o1, int o2)
 {
 
-	multiply(&uni[0], &uni[1]);
-	cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
-	return 1;
+    multiply(&uni[0], &uni[1]);
+    cats[0].out_cat = cats[1].out_cat = cats[2].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes for most 1-argument function that should not have units.
 */
-int Tdi2None(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2None(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	if (uni[0].pointer) {
-		MdsFree1Dx(&uni[0],NULL);
-		uni[0] = BAD;
-	}
-	return 1;
+    if (uni[0].pointer) {
+	MdsFree1Dx(&uni[0], NULL);
+	uni[0] = BAD;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes with logical result: NOT LOGICAL
 */
-int Tdi2Not(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Not(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	if (uni[0].pointer) {
-		MdsFree1Dx(&uni[0],NULL);
-		uni[0] = BAD;
-	}
-	if (cats[0].in_cat != cats[0].out_cat) {
-		cats[0].out_dtype = DTYPE_BU;
-		cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-	}
-	return 1;
+    if (uni[0].pointer) {
+	MdsFree1Dx(&uni[0], NULL);
+	uni[0] = BAD;
+    }
+    if (cats[0].in_cat != cats[0].out_cat) {
+	cats[0].out_dtype = DTYPE_BU;
+	cats[0].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode without H-complex: COS, EXP, LOG, SIN, SQRT.
 	We choose to convert to G-complex.
 */
-int Tdi2NoHc(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2NoHc(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	if (uni[0].pointer) {
-		MdsFree1Dx(&uni[0],NULL);
-		uni[0] = BAD;
-	}
-	if (cats[narg].out_cat == TdiREF_CAT[DTYPE_HC].cat) {
-		cats[narg].out_dtype = DTYPE_GC;
-		cats[narg].out_cat = TdiREF_CAT[DTYPE_GC].cat;
-	}
-	cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
-	return 1;
+    if (uni[0].pointer) {
+	MdsFree1Dx(&uni[0], NULL);
+	uni[0] = BAD;
+    }
+    if (cats[narg].out_cat == TdiREF_CAT[DTYPE_HC].cat) {
+	cats[narg].out_dtype = DTYPE_GC;
+	cats[narg].out_cat = TdiREF_CAT[DTYPE_GC].cat;
+    }
+    cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: PACK in1 matches in3 if any, in2 = logical.
 */
-int Tdi2Pack(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Pack(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	if (narg > 2 && uni[2].pointer) {
-		MdsFree1Dx(&uni[1],NULL);
-		uni[1] = uni[2];
-		uni[2] = EMPTY_XD;
-		either(&uni[0]);
-		cats[0].out_cat |= cats[2].out_cat;
-	}
-	cats[narg].out_cat = cats[0].out_cat;
-	cats[1].out_cat = (unsigned short)((cats[1].in_cat | TdiREF_CAT[DTYPE_BU].cat) & TdiREF_CAT[DTYPE_O].cat);
-	if (cats[1].out_cat != cats[1].in_cat) {
-		cats[1].out_dtype = DTYPE_BU;
-		cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
-	}
-	return 1;
+    if (narg > 2 && uni[2].pointer) {
+	MdsFree1Dx(&uni[1], NULL);
+	uni[1] = uni[2];
+	uni[2] = EMPTY_XD;
+	either(&uni[0]);
+	cats[0].out_cat |= cats[2].out_cat;
+    }
+    cats[narg].out_cat = cats[0].out_cat;
+    cats[1].out_cat =
+	(unsigned short)((cats[1].in_cat | TdiREF_CAT[DTYPE_BU].cat) &
+			 TdiREF_CAT[DTYPE_O].cat);
+    if (cats[1].out_cat != cats[1].in_cat) {
+	cats[1].out_dtype = DTYPE_BU;
+	cats[1].out_cat = TdiREF_CAT[DTYPE_BU].cat;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: POWER.
 */
-int Tdi2Power(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Power(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
 	/******************************************
 	Permit any^long, real^same, complex^same.
 	Integer exponents become long. Result=base.
 	******************************************/
-	if (uni[0].pointer || uni[1].pointer) {
-		MdsFree1Dx(&uni[0],NULL);
-		uni[0] = BAD;
+    if (uni[0].pointer || uni[1].pointer) {
+	MdsFree1Dx(&uni[0], NULL);
+	uni[0] = BAD;
+    }
+    if (cats[1].out_cat < TdiCAT_F) {
+	cats[1].out_dtype = DTYPE_L;
+	cats[1].out_cat = TdiREF_CAT[DTYPE_L].cat;
+    } else {
+	cats[0].out_cat |= cats[1].out_cat;
+	if (cats[0].out_cat == TdiREF_CAT[DTYPE_HC].cat) {
+	    cats[0].out_dtype = DTYPE_GC;
+	    cats[0].out_cat = TdiREF_CAT[DTYPE_GC].cat;
 	}
-	if (cats[1].out_cat < TdiCAT_F) {
-		cats[1].out_dtype = DTYPE_L;
-		cats[1].out_cat = TdiREF_CAT[DTYPE_L].cat;
-	}
-	else {
-		cats[0].out_cat |= cats[1].out_cat;
-		if (cats[0].out_cat == TdiREF_CAT[DTYPE_HC].cat) {
-			cats[0].out_dtype = DTYPE_GC;
-			cats[0].out_cat = TdiREF_CAT[DTYPE_GC].cat;
-		}
-		cats[1].out_cat = cats[0].out_cat;
-	}
-	cats[2].out_cat = cats[0].out_cat;
-	return 1;
+	cats[1].out_cat = cats[0].out_cat;
+    }
+    cats[2].out_cat = cats[0].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: DTYPE_RANGE, also used in I_TO_X and CULL/EXTEND.
 */
-int Tdi2Range(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Range(int narg, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	      int (**routine_ptr) (), int o1, int o2)
 {
 
-	if (narg > 2) either(&uni[1]);
-	either(uni);
-	cats[2].out_cat = cats[1].out_cat = cats[0].out_cat = cats[narg].out_cat;
-	if (cats[2].out_cat == TdiREF_CAT[DTYPE_T].cat) {
-		if (cats[0].digits < cats[1].digits) cats[0].digits = cats[1].digits;
-		if (cats[0].digits < cats[2].digits) cats[0].digits = cats[2].digits;
-		cats[narg].digits = cats[2].digits = cats[1].digits = cats[0].digits;
-	}
-	return 1;
+    if (narg > 2)
+	either(&uni[1]);
+    either(uni);
+    cats[2].out_cat = cats[1].out_cat = cats[0].out_cat = cats[narg].out_cat;
+    if (cats[2].out_cat == TdiREF_CAT[DTYPE_T].cat) {
+	if (cats[0].digits < cats[1].digits)
+	    cats[0].digits = cats[1].digits;
+	if (cats[0].digits < cats[2].digits)
+	    cats[0].digits = cats[2].digits;
+	cats[narg].digits = cats[2].digits = cats[1].digits = cats[0].digits;
+    }
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: FLOAT INT REAL.
 	This expects arguments (x,[kind])
 */
-int Tdi2Real(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Real(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
-int	status = 1;
+    int status = 1;
 
 	/**************************
 	Check for valid second arg.
 	Prevent its conversion.
 	**************************/
-	if (narg > 1) {
-	int	kind = -1;
-		status = TdiGetLong(dat[1].pointer, &kind);
-		if (kind < TdiCAT_MAX) cats[0].out_cat = 
-                        (unsigned short)((TdiREF_CAT[cats[0].out_dtype = (unsigned char)kind].cat
-			| TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
-		cats[1].out_dtype = cats[1].in_dtype;
-		cats[1].out_cat = cats[1].in_cat;
-		cats[1].digits = dat[1].pointer->length;
-	}
-	return status;
+    if (narg > 1) {
+	int kind = -1;
+	status = TdiGetLong(dat[1].pointer, &kind);
+	if (kind < TdiCAT_MAX)
+	    cats[0].out_cat =
+		(unsigned
+		 short)((TdiREF_CAT[cats[0].out_dtype = (unsigned char)kind].
+			 cat | TdiREF_CAT[o1].cat) & TdiREF_CAT[o2].cat);
+	cats[1].out_dtype = cats[1].in_dtype;
+	cats[1].out_cat = cats[1].in_cat;
+	cats[1].digits = dat[1].pointer->length;
+    }
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: REPEAT text duplication.
 */
-int Tdi2Repeat(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Repeat(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
-unsigned int	ncopies, status;
+    unsigned int ncopies, status;
 
-	status = TdiGetLong(dat[1].pointer, &ncopies);
-	if (status & 1) {
-		if ((ncopies *= cats[0].digits) < 65535) cats[narg].digits = (unsigned short)ncopies;
-		else status = TdiTOO_BIG;
-	}
-	cats[1].out_cat = cats[1].in_cat;
-	return status;
+    status = TdiGetLong(dat[1].pointer, &ncopies);
+    if (status & 1) {
+	if ((ncopies *= cats[0].digits) < 65535)
+	    cats[narg].digits = (unsigned short)ncopies;
+	else
+	    status = TdiTOO_BIG;
+    }
+    cats[1].out_cat = cats[1].in_cat;
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes, output = first:
 		SHFT SHIFT_LEFT SHIFT_RIGHT.
 */
-int Tdi2Shft(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Shft(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	cats[1].out_dtype = cats[0].out_dtype;
-	cats[1].out_cat = cats[0].out_cat;
-	cats[narg].out_dtype = cats[0].out_dtype;
-	cats[narg].out_cat = cats[0].out_cat;
-	return 1;
+    cats[1].out_dtype = cats[0].out_dtype;
+    cats[1].out_cat = cats[0].out_cat;
+    cats[narg].out_dtype = cats[0].out_dtype;
+    cats[narg].out_cat = cats[0].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: SIGN NEAREST.
 */
-int Tdi2Sign(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Sign(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
 
-	cats[narg].out_cat = cats[0].out_cat;
-	return 1;
+    cats[narg].out_cat = cats[0].out_cat;
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes: ABSSQ SQUARE.
 */
-int Tdi2Square(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Square(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
-struct descriptor_xd tmp = EMPTY_XD;
-int	status;
+    struct descriptor_xd tmp = EMPTY_XD;
+    int status;
 
-	status = MdsCopyDxXd(uni[0].pointer, &tmp);
-	multiply(&uni[0], &tmp);
-	MdsFree1Dx(&tmp,NULL);
-	return status;
+    status = MdsCopyDxXd(uni[0].pointer, &tmp);
+    multiply(&uni[0], &tmp);
+    MdsFree1Dx(&tmp, NULL);
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: STRING text length specifier.
 */
-int Tdi2String(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2String(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
-unsigned int	length, status;
+    unsigned int length, status;
 
-	cats[1].out_dtype = cats[1].in_dtype;
-	cats[1].out_cat = cats[1].in_cat;
-	cats[1].digits = dat[1].length;
-	status = TdiGetLong(dat[1].pointer, &length);
-	if (status & 1) {
-		if (length > 65535) status = TdiTOO_BIG;
-		else if (length > 0) cats[0].digits = cats[narg].digits = (unsigned short)length;
-	}
-	return status;
+    cats[1].out_dtype = cats[1].in_dtype;
+    cats[1].out_cat = cats[1].in_cat;
+    cats[1].digits = dat[1].length;
+    status = TdiGetLong(dat[1].pointer, &length);
+    if (status & 1) {
+	if (length > 65535)
+	    status = TdiTOO_BIG;
+	else if (length > 0)
+	    cats[0].digits = cats[narg].digits = (unsigned short)length;
+    }
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcode: TEXT text length specifier.
 */
-int Tdi2Text(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Text(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1,
+	     int o2)
 {
-unsigned int	length, status;
+    unsigned int length, status;
 
-	cats[1].out_dtype = cats[1].in_dtype;
-	cats[1].out_cat = cats[1].in_cat;
-	cats[1].digits = dat[1].length;
-	status = TdiGetLong(dat[1].pointer, &length);
-	if (status & 1) {
-		if (length > 65535) status = TdiTOO_BIG;
-		else if (length > 0) cats[0].digits = cats[narg].digits = (unsigned short)length;
-	}
-	return status;
+    cats[1].out_dtype = cats[1].in_dtype;
+    cats[1].out_cat = cats[1].in_cat;
+    cats[1].digits = dat[1].length;
+    status = TdiGetLong(dat[1].pointer, &length);
+    if (status & 1) {
+	if (length > 65535)
+	    status = TdiTOO_BIG;
+	else if (length > 0)
+	    cats[0].digits = cats[narg].digits = (unsigned short)length;
+    }
+    return status;
 }
+
 /*---------------------------------------------------
 	Fix categories for opcodes with text, text, logical:
 		integer = INDEX(t,t,[b]), SCAN(t,t,[b]), VERIFY(t,t,[b]).
 */
-int Tdi2Ttb(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Ttb(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1],
+	    struct TdiCatStruct cats[1], int (**routine_ptr) (), int o1, int o2)
 {
 
-	either(uni);
-	if (narg > 2) cats[2].out_cat = (unsigned short)((cats[2].out_cat | TdiCAT_BU) & TdiCAT_SIGNED);
-	return 1;
+    either(uni);
+    if (narg > 2)
+	cats[2].out_cat =
+	    (unsigned short)((cats[2].out_cat | TdiCAT_BU) & TdiCAT_SIGNED);
+    return 1;
 }
+
 /*---------------------------------------------------
 	Fix units for VECTOR, they must match or be missing.
 */
-int Tdi2Vector(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1], struct TdiCatStruct cats[1], int (**routine_ptr)(), int o1, int o2)
+int Tdi2Vector(int narg, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
+	       int (**routine_ptr) (), int o1, int o2)
 {
-int     j;
+    int j;
 
-        for (j = narg; --j > 0;) {
-                if (uni[0].pointer == 0) {
-                        uni[0] = uni[j];
-                        uni[j] = EMPTY_XD;
-                }
-                else if (uni[j].pointer) {
-                        if (StrCompare(uni[0].pointer, uni[j].pointer)) {
-                                MdsFree1Dx(&uni[0],NULL);
-                                uni[0] = BAD;
-                                break;
-                        }
-                }
-        }
-        return 1;
+    for (j = narg; --j > 0;) {
+	if (uni[0].pointer == 0) {
+	    uni[0] = uni[j];
+	    uni[j] = EMPTY_XD;
+	} else if (uni[j].pointer) {
+	    if (StrCompare(uni[0].pointer, uni[j].pointer)) {
+		MdsFree1Dx(&uni[0], NULL);
+		uni[0] = BAD;
+		break;
+	    }
+	}
+    }
+    return 1;
 }

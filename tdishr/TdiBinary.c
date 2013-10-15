@@ -45,54 +45,52 @@
 #include <tdimessages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
-int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr, 
-                unsigned int *out_count)
+int TdiBinary(struct descriptor *in1_ptr, struct descriptor *in2_ptr,
+	      struct descriptor *out_ptr, unsigned int *out_count)
 {
-  struct descriptor_a *a;
-  switch (out_ptr->class)
-  {
-   case CLASS_S:
-   case CLASS_D:
-    *out_count = 1;
-    break;
-   case CLASS_A:
-    a = (struct descriptor_a *) out_ptr;
-    if ((*out_count = (a->arsize / out_ptr->length)) <= 0)
-      return 1;
-    break;
-   default:
-    return TdiINVCLADSC;
-  }
+    struct descriptor_a *a;
+    switch (out_ptr->class) {
+    case CLASS_S:
+    case CLASS_D:
+	*out_count = 1;
+	break;
+    case CLASS_A:
+	a = (struct descriptor_a *)out_ptr;
+	if ((*out_count = (a->arsize / out_ptr->length)) <= 0)
+	    return 1;
+	break;
+    default:
+	return TdiINVCLADSC;
+    }
 
-  switch (in1_ptr->class)
-  {
-   case CLASS_S:
-   case CLASS_D:
-    break;
-   case CLASS_A:
-    a = (struct descriptor_a *) in1_ptr;
-    if (a->arsize / in1_ptr->length < *out_count)
-      return TdiINV_SIZE;
-    break;
-   default:
-    return TdiINVCLADSC;
-  }
+    switch (in1_ptr->class) {
+    case CLASS_S:
+    case CLASS_D:
+	break;
+    case CLASS_A:
+	a = (struct descriptor_a *)in1_ptr;
+	if (a->arsize / in1_ptr->length < *out_count)
+	    return TdiINV_SIZE;
+	break;
+    default:
+	return TdiINVCLADSC;
+    }
 
-  switch (in2_ptr->class)
-  {
-   case CLASS_S:
-   case CLASS_D:
-    break;
-   case CLASS_A:
-    a = (struct descriptor_a *) in2_ptr;
-    if (a->arsize / in2_ptr->length < *out_count)
-      return TdiINV_SIZE;
-    break;
-   default:
-    return TdiINVCLADSC;
-  }
+    switch (in2_ptr->class) {
+    case CLASS_S:
+    case CLASS_D:
+	break;
+    case CLASS_A:
+	a = (struct descriptor_a *)in2_ptr;
+	if (a->arsize / in2_ptr->length < *out_count)
+	    return TdiINV_SIZE;
+	break;
+    default:
+	return TdiINVCLADSC;
+    }
 
-  return 1;
+    return 1;
 }

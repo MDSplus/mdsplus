@@ -10,4 +10,3 @@
 #define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) const unsigned short Opc##name = __LINE__ - 25;
 #include "opcbuiltins.h"
 #undef OPC
-

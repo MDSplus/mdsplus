@@ -26,25 +26,26 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
-
 
 #include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <tdimessages.h>
 
-
-
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();
 extern void DoubleToWideInt();
 STATIC_CONSTANT int roprand = 0x8000;
-typedef struct { int longword[2]; } quadword;
-typedef struct { int longword[4]; } octaword;
+typedef struct {
+    int longword[2];
+} quadword;
+typedef struct {
+    int longword[4];
+} octaword;
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -178,37 +179,42 @@ typedef struct { int longword[4]; } octaword;
   break;\
 }
 
-int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
+int Tdi3Divide(struct descriptor *in1, struct descriptor *in2,
+	       struct descriptor *out)
 {
-  SetupArgs
-  switch (in1->dtype)
-  {
-    case DTYPE_B:   Operate(char)
-    case DTYPE_BU:  Operate(unsigned char)
-    case DTYPE_W:   Operate(short) 
-    case DTYPE_WU:  Operate(unsigned short) 
-    case DTYPE_L:   Operate(int)
-    case DTYPE_LU:  Operate(unsigned int) 
+    SetupArgs switch (in1->dtype) {
+    case DTYPE_B:
+	Operate(char)
+	case DTYPE_BU:Operate(unsigned char)
+	case DTYPE_W:Operate(short)
+	case DTYPE_WU:Operate(unsigned short)
+	case DTYPE_L:Operate(int)
+	case DTYPE_LU:Operate(unsigned int)
 #ifndef HAVE_VXWORKS_H
-    case DTYPE_Q:   Operate(_int64);
-    case DTYPE_QU:  Operate(_int64u);
-    case DTYPE_O:   OperateWide(octaword,4,1);
-    case DTYPE_OU:  OperateWide(octaword,4,0);
+	case DTYPE_Q:Operate(_int64);
+    case DTYPE_QU:
+	Operate(_int64u);
+    case DTYPE_O:
+	OperateWide(octaword, 4, 1);
+    case DTYPE_OU:
+	OperateWide(octaword, 4, 0);
 #endif
-    case DTYPE_F:   OperateF(float,DTYPE_F,DTYPE_NATIVE_FLOAT) 
-    case DTYPE_FS:  OperateF(float,DTYPE_FS,DTYPE_NATIVE_FLOAT)
-    case DTYPE_G:   OperateF(double,DTYPE_G,DTYPE_NATIVE_DOUBLE) 
-    case DTYPE_D:   OperateF(double,DTYPE_D,DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FT:  OperateF(double,DTYPE_FT,DTYPE_NATIVE_DOUBLE)
-    case DTYPE_FC:  OperateC(float,DTYPE_F)
-    case DTYPE_FSC: OperateC(float,DTYPE_FS)
-    case DTYPE_GC:  OperateC(double,DTYPE_G)
-    case DTYPE_DC:  OperateC(double,DTYPE_D)
-    case DTYPE_FTC: OperateC(double,DTYPE_FT)
-    default: return TdiINVDTYDSC;
-  }
-  return 1;
+    case DTYPE_F:
+	OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+	case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+	case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+	case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+	case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+	case DTYPE_FC:OperateC(float, DTYPE_F)
+	case DTYPE_FSC:OperateC(float, DTYPE_FS)
+	case DTYPE_GC:OperateC(double, DTYPE_G)
+	case DTYPE_DC:OperateC(double, DTYPE_D)
+	case DTYPE_FTC:OperateC(double, DTYPE_FT)
+	default:return TdiINVDTYDSC;
+    }
+    return 1;
 }
+
 /*  CMS REPLACEMENT HISTORY, Element Tdi3Divide.C */
 /*  *21   15-AUG-1996 15:48:38 TWF "Fix complex divide" */
 /*  *20   15-AUG-1996 15:32:03 TWF "Fix complex divide" */

@@ -18,53 +18,58 @@
 #include "tdirefcat.h"
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
-int				TdiGetShape(
-int				narg,
-struct descriptor_xd	dat[1],
-unsigned short			length,
-unsigned char			dtype,
-int				*cmode_ptr,
-struct descriptor_xd	*out_ptr)
+int TdiGetShape(int narg,
+		struct descriptor_xd dat[1],
+		unsigned short length,
+		unsigned char dtype,
+		int *cmode_ptr, struct descriptor_xd *out_ptr)
 {
-unsigned short ulen;
-int	cmode = -1, status = 1, count = 0x7fffffff, j, len, nelem;
-struct descriptor_a		*aptr;
+    unsigned short ulen;
+    int cmode = -1, status = 1, count = 0x7fffffff, j, len, nelem;
+    struct descriptor_a *aptr;
 
 	/*******************************
 	Find the smallest array, if any.
 	*******************************/
-	for (j = 0; j < narg; j++) {
-		aptr = (struct descriptor_a *)dat[j].pointer;
-		if (aptr) switch (aptr->class) {
-		case CLASS_S :
-		case CLASS_D :
-			break;
-		case CLASS_A :
-			nelem = ((int)aptr->length >0) ? (int)aptr->arsize / (int)aptr->length : 0;
-			if (nelem < count) {
-				count = nelem;
-				cmode = j;
-			}
-			break;
-		default :
-			status = TdiINVCLADSC;
-			break;
+    for (j = 0; j < narg; j++) {
+	aptr = (struct descriptor_a *)dat[j].pointer;
+	if (aptr)
+	    switch (aptr->class) {
+	    case CLASS_S:
+	    case CLASS_D:
+		break;
+	    case CLASS_A:
+		nelem =
+		    ((int)aptr->length >
+		     0) ? (int)aptr->arsize / (int)aptr->length : 0;
+		if (nelem < count) {
+		    count = nelem;
+		    cmode = j;
 		}
-	}
+		break;
+	    default:
+		status = TdiINVCLADSC;
+		break;
+	    }
+    }
 
 	/*****************************
 	Get array or scalar as needed.
 	*****************************/
-	if (status & 1) {
-		if ((len = length) == 0 && dtype < TdiCAT_MAX) len = TdiREF_CAT[dtype].length;
-                ulen = (unsigned short)len;
-		if (cmode < 0) 
-	          status = MdsGet1DxS(&ulen, &dtype, out_ptr);
-		else status = MdsGet1DxA((struct descriptor_a *)dat[cmode].pointer, &ulen, &dtype, 
-                                             out_ptr);
-	}
-	*cmode_ptr = cmode;
-	return status;
+    if (status & 1) {
+	if ((len = length) == 0 && dtype < TdiCAT_MAX)
+	    len = TdiREF_CAT[dtype].length;
+	ulen = (unsigned short)len;
+	if (cmode < 0)
+	    status = MdsGet1DxS(&ulen, &dtype, out_ptr);
+	else
+	    status =
+		MdsGet1DxA((struct descriptor_a *)dat[cmode].pointer, &ulen,
+			   &dtype, out_ptr);
+    }
+    *cmode_ptr = cmode;
+    return status;
 }

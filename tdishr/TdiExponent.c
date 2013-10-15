@@ -10,7 +10,8 @@
 #include <tdimessages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int IsRoprand();
 
@@ -44,67 +45,106 @@ extern int IsRoprand();
 	EXPONENT(1.0) is 1, EXPONENT(4.1) is 3, EXPONENT(0.0) is 0, EXPONENT(ROPRAND) is 0.
 		integer = EXPONENT(real)
 */
-int			Tdi3Exponent(
-struct descriptor	*in_ptr,
-struct descriptor	*out_ptr)
+int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-int	n, status = 1, step = in_ptr->length;
-char	*pi = in_ptr->pointer;
-int	*po = (int *)out_ptr->pointer;
+    int n, status = 1, step = in_ptr->length;
+    char *pi = in_ptr->pointer;
+    int *po = (int *)out_ptr->pointer;
 
-	N_ELEMENTS(out_ptr, n);
-	if (status & 1) switch (in_ptr->dtype) {
-	case DTYPE_FC :
-	case DTYPE_FSC :
-	case DTYPE_DC :
-	case DTYPE_GC :
-	case DTYPE_FTC : status = TdiNO_CMPLX; break;
-	case DTYPE_F : compute_exponent(F)
-	case DTYPE_FS : compute_exponent(FS)
-	case DTYPE_D : compute_exponent(D)
-	case DTYPE_G : compute_exponent(G)
-        case DTYPE_FT : compute_exponent(FT)
-	default : status = TdiINVDTYDSC; break;
+    N_ELEMENTS(out_ptr, n);
+    if (status & 1)
+	switch (in_ptr->dtype) {
+	case DTYPE_FC:
+	case DTYPE_FSC:
+	case DTYPE_DC:
+	case DTYPE_GC:
+	case DTYPE_FTC:
+	    status = TdiNO_CMPLX;
+	    break;
+	case DTYPE_F:
+	    compute_exponent(F)
+	case DTYPE_FS:
+	    compute_exponent(FS)
+	case DTYPE_D:
+	    compute_exponent(D)
+	case DTYPE_G:
+	    compute_exponent(G)
+	case DTYPE_FT:
+	    compute_exponent(FT)
+	default:
+	    status = TdiINVDTYDSC;
+	    break;
 	}
-	return status;
+    return status;
 }
+
 /*-------------------------------------------------------------------
 	Find the valid values.
 		FINITE(expression)
 	VAX dependent.
 */
-int			Tdi3Finite(
-struct descriptor	*in_ptr,
-struct descriptor	*out_ptr)
+int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-char	*pin = in_ptr->pointer;
-char	*pout = out_ptr->pointer;
-int	step = in_ptr->length;
-int	n, status = 1;
+    char *pin = in_ptr->pointer;
+    char *pout = out_ptr->pointer;
+    int step = in_ptr->length;
+    int n, status = 1;
 
-	N_ELEMENTS(out_ptr, n);
-	switch (in_ptr->dtype) {
-	case DTYPE_F  : for (; --n>=0; pin += step) *pout++ = (char)!IsRoprand(DTYPE_F,pin);  break;
-	case DTYPE_FS : for (; --n>=0; pin += step) *pout++ = (char)!IsRoprand(DTYPE_FS,pin); break;
-	case DTYPE_D  : for (; --n>=0; pin += step) *pout++ = (char)!IsRoprand(DTYPE_D,pin);  break;
-	case DTYPE_G  : for (; --n>=0; pin += step) *pout++ = (char)!IsRoprand(DTYPE_G,pin);  break;
-	case DTYPE_FT : for (; --n>=0; pin += step) *pout++ = (char)!IsRoprand(DTYPE_FT,pin); break;
-	case DTYPE_FC  : for (; --n>=0; pin += step) *pout++ = (char)!(IsRoprand(DTYPE_F,pin) ||
-                                                                            IsRoprand(DTYPE_F,pin+step/2)); break;
-	case DTYPE_FSC : for (; --n>=0; pin += step) *pout++ = (char)!(IsRoprand(DTYPE_FS,pin) ||
-                                                                            IsRoprand(DTYPE_FS,pin+step/2)); break;
-	case DTYPE_DC  : for (; --n>=0; pin += step) *pout++ = (char)!(IsRoprand(DTYPE_D,pin) ||
-                                                                            IsRoprand(DTYPE_D,pin+step/2)); break;
-	case DTYPE_GC  : for (; --n>=0; pin += step) *pout++ = (char)!(IsRoprand(DTYPE_G,pin) ||
-                                                                            IsRoprand(DTYPE_G,pin+step/2)); break;
-	case DTYPE_FTC : for (; --n>=0; pin += step) *pout++ = (char)!(IsRoprand(DTYPE_FT,pin) ||
-                                                                            IsRoprand(DTYPE_FT,pin+step/2)); break;
-	default :
-		for (; --n>=0;) *pout++ = (char)1;
-		break;
-	}
-	return status;
+    N_ELEMENTS(out_ptr, n);
+    switch (in_ptr->dtype) {
+    case DTYPE_F:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!IsRoprand(DTYPE_F, pin);
+	break;
+    case DTYPE_FS:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!IsRoprand(DTYPE_FS, pin);
+	break;
+    case DTYPE_D:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!IsRoprand(DTYPE_D, pin);
+	break;
+    case DTYPE_G:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!IsRoprand(DTYPE_G, pin);
+	break;
+    case DTYPE_FT:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!IsRoprand(DTYPE_FT, pin);
+	break;
+    case DTYPE_FC:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!(IsRoprand(DTYPE_F, pin) ||
+			      IsRoprand(DTYPE_F, pin + step / 2));
+	break;
+    case DTYPE_FSC:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!(IsRoprand(DTYPE_FS, pin) ||
+			      IsRoprand(DTYPE_FS, pin + step / 2));
+	break;
+    case DTYPE_DC:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!(IsRoprand(DTYPE_D, pin) ||
+			      IsRoprand(DTYPE_D, pin + step / 2));
+	break;
+    case DTYPE_GC:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!(IsRoprand(DTYPE_G, pin) ||
+			      IsRoprand(DTYPE_G, pin + step / 2));
+	break;
+    case DTYPE_FTC:
+	for (; --n >= 0; pin += step)
+	    *pout++ = (char)!(IsRoprand(DTYPE_FT, pin) ||
+			      IsRoprand(DTYPE_FT, pin + step / 2));
+	break;
+    default:
+	for (; --n >= 0;)
+	    *pout++ = (char)1;
+	break;
+    }
+    return status;
 }
+
 /*-------------------------------------------------------------------
 	Fix any reserved operands (overflows, errors) in the data.
 	If the expression and replacement is complex both elements are replaced.
@@ -133,35 +173,40 @@ int	n, status = 1;
 
 #define do_fix(type,dtype) case DTYPE##dtype##C : do_complex(type,DTYPE##dtype)  case DTYPE##dtype : do_simple(type,DTYPE##dtype)
 
-int			Tdi3FixRoprand(
-struct descriptor	*old_ptr,
-struct descriptor	*rep_ptr,
-struct descriptor	*out_ptr)
+int Tdi3FixRoprand(struct descriptor *old_ptr,
+		   struct descriptor *rep_ptr, struct descriptor *out_ptr)
 {
-char	*inp = old_ptr->pointer;
-char	*rep = rep_ptr->pointer;
-char	*outp = out_ptr->pointer;
-int	inp_inc = (old_ptr->class == CLASS_A) ? old_ptr->length : 0;
-int	rep_inc = (rep_ptr->class == CLASS_A) ? rep_ptr->length : 0;
-int	out_inc = (out_ptr->class == CLASS_A) ? out_ptr->length : 0;
-int	n, cmplx, status = 1;
+    char *inp = old_ptr->pointer;
+    char *rep = rep_ptr->pointer;
+    char *outp = out_ptr->pointer;
+    int inp_inc = (old_ptr->class == CLASS_A) ? old_ptr->length : 0;
+    int rep_inc = (rep_ptr->class == CLASS_A) ? rep_ptr->length : 0;
+    int out_inc = (out_ptr->class == CLASS_A) ? out_ptr->length : 0;
+    int n, cmplx, status = 1;
 
-	N_ELEMENTS(out_ptr, n);
-	switch (rep_ptr->dtype) {
-	case DTYPE_F : case DTYPE_FS : case DTYPE_D : case DTYPE_G : case DTYPE_FT : cmplx = 0; break;
-	default : cmplx = 1; break;
+    N_ELEMENTS(out_ptr, n);
+    switch (rep_ptr->dtype) {
+    case DTYPE_F:
+    case DTYPE_FS:
+    case DTYPE_D:
+    case DTYPE_G:
+    case DTYPE_FT:
+	cmplx = 0;
+	break;
+    default:
+	cmplx = 1;
+	break;
+    }
+    if (status & 1)
+	switch (out_ptr->dtype) {
+	    do_fix(float, _F)
+		do_fix(float, _FS)
+		do_fix(double, _D) do_fix(double, _G) do_fix(double, _FT)
+	    default:break;
 	}
-	if (status & 1) 
-          switch (out_ptr->dtype) {
-            do_fix(float,_F)
-            do_fix(float,_FS)
-            do_fix(double,_D)
-            do_fix(double,_G)
-            do_fix(double,_FT)
-	    default :break;
-	  }
-	return status;
+    return status;
 }
+
 #define do_fraction(dtype,copydouble) \
   case DTYPE_##dtype##C : n += n; inc >>= 1;\
   case DTYPE_##dtype :\
@@ -178,24 +223,30 @@ int	n, cmplx, status = 1;
 	FRACTION(3.0) is .75, FRACTION(0.0) is 0.0, FRACTION(ROPRAND) is ROPRAND.
 		real = FRACTION(real)
 */
-int			Tdi3Fraction(
-struct descriptor	*in_ptr,
-struct descriptor	*out_ptr)
+int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-char	*inp = in_ptr->pointer;
-char	*outp = out_ptr->pointer;
-int	inc = out_ptr->length, n, status = 1;
+    char *inp = in_ptr->pointer;
+    char *outp = out_ptr->pointer;
+    int inc = out_ptr->length, n, status = 1;
 
-	N_ELEMENTS(out_ptr, n);
-	if (status & 1) switch (out_ptr->dtype) {
-        do_fraction(F,;)
-        do_fraction(FS,;)
-        do_fraction(G,((int *)outp)[1] = ((int *)inp)[1];)
-        do_fraction(D,((int *)outp)[1] = ((int *)inp)[1];)
-        do_fraction(FT,((int *)outp)[1] = ((int *)inp)[1];)
-	default : status = TdiINVDTYDSC; break;
+    N_ELEMENTS(out_ptr, n);
+    if (status & 1)
+	switch (out_ptr->dtype) {
+	    do_fraction(F,;
+		)
+		do_fraction(FS,;
+		)
+		do_fraction(G, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_fraction(D, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_fraction(FT, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+	default:
+	    status = TdiINVDTYDSC;
+	    break;
 	}
-	return status;
+    return status;
 }
 
 #define do_rrspacing(dtype,copydouble) \
@@ -214,26 +265,33 @@ int	inc = out_ptr->length, n, status = 1;
 	RRSPACING(3.0) is .75*2^24.
 		real = RRSPACING(real)
 */
-int			Tdi3RrSpacing(
-struct descriptor	*in_ptr,
-struct descriptor	*out_ptr)
+int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-int	n, status = 1;
-int	inc = out_ptr->length;
-char	*inp = in_ptr->pointer;
-char	*outp = out_ptr->pointer;
+    int n, status = 1;
+    int inc = out_ptr->length;
+    char *inp = in_ptr->pointer;
+    char *outp = out_ptr->pointer;
 
-	N_ELEMENTS(out_ptr, n);
-	if (status & 1) switch (in_ptr->dtype) {
-        do_rrspacing(F,;)
-        do_rrspacing(FS,;)
-        do_rrspacing(G,((int *)outp)[1] = ((int *)inp)[1];)
-        do_rrspacing(D,((int *)outp)[1] = ((int *)inp)[1];)
-        do_rrspacing(FT,((int *)outp)[1] = ((int *)inp)[1];)
-	default : status = TdiINVDTYDSC; break;
+    N_ELEMENTS(out_ptr, n);
+    if (status & 1)
+	switch (in_ptr->dtype) {
+	    do_rrspacing(F,;
+		)
+		do_rrspacing(FS,;
+		)
+		do_rrspacing(G, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_rrspacing(D, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_rrspacing(FT, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+	default:
+	    status = TdiINVDTYDSC;
+	    break;
 	}
-	return status;
+    return status;
 }
+
 #define do_scale(dtype,copydouble) \
   case DTYPE_##dtype##C : n += n; inp_inc >>= 1; outp_inc >>= 1; inp2_inc >>= 1;\
   case DTYPE_##dtype :\
@@ -250,32 +308,41 @@ char	*outp = out_ptr->pointer;
 		real = SCALE(real, integer)
 	NEED overflow detection, complex.
 */
-int			Tdi3Scale(
-struct descriptor	*in1_ptr,
-struct descriptor	*in2_ptr,
-struct descriptor	*out_ptr)
+int Tdi3Scale(struct descriptor *in1_ptr,
+	      struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-int	n, status = 1;
-int	inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
-int	inp2_inc = (in2_ptr->class == CLASS_A) ? in2_ptr->length : 0;
-int	outp_inc = out_ptr->length;
-char	*inp = in1_ptr->pointer;
-char	*inp2 = in2_ptr->pointer;
-char	*outp = out_ptr->pointer;
+    int n, status = 1;
+    int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
+    int inp2_inc = (in2_ptr->class == CLASS_A) ? in2_ptr->length : 0;
+    int outp_inc = out_ptr->length;
+    char *inp = in1_ptr->pointer;
+    char *inp2 = in2_ptr->pointer;
+    char *outp = out_ptr->pointer;
 
-	N_ELEMENTS(out_ptr, n);
-	if (in1_ptr->class != CLASS_A) inp_inc = 0;
-	if (in2_ptr->class != CLASS_A) inp2_inc = 0;
-	if (status & 1) switch (in1_ptr->dtype) {
-        do_scale(F,;)
-        do_scale(FS,;)
-        do_scale(G,((int *)outp)[1] = ((int *)inp)[1];)
-        do_scale(D,((int *)outp)[1] = ((int *)inp)[1];)
-        do_scale(FT,((int *)outp)[1] = ((int *)inp)[1];)
-	default : status = TdiINVDTYDSC; break;
+    N_ELEMENTS(out_ptr, n);
+    if (in1_ptr->class != CLASS_A)
+	inp_inc = 0;
+    if (in2_ptr->class != CLASS_A)
+	inp2_inc = 0;
+    if (status & 1)
+	switch (in1_ptr->dtype) {
+	    do_scale(F,;
+		)
+		do_scale(FS,;
+		)
+		do_scale(G, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_scale(D, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_scale(FT, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+	default:
+	    status = TdiINVDTYDSC;
+	    break;
 	}
-	return status;
+    return status;
 }
+
 #define do_setexponent(dtype,copydouble) \
   case DTYPE_##dtype##C : n += n; inp_inc >>= 1; outp_inc >>= 1; inp2_inc >>=1;\
   case DTYPE_##dtype :\
@@ -292,30 +359,37 @@ char	*outp = out_ptr->pointer;
 		real = SET_EXPONENT(real, integer)
 	NEED overflow detection.
 */
-int			Tdi3SetExponent(
-struct descriptor	*in1_ptr,
-struct descriptor	*in2_ptr,
-struct descriptor	*out_ptr)
+int Tdi3SetExponent(struct descriptor *in1_ptr,
+		    struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
-int	n, status = 1;
-int	inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
-int	inp2_inc = (in2_ptr->class == CLASS_A) ? in2_ptr->length : 0;
-int	outp_inc = out_ptr->length;
-char	*inp = in1_ptr->pointer;
-char	*inp2 = in2_ptr->pointer;
-char	*outp = out_ptr->pointer;
+    int n, status = 1;
+    int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
+    int inp2_inc = (in2_ptr->class == CLASS_A) ? in2_ptr->length : 0;
+    int outp_inc = out_ptr->length;
+    char *inp = in1_ptr->pointer;
+    char *inp2 = in2_ptr->pointer;
+    char *outp = out_ptr->pointer;
 
-	N_ELEMENTS(out_ptr, n);
-	if (status & 1) switch (in1_ptr->dtype) {
-        do_setexponent(F,;)
-        do_setexponent(FS,;)
-        do_setexponent(G,((int *)outp)[1] = ((int *)inp)[1];)
-        do_setexponent(D,((int *)outp)[1] = ((int *)inp)[1];)
-        do_setexponent(FT,((int *)outp)[1] = ((int *)inp)[1];)
-	default : status = TdiINVDTYDSC; break;
+    N_ELEMENTS(out_ptr, n);
+    if (status & 1)
+	switch (in1_ptr->dtype) {
+	    do_setexponent(F,;
+		)
+		do_setexponent(FS,;
+		)
+		do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+		do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];
+		)
+	default:
+	    status = TdiINVDTYDSC;
+	    break;
 	}
-	return status;
+    return status;
 }
+
 #define do_spacing(dtype,zerodouble) \
   case DTYPE_##dtype##C : n += n; inc >>= 1;\
   case DTYPE_##dtype :\
@@ -335,23 +409,29 @@ char	*outp = out_ptr->pointer;
 		real = SPACING(real)
 	NEED overflow detection.
 */
-int			Tdi3Spacing(
-struct descriptor	*in_ptr,
-struct descriptor	*out_ptr)
+int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
-int	n, test, status = 1;
-int	inc = out_ptr->length;
-char	*inp = in_ptr->pointer;
-char	*outp = out_ptr->pointer;
+    int n, test, status = 1;
+    int inc = out_ptr->length;
+    char *inp = in_ptr->pointer;
+    char *outp = out_ptr->pointer;
 
-	N_ELEMENTS(out_ptr, n);
-	if (status & 1) switch (in_ptr->dtype) {
-        do_spacing(F,;)
-        do_spacing(FS,;)
-        do_spacing(G,((int *)outp)[1] = 0;)
-        do_spacing(D,((int *)outp)[1] = 0;)
-        do_spacing(FT,((int *)outp)[1] = 0;)
-	default : status = TdiINVDTYDSC; break;
+    N_ELEMENTS(out_ptr, n);
+    if (status & 1)
+	switch (in_ptr->dtype) {
+	    do_spacing(F,;
+		)
+		do_spacing(FS,;
+		)
+		do_spacing(G, ((int *)outp)[1] = 0;
+		)
+		do_spacing(D, ((int *)outp)[1] = 0;
+		)
+		do_spacing(FT, ((int *)outp)[1] = 0;
+		)
+	default:
+	    status = TdiINVDTYDSC;
+	    break;
 	}
-	return status;
+    return status;
 }

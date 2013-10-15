@@ -10,13 +10,14 @@
 /*  CMS REPLACEMENT HISTORY, Element TDI$$MAKE_FUNCTION_TABLE.C */
 #include <STATICdef.h>
 #include <mdsdescrip.h>
-#define COM 
+#define COM
 
 #define OPC(name,builtin,f1,f2,f3,i1,i2,o1,o2,m1,m2,token) extern int Tdi1##f1(), Tdi2##f2(), Tdi3##f3();
 #include "opcbuiltins.h"
 #undef OPC
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev =
+    "@(#)$RCSfile$ $Revision$ $Date$";
 
 	/******************************
 	Shorthand for conversions:
@@ -35,7 +36,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include "tdirefzone.h"
 
 #include "tdiyacc.h"
-YYSTYPE YYLVAL = {0};
+YYSTYPE YYLVAL = { 0 };
 
 #define LEX_OK 0
 #define OK 0
@@ -52,7 +53,8 @@ const struct TdiFunctionStruct TdiRefFunction[] = {
 	   DTYPE_##i1,DTYPE_##i2,DTYPE_##o1,DTYPE_##o2,m1,m2,token},
 #include "opcbuiltins.h"
 #undef OPC
-{0}
+    {0}
 };
 
-const int TdiFUNCTION_MAX = sizeof(TdiRefFunction)/sizeof(struct TdiFunctionStruct) - 1;
+const int TdiFUNCTION_MAX =
+    sizeof(TdiRefFunction) / sizeof(struct TdiFunctionStruct) - 1;
