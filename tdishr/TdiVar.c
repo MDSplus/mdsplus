@@ -39,6 +39,7 @@
 #include "STATICdef.h"
 #include "tdithreadsafe.h"
 #include "tdirefstandard.h"
+#include "tdishrp.h"
 #include <libroutines.h>
 #include <strroutines.h>
 #include <stdio.h>
@@ -121,7 +122,7 @@ int TdiPutLogical(unsigned char data, struct descriptor_xd *out_ptr)
     STATIC_CONSTANT unsigned short len = (unsigned short)sizeof(unsigned char);
     STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_BU;
     if (out_ptr == 0)
-	return 0;
+        return 0;
     status = MdsGet1DxS(&len, &dtype, out_ptr);
     if (status & 1)
 	*(unsigned char *)out_ptr->pointer->pointer = data;
@@ -150,16 +151,16 @@ STATIC_ROUTINE int allocate(struct descriptor *key_ptr,
 	Must clear memory unless allocate is called only once for each node.
 	*******************************************************************/
     if (block_ptr->data_zone == 0) {
-	LibCreateVmZone(&block_ptr->head_zone);
-	LibCreateVmZone(&block_ptr->data_zone);
+        LibCreateVmZone(&block_ptr->head_zone);
+        LibCreateVmZone(&block_ptr->data_zone);
     }
     status = LibGetVm(&len, node_ptr_ptr, &block_ptr->head_zone);
     if (status & 1) {
-	node_type *node_ptr = *node_ptr_ptr;
-	node_ptr->xd = EMPTY_XD;
-	node_ptr->name_dsc = *key_ptr;
-	node_ptr->name_dsc.pointer = (char *)&node_ptr->name[0];
-	memcpy(node_ptr->name, key_ptr->pointer, key_ptr->length);
+        node_type *node_ptr = *node_ptr_ptr;
+        node_ptr->xd = EMPTY_XD;
+        node_ptr->name_dsc = *key_ptr;
+        node_ptr->name_dsc.pointer = (char *)&node_ptr->name[0];
+        memcpy(node_ptr->name, key_ptr->pointer, key_ptr->length);
     }
     return status;
 }
@@ -202,21 +203,27 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 			status =
 			    LibLookupTree(&private->head, &key_dsc, compare,
 					  &node_ptr);
-			if (status & 1)
-			    if (node_ptr->xd.class != 0)
+			if (status & 1) {
+			    if (node_ptr->xd.class != 0){
 				break;
-			    else
+			    }
+			    else {
 				status = TdiUNKNOWN_VAR;
+			    }
+			}
 		    }
 		    if (search & 2) {
 			status =
 			    LibLookupTree(&_public.head, &key_dsc, compare,
 					  &node_ptr);
-			if (status & 1)
-			    if (node_ptr->xd.class != 0)
+			if (status & 1) {
+			    if (node_ptr->xd.class != 0) {
 				block_ptr = &_public;
-			    else
+			    }
+			    else {
 				status = TdiUNKNOWN_VAR;
+			    }
+			}
 		    }
 		} else if (search & 1) ;
 		else if (search & 2)
@@ -374,11 +381,12 @@ STATIC_ROUTINE int wild(int (*doit) (),
 			     &user.block_ptr);
 	    if (status & 1)
 		status = StrUpcase(&user.match, &user.match);
-	    if (status & 1)
+	    if (status & 1) {
 		if (StrPosition(&user.match, &star, 0)
-		    || StrPosition(&user.match, &percent, 0))
+		    || StrPosition(&user.match, &percent, 0)) {
 		    status =
 			LibTraverseTree(&user.block_ptr->head, doit, &user);
+		}
 		else {
 		    status =
 			LibLookupTree(&user.block_ptr->head, &user.match,
@@ -388,6 +396,7 @@ STATIC_ROUTINE int wild(int (*doit) (),
 		    else if (status == LibKEYNOTFOU)
 			status = 1;
 		}
+	    }
 	}
     if (user.match.class == CLASS_D)
 	StrFree1Dx(&user.match);
