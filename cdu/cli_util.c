@@ -51,7 +51,7 @@ int   cli_error(		/* Display only				*/
         fprintf(stderr,"\n*ERR* %s\n",msg);
 
     dsc = cli_addr_cmdline_dsc();
-    if (p = dsc->dscA_pointer)
+    if ((p = dsc->dscA_pointer))
        {
         strtrim(p,0);
         fprintf(stderr,"cmdline = '%s'\n",p);

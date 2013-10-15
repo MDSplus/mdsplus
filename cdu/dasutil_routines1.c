@@ -1,10 +1,41 @@
 #include        <ctype.h>
 #include        <stdio.h>
 #include        <string.h>
+#include        <unistd.h>
 #include        "dasutil.h"
 #include <config.h>
 #ifdef HAVE_WINDOWS_H
 #define fileno _fileno
+#endif
+#include        "dasutil.h"
+#ifdef vms
+#include        <stdlib.h>
+#else
+#ifdef HAVE_MALLOC_H
+#include	<malloc.h>
+#else
+#include 	<stdlib.h>
+#endif
+#endif
+#include        <stdio.h>
+#include        <errno.h>
+#if defined(vms)
+#include        <lib$routines.h>
+#elif defined(_WIN32)
+#include <time.h>
+static clock_t cpu_start;
+static time_t time_start;
+#else
+#include        <sys/time.h>
+#include        <sys/resource.h>
+static struct rusage  base;
+static struct rusage  rnow;
+static struct timeval  startTime;
+static struct timeval  nowTime;
+#endif
+#ifdef _WIN32
+#include <io.h>
+#define isatty _isatty
 #endif
 
 /**********************************************************************
@@ -41,13 +72,6 @@
 #define LINEWIDTH    70		/*..width of display line		*/
 
 
-/*struct cmd_struct {int   cmdL_id;
-/*                  char  *cmdA_string;
-/*                 };					/*  */
-
-
-/*#define NOMSG   1		/* "flags" mask, for no errmsg		*/
-/*#define NOWILD 2		/* "flags" mask, ignores wildcards	*/
 
 
 
@@ -64,7 +88,7 @@ static int strncmp_nocase(
     register int   i;
 
     for ( ; n ; n--,s++,t++)
-        if (i = toupper(*s) - toupper(*t))  break;
+      if ((i = toupper(*s) - toupper(*t))!=0)  break;
     return(i);
    }
 
@@ -125,7 +149,7 @@ int cmd_lookup(
        }
     if (nowildcard)
         wc = 0;
-    else if (wc = strpbrk(cmd,"*%"))
+    else if ((wc = strpbrk(cmd,"*%"))!=0)
         wc = 0; /* this never worked right! ((cmd+k) > wc) ? 0 : wc;	*//* Wildcard char within cmd ?	*/
 
 		/*========================================================
@@ -243,23 +267,6 @@ int cmd_lookup(
         *s = nonblank(*s + k);	/* Bump "command-line" ptr	*/;
     return((cmdlist+isave)->cmdL_id);
    }
-#include        "dasutil.h"
-#include        <stdio.h>
-#include        <errno.h>
-#if defined(vms)
-#include        <lib$routines.h>
-#elif defined(_WIN32)
-#include <time.h>
-static clock_t cpu_start;
-static time_t time_start;
-#else
-#include        <sys/time.h>
-#include        <sys/resource.h>
-static struct rusage  base;
-static struct rusage  rnow;
-static struct timeval  startTime;
-static struct timeval  nowTime;
-#endif
 
 /*************************************************************************
 * init_timer.c
@@ -323,7 +330,7 @@ int   show_timer()
     emsec = (nowTime.tv_usec-startTime.tv_usec) / 10000;
     umsec = (rnow.ru_utime.tv_usec-base.ru_utime.tv_usec) / 10000;
     smsec = (rnow.ru_stime.tv_usec-base.ru_stime.tv_usec) / 10000;
-    fprintf(stderr,"elapsed=%d.%02d user=%d.%02d sys=%d.%02d sf=%d hf=%d\n",
+    fprintf(stderr,"elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
         nowTime.tv_sec-startTime.tv_sec,emsec,
         rnow.ru_utime.tv_sec-base.ru_utime.tv_sec,umsec,
         rnow.ru_stime.tv_sec-base.ru_stime.tv_sec,smsec,
@@ -331,8 +338,6 @@ int   show_timer()
 #endif
     return(0);
    }
-#include        <ctype.h>
-#include        "dasutil.h"
 
 /***********************************************************************
 * l2u.c
@@ -361,7 +366,7 @@ char  *l2u(
     out = s;
     in = t ? t : s;		/* Default is to use "s" as in and out	*/
 
-    for ( ; *out++=toupper(*in++) ; )
+    for ( ; (*out++=toupper(*in++))!=0 ; )
         ;
     return(s);
    }
@@ -402,7 +407,7 @@ char  *u2l(
     out = s;
     in = t ? t : s;		/* Default is to use "s" as in and out	*/
 
-    for ( ; *out++=tolower(*in++) ; )
+    for ( ; (*out++=tolower(*in++))!=0 ; )
         ;
     return(s);
    }
@@ -460,9 +465,6 @@ int   i2bcd(		/* bcd val, 4 bits per digit, max 8 digits	*/
     bcd = (ival%10) | (i2bcd(ival/10) << 4);
     return(bcd);
    }
-#include        <ctype.h>
-#include        <string.h>
-#include        "dasutil.h"
 
 /***********************************************************************
 * nonblank.c --
@@ -530,9 +532,6 @@ void  remove_commas(
        }
     return;
    }
-#include        "dasutil.h"
-#include        <ctype.h>
-#include        <string.h>
 
 /***********************************************************************
 * STRTRIM.C --
@@ -599,10 +598,6 @@ int   strntrim(
     t[k] = '\0';
     return(k);
    }
-#include        <ctype.h>
-#include        <stdio.h>
-#include        <string.h>
-#include        "dasutil.h"
 
 /***********************************************************************
 * tokens.c
@@ -1202,64 +1197,6 @@ int   equalsAscFilename(
 
 
 
-	/***************************************************************
-	 * main:
-	 ***************************************************************/
-/*#include        rmsdef
-/*#include        ssdef
-/*
-/*main()
-/*   {
-/*    static char  token[128];
-/*    static char  line[128];
-/*    static $DESCRIPTOR(dsc_line,line);
-/*    short  lineLength;
-/*    static $DESCRIPTOR(dsc_token,token);
-/*    static $DESCRIPTOR(dsc_prompt,"Enter line >  ");
-/*    static int   flag;			/* for lib$get_foreign		*/
-/*    short tknLen;
-/*    int   sts;
-/*    char  *p;
-/*    char  *wc;
-/*    int   val;
-/*    static char wildcards[] = "*%#";
-/*
-/*    printf("Wildcards?  <N>  ");
-/*    wc = yesno() ? wildcards : 0;
-/*
-/*    for ( ; ; )
-/*       {
-/*        sts = lib$get_foreign(&dsc_line,&dsc_prompt,&lineLength,&flag);
-/*        if (sts != SS$_NORMAL)
-/*           {
-/*            if (sts != RMS$_EOF)
-/*                dasmsg(sts,"Error from lib$get_foreign");
-/*            exit(sts);
-/*           }
-/*        line[lineLength] = '\0';
-/*        for (p=line ; ; )
-/*           {
-/*            if (intToken(&p,&dsc_token,&tknLen,&val))
-/*                printf("   length=%-3d '%s'  integer=%d\n",tknLen,token,val);
-/*            else if (nextToken(&p,&dsc_token,&tknLen,wc))
-/*                printf("   length=%-3d '%s'\n",tknLen,token);
-/*            else
-/*                break;			/* out of loop			*/
-/*           }
-/*       }
-/*   }						/*  */
-#include	<ctype.h>
-#include	<string.h>
-#include        "dasutil.h"
-#ifdef vms
-#include        <stdlib.h>
-#else
-#ifdef HAVE_MALLOC_H
-#include	<malloc.h>
-#else
-#include 	<stdlib.h>
-#endif
-#endif
 
 /********************************************************************
 *  WILDCARD_MATCH.C --
@@ -1299,8 +1236,8 @@ static char  pattern_any = '%';		/* Matches any single char	*/
 static char pattern_dig = '#';		/* Matches any single digit	*/
 static char  wild_chars[4];
 
-static strcmp_uc();
-static strncmp_uc();
+static int strcmp_uc();
+static int strncmp_uc();
 
 
 
@@ -1397,7 +1334,7 @@ int   wc_match(
 	 *****************************************************************/
 #define upcase(C)  (islower(C) ? C+'A'-'a' : C)
 
-static strcmp_uc(s,t)
+static int strcmp_uc(s,t)
 unsigned char  *s,*t;
    {
     for ( ; *s  ; s++,t++)
@@ -1410,7 +1347,7 @@ unsigned char  *s,*t;
     return((int)*s - (int)*t);
    }
 
-static strncmp_uc(s,t,n)
+static int strncmp_uc(s,t,n)
 unsigned char  *s,*t;
 int   n;
    {
@@ -1432,36 +1369,6 @@ int   n;
 
 
 
-	/*****************************************************************
-	 * main:
-	 *****************************************************************/
-/*main()
-/*   {
-/*    char   comparison[40];
-/*    char   input[40];
-/*
-/*    char   *str,*getstr();
-/*
-/*    printf("Enter 'comparison' string >  ");
-/*    if ((str=getstr()) == 0)  exit();
-/*    sscanf(str,"%s",comparison);
-/*
-/*    for ( ; ; )
-/*       {
-/*        printf("Enter 'input' string >  ");
-/*        if ((str=getstr()) == 0)  exit();
-/*        sscanf(str,"%s",input);
-/*        printf("\tStrings '%s' and '%s' are %s\n",
-/*            input,comparison,
-/*            wildcard_match(input,comparison)?"matching":"different");
-/*       }
-/*   }								/*  */
-#include        <stdio.h>
-#include        <stdlib.h>
-#include        "dasutil.h"
-#ifdef vms
-#include        <unixio.h>
-#endif
 
 /***********************************************************************
 * yesno.c
@@ -1512,10 +1419,6 @@ int   yesno(
 	/***************************************************************
 	 * interactive:
 	 ***************************************************************/
-#ifdef _WIN32
-#include <io.h>
-#define isatty _isatty
-#endif
 
 int   interactive()
    {

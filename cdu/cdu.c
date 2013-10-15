@@ -366,7 +366,6 @@ static void  show_parameter(	/* informational only			*/
        {
         if (prm->prmL_flags || prm->prmA_label || prm->prmA_prompt)
             printf("\n    ");
-/*        show_value(prm->prmA_value);	/*  */
        }
     else
         printf("\n");
@@ -411,7 +410,6 @@ static void  show_qualifier(	/* informational only			*/
     if (q->qualA_value)
        {
         printf("\n    ");
-/*        show_value(q->qualA_value);	/*  */
        }
     else
         printf("\n");
@@ -435,7 +433,7 @@ static void  show_type(
 
     printf("\nType: %s\n",typeName);
 
-    for (idx=0 ; key=findKeywordByIdx(typeName,idx) ; idx++)
+    for (idx=0 ; (key=findKeywordByIdx(typeName,idx)) ; idx++)
        {
         printf("    Keyword %-8s:",key->keyA_name);
         if (key->keyA_label)
@@ -443,7 +441,7 @@ static void  show_type(
         if (key->keyA_syntax)
             printf("  syntax=%s",key->keyA_syntax);
 
-        if (mask = key->keyL_flags)
+        if ((mask = key->keyL_flags))
             printf("  Flags=");
         for ( ; mask ; mask>>=1)
            {
@@ -496,14 +494,6 @@ static void  show_verb(		/* Informational only			*/
         printf("  routine=%s",v->vrbA_routine);
     if (v->vrbA_disallow)
         printf("  disallow=%s",v->vrbA_disallow);
-
-/*    printf("\n");
-/*    for (paramId=1 ; prm=findParamByIdx(v,paramId) ; paramId++)
-/*        show_parameter(prm);
-/*
-/*    for (i=0 ; q=findQualifierByIdx(v,i) ; i++)
-/*        show_qualifier(q);			/*  */
-
     printf("\n");
     return;
    }
@@ -969,7 +959,6 @@ static int   cmd_defineType()	/* Return: status			*/
         if (strcmp(cmd,"KEYWORD"))
            {
             putNext(cmd,2);		/* replace cmd (atStart)	*/
-/*            show_type(typeName);	/*  */
             return(0);
            }
 
@@ -1094,11 +1083,11 @@ static int   cdu_parse(		/* Return: status			*/
                 break;
 
             case CMD_IDENT:
-                sts = cmd_ident(p);
+                sts = cmd_ident();
                 break;
 
             case CMD_MODULE:
-                sts = cmd_module(p);
+                sts = cmd_module();
                 break;
            }
        }

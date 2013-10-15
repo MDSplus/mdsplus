@@ -10,6 +10,9 @@
 #include        <stdio.h>
 #include        <string.h>
 #include        <time.h>
+#include        <errno.h>
+#include        <stdlib.h>
+#include        <unistd.h>
 
 /***********************************************************************
 * CDATE.C --
@@ -244,44 +247,6 @@ int   asc2time(
     return(1);
    }
 
-
-	/***************************************************************
-	 * main:
-	 ***************************************************************/
-/*main()
-/*   {
-/*    int   bintim;
-/*    int   sts;
-/*    static char  line[80];
-/*    static DESCRIPTOR(dsc_line,line);
-/*
-/*    printf("cdate = %s\ncdatime = %s\n\n",cdate(0),cdatime(0));
-/*    printf("now = %s\n",now());
-/*
-/*    for ( ; ; )
-/*       {
-/*        if (!getLine("Date/time",&dsc_line))
-/*            break;
-/*        sts = asc2time(line,&bintim);
-/*        if (~sts & 1)
-/*           {
-/*            printf("\terror from asc2time\n\n");
-/*            continue;
-/*           }
-/*        printf("bintim=%d  ctime=%s\n\n",bintim,ctime(&bintim));
-/*       }
-/*   }						/*  */
-#include        "dasutil.h"
-#include        <ctype.h>
-#include        <errno.h>
-#include        <stdio.h>
-#include        <stdlib.h>
-#include        <string.h>
-#ifdef vms
-#include        <ssdef.h>
-#include        <unixio.h>
-#include        <varargs.h>
-#endif
 
 /*********************************************************************
 * GETNEXT.C --
@@ -528,7 +493,7 @@ static void  clearAll()
         fclose(fp);
        }
 
-    if (linePtr = nonblank(inputStruct[inIdx].linePtr))
+    if ((linePtr = nonblank(inputStruct[inIdx].linePtr)))
         printf("  Deleting remainder of input line '...%s'\n",linePtr);
     inputStruct[inIdx].linePtr = 0;
 
@@ -540,7 +505,7 @@ static void  clearAll()
 	/*****************************************************************
 	 * successReturn:
 	 *****************************************************************/
-static successReturn(
+static int successReturn(
     char  *linePtr		/* <r> addr at end of scanned token	*/
    ,int   usingDefault		/* <r> flag				*/
    )
@@ -623,7 +588,7 @@ static void  openIndirectFile(
         clearAll();		/* File input:  close all files ...	*/
     else
        {			/*..else tty input: clear rest of line	*/
-        if (linePtr = nonblank(linePtr))
+	 if ((linePtr = nonblank(linePtr)))
             printf("  Deleting remainder of input line '...%s'\n",linePtr);
         inputStruct[inIdx].linePtr = 0;
        }
@@ -1298,32 +1263,3 @@ int   getLine(
     clearnext(0);			/* clear current line		*/
     return(1);
    }
-
-
-
-	/**************************************************************
-	 * main:
-	 **************************************************************/
-/*main()
-/*   {
-/*    int   sts;
-/*    static double val;
-/*    static double xmin= -100.0, xmax=100.0;
-/*    static char  flag[4];
-/*    static $DESCRIPTOR(dsc_flag,flag);
-/*    static $DESCRIPTOR(dsc_prompt,"Enter value >  ");
-/*
-/*    for ( ; ; )
-/*       {
-/*        sts = getDouble(&dsc_prompt,&val,&xmin,&xmax,&dsc_flag);
-/*        if (~sts & 1)
-/*           {
-/*            printf("--> error from getDouble\n\n");
-/*            continue;
-/*           }
-/*        printf("    val=%.6g",val);
-/*        if (flag[0] != ' ')
-/*            printf("  flag='%s'",flag);
-/*        printf("\n\n");
-/*       }
-/*   }							/*  */

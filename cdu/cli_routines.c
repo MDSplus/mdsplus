@@ -79,7 +79,7 @@ static int   init_value(	/* Return: initial "processing" status	*/
 		/*--------------------------------------------------------
 		 * Init keywords ...
 		 *-------------------------------------------------------*/
-    if (key = val->valA_userType)
+    if ((key = val->valA_userType)!=0)
        {
         for ( ; key->keyA_name ; key++)
             key->keyL_status = init_value(key->keyA_value);
@@ -326,7 +326,7 @@ static int   readCliValueList(	/* Return: status			*/
             break;
 
         str_append(&val->val_dsc,&dsc_token);
-        if (p = nonblank(p))
+        if ((p = nonblank(p))!=0)
            {
             if (*p == ')')
                 break;
@@ -670,23 +670,11 @@ static struct cduEntity  *find_entity(	/* Return: addr of struct	*/
 
         if (!(e->entL_flags & ENT_M_PARAMETERS))
             continue;
-        if (val = e->entA_value)
+        if ((val = e->entA_value)!=0)
            {
             if ((t=val->val_dsc.dscA_pointer) && !strcmp(entity,t))
                 break;
            }
-/*        if (val = e->entA_value)
-/*           {				/*...check keywords, if any	*/
-/*            if (val->valA_userType)
-/*               {
-/*                kwd = find_entity(entity,(void *)val->valA_userType);
-/*                if (kwd)
-/*                   {
-/*                    e = kwd;
-/*                    break;
-/*                   }
-/*               }
-/*           }					/*  */
        }
     if (!e->entA_name)
         return(0);			/*---------> return: not found	*/
@@ -803,7 +791,7 @@ int   cli_dcl_parse(		/* Returns: status			*/
 		/*======================================================
 		 * Set 'p' to start of command line ...
 		 *=====================================================*/
-    if (p = command_string)
+    if ((p = command_string)!=0)
        {
         if (is_cdescr(command_string) || is_ddescr(command_string))
            {
@@ -966,9 +954,6 @@ int   cli_get_value(		/* Return: status			*/
     val = e->entA_value;
     if (!val)
         return(CLI_STS_IVREQTYP);
-
-/*    if (val->valL_flags & VAL_M_USER_DEFINED_TYPE)
-/*        return(CLI_STS_IVREQTYP);			/*  */
 
     if (!val->valA_substring)
         return(CLI_STS_ABSENT);

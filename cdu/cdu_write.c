@@ -153,7 +153,7 @@ static void  writeUserType(
        }
     userTypeCnt++;
 
-    for (icnt=0 ; key=findKeywordByIdx(name,icnt) ; icnt++)
+    for (icnt=0 ; (key=findKeywordByIdx(name,icnt)) ; icnt++)
        {
         sprintf(prefix,"t%02dk%02d",userTypeCnt,icnt+1);
 
@@ -165,7 +165,7 @@ static void  writeUserType(
 
     fprintf(fp,"\n");
     fprintf(fp,fmt_userType1,name,icnt+1);
-    for (icnt=0 ; key=findKeywordByIdx(name,icnt) ; icnt++)
+    for (icnt=0 ; (key=findKeywordByIdx(name,icnt)) ; icnt++)
        {
         sprintf(prefix,"t%02dk%02d",userTypeCnt,icnt+1);
 
@@ -212,7 +212,7 @@ static void  writeParams(
 
     if (debugCdu)
         printf("writeParams: called for verb %s\n",parentPrefix);
-    for (icnt=0 ; prm=findParamByIdx(v,icnt+1) ; icnt++)
+    for (icnt=0 ; (prm=findParamByIdx(v,icnt+1)) ; icnt++)
        {
         sprintf(prefix,"%sp%02d",parentPrefix,icnt+1);
         writeValue(prefix,prm->prmA_value);
@@ -220,7 +220,7 @@ static void  writeParams(
 
     fprintf(fp,"\n");
     fprintf(fp,fmt_params1,parentPrefix,icnt+1);
-    for (icnt=0 ; prm=findParamByIdx(v,icnt+1) ; icnt++)
+    for (icnt=0 ; (prm=findParamByIdx(v,icnt+1)) ; icnt++)
        {
         sprintf(prefix,"%sp%02d",parentPrefix,icnt+1);
         if (prm->prmA_label)
@@ -265,7 +265,7 @@ static void  writeQualifiers(
 
     if (debugCdu)
         printf("writeQualifiers: called for %s\n",parentPrefix);
-    for (icnt=0 ; qual=findQualifierByIdx(v,icnt) ; icnt++)
+    for (icnt=0 ; (qual=findQualifierByIdx(v,icnt)) ; icnt++)
        {
         sprintf(prefix,"%sq%02d",parentPrefix,icnt+1);
 
@@ -276,7 +276,7 @@ static void  writeQualifiers(
 
     fprintf(fp,"\n");
     fprintf(fp,fmt_qualifiers1,parentPrefix,icnt+1);
-    for (icnt=0 ; qual=findQualifierByIdx(v,icnt) ; icnt++)
+    for (icnt=0 ; (qual=findQualifierByIdx(v,icnt)) ; icnt++)
        {
         sprintf(prefix,"%sq%02d",parentPrefix,icnt+1);
         if (qual->qualA_label)
@@ -415,7 +415,7 @@ void  cdu_write(
 		/*------------------------------------------------------
 		 * Write support structs first ...
 		 *-----------------------------------------------------*/
-    for (icnt=0 ; v=findVerbByIdx(icnt) ; icnt++)
+    for (icnt=0 ; (v=findVerbByIdx(icnt)) ; icnt++)
        {
         sprintf(prefix,"v%02d",icnt+1);
 
@@ -430,7 +430,7 @@ void  cdu_write(
     fprintf(fp,"\n");
     fprintf(fp,fmt_verbs1,moduleName,icnt+1);
 
-    for (icnt=0 ; v=findVerbByIdx(icnt) ; icnt++)
+    for (icnt=0 ; (v=findVerbByIdx(icnt)) ; icnt++)
        {
         sprintf(prefix,"v%02d",icnt+1);
 
@@ -459,16 +459,16 @@ void  cdu_write(
 		 *=====================================================*/
     if (interactive())
        {
-        for (i=0 ; userType=findUserTypeByIdx(i) ; i++)
+	 for (i=0 ; (userType=findUserTypeByIdx(i)) ; i++)
            {
             printf("\nUSER TYPE = %s\n",userType);
-            for (k=0 ; key=findKeywordByIdx(userType,i) ; i++)
+            for (k=0 ; (key=findKeywordByIdx(userType,i)) ; i++)
                 printf("    %s\n",key->keyA_name);
            }
         if (i > 0)
             printf("\n");
 
-        for (i=0 ; v=findSyntaxByIdx(i) ; i++)
+        for (i=0 ; (v=findSyntaxByIdx(i)) ; i++)
            {
             if (!i)
                 printf("\nSYNTAX list\n");

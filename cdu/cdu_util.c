@@ -405,7 +405,7 @@ struct verblist  *newVerb(	/* Return: Create new verb; else error	*/
     v = findVerb(verbName);
     if (v)
        {
-        printf("*ERR* newVerb:  verb %s already exists\n");
+	 printf("*ERR* newVerb:  verb %s already exists\n",verbName);
         exit(0);
        }
     vc = malloc(sizeof(struct verbChain));
@@ -485,7 +485,7 @@ struct verblist  *newSyntax(	/* Return: Create new syntax; else error*/
     v = findSyntax(syntaxName);
     if (v)
        {
-        printf("*ERR* newSyntax:  syntax %s already exists\n");
+	 printf("*ERR* newSyntax:  syntax %s already exists\n",syntaxName);
         exit(0);
        }
     vc = malloc(sizeof(struct verbChain));

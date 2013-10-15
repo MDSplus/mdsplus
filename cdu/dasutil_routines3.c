@@ -2,6 +2,7 @@
 #include        <string.h>
 #include        <stdlib.h>
 #include        <ctype.h>
+#include        <unistd.h>
 #include        "dasutil.h"
 
 #if defined(vms)
@@ -52,15 +53,15 @@
 #define KEY_UP    0403
 #define KEY_LEFT  0404
 #define KEY_RIGHT 0405
-static char  *key_up;
-static char  *key_down;
-static char  *key_right;
-static char  *key_left;
-static char  *save_cursor;
-static char  *restore_cursor;
-static char  *cursor_left;
-static char  *cursor_right;
-static char  *clr_eol;
+#define key_up  "\033OA"
+#define key_down "\033OB"
+#define key_right  "\033OC"
+#define key_left "\033OD"
+#define save_cursor "\0337"
+#define restore_cursor "\0338"
+#define cursor_left "\010"
+#define cursor_right "\033[C"
+#define clr_eol "\033[K"
 #endif
 
 static int   insert_mode = 1;	/* flag					*/
@@ -139,7 +140,7 @@ static char  *start_of_line(	/* Returns:  addr of line[]		*/
     if (num)
        {
         for (i=0,k=0 ; i<num ; i++)
-            k += sprintf(displayLine+k,cursor_left);
+            k += sprintf(displayLine+k,"\010");
         write(1,displayLine,k);
        }
     return(line);
@@ -184,16 +185,6 @@ static int   setupterm(
    ,int   *ierr
    )
    {
-    key_up =    "\033OA";
-    key_down =  "\033OB";
-    key_right = "\033OC";
-    key_left =  "\033OD";
-    save_cursor =    "\0337";
-    restore_cursor = "\0338";
-    cursor_left =  "\010";
-    cursor_right = "\033[C";
-    clr_eol =      "\033[K";
-
     *ierr = 1;
     return(0);
    }
@@ -264,7 +255,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
         sts = setupterm(0,1,&ierr);
         if (sts || ierr!=1)
            {
-            printf("after setupterm: sts=%d  ierr=%d\n");
+	     printf("after setupterm: sts=%d  ierr=%d\n",sts,ierr);
             usrline[0] = '\0';
             return(0);
            }
@@ -387,7 +378,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
            {
             if (p <= line)
                 continue;
-            for (i=0,p-- ; p[i]=p[i+1] ; i++)
+            for (i=0,p-- ; (p[i]=p[i+1]) ; i++)
                 ;
             k = sprintf(displayLine,"%s%s%s %s",
                 cursor_left,save_cursor,(i?p:""),restore_cursor);
@@ -416,8 +407,8 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
                     if (*p)
                        {
                         p++;
-                        k = strlen(cursorRight);
-                        write(1,cursorRight,k);
+                        k = strlen(cursor_right);
+                        write(1,cursor_right,k);
                        }
                    }
                 else if (kchar==KEY_UP || kchar==KEY_DOWN)
@@ -437,7 +428,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
                    {
                     k = 0;
                     for (i=0 ; i<num ; i++)
-                        k += sprintf(displayLine+k,cursorRight);
+                        k += sprintf(displayLine+k,cursor_right);
                     write(1,displayLine,k);
                     p += num;
                    }
@@ -455,7 +446,7 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
                         k += sprintf(displayLine+k,cursor_left);
                     k += sprintf(displayLine+k,"%s%s",p,clrEol);
                     write(1,displayLine,k);
-                    for (i=0 ; line[i]=p[i] ; i++)
+                    for (i=0 ; (line[i]=p[i]) ; i++)
                         ;		/* shift chars within line[]	*/
                     p = start_of_line(line,line+i);
                    }
@@ -488,23 +479,3 @@ char  *fgets_with_edit(		/* Returns:  addr of usrline, or NULL	*/
 #endif
     return(usrline);
    }
-
-
-
-	/***************************************************************
-	 * main:
-	 ***************************************************************/
-/*main()
-/*   {
-/*    int   i,k;
-/*    char  usrline[256];
-/*    FILE  *fp;
-/*
-/*    fp = stdin;		/* standard input		*/
-/*
-/*    for ( ; ; )
-/*       {
-/*        fgets_with_edit(usrline,sizeof(usrline),fp,"Enter> ");
-/*        printf("--> Line = '%s'\n\n",usrline);
-/*       }
-/*   }							/*  */
