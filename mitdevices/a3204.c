@@ -6,6 +6,7 @@
 #include <strroutines.h>
 #include <treeshr.h>
 #include <mdsshr.h>
+#include "devroutines.h"
 static int one = 1;
 #define min(a,b) (((a) <= (b)) ? (a) : (b))
 #define max(a,b) (((a) <= (b)) ? (b) : (a))

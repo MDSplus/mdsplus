@@ -7,6 +7,7 @@
 #include <string.h>
 
 extern int TdiData();
+extern int TdiText();
 extern int CamX();
 extern int CamQ();
 

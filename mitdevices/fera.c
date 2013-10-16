@@ -90,6 +90,7 @@ The data is dumped into the 4302 memory modules without using the hardware
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "fera_gen.h"
+#include "devroutines.h"
 extern int CamPiow();
 extern int CamStopw();
 extern int TdiExecute();
@@ -129,7 +130,7 @@ int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup )
   return_on_error(DevCamChk(CamPiow(setup->cntrl_name,0,9,0,16,0),&one,&one),status);
 
   /* setup the digitizers */
-  if(num_dig = NElements(setup->head_nid + FERA_N_DIG_NAME)) {
+  if((num_dig = NElements(setup->head_nid + FERA_N_DIG_NAME))) {
     int i;
     for(i=0; i<num_dig; i++) {
       char *name = ArrayRef(setup->head_nid + FERA_N_DIG_NAME, i);
@@ -149,7 +150,7 @@ int fera___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup )
 
   /* setup the memory modules */
   if (status&1) {
-    if (num_mem = NElements(setup->head_nid + FERA_N_MEM_NAME) ) {
+    if ((num_mem = NElements(setup->head_nid + FERA_N_MEM_NAME)) ) {
       int i;
       for(i=0; i<num_mem; i++) {
         char *name = ArrayRef(setup->head_nid + FERA_N_MEM_NAME, i);

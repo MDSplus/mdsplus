@@ -6,6 +6,7 @@
 #include <libroutines.h>
 #include <mitdevices_msg.h>
 #include <stdio.h>
+#include "devroutines.h"
 extern int CamPiow();
 extern int CamStopw();
 extern int TdiCompile();

@@ -4,6 +4,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "a12_gen.h"
+#include "devroutines.h"
 
 extern int CamXandQ();
 

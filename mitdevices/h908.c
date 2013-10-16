@@ -8,6 +8,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include "h908_gen.h"
+#include "devroutines.h"
 
 extern short OpcAdd;
 extern short OpcMultiply;

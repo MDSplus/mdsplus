@@ -7,6 +7,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include "h912_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;

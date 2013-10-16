@@ -796,7 +796,7 @@ static int Count(Widget w)
   DESCRIPTOR_LONG(count_d,0);
   struct descriptor_xd *valid_xd;
   count_d.pointer = (char *)&count;
-  if (valid_xd = (struct descriptor_xd *)XmdsExprGetXd(XtNameToWidget(Top(w),"*samples")))
+  if ((valid_xd = (struct descriptor_xd *)XmdsExprGetXd(XtNameToWidget(Top(w),"*samples"))))
     TdiData(valid_xd, &count_d MDS_END_ARG);
   return count;
 }

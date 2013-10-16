@@ -34,6 +34,7 @@
 #include <treeshr.h>
 #include <stdlib.h>
 #include "h911_gen.h"
+#include "devroutines.h"
 static int one=1;
 #define pio(f,a) {int status; \
                   if (!((status = DevCamChk(CamPiow(in->name, a, f, 0, 16, 0), &one, &one)) &1)) return status; }
