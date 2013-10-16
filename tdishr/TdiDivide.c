@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------------
 
-		Name:   Tdi3Divide   
+                Name:   Tdi3Divide   
 
-		Type:   C function
+                Type:   C function
 
-     		Author:	TOM FREDIAN
+                Author: TOM FREDIAN
 
-		Date:   5-OCT-1993 
+                Date:   5-OCT-1993 
 
-    		Purpose: Divide two operands
+                Purpose: Divide two operands
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+        Call sequence: 
 
 int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -24,7 +24,7 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -58,21 +58,21 @@ typedef struct {
     case CLASS_S:\
     case CLASS_D: nout = 1; break;\
     case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in1->class)\
   {\
     case CLASS_S:\
     case CLASS_D: scalars |= 1; break;\
     case CLASS_A: if (ina1->arsize/ina1->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in2->class)\
   {\
     case CLASS_S:\
     case CLASS_D: if (scalars && (nout > 1)) return TdiINV_SIZE; scalars |= 2; break;\
     case CLASS_A: if (ina2->arsize/ina2->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
 
 #define Operate(type) \
@@ -180,37 +180,37 @@ typedef struct {
 }
 
 int Tdi3Divide(struct descriptor *in1, struct descriptor *in2,
-	       struct descriptor *out)
+               struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_B:
-	Operate(char)
-	case DTYPE_BU:Operate(unsigned char)
-	case DTYPE_W:Operate(short)
-	case DTYPE_WU:Operate(unsigned short)
-	case DTYPE_L:Operate(int)
-	case DTYPE_LU:Operate(unsigned int)
+        Operate(char)
+        case DTYPE_BU:Operate(unsigned char)
+        case DTYPE_W:Operate(short)
+        case DTYPE_WU:Operate(unsigned short)
+        case DTYPE_L:Operate(int)
+        case DTYPE_LU:Operate(unsigned int)
 #ifndef HAVE_VXWORKS_H
-	case DTYPE_Q:Operate(_int64);
+        case DTYPE_Q:Operate(_int64);
     case DTYPE_QU:
-	Operate(_int64u);
+        Operate(_int64u);
     case DTYPE_O:
-	OperateWide(octaword, 4, 1);
+        OperateWide(octaword, 4, 1);
     case DTYPE_OU:
-	OperateWide(octaword, 4, 0);
+        OperateWide(octaword, 4, 0);
 #endif
     case DTYPE_F:
-	OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-	case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-	case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_FC:OperateC(float, DTYPE_F)
-	case DTYPE_FSC:OperateC(float, DTYPE_FS)
-	case DTYPE_GC:OperateC(double, DTYPE_G)
-	case DTYPE_DC:OperateC(double, DTYPE_D)
-	case DTYPE_FTC:OperateC(double, DTYPE_FT)
-	default:return TdiINVDTYDSC;
+        OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+        case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+        case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_FC:OperateC(float, DTYPE_F)
+        case DTYPE_FSC:OperateC(float, DTYPE_FS)
+        case DTYPE_GC:OperateC(double, DTYPE_G)
+        case DTYPE_DC:OperateC(double, DTYPE_D)
+        case DTYPE_FTC:OperateC(double, DTYPE_FT)
+        default:return TdiINVDTYDSC;
     }
     return 1;
 }

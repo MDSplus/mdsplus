@@ -22,36 +22,36 @@
        Type:    C function
 
        Author:  Mark London
-	       MIT Plasma Fusion Center
+               MIT Plasma Fusion Center
 
        Date:    7-SEP-1993
 
        Purpose: 
-	To test major VMS data types and classes.
-		out = in1 OP in2
-	or	out = LLT(in1, in2)
+        To test major VMS data types and classes.
+                out = in1 OP in2
+        or      out = LLT(in1, in2)
 
-	Test OP may be EQ GE GT LE LT NE.
-	F77 functions LGE LGT LLE LLT also.
-	Unsigned compares for unsigned types.
-	Only EQ or NE are allowed for COMPLEX types.
-	Input and output memory overlap produces UNDEFINED results.
-	Coincidence of input and output, however, will work here.
+        Test OP may be EQ GE GT LE LT NE.
+        F77 functions LGE LGT LLE LLT also.
+        Unsigned compares for unsigned types.
+        Only EQ or NE are allowed for COMPLEX types.
+        Input and output memory overlap produces UNDEFINED results.
+        Coincidence of input and output, however, will work here.
 
        Call sequence:
-	       struct descriptor *in1_ptr;
-	       struct descriptor *in2_ptr;
-	       struct descriptor *out_ptr;
+               struct descriptor *in1_ptr;
+               struct descriptor *in2_ptr;
+               struct descriptor *out_ptr;
 
-	       status = Tdi3Eq(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Ge(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Gt(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Le(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Lt(in1_ptr,in2_ptr,out_ptr);
-	       status = Tdi3Ne(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Eq(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Ge(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Gt(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Le(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Lt(in1_ptr,in2_ptr,out_ptr);
+               status = Tdi3Ne(in1_ptr,in2_ptr,out_ptr);
        returns:
-		TdiINVDTYDSC - if unsupported data type
-		1 - if supported data type
+                TdiINVDTYDSC - if unsupported data type
+                1 - if supported data type
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993
@@ -139,16 +139,16 @@ break;
   all long words are compared using unsigned except for top longword.
 */
 #define compare_n(type,op,longwords,signed) \
-  for (i=0;i<out_count;i++) {		    \
+  for (i=0;i<out_count;i++) {               \
     l = longwords*i; \
     for (j=longwords-1;j>=0;j--) \
-      if (!j || in1[s1 ? j : l+j] != in2[s2 ? j : l+j]) {	\
+      if (!j || in1[s1 ? j : l+j] != in2[s2 ? j : l+j]) {       \
         if (!(signed) || !(j != longwords-1)) \
           {out[i] = (char)(in1[s1 ? j : l+j] op in2[s2 ? j : l+j]); break;} \
         else {i1 = (int *)(in1+(s1 ? j : l+j)), \
-	      i2 = (int *)(in2+(s2 ? j : l+j)); \
+              i2 = (int *)(in2+(s2 ? j : l+j)); \
           out[i] = (char)(*i1 op *i2); break;} \
-      }}				       \
+      }}                                       \
    break;
 
 #define testn(type,longwords,signed) {\
@@ -186,14 +186,14 @@ break;
         type *in = (type *)((k >= in1_ptr->length) ? in2 : in1); \
         if (!(equal_until_last & (k < maxlen-1 && ' ' == in[k]))) {\
           if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) \
-	    {out[i] = not_op 0; break;} \
-	  else breakout \
+            {out[i] = not_op 0; break;} \
+          else breakout \
         } \
       } else \
         if (!(equal_until_last & (k < maxlen-1 && in1[k] == in2[k]))) {\
           if (!(in1[k] op in2[k])) \
-	    {out[i] = not_op 0; break;} \
-	  else breakout \
+            {out[i] = not_op 0; break;} \
+          else breakout \
         } \
       k++; \
     } \
@@ -219,7 +219,7 @@ break;
 break;
 
 int Tdi3_Eq(struct descriptor *in1_ptr,
-	    struct descriptor *in2_ptr, struct descriptor *out_ptr, int op)
+            struct descriptor *in2_ptr, struct descriptor *out_ptr, int op)
 {
     int out_count = 1;
     int status;
@@ -230,77 +230,77 @@ int Tdi3_Eq(struct descriptor *in1_ptr,
 
     status = TdiBinary(in1_ptr, in2_ptr, out_ptr, &out_count);
     if (status != 1)
-	return status;
+        return status;
 
     switch (in1_ptr->dtype) {
     case DTYPE_T:
-	testc(unsigned char)
-	case DTYPE_BU:test(unsigned char)
-	case DTYPE_WU:test(unsigned short int)
-	case DTYPE_LU:test(unsigned int)
-	case DTYPE_QU:testn(unsigned int, 2, 0)
-	case DTYPE_OU:testn(unsigned int, 4, 0)
-	case DTYPE_B:test(char)
-	case DTYPE_W:test(short int)
-	case DTYPE_L:test(int)
-	case DTYPE_Q:testn(unsigned int, 2, 1)
-	case DTYPE_O:testn(unsigned int, 4, 1)
-	case DTYPE_F:testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-	case DTYPE_FS:testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-	case DTYPE_G:testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_D:testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_FT:testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_FC:case DTYPE_FSC:if (op != OP_EQ && op != OP_NE) {
-	    status = TdiINVDTYDSC;
-	    break;
-	}
-	testn(int, 2, 0)
-	case DTYPE_GC:case DTYPE_DC:case DTYPE_FTC:if (op != OP_EQ
-						       && op != OP_NE) {
-	    status = TdiINVDTYDSC;
-	    break;
-	}
-	testn(int, 4, 0)
-	default:status = TdiINVDTYDSC;
+        testc(unsigned char)
+        case DTYPE_BU:test(unsigned char)
+        case DTYPE_WU:test(unsigned short int)
+        case DTYPE_LU:test(unsigned int)
+        case DTYPE_QU:testn(unsigned int, 2, 0)
+        case DTYPE_OU:testn(unsigned int, 4, 0)
+        case DTYPE_B:test(char)
+        case DTYPE_W:test(short int)
+        case DTYPE_L:test(int)
+        case DTYPE_Q:testn(unsigned int, 2, 1)
+        case DTYPE_O:testn(unsigned int, 4, 1)
+        case DTYPE_F:testf(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+        case DTYPE_FS:testf(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+        case DTYPE_G:testf(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_D:testf(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_FT:testf(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_FC:case DTYPE_FSC:if (op != OP_EQ && op != OP_NE) {
+            status = TdiINVDTYDSC;
+            break;
+        }
+        testn(int, 2, 0)
+        case DTYPE_GC:case DTYPE_DC:case DTYPE_FTC:if (op != OP_EQ
+                                                       && op != OP_NE) {
+            status = TdiINVDTYDSC;
+            break;
+        }
+        testn(int, 4, 0)
+        default:status = TdiINVDTYDSC;
     }
     return status;
 }
 
 int Tdi3Eq(struct descriptor *in1_ptr,
-	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
+           struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
 }
 
 int Tdi3Ge(struct descriptor *in1_ptr,
-	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
+           struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_GE);
 }
 
 int Tdi3Gt(struct descriptor *in1_ptr,
-	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
+           struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_GT);
 }
 
 int Tdi3Le(struct descriptor *in1_ptr,
-	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
+           struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_LE);
 }
 
 int Tdi3Lt(struct descriptor *in1_ptr,
-	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
+           struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     return Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_LT);
 }
 
 int Tdi3Ne(struct descriptor *in1_ptr,
-	   struct descriptor *in2_ptr, struct descriptor *out_ptr)
+           struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     int status = Tdi3_Eq(in1_ptr, in2_ptr, out_ptr, OP_EQ);
     if (status & 1)
-	status = Tdi3Not(out_ptr, out_ptr);
+        status = Tdi3Not(out_ptr, out_ptr);
     return status;
 }

@@ -1,18 +1,18 @@
 /*------------------------------------------------------------------------------
 
-		Name:   Tdi3Add   
+                Name:   Tdi3Add   
 
-		Type:   C function
+                Type:   C function
 
-     		Author:	TOM FREDIAN
+                Author: TOM FREDIAN
 
-		Date:   18-FEB-1993
+                Date:   18-FEB-1993
 
-    		Purpose: Add two operands 
+                Purpose: Add two operands 
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+        Call sequence: 
 
 int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -24,7 +24,7 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -58,21 +58,21 @@ int TdiSubtractOctaword();
     case CLASS_S:\
     case CLASS_D: nout = 1; break;\
     case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in1->class)\
   {\
     case CLASS_S:\
     case CLASS_D: scalars |= 1; break;\
     case CLASS_A: if (ina1->arsize/ina1->length < nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in2->class)\
   {\
     case CLASS_S:\
     case CLASS_D: if (scalars && (nout > 1)) return TdiINV_SIZE; scalars |= 2; break;\
     case CLASS_A: if (ina2->arsize/ina2->length < nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
 
 #define Operate(type,operator) \
@@ -184,91 +184,91 @@ STATIC_CONSTANT const int roprand = 0x8000;
 }
 
 int Tdi3Add(struct descriptor *in1, struct descriptor *in2,
-	    struct descriptor *out)
+            struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_B:
-	Operate(char, +)
-	case DTYPE_BU:Operate(unsigned char, +)
-	case DTYPE_W:Operate(short, +)
-	case DTYPE_WU:Operate(unsigned short, +)
-	case DTYPE_L:Operate(int, +)
-	case DTYPE_LU:Operate(unsigned int, +)
-	case DTYPE_Q:OperateSpecial(8, TdiAddQuadword)
-	case DTYPE_QU:OperateSpecial(8, TdiAddQuadword)
-	case DTYPE_O:OperateSpecial(16, TdiAddOctaword)
-	case DTYPE_OU:OperateSpecial(16, TdiAddOctaword)
-	case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
-	case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
-	case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
-	case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
-	case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
-	case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
-	case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
-	case DTYPE_GC:OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
-	case DTYPE_DC:OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
-	case DTYPE_FTC:OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
-	default:return TdiINVDTYDSC;
+        Operate(char, +)
+        case DTYPE_BU:Operate(unsigned char, +)
+        case DTYPE_W:Operate(short, +)
+        case DTYPE_WU:Operate(unsigned short, +)
+        case DTYPE_L:Operate(int, +)
+        case DTYPE_LU:Operate(unsigned int, +)
+        case DTYPE_Q:OperateSpecial(8, TdiAddQuadword)
+        case DTYPE_QU:OperateSpecial(8, TdiAddQuadword)
+        case DTYPE_O:OperateSpecial(16, TdiAddOctaword)
+        case DTYPE_OU:OperateSpecial(16, TdiAddOctaword)
+        case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
+        case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
+        case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
+        case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
+        case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
+        case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, +)
+        case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, +)
+        case DTYPE_GC:OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, +)
+        case DTYPE_DC:OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, +)
+        case DTYPE_FTC:OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, +)
+        default:return TdiINVDTYDSC;
     }
     return 1;
 }
 
 int Tdi3Subtract(struct descriptor *in1, struct descriptor *in2,
-		 struct descriptor *out)
+                 struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_B:
-	Operate(char, -)
-	case DTYPE_BU:Operate(unsigned char, -)
-	case DTYPE_W:Operate(short, -)
-	case DTYPE_WU:Operate(unsigned short, -)
-	case DTYPE_L:Operate(int, -)
-	case DTYPE_LU:Operate(unsigned int, -)
-	case DTYPE_Q:OperateSpecial(8, TdiSubtractQuadword)
-	case DTYPE_QU:OperateSpecial(8, TdiSubtractQuadword)
-	case DTYPE_O:OperateSpecial(16, TdiSubtractOctaword)
-	case DTYPE_OU:OperateSpecial(16, TdiSubtractOctaword)
-	case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
-	case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
-	case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
-	case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
-	case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
-	case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
-	case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
-	case DTYPE_GC:OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
-	case DTYPE_DC:OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
-	case DTYPE_FTC:OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
-	default:return TdiINVDTYDSC;
+        Operate(char, -)
+        case DTYPE_BU:Operate(unsigned char, -)
+        case DTYPE_W:Operate(short, -)
+        case DTYPE_WU:Operate(unsigned short, -)
+        case DTYPE_L:Operate(int, -)
+        case DTYPE_LU:Operate(unsigned int, -)
+        case DTYPE_Q:OperateSpecial(8, TdiSubtractQuadword)
+        case DTYPE_QU:OperateSpecial(8, TdiSubtractQuadword)
+        case DTYPE_O:OperateSpecial(16, TdiSubtractOctaword)
+        case DTYPE_OU:OperateSpecial(16, TdiSubtractOctaword)
+        case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
+        case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
+        case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
+        case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
+        case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
+        case DTYPE_FC:OperateComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT, -)
+        case DTYPE_FSC:OperateComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, -)
+        case DTYPE_GC:OperateComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, -)
+        case DTYPE_DC:OperateComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, -)
+        case DTYPE_FTC:OperateComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, -)
+        default:return TdiINVDTYDSC;
     }
     return 1;
 }
 
 int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2,
-		 struct descriptor *out)
+                 struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_B:
-	Operate(char, *)
-	case DTYPE_BU:Operate(unsigned char, *)
-	case DTYPE_W:Operate(short, *)
-	case DTYPE_WU:Operate(unsigned short, *)
-	case DTYPE_L:Operate(int, *)
-	case DTYPE_LU:Operate(unsigned int, *)
-	case DTYPE_Q:OperateSpecial(8, TdiMultiplyQuadword)
-	case DTYPE_QU:OperateSpecial(8, TdiMultiplyQuadword)
-	case DTYPE_O:OperateSpecial(16, TdiMultiplyOctaword)
-	case DTYPE_OU:OperateSpecial(16, TdiMultiplyOctaword)
-	case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
-	case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *)
-	case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *)
-	case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, *)
-	case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, *)
-	case DTYPE_FC:MultiplyComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-	case DTYPE_FSC:MultiplyComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-	case DTYPE_GC:MultiplyComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_DC:MultiplyComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-	case DTYPE_FTC:MultiplyComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-	default:return TdiINVDTYDSC;
+        Operate(char, *)
+        case DTYPE_BU:Operate(unsigned char, *)
+        case DTYPE_W:Operate(short, *)
+        case DTYPE_WU:Operate(unsigned short, *)
+        case DTYPE_L:Operate(int, *)
+        case DTYPE_LU:Operate(unsigned int, *)
+        case DTYPE_Q:OperateSpecial(8, TdiMultiplyQuadword)
+        case DTYPE_QU:OperateSpecial(8, TdiMultiplyQuadword)
+        case DTYPE_O:OperateSpecial(16, TdiMultiplyOctaword)
+        case DTYPE_OU:OperateSpecial(16, TdiMultiplyOctaword)
+        case DTYPE_F:OperateFloat(float, DTYPE_F, DTYPE_NATIVE_FLOAT, *)
+        case DTYPE_FS:OperateFloat(float, DTYPE_FS, DTYPE_NATIVE_FLOAT, *)
+        case DTYPE_D:OperateFloat(double, DTYPE_D, DTYPE_NATIVE_DOUBLE, *)
+        case DTYPE_G:OperateFloat(double, DTYPE_G, DTYPE_NATIVE_DOUBLE, *)
+        case DTYPE_FT:OperateFloat(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE, *)
+        case DTYPE_FC:MultiplyComplex(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+        case DTYPE_FSC:MultiplyComplex(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+        case DTYPE_GC:MultiplyComplex(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_DC:MultiplyComplex(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+        case DTYPE_FTC:MultiplyComplex(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+        default:return TdiINVDTYDSC;
     }
     return 1;
 }
@@ -395,45 +395,45 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
     emul(&in2l[0], &in1l[3], &tmp[3], &tmp[3]);
     swapquad(&tmp[3]);
     if (in1l[0] < 0) {
-	tmp[7] = tmp[4];
-	memcpy(tmp2, &tmp[1], 16);
-	swapocta(tmp2);
-	TdiAddOctaword(in2, tmp2, &tmp[1]);
-	swapocta(&tmp[1]);
-	tmp[4] = tmp[7];
+        tmp[7] = tmp[4];
+        memcpy(tmp2, &tmp[1], 16);
+        swapocta(tmp2);
+        TdiAddOctaword(in2, tmp2, &tmp[1]);
+        swapocta(&tmp[1]);
+        tmp[4] = tmp[7];
     }
     if (in1l[1] < 0) {
-	memcpy(tmp2, &tmp[2], 8);
-	swapquad(tmp2);
+        memcpy(tmp2, &tmp[2], 8);
+        swapquad(tmp2);
 #ifdef WORDS_BIGENDIAN
-	TdiAddQuadword(in2 + 2, tmp2, &tmp[2]);
+        TdiAddQuadword(in2 + 2, tmp2, &tmp[2]);
 #else
-	TdiAddQuadword(in2, tmp2, &tmp[2]);
+        TdiAddQuadword(in2, tmp2, &tmp[2]);
 #endif
-	swapquad(&tmp[2]);
+        swapquad(&tmp[2]);
     }
     if (in1l[2] < 0)
-	tmp[3] += in2l[0];
+        tmp[3] += in2l[0];
     if (in2l[0] < 0) {
-	tmp[7] = tmp[4];
-	memcpy(tmp2, &tmp[1], 16);
-	swapocta(tmp2);
-	TdiAddOctaword(in1, tmp2, &tmp[1]);
-	swapocta(&tmp[1]);
-	tmp[4] = tmp[7];
+        tmp[7] = tmp[4];
+        memcpy(tmp2, &tmp[1], 16);
+        swapocta(tmp2);
+        TdiAddOctaword(in1, tmp2, &tmp[1]);
+        swapocta(&tmp[1]);
+        tmp[4] = tmp[7];
     }
     if (in2l[1] < 0) {
-	memcpy(tmp2, &tmp[2], 8);
-	swapquad(tmp2);
+        memcpy(tmp2, &tmp[2], 8);
+        swapquad(tmp2);
 #ifdef WORDS_BIGENDIAN
-	TdiAddQuadword(in1 + 2, tmp2, &tmp[2]);
+        TdiAddQuadword(in1 + 2, tmp2, &tmp[2]);
 #else
-	TdiAddQuadword(in1, tmp2, &tmp[2]);
+        TdiAddQuadword(in1, tmp2, &tmp[2]);
 #endif
-	swapquad(&tmp[2]);
+        swapquad(&tmp[2]);
     }
     if (in2l[2] < 0)
-	tmp[3] += in1l[0];
+        tmp[3] += in1l[0];
 #ifdef WORDS_BIGENDIAN
     out[0] = tmp[3];
     out[1] = tmp[2];
@@ -472,10 +472,10 @@ int TdiAddOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
     swapocta(la);
     swapocta(lb);
     for (i = 0; i < 4; i++) {
-	unsigned int _a = la[i];
-	unsigned int _b = lb[i];
-	ans[i] = _a + _b + carry;
-	carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
+        unsigned int _a = la[i];
+        unsigned int _b = lb[i];
+        ans[i] = _a + _b + carry;
+        carry = (ans[i] <= _a) && ((_b != 0) || (carry != 0));
     }
     swapocta(ans);
     return !carry;
@@ -491,11 +491,11 @@ int TdiSubtractQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
     lb[1] = b[1];
     swapquad(lb);
     for (i = 0; i < 2; i++) {
-	sub[i] = ~lb[i];
-	if (i == 0)
-	    sub[i]++;
-	else if (sub[i - 1] < (~lb[i - 1]))
-	    sub[i]++;
+        sub[i] = ~lb[i];
+        if (i == 0)
+            sub[i]++;
+        else if (sub[i - 1] < (~lb[i - 1]))
+            sub[i]++;
     }
     swapquad(sub);
     status = TdiAddQuadword(a, sub, ans);
@@ -511,11 +511,11 @@ int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans)
     memcpy(lb, b, 16);
     swapocta(lb);
     for (i = 0; i < 4; i++) {
-	sub[i] = ~lb[i];
-	if (i == 0)
-	    sub[i]++;
-	else if (sub[i - 1] < (~lb[i - 1]))
-	    sub[i]++;
+        sub[i] = ~lb[i];
+        if (i == 0)
+            sub[i]++;
+        else if (sub[i - 1] < (~lb[i - 1]))
+            sub[i]++;
     }
     swapocta(sub);
     status = TdiAddOctaword(a, sub, ans);

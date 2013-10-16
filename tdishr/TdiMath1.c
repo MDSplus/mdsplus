@@ -1,24 +1,24 @@
 /*------------------------------------------------------------------------------
 
-		Name:   Tdi3MATH1   
+                Name:   Tdi3MATH1   
 
-		Type:   C function
+                Type:   C function
 
-     		Author:	TOM FREDIAN
+                Author: TOM FREDIAN
 
-		Date:   5-OCT-1993 
+                Date:   5-OCT-1993 
 
-    		Purpose:
+                Purpose:
  
-	Take square root or other math function of scalar or array.
-	real or complex to same: COS EXP LOG SIN SQRT
-	real to real only: ACOS ACOSD AINT ASIN ASIND ATAN ATAND ATANH
-		COSD COSH FLOOR LOG2 LOG10 SIND SINH TAN TAND TANH
-	complex to real: ARG ARGD
+        Take square root or other math function of scalar or array.
+        real or complex to same: COS EXP LOG SIN SQRT
+        real to real only: ACOS ACOSD AINT ASIN ASIND ATAN ATAND ATANH
+                COSD COSH FLOOR LOG2 LOG10 SIND SINH TAN TAND TANH
+        complex to real: ARG ARGD
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+        Call sequence: 
 
 int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 
@@ -30,7 +30,7 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -61,14 +61,14 @@ STATIC_CONSTANT int roprand = 0x8000;
     case CLASS_S:\
     case CLASS_D: nout = 1; break;\
     case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in->class)\
   {\
     case CLASS_S:\
     case CLASS_D: scalars |= 1; break;\
     case CLASS_A: if (ina->arsize/ina->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
    }
 
 #define Operate(type,dtype,function) \
@@ -220,28 +220,28 @@ STATIC_ROUTINE double cabs_d(double in1, double in2)
     double x = (in1 > 0) ? in1 : -in1;
     double y = (in2 > 0) ? in2 : -in2;
     if (x == 0.0)
-	return y;
+        return y;
     else if (y == 0.0)
-	return x;
+        return x;
     else if (x > y)
-	return x * sqrt(1 + pow((y / x), 2.0));
+        return x * sqrt(1 + pow((y / x), 2.0));
     else
-	return y * sqrt(1 + pow((x / y), 2.0));
+        return y * sqrt(1 + pow((x / y), 2.0));
 }
 
 STATIC_ROUTINE void sqrt_complex(double *in, double *out)
 {
     if (in[0] == (double)0.0 && in[1] == (double)0.0) {
-	out[0] = (double)0.0;
-	out[1] = (double)0.0;
+        out[0] = (double)0.0;
+        out[1] = (double)0.0;
     } else {
-	out[0] = sqrt((fabs(in[0]) + cabs_d(in[0], in[1])) * .5);
-	if (in[0] > 0.0)
-	    out[1] = in[1] / (out[0] + out[0]);
-	else {
-	    out[1] = (in[1] < 0.0) ? -out[0] : out[0];
-	    out[0] = in[1] / (out[1] + out[1]);
-	}
+        out[0] = sqrt((fabs(in[0]) + cabs_d(in[0], in[1])) * .5);
+        if (in[0] > 0.0)
+            out[1] = in[1] / (out[0] + out[0]);
+        else {
+            out[1] = (in[1] < 0.0) ? -out[0] : out[0];
+            out[0] = in[1] / (out[1] + out[1]);
+        }
     }
     return;
 }
@@ -250,23 +250,23 @@ STATIC_ROUTINE void log_complex(double *in, double *out)
 {
     double theta;
     if (in[0] > 0.0)
-	theta = 0.0;
+        theta = 0.0;
     else if (in[0] < 0.0 && in[1] >= 0.0)
-	theta = 3.1415927;
+        theta = 3.1415927;
     else if (in[0] < 0.0)
-	theta = -3.1415927;
+        theta = -3.1415927;
     else if (in[0] == 0 && in[1] == 0) {
-	out[0] = 0.0;
-	out[1] = 0.0;
-	return;
+        out[0] = 0.0;
+        out[1] = 0.0;
+        return;
     } else if (in[0] == 0.0 && in[1] > 0.0) {
-	out[0] = log(in[1]);
-	out[1] = 1.570963;
-	return;
+        out[0] = log(in[1]);
+        out[1] = 1.570963;
+        return;
     } else if (in[0] == 0.0) {
-	out[0] = log(fabs(in[1]));
-	out[1] = -1.570963;
-	return;
+        out[0] = log(fabs(in[1]));
+        out[1] = -1.570963;
+        return;
     }
     out[1] = atan(in[1] / in[0]) + theta;
     out[0] = log(sqrt(in[0] * in[0] + in[1] * in[1]));
@@ -317,9 +317,9 @@ STATIC_ROUTINE double atanh_Static(double in)
 {
     double ans;
     if (in <= -1.0 || in >= 1.)
-	CvtConvertFloat(&roprand, DTYPE_F, &ans, DTYPE_NATIVE_DOUBLE, 0);
+        CvtConvertFloat(&roprand, DTYPE_F, &ans, DTYPE_NATIVE_DOUBLE, 0);
     else
-	ans = log((in + 1) / (in - 1)) / 2.0;
+        ans = log((in + 1) / (in - 1)) / 2.0;
     return ans;
 }
 

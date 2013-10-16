@@ -1,8 +1,8 @@
-/*	Tdi3Exponent.C
-	EXPONENT FIX_ROPRAND FRACTION SCALE SET_EXPONENT
-	Floating point elemental operations.
+/*      Tdi3Exponent.C
+        EXPONENT FIX_ROPRAND FRACTION SCALE SET_EXPONENT
+        Floating point elemental operations.
 
-	Ken Klare, LANL P-4	(c)1989,1990,1991
+        Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
@@ -40,10 +40,10 @@ extern int IsRoprand();
 *po = dtype##_FLOAT_EXPONENT(pi) ? dtype##_FLOAT_EXPONENT(pi) - dtype##_FLOAT_BIAS : 0; break;
 
 /*-------------------------------------------------------------------
-	F8X exponent part of model: sign * base**exponent * fraction.
-	This is computer-dependent. VAX base=2.
-	EXPONENT(1.0) is 1, EXPONENT(4.1) is 3, EXPONENT(0.0) is 0, EXPONENT(ROPRAND) is 0.
-		integer = EXPONENT(real)
+        F8X exponent part of model: sign * base**exponent * fraction.
+        This is computer-dependent. VAX base=2.
+        EXPONENT(1.0) is 1, EXPONENT(4.1) is 3, EXPONENT(0.0) is 0, EXPONENT(ROPRAND) is 0.
+                integer = EXPONENT(real)
 */
 int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -53,35 +53,35 @@ int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
     N_ELEMENTS(out_ptr, n);
     if (status & 1)
-	switch (in_ptr->dtype) {
-	case DTYPE_FC:
-	case DTYPE_FSC:
-	case DTYPE_DC:
-	case DTYPE_GC:
-	case DTYPE_FTC:
-	    status = TdiNO_CMPLX;
-	    break;
-	case DTYPE_F:
-	    compute_exponent(F)
-	case DTYPE_FS:
-	    compute_exponent(FS)
-	case DTYPE_D:
-	    compute_exponent(D)
-	case DTYPE_G:
-	    compute_exponent(G)
-	case DTYPE_FT:
-	    compute_exponent(FT)
-	default:
-	    status = TdiINVDTYDSC;
-	    break;
-	}
+        switch (in_ptr->dtype) {
+        case DTYPE_FC:
+        case DTYPE_FSC:
+        case DTYPE_DC:
+        case DTYPE_GC:
+        case DTYPE_FTC:
+            status = TdiNO_CMPLX;
+            break;
+        case DTYPE_F:
+            compute_exponent(F)
+        case DTYPE_FS:
+            compute_exponent(FS)
+        case DTYPE_D:
+            compute_exponent(D)
+        case DTYPE_G:
+            compute_exponent(G)
+        case DTYPE_FT:
+            compute_exponent(FT)
+        default:
+            status = TdiINVDTYDSC;
+            break;
+        }
     return status;
 }
 
 /*-------------------------------------------------------------------
-	Find the valid values.
-		FINITE(expression)
-	VAX dependent.
+        Find the valid values.
+                FINITE(expression)
+        VAX dependent.
 */
 int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -93,67 +93,67 @@ int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
     N_ELEMENTS(out_ptr, n);
     switch (in_ptr->dtype) {
     case DTYPE_F:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!IsRoprand(DTYPE_F, pin);
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!IsRoprand(DTYPE_F, pin);
+        break;
     case DTYPE_FS:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!IsRoprand(DTYPE_FS, pin);
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!IsRoprand(DTYPE_FS, pin);
+        break;
     case DTYPE_D:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!IsRoprand(DTYPE_D, pin);
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!IsRoprand(DTYPE_D, pin);
+        break;
     case DTYPE_G:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!IsRoprand(DTYPE_G, pin);
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!IsRoprand(DTYPE_G, pin);
+        break;
     case DTYPE_FT:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!IsRoprand(DTYPE_FT, pin);
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!IsRoprand(DTYPE_FT, pin);
+        break;
     case DTYPE_FC:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!(IsRoprand(DTYPE_F, pin) ||
-			      IsRoprand(DTYPE_F, pin + step / 2));
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!(IsRoprand(DTYPE_F, pin) ||
+                              IsRoprand(DTYPE_F, pin + step / 2));
+        break;
     case DTYPE_FSC:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!(IsRoprand(DTYPE_FS, pin) ||
-			      IsRoprand(DTYPE_FS, pin + step / 2));
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!(IsRoprand(DTYPE_FS, pin) ||
+                              IsRoprand(DTYPE_FS, pin + step / 2));
+        break;
     case DTYPE_DC:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!(IsRoprand(DTYPE_D, pin) ||
-			      IsRoprand(DTYPE_D, pin + step / 2));
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!(IsRoprand(DTYPE_D, pin) ||
+                              IsRoprand(DTYPE_D, pin + step / 2));
+        break;
     case DTYPE_GC:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!(IsRoprand(DTYPE_G, pin) ||
-			      IsRoprand(DTYPE_G, pin + step / 2));
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!(IsRoprand(DTYPE_G, pin) ||
+                              IsRoprand(DTYPE_G, pin + step / 2));
+        break;
     case DTYPE_FTC:
-	for (; --n >= 0; pin += step)
-	    *pout++ = (char)!(IsRoprand(DTYPE_FT, pin) ||
-			      IsRoprand(DTYPE_FT, pin + step / 2));
-	break;
+        for (; --n >= 0; pin += step)
+            *pout++ = (char)!(IsRoprand(DTYPE_FT, pin) ||
+                              IsRoprand(DTYPE_FT, pin + step / 2));
+        break;
     default:
-	for (; --n >= 0;)
-	    *pout++ = (char)1;
-	break;
+        for (; --n >= 0;)
+            *pout++ = (char)1;
+        break;
     }
     return status;
 }
 
 /*-------------------------------------------------------------------
-	Fix any reserved operands (overflows, errors) in the data.
-	If the expression and replacement is complex both elements are replaced.
-	If the expression is complex but the replacement is real, replace either with that real.
-	This is computer dependent, reserved operand is VAX feature.
-		FIX_ROPRAND(expression, replacement)
-	NEED special case for no fixup? Remember we have fetched the data.
-	if-else is more efficient than ?: for loop.
-	NEED to understand why VAXC fetches 16/8 bytes for some struct copies in ?:.
+        Fix any reserved operands (overflows, errors) in the data.
+        If the expression and replacement is complex both elements are replaced.
+        If the expression is complex but the replacement is real, replace either with that real.
+        This is computer dependent, reserved operand is VAX feature.
+                FIX_ROPRAND(expression, replacement)
+        NEED special case for no fixup? Remember we have fetched the data.
+        if-else is more efficient than ?: for loop.
+        NEED to understand why VAXC fetches 16/8 bytes for some struct copies in ?:.
 */
 
 #define do_complex(type,dtype) \
@@ -174,7 +174,7 @@ int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 #define do_fix(type,dtype) case DTYPE##dtype##C : do_complex(type,DTYPE##dtype)  case DTYPE##dtype : do_simple(type,DTYPE##dtype)
 
 int Tdi3FixRoprand(struct descriptor *old_ptr,
-		   struct descriptor *rep_ptr, struct descriptor *out_ptr)
+                   struct descriptor *rep_ptr, struct descriptor *out_ptr)
 {
     char *inp = old_ptr->pointer;
     char *rep = rep_ptr->pointer;
@@ -191,19 +191,19 @@ int Tdi3FixRoprand(struct descriptor *old_ptr,
     case DTYPE_D:
     case DTYPE_G:
     case DTYPE_FT:
-	cmplx = 0;
-	break;
+        cmplx = 0;
+        break;
     default:
-	cmplx = 1;
-	break;
+        cmplx = 1;
+        break;
     }
     if (status & 1)
-	switch (out_ptr->dtype) {
-	    do_fix(float, _F)
-		do_fix(float, _FS)
-		do_fix(double, _D) do_fix(double, _G) do_fix(double, _FT)
-	    default:break;
-	}
+        switch (out_ptr->dtype) {
+            do_fix(float, _F)
+                do_fix(float, _FS)
+                do_fix(double, _D) do_fix(double, _G) do_fix(double, _FT)
+            default:break;
+        }
     return status;
 }
 
@@ -218,10 +218,10 @@ int Tdi3FixRoprand(struct descriptor *old_ptr,
     break;
 
 /*-------------------------------------------------------------------
-	F8X elemental for fraction part of model: sign * base**exponent * fraction.
-	This is computer-dependent. VAX base=2.
-	FRACTION(3.0) is .75, FRACTION(0.0) is 0.0, FRACTION(ROPRAND) is ROPRAND.
-		real = FRACTION(real)
+        F8X elemental for fraction part of model: sign * base**exponent * fraction.
+        This is computer-dependent. VAX base=2.
+        FRACTION(3.0) is .75, FRACTION(0.0) is 0.0, FRACTION(ROPRAND) is ROPRAND.
+                real = FRACTION(real)
 */
 int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -231,21 +231,21 @@ int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
     N_ELEMENTS(out_ptr, n);
     if (status & 1)
-	switch (out_ptr->dtype) {
-	    do_fraction(F,;
-		)
-		do_fraction(FS,;
-		)
-		do_fraction(G, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_fraction(D, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_fraction(FT, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-	default:
-	    status = TdiINVDTYDSC;
-	    break;
-	}
+        switch (out_ptr->dtype) {
+            do_fraction(F,;
+                )
+                do_fraction(FS,;
+                )
+                do_fraction(G, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_fraction(D, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_fraction(FT, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+        default:
+            status = TdiINVDTYDSC;
+            break;
+        }
     return status;
 }
 
@@ -260,10 +260,10 @@ int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
     break;
 
 /*-------------------------------------------------------------------
-	F8X elemental for reciprocal of the relative spacing of model: sign * base**exponent * fraction.
-	This is computer-dependent. VAX base=2. abs(X*b^(prec-offset)).
-	RRSPACING(3.0) is .75*2^24.
-		real = RRSPACING(real)
+        F8X elemental for reciprocal of the relative spacing of model: sign * base**exponent * fraction.
+        This is computer-dependent. VAX base=2. abs(X*b^(prec-offset)).
+        RRSPACING(3.0) is .75*2^24.
+                real = RRSPACING(real)
 */
 int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -274,21 +274,21 @@ int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
     N_ELEMENTS(out_ptr, n);
     if (status & 1)
-	switch (in_ptr->dtype) {
-	    do_rrspacing(F,;
-		)
-		do_rrspacing(FS,;
-		)
-		do_rrspacing(G, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_rrspacing(D, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_rrspacing(FT, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-	default:
-	    status = TdiINVDTYDSC;
-	    break;
-	}
+        switch (in_ptr->dtype) {
+            do_rrspacing(F,;
+                )
+                do_rrspacing(FS,;
+                )
+                do_rrspacing(G, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_rrspacing(D, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_rrspacing(FT, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+        default:
+            status = TdiINVDTYDSC;
+            break;
+        }
     return status;
 }
 
@@ -302,14 +302,14 @@ int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
     }\
     break;
 /*-------------------------------------------------------------------
-	F8X elemental to scale number of model: sign * base**exponent * fraction.
-	This is computer-dependent. VAX base=2.
-	SCALE(3.0, 2) is 12.0, SCALE(0.0, any) is 0.0, SCALE(ROPRAND, any) is ROPRAND.
-		real = SCALE(real, integer)
-	NEED overflow detection, complex.
+        F8X elemental to scale number of model: sign * base**exponent * fraction.
+        This is computer-dependent. VAX base=2.
+        SCALE(3.0, 2) is 12.0, SCALE(0.0, any) is 0.0, SCALE(ROPRAND, any) is ROPRAND.
+                real = SCALE(real, integer)
+        NEED overflow detection, complex.
 */
 int Tdi3Scale(struct descriptor *in1_ptr,
-	      struct descriptor *in2_ptr, struct descriptor *out_ptr)
+              struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     int n, status = 1;
     int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
@@ -321,25 +321,25 @@ int Tdi3Scale(struct descriptor *in1_ptr,
 
     N_ELEMENTS(out_ptr, n);
     if (in1_ptr->class != CLASS_A)
-	inp_inc = 0;
+        inp_inc = 0;
     if (in2_ptr->class != CLASS_A)
-	inp2_inc = 0;
+        inp2_inc = 0;
     if (status & 1)
-	switch (in1_ptr->dtype) {
-	    do_scale(F,;
-		)
-		do_scale(FS,;
-		)
-		do_scale(G, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_scale(D, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_scale(FT, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-	default:
-	    status = TdiINVDTYDSC;
-	    break;
-	}
+        switch (in1_ptr->dtype) {
+            do_scale(F,;
+                )
+                do_scale(FS,;
+                )
+                do_scale(G, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_scale(D, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_scale(FT, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+        default:
+            status = TdiINVDTYDSC;
+            break;
+        }
     return status;
 }
 
@@ -353,14 +353,14 @@ int Tdi3Scale(struct descriptor *in1_ptr,
     }\
     break;
 /*-------------------------------------------------------------------
-	F8X elemental to set exponent part of non-zeroes with model: sign * base**exponent * fraction.
-	This is computer-dependent. VAX base=2.
-	SET_EXPONENT(3.0, 1) is 1.5, SET_EXPONENT(0.0, any) is 0.0, SET_EXPONENT(ROPRAND, any) is ROPRAND.
-		real = SET_EXPONENT(real, integer)
-	NEED overflow detection.
+        F8X elemental to set exponent part of non-zeroes with model: sign * base**exponent * fraction.
+        This is computer-dependent. VAX base=2.
+        SET_EXPONENT(3.0, 1) is 1.5, SET_EXPONENT(0.0, any) is 0.0, SET_EXPONENT(ROPRAND, any) is ROPRAND.
+                real = SET_EXPONENT(real, integer)
+        NEED overflow detection.
 */
 int Tdi3SetExponent(struct descriptor *in1_ptr,
-		    struct descriptor *in2_ptr, struct descriptor *out_ptr)
+                    struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
     int n, status = 1;
     int inp_inc = (in1_ptr->class == CLASS_A) ? in1_ptr->length : 0;
@@ -372,21 +372,21 @@ int Tdi3SetExponent(struct descriptor *in1_ptr,
 
     N_ELEMENTS(out_ptr, n);
     if (status & 1)
-	switch (in1_ptr->dtype) {
-	    do_setexponent(F,;
-		)
-		do_setexponent(FS,;
-		)
-		do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-		do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];
-		)
-	default:
-	    status = TdiINVDTYDSC;
-	    break;
-	}
+        switch (in1_ptr->dtype) {
+            do_setexponent(F,;
+                )
+                do_setexponent(FS,;
+                )
+                do_setexponent(G, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_setexponent(D, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+                do_setexponent(FT, ((int *)outp)[1] = ((int *)inp)[1];
+                )
+        default:
+            status = TdiINVDTYDSC;
+            break;
+        }
     return status;
 }
 
@@ -403,11 +403,11 @@ int Tdi3SetExponent(struct descriptor *in1_ptr,
     break;
 
 /*-------------------------------------------------------------------
-	F8X elemental for the absolute spacing of model numbers near the argument: sign * base**exponent * fraction.
-	This is computer-dependent. VAX base=2. base^(exp-prec)
-	SPACING(3.0) is 2^22.
-		real = SPACING(real)
-	NEED overflow detection.
+        F8X elemental for the absolute spacing of model numbers near the argument: sign * base**exponent * fraction.
+        This is computer-dependent. VAX base=2. base^(exp-prec)
+        SPACING(3.0) is 2^22.
+                real = SPACING(real)
+        NEED overflow detection.
 */
 int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -418,20 +418,20 @@ int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 
     N_ELEMENTS(out_ptr, n);
     if (status & 1)
-	switch (in_ptr->dtype) {
-	    do_spacing(F,;
-		)
-		do_spacing(FS,;
-		)
-		do_spacing(G, ((int *)outp)[1] = 0;
-		)
-		do_spacing(D, ((int *)outp)[1] = 0;
-		)
-		do_spacing(FT, ((int *)outp)[1] = 0;
-		)
-	default:
-	    status = TdiINVDTYDSC;
-	    break;
-	}
+        switch (in_ptr->dtype) {
+            do_spacing(F,;
+                )
+                do_spacing(FS,;
+                )
+                do_spacing(G, ((int *)outp)[1] = 0;
+                )
+                do_spacing(D, ((int *)outp)[1] = 0;
+                )
+                do_spacing(FT, ((int *)outp)[1] = 0;
+                )
+        default:
+            status = TdiINVDTYDSC;
+            break;
+        }
     return status;
 }

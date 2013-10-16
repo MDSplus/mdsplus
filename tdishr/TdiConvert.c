@@ -90,11 +90,11 @@ extern int IsRoprand();
                    while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i+lena-lenb]; pa += lena;}\
                    status = 1;}
 #define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
-	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
-	       for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}\
-  	       status = 1;}
+               while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+               for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)0; pb += lenb; pa += lena;}\
+               status = 1;}
 #define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
-	       while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
+               while(numb-- > 0) {for (i=0;i<lena;i++) pb[lenb - i - 1] = pa[lena - i - 1];\
                for (i=lena; i<lenb; i++) pb[lenb - i - 1] = (char)((pa[0] < 0) ? -1 : 0); pb += lenb; pa += lena;}\
                status = 1;}
 #else
@@ -108,12 +108,12 @@ extern int IsRoprand();
                    while(numb-- > 0) {for (i=0;i<lenb;i++) *pb++ = pa[i]; pa += lena;}\
                    status = 1;}
 #define CONVERT_BINARY_LARGER_ZEXTEND(pa,pb,numb,lena,lenb) {int i; \
-	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
-	       for (i=lena; i<lenb; i++) *pb++ = (char)0;}\
-  	       status = 1;}
+               while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++;\
+               for (i=lena; i<lenb; i++) *pb++ = (char)0;}\
+               status = 1;}
 #define CONVERT_BINARY_LARGER_SEXTEND(pa,pb,numb,lena,lenb) {int i;\
-	       while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
-	       for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}\
+               while(numb-- > 0) {for (i=0;i<lena;i++) *pb++ = *pa++; \
+               for (i=lena; i<lenb; i++) *pb++ = (char)((pa[-1] < 0) ? -1 : 0);}\
                status = 1;}
 #endif
 
@@ -609,208 +609,208 @@ static void mem_shift(char *in, int offset, int num)
     int i;
     char *p1 = in, *p2 = in + offset;
     for (i = 0; i < num; i++)
-	*p1++ = *p2++;
+        *p1++ = *p2++;
 }
 
 STATIC_ROUTINE void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb,
-				  int lenb, char sym)
+                                  int lenb, char sym)
 {
     float *ip = (float *)pa;
     char *op = (char *)pb;
     int i = numb;
     while (i-- > 0) {
-	char text[64];
-	int nfill;
-	int n;
-	if (IsRoprand(itype, ip)) {
-	    n = sprintf(text, "$ROPRAND");
-	    ip++;
-	} else {
-	    char *pe;
-	    int width;
-	    int prec;
-	    double tmp;
-	    CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE, 0);
-	    width = lenb < 13 ? lenb : 13;
-	    prec = width - 7;
-	    if (prec < 0)
-		prec = 0;
-	    n = sprintf(text, "%#*.*G", width, prec, tmp);
-	    pe = strchr(text, 'E');
-	    if (pe)
-		*pe = sym;
-	    else {
-		if (text[0] == ' ')
-		    mem_shift(text, 1, n - 1);
-		if (text[0] == ' ')
-		    mem_shift(text, 1, n - 2);
-		text[n - 2] = sym;
-		text[n - 1] = '0';
-	    }
-	}
-	nfill = lenb - n;
-	strncpy((nfill <= 0) ? op : op + nfill,
-		(nfill <= 0) ? text - nfill : text, (nfill <= 0) ? lenb : n);
-	if (nfill > 0)
-	    memset(op, 32, nfill);
-	op += lenb;
+        char text[64];
+        int nfill;
+        int n;
+        if (IsRoprand(itype, ip)) {
+            n = sprintf(text, "$ROPRAND");
+            ip++;
+        } else {
+            char *pe;
+            int width;
+            int prec;
+            double tmp;
+            CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE, 0);
+            width = lenb < 13 ? lenb : 13;
+            prec = width - 7;
+            if (prec < 0)
+                prec = 0;
+            n = sprintf(text, "%#*.*G", width, prec, tmp);
+            pe = strchr(text, 'E');
+            if (pe)
+                *pe = sym;
+            else {
+                if (text[0] == ' ')
+                    mem_shift(text, 1, n - 1);
+                if (text[0] == ' ')
+                    mem_shift(text, 1, n - 2);
+                text[n - 2] = sym;
+                text[n - 1] = '0';
+            }
+        }
+        nfill = lenb - n;
+        strncpy((nfill <= 0) ? op : op + nfill,
+                (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? lenb : n);
+        if (nfill > 0)
+            memset(op, 32, nfill);
+        op += lenb;
     }
 }
 
 STATIC_ROUTINE void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb,
-				   int lenb, char sym)
+                                   int lenb, char sym)
 {
     double *ip = (double *)pa;
     char *op = (char *)pb;
     int i = numb;
     while (i-- > 0) {
-	char text[64];
-	int nfill;
-	int n;
-	if (IsRoprand(itype, ip)) {
-	    n = sprintf(text, "$ROPRAND");
-	    ip++;
-	} else {
-	    char *pe;
-	    int width;
-	    int prec;
-	    double tmp;
-	    if (itype != DTYPE_NATIVE_DOUBLE)
-		CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE, 0);
-	    else
-		tmp = *ip++;
-	    width = lenb < 23 ? lenb : 23;
-	    prec = width - 7;
-	    if (prec < 0)
-		prec = 0;
-	    n = sprintf(text, "%#*.*G", width, prec, tmp);
-	    pe = strchr(text, 'E');
-	    if (pe)
-		*pe = sym;
-	    else {
-		int i;
-		if (text[0] == ' ')
-		    for (i = 0; i < (n - 1); i++)
-			text[i] = text[i + 1];	/* memcpy(text,text+1,n-1); */
-		if (text[0] == ' ')
-		    for (i = 0; i < (n - 2); i++)
-			text[i] = text[i + 1];	/* memcpy(text,text+1,n-2); */
-		text[n - 2] = sym;
-		text[n - 1] = '0';
-	    }
-	}
-	nfill = lenb - n;
-	strncpy((nfill <= 0) ? op : op + nfill,
-		(nfill <= 0) ? text - nfill : text, (nfill <= 0) ? lenb : n);
-	if (nfill > 0)
-	    memset(op, 32, nfill);
-	op += lenb;
+        char text[64];
+        int nfill;
+        int n;
+        if (IsRoprand(itype, ip)) {
+            n = sprintf(text, "$ROPRAND");
+            ip++;
+        } else {
+            char *pe;
+            int width;
+            int prec;
+            double tmp;
+            if (itype != DTYPE_NATIVE_DOUBLE)
+                CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE, 0);
+            else
+                tmp = *ip++;
+            width = lenb < 23 ? lenb : 23;
+            prec = width - 7;
+            if (prec < 0)
+                prec = 0;
+            n = sprintf(text, "%#*.*G", width, prec, tmp);
+            pe = strchr(text, 'E');
+            if (pe)
+                *pe = sym;
+            else {
+                int i;
+                if (text[0] == ' ')
+                    for (i = 0; i < (n - 1); i++)
+                        text[i] = text[i + 1];  /* memcpy(text,text+1,n-1); */
+                if (text[0] == ' ')
+                    for (i = 0; i < (n - 2); i++)
+                        text[i] = text[i + 1];  /* memcpy(text,text+1,n-2); */
+                text[n - 2] = sym;
+                text[n - 1] = '0';
+            }
+        }
+        nfill = lenb - n;
+        strncpy((nfill <= 0) ? op : op + nfill,
+                (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? lenb : n);
+        if (nfill > 0)
+            memset(op, 32, nfill);
+        op += lenb;
     }
 }
 
 STATIC_ROUTINE void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb,
-				   int lenb, char sym)
+                                   int lenb, char sym)
 {
     float *ip = (float *)pa;
     char *op = (char *)pb;
     int i = numb;
     while (i-- > 0) {
-	char text[64];
-	int nfill;
-	int n;
-	int part;
-	for (part = 0; part < 2; part++) {
-	    int len = (lenb - 1) / 2;
-	    char *opl = op;
-	    if ((len * 2 + 1) != lenb)
-		*opl++ = ' ';
-	    opl[len] = ',';
-	    if (IsRoprand(itype, ip)) {
-		n = sprintf(text, "$ROPRAND");
-		ip++;
-	    } else {
-		int width;
-		int prec;
-		float tmp;
-		char *pe;
-		if (itype != DTYPE_NATIVE_FLOAT)
-		    CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_FLOAT, 0);
-		else
-		    tmp = *ip++;
-		width = len < 13 ? len : 13;
-		prec = width - 7;
-		if (prec < 0)
-		    prec = 0;
-		n = sprintf(text, "%#*.*G", width, prec, tmp);
-		pe = strchr(text, 'E');
-		if (pe)
-		    *pe = sym;
-		else {
-		    strcpy(text, text + 2);
-		    text[n - 2] = sym;
-		    text[n - 1] = '0';
-		}
-	    }
-	    nfill = len - n;
-	    strncpy((nfill <= 0) ? opl : opl + nfill,
-		    (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? len : n);
-	    if (nfill > 0)
-		memset(opl, 32, nfill);
-	}
-	op += lenb;
+        char text[64];
+        int nfill;
+        int n;
+        int part;
+        for (part = 0; part < 2; part++) {
+            int len = (lenb - 1) / 2;
+            char *opl = op;
+            if ((len * 2 + 1) != lenb)
+                *opl++ = ' ';
+            opl[len] = ',';
+            if (IsRoprand(itype, ip)) {
+                n = sprintf(text, "$ROPRAND");
+                ip++;
+            } else {
+                int width;
+                int prec;
+                float tmp;
+                char *pe;
+                if (itype != DTYPE_NATIVE_FLOAT)
+                    CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_FLOAT, 0);
+                else
+                    tmp = *ip++;
+                width = len < 13 ? len : 13;
+                prec = width - 7;
+                if (prec < 0)
+                    prec = 0;
+                n = sprintf(text, "%#*.*G", width, prec, tmp);
+                pe = strchr(text, 'E');
+                if (pe)
+                    *pe = sym;
+                else {
+                    strcpy(text, text + 2);
+                    text[n - 2] = sym;
+                    text[n - 1] = '0';
+                }
+            }
+            nfill = len - n;
+            strncpy((nfill <= 0) ? opl : opl + nfill,
+                    (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? len : n);
+            if (nfill > 0)
+                memset(opl, 32, nfill);
+        }
+        op += lenb;
     }
 }
 
 STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb,
-				    int lenb, char sym)
+                                    int lenb, char sym)
 {
     double *ip = (double *)pa;
     char *op = (char *)pb;
     int i = numb;
     while (i-- > 0) {
-	char text[64];
-	int nfill;
-	int n;
-	int part;
-	for (part = 0; part < 2; part++) {
-	    int len = (lenb - 1) / 2;
-	    char *opl = op;
-	    if ((len * 2 + 1) != lenb)
-		*opl++ = ' ';
-	    opl[len] = ',';
-	    if (IsRoprand(itype, ip)) {
-		n = sprintf(text, "$ROPRAND");
-		ip++;
-	    } else {
-		int width;
-		int prec;
-		double tmp;
-		char *pe;
-		if (itype != DTYPE_NATIVE_DOUBLE)
-		    CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE, 0);
-		else
-		    tmp = *ip++;
-		width = len < 23 ? len : 23;
-		prec = width - 7;
-		if (prec < 0)
-		    prec = 0;
-		n = sprintf(text, "%#*.*G", width, prec, tmp);
-		pe = strchr(text, 'E');
-		if (pe)
-		    *pe = sym;
-		else {
-		    strcpy(text, text + 2);
-		    text[n - 2] = sym;
-		    text[n - 1] = '0';
-		}
-	    }
-	    nfill = len - n;
-	    strncpy((nfill <= 0) ? opl : opl + nfill,
-		    (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? len : n);
-	    if (nfill > 0)
-		memset(opl, 32, nfill);
-	}
-	op += lenb;
+        char text[64];
+        int nfill;
+        int n;
+        int part;
+        for (part = 0; part < 2; part++) {
+            int len = (lenb - 1) / 2;
+            char *opl = op;
+            if ((len * 2 + 1) != lenb)
+                *opl++ = ' ';
+            opl[len] = ',';
+            if (IsRoprand(itype, ip)) {
+                n = sprintf(text, "$ROPRAND");
+                ip++;
+            } else {
+                int width;
+                int prec;
+                double tmp;
+                char *pe;
+                if (itype != DTYPE_NATIVE_DOUBLE)
+                    CvtConvertFloat(ip++, itype, &tmp, DTYPE_NATIVE_DOUBLE, 0);
+                else
+                    tmp = *ip++;
+                width = len < 23 ? len : 23;
+                prec = width - 7;
+                if (prec < 0)
+                    prec = 0;
+                n = sprintf(text, "%#*.*G", width, prec, tmp);
+                pe = strchr(text, 'E');
+                if (pe)
+                    *pe = sym;
+                else {
+                    strcpy(text, text + 2);
+                    text[n - 2] = sym;
+                    text[n - 1] = '0';
+                }
+            }
+            nfill = len - n;
+            strncpy((nfill <= 0) ? opl : opl + nfill,
+                    (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? len : n);
+            if (nfill > 0)
+                memset(opl, 32, nfill);
+        }
+        op += lenb;
     }
 }
 
@@ -880,26 +880,26 @@ STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb,
 #define defcase(a,b) case MAXTYPE*DTYPE_##a+DTYPE_##b : a##_##b(lena,pa,lenb,pb,numb); break;
 #define defset(a) \
         defcase(a,BU) \
-	defcase(a,WU) \
-	defcase(a,LU) \
-	defcase(a,QU) \
-	defcase(a,OU) \
-	defcase(a,B) \
-	defcase(a,W) \
-	defcase(a,L) \
-	defcase(a,Q) \
-	defcase(a,O) \
-	defcase(a,F) \
-	defcase(a,D) \
-	defcase(a,G) \
-	defcase(a,FC) \
-	defcase(a,DC) \
-	defcase(a,GC) \
-	defcase(a,T) \
-	defcase(a,FS) \
-	defcase(a,FT) \
-	defcase(a,FSC) \
-	defcase(a,FTC)
+        defcase(a,WU) \
+        defcase(a,LU) \
+        defcase(a,QU) \
+        defcase(a,OU) \
+        defcase(a,B) \
+        defcase(a,W) \
+        defcase(a,L) \
+        defcase(a,Q) \
+        defcase(a,O) \
+        defcase(a,F) \
+        defcase(a,D) \
+        defcase(a,G) \
+        defcase(a,FC) \
+        defcase(a,DC) \
+        defcase(a,GC) \
+        defcase(a,T) \
+        defcase(a,FS) \
+        defcase(a,FT) \
+        defcase(a,FSC) \
+        defcase(a,FTC)
 
 int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
 {
@@ -918,83 +918,83 @@ int TdiConvert(struct descriptor_a *pdin, struct descriptor_a *pdout)
     int status = TdiINVDTYDSC;
  /** no output **/
     if (numb <= 0 || lenb <= 0)
-	return 1;
+        return 1;
 
  /** set zero or blanks **/
     if (numa <= 0 || dtypea == DTYPE_Z) {
-	memset((void *)pb, (int)((dtypeb == DTYPE_T) ? ' ' : 0), numb * lenb);
-	return 1;
+        memset((void *)pb, (int)((dtypeb == DTYPE_T) ? ' ' : 0), numb * lenb);
+        return 1;
     }
 
  /** incomplete fill (was an error in olden times) **/
     if (classa && (n = numb - numa) > 0) {
-	memset((void *)(pb + numa * lenb), (int)((dtypeb == DTYPE_T) ? ' ' : 0),
-	       n * lenb);
-	numb = numa;
+        memset((void *)(pb + numa * lenb), (int)((dtypeb == DTYPE_T) ? ' ' : 0),
+               n * lenb);
+        numb = numa;
     }
 
  /** identical types just copies, even unknowns **/
  /** vector=>either is int copy, scalar=>either is many copies **/
     if (dtypea == dtypeb && lena == lenb) {
- same:	if (classa)
-	    memmove((void *)pb, (void *)pa, numb * lenb);
-	else
-	    switch (lenb) {
-	    case 1:
-		for (; --numb >= 0; pb += 1)
-		    *pb = *pa;
-	    case 2:
-		for (; --numb >= 0; pb += 2)
-		    *(short *)pb = *(short *)pa;
-	    case 4:
-		for (; --numb >= 0; pb += 4)
-		    *(int *)pb = *(int *)pa;
-	    default:
-		for (; --numb >= 0; pb += lenb)
-		    memmove((void *)pb, (void *)pa, lenb);
-	    }
-	status = 1;
+ same:  if (classa)
+            memmove((void *)pb, (void *)pa, numb * lenb);
+        else
+            switch (lenb) {
+            case 1:
+                for (; --numb >= 0; pb += 1)
+                    *pb = *pa;
+            case 2:
+                for (; --numb >= 0; pb += 2)
+                    *(short *)pb = *(short *)pa;
+            case 4:
+                for (; --numb >= 0; pb += 4)
+                    *(int *)pb = *(int *)pa;
+            default:
+                for (; --numb >= 0; pb += lenb)
+                    memmove((void *)pb, (void *)pa, lenb);
+            }
+        status = 1;
     } else if (dtypeb >= MAXTYPE)
-	status = TdiINVDTYDSC;
+        status = TdiINVDTYDSC;
  /** scalar => vector convert once as scalar and copy as needed **/
     else if (!classa && classb) {
-	struct descriptor scalarb;
-	scalarb = *(struct descriptor *)pdout;
-	scalarb.class = CLASS_S;
-	TdiConvert(pdin, (struct descriptor_a *)&scalarb);
-	pa = pb;
-	pb += lenb;
-	--numb;
-	goto same;
+        struct descriptor scalarb;
+        scalarb = *(struct descriptor *)pdout;
+        scalarb.class = CLASS_S;
+        TdiConvert(pdin, (struct descriptor_a *)&scalarb);
+        pa = pb;
+        pb += lenb;
+        --numb;
+        goto same;
     } else {
-	numbsave = numb;
-	/** big branch **/
-	n = MAXTYPE * dtypea + dtypeb;
-	switch (n) {
-	    defset(BU)
-		defset(WU)
-		defset(LU)
-		defset(QU)
-		defset(OU)
-		defset(B)
-		defset(W)
-		defset(L)
-		defset(Q)
-		defset(O)
-		defset(F)
-		defset(D)
-		defset(G)
-		defset(FC)
-		defset(DC)
-		defset(GC)
-		defset(T)
-		defset(FS)
-		defset(FT)
-		defset(FSC)
-		defset(FTC)
-	default:
-	    return TdiINVDTYDSC;
-	}
+        numbsave = numb;
+        /** big branch **/
+        n = MAXTYPE * dtypea + dtypeb;
+        switch (n) {
+            defset(BU)
+                defset(WU)
+                defset(LU)
+                defset(QU)
+                defset(OU)
+                defset(B)
+                defset(W)
+                defset(L)
+                defset(Q)
+                defset(O)
+                defset(F)
+                defset(D)
+                defset(G)
+                defset(FC)
+                defset(DC)
+                defset(GC)
+                defset(T)
+                defset(FS)
+                defset(FT)
+                defset(FSC)
+                defset(FTC)
+        default:
+            return TdiINVDTYDSC;
+        }
     }
     return status;
 }
@@ -1009,17 +1009,17 @@ double WideIntToDouble(unsigned int *bin_in, int size, int is_signed)
 
 #ifdef WORDS_BIGENDIAN
     for (i = 0; i < size; i++)
-	bin[i] = bin_in[size - i - 1];
+        bin[i] = bin_in[size - i - 1];
 #else
     memcpy(bin, bin_in, size * sizeof(int));
 #endif
 
     negative = is_signed && (bin[size - 1] & 0x80000000);
     for (i = 0, factor = 1.; i < size;
-	 i++, factor = (i < 4) ? factor * TWO_32 : 0)
-	ans += ((negative ? ~bin[i] : bin[i]) * factor);
+         i++, factor = (i < 4) ? factor * TWO_32 : 0)
+        ans += ((negative ? ~bin[i] : bin[i]) * factor);
     if (negative)
-	ans = -1 - ans;
+        ans = -1 - ans;
     return ans;
 }
 
@@ -1030,20 +1030,20 @@ void DoubleToWideInt(double *in, int size, unsigned int *out)
     double factor;
     double tmp;
     for (i = size - 1, tmp = negative ? -1 - *in : *in, factor =
-	 pow(2.0, 32. * (size - 1)); i >= 0;
-	 tmp -= out[i--] * factor, factor /= TWO_32)
-	out[i] = (int)((tmp / factor) + .49999999999);
+         pow(2.0, 32. * (size - 1)); i >= 0;
+         tmp -= out[i--] * factor, factor /= TWO_32)
+        out[i] = (int)((tmp / factor) + .49999999999);
     if (negative)
-	for (i = 0; i < size; i++)
-	    out[i] = ~out[i];
+        for (i = 0; i < size; i++)
+            out[i] = ~out[i];
 
 #ifdef WORDS_BIGENDIAN
     {
-	unsigned int tmp[16];
-	for (i = 0; i < size; i++)
-	    tmp[i] = out[i];
-	for (i = 0; i < size; i++)
-	    out[i] = tmp[size - i - 1];
+        unsigned int tmp[16];
+        for (i = 0; i < size; i++)
+            tmp[i] = out[i];
+        for (i = 0; i < size; i++)
+            out[i] = tmp[size - i - 1];
     }
 #endif
 

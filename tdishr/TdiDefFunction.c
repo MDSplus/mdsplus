@@ -1,9 +1,9 @@
-/*	TDI$$DEF_FUNCTION.C
- 	Internal/intrinsic function table definition.
-	Yacc tokens are put into TdiRefFunction table here.
-	Precedence is associated with a token.
+/*      TDI$$DEF_FUNCTION.C
+        Internal/intrinsic function table definition.
+        Yacc tokens are put into TdiRefFunction table here.
+        Precedence is associated with a token.
 
-	Ken Klare, LANL CTR-7	(c)1989,1990
+        Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #ifdef HAVE_VXWORKS_H
@@ -31,7 +31,7 @@ extern int TdiIntrinsic();
                narg++,arg=va_arg(incrmtr, struct descriptor *)); \
 } else narg=0
 
-#endif				/* va_count */
+#endif                          /* va_count */
 
 #define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) \
 int Tdi##name ( struct descriptor *first, ... ) \

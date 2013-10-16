@@ -26,23 +26,23 @@ int IsRoprand(int dtype, void *value)
     int ans = 0;
     switch (dtype) {
     case DTYPE_F:
-	ans = IsRoprandF(value);
-	break;
+        ans = IsRoprandF(value);
+        break;
     case DTYPE_D:
-	ans = IsRoprandD(value);
-	break;
+        ans = IsRoprandD(value);
+        break;
     case DTYPE_G:
-	ans = IsRoprandG(value);
-	break;
+        ans = IsRoprandG(value);
+        break;
     case DTYPE_FS:
-	ans = IsRoprandS(value);
-	break;
+        ans = IsRoprandS(value);
+        break;
     case DTYPE_FT:
-	ans = IsRoprandT(value);
-	break;
+        ans = IsRoprandT(value);
+        break;
     case DTYPE_T:
-	ans = IsRoprandT(value);
-	break;
+        ans = IsRoprandT(value);
+        break;
     }
     return ans;
 }

@@ -1,7 +1,7 @@
-/*	Tdi3Expt.C
-	Data base info.
+/*      Tdi3Expt.C
+        Data base info.
 
-	Ken Klare, LANL CTR-7	(c)1990
+        Ken Klare, LANL CTR-7   (c)1990
 */
 #include <stdio.h>
 #include <string.h>
@@ -16,7 +16,7 @@ STATIC_CONSTANT char *cvsrev =
     "@(#)$RCSfile$ $Revision$ $Date$";
 
 /*--------------------------------------------------------------
-	Default path name.
+        Default path name.
 */
 int Tdi3MdsDefault(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -32,16 +32,16 @@ int Tdi3MdsDefault(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
     lst[0].return_length_address = &retlen;
     status = TreeGetDbi(lst);
     if (status & 1) {
-	len = (unsigned short)retlen;
-	status = MdsGet1DxS(&len, &dtype, out_ptr);
+        len = (unsigned short)retlen;
+        status = MdsGet1DxS(&len, &dtype, out_ptr);
     }
     if (status & 1)
-	memcpy(out_ptr->pointer->pointer, value, len);
+        memcpy(out_ptr->pointer->pointer, value, len);
     return status;
 }
 
 /*--------------------------------------------------------------
-	Experiment name.
+        Experiment name.
 */
 int Tdi3Expt(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -57,16 +57,16 @@ int Tdi3Expt(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
     lst[0].return_length_address = &retlen;
     status = TreeGetDbi(lst);
     if (status & 1) {
-	len = (unsigned short)retlen;
-	status = MdsGet1DxS(&len, &dtype, out_ptr);
+        len = (unsigned short)retlen;
+        status = MdsGet1DxS(&len, &dtype, out_ptr);
     }
     if (status & 1)
-	memcpy(out_ptr->pointer->pointer, value, len);
+        memcpy(out_ptr->pointer->pointer, value, len);
     return status;
 }
 
 /*--------------------------------------------------------------
-	Shot number identifier.
+        Shot number identifier.
 */
 int Tdi3Shot(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -82,16 +82,16 @@ int Tdi3Shot(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
     lst[0].return_length_address = &retlen;
     status = TreeGetDbi(lst);
     if (status & 1) {
-	len = (unsigned short)retlen;
-	status = MdsGet1DxS(&len, &dtype, out_ptr);
+        len = (unsigned short)retlen;
+        status = MdsGet1DxS(&len, &dtype, out_ptr);
     }
     if (status & 1)
-	*(int *)out_ptr->pointer->pointer = value;
+        *(int *)out_ptr->pointer->pointer = value;
     return status;
 }
 
 /*--------------------------------------------------------------
-	Shot number identifier converted to string.
+        Shot number identifier converted to string.
 */
 int Tdi3Shotname(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -107,11 +107,11 @@ int Tdi3Shotname(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
     lst[0].return_length_address = &retlen;
     status = TreeGetDbi(lst);
     if (value != -1) {
-	sprintf(string, "%d", value);
-	dmodel.pointer = string;
-	dmodel.length = (unsigned short)strlen(string);
+        sprintf(string, "%d", value);
+        dmodel.pointer = string;
+        dmodel.length = (unsigned short)strlen(string);
     }
     if (status & 1)
-	status = MdsCopyDxXd((struct descriptor *)&dmodel, out_ptr);
+        status = MdsCopyDxXd((struct descriptor *)&dmodel, out_ptr);
     return status;
 }

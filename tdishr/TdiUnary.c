@@ -5,25 +5,25 @@
        Type:    C function
 
        Author:  Mark London
-	       MIT Plasma Fusion Center
+               MIT Plasma Fusion Center
 
        Date:    20-SEP-1993
 
        Purpose: Checks descriptors for valid classes and equal lengths.
-		Returns the count of the number of elements if the
-		descriptors points to an array, else returns 1 for scalar
-		or string.
+                Returns the count of the number of elements if the
+                descriptors points to an array, else returns 1 for scalar
+                or string.
 
        Call sequence:
-	       struct descriptor *in_ptr;
-	       struct descriptor *out_ptr;
-	       int  *out_count;
+               struct descriptor *in_ptr;
+               struct descriptor *out_ptr;
+               int  *out_count;
 
-	       status = TdiUnary(in_ptr,out_ptr,out_count);
+               status = TdiUnary(in_ptr,out_ptr,out_count);
        returns:
-		TdiINVCLADSC - if unsupported class
-		TdiINV_SIZE - if descriptor length mismatch
-		1 - if supported class and lengths match
+                TdiINVCLADSC - if unsupported class
+                TdiINV_SIZE - if descriptor length mismatch
+                1 - if supported class and lengths match
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993
@@ -40,36 +40,36 @@ STATIC_CONSTANT char *cvsrev =
     "@(#)$RCSfile$ $Revision$ $Date$";
 
 int TdiUnary(struct descriptor *in_ptr,
-	     struct descriptor *out_ptr, unsigned int *out_count)
+             struct descriptor *out_ptr, unsigned int *out_count)
 {
     struct descriptor_a *a;
 
     switch (out_ptr->class) {
     case CLASS_S:
     case CLASS_D:
-	*out_count = 1;
-	break;
+        *out_count = 1;
+        break;
     case CLASS_A:
-	a = (struct descriptor_a *)out_ptr;
-	if ((*out_count =
-	     out_ptr->length ? a->arsize / out_ptr->length : 0) <= 0)
-	    return 1;
-	break;
+        a = (struct descriptor_a *)out_ptr;
+        if ((*out_count =
+             out_ptr->length ? a->arsize / out_ptr->length : 0) <= 0)
+            return 1;
+        break;
     default:
-	return TdiINVCLADSC;
+        return TdiINVCLADSC;
     }
 
     switch (in_ptr->class) {
     case CLASS_S:
     case CLASS_D:
-	break;
+        break;
     case CLASS_A:
-	a = (struct descriptor_a *)in_ptr;
-	if (a->arsize / in_ptr->length < *out_count)
-	    return TdiINV_SIZE;
-	break;
+        a = (struct descriptor_a *)in_ptr;
+        if (a->arsize / in_ptr->length < *out_count)
+            return TdiINV_SIZE;
+        break;
     default:
-	return TdiINVCLADSC;
+        return TdiINVCLADSC;
     }
 
     return 1;

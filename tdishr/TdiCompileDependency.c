@@ -6,7 +6,7 @@
 */
 #include "tdirefstandard.h"
 int Tdi1CompileDependency(int opcode, int narg, struct descriptor *list[],
-			  struct descriptor_xd *out_ptr)
+                          struct descriptor_xd *out_ptr)
 {
     int status = 1;
     return 1;

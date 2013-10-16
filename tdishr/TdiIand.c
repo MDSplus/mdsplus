@@ -1,36 +1,36 @@
 /*------------------------------------------------------------------------------
 
-		Name:   Tdi3Iand   
+                Name:   Tdi3Iand   
 
-		Type:   C function
+                Type:   C function
 
-     		Author:	TOM FREDIAN
+                Author: TOM FREDIAN
 
-		Date:   18-FEB-1993
+                Date:   18-FEB-1993
 
-    		Purpose: Bitwise logical operations on two operands 
+                Purpose: Bitwise logical operations on two operands 
 
-	For AB	= 00,01,10,11
-	FALSE	= 0,0,0,0	use 0b
-	AND	= 0,0,0,1	.
-	AND_NOT	= 0,0,1,0	.
-	A	= 0,0,1,1	use a
-	NOR_NOT	= 0,1,0,0	use AND_NOT(b,a)
-	B	= 0,1,0,1	use b
-	EOR	= 0,1,1,0	(is NEQV)
-	OR	= 0,1,1,1	.
-	NOR	= 1,0,0,0	.
-NEOR =	EOR_NOT	= 1,0,0,1	(is EQV)
-	NOT B	= 1,0,1,0	use NOT(b)
-	OR_NOT	= 1,0,1,1	.
-	NOT A	= 1,1,0,0	use NOT(a)
-	NAND_NOT= 1,1,0,1	use OR_NOT(b,a)
-	NAND	= 1,1,1,0	.
-	TRUE	= 1,1,1,1	use -1b
+        For AB  = 00,01,10,11
+        FALSE   = 0,0,0,0       use 0b
+        AND     = 0,0,0,1       .
+        AND_NOT = 0,0,1,0       .
+        A       = 0,0,1,1       use a
+        NOR_NOT = 0,1,0,0       use AND_NOT(b,a)
+        B       = 0,1,0,1       use b
+        EOR     = 0,1,1,0       (is NEQV)
+        OR      = 0,1,1,1       .
+        NOR     = 1,0,0,0       .
+NEOR =  EOR_NOT = 1,0,0,1       (is EQV)
+        NOT B   = 1,0,1,0       use NOT(b)
+        OR_NOT  = 1,0,1,1       .
+        NOT A   = 1,1,0,0       use NOT(a)
+        NAND_NOT= 1,1,0,1       use OR_NOT(b,a)
+        NAND    = 1,1,1,0       .
+        TRUE    = 1,1,1,1       use -1b
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+        Call sequence: 
 
 int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -42,7 +42,7 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -178,21 +178,21 @@ int Tdi3##name(struct descriptor *in1, struct descriptor *in2, struct descriptor
     case CLASS_S:\
     case CLASS_D: nout = 1; break;\
     case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in1->class)\
   {\
     case CLASS_S:\
     case CLASS_D: scalars |= 1; break;\
     case CLASS_A: if (ina1->arsize/ina1->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in2->class)\
   {\
     case CLASS_S:\
     case CLASS_D: if (scalars && (nout > 1)) return TdiINV_SIZE; scalars |= 2; break;\
     case CLASS_A: if (ina2->arsize/ina2->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in1->dtype)\
   {\

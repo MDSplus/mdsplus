@@ -1,15 +1,15 @@
-/*	Tdi1DtypeRange.C
-	Create array of stepped values of most data types. Default delta is 1.
-		vector = from : to : [delta]
-	Example, 3..11..2) returns [3, 5, 7, 9, 11].
+/*      Tdi1DtypeRange.C
+        Create array of stepped values of most data types. Default delta is 1.
+                vector = from : to : [delta]
+        Example, 3..11..2) returns [3, 5, 7, 9, 11].
 
-	The begin, end, or delta may be vectors.
-	In which case they are matched.
-	The result is a simple vector concatenation.
-	Example, 3..[4,5] is [3,4,3,4,5].
+        The begin, end, or delta may be vectors.
+        In which case they are matched.
+        The result is a simple vector concatenation.
+        Example, 3..[4,5] is [3,4,3,4,5].
 
-	Ken Klare, LANL CTR-7	(c)1989,1990
-	NEED faster code for longs and maybe floats.
+        Ken Klare, LANL CTR-7   (c)1989,1990
+        NEED faster code for longs and maybe floats.
 */
 
 extern unsigned short OpcValue;
@@ -51,7 +51,7 @@ extern int TdiNint();
 extern struct descriptor *TdiItoXSpecial;
 
 int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[],
-		   struct descriptor_xd *out_ptr)
+                   struct descriptor_xd *out_ptr)
 {
     int status = 1;
     unsigned short len;
@@ -68,162 +68,162 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[],
     new[0] = list[0];
     new[1] = list[1];
     new[2] = narg > 2 ? list[2] : 0;
-	/**********************************************
-	* Specials for X_TO_I axis-to-index conversion.
-	* No axis increment implies all points between.
-	* *:*:$VALUE is done internally in X_TO_I.
-	* x:y:$VALUE is I_TO_X(X_TO_I(x),X_TO_I(y)) with
-	*	missing x or y taken as first or last.
-	* x:y:z is normal range with missing computed.
-	**********************************************/
+        /**********************************************
+        * Specials for X_TO_I axis-to-index conversion.
+        * No axis increment implies all points between.
+        * *:*:$VALUE is done internally in X_TO_I.
+        * x:y:$VALUE is I_TO_X(X_TO_I(x),X_TO_I(y)) with
+        *       missing x or y taken as first or last.
+        * x:y:z is normal range with missing computed.
+        **********************************************/
     if (new[2]
-	&& new[2]->dtype == DTYPE_FUNCTION
-	&& *(unsigned short *)new[2]->pointer == OpcValue) {
-	DESCRIPTOR_RANGE(range, 0, 0, 0);
-	range.begin = &dx0;
-	range.ending = &dx1;
-	if (!TdiThreadStatic()->TdiRANGE_PTRS[2])
-	    return TdiNULL_PTR;
-	if (new[0] == 0 && new[1] == 0)
-	    return TdiItoX(TdiThreadStatic()->TdiRANGE_PTRS[2],
-			   out_ptr MDS_END_ARG);
-	status =
-	    TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], TdiItoXSpecial,
-		    &limits MDS_END_ARG);
-	if (status & 1) {
-	    dx0 = *limits.pointer;
-	    dx0.class = CLASS_S;
-	    dx1 = dx0;
-	    dx1.pointer += dx1.length;
+        && new[2]->dtype == DTYPE_FUNCTION
+        && *(unsigned short *)new[2]->pointer == OpcValue) {
+        DESCRIPTOR_RANGE(range, 0, 0, 0);
+        range.begin = &dx0;
+        range.ending = &dx1;
+        if (!TdiThreadStatic()->TdiRANGE_PTRS[2])
+            return TdiNULL_PTR;
+        if (new[0] == 0 && new[1] == 0)
+            return TdiItoX(TdiThreadStatic()->TdiRANGE_PTRS[2],
+                           out_ptr MDS_END_ARG);
+        status =
+            TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], TdiItoXSpecial,
+                    &limits MDS_END_ARG);
+        if (status & 1) {
+            dx0 = *limits.pointer;
+            dx0.class = CLASS_S;
+            dx1 = dx0;
+            dx1.pointer += dx1.length;
 
-	    dat[0] = dat[1] = EMPTY_XD;
-	    if (new[0]) {
-		status =
-		    TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], new[0],
-			    &dat[0] MDS_END_ARG);
-		range.begin = dat[0].pointer;
-	    }
-	}
-	if (new[1] && status & 1) {
-	    status =
-		TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], new[1],
-			&dat[1] MDS_END_ARG);
-	    range.ending = dat[1].pointer;
-	}
-	if (status & 1)
-	    status =
-		TdiItoX(TdiThreadStatic()->TdiRANGE_PTRS[2], &range,
-			out_ptr MDS_END_ARG);
-	MdsFree1Dx(&dat[1], NULL);
-	MdsFree1Dx(&dat[0], NULL);
-	MdsFree1Dx(&limits, NULL);
-	return status;
+            dat[0] = dat[1] = EMPTY_XD;
+            if (new[0]) {
+                status =
+                    TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], new[0],
+                            &dat[0] MDS_END_ARG);
+                range.begin = dat[0].pointer;
+            }
+        }
+        if (new[1] && status & 1) {
+            status =
+                TdiXtoI(TdiThreadStatic()->TdiRANGE_PTRS[2], new[1],
+                        &dat[1] MDS_END_ARG);
+            range.ending = dat[1].pointer;
+        }
+        if (status & 1)
+            status =
+                TdiItoX(TdiThreadStatic()->TdiRANGE_PTRS[2], &range,
+                        out_ptr MDS_END_ARG);
+        MdsFree1Dx(&dat[1], NULL);
+        MdsFree1Dx(&dat[0], NULL);
+        MdsFree1Dx(&limits, NULL);
+        return status;
     }
     if (new[0] == 0)
-	new[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
+        new[0] = TdiThreadStatic()->TdiRANGE_PTRS[0];
     if (new[1] == 0)
-	new[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
+        new[1] = TdiThreadStatic()->TdiRANGE_PTRS[1];
     if (new[2] == 0)
-	nnew = 2;
+        nnew = 2;
 
-	/******************************************
-	Fetch signals and data and data's category.
-	******************************************/
+        /******************************************
+        Fetch signals and data and data's category.
+        ******************************************/
     if (status & 1)
-	status = TdiGetArgs(opcode, nnew, new, sig, uni, dat, cats);
+        status = TdiGetArgs(opcode, nnew, new, sig, uni, dat, cats);
     if (status & 1)
-	for (j = nnew; --j >= 0;)
-	    if (dat[j].pointer->dtype == DTYPE_MISSING)
-		status = TdiNULL_PTR;
+        for (j = nnew; --j >= 0;)
+            if (dat[j].pointer->dtype == DTYPE_MISSING)
+                status = TdiNULL_PTR;
 
-	/******************************************
-	Adjust category needed to match data types.
-	Do any conversions to match types.
-	******************************************/
+        /******************************************
+        Adjust category needed to match data types.
+        Do any conversions to match types.
+        ******************************************/
     if (status & 1)
-	status = Tdi2Range(nnew, uni, dat, cats, 0);
+        status = Tdi2Range(nnew, uni, dat, cats, 0);
     if (status & 1)
-	status = TdiCvtArgs(nnew, dat, cats);
+        status = TdiCvtArgs(nnew, dat, cats);
     dtype = cats[nnew].out_dtype;
     len = cats[nnew].digits;
 
-	/********************************************
-	The number of elements in each segment.
-	Expression: LONG(MAX((end-begin)/delta+1,0)).
-	Total number of elements is sum of above.
-	WARNING 3$ routines require type match.
-	********************************************/
+        /********************************************
+        The number of elements in each segment.
+        Expression: LONG(MAX((end-begin)/delta+1,0)).
+        Total number of elements is sum of above.
+        WARNING 3$ routines require type match.
+        ********************************************/
     if (status & 1)
-	status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
+        status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
     if (new[2] && status & 1)
-	status = TdiDivide(&nelem, dat[2].pointer, &nelem MDS_END_ARG);
+        status = TdiDivide(&nelem, dat[2].pointer, &nelem MDS_END_ARG);
     if (status & 1)
-	status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
+        status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
     if (status & 1 && nelem.pointer->dtype != DTYPE_L) {
-	status = TdiNint(&nelem, &nelem MDS_END_ARG);
-	if (status & 1 && nelem.pointer->dtype != DTYPE_L)
-	    status = TdiLong(&nelem, &nelem MDS_END_ARG);
+        status = TdiNint(&nelem, &nelem MDS_END_ARG);
+        if (status & 1 && nelem.pointer->dtype != DTYPE_L)
+            status = TdiLong(&nelem, &nelem MDS_END_ARG);
     }
     if (status & 1) {
-	N_ELEMENTS(nelem.pointer, nseg);
+        N_ELEMENTS(nelem.pointer, nseg);
     }
     if (status & 1)
-	for (j = nseg, pl = (int *)nelem.pointer->pointer, tot = 0; --j >= 0;)
-	    tot += *pl++;
+        for (j = nseg, pl = (int *)nelem.pointer->pointer, tot = 0; --j >= 0;)
+            tot += *pl++;
 
-	/**************************
-	Output array size is known.
-	Get the array and stuff it.
-	**************************/
+        /**************************
+        Output array size is known.
+        Get the array and stuff it.
+        **************************/
     arr.arsize = tot;
     if (status & 1)
-	status = MdsGet1DxA((struct descriptor_a *)&arr, &len, &dtype, out_ptr);
+        status = MdsGet1DxA((struct descriptor_a *)&arr, &len, &dtype, out_ptr);
     if (status & 1) {
-	DESCRIPTOR_A(x_dsc, 0, 0, 0, 0);
-	struct descriptor begin = { 0, 0, CLASS_S, 0 };
-	struct descriptor delta = { 0, 0, CLASS_S, 0 };
-	int incb = dat[0].pointer->class == CLASS_A;
-	int incs = new[2] && dat[2].pointer->class == CLASS_A;
+        DESCRIPTOR_A(x_dsc, 0, 0, 0, 0);
+        struct descriptor begin = { 0, 0, CLASS_S, 0 };
+        struct descriptor delta = { 0, 0, CLASS_S, 0 };
+        int incb = dat[0].pointer->class == CLASS_A;
+        int incs = new[2] && dat[2].pointer->class == CLASS_A;
 
-	x_dsc.length = len;
-	x_dsc.dtype = dtype;
-	x_dsc.pointer = out_ptr->pointer->pointer;
-	begin.length = len;
-	begin.dtype = dtype;
-	begin.pointer = dat[0].pointer->pointer;
-	delta.length = len;
-	delta.dtype = dtype;
-	delta.pointer = new[2] ? dat[2].pointer->pointer : 0;
-	for (j = nseg, pl = (int *)nelem.pointer->pointer; --j >= 0;) {
-	    x_dsc.arsize = *pl * len;
-	    if (status & 1)
-		status = Tdi3Ramp(&x_dsc);
-	    if (new[2] && status & 1)
-		status = Tdi3Multiply(&x_dsc, &delta, &x_dsc);
-	    if (status & 1)
-		status = Tdi3Add(&x_dsc, &begin, &x_dsc);
-	    if (incb)
-		begin.pointer += len;
-	    if (incs)
-		delta.pointer += len;
-	    x_dsc.pointer += x_dsc.arsize;
-	    ++pl;
-	}
+        x_dsc.length = len;
+        x_dsc.dtype = dtype;
+        x_dsc.pointer = out_ptr->pointer->pointer;
+        begin.length = len;
+        begin.dtype = dtype;
+        begin.pointer = dat[0].pointer->pointer;
+        delta.length = len;
+        delta.dtype = dtype;
+        delta.pointer = new[2] ? dat[2].pointer->pointer : 0;
+        for (j = nseg, pl = (int *)nelem.pointer->pointer; --j >= 0;) {
+            x_dsc.arsize = *pl * len;
+            if (status & 1)
+                status = Tdi3Ramp(&x_dsc);
+            if (new[2] && status & 1)
+                status = Tdi3Multiply(&x_dsc, &delta, &x_dsc);
+            if (status & 1)
+                status = Tdi3Add(&x_dsc, &begin, &x_dsc);
+            if (incb)
+                begin.pointer += len;
+            if (incs)
+                delta.pointer += len;
+            x_dsc.pointer += x_dsc.arsize;
+            ++pl;
+        }
     }
 
     MdsFree1Dx(&nelem, NULL);
     MdsFree1Dx(&limits, NULL);
 
     if (status & 1)
-	status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
+        status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
 
     for (j = nnew; --j >= 0;) {
-	if (sig[j].pointer)
-	    MdsFree1Dx(&sig[j], NULL);
-	if (uni[j].pointer)
-	    MdsFree1Dx(&uni[j], NULL);
-	if (dat[j].pointer)
-	    MdsFree1Dx(&dat[j], NULL);
+        if (sig[j].pointer)
+            MdsFree1Dx(&sig[j], NULL);
+        if (uni[j].pointer)
+            MdsFree1Dx(&uni[j], NULL);
+        if (dat[j].pointer)
+            MdsFree1Dx(&dat[j], NULL);
     }
     return status;
 }

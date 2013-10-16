@@ -1,6 +1,6 @@
-/*	TDI$UNDEF.C unwritten routines
+/*      TDI$UNDEF.C unwritten routines
 
-	Ken Klare, LANL P-4	(c)1989,1990,1992
+        Ken Klare, LANL P-4     (c)1989,1990,1992
 */
 
 #include <tdimessages.h>

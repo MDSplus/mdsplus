@@ -1,23 +1,23 @@
 /*------------------------------------------------------------------------------
 
-		Name:   Tdi3MATH2   
+                Name:   Tdi3MATH2   
 
-		Type:   C function
+                Type:   C function
 
-     		Author:	TOM FREDIAN
+                Author: TOM FREDIAN
 
-		Date:   5-OCT-1993 
+                Date:   5-OCT-1993 
 
-    		Purpose:
+                Purpose:
  
- 	Take two-argument arctangent or other math function of scalar or array.
- 	out = ATAN2(in1,in2)	arctangent in radians, 4 quadrants
- 	out = ATAN2D(in1,in2)	arctangent in degrees, 4 quadrants
- 	out = MOD(in1,in2)	remainder, in1 - int(in1/in2)*in2
+        Take two-argument arctangent or other math function of scalar or array.
+        out = ATAN2(in1,in2)    arctangent in radians, 4 quadrants
+        out = ATAN2D(in1,in2)   arctangent in degrees, 4 quadrants
+        out = MOD(in1,in2)      remainder, in1 - int(in1/in2)*in2
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+        Call sequence: 
 
 int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 int Tdi3Atan2d(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
@@ -31,7 +31,7 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+        Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -61,21 +61,21 @@ extern void DoubleToWideInt();
     case CLASS_S:\
     case CLASS_D: nout = 1; break;\
     case CLASS_A: nout = outa->arsize/outa->length; if (nout == 0) return 1; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in1->class)\
   {\
     case CLASS_S:\
     case CLASS_D: scalars |= 1; break;\
     case CLASS_A: if (ina1->arsize/ina1->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }\
   switch (in2->class)\
   {\
     case CLASS_S:\
     case CLASS_D: if (scalars && (nout > 1)) return TdiINV_SIZE; scalars |= 2; break;\
     case CLASS_A: if (ina2->arsize/ina2->length < (unsigned int)nout) return TdiINV_SIZE; break;\
-    default:		return TdiINVCLADSC;\
+    default:            return TdiINVCLADSC;\
   }
 
 #define Operate(type,operator) \
@@ -123,7 +123,7 @@ STATIC_ROUTINE double mod_d(double in1, double in2)
 }
 
 STATIC_ROUTINE void mod_bin(int size, int is_signed, char *in1, char *in2,
-			    char *out)
+                            char *out)
 {
     double in1_d = WideIntToDouble(in1, size, is_signed);
     double in2_d = WideIntToDouble(in2, size, is_signed);
@@ -146,71 +146,71 @@ STATIC_ROUTINE void mod_bin(int size, int is_signed, char *in1, char *in2,
 }
 
 int Tdi3Mod(struct descriptor *in1, struct descriptor *in2,
-	    struct descriptor *out)
+            struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_B:
-	Operate(char, %)
-	case DTYPE_BU:Operate(unsigned char, %)
-	case DTYPE_W:Operate(short, %)
-	case DTYPE_WU:Operate(unsigned short, %)
-	case DTYPE_L:Operate(int, %)
-	case DTYPE_LU:Operate(unsigned int, %)
-	case DTYPE_Q:OperateBin(in1->length, 1, mod_bin)
-	case DTYPE_QU:OperateBin(in1->length, 0, mod_bin)
-	case DTYPE_O:OperateBin(in1->length, 1, mod_bin)
-	case DTYPE_OU:OperateBin(in1->length, 0, mod_bin)
-	case DTYPE_F:OperateFloat(float, DTYPE_F, mod_d);
+        Operate(char, %)
+        case DTYPE_BU:Operate(unsigned char, %)
+        case DTYPE_W:Operate(short, %)
+        case DTYPE_WU:Operate(unsigned short, %)
+        case DTYPE_L:Operate(int, %)
+        case DTYPE_LU:Operate(unsigned int, %)
+        case DTYPE_Q:OperateBin(in1->length, 1, mod_bin)
+        case DTYPE_QU:OperateBin(in1->length, 0, mod_bin)
+        case DTYPE_O:OperateBin(in1->length, 1, mod_bin)
+        case DTYPE_OU:OperateBin(in1->length, 0, mod_bin)
+        case DTYPE_F:OperateFloat(float, DTYPE_F, mod_d);
     case DTYPE_FS:
-	OperateFloat(float, DTYPE_FS, mod_d);
+        OperateFloat(float, DTYPE_FS, mod_d);
     case DTYPE_D:
-	OperateFloat(double, DTYPE_D, mod_d);
+        OperateFloat(double, DTYPE_D, mod_d);
     case DTYPE_G:
-	OperateFloat(double, DTYPE_G, mod_d);
+        OperateFloat(double, DTYPE_G, mod_d);
     case DTYPE_FT:
-	OperateFloat(double, DTYPE_FT, mod_d);
+        OperateFloat(double, DTYPE_FT, mod_d);
     default:
-	return TdiINVDTYDSC;
+        return TdiINVDTYDSC;
     }
     return 1;
 }
 
 int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2,
-	      struct descriptor *out)
+              struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_F:
-	OperateFloat(float, DTYPE_F, atan2);
+        OperateFloat(float, DTYPE_F, atan2);
     case DTYPE_FS:
-	OperateFloat(float, DTYPE_FS, atan2);
+        OperateFloat(float, DTYPE_FS, atan2);
     case DTYPE_D:
-	OperateFloat(double, DTYPE_D, atan2);
+        OperateFloat(double, DTYPE_D, atan2);
     case DTYPE_G:
-	OperateFloat(double, DTYPE_G, atan2);
+        OperateFloat(double, DTYPE_G, atan2);
     case DTYPE_FT:
-	OperateFloat(double, DTYPE_FT, atan2);
+        OperateFloat(double, DTYPE_FT, atan2);
     default:
-	return TdiINVDTYDSC;
+        return TdiINVDTYDSC;
     }
     return 1;
 }
 
 int Tdi3Atan2d(struct descriptor *in1, struct descriptor *in2,
-	       struct descriptor *out)
+               struct descriptor *out)
 {
     SetupArgs switch (in1->dtype) {
     case DTYPE_F:
-	OperateFloat(float, DTYPE_F, radians_to_degrees * atan2);
+        OperateFloat(float, DTYPE_F, radians_to_degrees * atan2);
     case DTYPE_FS:
-	OperateFloat(float, DTYPE_FS, radians_to_degrees * atan2);
+        OperateFloat(float, DTYPE_FS, radians_to_degrees * atan2);
     case DTYPE_D:
-	OperateFloat(double, DTYPE_D, radians_to_degrees * atan2);
+        OperateFloat(double, DTYPE_D, radians_to_degrees * atan2);
     case DTYPE_G:
-	OperateFloat(double, DTYPE_G, radians_to_degrees * atan2);
+        OperateFloat(double, DTYPE_G, radians_to_degrees * atan2);
     case DTYPE_FT:
-	OperateFloat(double, DTYPE_FT, radians_to_degrees * atan2);
+        OperateFloat(double, DTYPE_FT, radians_to_degrees * atan2);
     default:
-	return TdiINVDTYDSC;
+        return TdiINVDTYDSC;
     }
     return 1;
 }
