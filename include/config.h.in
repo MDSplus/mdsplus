@@ -42,7 +42,7 @@
 /* Define PS_SYSV if ps(1) uses sysv arguments  */
 #undef PS_SYSV
 
-/* Define TYPE_SHMAT if sys/shm.h doesn't type shmat()  */
+/* Define TYPE_SHMAT if sys/shm.h does not type shmat()  */
 #undef TYPE_SHMAT
 
 /* Define USE_NIS if system has nis_local_host() function  */
@@ -95,6 +95,9 @@
 
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
+
+/* Define if you have the stdint header file. */
+#undef HAVE_STDINT_H
 
 /* Define if you have the <fcntl.h> header file.  */
 #undef HAVE_FCNTL_H

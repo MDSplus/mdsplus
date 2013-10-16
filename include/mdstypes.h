@@ -5,6 +5,12 @@
 #include <config.h>
 #endif
 
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+typedef int64_t _int64;
+typedef uint64_t _int64u;
+#else
+
 #ifdef HAVE_VXWORKS_H
 typedef long long _int64;
 typedef unsigned long long _int64u;
@@ -20,6 +26,7 @@ typedef unsigned long long _int64u;
 #endif
 #else
 typedef unsigned _int64 _int64u;
+#endif
 #endif
 #endif /*vxWorks*/
 
