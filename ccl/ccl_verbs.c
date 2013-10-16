@@ -23,6 +23,28 @@ static int Xrequired = 1;
 static int Qrequired = 0;
 static struct descriptor value = {0, DTYPE_T, CLASS_D, 0};
 
+extern int CamBytcnt(IOSB *iosb);
+extern int CamError(int *xexp, int *qexp, IOSB *iosb_in);
+extern int CamX(IOSB *iosb_in);
+extern int CamQ(IOSB *iosb_in);
+extern int CamGetStat(IOSB *iosb_in);
+extern int CamXandQ(IOSB *iosb_in);
+extern int CamFQrepw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamFQstopw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamFStopw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamQrepw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamQscanw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamQstopw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamStopw(char *name, int a, int f, int count, void *data, int mem, IOSB *iosb);
+extern int CamPiow(char *name, int a, int f, void *data, int mem, IOSB *iosb);
+extern int CamPioQrepw(char *name, int a, int f, void *data, int mem, IOSB *iosb);
+extern int CamVerbose(int);
+extern int str_copy_dx(struct descriptor *,struct descriptor *);
+extern int cli_get_value(char *,struct descriptor *);
+extern int cli_present(char *);
+extern char *MdsGetMsg(int);
+extern int MDSfprintf(FILE *,const char *,const char *);
+
 #define not_implemented(a) \
     int a(){printf("\n==>  %s : This command is not implemented on this platform\n\n",#a);return 0;}
 
