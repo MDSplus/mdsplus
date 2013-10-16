@@ -546,7 +546,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*apple-darwin10*) echo "Configuring for MacOS X lion 10";
+*apple-darwin*) echo "Configuring for MacOS X lion 10";
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
@@ -564,8 +564,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 		  VAL="F2C_VAL"
        elif (test "$F77" = "gfortran"); then
           FFLAGS="$FFLAGS -fno-range-check"
-          FORLD="gcc"
-          FOR_LDFLAGS="-shared -arch x86_64 -arch i386 -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/ -L/usr/local/gfortran/lib/gcc/x86_64-apple-darwin11/4.6.2/i386 -lgfortranbegin /usr/local/gfortran/lib/libquadmath.a /usr/local/gfortran/lib/i386/libquadmath.a /usr/local/gfortran/lib/libgfortran.a /usr/local/gfortran/lib/i386/libgfortran.a"
+          FORLD="gfortran"
+          FOR_LDFLAGS="-shared -march=x86_64 -march=i386"
           LOC="loc"
        fi;
        FEXECLIBDIR="-L";
