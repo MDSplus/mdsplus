@@ -60,7 +60,7 @@ STATIC_THREADSAFE char * saved_output = 0;
 #ifndef HAVE_WINDOWS_H
 STATIC_THREADSAFE pthread_mutex_t saved_output_mutex;
 #endif
-STATIC_THREADSAFE initialized=0;
+STATIC_THREADSAFE int initialized=0;
 
 	/***************************************************************
 	 * TclSetCallbacks:

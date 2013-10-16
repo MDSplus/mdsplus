@@ -266,7 +266,7 @@ int TclDispatch_show_server()
            {
             void  *ctx = 0;
             char *server;
-            while (server = ServerFindServers(&ctx,ident.dscA_pointer))
+            while ((server = ServerFindServers(&ctx,ident.dscA_pointer)))
                {
                 if (output)
 		{

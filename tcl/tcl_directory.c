@@ -179,7 +179,7 @@ int   TclDirectory()
 
                     ctx2 = 0;
                     first_tag = 1;
-                    while (tagnam = TreeFindNodeTags(nid,&ctx2))
+                    while ((tagnam = TreeFindNodeTags(nid,&ctx2)))
                        {
                         str_concat(&dsc_outline,&dsc_outline,
                                 (first_tag?" tags: \\":",\\"),tagnam,0);
@@ -297,7 +297,7 @@ static int doFull(int nid,unsigned char nodeUsage,int version)
   static char dtype;
   static int   dataLen;
   static unsigned short conglomerate_elt;
-  static vers;
+  static int vers;
   static NCI_ITM full_list[] = {
     {4,NciVERSION,&vers,0}
     ,{4,NciGET_FLAGS,&nciFlags,0}

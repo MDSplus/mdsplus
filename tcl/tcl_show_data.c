@@ -92,7 +92,7 @@ static int CvtNidT(struct descriptor *in_dsc_ptr,int depth)
        }
     else
        {
-        if (pathname = TreeGetPath(nid))
+	 if ((pathname = TreeGetPath(nid)))
            {
             str_concat(&out_str,&spaces,dstr,pathname,0);
             TreeFree(pathname);

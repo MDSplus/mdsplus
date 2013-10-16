@@ -44,7 +44,7 @@ int   TclShowDefault()		/* Returns: status			*/
     char  *p;
     int nid;
     TreeGetDefaultNid(&nid);
-    if (p = TreeGetPath(nid))
+    if ((p = TreeGetPath(nid)))
        {
         TclTextOut(p);
         TreeFree(p);

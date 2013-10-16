@@ -19,7 +19,7 @@
 int TclClose()
    {
     int sts;
-    static char  promptWritefirst[] =
+    static const char  promptWritefirst[] =
             "This tree has been modified, write it before closing? [Y]: ";
     static DYNAMIC_DESCRIPTOR(exp);
     static DYNAMIC_DESCRIPTOR(dsc_shotid);

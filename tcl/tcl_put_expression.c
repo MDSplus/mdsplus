@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <strroutines.h>
 
 /***********************************************************************
 * TCL_PUT_EXPRESSION.C --

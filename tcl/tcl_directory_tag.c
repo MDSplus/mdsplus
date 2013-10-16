@@ -43,7 +43,7 @@ int TclDirectoryTag()
         sprintf(text,"Tag listing for %s",tagnam);
         TclTextOut(text);
         TclTextOut(" ");
-        while (nodename = TreeFindTagWild(tagnam,0,&ctx))
+        while ((nodename = TreeFindTagWild(tagnam,0,&ctx)))
            {
             TclTextOut(nodename);
             sub_total++;
