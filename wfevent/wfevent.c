@@ -30,10 +30,12 @@ static void printhelp(char *cmd) {
 #endif
 }
 
-main(int argc, char **argv)
+extern int TdiDecompile();
+
+int main(int argc, char **argv)
 {
   int len;
-  unsigned char data[MAXDATA];
+  char data[MAXDATA];
   int opt;
   int showdata=0;
   int timeout=0;

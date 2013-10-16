@@ -1259,8 +1259,8 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
     int i;
     array_coeff *adsc = (array_coeff *)dsc;  
     int dims[MAXDIM];
-    int num = adsc->arsize/adsc->length;
-    int *m = &num;
+    unsigned int num = adsc->arsize/adsc->length;
+    unsigned int *m = &num;
     if (adsc->dimct > 1) m = adsc->m;
     for (i=0; i<adsc->dimct; i++) dims[i] = m[i];
     for (i=adsc->dimct; i<MAXDIM; i++) dims[i] = 0;
@@ -1382,7 +1382,7 @@ static void MdsValueMove(int source_length, char *source_array, char fill, int d
   }
 }
 
-static void MdsValueCopy(int dim, int length, char fill, char *in, int *in_m, char *out, int *out_m)
+static void MdsValueCopy(int dim, int length, char fill, char *in, unsigned int *in_m, char *out, unsigned int *out_m)
 {
   int i;
   if (dim == 1)
