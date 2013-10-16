@@ -996,7 +996,7 @@ static int getCStrCount
     if (!str) return(0);
     if (!*str) return(0);
 
-    while (newStr = getNextCStrDelim(str))
+    while ((newStr = getNextCStrDelim(str)))
     {
 	x++;
 	str = ++newStr;
@@ -1646,7 +1646,7 @@ Widget BxFindTopShell
 {
     Widget	p;
     
-    while(p = XtParent(start))
+    while((p = XtParent(start)))
     {
 	start = p;
     }

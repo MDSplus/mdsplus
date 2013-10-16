@@ -18,6 +18,7 @@
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/RowColumn.h>
+#include <Xm/List.h>
 #include <Xm/MainW.h>
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
@@ -30,6 +31,8 @@
 #include <Xmds/XmdsXdBoxDialog.h>
 #include <Xmds/XmdsCallbacks.h>
 #include <tdimessages.h>
+#include <mdsshr.h>
+extern int mdsdcl_do_command();
 /*
  * Standard includes for builtins.
  */
@@ -635,6 +638,8 @@ static void NodeTouched(int nid, NodeTouchType type)
             ListTreeDelete(treew, this_item);
 	    FixUpName(treew, pitem); 
 	  }
+	  break;
+	default:
 	  break;
 	}
       }

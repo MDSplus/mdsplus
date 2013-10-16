@@ -25,6 +25,7 @@ int GetSupportedDevices(char ***devnames, char ***imagenames, int *number)
     *imagenames = inames;
     *number = num;
   }
+  return status;
 }
 
 

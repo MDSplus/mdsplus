@@ -13,6 +13,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define MAX_ARGUMENTS 2
 extern int TdiData();
 extern int TdiCompile();
+extern int TdiExecute();
 char *ReadString(char *expr, ...)
 {
   static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, 0};

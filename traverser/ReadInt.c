@@ -7,6 +7,7 @@
 #define MAX_ARGUMENTS 2
 extern int TdiCompile();
 extern int TdiEvaluate();
+extern int TdiExecute();
 #ifndef va_count
 #define  va_count(narg) va_start(ap, expr); \
                         for (narg=1; (narg < 256) && (va_arg(ap, struct descriptor *) != MdsEND_ARG); narg++)
