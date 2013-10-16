@@ -28,6 +28,7 @@ Note also that the front panel VETO and CLR inputs may inhibit action.
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "hm650_gen.h"
+#include "devroutines.h"
 
 extern int TdiCompile();
 static int one=1;
@@ -104,9 +105,9 @@ int hm650___init(struct descriptor *niddsc, InInitStruct *setup)
 
   pio(21, 0, &zero, 16);
 
-  if (status&1 == 0) return status;
-  else if (dly_status&1 == 0) return dly_status;
-  else if (put_status&1 == 0) return put_status;
+  if ((status&1) == 0) return status;
+  else if ((dly_status&1) == 0) return dly_status;
+  else if ((put_status&1) == 0) return put_status;
   else return 1;
 }
 
@@ -114,4 +115,5 @@ int hm650___trigger(struct descriptor *niddsc, InTriggerStruct *setup)
 {
   int status;
   pio(25,0,0,16);
+  return status;
 }

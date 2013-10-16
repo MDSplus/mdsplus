@@ -112,6 +112,7 @@ Assumptions:
 #include <mdsshr.h>
 #include <libroutines.h>
 #include "hv1440_gen.h"
+#include "devroutines.h"
 
 extern int CamQ();
 extern int TdiCompile();

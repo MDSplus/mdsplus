@@ -103,9 +103,10 @@ Assumptions:
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "hv4032_gen.h"
+#include "devroutines.h"
 
-extern CamLamwait();
-extern TdiCompile();
+extern int CamLamwait();
+extern int TdiCompile();
 
 static void GetPodSettings(int nid, int *settings);
 
