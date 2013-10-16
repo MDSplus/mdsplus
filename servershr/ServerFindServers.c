@@ -36,6 +36,7 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 #endif
 #include <string.h>
 #include <stdlib.h>
+#include <strroutines.h>
 
 char *ServerFindServers(void **ctx, char *wild_match)
 {

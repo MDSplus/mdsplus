@@ -196,7 +196,7 @@ int ServerBuildDispatchTable( char *wildcard, char *monitor_name, void **table)
   {
     static struct descriptor node = {0, DTYPE_T, CLASS_D, 0};
     static struct descriptor object = {0, DTYPE_T, CLASS_D, 0};
-    static zero=0;
+    static int zero=0;
     int table_size = sizeof(DispatchTable) + (num_actions-1) * sizeof(ActionInfo);
     *table_ptr = (DispatchTable *)malloc(table_size);
     memset(*table_ptr,0,table_size);

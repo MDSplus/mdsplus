@@ -9,6 +9,7 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <unistd.h>
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 extern int  pthread_cond_timedwait();
@@ -377,7 +378,7 @@ static void *Worker(void *arg)
   pthread_cleanup_push(ThreadCleanup,0);
   WorkerThreadRunning = 1;
   ProgLoc = 1;
-  while (job = NextJob(1))
+  while ((job = NextJob(1)))
   {
     char *save_text;
     ProgLoc = 2;
@@ -902,7 +903,7 @@ static int SendReply(SrvJob *job, int replyType, int status_in, int length, char
     char reply[60];
     int bytes;
     memset(reply,0,60);
-    sprintf(reply,"%d %d %d %d",job->h.jobid,replyType, status_in, msg ? strlen(msg) : 0);
+    sprintf(reply,"%d %d %d %ld",job->h.jobid,replyType, status_in, msg ? strlen(msg) : 0);
     bytes = send(sock, reply, 60, 0);
     if (bytes == 60)
     {

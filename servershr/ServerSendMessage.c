@@ -31,10 +31,12 @@ int ServerSendMessage();
 #include <ipdesc.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
+#include <arpa/inet.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
@@ -96,6 +98,8 @@ static Job *Jobs = 0;
 static int MonJob = -1;
 static int JobId = 0;
 static Client *ClientList = 0;
+
+int ServerBadSocket(int socket);
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #define max(a,b) (((a) > (b)) ? (a) : (b))
