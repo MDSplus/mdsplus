@@ -140,6 +140,7 @@ extern int TdiCompile();
 extern int TdiDecompile();
 extern char *DescToNull(struct descriptor_s *text);
 #include <mdsshr.h>
+extern int MdsCompareXd();
 #include <treeshr.h>
 #include <xmdsshr.h>
 /*------------------------------------------------------------------------------
@@ -206,7 +207,7 @@ static CompositeClassExtensionRec composite_extension = {
   };
 
 XmdsExprClassRec xmdsExprClassRec = {
-  {  /* core_class
+  {  /* core_class */
      /*   superclass:     	*/  (WidgetClass) & xmManagerClassRec,
      /*   class_name:     	*/  "XmdsExpr",
      /*   widget_size:		*/  sizeof(XmdsExprWidgetRec),

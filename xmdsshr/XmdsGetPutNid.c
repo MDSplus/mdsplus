@@ -80,6 +80,7 @@ int XmdsXdsAreValid(Widget w)
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <Xmds/XmdsOnOffToggleButton.h>
 #include <Xmds/XmdsXdBox.h>
+#include <Xmds/XmdsXdBoxOnOffButton.h>
 
 int XmdsGetNidLongValue(int nid,int minVal,int maxVal,int defaultVal);
 int XmdsGetNidFloatOption(int nid,float *options,int numOptions);
@@ -216,13 +217,15 @@ int XmdsPutNidScale(Widget w,int nid,int originalValue)
 int XmdsPutNidSText(Widget w,int nid,char *originalValue)
 {
   char *value = XmTextGetString(w);
+  int status=1;
   if (strcmp(value,originalValue))
   {
     struct descriptor dsc = {0,DTYPE_T,CLASS_S,(char *) 0};
     dsc.length = strlen(value);
     dsc.pointer = value;
-    return TreePutRecord(nid,&dsc,0);
+    status = TreePutRecord(nid,&dsc,0);
   }
+  return status;
 }
 
 static int GetLong(int nid,int *intptr)

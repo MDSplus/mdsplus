@@ -258,7 +258,7 @@ static CompositeClassExtensionRec composite_extension = {
   };
 
 XmdsXdBoxClassRec xmdsXdBoxClassRec = {
-  {  /* core_class
+  {  /* core_class */
      /*   superclass:     	*/  (WidgetClass) & xmManagerClassRec,
      /*   class_name:     	*/  "XmdsXdBox",
      /*   widget_size:		*/  sizeof(XmdsXdBoxWidgetRec),
@@ -590,7 +590,7 @@ static void Initialize(Widget req,Widget new,ArgList args,Cardinal *argcount)
       int status;
       itms[0].pointer = (unsigned char *) &w->xdbox.usage;
       status = TreeGetNci(nid, itms);
-      if (status & 1 == 0) w->xdbox.usage = 0;
+      if ((status & 1) == 0) w->xdbox.usage = 0;
     }
     else
     {
@@ -1887,7 +1887,7 @@ static void GenericGet(XmdsXdBoxWidget w)
 	XtFree((char *)w->xdbox.tag_list);
 	w->xdbox.tag_list = 0;
       }
-      while (tag = TreeFindNodeTags(nid,&ctx))
+      while ((tag = TreeFindNodeTags(nid,&ctx)))
       { static struct descriptor tag_d = {0, DTYPE_T, CLASS_S, 0};
         tag_d.length = strlen(tag);
         tag_d.pointer = tag;
@@ -2029,12 +2029,14 @@ static int SetDefault(Widget widg)
   XmdsXdBoxWidget w = FindXdBoxWidget(widg);
   if (w)
   {
-    if (TreeIsOpen() & 1)
-      if (w->xdbox.nid)
+    if (TreeIsOpen() & 1) {
+      if (w->xdbox.nid) {
 	if (w->xdbox.default_nid != -1)
 	  def_nid = w->xdbox.default_nid;
 	else
 	  def_nid = DefaultNid(w->xdbox.nid + w->xdbox.nid_offset);
+      }
+    }
     if (def_nid != -1)
     {
       TreeGetDefaultNid(&ans);

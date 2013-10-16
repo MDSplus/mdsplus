@@ -119,7 +119,7 @@ int XmdsApplyCallback(Widget w)
 {
   int status;
   Widget db = FindShellChild(w);
-  if (status = XmdsXdsAreValid(db))
+  if ((status = XmdsXdsAreValid(db)))
     status = XmdsApplyAllXds(db);
   return status;
 }

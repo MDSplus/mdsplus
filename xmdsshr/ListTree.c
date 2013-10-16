@@ -44,7 +44,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifdef DEBUG
 #include <stdlib.h>
 #include <stdarg.h>
-void DBG(int line,char *fcn,char *fmt, ...)
+void DBG(int line,const char *fcn,const char *fmt, ...)
 {
   va_list ap;
   
@@ -56,7 +56,7 @@ void DBG(int line,char *fcn,char *fmt, ...)
 #define DARG __LINE__,__FUNCTION__
 #define DBGW(a) fprintf(stderr,"%s:%d %s()   %s\n",__FILE__,__LINE__,__FUNCTION__, a)
 #else
-void DBG()
+void DBG(int line,const char *fcn,const char *fmt, ...)
 {
 }
 #define DARG __LINE__,__FUNCTION__

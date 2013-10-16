@@ -208,7 +208,7 @@ int XmdsDigChansPut(Widget w)
   int status;
   Widget *chan_w;
   XtVaGetValues(rowcol_w,XmNnumChildren,&num,XmNchildren,&chan_w,NULL);
-  if (status = XmdsXdsAreValid(w))
+  if ((status = XmdsXdsAreValid(w)))
   {
     for (i = 0; i < num; i++)
     {

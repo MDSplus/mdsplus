@@ -58,6 +58,7 @@ extern Boolean PutIfChanged(int nid, struct dsc$descriptor_xd *xd);
 
 extern int XmdsComplain();
 extern int TdiDebug();
+extern int MdsCompareXd();
 /*------------------------------------------------------------------------------
 
  Subroutines referenced:                                                      */

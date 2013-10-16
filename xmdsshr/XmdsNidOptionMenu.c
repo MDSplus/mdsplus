@@ -89,6 +89,7 @@ typedef struct _Resources
 } Resources;
 
 extern int TdiCompile();
+extern int MdsCompareXd();
 
 static Resources *GetResources(Widget w);
 static void Destroy(Widget w,Resources *info,XtPointer cb);
