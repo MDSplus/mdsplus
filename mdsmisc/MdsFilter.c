@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <stdio.h>
+#include <math.h>
 #include "filter.h"
 
 struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off, int *num_in_poles)

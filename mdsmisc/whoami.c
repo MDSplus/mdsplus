@@ -1,6 +1,7 @@
 #include <mdsdescrip.h>
 #include <config.h>
 #include <string.h>
+#include <unistd.h>
 #if defined(WIN32)
 #include <io.h>
 #include <windows.h>

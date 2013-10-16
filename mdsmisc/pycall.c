@@ -25,7 +25,7 @@ int PyCall(char *cmd,int lock) {
     char *envsym=getenv("PyLib");
     if (!envsym) {
       fprintf(stderr,"\n\nYou cannot use the Py function until you defined the PyLib environment variable!\n\n"
-	      ,"Please define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
+	      "Please define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
       return 0;
     }
     if (envsym[0]=='/' || strncmp(envsym,"lib",3)==0) {
