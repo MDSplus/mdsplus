@@ -37,6 +37,7 @@ MCR ACTIONS -TREE treename
 #include <string.h>
 #include <stdlib.h>
 #include <mds_stdarg.h>
+#include <strroutines.h>
 
 extern int TdiDispatchOf();
 extern int TdiExecute();

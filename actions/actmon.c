@@ -53,6 +53,12 @@ $ MCR ACTMON -monitor monitor-name
 #include <stdio.h>
 #include <time.h>
 #include <pthread.h>
+#include <libroutines.h>
+#include <strroutines.h>
+#include <unistd.h>
+
+extern int ServerMonitorCheckin();
+extern int str_element();
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_condattr_default NULL
@@ -521,7 +527,7 @@ static void PutLog(char *time, char  *mode, char *status, char *server, char *pa
   char text[2048];
   XmString item;
   int items;
-  if (LogWidgetOff && CurrentWidgetOff || LogWidget == 0) return;
+  if ((LogWidgetOff && CurrentWidgetOff) || (LogWidget == 0)) return;
   sprintf(text, "%s %12d %-10.10s %-32.32s %-20.20s %s", time, current_shot, mode, status, server, path);
   item = XmStringCreateSimple(text);
   if (!LogWidgetOff) {
@@ -706,7 +712,7 @@ static void ActivateImages(String images)
   int i;
   list.length = strlen(images);
   list.pointer = images;
-  for (i=0;str_element(&image, &i, &comma, &list) & 1; i++)
+  for (i=0;(str_element(&image, &i, &comma, &list) & 1); i++)
     ActivateImage(&image);
   return;
 }
