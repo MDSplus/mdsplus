@@ -34,6 +34,7 @@ $ dwcope [-default setup]
 #include <stdlib.h>
 #include <string.h>
 #include <signal.h>
+#include <unistd.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
@@ -2064,7 +2065,7 @@ static void  WriteDatabase(String dbname, Boolean zoom)
     fprintf(file, "Scope.font: %s\n",font);
     XFree(font);
     fprintf(file, "Scope.columns: %d\n", Columns);
-    while (text = WaveToText("Scope.global_1_1", &GlobalWave, 0, &ctx))
+    while ((text = WaveToText("Scope.global_1_1", &GlobalWave, 0, &ctx)))
     {
       fprintf(file, "%s", text);
       XtFree(text);
@@ -2080,7 +2081,7 @@ static void  WriteDatabase(String dbname, Boolean zoom)
 	XtVaGetValues(Wave[c][r].w, XtNheight, &height, NULL);
         fprintf(file, "\n");
 	sprintf(prefix, "Scope.plot_%d_%d", r + 1, c + 1);
-	while (text = WaveToText(prefix, &Wave[c][r], height, &ctx))
+	while ((text = WaveToText(prefix, &Wave[c][r], height, &ctx)))
 	{
 	  fprintf(file, "%s", text);
 	  XtFree(text);

@@ -802,7 +802,7 @@ static void WriteDatabase(String dbname)
         fprintf(file, "\n");
 	sprintf(prefix, "Pad.pad_%d_%d", r + 1, c + 1);
 	XtVaGetValues(widgets[c * Rows + r], XmNuserData, &info, NULL);
-	while (text = WaveToText(prefix, info, 0, &ctx))
+	while ((text = WaveToText(prefix, info, 0, &ctx)))
 	{
 	  fprintf(file, "%s", text);
 	  XtFree(text);

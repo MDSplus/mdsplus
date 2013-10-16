@@ -83,6 +83,7 @@ void CloseDataSources();
 #include <Xm/Xm.h>
 #include <Xmds/XmdsWaveform.h>
 #include <ctype.h>
+#include <unistd.h>
 #ifndef _toupper
 # define _toupper(c)	(((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
