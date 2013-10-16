@@ -856,6 +856,8 @@ else
   REMCAMLIB="CamShr"
 fi
 
+AC_CHECK_HEADERS([stdint.h])
+
 dnl Check for default hdf5 header and library
 HDF5_APS=""
 AC_CHECK_HEADERS(hdf5.h,DO_HDF5="yes")
