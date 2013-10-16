@@ -34,6 +34,7 @@ ldconfig
 #include <stdio.h>
 #include <stdlib.h>
 #include <ipdesc.h>
+#include <ctype.h>
 #ifdef DTYPE_EVENT
 #undef DTYPE_EVENT
 #endif
@@ -50,6 +51,7 @@ extern int   TdiCvt();
 extern int   GetAnswerInfoTS();
 extern int   MdsFree1Dx();
 extern int   MdsIpFree();
+extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
 #ifndef _WIN32
 #define INVALID_SOCKET -1
 #endif
