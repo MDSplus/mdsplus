@@ -35,7 +35,7 @@ int TreeFindNodeWild(char const * path, int *nid_out, void **ctx_inout, int usag
 int TreeFindNodeEnd(void **ctx_in) { return _TreeFindNodeEnd(*TreeCtx(), ctx_in); }
 char *TreeFindNodeTags(int nid_in, void **ctx_ptr) { return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr); }
 char *TreeAbsPath(char const * inpath) { return _TreeAbsPath(*TreeCtx(), inpath); }
-int TreeFindTag(char *tagnam, char *treename, int *tagidx) {
+int TreeFindTag(const char *tagnam, const char *treename, int *tagidx) {
   PINO_DATABASE *dblist = (PINO_DATABASE *)*TreeCtx();
   NODE *nodeptr;
   return _TreeFindTag(*TreeCtx(), dblist->default_node, (short)strlen(treename), treename, (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
@@ -1083,7 +1083,7 @@ struct tag_search { TAG_NAME   tag;
                     TREE_INFO *info;
                   };
 
-int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *tagidx)
+int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const char *tree, short taglen, const char *tagnam, NODE **nodeptr, int *tagidx)
 
 {
   int len = min(taglen,(short)sizeof(TAG_NAME));

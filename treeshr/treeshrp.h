@@ -761,9 +761,9 @@ extern int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort);
 extern int TreePutNci(TREE_INFO *info, int node_number, NCI *nci, int flush);
 extern int TreeIsChild(NODE *node);
 extern struct descriptor *TreeSectionName(TREE_INFO *info);
-/* extern int TreeFindTag(PINO_DATABASE *db, NODE *node, char *treename, char **search_string, NODE **node_in_out); */
-extern int TreeFindTag(char *tagnam, char *treename, int *tagidx);
-int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, char *tree, short taglen, char *tagnam, NODE **nodeptr, int *
+/* extern int TreeFindTag(PINO_DATABASE *db, NODE *node, const char *treename, char **search_string, NODE **node_in_out); */
+extern int TreeFindTag(const char *tagnam, const char *treename, int *tagidx);
+int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const char *tree, short taglen, const char *tagnam, NODE **nodeptr, int *
 tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info,int nid);
 extern int TreeGetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
