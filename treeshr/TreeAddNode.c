@@ -41,7 +41,7 @@ int TreeAddNode(char const *name, int *nid_out, char usage)
   return _TreeAddNode(*TreeCtx(), name, nid_out, usage);
 }
 
-int TreeAddConglom(char const *path, char *congtype, int *nid)
+int TreeAddConglom(char const *path, char const * congtype, int *nid)
 {
   return _TreeAddConglom(*TreeCtx(), path, congtype, nid);
 }
@@ -478,7 +478,7 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
   return status;
 }
 
-int _TreeAddConglom(void *dbid, char const *path, char *congtype, int *nid)
+int _TreeAddConglom(void *dbid, char const *path, char const * congtype, int *nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   int       status = 1;

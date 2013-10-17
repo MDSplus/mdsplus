@@ -1478,7 +1478,7 @@ void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 		throw MdsException(status);
 }
 
-TreeNode *TreeNode::getNode(char *relPath)
+TreeNode *TreeNode::getNode(char const * relPath)
 {
 	int defNid;
 	int newNid;
@@ -1508,7 +1508,7 @@ TreeNode *TreeNode::getNode(String *relPathStr)
 	return new TreeNode(newNid, tree);
 }
 
-TreeNode *TreeNode::addNode(char *name, char *usage)
+TreeNode *TreeNode::addNode(char const * name, char const * usage)
 {
 	int defNid;
 	int newNid;
@@ -1522,7 +1522,7 @@ TreeNode *TreeNode::addNode(char *name, char *usage)
 	return new TreeNode(newNid, tree);
 }
 
-void TreeNode::remove(char *name)
+void TreeNode::remove(char const * name)
 {
 	int count;
 	int defNid;
@@ -1538,7 +1538,7 @@ void TreeNode::remove(char *name)
 		throw MdsException(status);
 }
 
-TreeNode *TreeNode::addDevice(char *name, char *type)
+TreeNode *TreeNode::addDevice(char const * name, char const * type)
 {
 	int defNid;
 	int newNid;
@@ -1552,23 +1552,20 @@ TreeNode *TreeNode::addDevice(char *name, char *type)
 	return new TreeNode(newNid, tree);
 }
 
-void TreeNode::rename(char *newName)
+void TreeNode::rename(std::string const & newName)
 {
 	resolveNid();
-	int status = _TreeRenameNode(tree->getCtx(), nid, newName);
+	int status = _TreeRenameNode(tree->getCtx(), nid, newName.c_str());
 	if(!(status & 1))
 		throw MdsException(status);
 }
 
-void TreeNode::move(TreeNode *parent, char *newName)
+void TreeNode::move(TreeNode *parent, std::string const & newName)
 {
 	resolveNid();
 	char *parentPath = parent->getFullPath();
-	char *newPath = new char[strlen(newName) + strlen(parentPath) + 2];
-	sprintf(newPath, "%s:%s", parentPath, newName);
-	rename(newPath);
+	rename(std::string(parentPath) + ":" + newName);
 	delete [] parentPath;
-	delete [] newPath;
 }
 
 void TreeNode::move(TreeNode *parent)

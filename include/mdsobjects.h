@@ -2055,7 +2055,7 @@ protected:
 		char *getFullPath();
 		char *getNodeName();
 		char *getOriginalPartName();
-		TreeNode *getNode(char *relPath);
+		TreeNode *getNode(char const * relPath);
 		TreeNode *getNode(String *relPathStr);
 		virtual Data *getData();
 		virtual void putData(Data *data);
@@ -2139,18 +2139,16 @@ protected:
 		StringArray *findTags();
 
 //////////Edit methods////////////////
-		TreeNode *addNode(char *name, char *usage);
-		void remove(char *name);
-		void rename(char *newName);
-		void move(TreeNode *parent, char *newName);
+		TreeNode *addNode(char const * name, char const * usage);
+		void remove(char const * name);
+		void rename(std::string const & newName);
+		void move(TreeNode *parent, std::string const & newName);
 		void move(TreeNode *parent);
-		TreeNode *addDevice(char *name, char *type);
+		TreeNode *addDevice(char const * name, char const * type);
 		void addTag(std::string const & tagName);
 		void removeTag(std::string const & tagName);
 		void setSubtree(bool isSubtree);
-
 	};
-
 
 
 /////////////////End Class TreeTreeNode///////////////

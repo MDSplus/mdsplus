@@ -468,8 +468,8 @@ extern EXPORT int TreeSetDbiItm();
 
 extern EXPORT char *TreeAbsPath(char const *in);             /********** Use TreeFree(result) *****/
 extern EXPORT char *_TreeAbsPath(void *dbid, char const *in);  /********** Use TreeFree(result) *****/
-extern EXPORT int TreeAddConglom(char const *path, char *congtype, int *nid);
-extern EXPORT int _TreeAddConglom(void *dbid, char const *path, char *congtype, int *nid);
+extern EXPORT int TreeAddConglom(char const *path, char const * congtype, int *nid);
+extern EXPORT int _TreeAddConglom(void *dbid, char const * path, char const * congtype, int *nid);
 extern EXPORT int TreeAddNode(char const *name, int *nid_ret, char usage);
 extern EXPORT int _TreeAddNode(void *dbid, char const *name, int *nid_ret, char usage);
 extern EXPORT int TreeAddTag(int nid, char const * tagnam);
@@ -551,8 +551,8 @@ extern EXPORT int TreeRemoveNodesTags(int nid);
 extern EXPORT int _TreeRemoveNodesTags(void *dbid, int nid);
 extern EXPORT int TreeRemoveTag(char const * tagname);
 extern EXPORT int _TreeRemoveTag(void *dbid, char const * tagname);
-extern EXPORT int TreeRenameNode(int nid, char *newnamedsc_ptr);
-extern EXPORT int _TreeRenameNode(void *dbid, int nid, char *newname);
+extern EXPORT int TreeRenameNode(int nid, char const * newname);
+extern EXPORT int _TreeRenameNode(void *dbid, int nid, char const * newname);
 extern EXPORT void TreeRestoreContext(void *ctx);
 extern EXPORT void _TreeRestoreContext(void **dbid, void *ctx);
 extern EXPORT int TreeRundownTree(struct descriptor *treenam, int *shotid, int single_tree, int force_exit);
