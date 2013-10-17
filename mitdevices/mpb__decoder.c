@@ -16,11 +16,13 @@
 #include <libroutines.h>
 #include <mds_stdarg.h>
 #include "mpb__decoder_gen.h"
+#include "devroutines.h"
 
 extern int TdiGetFloat();
 extern int TdiExecute();
 extern int TdiEvaluate();
 extern int TdiCompile();
+extern int CamPiow();
 
 #define max(a,b) ((a) > (b) ? (a) : (b))
 #define min(a,b) ((a) > (b) ? (a) : (b))
@@ -366,7 +368,7 @@ static int OctaFFS(unsigned int *src, int *next_bit)
   int status=0;
   for (; ((longword < 4) && (status==0));) {
     int width = 32 - bit_number;
-    status = libffs(&bit_number, &width, &src[longword], next_bit) & 1;
+    status = libffs(&bit_number, &width, (char *)&src[longword], next_bit) & 1;
     if (status==0) {
       bit_number=0;
       longword++;

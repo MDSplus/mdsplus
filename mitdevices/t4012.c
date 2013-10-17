@@ -16,6 +16,7 @@
 #include <Xm/List.h>
 #include <stdio.h>
 #include <time.h>
+#include "devroutines.h"
 
 static void Load(Widget w);
 static unsigned int Input(InStoreStruct *setup, int code);
@@ -202,7 +203,7 @@ int t4012___store(int *niddsc, InStoreStruct *setup)
   static DESCRIPTOR_A_BOUNDS(raw,sizeof(short),DTYPE_W,0,1,0);
   static int *lbound = &raw.bounds[0].l;
   static int *ubound = &raw.bounds[0].u;
-  static int *acoef  = &raw.m[0];
+  static unsigned int *acoef  = &raw.m[0];
   static DESCRIPTOR_A(f2_d,sizeof(f[0]),DTYPE_NATIVE_FLOAT,f,8);
   static DESCRIPTOR(counts_str,"counts");
   static DESCRIPTOR(volts_str,"volts");

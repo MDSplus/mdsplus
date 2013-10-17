@@ -43,6 +43,7 @@ int PREAMP_ADD(struct descriptor *name,
 #include <xmdsshr.h>
 #include <Xmds/XmdsExpr.h>
 #include <math.h>
+#include "devroutines.h"
 
 extern int TdiCompile();
 

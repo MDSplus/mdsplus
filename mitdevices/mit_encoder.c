@@ -4,6 +4,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "mit_encoder_gen.h"
+#include "devroutines.h"
 
 extern int TdiExecute();
 extern int mit_encoder___set_event();

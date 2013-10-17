@@ -11,6 +11,7 @@
 #include <xmdsshr.h>
 #include <stdlib.h>
 #include "reticon120_gen.h"
+#include "devroutines.h"
 
 extern int TdiNe();
 extern int TdiGetLong();

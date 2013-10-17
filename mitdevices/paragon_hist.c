@@ -38,6 +38,7 @@
 #include <treeshr.h>
 #include <time.h>
 #include "paragon_hist_gen.h"
+#include "devroutines.h"
 
 extern int TdiData();
 extern int TdiExecute();
