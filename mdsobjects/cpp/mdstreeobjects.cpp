@@ -1897,8 +1897,7 @@ EXPORT Tree *MDSplus::getActiveTree()
 		{1024, DbiNAME, name, &retNameLen},
 		{sizeof(int), DbiSHOTID, &shot, &retShotLen},
 		{0, DbiEND_OF_LIST, 0, 0}};
-	int 
-		status = TreeGetDbi(dbiItems);
+	int status = TreeGetDbi(dbiItems);
 	if(!(status & 1))
 		throw MdsException(status);
 	return new Tree(name, shot);
