@@ -1236,7 +1236,6 @@ const char *TreeNode::getUsage()
 
 int TreeNode::getConglomerateElt()
 {
-
 	int eltLen;
 	int elt = -1;
 	struct nci_itm nciList[] = 
@@ -1251,9 +1250,9 @@ int TreeNode::getConglomerateElt()
 		throw MdsException("Not a conglomerate element");
 	return elt;
 }
+
 int TreeNode::getNumElts()
 {
-
 	int nNidsLen;
 	int nNids;
 	struct nci_itm nciList[] = 
@@ -1267,10 +1266,8 @@ int TreeNode::getNumElts()
 	return nNidsLen;
 }
 
-	
 TreeNodeArray *TreeNode::getConglomerateNodes()
 {
-
 	int nNidsLen, retLen;
 	int nNids;
 	struct nci_itm nciList[] = 
@@ -1280,9 +1277,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 	resolveNid();
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
 
 	int *nids = new int[nNids];
 	struct nci_itm nciList1[] = 
@@ -1300,7 +1295,6 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 	
 int TreeNode::getDepth()
 {
-
 	int depthLen;
 	int depth;
 	struct nci_itm nciList[] = 
@@ -1314,6 +1308,7 @@ int TreeNode::getDepth()
 
 	return depth;
 }
+
 #ifdef HAVE_WINDOWS_H
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
@@ -1324,7 +1319,6 @@ static void UnlockMdsShrMutex(){}
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
 #endif
-	
 
 void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
@@ -1421,7 +1415,6 @@ Array *TreeNode::getSegment(int segIdx)
 	return retData;
 }
 
-
 void TreeNode::beginTimestampedSegment(Array *initData)
 {
 	resolveNid();
@@ -1476,6 +1469,7 @@ void TreeNode::acceptSegment(Array *data, Data *start, Data *end, Data *times)
 	if(!(status & 1))
 		throw MdsException(status);
 }
+
 void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 {
 	resolveNid();
@@ -1483,7 +1477,6 @@ void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
 	if(!(status & 1))
 		throw MdsException(status);
 }
-
 
 TreeNode *TreeNode::getNode(char *relPath)
 {
@@ -1515,11 +1508,8 @@ TreeNode *TreeNode::getNode(String *relPathStr)
 	return new TreeNode(newNid, tree);
 }
 
-
-
 TreeNode *TreeNode::addNode(char *name, char *usage)
 {
-
 	int defNid;
 	int newNid;
 	resolveNid();
@@ -1531,7 +1521,6 @@ TreeNode *TreeNode::addNode(char *name, char *usage)
 		throw MdsException(status);
 	return new TreeNode(newNid, tree);
 }
-
 
 void TreeNode::remove(char *name)
 {
@@ -1551,7 +1540,6 @@ void TreeNode::remove(char *name)
 
 TreeNode *TreeNode::addDevice(char *name, char *type)
 {
-
 	int defNid;
 	int newNid;
 	resolveNid();
@@ -1583,7 +1571,6 @@ void TreeNode::move(TreeNode *parent, char *newName)
 	delete [] newPath;
 }
 
-
 void TreeNode::move(TreeNode *parent)
 {
 	resolveNid();
@@ -1602,7 +1589,6 @@ void TreeNode::addTag(char *tagName)
 
 void TreeNode::removeTag(char *tagName)
 {
-
 	resolveNid();
 	int currNid;
 	char *bTag = new char[strlen(tagName) + 2];
