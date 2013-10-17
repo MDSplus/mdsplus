@@ -107,6 +107,7 @@ int main(int argc, char **argv)
 	}
       }
       if (len > MAXDATA) len=MAXDATA;
+      for (;data[len-1]==0 && len > 0;len--) {;}
       for (i=0;i<len;i++) {
 	if (data[i] < 32 || data[i] >= 127) {
 	  istext=0;
