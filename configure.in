@@ -565,7 +565,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        elif (test "$F77" = "gfortran"); then
           FFLAGS="$FFLAGS -fno-range-check"
           FORLD="gfortran"
-          FOR_LDFLAGS="-shared -march=x86_64 -march=i386"
+          FOR_LDFLAGS="-shared"
           LOC="loc"
        fi;
        FEXECLIBDIR="-L";
