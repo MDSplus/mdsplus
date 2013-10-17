@@ -79,12 +79,12 @@ int Tdi1Same(int opcode, int narg, struct descriptor *list[],
         No action for simple conversions.
         Default is for MIN/MAX pairwise.
         ********************************/
-    if (status & 1)
+    if (status & 1) {
         if (routine == &Tdi3undef || routine == 0) {
             MdsFree1Dx(out_ptr, NULL);
             *out_ptr = dat[0];
             dat[0] = EMPTY_XD;
-        } else
+        } else {
             switch (fun_ptr->m2) {
             case 1:
                 status = (*routine) (dat[0].pointer, out_ptr->pointer);
@@ -101,10 +101,11 @@ int Tdi1Same(int opcode, int narg, struct descriptor *list[],
                                 out_ptr->pointer);
                 break;
             }
-
-        /********************
-        Embed data in signal.
-        ********************/
+        }
+    }
+    /********************
+      Embed data in signal.
+     ********************/
     if (status & 1)
         status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
 

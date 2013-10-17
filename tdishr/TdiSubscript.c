@@ -85,7 +85,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[],
     int stride[MAXDIM + 1], *px[MAXDIM], count[MAXDIM];
     struct descriptor_signal *psig;
     struct descriptor_dimension *pdim;
-    struct descriptor *keeps = TdiThreadStatic()->TdiSELF_PTR;
+    struct descriptor_xd *keeps = TdiThreadStatic()->TdiSELF_PTR;
     array_coeff *pdat, *pdi = 0;
     array_coeff arr = *(array_coeff *) & coeff0;
     struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
@@ -168,7 +168,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[],
             if (psig && dim < psig->ndesc - 2 &&
                 (pdim =
                  (struct descriptor_dimension *)psig->dimensions[dim]) != 0) {
-                TdiThreadStatic()->TdiSELF_PTR = (struct descriptor *)psig;
+                TdiThreadStatic()->TdiSELF_PTR = (struct descriptor_xd *)psig;
                 status =
                     TdiCull(psig, &ddim, dim + 1 < narg ? list[dim + 1] : 0,
                             &xx[dim] MDS_END_ARG);
@@ -251,8 +251,9 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[],
         if (status & 1 && ii[dim].pointer->dtype != DTYPE_L)
             status = TdiNint(&ii[dim], &ii[dim] MDS_END_ARG);
         if (status & 1 && (pdi = (array_coeff *) ii[dim].pointer) != 0) {
-            if (pdi->class == CLASS_A)
+            if (pdi->class == CLASS_A) {
                 highest = dim + 1;
+            }
             N_ELEMENTS(pdi, arr.m[dim]);
         }
         if (status & 1 && (arr.arsize *= arr.m[dim]))
@@ -437,8 +438,9 @@ int Tdi1Map(int opcode, int narg, struct descriptor *list[],
         po = out_ptr->pointer->pointer;
         status = TdiIextend(left, right, dat[0].pointer);
         pindex = (int *)dat[0].pointer->pointer;
-        if (status & 1)
+        if (status & 1) {
             N_ELEMENTS(dat[0].pointer, n);
+        }
     }
     if (status & 1) {
         char *cptr = (char *)po;

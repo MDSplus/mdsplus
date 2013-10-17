@@ -39,8 +39,10 @@ STATIC_CONSTANT char *cvsrev =
 int Tdi_RandomSeed = 1234567;
 
 extern int TdiData();
-extern int TdiConvert();
 extern int Tdi3Add();
+extern int TdiConvert();
+extern int CvtConvertFloat();
+
 extern int Tdi1Array(int opcode, int narg, struct descriptor *list[],
                      struct descriptor_xd *out_ptr)
 {
@@ -75,7 +77,7 @@ extern int Tdi1Array(int opcode, int narg, struct descriptor *list[],
             else {
                 cvt.pointer = (int *)&arr.m[0];
                 cvt.arsize = sizeof(int) * ndim;
-                status = TdiConvert(tmp.pointer, &cvt MDS_END_ARG);
+                status = TdiConvert(tmp.pointer, &cvt);
             }
         }
     }
@@ -178,12 +180,12 @@ int Tdi3Ramp(struct descriptor *out_ptr)
             struct descriptor new = *out_ptr;
             new.class = CLASS_S;
             if (n > 0)
-                status = TdiConvert(&con0, &new MDS_END_ARG);
+                status = TdiConvert(&con0, &new);
             if (n > 1) {
                 int step = new.length;
                 new.pointer += step;
                 if (status & 1)
-                    status = TdiConvert(&con1, &new MDS_END_ARG);
+                    status = TdiConvert(&con1, &new);
                 if (n > 2) {
                     struct descriptor_a modify =
                         *(struct descriptor_a *)out_ptr;
@@ -313,6 +315,6 @@ int Tdi3Zero(struct descriptor_a *out_ptr)
         { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
     int status;
 
-    status = TdiConvert(&con0, out_ptr MDS_END_ARG);
+    status = TdiConvert(&con0, out_ptr);
     return status;
 }

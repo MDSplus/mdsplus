@@ -648,7 +648,6 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
                 count++;
                 , {
                 octaword temp = ozero;
-                count;
                 memcpy(&temp, &count, sizeof(int));
                 TdiDivO(&result, &temp, outp++, DTYPE_OU);
                 })
@@ -658,7 +657,6 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
                 count++;
                 , {
                 octaword temp = ozero;
-                count;
                 memcpy(&temp, &count, sizeof(int));
                 TdiDivO(&result, &temp, outp++, DTYPE_O);
                 })
@@ -1008,7 +1006,7 @@ int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed)
 {
     int j, longwords = 4, k = 0, *i1, *i2;
     for (j = longwords - 1; j >= 0; j--)
-        if (!j || in1[j] != in2[j])
+        if (!j || in1[j] != in2[j]) {
             if (!is_signed || j != longwords - 1) {
                 k = (in1[j] < in2[j]);
                 break;
@@ -1018,14 +1016,15 @@ int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed)
                 k = (*i1 < *i2);
                 break;
             }
+        }
     return k;
 }
 
 int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed)
 {
     int j, longwords = 4, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--)
-        if (!j || in1[j] != in2[j])
+    for (j = longwords - 1; j >= 0; j--) {
+        if (!j || in1[j] != in2[j]) {
             if (!is_signed || j != longwords - 1) {
                 k = (in1[j] > in2[j]);
                 break;
@@ -1035,14 +1034,16 @@ int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed)
                 k = (*i1 > *i2);
                 break;
             }
+        }
+    }
     return k;
 }
 
 int TdiLtQ(unsigned int *in1, unsigned int *in2, int is_signed)
 {
     int j, longwords = 2, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--)
-        if (!j || in1[j] != in2[j])
+    for (j = longwords - 1; j >= 0; j--) {
+        if (!j || in1[j] != in2[j]) {
             if (!is_signed || j != longwords - 1) {
                 k = (in1[j] < in2[j]);
                 break;
@@ -1052,14 +1053,16 @@ int TdiLtQ(unsigned int *in1, unsigned int *in2, int is_signed)
                 k = (*i1 < *i2);
                 break;
             }
+        }
+    }
     return k;
 }
 
 int TdiGtQ(unsigned int *in1, unsigned int *in2, int is_signed)
 {
     int j, longwords = 2, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--)
-        if (!j || in1[j] != in2[j])
+    for (j = longwords - 1; j >= 0; j--) {
+        if (!j || in1[j] != in2[j]) {
             if (!is_signed || j != longwords - 1) {
                 k = (in1[j] > in2[j]);
                 break;
@@ -1069,6 +1072,8 @@ int TdiGtQ(unsigned int *in1, unsigned int *in2, int is_signed)
                 k = (*i1 > *i2);
                 break;
             }
+        }
+    }
     return k;
 }
 

@@ -271,11 +271,14 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[],
     }
     if (status & 1)
         status = TdiGetShape(1, &dat[0], sizeof(int), DTYPE_L, &cmode, out_ptr);
-    if (status & 1)
-        if (ni <= 0) ;          /* null output */
-        else if (nt <= 0)
+    if (status & 1) {
+        if (ni <= 0)          /* null output */
+        {
+        }
+        else if (nt <= 0) {
             status = TdiNULL_PTR;       /* cannot lookup */
-        else
+        }
+        else {
             switch (dat[0].pointer->dtype) {
             case DTYPE_BU:
                 neq = (int (*)())&NEQ_BU;
@@ -381,6 +384,8 @@ int Tdi1Bsearch(int opcode, int narg, struct descriptor *list[],
                     status = TdiINVDTYDSC;
                 break;
             }
+        }
+    }
     if (status & 1) {
         len = dat[0].pointer->length;
         pinput = dat[0].pointer->pointer;
