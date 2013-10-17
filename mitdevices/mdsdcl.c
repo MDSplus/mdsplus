@@ -12,6 +12,8 @@
 #include <xmdsshr.h>
 #include "mdsdcl_gen.h"
 
+extern int TdiExecute();
+
 
 extern int mdsdcl_do_command();
 static int  Apply();
@@ -134,7 +136,7 @@ static void Reset(Widget w)
   XmListDeselectAllItems(list_w);
   XmListDeleteAllItems(list_w);
   TdiExecute(&initial,&cli MDS_END_ARG);
-  while (status=TdiExecute(&clis, &cli MDS_END_ARG)&1 && cli.length > 0 && strlen(cli.pointer) > 0)
+  while ((status=TdiExecute(&clis, &cli MDS_END_ARG)&1 && cli.length > 0 && strlen(cli.pointer) > 0))
   {
     XmString item;
     item = XmStringCreateSimple(cli.pointer);

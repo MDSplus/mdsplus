@@ -7,6 +7,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include "l8818_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcDble;
 extern unsigned short OpcAdd;

@@ -9,6 +9,7 @@
 #include <libroutines.h>
 #include "mit_decoder_gen.h"
 #include "decoder.h"
+#include "devroutines.h"
 
 extern int TdiExecute();
 
@@ -199,7 +200,7 @@ static int OctaFFS(EventMask *src, int *next_bit)
   int status=0;
   for (; ((longword < 4) && (status==0));) {
     int width = 32 - bit_number;
-    status = libffs(&bit_number, &width, &src->bits[longword], next_bit);
+    status = libffs(&bit_number, &width, (char *)&src->bits[longword], next_bit);
     if (status==0) {
       bit_number=0;
       longword++;
