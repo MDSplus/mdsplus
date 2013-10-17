@@ -63,16 +63,6 @@ extern "C" {
 	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled);
 	int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size);
 
-	// From CachedTreeshr.c
-	int _RTreeClearCallback(void *dbid, int nid, char *callbackDescr);
-	int _RTreeClose(void *dbid, char *tree, int shot);
-	void RTreeConfigure(int shared, int size);
-	int _RTreeFlushNode(void *dbid, int nid);
-	int _RTreeOpen(void *dbid, char *tree, int shot);
-	char * _RTreeSetCallback(void *dbid, int nid, void *argument, void (*callback)(int, void *));
-	void RTreeSynch();
-	int _RTreeTerminateSegment(void *dbid, int nid);
-
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
 }
