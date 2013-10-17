@@ -14,6 +14,7 @@
 #include <Xm/Scale.h>
 #include <xmdsshr.h>
 #include <Xmds/XmdsNidOptionMenu.h>
+#include "devroutines.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;
@@ -223,11 +224,11 @@ static int ReadChannel(InStoreStruct *setup, int *max_samps_ptr, int chan, int *
   int status;
   pio(10,0,0);
   pio(16,chan,&zero);
-  while (pnts_to_read = max(0,min(32767,end_ptr-in_ptr)))
+  while ((pnts_to_read = max(0,min(32767,end_ptr-in_ptr))))
   {
     return_on_error(DevCamChk(CamQrepw(setup->name,0,2,pnts_to_read,in_ptr,16,0),&one,0),status);
-    CamGetStat((short *)&iosb);
-    if ((!(CamQ((short *)&iosb)&1)) && (iosb.bytcnt == 0)) 
+    CamGetStat((unsigned short *)&iosb);
+    if ((!(CamQ((unsigned short *)&iosb)&1)) && (iosb.bytcnt == 0)) 
       in_ptr = end_ptr;
     else 
       in_ptr += iosb.bytcnt/2;

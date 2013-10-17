@@ -5,6 +5,7 @@
 #include <treeshr.h>
 #include <libroutines.h>
 #include "l3512_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcValue;
 
@@ -87,6 +88,7 @@ int l3512___init(struct descriptor *niddsc, InInitStruct *setup)
   dwell_code = ConvertDwell(&duration);
   pio(setup->router_name, 17, 2, &dwell_code, 16);
   pio(setup->router_name, 17, 3, (short *)&setup_3587, 16);
+  return status;
 }
     
 static DwellCode ConvertDwell(float *dwell)

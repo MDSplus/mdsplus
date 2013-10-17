@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "joerger_tr16_gen.h"
 #include <stdio.h>
+#include "devroutines.h"
 
 extern int CamXandQ();
 

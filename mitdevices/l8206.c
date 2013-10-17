@@ -4,6 +4,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "l8206_gen.h"
+#include "devroutines.h"
 
 static int one=1;
 static int zero=0;

@@ -6,6 +6,7 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include "l4202_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcValue;
 

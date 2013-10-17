@@ -12,6 +12,8 @@
 #include <Xmds/XmdsDigChans.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <xmdsshr.h>
+#include "libroutines.h"
+#include "devroutines.h"
 
 /*
    All the init routines use one common function which takes the number
@@ -226,7 +228,7 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
 	  static int channels[4][4] = {{1,2,4,8},{1,2,4,8},{2,4,8,16},{4,8,16,32}};\
           int chan_index;\
 	  int base = chans>>2;\
-          libffs(&zero,&four,&base,&chan_index);\
+          libffs(&zero,&four,(char *)&base,&chan_index);	\
 	  *chans_ptr = channels[chan_index][noc];\
 	}
 #define ClockToDt(chans,period,freq_ptr)\
@@ -399,14 +401,14 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
 
   
   pio(16,0,&chan)
-  while (pnts_to_read = max(0,min(32767,end_ptr-in_ptr)))
+    while ((pnts_to_read = max(0,min(32767,end_ptr-in_ptr))))
   {
     if (use_qrep)
       qrep(2,0,pnts_to_read,in_ptr)
     else 
       stop(2,0,pnts_to_read,in_ptr)
-    CamGetStat((short *)&iosb);
-    if ((!(CamQ((short *)&iosb)&1)) && (iosb.bytcnt == 0)) 
+    CamGetStat((unsigned short *)&iosb);
+    if ((!(CamQ((unsigned short *)&iosb)&1)) && (iosb.bytcnt == 0)) 
       in_ptr = end_ptr;
     else 
       in_ptr += iosb.bytcnt/2;

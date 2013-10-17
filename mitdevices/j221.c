@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "j221_gen.h"
+#include "devroutines.h"
 
 extern int TdiData();
 extern int TdiLong();

@@ -5,6 +5,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "l2415_gen.h"
+#include "devroutines.h"
 
 extern int TdiCompile();
 static int one=1;

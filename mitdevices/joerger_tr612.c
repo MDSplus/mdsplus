@@ -9,6 +9,7 @@
 #include <libroutines.h>
 #include "joerger_tr612_gen.h"
 #include <stdio.h>
+#include "devroutines.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;
@@ -95,7 +96,7 @@ int joerger_tr612___store(struct descriptor *niddsc, InStoreStruct *setup)
 {
   static int max_samples;
   static DESCRIPTOR_LONG(max_samples_d, &max_samples);
-  static unsigned long one = 1;
+  static int one = 1;
   static DESCRIPTOR_LONG(one_d, &one);
   static DESCRIPTOR_A_BOUNDS(raw,sizeof(short),DTYPE_W,0,1,0);
   static DESCRIPTOR(counts_str,"counts");

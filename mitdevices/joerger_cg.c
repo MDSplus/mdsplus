@@ -6,6 +6,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "joerger_cg_gen.h"
+#include "devroutines.h"
 extern int TdiSlopeOf();
 extern int TdiCompile();
 static int one=1;
@@ -44,6 +45,7 @@ static int SetChannel(InInitStruct *setup,struct descriptor *channel_value, int 
   nid++;
   p |= (TreeIsOn(nid) & 1) << (channel -1);
   *polarities = p;
+  return status;
 }
 
 int joerger_cg___init(struct descriptor *niddsc, InInitStruct *setup)

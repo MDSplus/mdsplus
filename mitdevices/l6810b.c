@@ -4,6 +4,8 @@
 #include <mds_stdarg.h>
 #include <stdio.h>
 #include "l6810b_gen.h"
+#include "devroutines.h"
+
 extern int CamXandQ();
 
 #define min(a,b) ((a) < (b)) ? (a) : (b)
@@ -154,7 +156,7 @@ int l6810b___store(struct descriptor *niddsc_ptr, InStoreStruct *in_struct)
 #define pio(f,a,d,q)  return_on_error(DevCamChk(CamPiow(in_struct->name, a, f, d, 16, 0), &one, &q))
 #define CHAN_NID(chan, field) c_nids[L6810B_N_CHANNELS+chan*L6810B_K_NODES_PER_CHANNEL+field]
 
-  static unsigned long one = 1;
+  static int one = 1;
   static int c_nids[L6810B_K_CONG_NODES];
 
   static int end;

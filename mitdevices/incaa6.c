@@ -6,6 +6,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include "incaa6_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcMultiply;
 extern unsigned short OpcValue;

@@ -5,6 +5,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "hv4032a1_gen.h"
+#include "devroutines.h"
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define HV4032A1_K_CHANS         4

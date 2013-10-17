@@ -9,6 +9,7 @@
 #include <Xm/Xm.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <xmdsshr.h>
+#include "devroutines.h"
 
 extern unsigned short OpcSubtract;
 extern unsigned short OpcMultiply;

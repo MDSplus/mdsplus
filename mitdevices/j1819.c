@@ -41,6 +41,7 @@ int J1819_TRIGGER(struct descriptor *niddsc);
 #include <string.h>
 #include <stdlib.h>
 #include "j1819_gen.h"
+#include "devroutines.h"
 extern int CamPiow();
 extern int CamXandQ();
 extern int CamStopw();
@@ -132,4 +133,5 @@ int j1819___trigger(struct descriptor *niddsc, InTriggerStruct *setup)
 {
   int status; 
   pio(28,0,0);
+  return status;
 }

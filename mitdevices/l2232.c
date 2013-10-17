@@ -40,6 +40,7 @@ extern int CamStopw();
 extern int CamXandQ();
 extern int TdiCompile();
 #include "l2232_gen.h"
+#include "devroutines.h"
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */

@@ -6,6 +6,7 @@
 #include <treeshr.h>
 #include <stdio.h>
 #include "l8590_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcValue;
 

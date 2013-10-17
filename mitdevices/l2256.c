@@ -6,6 +6,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "l2256_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;

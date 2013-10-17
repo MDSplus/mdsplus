@@ -3,6 +3,7 @@
 #include <mitdevices_msg.h>
 #include <mds_stdarg.h>
 #include "l6810_gen.h"
+#include "devroutines.h"
 
 extern int CamXandQ();
 
@@ -146,7 +147,7 @@ int l6810___store(struct descriptor *niddsc_ptr, InStoreStruct *in_struct)
 #define pio(f,a,d,q)  return_on_error(DevCamChk(CamPiow(in_struct->name, a, f, d, 16, 0), &one, &q))
 #define CHAN_NID(chan, field) c_nids[L6810_N_CHANNELS+chan*L6810_K_NODES_PER_CHANNEL+field]
 
-  static unsigned long one = 1;
+  static int one = 1;
   static int c_nids[L6810_K_CONG_NODES];
 
   static DESCRIPTOR_A_BOUNDS(raw,sizeof(short),DTYPE_W,0,1,0);

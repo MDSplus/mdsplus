@@ -4,6 +4,7 @@
 #include <mds_stdarg.h>
 #include <treeshr.h>
 #include "joerger_adc_gen.h"
+#include "devroutines.h"
 
 extern int TdiCompile();
 extern int CamBytcnt();

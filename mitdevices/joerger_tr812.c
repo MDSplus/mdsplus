@@ -9,6 +9,7 @@
 #include <libroutines.h>
 #include <string.h>
 #include "joerger_tr812_gen.h"
+#include "devroutines.h"
 
 extern unsigned short OpcAdd;
 extern unsigned short OpcMultiply;
@@ -38,6 +39,7 @@ int joerger_tr812___trigger(struct descriptor_s *niddsc_ptr,InTriggerStruct *set
 {
   int status;
   pio(25,0,0);
+  return status;
 }
 
 int joerger_tr812___init(struct descriptor_s *niddsc_ptr,InInitStruct *setup)
