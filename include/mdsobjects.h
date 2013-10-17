@@ -2145,8 +2145,8 @@ protected:
 		void move(TreeNode *parent, char *newName);
 		void move(TreeNode *parent);
 		TreeNode *addDevice(char *name, char *type);
-		void addTag(char *tagName);
-		void removeTag(char *tagName);
+		void addTag(std::string const & tagName);
+		void removeTag(std::string const & tagName);
 		void setSubtree(bool isSubtree);
 
 	};

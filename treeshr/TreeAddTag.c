@@ -49,12 +49,12 @@ extern void **TreeCtx();
 #endif
 #define max(a,b)  ( (a) >= (b) ? (a) : (b) )
 
-int TreeAddTag(int nid, char *tagnam)
+int TreeAddTag(int nid, char const * tagnam)
 {
   return _TreeAddTag(*TreeCtx(), nid, tagnam);
 }
 
-int _TreeAddTag(void *dbid, int nid_in, char *tagnam)
+int _TreeAddTag(void *dbid, int nid_in, char const * tagnam)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID       *nid_ptr = (NID *)&nid_in;

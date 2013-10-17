@@ -1579,25 +1579,23 @@ void TreeNode::move(TreeNode *parent)
 	delete [] name;
 }
 
-void TreeNode::addTag(char *tagName)
+void TreeNode::addTag(std::string const & tagName)
 {
 	resolveNid();
-	int status = _TreeAddTag(tree->getCtx(), nid, tagName);
+	int status = _TreeAddTag(tree->getCtx(), nid, tagName.c_str());
 	if(!(status & 1))
 		throw MdsException(status);
 }
 
-void TreeNode::removeTag(char *tagName)
+void TreeNode::removeTag(std::string const & tagName)
 {
 	resolveNid();
 	int currNid;
-	char *bTag = new char[strlen(tagName) + 2];
-	sprintf(bTag, "\\%s", tagName);
-	int status = _TreeFindNode(tree->getCtx(), bTag, &currNid);
-	delete [] bTag;
+	std::string bTag("\\" + tagName);
+	int status = _TreeFindNode(tree->getCtx(), bTag.c_str(), &currNid);
 	if(currNid != nid)
 		throw MdsException("No such tag for this tree node"); //The tag does not refer to this node
-	status = _TreeRemoveTag(tree->getCtx(), tagName);
+	status = _TreeRemoveTag(tree->getCtx(), tagName.c_str());
 	if(!(status & 1))
 		throw MdsException(status);
 }
