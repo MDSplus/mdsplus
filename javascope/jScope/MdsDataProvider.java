@@ -1977,6 +1977,10 @@ public class MdsDataProvider
         //return GetIntArray(in_y);
         //Gabriele June 2013: reduce dimension if one component is 1
         int [] fullDims = GetIntArray(in_y);
+
+		if( fullDims == null )
+			return null;
+
         if(fullDims.length == 1) return fullDims;
         //count dimensions == 1
         int numDimensions = 0;
