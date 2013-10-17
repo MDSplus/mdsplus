@@ -1627,7 +1627,6 @@ StringArray *TreeNode::findTags()
 
 //////////////////TreePath Methods//////////////////
 
-
 TreePath::TreePath(char *val, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
 {
 	clazz = CLASS_S;
@@ -1637,6 +1636,7 @@ TreePath::TreePath(char *val, Tree *tree, Data *units, Data *error, Data *help, 
 	memcpy(ptr, val, length);
 	setAccessory(units, error, help, validation);
 }
+
 TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
 {
 	clazz = CLASS_S;
@@ -1665,6 +1665,7 @@ EXPORT TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
 	for(int i = 0; i < numNodes; i++)
 		this->nodes[i] = nodes[i];
 }
+
 EXPORT TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
 {
 	this->numNodes = numNodes;
@@ -1673,6 +1674,7 @@ EXPORT TreeNodeArray::TreeNodeArray(int *nids, int numNodes, Tree *tree)
 	for(int i = 0; i < numNodes; i++)
 		this->nodes[i] = new TreeNode(nids[i], tree);
 }
+
 EXPORT TreeNodeArray::~TreeNodeArray()
 {
 	if(numNodes > 0)
@@ -1681,7 +1683,6 @@ EXPORT TreeNodeArray::~TreeNodeArray()
 			deleteData(nodes[i]);
 		delete [] nodes;
 	}
-			
 }
 
 
@@ -1689,6 +1690,7 @@ EXPORT void *TreeNodeArray::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
+
 EXPORT void TreeNodeArray::operator delete(void *p)
 {
 	::operator delete(p);
@@ -1696,47 +1698,37 @@ EXPORT void TreeNodeArray::operator delete(void *p)
 
 EXPORT StringArray *TreeNodeArray::getPath()
 {
-	int i;
 	char **paths = new char *[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		paths[i] = nodes[i]->getPath();
-	}
 
 	StringArray *retData = new StringArray(paths, numNodes);
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		deleteString(paths[i]);
-	}
+
 	delete [] paths;
 	return  retData;
 }
+
 EXPORT StringArray *TreeNodeArray::getFullPath()
 {
-	int i;
 	char **paths = new char *[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		paths[i] = nodes[i]->getFullPath();
-	}
 
 	StringArray *retData = new StringArray(paths, numNodes);
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		deleteString(paths[i]);
-	}
+
 	delete [] paths;
 	return  retData;
 }
 
 EXPORT Int32Array *TreeNodeArray::getNid()
 {
-	int i;
 	int *nids = new int[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		nids[i] = nodes[i]->getNid();
-	}
 
 	Int32Array *retData = new Int32Array(nids, numNodes);
 	delete [] nids;
@@ -1745,12 +1737,9 @@ EXPORT Int32Array *TreeNodeArray::getNid()
 
 EXPORT Int8Array *TreeNodeArray::isOn()
 {
-	int i;
 	char *info = new char[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isOn();
-	}
 
 	Int8Array *retData = new Int8Array(info, numNodes);
 	delete [] info;
@@ -1759,26 +1748,22 @@ EXPORT Int8Array *TreeNodeArray::isOn()
 
 EXPORT void TreeNodeArray::setOn(Int8Array *info)
 {
-	int i, numInfo;
+	int numInfo;
 	char *infoArray = info->getByteArray(&numInfo);
 	if(numInfo > numNodes)
 		numInfo = numNodes;
 
-	for(i = 0; i < numInfo; i++)
-	{
-		nodes[i]->setOn((infoArray[i])?true:false);
-	}
+	for(int i = 0; i < numInfo; ++i)
+		nodes[i]->setOn((infoArray[i]) ? true : false);
+
 	delete [] infoArray;
 }
 
 EXPORT Int8Array *TreeNodeArray::isSetup()
 {
-	int i;
 	char *info = new char[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isSetup();
-	}
 
 	Int8Array *retData = new Int8Array(info, numNodes);
 	delete [] info;
@@ -1788,12 +1773,9 @@ EXPORT Int8Array *TreeNodeArray::isSetup()
 
 EXPORT Int8Array *TreeNodeArray::isWriteOnce()
 {
-	int i;
 	char *info = new char[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isWriteOnce();
-	}
 
 	Int8Array *retData = new Int8Array(info, numNodes);
 	delete [] info;
@@ -1802,26 +1784,22 @@ EXPORT Int8Array *TreeNodeArray::isWriteOnce()
 
 EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
 {
-	int i, numInfo;
+	int numInfo;
 	char *infoArray = info->getByteArray(&numInfo);
 	if(numInfo > numNodes)
 		numInfo = numNodes;
 
-	for(i = 0; i < numInfo; i++)
-	{
+	for(int i = 0; i < numInfo; ++i)
 		nodes[i]->setWriteOnce((infoArray[i])?true:false);
-	}
+
 	delete [] infoArray;
 }
 
 EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
 {
-	int i;
 	char *info = new char[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isCompressOnPut();
-	}
 
 	Int8Array *retData = new Int8Array(info, numNodes);
 	delete [] info;
@@ -1830,26 +1808,22 @@ EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
 
 EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
 {
-	int i, numInfo;
+	int numInfo;
 	char *infoArray = info->getByteArray(&numInfo);
 	if(numInfo > numNodes)
 		numInfo = numNodes;
 
-	for(i = 0; i < numInfo; i++)
-	{
+	for(int i = 0; i < numInfo; ++i)
 		nodes[i]->setCompressOnPut((infoArray[i])?true:false);
-	}
+
 	delete [] infoArray;
 }
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
 {
-	int i;
 	char *info = new char[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteModel();
-	}
 
 	Int8Array *retData = new Int8Array(info, numNodes);
 	delete [] info;
@@ -1858,26 +1832,22 @@ EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
 
 EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
 {
-	int i, numInfo;
+	int numInfo;
 	char *infoArray = info->getByteArray(&numInfo);
 	if(numInfo > numNodes)
 		numInfo = numNodes;
 
-	for(i = 0; i < numInfo; i++)
-	{
+	for(int i = 0; i < numInfo; ++i)
 		nodes[i]->setNoWriteModel((infoArray[i])?true:false);
-	}
+
 	delete [] infoArray;
 }
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
 {
-	int i;
 	char *info = new char[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteShot();
-	}
 
 	Int8Array *retData = new Int8Array(info, numNodes);
 	delete [] info;
@@ -1886,26 +1856,22 @@ EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
 
 EXPORT void TreeNodeArray::setNoWriteShot(Int8Array *info)
 {
-	int i, numInfo;
+	int numInfo;
 	char *infoArray = info->getByteArray(&numInfo);
 	if(numInfo > numNodes)
 		numInfo = numNodes;
 
-	for(i = 0; i < numInfo; i++)
-	{
+	for(int i = 0; i < numInfo; ++i)
 		nodes[i]->setNoWriteShot((infoArray[i])?true:false);
-	}
+
 	delete [] infoArray;
 }
 
 EXPORT Int32Array *TreeNodeArray::getLength()
 {
-	int i;
 	int *sizes = new int[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		sizes[i] = nodes[i]->getLength();
-	}
 
 	Int32Array *retData = new Int32Array(sizes, numNodes);
 	delete [] sizes;
@@ -1913,12 +1879,9 @@ EXPORT Int32Array *TreeNodeArray::getLength()
 }
 EXPORT Int32Array *TreeNodeArray::getCompressedLength()
 {
-	int i;
 	int *sizes = new int[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		sizes[i] = nodes[i]->getCompressedLength();
-	}
 
 	Int32Array *retData = new Int32Array(sizes, numNodes);
 	delete [] sizes;
@@ -1927,12 +1890,9 @@ EXPORT Int32Array *TreeNodeArray::getCompressedLength()
 
 EXPORT StringArray *TreeNodeArray::getUsage()
 {
-	int i;
 	const char **usages = new const char *[numNodes];
-	for(i = 0; i < numNodes; i++)
-	{
+	for(int i = 0; i < numNodes; ++i)
 		usages[i] = nodes[i]->getUsage();
-	}
 
 	StringArray *retData = new StringArray((char **)usages, numNodes);
 	delete [] usages;
