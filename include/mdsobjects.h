@@ -35,6 +35,7 @@
 #define NOEXCEPT noexcept
 #else
 #define NOEXCEPT throw()
+#define nullptr NULL
 #endif
 
 #define DTYPE_BU 2 
@@ -244,17 +245,22 @@ protected:
 		void *operator new(size_t sz);
 		void operator delete(void *p);
 		virtual bool equals(Data *data) {return false;}
-		Data()
+
+		Data():
+			changed(true),
+			refCount(0),
+			dataCache(nullptr),
+			units(nullptr),
+			error(nullptr),
+			help(nullptr),
+			validation(nullptr)
 		{
-			changed = true;
-			refCount = 0;
-			dataCache = 0;
-			units = error = help = validation = 0;
 		}
+
 		virtual ~Data()
 		{
-			//printf("DELETED\n");
 		}
+
 		Data *evaluate();
 		Data *data();
 		char *decompile();
