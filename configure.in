@@ -546,7 +546,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*apple-darwin*) echo "Configuring for MacOS X lion 10";
+*apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
@@ -591,7 +591,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
        JDK_DIR=/Library/Java/Home
-       jni_inc_dir="$JDK_DIR/include";
+       jni_inc_dir="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers";
        jni_md_inc_dir="$jni_inc_dir";
        JDK_LIVECONNECT="$JDK_DIR/lib/plugin.jar"
        JVM="-framework JavaVM";
@@ -602,7 +602,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        dnl HDF5_LIBS="-lz -lsz";
        dnl HDF5_DIR="/usr/local";
        X_EXTRA_LIBS="-lXmu";;
-*apple-darwin*) echo "Configuring for MacOS X...";
+*xxxxxxxxxxxapple-darwin*) echo "Configuring for MacOS X...";
        CFLAGS="$CFLAGS -no-cpp-precomp -dynamic";
        if (test "$F77" = "f77"); then 
           FFLAGS="$FFLAGS -w -f -V -W";
