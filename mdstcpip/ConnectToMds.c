@@ -23,7 +23,11 @@ static void ParseHost(char *hostin, char **protocol, char **host) {
       strcpy(*host,hostin);
     }
   }
-  for (i=strlen(*host)-1;i>=0 && (*host)[i]==32;(*host)[i]=0,i--);
+  for (i=strlen(*host)-1;(*host)[i]==32;i--) {
+	(*host)[i]=0;
+	if (i==0)
+	  break;
+  }
 }
 
 static int DoLogin(int id) {
