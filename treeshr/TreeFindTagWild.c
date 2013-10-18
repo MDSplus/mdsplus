@@ -263,7 +263,7 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
   }
   if ((cptr = strstr(tagnam_ptr,"::")) != 0)
   {
-    tree_len = (unsigned_short)(cptr - tagnam_ptr);
+    tree_len = (unsigned short)(cptr - tagnam_ptr);
     StrCopyR(&ctx->search_tree, &tree_len, tag_dsc.pointer);
     tag_dsc.length -= (tree_len + 2);
     tag_dsc.pointer += (tree_len + 2);

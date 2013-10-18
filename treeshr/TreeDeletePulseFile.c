@@ -112,14 +112,14 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
 
 STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot)
 {
-  int len = strlen(tree);
+  size_t len = strlen(tree);
   char tree_lower[13];
   char pathname[32];
   char *path;
   char *pathin;
-  int pathlen;
+  size_t pathlen;
   char name[32];
-  int i;
+  size_t i;
   int status = 1;
   int retstatus = 1;
   int itype;
