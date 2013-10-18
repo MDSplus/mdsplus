@@ -1097,7 +1097,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
   {
     link_it2(dblist, grandparent, child, subtreetop, grandparent);
     /*
-  if (((char *)(subtreetop) - (char *)(grandparent)) >= 2^32) {
+  if (((char *)(subtreetop) - (char *)(grandparent)) >= (2^32)) {
     int i; 
     if (grandparent->parent != -1) {
       for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);
