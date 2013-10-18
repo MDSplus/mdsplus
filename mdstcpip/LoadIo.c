@@ -19,7 +19,7 @@ IoRoutines *LoadIo(char *protocol_in) {
     protocol[i]=toupper(protocol[i]);
   image_dsc.pointer=strcpy((char *)malloc(strlen(protocol)+36),"MdsIp");
   strcat(image_dsc.pointer,protocol);
-  image_dsc.length=strlen(image_dsc.pointer);
+  image_dsc.length=(unsigned short)strlen(image_dsc.pointer);
   status=LibFindImageSymbol(&image_dsc,&symbol_dsc,&rtn);
   free(image_dsc.pointer);
   if (status & 1 && rtn != 0) {

@@ -10,7 +10,7 @@
 #endif
 
 static void ParseHost(char *hostin, char **protocol, char **host) {
-  int i;
+  size_t i;
   *protocol=strcpy((char *)malloc(strlen(hostin)+10),"");
   *host=strcpy((char *)malloc(strlen(hostin)+10),"");
   sscanf(hostin,"%[^:]://%s",*protocol,*host);
@@ -70,7 +70,7 @@ static int DoLogin(int id) {
   m = malloc(sizeof(MsgHdr) + strlen(user_p));
   memset(m,0,sizeof(MsgHdr) + strlen(user_p));
   m->h.client_type = SENDCAPABILITIES;
-  m->h.length = strlen(user_p);
+  m->h.length = (short)strlen(user_p);
   m->h.msglen = sizeof(MsgHdr) + m->h.length;
   m->h.dtype = DTYPE_CSTRING;
   m->h.status = GetConnectionCompression(id);
