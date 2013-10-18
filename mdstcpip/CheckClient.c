@@ -125,7 +125,7 @@ int CheckClient(char *username, int num, char **matchString) {
       while (ok==0 && fgets(line_c,1023,f)) {
 	if (line_c[0] != '#') {
 	  int i;
-	  line_d.length = (unsigned short0strlen(line_c) - 1;
+	  line_d.length = (unsigned short)(strlen(line_c) - 1);
 	  StrElement(&access_id,&zero,&delimiter,&line_d);
 	  StrElement(&local_user,&one,&delimiter,&line_d);
 	  CompressString(&access_id,1);
