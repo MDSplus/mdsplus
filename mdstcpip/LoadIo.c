@@ -11,7 +11,7 @@ IoRoutines *LoadIo(char *protocol_in) {
   IoRoutines *(*rtn)();
   char *protocol;
   int status;
-  int i;
+  size_t i;
   if (protocol_in == 0)
     protocol_in="TCP";
   protocol=strcpy((char *)malloc(strlen(protocol_in)+1),protocol_in);
