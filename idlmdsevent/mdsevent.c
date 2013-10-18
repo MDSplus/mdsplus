@@ -30,7 +30,7 @@ Invoked from MDSEVENT.PRO
 
 ------------------------------------------------------------------------------*/
 #include <ipdesc.h>
-
+#include <stdlib.h>
 extern int MDSEventAst();
 extern int MDSEventCan();
 
@@ -50,12 +50,11 @@ typedef struct _event_struct { int stub_id;
 #include <stdio.h>
 #ifdef WIN32
 #include <windows.h>
-extern unsigned long WINAPI MdsDispatchEvent(SOCKET sock);
 #else
 #include <X11/Intrinsic.h>
 static XtInputId XTINPUTID=0;
-extern void MdsDispatchEvent(void *, int *, unsigned long *);
 #endif
+extern void MdsDispatchEvent();
 
 static EventStruct *EventList = (EventStruct *)0;
 static int EventCount = 1;

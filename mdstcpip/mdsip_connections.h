@@ -217,11 +217,7 @@ EXPORT void LockAsts();
 EXPORT struct descrip *MakeDescrip(struct descrip *in_descrip, char dtype, char ndims, int *dims, void *ptr);
 EXPORT struct descrip *MakeDescripWithLength(struct descrip *in_descrip, char dtype, int length, char ndims, int *dims, void *ptr);
 EXPORT int MdsClose(int id);
-#ifndef HAVE_WINDOWS_H
 EXPORT void MdsDispatchEvent(int id);
-#else
-EXPORT unsigned long WINAPI MdsDispatchEvent(int id);
-#endif
 EXPORT int  MdsEventAst(int id, char *eventnam, void (*astadr)(), void *astprm, int *eventid);
 EXPORT int MdsEventCan(int id, int eventid);
 EXPORT void MdsIpFree(void *ptr);

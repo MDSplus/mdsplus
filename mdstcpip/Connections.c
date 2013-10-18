@@ -3,6 +3,7 @@
 #include <treeshr.h>
 #include "mdsip_connections.h"
 #include <stdio.h>
+#include <mdsshr.h>
 
 static Connection *ConnectionList=0;
 static int connection_mutex_initialized = 0;

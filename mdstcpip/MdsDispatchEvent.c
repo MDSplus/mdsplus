@@ -2,11 +2,7 @@
 #include "mdsip_connections.h"
 #include <stdlib.h>
 
-#ifndef HAVE_WINDOWS_H
 void MdsDispatchEvent(int id)
-#else
-unsigned long WINAPI MdsDispatchEvent(int id)
-#endif
 {
   int status;
   Message  *m;
