@@ -71,8 +71,8 @@ int _TreeFindNode(void *dbid, char const * path, int *outnid)
   NODE *node;
   SEARCH_CONTEXT *ctx;
   int current_level;
-  int i;
-  int len = strlen(path);
+  size_t i;
+  size_t len = strlen(path);
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
   if (dblist->remote)
@@ -122,8 +122,8 @@ int _TreeFindNodeWild(void *dbid, char const * path, int *nid_out, void **ctx_in
     ctx = *(SEARCH_CONTEXT **)ctx_inout;
     if (ctx)
     {
-      int i;
-      int len = strlen(path);
+      size_t i;
+      size_t len = strlen(path);
       memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
       ctx->type = EOL;
       ctx->string = strcpy(malloc(len+1),path);
@@ -897,7 +897,7 @@ int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
   if (tagname)
   {
     struct descriptor tagd = {0,DTYPE_T,CLASS_S,0};
-    tagd.length = strlen(tagname);
+    tagd.length = (unsigned short)strlen(tagname);
     tagd.pointer = tagname;
     StrCopyDx(tag,&tagd);
     status = 1;
@@ -997,8 +997,8 @@ STATIC_ROUTINE char * AbsPath(void *dbid, char const * inpath, int nid_in)
   char *tmppath = NULL;
   char const * pathptr = inpath;
   char *answer = NULL;
-  int len;
-  int i;
+  size_t len;
+  size_t i;
   _TreeSetDefaultNid(dbid,nid_in);
   if (strlen(inpath))
   {
@@ -1106,8 +1106,8 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const cha
   {
 	  if (tree)
 	  {
-		  int len = strlen(tsearch.info->treenam);
-		  if (len == (unsigned short)treelen && strncmp(tsearch.info->treenam,tree,len) == 0)
+		  size_t len = strlen(tsearch.info->treenam);
+		  if ((len == (size_t)treelen) && strncmp(tsearch.info->treenam,tree,len) == 0)
 			  break;
 	  }
 	  else if ((default_node >= tsearch.info->node) && 
@@ -1210,8 +1210,8 @@ int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, ch
   int       status;
   NODE     *node_ptr;
   int       ctxidx;
-  int       len = strlen(path_ptr);
-  int       i;
+  size_t       len = strlen(path_ptr);
+  size_t       i;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
   status = TreeNORMAL;
@@ -1270,7 +1270,7 @@ int TreeAbsPathDsc(char *inpath, struct descriptor *outpath)
   else
     {
       struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
-      ans_d.length = strlen(ans_c);
+      ans_d.length = (unsigned short)strlen(ans_c);
       ans_d.pointer = ans_c;
       StrCopyDx(outpath,&ans_d);
       free(ans_c);
