@@ -1096,25 +1096,6 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
   if (child_of(grandparent) == parent)
   {
     link_it2(dblist, grandparent, child, subtreetop, grandparent);
-    /*
-  if (((char *)(subtreetop) - (char *)(grandparent)) >= (2^32)) {
-    int i; 
-    if (grandparent->parent != -1) {
-      for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);
-      dblist->big_node_linkage[i].node = grandparent;
-      dblist->big_node_linkage[i].parent = parent_of(grandparent);
-      dblist->big_node_linkage[i].child = child_of(grandparent);
-      dblist->big_node_linkage[i].member = member_of(grandparent);
-      dblist->big_node_linkage[i].brother = brother_of(grandparent);
-      grandparent->parent = -1;
-      grandparent->INFO.LINK_INFO.big_linkage=dblist->big_node_linkage+i;
-    }
-    grandparent->INFO.LINK_INFO.big_linkage->child=(subtreetop);
-  } else {
-    grandparent->INFO.LINK_INFO.big_linkage->child = (char *)((((subtreetop) != 0) && ((grandparent) != 0)) ? (char *)(subtreetop) - (char *)(grandparent) : 0)-(char *)0; 
-    grandparent->INFO.LINK_INFO.big_linkage->child = (char *)(swapint((char *)&grandparent->INFO.LINK_INFO.big_linkage->child))-(char *)0;
-  }
-    */
   }
   else
   {
@@ -1126,7 +1107,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
     }
   }
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
-  link_parent(dblist, subtreetop, grandparent, subtreetop);
+  link_it2(dblist, subtreetop, parent, grandparent, subtreetop);
   if (brother_of(parent))
   {
     link_it2(dblist, subtreetop, brother, brother_of(parent), subtreetop);
