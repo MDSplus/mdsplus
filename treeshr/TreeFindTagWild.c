@@ -73,7 +73,7 @@ int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descrip
   if (ans)
     {
       static struct descriptor tag = {0, DTYPE_T, CLASS_S, 0};
-      tag.length = strlen(ans);
+      tag.length = (unsigned short)strlen(ans);
       tag.pointer = ans;
       MdsCopyDxXd(&tag,name);
       status = 1;
@@ -249,7 +249,7 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
   unsigned short tree_len;
   char *cptr;
   static unsigned short one = 1;
-  tag_dsc.length = strlen(tagnam_ptr);
+  tag_dsc.length = (unsigned short)strlen(tagnam_ptr);
   tag_dsc.pointer = tagnam_ptr;
   ctx->search_tag = empty;
   ctx->search_tree = empty;
@@ -263,7 +263,7 @@ static TAG_SEARCH *NewTagSearch(char *tagnam_ptr)
   }
   if ((cptr = strstr(tagnam_ptr,"::")) != 0)
   {
-    tree_len = cptr - tagnam_ptr;
+    tree_len = (unsigned_short)(cptr - tagnam_ptr);
     StrCopyR(&ctx->search_tree, &tree_len, tag_dsc.pointer);
     tag_dsc.length -= (tree_len + 2);
     tag_dsc.pointer += (tree_len + 2);
@@ -293,7 +293,7 @@ static int NextTagTree(PINO_DATABASE *dblist, TAG_SEARCH *ctx)
   for (found = 0; !found && ctx->this_tree_info; ctx->this_tree_info = ctx->this_tree_info->next_info)
   {
     struct descriptor treenam = {0, DTYPE_T, CLASS_S, 0};
-    treenam.length = strlen(ctx->this_tree_info->treenam);
+    treenam.length = (unsigned short)strlen(ctx->this_tree_info->treenam);
     treenam.pointer = ctx->this_tree_info->treenam;
     if (StrMatchWild(&treenam, &ctx->search_tree) & 1)
     {

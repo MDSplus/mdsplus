@@ -140,7 +140,7 @@ int _TreeGetDbi(void *dbid, struct dbi_itm *itmlst)
       else
       {
         lst->pointer = (unsigned char *)string;
-        retlen = strlen(string);
+        retlen = (unsigned short)strlen(string);
       }
     }
     if (lst->return_length_address)
