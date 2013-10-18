@@ -39,7 +39,6 @@ int ServerSendMessage();
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
-#include <arpa/inet.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
@@ -53,6 +52,7 @@ int ServerSendMessage();
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <arpa/inet.h>
 #include <sys/time.h>
 #include <pthread.h>
 #define INVALID_SOCKET -1
