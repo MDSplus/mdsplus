@@ -360,6 +360,9 @@ typedef struct big_node_linkage {
     }\
     nodeptr->INFO.LINK_INFO.big_linkage->field=(a);\
   }
+#define link_parent(dblist,nodeptr, a, b) \
+  link_it2(dblist,nodeptr,parent, a,b)
+
 #else
 #define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)
 
@@ -373,6 +376,9 @@ typedef struct big_node_linkage {
 
 #define link_it2(dblist,node,field,a,b)  \
 node->INFO.TREE_INFO.field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->INFO.TREE_INFO.field = swapint((char *)&node->INFO.TREE_INFO.field)
+
+#define link_parent(dblist,node,a,b)  \
+node->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->parent = swapint((char *)&node->parent)
 
 #endif
 

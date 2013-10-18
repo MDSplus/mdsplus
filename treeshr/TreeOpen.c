@@ -1107,7 +1107,7 @@ static void SubtreeNodeConnect(PINO_DATABASE *dblist, NODE *parent, NODE *subtre
     }
   }
   memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
-  link_it2(dblist, subtreetop, parent, grandparent, subtreetop);
+  link_parent(dblist, subtreetop, grandparent, subtreetop);
   if (brother_of(parent))
   {
     link_it2(dblist, subtreetop, brother, brother_of(parent), subtreetop);
