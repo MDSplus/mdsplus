@@ -1,7 +1,10 @@
+#include <config.h>
 #include <mdsdescrip.h>
 #include <config.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #if defined(WIN32)
 #include <io.h>
 #include <windows.h>
