@@ -115,12 +115,6 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
 	{
 	  NODE     *node_ptr;
 	  int       node_idx;
-	  int       numext;
-	  int       pages_needed;
-	  int       pages_allocated;
-	  int       i;
-	  int       status;
-	  int      *new_external_ptr;
 
 /**************************************************
  First we must check to make sure we are editting
