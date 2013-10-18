@@ -344,7 +344,7 @@ typedef struct big_node_linkage {
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->child : (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0))
 #define brother_of(a)\
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
-#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; out = swapint((char *)&out)
+#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; swapint((char *)&out)
 #define link_it2(dblist,nodeptr,field,a,b)  \
   {\
     int i; \
