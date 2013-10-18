@@ -231,7 +231,7 @@ address to a NID:
             (node_in <= (node_to_nid__info->node + \
              node_to_nid__info->header->nodes))) \
        { \
-         nid->node = int(node_in - node_to_nid__info->node); \
+         nid->node = (int)(node_in - node_to_nid__info->node); \
          node_to_nid__info = 0; \
        } \
        else \
