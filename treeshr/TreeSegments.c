@@ -1055,9 +1055,10 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value) 
     /*** See if the node currently has a value for this attribute.
     ***/
     while(index_offset != -1 && found_index==-1) {
-      int i,j;
+      int i;
+      size_t j;
       for (i=0;i<NAMED_ATTRIBUTES_PER_INDEX;i++) {
-	int len=strlen(xnciname);
+	size_t len=strlen(xnciname);
 	for (j=0;j<len;j++) {
 	  if (tolower(xnciname[j]) != tolower(index.attribute[i].name[j]))
 	    break;
@@ -1161,8 +1162,8 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     } *namelist = 0;
     int longestattname=0;
     int numnames=0;
-    unsigned int i;
-    unsigned int len=strlen(xnciname);
+    size_t i;
+    size_t len=strlen(xnciname);
     if (len == strlen(attnames)) {
       for (i=0;i<len;i++) {
 	if (tolower(xnciname[i]) != attnames[i])
@@ -1197,7 +1198,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	for (i=0;i<NAMED_ATTRIBUTES_PER_INDEX;i++) {
 	  if (getnames==1) {
 	    if (index.attribute[i].name[0]!=0) {
-	      int len=strlen(index.attribute[i].name);
+	      size_t len=strlen(index.attribute[i].name);
 	      struct _namelist *p=malloc(sizeof(struct _namelist));
 	      memcpy(p->name,index.attribute[i].name,sizeof(p->name));
 	      p->next=namelist;
