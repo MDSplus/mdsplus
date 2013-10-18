@@ -94,6 +94,7 @@ struct EventInfo {
 
 #ifdef HAVE_WINDOWS_H
 extern int pthread_create(pthread_t  *thread, void *dummy, void (*rtn)(void *), void *rtn_param);
+extern void pthread_detach(HANDLE *thread);
 #endif
 
 #ifdef HAVE_WINDOWS_H
