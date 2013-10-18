@@ -114,7 +114,6 @@ int       _TreeSetNci(void *dbid, int nid_in, NCI_ITM *nci_itm_ptr)
       case NciUSAGE:
 	{
 	  NODE     *node_ptr;
-	  int       node_idx;
 
 /**************************************************
  First we must check to make sure we are editting
@@ -695,7 +694,7 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
        info && ((node < info->node) || (node > (info->node + info->header->nodes))); info = info->next_info);
   if (!info)
     return TreeNNF;
-  node_num = node - info->node;
+  node_num = (int)(node - info->node);
   status = TreeGetNciLw(info, node_num, nci);
   if (status & 1)
 
