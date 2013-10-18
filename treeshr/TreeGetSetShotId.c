@@ -47,8 +47,6 @@ extern char *TranslateLogical();
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#define _ToLower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
-
 static char *GetFileName(char *experiment,char **ctx)
 {
   char *ans = 0;
@@ -85,10 +83,10 @@ static char *GetFileName(char *experiment,char **ctx)
     free(tmp);
     if (pathname[strlen(pathname)-1] == '+')
     {
-      int i;
-      for (i=strlen(pathname)-1;(i >= 0) && (pathname[i] != delim[0]);i--);
-      if (i >= 0)
-        pathname[i+1] = 0;
+      size_t i;
+      for (i=strlen(pathname);(i > 0) && (pathname[i-1] != delim[0]);i--);
+      if (i > 0)
+        pathname[i] = 0;
     }
     else
     {
@@ -133,9 +131,9 @@ int       TreeGetCurrentShotId(char const * experiment)
   char *path = 0;
   char *exp = strcpy(malloc(strlen(experiment)+6),experiment);
   int i;
-  int slen;
+  size_t slen;
   for (i=0;exp[i] != '\0';i++)
-    exp[i] = _ToLower(exp[i]);
+    exp[i] = tolower(exp[i]);
   strcat(exp,"_path");
   path = TranslateLogical(exp);
   exp[strlen(experiment)]='\0';
@@ -174,10 +172,10 @@ int       TreeSetCurrentShotId(char const * experiment, int shot)
   int status = 0;
   char *path = 0;
   char *exp = strcpy(malloc(strlen(experiment)+6),experiment);
-  int slen;
+  size_t slen;
   int i;
   for (i=0;exp[i] != '\0';i++)
-    exp[i] = _ToLower(exp[i]);
+    exp[i] = tolower(exp[i]);
   strcat(exp,"_path");
   path = TranslateLogical(exp);
   exp[strlen(experiment)]='\0';
