@@ -251,7 +251,8 @@ switch (encrypt) {
 	* buffer.  Usernames can not be longer than 31 characters.
 	*/
 	for (r0=0; (strcmp(r6+4+r0," ")==0) || (r0==r5) || (r0==31);
-					r0++,(unsigned short)*r6++);
+	     /* r0++,(unsigned short)*r6++); */
+					r0++,r6++);
 	/* This part       ^^^^^^^     is the buffer holding the username */
 
 	/* If Purdy_S:  Bytes 0-1 => plaintext length */

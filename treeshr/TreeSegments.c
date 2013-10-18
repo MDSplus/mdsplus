@@ -6,7 +6,9 @@
 #include <libroutines.h>
 #include <mdsshr.h>
 #include "treeshrp.h"
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <ctype.h>
 extern void **TreeCtx();
 
