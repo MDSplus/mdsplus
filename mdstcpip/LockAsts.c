@@ -1,4 +1,5 @@
 #include <config.h>
+#include <mdsshr.h>
 #include "mdsip_connections.h"
 
 static int ast_mutex_initialized = 0;
