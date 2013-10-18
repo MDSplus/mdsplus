@@ -168,7 +168,7 @@ static void _RemoveTagIdx(PINO_DATABASE  *dblist, int tagidx)
    total tag count.
   ********************************************/
     if (dblist->tree_info->header->tags > 0) {
-      int bytes;
+      size_t bytes;
       if( (bytes = (dblist->tree_info->header->tags - (this_tags_ptr - dblist->tree_info->tags)) * sizeof(int)) > 0) 
 	memcpy(this_tags_ptr, this_tags_ptr+1, bytes);
       if( (bytes = (dblist->tree_info->header->tags - tagidx) * sizeof(TAG_INFO)) > 0) 

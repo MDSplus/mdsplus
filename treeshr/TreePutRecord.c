@@ -346,7 +346,7 @@ int TreeFixupNid(NID *nid, unsigned char *tree, struct descriptor *path)
     if (path_c)
       {
         struct descriptor path_d = {0, DTYPE_T, CLASS_S, 0};
-        path_d.length = strlen(path_c);
+        path_d.length = (unsigned short)strlen(path_c);
         path_d.pointer = path_c;
         StrCopyDx(path,&path_d);
         TreeFree(path_c);
