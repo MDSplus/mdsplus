@@ -72,8 +72,8 @@ int TreeOpenNew(char const *tree, int shot) { return _TreeOpenNew(TreeCtx(), tre
 
 static char *TreePath( char *tree, char *tree_lower_out )
 {
-  int len = strlen(tree);
-  int i;
+  size_t len = strlen(tree);
+  size_t i;
   char tree_lower[13] = {0};
   char pathname[32];
   char *path;
@@ -86,18 +86,18 @@ static char *TreePath( char *tree, char *tree_lower_out )
   path = TranslateLogical(pathname);
   if (path)
   {
-    for (i=strlen(path)-1;i>=0 && (path[i]==32 || path[i]==9);i--) 
-      path[i]=0;
+    for (i=strlen(path);i>0 && (path[i-1]==32 || path[i-1]==9);i--) 
+      path[i-1]=0;
   }
   return path;
 }
 
 static char *ReplaceAliasTrees(char *tree_in)
 {
-  int buflen=strlen(tree_in)+1;
+  size_t buflen=strlen(tree_in)+1;
   char *ans=malloc(buflen);
   char *tree=strtok(tree_in,",");
-  int i;
+  size_t i;
   memset(ans,0,buflen);
   while(tree)
   {
@@ -213,9 +213,9 @@ int _TreeClose(void **dbid, char const * tree, int shot)
   {
     if (tree)
     {
-      int i;
+      size_t i;
       char uptree[13] = {0};
-      int len = strlen(tree);
+      size_t len = strlen(tree);
       for (i = 0; i < 12 && i < len; ++i)
         uptree[i] = toupper(tree[i]);
       status = TreeNOT_OPEN;
@@ -847,7 +847,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
   if (path)
   {
     char *part;
-    int pathlen = strlen(path);
+    size_t pathlen = strlen(path);
     char *npath;
     npath = MaskReplace(path,tree_lower,shot);
     TranslateLogicalFree(path);
@@ -1386,7 +1386,7 @@ struct descriptor *TreeFileName(char *tree, int shot)
   if (fd != -1) {
     MDS_IO_CLOSE(fd);
     ans_dsc.pointer = ans;
-    ans_dsc.length = strlen(ans);
+    ans_dsc.length = (unsigned short)strlen(ans);
   }
   else {
     ans_dsc.pointer = NULL;
