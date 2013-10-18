@@ -1160,7 +1160,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
       char name[NAMED_ATTRIBUTE_NAME_SIZE+1];
       struct _namelist *next;
     } *namelist = 0;
-    int longestattname=0;
+    size_t longestattname=0;
     int numnames=0;
     size_t i;
     size_t len=strlen(xnciname);
@@ -1233,7 +1233,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	  status = TreeFAILURE;
 	} else {
 	  char *names=malloc(longestattname*numnames);
-	  DESCRIPTOR_A(name_array,longestattname,DTYPE_T,names,longestattname*numnames);
+	  DESCRIPTOR_A(name_array,(short)longestattname,DTYPE_T,names,longestattname*numnames);
 	  struct _namelist *p;
 	  char *np;
 	  for (p=namelist,np=names;p;p=p->next,np+=longestattname) {
