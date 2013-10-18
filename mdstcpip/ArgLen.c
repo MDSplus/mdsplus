@@ -6,7 +6,7 @@ short ArgLen(struct descrip *d) {
   short len;
   switch (d->dtype)
   {
-    case DTYPE_CSTRING :  len = d->length ? d->length : (d->ptr ? strlen(d->ptr) : 0); break;
+    case DTYPE_CSTRING :  len = d->length ? d->length : (short)(d->ptr ? strlen(d->ptr) : 0); break;
     case DTYPE_UCHAR   :
     case DTYPE_CHAR    :  len = sizeof(char); break;
     case DTYPE_USHORT  :

@@ -125,14 +125,14 @@ int CheckClient(char *username, int num, char **matchString) {
       while (ok==0 && fgets(line_c,1023,f)) {
 	if (line_c[0] != '#') {
 	  int i;
-	  line_d.length = strlen(line_c) - 1;
+	  line_d.length = (unsigned short0strlen(line_c) - 1;
 	  StrElement(&access_id,&zero,&delimiter,&line_d);
 	  StrElement(&local_user,&one,&delimiter,&line_d);
 	  CompressString(&access_id,1);
 	  CompressString(&local_user,0);
 	  if (access_id.length) {
 	    for (i=0;i<num;i++) {
-	      struct descriptor match_d = {strlen(matchString[i]), DTYPE_T, CLASS_S, matchString[i]};
+	      struct descriptor match_d = {(unsigned short)strlen(matchString[i]), DTYPE_T, CLASS_S, matchString[i]};
 	      struct descriptor match = {0, DTYPE_T, CLASS_D, 0};
 	      StrUpcase(&match,&match_d);
 	      if (access_id.pointer[0] != '!') {
@@ -167,7 +167,7 @@ int CheckClient(char *username, int num, char **matchString) {
     int status;
     struct descriptor cmd_d={0,DTYPE_T,CLASS_S,0};
     struct descriptor ans_d={0,DTYPE_T,CLASS_D,0};
-    int cmdlen=strlen(hostfile)+10+strlen(username);
+    size_t cmdlen=strlen(hostfile)+10+strlen(username);
     char *cmd;
     static int (*TdiExecute)(struct descriptor *cmd, struct descriptor *ans, void *endarg) = 0;
     if (TdiExecute == 0) {
@@ -187,7 +187,7 @@ int CheckClient(char *username, int num, char **matchString) {
       sprintf(cmd+strlen(cmd),"\"%s\",",matchString[i]);
     cmd[strlen(cmd)-1]=')';
     cmd_d.pointer=cmd;
-    cmd_d.length=strlen(cmd);
+    cmd_d.length=(unsigned short)strlen(cmd);
     status=(*TdiExecute)(&cmd_d,&ans_d MDS_END_ARG);
     if (status & 1) {
       ok=1;
