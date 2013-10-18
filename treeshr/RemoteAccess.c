@@ -1288,7 +1288,7 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
   }
 }
 
-STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
+STATIC_ROUTINE ssize_t io_write_remote(int fd, void *buff, size_t count)
 {
   ssize_t ret = 0;
   int info[] = {0,0};
@@ -1318,9 +1318,9 @@ STATIC_ROUTINE int io_write_remote(int fd, void *buff, size_t count)
   return ret;
 }
 
-int MDS_IO_WRITE(int fd, void *buff, size_t count)
+ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
 {
-  int ans = -1;
+  ssize_t ans = -1;
   if (count == 0) return 0;
   LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)

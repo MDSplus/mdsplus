@@ -297,7 +297,7 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
   int src_fd = MDS_IO_OPEN(src,O_RDONLY | O_BINARY | O_RANDOM, 0);
   if (src_fd != -1)
   {
-    _int64 src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
+    ssize_t src_len = MDS_IO_LSEEK(src_fd, 0, SEEK_END);
     int dst_fd = MDS_IO_OPEN(dst,O_RDWR | O_CREAT | O_TRUNC, 0664);
     if ((dst_fd != -1) && (src_len != -1))
     {
@@ -305,16 +305,16 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
       if (lock_it) MDS_IO_LOCK(src_fd,0,(int)src_len,MDS_IO_LOCK_RD,0);
       if (src_len > 0)
       {
-        size_t chunk_size = MIN(MAX_CHUNK, src_len);
+        ssize_t chunk_size = MIN(MAX_CHUNK, src_len);
         void *buff = malloc((int)chunk_size);
-        _int64 bytes_to_go = src_len;
+        ssize_t bytes_to_go = src_len;
         while(bytes_to_go > 0)
         {
           size_t io_size = MIN(bytes_to_go, chunk_size);
-          size_t bytes_read = MDS_IO_READ(src_fd,buff,(size_t)io_size);
+          ssize_t bytes_read = MDS_IO_READ(src_fd,buff,io_size);
           if (bytes_read == io_size)
 	  {
-            int bytes_written = MDS_IO_WRITE(dst_fd,buff,(size_t)io_size);
+            ssize_t bytes_written = MDS_IO_WRITE(dst_fd,buff,io_size);
             if (bytes_written != io_size)
               break;
           }
