@@ -112,7 +112,7 @@ This does not make harm to treeshr, but avoids to load a wrong symbol when MdsLi
       	mdslib_library_linked = 1;
   }
 
-  symname.length = strlen(name);
+  symname.length = (unsigned short)strlen(name);
   symname.pointer = name;
   return LibFindImageSymbol(&image,&symname,sym);
 }
@@ -145,7 +145,7 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
   } *AddrList=0;
   char hostpart[256] = {0};
   char portpart[256] = {0};
-  int i;
+  size_t i;
   struct addr_list *a;
   for (a=AddrList;a;a=a->next) {
     if (strcmp(host,a->host)==0) {
@@ -165,7 +165,7 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
     else
       strcpy(portpart,"mdsip");
   }
-  for (i=strlen(hostpart)-1;i>=0 && hostpart[i]==32;hostpart[i]=0,i--);
+  for (i=strlen(hostpart);(i>0) && (hostpart[i-1]==32);hostpart[i-1]=0,i--);
   status=getaddrinfo(hostpart,portpart,&hints,&res);
   if (status == 0) {
     struct addr_list *p=malloc(sizeof(struct addr_list)),*next;
@@ -442,8 +442,8 @@ int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc
 
 STATIC_ROUTINE int LeadingBackslash(char const *path)
 {
-  int i;
-  int len = strlen(path);
+  size_t i;
+  size_t len = strlen(path);
   for (i=0;i<len;i++)
   {
     if ((path[i] != 32) && (path[i] != 9))
@@ -1074,7 +1074,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
     {
       int status;
       int info[3];
-      info[0]=strlen(filename)+1;
+      info[0]=(int)strlen(filename)+1;
       if (O_CREAT == 0x0200) /* BSD */
       {
         if (options & O_CREAT)
@@ -1295,7 +1295,7 @@ STATIC_ROUTINE ssize_t io_write_remote(int fd, void *buff, size_t count)
   int sock = FDS[fd-1].socket;
   int status;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
-  info[0]=count;
+  info[0]=(int)count;
   info[1]=FDS[fd-1].fd;
   status = SendArg(sock,MDS_IO_WRITE_K,0,0,0,sizeof(info)/sizeof(int),info,buff);
   if (status & 1)
@@ -1335,7 +1335,7 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
 #ifdef USE_PERF
 	TreePerfWrite(count);
 #endif
-	ans = write(FDS[fd-1].fd,buff,count);
+	ans = (ssize_t)write(FDS[fd-1].fd,buff,count);
       } else
 	ans = io_write_remote(fd,buff,count);
   }
@@ -1385,7 +1385,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
   int status;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
-  info[4]=count;
+  info[4]=(int)count;
   *(_int64 *)(&info[2]) = offset;
 #ifdef _big_endian
   status = info[2];
@@ -1435,9 +1435,9 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 #ifdef USE_PERF
       TreePerfRead(count);
 #endif
-      ans = read(FDS[fd-1].fd,buff,count);
+      ans = (ssize_t)read(FDS[fd-1].fd,buff,count);
     } else
-      ans = io_read_remote(fd,buff,count);
+      ans = (ssize_t)io_read_remote(fd,buff,count);
   }
   UNLOCKFDS
   return ans; 
