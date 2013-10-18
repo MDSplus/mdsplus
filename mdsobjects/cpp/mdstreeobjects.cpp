@@ -1698,20 +1698,32 @@ EXPORT void TreeNodeArray::operator delete(void *p)
 
 EXPORT StringArray *TreeNodeArray::getPath()
 {
+#ifdef HAVE_WINDOWS_H
+	char **paths = new char *[numNodes];
+#else
 	char * paths[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		paths[i] = nodes[i]->getPath();
 
 	StringArray *retData = new StringArray(paths, numNodes);
 	for(int i = 0; i < numNodes; ++i)
 		deleteString(paths[i]);
+#ifdef HAVE_WINDOWS_H
+	delete [] paths;
+#endif
 
 	return retData;
 }
 
 EXPORT StringArray *TreeNodeArray::getFullPath()
 {
-	char *paths[numNodes];
+#ifdef HAVE_WINDOWS_H
+	char **paths = new char *[numNodes];
+#else
+	char * paths[numNodes];
+#endif
+
 	for(int i = 0; i < numNodes; ++i)
 		paths[i] = nodes[i]->getFullPath();
 
@@ -1719,25 +1731,44 @@ EXPORT StringArray *TreeNodeArray::getFullPath()
 	for(int i = 0; i < numNodes; ++i)
 		deleteString(paths[i]);
 
+#ifdef HAVE_WINDOWS_H
+	delete [] paths;
+#endif
+
 	return  retData;
 }
 
 EXPORT Int32Array *TreeNodeArray::getNid()
 {
+#ifdef HAVE_WINDOWS_H
+	int *nids = new int[numNodes];
+#else
 	int nids[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		nids[i] = nodes[i]->getNid();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] nids;
+#endif
 	return new Int32Array(nids, numNodes);;
 }
 
+
 EXPORT Int8Array *TreeNodeArray::isOn()
 {
+#ifdef HAVE_WINDOWS_H
+	char *info = new char[numNodes];
+#else
 	char info[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isOn();
 
 	Int8Array *retData = new Int8Array(info, numNodes);
+#ifdef HAVE_WINDOWS_H
+	delete [] info;
+#endif
 	return  retData;
 }
 
@@ -1756,20 +1787,34 @@ EXPORT void TreeNodeArray::setOn(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isSetup()
 {
+#ifdef HAVE_WINDOWS_H
+	char *info = new char[numNodes];
+#else
 	char info[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isSetup();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] info;
+#endif
 	return new Int8Array(info, numNodes);
 }
 
 
 EXPORT Int8Array *TreeNodeArray::isWriteOnce()
 {
+#ifdef HAVE_WINDOWS_H
+	char *info = new char[numNodes];
+#else
 	char info[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isWriteOnce();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] info;
+#endif
 	return new Int8Array(info, numNodes);
 }
 
@@ -1788,10 +1833,17 @@ EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
 {
+#ifdef HAVE_WINDOWS_H
+	char *info = new char[numNodes];
+#else
 	char info[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isCompressOnPut();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] info;
+#endif
 	return new Int8Array(info, numNodes);
 }
 
@@ -1810,10 +1862,17 @@ EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
 {
+#ifdef HAVE_WINDOWS_H
+	char *info = new char[numNodes];
+#else
 	char info[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteModel();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] info;
+#endif
 	return new Int8Array(info, numNodes);
 }
 
@@ -1832,10 +1891,17 @@ EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
 {
+#ifdef HAVE_WINDOWS_H
+	char *info = new char[numNodes];
+#else
 	char info[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteShot();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] info;
+#endif
 	return new Int8Array(info, numNodes);
 }
 
@@ -1854,28 +1920,49 @@ EXPORT void TreeNodeArray::setNoWriteShot(Int8Array *info)
 
 EXPORT Int32Array *TreeNodeArray::getLength()
 {
+#ifdef HAVE_WINDOWS_H
+	int *sizes = new int[numNodes];
+#else
 	int sizes[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		sizes[i] = nodes[i]->getLength();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] sizes;
+#endif
 	return new Int32Array(sizes, numNodes);
 }
 
 EXPORT Int32Array *TreeNodeArray::getCompressedLength()
 {
+#ifdef HAVE_WINDOWS_H
+	int *sizes = new int[numNodes];
+#else
 	int sizes[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		sizes[i] = nodes[i]->getCompressedLength();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] sizes;
+#endif
 	return new Int32Array(sizes, numNodes);
 }
 
 EXPORT StringArray *TreeNodeArray::getUsage()
 {
+#ifdef HAVE_WINDOWS_H
+	const char **usages = new const char *[numNodes];
+#else
 	const char *usages[numNodes];
+#endif
 	for(int i = 0; i < numNodes; ++i)
 		usages[i] = nodes[i]->getUsage();
 
+#ifdef HAVE_WINDOWS_H
+	delete [] usages;
+#endif
 	return new StringArray((char **)usages, numNodes);
 }
 

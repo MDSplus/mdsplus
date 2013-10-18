@@ -285,7 +285,7 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
 
 
 
-	MdsCopyDxXd((struct descriptor *)&retSignalDsc, (struct descriptor *)outSignalXd);
+	MdsCopyDxXd((struct descriptor *)&retSignalDsc, (struct descriptor_xd *)outSignalXd);
 	//Free stuff
 	freeResources(startTimeXds, endTimeXds, numSegments);
 	free(startTimesBuf);

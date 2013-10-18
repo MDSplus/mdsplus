@@ -1243,14 +1243,14 @@ EXPORT Scope::Scope(char *name, int x, int y, int width, int height)
 	this->height = height;
 	show();
 }
-EXPORT void Scope::plot(Data *x, Data *y , int row, int col, char *color)
+EXPORT void Scope::plot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
 	sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
-EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, char *color)
+EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
 	sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
