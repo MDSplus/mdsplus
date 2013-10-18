@@ -104,7 +104,7 @@ int sig_elements;
   new_y_f = (float *)new_y->pointer;
   new_elements = new_y->arsize/new_y->length;
   sig_elements = sig_y->arsize/sig_y->length;
-  if (!sig_elements || (sig_elements > (sig_x->arsize/sig_x->length))) return (struct descriptor *)&bad_sig_in;
+  if (!sig_elements || ((unsigned)sig_elements > (sig_x->arsize/sig_x->length))) return (struct descriptor *)&bad_sig_in;
   for (i=0;i<new_elements;i++)
   {
     if (new_x_f[i] <= sig_x_f[0])

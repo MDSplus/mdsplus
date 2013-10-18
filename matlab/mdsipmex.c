@@ -176,7 +176,9 @@ void GetMatReply(int nlhs,mxArray *plhs[])
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
    _int64 *qptr;
+#ifndef _WIN32
    _int64u *uqptr;
+#endif
 #endif
    float *fptr;
    double *dptr, *dpout;
@@ -375,6 +377,7 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
    _int64 *qptr;
+#ifndef 
    _int64u *uqptr;
 #endif
    float *fptr;
