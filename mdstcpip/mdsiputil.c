@@ -11,7 +11,9 @@
 #include <io.h>
 #define MSG_DONTWAIT 0
 #else
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #ifndef HAVE_VXWORKS_H
 #include <pwd.h>
 #endif

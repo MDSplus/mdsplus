@@ -12,7 +12,9 @@
 #include <signal.h>
 #include <config.h>
 #include <signal.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <ctype.h>
 #ifndef HAVE_WINDOWS_H
 #include <sys/types.h>

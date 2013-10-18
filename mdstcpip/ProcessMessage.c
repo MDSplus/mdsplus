@@ -9,7 +9,9 @@
 #define close _close
 typedef int mode_t;
 #else
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #endif
 #include <fcntl.h>
 #include "mdsIo.h"

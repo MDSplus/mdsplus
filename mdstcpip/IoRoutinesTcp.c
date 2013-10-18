@@ -8,7 +8,9 @@
 #include <stdio.h>
 #include <config.h>
 #include <time.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif

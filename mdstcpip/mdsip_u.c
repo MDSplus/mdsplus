@@ -65,7 +65,9 @@ typedef void *pthread_mutex_t;
 #include <resolvLib.h>
 #else
 #include <pwd.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>  /* for getpid() */
+#endif
 #endif
 #define closesocket close
 #endif

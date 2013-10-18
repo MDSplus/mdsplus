@@ -35,7 +35,9 @@ extern void FlipHeader(MsgHdr *header);
 #include <syslog.h>
 #include <sys/param.h>
 #include <pwd.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <sys/uio.h>
 #include <sys/socket.h>
 #include <netdb.h>

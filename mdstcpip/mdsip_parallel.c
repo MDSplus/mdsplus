@@ -2,7 +2,9 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <sys/uio.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <stdio.h>
 #include <errno.h>
 #include <stdlib.h>
