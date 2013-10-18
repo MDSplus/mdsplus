@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE
+#define _GNU_SOURCE /* glibc2 needs this */
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <libroutines.h>
@@ -5,7 +7,6 @@
 #include <mds_stdarg.h>
 #include <librtl_messages.h>
 #include <mdsshr.h>
-#define _GNU_SOURCE /* glibc2 needs this */
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)

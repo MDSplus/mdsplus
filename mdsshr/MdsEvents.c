@@ -72,7 +72,7 @@ static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t *len) {
 #endif
 }
 
-static int  MdsEventAst_(SOCKET sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid) {
+static int  MdsEventAst_(int sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid) {
   static DESCRIPTOR(routine_d,"MdsEventAst");
   STATIC_THREADSAFE int (*rtn)() = 0;
   int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
@@ -122,11 +122,11 @@ static int MdsValue_(int id, char *exp, struct descrip *d1, struct descrip *d2, 
   return 0;
 }
 
-static int RegisterRead_(SOCKET sock) {
+static int RegisterRead_(int sock) {
   STATIC_CONSTANT DESCRIPTOR(library_d,"MdsIpShr");
   STATIC_CONSTANT DESCRIPTOR(routine_d,"RegisterRead");
   int status=1;
-  STATIC_THREADSAFE int (*rtn)(SOCKET) = 0;
+  STATIC_THREADSAFE int (*rtn)(int) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol(&library_d, &routine_d, &rtn);
   if(!(status & 1))
@@ -152,9 +152,9 @@ STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid);
 STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data);
 STATIC_ROUTINE int getRemoteId(int id, int ofs);
 STATIC_THREADSAFE int receive_ids[256];  	/* Connections to receive external events  */
-STATIC_THREADSAFE SOCKET receive_sockets[256];  	/* Socket to receive external events  */
+STATIC_THREADSAFE int receive_sockets[256];  	/* Socket to receive external events  */
 STATIC_THREADSAFE int send_ids[256];  		/* Connections to send external events  */
-STATIC_THREADSAFE SOCKET send_sockets[256];  		/* Socket to send external events  */
+STATIC_THREADSAFE int send_sockets[256];  		/* Socket to send external events  */
 STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
 STATIC_THREADSAFE char *send_servers[256];		/* Send server names */
 STATIC_THREADSAFE HANDLE external_thread = 0;
@@ -1775,7 +1775,7 @@ STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_
 }
 
 #ifdef GLOBUS
-STATIC_ROUTINE void handleRemoteEvent(SOCKET sock);
+STATIC_ROUTINE void handleRemoteEvent(int sock);
 
 STATIC_ROUTINE void KillHandler() {}
 
@@ -1785,7 +1785,7 @@ STATIC_ROUTINE void handleRemoteAst()
 }
 
   
-STATIC_ROUTINE void handleRemoteEvent(SOCKET sock)
+STATIC_ROUTINE void handleRemoteEvent(int sock)
 {
   char buf[16];
   STATIC_CONSTANT struct descriptor 
