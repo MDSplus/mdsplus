@@ -1,3 +1,4 @@
+#include <config.h>
 #if defined(vms)
 #include        <varargs.h>
 #elif defined (_WIN32)
@@ -12,7 +13,9 @@
 #include        <time.h>
 #include        <errno.h>
 #include        <stdlib.h>
+#ifdef HAVE_UNISTD_H
 #include        <unistd.h>
+#endif
 
 /***********************************************************************
 * CDATE.C --

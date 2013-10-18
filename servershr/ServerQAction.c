@@ -1,3 +1,4 @@
+#include <config.h>
 #include <servershr.h>
 #include "servershrp.h"
 #include <stdlib.h>
@@ -9,7 +10,9 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 extern int  pthread_cond_timedwait();

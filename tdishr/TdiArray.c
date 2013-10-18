@@ -31,7 +31,9 @@
 #ifdef HAVE_WINDOWS_H
 #include <process.h>
 #endif
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 
 STATIC_CONSTANT char *cvsrev =
     "@(#)$RCSfile$ $Revision$ $Date$";

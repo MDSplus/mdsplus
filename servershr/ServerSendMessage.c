@@ -28,10 +28,13 @@ int ServerSendMessage();
 
 
 ------------------------------------------------------------------------------*/
+#include <config.h>
 #include <ipdesc.h>
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <string.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
