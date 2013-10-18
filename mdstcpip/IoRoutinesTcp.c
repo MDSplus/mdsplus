@@ -507,7 +507,7 @@ static int GetSocketHandle(char *name) {
     exit(1);
   }
   sprintf(shutdownEventName,"MDSIP_%s_SHUTDOWN",GetPortname());
-  shutdownEvent = CreateEvent(NULL,FALSE,FALSE,shutdownEventName);
+  shutdownEvent = CreateEvent(NULL,FALSE,FALSE,(LPCWSTR)shutdownEventName);
   if (!RegisterWaitForSingleObject(&waitHandle,shutdownEvent,ShutdownEvent,NULL,INFINITE,0))
     perror("Error registering for shutdown event");
   return *(int *)&h;

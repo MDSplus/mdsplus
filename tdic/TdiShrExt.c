@@ -44,8 +44,8 @@ ldconfig
 #include <ctype.h>
 #define TdiCvt TDI$CVT
 #endif
-extern int   MdsOpen(SOCKET sock, char *tree, int shot);
-extern int   MdsClose(SOCKET sock);
+extern int   MdsOpen(int sock, char *tree, int shot);
+extern int   MdsClose(int sock);
 extern int   MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
 extern int   TdiCvt();
 extern int   GetAnswerInfoTS();

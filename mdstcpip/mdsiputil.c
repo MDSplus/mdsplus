@@ -30,12 +30,12 @@ static int CompressionLevel = 0;
 extern int compress2();
 extern int uncompress();
 #endif
-Message *GetMdsMsg(SOCKET sock, int *status);
+Message *GetMdsMsg(int sock, int *status);
 #ifdef _WIN32
-Message *GetMdsMsgOOB(SOCKET sock, int *status);
+Message *GetMdsMsgOOB(int sock, int *status);
 #endif
-int SendMdsMsg(SOCKET sock, Message *m, int oob);
-int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m);
+int SendMdsMsg(int sock, Message *m, int oob);
+int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m);
 #ifdef _WIN32
 #define MIN_PARALLEL -1
 #define mdsipParallelInfo(a,c) 0
@@ -44,21 +44,21 @@ int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *
 extern int mdsipParallelInfo(int,int **);
 #endif
 
-extern void SetSocketOptions(SOCKET s, int reuse);
+extern void SetSocketOptions(int s, int reuse);
 static int initialized = 0;
 void FlipHeader(MsgHdr *header);
 static void FlipData(Message *m);
-extern int SocketSend(SOCKET s, char *bptr, int num, int oob);
-extern int SocketRecv(SOCKET s, char *bptr, int num,int oob);
-extern int CloseSocket(SOCKET s);
-extern SOCKET MConnect(char *host, unsigned short port);
-extern void FlushSocket(SOCKET sock);
+extern int SocketSend(int s, char *bptr, int num, int oob);
+extern int SocketRecv(int s, char *bptr, int num,int oob);
+extern int CloseSocket(int s);
+extern int MConnect(char *host, unsigned short port);
+extern void FlushSocket(int sock);
 
 #ifdef __VMS
 extern int MdsDispatchEvent();
 #endif
 
-static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_send) {
+static int SendParallel(int sock, int num, int *fds, char *ptr, int bytes_to_send) {
   struct timeval timout = {15,0};
   int more=1;
   char *sptr[MAX_STREAMS];
@@ -109,7 +109,7 @@ static int SendParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_
   return (status >= 0) ? bytes_sent==bytes_to_send : 0;
 }
 
-static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_recv) {
+static int GetParallel(int sock, int num, int *fds, char *ptr, int bytes_to_recv) {
   int more=1;
   char *sptr[MAX_STREAMS];
   int remaining[MAX_STREAMS];
@@ -146,7 +146,7 @@ static int GetParallel(SOCKET sock, int num, int *fds, char *ptr, int bytes_to_r
   return bytes_recv==bytes_to_recv;
 }
 
-int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
+int SendBytes(int sock, char *bptr, int bytes_to_send, int options)
 {
   int tries = 0;
   if (MIN_PARALLEL > 0 && bytes_to_send > (MIN_PARALLEL + (int)sizeof(MsgHdr))) {
@@ -188,7 +188,7 @@ int SendBytes(SOCKET sock, char *bptr, int bytes_to_send, int options)
   return 1;
 }
 
-int GetBytes(SOCKET sock, char *bptr, int bytes_to_recv, int oob)
+int GetBytes(int sock, char *bptr, int bytes_to_recv, int oob)
 {
   int tries = 0;
   if (MIN_PARALLEL > 0 && bytes_to_recv > MIN_PARALLEL) {
@@ -321,9 +321,9 @@ void MdsIpFree(void *ptr)
 	free(ptr);
 }
 
-static SOCKET ConnectToPort(char *host, char *service)
+static int ConnectToPort(char *host, char *service)
 {
-  SOCKET s;
+  int s;
   unsigned short portnum = 0;
   static struct sockaddr_in sin;
   struct servent *sp;
@@ -568,7 +568,7 @@ int  ConnectToMdsEvents(char *host)
   return ConnectToPort(hostpart, portpart);
 }
 
-int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr)
+int  GetAnswerInfo(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr)
 {
   static Message *m = 0;
   if (m)
@@ -579,7 +579,7 @@ int  GetAnswerInfo(SOCKET sock, char *dtype, short *length, char *ndims, int *di
   return GetAnswerInfoTS(sock,dtype,length,ndims,dims,numbytes,dptr,&m);
 }
 
-int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m)
+int  GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, Message **m)
 {
   int status;
   int i;
@@ -640,7 +640,7 @@ int  GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *
   return (*m)->h.status;
 }
 
-int  DisconnectFromMds(SOCKET sock)
+int  DisconnectFromMds(int sock)
 {
   int status = CloseSocket(sock);
 #ifdef __MSDOS__
@@ -649,7 +649,7 @@ int  DisconnectFromMds(SOCKET sock)
   return status;
 }
 
-int  SendArg(SOCKET sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
+int  SendArg(int sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 int *dims, char *bytes)
 {
   int status;
@@ -705,7 +705,7 @@ int *dims, char *bytes)
 }
 
 
-int SendMdsMsg(SOCKET sock, Message *m, int oob)
+int SendMdsMsg(int sock, Message *m, int oob)
 {
   unsigned long len = m->h.msglen - sizeof(m->h);
   unsigned long clength = 0; 
@@ -805,7 +805,7 @@ static void FlipData(Message *m)
   }
 }
 
-Message *GetMdsMsg(SOCKET sock, int *status)
+Message *GetMdsMsg(int sock, int *status)
 {
   MsgHdr header;
   Message *msg = 0;

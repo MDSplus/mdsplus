@@ -114,7 +114,6 @@ int CamSetMAXBUF(char *name, int new)
 {
   int serverid = RemoteServerId();
   int status = -1;
-  int writeData;
   if (serverid)
   {
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
@@ -137,7 +136,6 @@ int CamGetMAXBUF(char *name)
 {
   int serverid = RemoteServerId();
   int status = -1;
-  int writeData;
   if (serverid)
   {
     struct descrip ans_d = {0,0,{0,0,0,0,0,0,0},0};
