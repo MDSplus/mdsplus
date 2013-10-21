@@ -54,7 +54,7 @@
 /* Define PS_SYSV if ps(1) uses sysv arguments  */
 #undef PS_SYSV
 
-/* Define TYPE_SHMAT if sys/shm.h doesn't type shmat()  */
+/* Define TYPE_SHMAT if sys/shm.h does not type shmat()  */
 #undef TYPE_SHMAT
 
 /* Define USE_NIS if system has nis_local_host() function  */
@@ -189,12 +189,6 @@
 #endif
 #define sigset signal
 
-#if SIZEOF_INT_P == 8
-#define _pointer_int _int64
-#else
-#define _pointer_int int
-#endif
-
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
 #else
@@ -204,6 +198,10 @@
 #define BLOCK_ALL 0xfffff
 
 #define MDSIP_CONNECTIONS 1
-
+#ifdef _WIN64
+#define SIZEOF_INT_P == 8
+#else
+#define SIZEOF_INT_P == 4
+#endif
 #define _CONFIG_INCLUDED
 #endif
