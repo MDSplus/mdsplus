@@ -1479,7 +1479,7 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
   return ans; 
 }
 
-STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int *deleted)
+STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, size_t size, int mode, int *deleted)
 {
   int ret=0;
   int info[] = {0,0,0,0,0,0};
@@ -1487,7 +1487,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int
   int status;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
-  info[4]=size;
+  info[4]=(int)size;
   info[5]=mode;
   *(_int64 *)(&info[2]) = offset;
 #ifdef _big_endian
@@ -1551,13 +1551,13 @@ int MDS_IO_LOCK(int fd, _int64 offset, size_t size, int mode_in, int *deleted)
 		flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0))? 0 : LOCKFILE_EXCLUSIVE_LOCK;
 		if (nowait)
 		  flags |= LOCKFILE_FAIL_IMMEDIATELY;
-		status = UnlockFileEx(h,0,size,0,&overlapped);
-		status = LockFileEx(h,flags,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+		status = UnlockFileEx(h,0,(DWORD)size,0,&overlapped);
+		status = LockFileEx(h,flags,0,(DWORD)size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
       }
       else
       {
         HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
-		status = UnlockFileEx(h,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+	status = UnlockFileEx(h,0,(DWORD)size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
       }
 #elif defined (HAVE_VXWORKS_H)
         status = TreeSUCCESS;

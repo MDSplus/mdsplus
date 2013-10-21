@@ -782,7 +782,7 @@ extern int MDS_IO_CLOSE(int fd);
 extern _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence);
 extern ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count);
 extern ssize_t MDS_IO_READ(int fd, void *buff, size_t count);
-extern int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode, int *deleted);
+extern int MDS_IO_LOCK(int fd, _int64 offset, size_t size, int mode, int *deleted);
 extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
