@@ -1335,7 +1335,7 @@ ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count)
 #ifdef USE_PERF
 	TreePerfWrite(count);
 #endif
-	ans = (ssize_t)write(FDS[fd-1].fd,buff,count);
+	ans = (ssize_t)write(FDS[fd-1].fd,buff,(unsigned int)count);
       } else
 	ans = io_write_remote(fd,buff,count);
   }
@@ -1352,7 +1352,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   int status;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
-  info[2]=count;
+  info[2]=(int)count;
   status = SendArg(sock,MDS_IO_READ_K,0,0,0,sizeof(info)/sizeof(int),info,0);
   if (status & 1)
   {
