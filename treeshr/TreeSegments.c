@@ -1237,7 +1237,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	  struct _namelist *p;
 	  char *np;
 	  for (p=namelist,np=names;p;p=p->next,np+=longestattname) {
-	    int i;
+	    size_t i;
 	    memcpy(np,p->name,longestattname);
 	    for (i=1;i<longestattname;i++) if (np[i]=='\0') np[i]=' ';
 	  }

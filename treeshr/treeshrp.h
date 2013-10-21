@@ -776,7 +776,7 @@ extern int MDS_IO_FD(int fd);
 #ifdef HAVE_WINDOWS_H
 typedef int mode_t;
 #define off_t __int64
-#define ssize_t SSIZE_T
+#define ssize_t _int64
 #endif
 extern int MDS_IO_OPEN(char *filename, int options, mode_t mode);
 extern int MDS_IO_CLOSE(int fd);
