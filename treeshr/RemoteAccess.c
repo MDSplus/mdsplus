@@ -1366,7 +1366,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
     {
       ret = (ssize_t)ret_i;
       if (ret)
-        memcpy(buff,dptr, ret);
+        memcpy(buff,dptr, (size_t)ret);
     }
     if (msg)
       free(msg);

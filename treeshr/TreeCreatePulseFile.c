@@ -305,9 +305,9 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
       if (lock_it) MDS_IO_LOCK(src_fd,0,(int)src_len,MDS_IO_LOCK_RD,0);
       if (src_len > 0)
       {
-        ssize_t chunk_size = MIN(MAX_CHUNK, src_len);
-        void *buff = malloc((int)chunk_size);
-        ssize_t bytes_to_go = src_len;
+        size_t chunk_size = (size_t)(MIN(MAX_CHUNK, src_len));
+        void *buff = malloc(chunk_size);
+        size_t bytes_to_go = src_len;
         while(bytes_to_go > 0)
         {
           size_t io_size = MIN(bytes_to_go, chunk_size);

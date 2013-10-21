@@ -744,7 +744,7 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
       ntreefd = MDS_IO_OPEN(nfilenam,O_WRONLY | O_CREAT | O_TRUNC, 0777);
       if (ntreefd != -1)
       {
-        size_t num;
+        ssize_t num;
         TREE_HEADER *header = HeaderOut(info_ptr->header);
         num = MDS_IO_WRITE(ntreefd,header,512*header_pages);
         FreeHeaderOut(header);
