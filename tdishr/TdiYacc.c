@@ -203,7 +203,7 @@ typedef int yytabelem;
 
 # line 468 "TdiYacc.y"
 
-const
+const int
     LEX_ERROR = ERROR,
     LEX_IDENT = IDENT,
     LEX_POINT = POINT,
@@ -846,8 +846,10 @@ int yyparse()
     if (allocate_stacks())
         YYABORT;
 # endif
-    yypv = &yyv[-1];
-    yyps = &yys[-1];
+    //    yypv = &yyv[-1];
+    yypv = yyv-1;
+    //    yyps = &yys[-1];
+    yyps = yys-1;
     yystate = 0;
     yytmp = 0;
     yynerrs = 0;
@@ -1396,7 +1398,7 @@ int yyparse()
     case 59:
 # line 256 "TdiYacc.y"
         {
-            _EMPTY_MARKER;
+            yyval.mark=_EMPTY_MARKER;
         }
         break;
     case 60:

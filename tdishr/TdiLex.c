@@ -128,7 +128,7 @@ extern unsigned short Opcdollar, OpcZero,
     OpcShiftLeft, OpcShiftRight, OpcSubtract;
 
 extern
-    LEX_ERROR, LEX_IDENT, LEX_VBL, LEX_TEXT, LEX_VALUE,
+    int LEX_ERROR, LEX_IDENT, LEX_VBL, LEX_TEXT, LEX_VALUE,
     LEX_IN, LEX_LAND, LEX_LEQ, LEX_LEQV, LEX_LGE, LEX_LOR, LEX_MUL,
     LEX_ADD, LEX_CONCAT, LEX_IAND, LEX_INC, LEX_IOR,
     LEX_POINT, LEX_POWER, LEX_PROMO, LEX_RANGE, LEX_SHIFT, LEX_BINEQ,
@@ -914,7 +914,7 @@ int TdiLexQuote(int len, unsigned char *str, struct marker *mark_ptr)
                 break;
             case 'x':
                 c = 0;          /*hex number, any number of digits */
-                while (c1 = input()) {
+                while ((c1 = input())) {
                     if (c1 >= '0' && c1 <= '9')
                         c = (c << 4) | (c1 - '0');
                     else if (c1 >= 'A' && c1 <= 'F')
@@ -935,7 +935,7 @@ int TdiLexQuote(int len, unsigned char *str, struct marker *mark_ptr)
 }
 
 # define YYNEWLINE 10
-yylex()
+int yylex()
 {
     int nstr;
     extern int yyprevious;
@@ -1510,7 +1510,7 @@ extern "C" {
 #endif                          /* __cplusplus */
 #endif                          /* LEXDEBUG */
 #endif                          /* YY_NOPROTO */
-yylook()
+int yylook()
 {
     register struct yysvf *yystate, **lsp;
     register struct yywork *yyt;
@@ -1687,7 +1687,7 @@ yylook()
     }
 }
 
-yyback(int *p, int m)
+int yyback(int *p, int m)
 {
     if (p == 0)
         return (0);
@@ -1699,17 +1699,17 @@ yyback(int *p, int m)
 }
 
         /* the following are only used in the lex library */
-yyinput()
+int yyinput()
 {
     return (input());
 }
 
-yyoutput(int c)
+void yyoutput(int c)
 {
     output(c);
 }
 
-yyunput(int c)
+void yyunput(int c)
 {
     unput(c);
 }
