@@ -176,9 +176,7 @@ void GetMatReply(int nlhs,mxArray *plhs[])
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
    _int64 *qptr;
-#ifndef _WIN32
    _int64u *uqptr;
-#endif
 #endif
    float *fptr;
    double *dptr, *dpout;
@@ -301,12 +299,6 @@ void GetMatReply(int nlhs,mxArray *plhs[])
 	 break;
 #ifdef DTYPE_LONGLONG
        case DTYPE_ULONGLONG   : 
-#ifdef _WIN32
-	 qptr = (_int64 *)ans.ptr;
-	 while(len--)
-	   *dpout++ = (double)*qptr++;
-   break;
-#else
 	 uqptr = (_int64u *)ans.ptr;
 	 while(len--)
 	   *dpout++ = (double)*uqptr++;
@@ -377,7 +369,6 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
    _int64 *qptr;
-#ifndef _WIN32
    _int64u *uqptr;
 #endif
    float *fptr;
