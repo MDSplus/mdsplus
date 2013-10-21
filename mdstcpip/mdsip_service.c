@@ -104,7 +104,7 @@ static void InstallService() {
     static const char* multi_opt="--multi";
     static const char* server_opt="--server";
     static const char* data_opt="";
-    char *opts = GetMulti() ? (GetContextSwitching() ? "--multi" : "--server") : "";
+    const char *opts = GetMulti() ? (GetContextSwitching() ? "--multi" : "--server") : "";
     SERVICE_DESCRIPTION sd;
     LPTSTR description=(LPTSTR)malloc(4096);
     if (GetMulti()) {
