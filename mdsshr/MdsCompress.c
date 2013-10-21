@@ -55,9 +55,6 @@ The expansion routine "xentry":
 #include <strroutines.h>
 #include <librtl_messages.h>
 #include <STATICdef.h>
-#ifdef HAVE_VXWORKS_H
-#define _pointer_int int
-#endif
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
@@ -153,9 +150,9 @@ STATIC_ROUTINE  int       compress(
     Second is dummy for expansion function.
     ASSUME compressor fails gracefully and only changes *pdat data.
     **************************************************************/
-      prec = (record_four *) align((_pointer_int)((char *) pwork + asize),sizeof(void *));
+      prec = (record_four *) align((intptr_t)((char *) pwork + asize),sizeof(void *));
       pca1 = (array_coef *) ((char *) prec + sizeof(rec0));
-      pdat = (struct descriptor_a *) align((_pointer_int)((char *) pca1 + asize),sizeof(void *));
+      pdat = (struct descriptor_a *) align((intptr_t)((char *) pca1 + asize),sizeof(void *));
       pcmp = (char *) pdat + sizeof(struct descriptor_a);
       plim = porig->pointer + porig->arsize - sizeof(opcode);
       if (pcmp >= plim)
