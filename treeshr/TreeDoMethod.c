@@ -66,7 +66,7 @@ int TreeDoMethod(struct descriptor *nid_dsc, struct descriptor *method_ptr, ...)
     arglist[i + 1] = va_arg(incrmtr, struct descriptor *);
   va_end(incrmtr);
   arglist[nargs+2] = MdsEND_ARG;
-  return (char *)LibCallg(arglist,_TreeDoMethod)-(char *)0;
+  return (int)((char *)LibCallg(arglist,_TreeDoMethod)-(char *)0);
 }
 
 int TreeDoFun(struct descriptor *funname,int nargs, struct descriptor **args, struct descriptor_xd *out_ptr) {
@@ -84,7 +84,7 @@ int TreeDoFun(struct descriptor *funname,int nargs, struct descriptor **args, st
   for (i=0;i<nargs;i++)
     fun.arguments[2+i]=args[i];
   if ((status=TdiEvaluate?1:LibFindImageSymbol(&tdishr,&tdievaluate,&TdiEvaluate))&1)
-    status = (char *)LibCallg(call_arglist,TdiEvaluate)-(char *)0;
+    status = (int)((char *)LibCallg(call_arglist,TdiEvaluate)-(char *)0);
   return status;
 }
 
@@ -158,7 +158,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	arglist[0] = arglist_nargs(nargs);
 	arglist[1] = &exp;;
 	arglist[nargs] = MdsEND_ARG;
-	status = (char *)LibCallg(arglist,TdiExecute)-(char *)0;
+	status = (int)((char *)LibCallg(arglist,TdiExecute)-(char *)0);
 	if (status & 1) {
 	  STATIC_CONSTANT DESCRIPTOR(getstat,"public _method_status");
 	  int stat;
@@ -167,7 +167,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
 	  arglist[1]=&getstat;
 	  arglist[2]=&stat_d;
 	  arglist[3]=MdsEND_ARG;
-	  status = (char *)LibCallg(arglist,TdiExecute) - (char *)0;
+	  status = (int)((char *)LibCallg(arglist,TdiExecute) - (char *)0);
 	  if (status & 1) status=stat;
 	}
 	if (status == TdiUNKNOWN_VAR || status == LibINVSTRDES)
@@ -193,7 +193,7 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
     {
       void *old_dbid = *TreeCtx();
       *TreeCtx() = dbid;
-      status = (char *)LibCallg(arglist, addr) - (char *)0;
+      status = (int)((char *)LibCallg(arglist, addr) - (char *)0);
       *TreeCtx() = old_dbid;
       if (arglist[nargs])
       {

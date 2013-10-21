@@ -70,7 +70,7 @@ int _TreeAddTag(void *dbid, int nid_in, char const * tagnam)
   TAG_INFO  tag_info;
   size_t    len;
   char      tag[24];
-  int       i;
+  size_t    i;
   int       tmp;
 
 /************************************************
@@ -177,7 +177,7 @@ the tag name specified does not already exist.
 *********************************************/
 
   memcpy(tag_info.name,tag,sizeof(tag));
-  tmp = node_ptr - dblist->tree_info->node;
+  tmp = (int)(node_ptr - dblist->tree_info->node);
   tag_info.node_idx = swapint((char *)&tmp);
   tag_info.tag_link = node_ptr->tag_link;
 

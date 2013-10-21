@@ -141,14 +141,14 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
 
 int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 {
-  int len = strlen(tree);
+  size_t len = strlen(tree);
   char tree_lower[13];
   char pathname[32];
   char *path;
   char *pathin;
-  int pathlen;
+  size_t pathlen;
   char name[32];
-  int i;
+  size_t i;
   int status = 1;
   int itype;
   char *types[] = {".tree",".characteristics",".datafile"};
@@ -235,7 +235,7 @@ int  TreeCreateTreeFiles(char *tree, int shot, int source_shot)
             if (dstfile[strlen(dstfile)-1] == '+')
 	    {
               char *delim = TREE_PATH_DELIM;
-              int j = strlen(dstfile) - 1;
+              int j = (int)(strlen(dstfile) - 1);
               dstfile[j] = '\0';
               for (j--;j >= 0 && dstfile[j] != delim[0]; j--);
               if (j >= 0)
