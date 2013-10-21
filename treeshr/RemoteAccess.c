@@ -1435,7 +1435,7 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
 #ifdef USE_PERF
       TreePerfRead(count);
 #endif
-      ans = (ssize_t)read(FDS[fd-1].fd,buff,count);
+      ans = (ssize_t)read(FDS[fd-1].fd,buff,(unsigned int)count);
     } else
       ans = (ssize_t)io_read_remote(fd,buff,count);
   }
@@ -1520,7 +1520,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, int size, int mode, int
   return ret;
 }
 
-int MDS_IO_LOCK(int fd, _int64 offset, int size, int mode_in, int *deleted)
+int MDS_IO_LOCK(int fd, _int64 offset, size_t size, int mode_in, int *deleted)
 {
   int status = TreeFAILURE;
   LOCKFDS
@@ -1594,7 +1594,7 @@ STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
   {
     int info[] = {0};
     int status;
-    info[0]=strlen(filename)+1;
+    info[0]=(int)strlen(filename)+1;
     status = SendArg(sock,MDS_IO_EXISTS_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
     if (status & 1)
     {
@@ -1645,7 +1645,7 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
   {
     int info[] = {0};
     int status;
-    info[0]=strlen(filename)+1;
+    info[0]=(int)strlen(filename)+1;
     status = SendArg(sock,MDS_IO_REMOVE_K,0,0,0,sizeof(info)/sizeof(int),info,filename);
     if (status & 1)
     {
@@ -1696,7 +1696,7 @@ STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filena
     int info[] = {0};
     char *names;
     int status;
-    info[0]=strlen(filename_old)+1+strlen(filename_new)+1;
+    info[0]=(int)(strlen(filename_old)+1+strlen(filename_new)+1);
     names = strcpy(malloc(info[0]),filename_old);    
     strcpy(&names[strlen(filename_old)+1],filename_new);
     status = SendArg(sock,MDS_IO_RENAME_K,0,0,0,sizeof(info)/sizeof(int),info,names);
