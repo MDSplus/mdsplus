@@ -828,7 +828,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
   int fd = -1;
   char *path;
   char name[32];
-  int i;
+  size_t i;
   char tree_lower[13];
   char *resnam = 0;
   int is_tree = strcmp(type,TREE_TREEFILE_TYPE)==0;
@@ -862,7 +862,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     else
       return TreeINVSHOT;
 
-    for (i=0,part=path;i<pathlen+1 && fd==-1;i++)
+    for (i=0,part=path;(i<(pathlen+1)) && (fd==-1);i++)
     {
       if (*part == ' ') 
         part++;
@@ -914,7 +914,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     if (path)
       TranslateLogicalFree(path);
   }
-  if (fd != -1 && is_tree && edit_flag)
+  if ((fd != -1) && is_tree && edit_flag)
   {
     if (!(MDS_IO_LOCK(fd,1,1,MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT,0) & 1))
     {
