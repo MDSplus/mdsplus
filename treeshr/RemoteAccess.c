@@ -18,6 +18,7 @@
 #define open _open
 #define close _close
 #define read _read
+typedef __int64 off_t;
 #else
 #include <unistd.h>
 #ifndef HAVE_VXWORKS_H
@@ -1224,9 +1225,9 @@ int MDS_IO_CLOSE(int fd)
   } 
 }
 
-STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
+STATIC_ROUTINE off_t io_lseek_remote(int fd, _int64 offset, int whence)
 {
-  _int64 ret = -1;
+  off_t ret = -1;
   int info[] = {0,0,0,0,0};
   int sock = FDS[fd-1].socket;
   int status;
@@ -1264,7 +1265,7 @@ STATIC_ROUTINE _int64 io_lseek_remote(int fd, _int64 offset, int whence)
 }
 
 
-_int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
+off_t MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 {
     _int64 pos;
   LOCKFDS
@@ -1278,7 +1279,7 @@ _int64 MDS_IO_LSEEK(int fd, _int64 offset, int whence)
 	return pos;
     }
 #endif
-    pos = (FDS[fd-1].socket == -1) ? (_int64) lseek(FDS[fd-1].fd,offset,whence) : io_lseek_remote(fd,offset,whence);
+    pos = (FDS[fd-1].socket == -1) ? lseek(FDS[fd-1].fd,offset,whence) : io_lseek_remote(fd,offset,whence);
     UNLOCKFDS
     return pos;
   }
@@ -1520,7 +1521,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, size_t size, int mode, 
   return ret;
 }
 
-int MDS_IO_LOCK(int fd, _int64 offset, size_t size, int mode_in, int *deleted)
+int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 {
   int status = TreeFAILURE;
   LOCKFDS
