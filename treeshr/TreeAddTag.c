@@ -65,6 +65,7 @@ int _TreeAddTag(void *dbid, int nid_in, char const * tagnam)
   int       pages_allocated;
   int      *new_tags_ptr;
   int      *old_tags_ptr;
+  int       tidx;
   int       newtag_idx;
   TAG_INFO *new_tag_info_ptr;
   TAG_INFO  tag_info;
@@ -101,21 +102,21 @@ the tag name specified does not already exist.
   if (tags > 0)
   {
     newtag_idx = 0;
-    for (i=0;i<tags;i++)
+    for (tidx=0;tidx<tags;tidx++)
     {
-      int idx = swapint((char *)(old_tags_ptr+i));
+      int idx = swapint((char *)(old_tags_ptr+tidx));
       char *defined_tag = (char *)(dblist->tree_info->tag_info + idx)->name;
       int cmp = strncmp(tag, defined_tag, sizeof(TAG_NAME));
       if (cmp == 0)
         return TreeDUPTAG;
       else if (cmp < 0)
       {
-        newtag_idx = i;
+        newtag_idx = tidx;
         break;
       }
     }
     if (newtag_idx == 0)
-      newtag_idx = i;
+      newtag_idx = idx;
   }
   else
     newtag_idx = 0;
