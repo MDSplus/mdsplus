@@ -92,8 +92,8 @@ int       _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
   short    *conglom_size;
   short    *conglom_index;
   char *upcase_name;
-  int i;
-  int len = strlen(name);
+  size_t i;
+  size_t len = strlen(name);
 /*****************************************************
   Make sure that the tree is open and OK and editable
 *****************************************************/
@@ -142,7 +142,7 @@ int       _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	status = TreeNewNode(dblist, &new_ptr, &parent);
 	if (status & 1)
 	{
-	  unsigned int       i;
+	  size_t       i;
           unsigned short idx = *conglom_index;
           strncpy(new_ptr->name,node_name,sizeof(new_ptr->name));
           for (i=strlen(node_name);i<sizeof(new_ptr->name);i++)
@@ -412,9 +412,9 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
     ****************************************/
       saved_node_numbers = (int *)malloc((num_fixup + 2) * sizeof(int));
       for (i = 0; i < num_fixup; i++)
-	saved_node_numbers[i] = *fixup_nodes[i] - info_ptr->node;
-      saved_node_numbers[i++] = info_ptr->root - info_ptr->node;
-      saved_node_numbers[i++] = db_ptr->default_node - info_ptr->node;
+	saved_node_numbers[i] = (int)(*fixup_nodes[i] - info_ptr->node);
+      saved_node_numbers[i++] = (int)(info_ptr->root - info_ptr->node);
+      saved_node_numbers[i++] = (int)(db_ptr->default_node - info_ptr->node);
       nciptr = (NCI *) (ptr + 10 * EXTEND_NODES + header_ptr->nodes);
     /***************************************
       copy the nodes and ncis
@@ -502,13 +502,13 @@ int _TreeAddConglom(void *dbid, char const *path, char const * congtype, int *ni
   if (status & 1)
   {
     void *old_dbid = *TreeCtx();
-    expdsc.length = strlen(exp);
+    expdsc.length = (unsigned short)strlen(exp);
     expdsc.pointer = exp;
     arglist[1] = &expdsc;
     arglist[2] = &statdsc;
     arglist[3] = MdsEND_ARG;
     *TreeCtx() = dbid;
-    status = (char *)LibCallg(arglist,addr) - (char *)0;
+    status = (int)((char *)LibCallg(arglist,addr) - (char *)0);
     *TreeCtx() = old_dbid;
     if (status & 1)
     {
@@ -523,9 +523,9 @@ int _TreeAddConglom(void *dbid, char const *path, char const * congtype, int *ni
 }
 
 #define set_parent(nod_ptr, new_par_ptr) \
-    (nod_ptr)->parent = (char *)new_par_ptr - (char *)nod_ptr
+  (nod_ptr)->parent = (int)((char *)new_par_ptr - (char *)nod_ptr)
 #define set_child(nod_ptr, new_child_ptr) \
-    (nod_ptr)->INFO.TREE_INFO.child = (char *)new_child_ptr - (char *)nod_ptr
+  (nod_ptr)->INFO.TREE_INFO.child = (int)((char *)new_child_ptr - (char *)nod_ptr)
 
 int _TreeStartConglomerate(void *dbid, int size)
 {
