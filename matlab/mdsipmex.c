@@ -302,8 +302,7 @@ void GetMatReply(int nlhs,mxArray *plhs[])
 	 uqptr = (_int64u *)ans.ptr;
 	 while(len--)
 	   *dpout++ = (double)*uqptr++;
-   break;
-#endif
+	 break;
        case DTYPE_LONGLONG    :
 	 qptr = (_int64 *)ans.ptr;
 	 while(len--)
