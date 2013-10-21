@@ -12,8 +12,8 @@ typedef uint64_t _int64u;
 #else
 #ifdef HAVE_WINDOWS_H
 #include <msc_stdint.h>
-typedef int64_t _int64;
-typedef uint64_t _int64u;
+typedef signed __int64 _int64;
+typedef unsigned __int64 _int64u;
 #else
 
 #ifdef HAVE_VXWORKS_H
