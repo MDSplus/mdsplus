@@ -116,7 +116,7 @@ the tag name specified does not already exist.
       }
     }
     if (newtag_idx == 0)
-      newtag_idx = idx;
+      newtag_idx = tidx;
   }
   else
     newtag_idx = 0;

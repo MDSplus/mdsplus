@@ -600,7 +600,7 @@ int _TreeStartConglomerate(void *dbid, int size)
 	(child_of(starting_node_ptr))->parent = 0;
       set_parent(this_node_ptr, (NODE *) ((char *) info_ptr->node + header_ptr->free));
       set_child((NODE *) ((char *) info_ptr->node + header_ptr->free), this_node_ptr);
-      header_ptr->free = (char *) starting_node_ptr - (char *) info_ptr->node;
+      header_ptr->free = (int)((char *) starting_node_ptr - (char *) info_ptr->node);
       starting_node_ptr->INFO.TREE_INFO.child = 0;
     }
     info_ptr->edit->conglomerate_index = 0;
@@ -694,9 +694,9 @@ int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
     if (exp_ptr)
     {
       char uptree[13];
-      int i;
+      size_t i;
       int shot;
-      int len = strlen(exp_ptr);
+      size_t len = strlen(exp_ptr);
       for (i=0;i<12 && i<len;i++)
       uptree[i] = toupper(exp_ptr[i]);
       uptree[i]='\0';
@@ -802,7 +802,7 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO *info_ptr)
   int       length = sizeof(node_ptr->name);
   for (node_ptr = last_node_ptr;
        strncmp((const char *) node_ptr->name, (const char *) empty_node.name, length) == 0; node_ptr--);
-  node_pages = ((node_ptr - nodes_ptr + 1) * sizeof(NODE) + 511) / 512;
+  node_pages = (int)(((node_ptr - nodes_ptr + 1) * sizeof(NODE) + 511) / 512);
   nodes = max(info_ptr->edit->first_in_mem, (int)((node_pages * 512) / sizeof(NODE)));
   if (nodes < *nodecount_ptr)
   {
@@ -897,7 +897,7 @@ int _TreeSetSubtree(void *dbid, int nid)
  subtree reference.   If so just check the usage.
 ***************************************************/
 
-  node_idx = node_ptr - dblist->tree_info->node;
+  node_idx = (int)(node_ptr - dblist->tree_info->node);
   for (i = 0; i < dblist->tree_info->header->externals; i++) {
     if (swapint((char *)&dblist->tree_info->external[i]) == node_idx) {
       if (node_ptr->usage != TreeUSAGE_SUBTREE) {
@@ -969,7 +969,7 @@ int _TreeSetNoSubtree(void *dbid, int nid)
 *************************************/
 
   nid_to_node(dblist, nid_ptr, node_ptr);
-  node_idx = node_ptr - dblist->tree_info->node;
+  node_idx = (int)(node_ptr - dblist->tree_info->node);
   for (ext_idx = 0; ext_idx < dblist->tree_info->header->externals; ext_idx++)
     if (swapint((char *)&dblist->tree_info->external[ext_idx]) == node_idx)
       break;
@@ -1007,9 +1007,9 @@ int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid)
     if (exp_ptr)
     {
       char uptree[13];
-      int i;
+      size_t i;
       int shot;
-      int len = strlen(exp_ptr);
+      size_t len = strlen(exp_ptr);
       for (i=0;i<12 && i<len;i++)
       uptree[i] = toupper(exp_ptr[i]);
       uptree[i]='\0';
