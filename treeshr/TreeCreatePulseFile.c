@@ -307,7 +307,7 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
       {
         size_t chunk_size = (size_t)(MIN(MAX_CHUNK, src_len));
         void *buff = malloc(chunk_size);
-        size_t bytes_to_go = src_len;
+        size_t bytes_to_go = (size_t)src_len;
         while(bytes_to_go > 0)
         {
           size_t io_size = MIN(bytes_to_go, chunk_size);
