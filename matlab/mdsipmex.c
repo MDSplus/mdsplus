@@ -377,7 +377,7 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
    _int64 *qptr;
-#ifndef 
+#ifndef _WIN32
    _int64u *uqptr;
 #endif
    float *fptr;
