@@ -199,9 +199,9 @@
 
 #define MDSIP_CONNECTIONS 1
 #ifdef _WIN64
-#define SIZEOF_INT_P == 8
+#define SIZEOF_INT_P 8
 #else
-#define SIZEOF_INT_P == 4
+#define SIZEOF_INT_P 4
 #endif
 #define _CONFIG_INCLUDED
 #endif
