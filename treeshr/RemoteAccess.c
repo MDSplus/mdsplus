@@ -1224,7 +1224,7 @@ int MDS_IO_CLOSE(int fd)
   } 
 }
 
-STATIC_ROUTINE off_t io_lseek_remote(int fd, _int64 offset, int whence)
+STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
 {
   off_t ret = -1;
   int info[] = {0,0,0,0,0};
@@ -1233,7 +1233,7 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, _int64 offset, int whence)
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   info[4]=whence;
-  *(_int64 *)(&info[2]) = offset;
+  *(off_t *)(&info[2]) = offset;
 #ifdef _big_endian
   status = info[2];
   info[2]=info[3];
@@ -1264,9 +1264,9 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, _int64 offset, int whence)
 }
 
 
-off_t MDS_IO_LSEEK(int fd, _int64 offset, int whence)
+off_t MDS_IO_LSEEK(int fd, off_t offset, int whence)
 {
-    _int64 pos;
+  off_t pos;
   LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
   {
@@ -1377,7 +1377,7 @@ STATIC_ROUTINE ssize_t io_read_remote(int fd, void *buff, size_t count)
   return ret;
 }
 
-STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_t count, int *deleted)
+STATIC_ROUTINE ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t count, int *deleted)
 {
   ssize_t ret = -1;
   int info[] = {0,0,0,0,0};
@@ -1386,7 +1386,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, _int64 offset, void *buff, size_
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   info[1]=FDS[fd-1].fd;
   info[4]=(int)count;
-  *(_int64 *)(&info[2]) = offset;
+  *(off_t *)(&info[2]) = offset;
 #ifdef _big_endian
   status = info[2];
   info[2]=info[3];
@@ -1450,7 +1450,7 @@ ssize_t MDS_IO_READ(int fd, void *buff, size_t count)
     else
 #endif
 
-ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *deleted)
+ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted)
 {
   ssize_t ans = -1;
   if (count == 0) return 0;
@@ -1479,7 +1479,7 @@ ssize_t MDS_IO_READ_X(int fd, _int64 offset, void *buff, size_t count, int *dele
   return ans; 
 }
 
-STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, size_t size, int mode, int *deleted)
+STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, int *deleted)
 {
   int ret=0;
   int info[] = {0,0,0,0,0,0};
@@ -1489,7 +1489,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, _int64 offset, size_t size, int mode, 
   info[1]=FDS[fd-1].fd;
   info[4]=(int)size;
   info[5]=mode;
-  *(_int64 *)(&info[2]) = offset;
+  *(off_t *)(&info[2]) = offset;
 #ifdef _big_endian
   status = info[2];
   info[2]=info[3];
