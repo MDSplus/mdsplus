@@ -18,7 +18,6 @@
 #define open _open
 #define close _close
 #define read _read
-typedef __int64 off_t;
 #else
 #include <unistd.h>
 #ifndef HAVE_VXWORKS_H
