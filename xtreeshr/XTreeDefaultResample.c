@@ -17,6 +17,7 @@ extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
+extern int TdiDecompile();
 extern int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *converted);
 extern int XTreeConvertToLongDelta(struct descriptor *deltaD, _int64u *converted);
 

@@ -261,7 +261,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 //			unsigned short funCode = OpcExtFunction;
 			unsigned short funCode = 162;
 			resampleFunD.length = sizeof(unsigned short);
-			resampleFunD.pointer = (char *)&funCode;
+			resampleFunD.pointer = (unsigned char *)&funCode;
 			resampleFunNameD.length = strlen(resampleFunName);
 			resampleFunNameD.pointer = resampleFunName;
 			resampleFunD.dscptrs[0] = 0;
@@ -312,7 +312,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	{
 		unsigned short funCode = OpcExtFunction;
 		squishFunD.length = sizeof(unsigned short);
-		squishFunD.pointer = (char *)&funCode;
+		squishFunD.pointer = (unsigned char *)&funCode;
 		squishFunNameD.length = strlen(squishFunName);
 		squishFunNameD.pointer = squishFunName;
 		squishFunD.dscptrs[0] = 0;
