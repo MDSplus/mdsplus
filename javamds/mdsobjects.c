@@ -45,9 +45,9 @@ static jintArray  getDimensions(JNIEnv *env, void *dsc)
 
 	jdims = (*env)->NewIntArray(env, arrD->dimct);
 	if(arrD->dimct == 1)
-		(*env)->SetIntArrayRegion(env, jdims, 0, 1, &dim);
+		(*env)->SetIntArrayRegion(env, jdims, 0, 1, (const jint *)&dim);
 	else
-		(*env)->SetIntArrayRegion(env, jdims, 0, arrD->dimct, (const int *)arrD->m);
+		(*env)->SetIntArrayRegion(env, jdims, 0, arrD->dimct, (const jint *)arrD->m);
 	return jdims;
 }
 
@@ -1529,7 +1529,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
 
 	(*env)->ReleaseStringUTFChars(env, jpath, path);
 	jnids = (*env)->NewIntArray(env, numNids);
-	(*env)->SetIntArrayRegion(env, jnids, 0, numNids, nids);
+	(*env)->SetIntArrayRegion(env, jnids, 0, numNids, (const jint *)nids);
 	free((char *)nids);
 	return jnids;
 }
@@ -2025,7 +2025,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_TreeNode_getNciNids
 	if(!(status & 1))
 		throwMdsException(env, status);
 	jnids = (*env)->NewIntArray(env, nNids);
-	(*env)->SetIntArrayRegion(env, jnids, 0, nNids, nids);
+	(*env)->SetIntArrayRegion(env, jnids, 0, nNids, (const jint *)nids);
 	free((char *)nids);
 	return jnids;
 

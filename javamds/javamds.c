@@ -532,7 +532,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv *en
 		return NULL;
     }
     jarr = (*env)->NewIntArray(env, dim);
-    (*env)->SetIntArrayRegion(env, jarr, 0, dim, out_ptr);
+    (*env)->SetIntArrayRegion(env, jarr, 0, dim, (const jint *)out_ptr);
 	
 	free((char *)out_ptr);
    return jarr;
@@ -1141,7 +1141,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getSegmentIdxs
 			arr[rowIdx++] = startIdx + idx;
 	}
 	jarr = (*env)->NewIntArray(env, nRows);
-	(*env)->SetIntArrayRegion(env, jarr, 0, nRows, arr);
+	(*env)->SetIntArrayRegion(env, jarr, 0, nRows, (const jint *)arr);
 	free((char *)arr);
 	free((char *)dims);
 	return jarr;
@@ -1282,7 +1282,7 @@ int createWindow(char *name, int idx, int enableLiveUpdate)
 
 		if(res < 0)
 		{
-			printf("\nCannot create Java VM (result = %d)!!\n", res);
+			printf("\nCannot create Java VM (result = %d)!!\n", (int)res);
 			return -1;
 		}
 	}
