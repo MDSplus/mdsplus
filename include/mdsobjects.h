@@ -2533,7 +2533,7 @@ protected:
 		int x, y, width, height;
 		int idx;
 	public:
-		Scope(char *name, int x = 100, int y = 100, int width = 400, int height = 400);
+		Scope(const char *name, int x = 100, int y = 100, int width = 400, int height = 400);
 		void plot(Data *x, Data *y , int row = 1, int col = 1, const char *color = "black");
 		void oplot(Data *x, Data *y , int row = 1, int col = 1, const char *color = "black");
 		void show();

@@ -1229,7 +1229,7 @@ EXPORT void Scope::show()
 	Data *ris = execute(expr);
 	deleteData(ris);
 }
-EXPORT Scope::Scope(char *name, int x, int y, int width, int height)
+EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
 {
 	char *expr = new char[64+strlen(name)];
 	sprintf(expr, "JavaNewWindow(\"%s\", -1)", name);

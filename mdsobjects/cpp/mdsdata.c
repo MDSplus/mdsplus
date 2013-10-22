@@ -318,7 +318,7 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 					else
 						descs[i] = 0;
 				}
-				retData = createCompoundData(dscRPtr->dtype, dscRPtr->length, dscRPtr->pointer, dscRPtr->ndesc, descs,
+				retData = createCompoundData(dscRPtr->dtype, dscRPtr->length, (char *)dscRPtr->pointer, dscRPtr->ndesc, descs,
 					unitsData, errorData, helpData, validationData);
 				free((char *)descs);
 				return retData;
@@ -780,10 +780,11 @@ extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *
 }
 
 
-extern _int64 convertAsciiToTime(char *ascTime)
+extern _int64 convertAsciiToTime(const char *ascTime)
 {
 	_int64 time;
-	LibConvertDateString("now", &time);
+//	LibConvertDateString("now", &time);
+	LibConvertDateString(ascTime, &time);
 	return time;
 }
 

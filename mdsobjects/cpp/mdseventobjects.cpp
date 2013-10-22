@@ -12,7 +12,7 @@ using namespace std;
 
 
 extern "C" {
-	_int64 convertAsciiToTime(char *ascTime);
+	_int64 convertAsciiToTime(const char *ascTime);
 	int MDSUdpEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 	int MDSUdpEventCan(int id);
 	int MDSUdpEvent(char *eventNameIn, int bufLen, char *buf);
