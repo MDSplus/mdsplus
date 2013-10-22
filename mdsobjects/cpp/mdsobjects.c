@@ -16,7 +16,7 @@ extern int TdiData(), TdiDecompile(), TdiCompile();
 extern int CvtConvertFloat();
 extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
 							struct descriptor *dim, struct descriptor_a *data, int idx);
-extern int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *data); 
+extern int TreePutRow(int nid, int bufsize, int64_t *timestamp, struct descriptor_a *data); 
 
 static jobject DescripToObject(JNIEnv *env, struct descriptor *desc);
 
@@ -523,19 +523,19 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	  	  case DTYPE_Q:
 		  case DTYPE_QU:
 			    datum_fid = (*env)->GetFieldID(env, cls, "data", "J");
-			    desc->length = sizeof(_int64);
+			    desc->length = sizeof(int64_t);
 			    desc->pointer = (char *)malloc(desc->length);
-			    *(_int64 *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
+			    *(int64_t *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
 			    return desc;
 	  	  case DTYPE_O:
 		  case DTYPE_OU:
 			    datum_fid = (*env)->GetFieldID(env, cls, "data", "[J");
 			    jlongs = (*env)->GetObjectField(env, obj, datum_fid);	
 			    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
-			    desc->length = 2 * sizeof(_int64);
+			    desc->length = 2 * sizeof(int64_t);
 			    desc->pointer = (char *)malloc(desc->length);
-			    *(_int64 *)desc->pointer = longs[0];
-			    *((_int64 *)desc->pointer + 1) = longs[1];
+			    *(int64_t *)desc->pointer = longs[0];
+			    *((int64_t *)desc->pointer + 1) = longs[1];
 			    (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
 			    return desc;
 		  case DTYPE_T:
@@ -626,7 +626,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = sizeof(_int64);
+		    array_d->length = sizeof(int64_t);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -638,7 +638,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = 2*sizeof(_int64);
+		    array_d->length = 2*sizeof(int64_t);
 		    array_d->arsize = array_d->length * length/2;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -1391,7 +1391,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_putRow
 	struct descriptor *dataD;
 	int status;
 
-	_int64 time = jtime;
+	int64_t time = jtime;
 	dataD = ObjectToDescrip(env, data);
 	status = TreePutRow(nid, BUFSIZE, &time, (struct descriptor_a *)dataD);
 	freeDescrip(dataD);
@@ -1448,7 +1448,7 @@ JNIEXPORT void JNICALL Java_mdstree_MdsTree_putCachedRow
 	struct descriptor *dataD;
 	int status;
 
-	_int64 time = jtime;
+	int64_t time = jtime;
 
 	dataD = ObjectToDescrip(env, data);
 	status = RTreePutRow(nid, BUFSIZE, &time, (struct descriptor_a *)dataD, (isLast)?WRITE_LAST:WRITE_BUFFER);

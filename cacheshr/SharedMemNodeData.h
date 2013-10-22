@@ -15,14 +15,14 @@ class SharedMemNodeData
 		bool segmented;
 		char dataType;
 		int numSamples;
-		_int64 data;
+		int64_t data;
 		int dataSize;
 		int numSegments;
-		_int64 firstSegment;
-		_int64 lastSegment;
+		int64_t firstSegment;
+		int64_t lastSegment;
 
 		//Callback list
-		_int64 callbackManager;
+		int64_t callbackManager;
 
 		//Cache coherency parameters
 		bool owner; //true if the owner of the nid, i.e. the last writer
@@ -45,7 +45,7 @@ class SharedMemNodeData
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = - reinterpret_cast<_int64>(this);
+		firstSegment = lastSegment = - reinterpret_cast<int64_t>(this);
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -66,7 +66,7 @@ class SharedMemNodeData
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = reinterpret_cast<_int64>(this);
+		firstSegment = lastSegment = reinterpret_cast<int64_t>(this);
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -87,7 +87,7 @@ class SharedMemNodeData
 		numSamples = 0;
 		numSegments = 0;
 		segmented = false;
-		firstSegment = lastSegment = reinterpret_cast<_int64>(this);
+		firstSegment = lastSegment = reinterpret_cast<int64_t>(this);
 		data = 0;
 		dataSize = 0;
 		owner = false;
@@ -149,16 +149,16 @@ class SharedMemNodeData
 
 	void setLastSegment(Segment *lastSegment)
 	{
-		this->lastSegment = reinterpret_cast<_int64>(lastSegment) - reinterpret_cast<_int64>(this);
+		this->lastSegment = reinterpret_cast<int64_t>(lastSegment) - reinterpret_cast<int64_t>(this);
 	}
 	Segment *getFirstSegment()
 	{
-		return reinterpret_cast<Segment *>(reinterpret_cast<_int64>(this) + firstSegment);
+		return reinterpret_cast<Segment *>(reinterpret_cast<int64_t>(this) + firstSegment);
 	}
 
 	Segment *getLastSegment()
 	{
-		return reinterpret_cast<Segment *>(reinterpret_cast<_int64>(this) + lastSegment);
+		return reinterpret_cast<Segment *>(reinterpret_cast<int64_t>(this) + lastSegment);
 	}
 
 	
@@ -175,7 +175,7 @@ class SharedMemNodeData
 		return currSegment;
 	}
 
-	void discardOldSegments(_int64 timestamp, SimpleAllocationManager *fsm)
+	void discardOldSegments(int64_t timestamp, SimpleAllocationManager *fsm)
 	{
 		if(numSegments == 0) 
 			return;
@@ -185,7 +185,7 @@ class SharedMemNodeData
 
 		while(numSegments > 0)
 		{
-			_int64 *endTimePtr;
+			int64_t *endTimePtr;
 			int endSize;
 			currSegment->getEndTimestamp((char **)&endTimePtr, &endSize);
 
@@ -201,7 +201,7 @@ class SharedMemNodeData
 				break; //No need to proccede
 		}
 		if(numSegments == 0)
-			firstSegment = lastSegment = -reinterpret_cast<_int64>(this);
+			firstSegment = lastSegment = -reinterpret_cast<int64_t>(this);
 	}
 
 	void discardFirstSegment(SimpleAllocationManager *fsm)
@@ -222,7 +222,7 @@ class SharedMemNodeData
 
 	void setFirstSegment(Segment *firstSegment)
 	{
-		this->firstSegment = reinterpret_cast<_int64>(firstSegment) - reinterpret_cast<_int64>(this);
+		this->firstSegment = reinterpret_cast<int64_t>(firstSegment) - reinterpret_cast<int64_t>(this);
 	}
 
 	void appendSegment(Segment *newSegment)
@@ -258,13 +258,13 @@ class SharedMemNodeData
 	
 	void setData(char *data, int dataSize)
 	{
-		this->data = reinterpret_cast<_int64>(data) - reinterpret_cast<_int64>(this);
+		this->data = reinterpret_cast<int64_t>(data) - reinterpret_cast<int64_t>(this);
 		this->dataSize = dataSize;
 	}
 
 	void getData(char **data, int *dataSize)
 	{
-		*data = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->data);
+		*data = reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->data);
 		*dataSize = this->dataSize;
 	}
 	
@@ -476,7 +476,7 @@ class SharedMemNodeData
 			for(i = 0; i < numSegments; i++)
 				fsm->deallocateShared((char *)segments[i], sizeof(Segment));
 			numSegments = 0;
-			firstSegment = lastSegment = -reinterpret_cast<_int64>(this);
+			firstSegment = lastSegment = -reinterpret_cast<int64_t>(this);
 		}
 		else
 		{
@@ -541,7 +541,7 @@ class SharedMemNodeData
 		if(callbackManager == 0)
 			this->callbackManager = 0;
 		else
-			this->callbackManager = reinterpret_cast<_int64>(callbackManager) - reinterpret_cast<_int64>(this);
+			this->callbackManager = reinterpret_cast<int64_t>(callbackManager) - reinterpret_cast<int64_t>(this);
 	}
 
 	CallbackManager *getCallbackManager()

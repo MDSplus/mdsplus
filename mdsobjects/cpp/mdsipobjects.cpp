@@ -392,10 +392,10 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new Uint32Array((unsigned int *)ptr, nDims, retDims);
 				break;
 			case DTYPE_LONGLONG_IP:
-				resData = new Int64Array((_int64 *)ptr, nDims, retDims);
+				resData = new Int64Array((int64_t *)ptr, nDims, retDims);
 				break;
 			case DTYPE_ULONGLONG_IP:
-				resData = new Uint64Array((_int64u *)ptr, nDims, retDims);
+				resData = new Uint64Array((uint64_t *)ptr, nDims, retDims);
 				break;
 			case DTYPE_FLOAT_IP:
 				resData = new Float32Array((float *)ptr, nDims, retDims);

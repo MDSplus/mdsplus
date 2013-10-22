@@ -7,8 +7,8 @@
 //Class RelativePointer handles memory references stored as a 64 bit offset from the 
 //actual, process-specific, address of the current instance
 /*#ifndef HAVE_WINDOWS_H
-typedef long long _int64;
-typedef unsigned long long _int64u;
+typedef long long int64_t;
+typedef unsigned long long uint64_t;
 #define EXPORT
 #else
 #define EXPORT __declspec(dllexport)
@@ -17,15 +17,15 @@ typedef unsigned long long _int64u;
 
 class EXPORT RelativePointer
 {
-	_int64 offset;
+	int64_t offset;
 
 public:
-	_int64 getOffset() {return offset;}
+	int64_t getOffset() {return offset;}
 	void *getAbsAddress()
 	{
 		if(!offset)
 			return 0;
-		return reinterpret_cast<void *>(offset + reinterpret_cast<_int64>(this));
+		return reinterpret_cast<void *>(offset + reinterpret_cast<int64_t>(this));
 	}
 	void * operator = (void *ptr)
 	{
@@ -34,7 +34,7 @@ public:
 		if(!ptr)
 			offset = 0;
 		else
-			offset = reinterpret_cast<_int64>(ptr) - reinterpret_cast<_int64>(this);
+			offset = reinterpret_cast<int64_t>(ptr) - reinterpret_cast<int64_t>(this);
 		return ptr;
 	}
 	void * operator = (RelativePointer &rp)

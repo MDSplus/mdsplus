@@ -16,8 +16,8 @@
 #endif
 
 #ifdef HAVE_VXWORKS_H
-#define _int64 long long
-#define _int64u long long
+#define int64_t long long
+#define uint64_t long long
 #endif
 #define MDS_IO_LOCK_RD  0x01
 #define MDS_IO_LOCK_WRT 0x02
@@ -49,7 +49,7 @@ typedef struct nci
   unsigned int  flags;
   unsigned char flags2;
   unsigned char spare;
-  _int64        time_inserted;
+  int64_t        time_inserted;
   unsigned int  owner_identifier;
   unsigned char class;
   unsigned char dtype;
@@ -81,8 +81,8 @@ typedef struct nci
 
 #define FACILITIES_PER_EA 8
 typedef struct extended_attributes {
-  _int64    next_ea_offset;
-  _int64    facility_offset[FACILITIES_PER_EA];
+  int64_t    next_ea_offset;
+  int64_t    facility_offset[FACILITIES_PER_EA];
   int       facility_length[FACILITIES_PER_EA];
 } EXTENDED_ATTRIBUTES;
 
@@ -97,27 +97,27 @@ typedef struct segment_header {
   short    length;
   int      idx;
   int      next_row;
-  _int64   index_offset;
-  _int64   data_offset;
-  _int64   dim_offset;
+  int64_t   index_offset;
+  int64_t   data_offset;
+  int64_t   dim_offset;
 } SEGMENT_HEADER;
 
 typedef struct segment_info {
-  _int64 start;
-  _int64 end;
-  _int64 start_offset;
+  int64_t start;
+  int64_t end;
+  int64_t start_offset;
   int    start_length;
-  _int64 end_offset;
+  int64_t end_offset;
   int    end_length;
-  _int64 dimension_offset;
+  int64_t dimension_offset;
   int    dimension_length;
-  _int64 data_offset;
+  int64_t data_offset;
   int    rows;
 } SEGMENT_INFO;
 
 #define SEGMENTS_PER_INDEX 128
 typedef struct segment_index {
-  _int64 previous_offset;
+  int64_t previous_offset;
   int first_idx;
   SEGMENT_INFO segment[SEGMENTS_PER_INDEX];
 } SEGMENT_INDEX;
@@ -126,12 +126,12 @@ typedef struct segment_index {
 #define NAMED_ATTRIBUTE_NAME_SIZE 64
 typedef struct named_attribute {
   char name[NAMED_ATTRIBUTE_NAME_SIZE];
-  _int64 offset;
+  int64_t offset;
   int length;
 } NAMED_ATTRIBUTE;
 
 typedef struct named_attributes_index {
-  _int64 previous_offset;
+  int64_t previous_offset;
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
@@ -166,10 +166,10 @@ typedef struct named_attributes_index {
                            (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 #endif
 
-#define swapquad(ptr) ( (((_int64)((unsigned char *)ptr)[7]) << 56) | (((_int64)((unsigned char *)ptr)[6]) << 48) | \
-                        (((_int64)((unsigned char *)ptr)[5]) << 40) | (((_int64)((unsigned char *)ptr)[4]) << 32) | \
-                        (((_int64)((unsigned char *)ptr)[3]) << 24) | (((_int64)((unsigned char *)ptr)[2]) << 16) | \
-                        (((_int64)((unsigned char *)ptr)[1]) <<  8) | (((_int64)((unsigned char *)ptr)[0]) ))
+#define swapquad(ptr) ( (((int64_t)((unsigned char *)ptr)[7]) << 56) | (((int64_t)((unsigned char *)ptr)[6]) << 48) | \
+                        (((int64_t)((unsigned char *)ptr)[5]) << 40) | (((int64_t)((unsigned char *)ptr)[4]) << 32) | \
+                        (((int64_t)((unsigned char *)ptr)[3]) << 24) | (((int64_t)((unsigned char *)ptr)[2]) << 16) | \
+                        (((int64_t)((unsigned char *)ptr)[1]) <<  8) | (((int64_t)((unsigned char *)ptr)[0]) ))
 #define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
                        (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) ))
 #define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
@@ -730,8 +730,8 @@ extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif
-extern _int64 RfaToSeek(unsigned char *rfa);
-void SeekToRfa(_int64 seek, unsigned char *rfa);
+extern int64_t RfaToSeek(unsigned char *rfa);
+void SeekToRfa(int64_t seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
 
 extern int TreeCloseFiles(TREE_INFO *info, int nci, int data);
@@ -752,8 +752,8 @@ tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info,int nid);
 extern int TreeGetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO *info);
-extern int TreeGetDsc(TREE_INFO *info,_int64 offset, int length, struct descriptor_xd *dsc);
-extern int TreeGetExtendedAttributes(TREE_INFO *info_ptr, _int64 offset, EXTENDED_ATTRIBUTES *att);
+extern int TreeGetDsc(TREE_INFO *info,int64_t offset, int length, struct descriptor_xd *dsc);
+extern int TreeGetExtendedAttributes(TREE_INFO *info_ptr, int64_t offset, EXTENDED_ATTRIBUTES *att);
 extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
 extern int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci);
 extern DATA_FILE *TreeGetVmDatafile();
@@ -763,22 +763,22 @@ extern int TreeOpenDatafileR(TREE_INFO *info);
 extern int TreeOpenNciR(TREE_INFO *info);
 extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
-extern int TreePutDsc(TREE_INFO *info_ptr, int nid, struct descriptor *dsc, _int64 *offset, int *length);
-extern int TreePutExtendedAttributes(TREE_INFO *info_ptr, EXTENDED_ATTRIBUTES *att, _int64 *offset);
+extern int TreePutDsc(TREE_INFO *info_ptr, int nid, struct descriptor *dsc, int64_t *offset, int *length);
+extern int TreePutExtendedAttributes(TREE_INFO *info_ptr, EXTENDED_ATTRIBUTES *att, int64_t *offset);
 extern void TreeSerializeNciIn(char *in, struct nci *out);
 extern void TreeSerializeNciOut(struct nci *in, char *out);
-extern _int64 TreeTimeInserted();
+extern int64_t TreeTimeInserted();
 extern int TreeSetTemplateNci(NCI *nci);
 extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted);
 extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
-extern int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 where);
-extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 where);
+extern int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t where);
+extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef HAVE_WINDOWS_H
 typedef int mode_t;
-#define off_t __int64
-#define ssize_t _int64
+#define off_t int64_t_t
+#define ssize_t int64_t
 #endif
 extern int MDS_IO_OPEN(char *filename, int options, mode_t mode);
 extern int MDS_IO_CLOSE(int fd);

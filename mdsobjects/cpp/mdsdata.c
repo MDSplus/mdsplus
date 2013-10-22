@@ -11,7 +11,7 @@
 #include <mdstypes.h>
 extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end,
 							struct descriptor *dim, struct descriptor_a *initialData, int idx);
-extern int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
+extern int TreePutRow(int nid, int bufsize, int64_t *timestamp, struct descriptor_a *rowdata);
 extern int TdiData();
 extern int TdiEvaluate();
 extern int TdiDecompile();
@@ -33,7 +33,7 @@ extern void convertTime(int *time, char *retTime);
 extern char * serializeData(void *dsc, int *retSize, void **retDsc);
 extern void *deserializeData(char *serialized);
 
-extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen);
+extern void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen);
 extern void *getManyObj(char *serializedIn);
 extern void *putManyObj(char *serializedIn);
 
@@ -766,7 +766,7 @@ extern void *deserializeData(char *serialized)
 	return xdPtr;
 }
 
-extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen)
+extern void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen)
 {
 	struct descriptor dateDsc = {0, DTYPE_T, CLASS_D, 0};
 	short len;
@@ -780,9 +780,9 @@ extern void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *
 }
 
 
-extern _int64 convertAsciiToTime(const char *ascTime)
+extern int64_t convertAsciiToTime(const char *ascTime)
 {
-	_int64 time;
+	int64_t time;
 //	LibConvertDateString("now", &time);
 	LibConvertDateString(ascTime, &time);
 	return time;

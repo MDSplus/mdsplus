@@ -14,7 +14,7 @@ extern "C" {
 	int TreeFindTag(char *tagnam, char *treename, int *tagidx);
 
 	// From libroutines.h
-	int LibConvertDateString(char *asc_time, _int64 *qtime);
+	int LibConvertDateString(char *asc_time, int64_t *qtime);
 
 	// From mdsshr.h
 	const char *MdsClassString(int id);
@@ -59,9 +59,9 @@ extern "C" {
 	int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc);
 	int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
 	int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
-	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times);
-	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled);
-	int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size);
+	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
+	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
+	int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
 
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
@@ -467,7 +467,7 @@ void Tree::setVersionsInPulse(bool verEnabled)
 
 void Tree::setViewDate(char *date)
 {
-	_int64  qtime;
+	int64_t  qtime;
 
 	int status = LibConvertDateString(date, &qtime);
 	if(!(status & 1))
@@ -541,9 +541,9 @@ void Tree::removeTag(char const * tagName)
 		throw MdsException(status);
 }
 
-_int64 Tree::getDatafileSize()
+int64_t Tree::getDatafileSize()
 {
-	_int64 size = _TreeGetDatafileSize(getCtx());
+	int64_t size = _TreeGetDatafileSize(getCtx());
 	if(size == -1)
 		throw MdsException("Cannot retrieve datafile size");
 	return size;
@@ -810,9 +810,9 @@ int TreeNode::getOwnerId()
 	return id;
 }
 
-_int64 TreeNode::getTimeInserted()
+int64_t TreeNode::getTimeInserted()
 {
-	_int64 timeInserted; 
+	int64_t timeInserted; 
 	int timeLen;
 	struct nci_itm nciList[] = 
 		{{8, NciTIME_INSERTED, (char *)&timeInserted, &timeLen},
@@ -1425,7 +1425,7 @@ void TreeNode::beginTimestampedSegment(Array *initData)
 		throw MdsException(status);
 }
 
-void TreeNode::makeTimestampedSegment(Array *data, _int64 *times)
+void TreeNode::makeTimestampedSegment(Array *data, int64_t *times)
 {
 	int nTimesArray;
 	int numDims;
@@ -1440,7 +1440,7 @@ void TreeNode::makeTimestampedSegment(Array *data, _int64 *times)
 		throw MdsException(status);
 }
 
-void TreeNode::putTimestampedSegment(Array *data, _int64 *times)
+void TreeNode::putTimestampedSegment(Array *data, int64_t *times)
 {
 	int nTimesArray;
 	resolveNid();
@@ -1451,7 +1451,7 @@ void TreeNode::putTimestampedSegment(Array *data, _int64 *times)
 		throw MdsException(status);
 }
 
-void TreeNode::putRow(Data *data, _int64 *time, int size)
+void TreeNode::putRow(Data *data, int64_t *time, int size)
 {
 	resolveNid();
 	//if(tree) tree->lock();
@@ -1470,7 +1470,7 @@ void TreeNode::acceptSegment(Array *data, Data *start, Data *end, Data *times)
 		throw MdsException(status);
 }
 
-void TreeNode::acceptRow(Data *data, _int64 time, bool isLast)
+void TreeNode::acceptRow(Data *data, int64_t time, bool isLast)
 {
 	resolveNid();
 	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, 1024);

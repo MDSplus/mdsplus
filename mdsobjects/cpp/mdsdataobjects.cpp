@@ -45,7 +45,7 @@ extern "C" {
 	void * convertToUnits(void *dsc, void *unitsDsc);
 	void * convertToError(void *dsc, void *errorDsc);
 
-	void convertTimeToAscii(_int64 *timePtr, char *dateBuf, int bufLen, int *retLen);
+	void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen);
 }
 
 
@@ -66,8 +66,8 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 		case DTYPE_WU: return new Uint16(*(unsigned short *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_L: return new Int32(*(int *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_LU: return new Uint32(*(int *)ptr, unitsData, errorData, helpData, validationData);
-		case DTYPE_Q: return new Int64(*(_int64 *)ptr, unitsData, errorData, helpData, validationData);
-		case DTYPE_QU: return new Uint64(*(_int64 *)ptr, unitsData, errorData, helpData, validationData);
+		case DTYPE_Q: return new Int64(*(int64_t *)ptr, unitsData, errorData, helpData, validationData);
+		case DTYPE_QU: return new Uint64(*(int64_t *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32(*(float *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64(*(double *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_T: return new String(ptr, length, unitsData, errorData, helpData, validationData);
@@ -91,8 +91,8 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 		case DTYPE_WU: return new Uint16Array((unsigned short *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_L: return new Int32Array((int *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_LU: return new Uint32Array((unsigned int *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
-		case DTYPE_Q: return new Int64Array((_int64 *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
-		case DTYPE_QU: return new Uint64Array((_int64u *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
+		case DTYPE_Q: return new Int64Array((int64_t *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
+		case DTYPE_QU: return new Uint64Array((uint64_t *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_T: return new StringArray((char *)ptr, dims[0], length);
@@ -319,7 +319,7 @@ unsigned int * Data::getIntUnsignedArray(int *numElements)
 	return res;
 }
 
-_int64 * Data::getLongArray(int *numElements)
+int64_t * Data::getLongArray(int *numElements)
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLong(dscPtr);
@@ -329,14 +329,14 @@ _int64 * Data::getLongArray(int *numElements)
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
-	_int64 *res = retData->getLongArray(numElements);
+	int64_t *res = retData->getLongArray(numElements);
 	deleteData(retData);
 	return res;
 }
 #ifdef HAVE_WINDOWS_H
-unsigned _int64 * Data::getLongUnsignedArray(int *numElements)
+unsigned int64_t * Data::getLongUnsignedArray(int *numElements)
 #else
-_int64u * Data::getLongUnsignedArray(int *numElements)
+uint64_t * Data::getLongUnsignedArray(int *numElements)
 #endif
 {
 	void *dscPtr = convertToDsc();
@@ -347,9 +347,9 @@ _int64u * Data::getLongUnsignedArray(int *numElements)
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 #ifdef HAVE_WINDOWS_H	
-	unsigned _int64 *res = retData->getLongUnsignedArray(numElements);
+	unsigned int64_t *res = retData->getLongUnsignedArray(numElements);
 #else
-	_int64u *res = retData->getLongUnsignedArray(numElements);
+	uint64_t *res = retData->getLongUnsignedArray(numElements);
 #endif
 	deleteData(retData);
 	return res;
@@ -452,7 +452,7 @@ int Data::getInt()
 	return res;
 }
 
-_int64 Data::getLong()
+int64_t Data::getLong()
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLong(dscPtr);
@@ -462,7 +462,7 @@ _int64 Data::getLong()
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
-	_int64 res = retData->getLong();
+	int64_t res = retData->getLong();
 	deleteData(retData);
 	return res;
 }
@@ -512,7 +512,7 @@ unsigned int Data::getIntUnsigned()
 	return res;
 }
 #ifdef HAVE_WINDOWS_H
-unsigned _int64 Data::getLongUnsigned()
+unsigned int64_t Data::getLongUnsigned()
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLong(dscPtr);
@@ -522,12 +522,12 @@ unsigned _int64 Data::getLongUnsigned()
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
-	unsigned _int64 res = retData->getLongUnsigned();
+	unsigned int64_t res = retData->getLongUnsigned();
 	deleteData(retData);
 	return res;
 }
 #else
-_int64u Data::getLongUnsigned()
+uint64_t Data::getLongUnsigned()
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLong(dscPtr);
@@ -537,7 +537,7 @@ _int64u Data::getLongUnsigned()
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
-	_int64u res = retData->getLongUnsigned();
+	uint64_t res = retData->getLongUnsigned();
 	deleteData(retData);
 	return res;
 }
@@ -925,8 +925,8 @@ char *Array::getByteArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 		}
@@ -947,8 +947,8 @@ unsigned char *Array::getByteUnsignedArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 		}
@@ -968,8 +968,8 @@ short *Array::getShortArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 		}
@@ -988,8 +988,8 @@ unsigned short *Array::getShortUnsignedArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 		}
@@ -1008,8 +1008,8 @@ int *Array::getIntArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 		}
@@ -1028,18 +1028,18 @@ unsigned int *Array::getIntUnsignedArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
 }
-_int64 *Array::getLongArray(int *numElements)
+int64_t *Array::getLongArray(int *numElements)
 {
 	int size = arsize/length;
-	_int64 *retArr = new _int64[size];
+	int64_t *retArr = new int64_t[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
 			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
@@ -1048,19 +1048,19 @@ _int64 *Array::getLongArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = (_int64)*(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = (_int64)*(double *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (int64_t)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (int64_t)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
 }
 #ifdef HAVE_WINDOWS_H
-unsigned _int64 *Array::getLongUnsignedArray(int *numElements)
+unsigned int64_t *Array::getLongUnsignedArray(int *numElements)
 {
 	int size = arsize/length;
-	unsigned _int64 *retArr = new unsigned _int64[size];
+	unsigned int64_t *retArr = new unsigned int64_t[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
 			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
@@ -1069,19 +1069,19 @@ unsigned _int64 *Array::getLongUnsignedArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(unsigned _int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(unsigned _int64 *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = (unsigned _int64)*(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = (unsigned _int64)*(double *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(unsigned int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(unsigned int64_t *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (unsigned int64_t)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (unsigned int64_t)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
 }
 #else
-_int64u *Array::getLongUnsignedArray(int *numElements)
+uint64_t *Array::getLongUnsignedArray(int *numElements)
 {
 	int size = arsize/length;
-	_int64u *retArr = new _int64u[size];
+	uint64_t *retArr = new uint64_t[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
 			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
@@ -1090,10 +1090,10 @@ _int64u *Array::getLongUnsignedArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64u *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64u *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = (_int64u)*(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = (_int64u)*(double *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(uint64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(uint64_t *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (uint64_t)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (uint64_t)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
@@ -1112,8 +1112,8 @@ float *Array::getFloatArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
 		}
@@ -1132,8 +1132,8 @@ double *Array::getDoubleArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(_int64 *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(_int64 *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(int64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(int64_t *)&ptr[i * length]; break;
 			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
 		}
@@ -1168,7 +1168,7 @@ char *Uint64::getDate()
 {
 	char dateBuf[512];
 	int bufLen;
-	convertTimeToAscii((_int64 *)ptr, dateBuf, 512, &bufLen);
+	convertTimeToAscii((int64_t *)ptr, dateBuf, 512, &bufLen);
 	char *retDate = new char[bufLen+1];
 	dateBuf[bufLen] = 0;
 	strcpy(retDate, dateBuf);
@@ -1264,7 +1264,7 @@ EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
 #if (SIZEOF_LONG != 8)
-EXPORT void MDSplus::deleteNativeArray(_int64 *array){delete [] array;}
+EXPORT void MDSplus::deleteNativeArray(int64_t *array){delete [] array;}
 #endif
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}

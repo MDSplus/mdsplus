@@ -1,40 +1,24 @@
 #ifndef MDSTYPES_H
+
 #define MDSTYPES_H
-
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#endif
-
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
-typedef int64_t _int64;
-typedef uint64_t _int64u;
-#else
+#else /* HAVE_STDINT_H */
 #ifdef HAVE_WINDOWS_H
 #include <msc_stdint.h>
-typedef unsigned __int64 _int64u;
-#else
-
-#ifdef HAVE_VXWORKS_H
-typedef long long _int64;
-typedef unsigned long long _int64u;
-typedef int intptr_t
-#else
-
+#else /* HAVE_WINDOWS_H */
 #if (SIZEOF__INT64 != 8)
 #if (SIZEOF_LONG == 8)
-typedef long _int64;
-typedef unsigned long _int64u;
+typedef long int64_t;
+typedef unsigned long uint64_t;
 #elif (SIZEOF_LONG_LONG == 8)
-typedef long long _int64;
-typedef unsigned long long _int64u;
-#endif
-#else
-typedef unsigned _int64 _int64u;
-#endif
-#endif
-typedef  _int64 int64_t
-typedef  _int64u uint64_t
-#endif /*vxWorks*/
-#endif
-#endif
+typedef long long int64_t;
+typedef unsigned long long uint64_t;
+#endif /* SIZEOF_LONG */
+#else /*SIZEOF_INT64 */
+typedef unsigned int64_t uint64_t;
+#endif /* SIZEOF_INT64 */
+#endif /* HAVE_WINDOWS_H */
+#endif /* HAVE_STDINT_H */
+#endif /* MDSTYPES_H */

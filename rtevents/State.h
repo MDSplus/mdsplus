@@ -28,7 +28,7 @@ public:
 		swap(a[1], a[2]);
 		return *((int *)a);
 	}
-	_int64 swap(_int64 n)
+	int64_t swap(int64_t n)
 	{
 		if(isBigEndian()) return n;
 		char a[8];
@@ -37,7 +37,7 @@ public:
 		swap(a[1], a[6]);
 		swap(a[2], a[5]);
 		swap(a[3], a[4]);
-		return *((_int64 *)a);
+		return *((int64_t *)a);
 	}
 };
 

@@ -30,7 +30,7 @@ typedef struct _thread_static {
   void *DBID;
   int privateCtx;
   SEARCH_CONTEXT search_ctx[MAX_SEARCH_LEVELS];
-  _int64 ViewDate;
+  int64_t ViewDate;
   int nid_reference;
   int path_reference;
 } TreeThreadStatic;

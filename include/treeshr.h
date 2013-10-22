@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #ifdef HAVE_VXWORKS_H
-//typedef long long  _int64;
+//typedef long long  int64_t;
 #else
 #include <config.h>
 #endif
@@ -529,7 +529,7 @@ extern EXPORT int TreeGetRecord(int nid, struct descriptor_xd *dsc_ptr);
 extern EXPORT int _TreeGetRecord(void *dbid, int nid, struct descriptor_xd *dsc_ptr);
 extern EXPORT int TreeGetStackSize();
 extern EXPORT int _TreeGetStackSize(void *dbid);
-extern EXPORT int TreeGetViewDate(_int64 *date);
+extern EXPORT int TreeGetViewDate(int64_t *date);
 extern EXPORT int TreeIsOn(int nid);
 extern EXPORT int _TreeIsOn(void *dbid, int nid);
 extern EXPORT int TreeIsOpen();
@@ -604,12 +604,12 @@ extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct de
 extern EXPORT int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dim, int idx);
 extern EXPORT int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx);
 extern EXPORT int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx);
-extern EXPORT int TreePutTimestampedSegment(int nid, _int64 *timestamp, struct descriptor_a *rowdata);
-extern EXPORT int _TreePutTimestampedSegment(void *dbid, int nid, _int64 *timestamp, struct descriptor_a *rowdata);
-extern EXPORT int TreeMakeTimestampedSegment(int nid, _int64 *timestamp, struct descriptor_a *rowdata, int idx, int filled);
-extern EXPORT int _TreeMakeTimestampedSegment(void *dbid, int nid, _int64 *timestamp, struct descriptor_a *rowdata, int idx, int filled);
-extern EXPORT int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
-extern EXPORT int _TreePutRow(void *dbid, int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int TreePutTimestampedSegment(int nid, int64_t *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int _TreePutTimestampedSegment(void *dbid, int nid, int64_t *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int TreeMakeTimestampedSegment(int nid, int64_t *timestamp, struct descriptor_a *rowdata, int idx, int filled);
+extern EXPORT int _TreeMakeTimestampedSegment(void *dbid, int nid, int64_t *timestamp, struct descriptor_a *rowdata, int idx, int filled);
+extern EXPORT int TreePutRow(int nid, int bufsize, int64_t *timestamp, struct descriptor_a *rowdata);
+extern EXPORT int _TreePutRow(void *dbid, int nid, int bufsize, int64_t *timestamp, struct descriptor_a *rowdata);
 extern EXPORT int TreeSetTimeContext( struct descriptor *start, struct descriptor *end, struct descriptor *delta);
 extern EXPORT int _TreeSetTimeContext(void *dbid,  struct descriptor *start, struct descriptor *end, struct descriptor *delta);
 extern EXPORT int TreeGetNumSegments(int nid, int *num);
@@ -626,13 +626,13 @@ extern EXPORT int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *val
 extern EXPORT int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
 extern EXPORT int TreeSetXNci(int nid, char *xnciname, struct descriptor *value);
 extern EXPORT int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value);
-extern EXPORT int TreeSetViewDate(_int64 *date);
-extern EXPORT int _TreeSetViewDate(void *dbid, _int64 *date);
+extern EXPORT int TreeSetViewDate(int64_t *date);
+extern EXPORT int _TreeSetViewDate(void *dbid, int64_t *date);
 extern EXPORT int TreeSetCurrentShotId(char const * experiment, int shot);
 extern EXPORT int TreeGetCurrentShotId(char const * experiment);
 extern EXPORT int TreeSetDbiItm(int code, int value);
-extern EXPORT _int64 TreeGetDatafileSize();
-extern EXPORT _int64 _TreeGetDatafileSize(void *dbid);
+extern EXPORT int64_t TreeGetDatafileSize();
+extern EXPORT int64_t _TreeGetDatafileSize(void *dbid);
 
 #endif
 

@@ -9,7 +9,7 @@ class SharedMemNode
 {
 	friend class SharedMemTree;
 	bool isValid; 
-	_int64 left, right;
+	int64_t left, right;
 
 //Shared Memory related stuff
 	SharedMemNodeData data;
@@ -63,7 +63,7 @@ public:
       if(!node) 
          right = 0;
       else
-		   right = (_int64)(reinterpret_cast<char *>(node) - reinterpret_cast<char *>(this));
+		   right = (int64_t)(reinterpret_cast<char *>(node) - reinterpret_cast<char *>(this));
 		return node;
 	}
 
@@ -72,7 +72,7 @@ public:
       if(!node)
          left = 0;
       else
-		   left = (_int64)(reinterpret_cast<char *>(node) - reinterpret_cast<char *>(this));
+		   left = (int64_t)(reinterpret_cast<char *>(node) - reinterpret_cast<char *>(this));
 		return node;
 	}
 

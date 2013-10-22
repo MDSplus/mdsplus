@@ -31,8 +31,8 @@ extern int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor
 extern int TreePutSegment(int nid, int rowidx, struct descriptor_a *data);
 extern int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, struct descriptor *dim, int idx);
 extern int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx);
-extern int TreePutTimestampedSegment(int nid, _int64 *timestamp, struct descriptor_a *rowdata);
-extern int TreePutRow(int nid, int bufsize, _int64 *timestamp, struct descriptor_a *rowdata);
+extern int TreePutTimestampedSegment(int nid, int64_t *timestamp, struct descriptor_a *rowdata);
+extern int TreePutRow(int nid, int bufsize, int64_t *timestamp, struct descriptor_a *rowdata);
 extern int TreeSetTimeContext( struct descriptor *start, struct descriptor *end, struct descriptor *delta);
 extern int TreeGetNumSegments(int nid, int *num);
 extern int TreeGetSegmentLimits(int nid, int segidx, struct descriptor_xd *start, struct descriptor_xd *end);
@@ -56,9 +56,9 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
  int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timesDsc);
  int setTreeTimeContext(void *startDsc, void *endDsc, void *deltaDsc);
  int beginTreeTimestampedSegment(void *dbid, int nid, void *dataDsc);
- int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled);
- int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times);
- int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size);
+ int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
+ int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
+ int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
 
 
   int getTreeData(void *dbid, int nid, void **data, void *tree)
@@ -158,7 +158,7 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 }
 
 #define PUTROW_BUFSIZE 1000
- int putTreeRow(void *dbid, int nid, void *dataDsc, _int64 *time, int size)
+ int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;
@@ -261,7 +261,7 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 	return status;
 }
 
- extern int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times)
+ extern int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;
@@ -270,7 +270,7 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 	freeDsc(dataXd);
 	return status;
 }
- extern int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, _int64 *times, int rowsFilled)
+ extern int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled)
 {
 	struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
 	int status;

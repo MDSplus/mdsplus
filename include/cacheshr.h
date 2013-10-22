@@ -18,13 +18,13 @@ extern int RTreeBeginTimestampedSegment(int nid, struct descriptor_a *initialVal
 extern int RTreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end, 
 							  struct descriptor *dimension, int idx, int writeMode);
 extern int RTreePutSegment(int nid, int segIdx, struct descriptor_a *dataD, int writeMode);
-extern int RTreePutTimestampedSegment(int nid, _int64 *timestamps, struct descriptor_a *dataD, int writeMode);
-extern int RTreePutRow(int nid, int bufSize, _int64 *timestamp, struct descriptor_a *rowD, int writeMode);
+extern int RTreePutTimestampedSegment(int nid, int64_t *timestamps, struct descriptor_a *dataD, int writeMode);
+extern int RTreePutRow(int nid, int bufSize, int64_t *timestamp, struct descriptor_a *rowD, int writeMode);
 extern int RTreeGetNumSegments(int nid, int *numSegments);
 extern int RTreeGetSegment(int nid, int idx, struct descriptor_xd *retData, struct descriptor_xd *retDim);
 extern int RTreeGetSegmentLimits(int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd);
 extern int RTreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
-extern int RTreeDiscardOldSegments(int nid, _int64 timestamp);
+extern int RTreeDiscardOldSegments(int nid, int64_t timestamp);
 extern int RTreeDiscardData(int nid);
 extern int RTreePutRecord(int nid, struct descriptor *descriptor_ptr, int writeMode);
 extern int RTreeFlush();
@@ -48,13 +48,13 @@ extern int _RTreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_
 extern int _RTreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct descriptor *end, 
 							  struct descriptor *dimension, int idx, int writeMode);
 extern int _RTreePutSegment(void *dbid, int nid, int segIdx, struct descriptor_a *dataD, int writeMode);
-extern int _RTreePutTimestampedSegment(void *dbid, int nid, _int64 *timestamps, struct descriptor_a *dataD, int writeMode);
-extern int _RTreePutRow(void *dbid, int nid, int bufSize, _int64 *timestamp, struct descriptor_a *rowD, int writeMode);
+extern int _RTreePutTimestampedSegment(void *dbid, int nid, int64_t *timestamps, struct descriptor_a *dataD, int writeMode);
+extern int _RTreePutRow(void *dbid, int nid, int bufSize, int64_t *timestamp, struct descriptor_a *rowD, int writeMode);
 extern int _RTreeGetNumSegments(void *dbid, int nid, int *numSegments);
 extern int _RTreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *retData, struct descriptor_xd *retDim);
 extern int _RTreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *retStart, struct descriptor_xd *retEnd);
 extern int _RTreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *leftItems, int *leftRows);
-extern int _RTreeDiscardOldSegments(void *dbid, int nid, _int64 timestamp);
+extern int _RTreeDiscardOldSegments(void *dbid, int nid, int64_t timestamp);
 extern int _RTreeDiscardData(void *dbid, int nid);
 extern int _RTreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int writeMode);
 extern int _RTreeFlush(void *dbid);

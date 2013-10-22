@@ -227,8 +227,8 @@ void AllocationManager::initialize(int size)
 		currDsc = freeDscHead;
 		while(currDsc)
 		{
-			_int64 currOffset = reinterpret_cast<char *>(currDsc) - reinterpret_cast<char *>(&freeListHead);
-			_int64 currDataOffset = reinterpret_cast<char *>(currDsc->getStartAddr()) - reinterpret_cast<char *>(&freeListHead);
+			int64_t currOffset = reinterpret_cast<char *>(currDsc) - reinterpret_cast<char *>(&freeListHead);
+			int64_t currDataOffset = reinterpret_cast<char *>(currDsc->getStartAddr()) - reinterpret_cast<char *>(&freeListHead);
 			state->addFreeDescr(currOffset, currDataOffset, currDsc->getSize());
 			currDsc = currDsc->getNext();
 		}
@@ -237,7 +237,7 @@ void AllocationManager::initialize(int size)
 		currDsc = unusedDscHead;
 		while(currDsc)
 		{
-			_int64 currOffset = reinterpret_cast<char *>(currDsc) - reinterpret_cast<char *>(&freeListHead);
+			int64_t currOffset = reinterpret_cast<char *>(currDsc) - reinterpret_cast<char *>(&freeListHead);
 			state->addUnusedDescr(currOffset);
 			currDsc = currDsc->getNext();
 		}

@@ -44,7 +44,7 @@ public:
 	int beginSegment(TreeDescriptor treeId, int nid, int idx, char *start, int startSize, char *end, int endSize, 
 		char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, int *retIdx);
 	int beginTimestampedSegment(TreeDescriptor treeId, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
-		_int64 start, _int64 end, char *dim, int dimSize, int *retIdx);
+		int64_t start, int64_t end, char *dim, int dimSize, int *retIdx);
 
 	int findSegment(TreeDescriptor treeId, int nid, int *retIdx);
 	int isSegmented(TreeDescriptor treeId, int nid, int *segmented);
@@ -59,11 +59,11 @@ public:
 		int *shapeSize);
 	int appendSegmentData(TreeDescriptor treeId, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, bool isTimestamped, 
-										 _int64 *timestamps, int numTimestamps, int *segmentFilled, int *retIdx);
+										 int64_t *timestamps, int numTimestamps, int *segmentFilled, int *retIdx);
 	int appendRow(TreeDescriptor treeId, int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, _int64 timestamp, int *segmentFilled, int *retIdx, bool *segmentCreated);
+										 int dataSize, int64_t timestamp, int *segmentFilled, int *retIdx, bool *segmentCreated);
 	int appendRow(TreeDescriptor treeId, int nid, int *bounds, int boundsSize, char *data, int dataSize, char *timestamp, int blockSize);
-	int discardOldSegments(TreeDescriptor treeId, int nid, _int64 timestamp);
+	int discardOldSegments(TreeDescriptor treeId, int nid, int64_t timestamp);
 	int discardFirstSegment(TreeDescriptor treeId, int nid);
 	int discardData(TreeDescriptor treeId, int nid);
 

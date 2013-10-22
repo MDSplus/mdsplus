@@ -7,19 +7,19 @@ class Segment
 public:
 	
 	bool timestamped;
-	_int64 data;
+	int64_t data;
 	int dataSize;
-	_int64 shape;
+	int64_t shape;
 	int shapeSize;
-	_int64 start;
+	int64_t start;
 	int startSize;
-	_int64 end;
+	int64_t end;
 	int endSize;
-	_int64 dim;
+	int64_t dim;
 	int dimSize;
 	int dimOfs;
 	int currDataSize;
-	_int64 nxt;
+	int64_t nxt;
 
 
 
@@ -39,7 +39,7 @@ public:
 		shapeSize = 0;
 		dataSize = 0;
 		currDataSize = 0;
-		nxt = -reinterpret_cast<_int64>(this);
+		nxt = -reinterpret_cast<int64_t>(this);
 	}
 
 //	void free(FreeSpaceManager *fsm, LockManager *lock)
@@ -80,18 +80,18 @@ public:
 
 	void setNext(Segment *segment)
 	{
-		this->nxt = reinterpret_cast<_int64>(segment) - reinterpret_cast<_int64>(this);
+		this->nxt = reinterpret_cast<int64_t>(segment) - reinterpret_cast<int64_t>(this);
 	}
 
 
 	Segment *getNext()
 	{
-		return reinterpret_cast<Segment *>(reinterpret_cast<_int64>(this) + nxt);
+		return reinterpret_cast<Segment *>(reinterpret_cast<int64_t>(this) + nxt);
 	}
 
 	void setData(char *data, int dataSize)
 	{
-		this->data = reinterpret_cast<_int64>(data) - reinterpret_cast<_int64>(this);
+		this->data = reinterpret_cast<int64_t>(data) - reinterpret_cast<int64_t>(this);
 		this->dataSize = dataSize;
 		currDataSize = 0;
 	}
@@ -103,14 +103,14 @@ public:
 		return dimOfs/8;
 	}
 
-	void appendTimestamps(_int64 *timestamps, int numTimestamps)
+	void appendTimestamps(int64_t *timestamps, int numTimestamps)
 	{
 		if(dimOfs + 8*numTimestamps > dimSize)
 		{
 			printf("SEGMENT TIMESTAMP OVERFLOW!!!!\n");
 			return;
 		}
-		memcpy(reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->dim+dimOfs), timestamps, 8*numTimestamps);
+		memcpy(reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->dim+dimOfs), timestamps, 8*numTimestamps);
 		if(dimOfs == 0)
 			start = timestamps[0];
 		dimOfs += 8*numTimestamps;
@@ -118,7 +118,7 @@ public:
 	}
 	void getData(char **data, int *dataSize)
 	{
-		*data = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->data);
+		*data = reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->data);
 		*dataSize = this->dataSize;
 	}
 
@@ -130,43 +130,43 @@ public:
 
 	void setDim(char *dim, int dimSize)
 	{
-		this->dim = reinterpret_cast<_int64>(dim) - reinterpret_cast<_int64>(this);
+		this->dim = reinterpret_cast<int64_t>(dim) - reinterpret_cast<int64_t>(this);
 		this->dimSize = dimSize;
 	}
 
 
 	void getDim(char **dim, int *dimSize)
 	{
-		*dim = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->dim);
+		*dim = reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->dim);
 		*dimSize = this->dimSize;
 	}
 
 	void setShape(char *shape, int shapeSize)
 	{
-		this->shape = reinterpret_cast<_int64>(shape) - reinterpret_cast<_int64>(this);
+		this->shape = reinterpret_cast<int64_t>(shape) - reinterpret_cast<int64_t>(this);
 		this->shapeSize = shapeSize;
 	}
 
 
 	void getShape(char **shape, int *shapeSize)
 	{
-		*shape = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->shape);
+		*shape = reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->shape);
 		*shapeSize = this->shapeSize;
 	}
 
 	void setStart(char *start, int startSize)
 	{
-		this->start = reinterpret_cast<_int64>(start) - reinterpret_cast<_int64>(this);
+		this->start = reinterpret_cast<int64_t>(start) - reinterpret_cast<int64_t>(this);
 		this->startSize = startSize;
 	}
 
 	void getStart(char **start, int *startSize)
 	{
-		*start = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->start);
+		*start = reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->start);
 		*startSize = this->startSize;
 	}
 
-	void setStartTimestamp(_int64 timestamp)
+	void setStartTimestamp(int64_t timestamp)
 	{
 		start = timestamp;
 	}
@@ -180,16 +180,16 @@ public:
 
 	void setEnd(char *end, int endSize)
 	{
-		this->end = reinterpret_cast<_int64>(end) - reinterpret_cast<_int64>(this);
+		this->end = reinterpret_cast<int64_t>(end) - reinterpret_cast<int64_t>(this);
 		this->endSize = endSize;
 	}
 
 	void getEnd(char **end, int *endSize)
 	{
-		*end = reinterpret_cast<char *>(reinterpret_cast<_int64>(this) + this->end);
+		*end = reinterpret_cast<char *>(reinterpret_cast<int64_t>(this) + this->end);
 		*endSize = this->endSize;
 	}
-	void setEndTimestamp(_int64 timestamp)
+	void setEndTimestamp(int64_t timestamp)
 	{
 		end = timestamp;
 	}
@@ -212,11 +212,11 @@ public:
 //Serialization protocol
 //	1) One (two bytes) for endianity mismatch detection
 //	2) Timestamped (one byte)
-//	3) Data size (_int64word) + data
-//	4) Shape size (_int64word) + shape
-//	5) Start size (_int64word) + start
-//	6) End size (_int64word) + end
-//	7) Dim size (_int64word) + dim
+//	3) Data size (int64_tword) + data
+//	4) Shape size (int64_tword) + shape
+//	5) Start size (int64_tword) + start
+//	6) End size (int64_tword) + end
+//	7) Dim size (int64_tword) + dim
 
 	int getSerializedSize()
 	{

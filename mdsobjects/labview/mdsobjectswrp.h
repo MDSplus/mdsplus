@@ -143,7 +143,7 @@ DLLEXPORT void mdsplus_data_getHelp(const void *lvDataPtr, void **lvDataPtrOut, 
 DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char *dtypeOut, short *lengthOut, LIntArrHdl lvIntArrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_getInt(const void *lvDataPtr, int *intOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntArrHdlOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLngArrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_getShape(const void *lvDataPtr, LIntArrHdl lvIntArrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_getShort(const void *lvDataPtr, short *shortOut, ErrorCluster *error);
@@ -193,7 +193,7 @@ DLLEXPORT void mdsplus_float32_getByte(const void *lvFloat32Ptr, char *byteOut, 
 DLLEXPORT void mdsplus_float32_getDouble(const void *lvFloat32Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_float32_getFloat(const void *lvFloat32Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_float32_getInt(const void *lvFloat32Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOut, ErrorCluster *error);
 
 /********** FLOAT32ARRAY **********/
@@ -208,7 +208,7 @@ DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, 
 DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOut, ErrorCluster *error);
 
 /********** FLOAT64ARRAY **********/
@@ -223,7 +223,7 @@ DLLEXPORT void mdsplus_int16_getByte(const void *lvInt16Ptr, char *byteOut, Erro
 DLLEXPORT void mdsplus_int16_getDouble(const void *lvInt16Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int16_getFloat(const void *lvInt16Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int16_getInt(const void *lvInt16Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int16_getShort(const void *lvInt16Ptr, short *shortOut, ErrorCluster *error);
 
 /********** INT16ARRAY **********/
@@ -238,7 +238,7 @@ DLLEXPORT void mdsplus_int32_getByte(const void *lvInt32Ptr, char *byteOut, Erro
 DLLEXPORT void mdsplus_int32_getDouble(const void *lvInt32Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int32_getFloat(const void *lvInt32Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int32_getInt(const void *lvInt32Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int32_getShort(const void *lvInt32Ptr, short *shortOut, ErrorCluster *error);
 
 /********** INT32ARRAY **********/
@@ -247,19 +247,19 @@ DLLEXPORT void mdsplus_int32array_constructor_dims(void **lvInt32ArrayPtrOut, co
 DLLEXPORT void mdsplus_int32array_destructor(void **lvInt32ArrayPtr);
 
 /********** INT64 **********/
-DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, _int64 valIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64_destructor(void **lvInt64Ptr);
-DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, _int64 *longOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_constructor(void **lvInt64PtrOut, int64_t valIn, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_destructor(void **lvInt64Ptr);
+DLLEXPORT void mdsplusint64_t_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_getDouble(const void *lvInt64Ptr, double *doubleOut, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_getFloat(const void *lvInt64Ptr, float *floatOut, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_getInt(const void *lvInt64Ptr, int *intOut, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_getLong(const void *lvInt64Ptr, int64_t *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_t_getShort(const void *lvInt64Ptr, short *shortOut, ErrorCluster *error);
 
 /********** INT64ARRAY **********/
-DLLEXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_int64array_destructor(void **lvInt64ArrayPtr);
+DLLEXPORT void mdsplusint64_tarray_constructor(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_tarray_constructor_dims(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error);
+DLLEXPORT void mdsplusint64_tarray_destructor(void **lvInt64ArrayPtr);
 
 /********** INT8 **********/
 DLLEXPORT void mdsplus_int8_constructor(void **lvInt8PtrOut, char valIn, ErrorCluster *error);
@@ -268,7 +268,7 @@ DLLEXPORT void mdsplus_int8_getByte(const void *lvInt8Ptr, char *byteOut, ErrorC
 DLLEXPORT void mdsplus_int8_getDouble(const void *lvInt8Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int8_getFloat(const void *lvInt8Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int8_getInt(const void *lvInt8Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_int8_getShort(const void *lvInt8Ptr, short *shortOut, ErrorCluster *error);
 
 /********** INT8ARRAY **********/
@@ -338,7 +338,7 @@ DLLEXPORT void mdsplus_tree_edit(const void *lvTreePtr, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_findTags(const void *lvTreePtr, void **lvStringArrayPtrOut, const char *wildIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getActiveTree(void **lvTreePtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, _int64 *sizeOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, int64_t *sizeOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getDefault(const void *lvTreePtr, void **lvTreeNodePtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_getNode(const void *lvTreePtr, void **lvTreeNodePtrOut, const char *pathIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeOut, const char *pathIn, ErrorCluster *error);
@@ -406,7 +406,7 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 DLLEXPORT void mdsplus_treenode_getSegment(const void *lvTreeNodePtr, void **lvArrayPtrOut, int segIdxIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int segmentIdxIn, void **lvStartDataPtrOut, void **lvEndDataPtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *statusOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, _int64 *timeInsertedOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTreePtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle lvStrHdlOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_isChild(const void *lvTreeNodePtr, LVBoolean *lvIsChildOut, ErrorCluster *error);
@@ -424,7 +424,7 @@ DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr
 DLLEXPORT void mdsplus_treenode_move(const void *lvTreeNodePtr, const void *lvTreeNodePtrIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_move_newName(const void *lvTreeNodePtr, const void *lvTreeNodePtrIn, const char *newNameIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *lvDataPtrIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lvDataPtrIn, _int64 *timeIn, int sizeIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lvDataPtrIn, int64_t *timeIn, int sizeIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_putSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, int ofsIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr, const void *lvArrayPtrIn, const LLngArrHdl lvLngArrHdlIn ,ErrorCluster *error);
 DLLEXPORT void mdsplus_treenode_remove(const void *lvTreeNodePtr, const char *nameIn, ErrorCluster *error);
@@ -454,7 +454,7 @@ DLLEXPORT void mdsplus_uint16_getByte(const void *lvUint16Ptr, char *byteOut, Er
 DLLEXPORT void mdsplus_uint16_getDouble(const void *lvUint16Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint16_getFloat(const void *lvUint16Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint16_getInt(const void *lvUint16Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_uint16_getLong(const void *lvUint16Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_uint16_getLong(const void *lvUint16Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint16_getShort(const void *lvUint16Ptr, short *shortOut, ErrorCluster *error);
 
 /********** UINT16ARRAY **********/
@@ -469,7 +469,7 @@ DLLEXPORT void mdsplus_uint32_getByte(const void *lvUint32Ptr, char *byteOut, Er
 DLLEXPORT void mdsplus_uint32_getDouble(const void *lvUint32Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint32_getFloat(const void *lvUint32Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint32_getInt(const void *lvUint32Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_uint32_getLong(const void *lvUint32Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_uint32_getLong(const void *lvUint32Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint32_getShort(const void *lvUint32Ptr, short *shortOut, ErrorCluster *error);
 
 /********** UINT32ARRAY **********/
@@ -479,9 +479,9 @@ DLLEXPORT void mdsplus_uint32array_destructor(void **lvUint32ArrayPtr);
 
 /********** UINT64 **********/
 #ifdef HAVE_WINDOWS_H
-DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned _int64 valIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned int64_t valIn, ErrorCluster *error);
 #else
-DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, _int64u valIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn, ErrorCluster *error);
 #endif
 DLLEXPORT void mdsplus_uint64_destructor(void **lvUint64Ptr);
 DLLEXPORT void mdsplus_uint64_getByte(const void *lvUint64Ptr, char *byteOut, ErrorCluster *error);
@@ -489,7 +489,7 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 DLLEXPORT void mdsplus_uint64_getDouble(const void *lvUint64Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint64_getFloat(const void *lvUint64Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint64_getInt(const void *lvUint64Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_uint64_getLong(const void *lvUint64Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_uint64_getLong(const void *lvUint64Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint64_getShort(const void *lvUint64Ptr, short *shortOut, ErrorCluster *error);
 
 /********** UINT64ARRAY **********/
@@ -504,7 +504,7 @@ DLLEXPORT void mdsplus_uint8_getByte(const void *lvUint8Ptr, char *byteOut, Erro
 DLLEXPORT void mdsplus_uint8_getDouble(const void *lvUint8Ptr, double *doubleOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint8_getFloat(const void *lvUint8Ptr, float *floatOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint8_getInt(const void *lvUint8Ptr, int *intOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_uint8_getLong(const void *lvUint8Ptr, _int64 *longOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_uint8_getLong(const void *lvUint8Ptr, int64_t *longOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint8_getShort(const void *lvUint8Ptr, short *shortOut, ErrorCluster *error);
 
 /********** UINT8ARRAY **********/

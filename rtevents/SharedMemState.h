@@ -10,11 +10,11 @@ class SharedMemState: State
 	class FreeStateDescr
 	{
 	public:
-		_int64 offset;
-		_int64 dataOffset;
+		int64_t offset;
+		int64_t dataOffset;
 		int size;
 		FreeStateDescr *nxt;
-		FreeStateDescr(_int64 offset, _int64 dataOffset, int size)
+		FreeStateDescr(int64_t offset, int64_t dataOffset, int size)
 		{
 			this->offset = offset;
 			this->dataOffset = dataOffset;
@@ -57,14 +57,14 @@ public:
 			delete prevDescr;
 		}
 	}
-	void addFreeDescr(_int64 offset, _int64 dataOffset, int size)
+	void addFreeDescr(int64_t offset, int64_t dataOffset, int size)
 	{
 		FreeStateDescr *newDescr = new FreeStateDescr(offset, dataOffset, size);
 		newDescr->nxt = freeDescrHead;
 		freeDescrHead = newDescr;
 		numFreeDescr++;
 	}
-	void addUnusedDescr(_int64 offset)
+	void addUnusedDescr(int64_t offset)
 	{
 		FreeStateDescr *newDescr = new FreeStateDescr(offset, 0, 0);
 		newDescr->nxt = unusedDescrHead;
@@ -76,7 +76,7 @@ public:
 	{
 		int i;
 		char *retBuf;
-		retSize = 3 * sizeof(int) + (numFreeDescr) * (2 * sizeof(_int64) + sizeof(int)) +  numUnusedDescr * sizeof(_int64);
+		retSize = 3 * sizeof(int) + (numFreeDescr) * (2 * sizeof(int64_t) + sizeof(int)) +  numUnusedDescr * sizeof(int64_t);
 		retBuf = new char[retSize];
 		char *currPtr = retBuf;
 		//Use Big Endian
@@ -89,10 +89,10 @@ public:
 		FreeStateDescr *currDescr = freeDescrHead;
 		for(i = 0; i < numFreeDescr; i++)
 		{
-			*((_int64 *)currPtr) = swap(currDescr->offset);
-			currPtr += sizeof(_int64);
-			*((_int64 *)currPtr) = swap(currDescr->dataOffset);
-			currPtr += sizeof(_int64);
+			*((int64_t *)currPtr) = swap(currDescr->offset);
+			currPtr += sizeof(int64_t);
+			*((int64_t *)currPtr) = swap(currDescr->dataOffset);
+			currPtr += sizeof(int64_t);
 			*((int *)currPtr) = swap(currDescr->size);
 			currPtr += sizeof(int);
 			currDescr = currDescr->nxt;
@@ -100,8 +100,8 @@ public:
 		currDescr = unusedDescrHead;
 		for(i = 0; i < numUnusedDescr; i++)
 		{
-			*((_int64 *)currPtr) = swap(currDescr->offset);
-			currPtr += sizeof(_int64);
+			*((int64_t *)currPtr) = swap(currDescr->offset);
+			currPtr += sizeof(int64_t);
 			currDescr = currDescr->nxt;
 		}
 		return retBuf;

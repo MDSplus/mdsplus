@@ -16,7 +16,7 @@ public:
 		sa.bInheritHandle = FALSE;  
 		sa.lpSecurityDescriptor = NULL;
 
-		_int64 uniqueId = reinterpret_cast<_int64>(this);
+		int64_t uniqueId = reinterpret_cast<int64_t>(this);
 		while(true) 
 		{
 			sprintf((char *)semName, "%x", uniqueId);

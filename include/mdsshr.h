@@ -69,10 +69,10 @@ EXPORT extern char *TranslateLogical(char *name);
 EXPORT extern void TranslateLogicalFree(char *value);
 EXPORT extern int TranslateLogicalXd(struct descriptor *in, struct descriptor_xd *out);
 EXPORT extern char *MdsRelease();
-EXPORT extern void MdsFloatToTime(double floatTime, _int64u *outTime);
-EXPORT extern void MdsFloatToDelta(double floatTime, _int64u *outTime);
-EXPORT extern void MdsTimeToFloat(_int64u inTime, float *outFloat);
-EXPORT extern void MdsTimeToDouble(_int64u inTime, double *outFloat);
+EXPORT extern void MdsFloatToTime(double floatTime, uint64_t *outTime);
+EXPORT extern void MdsFloatToDelta(double floatTime, uint64_t *outTime);
+EXPORT extern void MdsTimeToFloat(uint64_t inTime, float *outFloat);
+EXPORT extern void MdsTimeToDouble(uint64_t inTime, double *outFloat);
 EXPORT extern int MdsPutEnv(char *cmd);
 
 #ifdef HAVE_WINDOWS_H

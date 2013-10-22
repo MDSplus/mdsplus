@@ -5,7 +5,7 @@
 
 class CallbackManager:Runnable
 {
-	_int64 next, prev;
+	int64_t next, prev;
 	Notifier notifier;
 	int nid;
 	void (*callback)(int, void *);
@@ -16,14 +16,14 @@ public:
 		if(nxt == NULL)
 			next = 0;
 		else
-			next = reinterpret_cast<_int64>(nxt) - reinterpret_cast<_int64>(this);
+			next = reinterpret_cast<int64_t>(nxt) - reinterpret_cast<int64_t>(this);
 	}
 	void setPrev(char *prv)
 	{
 		if(prv == NULL)
 			prev = 0;
 		else 
-			prev = reinterpret_cast<_int64>(prv) - reinterpret_cast<_int64>(this);
+			prev = reinterpret_cast<int64_t>(prv) - reinterpret_cast<int64_t>(this);
 	}
 
 	CallbackManager *getNext()

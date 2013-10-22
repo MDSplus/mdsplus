@@ -38,7 +38,7 @@ public:
 		char *dim, int dimSize, char *shape, int shapeSize, char *data, 
 		int dataSize, int writeThrough);
 	int beginTimestampedSegment(TreeDescriptor treeIdx, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, 
-		int dataSize, _int64 start, _int64 end, char *dim, int dimSize, int writeThrough);
+		int dataSize, int64_t start, int64_t end, char *dim, int dimSize, int writeThrough);
 	int updateSegment(TreeDescriptor treeIdx, int nid, int idx, char *start, int startSize, char *end, int endSize, char *dim, int dimSize, int writeThrough);
 	int getNumSegments(TreeDescriptor treeIdx, int nid, int *numSegments);
 	int getSegmentLimits(TreeDescriptor treeIdx, int nid, int idx, char **start, int *startSize, char **end, int *endSize, char *timestamped);
@@ -50,14 +50,14 @@ public:
 	int	appendSegmentData(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode);
 	int appendTimestampedSegmentData(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, _int64 *timestamp, int numTimestamps, int writeMode);
+										 int dataSize, int idx, int startIdx, int64_t *timestamp, int numTimestamps, int writeMode);
 	int appendRow(TreeDescriptor treeIdx, int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, _int64 timestamp, int writeMode);
+										 int dataSize, int64_t timestamp, int writeMode);
 
 	int flush(TreeDescriptor treeIdx);
 	int flush(TreeDescriptor treeIdx, int nid);
 	int terminateSegment(TreeDescriptor treeIdx, int nid);
-	int discardOldSegments(TreeDescriptor treeIdx, int nid, _int64 timestamp);
+	int discardOldSegments(TreeDescriptor treeIdx, int nid, int64_t timestamp);
 	int discardData(TreeDescriptor treeIdx, int nid);
 
 	void * setCallback(TreeDescriptor treeIdx, int nid, void *argument, void (* callback)(int, void *));
