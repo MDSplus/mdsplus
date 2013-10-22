@@ -28,6 +28,7 @@ extern int TdiData(), TdiEvaluate();
 #endif
 
 extern int TdiDecompile();
+extern int TdiExecute();
 
 static void printDecompiled(struct descriptor *inD)
 {
