@@ -2739,7 +2739,7 @@ static void handleEvent(void *objPtr, int dim ,char *buf)
 	LibConvertDateString("now", &time);
 	args[1].j = time;
 	(*env)->CallVoidMethodA(env, obj, mid, args);
-	(*env)->ReleaseByteArrayElements(env, jbuf, (const jbyte *)buf, 0);
+	(*env)->ReleaseByteArrayElements(env, jbuf, (jbyte *)buf, 0);
 	releaseJNIEnv();
 }
 
@@ -2853,7 +2853,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Event_setEventRaw
   (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
 {
 	int dim = (*env)->GetArrayLength(env, jbuf);
-	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
+	char  *buf = (char *)(*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
 	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
 	MDSUdpEvent((char *)event, dim, buf);
 	(*env)->ReleaseStringUTFChars(env, jevent, event);
@@ -2897,80 +2897,6 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
 	return (long)time;
 }
 
-
-/*
- * Class:     MDSplus_REvent
- * Method:    registerEvent
- * Signature: (Ljava/lang/String;)I
- 
-JNIEXPORT jlong JNICALL Java_MDSplus_REvent_registerEvent
-  (JNIEnv *env, jobject obj, jstring jevent)
-{
-	const char *event;
-	void *eventId = (void *)-1;
-	int status;
-	jobject eventObj = (*env)->NewGlobalRef(env, obj);
-
-	if(jvm == 0)
-	{
-		status = (*env)->GetJavaVM(env, &jvm);
-		if (status) 
-			printf("GetJavaVM error %d\n", status);
-	}
-	event = (*env)->GetStringUTFChars(env, jevent, 0);
-	//make sure this Event instance will not be released by the garbage collector
-	eventId = MdsEventAddListener((char *)event, handleREvent, (void *)eventObj);
-	addEventDescr(eventObj, (_int64)eventId);
-	(*env)->ReleaseStringUTFChars(env, jevent, event);
-	if(eventId == NULL)
-		return -1;
-	return (jlong)eventId;
-}
-
-/*
- * Class:     MDSplus_REvent
- * Method:    unregisterEvent
- * Signature: (I)V
- 
-JNIEXPORT void JNICALL Java_MDSplus_REvent_unregisterEvent
-  (JNIEnv *env, jobject obj, jlong eventId)
-{
-	jobject delObj = releaseEventDescr(eventId);
-	MdsEventRemoveListener((void *)eventId);
-	//Allow Garbage Collector reclaim the Event object
-	(*env)->DeleteGlobalRef(env, delObj);
-}
-
-
- * Class:     MDSplus_REvent
- * Method:    setEventRaw
- * Signature: (Ljava/lang/String;[B)V
-
-JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRaw
-  (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
-{
-	int dim = (*env)->GetArrayLength(env, jbuf);
-	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
-	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
-	MdsEventTrigger((char *)event, buf, dim);
-	(*env)->ReleaseStringUTFChars(env, jevent, event);
-}
-
-/*
- * Class:     MDSplus_REvent
- * Method:    setEventRawAndWait
- * Signature: (Ljava/lang/String;[B)V
- 
-JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRawAndWait
-  (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
-{
-	int dim = (*env)->GetArrayLength(env, jbuf);
-	char  *buf = (*env)->GetByteArrayElements(env, jbuf, JNI_FALSE);
-	const char *event = (*env)->GetStringUTFChars(env, jevent, 0);
-	MdsEventTriggerAndWait((char *)event, buf, dim);
-	(*env)->ReleaseStringUTFChars(env, jevent, event);
-}
-*/
 
 /////////////////////Connection stuff //////////////////////
 ///NOTE put it in the end of this source file so that ipdesc.h does not harm
