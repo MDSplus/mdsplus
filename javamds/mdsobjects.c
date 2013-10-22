@@ -19,6 +19,25 @@
 #include <strroutines.h>
 #include <rtevents.h>
 #include "../mdsshr/mdsshrthreadsafe.h"
+
+#if _WIN32 || _WIN64
+#if _WIN64
+#define ENV_64
+#else
+#define ENV_32
+#endif
+#endif
+
+// Check GCC
+#if __GNUC__
+#if __x86_64__ || __ppc64__
+#define ENV_64
+#else
+#define ENV_32
+#endif
+#endif
+
+
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
 
@@ -1304,14 +1323,14 @@ static unsigned int getCtx2(void *ctx)
 
 static void *getCtx(unsigned int ctx1, unsigned int ctx2)
 {
-	if(sizeof(void *) == 8)
-	{
-		_int64u ctx; 
-		ctx = (_int64u) ctx1 | ((_int64u)ctx2 << 32);
-		return (void *)ctx;
-	}
-	else
-		return (void *)ctx1;
+//	if(sizeof(void *) == 8)
+#ifdef ENV_64
+	_int64u ctx; 
+	ctx = (_int64u) ctx1 | ((_int64u)ctx2 << 32);
+	return (void *)ctx;
+#else
+	return (void *)ctx1;
+#endif
 }
 
 /*
