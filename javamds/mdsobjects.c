@@ -18,10 +18,9 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <rtevents.h>
-
 #include "../mdsshr/mdsshrthreadsafe.h"
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), TdiEvaluate(), CvtConvertFloat();
-
+extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **m);
 
 static void printDecompiled(struct descriptor *dsc)
 {
@@ -48,7 +47,7 @@ static jintArray  getDimensions(JNIEnv *env, void *dsc)
 	if(arrD->dimct == 1)
 		(*env)->SetIntArrayRegion(env, jdims, 0, 1, &dim);
 	else
-		(*env)->SetIntArrayRegion(env, jdims, 0, arrD->dimct, arrD->m);
+		(*env)->SetIntArrayRegion(env, jdims, 0, arrD->dimct, (const int *)arrD->m);
 	return jdims;
 }
 
@@ -510,7 +509,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
 		for(i = 0; i < length; i++)
 		{
-			if(curr_obj =  DescripToObject(env, ((struct descriptor **)array_d->pointer)[i],0,0,0,0))
+			if((curr_obj =  DescripToObject(env, ((struct descriptor **)array_d->pointer)[i],0,0,0,0)))
 				(*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
 		}
 		args[0].l = jobjects;
@@ -1007,7 +1006,7 @@ JNIEXPORT jbyteArray JNICALL Java_MDSplus_Data_serialize
 		exit(0);
 	}
 	jserialized = (*env)->NewByteArray(env, arrPtr->arsize);
-	(*env)->SetByteArrayRegion(env, jserialized, 0, arrPtr->arsize, arrPtr->pointer);
+	(*env)->SetByteArrayRegion(env, jserialized, 0, arrPtr->arsize, (const jbyte *)arrPtr->pointer);
 	MdsFree1Dx(&xd, 0);
 	FreeDescrip(dscPtr);
 	return jserialized;
@@ -1027,7 +1026,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize
 	char *errorMsg;
 	jobject retObj;
 	int dim = (*env)->GetArrayLength(env, jserialized);
-	char  *serialized = (*env)->GetByteArrayElements(env, jserialized, JNI_FALSE);
+	char  *serialized = (char *)(*env)->GetByteArrayElements(env, jserialized, JNI_FALSE);
 	int status = MdsSerializeDscIn(serialized, &xd);
 	if(!(status & 1))
 	{
@@ -1307,8 +1306,8 @@ static void *getCtx(unsigned int ctx1, unsigned int ctx2)
 {
 	if(sizeof(void *) == 8)
 	{
-		unsigned long ctx; 
-		ctx = (unsigned long) ctx1 | ((unsigned long)ctx2 << 32);
+		_int64u ctx; 
+		ctx = (_int64u) ctx1 | ((_int64u)ctx2 << 32);
 		return (void *)ctx;
 	}
 	else
@@ -2735,12 +2734,12 @@ static void handleEvent(void *objPtr, int dim ,char *buf)
 	mid = (*env)->GetMethodID(env, cls,  "intRun", "([BJ)V");
 	if(!mid) printf("Error getting method intRun for MDSplus.Event\n");
 	jbuf = (*env)->NewByteArray(env, dim);
-	(*env)->SetByteArrayRegion(env, jbuf, 0, dim, buf);
+	(*env)->SetByteArrayRegion(env, jbuf, 0, dim, (const jbyte *)buf);
 	args[0].l = jbuf;
 	LibConvertDateString("now", &time);
 	args[1].j = time;
 	(*env)->CallVoidMethodA(env, obj, mid, args);
-	(*env)->ReleaseByteArrayElements(env, jbuf, buf, 0);
+	(*env)->ReleaseByteArrayElements(env, jbuf, (const jbyte *)buf, 0);
 	releaseJNIEnv();
 }
 
@@ -2903,7 +2902,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
  * Class:     MDSplus_REvent
  * Method:    registerEvent
  * Signature: (Ljava/lang/String;)I
- */
+ 
 JNIEXPORT jlong JNICALL Java_MDSplus_REvent_registerEvent
   (JNIEnv *env, jobject obj, jstring jevent)
 {
@@ -2932,7 +2931,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_REvent_registerEvent
  * Class:     MDSplus_REvent
  * Method:    unregisterEvent
  * Signature: (I)V
- */
+ 
 JNIEXPORT void JNICALL Java_MDSplus_REvent_unregisterEvent
   (JNIEnv *env, jobject obj, jlong eventId)
 {
@@ -2942,11 +2941,11 @@ JNIEXPORT void JNICALL Java_MDSplus_REvent_unregisterEvent
 	(*env)->DeleteGlobalRef(env, delObj);
 }
 
-/*
+
  * Class:     MDSplus_REvent
  * Method:    setEventRaw
  * Signature: (Ljava/lang/String;[B)V
- */
+
 JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRaw
   (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
 {
@@ -2961,7 +2960,7 @@ JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRaw
  * Class:     MDSplus_REvent
  * Method:    setEventRawAndWait
  * Signature: (Ljava/lang/String;[B)V
- */
+ 
 JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRawAndWait
   (JNIEnv *env, jclass cls, jstring jevent, jbyteArray jbuf)
 {
@@ -2971,7 +2970,7 @@ JNIEXPORT void JNICALL Java_MDSplus_REvent_setEventRawAndWait
 	MdsEventTriggerAndWait((char *)event, buf, dim);
 	(*env)->ReleaseStringUTFChars(env, jevent, event);
 }
-
+*/
 
 /////////////////////Connection stuff //////////////////////
 ///NOTE put it in the end of this source file so that ipdesc.h does not harm
@@ -3090,7 +3089,7 @@ static void getDims(struct descriptor *dsc, int *dims)
 
 	if(dsc->class != CLASS_A)
 		return;
-	arrPtr = (ARRAY_BOUNDS(char *, 64) *)dsc;
+	arrPtr = (void *)(ARRAY_BOUNDS(char *, 64) *)dsc;
 	for(i = 0; i < arrPtr->dimct; i++)
 		dims[i] = arrPtr->m[i];
 }

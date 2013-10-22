@@ -504,7 +504,7 @@ jobject DescripToObject(JNIEnv *env, struct descriptor *desc)
 	jobjects = (*env)->NewObjectArray(env, length, data_cls, 0);
 	for(i = 0; i < length; i++)
 	  {
-	    if(curr_obj =  DescripToObject(env, ((struct descriptor **)array_d->pointer)[i]))
+	    if((curr_obj =  DescripToObject(env, ((struct descriptor **)array_d->pointer)[i])))
 	      (*env)->SetObjectArrayElement(env, jobjects, i, curr_obj);
 	  }
 	args[0].l = jobjects;

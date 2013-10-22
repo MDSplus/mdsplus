@@ -6,6 +6,7 @@
 #include <mdstypes.h>
 #include <string.h>
 #include <stdlib.h>
+#include <libroutines.h>
 //#include "LocalDataProvider.h"
 #include "jScope_LocalDataProvider.h"
 #include "MdsHelper.h"
@@ -253,7 +254,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 			int_ris = (int *)malloc(sizeof(int) * dim);
 			break;
 		case QUADWORD:
-			quad_ris = (_int64 *)malloc(8 * dim);
+			quad_ris = (_int64u *)malloc(8 * dim);
 			break;
 
 	}
@@ -498,7 +499,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
     float zero = 0.;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     int dim;
-    _int64u *out_ptr;
+    _int64 *out_ptr;
     
 	out_ptr = MdsGetArray((char *)in_char, &dim, QUADWORD);
     (*env)->ReleaseStringUTFChars(env, in, in_char);
@@ -507,7 +508,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
 		return NULL;
     }
     jarr = (*env)->NewLongArray(env, dim);
-    (*env)->SetLongArrayRegion(env, jarr, 0, dim, out_ptr);
+    (*env)->SetLongArrayRegion(env, jarr, 0, dim, (const jlong *)out_ptr);
 	free((char *)out_ptr);
     return jarr;
 }
@@ -552,7 +553,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *
 	return NULL;
     }
     jarr = (*env)->NewByteArray(env, dim);
-    (*env)->SetByteArrayRegion(env, jarr, 0, dim, (char *)out_ptr);
+    (*env)->SetByteArrayRegion(env, jarr, 0, dim, (const jbyte *)out_ptr);
 	free((char *)out_ptr);
     return jarr;
 }
@@ -710,7 +711,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
 	
 
 	jarr = (*env)->NewByteArray(env, frameSize);
-    (*env)->SetByteArrayRegion(env, jarr, 0, frameSize, (char *)arrPtr->pointer + (int)segmentOffset * frameSize);
+    (*env)->SetByteArrayRegion(env, jarr, 0, frameSize, (const jbyte *)arrPtr->pointer + (int)segmentOffset * frameSize);
 
 
 	MdsFree1Dx(&segXd, 0);
@@ -765,7 +766,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
 
 	frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
     jarr = (*env)->NewByteArray(env, frameSize * (endIdx - startIdx));
-    (*env)->SetByteArrayRegion(env, jarr, 0, frameSize * (endIdx - startIdx), (char *)arrPtr->pointer + (int)startIdx * frameSize);
+    (*env)->SetByteArrayRegion(env, jarr, 0, frameSize * (endIdx - startIdx), (const jbyte *)arrPtr->pointer + (int)startIdx * frameSize);
 	MdsFree1Dx(&xd, 0);
 	return jarr;
 }
@@ -847,7 +848,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfo
 		MdsFree1Dx(&xd, 0);
 	}
     jarr = (*env)->NewIntArray(env, 3);
-    (*env)->SetIntArrayRegion(env, jarr, 0, 3, retInfo);
+    (*env)->SetIntArrayRegion(env, jarr, 0, 3, (const jint *)retInfo);
 	return jarr;
 }
 
@@ -1358,6 +1359,7 @@ int clearWindow(char *name, int idx)
 		printf("\nWindow %d not created!!\n", idx);
 		return -1;
 	}
+	return 0;
 }
 
 int addSignalWithParam(int obj_idx, float *x, float *y, int xType, int num_points, int row, int column,
@@ -1524,7 +1526,7 @@ void deviceSetup(char *deviceName, char *treeName, int shot, char *rootName, int
 
 		if(res < 0)
 		{
-			printf("\nCannot create Java VM (result = %d)!!\n", res);
+			printf("\nCannot create Java VM (result = %d)!!\n", (int)res);
 			return ;
 		}
 	}

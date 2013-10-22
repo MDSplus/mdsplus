@@ -64,12 +64,12 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 #include <mds_stdarg.h>
-
+#include <treeshr.h>
 
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiDimOf();
-
+extern int TdiCompile();
 #define MAX_POINTS 1000
 
 #ifdef HAVE_WINDOWS_H
@@ -77,7 +77,6 @@ extern int TdiDimOf();
 #else
 #define EXPORT
 #endif
-
 
 EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax, float *dt)
 {
@@ -239,7 +238,7 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
 	timesDsc.arsize = 2*outIdx*sizeof(float);
 	dataDsc.pointer = (char *)outData;
 	dataDsc.arsize = 2*outIdx*sizeof(float);
-	MdsCopyDxXd(&retSigDsc, &xd);
+	MdsCopyDxXd((struct descriptor *)&retSigDsc, &xd);
 	free((char *)outTimes);
 	free((char *)outData);
 	return &xd;
@@ -559,7 +558,7 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
 	if(!(status & 1)) return 0;
 	if(numSegments == 0)
 	{
-		status = TreeGetRecord(&xd);
+		status = TreeGetRecord(nid, &xd);
 		if(!(status & 1)) return 0;
 		status = traverseExprMinMax(xd.pointer, xMin, xMax);
 		MdsFree1Dx(&xd, 0);

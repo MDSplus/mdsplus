@@ -76,7 +76,7 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 //	dsc.length = strlen(names);
 	dsc.arsize = strlen(names);
 	dsc.pointer = names;
-	MdsCopyDxXd(&dsc, &xd);
+	MdsCopyDxXd((struct descriptor *)&dsc, &xd);
 	printf("%s\n",names);
 	free(names);
 	return &xd;
