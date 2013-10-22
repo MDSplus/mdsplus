@@ -2,11 +2,6 @@
 #include <config.h>
 #endif
 #include <STATICdef.h>
-#ifdef linux
-#define _LARGEFILE_SOURCE
-#define _FILE_OFFSET_BITS 64
-#define __USE_FILE_OFFSET64
-#endif
 #ifdef HAVE_WINDOWS_H
 #include <winsock2.h>
 #include <ws2tcpip.h>

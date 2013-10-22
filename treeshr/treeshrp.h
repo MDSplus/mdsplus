@@ -2,7 +2,9 @@
 #define _TREESHRP_H
 
 /************ Data structures internal to TREESHR ***********/
-
+#define _LARGEFILE_SOURCE
+#define _FILE_OFFSET_BITS 64
+#define __USE_FILE_OFFSET64
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
