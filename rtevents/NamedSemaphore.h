@@ -68,7 +68,7 @@ public:
 	void wait() //Return 0 if successful
 	{
 		int status;
-		while(status = sem_wait(semPtr))
+		while((status = sem_wait(semPtr)))
 		{
 			if(errno != EINTR)
 				throw new SystemException("Error waiting semaphore", errno);

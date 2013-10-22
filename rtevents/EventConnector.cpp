@@ -726,7 +726,7 @@ public:
 		}
 		extEvent->addExternalListener(addr);
 		if(isNewEvent)
-			extEvent->listenerAddr = ev.addListener(name, eventCallback, false, retSize);
+			extEvent->listenerAddr = ev.addListener(name, eventCallback, 0, false, retSize);
 		else
 		{
 			int prevSize = extEvent->retSize;
