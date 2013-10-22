@@ -63,7 +63,7 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
                   TreeGetVersionNci(info1,&old_list->nci,&list->nci);
                 }
                 while (list) {
-                  _int64 now=-1;
+                  int64_t now=-1;
                   int oldlength;
                   struct nci_list *old_list=list;
 		  TreeSetViewDate(&list->nci.time_inserted);

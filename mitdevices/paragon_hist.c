@@ -302,8 +302,8 @@ static int ParseHistorian(char *line,
         tim = mktime(&time_v);
         if (tim > 0)
 	{
-           _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
-           _int64 qtime = ((_int64)tim)*10000000+addin;
+           int64_t addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+           int64_t qtime = ((int64_t)tim)*10000000+addin;
            memcpy((void *)time,&qtime,sizeof(qtime));
         }
         name_dsc.length = strlen(name_c);

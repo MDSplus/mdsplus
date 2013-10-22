@@ -700,19 +700,19 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	  	  case DTYPE_Q:
 		  case DTYPE_QU:
 			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "J");
-			    desc->length = sizeof(_int64);
+			    desc->length = sizeof(int64_t);
 			    desc->pointer = (char *)malloc(desc->length);
-			    *(_int64 *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
+			    *(int64_t *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
 			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 	  	  case DTYPE_O:
 		  case DTYPE_OU:
 			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "[J");
 			    jlongs = (*env)->GetObjectField(env, obj, datum_fid);	
 			    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
-			    desc->length = 2 * sizeof(_int64);
+			    desc->length = 2 * sizeof(int64_t);
 			    desc->pointer = (char *)malloc(desc->length);
-			    *(_int64 *)desc->pointer = longs[0];
-			    *((_int64 *)desc->pointer + 1) = longs[1];
+			    *(int64_t *)desc->pointer = longs[0];
+			    *((int64_t *)desc->pointer + 1) = longs[1];
 			    (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
 			    return completeDescr(desc, helpDscPtr, unitsDscPtr, errorDscPtr, validationDscPtr);
 		  case DTYPE_T:
@@ -833,7 +833,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = sizeof(_int64);
+		    array_d->length = sizeof(int64_t);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -845,7 +845,7 @@ static struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = 2*sizeof(_int64);
+		    array_d->length = 2*sizeof(int64_t);
 		    array_d->arsize = array_d->length * length/2;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -1308,7 +1308,7 @@ static void throwMdsException(JNIEnv *env, int status)
 static unsigned int getCtx1(void *ctx)
 {
 	if(sizeof(void *) == 8)
-		return (unsigned int)((unsigned long)ctx & 0x00000000ffffffff);
+		return (unsigned int)((unsigned long)ctx & 0x00000000ffffffffLL);
 	else
 		return (unsigned int)ctx;
 }
@@ -1316,7 +1316,7 @@ static unsigned int getCtx1(void *ctx)
 static unsigned int getCtx2(void *ctx)
 {
 	if(sizeof(void *) == 8)
-		return (unsigned int)(((unsigned long)ctx & 0xffffffff00000000)>>32);
+		return (unsigned int)(((unsigned long)ctx & 0xffffffff00000000LL)>>32);
 	else
 		return 0;
 }
@@ -1325,8 +1325,8 @@ static void *getCtx(unsigned int ctx1, unsigned int ctx2)
 {
 //	if(sizeof(void *) == 8)
 #ifdef ENV_64
-	_int64u ctx; 
-	ctx = (_int64u) ctx1 | ((_int64u)ctx2 << 32);
+	uint64_t ctx; 
+	ctx = (uint64_t) ctx1 | ((uint64_t)ctx2 << 32);
 	return (void *)ctx;
 #else
 	return (void *)ctx1;
@@ -1633,7 +1633,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate
   (JNIEnv *env, jclass cls, jint ctx1, jint ctx2, jstring jdate)
 {
-	_int64  qtime;
+	int64_t  qtime;
 	const char *date;
 	int status;
 
@@ -1877,7 +1877,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
   (JNIEnv *env, jclass cls, jint ctx1, jint ctx2)
 {
 	int status;
-	_int64 size;
+	int64_t size;
 	void *ctx = getCtx(ctx1, ctx2);
 
 	size =  _TreeGetDatafileSize(ctx);
@@ -1919,10 +1919,10 @@ JNIEXPORT jlong JNICALL Java_MDSplus_TreeNode_getNciLong
   (JNIEnv *env, jclass cls, jint nid, jint ctx1, jint ctx2, jint nciType)
 {
 	int status;
-	_int64 retNci = 0;
+	int64_t retNci = 0;
 	int retNciLen;
 
-	struct nci_itm nciList[] =  {{sizeof(_int64), 0, &retNci, &retNciLen},
+	struct nci_itm nciList[] =  {{sizeof(int64_t), 0, &retNci, &retNciLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 	void *ctx = getCtx(ctx1, ctx2);
 
@@ -2344,10 +2344,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
 	int numTimes;
-	_int64 *times;
+	int64_t *times;
 	
 	numTimes = (*env)->GetArrayLength(env, jtimes);
-	times = (_int64 *)(*env)->GetLongArrayElements(env, jtimes,NULL);
+	times = (int64_t *)(*env)->GetLongArrayElements(env, jtimes,NULL);
 	dataD = ObjectToDescrip(env, jdata);
 
 	//printDecompiled(dataD);
@@ -2370,10 +2370,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
 	int status;
 	void *ctx = getCtx(ctx1, ctx2);
 	int numTimes;
-	_int64 *times;
+	int64_t *times;
 	
 	numTimes = (*env)->GetArrayLength(env, jtimes);
-	times = (_int64 *)(*env)->GetLongArrayElements(env, jtimes,NULL);
+	times = (int64_t *)(*env)->GetLongArrayElements(env, jtimes,NULL);
 	dataD = ObjectToDescrip(env, jdata);
 
 	printDecompiled(dataD);
@@ -2405,7 +2405,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
 	ctx = getCtx(ctx1, ctx2);
 
 	rowD = ObjectToDescrip(env, jrow);
-	status = _TreePutRow(ctx, nid, size, (_int64*)&jtime, (struct descriptor_a *)rowD);
+	status = _TreePutRow(ctx, nid, size, (int64_t*)&jtime, (struct descriptor_a *)rowD);
 	
 	FreeDescrip(rowD);
 	if(!(status & 1))
@@ -2744,7 +2744,7 @@ static void handleEvent(void *objPtr, int dim ,char *buf)
 	jclass cls;
 	jvalue args[2];
 	jbyteArray jbuf;
-	_int64 time;
+	int64_t time;
 	jobject obj = (jobject) objPtr;
 
 	env = getJNIEnv();
@@ -2771,7 +2771,7 @@ static void handleREvent(char *evName, char *buf, int dim, void *objPtr)
 //(indexed by eventId)
 struct EventDescr {
 	jobject eventObj;
-	_int64 eventId;
+	int64_t eventId;
 	struct EventDescr *nxt;
 };
 #ifdef HAVE_WINDOWS_H
@@ -2783,7 +2783,7 @@ static int eventMutex_initialized = 0;
 #endif
 
 static struct EventDescr *eventDescrHead = 0;
-static void addEventDescr(jobject eventObj, _int64 eventId)
+static void addEventDescr(jobject eventObj, int64_t eventId)
 {
 	struct EventDescr *newDescr = malloc(sizeof(struct EventDescr));
 	LockMdsShrMutex(&eventMutex,&eventMutex_initialized);
@@ -2794,7 +2794,7 @@ static void addEventDescr(jobject eventObj, _int64 eventId)
     UnlockMdsShrMutex(&eventMutex);
 }
 
-static jobject releaseEventDescr(_int64 eventId)
+static jobject releaseEventDescr(int64_t eventId)
 {
 	jobject retObj = 0;
 	struct EventDescr *currDescr, *prevDescr;
@@ -2842,7 +2842,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent
 	event = (*env)->GetStringUTFChars(env, jevent, 0);
 	//make sure this Event instance will not be released by the garbage collector
 	status = MDSUdpEventAst((char *)event, handleEvent, (void *)eventObj, &eventId); 
-	addEventDescr(eventObj, (_int64)eventId);
+	addEventDescr(eventObj, (int64_t)eventId);
 	(*env)->ReleaseStringUTFChars(env, jevent, event);
 	if(!(status & 1))
 		return -1;
@@ -2911,7 +2911,7 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate
 JNIEXPORT jlong JNICALL Java_MDSplus_Data_getTime
   (JNIEnv *env, jclass cls)
 {
-	_int64 time;
+	int64_t time;
 	LibConvertDateString("now", &time);
 	return (long)time;
 }

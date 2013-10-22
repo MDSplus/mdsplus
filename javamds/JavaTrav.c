@@ -392,7 +392,7 @@ JNIEXPORT void JNICALL Java_Database_putRow
   jfieldID nid_fid; 
   jclass cls;
   struct descriptor *dsc;
-  _int64 currTime = time;
+  int64_t currTime = time;
 
   EMPTYXD(xd);
   cls = (*env)->GetObjectClass(env, jnid);
@@ -1335,7 +1335,7 @@ JNIEXPORT jlong JNICALL Java_Database_saveContext
 }
 
 JNIEXPORT void JNICALL Java_Database_restoreContext
-  (JNIEnv *env, jobject obj, jlong context)
+  (JNIEnv *env, jobject obj, void *context)
 {
 	char **ctx = (char **)context;
 

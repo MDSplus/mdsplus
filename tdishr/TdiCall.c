@@ -92,8 +92,8 @@ STATIC_ROUTINE int TdiInterlude(int opcode, struct descriptor **newdsc,
         }
 #if  defined(__ALPHA) && defined(__VMS)
         else {
-            __int64(*called_g) () = (__int64(*)())called;
-            __int64 *result_g = (__int64 *) result;
+            _int64_t(*called_g) () = (_int64_t(*)())called;
+            _int64_t *result_g = (_int64_t *) result;
             *max = sizeof(double);
             *result_g = (*called_g) (newdsc, routine);
             break;

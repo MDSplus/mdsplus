@@ -13,7 +13,7 @@ extern int TdiData();
 extern int TdiFloat();
 //Convert a time expression to 64 bit integer 
 
-EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
+EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t *retTime)
 {	
 
 	int status;
@@ -32,7 +32,7 @@ EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
 
 	if(xd.pointer->dtype == DTYPE_Q || xd.pointer->dtype == DTYPE_QU)
 	{
-		*retTime = *(_int64 *)xd.pointer->pointer;
+		*retTime = *(int64_t *)xd.pointer->pointer;
 		MdsFree1Dx(&xd, 0);
 		return 1;
 	}
@@ -53,7 +53,7 @@ EXPORT int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *retTime)
 	MdsFree1Dx(&xd, 0);
 	return status;
 }
-EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, _int64u *retTime)
+EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, uint64_t *retTime)
 {	
 
 	int status;
@@ -72,7 +72,7 @@ EXPORT int XTreeConvertToLongDelta(struct descriptor *timeD, _int64u *retTime)
 
 	if(xd.pointer->dtype == DTYPE_Q || xd.pointer->dtype == DTYPE_QU)
 	{
-		*retTime = *(_int64 *)xd.pointer->pointer;
+		*retTime = *(int64_t *)xd.pointer->pointer;
 		MdsFree1Dx(&xd, 0);
 		return 1;
 	}

@@ -833,7 +833,7 @@ void hpe1564_delay(long delayTime)
 long setDelay( double val )
 {
 	double slice;
-	__int64 count;
+	_int64_t count;
 
 	if( !QueryPerformanceFrequency( (LARGE_INTEGER *)&count ) )
 	{
@@ -851,7 +851,7 @@ long setDelay( double val )
 
 void hpe1564_doDelay( long ticks )
 {
-__int64 startval,tmp;
+_int64_t startval,tmp;
 
  if(!QueryPerformanceCounter( (LARGE_INTEGER *)&startval))
 	{

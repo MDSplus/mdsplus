@@ -49,13 +49,13 @@ void MdsFixDscLength(struct descriptor *in);
 #define offset(ptr)       *(unsigned int *)&ptr
 
 #ifdef HAVE_VXWORKS_H
-#define _int64 long long
+#define int64_t long long
 #endif
 
 union __bswap { char   b[8];
              int    int_;
              short  short_;
-             _int64  _int64_;
+             int64_t  int64_t_;
              };
 
 #if defined(WORDS_BIGENDIAN)
@@ -113,7 +113,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	    {
 	    case 2: swap(short,po->pointer,*(short *)po->pointer) break;
             case 4: swap(int,po->pointer,*(int *)po->pointer) break;
-            case 8: swap(_int64,po->pointer,*(_int64 *)po->pointer); break;
+            case 8: swap(int64_t,po->pointer,*(int64_t *)po->pointer); break;
 	    }
 	  }
 #endif
@@ -263,8 +263,8 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
 	      }
 	      break;
 	    case 8:
-	      { _int64 *ptr;
-		for (i=0,ptr=(_int64 *)po->pointer;i<(int)po->arsize;i += sizeof(*ptr),ptr++) swap(_int64,(char *)ptr,*ptr);
+	      { int64_t *ptr;
+		for (i=0,ptr=(int64_t *)po->pointer;i<(int)po->arsize;i += sizeof(*ptr),ptr++) swap(int64_t,(char *)ptr,*ptr);
 	      }
 	      break;
 	    }

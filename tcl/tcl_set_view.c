@@ -25,7 +25,7 @@ int TclSetView()
    {
     int   status;
     void  *ctx = 0;
-    _int64 viewDate=-1;
+    int64_t viewDate=-1;
     static DYNAMIC_DESCRIPTOR(dsc_viewdate_string);
     cli_get_value("DATE",&dsc_viewdate_string);
 	StrUpcase(&dsc_viewdate_string,&dsc_viewdate_string);

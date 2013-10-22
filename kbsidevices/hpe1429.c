@@ -382,7 +382,7 @@ long setDelay( double val )
 //Delay should be absolute (e.g. 100 micro sec = 1e-4)
 
 double slice;
-__int64 count;
+_int64_t count;
 
 
 if( !QueryPerformanceFrequency( (LARGE_INTEGER *)&count ) )
@@ -401,7 +401,7 @@ return (long)(val/slice)+1;
 
 void doDelay( long ticks )
 {
-__int64 startval,tmp;
+_int64_t startval,tmp;
 
  if(!QueryPerformanceCounter( (LARGE_INTEGER *)&startval))
 	{

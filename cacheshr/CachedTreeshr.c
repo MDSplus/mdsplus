@@ -39,7 +39,7 @@ int beginSegment(char *name, int shot, int nid, int idx, char *start, int startS
 						char *dim, int dimSize, char *shape, int shapeSize, char *data, int dataSize, 
 						int writeThrough, char *cachePtr);
 int beginTimestampedSegment(char *name, int shot, int nid, int idx, int numItems, char *shape, int shapeSize, char *data, int dataSize, 
-						_int64 start, _int64 end, char *dim, int dimSize, int writeThrough, char *cachePtr);
+						int64_t start, int64_t end, char *dim, int dimSize, int writeThrough, char *cachePtr);
 int putSegmentInternal(char *name, int shot, int nid, 
 						char *start, int startSize, char *end, int endSize, char *dim, int dimSize, char *data, 
 						int dataSize, int *shape, int shapeSize, int currDataSize, int isTimestamped, int actSamples, int updateOnly);
@@ -60,10 +60,10 @@ int clearCallback(char *name, int shot, int nid, char *callbackDescr, void *cach
 int appendSegmentData(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
 										 int dataSize, int idx, int startIdx, int writeMode, char *cachePtr);
 int appendTimestampedSegmentData(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, int idx, int startIdx, _int64 *timestamp, int numTimestamps, int writeMode, char *cachePtr);
+										 int dataSize, int idx, int startIdx, int64_t *timestamp, int numTimestamps, int writeMode, char *cachePtr);
 int appendRow(char *name, int shot, int nid, int *bounds, int boundsSize, char *data, 
-										 int dataSize, _int64 timestamp, int writeMode, char *cachePtr);
-int discardOldSegments(char *name, int shot, int nid, _int64 timestamp, char *cachePtr);
+										 int dataSize, int64_t timestamp, int writeMode, char *cachePtr);
+int discardOldSegments(char *name, int shot, int nid, int64_t timestamp, char *cachePtr);
 int discardData(char *name, int shot, int nid, char *cachePtr);
 void synch(char *cachePtr);
 extern int TdiCompile();
@@ -274,9 +274,9 @@ static void getDataTypeAndShape(struct descriptor *inData, int *outShape, int *o
 //The remaining elements are the dimension limits
 
 static int intBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initialValue, int idx, 
-									  _int64 start, _int64 end, struct descriptor_a *timesD, int writeMode)
+									  int64_t start, int64_t end, struct descriptor_a *timesD, int writeMode)
 {
-	_int64 *times;
+	int64_t *times;
 	int nTimes, timesSize;
 	int bounds[MAX_BOUND_SIZE], boundsSize;
 	char name[256];
@@ -297,7 +297,7 @@ static int intBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *
 	getDataTypeAndShape((struct descriptor *)initialValue, bounds, &boundsSize);
 	if(timesD)
 	{
-		times = (_int64 *)timesD->pointer;
+		times = (int64_t *)timesD->pointer;
 		nTimes = timesD->arsize/timesD->length;
 		timesSize = nTimes * 8;
 	}
@@ -349,7 +349,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 	EMPTYXD(dataXd);
 	EMPTYXD(dimXd);
 
-	_int64 *times;
+	int64_t *times;
 	int nTimes, i;
 	char dtype, dimct;
 	int dims[64], nextRow, oldLen;
@@ -378,7 +378,7 @@ static int copySegmentedIntoCache(void *dbid, int nid, int *copiedSegments)
 			timesD = (struct descriptor_a *)dimXd.pointer;
 			if(timesD->dtype != DTYPE_Q && timesD->dtype != DTYPE_QU)
 				return 0;
-			times = (_int64*)timesD->pointer;
+			times = (int64_t*)timesD->pointer;
 			nTimes = timesD->arsize/timesD->length;
 
 			status = intBeginTimestampedSegment(dbid, nid, (struct descriptor_a *)dataXd.pointer, -1, times[0], times[nTimes - 1],
@@ -561,7 +561,7 @@ EXPORT int RTreeUpdateSegment(int nid, struct descriptor *start, struct descript
 
 
 
-EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid,  _int64 *timestamps, struct descriptor *dataD,int writeMode)
+EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid,  int64_t *timestamps, struct descriptor *dataD,int writeMode)
 {
 	int bounds[MAX_BOUND_SIZE];
 	int boundsSize;
@@ -581,7 +581,7 @@ EXPORT int _RTreePutTimestampedSegment(void *dbid, int nid,  _int64 *timestamps,
 										 writeMode, cache);
 	return status;
 }
-EXPORT int RTreePutTimestampedSegment(int nid,  _int64 *timestamps, struct descriptor *dataD,int writeMode)
+EXPORT int RTreePutTimestampedSegment(int nid,  int64_t *timestamps, struct descriptor *dataD,int writeMode)
 {
 	return _RTreePutTimestampedSegment(0, nid, timestamps, dataD, writeMode);
 }
@@ -593,7 +593,7 @@ EXPORT int RTreePutTimestampedSegment(int nid,  _int64 *timestamps, struct descr
 //4) total dimension in bytes 
 //The remaining elements are the dimension limits
 
-EXPORT int _RTreePutRow(void *dbid, int nid, int bufSize, _int64 *timestamp, struct descriptor_a *rowD, int writeMode)
+EXPORT int _RTreePutRow(void *dbid, int nid, int bufSize, int64_t *timestamp, struct descriptor_a *rowD, int writeMode)
 {
 	int bounds[MAX_BOUND_SIZE], extendedBounds[MAX_BOUND_SIZE];
 	int boundsSize;
@@ -632,7 +632,7 @@ EXPORT int _RTreePutRow(void *dbid, int nid, int bufSize, _int64 *timestamp, str
 	return status;
 }
 
-EXPORT int RTreePutRow(int nid, int bufSize, _int64 *timestamp, struct descriptor_a *rowD, int writeMode)
+EXPORT int RTreePutRow(int nid, int bufSize, int64_t *timestamp, struct descriptor_a *rowD, int writeMode)
 {
 	return _RTreePutRow(0, nid, bufSize, timestamp, rowD, writeMode);
 }
@@ -875,7 +875,7 @@ EXPORT int RTreeGetLastSegmentInfo(int nid, char *dtype, char *dimct, int *dims,
 
 
 
-EXPORT int _RTreeDiscardOldSegments(void *dbid, int nid, _int64 timestamp)
+EXPORT int _RTreeDiscardOldSegments(void *dbid, int nid, int64_t timestamp)
 {
 	char name[256];
 	int shot, status;
@@ -886,7 +886,7 @@ EXPORT int _RTreeDiscardOldSegments(void *dbid, int nid, _int64 timestamp)
 	if(!cache) cache = getCache(cacheSize);
 	return discardOldSegments(name, shot, nid, timestamp, cache);
 }
-EXPORT int RTreeDiscardOldSegments(int nid, _int64 timestamp)
+EXPORT int RTreeDiscardOldSegments(int nid, int64_t timestamp)
 {
 	return _RTreeDiscardOldSegments(0, nid, timestamp);
 }

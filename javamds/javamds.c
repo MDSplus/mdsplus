@@ -166,7 +166,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
     double *double_ris = NULL;
     int *int_ris = NULL;
 	char *byte_ris = NULL;
-	_int64u *quad_ris = NULL;
+	uint64_t *quad_ris = NULL;
     int status, dim, i;
     struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
     EMPTYXD(xd);
@@ -254,7 +254,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 			int_ris = (int *)malloc(sizeof(int) * dim);
 			break;
 		case QUADWORD:
-			quad_ris = (_int64u *)malloc(8 * dim);
+			quad_ris = (uint64_t *)malloc(8 * dim);
 			break;
 
 	}
@@ -389,19 +389,19 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 		{
 			switch(type) {
 				case FLOAT: 
-					float_ris[i] = ((_int64 *)arr_ptr->pointer)[i];
+					float_ris[i] = ((int64_t *)arr_ptr->pointer)[i];
 					break;
 				case DOUBLE:
-					double_ris[i] = ((_int64 *)arr_ptr->pointer)[i];
+					double_ris[i] = ((int64_t *)arr_ptr->pointer)[i];
 					break;
 				case BYTE: 
-		    		byte_ris[i] = ((_int64u *)arr_ptr->pointer)[i];
+		    		byte_ris[i] = ((uint64_t *)arr_ptr->pointer)[i];
 					break;
 				case LONG:
-		    	    int_ris[i] = ((_int64u *)arr_ptr->pointer)[i];
+		    	    int_ris[i] = ((uint64_t *)arr_ptr->pointer)[i];
 					break;
 				case QUADWORD:
-		    	    quad_ris[i] = ((_int64u *)arr_ptr->pointer)[i];
+		    	    quad_ris[i] = ((uint64_t *)arr_ptr->pointer)[i];
 					break;
 			}
 		}
@@ -499,7 +499,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
     float zero = 0.;
     const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
     int dim;
-    _int64 *out_ptr;
+    int64_t *out_ptr;
     
 	out_ptr = MdsGetArray((char *)in_char, &dim, QUADWORD);
     (*env)->ReleaseStringUTFChars(env, in, in_char);

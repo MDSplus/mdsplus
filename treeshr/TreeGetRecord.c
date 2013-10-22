@@ -1,6 +1,4 @@
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
+#include "treeshrp.h" /* must be first or off_t wrong */
 #ifdef _WIN32
 #include <io.h>
 #endif
@@ -9,7 +7,6 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
-#include "treeshrp.h"
 #include "treethreadsafe.h"
 #include <treeshr.h>
 #include <librtl_messages.h>
@@ -26,7 +23,7 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static _int64 ViewDate = -1;
+static int64_t ViewDate = -1;
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 
 int MdsSerializeDscIn(char *in, struct descriptor_xd *out_dsc_ptr);
@@ -128,7 +125,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 			   {
 			   case 2: *(short *)dptr->pointer = swapshort(dptr->pointer); break;
 			   case 4: *(int *)dptr->pointer = swapint(dptr->pointer); break;
-			   case 8: *(_int64 *)dptr->pointer = swapquad(dptr->pointer); break;
+			   case 8: *(int64_t *)dptr->pointer = swapquad(dptr->pointer); break;
 			   }
 		       }
 		   }
@@ -302,7 +299,7 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
     while ((rfa[0] || rfa[1] || rfa[2] || rfa[3] || rfa[4] || rfa[5]) && buffer_space && (status & 1))
     {
       RECORD_HEADER hdr;
-      _int64 rfa_l = RfaToSeek(rfa);
+      int64_t rfa_l = RfaToSeek(rfa);
       int deleted=1;
       while (status & 1 && deleted) {
         status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)&hdr,12,&deleted) == 12) ? TreeSUCCESS : TreeFAILURE;
@@ -337,7 +334,7 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
   {
     if (flags & NciM_NON_VMS)
     {
-      _int64 rfa_l = RfaToSeek(rfa);
+      int64_t rfa_l = RfaToSeek(rfa);
       int deleted=1;
       while (status & 1 && deleted) {
         status = (MDS_IO_READ_X(info->data_file->get,rfa_l,(void *)record,*buffer_size,&deleted) == *buffer_size) ? TreeSUCCESS : TreeFAILURE;
@@ -353,7 +350,7 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
       char     *bptr_in;
       unsigned int      bytes_remaining;
       unsigned int      partlen = (blen % (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
-      _int64 rfa_l = RfaToSeek(rfa);
+      int64_t rfa_l = RfaToSeek(rfa);
       int deleted=1;
       rfa_l -= blen - (partlen ? partlen : (DATAF_C_MAX_RECORD_SIZE + 2 + sizeof(RECORD_HEADER)));
       while (status & 1 && deleted) {
@@ -378,7 +375,7 @@ int TreeGetDatafile(TREE_INFO *info, unsigned char *rfa_in, int *buffer_size, ch
   return status;
 }
 
-int TreeSetViewDate(_int64 *date)
+int TreeSetViewDate(int64_t *date)
 { 
   if (TreeGetThreadStatic()->privateCtx)
     TreeGetThreadStatic()->ViewDate=*date;
@@ -387,7 +384,7 @@ int TreeSetViewDate(_int64 *date)
   return TreeSUCCESS;
 }
 
-int TreeGetViewDate(_int64 *date)
+int TreeGetViewDate(int64_t *date)
 {
   if (TreeGetThreadStatic()->privateCtx)
     *date=TreeGetThreadStatic()->ViewDate;
@@ -406,7 +403,7 @@ int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci)
     status = 1;
   if (status & 1) {
     int deleted=1;
-    _int64 rfa_l = RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa);
+    int64_t rfa_l = RfaToSeek(nci->DATA_INFO.DATA_LOCATION.rfa);
     rfa_l+=((nci->DATA_INFO.DATA_LOCATION.record_length == (DATAF_C_MAX_RECORD_SIZE + 2)) ? (DATAF_C_MAX_RECORD_SIZE + 2) : 
        (nci->DATA_INFO.DATA_LOCATION.record_length % (DATAF_C_MAX_RECORD_SIZE + 2)));
     rfa_l+=sizeof(RECORD_HEADER);

@@ -60,9 +60,9 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 						struct descriptor_xd *outSignal)
 {
 	int status;
-	_int64u start, end;
+	uint64_t start, end;
 	int numSegments;
-	_int64u currStart, currEnd;
+	uint64_t currStart, currEnd;
 	int segmentIdx, startIdx, endIdx, actNumSegments, currIdx, currSegIdx;
 	int numDimensions;
 	int i, nameLen;

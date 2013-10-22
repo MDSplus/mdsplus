@@ -205,7 +205,7 @@ JNIEXPORT jobject JNICALL Java_Database_resolve
  * Signature: (J)V
  */
 JNIEXPORT void JNICALL Java_Database_restoreContext
-  (JNIEnv *, jobject, jlong);
+  (JNIEnv *, jobject, void *);
 
 /*
  * Class:     Database

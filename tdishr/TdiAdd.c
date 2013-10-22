@@ -291,16 +291,16 @@ extern int emul();
 
 STATIC_ROUTINE int emul(int *m1, int *m2, int *add, int *out)
 {
-    *(_int64 *) out = (_int64) * m1 * (_int64) * m2 + (_int64) * add;
+    *(int64_t *) out = (int64_t) * m1 * (int64_t) * m2 + (int64_t) * add;
     return 1;
 }
 #endif
 
 int TdiMultiplyQuadword(int *in1, int *in2, int *out)
 {
-    _int64 *arg1 = (_int64 *) in1;
-    _int64 *arg2 = (_int64 *) in2;
-    *((_int64 *) out) = *arg1 * *arg2;
+    int64_t *arg1 = (int64_t *) in1;
+    int64_t *arg2 = (int64_t *) in2;
+    *((int64_t *) out) = *arg1 * *arg2;
     return 1;
     /*
 
@@ -450,9 +450,9 @@ int TdiMultiplyOctaword(int *in1, int *in2, int *out)
 
 int TdiAddQuadword(unsigned int *a, unsigned int *b, unsigned int *ans)
 {
-    _int64u *arg1 = (_int64u *) a;
-    _int64u *arg2 = (_int64u *) b;
-    _int64u *out = (_int64u *) ans;
+    uint64_t *arg1 = (uint64_t *) a;
+    uint64_t *arg2 = (uint64_t *) b;
+    uint64_t *out = (uint64_t *) ans;
     *out = *arg1 + *arg2;
 #if defined(_MSC_VER) && _MSC_VER <= 1300
     return (*out & 0x800000000000000U i64) != 0;

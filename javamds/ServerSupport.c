@@ -482,12 +482,12 @@ static int traverseExprMinMax(struct descriptor *dsc, float *xMin, float *xMax)
 					*xMax = ((unsigned int *)arrD->pointer)[size - 1];
 					break;
 				case DTYPE_Q:
-					*xMin = ((_int64 *)arrD->pointer)[0];
-					*xMax = ((_int64 *)arrD->pointer)[size - 1];
+					*xMin = ((int64_t *)arrD->pointer)[0];
+					*xMax = ((int64_t *)arrD->pointer)[size - 1];
 					break;
 				case DTYPE_QU:
-					*xMin = ((_int64u *)arrD->pointer)[0];
-					*xMax = ((_int64u *)arrD->pointer)[size - 1];
+					*xMin = ((uint64_t *)arrD->pointer)[0];
+					*xMax = ((uint64_t *)arrD->pointer)[size - 1];
 					break;
 				case DTYPE_FLOAT:
 					*xMin = ((float *)arrD->pointer)[0];

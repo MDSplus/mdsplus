@@ -28,6 +28,7 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 
 
 ------------------------------------------------------------------------------*/
+#include "treeshrp.h" /* must be first or off_t wrong */
 #include <STATICdef.h>
 #include <fcntl.h>
 #include <STATICdef.h>
@@ -37,7 +38,6 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include "treeshrp.h"
 #include <ncidef.h>
 #include <sys/stat.h>
 #include <ctype.h>

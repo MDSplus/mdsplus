@@ -92,13 +92,13 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
     {
       if (out_dsc->dscB_class == CLASS_CA)
       {
-        _int64 offset = ((_int64) out_dsc->dscW_length) * ((in_dsc->dscA_a0 - (char *)0) / ((_int64) in_dsc->dscW_length));
+        int64_t offset = ((int64_t) out_dsc->dscW_length) * ((in_dsc->dscA_a0 - (char *)0) / ((int64_t) in_dsc->dscW_length));
 	out_dsc->dscA_a0 = out_dsc->dscA_pointer + offset;
       }
       else
       {
-        _int64 offset = ((_int64) out_dsc->dscW_length) *
-		       ((in_dsc->dscA_a0 - in_dsc->dscA_pointer) / ((_int64) in_dsc->dscW_length));
+        int64_t offset = ((int64_t) out_dsc->dscW_length) *
+		       ((in_dsc->dscA_a0 - in_dsc->dscA_pointer) / ((int64_t) in_dsc->dscW_length));
 	out_dsc->dscA_a0 = out_dsc->dscA_pointer + offset;
       }
       for (i = 0; i < out_dsc->dscB_dimct; i++)

@@ -1,13 +1,10 @@
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
+#include "treeshrp.h" /* must be first or off_t wrong */
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include "treeshrp.h"
 #include <ctype.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>

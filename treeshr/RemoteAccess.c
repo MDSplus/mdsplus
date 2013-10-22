@@ -1,6 +1,4 @@
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
+#include "treeshrp.h"
 #include <STATICdef.h>
 #ifdef HAVE_WINDOWS_H
 #include <winsock2.h>
@@ -27,7 +25,6 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include "treeshrp.h"
 #include <ncidef.h>
 #include <dbidef.h>
 #include <libroutines.h>

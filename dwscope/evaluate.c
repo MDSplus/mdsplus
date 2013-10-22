@@ -1114,7 +1114,7 @@ void SetupEvent(String event, Boolean *received, int *id)
   }
 }
 
-extern int MdsDispatchEvent();
+extern void MdsDispatchEvent();
 
 static void DoEventUpdate(XtPointer client_data, int *source, XtInputId *id)
 {

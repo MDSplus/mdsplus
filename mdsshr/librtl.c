@@ -26,11 +26,11 @@
 #include "mdsshrthreadsafe.h"
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
-int LibTimeToVMSTime(time_t *time_in,_int64 *time_out);  
+int LibTimeToVMSTime(time_t *time_in,int64_t *time_out);  
 #ifndef HAVE_VXWORKS_H
-STATIC_CONSTANT _int64 addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+STATIC_CONSTANT int64_t addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
 #else
-STATIC_CONSTANT _int64 addin = 0x7c95674beb4000;
+STATIC_CONSTANT int64_t addin = 0x7c95674beb4000;
 #endif
 
 extern int MdsCopyDxXd();
@@ -1304,11 +1304,11 @@ static int timezone = 0;   /* vxworks THREADSAFE ? */
 
 
 
-int LibEmul(int *m1, int *m2, int *add, _int64 *prod)
+int LibEmul(int *m1, int *m2, int *add, int64_t *prod)
 {
-  _int64 m1_64 = *m1;
-  _int64 m2_64 = *m2;
-  _int64 add_64 = *add;
+  int64_t m1_64 = *m1;
+  int64_t m2_64 = *m2;
+  int64_t add_64 = *add;
   *prod = m1_64 * m2_64 + add_64;
   return 1;
 }
@@ -1547,7 +1547,7 @@ STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
   return ans;
 }
 
-int LibConvertDateString(char *asc_time, _int64 *qtime)
+int LibConvertDateString(char *asc_time, int64_t *qtime)
 {
   time_t tim=0;
   char time_out[24];
@@ -1645,13 +1645,13 @@ int LibConvertDateString(char *asc_time, _int64 *qtime)
   if (tim > 0) {
     LibTimeToVMSTime(&tim,qtime);
     return tim > 0;
-    *qtime = ((_int64)tim + daylight * 3600)*10000000+addin;
+    *qtime = ((int64_t)tim + daylight * 3600)*10000000+addin;
   } else
     *qtime = 0;
   return tim > 0;
 }
 
-int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
+int LibTimeToVMSTime(time_t *time_in,int64_t *time_out) {
   time_t t;
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tm;
@@ -1672,11 +1672,11 @@ int LibTimeToVMSTime(time_t *time_in,_int64 *time_out) {
   { 
     struct tm *tm;
     tm = localtime(&t);
-    *time_out = (_int64)((unsigned int)t + tm->tm_gmtoff) * (_int64)10000000 + addin + microseconds * 10;
+    *time_out = (int64_t)((unsigned int)t + tm->tm_gmtoff) * (int64_t)10000000 + addin + microseconds * 10;
   }
 #else
   tzset();
-  *time_out = (_int64)(t - timezone + daylight * 3600) * (_int64)10000000 + addin + microseconds * 10;
+  *time_out = (int64_t)(t - timezone + daylight * 3600) * (int64_t)10000000 + addin + microseconds * 10;
 #endif
   return 1;
 }
@@ -1688,12 +1688,12 @@ time_t LibCvtTim(int *time_in,double *t)
 #ifndef HAVE_VXWORKS_H
   if (time_in)
   {
-    _int64 time_local;
+    int64_t time_local;
     double time_d;
     struct tm *tmval;
     time_t dummy=0;
     memcpy(&time_local,time_in,sizeof(time_local));
-    time_local = (*(_int64 *)time_in - addin);
+    time_local = (*(int64_t *)time_in - addin);
     if (time_local < 0) time_local=0;
     bintim=time_local/LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000))*1E-7;
@@ -1728,14 +1728,14 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   char time_out[23];
   unsigned short slen=sizeof(time_out);
   time_t bintim = LibCvtTim(time_in,0);
-  _int64 chunks=0;
-  _int64 *time_q=(_int64 *)time_in;
+  int64_t chunks=0;
+  int64_t *time_q=(int64_t *)time_in;
 #ifndef HAVE_VXWORKS_H
   tzset();
 #endif
   if (time_in != NULL) {
 #ifdef HAVE_GETTIMEOFDAYx
-    _int64 tmp;
+    int64_t tmp;
     struct timeval tv;
 	struct timezone tz;
     gettimeofday(&tv,&tz);

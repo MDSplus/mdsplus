@@ -9,7 +9,7 @@ int MAIN__( )
 
 
 #if SIZEOF_INT_P == 8
-typedef _int64 INTEGER;
+typedef int64_t INTEGER;
 #else
 typedef int INTEGER;
 #endif

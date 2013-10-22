@@ -175,8 +175,8 @@ void GetMatReply(int nlhs,mxArray *plhs[])
    int *iptr;
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
-   _int64 *qptr;
-   _int64u *uqptr;
+   int64_t *qptr;
+   uint64_t *uqptr;
 #endif
    float *fptr;
    double *dptr, *dpout;
@@ -299,12 +299,12 @@ void GetMatReply(int nlhs,mxArray *plhs[])
 	 break;
 #ifdef DTYPE_LONGLONG
        case DTYPE_ULONGLONG   : 
-	 uqptr = (_int64u *)ans.ptr;
+	 uqptr = (uint64_t *)ans.ptr;
 	 while(len--)
 	   *dpout++ = (double)*uqptr++;
 	 break;
        case DTYPE_LONGLONG    :
-	 qptr = (_int64 *)ans.ptr;
+	 qptr = (int64_t *)ans.ptr;
 	 while(len--)
 	   *dpout++ = (double)*qptr++;
 	 break;
@@ -367,8 +367,8 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
    int *iptr;
    unsigned int *uiptr;
 #ifdef DTYPE_LONGLONG
-   _int64 *qptr;
-   _int64u *uqptr;
+   int64_t *qptr;
+   uint64_t *uqptr;
 #endif
    float *fptr;
    double *dptr;
@@ -608,20 +608,20 @@ void SendMatValue(CONST mxArray *prhs[],int i, int nrhs, int opt)  {
 	 break;
 #ifdef DTYPE_LONGLONG
        case DTYPE_ULONGLONG   :  
-	 alloc = sizeof(_int64u);
+	 alloc = sizeof(uint64_t);
 	 if(conv < 0)  break;
-	 uqptr = (_int64u *)MatAlloc(len, alloc);
+	 uqptr = (uint64_t *)MatAlloc(len, alloc);
 	 strptr = (char *)uqptr;
 	 while(len--)
-	   *uqptr++ = (_int64u)*dptr++;
+	   *uqptr++ = (uint64_t)*dptr++;
 	 break;
        case DTYPE_LONGLONG    :
-	 alloc = sizeof(_int64);
+	 alloc = sizeof(int64_t);
 	 if(conv < 0)  break;
-	 qptr = (_int64 *)MatAlloc(len, alloc);
+	 qptr = (int64_t *)MatAlloc(len, alloc);
 	 strptr = (char *)qptr;
 	 while(len--)
-	   *qptr++ = (_int64)*dptr++;
+	   *qptr++ = (int64_t)*dptr++;
 	 break;
 #endif
        case DTYPE_ULONG   :  

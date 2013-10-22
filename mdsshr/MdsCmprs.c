@@ -111,7 +111,7 @@ int       MdsCmprs(
   unsigned short *pxus = (unsigned short *)px;
   short     *pxs = (short *)px;
   char     *ppack = pack_dsc_ptr->pointer;
-  _int64u       limit = (pack_dsc_ptr->arsize > 4) ? ((_int64u)pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX) : 0;
+  uint64_t       limit = (pack_dsc_ptr->arsize > 4) ? ((uint64_t)pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX) : 0;
   register int j,
               yy;
   register int i,
@@ -306,7 +306,7 @@ Do this in runs.
   /******************************
   Must have enough room to store.
   ******************************/
-    if ((_int64u)(*bit_ptr + xe * ye + xn * yn) > limit)
+    if ((uint64_t)(*bit_ptr + xe * ye + xn * yn) > limit)
       return LibSTRTRU;
     header.n = X_AND_Y(xn - 1,yn);
     header.e = X_AND_Y(xe,ye - 1);

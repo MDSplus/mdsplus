@@ -60,8 +60,8 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <tdimessages.h>
 #include <STATICdef.h>
 #ifdef HAVE_VXWORKS_H
-/*#define _int64  long long
-#define _int64u unsigned long long*/
+/*#define int64_t  long long
+#define uint64_t unsigned long long*/
 
 #define LONG_LONG_CONSTANT(value) value##ll
 #endif
@@ -603,7 +603,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2,
 #define char_min -128
 #define short_min -32768
 #define int_min 0x80000000
-#define _int64_min LONG_LONG_CONSTANT(0x8000000000000000)
+#define int64_t_min LONG_LONG_CONSTANT(0x8000000000000000)
 #define min_struct(type) type##_min
 
 #undef Operate
@@ -671,8 +671,8 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_L:Operate(int)
         case DTYPE_LU:OperateU(unsigned int, int)
 #ifndef HAVE_VXWORKS_H
-        case DTYPE_Q:Operate(_int64)
-        case DTYPE_QU:OperateU(_int64u, _int64)
+        case DTYPE_Q:Operate(int64_t)
+        case DTYPE_QU:OperateU(uint64_t, int64_t)
 #endif
         default:return TdiINVDTYDSC;
     }
@@ -710,8 +710,8 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_L:Operate(int, >>)
         case DTYPE_LU:Operate(unsigned int, >>)
 #ifndef HAVE_VXWORKS_H
-        case DTYPE_Q:Operate(_int64, >>)
-        case DTYPE_QU:Operate(_int64u, >>)
+        case DTYPE_Q:Operate(int64_t, >>)
+        case DTYPE_QU:Operate(uint64_t, >>)
 #endif
         default:return TdiINVDTYDSC;
     }
@@ -730,8 +730,8 @@ int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_L:Operate(int, <<)
         case DTYPE_LU:Operate(unsigned int, <<)
 #ifndef HAVE_VXWORKS_H
-        case DTYPE_Q:Operate(_int64, <<)
-        case DTYPE_QU:Operate(_int64u, <<)
+        case DTYPE_Q:Operate(int64_t, <<)
+        case DTYPE_QU:Operate(uint64_t, <<)
 #endif
         default:return TdiINVDTYDSC;
     }

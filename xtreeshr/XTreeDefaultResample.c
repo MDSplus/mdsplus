@@ -17,9 +17,8 @@ extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
-extern int TdiDecompile();
-extern int XTreeConvertToLongTime(struct descriptor *timeD, _int64u *converted);
-extern int XTreeConvertToLongDelta(struct descriptor *deltaD, _int64u *converted);
+extern int XTreeConvertToLongTime(struct descriptor *timeD, uint64_t *converted);
+extern int XTreeConvertToLongDelta(struct descriptor *deltaD, uint64_t *converted);
 
 static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD, struct descriptor *endD, 
 						 struct descriptor *deltaD, char mode, struct descriptor_xd *outSignalXd);
@@ -52,12 +51,12 @@ static void printDecompiled(struct descriptor *inD)
 //64 bit time-based resampling function. It is assumed here that the 54 bit representation of time is the count
 //of a given, fixed amount of time, starting from a given time in the past
 //The closest point is selected as representative for a given time
-static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimebase, int inTimebaseSamples, 
-					int numDims, int *dims, char *inData, int dataSize, char dataType, int mode, char *outData, _int64u *outDim, int *retSamples)
+static void resample(uint64_t start, uint64_t end, uint64_t delta, uint64_t *inTimebase, int inTimebaseSamples, 
+					int numDims, int *dims, char *inData, int dataSize, char dataType, int mode, char *outData, uint64_t *outDim, int *retSamples)
 {
 	int i, timebaseIdx, outIdx, itemSize, outSamples, startIdx, timebaseSamples;
-	_int64u refTime, delta1, delta2;
-	_int64u *timebase;
+	uint64_t refTime, delta1, delta2;
+	uint64_t *timebase;
 	char *data;
 	int numDataItems;
 
@@ -188,21 +187,21 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimeb
 						case DTYPE_QU :
 							for(i = 0; i < numDataItems; i++)
 							{
-								prevData = ((_int64u *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((_int64u *)(&data[timebaseIdx * itemSize]))[i];
+								prevData = ((uint64_t *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((uint64_t *)(&data[timebaseIdx * itemSize]))[i];
 								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
 									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((_int64u *)(&outData[outSamples * itemSize]))[i] = currData;
+								((uint64_t *)(&outData[outSamples * itemSize]))[i] = currData;
 							}
 							break;
 						case DTYPE_Q :
 							for(i = 0; i < numDataItems; i++)
 							{
-								prevData = ((_int64u *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((_int64u *)(&data[timebaseIdx * itemSize]))[i];
+								prevData = ((uint64_t *)(&data[(timebaseIdx - 1) * itemSize]))[i];
+								nextData = ((uint64_t *)(&data[timebaseIdx * itemSize]))[i];
 								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
 									/(timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((_int64u *)(&outData[outSamples * itemSize]))[i] = currData;
+								((uint64_t *)(&outData[outSamples * itemSize]))[i] = currData;
 							}
 							break;
 						case DTYPE_FLOAT :
@@ -258,12 +257,12 @@ static void resample(_int64u start, _int64u end, _int64u delta, _int64u *inTimeb
 
 //The default resample handles int64 timebases
 //return 0 if the conversion is  not possible
-static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples)
+static uint64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples)
 {
 	struct descriptor_a *currDim;
 	double *doublePtr;
 	float *floatPtr;
-	_int64u *outPtr;
+	uint64_t *outPtr;
 	int numSamples, i, status;
 	EMPTYXD(currXd);
 
@@ -276,7 +275,7 @@ static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
 		outPtr = malloc(currDim->arsize);
 		numSamples = currDim->arsize/currDim->length;
 		for(i = 0; i < numSamples; i++)
-			outPtr[i] = ((_int64u *)currDim->pointer)[i];
+			outPtr[i] = ((uint64_t *)currDim->pointer)[i];
 		*outSamples = numSamples;
 		return outPtr;
 	}
@@ -290,7 +289,7 @@ static _int64u *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int 
 			outPtr = malloc(currDim->arsize);
 			numSamples = currDim->arsize/currDim->length;
 			for(i = 0; i < numSamples; i++)
-				outPtr[i] = ((_int64u *)currDim->pointer)[i];
+				outPtr[i] = ((uint64_t *)currDim->pointer)[i];
 			*outSamples = numSamples;
 			MdsFree1Dx(&currXd, 0);
 			return outPtr;
@@ -332,14 +331,14 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 			char dataType, char mode, struct descriptor_xd *outSignalXd)
 {
 	int dataSize, numOutSamples, status, i, memSize, currOffset, numInSamples, totInSamples;
-	_int64u start64, end64, delta64, rangeStart64, rangeEnd64, rangeDelta64, currTime64, inTime64;
+	uint64_t start64, end64, delta64, rangeStart64, rangeEnd64, rangeDelta64, currTime64, inTime64;
 	Array_coeff_type *dataD = (Array_coeff_type *)dataD_in;
 	char *signalExpr = "MAKE_SIGNAL($1,,MAKE_RANGE(MAX($2, $3), MIN($4, $5), $6))";
 	struct descriptor signalExprD = {strlen(signalExpr), DTYPE_T, CLASS_S, signalExpr};
 
 	char *prevDataPtr, *nextDataPtr;
 	double currSample, prevSample, nextSample;
-	_int64u prevTime64, nextTime64;
+	uint64_t prevTime64, nextTime64;
 	int numDataItems;
 	int previousClosest = 1;
 
@@ -488,10 +487,10 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD, str
 					case DTYPE_Q:
 						for(i = 0; i < numDataItems; i++)
 						{
-							prevSample = ((_int64u *)prevDataPtr)[i];
-							nextSample = ((_int64u *)nextDataPtr)[i];
+							prevSample = ((uint64_t *)prevDataPtr)[i];
+							nextSample = ((uint64_t *)nextDataPtr)[i];
 							currSample = prevSample + (nextSample - prevSample)*(currTime64 - prevTime64)/(nextTime64 - prevTime64);
-							((_int64u *)currOutDataPtr)[i] = currSample;
+							((uint64_t *)currOutDataPtr)[i] = currSample;
 						}
 						break;
 					case DTYPE_FLOAT:
@@ -587,7 +586,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 	char *shapeExpr = "SHAPE(DATA($1))";
 	struct descriptor shapeExprD = {strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr};
 
-	_int64u start64, end64, delta64, *timebase64, *outDim;
+	uint64_t start64, end64, delta64, *timebase64, *outDim;
 //	float *timebaseFloat;
 	double *timebaseDouble;
 	int *dims;

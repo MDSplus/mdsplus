@@ -26,6 +26,7 @@
 	Description:
 
 +-----------------------------------------------------------------------------*/
+#include "treeshrp.h" /* must be first or off_t wrong */
 #ifndef HAVE_VXWORKS_H
 #include <config.h>
 #endif
@@ -35,7 +36,6 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
-#include "treeshrp.h"
 #include "treethreadsafe.h"
 #include <treeshr.h>
 #include <usagedef.h>
@@ -83,8 +83,8 @@ extern int PutRecordRemote();
 
 extern void **TreeCtx();
 
-_int64 TreeTimeInserted() {
-  _int64 ans;
+int64_t TreeTimeInserted() {
+  int64_t ans;
   LibTimeToVMSTime(0,&ans);
   return ans;
 }
@@ -106,7 +106,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int       shot_open;
   EXTENDED_ATTRIBUTES attributes;
   int extended = 0;
-  _int64 extended_offset;
+  int64_t extended_offset;
   int compress_utility = utility_update == 2;
 #if !defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H)
   if (!saved_uic)
@@ -124,7 +124,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   {
     int       stv;
     NCI       local_nci,old_nci;
-    _int64    saved_viewdate;
+    int64_t    saved_viewdate;
     status = TreeCallHook(PutData,info_ptr,nid);
     if (status && !(status & 1))
       return status;
@@ -422,7 +422,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   static    int nonvms_compatible=-1;
   char      *buffer = 0;
   char      *bptr;
-  _int64 eof;
+  int64_t eof;
   int locked=0;
   unsigned char rfa[6];
   if (blen > 0) {
@@ -493,7 +493,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   }
   if (nci_ptr->flags & NciM_VERSIONS) {
     char nci_bytes[42];
-    _int64 old_nci_offset;
+    int64_t old_nci_offset;
     TreeSerializeNciOut(old_nci_ptr,nci_bytes);
     old_nci_offset =  MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
     status = (MDS_IO_WRITE(info->data_file->put,nci_bytes,sizeof(nci_bytes)) == sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
@@ -517,7 +517,7 @@ static int PutDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct descri
   while (bytes_to_put && (status & 1))
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    _int64 eof;
+    int64_t eof;
     unsigned char rfa[6];
     status = TreeLockDatafile(info, 0, 0);
     if (status & 1)
@@ -569,7 +569,7 @@ static int UpdateDatafile(TREE_INFO *info, int nodenum, NCI *nci_ptr, struct des
   while (bytes_to_put && (status & 1))
   {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    _int64 rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+    int64_t rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
     status = TreeLockDatafile(info, 0, rfa_l);
     if (status & 1)
     {
@@ -612,7 +612,7 @@ int TreeSetTemplateNci(NCI *nci)
   return TreeSUCCESS;
 }
 
-int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
   int deleted=1;
   int status=1;
@@ -625,7 +625,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
   return status;
 }
 
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
   return MDS_IO_LOCK(readonly ? info->data_file->get : info->data_file->put, 
 	  offset, offset >= 0 ? 12 : (DATAF_C_MAX_RECORD_SIZE * 3), MDS_IO_LOCK_NONE,0);
@@ -635,14 +635,14 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
 
 static int LockStart;
 static int LockSize;
-int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
 	LockStart = offset >= 0 ? offset : MDS_IO_LSEEK(info->data_file->put,0,SEEK_END);
 	LockSize = offset >= 0 ? 12 : 0x7fffffff;
 	return LockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
   return UnlockFile((HANDLE)_get_osfhandle(readonly ? info->data_file->get : info->data_file->put), LockStart, 0,
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
@@ -654,7 +654,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 int TreeUnLockDatafile(TREE_INFO *info, int readonly, int nodenum)
 { return TreeSUCCESS; }
 #else
-int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
   struct flock flock_info;
   flock_info.l_type = readonly ? F_RDLCK : F_WRLCK;
@@ -665,7 +665,7 @@ int TreeLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
           TreeSUCCESS : TreeLOCK_FAILURE;
 }
 
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, _int64 offset)
+int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
   struct flock flock_info;
   flock_info.l_type = F_UNLCK;

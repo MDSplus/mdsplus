@@ -1,9 +1,9 @@
+#define EMPTY_NODE
+#define EMPTY_NCI
+#include "treeshrp.h" /*must be first or off_t is misdefined*/
 #include <STATICdef.h>
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -13,10 +13,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include <treeshr.h>
 #include <errno.h>
 #include <fcntl.h>
-#define EMPTY_NODE
-#define EMPTY_NCI
 #include <ncidef.h>
-#include "treeshrp.h"
 #include <mds_stdarg.h>
 #include <usagedef.h>
 #include <libroutines.h>
@@ -75,7 +72,7 @@ int TreeWriteTree(char *exp_ptr, int shotid)
 {
   return _TreeWriteTree(TreeCtx(), exp_ptr, shotid);
 }
-_int64 TreeGetDatafileSize()
+int64_t TreeGetDatafileSize()
 {
   return _TreeGetDatafileSize(*TreeCtx());
 }
@@ -663,7 +660,7 @@ STATIC_ROUTINE void FreeHeaderOut(TREE_HEADER *hdr)
 #endif
 
 
-_int64 _TreeGetDatafileSize(void *dbid)
+int64_t _TreeGetDatafileSize(void *dbid)
 {
 	int status;
 	PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;

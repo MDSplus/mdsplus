@@ -23,6 +23,7 @@ int TreeGetCurrentShotId(experiment,shot)
    use without specific written approval of MIT Plasma Fusion Center
    Management.
 ------------------------------------------------------------------------------*/
+#include "treeshrp.h" /* must be first of off_t wrong */
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -34,7 +35,6 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <fcntl.h>
 #include <ncidef.h>
 #include <treeshr.h>
-#include "treeshrp.h"
 extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
 extern int TreeSetCurrentShotIdRemote();

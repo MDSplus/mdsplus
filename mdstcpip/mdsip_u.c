@@ -705,7 +705,7 @@ int main(int argc, char **argv)
 #endif
 }
 
- static int lock_file(int fd, _int64 offset,  int size, int mode_in, int *deleted) {
+ static int lock_file(int fd, int64_t offset,  int size, int mode_in, int *deleted) {
    int status;
    int mode=mode_in &  MDS_IO_LOCK_MASK;
    int nowait=mode_in & MDS_IO_LOCK_NOWAIT;
@@ -1275,7 +1275,7 @@ static void ProcessMessage(Client *c, Message *message)
         int fd = message->h.dims[1];
         off_t offset;
         int whence = message->h.dims[4];
-      	_int64 ans;
+      	int64_t ans;
         struct descriptor ans_d = {8, DTYPE_Q, CLASS_S, 0};
 #ifdef _big_endian
 	    int tmp;
@@ -1283,7 +1283,7 @@ static void ProcessMessage(Client *c, Message *message)
         message->h.dims[2] = message->h.dims[3];
         message->h.dims[3] = tmp;
 #endif
-        offset = (off_t)*(_int64 *)&message->h.dims[2];
+        offset = (off_t)*(int64_t *)&message->h.dims[2];
       	ans = lseek(fd,offset,whence);
         ans_d.pointer = (char *)&ans;
         SendResponse(c, 1, (struct descriptor *)&ans_d);
@@ -1328,7 +1328,7 @@ static void ProcessMessage(Client *c, Message *message)
       {
         int fd = message->h.dims[1];
         int status;
-        _int64 offset;
+        int64_t offset;
         int size = message->h.dims[4];
         int mode_in = message->h.dims[5];
         int mode = mode_in & 0x3;
@@ -1336,9 +1336,9 @@ static void ProcessMessage(Client *c, Message *message)
         int deleted;
         DESCRIPTOR_LONG(ans_d,0);
 #ifdef _big_endian
-	offset = ((_int64)message->h.dims[2]) << 32 | message->h.dims[3];
+	offset = ((int64_t)message->h.dims[2]) << 32 | message->h.dims[3];
 #else
-	offset = ((_int64)message->h.dims[3]) << 32 | message->h.dims[2];
+	offset = ((int64_t)message->h.dims[3]) << 32 | message->h.dims[2];
 #endif
 	status = lock_file(fd, offset, size, mode | nowait, &deleted);
         ans_d.pointer = (char *)&status;
@@ -1395,7 +1395,7 @@ static void ProcessMessage(Client *c, Message *message)
         message->h.dims[2] = message->h.dims[3];
         message->h.dims[3] = tmp;
 #endif
-        offset = (off_t)*(_int64 *)&message->h.dims[2];
+        offset = (off_t)*(int64_t *)&message->h.dims[2];
         
 	lock_file(fd, offset, num, 1, &deleted);
       	lseek(fd,offset,SEEK_SET);

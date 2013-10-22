@@ -478,7 +478,7 @@ int Tdi1Sort(int opcode, int narg, struct descriptor *list[],
              struct descriptor_xd *out_ptr)
 {
     int status = 1;
-    STATIC_THREADSAFE _int64 ran = 0;
+    STATIC_THREADSAFE int64_t ran = 0;
     int i, j, keep, l, r, jstack, *ndx;
     int upcase = 0, cmode = -1, len, n = 0;
     int (*gtr) () = 0;

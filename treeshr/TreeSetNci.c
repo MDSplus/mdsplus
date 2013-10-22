@@ -30,9 +30,7 @@
 	Description:
 
 +-----------------------------------------------------------------------------*/
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
+#include "treeshrp.h" /* must be first or off_t wrong */
 #include <STATICdef.h>
 #ifdef _WIN32
 #include <windows.h>
@@ -46,7 +44,6 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <treeshr.h>
-#include "treeshrp.h"
 #include <ncidef.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

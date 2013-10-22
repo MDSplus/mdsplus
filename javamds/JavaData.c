@@ -596,19 +596,19 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 	  	  case DTYPE_Q:
 		  case DTYPE_QU:
 			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "J");
-			    desc->length = sizeof(_int64);
+			    desc->length = sizeof(int64_t);
 			    desc->pointer = (char *)malloc(desc->length);
-			    *(_int64 *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
+			    *(int64_t *)desc->pointer =(*env)->GetLongField(env, obj, datum_fid);
 			    return desc;
 	  	  case DTYPE_O:
 		  case DTYPE_OU:
 			    datum_fid = (*env)->GetFieldID(env, cls, "datum", "[J");
 			    jlongs = (*env)->GetObjectField(env, obj, datum_fid);	
 			    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
-			    desc->length = 2 * sizeof(_int64);
+			    desc->length = 2 * sizeof(int64_t);
 			    desc->pointer = (char *)malloc(desc->length);
-			    *(_int64 *)desc->pointer = longs[0];
-			    *((_int64 *)desc->pointer + 1) = longs[1];
+			    *(int64_t *)desc->pointer = longs[0];
+			    *((int64_t *)desc->pointer + 1) = longs[1];
 			    (*env)->ReleaseLongArrayElements(env, jlongs, longs, 0);
 			    return desc;
 		  case DTYPE_T:
@@ -707,7 +707,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = sizeof(_int64);
+		    array_d->length = sizeof(int64_t);
 		    array_d->arsize = array_d->length * length;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);
@@ -719,7 +719,7 @@ struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj)
 		    jlongs = (*env)->GetObjectField(env, obj, datum_fid);
 		    longs =  (*env)->GetLongArrayElements(env, jlongs,0);
 		    length = (*env)->GetArrayLength(env, jlongs);
-		    array_d->length = 2*sizeof(_int64);
+		    array_d->length = 2*sizeof(int64_t);
 		    array_d->arsize = array_d->length * length/2;
 		    array_d->pointer = (char *)malloc(array_d->arsize);
 		    memcpy(array_d->pointer, longs, array_d->arsize);

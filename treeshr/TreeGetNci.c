@@ -1,12 +1,9 @@
-#ifndef HAVE_VXWORKS_H
-#include <config.h>
-#endif
+#include "treeshrp.h" /* must be first or off_t wrong */
 #if defined(_WIN32)
 #include <io.h>
 #endif
 #include <fcntl.h>
 #include <treeshr.h>
-#include "treeshrp.h"
 #include <ncidef.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -70,7 +67,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   NODE     *cng_node;
   int       node_exists;
   int		depth;
-  _int64    rfa_l;
+  int64_t    rfa_l;
   int       count = 0;
   NID      *out_nids;
   NID      *end_nids;
@@ -690,7 +687,7 @@ int TreeGetNciW(TREE_INFO *info, int node_num, NCI *nci, unsigned int version)
 	  if (status & 1) {
 	    char nci_bytes[42];
 	    unsigned int n_version=0;
-	    _int64 viewDate;
+	    int64_t viewDate;
 	    int deleted=1;
 	    while (status & 1 && deleted) {
 	      status = MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes, sizeof(nci_bytes),&deleted) ==
@@ -781,32 +778,32 @@ void TreeFree(void *ptr)
 }
 
 #ifdef HAVE_VXWORKS_H
-_int64 RfaToSeek(unsigned char *rfa)
+int64_t RfaToSeek(unsigned char *rfa)
 {
-  _int64 ans = (((_int64)rfa[0] << 9) |
-            ((_int64)rfa[1] << 17) |
-            ((_int64)rfa[2] << 25) |
-            ((_int64)rfa[4]) |
-            (((_int64)rfa[5] & 1) << 8));
+  int64_t ans = (((int64_t)rfa[0] << 9) |
+            ((int64_t)rfa[1] << 17) |
+            ((int64_t)rfa[2] << 25) |
+            ((int64_t)rfa[4]) |
+            (((int64_t)rfa[5] & 1) << 8));
     ans =- 512;
-    ans |= ((_int64)rfa[3] << 33);
+    ans |= ((int64_t)rfa[3] << 33);
   return ans;
 }
 #else
-_int64 RfaToSeek(unsigned char *rfa)
+int64_t RfaToSeek(unsigned char *rfa)
 {
-  _int64 ans = (((_int64)rfa[0] << 9) |
-            ((_int64)rfa[1] << 17) |
-            ((_int64)rfa[2] << 25) |
-            ((_int64)rfa[4]) |
-            (((_int64)rfa[5] & 1) << 8)) - 512;
-    ans |= ((_int64)rfa[3] << 33);
+  int64_t ans = (((int64_t)rfa[0] << 9) |
+            ((int64_t)rfa[1] << 17) |
+            ((int64_t)rfa[2] << 25) |
+            ((int64_t)rfa[4]) |
+            (((int64_t)rfa[5] & 1) << 8)) - 512;
+    ans |= ((int64_t)rfa[3] << 33);
   return ans;
 }
 #endif
-void SeekToRfa(_int64 seek, unsigned char *rfa)
+void SeekToRfa(int64_t seek, unsigned char *rfa)
 {
-  _int64 tmp = seek + 512;
+  int64_t tmp = seek + 512;
   rfa[0] = (unsigned char)((tmp >> 9) & 0xff);
   rfa[1] = (unsigned char)((tmp >> 17) & 0xff);
   rfa[2] = (unsigned char)((tmp >> 25) & 0xff);

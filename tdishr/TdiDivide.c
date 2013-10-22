@@ -191,9 +191,9 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_L:Operate(int)
         case DTYPE_LU:Operate(unsigned int)
 #ifndef HAVE_VXWORKS_H
-        case DTYPE_Q:Operate(_int64);
+        case DTYPE_Q:Operate(int64_t);
     case DTYPE_QU:
-        Operate(_int64u);
+        Operate(uint64_t);
     case DTYPE_O:
         OperateWide(octaword, 4, 1);
     case DTYPE_OU:
