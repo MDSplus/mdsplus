@@ -25,7 +25,7 @@ int main(int argc, char *argv[])
   unsigned long vULong = UINT_MAX;
 
   int dtype_ulonglong = DTYPE_ULONGLONG;
-  long vULongLong[2] = {UINT_MAX,UINT_MAX};
+  unsigned long vULongLong[2] = {UINT_MAX,UINT_MAX};
 
   int dtype_char = DTYPE_CHAR;
   char vChar = CHAR_MAX;
@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
   dsc = descr(&dtype_ulong,&vULong,&null);
   status = MdsValue("$-1",&dsc,&dsc,&null,&len);
   msg = (vULong == UINT_MAX-1 ? " ok":"BAD");
-  printf("%s ULONG: %u = %u\n",msg,vULong,UINT_MAX-1);
+  printf("%s ULONG: %lu = %u\n",msg,vULong,UINT_MAX-1);
 
   dsc = descr(&dtype_ulonglong,vULongLong,&null);
   status = MdsValue("$-1",&dsc,&dsc,&null,&len);
@@ -100,12 +100,12 @@ int main(int argc, char *argv[])
 #if defined( _QUAD_HIGHWORD) && defined(_QUAD_LOWWORD)
   msg = ( (vULongLong[_QUAD_LOWWORD] == UINT_MAX-1) &&
           (vULongLong[_QUAD_HIGHWORD] == UINT_MAX) ? " ok":"BAD");
-  printf("%s ULONGLONG[QUAD_LOWWORD]: %u = %u     ULONGLONG[QUAD_HIGHWORD]: %u = %u\n",msg,
+  printf("%s ULONGLONG[QUAD_LOWWORD]: %lu = %u     ULONGLONG[QUAD_HIGHWORD]: %lu = %u\n",msg,
          vULongLong[_QUAD_LOWWORD],UINT_MAX-1,vULongLong[_QUAD_HIGHWORD],UINT_MAX);  
 #else
   msg = ( (vULongLong[0] == UINT_MAX-1) &&
           (vULongLong[1] == UINT_MAX) ? " ok":"BAD");
-  printf("%s ULONGLONG[0]: %u = %u     ULONGLONG[1]: %u = %u\n",msg,
+  printf("%s ULONGLONG[0]: %lu = %lu     ULONGLONG[1]: %lu = %lu\n",msg,
          vULongLong[0],UINT_MAX-1,vULongLong[1],UINT_MAX);
 #endif
 
@@ -122,19 +122,19 @@ int main(int argc, char *argv[])
   dsc = descr(&dtype_long,&vLong,&null);
   status = MdsValue("$-1",&dsc,&dsc,&null,&len);
   msg = (vLong == INT_MAX-1 ? " ok":"BAD");
-  printf("%s LONG: %u = %u\n",msg,vLong,INT_MAX-1);
+  printf("%s LONG: %lu = %u\n",msg,vLong,INT_MAX-1);
 
   dsc = descr(&dtype_longlong,vLongLong,&null);
   status = MdsValue("$-1",&dsc,&dsc,&null,&len);
 #if defined( _QUAD_HIGHWORD) && defined(_QUAD_LOWWORD)
   msg = ( (vLongLong[_QUAD_LOWWORD] == INT_MAX-1) &&
           (vLongLong[_QUAD_HIGHWORD] == INT_MAX) ? " ok":"BAD");
-  printf("%s LONGLONG[QUAD_LOWWORD]: %u = %u     LONGLONG[QUAD_HIGHWORD]: %u = %u\n",msg,
+  printf("%s LONGLONG[QUAD_LOWWORD]: %lu = %u     LONGLONG[QUAD_HIGHWORD]: %lu = %u\n",msg,
          vLongLong[_QUAD_LOWWORD],INT_MAX-1,vLongLong[_QUAD_HIGHWORD],INT_MAX);
 #else
   msg = ( (vLongLong[0] == INT_MAX-1) && 
 	  (vLongLong[1] == INT_MAX) ? " ok":"BAD");
-  printf("%s LONGLONG[0]: %u = %u     LONGLONG[1]: %u = %u\n",msg,
+  printf("%s LONGLONG[0]: %lu = %u     LONGLONG[1]: %lu = %u\n",msg,
 	 vLongLong[0],INT_MAX-1,vLongLong[1],INT_MAX);
 #endif
 
