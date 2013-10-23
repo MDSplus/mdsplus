@@ -33,6 +33,8 @@ else
                 result = reshape(mdsthing.getDoubleArray, shape);
             case 'MDSplus.Float32Array'
                 result = reshape(mdsthing.getFloatArray,  shape);
+            case 'MDSplus.StringArray'
+                result = char(mdsthing.getStringArray);
             otherwise
                 throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
         end
