@@ -384,19 +384,15 @@ int64_t * Data::getLongArray(int *numElements)
 	deleteData(retData);
 	return res;
 }
-std::vector<_int64> Data::getLongArray()
+std::vector<int64_t> Data::getLongArray()
 {
 	int numElements;
-	_int64 *retData = getLongArray(&numElements);
-	std::vector<_int64> retVect(retData, retData+numElements);
+	int64_t *retData = getLongArray(&numElements);
+	std::vector<int64_t> retVect(retData, retData+numElements);
 	delete [] retData;
 	return retVect;
 }
-#ifdef HAVE_WINDOWS_H
 unsigned int64_t * Data::getLongUnsignedArray(int *numElements)
-#else
-uint64_t * Data::getLongUnsignedArray(int *numElements)
-#endif
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLongUnsigned(dscPtr);
@@ -405,33 +401,18 @@ uint64_t * Data::getLongUnsignedArray(int *numElements)
 		throw MdsException("Cannot convert to Long Unsigned Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
-#ifdef HAVE_WINDOWS_H	
 	unsigned int64_t *res = retData->getLongUnsignedArray(numElements);
-#else
-	uint64_t *res = retData->getLongUnsignedArray(numElements);
-#endif
 	deleteData(retData);
 	return res;
 }
-#ifdef HAVE_WINDOWS_H
-std::vector<unsigned _int64> Data::getLongUnsignedArray()
+#std::vector<unsigned int64_t> Data::getLongUnsignedArray()
 {
 	int numElements;
 	unsigned _int64 *retData = getLongUnsignedArray(&numElements);
-	std::vector<unsigned _int64> retVect(retData, retData+numElements);
+	std::vector<unsigned int64_t> retVect(retData, retData+numElements);
 	delete [] retData;
 	return retVect;
 }
-#else
-std::vector<_int64u> Data::getLongUnsignedArray()
-{
-	int numElements;
-	_int64u *retData = getLongUnsignedArray(&numElements);
-	std::vector<_int64u> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
-}
-#endif
 float * Data::getFloatArray(int *numElements)
 {
 	void *dscPtr = convertToDsc();
