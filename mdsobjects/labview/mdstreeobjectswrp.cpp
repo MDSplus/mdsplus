@@ -224,7 +224,7 @@ DLLEXPORT void mdsplus_tree_getCurrent(int *currentOut, const char *treeNameIn, 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, _int64 *sizeOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_tree_getDatafileSize(const void *lvTreePtr, int64_t *sizeOut, ErrorCluster *error)
 {
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1786,7 +1786,7 @@ DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *status
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, _int64 *timeInsertedOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -2103,7 +2103,7 @@ DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
-	_int64 *timesArrIn = NULL;	
+	int64_t *timesArrIn = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
@@ -2112,9 +2112,9 @@ DLLEXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		arrayPtrIn = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtrIn));
 		int timesArrLen = static_cast<int>((*lvLngArrHdlIn)->dimSize);
-		timesArrIn = new _int64[timesArrLen];
+		timesArrIn = new int64_t[timesArrLen];
 		for (int i = 0; i < timesArrLen; i++)
-			timesArrIn[i] = static_cast<_int64>((*lvLngArrHdlIn)->elt[i]);
+			timesArrIn[i] = static_cast<int64_t>((*lvLngArrHdlIn)->elt[i]);
 		treeNodePtr->makeTimestampedSegment(arrayPtrIn, timesArrIn);
 		delete[] timesArrIn;
 	}
@@ -2198,7 +2198,7 @@ DLLEXPORT void mdsplus_treenode_putData(const void *lvTreeNodePtr, const void *l
 }
 
 
-DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lvDataPtrIn, _int64 *timeIn, int sizeIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_treenode_putRow(const void *lvTreeNodePtr, const void *lvDataPtrIn, int64_t *timeIn, int sizeIn, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	Data *dataPtrIn = NULL;
@@ -2248,7 +2248,7 @@ DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr,
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
-	_int64 *timesArrIn = NULL;	
+	int64_t *timesArrIn = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
@@ -2257,9 +2257,9 @@ DLLEXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr,
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		arrayPtrIn = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtrIn));
 		int timesArrLen = static_cast<int>((*lvLngArrHdlIn)->dimSize);
-		timesArrIn = new _int64[timesArrLen];
+		timesArrIn = new int64_t[timesArrLen];
 		for (int i = 0; i < timesArrLen; i++)
-			timesArrIn[i] = static_cast<_int64>((*lvLngArrHdlIn)->elt[i]);
+			timesArrIn[i] = static_cast<int64_t>((*lvLngArrHdlIn)->elt[i]);
 		treeNodePtr->putTimestampedSegment(arrayPtrIn, timesArrIn);
 		delete[] timesArrIn;
 	}

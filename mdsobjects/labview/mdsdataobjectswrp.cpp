@@ -280,7 +280,7 @@ DLLEXPORT void mdsplus_array_getIntArray(const void *lvArrayPtr, LIntArrHdl lvIn
 DLLEXPORT void mdsplus_array_getLongArray(const void *lvArrayPtr, LLngArrHdl lvLngArrHdlOut, ErrorCluster *error)
 {
 	Array *arrayPtr = NULL;
-	_int64 *longArrOut = NULL;
+	int64_t *longArrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
@@ -1071,7 +1071,7 @@ DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntA
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, int64_t *longOut, ErrorCluster *error)
 {
 	Data *dataPtr = NULL;
 	MgErr errorCode = noErr;
@@ -1095,7 +1095,7 @@ DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, _int64 *longOut, Erro
 DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLngArrHdlOut, ErrorCluster *error)
 {
 	Data *dataPtr = NULL;
-	_int64 *longArrOut = NULL;
+	int64_t *longArrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
@@ -1627,7 +1627,7 @@ DLLEXPORT void mdsplus_float32_getInt(const void *lvFloat32Ptr, int *intOut, Err
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Float32 *float32Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -1844,7 +1844,7 @@ DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, Err
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Float64 *float64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2062,7 +2062,7 @@ DLLEXPORT void mdsplus_int16_getInt(const void *lvInt16Ptr, int *intOut, ErrorCl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Int16 *int16Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2279,7 +2279,7 @@ DLLEXPORT void mdsplus_int32_getInt(const void *lvInt32Ptr, int *intOut, ErrorCl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Int32 *int32Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2393,7 +2393,7 @@ DLLEXPORT void mdsplus_int32array_destructor(void **lvInt32ArrayPtr)
 												INT64
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, _int64 valIn, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_constructor(void **lvInt64PtrOut, int64_t valIn, ErrorCluster *error)
 {
 	Int64 *int64PtrOut = NULL;
 	MgErr errorCode = noErr;
@@ -2413,14 +2413,14 @@ DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, _int64 valIn, Err
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64_destructor(void **lvInt64Ptr)
+DLLEXPORT void mdsplusint64_t_destructor(void **lvInt64Ptr)
 {
 	Int64 *int64Ptr = reinterpret_cast<Int64 *>(*lvInt64Ptr);
 	deleteData(int64Ptr);
 	*lvInt64Ptr = NULL;
 }
 
-DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error)
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2439,7 +2439,7 @@ DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, Erro
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_getDouble(const void *lvInt64Ptr, double *doubleOut, ErrorCluster *error)
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2458,7 +2458,7 @@ DLLEXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_getFloat(const void *lvInt64Ptr, float *floatOut, ErrorCluster *error)
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2477,7 +2477,7 @@ DLLEXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, E
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_getInt(const void *lvInt64Ptr, int *intOut, ErrorCluster *error)
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2496,7 +2496,7 @@ DLLEXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorCl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_getLong(const void *lvInt64Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2515,7 +2515,7 @@ DLLEXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, _int64 *longOut, Er
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_t_getShort(const void *lvInt64Ptr, short *shortOut, ErrorCluster *error)
 {
 	Int64 *int64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -2538,19 +2538,19 @@ DLLEXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, E
 												INT64ARRAY
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_tarray_constructor(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error)
 {
 	Int64Array *int64ArrayPtrOut = NULL;
-	_int64 *int64Arr = NULL;	
+	int64_t *int64Arr = NULL;	
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
 		int int64ArrLen = static_cast<int>((*lvLngArrHdlIn)->dimSize);
-		int64Arr = new _int64[int64ArrLen];
+		int64Arr = new int64_t[int64ArrLen];
 		for (int i = 0; i < int64ArrLen; i++)
-			int64Arr[i] = static_cast<_int64>((*lvLngArrHdlIn)->elt[i]);
+			int64Arr[i] = static_cast<int64_t>((*lvLngArrHdlIn)->elt[i]);
 		int64ArrayPtrOut = new Int64Array(int64Arr, int64ArrLen);
 		delete[] int64Arr;
 		*lvInt64ArrayPtrOut = reinterpret_cast<void *>(int64ArrayPtrOut);
@@ -2565,10 +2565,10 @@ DLLEXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const L
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
+DLLEXPORT void mdsplusint64_tarray_constructor_dims(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
 {
 	Int64Array *int64ArrayPtrOut = NULL;
-	_int64 *int64Arr = NULL;
+	int64_t *int64Arr = NULL;
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
@@ -2576,9 +2576,9 @@ DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, co
 	try
 	{
 		int int64ArrLen = static_cast<int>((*lvLngArrHdlIn)->dimSize);
-		int64Arr = new _int64[int64ArrLen];
+		int64Arr = new int64_t[int64ArrLen];
 		for (int i = 0; i < int64ArrLen; i++)
-			int64Arr[i] = static_cast<_int64>((*lvLngArrHdlIn)->elt[i]);
+			int64Arr[i] = static_cast<int64_t>((*lvLngArrHdlIn)->elt[i]);
 		int intArrLen = static_cast<int>((*lvIntArrHdlIn)->dimSize);
 		intArr = new int[intArrLen];
 		for (int i = 0; i < intArrLen; i++)
@@ -2599,7 +2599,7 @@ DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, co
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int64array_destructor(void **lvInt64ArrayPtr)
+DLLEXPORT void mdsplusint64_tarray_destructor(void **lvInt64ArrayPtr)
 {
 	Int64Array *int64ArrayPtr = reinterpret_cast<Int64Array *>(*lvInt64ArrayPtr);
 	deleteData(int64ArrayPtr);
@@ -2713,7 +2713,7 @@ DLLEXPORT void mdsplus_int8_getInt(const void *lvInt8Ptr, int *intOut, ErrorClus
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Int8 *int8Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -3515,7 +3515,7 @@ DLLEXPORT void mdsplus_uint16_getInt(const void *lvUint16Ptr, int *intOut, Error
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_uint16_getLong(const void *lvUint16Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_uint16_getLong(const void *lvUint16Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Uint16 *uint16Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -3733,7 +3733,7 @@ DLLEXPORT void mdsplus_uint32_getInt(const void *lvUint32Ptr, int *intOut, Error
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_uint32_getLong(const void *lvUint32Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_uint32_getLong(const void *lvUint32Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Uint32 *uint32Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -3849,7 +3849,7 @@ DLLEXPORT void mdsplus_uint32array_destructor(void **lvUint32ArrayPtr)
  ********************************************************************************************************/
 
 #ifdef HAVE_WINDOWS_H
-DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned _int64 valIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned int64_t valIn, ErrorCluster *error)
 {
 	Uint64 *uint64PtrOut = NULL;
 	MgErr errorCode = noErr;
@@ -3869,7 +3869,7 @@ DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned _int64
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 #else
-DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, _int64u valIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn, ErrorCluster *error)
 {
 	Uint64 *uint64PtrOut = NULL;
 	MgErr errorCode = noErr;
@@ -4004,7 +4004,7 @@ DLLEXPORT void mdsplus_uint64_getInt(const void *lvUint64Ptr, int *intOut, Error
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_uint64_getLong(const void *lvUint64Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_uint64_getLong(const void *lvUint64Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Uint64 *uint64Ptr = NULL;
 	MgErr errorCode = noErr;
@@ -4050,9 +4050,9 @@ DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const
 {
 	Uint64Array *uint64ArrayPtrOut = NULL;
 #ifdef HAVE_WINDOWS_H
-	unsigned _int64 *uint64Arr = NULL;	
+	unsigned int64_t *uint64Arr = NULL;	
 #else
-	_int64u *uint64Arr = NULL;	
+	uint64_t *uint64Arr = NULL;	
 #endif
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
@@ -4061,15 +4061,15 @@ DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const
 	{
 		int uint64ArrLen = static_cast<int>((*lvULngArrHdlIn)->dimSize);
 #ifdef HAVE_WINDOWS_H
-		uint64Arr = new unsigned _int64[uint64ArrLen];
+		uint64Arr = new unsigned int64_t[uint64ArrLen];
 #else
-		uint64Arr = new _int64u[uint64ArrLen];
+		uint64Arr = new uint64_t[uint64ArrLen];
 #endif
 		for (int i = 0; i < uint64ArrLen; i++)
 #ifdef HAVE_WINDOWS_H
-			uint64Arr[i] = static_cast<unsigned _int64>((*lvULngArrHdlIn)->elt[i]);
+			uint64Arr[i] = static_cast<unsigned int64_t>((*lvULngArrHdlIn)->elt[i]);
 #else
-			uint64Arr[i] = static_cast<_int64u>((*lvULngArrHdlIn)->elt[i]);
+			uint64Arr[i] = static_cast<uint64_t>((*lvULngArrHdlIn)->elt[i]);
 #endif
 		uint64ArrayPtrOut = new Uint64Array(uint64Arr, uint64ArrLen);
 		delete[] uint64Arr;
@@ -4089,9 +4089,9 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 {
 	Uint64Array *uint64ArrayPtrOut = NULL;
 #ifdef HAVE_WINDOWS_H
-	unsigned _int64 *uint64Arr = NULL;
+	unsigned int64_t *uint64Arr = NULL;
 #else
-	_int64u *uint64Arr = NULL;
+	uint64_t *uint64Arr = NULL;
 #endif
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
@@ -4101,15 +4101,15 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 	{
 		int uint64ArrLen = static_cast<int>((*lvULngArrHdlIn)->dimSize);
 #ifdef HAVE_WINDOWS_H
-		uint64Arr = new unsigned _int64[uint64ArrLen];
+		uint64Arr = new unsigned int64_t[uint64ArrLen];
 #else
-		uint64Arr = new _int64u[uint64ArrLen];
+		uint64Arr = new uint64_t[uint64ArrLen];
 #endif
 		for (int i = 0; i < uint64ArrLen; i++)
 #ifdef HAVE_WINDOWS_H
-			uint64Arr[i] = static_cast<unsigned _int64>((*lvULngArrHdlIn)->elt[i]);
+			uint64Arr[i] = static_cast<unsigned int64_t>((*lvULngArrHdlIn)->elt[i]);
 #else
-			uint64Arr[i] = static_cast<_int64u>((*lvULngArrHdlIn)->elt[i]);
+			uint64Arr[i] = static_cast<uint64_t>((*lvULngArrHdlIn)->elt[i]);
 #endif
 		int intArrLen = static_cast<int>((*lvIntArrHdlIn)->dimSize);
 		intArr = new int[intArrLen];
@@ -4246,7 +4246,7 @@ DLLEXPORT void mdsplus_uint8_getInt(const void *lvUint8Ptr, int *intOut, ErrorCl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_uint8_getLong(const void *lvUint8Ptr, _int64 *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_uint8_getLong(const void *lvUint8Ptr, int64_t *longOut, ErrorCluster *error)
 {
 	Uint8 *uint8Ptr = NULL;
 	MgErr errorCode = noErr;
