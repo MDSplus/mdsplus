@@ -306,8 +306,8 @@ protected:
 		virtual std::vector<unsigned  short> getShortUnsignedArray();
 		virtual unsigned int *getIntUnsignedArray(int *numElements);
 		virtual std::vector<unsigned int> getIntUnsignedArray();
-		virtual unsigned int64_t *getLongUnsignedArray(int *numElements);
-		virtual std::vector<unsigned _int64> getLongUnsignedArray();
+		virtual uint64_t *getLongUnsignedArray(int *numElements);
+		virtual std::vector<uint64_t> getLongUnsignedArray();
 		virtual double * getDoubleArray(int *numElements);
 		virtual std::vector<double> getDoubleArray();
 		virtual char ** getStringArray(int *numElements)
