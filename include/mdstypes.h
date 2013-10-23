@@ -6,7 +6,11 @@
 #include <stdint.h>
 #else /* HAVE_STDINT_H */
 #ifdef HAVE_WINDOWS_H
+typedef __int64 off_t;
+typedef off_t _off_t;
+#define _OFF_T_DEFINED
 #include <msc_stdint.h>
+#define _STDINT_H
 #else /* HAVE_WINDOWS_H */
 #if (SIZEOF__INT64 != 8)
 #if (SIZEOF_LONG == 8)

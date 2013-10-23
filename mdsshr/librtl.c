@@ -14,6 +14,7 @@
 #ifdef HAVE_GETTIMEOFDAY
 #include <sys/types.h>
 #include <sys/time.h>
+#include <strings.h>
 #endif
 #endif
 

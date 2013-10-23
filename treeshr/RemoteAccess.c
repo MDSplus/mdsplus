@@ -1,5 +1,5 @@
-#include "treeshrp.h"
-#include <STATICdef.h>
+#include <config.h>
+#include <mdstypes.h>
 #ifdef HAVE_WINDOWS_H
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -17,6 +17,8 @@
 #include <pthread.h>
 #endif
 #endif
+#include "treeshrp.h"
+#include <STATICdef.h>
 #include <time.h>
 #include <fcntl.h>
 #include <sys/stat.h>

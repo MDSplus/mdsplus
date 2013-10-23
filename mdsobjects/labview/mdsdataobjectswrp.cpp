@@ -3848,27 +3848,6 @@ DLLEXPORT void mdsplus_uint32array_destructor(void **lvUint32ArrayPtr)
 												UINT64
  ********************************************************************************************************/
 
-#ifdef HAVE_WINDOWS_H
-DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned int64_t valIn, ErrorCluster *error)
-{
-	Uint64 *uint64PtrOut = NULL;
-	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
-	try
-	{
-		uint64PtrOut = new Uint64(valIn);
-		*lvUint64PtrOut = reinterpret_cast<void *>(uint64PtrOut);
-	}
-	catch (const MdsException &e)
-	{
-		deleteData(uint64PtrOut);
-		errorCode = bogusError;
-		errorMessage = const_cast<char *>(e.what());
-	}
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-}
-#else
 DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn, ErrorCluster *error)
 {
 	Uint64 *uint64PtrOut = NULL;
@@ -3888,7 +3867,6 @@ DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn,
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-#endif
 
 DLLEXPORT void mdsplus_uint64_destructor(void **lvUint64Ptr)
 {
@@ -4049,28 +4027,16 @@ DLLEXPORT void mdsplus_uint64_getShort(const void *lvUint64Ptr, short *shortOut,
 DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const LULngArrHdl lvULngArrHdlIn, ErrorCluster *error)
 {
 	Uint64Array *uint64ArrayPtrOut = NULL;
-#ifdef HAVE_WINDOWS_H
-	unsigned int64_t *uint64Arr = NULL;	
-#else
 	uint64_t *uint64Arr = NULL;	
-#endif
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char *errorMessage = "";
 	try
 	{
 		int uint64ArrLen = static_cast<int>((*lvULngArrHdlIn)->dimSize);
-#ifdef HAVE_WINDOWS_H
-		uint64Arr = new unsigned int64_t[uint64ArrLen];
-#else
 		uint64Arr = new uint64_t[uint64ArrLen];
-#endif
 		for (int i = 0; i < uint64ArrLen; i++)
-#ifdef HAVE_WINDOWS_H
-			uint64Arr[i] = static_cast<unsigned int64_t>((*lvULngArrHdlIn)->elt[i]);
-#else
 			uint64Arr[i] = static_cast<uint64_t>((*lvULngArrHdlIn)->elt[i]);
-#endif
 		uint64ArrayPtrOut = new Uint64Array(uint64Arr, uint64ArrLen);
 		delete[] uint64Arr;
 		*lvUint64ArrayPtrOut = reinterpret_cast<void *>(uint64ArrayPtrOut);
@@ -4088,11 +4054,7 @@ DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const
 DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, const LULngArrHdl lvULngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
 {
 	Uint64Array *uint64ArrayPtrOut = NULL;
-#ifdef HAVE_WINDOWS_H
-	unsigned int64_t *uint64Arr = NULL;
-#else
 	uint64_t *uint64Arr = NULL;
-#endif
 	int *intArr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
@@ -4100,17 +4062,9 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 	try
 	{
 		int uint64ArrLen = static_cast<int>((*lvULngArrHdlIn)->dimSize);
-#ifdef HAVE_WINDOWS_H
-		uint64Arr = new unsigned int64_t[uint64ArrLen];
-#else
 		uint64Arr = new uint64_t[uint64ArrLen];
-#endif
 		for (int i = 0; i < uint64ArrLen; i++)
-#ifdef HAVE_WINDOWS_H
-			uint64Arr[i] = static_cast<unsigned int64_t>((*lvULngArrHdlIn)->elt[i]);
-#else
 			uint64Arr[i] = static_cast<uint64_t>((*lvULngArrHdlIn)->elt[i]);
-#endif
 		int intArrLen = static_cast<int>((*lvIntArrHdlIn)->dimSize);
 		intArr = new int[intArrLen];
 		for (int i = 0; i < intArrLen; i++)

@@ -478,11 +478,7 @@ DLLEXPORT void mdsplus_uint32array_constructor_dims(void **lvUint32ArrayPtrOut, 
 DLLEXPORT void mdsplus_uint32array_destructor(void **lvUint32ArrayPtr);
 
 /********** UINT64 **********/
-#ifdef HAVE_WINDOWS_H
-DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, unsigned int64_t valIn, ErrorCluster *error);
-#else
 DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn, ErrorCluster *error);
-#endif
 DLLEXPORT void mdsplus_uint64_destructor(void **lvUint64Ptr);
 DLLEXPORT void mdsplus_uint64_getByte(const void *lvUint64Ptr, char *byteOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrHdlOut, ErrorCluster *error);
