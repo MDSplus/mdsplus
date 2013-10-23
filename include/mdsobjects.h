@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <vector>
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>
@@ -287,23 +288,28 @@ protected:
 
 		virtual int * getShape(int *numDim);
 		virtual char *getByteArray(int *numElements);
+		virtual std::vector<char> getByteArray();
 		virtual short * getShortArray(int *numElements);
+		virtual std::vector<short> getShortArray();
 
 		virtual int * getIntArray(int *numElements);
+		virtual std::vector<int> getIntArray();
 
 		virtual int64_t * getLongArray(int *numElements);
+		virtual std::vector<int64_t> getLongArray();
 
 		virtual float * getFloatArray(int *numElements);
+		virtual std::vector<float> getFloatArray();
 		virtual unsigned char *getByteUnsignedArray(int *numElements);
+		virtual std::vector<unsigned char> getByteUnsignedArray();
 		virtual unsigned short *getShortUnsignedArray(int *numElements);
+		virtual std::vector<unsigned  short> getShortUnsignedArray();
 		virtual unsigned int *getIntUnsignedArray(int *numElements);
-#ifdef HAVE_WINDOWS_H
+		virtual std::vector<unsigned int> getIntUnsignedArray();
 		virtual unsigned int64_t *getLongUnsignedArray(int *numElements);
-#else
-		virtual uint64_t *getLongUnsignedArray(int *numElements);
-#endif
-
+		virtual std::vector<unsigned _int64> getLongUnsignedArray();
 		virtual double * getDoubleArray(int *numElements);
+		virtual std::vector<double> getDoubleArray();
 		virtual char ** getStringArray(int *numElements)
 		{
 			printf("GET STRING ARRAY DATA !!!!!\n");
