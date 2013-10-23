@@ -405,7 +405,7 @@ unsigned int64_t * Data::getLongUnsignedArray(int *numElements)
 	deleteData(retData);
 	return res;
 }
-#std::vector<unsigned int64_t> Data::getLongUnsignedArray()
+std::vector<unsigned int64_t> Data::getLongUnsignedArray()
 {
 	int numElements;
 	unsigned _int64 *retData = getLongUnsignedArray(&numElements);
