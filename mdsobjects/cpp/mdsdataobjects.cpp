@@ -244,6 +244,17 @@ char *Data::getByteArray(int *numElements)
 	return res;
 }
 
+std::vector<char> Data::getByteArray()
+{
+	int numElements;
+	char *retData = getByteArray(&numElements);
+	std::vector<char> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
+}
+
+
+
 unsigned char *Data::getByteUnsignedArray(int *numElements)
 {
 	void *dscPtr = convertToDsc();
@@ -257,6 +268,14 @@ unsigned char *Data::getByteUnsignedArray(int *numElements)
 	unsigned char *res = retData->getByteUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
+}
+std::vector<unsigned char> Data::getByteUnsignedArray()
+{
+	int numElements;
+	unsigned char *retData = getByteUnsignedArray(&numElements);
+	std::vector<unsigned char> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
 }
 
 short * Data::getShortArray(int *numElements)
@@ -273,6 +292,14 @@ short * Data::getShortArray(int *numElements)
 	deleteData(retData);
 	return res;
 }
+std::vector<short> Data::getShortArray()
+{
+	int numElements;
+	short *retData = getShortArray(&numElements);
+	std::vector<short> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
+}
 
 unsigned short * Data::getShortUnsignedArray(int *numElements)
 {
@@ -287,6 +314,14 @@ unsigned short * Data::getShortUnsignedArray(int *numElements)
 	unsigned short *res = retData->getShortUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
+}
+std::vector<unsigned short> Data::getShortUnsignedArray()
+{
+	int numElements;
+	unsigned short *retData = getShortUnsignedArray(&numElements);
+	std::vector<unsigned short> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
 }
 
 int * Data::getIntArray(int *numElements)
@@ -303,6 +338,14 @@ int * Data::getIntArray(int *numElements)
 	deleteData(retData);
 	return res;
 }
+std::vector<int> Data::getIntArray()
+{
+	int numElements;
+	int *retData = getIntArray(&numElements);
+	std::vector<int> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
+}
 
 unsigned int * Data::getIntUnsignedArray(int *numElements)
 {
@@ -318,6 +361,14 @@ unsigned int * Data::getIntUnsignedArray(int *numElements)
 	deleteData(retData);
 	return res;
 }
+std::vector<unsigned int> Data::getIntUnsignedArray()
+{
+	int numElements;
+	unsigned int *retData = getIntUnsignedArray(&numElements);
+	std::vector<unsigned int> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
+}
 
 int64_t * Data::getLongArray(int *numElements)
 {
@@ -332,6 +383,14 @@ int64_t * Data::getLongArray(int *numElements)
 	int64_t *res = retData->getLongArray(numElements);
 	deleteData(retData);
 	return res;
+}
+std::vector<_int64> Data::getLongArray()
+{
+	int numElements;
+	_int64 *retData = getLongArray(&numElements);
+	std::vector<_int64> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
 }
 #ifdef HAVE_WINDOWS_H
 unsigned int64_t * Data::getLongUnsignedArray(int *numElements)
@@ -354,7 +413,25 @@ uint64_t * Data::getLongUnsignedArray(int *numElements)
 	deleteData(retData);
 	return res;
 }
-
+#ifdef HAVE_WINDOWS_H
+std::vector<unsigned _int64> Data::getLongUnsignedArray()
+{
+	int numElements;
+	unsigned _int64 *retData = getLongUnsignedArray(&numElements);
+	std::vector<unsigned _int64> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
+}
+#else
+std::vector<_int64u> Data::getLongUnsignedArray()
+{
+	int numElements;
+	_int64u *retData = getLongUnsignedArray(&numElements);
+	std::vector<_int64u> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
+}
+#endif
 float * Data::getFloatArray(int *numElements)
 {
 	void *dscPtr = convertToDsc();
@@ -368,6 +445,14 @@ float * Data::getFloatArray(int *numElements)
 	float *res = retData->getFloatArray(numElements);
 	deleteData(retData);
 	return res;
+}
+std::vector<float> Data::getFloatArray()
+{
+	int numElements;
+	float *retData = getFloatArray(&numElements);
+	std::vector<float> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
 }
 
 double * Data::getDoubleArray(int *numElements)
@@ -383,6 +468,14 @@ double * Data::getDoubleArray(int *numElements)
 	double *res = retData->getDoubleArray(numElements);
 	deleteData(retData);
 	return res;
+}
+std::vector<double> Data::getDoubleArray()
+{
+	int numElements;
+	double *retData = getDoubleArray(&numElements);
+	std::vector<double> retVect(retData, retData+numElements);
+	delete [] retData;
+	return retVect;
 }
 
 char *	Data::serialize(int *size)
