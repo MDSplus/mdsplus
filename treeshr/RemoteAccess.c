@@ -11,7 +11,9 @@
 #define open _open
 #define close _close
 #define read _read
+#include "treeshrp.h"
 #else
+#include "treeshrp.h"
 #include <unistd.h>
 #ifndef HAVE_VXWORKS_H
 #include <pthread.h>
