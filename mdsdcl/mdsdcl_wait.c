@@ -1,4 +1,5 @@
 #define _GNU_SOURCE /* glibc2 needs this */
+#include <config.h>
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
