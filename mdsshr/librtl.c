@@ -1,4 +1,4 @@
-#define _XOPEN_SOURCE
+#define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE /* glibc2 needs this */
 #include <mdstypes.h>
 #include <mdsdescrip.h>
@@ -18,6 +18,7 @@
 
 #include <time.h>
 #include <string.h>
+#include <strings.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
