@@ -392,7 +392,7 @@ std::vector<int64_t> Data::getLongArray()
 	delete [] retData;
 	return retVect;
 }
-unsigned int64_t * Data::getLongUnsignedArray(int *numElements)
+uint64_t * Data::getLongUnsignedArray(int *numElements)
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLongUnsigned(dscPtr);
@@ -401,15 +401,15 @@ unsigned int64_t * Data::getLongUnsignedArray(int *numElements)
 		throw MdsException("Cannot convert to Long Unsigned Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
-	unsigned int64_t *res = retData->getLongUnsignedArray(numElements);
+	uint64_t *res = retData->getLongUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
 }
-std::vector<unsigned int64_t> Data::getLongUnsignedArray()
+std::vector<uint64_t> Data::getLongUnsignedArray()
 {
 	int numElements;
-	unsigned _int64 *retData = getLongUnsignedArray(&numElements);
-	std::vector<unsigned int64_t> retVect(retData, retData+numElements);
+	uint64_t *retData = getLongUnsignedArray(&numElements);
+	std::vector<uint64_t> retVect(retData, retData+numElements);
 	delete [] retData;
 	return retVect;
 }
@@ -586,7 +586,7 @@ unsigned int Data::getIntUnsigned()
 	return res;
 }
 #ifdef HAVE_WINDOWS_H
-unsigned int64_t Data::getLongUnsigned()
+uint64_t Data::getLongUnsigned()
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToLong(dscPtr);
@@ -596,7 +596,7 @@ unsigned int64_t Data::getLongUnsigned()
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
 	
-	unsigned int64_t res = retData->getLongUnsigned();
+	uint64_t res = retData->getLongUnsigned();
 	deleteData(retData);
 	return res;
 }
@@ -1131,10 +1131,10 @@ int64_t *Array::getLongArray(int *numElements)
 	return retArr;
 }
 #ifdef HAVE_WINDOWS_H
-unsigned int64_t *Array::getLongUnsignedArray(int *numElements)
+uint64_t *Array::getLongUnsignedArray(int *numElements)
 {
 	int size = arsize/length;
-	unsigned int64_t *retArr = new unsigned int64_t[size];
+	uint64_t *retArr = new uint64_t[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
 			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
@@ -1143,10 +1143,10 @@ unsigned int64_t *Array::getLongUnsignedArray(int *numElements)
 			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
 			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
 			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(unsigned int64_t *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(unsigned int64_t *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = (unsigned int64_t)*(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = (unsigned int64_t)*(double *)&ptr[i * length]; break;
+			case DTYPE_Q: retArr[i] = *(uint64_t *)&ptr[i * length]; break; 
+			case DTYPE_QU: retArr[i] = *(uint64_t *)&ptr[i * length]; break;
+			case DTYPE_FLOAT: retArr[i] = (uint64_t)*(float *)&ptr[i * length]; break;
+			case DTYPE_DOUBLE: retArr[i] = (uint64_t)*(double *)&ptr[i * length]; break;
 		}
 	*numElements = size;
 	return retArr;
