@@ -227,12 +227,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		  //return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 
 		case DTYPE_MISSING: 
-			cls = (*env)->FindClass(env, "MDSplus/Int32Array");
-			constr = (*env)->GetStaticMethodID(env, cls, "getData", "([ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
-			jints = (*env)->NewIntArray(env, 0);
-			args[0].l = jints;
-			if(is_ca) MdsFree1Dx(&ca_xd, 0);
-			return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+			return NULL;
 
         default: 
 		  sprintf(message, "Datatype %d not supported for class CLASS_S", desc->dtype);
@@ -265,12 +260,7 @@ static jobject DescripToObject(JNIEnv *env, struct descriptor *desc,
 		length =array_d->arsize/array_d->length; 
 		switch(array_d->dtype) {
 			case DTYPE_MISSING: 
-				cls = (*env)->FindClass(env, "MDSplus/Int32Array");
-				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([I[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
-				jints = (*env)->NewIntArray(env, 0);
-				args[0].l = jints;
-				if(is_ca) MdsFree1Dx(&ca_xd, 0);
-				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
+				return NULL;
 			case DTYPE_BU: 
 				cls = (*env)->FindClass(env, "MDSplus/Uint8Array");
 				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([B[ILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Data;");
