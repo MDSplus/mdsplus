@@ -2,6 +2,7 @@ import ctypes as _C
 from ctypes.util import find_library as _find_library
 import numpy as _N
 import os as _os
+import sys as _sys
 
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
@@ -11,6 +12,8 @@ else:
     return __import__(name,globals(),{},[],level)
 
 def _load_library(name):
+    if _sys.version_info[0]==2 and _sys.version_info[1]<5 and _os.name=='posix' and _sys.platform.startswith('linux'):
+      return _C.CDLL('lib'+name+'.so')
     libnam=_find_library(name)
     if libnam is None:
         raise Exception("Error finding library: "+name)
