@@ -271,18 +271,71 @@ public fun FASTCAM__store(as_is _nid, optional _method)
 			_video = compile('build_signal(($VALUE), set_range(`_x_pixel, `_y_pixel, `_n_frames, `_imgs), (`_frameTimes))');
 			_video_nid =  DevHead(_nid) + _N_VIDEO;
 			
-			
+ _SEGMENTED_ACQ = 1;
+	
+if( _SEGMENTED_ACQ == 0 )
+{			
+			write(*, "Write Bulk data"); 
+
 			_status = TreeShr->TreePutRecord(val(_video_nid),xd(_video),val(0));
 			if( !(_status & 1) )
 			{
+
 				if( _remote != 0 )
+				{
+					MdsValue('FastCamHWClose()');
 					MdsDisconnect();
+				}
+				else
+				{
+					_msg = FastCamHWClose();
+				}
+
+
 				DevLogErr(_nid, 'Error writing data in pulse file');
 				abort();
 			}
+			write(*, "End Write Bulk data"); 
+}
+else
+{
+
+			write(*, "Write Segmented data"); 
+
+			_frames = set_range(_x_pixel, _y_pixel, _n_frames, _imgs);
+			_status = 1;
+
+			for ( _k = 0; _k < _n_frames && (_status & 1) ; _k++ )
+			{
+				if( ( _k mod 50 ) == 0 || (_k+1) == _n_frames  )
+				write(*, "Frames written ", _k );
+
+				_array = compile('set_range(`_x_pixel, `_y_pixel, 1, ` _frames[*,*,`_k])');
+				_time =_frameTimes[ _k ];
+				_dim = compile('[ `_time ]');
+
+    			_status = TreeShr->TreeMakeSegment(val(_video_nid),descr(_time),descr(_time), descr(_dim), descr( _array ),val(-1),val(1) );
+			}
+
+			if( !(_status & 1) )
+			{
+				if( _remote != 0 )
+				{
+					MdsValue('FastCamHWClose()');
+					MdsDisconnect();
+				}
+				else
+				{
+					_msg = FastCamHWClose();
+				}
+				DevLogErr(_nid, 'Error writing segmented data in pulse file');
+				abort();
+			}
+			write(*, "End write Segmented data : ", getmsg(_status)); 
+}/**/
+
 		}
 	}
-
 
 	if( _acq_mode == 1 || _acq_mode == 2)
 	{
