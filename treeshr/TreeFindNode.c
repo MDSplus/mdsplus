@@ -866,7 +866,7 @@ int _TreeFindNodeEnd(void *dbid, void **ctx_in)
   SEARCH_CONTEXT *ctx = (SEARCH_CONTEXT *)*ctx_in;
   int status = TreeNORMAL;
   if (dblist && dblist->remote)
-	  FindNodeEndRemote(dblist,ctx_in);
+	  return FindNodeEndRemote(dblist,ctx_in);
   if (ctx)
   {
     NODELIST *ptr;
