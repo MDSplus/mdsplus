@@ -330,23 +330,34 @@ TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
 	int currNid, status; 
 	int numNids = 0;
 	void *wildCtx = 0;
+	int chunkSize = 10000;
+	int *currNids = new int[chunkSize];
 
-	while ((status = _TreeFindNodeWild(ctx, path,&currNid,&wildCtx, usageMask)) & 1)
+
+	while ((status = _TreeFindNodeWild(ctx, path,&currNids[numNids],&wildCtx, usageMask)) & 1)
+	{
 		numNids++;
+		if(numNids == chunkSize)
+		{
+			int* newNids = new int[2 * chunkSize];
+			memcpy(newNids, currNids, chunkSize * sizeof(int));
+			delete []currNids;
+			currNids = newNids;
+			chunkSize = 2 * chunkSize;
+		}
+	}
 	_TreeFindNodeEnd(ctx, &wildCtx);
 
 	//printf("%s\n", MdsGetMsg(status));
 
 	TreeNode **retNodes = new TreeNode *[numNids];
-	wildCtx = 0;
 	for(int i = 0; i < numNids; i++)
 	{
-		_TreeFindNodeWild(ctx, path,&currNid,&wildCtx, usageMask);
-		retNodes[i] = new TreeNode(currNid, this);
+		retNodes[i] = new TreeNode(currNids[i], this);
 	}
-	_TreeFindNodeEnd(ctx, &wildCtx);
 	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, numNids);
 	delete [] retNodes;
+	delete[]currNids;
 	return nodeArray;
 }
 
@@ -1965,6 +1976,7 @@ EXPORT StringArray *TreeNodeArray::getUsage()
 #endif
 	return new StringArray((char **)usages, numNodes);
 }
+
 
 ////////////////End TreeNodeArray methods/////////////////////
 
