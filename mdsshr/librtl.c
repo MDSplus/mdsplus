@@ -10,7 +10,7 @@
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
-#import <strings.h>
+#include <strings.h>
 #ifdef HAVE_GETTIMEOFDAY
 #include <sys/types.h>
 #include <sys/time.h>
