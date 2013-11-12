@@ -41,6 +41,7 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 #include <ncidef.h>
 #include <treeshr.h>
 #include <ctype.h>
+#include <usagedef.h>
 
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
@@ -90,7 +91,8 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
   if (numnids_in == 0)
   {
     void       *ctx = 0;
-    for (num = 0; num < 256 && _TreeFindTagWild(dbid, "TOP", &nids[num], &ctx); num++);
+    nids[0]=0;
+    for (num = 1; num < 256 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx,(1 << TreeUSAGE_SUBTREE)) & 1); num++);
     TreeFindTagEnd(&ctx);
   }
   else
@@ -117,12 +119,16 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
   {
     for (i = 0; i < num && (retstatus & 1); i++)
     {
+      int skip=0;
       char name[13];
       if (nids[i])
       {
-        NCI_ITM itmlst[] = {{sizeof(name)-1, NciNODE_NAME, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
+	int flags;
+        NCI_ITM itmlst[] = {{sizeof(name)-1, NciNODE_NAME, 0, 0}, {4, NciGET_FLAGS,&flags,0},{0, NciEND_OF_LIST, 0, 0}};
         itmlst[0].pointer = name;
         status = _TreeGetNci(dbid, nids[i], itmlst);
+	if (numnids_in == 0)
+	  skip = (flags & NciM_INCLUDE_IN_PULSE) == 0;
         name[12] = 0;
         for (j=11;j>0;j--) if (name[j] == 0x20) name[j] = '\0';
       }
@@ -130,7 +136,7 @@ int       _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids
       {
         strcpy(name,dblist->experiment);
       }
-      if (status & 1)
+      if (status & 1 && !(skip))
         status = TreeCreateTreeFiles(name, shot, source_shot);
       if (!(status & 1) && (i==0))
         retstatus = status;
