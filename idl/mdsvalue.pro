@@ -53,9 +53,11 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
   ;; to expression
 
   vm_being_used = 0
-  if (!version.release ge '6.2' or $
+  defsysv,'!gdl',exists=is_gdl
+  if (not is_gdl) then begin
+    if (!version.release ge '6.2' or $
       strmid(!version.release,0,1) ge '1') then vm_being_used = lmgr(/vm)
-
+  endif
   if (mdsIsClient(socket=socket)) then begin
 
     sock = mds$socket(status=status,quiet=quiet, socket=socket)
