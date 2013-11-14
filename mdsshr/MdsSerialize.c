@@ -404,8 +404,11 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
               }
             }
           }
-          po->pointer = offset ? 
-              (char *)po + align( ((char *)po - (char *)0) + bytes_out, sizeof(void *)) - ((char *)po - (char *)0) : 0;
+/*          po->pointer = offset ? 
+              (char *)po + align( ((char *)po - (char *)0) + bytes_out, sizeof(void *)) - ((char *)po - (char *)0) : 0;*/
+//do not use align!!
+          po->pointer = offset ? ((char *)po  + bytes_out) : 0;
+
           if (po->pointer && pi->aflags.bounds) {
 	    po->a0 = (char *)0-(po->m[po->dimct]*po->length);
 	  }
