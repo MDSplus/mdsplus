@@ -93,6 +93,12 @@ typedef struct {
 
 static int ShortStrings(char *b)
 {
+#ifndef HAVE_WINDOWS_H
+  extern char *__progname;
+  int isGdl=strcmp(__progname,"gdl")==0;
+#else
+  int isGdl=0;
+#endif
 #ifdef WORDS_BIGENDIAN
   int t1_idx=5;
   int t2_idx=4;
@@ -100,6 +106,7 @@ static int ShortStrings(char *b)
   int t1_idx=4;
   int t2_idx=5;
 #endif
+ if (isGdl) return 0;
   return ((b[t1_idx] != 0) && (b[t1_idx] != 1)) || (b[t2_idx] != 0);
 }
 
@@ -121,7 +128,8 @@ static void *MakeDescr(int idx, int *argsize, void *bytes)
                          ((IDL_STRING *)bytes)->slen : ((IDL_STRING_L *)bytes)->slen;
             scalarArgs[idx].dtype = DTYPE_T; 
             scalarArgs[idx].pointer = ShortStrings(bytes) ? 
-                         ((IDL_STRING *)bytes)->s : ((IDL_STRING_L *)bytes)->s; break;
+                         ((IDL_STRING *)bytes)->s : ((IDL_STRING_L *)bytes)->s; 
+	    break;
     case 9: scalarArgs[idx].length = 16; scalarArgs[idx].dtype = DTYPE_FTC; break;
     case 12: scalarArgs[idx].length = 2; scalarArgs[idx].dtype = DTYPE_WU; break;
     case 13: scalarArgs[idx].length = 4; scalarArgs[idx].dtype = DTYPE_LU; break;
