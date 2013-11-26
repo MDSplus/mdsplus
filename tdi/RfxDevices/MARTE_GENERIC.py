@@ -57,10 +57,8 @@ class MARTE_GENERIC(Device):
     parts.append({'path':':STORE_ACTION','type':'action',
 	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
 	  'options':('no_write_shot',)})
-    print 'PARTS FATTE!!!'
-    
+     
     def init(self,arg):
-      print 'CIAO SONO LA INIT'
       eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
       eventStr = eventStr + " " + str(Tree.getActiveTree().shot)
       try:
