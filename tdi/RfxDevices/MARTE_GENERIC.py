@@ -1,5 +1,6 @@
 # -*- coding: iso-8859-1 -*-
 from MDSplus import *
+import os
 import time
 
 class MARTE_GENERIC(Device):
@@ -112,38 +113,44 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
       print eventStr
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       time.sleep(3)
       return 1
-    
+    def getEventName():
+      if os.environ.get("MARTE_EVENT") is None:
+        return "MARTE"
+      else:
+        return os.environ["MARTE_EVENT"] 
+   
+
     def trigger(self, arg):
       eventStr = "TRIGGER " + str(self.id.data())
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       return 1
  
     def pre_req(self, arg):
       eventStr = "PRE_REQ " + str(self.id.data())
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       return 1
  
     def pulse_req(self, arg):
       eventStr = "PULSE_REQ"
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       return 1
 
     def post_req(self, arg):
       eventStr = "POST_REQ"
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       return 1
 
     def collection_complete(self, arg):
       eventStr = "COLLECTION_COMPLETE"
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       return 1
  
     def abort(self, arg):
       eventStr = "ABORT"
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       return 1
  
  
@@ -153,7 +160,7 @@ class MARTE_GENERIC(Device):
       eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
       eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
       eventStr = eventStr + " " + str(self.signals_user.getNid())
-      Event.setevent("MARTE", eventStr)
+      Event.setevent(getEventName(), eventStr)
       time.sleep(10)
       return 1
       
