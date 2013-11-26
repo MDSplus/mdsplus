@@ -33,7 +33,7 @@ else
   if [ ! "${pkg}" == "all" ]
   then
     awk '{if (substr($1,1,1) == "%") {if ($1=="%files" || substr($1,1,5)=="%defa") F=1; else F=0;}; if (F==1 && substr($1,1,1) == "/") {gsub("bin\?\?","bin",$1); gsub("lib\?\?","lib"); system("cd ${WORKSPACE}/BUILDROOT; echo \"*" $1 "*\"; find . -wholename \"*" $1 "*\" -exec '$0' copy_it '$pkg' \"{}\" \;");}}' ${WORKSPACE}/rpm/subpackages/${pkg}
-    for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") {gsub("bin\?\?","bin",$2); gsub("lib\?\?","lib",$2); print $2;}}}' ${WORKSPACE}/rpm/subpackages/${pkg}`
+    for f in `awk '{if (substr($1,1,1) == "%") {if ($1=="%exclude") {gsub("bin\?\?","bin",$2); gsub("lib\?\?","lib",$2); print "\""$2"\"";}}}' ${WORKSPACE}/rpm/subpackages/${pkg}`
     do
       echo "rm -Rf ${WORKSPACE}/debian/${pkg}${f}"
       rm -Rf ${WORKSPACE}/debian/${pkg}${f}
