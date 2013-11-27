@@ -77,7 +77,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
 #include "filter.h"
 
 #define N_POINTS_TEST 500 /* NEVER less than 100 */
@@ -363,7 +363,6 @@ void FreeFilter(Filter *filter)
     free((char *)filter->units);
     free((char *)filter);
 }
-    
 
 
 static void NormalizeFilter(Filter *filter)
@@ -382,4 +381,78 @@ static void NormalizeFilter(Filter *filter)
 	}
     }
 }
+
+//Prepare the description of a butterworth 
+Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
+{
+    Filter *outFilter;
+    float zero = 0;
+    outFilter = (Filter *)ButtwInvar(&cutFreq, &zero, &zero, &zero, &samplingFreq, &numPoles);
+    normalizeFilter(outFilter);
+    return outFilter;
+}
+
+//Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
+
+
+
+//Initialize then data structures whichb are required for real-time filtering
+void initializeRunTimeFilter(RunTimeFilter *rtf)
+{
+    RunTimeFilter *runTimeFilter = (RunTimeFilter *)rtf;
+    memset(runTimeFilter->oldX, 0, MAX_FILTER_BUF * sizeof(double));
+    memset(runTimeFilter->oldY, 0, MAX_FILTER_UNITS * MAX_FILTER_BUF * sizeof(double));
+    runTimeFilter->idx = 0;
+}
+
+
+/* Perform step filtering */
+double getFiltered(double in, Filter *flt, RunTimeFilter *rtf)
+{
+    int i, j;
+    double totOut = 0, currOut;
+    Filter *filter = (Filter *)flt;
+    RunTimeFilter *runFilter = (RunTimeFilter *)rtf;
+
+
+
+    int idx;
+    int currIdx;
+    double *oldX;
+    idx = runFilter->idx;
+    oldX = runFilter->oldX;
+
+
+    for(i = 0; i < filter->num_parallels; i++)
+    {   
+
+	currOut = filter->units[i].num[0] * in;
+	for(j = 1; j < filter->units[i].num_degree; j++)
+	{
+	    currIdx = idx - j;
+	    if(currIdx < 0)
+		currIdx += MAX_FILTER_BUF;
+	    currOut += filter->units[i].num[j] * oldX[currIdx];
+	}
+	for(j = 1; j < filter->units[i].den_degree; j++)
+	{
+	    currIdx = idx - j;
+	    if(currIdx < 0)
+		currIdx += MAX_FILTER_BUF;
+	    currOut -= filter->units[i].den[j] * runFilter->oldY[i][currIdx];
+	}
+	runFilter->oldY[i][idx] = currOut;
+        totOut += currOut;
+	
+    }
+    oldX[idx] = in;
+    idx++;
+    if(idx >= MAX_FILTER_BUF)
+	idx -= MAX_FILTER_BUF;
+    runFilter->idx = idx;
+    return totOut;
+}
+		
+
+
 

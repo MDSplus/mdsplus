@@ -35,6 +35,15 @@ typedef struct {
   }Filter;
 
 
+#define MAX_FILTER_BUF 64
+#define MAX_FILTER_UNITS 16
+
+typedef struct{
+	double oldX[MAX_FILTER_BUF];
+	double oldY[MAX_FILTER_UNITS][MAX_FILTER_BUF];
+	int idx;
+}RunTimeFilter;
+
 
 /* Public Function prototypes */
 Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
@@ -62,6 +71,14 @@ void	FreeFilter(Filter *filter);
 Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)());
 Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)());
 complex *FindFactors(complex *poles, double fc, int n, double gain);
+
+/* Real time support */
+//Prepare the description of a butterworth 
+Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles);
+//Initialize then data structures whichb are required for real-time filtering
+void initializeRunTimeFilter(RunTimeFilter *rtf);
+/* Perform step filtering */
+double getFiltered(double in, Filter *flt, RunTimeFilter *rtf);
 
 
 
