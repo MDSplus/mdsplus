@@ -388,7 +388,7 @@ Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
     Filter *outFilter;
     float zero = 0;
     outFilter = (Filter *)ButtwInvar(&cutFreq, &zero, &zero, &zero, &samplingFreq, &numPoles);
-    normalizeFilter(outFilter);
+    NormalizeFilter(outFilter);
     return outFilter;
 }
 
