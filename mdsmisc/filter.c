@@ -268,7 +268,7 @@ void	TestFilter(Filter *filter, float fc, int n_points, float *module, float *ph
 {
     float curr_f, step_f, *in, *out, t_in, t_out;
     int i, j, k, idx;
-    complex curr_fc, curr_c, curr_fac, curr_num, curr_den, curr_z;
+    Complex curr_fc, curr_c, curr_fac, curr_num, curr_den, curr_z;
 
 /* normalize if not already done */
     NormalizeFilter(filter);

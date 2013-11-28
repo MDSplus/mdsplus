@@ -68,9 +68,9 @@ void	FreeFilter(Filter *filter);
 
 
 /* Public Function prototypes internally used */
-Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)());
-Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)());
-complex *FindFactors(complex *poles, double fc, int n, double gain);
+Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)());
+Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)());
+Complex *FindFactors(Complex *poles, double fc, int n, double gain);
 
 /* Real time support */
 //Prepare the description of a butterworth 

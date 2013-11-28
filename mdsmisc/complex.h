@@ -18,13 +18,13 @@
 typedef struct {
         double re;
         double im;
-        } complex;
+        } Complex;
 
-complex MulC(complex, complex);
-complex AddC(complex, complex);
-complex DivC(complex, complex);
-complex SubC(complex, complex);
-complex ExpC(complex);
-double	Mod2(complex); 
+Complex MulC(Complex, Complex);
+Complex AddC(Complex, Complex);
+Complex DivC(Complex, Complex);
+Complex SubC(Complex, Complex);
+Complex ExpC(Complex);
+double	Mod2(Complex); 
 
 #endif
