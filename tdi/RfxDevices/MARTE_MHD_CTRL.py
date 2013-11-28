@@ -38,7 +38,9 @@ class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
     'vsKpAmplitudes_6','vsKpPhases_6','vsKp_6', 'vsKi_6','vsKd_6','vsTStart_6','vsTEnd_6','vsCutoffFreq_6',
     'vsKpAmplitudes_7','vsKpPhases_7','vsKp_7', 'vsKi_7','vsKd_7','vsTStart_7','vsTEnd_7','vsCutoffFreq_7',
     'vsKpAmplitudes_8','vsKpPhases_8','vsKp_8', 'vsKi_8','vsKd_8','vsTStart_8','vsTEnd_8','vsCutoffFreq_8',
-    'staticDecoupler', 'outCoilEnabled', 'supercoilIdx', 'reconfiguredModes']
+    'staticDecoupler', 'outCoilEnabled', 'supercoilIdx', 'reconfiguredModes',
+    'refCutoffFreq_1','refCutoffFreq_2','refCutoffFreq_3','refCutoffFreq_4','refCutoffFreq_5','refCutoffFreq_6','refCutoffFreq_7','refCutoffFreq_8',
+    'freezeStartTime', 'freezeEndTime']
     parValues = [0,0,0,0,0,Data.compile('zero(192, 0)'), 0]
     for i in range(88):  #References
       parValues.append(0)
@@ -66,6 +68,11 @@ class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
     parValues.append(Data.compile('zero(192, 0.)+1'))
     parValues.append(Data.compile('zero(192, 0.)-1'))
     parValues.append(Data.compile('zero(192, 0.)'))
+    for i in range(8):  #Reference cutoff frequency
+      parValues.append(0)
+      parValues.append(0)
+    parValues.append(-1) #Start and end freeze time
+    parValues.append(-1)
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])
