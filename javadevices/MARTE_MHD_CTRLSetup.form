@@ -258,6 +258,20 @@
                     <Property name="offsetNid" type="int" value="1375"/>
                   </Properties>
                 </Component>
+                <Component class="DeviceField" name="deviceField4">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Start Freeze Time: "/>
+                    <Property name="offsetNid" type="int" value="3277"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField5">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="End Freeze Time "/>
+                    <Property name="offsetNid" type="int" value="3283"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -2242,9 +2256,17 @@
                             <Component class="DeviceField" name="deviceField185">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2479"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField40">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3229"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -2590,9 +2612,17 @@
                             <Component class="DeviceField" name="deviceField194">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2527"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField41">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3235"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -2938,9 +2968,17 @@
                             <Component class="DeviceField" name="deviceField172">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2575"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField42">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3241"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -3286,9 +3324,17 @@
                             <Component class="DeviceField" name="deviceField188">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2623"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField43">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3247"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -3634,9 +3680,17 @@
                             <Component class="DeviceField" name="deviceField191">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2671"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField44">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3253"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -3982,9 +4036,17 @@
                             <Component class="DeviceField" name="deviceField197">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2719"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField45">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3259"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -4330,9 +4392,17 @@
                             <Component class="DeviceField" name="deviceField200">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2767"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField46">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3265"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -4678,9 +4748,17 @@
                             <Component class="DeviceField" name="deviceField203">
                               <Properties>
                                 <Property name="identifier" type="java.lang.String" value=""/>
-                                <Property name="labelString" type="java.lang.String" value="Cutoff Freq.: "/>
+                                <Property name="labelString" type="java.lang.String" value="Derivative Cutoff Freq.: "/>
                                 <Property name="numCols" type="int" value="4"/>
                                 <Property name="offsetNid" type="int" value="2815"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField47">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Reference Cutoff Freq"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="3271"/>
                               </Properties>
                             </Component>
                           </SubComponents>

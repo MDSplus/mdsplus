@@ -51,6 +51,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceChoice5 = new DeviceChoice();
         deviceChoice6 = new DeviceChoice();
         deviceField9 = new DeviceField();
+        deviceField4 = new DeviceField();
+        deviceField5 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
@@ -258,6 +260,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField183 = new DeviceField();
         deviceField184 = new DeviceField();
         deviceField185 = new DeviceField();
+        deviceField40 = new DeviceField();
         deviceTable6 = new DeviceTable();
         deviceTable7 = new DeviceTable();
         deviceTable8 = new DeviceTable();
@@ -268,6 +271,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField192 = new DeviceField();
         deviceField193 = new DeviceField();
         deviceField194 = new DeviceField();
+        deviceField41 = new DeviceField();
         deviceTable18 = new DeviceTable();
         deviceTable19 = new DeviceTable();
         deviceTable20 = new DeviceTable();
@@ -278,6 +282,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField170 = new DeviceField();
         deviceField171 = new DeviceField();
         deviceField172 = new DeviceField();
+        deviceField42 = new DeviceField();
         deviceTable2 = new DeviceTable();
         deviceTable3 = new DeviceTable();
         deviceTable4 = new DeviceTable();
@@ -288,6 +293,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField186 = new DeviceField();
         deviceField187 = new DeviceField();
         deviceField188 = new DeviceField();
+        deviceField43 = new DeviceField();
         deviceTable10 = new DeviceTable();
         deviceTable11 = new DeviceTable();
         deviceTable12 = new DeviceTable();
@@ -298,6 +304,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField189 = new DeviceField();
         deviceField190 = new DeviceField();
         deviceField191 = new DeviceField();
+        deviceField44 = new DeviceField();
         deviceTable14 = new DeviceTable();
         deviceTable15 = new DeviceTable();
         deviceTable16 = new DeviceTable();
@@ -308,6 +315,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField195 = new DeviceField();
         deviceField196 = new DeviceField();
         deviceField197 = new DeviceField();
+        deviceField45 = new DeviceField();
         deviceTable22 = new DeviceTable();
         deviceTable23 = new DeviceTable();
         deviceTable24 = new DeviceTable();
@@ -318,6 +326,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField198 = new DeviceField();
         deviceField199 = new DeviceField();
         deviceField200 = new DeviceField();
+        deviceField46 = new DeviceField();
         deviceTable26 = new DeviceTable();
         deviceTable27 = new DeviceTable();
         deviceTable28 = new DeviceTable();
@@ -328,6 +337,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField201 = new DeviceField();
         deviceField202 = new DeviceField();
         deviceField203 = new DeviceField();
+        deviceField47 = new DeviceField();
         deviceTable30 = new DeviceTable();
         deviceTable31 = new DeviceTable();
         deviceTable32 = new DeviceTable();
@@ -452,6 +462,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField9.setNumCols(5);
         deviceField9.setOffsetNid(1375);
         jPanel3.add(deviceField9);
+
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("Start Freeze Time: ");
+        deviceField4.setOffsetNid(3277);
+        jPanel3.add(deviceField4);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("End Freeze Time ");
+        deviceField5.setOffsetNid(3283);
+        jPanel3.add(deviceField5);
 
         jTabbedPane1.addTab("General", jPanel3);
 
@@ -1677,10 +1697,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel34.add(deviceField184);
 
         deviceField185.setIdentifier("");
-        deviceField185.setLabelString("Cutoff Freq.: ");
+        deviceField185.setLabelString("Derivative Cutoff Freq.: ");
         deviceField185.setNumCols(4);
         deviceField185.setOffsetNid(2479);
         jPanel34.add(deviceField185);
+
+        deviceField40.setIdentifier("");
+        deviceField40.setLabelString("Reference Cutoff Freq");
+        deviceField40.setNumCols(4);
+        deviceField40.setOffsetNid(3229);
+        jPanel34.add(deviceField40);
 
         jPanel33.add(jPanel34);
 
@@ -1754,10 +1780,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel40.add(deviceField193);
 
         deviceField194.setIdentifier("");
-        deviceField194.setLabelString("Cutoff Freq.: ");
+        deviceField194.setLabelString("Derivative Cutoff Freq.: ");
         deviceField194.setNumCols(4);
         deviceField194.setOffsetNid(2527);
         jPanel40.add(deviceField194);
+
+        deviceField41.setIdentifier("");
+        deviceField41.setLabelString("Reference Cutoff Freq");
+        deviceField41.setNumCols(4);
+        deviceField41.setOffsetNid(3235);
+        jPanel40.add(deviceField41);
 
         jPanel39.add(jPanel40);
 
@@ -1831,10 +1863,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel31.add(deviceField171);
 
         deviceField172.setIdentifier("");
-        deviceField172.setLabelString("Cutoff Freq.: ");
+        deviceField172.setLabelString("Derivative Cutoff Freq.: ");
         deviceField172.setNumCols(4);
         deviceField172.setOffsetNid(2575);
         jPanel31.add(deviceField172);
+
+        deviceField42.setIdentifier("");
+        deviceField42.setLabelString("Reference Cutoff Freq");
+        deviceField42.setNumCols(4);
+        deviceField42.setOffsetNid(3241);
+        jPanel31.add(deviceField42);
 
         jPanel30.add(jPanel31);
 
@@ -1908,10 +1946,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel36.add(deviceField187);
 
         deviceField188.setIdentifier("");
-        deviceField188.setLabelString("Cutoff Freq.: ");
+        deviceField188.setLabelString("Derivative Cutoff Freq.: ");
         deviceField188.setNumCols(4);
         deviceField188.setOffsetNid(2623);
         jPanel36.add(deviceField188);
+
+        deviceField43.setIdentifier("");
+        deviceField43.setLabelString("Reference Cutoff Freq");
+        deviceField43.setNumCols(4);
+        deviceField43.setOffsetNid(3247);
+        jPanel36.add(deviceField43);
 
         jPanel35.add(jPanel36);
 
@@ -1985,10 +2029,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel38.add(deviceField190);
 
         deviceField191.setIdentifier("");
-        deviceField191.setLabelString("Cutoff Freq.: ");
+        deviceField191.setLabelString("Derivative Cutoff Freq.: ");
         deviceField191.setNumCols(4);
         deviceField191.setOffsetNid(2671);
         jPanel38.add(deviceField191);
+
+        deviceField44.setIdentifier("");
+        deviceField44.setLabelString("Reference Cutoff Freq");
+        deviceField44.setNumCols(4);
+        deviceField44.setOffsetNid(3253);
+        jPanel38.add(deviceField44);
 
         jPanel37.add(jPanel38);
 
@@ -2062,10 +2112,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel42.add(deviceField196);
 
         deviceField197.setIdentifier("");
-        deviceField197.setLabelString("Cutoff Freq.: ");
+        deviceField197.setLabelString("Derivative Cutoff Freq.: ");
         deviceField197.setNumCols(4);
         deviceField197.setOffsetNid(2719);
         jPanel42.add(deviceField197);
+
+        deviceField45.setIdentifier("");
+        deviceField45.setLabelString("Reference Cutoff Freq");
+        deviceField45.setNumCols(4);
+        deviceField45.setOffsetNid(3259);
+        jPanel42.add(deviceField45);
 
         jPanel41.add(jPanel42);
 
@@ -2139,10 +2195,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel44.add(deviceField199);
 
         deviceField200.setIdentifier("");
-        deviceField200.setLabelString("Cutoff Freq.: ");
+        deviceField200.setLabelString("Reference Cutoff Freq.: ");
         deviceField200.setNumCols(4);
         deviceField200.setOffsetNid(2767);
         jPanel44.add(deviceField200);
+
+        deviceField46.setIdentifier("");
+        deviceField46.setLabelString("Reference Cutoff Freq");
+        deviceField46.setNumCols(4);
+        deviceField46.setOffsetNid(3265);
+        jPanel44.add(deviceField46);
 
         jPanel43.add(jPanel44);
 
@@ -2216,10 +2278,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         jPanel46.add(deviceField202);
 
         deviceField203.setIdentifier("");
-        deviceField203.setLabelString("Cutoff Freq.: ");
+        deviceField203.setLabelString("Derivative Cutoff Freq.: ");
         deviceField203.setNumCols(4);
         deviceField203.setOffsetNid(2815);
         jPanel46.add(deviceField203);
+
+        deviceField47.setIdentifier("");
+        deviceField47.setLabelString("Reference Cutoff Freq");
+        deviceField47.setNumCols(4);
+        deviceField47.setOffsetNid(3271);
+        jPanel46.add(deviceField47);
 
         jPanel45.add(jPanel46);
 
@@ -2487,6 +2555,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     private DeviceField deviceField37;
     private DeviceField deviceField38;
     private DeviceField deviceField39;
+    private DeviceField deviceField4;
+    private DeviceField deviceField40;
+    private DeviceField deviceField41;
+    private DeviceField deviceField42;
+    private DeviceField deviceField43;
+    private DeviceField deviceField44;
+    private DeviceField deviceField45;
+    private DeviceField deviceField46;
+    private DeviceField deviceField47;
+    private DeviceField deviceField5;
     private DeviceField deviceField50;
     private DeviceField deviceField51;
     private DeviceField deviceField52;
