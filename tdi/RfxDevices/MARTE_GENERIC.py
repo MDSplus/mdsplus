@@ -58,6 +58,12 @@ class MARTE_GENERIC(Device):
 	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
 	  'options':('no_write_shot',)})
      
+    def getEventName():
+      if os.environ.get("MARTE_EVENT") is None:
+        return "MARTE"
+      else:
+        return os.environ["MARTE_EVENT"] 
+
     def init(self,arg):
       eventStr = "SETUP " + str(self.id.data()) + " " + Tree.getActiveTree().name
       eventStr = eventStr + " " + str(Tree.getActiveTree().shot)
@@ -114,12 +120,7 @@ class MARTE_GENERIC(Device):
       Event.setevent(getEventName(), eventStr)
       time.sleep(3)
       return 1
-    def getEventName():
-      if os.environ.get("MARTE_EVENT") is None:
-        return "MARTE"
-      else:
-        return os.environ["MARTE_EVENT"] 
-   
+    
 
     def trigger(self, arg):
       eventStr = "TRIGGER " + str(self.id.data())
