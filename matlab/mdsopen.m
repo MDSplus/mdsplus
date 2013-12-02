@@ -18,7 +18,7 @@ function [ status ] = mdsopen( tree, shot )
    else
        ltree=tree;
    end
-   if status
+   if NATIVEvalue(status)
        status = mdsvalue('TreeOpen($,$)', ltree, shot);
    end
 end
