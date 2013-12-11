@@ -108,7 +108,7 @@ static double DelayErr[7][14] = {
 #define NUM_STEP_DEL_ERR 14 
 
 
-complex *BessCRoots(int n, double *g);
+Complex *BessCRoots(int n, double *g);
 void BessRoots();	
 
 

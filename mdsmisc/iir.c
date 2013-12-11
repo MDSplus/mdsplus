@@ -60,12 +60,12 @@ which actually perform digital filtering.
 #include "complex.h"
 #include "filter.h"
 
-complex *FindFactors(complex *poles, double fc, int n, double gain)
+Complex *FindFactors(Complex *poles, double fc, int n, double gain)
 {
     int i, j;
     double A, currA;	
-    complex *Ak;
-    complex temp, temp1;
+    Complex *Ak;
+    Complex temp, temp1;
 /* Ak :denominators of single factors */
 
     
@@ -76,7 +76,7 @@ complex *FindFactors(complex *poles, double fc, int n, double gain)
 	for(A = 1/fc, i = 0; i < n; i+=2)
 	    A *= poles[i].re * poles[i].re + poles[i].im * poles[i].im;
 */
-    Ak = (complex *)malloc(2 * n * sizeof(complex));
+    Ak = (Complex *)malloc(2 * n * sizeof(Complex));
 
     for(i = 0; i < n; i++)
     {
@@ -111,13 +111,13 @@ complex *FindFactors(complex *poles, double fc, int n, double gain)
 
 
 
-Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)())
+Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)())
 {
-    complex *poles, *Ak, cplx1, cplx2; 
+    Complex *poles, *Ak, cplx1, cplx2; 
     Filter *filter;
     int n, num_filter_units, i, j;
     double T, A, Ws, Wp, gain;	
-    complex Tc;
+    Complex Tc;
 
     Ws = 2 * PI * fs;
     Wp = 2 * PI * fp;
@@ -215,13 +215,13 @@ Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *ou
 }
 
 
-Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)())
+Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)())
 {
-    complex *poles, *Ak, cplx;
+    Complex *poles, *Ak, cplx;
     Filter *filter;
     int n, num_filter_units, i, j;
     double T, T2, Ws, Wp, ws, wp, gain;	
-    complex Tc, ac, a1c, bc, b1c, Ac, A1c, T2c;
+    Complex Tc, ac, a1c, bc, b1c, Ac, A1c, T2c;
 
 /* Pre distorsion */
     wp = 2 * PI * fp/fc;

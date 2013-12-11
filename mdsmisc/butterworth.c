@@ -83,8 +83,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-static complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N, double *gain);
-static complex *FindButtwPoles(double fp, double fs, double ap, double as, double fc, int *N, double *gain);
+static Complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N, double *gain);
+static Complex *FindButtwPoles(double fp, double fs, double ap, double as, double fc, int *N, double *gain);
 
 
 
@@ -110,11 +110,11 @@ Filter *ChebBilinear(float * fp, float * fs, float * ap, float * as, float * fc,
 } 
 
 
-static complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
+static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
 {
     double n_real, Wc, l10, A, fc2;
     int n, j, i;
-    complex *poles;
+    Complex *poles;
 
     l10 = log(10.);
     fc2 = fc * fc;
@@ -136,7 +136,7 @@ static complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
 	Wc = Wp;
     }
 /* Find poles */
-    poles = (complex *)malloc(n * sizeof(complex));
+    poles = (Complex *)malloc(n * sizeof(Complex));
     j = 0;
     if(n % 2)   /* odd N */
     {
@@ -164,11 +164,11 @@ static complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
 }
 
 
-static complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
+static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
 {
     double eps, Wc, alpha, a, b, l10, treshold, curr_val, angle, V, Vprev, Vnew;
     int n, i, j;
-    complex *poles;
+    Complex *poles;
 
     l10 = log(10.);
 
@@ -200,7 +200,7 @@ static complex *FindChebPoles(double Wp, double Ws, double ap, double as, double
     b = 0.5 * Wc * (exp(log(alpha)/n) + exp(-log(alpha)/n));
 
 
-    poles = (complex *)malloc(n * sizeof(complex));
+    poles = (Complex *)malloc(n * sizeof(Complex));
     if(n % 2)
     {
 	poles[0].re = -a;

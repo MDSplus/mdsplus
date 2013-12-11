@@ -15,22 +15,22 @@
 #include <stdlib.h>
 #include "complex.h"
 
-complex AddC(complex c1, complex c2)
+Complex AddC(Complex c1, Complex c2)
 {
  //This ckeck is required to avoid floating point underflow!!
     if(fabs(c1.re) < 1E-30) c1.re = 0;
     if(fabs(c2.re) < 1E-30) c2.re = 0;
     if(fabs(c1.im) < 1E-30) c1.im = 0;
     if(fabs(c2.im) < 1E-30) c2.im = 0;
-   complex ris;
+   Complex ris;
     ris.re = c1.re + c2.re;
     ris.im = c1.im + c2.im;
     return ris;
 }
 
-complex SubC(complex c1, complex c2)
+Complex SubC(Complex c1, Complex c2)
 {
-   complex ris;
+   Complex ris;
 //This ckeck is required to avoid floating point underflow!!
     if(fabs(c1.re) < 1E-30) c1.re = 0;
     if(fabs(c2.re) < 1E-30) c2.re = 0;
@@ -42,9 +42,9 @@ complex SubC(complex c1, complex c2)
 }
 
 
-complex MulC(complex c1, complex c2)
+Complex MulC(Complex c1, Complex c2)
 {
-    complex ris;
+    Complex ris;
 
 //This ckeck is required to avoid floating point underflow!!
     if(fabs(c1.re) < 1E-30) c1.re = 0;
@@ -58,9 +58,9 @@ complex MulC(complex c1, complex c2)
     return ris;
 }
 
-complex DivC(complex c1, complex c2)
+Complex DivC(Complex c1, Complex c2)
 {
-    complex ris;
+    Complex ris;
     double den;
  //This ckeck is required to avoid floating point underflow!!
     if(fabs(c1.re) < 1E-30) c1.re = 0;
@@ -79,9 +79,9 @@ complex DivC(complex c1, complex c2)
 }
 
 
-complex ExpC(complex c)
+Complex ExpC(Complex c)
 {
-    complex ris;
+    Complex ris;
  //This ckeck is required to avoid floating point underflow!!
     if(fabs(c.re) < 1E-30) c.re = 0;
     if(fabs(c.im) < 1E-30) c.im = 0;
@@ -90,7 +90,7 @@ complex ExpC(complex c)
     return ris;
 }
 
-double Mod2(complex c)
+double Mod2(Complex c)
 {
   //This ckeck is required to avoid floating point underflow!!
     if(fabs(c.re) < 1E-30) c.re = 0;

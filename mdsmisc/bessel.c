@@ -71,7 +71,7 @@ double BessJmD(double x)		Computes Jm'(x)
 
 void BessRoots(char *filename)		Computes and store in a file the first 40 real roots of J0, J1, J2
 
-complex *BessCRoots(int n, int *num_poles) Computes the complex poles of a bessel polinomial of order n, up to n=10
+Complex *BessCRoots(int n, int *num_poles) Computes the Complex poles of a bessel polinomial of order n, up to n=10
 
 
 double **Bessel(int mc_max, int ms_max, int l_max, int num_chords, double *p, double *fi)
@@ -132,8 +132,8 @@ static double BessJ1(double x);
 
 static double FindRoot(int n, double *x);
 static double Bisection(int n, double x1, double x2, double y1, double y2);
-static complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain);
-Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, complex* (*FindPoles)());
+static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain);
+Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)());
 
 static int ConvertCoord(float x, float y, float *out_r, float *out_theta)
 {
@@ -558,14 +558,14 @@ void BesselEndRebuild(double **j_temp, int mc_max, int ms_max)
 static double bess_delay;
 
 
-complex *BessCRoots(int n, double *g)
+Complex *BessCRoots(int n, double *g)
 {
     int n_poles, i, j;
-    complex *poles;
+    Complex *poles;
     double a, b, c;
 
     n_poles = n;
-    poles = (complex *)malloc(n_poles * sizeof(complex));
+    poles = (Complex *)malloc(n_poles * sizeof(Complex));
     if(n_poles % 2)
     {
 	poles[0].re = -BesselFactors[n-1][1]/bess_delay;
@@ -614,7 +614,7 @@ Filter *BessInvar(float * fp, float * fs, float * ap, float * as, float * fc, fl
 } 
 
 
-static complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
+static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
 {
     double norm_wp, norm_ws;
     int n1, n2, n, i;
