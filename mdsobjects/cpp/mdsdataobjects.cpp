@@ -462,11 +462,11 @@ std::vector<double> Data::getDoubleArray()
 	delete [] retData;
 	return retVect;
 }
-std::vector<std::complex<double>> Data::getComplexArray()
+std::vector<std::complex<double> > Data::getComplexArray()
 {
 	int numElements;
 	std::complex<double> *retData = getComplexArray(&numElements);
-	std::vector<std::complex<double>> retVect(retData, retData+numElements);
+	std::vector<std::complex<double> > retVect(retData, retData+numElements);
 	delete [] retData;
 	return retVect;
 }
