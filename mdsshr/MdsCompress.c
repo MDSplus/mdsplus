@@ -104,7 +104,7 @@ STATIC_ROUTINE  int       compress(
 //      pd1 = (struct descriptor *) pwork->pointer;
       ppd = (struct descriptor **) pwork->pointer;
       j = (long) ((struct descriptor_a *) pwork)->arsize / (long) pwork->length;
-      for (; --j >= 0 && status & 1;)
+      while ((--j >= 0) && (status & 1))
 //	if ((stat1 = compress(pcimage, pcentry, delta, pd1++)) != 1)
 		if ((stat1 = compress(pcimage, pcentry, delta, *ppd++)) != 1)
 			status = stat1;
@@ -116,7 +116,7 @@ STATIC_ROUTINE  int       compress(
      case CLASS_R:
       ppd = &((struct descriptor_r *) pwork)->dscptrs[0];
       j = ((struct descriptor_r *) pwork)->ndesc;
-      for (; --j >= 0 && status & 1;)
+      while ((--j >= 0) && (status & 1))
 	if ((stat1 = compress(pcimage, pcentry, delta, *(ppd++))) != 1)
 	  status = stat1;
       break;
@@ -202,7 +202,7 @@ STATIC_ROUTINE  int       compress(
 	  pd0 = pd1;
 	  StrFree1Dx(&dxentry);
 	}
-	if (status & 1 && status != LibSTRTRU && (char *) pd0 < (char *) plim)
+	if ((status & 1) && (status != LibSTRTRU) && ((char *) pd0 < (char *) plim))
 	  goto good;
       /**************************************************
       If it doesn't fit then must restore old data field.
@@ -218,7 +218,7 @@ STATIC_ROUTINE  int       compress(
     ********************/
       status = MdsCmprs(&nitems, (struct descriptor_a *) pwork, pdat, &bit);
       pdat->arsize = (bit + 7) / 8;
-      if (status & 1 && status != LibSTRTRU)
+      if ((status & 1) && (status != LibSTRTRU))
 	goto good;
     /*************************************
     Did not do a good job, so restore all.
