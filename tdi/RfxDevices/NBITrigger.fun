@@ -3,7 +3,7 @@ public fun NBITrigger()
 	_phase = "";
 
     _status = mdsconnect("150.178.34.151:8100");
-	if( _status & 1)
+	if( _status != 0 )
 	{
 		_handle = mdsvalue('OPCConnect("OPC.SimaticNET", 500)');
 		
