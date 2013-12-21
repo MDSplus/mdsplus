@@ -133,4 +133,4 @@ TdiShr.exports: TdiShr.def
 	sed -e /LIBRARY/\;/\;/d TdiShr.def > $@
 
 TdiSql.o : TdiSql.c
-	$(CC) -o $@ TdiSql.c $(CFLAGS) -c $(SYBASE_INC)
+	$(COMPILE.cc) $(OUTPUT_OPTION) $< $(SYBASE_INC)
