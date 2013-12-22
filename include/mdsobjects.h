@@ -214,13 +214,13 @@ protected:
 		void operator delete(void *p);
 		virtual bool equals(Data *data) {return false;}
 		Data():
-			changed(true),
-			refCount(0),
-			dataCache(nullptr),
 			units(nullptr),
 			error(nullptr),
+			validation(nullptr),
 			help(nullptr),
-			validation(nullptr)
+			changed(true),
+			dataCache(nullptr),
+			refCount(0)
 		{
 		}
 
