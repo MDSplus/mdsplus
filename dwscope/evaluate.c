@@ -1004,13 +1004,13 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,
       return Error(1, "Error opening database", error, NULL, NULL);
   }
   if (strlen(default_node)) {
-    MdsValue(sock,"treeshr->tree$set_default_nid(0)",&ans,0);
+    MdsValue(sock,"TreeShr->TreeSetDefaultNid(val(0))",&ans,0);
     FreeDescrip(ans);
     if (!(MdsSetDefault(sock,default_node) & 1))
       return Error(1, "Default node not found", error, NULL, NULL);
   }
   else {
-    MdsValue(sock,"treeshr->tree$set_default_nid(0)",&ans,0);
+    MdsValue(sock,"TreeShr->TreeSetDefaultNid(val(0))",&ans,0);
     FreeDescrip(ans);
   }
   if (strlen(y)) {
