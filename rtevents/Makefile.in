@@ -15,20 +15,22 @@ INSTALL=@top_srcdir@/conf/install-sh -c
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
 	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp
-	
-	
 SOURCES = MdsEvents.c
-
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = RtEventsShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ @MAKELIBDIR@libRtEventsShr.a @MAKEBINDIR@EventConnector
+EventConnector = @MAKEBINDIR@EventConnector
+RtEventsShr_shared = @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@
+RtEventsShr_static = @MAKELIBDIR@libRtEventsShr.a
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(EventConnector) $(RtEventsShr_shared) $(RtEventsShr_static)
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libRtEventsShr.a
+	@ $(RM) $(EventConnector)
+	@ $(RM) $(RtEventsShr_shared)
+	@ $(RM) $(RtEventsShr_static)
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -38,29 +40,25 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755 $(RtEventsShr_shared) @libdir@
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libRtEventsShr.a @libdir@; \
+		$(INSTALL) -m 644 $(RtEventsShr_static) @libdir@; \
 	fi;
 
+$(RtEventsShr_shared): $(OBJECTS) @EXPORTS_FILE@ 
+	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $^ $(LIBS)
 
-@MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS)
-
-@MAKELIBDIR@libRtEventsShr.a : $(OBJECTS)
-	$(AR) -cr $@ $(OBJECTS)
+$(RtEventsShr_static): $(OBJECTS)
+	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
 @MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
+	mkdir -p $@
 
-@MAKEBINDIR@EventConnector : @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ 
-	$(CXX) -o $@ $(CXXFLAGS)  EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
-	
+$(EventConnector): $(RtEventsShr_shared)
+	$(CXX) -o $@ $(CXXFLAGS) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
+
 
 RtEventsShr.exports: RtEventsShr.def
 	sed -e /LIBRARY/\;/\;/d RtEventsShr.def > $@
-
-
-	
 
