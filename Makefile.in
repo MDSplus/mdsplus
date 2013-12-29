@@ -132,3 +132,11 @@ binaries :
 	tar cvf - $(CLIENT_BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.client.tar.Z
 
 
+# Interdependent directories:
+ccl: cdu mdsshr mdsdcl
+tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
+camshr: cdu mdsdcl
+mdsdcl: cdu mdsshr
+mdslib: mdstcpip
+servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
+
