@@ -44,6 +44,8 @@ install:
 $(directories):
 	$(INSTALL) -d $@
 
+$(manpages): $(directories)
+
 BUILDMAN = $(GROFF) $(GROFF_FLAGS) $< | gzip - -c > $@
 $(top_srcdir)/man/man1/traverser.1.gz : traverser.groff
 	$(BUILDMAN)
