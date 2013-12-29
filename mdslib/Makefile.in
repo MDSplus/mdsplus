@@ -50,7 +50,7 @@ clean:
 	@ $(RM) @MAKELIBDIR@libMdsLib_client.a
 	@ $(RM) @MAKESHLIBDIR@libMdsLib@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsLib.a
-	@ $(RM) @MAKEBINDIR@/mdslib_*test
+	@ $(RM) @MAKEBINDIR@mdslib_*test
 	@ $(RM) @MAKEBINDIR@dtype_test
 
 install:
