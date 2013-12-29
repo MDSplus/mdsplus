@@ -2,6 +2,7 @@ SHELL=/bin/sh
 CC=@CC@
 CXX=@CXX@
 LD=@LD@
+RANLIB=@RANLIB@
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
 inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
@@ -18,6 +19,16 @@ CXXFLAGS=-g -O3 -Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -I
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
+
+MdsIpShr    = @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
+MdsIpSrvShr = @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@
+MdsIpTunnel = @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@
+MdsIpTCP    = @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@
+MdsIpTCPV6  = @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@
+MdsIpUDT    = @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@
+MdsIpUDTV6  = @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@
+MdsIpSSH    = @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@
+MdsIpHTTP   = @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@
 
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
@@ -56,14 +67,6 @@ TUNNEL_SOURCES = IoRoutinesTunnel.c
 TUNNEL_OBJECTS = $(TUNNEL_SOURCES:.c=.o)
 CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(UDT_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS)
 ALL_SOURCES = $(LIB_SOURCES) $(TUNNEL_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURCES) $(SERVER_SOURCES)
-MdsIpSrvShr = @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@
-MdsIpTunnel = @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@
-MdsIpTCP    = @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@
-MdsIpTCPV6  = @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@
-MdsIpUDT    = @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@
-MdsIpUDTV6  = @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@
-MdsIpSSH    = @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@
-MdsIpHTTP   = @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@
 MDSIP_CLIENT_SSH = @MAKEBINDIR@mdsip-client-ssh
 MDSIP_CLIENT_HTTP = @MAKEBINDIR@mdsip-client-http
 MDSIP_SERVER_SSH = @MAKEBINDIR@mdsip-server-ssh
@@ -93,11 +96,10 @@ MDSIP_UTIL = @MAKELIBDIR@libMdsIpUtil.a
 endif
 
 
-
 EXPORTS = mdsipshr.export
 
 all : $(MAKEFILE_HEADER) \
-      @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ \
+      $(MdsIpShr) \
       $(modules) \
       $(MdsIpSrvShr) \
       $(MdsIpTunnel) \
@@ -127,7 +129,7 @@ depend:
 clean :
 	@ $(RM) $(CLEAN_OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
+	@ $(RM) $(MdsIpShr)
 	@ $(RM) @MAKELIBDIR@libMdsIpShr.a
 	@ $(RM) @MAKELIBDIR@libMdsIpUtil.a
 	@ $(RM) @MAKEBINDIR@mdsiptest
@@ -145,10 +147,10 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsIpUDTV6@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpSSH@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpHTTP@SHARETYPE@
-	@ $(RM) @MAKEBINDIR@mdsip-client-ssh
-	@ $(RM) @MAKEBINDIR@mdsip-server-ssh
-	@ $(RM) @MAKEBINDIR@mdsip-client-http
-	@ $(RM) @MAKEBINDIR@mdsip-server-http
+	@ $(RM) $(MDSIP_CLIENT_SSH)
+	@ $(RM) $(MDSIP_SERVER_SSH)
+	@ $(RM) $(MDSIP_CLIENT_HTTP)
+	@ $(RM) $(MDSIP_SERVER_HTTP)
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
@@ -160,7 +162,7 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755 $(MdsIpShr) @libdir@
         ifdef modules
 		$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ @libdir@
         endif
@@ -182,63 +184,62 @@ endif
         fi;
 	$(INSTALL) -m 755  mdsip.hosts $(exec_prefix)/etc
         ifdef MDSIP_CONNECTIONS
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@ @libdir@
-		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-client-ssh @bindir@
-		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-ssh @bindir@
-		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-client-http @bindir@
-		$(INSTALL) -m 755 @MAKEBINDIR@mdsip-server-http @bindir@
+		$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
+		$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
+		$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
+		$(INSTALL) -m 755 $(MdsIpTCPV6) @libdir@
+		$(INSTALL) -m 755 $(MdsIpUDT) @libdir@
+		$(INSTALL) -m 755 $(MdsIpUDTV6) @libdir@
+		$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
+		$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
+		$(INSTALL) -m 755 $(MDSIP_CLIENT_SSH) @bindir@
+		$(INSTALL) -m 755 $(MDSIP_SERVER_SSH) @bindir@
+		$(INSTALL) -m 755 $(MDSIP_CLIENT_HTTP) @bindir@
+		$(INSTALL) -m 755 $(MDSIP_SERVER_HTTP) @bindir@
           ifdef MdsIpGSI
-		$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsIpGSI@SHARETYPE@ @libdir@
+		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
 		$(INSTALL) -m 755 @MAKEBINDIR@mdsipsd @bindir@
           endif
         endif
 
 @MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
+	mkdir $@
 
-@MAKEBINDIR@mdsiptest : t.c @MAKELIBDIR@libMdsIpShr@SHARETYPE@
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ t.c -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
-
-ifdef MDSIP_CONNECTIONS
-@MAKEBINDIR@mdsip : $(SERVER_OBJECTS)
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpSrvShr -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
-else
-@MAKEBINDIR@mdsip : $(SERVER_OBJECTS)
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
-endif
-
-@MAKEBINDIR@mdsipd : mdsipd
-	cp mdsipd @MAKEBINDIR@mdsipd
-
-@MAKEBINDIR@mdsip_server : mdsip_server
-	cp mdsip_server @MAKEBINDIR@mdsip_server
+@MAKEBINDIR@mdsiptest: t.c $(MdsIpShr)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $< -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 ifdef MDSIP_CONNECTIONS
-@MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(LDFLAGS)
-else
-@MAKESHLIBDIR@libMdsIpShr@SHARETYPE@ : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) $(LIBS) $(LDFLAGS) 
+MDSIP_EXTRALIB = -lMdsIpSrvShr
+@MAKEBINDIR@mdsip: $(MdsIpSrvShr)
 endif
+
+@MAKEBINDIR@mdsip: $(MdsIpShr)
+@MAKEBINDIR@mdsip: $(SERVER_OBJECTS)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+
+@MAKEBINDIR@mdsipd: mdsipd
+	cp $< $@
+
+@MAKEBINDIR@mdsip_server: mdsip_server
+	cp $< $@
+
+ifdef MDSIP_CONNECTIONS
+MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr
+endif
+
+$(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $^ $(MDSIPSHR_EXTRALIBS) $(LIBS) $(LDFLAGS)
+
 @MAKELIBDIR@libMdsIpShr.a : $(LIB_OBJECTS)
-	$(AR) -cr $@ $(LIB_OBJECTS)
-	@RANLIB@ $@
+	$(AR) -cr $@ $^
+	$(RANLIB) $@
 
-ifdef modules
-@MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
+$(modules): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) $(LDFLAGS)
-endif
 
 $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJECTS)
-	$(AR) -cr $@ mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJECTS)
-	@RANLIB@ $@
+	$(AR) -cr $@ $^
+	$(RANLIB) $@
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
@@ -247,47 +248,48 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 	mkdir @MAKEETCDIR@
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts
-	cp mdsip.hosts @MAKEETCDIR@mdsip.hosts
+	cp $< $@
 
 @MAKEBINDIR@mkdirhier : mkdirhier
-	cp mkdirhier @MAKEBINDIR@mkdirhier
+	cp $< $@
 
-@MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@ : $(SERVER_LIB_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(SERVER_LIB_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(LDFLAGS)
+$(MdsIpSrvShr) $(MdsIpTunnel) $(MdsIpTCP) $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6): $(MdsIpShr)
+$(MdsIpSrvShr): $(SERVER_LIB_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@ : $(TUNNEL_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(TUNNEL_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+$(MdsIpTunnel): $(TUNNEL_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@ : $(TCP_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(TCP_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+$(MdsIpTCP): $(TCP_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@ : $(TCPV6_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(TCPV6_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+$(MdsIpTCPV6): $(TCPV6_OBJECTS)
+	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@ : $(UDT_OBJECTS)
-	$(CXX) -o $@ @LINKSHARED@ $(UDT_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+$(MdsIpUDT): $(UDT_OBJECTS)
+	$(CXX) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@ : $(UDTV6_OBJECTS)
-	$(CXX) -o $@ @LINKSHARED@ $(UDTV6_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+$(MdsIpUDTV6): $(UDTV6_OBJECTS)
+	$(CXX) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@ :
+$(MdsIpSSH):
 	ln -sf libMdsIpTunnel@SHARETYPE@ $@
 
-@MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@ :
+$(MdsIpHTTP):
 	ln -sf libMdsIpTunnel@SHARETYPE@ $@
 
 
-@MAKEBINDIR@mdsip-client-ssh : mdsip-client-ssh
-	cp mdsip-client-ssh $@
+$(MDSIP_CLIENT_SSH): mdsip-client-ssh
+	cp $< $@
 
-@MAKEBINDIR@mdsip-server-ssh : mdsip-server-ssh
-	cp mdsip-server-ssh $@
+$(MDSIP_SERVER_SSH): mdsip-server-ssh
+	cp $< $@
 
-@MAKEBINDIR@mdsip-client-http : mdsip-client-http
-	cp mdsip-client-http $@
+$(MDSIP_CLIENT_HTTP): mdsip-client-http
+	cp $< $@
 
-@MAKEBINDIR@mdsip-server-http : mdsip-server-http
-	cp mdsip-server-http $@
+$(MDSIP_SERVER_HTTP): mdsip-server-http
+	cp $< $@
 
 
 #makefile-header:  
@@ -297,9 +299,9 @@ ifdef MdsIpGSI
 
 #include makefile-header
 
-$(MdsIpGSI) :  IoRoutinesGsi.c
-	$(CC) -o $@ IoRoutinesGsi.c @CFLAGS@ $$(pkg-config --cflags globus-xio) -I$(top_srcdir)/include  @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
+$(MdsIpGSI):  IoRoutinesGsi.c
+	$(CC) -o $@ $^ @CFLAGS@ $$(pkg-config --cflags globus-xio) -I$(top_srcdir)/include  @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
 
 @MAKEBINDIR@mdsipsd : mdsipsd
-	cp mdsipsd $@
+	cp $< $@
 endif
