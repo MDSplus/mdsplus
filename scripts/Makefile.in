@@ -33,36 +33,19 @@ install:
 @MAKEBINDIR@ :
 	mkdir @MAKEBINDIR@
 
-COPY_SCRIPT = cp $< $@
 @MAKEBINDIR@remote_submit : remote_submit
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@unix_submit : unix_submit
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@synchronize_unix : synchronize_unix
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@SetMdsplusFileProtection : SetMdsplusFileProtection
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@job_finish : job_finish
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@job_functions : job_functions
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@job_output : job_output
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@job_que : job_que
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@job_start : job_start
-	$(COPY_SCRIPT)
-
 @MAKEBINDIR@job_wait : job_wait
+@MAKEBINDIR@MonitorCpciData.py : MonitorCpciData.py
+
+COPY_SCRIPT = cp $< $@
+$(SCRIPTS):
 	$(COPY_SCRIPT)
 
-@MAKEBINDIR@MonitorCpciData.py : MonitorCpciData.py 
-	$(COPY_SCRIPT)
