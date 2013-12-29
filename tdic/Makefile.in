@@ -51,10 +51,10 @@ install:
 	$(CC) -o $@ @CC_LDFLAGS@ tdic.c $(CFLAGS) $(TDIC_LIBS)
 
 @MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
+	mkdir -p @MAKELIBDIR@
 
 @MAKEBINDIR@ :
-	MKDIR @MAKEBINDIR@
+	mkdir -p @MAKEBINDIR@
 
 @MAKESHLIBDIR_RULE@
 
