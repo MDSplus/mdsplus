@@ -64,7 +64,7 @@ def makeRepoRpms():
     else:
       rpmflavor="-"+FLAVOR
     sys.stdout.flush()
-    p=subprocess.Popen('rpmbuild -vba' +\
+    p=subprocess.Popen('rpmbuild -ba' -v +\
                 ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
                 ' --define="_topdir %s"' % (WORKSPACE,)+\
                 ' --define="_builddir %s"' % (WORKSPACE,)+\
@@ -78,7 +78,7 @@ def makeRepoRpms():
         status="error"
     else:
         sys.stdout.flush()
-        p=subprocess.Popen('rpmbuild -vba'+\
+        p=subprocess.Popen('rpmbuild -ba -v'+\
                     ' --target=i686-linux'+\
                     ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
