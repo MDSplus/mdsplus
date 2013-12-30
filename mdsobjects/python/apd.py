@@ -129,7 +129,10 @@ class Dictionary(dict,Apd):
     
     def __init__(self,value=None):
         if value is not None:
-            if isinstance(value,Apd):
+            if isinstance(value,dict):
+                for key,val in value.items():
+                    self.setdefault(key,val)
+            elif isinstance(value,Apd):
                 for idx in range(0,len(value),2):
                     key=value[idx]
                     if isinstance(key,_scalar.Scalar):
@@ -143,9 +146,6 @@ class Dictionary(dict,Apd):
                     val=value[idx+1]
                     if isinstance(val,Apd):
                         val=Dictionary(val)
-                    self.setdefault(key,val)
-            elif isinstance(value,dict):
-                for key,val in value.items():
                     self.setdefault(key,val)
             else:
                 raise TypeError('Cannot create Dictionary from type: '+str(type(value)))

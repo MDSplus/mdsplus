@@ -278,7 +278,7 @@ class descriptor(_C.Structure):
             return
 
         if isinstance(value,_apd.Dictionary):
-            apd=descriptor(value.to_apd.Apd())
+            apd=descriptor(value.toApd())
             self.length=apd.length
             self.dtype=apd.dtype
             self.pointer=apd.pointer
@@ -287,7 +287,7 @@ class descriptor(_C.Structure):
             return
 
         if isinstance(value,_apd.List):
-            apd=descriptor(value.to_apd.Apd())
+            apd=descriptor(value.toApd())
             self.length=apd.length
             self.dtype=apd.dtype
             self.pointer=apd.pointer
