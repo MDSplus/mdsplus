@@ -187,9 +187,7 @@ endif
 		$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
 		$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
 		$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
-		$(INSTALL) -m 755 $(MdsIpTCPV6) @libdir@
 		$(INSTALL) -m 755 $(MdsIpUDT) @libdir@
-		$(INSTALL) -m 755 $(MdsIpUDTV6) @libdir@
 		$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
 		$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
 		$(INSTALL) -m 755 $(MDSIP_CLIENT_SSH) @bindir@
