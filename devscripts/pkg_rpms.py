@@ -64,21 +64,21 @@ def makeRepoRpms():
     else:
       rpmflavor="-"+FLAVOR
     sys.stdout.flush()
-    p=subprocess.Popen('rpmbuild -ba' +\
+    p=subprocess.Popen('rpmbuild -vba' +\
                 ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
                 ' --define="_topdir %s"' % (WORKSPACE,)+\
                 ' --define="_builddir %s"' % (WORKSPACE,)+\
                 ' --define="flavor %s"' % (FLAVOR,)+\
                 ' --define="rpmflavor %s"' % (rpmflavor,)+\
                 ' --define="s_dist %s"' % (DIST,)+\
-                ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=getTopDir())
+                ' %s/x86_64/mdsplus/rpm/repos.spec' % (WORKSPACE,),shell=True,cwd=getTopDir())
     rpmbuild_status=p.wait()
     if rpmbuild_status != 0:
         print "Error building repository rpm for x86_64 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
         status="error"
     else:
         sys.stdout.flush()
-        p=subprocess.Popen('rpmbuild -ba'+\
+        p=subprocess.Popen('rpmbuild -vba'+\
                     ' --target=i686-linux'+\
                     ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
                     ' --define="_topdir %s"' % (WORKSPACE,)+\
@@ -86,7 +86,7 @@ def makeRepoRpms():
                     ' --define="flavor %s"' % (FLAVOR,)+\
                     ' --define="rpmflavor %s"' % (rpmflavor,)+\
                     ' --define="s_dist %s"' % (DIST,)+\
-                    ' %s/x86_64/mdsplus/rpm/repos.spec >/dev/null' % (WORKSPACE,),shell=True,cwd=getTopDir())
+                    ' %s/x86_64/mdsplus/rpm/repos.spec' % (WORKSPACE,),shell=True,cwd=getTopDir())
         rpmbuild_status=p.wait()
         if rpmbuild_status != 0:
             print "Error building repository rpm for i686 %s %s. rpmbuild returned status=%d." % (DIST,FLAVOR,rpmbuild_status)
