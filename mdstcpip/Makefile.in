@@ -213,7 +213,7 @@ endif
 
 @MAKEBINDIR@mdsip: $(MdsIpShr)
 @MAKEBINDIR@mdsip: $(SERVER_OBJECTS)
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
 @MAKEBINDIR@mdsipd: mdsipd
 	cp $< $@
