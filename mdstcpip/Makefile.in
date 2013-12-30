@@ -251,23 +251,22 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 @MAKEBINDIR@mkdirhier : mkdirhier
 	cp $< $@
 
-$(MdsIpSrvShr) $(MdsIpTunnel) $(MdsIpTCP) $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6): $(MdsIpShr)
-$(MdsIpSrvShr): $(SERVER_LIB_OBJECTS)
+$(MdsIpSrvShr): $(SERVER_LIB_OBJECTS) $(MdsIpShr)
 	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(LDFLAGS)
 
-$(MdsIpTunnel): $(TUNNEL_OBJECTS)
+$(MdsIpTunnel): $(TUNNEL_OBJECTS) $(MdsIpShr)
 	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-$(MdsIpTCP): $(TCP_OBJECTS)
+$(MdsIpTCP): $(TCP_OBJECTS) $(MdsIpShr)
 	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-$(MdsIpTCPV6): $(TCPV6_OBJECTS)
+$(MdsIpTCPV6): $(TCPV6_OBJECTS) $(MdsIpShr)
 	$(LD) -o $@ @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-$(MdsIpUDT): $(UDT_OBJECTS)
+$(MdsIpUDT): $(UDT_OBJECTS) $(MdsIpShr)
 	$(CXX) -o $@ @LINKSHARED@ $^ $(CXXFLAGS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
-$(MdsIpUDTV6): $(UDTV6_OBJECTS)
+$(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
 	$(CXX) -o $@ @LINKSHARED@ $^ $(CXXFLAGS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
 
 $(MdsIpSSH):
