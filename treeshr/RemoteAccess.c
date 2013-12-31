@@ -128,7 +128,7 @@ STATIC_THREADSAFE int IOMutex_initialized = 0;
 #include <netinet/in.h>
 #endif
 
-STATIC_THREADSAFE struct _host_list {char *host; int socket; struct sockaddr_in sockaddr; int connections; time_t time; struct _host_list *next;} *host_list = 0;
+STATIC_THREADSAFE struct _host_list {void *dbid; char *host; int socket; struct sockaddr_in sockaddr; int connections; time_t time; struct _host_list *next;} *host_list = 0;
 
 STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
   int status;
@@ -183,7 +183,7 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
 }
 
 #else 
-STATIC_THREADSAFE struct _host_list {char *host; int socket; int connections; time_t time; struct _host_list *next;} *host_list = 0;
+STATIC_THREADSAFE struct _host_list {void *dbid, char *host; int socket; int connections; time_t time; struct _host_list *next;} *host_list = 0;
 #endif
 
 STATIC_ROUTINE void MdsIpFree(void *ptr)
@@ -197,7 +197,7 @@ STATIC_ROUTINE void MdsIpFree(void *ptr)
 	(*rtn)(ptr);
 }
 
-STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
+STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
 {
   struct _host_list *hostchk;
   struct _host_list **nextone;
@@ -219,6 +219,8 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
   LockMdsShrMutex(&HostListMutex,&HostListMutex_initialized);
   for (nextone = &host_list,hostchk = host_list; hostchk; nextone = &hostchk->next, hostchk = hostchk->next)
   {
+    if (dbid && hostchk->dbid != dbid)
+      continue;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
     if (((getaddr_status == 0) ? memcmp(&sockaddr,&hostchk->sockaddr,sizeof(sockaddr)) : strcmp(hostchk->host,host)) == 0)
 #else
@@ -238,6 +240,7 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count)
     if (socket != -1)
     {
       *nextone = malloc(sizeof(struct _host_list));
+      (*nextone)->dbid = dbid;
       (*nextone)->host = strcpy(malloc(strlen(host)+1),host);
       (*nextone)->socket = socket;
       (*nextone)->connections = inc_count ? 1 : 0;
@@ -274,7 +277,7 @@ STATIC_ROUTINE int RemoteAccessDisconnect(int socket,int force)
   hostchk = host_list;
   while(hostchk)
   {
-    if (force || (hostchk->connections <= 0 && ((time(0) - hostchk->time) > 60)))
+    if (force || (hostchk->connections <= 0 && (hostchk->dbid || ((time(0) - hostchk->time) > 60))))
     {
       struct _host_list *next = hostchk->next;
       status = (*rtn)(hostchk->socket);
@@ -330,7 +333,7 @@ int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list,char
 {
   int socket;
   logname[strlen(logname)-2] = '\0';
-  socket = RemoteAccessConnect(logname,1);
+  socket = RemoteAccessConnect(logname,1, (void *)dblist);
   if (socket != -1)
   {
     struct descrip ans = empty_ans;
@@ -918,7 +921,7 @@ int TreeTurnOffRemote(PINO_DATABASE *dblist, int nid)
 int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
 {
   int status = 0;
-  int channel = RemoteAccessConnect(path,0);
+  int channel = RemoteAccessConnect(path,0,0);
   if (channel > 0)
   {
     struct descrip ans = empty_ans;
@@ -940,7 +943,7 @@ int TreeGetCurrentShotIdRemote(char *tree, char *path, int *shot)
 int TreeSetCurrentShotIdRemote(char *tree, char *path, int shot)
 {
   int status = 0;
-  int channel = RemoteAccessConnect(path,0);
+  int channel = RemoteAccessConnect(path,0,0);
   if (channel > 0)
   {
     struct descrip ans = empty_ans;
@@ -1065,7 +1068,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
   while(try_again)
   {
-    *sock = RemoteAccessConnect(host, 1);
+    *sock = RemoteAccessConnect(host, 1,0);
     if (*sock != -1)
     {
       int status;
@@ -1585,7 +1588,7 @@ STATIC_ROUTINE int io_exists_remote(char *host, char *filename)
   int ans = 0;
   int sock;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
-  sock = RemoteAccessConnect(host, 1);
+  sock = RemoteAccessConnect(host, 1,0);
   if (sock != -1)
   {
     int info[] = {0};
@@ -1636,7 +1639,7 @@ STATIC_ROUTINE int io_remove_remote(char *host, char *filename)
   int ans = -1;
   int sock;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
-  sock = RemoteAccessConnect(host, 1);
+  sock = RemoteAccessConnect(host, 1,0);
   if (sock != -1)
   {
     int info[] = {0};
@@ -1686,7 +1689,7 @@ STATIC_ROUTINE int io_rename_remote(char *host, char *filename_old, char *filena
   int ans = -1;
   int sock;
   LockMdsShrMutex(&IOMutex,&IOMutex_initialized);
-  sock = RemoteAccessConnect(host, 1);
+  sock = RemoteAccessConnect(host, 1,0);
   if (sock != -1)
   {
     int info[] = {0};
