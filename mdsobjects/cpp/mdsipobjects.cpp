@@ -105,11 +105,11 @@ void *getManyObj(char *serializedIn)
 			errorReported = true;
 		}
 		result->setItem(nameData, answDict);
-		//deleteData(exprData);
-		//deleteData(nameData);
+		deleteData(exprData);
+		deleteData(nameData);
 		delete [] expr;
-		//deleteData(argsData);
-		//deleteData(currArg);
+		deleteData(argsData);
+		deleteData(currArg);
 	}
 	void *resDsc = result->convertToDsc();
 	deleteData(nameKey);
