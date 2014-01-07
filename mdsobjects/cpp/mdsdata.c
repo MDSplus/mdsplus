@@ -789,8 +789,45 @@ extern int64_t convertAsciiToTime(const char *ascTime)
 }
 
 
+//Conversion from VMS to IEEE float
+EXPORT void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr)
+{
+	int status, arsize, i;
+	float *fArr;
+	DESCRIPTOR_A(inArrD, 0, 0, 0, 0);
+	DESCRIPTOR_A(outArrD, 0, 0, 0, 0);
+
+	arsize = 1;
+	for(i = 0; i < nDims; i++)
+		arsize *= dims[i];
+	arsize *= length;
+
+	inArrD.length = outArrD.length = length;
+	inArrD.dtype = dtype;
+	inArrD.arsize = outArrD.arsize = arsize;
+	inArrD.pointer = ptr;
+	fArr = (float *)malloc(arsize);
+	outArrD.pointer = (char *)fArr;
+	if(inArrD.dtype == DTYPE_F)
+		outArrD.dtype = DTYPE_FLOAT;
+	else //DTYPE_D or DTYPE_G
+		outArrD.dtype = DTYPE_DOUBLE;
+	status = TdiConvert(&inArrD, &outArrD);
+	if(!(status & 1))
+		printf("Internal Error: cannot issue TdiConvert\n");
+		//copy back results
+	memcpy(ptr, outArrD.pointer, arsize);
+	free((char *)fArr);
+}    	
+
+extern  void convertToIEEEFloat(int dtype, int length, void *ptr)
+{
+	int dims[1] = {1};
+	convertToIEEEFloatArray(dtype, length, 1, dims, ptr);
+}
+
 ///////////////mdsip support for Connection class///////////
-EXPORT struct descriptor_xd *GetManyExecute(char *serializedIn)
+extern struct descriptor_xd *GetManyExecute(char *serializedIn)
 {
 	static EMPTYXD(xd);
 	struct descriptor_xd *serResult;

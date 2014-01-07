@@ -45,6 +45,10 @@
 #define DTYPE_O 26 
 #define DTYPE_FLOAT 52 
 #define DTYPE_DOUBLE 53 
+#define DTYPE_F	10		
+#define DTYPE_D	11	
+#define DTYPE_G	27	
+#define DTYPE_H	28		
 #define DTYPE_FSC 54
 #define DTYPE_FTC 55
 #define DTYPE_T 14 
@@ -731,6 +735,7 @@ protected:
 		{
 			return getElementAt(&dim, 1);
 		}
+		Array *getSubArray(int startDim, int nSamples);
 		void setElementAt(int dim, Data *data)
 		{
 			setElementAt(&dim, 1, data);
@@ -1978,6 +1983,7 @@ protected:
 		void makeTimestampedSegment(Array *data, int64_t *times);
 		void putTimestampedSegment(Array *data, int64_t *times);
 		void putRow(Data *data, int64_t *time, int size = 1024);
+		void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 		void acceptSegment(Array *data, Data *start, Data *end, Data *times);
 		void acceptRow(Data *data, int64_t time, bool isLast);
 		StringArray *findTags();

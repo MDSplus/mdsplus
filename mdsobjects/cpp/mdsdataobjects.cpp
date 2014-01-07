@@ -44,7 +44,8 @@ extern "C" {
 	void * convertToParameter(void *dsc, void *helpDsc, void *validationDsc);
 	void * convertToUnits(void *dsc, void *unitsDsc);
 	void * convertToError(void *dsc, void *errorDsc);
-
+	void convertToIEEEFloat(int dtype, int length, void *ptr);
+	void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr);
 	void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen);
 }
 
@@ -69,7 +70,14 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 		case DTYPE_Q: return new Int64(*(int64_t *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_QU: return new Uint64(*(int64_t *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32(*(float *)ptr, unitsData, errorData, helpData, validationData);
+		case DTYPE_F: 
+			convertToIEEEFloat(dtype, length, ptr); 
+			return new Float32(*(float *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64(*(double *)ptr, unitsData, errorData, helpData, validationData);
+		case DTYPE_G:
+		case DTYPE_D:
+			convertToIEEEFloat(dtype, length, ptr); 
+			return new Float64(*(double *)ptr, unitsData, errorData, helpData, validationData);
 		case DTYPE_FSC: return new Complex32(((float *)ptr)[0], ((float *)ptr)[1], unitsData, errorData, helpData, validationData);
 		case DTYPE_FTC: return new Complex64(((double *)ptr)[0], ((double *)ptr)[1], unitsData, errorData, helpData, validationData);
 		case DTYPE_T: return new String(ptr, length, unitsData, errorData, helpData, validationData);
@@ -96,7 +104,14 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 		case DTYPE_Q: return new Int64Array((int64_t *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_QU: return new Uint64Array((uint64_t *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FLOAT: return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
+		case DTYPE_F: 
+			convertToIEEEFloatArray(dtype, length, nDims, dims, ptr);
+			return new Float32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_DOUBLE: return new Float64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
+		case DTYPE_G:
+		case DTYPE_D:
+			convertToIEEEFloatArray(dtype, length, nDims, dims, ptr);
+			return new Float64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FSC: return new Complex32Array((float *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_FTC: return new Complex64Array((double *)ptr, nDims, revDims, unitsData, errorData, helpData, validationData);
 		case DTYPE_T: return new StringArray((char *)ptr, dims[0], length);
@@ -928,6 +943,33 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 	//Otherwise return an array
 	return (Data *)createArrayData(dtype, length, nDims - getNumDims, &dims[getNumDims], ptr+(startIdx * length), 0,0,0,0);
 }
+
+
+Array *Array::getSubArray(int startDim, int nSamples)
+{
+	int i;
+
+	//Check Dimensionality
+	if(startDim + nSamples > dims[0])
+		throw MdsException("Invalid passed dimensions in Array::getSubArray");
+
+	//Prepare actual row dimensions
+	int rowItems = 1;
+	for(i = nDims - 2; i >= 0; i--)
+		rowItems *= dims[i+1];
+
+	//Compute startIdx of selected data portion
+	int startIdx = startDim * rowItems;
+	int *newDims = new int[nDims];
+	for(i = 1; i < nDims; i++)
+		newDims[i] = dims[i];
+	newDims[0] = nSamples;
+
+	return (Array *)createArrayData(dtype, length, nDims, newDims, ptr+(startIdx * length), 0,0,0,0);
+}
+
+
+
 void Data::plot()
 {
 		Data *dim = getDimensionAt(0);
@@ -949,11 +991,11 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 		throw MdsException("Invalid data type in Array::setElementAt");
 	//Check Dimensionality
 	if(getNumDims > nDims)
-		throw MdsException("Invalid passed dimensions in Array::getElementAt");
+		throw MdsException("Invalid passed dimensions in Array::setElementAt");
 	for(i = 0; i < getNumDims; i++)
 	{
 		if(getDims[i] < 0 || getDims[i] >= dims[i])
-			throw MdsException("Invalid passed dimensions in Array::getElementAt");
+			throw MdsException("Invalid passed dimensions in Array::setElementAt");
 	}
 
 	//Prepare actual row dimensions
