@@ -70,6 +70,9 @@ int FlushConnection(int id) {
     return -1;
 }
 
+#ifdef HAVE_WINDOWS_H
+static void exitHandler(void) {}
+#else
 static void exitHandler(void) {
   int id;
   void *ctx=0;
@@ -78,6 +81,8 @@ static void exitHandler(void) {
     ctx=0;
   }
 }
+#endif
+
 
 int NewConnection(char *protocol) {
   Connection *oldhead,*new;

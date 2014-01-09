@@ -15,6 +15,7 @@
 #include <sys/filio.h>
 #endif
 #ifdef HAVE_WINDOWS_H
+#include "udtc.h"
 typedef int socklen_t;
 #define snprintf _snprintf
 #define MSG_DONTWAIT 0
