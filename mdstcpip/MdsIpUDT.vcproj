@@ -117,10 +117,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MDSIPUDT_EXPORTS"
+				AdditionalIncludeDirectories="..\include;..\udt4;..\udt4\udtc;udt4\udtc;..\src;udt4\src"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;MDSIPUDT_EXPORTS;UDT_EXPORTS"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				UsePrecompiledHeader="2"
+				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				DebugInformationFormat="3"
 			/>
@@ -135,6 +136,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
+				AdditionalOptions="&quot;..\win32\debug\mdsipshr.lib&quot; &quot;..\win32\debug\mdsshr.lib&quot;"
+				AdditionalDependencies="ws2_32.lib"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -303,11 +306,11 @@
 			>
 		</Filter>
 		<File
-			RelativePath="..\udt4\src\Makefile"
+			RelativePath=".\udt4\src\Makefile"
 			>
 		</File>
 		<File
-			RelativePath=".\udt4\src\Makefile"
+			RelativePath="..\udt4\src\Makefile"
 			>
 		</File>
 		<File
