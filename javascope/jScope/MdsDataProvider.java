@@ -1222,7 +1222,9 @@ public class MdsDataProvider
                     else
                         return (error = desc.error);
             }
-           throw new IOException("Unexpected descriptor");
+            if(desc.error == null)
+                return "Undefined error";
+            return (error = desc.error);
         }
         else
             return new String(in.getBytes(), 1, in.length() - 2);
