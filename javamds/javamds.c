@@ -20,10 +20,15 @@ static jint DYN_JNI_CreateJavaVM(JavaVM **jvm, void **env, JavaVMInitArgs *vm_ar
   static jint (*JNI_CreateJavaVM)(JavaVM **, void **, JavaVMInitArgs *) = 0;
   if (JNI_CreateJavaVM == 0) {
     static DESCRIPTOR(javalib_d,"java");
+    static DESCRIPTOR(jvmlib_d,"jvm");
     static DESCRIPTOR(javasym_d,"JNI_CreateJavaVM");
     status = LibFindImageSymbol(&javalib_d,&javasym_d,&JNI_CreateJavaVM);
-    if (!(status & 1)) {
+	if(!(status & 1))
+		status = LibFindImageSymbol(&jvmlib_d,&javasym_d,&JNI_CreateJavaVM);
+	if(!(status & 1))
+	{
       JNI_CreateJavaVM = 0;
+	  printf("JNI_CreateJavaVM Not Found!\n");
       return -1;
     } 
   }
