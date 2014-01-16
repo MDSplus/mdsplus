@@ -6,7 +6,7 @@
 /*
  * RFXDiagTimesV1Setup.java
  *
- * Created on Jan 4, 2010, 3:07:17 PM
+ * Created on 16-Jan-2014, 13:27:16
  */
 
 /**
@@ -15,12 +15,12 @@
  */
 public class RFXDiagTimesV1Setup extends DeviceSetup {
 
-    /** Creates new form BeanForm */
+    /** Creates new form RFXDiagTimesV1Setup */
     public RFXDiagTimesV1Setup() {
         initComponents();
-        setSize(300, 800);
+        setSize(240, 550);
         this.pack();
-    }
+   }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -31,120 +31,92 @@ public class RFXDiagTimesV1Setup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        deviceField2 = new DeviceField();
+        deviceDispatch1 = new DeviceDispatch();
         deviceButtons1 = new DeviceButtons();
         jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
         deviceChoice1 = new DeviceChoice();
         deviceField1 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
-        jPanel4 = new javax.swing.JPanel();
-        deviceTable1 = new DeviceTable();
         jPanel5 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
+        deviceTable1 = new DeviceTable();
         jPanel6 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        jLabel3 = new javax.swing.JLabel();
-        deviceField5 = new DeviceField();
-        jLabel4 = new javax.swing.JLabel();
-
+        jPanel8 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
 
         setDeviceProvider("localhost");
         setDeviceTitle("RFX Diagnostic Timing Configuration");
-        setDeviceType("RFXDiagTimes");
-
-        deviceButtons1.setCheckExpressions(new String[] {"_triggerTime >= -0.025", "( _trigMode == 'EXT_10_DT' ) ? ( sum( _delayArray >= 0.025 ) == 10 ) : (  ( _trigMode == 'EXT_RT' ) ? 1BU  : _delayArray[0] >= 0.025 )"});
-        deviceButtons1.setCheckMessages(new String[] {"Trigger time must be greater than -25ms", "The delay between the pulses must be greater than 25ms"});
-        deviceButtons1.setMethods(new String[] {"dtsr_init"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+        setDeviceType("RFXDiagTimesV1");
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jPanel2.setLayout(new java.awt.GridLayout(2, 0));
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Comment:");
+        deviceField2.setNumCols(20);
+        deviceField2.setOffsetNid(14);
+        deviceField2.setTextOnly(true);
+        jPanel7.add(deviceField2);
+        jPanel7.add(deviceDispatch1);
 
-        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        jPanel1.add(jPanel7, java.awt.BorderLayout.NORTH);
+        jPanel1.add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jPanel3.setLayout(new java.awt.GridLayout(2, 0));
 
         deviceChoice1.setChoiceItems(new String[] {"EXT_DT", "EXT_10_DT", "EXT_RT"});
-        deviceChoice1.setIdentifier("trigMode");
-        deviceChoice1.setLabelString("Triger Mode");
+        deviceChoice1.setIdentifier("");
+        deviceChoice1.setLabelString("Trigger Mode:");
         deviceChoice1.setOffsetNid(3);
         deviceChoice1.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice1);
+        jPanel4.add(deviceChoice1);
 
-        deviceField1.setIdentifier("triggerTime");
-        deviceField1.setLabelString("Trigger Time :");
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Trigger Time:");
         deviceField1.setOffsetNid(2);
-        jPanel3.add(deviceField1);
+        jPanel4.add(deviceField1);
 
-        //deviceChoice2.setChoiceItems(new String[] {"N7_AMP", "N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH"});
-/*
+        jPanel3.add(jPanel4);
 
-Removed Real time thomson scattaring parameters (24-10-2012)
+        jPanel5.setLayout(new java.awt.BorderLayout());
 
-        deviceChoice2.setChoiceItems(new String[] {"M1_N7_AMP", "M1_N7_AMP_PH", "RATIO_DOM_SEC", "RATIO_DOM_SEC_PH", "M0_N1_AMP", "M0_N1_AMP_PH", "M0_N7_AMP", "M0_N7_AMP_PH"});
-		deviceChoice2.setIdentifier("rtTriggerMode");
-        deviceChoice2.setLabelString("Real Time Trigger Mode : ");
-        deviceChoice2.setOffsetNid(4);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice2);
-*/
-        jPanel2.add(jPanel3);
-
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"});
-        deviceTable1.setIdentifier("delayArray");
+        deviceTable1.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        deviceTable1.setDisplayRowNumber(true);
+        deviceTable1.setIdentifier("");
+        deviceTable1.setLabelString("Delay Pulse");
         deviceTable1.setNumCols(10);
         deviceTable1.setNumRows(1);
         deviceTable1.setOffsetNid(5);
         deviceTable1.setRowNames(new String[] {"Delay_Pulse"});
-        jPanel4.add(deviceTable1, java.awt.BorderLayout.CENTER);
+        jPanel5.add(deviceTable1, java.awt.BorderLayout.CENTER);
 
-        jPanel2.add(jPanel4);
+        jPanel3.add(jPanel5);
 
-/*
+        jPanel2.add(jPanel3, java.awt.BorderLayout.CENTER);
 
-Removed Real time thomson scattaring parameters (24-10-2012)
+        jTabbedPane1.addTab("Thomson Scattering", jPanel2);
 
+        jPanel6.setLayout(new java.awt.BorderLayout());
 
-        deviceField2.setIdentifier("ampMin");
-        deviceField2.setLabelString("Amplitude [T]  OR Dom/Sec Min : ");
-        deviceField2.setOffsetNid(7);
-        jPanel5.add(deviceField2);
+        deviceChoice2.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Gas Puffing Imaging Trigger: ");
+        deviceChoice2.setOffsetNid(12);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel8.add(deviceChoice2);
 
-        deviceField3.setIdentifier("ampMax");
-        deviceField3.setLabelString("Amplitude [T]  OR Dom/Sec Max : ");
-        deviceField3.setOffsetNid(6);
-        jPanel5.add(deviceField3);
+        jPanel6.add(jPanel8, java.awt.BorderLayout.CENTER);
 
-        jPanel2.add(jPanel5);
+        jTabbedPane1.addTab("Gas Puffing Imaging", jPanel6);
 
-        deviceField4.setIdentifier("phaseMin");
-        deviceField4.setLabelString("Phase Min : ");
-        deviceField4.setOffsetNid(9);
-        jPanel6.add(deviceField4);
+        jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jLabel3.setText("[º]");
-        jPanel6.add(jLabel3);
-
-        deviceField5.setIdentifier("phaseMax");
-        deviceField5.setLabelString("Phase Max : ");
-        deviceField5.setOffsetNid(8);
-        jPanel6.add(deviceField5);
-
-        jLabel4.setText("[º]");
-        jPanel6.add(jLabel4);
-
-        jPanel2.add(jPanel6);
-*/
-
-        jPanel1.add(jPanel2, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Thonson Scattering", jPanel1);
-
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 
@@ -152,20 +124,18 @@ Removed Real time thomson scattaring parameters (24-10-2012)
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
+    private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField2;
-    private DeviceField deviceField3;
-    private DeviceField deviceField4;
-    private DeviceField deviceField5;
     private DeviceTable deviceTable1;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 
