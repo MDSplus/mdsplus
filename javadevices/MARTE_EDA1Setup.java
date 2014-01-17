@@ -614,6 +614,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceTable5.setLabelString("ResAddFcoil");
         deviceTable5.setNumCols(8);
         deviceTable5.setNumRows(1);
+        deviceTable5.setOffsetNid(1795);
         jPanel15.add(deviceTable5);
 
         deviceTable6.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
@@ -621,6 +622,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceTable6.setLabelString("I2tResFcoil");
         deviceTable6.setNumCols(8);
         deviceTable6.setNumRows(1);
+        deviceTable6.setOffsetNid(1801);
         jPanel15.add(deviceTable6);
 
         jPanel13.add(jPanel15, java.awt.BorderLayout.CENTER);
