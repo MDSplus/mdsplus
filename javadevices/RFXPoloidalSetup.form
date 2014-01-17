@@ -1,0 +1,508 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+
+<Form version="1.2" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
+    <Property name="deviceTitle" type="java.lang.String" value="RFX Poloidal Configuration"/>
+    <Property name="deviceType" type="java.lang.String" value="RFXPoloidal"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,69,0,0,3,15"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="South"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="3"/>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="0"/>
+            <Property name="rows" type="int" value="5"/>
+          </Layout>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField1">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Comment:"/>
+                <Property name="numCols" type="int" value="50"/>
+                <Property name="offsetNid" type="int" value="1"/>
+              </Properties>
+            </Component>
+            <Container class="javax.swing.JPanel" name="jPanel5">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField2">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Transfer R1 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="20"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField6">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RA1 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="22"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField7">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RB1 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="23"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField8">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RF1 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="24"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel6">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField3">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Transfer R2 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="25"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField9">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RA2 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="26"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField10">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RB2 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="27"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField11">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RF2 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="28"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel7">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField4">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Transfer R3 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="29"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField12">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RA3 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="30"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField13">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RB3 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="31"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField14">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RF3 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="32"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel8">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                <Property name="alignment" type="int" value="0"/>
+              </Layout>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField5">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Transfer R4 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="33"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField15">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RA4 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="34"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField16">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RB4 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="35"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField17">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="RF4 (Ohm):"/>
+                    <Property name="offsetNid" type="int" value="36"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="0"/>
+            <Property name="rows" type="int" value="2"/>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel9">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="Bobine F"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="2"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel11">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField18">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value=" RF1 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="37"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField19">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF2 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="38"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField20">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF3 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="39"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField21">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF4 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="40"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel12">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField22">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF5 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="41"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField23">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF6 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="42"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField24">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF7 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="43"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField25">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="RF8 (Ohm):"/>
+                        <Property name="offsetNid" type="int" value="44"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel10">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="PM"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="2"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel15">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel1">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PM Units :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel1">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PM Units : "/>
+                        <Property name="offsetNid" type="int" value="5"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel16">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel2">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PM Connection :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel2">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PM Connection"/>
+                        <Property name="offsetNid" type="int" value="6"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel3">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PM Window :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel3">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PM Window : "/>
+                        <Property name="offsetNid" type="int" value="9"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel4">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="0"/>
+            <Property name="rows" type="int" value="2"/>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel13">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="PC"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="2"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel17">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel4">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PC Units :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel4">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PC Units : "/>
+                        <Property name="offsetNid" type="int" value="10"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel18">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel5">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PC Connection :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel5">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PC Connection : "/>
+                        <Property name="offsetNid" type="int" value="11"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel6">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PC Window :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel6">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PC Window :"/>
+                        <Property name="offsetNid" type="int" value="14"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel14">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder title="PV"/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="2"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel19">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel7">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PV Units :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel7">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PV Units : "/>
+                        <Property name="offsetNid" type="int" value="15"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel20">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="javax.swing.JLabel" name="jLabel8">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PV Connection :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel8">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PV Connection : "/>
+                        <Property name="offsetNid" type="int" value="16"/>
+                      </Properties>
+                    </Component>
+                    <Component class="javax.swing.JLabel" name="jLabel9">
+                      <Properties>
+                        <Property name="text" type="java.lang.String" value="PV Window :"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceLabel" name="deviceLabel9">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="PV Window : "/>
+                        <Property name="offsetNid" type="int" value="19"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

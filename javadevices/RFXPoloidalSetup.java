@@ -1,402 +1,441 @@
-
-
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2003</p>
- * <p>Company: </p>
- * @author not attributable
- * @version 1.0
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 
+/*
+ * RFXPoloidalSetup.java
+ *
+ * Created on 17-Jan-2014, 16:27:50
+ */
+
+/**
+ *
+ * @author taliercio
+ */
 public class RFXPoloidalSetup extends DeviceSetup {
-  BorderLayout borderLayout1 = new BorderLayout();
-  DeviceButtons deviceButtons1 = new DeviceButtons();
-  JPanel jPanel1 = new JPanel();
-  JPanel jPanel2 = new JPanel();
-  GridLayout gridLayout1 = new GridLayout();
-  JPanel jPanel3 = new JPanel();
-  JPanel jPanel4 = new JPanel();
-  JPanel jPanel5 = new JPanel();
-  DeviceField deviceField1 = new DeviceField();
-  DeviceField deviceField2 = new DeviceField();
-  DeviceField deviceField3 = new DeviceField();
-  DeviceField deviceField4 = new DeviceField();
-    GridLayout gridLayout2 = new GridLayout();
-  JPanel jPanel6 = new JPanel();
-  JPanel jPanel7 = new JPanel();
-  JPanel jPanel8 = new JPanel();
-  TitledBorder titledBorder1;
-  TitledBorder titledBorder2;
-  TitledBorder titledBorder3;
-  TitledBorder titledBorder4;
-  BorderLayout borderLayout2 = new BorderLayout();
-  JPanel jPanel9 = new JPanel();
-  DeviceField deviceField6 = new DeviceField();
-  JPanel jPanel10 = new JPanel();
-  DeviceField deviceField7 = new DeviceField();
-  DeviceField deviceField8 = new DeviceField();
-  BorderLayout borderLayout3 = new BorderLayout();
-  DeviceField deviceField9 = new DeviceField();
-  JPanel jPanel11 = new JPanel();
-  JPanel jPanel12 = new JPanel();
-  DeviceField deviceField10 = new DeviceField();
-  DeviceField deviceField11 = new DeviceField();
-  BorderLayout borderLayout4 = new BorderLayout();
-  DeviceField deviceField12 = new DeviceField();
-  JPanel jPanel13 = new JPanel();
-  JPanel jPanel14 = new JPanel();
-  DeviceField deviceField13 = new DeviceField();
-  DeviceField deviceField14 = new DeviceField();
-    FlowLayout flowLayout1 = new FlowLayout();
-    FlowLayout flowLayout2 = new FlowLayout();
-    FlowLayout flowLayout3 = new FlowLayout();
-    FlowLayout flowLayout4 = new FlowLayout();
-    FlowLayout flowLayout5 = new FlowLayout();
-    FlowLayout flowLayout6 = new FlowLayout();
-    FlowLayout flowLayout7 = new FlowLayout();
-    FlowLayout flowLayout8 = new FlowLayout();
-    FlowLayout flowLayout9 = new FlowLayout();
-    DeviceField deviceField5 = new DeviceField();
-    DeviceField deviceField17 = new DeviceField();
-    DeviceField deviceField16 = new DeviceField();
-    DeviceField deviceField15 = new DeviceField();
-    FlowLayout flowLayout10 = new FlowLayout();
-    FlowLayout flowLayout11 = new FlowLayout();
-    FlowLayout flowLayout12 = new FlowLayout();
-    FlowLayout flowLayout13 = new FlowLayout();
-    FlowLayout flowLayout14 = new FlowLayout();
-    FlowLayout flowLayout15 = new FlowLayout();
-    FlowLayout flowLayout16 = new FlowLayout();
-    FlowLayout flowLayout18 = new FlowLayout();
-    JPanel jPanel15 = new JPanel();
-    JPanel jPanel16 = new JPanel();
-    JPanel jPanel17 = new JPanel();
-    FlowLayout flowLayout19 = new FlowLayout();
-    FlowLayout flowLayout20 = new FlowLayout();
-    FlowLayout flowLayout21 = new FlowLayout();
-    DeviceField deviceField18 = new DeviceField();
-    DeviceField deviceField19 = new DeviceField();
-    DeviceField deviceField20 = new DeviceField();
-    DeviceField deviceField21 = new DeviceField();
-    FlowLayout flowLayout17 = new FlowLayout();
-    FlowLayout flowLayout22 = new FlowLayout();
-    FlowLayout flowLayout23 = new FlowLayout();
-    FlowLayout flowLayout24 = new FlowLayout();
-    FlowLayout flowLayout25 = new FlowLayout();
-    DeviceField deviceField22 = new DeviceField();
-    DeviceField deviceField23 = new DeviceField();
-    DeviceField deviceField24 = new DeviceField();
-    DeviceField deviceField25 = new DeviceField();
-    DeviceField deviceField26 = new DeviceField();
-    DeviceField deviceField27 = new DeviceField();
-    DeviceField deviceField28 = new DeviceField();
-    DeviceField deviceField29 = new DeviceField();
-    FlowLayout flowLayout26 = new FlowLayout();
-    FlowLayout flowLayout27 = new FlowLayout();
-    FlowLayout flowLayout28 = new FlowLayout();
-    FlowLayout flowLayout29 = new FlowLayout();
-    FlowLayout flowLayout30 = new FlowLayout();
-    FlowLayout flowLayout31 = new FlowLayout();
-    FlowLayout flowLayout32 = new FlowLayout();
-    FlowLayout flowLayout33 = new FlowLayout();
+
+    /** Creates new form RFXPoloidalSetup */
     public RFXPoloidalSetup() {
-    try {
-      jbInit();
+        initComponents();
     }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  private void jbInit() throws Exception {
-    this.setWidth(630);
-    this.setHeight(520);
-    titledBorder1 = new TitledBorder("");
-    titledBorder2 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(148, 145, 140)),"PV");
-    titledBorder3 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142)),"PC");
-    titledBorder4 = new TitledBorder(BorderFactory.createEtchedBorder(Color.white,new Color(142, 142, 142)),"PM");
-        this.setDeviceType("RFXPoloidal");
-    this.setDeviceProvider("localhost");
-    this.setDeviceTitle("RFX Poloidal Configuration");
-    this.getContentPane().setLayout(borderLayout1);
-    jPanel1.setLayout(gridLayout1);
-    gridLayout1.setColumns(1);
-    gridLayout1.setRows(6);
-    deviceField1.setOffsetNid(1);
-    deviceField1.setTextOnly(true);
-    deviceField1.setLabelString("Comment:");
-    deviceField1.setNumCols(30);
-    deviceField1.setIdentifier("");
-    deviceField3.setOffsetNid(2);
-    deviceField3.setLabelString("Load Ind. (mH):");
-        deviceField3.setLayout(flowLayout12);
-        deviceField3.setNumCols(6);
-    deviceField3.setIdentifier("");
-    deviceField2.setOffsetNid(3);
-    deviceField2.setLabelString("Load Res. (Ohm):");
-        deviceField2.setLayout(flowLayout13);
-        deviceField2.setNumCols(6);
-    deviceField2.setIdentifier("");
-        deviceField4.setOffsetNid(20);
-    deviceField4.setLabelString("Transfer R1 (Ohm):");
-        deviceField4.setLayout(flowLayout14);
-        deviceField4.setNumCols(6);
-    deviceField4.setIdentifier("");
-    jPanel2.setLayout(gridLayout2);
-    gridLayout2.setColumns(1);
-    gridLayout2.setRows(3);
-    jPanel6.setBorder(titledBorder4);
-    jPanel6.setLayout(borderLayout2);
-    jPanel8.setBorder(titledBorder3);
-    jPanel8.setLayout(borderLayout3);
-    jPanel7.setBorder(titledBorder2);
-    jPanel7.setLayout(borderLayout4);
-    deviceField6.setOffsetNid(5);
-    deviceField6.setTextOnly(true);
-    deviceField6.setLabelString("PM Units:");
-    deviceField6.setNumCols(35);
-    deviceField6.setIdentifier("");
-    deviceField6.setEditable(false);
-    deviceField8.setOffsetNid(6);
-    deviceField8.setTextOnly(true);
-    deviceField8.setLabelString("PM Connection:");
-    deviceField8.setIdentifier("");
-    deviceField8.setEditable(false);
-    deviceField7.setOffsetNid(9);
-    deviceField7.setLabelString("PM Window: ");
-    deviceField7.setNumCols(4);
-    deviceField7.setIdentifier("");
-    deviceField7.setEditable(false);
-    deviceField9.setEditable(false);
-    deviceField9.setIdentifier("");
-    deviceField9.setNumCols(35);
-    deviceField9.setLabelString("PC Units:");
-    deviceField9.setTextOnly(true);
-        deviceField9.setLayout(flowLayout3);
-        deviceField9.setOffsetNid(10);
-    deviceField10.setOffsetNid(14);
-    deviceField10.setLabelString("PC Window: ");
-    deviceField10.setNumCols(4);
-    deviceField10.setIdentifier("");
-    deviceField10.setEditable(false);
-    deviceField11.setOffsetNid(11);
-    deviceField11.setTextOnly(true);
-    deviceField11.setLabelString("PC Connection:");
-    deviceField11.setIdentifier("");
-    deviceField11.setEditable(false);
-    deviceField12.setOffsetNid(15);
-    deviceField12.setTextOnly(true);
-        deviceField12.setLayout(flowLayout9);
-        deviceField12.setLabelString("PV Units:");
-    deviceField12.setNumCols(35);
-    deviceField12.setIdentifier("");
-    deviceField12.setEditable(false);
-    deviceField13.setOffsetNid(19);
-    deviceField13.setLabelString("PV Window: ");
-    deviceField13.setNumCols(4);
-    deviceField13.setIdentifier("");
-    deviceField13.setEditable(false);
-    deviceField14.setOffsetNid(16);
-    deviceField14.setTextOnly(true);
-    deviceField14.setLabelString("PV Connection:");
-    deviceField14.setIdentifier("");
-    deviceField14.setEditable(false);
-        jPanel9.setLayout(flowLayout1);
-        flowLayout1.setHgap(0);
-        flowLayout1.setVgap(0);
-        jPanel10.setLayout(flowLayout2);
-        flowLayout2.setHgap(0);
-        flowLayout2.setVgap(0);
-        flowLayout3.setHgap(0);
-        flowLayout3.setVgap(0);
-        jPanel11.setLayout(flowLayout4);
-        flowLayout4.setHgap(0);
-        flowLayout4.setVgap(0);
-        jPanel12.setLayout(flowLayout5);
-        flowLayout5.setHgap(0);
-        flowLayout5.setVgap(0);
-        jPanel13.setLayout(flowLayout7);
-        flowLayout7.setHgap(0);
-        flowLayout7.setVgap(0);
-        jPanel14.setLayout(flowLayout8);
-        flowLayout8.setHgap(0);
-        flowLayout8.setVgap(0);
-        flowLayout9.setHgap(0);
-        flowLayout9.setVgap(0);
-        deviceField5.setOffsetNid(4);
-        deviceField5.setNumCols(8);
-        deviceField5.setLabelString("Plasma Ind. (mH):");
-        deviceField5.setLayout(flowLayout11);
-        deviceField17.setOffsetNid(22);
-        deviceField17.setIdentifier("");
-        deviceField17.setNumCols(5);
-        deviceField17.setLabelString("RA1 (Ohm):");
-        deviceField17.setLayout(flowLayout15);
-        deviceField16.setOffsetNid(23);
-        deviceField16.setIdentifier("");
-        deviceField16.setNumCols(5);
-        deviceField16.setLabelString("RB1 (Ohm):");
-        deviceField16.setLayout(flowLayout16);
-        deviceField15.setOffsetNid(24);
+
+    /** This method is called from within the constructor to
+     * initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is
+     * always regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        deviceButtons1 = new DeviceButtons();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        deviceField1 = new DeviceField();
+        jPanel5 = new javax.swing.JPanel();
+        deviceField2 = new DeviceField();
+        deviceField6 = new DeviceField();
+        deviceField7 = new DeviceField();
+        deviceField8 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
+        deviceField3 = new DeviceField();
+        deviceField9 = new DeviceField();
+        deviceField10 = new DeviceField();
+        deviceField11 = new DeviceField();
+        jPanel7 = new javax.swing.JPanel();
+        deviceField4 = new DeviceField();
+        deviceField12 = new DeviceField();
+        deviceField13 = new DeviceField();
+        deviceField14 = new DeviceField();
+        jPanel8 = new javax.swing.JPanel();
+        deviceField5 = new DeviceField();
+        deviceField15 = new DeviceField();
+        deviceField16 = new DeviceField();
+        deviceField17 = new DeviceField();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jPanel11 = new javax.swing.JPanel();
+        deviceField18 = new DeviceField();
+        deviceField19 = new DeviceField();
+        deviceField20 = new DeviceField();
+        deviceField21 = new DeviceField();
+        jPanel12 = new javax.swing.JPanel();
+        deviceField22 = new DeviceField();
+        deviceField23 = new DeviceField();
+        deviceField24 = new DeviceField();
+        deviceField25 = new DeviceField();
+        jPanel10 = new javax.swing.JPanel();
+        jPanel15 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        deviceLabel1 = new DeviceLabel();
+        jPanel16 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        deviceLabel2 = new DeviceLabel();
+        jLabel3 = new javax.swing.JLabel();
+        deviceLabel3 = new DeviceLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jPanel13 = new javax.swing.JPanel();
+        jPanel17 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        deviceLabel4 = new DeviceLabel();
+        jPanel18 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        deviceLabel5 = new DeviceLabel();
+        jLabel6 = new javax.swing.JLabel();
+        deviceLabel6 = new DeviceLabel();
+        jPanel14 = new javax.swing.JPanel();
+        jPanel19 = new javax.swing.JPanel();
+        jLabel7 = new javax.swing.JLabel();
+        deviceLabel7 = new DeviceLabel();
+        jPanel20 = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        deviceLabel8 = new DeviceLabel();
+        jLabel9 = new javax.swing.JLabel();
+        deviceLabel9 = new DeviceLabel();
+
+        setDeviceProvider("localhost");
+        setDeviceTitle("RFX Poloidal Configuration");
+        setDeviceType("RFXPoloidal");
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+
+        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
+
+        jPanel2.setLayout(new java.awt.GridLayout(5, 0));
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Comment:");
+        deviceField1.setNumCols(50);
+        deviceField1.setOffsetNid(1);
+        jPanel2.add(deviceField1);
+
+        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Transfer R1 (Ohm):");
+        deviceField2.setOffsetNid(20);
+        jPanel5.add(deviceField2);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("RA1 (Ohm):");
+        deviceField6.setOffsetNid(22);
+        jPanel5.add(deviceField6);
+
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("RB1 (Ohm):");
+        deviceField7.setOffsetNid(23);
+        jPanel5.add(deviceField7);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("RF1 (Ohm):");
+        deviceField8.setOffsetNid(24);
+        jPanel5.add(deviceField8);
+
+        jPanel2.add(jPanel5);
+
+        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Transfer R2 (Ohm):");
+        deviceField3.setOffsetNid(25);
+        jPanel6.add(deviceField3);
+
+        deviceField9.setIdentifier("");
+        deviceField9.setLabelString("RA2 (Ohm):");
+        deviceField9.setOffsetNid(26);
+        jPanel6.add(deviceField9);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("RB2 (Ohm):");
+        deviceField10.setOffsetNid(27);
+        jPanel6.add(deviceField10);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("RF2 (Ohm):");
+        deviceField11.setOffsetNid(28);
+        jPanel6.add(deviceField11);
+
+        jPanel2.add(jPanel6);
+
+        jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("Transfer R3 (Ohm):");
+        deviceField4.setOffsetNid(29);
+        jPanel7.add(deviceField4);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("RA3 (Ohm):");
+        deviceField12.setOffsetNid(30);
+        jPanel7.add(deviceField12);
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("RB3 (Ohm):");
+        deviceField13.setOffsetNid(31);
+        jPanel7.add(deviceField13);
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("RF3 (Ohm):");
+        deviceField14.setOffsetNid(32);
+        jPanel7.add(deviceField14);
+
+        jPanel2.add(jPanel7);
+
+        jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Transfer R4 (Ohm):");
+        deviceField5.setOffsetNid(33);
+        jPanel8.add(deviceField5);
+
         deviceField15.setIdentifier("");
-        deviceField15.setNumCols(5);
-        deviceField15.setLabelString("RF1 (Ohm):");
-        deviceField15.setLayout(flowLayout25);
-        jPanel5.setLayout(flowLayout10);
-        flowLayout10.setHgap(0);
-        flowLayout10.setVgap(0);
-        flowLayout11.setHgap(0);
-        flowLayout11.setVgap(0);
-        flowLayout12.setHgap(0);
-        flowLayout12.setVgap(0);
-        flowLayout13.setHgap(0);
-        flowLayout13.setVgap(0);
-        flowLayout14.setHgap(0);
-        flowLayout14.setVgap(0);
-        flowLayout15.setHgap(0);
-        flowLayout15.setVgap(0);
-        flowLayout16.setHgap(0);
-        flowLayout16.setVgap(0);
-        jPanel4.setLayout(flowLayout18);
-        flowLayout18.setAlignment(FlowLayout.LEFT);
-        flowLayout18.setHgap(5);
-        flowLayout18.setVgap(0);
-        jPanel15.setLayout(flowLayout19);
-        flowLayout19.setAlignment(FlowLayout.LEFT);
-        flowLayout19.setHgap(5);
-        flowLayout19.setVgap(0);
-        jPanel16.setLayout(flowLayout20);
-        flowLayout20.setAlignment(FlowLayout.LEFT);
-        flowLayout20.setHgap(5);
-        flowLayout20.setVgap(0);
-        jPanel17.setLayout(flowLayout21);
-        flowLayout21.setAlignment(FlowLayout.LEFT);
-        flowLayout21.setHgap(5);
-        flowLayout21.setVgap(0);
-        deviceField21.setOffsetNid(25);
-        deviceField21.setNumCols(6);
-        deviceField21.setLabelString("Transfer R2 (Ohm):");
-        deviceField21.setLayout(flowLayout17);
-        deviceField20.setOffsetNid(26);
-        deviceField20.setNumCols(5);
-        deviceField20.setLabelString("RA2 (Ohm):");
-        deviceField20.setLayout(flowLayout22);
-        deviceField19.setOffsetNid(27);
-        deviceField19.setNumCols(5);
-        deviceField19.setLabelString("RB2 (Ohm):");
-        deviceField19.setLayout(flowLayout23);
-        deviceField18.setOffsetNid(28);
-        deviceField18.setNumCols(5);
-        deviceField18.setLabelString("RF2 (Ohm):");
-        deviceField18.setLayout(flowLayout24);
-        flowLayout17.setHgap(0);
-        flowLayout17.setVgap(0);
-        flowLayout22.setHgap(0);
-        flowLayout22.setVgap(0);
-        flowLayout23.setHgap(0);
-        flowLayout23.setVgap(0);
-        flowLayout24.setHgap(0);
-        flowLayout24.setVgap(0);
-        flowLayout25.setHgap(0);
-        flowLayout25.setVgap(0);
-        deviceField24.setOffsetNid(29);
-        deviceField24.setNumCols(6);
-        deviceField24.setLabelString("Transfer R3 (Ohm):");
-        deviceField24.setLayout(flowLayout26);
-        deviceField28.setOffsetNid(33);
-        deviceField28.setNumCols(6);
-        deviceField28.setLabelString("Transfer R4 (Ohm):");
-        deviceField28.setLayout(flowLayout27);
-        deviceField23.setOffsetNid(30);
-        deviceField23.setNumCols(5);
-        deviceField23.setLabelString("RA3 (Ohm):");
-        deviceField23.setLayout(flowLayout28);
-        deviceField27.setOffsetNid(34);
-        deviceField27.setNumCols(5);
-        deviceField27.setLabelString("RA4 (Ohm):");
-        deviceField27.setLayout(flowLayout29);
-        deviceField25.setOffsetNid(31);
-        deviceField25.setNumCols(5);
-        deviceField25.setLabelString("RB3 (Ohm):");
-        deviceField25.setLayout(flowLayout30);
-        deviceField26.setOffsetNid(35);
-        deviceField26.setNumCols(5);
-        deviceField26.setLabelString("RB4 (Ohm):");
-        deviceField26.setLayout(flowLayout31);
-        deviceField22.setOffsetNid(32);
-        deviceField22.setNumCols(5);
-        deviceField22.setLabelString("RF3 (Ohm):");
-        deviceField22.setLayout(flowLayout32);
-        deviceField29.setOffsetNid(36);
-        deviceField29.setNumCols(5);
-        deviceField29.setLabelString("RF4 (Ohm):");
-        deviceField29.setLayout(flowLayout33);
-        flowLayout26.setHgap(0);
-        flowLayout26.setVgap(0);
-        flowLayout28.setHgap(0);
-        flowLayout28.setVgap(0);
-        flowLayout30.setHgap(0);
-        flowLayout30.setVgap(0);
-        flowLayout32.setHgap(0);
-        flowLayout32.setVgap(0);
-        flowLayout27.setHgap(0);
-        flowLayout27.setVgap(0);
-        flowLayout29.setHgap(0);
-        flowLayout29.setVgap(0);
-        flowLayout31.setHgap(0);
-        flowLayout31.setVgap(0);
-        flowLayout33.setHgap(0);
-        flowLayout33.setVgap(0);
-        this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
-    this.getContentPane().add(jPanel1, BorderLayout.NORTH);
-    jPanel1.add(jPanel3, null);
-    jPanel3.add(deviceField1, null);
-        jPanel1.add(jPanel5, null);
-     //   jPanel5.add(deviceField3, null);
-    //jPanel5.add(deviceField2, null);
-        //jPanel5.add(deviceField5);
-        jPanel1.add(jPanel4, null);
-        jPanel1.add(jPanel15);
-        jPanel15.add(deviceField21);
-        jPanel15.add(deviceField20);
-        jPanel15.add(deviceField19);
-        jPanel15.add(deviceField18);
-        jPanel1.add(jPanel16);
-        jPanel16.add(deviceField24);
-        jPanel16.add(deviceField23);
-        jPanel16.add(deviceField25);
-        jPanel16.add(deviceField22);
-        jPanel1.add(jPanel17);
-        jPanel17.add(deviceField28);
-        jPanel17.add(deviceField27);
-        jPanel17.add(deviceField26);
-        jPanel17.add(deviceField29);
-        jPanel4.add(deviceField4, null);
-        jPanel4.add(deviceField17);
-        jPanel4.add(deviceField16);
-        jPanel4.add(deviceField15);
-        this.getContentPane().add(jPanel2, BorderLayout.CENTER);
-    jPanel2.add(jPanel6, null);
-    jPanel6.add(jPanel9, BorderLayout.NORTH);
-    jPanel9.add(deviceField6, null);
-    jPanel6.add(jPanel10,  BorderLayout.CENTER);
-    jPanel10.add(deviceField8, null);
-    jPanel10.add(deviceField7, null);
-    jPanel2.add(jPanel8, null);
-    jPanel8.add(jPanel11,  BorderLayout.NORTH);
-    jPanel11.add(deviceField9, null);
-    jPanel8.add(jPanel12, BorderLayout.CENTER);
-    jPanel12.add(deviceField11, null);
-    jPanel12.add(deviceField10, null);
-    jPanel2.add(jPanel7, null);
-    jPanel7.add(jPanel13, BorderLayout.NORTH);
-    jPanel13.add(deviceField12, null);
-    jPanel7.add(jPanel14,  BorderLayout.CENTER);
-    jPanel14.add(deviceField14, null);
-    jPanel14.add(deviceField13, null);
-    }
+        deviceField15.setLabelString("RA4 (Ohm):");
+        deviceField15.setOffsetNid(34);
+        jPanel8.add(deviceField15);
+
+        deviceField16.setIdentifier("");
+        deviceField16.setLabelString("RB4 (Ohm):");
+        deviceField16.setOffsetNid(35);
+        jPanel8.add(deviceField16);
+
+        deviceField17.setIdentifier("");
+        deviceField17.setLabelString("RF4 (Ohm):");
+        deviceField17.setOffsetNid(36);
+        jPanel8.add(deviceField17);
+
+        jPanel2.add(jPanel8);
+
+        jPanel1.add(jPanel2);
+
+        jPanel3.setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Bobine F"));
+        jPanel9.setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString(" RF1 (Ohm):");
+        deviceField18.setOffsetNid(37);
+        jPanel11.add(deviceField18);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("RF2 (Ohm):");
+        deviceField19.setOffsetNid(38);
+        jPanel11.add(deviceField19);
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("RF3 (Ohm):");
+        deviceField20.setOffsetNid(39);
+        jPanel11.add(deviceField20);
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("RF4 (Ohm):");
+        deviceField21.setOffsetNid(40);
+        jPanel11.add(deviceField21);
+
+        jPanel9.add(jPanel11);
+
+        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 5, 0));
+
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("RF5 (Ohm):");
+        deviceField22.setOffsetNid(41);
+        jPanel12.add(deviceField22);
+
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("RF6 (Ohm):");
+        deviceField23.setOffsetNid(42);
+        jPanel12.add(deviceField23);
+
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("RF7 (Ohm):");
+        deviceField24.setOffsetNid(43);
+        jPanel12.add(deviceField24);
+
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("RF8 (Ohm):");
+        deviceField25.setOffsetNid(44);
+        jPanel12.add(deviceField25);
+
+        jPanel9.add(jPanel12);
+
+        jPanel3.add(jPanel9);
+
+        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("PM"));
+        jPanel10.setLayout(new java.awt.GridLayout(2, 0));
+
+        jLabel1.setText("PM Units :");
+        jPanel15.add(jLabel1);
+
+        deviceLabel1.setIdentifier("");
+        deviceLabel1.setLabelString("PM Units : ");
+        deviceLabel1.setOffsetNid(5);
+        jPanel15.add(deviceLabel1);
+
+        jPanel10.add(jPanel15);
+
+        jLabel2.setText("PM Connection :");
+        jPanel16.add(jLabel2);
+
+        deviceLabel2.setIdentifier("");
+        deviceLabel2.setLabelString("PM Connection");
+        deviceLabel2.setOffsetNid(6);
+        jPanel16.add(deviceLabel2);
+
+        jLabel3.setText("PM Window :");
+        jPanel16.add(jLabel3);
+
+        deviceLabel3.setIdentifier("");
+        deviceLabel3.setLabelString("PM Window : ");
+        deviceLabel3.setOffsetNid(9);
+        jPanel16.add(deviceLabel3);
+
+        jPanel10.add(jPanel16);
+
+        jPanel3.add(jPanel10);
+
+        jPanel1.add(jPanel3);
+
+        jPanel4.setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("PC"));
+        jPanel13.setLayout(new java.awt.GridLayout(2, 0));
+
+        jLabel4.setText("PC Units :");
+        jPanel17.add(jLabel4);
+
+        deviceLabel4.setIdentifier("");
+        deviceLabel4.setLabelString("PC Units : ");
+        deviceLabel4.setOffsetNid(10);
+        jPanel17.add(deviceLabel4);
+
+        jPanel13.add(jPanel17);
+
+        jLabel5.setText("PC Connection :");
+        jPanel18.add(jLabel5);
+
+        deviceLabel5.setIdentifier("");
+        deviceLabel5.setLabelString("PC Connection : ");
+        deviceLabel5.setOffsetNid(11);
+        jPanel18.add(deviceLabel5);
+
+        jLabel6.setText("PC Window :");
+        jPanel18.add(jLabel6);
+
+        deviceLabel6.setIdentifier("");
+        deviceLabel6.setLabelString("PC Window :");
+        deviceLabel6.setOffsetNid(14);
+        jPanel18.add(deviceLabel6);
+
+        jPanel13.add(jPanel18);
+
+        jPanel4.add(jPanel13);
+
+        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("PV"));
+        jPanel14.setLayout(new java.awt.GridLayout(2, 0));
+
+        jLabel7.setText("PV Units :");
+        jPanel19.add(jLabel7);
+
+        deviceLabel7.setIdentifier("");
+        deviceLabel7.setLabelString("PV Units : ");
+        deviceLabel7.setOffsetNid(15);
+        jPanel19.add(deviceLabel7);
+
+        jPanel14.add(jPanel19);
+
+        jLabel8.setText("PV Connection :");
+        jPanel20.add(jLabel8);
+
+        deviceLabel8.setIdentifier("");
+        deviceLabel8.setLabelString("PV Connection : ");
+        deviceLabel8.setOffsetNid(16);
+        jPanel20.add(deviceLabel8);
+
+        jLabel9.setText("PV Window :");
+        jPanel20.add(jLabel9);
+
+        deviceLabel9.setIdentifier("");
+        deviceLabel9.setLabelString("PV Window : ");
+        deviceLabel9.setOffsetNid(19);
+        jPanel20.add(deviceLabel9);
+
+        jPanel14.add(jPanel20);
+
+        jPanel4.add(jPanel14);
+
+        jPanel1.add(jPanel4);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+    }// </editor-fold>//GEN-END:initComponents
+
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private DeviceButtons deviceButtons1;
+    private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
+    private DeviceField deviceField12;
+    private DeviceField deviceField13;
+    private DeviceField deviceField14;
+    private DeviceField deviceField15;
+    private DeviceField deviceField16;
+    private DeviceField deviceField17;
+    private DeviceField deviceField18;
+    private DeviceField deviceField19;
+    private DeviceField deviceField2;
+    private DeviceField deviceField20;
+    private DeviceField deviceField21;
+    private DeviceField deviceField22;
+    private DeviceField deviceField23;
+    private DeviceField deviceField24;
+    private DeviceField deviceField25;
+    private DeviceField deviceField3;
+    private DeviceField deviceField4;
+    private DeviceField deviceField5;
+    private DeviceField deviceField6;
+    private DeviceField deviceField7;
+    private DeviceField deviceField8;
+    private DeviceField deviceField9;
+    private DeviceLabel deviceLabel1;
+    private DeviceLabel deviceLabel2;
+    private DeviceLabel deviceLabel3;
+    private DeviceLabel deviceLabel4;
+    private DeviceLabel deviceLabel5;
+    private DeviceLabel deviceLabel6;
+    private DeviceLabel deviceLabel7;
+    private DeviceLabel deviceLabel8;
+    private DeviceLabel deviceLabel9;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
+    private javax.swing.JPanel jPanel16;
+    private javax.swing.JPanel jPanel17;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
+    // End of variables declaration//GEN-END:variables
 
 }
