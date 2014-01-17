@@ -1,6 +1,6 @@
 public fun RFXPoloidal__add(in _path, out _nidout)
 {
-    DevAddStart(_path, 'RFXPoloidal', 37, _nidout);
+    DevAddStart(_path, 'RFXPoloidal', 45, _nidout);
     DevAddNode(_path // ':COMMENT', 'TEXT', *, *, _nid);
     DevAddNode(_path // ':LOAD_INDUCT', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RESIST', 'NUMERIC', *, *, _nid);
@@ -38,6 +38,15 @@ public fun RFXPoloidal__add(in _path, out _nidout)
     DevAddNode(_path // ':LOAD_RA4', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RB4', 'NUMERIC', *, *, _nid);
     DevAddNode(_path // ':LOAD_RF4', 'NUMERIC', *, *, _nid);
+
+    DevAddNode(_path // ':R_COIL_F1', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F2', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F3', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F4', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F5', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F6', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F7', 'NUMERIC', *, *, _nid);
+    DevAddNode(_path // ':R_COIL_F8', 'NUMERIC', *, *, _nid);
 
     DevAddEnd();
 }
