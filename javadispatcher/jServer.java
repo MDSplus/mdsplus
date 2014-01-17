@@ -586,7 +586,14 @@ public class jServer
                 mdsTree.doAction(nid, 0);
             }catch(Exception exc) {
                 System.err.println("Exception generated in Action execution: " + exc);
-                status = 0;
+                try {
+                    String msg = exc.toString();
+                    StringTokenizer st = new StringTokenizer(msg, ":");
+                    status = Integer.parseInt(st.nextToken());
+                }catch(Exception exc1)
+                {
+                    status = 0;
+                }
             }
          
       
