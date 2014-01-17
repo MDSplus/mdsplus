@@ -289,5 +289,5 @@ class MILL3(Device):
         finally:
             if self.ser is not None: self.ser.close()
             if conn: c.write_register(12,2)
-
+            return 1
                 
