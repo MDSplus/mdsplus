@@ -32,6 +32,7 @@ public class RFXPoloidalSetup extends DeviceSetup {
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
+        jPanel21 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
@@ -97,6 +98,8 @@ public class RFXPoloidalSetup extends DeviceSetup {
         setDeviceProvider("localhost");
         setDeviceTitle("RFX Poloidal Configuration");
         setDeviceType("RFXPoloidal");
+        setHeight(600);
+        setWidth(900);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
         jPanel1.setLayout(new java.awt.GridLayout(3, 0));
@@ -107,7 +110,9 @@ public class RFXPoloidalSetup extends DeviceSetup {
         deviceField1.setLabelString("Comment:");
         deviceField1.setNumCols(50);
         deviceField1.setOffsetNid(1);
-        jPanel2.add(deviceField1);
+        jPanel21.add(deviceField1);
+
+        jPanel2.add(jPanel21);
 
         jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -429,6 +434,7 @@ public class RFXPoloidalSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel19;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
