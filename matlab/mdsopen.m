@@ -1,4 +1,4 @@
-function [ status ] = mdsopen( tree, shot )
+function [ shoto,status ] = mdsopen( tree, shot )
 %mdsconnect - connect to a remote mdsplus data server. 
 %   
 %      This routine will make a thin client connection to the specified
@@ -20,6 +20,7 @@ function [ status ] = mdsopen( tree, shot )
    end
    if NATIVEvalue(status)
        status = mdsvalue('TreeOpen($,$)', ltree, shot);
+       shoto = mdsvalue('$shot')
    end
 end
 
