@@ -36,7 +36,10 @@ function [ result, status ] = mdsvalue( expression, varargin)
        else
            expr = 'mdsvalue($)';
        end
-       result = Data.execute(expr, args);
+       try
+         result = Data.execute(expr, args);
+       catch err
+         result = 0
        result = NATIVEvalue(result);
    end
 end
