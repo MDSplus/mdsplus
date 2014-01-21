@@ -61,7 +61,7 @@
 function EventImage
   case !version.os of
   'linux' : ans = 'libIdlMdsEvent.so'
-  'darwin': ans = 'libIdlMdsEvent.so'
+  'darwin': ans = 'libIdlMdsEvent.dylib'
   'OSF'   : ans = 'libIdlMdsEvent.so'
   'sunos' : ans = 'libIdlMdsEvent.so'
   'Win32' : ans = 'IDLMDSEVENT'
