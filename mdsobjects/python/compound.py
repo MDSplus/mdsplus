@@ -262,7 +262,7 @@ class _Dispatch(Compound):
         if 'dispatch_type' not in kwargs:
             kwargs['dispatch_type']=2
         kwargs['opcode']=kwargs['dispatch_type']
-        super(Dispatch,self).__init__(args=args,params=kwargs)
+        super(_Dispatch,self).__init__(args=args,params=kwargs)
         if self.completion is None:
            self.completion = None
 Dispatch=MetaClass('Dispatch',(_Dispatch,),{})
