@@ -9,7 +9,6 @@ static void (*PyEval_InitThreads)()=0;
 static void (*PyEval_ReleaseThread)(void *)=0;
 static void (*PyRun_SimpleString)(char *)=0;
 static void (*PyGILState_Release)(void *)=0;
-static void (*PyEval_SaveThread)()=0;
 
 #define loadrtn(name,check) name=dlsym(handle,#name);	\
   if (check && !name) { \
@@ -56,18 +55,14 @@ int PyCall(char *cmd,int lock) {
     loadrtn(PyEval_ReleaseThread,1);
     loadrtn(PyRun_SimpleString,1);
     loadrtn(PyGILState_Release,1);
-    loadrtn(PyEval_SaveThread,1);
     (*Py_Initialize)();
     (*PyEval_InitThreads)();
-    (*PyEval_SaveThread)();
   }
-  if (lock) {
+  if (lock) 
     GIL=(*PyGILState_Ensure)();
-  }
   (*PyRun_SimpleString)(cmd);
-  if (lock && GIL) {
+  if (lock)
     (*PyGILState_Release)(GIL);
-  }
   return 1;
 }
 
