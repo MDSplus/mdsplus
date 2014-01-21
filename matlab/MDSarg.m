@@ -9,7 +9,8 @@ function  result = MDSarg( thing )
 %   node.putData(MDSarg(matlab-native-object))
 %
 import MDSplus.*;
-if size(thing) == [1,1]
+sz = size(thing);
+if isequal(sz, [1,1])
     switch class(thing)
         case 'double'
             result = Float64(thing);
@@ -29,7 +30,6 @@ if size(thing) == [1,1]
             result = thing;
     end
 else
-    sz = size(thing);
     switch class(thing)
         case 'double'
             result = Float64Array(reshape(thing,[],1),sz(sz > 1));
