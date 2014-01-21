@@ -40,7 +40,7 @@ function [ result, status ] = mdsvalue( expression, varargin)
          result = Data.execute(expr, args);
        catch err
          status = 0
-         result = 0
+         result = []
        end
        result = NATIVEvalue(result);
    end
