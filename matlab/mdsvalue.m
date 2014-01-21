@@ -30,7 +30,7 @@ function [ result, status ] = mdsvalue( expression, varargin)
        for k = 1: size(varargin, 2)
            args(k+1) = MDSarg(cell2mat(varargin(k)));
        end
-       status = 0;
+       status = 1;
        if size(varargin, 2) > 0
          expr = strcat('mdsvalue($',repmat(',$', 1,size(varargin, 2)),')');
        else
