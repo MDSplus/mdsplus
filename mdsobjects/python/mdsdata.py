@@ -505,8 +505,9 @@ class Data(object):
         @type tdivarname: string
         @rtype: Data"""
         try:
-            _compound=_mimport('compound',1)
-            return _compound.Function(opcode='public',args=(str(tdivarname),)).evaluate()
+#            _compound=_mimport('compound',1)
+#            return _compound.Function(opcode='public',args=(str(tdivarname),)).evaluate()
+            return _mimport('_tdishr',1).TdiExecute('public '+str(tdivarname))
         except:
             return None
     getTdiVar=staticmethod(getTdiVar)
