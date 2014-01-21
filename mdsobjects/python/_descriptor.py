@@ -418,13 +418,13 @@ class descriptor(_C.Structure):
                 return ans2
             if self.dtype == _dtypes.DTYPE_RANGE:
                 if (ans.ndesc == 2):
-                    return Range(d_contents(ans.dscptrs[0]),d_contents(ans.dscptrs[1]))
+                    return _compound.Range(d_contents(ans.dscptrs[0]),d_contents(ans.dscptrs[1]))
                 elif (ans.ndesc == 3):
-                   return Range(d_contents(ans.dscptrs[0]),d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]))
+                   return _compound.Range(d_contents(ans.dscptrs[0]),d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]))
                 else:
                     raise Exception("Range has must have two or three fields, this range has %d fields" % ans.ndesc)
             if self.dtype == _dtypes.DTYPE_SLOPE:
-                return Range(d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]),d_contents(ans.dscptrs[0]))
+                return _compound.Range(d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]),d_contents(ans.dscptrs[0]))
             if self.dtype in  (_dtypes.DTYPE_FUNCTION,_dtypes.DTYPE_CALL,_dtypes.DTYPE_DEPENDENCY):
                 if ans.length==0:
                     opcode=None
