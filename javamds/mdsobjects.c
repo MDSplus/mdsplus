@@ -3192,7 +3192,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
 		retObj = DescripToObject(env, (struct descriptor *)&arrayDsc, 0, 0, 0, 0); 
 	}
 	if(mem) FreeMessage(mem);
-printf("FINITO\n");
+//printf("FINITO\n");
 	return retObj;
 }
 
