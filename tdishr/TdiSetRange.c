@@ -158,7 +158,7 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[],
 
         if (lo != 0)
             arr.aflags.bounds = 1;
-        arr.a0 -= lo * arr.arsize;
+        arr.a0 -= lo * (int)arr.arsize;
         arr.m[dimct + 2 * j] = lo;
         arr.m[dimct + 2 * j + 1] = hi;
         arr.m[j] = hi - lo + 1;
