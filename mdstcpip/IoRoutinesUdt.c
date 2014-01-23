@@ -40,15 +40,15 @@ extern int pthread_mutex_unlock();
 #ifndef MSG_NOSIGNAL
 #define MSG_NOSIGNAL 0
 #endif
-static ssize_t tcp_send(int conid, const void *buffer, size_t buflen, int nowait);
-static ssize_t tcp_recv(int conid, void *buffer, size_t len);
-static int tcp_disconnect(int conid);
-static int tcp_flush(int conid);
-static int tcp_listen(int argc, char **argv);
-static int tcp_authorize(int conid, char *username);
-static int tcp_connect(int conid, char *protocol, char *host);
-static int tcp_reuseCheck(char *host,char *unique, size_t buflen);
-static IoRoutines tcp_routines = {tcp_connect,tcp_send,tcp_recv,tcp_flush,tcp_listen,tcp_authorize,tcp_reuseCheck,tcp_disconnect};
+static ssize_t UDT_send(int conid, const void *buffer, size_t buflen, int nowait);
+static ssize_t UDT_recv(int conid, void *buffer, size_t len);
+static int UDT_disconnect(int conid);
+static int UDT_flush(int conid);
+static int UDT_listen(int argc, char **argv);
+static int UDT_authorize(int conid, char *username);
+static int UDT_connect(int conid, char *protocol, char *host);
+static int UDT_reuseCheck(char *host,char *unique, size_t buflen);
+static IoRoutines UDT_routines = {UDT_connect,UDT_send,UDT_recv,UDT_flush,UDT_listen,UDT_authorize,UDT_reuseCheck,UDT_disconnect};
 
 typedef struct _client {
   UDTSOCKET sock;
@@ -71,7 +71,7 @@ typedef struct _socket_list {
 static SocketList *Sockets = 0;
 
 EXPORT IoRoutines *Io() {
-  return &tcp_routines;
+  return &UDT_routines;
 }
 
 static void InitializeSockets() {
@@ -184,7 +184,7 @@ static char *getHostInfo(UDTSOCKET s,char **iphostptr,char **hostnameptr) {
   return ans;
 }
   
-static int tcp_authorize(int conid, char *username) {
+static int UDT_authorize(int conid, char *username) {
   UDTSOCKET s=getSocket(conid);
   time_t tim = time(0);
   char *timestr = ctime(&tim);
@@ -223,7 +223,7 @@ static int tcp_authorize(int conid, char *username) {
   return ans;
 }
 
-static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait) {
+static ssize_t UDT_send(int conid, const void *bptr, size_t num, int nowait) {
   UDTSOCKET s = getSocket(conid);
   int options = nowait ? MSG_DONTWAIT : 0; 
   ssize_t sent=-1;
@@ -233,7 +233,7 @@ static ssize_t tcp_send(int conid, const void *bptr, size_t num, int nowait) {
   return sent;
 }   
 
-static ssize_t tcp_recv(int conid, void *bptr, size_t num) {
+static ssize_t UDT_recv(int conid, void *bptr, size_t num) {
   UDTSOCKET s = getSocket(conid);
   ssize_t recved = -1;
   if (s != -1) {
@@ -251,7 +251,7 @@ static ssize_t tcp_recv(int conid, void *bptr, size_t num) {
 }
 
 
-static int tcp_disconnect(int conid) {
+static int UDT_disconnect(int conid) {
   UDTSOCKET s = getSocket(conid);
   int status = 0;
   time_t tim = time(0);
@@ -282,7 +282,7 @@ static int tcp_disconnect(int conid) {
   return status;
 }
 
-static int tcp_flush(int conid) {
+static int UDT_flush(int conid) {
   UDTSOCKET sock = getSocket(conid);
   return 0;
   if (sock != -1) {
@@ -390,7 +390,7 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin) {
   return 1;
 }
 
-static int tcp_reuseCheck(char *host, char *unique, size_t buflen) {
+static int UDT_reuseCheck(char *host, char *unique, size_t buflen) {
   struct sockaddr_in sin;
   int status = getHostAndPort(host,&sin);
   if (status == 1) {
@@ -403,7 +403,7 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen) {
   }
 }
 
-static int tcp_connect(int conid, char *protocol, char *host) {
+static int UDT_connect(int conid, char *protocol, char *host) {
   struct sockaddr_in sin;
   UDTSOCKET s;
   int status = getHostAndPort(host,&sin);
@@ -489,7 +489,7 @@ static void ChildSignalHandler(int num) {
 }
 #endif
 
-static int tcp_listen(int argc, char **argv) {
+static int UDT_listen(int argc, char **argv) {
   Options options[] = {{"p","port",1,0,0},
 #ifdef HAVE_WINDOWS_H
 		       {"S","sockethandle",1,0,0},
