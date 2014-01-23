@@ -367,7 +367,6 @@ static int UDTV6_reuseCheck(char *host, char *unique, size_t buflen) {
     unsigned short *addr=(unsigned short *)&sin.sin6_addr;
     snprintf(unique,buflen,"udtv6://%x:%x:%x:%x:%x:%x:%x:%x#%x",addr[0],addr[1],addr[2],addr[3],
 	     addr[4],addr[5],addr[6],addr[7],ntohs(sin.sin6_port));
-    printf("reuseCheck string=%s\n",unique);
     return 0;
   } else {
     *unique=0;
