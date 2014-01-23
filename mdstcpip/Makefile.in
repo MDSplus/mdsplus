@@ -15,7 +15,7 @@ RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH)  -Iudt4/src -Iudt4/udtc
-CXXFLAGS=-g -O3 -Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/udtc -Iudt4/src @CFLAGS@ 
+CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/udtc -Iudt4/src @CFLAGS@ 
 LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
 INSTALL=@top_srcdir@/conf/install-sh -c
@@ -60,9 +60,9 @@ UDT4_SOURCES = udt4/src/api.cpp udt4/src/buffer.cpp udt4/src/cache.cpp udt4/src/
 	udt4/src/common.cpp udt4/src/core.cpp udt4/src/epoll.cpp udt4/src/list.cpp udt4/src/md5.cpp \
 	udt4/src/packet.cpp udt4/src/queue.cpp udt4/src/window.cpp\
 	udt4/udtc/udtc.cpp
-UDT_OBJECTS = IoRoutinesUdt.o  $(UDT4_SOURCES:.cpp=.o)
-UDTV6_SOURCES = IoRoutinesUdtv6.c udtc.cpp
-UDTV6_OBJECTS = IoRoutinesUdtv6.o udtc.o
+UDT4_OBJECTS=$(UDT4_SOURCES:.cpp=.o)
+UDT_OBJECTS = IoRoutinesUdt.o  $(UDT4_OBJECTS)
+UDTV6_OBJECTS = IoRoutinesUdtV6.o $(UDT4_OBJECTS)
 TUNNEL_SOURCES = IoRoutinesTunnel.c
 TUNNEL_OBJECTS = $(TUNNEL_SOURCES:.c=.o)
 CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(UDT_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS)
@@ -105,6 +105,7 @@ all : $(MAKEFILE_HEADER) \
       $(MdsIpTunnel) \
       $(MdsIpTCP) \
       $(MdsIpUDT) \
+      $(MdsIpUDTV6) \
       $(MdsIpGSI) \
       $(MdsIpSSH) \
       $(MdsIpHTTP) \
