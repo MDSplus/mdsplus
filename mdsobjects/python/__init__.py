@@ -93,7 +93,7 @@ String=_scalar.String
 Uint128=_scalar.Uint128
 Uint16=_scalar.Uint16
 Uint32=_scalar.Uint32
-Uint32=_scalar.Uint64
+Uint64=_scalar.Uint64
 Uint8=_scalar.Uint8
 
 _tree=_mimport('tree',1)
