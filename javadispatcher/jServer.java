@@ -582,7 +582,13 @@ public class jServer
             System.out.println("" + new Date() + ", Doing " + name + " in " +
                                tree + " shot " + shot);
 
-            try {
+            //Gabriele jan 2014: let doAction return the true status and get error message 
+            //via  JNI method GetMdsMessage(status)
+            status = mdsTree.doAction(nid, 0);
+            if((status & 1) == 0)
+               System.err.println("Action Execution failed: " + mdsTree.getMdsMessage(status));
+             
+/*            try {
                 mdsTree.doAction(nid, 0);
             }catch(Exception exc) {
                 System.err.println("Exception generated in Action execution: " + exc);
@@ -595,7 +601,7 @@ public class jServer
                     status = 0;
                 }
             }
-         
+*/         
       
             System.out.println("" + new Date() + ", Done " + name + " in " +
                                tree + " shot " + shot);

@@ -198,10 +198,10 @@ class TreeServer extends UnicastRemoteObject implements RemoteTree
         NidData nid = tree.addDevice(path, model, 0);
         return nid;
     }
-    public void doAction(NidData nid, int ctx) throws DatabaseException
+    public int doAction(NidData nid, int ctx) throws DatabaseException
     {
         setContext(ctx);
-        tree.doAction(nid, 0);
+        return tree.doAction(nid, 0);
     }
     public void doDeviceMethod(NidData nid, String method, int ctx) throws DatabaseException
     {

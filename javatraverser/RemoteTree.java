@@ -39,7 +39,7 @@ public interface RemoteTree extends Remote {
     public void setDefault(NidData nid, int ctx) throws RemoteException, DatabaseException;
     public NidData getDefault(int ctx) throws RemoteException, DatabaseException;
     public NidData addDevice(String path, String model, int ctx) throws RemoteException, DatabaseException;
-    public void doAction(NidData nid, int ctx) throws RemoteException, DatabaseException;
+    public int doAction(NidData nid, int ctx) throws RemoteException, DatabaseException;
     public void doDeviceMethod(NidData nid, String method, int ctx) throws RemoteException, DatabaseException;
     public NidData [] getWild(int usage_mask, int ctx) throws RemoteException, DatabaseException;
     public int create(int shot) throws RemoteException, DatabaseException;

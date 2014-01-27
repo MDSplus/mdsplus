@@ -85,7 +85,7 @@ public class Database implements RemoteTree{
     public native void setDefault(NidData nid, int ctx) throws DatabaseException;
     public native NidData getDefault(int ctx) throws DatabaseException;
     public native NidData addDevice(String path, String model, int ctx) throws DatabaseException;
-    public native void doAction(NidData nid, int ctx) throws DatabaseException;
+    public native int doAction(NidData nid, int ctx) throws DatabaseException;
     public native void doDeviceMethod(NidData nid, String method, int ctx) throws DatabaseException;
     public native NidData [] getWild(int usage_mask, int ctx) throws DatabaseException;
     public native int create(int shot) throws DatabaseException;
@@ -100,5 +100,6 @@ public class Database implements RemoteTree{
     public native String getOriginalPartName(NidData nid) throws DatabaseException;
     public native void setFlags(NidData nid, int flags) throws DatabaseException;
     public native void setEvent(String event)throws DatabaseException;
+    public native String getMdsMessage(int status);
   }
 
