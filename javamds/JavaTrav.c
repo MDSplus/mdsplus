@@ -1285,7 +1285,7 @@ int doAction(int nid)
 	return status;
 }
 
-JNIEXPORT void JNICALL Java_Database_doAction
+JNIEXPORT jint JNICALL Java_Database_doAction
   (JNIEnv *env, jobject obj, jobject jnid, jint context)
 {
 	int nid, status;
@@ -1295,8 +1295,11 @@ JNIEXPORT void JNICALL Java_Database_doAction
 	nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
 	nid = (*env)->GetIntField(env, jnid, nid_fid);
 	status = doAction(nid);
-	if(!(status & 1))
-		RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
+
+//Gabriele Jan 2014: return original status
+	return status;
+	//if(!(status & 1))
+	//	RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
 }
 
 
@@ -1376,3 +1379,9 @@ JNIEXPORT void JNICALL Java_Database_setEvent
 }
 
 
+JNIEXPORT jstring JNICALL Java_Database_getMdsMessage
+  (JNIEnv *env, jobject obj, jint status)
+{
+	char *msg = MdsGetMsg(status);
+	return (*env)->NewStringUTF(env, msg);
+}
