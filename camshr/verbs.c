@@ -295,7 +295,7 @@ AutoConfig_Exit:
 //-------------------------------------------------------------------------
 int Deassign()
 {
-	char			db_tmp[33];
+	char			db_tmp[64];
 	int 			i, index, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name; 
 	int				status = SUCCESS;
 	struct Module_	Mod, *pMod;
@@ -552,7 +552,7 @@ int ShowCrate()
 	// get number of crates in db file
 	if( (numOfCrates = get_file_count(CRATE_DB)) > 0 ) {	// possibly something to show
 		if( (numOfModules = get_file_count(CTS_DB)) > 0 ) {	// maybe some crates controllers ..
-			for( i = 0; i < numOfCrates; ++i ) {
+			for( i = 0; i < numOfCrates; i++ ) {
 				parse_crate_db(CRATEdb+i, pCr8);
 				if(  wildcard_match( wild.pointer, pCr8->name, 0,0,0 ) ) {
 				  //					moduleFound = FALSE;
@@ -625,7 +625,7 @@ ShowCrate_Exit:
 //-------------------------------------------------------------------------
 int ShowModule()
 {
-	char	db_tmp[33];		// enough space for a logical name and a cstring terminator	[2002.02.20]
+	char	db_tmp[64];		// enough space for a logical name and a cstring terminator	[2002.02.20]
 	int 	i, numOfEntries, status = SUCCESS;
 
 	static DESCRIPTOR( physical, "PHYSICAL" );
@@ -666,7 +666,7 @@ int ShowModule()
 	if( (numOfEntries = get_file_count(CTS_DB)) > 0 ) {	// something to show
 		printf( "%s\n",   heading1.pointer );
 		printf( "%s%d\n", heading2.pointer, numOfEntries );
-		for( i = 0; i < numOfEntries; ++i ) {
+		for( i = 0; i < numOfEntries; i++ ) {
 			parse_cts_db( CTSdb+i, pMod );		// extract info from db
 
 			memset(db_tmp, ' ', 32);
@@ -686,6 +686,7 @@ int ShowModule()
 //				printf( "%s%3d: %.84s<%s\n", CYAN, i+1, (char *)CTSdb+(i * MODULE_ENTRY), NORMAL );	// fancy, with color
 				printf( "%3d: %.84s<\n", i+1, (char *)CTSdb+(i * MODULE_ENTRY) );
 			}
+
 		} // end of for() loop
 
 		printf( "%s\n", heading2.pointer );
