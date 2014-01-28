@@ -1,3 +1,4 @@
+import traceback as _tb
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
     return __import__(name,globals())
@@ -255,13 +256,17 @@ class Tree(object):
         for i in range(len(q)):
             exec( str(q[0]))
         try:
-            exec( str('_data.makeData('+model+'(n).'+method+'(_data.Data.getTdiVar("__do_method_arg__"))).setTdiVar("_result")'))
-            _data.makeData(1).setTdiVar("_method_status")
-            
+            exec( str('status=_data.makeData('+model+'(n).'+method+'(_data.Data.getTdiVar("__do_method_arg__")))'))
+	    status.setTdiVar('_result')
+            if isinstance(status,_mimport('mdsscalar',1).Int32):        
+                status.setTdiVar("_method_status")
+            else:
+                _data.makeData(1).setTdiVar("_method_status")            
         except AttributeError:
             _data.makeData(0xfd180b0).setTdiVar("_method_status")
         except Exception:
             print("Error doing %s on node %s" % (str(method),str(n)))
+            _tb.print_exc()
             _data.makeData(0).setTdiVar("_method_status")
             raise
         return _data.Data.getTdiVar("_result")
