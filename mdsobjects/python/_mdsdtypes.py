@@ -118,6 +118,7 @@ class mdsdtypes:
         if not mdsdtypes.m_to_n_types:
             for d in mdsdtypes.numpytypes:
                mdsdtypes.m_to_n_types.setdefault(str((mdsdtypes.numpytypes[d])().dtype),d)
+            mdsdtypes.m_to_n_types.setdefault("bool",DTYPE_BU)
         if str(value.dtype)[1:2]=='S' or str(value.dtype)[1:2]=='U':
             return DTYPE_T
         try:
