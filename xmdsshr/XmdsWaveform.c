@@ -2070,7 +2070,7 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   static Position xorigin,yorigin;
   static float xoffset,yoffset;
   static float x,y;
-  static float rotate,width_limit,height_limit,width_page,height_page;
+  static float rotate,width_limit,height_limit,width_page;
   static short swidth,sheight;
   static float margin = .375;
   static unsigned long fatom;
