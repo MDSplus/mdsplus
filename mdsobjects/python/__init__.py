@@ -21,5 +21,6 @@ else:
 
 gbls=_mimport('_loadglobals',1)
 for key in gbls.__dict__.iterkeys():
+   if not key.startswith('_'):
 	globals()[key]=gbls.__dict__[key]
 
