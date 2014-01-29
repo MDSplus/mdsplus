@@ -20,7 +20,7 @@ function [ shoto,status ] = mdsopen( tree, shot )
    end
    if NATIVEvalue(status)
        status = mdsvalue('TreeOpen($,$)', ltree, shot);
-       shoto = mdsvalue('$shot')
+       shoto = mdsvalue('$shot');
    end
 end
 
