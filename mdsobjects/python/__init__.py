@@ -19,8 +19,8 @@ else:
   def _mimport(name,level):
     return __import__(name,globals(),{},[],level)
 
-gbls=_mimport('_loadglobals',1)
-for key in gbls.__dict__.iterkeys():
-   if not key.startswith('_'):
-	globals()[key]=gbls.__dict__[key]
+_mimport('_loadglobals',1).load(globals())
+#for key in gbls.__dict__.iterkeys():
+#   if not key.startswith('_'):
+#	globals()[key]=gbls.__dict__[key]
 
