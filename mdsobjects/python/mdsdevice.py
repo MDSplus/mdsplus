@@ -7,7 +7,7 @@ else:
 
 _treenode=_mimport('treenode',1)
 _treeshr=_mimport('_treeshr',1)
-
+_compound=_mimport('compound',1)
 
 class Device(_treenode.TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
@@ -187,7 +187,7 @@ class Device(_treenode.TreeNode):
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         head=tree.addNode(path,'DEVICE')
         head=cls(head)
-        head.record=Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
+        head.record=_compound.Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
         head.write_once=True
         for elt in cls.parts:
             node=tree.addNode(path+elt['path'],elt['type'])
