@@ -43,6 +43,9 @@ function [ result, status ] = mdsvalue( expression, varargin)
          result = []
        end
        result = NATIVEvalue(result);
+       if class(result) == 'single'
+         result=double(result);
+       end
    end
 end
 
