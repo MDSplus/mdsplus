@@ -5,11 +5,13 @@ else:
   def _mimport(name,level):
     return __import__(name,globals(),{},[],level)
 
-_treenode=_mimport('treenode',1)
-_treeshr=_mimport('_treeshr',1)
-_compound=_mimport('compound',1)
+gbls=_mimport('_loadglobals',1)
+for key in gbls.__dict__.iterkeys():
+        globals()[key]=gbls.__dict__[key]
 
-class Device(_treenode.TreeNode):
+_treeshr=_mimport('_treeshr',1)
+
+class Device(TreeNode):
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.
 
     Use this class as a superclass for device support classes. When creating a device support class include a class attribute called "parts"
@@ -155,7 +157,7 @@ class Device(_treenode.TreeNode):
         if name == 'part_name' or name == 'original_part_name':
             return self.ORIGINAL_PART_NAME(None)
         try:
-            return self.__class__(_treenode.TreeNode(self.part_dict[name]+self.head,self.tree))
+            return self.__class__(TreeNode(self.part_dict[name]+self.head,self.tree))
         except KeyError:
             return super(Device,self).__getattr__(name)
 
@@ -168,7 +170,7 @@ class Device(_treenode.TreeNode):
         @rtype: None
         """
         try:
-            _treenode.TreeNode(self.part_dict[name]+self.head,self.tree).record=value
+            TreeNode(self.part_dict[name]+self.head,self.tree).record=value
         except KeyError:
             super(Device,self).__setattr__(name,value)
 
@@ -187,7 +189,7 @@ class Device(_treenode.TreeNode):
         _treeshr.TreeStartConglomerate(tree,len(cls.parts)+1)
         head=tree.addNode(path,'DEVICE')
         head=cls(head)
-        head.record=_compound.Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
+        head.record=Conglom('__python__',cls.__name__,None,"from %s import %s" % (cls.__module__[0:cls.__module__.index('.')],cls.__name__))
         head.write_once=True
         for elt in cls.parts:
             node=tree.addNode(path+elt['path'],elt['type'])
