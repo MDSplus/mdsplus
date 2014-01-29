@@ -21,9 +21,9 @@ _tdi=_mimport('tdibuiltins',1)
 import numpy as _N
 
 import ctypes as _C
-import os,sys
+import os as _os,sys as _sys
 
-if sys.version > '3':
+if _sys.version > '3':
     buffer = memoryview
 
 def pointerToObject(pointer):
@@ -493,7 +493,7 @@ class descriptor(_C.Structure):
                                   buffer=buffer(_C.cast(descr.pointer,_C.POINTER(_dtypes.mdsdtypes(self.dtype).toCtype() * int(descr.arsize/descr.length))).contents))
                 return _array.makeArray(a)
             except TypeError:
-                e=sys.exc_info()[1]
+                e=_sys.exc_info()[1]
                 raise TypeError('Arrays of type %s are unsupported. Error message was: %s' % (str(_dtypes.mdsdtypes(self.dtype)),str(e)))
             raise Exception('Unsupported array type')
         if self.dclass == _mdsclasses.CLASS_APD:
@@ -561,7 +561,7 @@ class descriptor_xd(_C.Structure):
           pass
         
 class descriptor_r(_C.Structure):
-    if os.name=='nt':
+    if _os.name=='nt':
         _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*4),("dscptrs",_C.POINTER(descriptor)*256)]
     else:
         _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*3),("dscptrs",_C.POINTER(descriptor)*256)]
@@ -601,7 +601,7 @@ class descriptor_string(_C.Structure):
             self.pointer=str.encode(string)
 
 class descriptor_apd(_C.Structure):
-    if os.name=='nt':
+    if _os.name=='nt':
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
@@ -657,7 +657,7 @@ class descriptor_apd(_C.Structure):
         return ans
     
 class descriptor_a(_C.Structure):
-    if os.name=='nt':
+    if _os.name=='nt':
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.c_void_p),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
