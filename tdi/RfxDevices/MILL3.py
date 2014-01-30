@@ -1,25 +1,6 @@
 #!/usr/bin/env python
 
 from MDSplus import *
-import serial
-from serial import SerialException, SerialTimeoutException
-import struct
-import time
-
-from pymodbus.client.sync import ModbusTcpClient
-from pymodbus.exceptions import *
-
-import logging
-
-
-
-class SerialReadTimeoutException(SerialException):
-    """Read tmeout give an exception"""
-    
-class SerialBadMessageException(SerialException):
-    """Received bad message give an exception"""
-
-
 
 
 
@@ -79,6 +60,25 @@ class MILL3(Device):
 
 
     def INIT(self, arg):
+        class SerialReadTimeoutException(SerialException):
+            """Read tmeout give an exception"""
+    
+        class SerialBadMessageException(SerialException):
+            """Received bad message give an exception"""
+
+
+
+
+        import serial
+        from serial import SerialException, SerialTimeoutException
+        import struct
+        import time
+
+        from pymodbus.client.sync import ModbusTcpClient
+#        from pymodbus.exceptions import *
+
+        import logging
+
         LONG_TRANSLATION_SET_POINT_MAX_VALUE = 1540
         SHORT_TRANSLATION_SET_POINT_MAX_VALUE = 200
 
