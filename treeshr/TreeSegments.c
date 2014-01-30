@@ -46,7 +46,7 @@ int TreeMakeSegment(int nid, struct descriptor *start, struct descriptor *end,
 }
 
 int TreeGetSegmentTimes(int nid, int *nsegs, uint64_t **times) {
-  return _TreeGetSegmentTimes(*TreeCtx(), nid, times);
+  return _TreeGetSegmentTimes(*TreeCtx(), nid, nsegs, times);
 }
 
 int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, uint64_t **times) {

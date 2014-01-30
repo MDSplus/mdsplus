@@ -452,6 +452,8 @@ extern EXPORT int TreeGetSegment();
 extern EXPORT int _TreeGetSegment();
 extern EXPORT int TreeGetSegmentInfo();
 extern EXPORT int _TreeGetSegmentInfo();
+extern EXPORT int TreeGetSegmentTimes();
+extern EXPORT int _TreeGetSegmentTimes();
 
 extern EXPORT int TreeGetXNci();
 extern EXPORT int _TreeGetXNci();
@@ -621,6 +623,8 @@ extern EXPORT int _TreeGetSegment(void *dbid, int nid, int segidx, struct descri
 extern EXPORT int TreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
 extern EXPORT int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
 
+extern EXPORT int TreeGetSegmentTimes(int nid, int *numsegs, uint64_t **times);
+extern EXPORT int _TreeGetSegmentTimes(void *dbid, int nid, int *numsegs, uint64_t **times);
 
 extern EXPORT int TreeGetXNci(int nid, char *xnciname, struct descriptor_xd *value);
 extern EXPORT int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *value);
