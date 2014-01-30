@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -2532,6 +2532,57 @@
                     </Container>
                   </SubComponents>
                 </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel125">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Triggers">
+                    <Property name="tabTitle" type="java.lang.String" value="Triggers"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceTable" name="deviceTable7">
+                  <Properties>
+                    <Property name="columnNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="4">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="2"/>
+                        <StringItem index="2" value="3"/>
+                        <StringItem index="3" value="4"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Trigger times"/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="numRows" type="int" value="1"/>
+                    <Property name="offsetNid" type="int" value="1885"/>
+                    <Property name="preferredColumnWidth" type="int" value="60"/>
+                    <Property name="preferredHeight" type="int" value="20"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceTable" name="deviceTable8">
+                  <Properties>
+                    <Property name="columnNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="4">
+                        <StringItem index="0" value="1"/>
+                        <StringItem index="1" value="2"/>
+                        <StringItem index="2" value="3"/>
+                        <StringItem index="3" value="4"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Plasma Current Threshods"/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="numRows" type="int" value="1"/>
+                    <Property name="offsetNid" type="int" value="1891"/>
+                    <Property name="preferredColumnWidth" type="int" value="60"/>
+                    <Property name="preferredHeight" type="int" value="20"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>

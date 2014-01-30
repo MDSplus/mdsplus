@@ -309,6 +309,9 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField115 = new DeviceField();
         jPanel120 = new javax.swing.JPanel();
         deviceField116 = new DeviceField();
+        jPanel125 = new javax.swing.JPanel();
+        deviceTable7 = new DeviceTable();
+        deviceTable8 = new DeviceTable();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA1Setup");
@@ -1575,6 +1578,28 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jTabbedPane1.addTab("Waveforms", jScrollPane2);
 
+        deviceTable7.setColumnNames(new String[] {"1", "2", "3", "4"});
+        deviceTable7.setIdentifier("");
+        deviceTable7.setLabelString("Trigger times");
+        deviceTable7.setNumCols(4);
+        deviceTable7.setNumRows(1);
+        deviceTable7.setOffsetNid(1885);
+        deviceTable7.setPreferredColumnWidth(60);
+        deviceTable7.setPreferredHeight(20);
+        jPanel125.add(deviceTable7);
+
+        deviceTable8.setColumnNames(new String[] {"1", "2", "3", "4"});
+        deviceTable8.setIdentifier("");
+        deviceTable8.setLabelString("Plasma Current Threshods");
+        deviceTable8.setNumCols(4);
+        deviceTable8.setNumRows(1);
+        deviceTable8.setOffsetNid(1891);
+        deviceTable8.setPreferredColumnWidth(60);
+        deviceTable8.setPreferredHeight(20);
+        jPanel125.add(deviceTable8);
+
+        jTabbedPane1.addTab("Triggers", jPanel125);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -1732,6 +1757,8 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceTable deviceTable4;
     private DeviceTable deviceTable5;
     private DeviceTable deviceTable6;
+    private DeviceTable deviceTable7;
+    private DeviceTable deviceTable8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel100;
@@ -1761,6 +1788,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel122;
     private javax.swing.JPanel jPanel123;
     private javax.swing.JPanel jPanel124;
+    private javax.swing.JPanel jPanel125;
     private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
