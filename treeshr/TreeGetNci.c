@@ -774,7 +774,8 @@ int TreeOpenNciR(TREE_INFO *info)
 
 void TreeFree(void *ptr)
 {
-  free(ptr);
+  if (ptr)
+    free(ptr);
 }
 
 #ifdef HAVE_VXWORKS_H
