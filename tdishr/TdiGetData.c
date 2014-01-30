@@ -85,7 +85,7 @@ int TdiImpose(struct descriptor_a *in_ptr, struct descriptor_xd *out_ptr)
                         *******************************/
             if (in_ptr->class == CLASS_CA) {
                 arr.a0 =
-                    pout->pointer + (((char *)arr.a0 - (char *)0) & 0xffff);
+                    pout->pointer + *(int *)&arr.a0;
             } else
                 arr.a0 = pout->pointer + (arr.a0 - arr.pointer);
         }
