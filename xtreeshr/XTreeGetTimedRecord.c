@@ -79,6 +79,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	EMPTYXD(retEndXd);
 	EMPTYXD(emptyXd);
 	struct descriptor_xd *resampledXds, *dataXds, *dimensionXds;
+	uint64_t *startEndTimes;
 
 	DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMENSION_SIGNAL, 0, 0);
 	struct descriptor_a *currApd;
@@ -129,11 +130,13 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 
 	//Get segment limits. If not evaluated to 64 bit int, make the required conversion.
 
-	
+	/********* Old management of start and end times per segment 
+
 
 	status = (dbid)?_TreeGetNumSegments(dbid, nid, &numSegments):TreeGetNumSegments(nid, &numSegments);
 	if(!(status & 1))
 		return status;
+
 
 
     startIdx = 0;
@@ -201,6 +204,59 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 		else
 			endIdx = segmentIdx;
 	}
+*/
+/******** New management based on TreeGetSegmentLimits() ***********/
+	status = (dbid)?_TreeGetSegmentTimes(dbid, nid, &numSegments, &startEndTimes):TreeGetSegmentTimes(nid, &numSegments, &startEndTimes);
+	if(!(status & 1)) return status;
+    startIdx = 0;
+	if(!startD)     //If no start time specified, take all initial segments
+		startIdx = 0;
+	else
+	{
+		while(startIdx < numSegments)
+		{
+			if(startEndTimes[2*startIdx+1] > start) //First overlapping segment
+			{
+				if(startEndTimes[2*startIdx] < start)
+					firstSegmentTruncated = 1;
+				break;
+			}
+			startIdx++;
+		}
+	}
+	if(startIdx == numSegments) //All segments antecedent to start time
+	{
+		MdsCopyDxXd((struct descriptor *)&emptyXd, outSignal);	//return an empty XD
+		return 1;
+	}
+	if(!endD)
+		endIdx = numSegments - 1;
+	else
+	{
+		segmentIdx = startIdx;
+		while(segmentIdx < numSegments)
+		{
+			if(startEndTimes[2*segmentIdx+1] >= end) //Last overlapping segment
+			{
+				if(startEndTimes[2*segmentIdx] > end) //all the segment lies outside the specifid range, it has to be excluded
+				{
+					segmentIdx--;
+					break;
+				}
+				if(startEndTimes[2*segmentIdx] < end)
+					lastSegmentTruncated = 1;
+				break;
+			}
+			segmentIdx++;
+		}
+		if(segmentIdx == numSegments) //No segment (section) after end
+			endIdx = numSegments - 1;
+		else
+			endIdx = segmentIdx;
+	}
+	TreeFree(startEndTimes);
+/********************************************************/
+
 
 	//startIdx and endIdx contain now start and end indexes for valid segments
 	actNumSegments = endIdx - startIdx + 1;
