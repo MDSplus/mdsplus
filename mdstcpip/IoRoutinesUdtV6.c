@@ -15,6 +15,8 @@
 #include <sys/filio.h>
 #endif
 #ifdef HAVE_WINDOWS_H
+#include<winsock2.h>
+#include<Ws2tcpip.h>
 #include "udtc.h"
 typedef int socklen_t;
 #define snprintf _snprintf
@@ -159,7 +161,8 @@ static char *getHostInfo(UDTSOCKET s,char **iphostptr,char **hostnameptr) {
     char *hoststr=0;
     int num=1;
     char straddr[INET6_ADDRSTRLEN];
-    const char *iphost=inet_ntop(AF_INET6,&sin.sin6_addr,straddr,sizeof(straddr));
+	const char *iphost=inet_ntop(AF_INET6,&sin.sin6_addr,straddr,sizeof(straddr));
+
     hp = gethostbyaddr((char *)&sin.sin6_addr,sizeof(sin.sin6_addr),AF_INET6);
     if (hp && hp->h_name) {
       ans=(char *)malloc(strlen(iphost)+strlen(hp->h_name)+10);

@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="MdsIpUDT"
-	ProjectGUID="{300E0E2C-3350-4AE7-8235-4FDD143D8AFF}"
+	Name="MdsIpUDTV6"
+	ProjectGUID="{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}"
 	RootNamespace="MdsIpUDT"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
@@ -363,7 +363,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\IoRoutinesUdt.c"
+				RelativePath=".\IoRoutinesUdtV6.c"
 				>
 			</File>
 			<File
@@ -460,11 +460,11 @@
 			>
 		</Filter>
 		<File
-			RelativePath=".\udt4\src\Makefile"
+			RelativePath="..\udt4\src\Makefile"
 			>
 		</File>
 		<File
-			RelativePath="..\udt4\src\Makefile"
+			RelativePath=".\udt4\src\Makefile"
 			>
 		</File>
 		<File
