@@ -104,7 +104,7 @@ def MdsSerializeDscOut(desc):
 def MdsSerializeDscIn(bytes):
     _desc=_mimport('_descriptor',1)
     xd=_desc.descriptor_xd()
-    status=MdsShr.MdsSerializeDscIn(bytes.ctypes.data,_C.pointer(xd))
+    status=MdsShr.MdsSerializeDscIn(_C.c_void_p(bytes.ctypes.data),_C.pointer(xd))
     if (status & 1) == 1:
       return xd.value
     else:
