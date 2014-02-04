@@ -196,6 +196,11 @@ class ACQ(MDSplus.Device):
 		    print "getBoardState  returning /%s/\n" % (state,)
                 s.close()
                 return state
+            except socket.error, e:
+		print "Error getting board state - offline: %s" % (str(e),)
+		state = "off-line"
+                s.close()
+		return state
             except Exception,e:
                 print "Error getting board state: %s" % (str(e),)
 	        state = "off-line"
