@@ -10,7 +10,6 @@ public fun PyDoMethod(as_is _nid, in _method,optional in _arg) {
           "t=Tree('"//$expt//"',"//text($shot)//")",
           "n=t.getNode('"//_n//"')",
           "t.doMethod(n.nid,'"//_method//"')"];
-   write(*,_cmds);
    Py(_cmds);
    if (public _py_exception != "") {
      write(*, _py_exception);
