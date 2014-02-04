@@ -112,7 +112,7 @@ try:
             try:
                 self.raw=self.getQueue(self.eventid,self.timeout)
                 self.exception=None
-            except MdsInvalidEvent:
+            except MDSInvalidEvent:
                 return
             except Exception:
                 import sys
