@@ -2725,7 +2725,15 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
 	} 
       }
       if (status & 1) {
+	int i;
 	apd.arsize=apd_idx*sizeof(struct descriptor *);
+	for (i=0;i<apd_idx/2/2;i++) {
+	  struct descriptor *data=apd.pointer[i*2],*dim=apd.pointer[i*2+1];
+          apd.pointer[i*2]=apd.pointer[apd_idx-i*2-2];
+          apd.pointer[i*2+1]=apd.pointer[apd_idx-i*2-1];
+          apd.pointer[apd_idx-i*2-2]=data;
+          apd.pointer[apd_idx-i*2-1]=dim;
+        }
 	status = MdsCopyDxXd((struct descriptor *)&apd,out);
       }
       for (idx=0;idx<apd_idx;idx++) {
