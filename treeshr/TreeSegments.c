@@ -2610,30 +2610,58 @@ static int segmentInRange(TREE_INFO *info_ptr,
 			  struct descriptor *end, 
 			  SEGMENT_HEADER *segment_header,
 			  SEGMENT_INFO *sinfo) {
-  int status=1;
-  STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
-  STATIC_CONSTANT DESCRIPTOR(tdiexecute,"TdiExecute");
-  STATIC_THREADSAFE int (*addr)()=0;
-  STATIC_CONSTANT DESCRIPTOR(expression,"($ <= $) && ($ >= $)");
   int ans=0;
-  EMPTYXD(segstart);
-  EMPTYXD(segend);
-  DESCRIPTOR_LONG(ans_d,&ans);
-  status = getSegmentLimits(info_ptr, sinfo, &segstart, &segend);
-  if (status & 1) {
+  if ((start && start->pointer) || (end && end->pointer)) {
+    int status=1;
+    STATIC_CONSTANT DESCRIPTOR(tdishr,"TdiShr");
+    STATIC_CONSTANT DESCRIPTOR(tdiexecute,"TdiExecute");
+    STATIC_THREADSAFE int (*addr)()=0;
     if (addr == 0)
       status = LibFindImageSymbol(&tdishr,&tdiexecute,&addr);
     if (status & 1) {
-      void *arglist[8] = {(void *)7};
-      arglist[1] = &expression;
-      arglist[2] = start;
-      arglist[3] = &segend;
-      arglist[4] = end;
-      arglist[5] = &segstart;
-      arglist[6] = &ans_d;
-      arglist[7] = MdsEND_ARG;
-      status = (int)((char *)LibCallg(arglist,addr) - (char *)0);
+      EMPTYXD(segstart);
+      EMPTYXD(segend);
+      DESCRIPTOR_LONG(ans_d,&ans);
+      status = getSegmentLimits(info_ptr, sinfo, &segstart, &segend);
+      if (status & 1) {
+	if ((start && start->pointer) && (end && end->pointer)) {
+	  STATIC_CONSTANT DESCRIPTOR(expression,"($ <= $) && ($ >= $)");
+	  void *arglist[8] = {(void *)7};
+	  arglist[1] = &expression;
+	  arglist[2] = start;
+	  arglist[3] = &segend;
+	  arglist[4] = end;
+	  arglist[5] = &segstart;
+	  arglist[6] = &ans_d;
+	  arglist[7] = MdsEND_ARG;
+	  status = (int)((char *)LibCallg(arglist,addr) - (char *)0);
+	} else {
+	  if (start && start->pointer) {
+	    STATIC_CONSTANT DESCRIPTOR(expression,"($ <= $)");
+	    void *arglist[6] = {(void *)5};
+	    arglist[1] = &expression;
+	    arglist[2] = start;
+	    arglist[3] = &segend;
+	    arglist[4] = &ans_d;
+	    arglist[5] = MdsEND_ARG;
+	    status = (int)((char *)LibCallg(arglist,addr) - (char *)0);
+	  } else {
+	    STATIC_CONSTANT DESCRIPTOR(expression,"($ >= $)");
+	    void *arglist[6] = {(void *)5};
+	    arglist[1] = &expression;
+	    arglist[2] = end;
+	    arglist[3] = &segstart;
+	    arglist[4] = &ans_d;
+	    arglist[5] = MdsEND_ARG;
+	    status = (int)((char *)LibCallg(arglist,addr) - (char *)0);
+	  }
+	}
+      }
+      MdsFree1Dx(&segstart,0);
+      MdsFree1Dx(&segend,0);
     }
+  } else {
+    ans=1;  
   }
   return ans;
 }
