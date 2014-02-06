@@ -11,9 +11,5 @@ public fun PyDoMethod(as_is _nid, in _method,optional in _arg) {
           "n=t.getNode('"//_n//"')",
           "t.doMethod(n.nid,'"//_method//"')"];
    Py(_cmds);
-   if (public _py_exception != "") {
-     write(*, _py_exception);
-     public _result=662480186;
-   }
    return(public _result);
 }
