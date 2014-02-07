@@ -1,11 +1,26 @@
 function [ status ] = mdsput( node, expression, varargin)
 %UNTITLED Summary of this function goes here
 %   Detailed explanation goes here
-   if nargin == 2
-     status = mdsput(node, '$', expression)
-   else
-     expr = strcat('treeput($, $', repmat(',$', 1,size(varargin, 2)),')');
-     status = mdsvalue(expr, node, expression, varargin{:});
-   end
-end
 
+  import MDSplus.Data
+  global MDSplus_Connection_Obj
+
+  if nargin == 2
+    status = mdsput(node,'$',expression)
+  else
+    args = javaArray('MDSplus.Data',1);
+    for k = 1: size(varargin, 2)
+      args(k) = MDSarg(cell2mat(varargin(k)));
+    end
+    try
+      if isjava(MDSplus_Connection_Obj)
+        status = MDSplus_Connection_Obj.put(node,expression,args);
+      else
+        status = mdsvalue(strcat('treeput($,$',repmat(',$', 1,size(varargin, 2)),')'),node,expression,varargin{:});
+      end
+    catch err
+      status=0;
+      err.message
+    end
+  end
+end

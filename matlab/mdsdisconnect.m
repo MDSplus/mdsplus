@@ -4,14 +4,10 @@ function [ status ] = mdsdisconnect( )
 %      mdsdisconnect will destroy this connection, reverting the above
 %      described routines to their local behaviors
 %
-  
-  import MDSplus.*
-  global connection
-   
-   status = 1;
-   if isa(connection, 'char')
-       status = mdsvalue('mdsdisconnect()');
-       clearvars -global connection;
-   end
+    global MDSplus_Connection_Host
+    global MDSplus_Connection_Obj
+    MDSplus_Connection_Host='LOCAL';
+    clearvars -global MDSplus_Connection_Obj
+    status=1; 
 end
 

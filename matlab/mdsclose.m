@@ -6,6 +6,19 @@ function [ status ] = mdsclose()
 %      Previous incarnations also disconnected thin-client (mdsconnect) connections.
 %      THAT IS NO LONGER DONE
 %
-   status = mdsvalue('TreeClose()');
+   import MDSplus.Data
+   global MDSplus_Connection_Obj
+   status = 1;
+   shoto = '';
+   if isjava(MDSplus_Connection_Obj)
+     try
+       MDSplus_Connection_Obj.get('TreeClose()');
+     catch err
+         status=0;
+         err.message
+     end
+   else
+     status = mdsvalue('TreeClose()');   
+   end
 end
 

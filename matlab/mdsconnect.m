@@ -10,22 +10,26 @@ function [ status ] = mdsconnect( host )
 %      described routines to their local behaviors
 %
   
-  import MDSplus.*
-  global connection
+    import MDSplus.Connection
+    global MDSplus_Connection_Host
+    global MDSplus_Connection_Obj
    
-   status = 0;
-   if isa(connection, 'char')
-       if compareIP(connection, host) == 0 
-           status = 1;
-       end
-   end
-   if status == 0
-       status = Data.execute(strcat('mdsconnect("',host, '")'), javaArray('MDSplus.Data', 1));
-       if status ~= 0
-           connection = host;
-       else
-           clearvars -global connection;
-       end
-   end
+    status = 0;
+    if isa(MDSplus_Connection_Host, 'char')
+      if compareIP(MDSplus_Connection_Host, host) == 1 
+         status = 1;
+      end
+    end
+    if status == 0
+      if strcmp(upper(host),'LOCAL') == 1
+        clearvars -global MDSplusConnection_Obj
+        MDSplus_Connection_Host='LOCAL';
+        status = 1;
+      else 
+        MDSplus_Connection_Obj=Connection(host);
+        MDSplus_Connection_Host=host;
+        status = 1;
+      end
+    end
 end
 

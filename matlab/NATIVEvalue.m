@@ -15,10 +15,11 @@ else
     if isa (mdsthing, 'MDSplus.Array')
         shape = mdsthing.getShape;
         if numel(shape) == 1
-            shape = [shape, 1];
+            shape = [1, shape];
         else
             shape = shape';
         end
+            
         switch class(mdsthing)
             case 'MDSplus.Int64Array'
                 result = reshape(mdsthing.getLongArray, shape);
@@ -42,7 +43,7 @@ else
             case 'MDSplus.Int64'
                 result = mdsthing.getLong;
             case 'MDSplus.Int32'
-                result = mdsthing.getInt;
+                result = int32(mdsthing.getInt);
             case 'MDSplus.Int16'
                 result = mdsthing.getShort;
             case 'MDSplus.Int8'

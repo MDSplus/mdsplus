@@ -1,51 +1,31 @@
 
 function [ result, status ] = mdsvalue( expression, varargin)
-%mdsvalue - connect to a remote mdsplus data server 
+%mdsvalue - evaluate an expression
 %   
-%      This routine will make a thin client connection to the specified
-%      mdsplus data server.  It will cause subsequent invocations of 
-%      mdsopen, mdsvalue, mdsput, and mdsclose to be executed remotely
-%      on the specified host.
-%
-%      mdsdisconnect will destroy this connection, reverting the above
-%      described routines to their local behaviors
 %
   
-   import MDSplus.*
+  import MDSplus.Data
+  global MDSplus_Connection_Obj
 
-   global connection
-   
-   status = -1;
-   
-   if  ~isa(connection, 'char')
-       args = javaArray('MDSplus.Data',1);
-       status = Data.execute('mdsconnect("LOCAL")', args);
-       if status == -1 
-           connection = 'LOCAL';
-       end
-   end
-   if status == -1
-       args = javaArray('MDSplus.Data',1);
-       args(1) = MDSarg(expression);
-       for k = 1: size(varargin, 2)
-           args(k+1) = MDSarg(cell2mat(varargin(k)));
-       end
-       status = 1;
-       if size(varargin, 2) > 0
-         expr = strcat('mdsvalue($',repmat(',$', 1,size(varargin, 2)),')');
-       else
-           expr = 'mdsvalue($)';
-       end
-       try
-         result = Data.execute(expr, args);
-       catch err
-         status = 0
-         result = []
-       end
-       result = NATIVEvalue(result);
-       if strcmp(class(result), 'single')
-         result=double(result);
-       end
-   end
+  args = javaArray('MDSplus.Data',1);
+  for k = 1: size(varargin, 2)
+    args(k) = MDSarg(cell2mat(varargin(k)));
+  end
+
+  try
+    if isjava(MDSplus_Connection_Obj)
+      if size(varargin,2) > 0
+        result = MDSplus_Connection_Obj.get(expression,args);
+      else
+        result = MDSplus_Connection_Obj.get(expression);
+      end
+    else
+      result = Data.execute(expression, args);
+    end
+    status=1;
+  catch err
+    status=0;
+    result=err.message;
+  end
+  result=NATIVEvalue(result);
 end
-
