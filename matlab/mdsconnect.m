@@ -25,10 +25,14 @@ function [ status ] = mdsconnect( host )
         clearvars -global MDSplusConnection_Obj
         MDSplus_Connection_Host='LOCAL';
         status = 1;
-      else 
-        MDSplus_Connection_Obj=Connection(host);
-        MDSplus_Connection_Host=host;
-        status = 1;
+      else
+        try
+          MDSplus_Connection_Obj=Connection(host);
+          MDSplus_Connection_Host=host;
+          status = 1;
+        catch err
+	  status = -1;
+        end
       end
     end
 end
