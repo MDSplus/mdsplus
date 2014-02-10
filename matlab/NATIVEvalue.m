@@ -30,9 +30,9 @@ else
             case 'MDSplus.Int8Array'
                 result = reshape(mdsthing.getByteArray, shape);
             case 'MDSplus.Float64Array'
-                result = reshape(mdsthing.getDoubleArray, shape);
+                result = double(reshape(mdsthing.getDoubleArray, shape));
             case 'MDSplus.Float32Array'
-                result = reshape(mdsthing.getFloatArray,  shape);
+                result = double(reshape(mdsthing.getFloatArray,  shape));
             case 'MDSplus.StringArray'
                 result = char(mdsthing.getStringArray);
             otherwise
@@ -51,7 +51,7 @@ else
             case 'MDSplus.Float64'
                 result = mdsthing.getDouble;
             case 'MDSplus.Float32'
-                result = mdsthing.getFloat;
+                result = double(mdsthing.getFloat);
             case 'MDSplus.String'
                 result = mdsthing.getString;
             otherwise
