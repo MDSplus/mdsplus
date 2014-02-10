@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 from setuptools import setup, Extension
-version='0.2'
+version='0.3'
 setup(name='MitDevices',
       version=version,
       description='MIT Python Device support',
