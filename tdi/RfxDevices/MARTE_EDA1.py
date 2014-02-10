@@ -15,12 +15,13 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
         'TriangIfsCos3IntSat','KiTriang','KpTriang','KdTriang','TriangFFON','TriangFFGAIN','LeadLagTriangON','VerticalShiftControl_ON','TStartVerticalShiftControl',
         'TEndVerticalShiftControl','VertShiftFBON','VertShiftSel','TStartVertShiftIntegralAction','VertShiftIntSat','KiVertShift','KpVertShift','KdVertShift','VertShiftFFON',
         'VertShiftFFGAIN','LeadLagVertShiftON','ResAddFcoil','I2tResFcoil','DNSTT0','DNSTT1','Tok2DnEnable','LqgControlOn','TStartLQGControl','TEndLQGControl',
-        'LqgComResOn','LqgFbkON','LqgRefOn','LqgFbkKproGain','LqgFfwOn','LqgFfwGain', 'DisruptionDetectionEnable']
+        'LqgComResOn','LqgFbkON','LqgRefOn','LqgFbkKproGain','LqgFfwOn','LqgFfwGain', 'ToffFbkShiftH', 'condTriggerTimes', 'condTriggerThresholds', 'DisruptionDetectionEnable']
 
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Data.compile('zero(8, 0.)'),Data.compile('zero(8, 0.)'),0,0,0,0,0,0,0,
         0,0.3,1.5,Data.compile('[ 0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239]'),500, 0,0.3, 300, 1500,7.5,0, 0, 5.649E-5, 0,   
         0,0.3,1.5,Data.compile('[0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315]'),500,0,0.3,300,150,7.5,0,0,5950,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-        Data.compile('[.15,.3,.15,.3,.15,.3,.3,.3]'),Data.compile('[9000E3,2250E3,6000E3,2250E3,6000E3,1500E3,1500E3,2250E3]'), .3,.5,0.,0.,.55,.8,0,1,0,1.,0,1.,0] 
+        Data.compile('[.15,.3,.15,.3,.15,.3,.3,.3]'),Data.compile('[9000E3,2250E3,6000E3,2250E3,6000E3,1500E3,1500E3,2250E3]'), .3,.5,0.,0.,.55,.8,0,1,0,1.,0,1.,
+        0., Data.compile('[0.,0.,0.,0.]'), Data.compile('[0.,0.,0.,0.]'), 0] 
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])

@@ -431,7 +431,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceChoice2.setConvert(true);
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Check Disruption: ");
-        deviceChoice2.setOffsetNid(1879);
+        deviceChoice2.setOffsetNid(1897);
         deviceChoice2.setUpdateIdentifier("");
         jPanel11.add(deviceChoice2);
 

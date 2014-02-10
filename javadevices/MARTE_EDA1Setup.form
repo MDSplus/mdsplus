@@ -272,7 +272,7 @@
                             <Property name="convert" type="boolean" value="true"/>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Check Disruption: "/>
-                            <Property name="offsetNid" type="int" value="1879"/>
+                            <Property name="offsetNid" type="int" value="1897"/>
                             <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
