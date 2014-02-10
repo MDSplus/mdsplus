@@ -74,6 +74,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	DESCRIPTOR_R(resampleFunD, DTYPE_FUNCTION, 6);
 	DESCRIPTOR_R(squishFunD, DTYPE_FUNCTION, 6);
 
+	struct descriptor_a *segmentsApd;
+	EMPTYXD(segmentsXd);
 	EMPTYXD(xd);
 	EMPTYXD(retStartXd);
 	EMPTYXD(retEndXd);
@@ -115,8 +117,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	else
 		squishFunName[0] = 0;
 
-
-	//Evaluate start, end to int64
+/*** Not Necessary using TreeGetSegments
+//Evaluate start, end to int64
 	if(startD)
 	{
 		status = XTreeConvertToLongTime(startD, &start);
@@ -127,7 +129,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 		status = XTreeConvertToLongTime(endD, &end);
 		if(!(status & 1)) return status;
 	}
-
+***/
 	//Get segment limits. If not evaluated to 64 bit int, make the required conversion.
 
 	/********* Old management of start and end times per segment 
@@ -205,7 +207,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 			endIdx = segmentIdx;
 	}
 */
-/******** New management based on TreeGetSegmentLimits() ***********/
+/******** New management based on TreeGetSegmentLimits() ***********
 	status = (dbid)?_TreeGetSegmentTimes(dbid, nid, &numSegments, &startEndTimes):TreeGetSegmentTimes(nid, &numSegments, &startEndTimes);
 	if(!(status & 1)) return status;
     startIdx = 0;
@@ -257,6 +259,71 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	TreeFree(startEndTimes);
 /********************************************************/
 
+/************** Even newer implementation based on TreeGetSegments */
+
+	status = (dbid)?_TreeGetSegments(dbid, nid, startD, endD, &segmentsXd):TreeGetSegments(nid, startD, endD, &segmentsXd);
+	if(!(status & 1)) return status;
+	segmentsApd = (struct descriptor_a *)segmentsXd.pointer;
+	actNumSegments = (segmentsApd->arsize/segmentsApd->length)/2;
+
+	signals = (struct descriptor_signal **)malloc(actNumSegments * sizeof(struct descriptor_signal *));
+	signalsApd.pointer = (struct descriptor **)signals;
+	signalsApd.arsize = actNumSegments * sizeof(struct descriptor_signal *);
+
+	resampledXds = (struct descriptor_xd *)malloc(actNumSegments * sizeof(struct descriptor_xd));
+	for(i = 0; i < actNumSegments; i++)
+	{
+		resampledXds[i] = emptyXd;
+	}
+
+	for(currSegIdx = 0; currSegIdx < actNumSegments; currSegIdx++)
+	{
+		currSignalD.ndesc = 3;
+		currSignalD.dimensions[0] = ((struct descriptor **)(segmentsApd->pointer))[2 * currSegIdx + 1];
+		currSignalD.data = ((struct descriptor **)(segmentsApd->pointer))[2 * currSegIdx];
+//If defined, call User Provided resampling function, oterwise use default one (XTreeDefaultResample())
+		if(resampleFunName[0])
+		{
+//			unsigned short funCode = OpcExtFunction;
+			unsigned short funCode = 162;
+			resampleFunD.length = sizeof(unsigned short);
+			resampleFunD.pointer = (unsigned char *)&funCode;
+			resampleFunNameD.length = strlen(resampleFunName);
+			resampleFunNameD.pointer = resampleFunName;
+			resampleFunD.dscptrs[0] = 0;
+			resampleFunD.dscptrs[1] = &resampleFunNameD;
+			resampleFunD.dscptrs[2] = (struct descriptor *)&currSignalD;
+			resampleFunD.dscptrs[3] = startD;
+			resampleFunD.dscptrs[4] = endD;
+			resampleFunD.dscptrs[5] = minDeltaD;
+			status = TdiEvaluate(&resampleFunD, &resampledXds[currSegIdx] MDS_END_ARG);
+			printf("%s\n", MdsGetMsg(status));
+		}
+		else
+		{
+			status = XTreeDefaultResample((struct descriptor_signal *)&currSignalD, startD, endD, 
+				minDeltaD, &resampledXds[currSegIdx]);
+		}
+		if(!(status & 1))
+		{
+			free((char *)signals);
+			for(i = 0; i < actNumSegments; i++)
+			{
+				MdsFree1Dx(&resampledXds[i], 0);
+			}
+			free((char *)resampledXds);
+			MdsFree1Dx(&segmentsXd, 0);
+			return status;
+		}
+		signals[currSegIdx] = (struct descriptor_signal *)resampledXds[currSegIdx].pointer;
+	}
+	MdsFree1Dx(&segmentsXd, 0);
+
+
+
+/*********************************************************************/
+
+/**** OLD 
 
 	//startIdx and endIdx contain now start and end indexes for valid segments
 	actNumSegments = endIdx - startIdx + 1;
@@ -338,7 +405,6 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 //printDecompiled(resampledXds[currSegIdx].pointer);
 //scanf("%d", &i);
 
-
 		
 		if(!(status & 1))
 		{
@@ -360,7 +426,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 		signals[currSegIdx] = (struct descriptor_signal *)resampledXds[currSegIdx].pointer;
 	}
 
-
+****************************/
 //Now signalsApd contains the list of selected resampled signals. If User squish fun defined, call it
 //Otherwise call default Squish fun XTreeDefaultSquish()
 
@@ -391,8 +457,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 		MdsFree1Dx(&resampledXds[i], 0);
 	}
 	free((char *)resampledXds);
-	free((char *)dataXds);
-	free((char *)dimensionXds);
+//	free((char *)dataXds);
+//	free((char *)dimensionXds);
 
 	return status;
 }
