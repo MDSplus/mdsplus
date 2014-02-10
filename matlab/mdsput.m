@@ -6,7 +6,7 @@ function [ status ] = mdsput( node, expression, varargin)
   global MDSplus_Connection_Obj
 
   if nargin == 2
-    status = mdsput(node,'$',expression)
+    status = mdsput(node,'$',expression);
   else
     args = javaArray('MDSplus.Data',1);
     for k = 1: size(varargin, 2)
@@ -14,7 +14,8 @@ function [ status ] = mdsput( node, expression, varargin)
     end
     try
       if isjava(MDSplus_Connection_Obj)
-        status = MDSplus_Connection_Obj.put(node,expression,args);
+        MDSplus_Connection_Obj.put(node,expression,args);
+        status=1;
       else
         status = mdsvalue(strcat('treeput($,$',repmat(',$', 1,size(varargin, 2)),')'),node,expression,varargin{:});
       end
