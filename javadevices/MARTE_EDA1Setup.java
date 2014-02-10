@@ -58,6 +58,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField12 = new DeviceField();
         deviceField93 = new DeviceField();
         deviceField94 = new DeviceField();
+        deviceChoice2 = new DeviceChoice();
         jPanel12 = new javax.swing.JPanel();
         deviceField13 = new DeviceField();
         deviceField14 = new DeviceField();
@@ -424,6 +425,15 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField94.setLabelString("ccVRogThresholdt: ");
         deviceField94.setOffsetNid(1543);
         jPanel11.add(deviceField94);
+
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice2.setChoiceItems(new String[] {"Enabled", "Disabled"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Check Disruption: ");
+        deviceChoice2.setOffsetNid(1879);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel11.add(deviceChoice2);
 
         jTabbedPane2.addTab("Tokamak", jPanel11);
 
@@ -1609,6 +1619,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField100;
