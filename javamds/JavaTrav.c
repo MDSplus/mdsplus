@@ -1302,7 +1302,43 @@ JNIEXPORT jint JNICALL Java_Database_doAction
 	//	RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
 }
 
+//Cesare Feb 2014: Java_Database_doDeviceMethod support routine 
+static char *MdsGetString(char *in)
+{
+    char error_message[512];
+    char *out = NULL;
+    int status;
+    struct descriptor in_d = {0,DTYPE_T,CLASS_S,0};
+    EMPTYXD(xd);
 
+    in_d.length = strlen(in);
+    in_d.pointer = in;
+    status = TdiCompile(&in_d, &xd MDS_END_ARG);
+    if(status & 1)
+	status = TdiData(&xd, &xd MDS_END_ARG);
+    if(!(status & 1))
+    {
+    	strncpy(error_message, MdsGetMsg(status), 512);
+		return NULL;
+    }
+    if(!xd.pointer)
+    {
+		strcpy(error_message, "Missing data");
+		return NULL;
+    }
+    if(xd.pointer->dtype != DTYPE_T)
+    { 
+		MdsFree1Dx(&xd, NULL);
+		strcpy(error_message, "Not a string");
+		return NULL;
+    }
+    out = (char *)malloc(xd.pointer->length + 1);
+    memcpy(out, xd.pointer->pointer, xd.pointer->length);
+    out[xd.pointer->length] = 0;
+    MdsFree1Dx(&xd, NULL);
+    error_message[0] = 0;
+    return out;
+}
   
 JNIEXPORT void JNICALL Java_Database_doDeviceMethod
   (JNIEnv *env, jobject obj, jobject jnid, jstring jmethod, jint context)
@@ -1329,7 +1365,27 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
 	status = TreeDoMethod(&nid_dsc, &method_dsc, &stat_d MDS_END_ARG);
 	(*env)->ReleaseStringUTFChars(env, jmethod, method);
 	if(!(status & 1) || !(stat & 1))
-		RaiseException(env, (status == 0)?"Cannot execute method":MdsGetMsg(status), status);
+	{
+//Cesare Feb 2014: Fix nethod remporte message  
+
+		char outMsg[1024];
+		char *lastMsg;
+
+		lastMsg = MdsGetString("GetLastError()");
+		if( !(status & 1) && lastMsg != NULL && strcmp( lastMsg, "Success" ) )
+			snprintf(outMsg, sizeof(outMsg),  "%s : %s", MdsGetMsg(status), lastMsg);
+		else if( !(status & 1) )
+			snprintf(outMsg, sizeof(outMsg),  "%s", MdsGetMsg(status));
+		else if( lastMsg != NULL && strcmp( lastMsg, "Success" ) )
+			snprintf(outMsg, sizeof(outMsg),  "%s", lastMsg);
+		else
+			snprintf(outMsg, sizeof(outMsg),  "Cannot execute method" );
+
+		RaiseException(env, outMsg, status);
+		free(lastMsg);
+
+		//RaiseException(env, (status == 0)?"Cannot execute method":MdsGetMsg(status), status);
+	}
 }
 
 
