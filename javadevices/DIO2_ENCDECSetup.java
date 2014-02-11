@@ -555,20 +555,17 @@ public class DIO2_ENCDECSetup extends DeviceSetup {
         deviceChannel70 = new DeviceChannel();
         jPanel139 = new javax.swing.JPanel();
         deviceChannel71 = new DeviceChannel();
-        jPanel140 = new javax.swing.JPanel();
         deviceField233 = new DeviceField();
         deviceField234 = new DeviceField();
         deviceField235 = new DeviceField();
         deviceChoice104 = new DeviceChoice();
-        deviceChoice105 = new DeviceChoice();
-        jPanel141 = new javax.swing.JPanel();
+        jPanel140 = new javax.swing.JPanel();
         deviceChannel72 = new DeviceChannel();
         jPanel142 = new javax.swing.JPanel();
         deviceField236 = new DeviceField();
         deviceField237 = new DeviceField();
         deviceField238 = new DeviceField();
         deviceChoice106 = new DeviceChoice();
-        deviceChoice107 = new DeviceChoice();
         deviceChannel73 = new DeviceChannel();
         jPanel143 = new javax.swing.JPanel();
         deviceField239 = new DeviceField();
@@ -3416,57 +3413,47 @@ public class DIO2_ENCDECSetup extends DeviceSetup {
         deviceChannel70.getContainer().setLayout(new java.awt.GridLayout(2, 0));
 
         jPanel139.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 1"));
-        jPanel139.setLayout(new java.awt.BorderLayout());
+        jPanel139.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
         deviceChannel71.setInSameLine(true);
         deviceChannel71.setLabelString("(DO2 Ch 15)");
         deviceChannel71.setOffsetNid(239);
         deviceChannel71.setShowVal("");
         deviceChannel71.setUpdateIdentifier("");
-        deviceChannel71.getContainer().setLayout(new java.awt.BorderLayout());
 
         deviceField233.setIdentifier("");
         deviceField233.setLabelString("NAME :");
         deviceField233.setOffsetNid(240);
         deviceField233.setTextOnly(true);
-        jPanel140.add(deviceField233);
+        deviceChannel71.getContainer().add(deviceField233);
 
         deviceField234.setIdentifier("");
         deviceField234.setLabelString("CODE :");
         deviceField234.setOffsetNid(241);
-        jPanel140.add(deviceField234);
+        deviceChannel71.getContainer().add(deviceField234);
 
         deviceField235.setIdentifier("");
         deviceField235.setLabelString("TIME :");
         deviceField235.setOffsetNid(242);
-        jPanel140.add(deviceField235);
+        deviceChannel71.getContainer().add(deviceField235);
 
         deviceChoice104.setChoiceItems(new String[] {"NO", "YES"});
         deviceChoice104.setIdentifier("");
         deviceChoice104.setLabelString("TERMINATION :");
         deviceChoice104.setOffsetNid(243);
         deviceChoice104.setUpdateIdentifier("");
-        jPanel140.add(deviceChoice104);
+        deviceChannel71.getContainer().add(deviceChoice104);
 
-        deviceChoice105.setChoiceItems(new String[] {"FALLING", "RISING"});
-        deviceChoice105.setIdentifier("");
-        deviceChoice105.setLabelString("EDGE :");
-        deviceChoice105.setOffsetNid(244);
-        deviceChoice105.setUpdateIdentifier("");
-        jPanel140.add(deviceChoice105);
-
-        deviceChannel71.getContainer().add(jPanel140, java.awt.BorderLayout.CENTER);
-
-        jPanel139.add(deviceChannel71, java.awt.BorderLayout.CENTER);
+        jPanel139.add(deviceChannel71);
 
         deviceChannel70.getContainer().add(jPanel139);
 
-        jPanel141.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
-        jPanel141.setLayout(new java.awt.BorderLayout());
+        jPanel140.setBorder(javax.swing.BorderFactory.createTitledBorder("EVENT 2"));
+        jPanel140.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
         deviceChannel72.setInSameLine(true);
         deviceChannel72.setLabelString("(DO2 Ch 16)");
-        deviceChannel72.setOffsetNid(246);
+        deviceChannel72.setOffsetNid(245);
         deviceChannel72.setShowVal("");
         deviceChannel72.setUpdateIdentifier("");
         deviceChannel72.getContainer().setLayout(new java.awt.BorderLayout());
@@ -3494,18 +3481,11 @@ public class DIO2_ENCDECSetup extends DeviceSetup {
         deviceChoice106.setUpdateIdentifier("");
         jPanel142.add(deviceChoice106);
 
-        deviceChoice107.setChoiceItems(new String[] {"FALLING", "RISING"});
-        deviceChoice107.setIdentifier("");
-        deviceChoice107.setLabelString("EDGE :");
-        deviceChoice107.setOffsetNid(250);
-        deviceChoice107.setUpdateIdentifier("");
-        jPanel142.add(deviceChoice107);
-
         deviceChannel72.getContainer().add(jPanel142, java.awt.BorderLayout.CENTER);
 
-        jPanel141.add(deviceChannel72, java.awt.BorderLayout.CENTER);
+        jPanel140.add(deviceChannel72);
 
-        deviceChannel70.getContainer().add(jPanel141);
+        deviceChannel70.getContainer().add(jPanel140);
 
         jPanel128.add(deviceChannel70, "ENCODER");
 
@@ -3623,9 +3603,7 @@ public class DIO2_ENCDECSetup extends DeviceSetup {
     private DeviceChoice deviceChoice100;
     private DeviceChoice deviceChoice102;
     private DeviceChoice deviceChoice104;
-    private DeviceChoice deviceChoice105;
     private DeviceChoice deviceChoice106;
-    private DeviceChoice deviceChoice107;
     private DeviceChoice deviceChoice109;
     private DeviceChoice deviceChoice11;
     private DeviceChoice deviceChoice114;
@@ -3993,7 +3971,6 @@ public class DIO2_ENCDECSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel139;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel140;
-    private javax.swing.JPanel jPanel141;
     private javax.swing.JPanel jPanel142;
     private javax.swing.JPanel jPanel143;
     private javax.swing.JPanel jPanel15;
