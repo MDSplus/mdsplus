@@ -32,5 +32,6 @@ fun public MdsDevices() {
     'FAKECAMERA\0', 'RfxDevices\0',
     'FLIRSC65X\0', 'RfxDevices\0',
     'NI6368AI\0', 'RfxDevices\0',
-    'RFX_PROTECTIONS\0', 'RfxDevices\0']);
+    'RFX_PROTECTIONS\0', 'RfxDevices\0',
+    'DIO2_ENCDEC\0', 'RfxDevices\0']);
 }
