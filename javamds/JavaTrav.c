@@ -1144,8 +1144,16 @@ int doAction(int nid)
 				status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method,  method_d_ptr->arguments[0], 
 					&retStatus_d MDS_END_ARG);
 			else
-				status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method,  method_d_ptr->arguments[0], 
-					 method_d_ptr->arguments[1], &retStatus_d MDS_END_ARG);
+			{
+				if(!method_d_ptr->arguments[0])
+					status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+				else if (!method_d_ptr->arguments[1])
+					status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method,  method_d_ptr->arguments[0], 
+						&retStatus_d MDS_END_ARG);
+				else
+					status = TreeDoMethod(method_d_ptr->object, method_d_ptr->method,  method_d_ptr->arguments[0], 
+					 	method_d_ptr->arguments[1], &retStatus_d MDS_END_ARG);
+			}
 			if(status & 1)
 				status = retStatus;
 		}
