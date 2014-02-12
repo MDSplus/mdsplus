@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.1" encoding="UTF-8" ?>
 
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
@@ -258,22 +258,11 @@
                             <Property name="offsetNid" type="int" value="1543"/>
                           </Properties>
                         </Component>
-                        <Component class="DeviceChoice" name="deviceChoice2">
+                        <Component class="DeviceField" name="deviceField133">
                           <Properties>
-                            <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
-                              <PropertyValue value="[1, 0]"/>
-                            </Property>
-                            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                              <StringArray count="2">
-                                <StringItem index="0" value="Enabled"/>
-                                <StringItem index="1" value="Disabled"/>
-                              </StringArray>
-                            </Property>
-                            <Property name="convert" type="boolean" value="true"/>
                             <Property name="identifier" type="java.lang.String" value=""/>
                             <Property name="labelString" type="java.lang.String" value="Check Disruption: "/>
                             <Property name="offsetNid" type="int" value="1897"/>
-                            <Property name="updateIdentifier" type="java.lang.String" value=""/>
                           </Properties>
                         </Component>
                       </SubComponents>
@@ -616,6 +605,7 @@
                         <Property name="numCols" type="int" value="8"/>
                         <Property name="numRows" type="int" value="1"/>
                         <Property name="offsetNid" type="int" value="1795"/>
+                        <Property name="useExpressions" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceTable" name="deviceTable6">
@@ -637,6 +627,7 @@
                         <Property name="numCols" type="int" value="8"/>
                         <Property name="numRows" type="int" value="1"/>
                         <Property name="offsetNid" type="int" value="1801"/>
+                        <Property name="useExpressions" type="boolean" value="true"/>
                       </Properties>
                     </Component>
                   </SubComponents>

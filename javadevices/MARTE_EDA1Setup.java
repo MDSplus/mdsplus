@@ -58,7 +58,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField12 = new DeviceField();
         deviceField93 = new DeviceField();
         deviceField94 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
+        deviceField133 = new DeviceField();
         jPanel12 = new javax.swing.JPanel();
         deviceField13 = new DeviceField();
         deviceField14 = new DeviceField();
@@ -426,14 +426,10 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField94.setOffsetNid(1543);
         jPanel11.add(deviceField94);
 
-        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
-        deviceChoice2.setChoiceItems(new String[] {"Enabled", "Disabled"});
-        deviceChoice2.setConvert(true);
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Check Disruption: ");
-        deviceChoice2.setOffsetNid(1897);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice2);
+        deviceField133.setIdentifier("");
+        deviceField133.setLabelString("Check Disruption: ");
+        deviceField133.setOffsetNid(1897);
+        jPanel11.add(deviceField133);
 
         jTabbedPane2.addTab("Tokamak", jPanel11);
 
@@ -628,6 +624,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceTable5.setNumCols(8);
         deviceTable5.setNumRows(1);
         deviceTable5.setOffsetNid(1795);
+        deviceTable5.setUseExpressions(true);
         jPanel15.add(deviceTable5);
 
         deviceTable6.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
@@ -636,6 +633,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceTable6.setNumCols(8);
         deviceTable6.setNumRows(1);
         deviceTable6.setOffsetNid(1801);
+        deviceTable6.setUseExpressions(true);
         jPanel15.add(deviceTable6);
 
         jPanel13.add(jPanel15, java.awt.BorderLayout.CENTER);
@@ -1619,7 +1617,6 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
-    private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField100;
@@ -1658,6 +1655,7 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField130;
     private DeviceField deviceField131;
     private DeviceField deviceField132;
+    private DeviceField deviceField133;
     private DeviceField deviceField134;
     private DeviceField deviceField135;
     private DeviceField deviceField136;
