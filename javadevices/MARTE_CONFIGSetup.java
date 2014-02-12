@@ -33,6 +33,7 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
         deviceChoice1 = new DeviceChoice();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
+        deviceChoice2 = new DeviceChoice();
         jPanel3 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
@@ -83,6 +84,15 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
         deviceField3.setNumCols(4);
         deviceField3.setOffsetNid(4);
         jPanel2.add(deviceField3);
+
+        deviceChoice2.setChoiceIntValues(new int[] {0, 1});
+        deviceChoice2.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Check Disruption:");
+        deviceChoice2.setOffsetNid(14);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel2.add(deviceChoice2);
 
         jPanel1.add(jPanel2);
 
@@ -151,6 +161,7 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField11;
