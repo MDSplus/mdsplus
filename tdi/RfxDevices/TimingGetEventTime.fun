@@ -6,13 +6,13 @@ public fun TimingGetEventTime(in _event)
 
     if(!_event_ok) return (0D0);
     if(!(size(_event_names) == size(_event_times)))
-       return (-HUGE(0.D0));	
+       return (-HUGE(0.));	
    for(_i = 0; _i < size(_event_names); _i++)
     {
 		if(_event_names[_i] == _event)
 	    /*return (compile('ft_float(' // _event_times[_i]//')'));*/
  	    return (compile( _event_times[_i])); 
    }
-    return (HUGE(0.D0));
+    return (HUGE(0.));
 }
 
