@@ -3,7 +3,7 @@ public fun DevCamChk(in _name, in _status, optional _x, optional _q, optional _n
   /* Check CAMAC operation for successful completion */
   if (!(_status & 1))
   {
-    write(*,'%CAMERR, module '//_name//', bad status = '//TEXT(_status)//'\n');
+    write(*, public _last_device_error = '%CAMERR, module '//_name//', bad status = '//TEXT(_status)//'\n');
     if (!present(_noabort)) 
       abort();
     else
@@ -12,7 +12,7 @@ public fun DevCamChk(in _name, in _status, optional _x, optional _q, optional _n
   else if (CamError())
   {
     _iosb = CamGetStat();
-    write(*,'%CAMERR, module '//_name//', bad iosb[0] = '//TEXT(_iosb[0])//'\n');
+    write(*, public _last_device_error = '%CAMERR, module '//_name//', bad iosb[0] = '//TEXT(_iosb[0])//'\n');
     if (!present(_noabort))
       abort();
     else
@@ -24,7 +24,7 @@ public fun DevCamChk(in _name, in _status, optional _x, optional _q, optional _n
     {
       if (_x != CamX())
       {
-        write(*,'%CAMERR, module '//_name//', no X\n');
+        write(*, public _last_device_error  = '%CAMERR, module '//_name//', no X\n');
         if (!present(_noabort))
           abort();
         else
@@ -35,7 +35,7 @@ public fun DevCamChk(in _name, in _status, optional _x, optional _q, optional _n
     {
       if (_q != CamQ())
       {
-        write(*,'%CAMERR, module '//_name//', no Q\n');
+        write(*, public _last_device_error = '%CAMERR, module '//_name//', no Q\n');
         if (!present(_noabort))
           abort();
         else
