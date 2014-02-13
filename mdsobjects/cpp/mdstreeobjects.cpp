@@ -1669,9 +1669,13 @@ TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Dat
 
 void TreePath::resolveNid()
 {
-	int status = _TreeFindNode(tree->getCtx(), ptr, &nid);
+	char *path = new char[length+1];
+	memcpy(path, ptr, length);
+	path[length] = 0;
+	int status = _TreeFindNode(tree->getCtx(), path, &nid);
 	if(!(status & 1))
 		nid = -1;
+	delete [] path;
 }
 	
 
