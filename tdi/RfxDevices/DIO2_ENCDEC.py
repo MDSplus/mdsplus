@@ -62,13 +62,13 @@ class DIO2_ENCDEC(Device):
     parts.append({'path':'.OUT_EV_SW:TIME', 'type':'numeric', 'value':0})
 
     parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'INIT',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'STORE',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'store',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':RESET_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','RESET',50,None),Method(None,'RESET',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','RESET',50,None),Method(None,'trigger',head))",
         'options':('no_write_shot',)})
 
 
@@ -259,7 +259,7 @@ class DIO2_ENCDEC(Device):
 
                     if swMode == 'REMOTE':
                         #status = Data.execute('MdsValue("DIO4HWSetClockChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4, $5)', boardId, c, frequency, dutyCycle, terminationCode)
-                        status = Data.execute('MdsValue("DIO2HWSetClockChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4)', boardId, c, frequency, dutyCycle)
+                        status = Data.execute('MdsValue("DIO2HWSetClockChan(0, $1, $2, $3, $4)", $1,$2,$3,$4)', boardId, c, frequency, dutyCycle)
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW clock setup. See CPCI console for details')
@@ -359,7 +359,7 @@ class DIO2_ENCDEC(Device):
                         return 0
 
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO2HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9,$10)', boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute('MdsValue("DIO2HWSetPulseChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9)', boardId, c, trigModeCode, cyclic, initLev1, initLev2, delay, duration, makeArray(eventCodes))
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW pulse setup. See CPCI console for details')
@@ -589,7 +589,7 @@ class DIO2_ENCDEC(Device):
                                 evCode = Data.execute('TimingDecodeEvent($1)', evName)
                             else:
                                 evCode = 0
-                            #print 'evCode: ' + str(evCode)
+                            print 'evCode: ' + str(evCode)
                             if evCode != 0:
                                 nodePath = getattr(self, 'channel_%d_out_ev%d_code'%(c+1, e+1)).getFullPath()
                                 setattr(self,'channel_%d_out_ev%d_code'%(c+1, e+1), evCode)
@@ -606,11 +606,12 @@ class DIO2_ENCDEC(Device):
                                 evTime = getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).data()
                             except:
                                 evTime = huge
+							#print " event time ", evTime, huge
                             if evTime == huge:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for channel %d'%(c+1+e))
                                 return 0
                             nodePath = getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).getFullPath()
-                            #print 'evName: ', evName
+                            print 'evName: ', evName
                             status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
                             if status == -1:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register event time')
@@ -642,15 +643,13 @@ class DIO2_ENCDEC(Device):
                         realChannel = 2*c+1+e
                         print 'Event real channel: ' + str(realChannel)
                         print 'Event code: ' + str(evCode)
-                        if swMode == 'REMOTE':
-                            #status = Data.execute('MdsValue("DIO4HWSetEventGenChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4,$5)', boardId, realChannel, evCode, terminationCode, evEdgeCode) 
+                        if swMode == 'REMOTE':                           
                             status = Data.execute('MdsValue("DIO2_ENCDECHWInitChan(0, $1, $2, $3, $4, $5)", $1,$2,$3,$4,$5)', boardId, clockSource, realChannel, evCode, terminationCode)
                             if status == 0:
                                 Data.execute('MdsDisconnect()')
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW set event setup.')
                                 return 0
                         else:
-                            #status = Data.execute("DIO4HWSetEventGenChan(0, $1, $2, $3, $4, $5)", boardId, realChannel, evCode, terminationCode, evEdgeCode)
                             status = Data.execute("DIO2_ENCDECHWInitChan(0, $1, $2, $3, $4, $5)", boardId, clockSource, realChannel, evCode, terminationCode)
                             if status == 0:
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW set event setup')
@@ -997,10 +996,19 @@ class DIO2_ENCDEC(Device):
         else:
             print '===== Sofware Event OFF'
             evCode = 0;
-            status = Data.execute("DIO2_ENCDECHWEventTrigger(0, $1, $2)", boardId, evCode)
-            if status == 0:
-                Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
-                return 0
+            if swMode == 'REMOTE':
+                status = Data.execute('MdsValue("DIO2_ENCDECHWEventTrigger(0, $1, $2)", $1,$2)', boardId, evCode)
+                if status == 0:
+                    Data.execute('MdsDisconnect()')
+                    Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW event trigger')
+                    return 0
+            else:
+                #print "nodePath: ",nodePath , evCode
+                status = Data.execute("DIO2_ENCDECHWEventTrigger(0, $1, $2)", boardId, evCode)
+                if status == 0:
+                    Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
+                    return 0
+
             
         if swMode == 'REMOTE':
             Data.execute('MdsDisconnect()')
