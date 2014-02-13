@@ -571,6 +571,15 @@ void *TreeNode::convertToDsc()
 	return retDsc;
 }
 
+Data *TreeNode::data()
+{
+	Data *d = getData();
+	Data *outD = d->data();
+	MDSplus::deleteData(d);
+	return outD;
+}
+
+
 int TreeNode::getFlag(int flagOfs)
 {
 	int nciFlags;

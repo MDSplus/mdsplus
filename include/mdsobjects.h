@@ -232,7 +232,7 @@ protected:
 		{
 		}
 		Data *evaluate();
-		Data *data();
+		virtual Data *data();
 		char *decompile();
 		Data *clone();
 		char *	serialize(int *size);
@@ -1910,6 +1910,7 @@ protected:
 		int getFlag(int flagOfs);
 		void setFlag(int flagOfs, bool val);
 	public:
+		virtual Data *data();
 		TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 		//Force new and delete in dll for windows
 		void *operator new(size_t sz);
