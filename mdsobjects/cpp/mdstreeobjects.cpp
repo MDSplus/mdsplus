@@ -561,11 +561,10 @@ int64_t Tree::getDatafileSize()
 }
 //////////////////////TreeNode Methods/////////////////
 
-
 void *TreeNode::convertToDsc()
 {
 	Tree::lock();
-	//setActiveTree(tree);
+	setActiveTree(tree);
 	void *retDsc = completeConversionToDsc(convertToScalarDsc(clazz, dtype, sizeof(int), (char *)&nid));
 	Tree::unlock();
 	return retDsc;
