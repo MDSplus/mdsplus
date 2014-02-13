@@ -448,6 +448,8 @@ extern EXPORT int _TreeSetTimeContext();
 extern EXPORT int TreeGetNumSegments();
 extern EXPORT int TreeGetSegmentLimits();
 extern EXPORT int _TreeGetSegmentLimits();
+extern EXPORT int TreeGetSegments();
+extern EXPORT int _TreeGetSegments();
 extern EXPORT int TreeGetSegment();
 extern EXPORT int _TreeGetSegment();
 extern EXPORT int TreeGetSegmentInfo();
@@ -624,7 +626,8 @@ extern EXPORT int TreeGetSegments(int nid, struct descriptor *start, struct desc
 extern EXPORT int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor_xd *retSegments);
 extern EXPORT int TreeGetSegmentInfo(int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
 extern EXPORT int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, int *dims, int *next_row);
-
+extern EXPORT int TreeGetSegments(int nid, struct descriptor *start, struct descriptor *end, struct descriptor_xd *out);
+extern EXPORT int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descriptor *end, struct descriptor_xd *out);
 extern EXPORT int TreeGetSegmentTimes(int nid, int *numsegs, uint64_t **times);
 extern EXPORT int _TreeGetSegmentTimes(void *dbid, int nid, int *numsegs, uint64_t **times);
 
