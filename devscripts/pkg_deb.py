@@ -56,6 +56,7 @@ def makeDebsCommand(args):
     """Make all debian(Ubuntu) packages."""
     DIST=getLsbReleaseDist()
     WORKSPACE=getWorkspace()
+    print "WORKSPACE is set to: %s" % (WORKSPACE,)
     FLAVOR=getFlavor()
     DISTPATH='/mnt/dist/'+FLAVOR+'/'
     need_to_build=len(args) > 3
@@ -118,6 +119,7 @@ def makeDebsCommand(args):
              'python setup.py bdist_egg;' +\
              'rsync -a dist %s/BUILDROOT/usr/local/mdsplus/mdsobjects/python/;' % (WORKSPACE,) +\
              'cd $olddir'
+        print cmd
         sys.stdout.flush()
         p=subprocess.Popen(cmd,shell=True,cwd=getTopDir())
         build_status=p.wait()
