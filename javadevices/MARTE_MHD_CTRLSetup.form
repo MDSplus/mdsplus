@@ -272,6 +272,20 @@
                     <Property name="offsetNid" type="int" value="3283"/>
                   </Properties>
                 </Component>
+                <Component class="DeviceField" name="deviceField48">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Start Bp Autozero (s, abs. time):"/>
+                    <Property name="offsetNid" type="int" value="3289"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField49">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="End Bp Autozero (s, abs time):"/>
+                    <Property name="offsetNid" type="int" value="3295"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
             <Container class="javax.swing.JScrollPane" name="jScrollPane1">

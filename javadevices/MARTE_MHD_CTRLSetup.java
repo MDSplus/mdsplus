@@ -53,6 +53,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField9 = new DeviceField();
         deviceField4 = new DeviceField();
         deviceField5 = new DeviceField();
+        deviceField48 = new DeviceField();
+        deviceField49 = new DeviceField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jPanel4 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
@@ -472,6 +474,16 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField5.setLabelString("End Freeze Time ");
         deviceField5.setOffsetNid(3283);
         jPanel3.add(deviceField5);
+
+        deviceField48.setIdentifier("");
+        deviceField48.setLabelString("Start Bp Autozero (s, abs. time):");
+        deviceField48.setOffsetNid(3289);
+        jPanel3.add(deviceField48);
+
+        deviceField49.setIdentifier("");
+        deviceField49.setLabelString("End Bp Autozero (s, abs time):");
+        deviceField49.setOffsetNid(3295);
+        jPanel3.add(deviceField49);
 
         jTabbedPane1.addTab("General", jPanel3);
 
@@ -2564,6 +2576,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     private DeviceField deviceField45;
     private DeviceField deviceField46;
     private DeviceField deviceField47;
+    private DeviceField deviceField48;
+    private DeviceField deviceField49;
     private DeviceField deviceField5;
     private DeviceField deviceField50;
     private DeviceField deviceField51;
