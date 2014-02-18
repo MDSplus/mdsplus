@@ -25,7 +25,16 @@ if [ -d /usr/share/applications/mdsplus ]
 then
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/desktop/motif /usr/share/applications/mdsplus/
 fi
+if [ -d $RPM_INSTALL_PREFIX/mdsplus/uid64 ]
+then
+  ln -sf uid64 $RPM_INSTALL_PREFIX/mdsplus/uid
+else
+  ln -sf uid32 $RPM_INSTALL_PREFIX/mdsplus/uid
+fi
 ldconfig >/dev/null 2>&1
+
+%preun modif
+rm -f $RPM_INSTALL_PREFIX/mdsplus/uid
 
 %postun motif
 if [ "$1" == "0" ]

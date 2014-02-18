@@ -93,11 +93,11 @@ then
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
   ln -sf $RPM_INSTALL_PREFIX/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
 fi
-if [ "$(uname -i)" == "i386" ]
+if [ -d $RPM_INSTALL_PREFIX/mdsplus/bin64 ]
 then
-  bits=32
-else
   bits=64
+else
+  bits=32
 fi
 if [ -d $RPM_INSTALL_PREFIX/mdsplus/bin${bits} ]
 then
@@ -128,7 +128,6 @@ if [ "$1" == "0" ]
 then
   rm -f $RPM_INSTALL_PREFIX/mdsplus/bin
   rm -f $RPM_INSTALL_PREFIX/mdsplus/lib
-  rm -f $RPM_INSTALL_PREFIX/mdsplus/uil
 fi
 
 %postun kernel
