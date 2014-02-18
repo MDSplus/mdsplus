@@ -34,7 +34,10 @@ fi
 ldconfig >/dev/null 2>&1
 
 %preun motif
-rm -f $RPM_INSTALL_PREFIX/mdsplus/uid
+if [ -h $RPM_INSTALL_PREFIX/mdsplus/uid ]
+then
+  rm -f $RPM_INSTALL_PREFIX/mdsplus/uid
+fi
 
 %postun motif
 if [ "$1" == "0" ]
