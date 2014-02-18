@@ -151,9 +151,8 @@ void Tree::unlock()
 #endif
 
 
-Tree::Tree(char const *name, int shot) : shot(shot)
+Tree::Tree(char const *name, int shot) : shot(shot), ctx(nullptr)
 {
-	ctx = 0;
 	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
 	{
@@ -164,16 +163,14 @@ Tree::Tree(char const *name, int shot) : shot(shot)
 	//setActiveTree(this);
 }
 
-Tree::Tree(void *dbid, char const *name, int shot) : shot(shot)
+Tree::Tree(void *dbid, char const *name, int shot) : shot(shot), ctx(dbid)
 {
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
-	this->ctx = dbid;
 }
 
-Tree::Tree(char const *name, int shot, char const *mode) : shot(shot)
+Tree::Tree(char const *name, int shot, char const *mode) : shot(shot), ctx(nullptr)
 {
-	ctx = 0;
 	std::string upMode(mode);
 	std::transform(upMode.begin(), upMode.end(), upMode.begin(), static_cast<int(*)(int)>(&std::toupper));
 
@@ -190,9 +187,7 @@ Tree::Tree(char const *name, int shot, char const *mode) : shot(shot)
 		throw MdsException("Invalid Open mode");
 
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
 
 	this->name = new char[strlen(name) + 1];
 	strcpy(this->name, name);
@@ -244,6 +239,7 @@ void Tree::write()
 		throw MdsException(status);
 	}
 }
+
 void Tree::quit()
 {
 	int status = _TreeQuitTree(&ctx, name, shot);
@@ -261,7 +257,6 @@ TreeNode *Tree::addNode(char const * name, char *usage)
 		throw MdsException(status);
 	return new TreeNode(newNid, this);
 }
-
 
 TreeNode *Tree::addDevice(char const * name, char *type)
 {
@@ -295,7 +290,6 @@ TreeNode *Tree::getNode(char const * path)
 	return new TreeNode(nid, this);
 }
 
-	
 TreeNode *Tree::getNode(TreePath *path)
 {
 	int nid, status;
@@ -309,7 +303,6 @@ TreeNode *Tree::getNode(TreePath *path)
 	return new TreeNode(nid, this);
 }
 
-	
 TreeNode *Tree::getNode(String *path)
 {
 	int nid, status;
@@ -322,8 +315,6 @@ TreeNode *Tree::getNode(String *path)
 	}
 	return new TreeNode(nid, this);
 }
-
-	
 
 TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
 {
