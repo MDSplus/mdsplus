@@ -33,7 +33,7 @@ else
 fi
 ldconfig >/dev/null 2>&1
 
-%preun modif
+%preun motif
 rm -f $RPM_INSTALL_PREFIX/mdsplus/uid
 
 %postun motif
