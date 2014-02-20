@@ -4788,7 +4788,7 @@ DLLEXPORT void mdsplus_int32array_destructor(void **lvInt32ArrayPtr)
 
 
 
-DLLEXPORT void mdsplusint64_t_constructor(void **lvInt64PtrOut, int64_t valIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, int64_t valIn, ErrorCluster *error)
 
 {
 
@@ -4828,7 +4828,7 @@ DLLEXPORT void mdsplusint64_t_constructor(void **lvInt64PtrOut, int64_t valIn, E
 
 
 
-DLLEXPORT void mdsplusint64_t_destructor(void **lvInt64Ptr)
+DLLEXPORT void mdsplus_int64_destructor(void **lvInt64Ptr)
 
 {
 
@@ -4842,7 +4842,7 @@ DLLEXPORT void mdsplusint64_t_destructor(void **lvInt64Ptr)
 
 
 
-DLLEXPORT void mdsplusint64_t_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error)
 
 {
 
@@ -4880,7 +4880,7 @@ DLLEXPORT void mdsplusint64_t_getByte(const void *lvInt64Ptr, char *byteOut, Err
 
 
 
-DLLEXPORT void mdsplusint64_t_getDouble(const void *lvInt64Ptr, double *doubleOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut, ErrorCluster *error)
 
 {
 
@@ -4918,7 +4918,7 @@ DLLEXPORT void mdsplusint64_t_getDouble(const void *lvInt64Ptr, double *doubleOu
 
 
 
-DLLEXPORT void mdsplusint64_t_getFloat(const void *lvInt64Ptr, float *floatOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, ErrorCluster *error)
 
 {
 
@@ -4956,7 +4956,7 @@ DLLEXPORT void mdsplusint64_t_getFloat(const void *lvInt64Ptr, float *floatOut, 
 
 
 
-DLLEXPORT void mdsplusint64_t_getInt(const void *lvInt64Ptr, int *intOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorCluster *error)
 
 {
 
@@ -4994,7 +4994,7 @@ DLLEXPORT void mdsplusint64_t_getInt(const void *lvInt64Ptr, int *intOut, ErrorC
 
 
 
-DLLEXPORT void mdsplusint64_t_getLong(const void *lvInt64Ptr, int64_t *longOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, int64_t *longOut, ErrorCluster *error)
 
 {
 
@@ -5032,7 +5032,7 @@ DLLEXPORT void mdsplusint64_t_getLong(const void *lvInt64Ptr, int64_t *longOut, 
 
 
 
-DLLEXPORT void mdsplusint64_t_getShort(const void *lvInt64Ptr, short *shortOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, ErrorCluster *error)
 
 {
 
@@ -5078,7 +5078,7 @@ DLLEXPORT void mdsplusint64_t_getShort(const void *lvInt64Ptr, short *shortOut, 
 
 
 
-DLLEXPORT void mdsplusint64_tarray_constructor(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, ErrorCluster *error)
 
 {
 
@@ -5132,7 +5132,7 @@ DLLEXPORT void mdsplusint64_tarray_constructor(void **lvInt64ArrayPtrOut, const 
 
 
 
-DLLEXPORT void mdsplusint64_tarray_constructor_dims(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
+DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, const LLngArrHdl lvLngArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
 
 {
 
@@ -5200,7 +5200,8 @@ DLLEXPORT void mdsplusint64_tarray_constructor_dims(void **lvInt64ArrayPtrOut, c
 
 
 
-DLLEXPORT void mdsplusint64_tarray_destructor(void **lvInt64ArrayPtr)
+
+DLLEXPORT void mdsplus_int64array_destructor(void **lvInt64ArrayPtr)
 
 {
 
