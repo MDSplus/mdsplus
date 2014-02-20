@@ -76,6 +76,9 @@ def writeMsiInfo(outfile):
 def makeMsiCommand(args):
     """Make Windows distribution kits."""
     WORKSPACE=getWorkspace()
+    print "Workspace begins as: %s" % (WORKSPACE,)
+    WORKPLACE=WORKPLACE.replace('/','\\')
+    print "Workspace is now: %s" % (WORKSPACE,)
     FLAVOR=getFlavor()
     print "WORKSPACE is %s" % (WORKSPACE,)
     VERSION=getVersion()
