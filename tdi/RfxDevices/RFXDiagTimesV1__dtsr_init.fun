@@ -34,6 +34,7 @@ public fun RFXDiagTimesV1__dtsr_init(as_is _nid, optional _method)
 	_diagTimesTag =  "\\DTSR_RAW::ACQUISITION.NEODINIUM:LASER_NDRT";
 */
 
+
 	_diagTimesTag =  "\\DTSE_RAW::ACQUISITION:LASER_YLF_RT";
 
 
@@ -52,6 +53,7 @@ public fun RFXDiagTimesV1__dtsr_init(as_is _nid, optional _method)
 	DevPut(_diagTimesNid, _K_DELAY_PULSE, _delayPulse); 
 
  	_decChanNid = getnci(getnci(getnci( DevNodeRef( _diagTimesNid, _K_TRIG_SOURCE ), 'record'), 'parent'), 'nid_number' );
+
 		
 	if( _trigMode == 'EXT_RT')
 	{
@@ -78,6 +80,7 @@ public fun RFXDiagTimesV1__dtsr_init(as_is _nid, optional _method)
 	{
 		TreeTurnOn( _decChanNid );
 	}
+
 	
     return (1);
 }

@@ -160,7 +160,7 @@ class DIO2_ENCDEC(Device):
                 return 0
 
 # SW EVENT Configuration Check
-        huge = Data.execute('HUGE(0.)')
+        huge = float( Data.execute('HUGE(0.)') )
         if getattr(self, 'out_ev_sw').isOn():
             print '===== SW EVENT IS ON'
             try:
@@ -177,7 +177,7 @@ class DIO2_ENCDEC(Device):
             else:
                 try:
                     #evCode = getattr(self, 'out_ev_sw_code').data()
-                    evCode = self.out_ev_sw_code.data()
+                    evCode = int( self.out_ev_sw_code.data() )
                 except:
                     evCode = 0
             if evCode == 0:
@@ -188,7 +188,7 @@ class DIO2_ENCDEC(Device):
                 nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
                 print 'Leggo evTime: ' , nodePath
                 #evTime = getattr(self, 'out_ev_sw_time').data()
-                evTime = self.out_ev_sw_time.data()
+                evTime = float( self.out_ev_sw_time.data() )
                 print 'evTime: ', evTime
             except:
                 print 'Perche va in exception'
@@ -236,13 +236,13 @@ class DIO2_ENCDEC(Device):
 #Clock Generation                
                 if function == 'CLOCK': 
                     try :
-                        frequency = getattr(self,'channel_%d_freq_1'%(c+1)).data()
+                        frequency = float( getattr(self,'channel_%d_freq_1'%(c+1)).data() )
                         #print 'FREQ: ' + str(frequency)
                         if frequency <= 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid clock frequency parameter for channel %d'%(c+1))
                             return 0
                         
-                        dutyCycle = getattr(self,'channel_%d_duty_cycle'%(c+1)).data()
+                        dutyCycle = float( getattr(self,'channel_%d_duty_cycle'%(c+1)).data() )
                         #print 'Duty Cycle: ' + str(dutyCycle)
                         if dutyCycle <= 0 or dutyCycle > 100 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid clock duty cycle parameter for channel %d'%(c+1))
@@ -303,7 +303,7 @@ class DIO2_ENCDEC(Device):
                                     for i in range(eventSize):
                                         eventCodes.append(Data.execute('TimingDecodeEvent($1)', event[i]))
                                     try:
-                                        eventTime = getattr(self,'channel_%d_trigger'%(c+1)).data()
+                                        eventTime = float( getattr(self,'channel_%d_trigger'%(c+1)).data() )
                                     except:
                                         Data.execute('DevLogErr($1, $2)', self.getNid(), 'Cannot associate a time to event ' + str(event) + ' for channel %d'%(c+1))
                                         return 0                                
@@ -603,11 +603,13 @@ class DIO2_ENCDEC(Device):
                                 return 0
 
                             try:
-                                evTime = getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).data()
+                                evTime = float(getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).data())
                             except:
-                                evTime = huge
-							#print " event time ", evTime, huge
+                                evTime = float(huge)
+                            print " 1 event time ", evTime
+                            print " 2 huge ", huge
                             if evTime == huge:
+                                print "3 Perche entra qui"
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for channel %d'%(c+1+e))
                                 return 0
                             nodePath = getattr(self, 'channel_%d_out_ev%d_time'%(c+1, e+1)).getFullPath()
