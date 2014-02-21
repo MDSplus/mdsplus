@@ -5938,7 +5938,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        then
          if ( echo $target | grep 64 > /dev/null )
          then
-           if  -d /usr/lib64
+           if [ -d /usr/lib64 ]
            then
              D64="64"
            else
@@ -14785,7 +14785,7 @@ LIBS="$LIBPTHREAD $LIBS"
 
 ac_config_headers="$ac_config_headers include/config.h"
 
-ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile math/csint.f math/dsvrgn.f math/svign.f math/svrgn.f math/umach.f mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+ac_config_files="$ac_config_files Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -15403,11 +15403,6 @@ do
     "manpages/Makefile") CONFIG_FILES="$CONFIG_FILES manpages/Makefile" ;;
     "macosx/Makefile") CONFIG_FILES="$CONFIG_FILES macosx/Makefile" ;;
     "math/Makefile") CONFIG_FILES="$CONFIG_FILES math/Makefile" ;;
-    "math/csint.f") CONFIG_FILES="$CONFIG_FILES math/csint.f" ;;
-    "math/dsvrgn.f") CONFIG_FILES="$CONFIG_FILES math/dsvrgn.f" ;;
-    "math/svign.f") CONFIG_FILES="$CONFIG_FILES math/svign.f" ;;
-    "math/svrgn.f") CONFIG_FILES="$CONFIG_FILES math/svrgn.f" ;;
-    "math/umach.f") CONFIG_FILES="$CONFIG_FILES math/umach.f" ;;
     "mdsdcl/Makefile") CONFIG_FILES="$CONFIG_FILES mdsdcl/Makefile" ;;
     "mdslib/Makefile") CONFIG_FILES="$CONFIG_FILES mdslib/Makefile" ;;
     "mdslibidl/Makefile") CONFIG_FILES="$CONFIG_FILES mdslibidl/Makefile" ;;

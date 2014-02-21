@@ -407,7 +407,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        then
          if ( echo $target | grep 64 > /dev/null )
          then
-           if [ -d /usr/lib64 ]
+           if [[ -d /usr/lib64 ]]
            then
              D64="64"
            else
@@ -1206,11 +1206,6 @@ javadevices/Makefile
 manpages/Makefile
 macosx/Makefile
 math/Makefile 
-math/csint.f 
-math/dsvrgn.f
-math/svign.f
-math/svrgn.f
-math/umach.f 
 mdsdcl/Makefile 
 mdslib/Makefile 
 mdslibidl/Makefile 
