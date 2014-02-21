@@ -64,34 +64,30 @@
 	Real	aper(ldaper,*)!output, [nra,nca] element matrix
 !		aper may be the same storage as a
 !+Array permutation of rows or columns
-	Integer	j,k
-	Real	dgot(1)
-	Integer	igot(2)
-	Equivalence (igot,dgot)
-        data igot /0,0/
+	Integer	j,k,l
+        Real temp(nra,nca)
 	If (ipath.eq.1) Then
 		Do j = 1,nca
 			Call PERMU(nra,a(1,j),ipermu,1,aper(1,j))
 		Enddo
 	Else
-		Call W9GET(nca,igot)
-		Do j = 1,nra !************************ TWF Don't know if this is right. Just made it compile *************
+		Do j = 1,nra
 			ipermu(j) = -ipermu(j)
 		Enddo
 		Do j = 1,nca
 			If (ipermu(j).lt.0) Then
 				ipermu(j) = -ipermu(j)
 				k = ipermu(j)
-				Call P9CPY(nra,a(1,k),1,dgot(igot(1)+1),1)
+				Call P9CPY(nra,a(1,k),1,temp,1)
 				Do While (k.ne.j)
 					ipermu(k) = -ipermu(k)
-					Call P9CPY(nra,a(1,ipermu(k)),1,aper(1,k),1)
+                                        l=ipermu(k)
+					Call P9CPY(nca,a(1,ipermu(k)),1,aper(1,k),1)
 					k = ipermu(k)
 				Enddo
-				Call P9CPY(nra,dgot(igot(1)+1),1,aper(1,j),1)
+				Call P9CPY(nra,temp,1,aper(1,j),1)
 			Endif
 		Enddo
-		Call W9GET(0,igot)
 	Endif
 	End
 !-----------------------------------------------------------------------

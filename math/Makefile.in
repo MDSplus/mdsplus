@@ -49,7 +49,7 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f
 
-OBJECTS = $(SOURCES:.f=.o) boxsmooth.o iw9get.o
+OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 EXPORTS = MdsMath.export
 
 all: @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsMath@SHARETYPE@ 
@@ -83,7 +83,7 @@ clean:
 
 else
 
-OBJ_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o iw9get.o
+OBJ_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
 
 %.o_i386 : %.f
 	$(FC) -c $(FFLAGS) -m32 $< -o $@

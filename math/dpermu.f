@@ -65,16 +65,12 @@
 !		aper may be the same storage as a
 !+Array permutation of rows or columns
 	Integer	j,k
-	Real*8	dgot(1)
-	Integer	igot(2)
-	Equivalence (igot,dgot)
-        data igot /0,0/
+	Real*8 temp(nra,nca)
 	If (ipath.eq.1) Then
 		Do j = 1,nca
 			Call DPERMU(nra,a(1,j),ipermu,1,aper(1,j))
 		Enddo
 	Else
-		Call DW9GET(nca,igot)
 		Do j = 1,nra !************************ TWF Don't know if this is right. Just made it compile *************
 			ipermu(j) = -ipermu(j)
 		Enddo
@@ -82,16 +78,15 @@
 			If (ipermu(j).lt.0) Then
 				ipermu(j) = -ipermu(j)
 				k = ipermu(j)
-				Call DP9CPY(nra,a(1,k),1,dgot(igot(1)+1),1)
+				Call DP9CPY(nra,a(1,k),1,temp,1)
 				Do While (k.ne.j)
 					ipermu(k) = -ipermu(k)
-					Call DP9CPY(nra,a(1,ipermu(k)),1,aper(1,k),1)
+					Call DP9CPY(nca,a(1,ipermu(k)),1,aper(1,k),1)
 					k = ipermu(k)
 				Enddo
-				Call DP9CPY(nra,dgot(igot(1)+1),1,aper(1,j),1)
+				Call DP9CPY(nra,temp,1,aper(1,j),1)
 			Endif
 		Enddo
-		Call DW9GET(0,igot)
 	Endif
 	End
 !-----------------------------------------------------------------------

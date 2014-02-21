@@ -243,19 +243,14 @@
 	Real*8	break(*)!output, [ndata] breakpoints
 	Real*8	c(4,*)	!output, [4,ndata] coefficients, f f' f'' f'''
 !+Internal, initialize spline vectors
-	Integer i,j,k
-	Integer	igot(2)
-        Data igot /0,0/
-	Call IW9GET(ndata,igot)
-	i = igot(1)
+	Integer j,k
+        Integer idx(ndata)
 	Do j = 1,ndata
-		igot(i+j) = j
+		idx(j) = j
 	Enddo
-	Call DSVRGP(ndata,xdata,break,1,igot(igot(1)+1))
+	Call DSVRGP(ndata,xdata,break,1,idx)
 	Do j = 1,ndata
-		k = igot(i+j)
-		c(1,k) = fdata(j)
-		c(2,k) = dfdata(j)
+		c(1,idx(j)) = fdata(j)
+		c(2,idx(j)) = dfdata(j)
 	Enddo
-	Call IW9GET(0,igot)
 	End
