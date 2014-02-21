@@ -78,9 +78,6 @@ clean:
 @MAKESHLIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@ :
-	mkdir @MAKESHLIBDIR@
-
 else
 
 OBJ_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
