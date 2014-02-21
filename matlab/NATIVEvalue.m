@@ -15,7 +15,7 @@ else
     if isa (mdsthing, 'MDSplus.Array')
         shape = mdsthing.getShape;
         if numel(shape) == 1
-            shape = [1, shape];
+            shape = [shape, 1];
         else
             shape = shape';
         end
