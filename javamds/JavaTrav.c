@@ -16,6 +16,7 @@
 #include <usagedef.h>
 #ifdef HAVE_WINDOWS_H
 #define putenv _putenv
+#define snprintf _snprintf
 #endif
 
 struct descriptor * ObjectToDescrip(JNIEnv *env, jobject obj);
