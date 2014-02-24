@@ -1009,7 +1009,8 @@ Global
 		{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}.Release|Setup64.ActiveCfg = Release|Win32
 		{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}.Release|Win32.ActiveCfg = Release|Win32
 		{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}.Release|Win32.Build.0 = Release|Win32
-		{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}.Release|x64.ActiveCfg = Release|Win32
+		{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}.Release|x64.ActiveCfg = Release|x64
+		{FC7CCCE4-B1C1-48A4-A575-4DB1509057B8}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
