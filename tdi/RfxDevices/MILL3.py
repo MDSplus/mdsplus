@@ -82,6 +82,8 @@ class MILL3(Device):
         
         LONG_TRANSLATION_SET_POINT_MAX_VALUE = 1540
         SHORT_TRANSLATION_SET_POINT_MAX_VALUE = 200
+        
+        bad = 1
 
         print 'START INIT'
 
@@ -157,6 +159,7 @@ class MILL3(Device):
                     
             c=ModbusTcpClient(crouzet)
             conn=c.connect()
+            time.sleep(1.0)            
             if not conn: raise ModbusException("cannot connect to " + crouzet)
                     
             c.write_register(12,1)
@@ -279,16 +282,24 @@ class MILL3(Device):
             setattr(self,'pressure',float(data))             
         except ModbusException as e:
             print e
+            bad = 0
         except SerialTimeoutException:   
             print "Timeout on write operation"
+            bad = 0            
         except SerialReadTimeoutException:   
             print "Timeout on read operation"
+            bad = 0            
         except SerialBadMessageException:
-            print "Bad message"    
+            print "Bad message"
+            bad = 0            
         except SerialException:
             print "Could not open port " + port
+            bad = 0            
         finally:
             if self.ser is not None: self.ser.close()
             if conn: c.write_register(12,2)
+            print "status: " + str(bad) 
+            return bad
 
+                
                 
