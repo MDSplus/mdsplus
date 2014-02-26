@@ -16,10 +16,10 @@
 			<Item Name="SetEventDataExample.vi" Type="VI" URL="/&lt;vilib&gt;/builds/MDSplus/MDSplus/SetEventDataExample.vi"/>
 			<Item Name="MakeSegmentUtility.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/MakeSegmentUtility.vi"/>
 			<Item Name="MakeSegmentExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/MakeSegmentExample.vi"/>
-			<Item Name="PutRowExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRowExample.vi"/>
 			<Item Name="WaitEventDataExamplevi.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/WaitEventDataExamplevi.vi"/>
 			<Item Name="PutGetTreeNodeExpressionExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExpressionExample.vi"/>
 		</Item>
+		<Item Name="PutRowExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRowExample.vi"/>
 		<Item Name="MDSplus.lvlib" Type="Library" URL="/&lt;vilib&gt;/MDSplus/Library/MDSplus.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
@@ -76,6 +76,7 @@
 				<Item Name="sub2ShouldUseDefSigName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/sub2ShouldUseDefSigName.vi"/>
 				<Item Name="subGetSignalName.vi" Type="VI" URL="/&lt;vilib&gt;/express/express input/SimulateSignalBlock.llb/subGetSignalName.vi"/>
 				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
+				<Item Name="Delete Signal DVR.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Delete Signal DVR.vi"/>
 			</Item>
 			<Item Name="lvanlys.dll" Type="Document" URL="../../../resource/lvanlys.dll"/>
 			<Item Name="MDSobjectsLVShr" Type="VI" URL="MDSobjectsLVShr">
