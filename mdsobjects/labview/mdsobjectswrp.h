@@ -814,7 +814,7 @@ DLLEXPORT void mdsplus_treenode_getSegmentLimits(const void *lvTreeNodePtr, int 
 
 DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *statusOut, ErrorCluster *error);
 
-DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, ErrorCluster *error);
+DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, LStrHandle lvStrHdlOut, ErrorCluster *error);
 
 DLLEXPORT void mdsplus_treenode_getTree(const void *lvTreeNodePtr, void **lvTreePtrOut, ErrorCluster *error);
 

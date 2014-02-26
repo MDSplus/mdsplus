@@ -1786,7 +1786,7 @@ DLLEXPORT void mdsplus_treenode_getStatus(const void *lvTreeNodePtr, int *status
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, ErrorCluster *error)
+DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64_t *timeInsertedOut, LStrHandle lvStrHdlOut, ErrorCluster *error)
 {
 	TreeNode *treeNodePtr = NULL;
 	MgErr errorCode = noErr;
@@ -1796,6 +1796,16 @@ DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		*timeInsertedOut = treeNodePtr->getTimeInserted();
+		Int64 *timeInsertedData = new Int64(*timeInsertedOut);
+		Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
+		char *retStr = retTimeStr->getString();
+		int32 retLen = static_cast<int32>(strlen(retStr));
+
+		MoveBlock(reinterpret_cast<uChar *>(retStr), LStrBuf(*lvStrHdlOut), retLen);
+		(*lvStrHdlOut)->cnt = retLen;
+		deleteString(retStr);
+		deleteData(retTimeStr);
+		deleteData(timeInsertedData);
 	}
 	catch (const MdsException &mdsE)
 	{
