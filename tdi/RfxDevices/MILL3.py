@@ -38,6 +38,7 @@ class MILL3(Device):
         'options':('no_write_shot',)})
 
     ser=None
+    c=None
 
 
     def sendCmd(self, cmd):
@@ -298,6 +299,8 @@ class MILL3(Device):
         finally:
             if self.ser is not None: self.ser.close()
             if conn: c.write_register(12,2)
+            time.sleep(1.0)             
+            if self.c is not None: self.c.close()            
             print "status: " + str(bad) 
             return bad
 
