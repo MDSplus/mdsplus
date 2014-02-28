@@ -158,7 +158,7 @@ static void PasteTypesComplete(Widget w, XtPointer cdata, Atom *selection, Atom 
 
 #define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
-
+#define N_ELEMENTS(a) (sizeof(a)/sizeof(a[0]))
 #define XA_DWSCOPE_PANEL  XInternAtom(XtDisplay(TopWidget), "DWSCOPE_PANEL", 0)
 #define XA_TARGETS  XInternAtom(XtDisplay(TopWidget), "TARGETS", 0)
 
@@ -244,6 +244,11 @@ int       main(int argc, char **argv)
 				    "PAD_DEFAULTS.DAT"}};
   XtAppContext app_ctx;
   MrmHierarchy drm_hierarchy;
+  static const char *fontfamilies[] = {"adobe","b&h","bitstream","bold","bolditalic","isas","italic","misc","schumacher","sony","sun","xfree86"};
+  static const char *fontfmt = "-%s-%s-medium-r-normal-*-*-*-%3.3d-%3.3d-*-*-*-*";
+#define MAXFONTNAMELEN 255
+  char fontname[MAXFONTNAMELEN];
+
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
@@ -262,12 +267,24 @@ int       main(int argc, char **argv)
   MrmFetchWidget(drm_hierarchy, "pad", TopWidget, &MainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);
   XtManageChild(MainWidget);
-  font[0] = XLoadQueryFont(XtDisplay(TopWidget), "-*-Menu-Medium-R-*--*-100-*-*-*-*-*-*");
-  if (!font[0])
-    font[0] = XLoadQueryFont(XtDisplay(TopWidget), "-*-*-Medium-R-*--*-100-*-*-*-*-*-*");
-  font[1] = XLoadQueryFont(XtDisplay(TopWidget), "-*-Menu-Medium-R-*--*-120-*-*-*-*-*-*");
-  if (!font[1])
-    font[1] = XLoadQueryFont(XtDisplay(TopWidget), "-*-*-Medium-R-*--*-120-*-*-*-*-*-*");
+  sprintf(fontname, fontfmt, "*", "menu", 100, 100);
+  font[0] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
+  for (i=0; ((!font[0]) && (i<N_ELEMENTS(fontfamilies))); i++) 
+  {
+	sprintf(fontname, fontfmt, fontfamilies[i], "*", 100, 100);
+	font[0] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
+  }
+  sprintf(fontname, fontfmt, "*", "menu", 120, 120);
+  font[1] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
+  for (i=0; ((!font[1]) && (i<N_ELEMENTS(fontfamilies))); i++) 
+  {
+        sprintf(fontname, fontfmt, fontfamilies[i], "*", 120, 120);
+        font[1] = XLoadQueryFont(XtDisplay(TopWidget), fontname);
+  }
+  if ((!font[0]) && (!font[1])) {
+	printf("No useable Fonts found-Please check your X-Windows configuration\n");
+	exit(0);
+  }
   fontlist[0] = XmFontListCreate(font[0], XmSTRING_DEFAULT_CHARSET);
   fontlist[1] = XmFontListCreate(font[1], XmSTRING_DEFAULT_CHARSET);
   XtRealizeWidget(TopWidget);
