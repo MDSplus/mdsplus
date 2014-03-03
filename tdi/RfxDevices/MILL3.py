@@ -70,6 +70,10 @@ class MILL3(Device):
 
 
     def INIT(self, arg):
+        import modbus_tk
+        import modbus_tk.defines as cst
+        import modbus_tk.modbus_tcp as modbus_tcp
+        
         import serial
         from serial import SerialException, SerialTimeoutException
         from pymodbus.client.sync import ModbusTcpClient
@@ -87,6 +91,9 @@ class MILL3(Device):
         bad = 1
 
         print 'START INIT'
+
+
+
 
 
         try:
@@ -149,7 +156,26 @@ class MILL3(Device):
             Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid MOXA_COM4')
             return 0
         
-                
+
+        """
+        try:
+            master = modbus_tcp.TcpMaster(host=ip)           
+            master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=1)           
+            master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=2)            
+            
+        except modbus_tk.modbus.ModbusError, e:
+            print "Modbus error ", e.get_exception_code()
+        except Exception, e2:
+            print "Error ", str(e2)
+        """
+        
+
+
+
+        
+
+        print 'OK'
+        
         try:
             crouzet=ip
             port=moxaCom1
@@ -157,14 +183,18 @@ class MILL3(Device):
             self.ser=None
             serTimeout=5
 
+
+            master = modbus_tcp.TcpMaster(host=ip)           
+            master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=1) 
                     
-            c=ModbusTcpClient(crouzet)
-            conn=c.connect()
-            time.sleep(1.0)            
-            if not conn: raise ModbusException("cannot connect to " + crouzet)
+            #c=ModbusTcpClient(crouzet)
+            #time.sleep(1.0)             
+            #conn=c.connect()
+            #time.sleep(1.0)            
+            #if not conn: raise ModbusException("cannot connect to " + crouzet)
                     
-            c.write_register(12,1)
-            time.sleep(0.5)
+            #c.write_register(12,1)
+            #time.sleep(0.5)
             
             self.ser = serial.Serial(
             port = port,
@@ -280,7 +310,13 @@ class MILL3(Device):
             data=data[2:13]
             data=data.strip()
             print("pressure: " + data)
-            setattr(self,'pressure',float(data))             
+            setattr(self,'pressure',float(data))
+        except modbus_tk.modbus.ModbusError, e:
+            print "Modbus error ", e.get_exception_code()
+            bad = 0            
+        except Exception, e2:
+            print "Error ", str(e2)
+            bad = 0            
         except ModbusException as e:
             print e
             bad = 0
@@ -298,9 +334,11 @@ class MILL3(Device):
             bad = 0            
         finally:
             if self.ser is not None: self.ser.close()
-            if conn: c.write_register(12,2)
-            time.sleep(1.0)             
-            if self.c is not None: self.c.close()            
+            master.execute(1, cst.WRITE_SINGLE_REGISTER, 12, output_value=2)            
+            #if conn: c.write_register(12,2)
+            #time.sleep(1.0)
+            #self.c.close()            
+            #if self.c is not None: self.c.close()            
             print "status: " + str(bad) 
             return bad
 
