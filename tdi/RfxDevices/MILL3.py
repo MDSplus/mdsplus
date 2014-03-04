@@ -190,7 +190,7 @@ class MILL3(Device):
             #c=ModbusTcpClient(crouzet)
             #time.sleep(1.0)             
             #conn=c.connect()
-            #time.sleep(1.0)            
+            time.sleep(1.0)            
             #if not conn: raise ModbusException("cannot connect to " + crouzet)
                     
             #c.write_register(12,1)
