@@ -258,7 +258,7 @@ install:
 		chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite @bindir@
-	$(INSTALL) -m 755  @MAKEBINDIR@dtacq_update_board.sh @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@dtaq_update_board.sh @bindir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs @libdir@
 
