@@ -105,7 +105,7 @@ class Connection(object):
             dtype = _dtypes.DTYPE_DOUBLE_COMPLEX
         if ndims.value == 0:
             if dtype == _dtypes.DTYPE_T:
-                ans=String(_C.cast(ans,_C.POINTER(_C.c_char*length.value)).contents.value)
+                ans=_scalar.String(_C.cast(ans,_C.POINTER(_C.c_char*length.value)).contents.value)
             else:
                 ans=Connection.dtype_to_scalar[dtype](_C.cast(ans,_C.POINTER(_dtypes.mdsdtypes.ctypes[dtype])).contents.value)
         else:
@@ -128,7 +128,7 @@ class Connection(object):
         if not ((status & 1) == 1):
             if mem.value is not None:
                 MdsIpFree(mem)
-            if isinstance(ans,String):
+            if isinstance(ans,_scalar.String):
                 raise MdsException(str(ans))
             else:
                 raise MdsException(MdsGetMsg(status))
