@@ -163,13 +163,9 @@ public class Node
         }
         catch (Exception e)
         {
-            try {
-                experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
-            }catch(Exception exc) {
             JOptionPane.showMessageDialog(null, e.getMessage(),
                                           "Error executing message",
                                           JOptionPane.WARNING_MESSAGE);
-            }
         }
 
     }
@@ -257,16 +253,19 @@ public class Node
                 catch (Exception e)
                 {
                     
-                    
-                    
-                    
-                    JOptionPane.showMessageDialog(FrameRepository.frame,
+             		try {
+                		experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
+            		}catch(Exception exc) {
+                   
+                     	JOptionPane.showMessageDialog(FrameRepository.frame,
                                                   e.getMessage(),
                                                   "Error in device setup: " + e,
                                                   JOptionPane.WARNING_MESSAGE);
-                    e.printStackTrace();
-                    return;
-                }
+                    	e.printStackTrace();
+                    	return;
+                	}
+				}
+
             }
         }
         JOptionPane.showMessageDialog(null, "Missing model in descriptor",
