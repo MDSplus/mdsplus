@@ -142,3 +142,11 @@ else
     unset temp_file
   endif
 endif
+if ( ! $?PyLib ) then
+  set pyver=`python -V >& /dev/stdout`
+  if ( $? == 0 ) then
+    set PyLib=`echo $pyver | awk '{print $2}' | awk -F. '{print "python"$1"."$2;}'`
+  endif
+  unset pyver
+endif
+

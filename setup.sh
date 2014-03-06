@@ -182,3 +182,16 @@ else
     unset temp_file
   fi
 fi
+if [ -z "$PyLib" ]
+then
+  pyver="$(python -V 2>&1)"
+  if [ $? == 0 -a "$pyver" != "" ]
+  then
+    PyLib=$(echo $pyver | awk '{print $2}' 2>/dev/null | awk -F. '{print "python"$1"."$2}' 2>/dev/null)
+    if [ $? == 0 ]
+    then
+      doExport PyLib
+    fi
+  fi
+fi
+
