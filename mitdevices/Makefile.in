@@ -212,6 +212,7 @@ all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKEBINDIR@reboot_dtaq_satelite \
        @DC1394_SUPPORT@ @DC1394_SUPPORT2@ \
        @MAKESHLIBDIR@acq_root_filesystem.tgz \
+	@MAKESHLIBDIR@acq_root_filesystem.tgz_ffs \
        @MAKEBINDIR@dtaq_update_board.sh
 
 
@@ -230,6 +231,9 @@ clean:
 	@ $(RM)	@MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 	@ $(RM) @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@reboot_dtaq_satelite
+	@ $(RM) @MAKEBINDIR@dtaq_update_board.sh
+	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz
+	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs
 
 install:
 	set -e; for uid in $(UIDS) ; do\
@@ -254,6 +258,9 @@ install:
 		chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@dtaq_update_board.sh @bindir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs @libdir@
 
 a12_gen.c : a12.gen
 	@MAKEBINDIR@/gen_device a12.gen sx _gentmp
@@ -796,6 +803,11 @@ dc1394_support2.o : dc1394_support2.c
 @MAKESHLIBDIR@acq_root_filesystem.tgz : $(DTACQ_FILESYSTEM)
 	echo $(DC) > acq_root_filesystem/ffs/user/MitFilesDate  
 	( cd acq_root_filesystem;  tar  --exclude=ffs -cvzf ../$@  . ; tar -cvzf ../$(@)_ffs ffs/user )
+
+
+@MAKESHLIBDIR@acq_root_filesystem.tgz_ffs : $(DTACQ_FILESYSTEM)
+	echo $(DC) > acq_root_filesystem/ffs/user/MitFilesDate
+	( cd acq_root_filesystem;  tar -cvzf ../$(@) ffs/user )
 
 @MAKEBINDIR@dtaq_update_board.sh : dtaq_update_board.sh
 	cp $< $@
