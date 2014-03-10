@@ -1425,6 +1425,27 @@ Array *TreeNode::getSegment(int segIdx)
 	return retData;
 }
 
+Data *TreeNode::getSegmentDim(int segIdx)
+{
+	void *dataDsc;
+	void *timeDsc;
+	
+	resolveNid();
+	//if(tree) tree->lock();
+	int status = getTreeSegment(tree->getCtx(), getNid(), segIdx, &dataDsc, &timeDsc);
+	//if(tree) tree->unlock();
+	if(!(status & 1))
+	{
+		freeDsc(dataDsc);
+		freeDsc(timeDsc);
+		throw MdsException(status);
+	}
+	Data *retDim = (Data *)convertFromDsc(timeDsc);
+	freeDsc(dataDsc);
+	freeDsc(timeDsc);
+	return retDim;
+}
+
 void TreeNode::beginTimestampedSegment(Array *initData)
 {
 	resolveNid();

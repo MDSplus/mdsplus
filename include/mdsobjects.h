@@ -1978,8 +1978,9 @@ protected:
 		void updateSegment(Data *start, Data *end, Data *time);
 		int getNumSegments();
 		void getSegmentLimits(int segmentIdx, Data **start, Data **end);
-			
 		Array *getSegment(int segIdx);
+		Data *getSegmentDim(int segIdx);
+		void getSegmentAndDimension(int segIdx, Array *segment, Data *dimension);
 		void beginTimestampedSegment(Array *initData);
 		void makeTimestampedSegment(Array *data, int64_t *times);
 		void putTimestampedSegment(Array *data, int64_t *times);
