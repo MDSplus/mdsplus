@@ -1532,7 +1532,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
 	wildCtx = 0;
 	for(i = 0; i < numNids; i++)
 	{
-		_TreeFindNodeWild(ctx, (char *)path,&nids[i],&wildCtx, usage);
+		_TreeFindNodeWild(ctx, (char *)path,&nids[i],&wildCtx, (1 << usage));
 	}
 	_TreeFindNodeEnd(ctx, &wildCtx);
 
