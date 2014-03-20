@@ -217,7 +217,10 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 	return _TreeGetSegmentLimits(dbid, nid, idx, startXd, endXd);
 }
 
-
+int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow)
+{
+	return _TreeGetSegmentInfo(dbid, nid, segIdx, dtype, dimct, dims, nextRow);
+}
 
 
  int getTreeSegment(void *dbid, int nid, int segIdx, void **dataDsc, void **timeDsc)

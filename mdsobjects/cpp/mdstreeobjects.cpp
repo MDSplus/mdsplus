@@ -62,7 +62,7 @@ extern "C" {
 	int putTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times);
 	int makeTreeTimestampedSegment(void *dbid, int nid, void *dataDsc, int64_t *times, int rowsFilled);
 	int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t *time, int size);
-
+	int getTreeSegmentInfo(void *dbid, int nid, int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
 }
@@ -1388,6 +1388,15 @@ int TreeNode::getNumSegments()
 		throw MdsException(status);
 	return  numSegments;
 }
+
+void TreeNode::getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow)
+{
+	resolveNid();
+	int status = getTreeSegmentInfo(tree->getCtx(), getNid(), segIdx, dtype, dimct, dims, nextRow);
+	if(!(status & 1))
+		throw MdsException(status);
+}
+
 
 void TreeNode::getSegmentLimits(int segmentIdx, Data **start, Data **end)
 {
