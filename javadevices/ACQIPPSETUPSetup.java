@@ -27,6 +27,7 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel1 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceDispatch1 = new DeviceDispatch();
@@ -41,19 +42,23 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
         deviceField10 = new DeviceField();
         deviceChoice3 = new DeviceChoice();
         jPanel4 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
         deviceChoice2 = new DeviceChoice();
+        deviceField11 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("Probes & TC  Acquisition Setup");
         setDeviceType("ACQIPPSETUP");
-        setHeight(350);
+        setHeight(400);
         setWidth(850);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 0));
+        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+
+        jPanel7.setLayout(new java.awt.GridLayout(3, 0));
 
         jPanel2.setBorder(new javax.swing.border.MatteBorder(null));
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -66,7 +71,7 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
         jPanel2.add(deviceField1);
         jPanel2.add(deviceDispatch1);
 
-        jPanel1.add(jPanel2);
+        jPanel7.add(jPanel2);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Probe Acquisition"));
         jPanel3.setName("Probe Acquisition"); // NOI18N
@@ -93,7 +98,7 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
         deviceChoice1.setUpdateIdentifier("");
         jPanel3.add(deviceChoice1);
 
-        jPanel1.add(jPanel3);
+        jPanel7.add(jPanel3);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Thermocouples Acquisition"));
 
@@ -119,31 +124,44 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
         deviceChoice3.setUpdateIdentifier("");
         jPanel5.add(deviceChoice3);
 
-        jPanel1.add(jPanel5);
+        jPanel7.add(jPanel5);
+
+        jPanel1.add(jPanel7);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Sweep Voltage Configuration"));
+        jPanel4.setLayout(new java.awt.GridLayout(3, 0));
+
+        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Min Value (V):");
         deviceField5.setOffsetNid(11);
-        jPanel4.add(deviceField5);
+        jPanel6.add(deviceField5);
 
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Max Value (V):");
         deviceField6.setOffsetNid(12);
-        jPanel4.add(deviceField6);
+        jPanel6.add(deviceField6);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Frequency (Hz):");
         deviceField7.setOffsetNid(13);
-        jPanel4.add(deviceField7);
+        jPanel6.add(deviceField7);
 
         deviceChoice2.setChoiceItems(new String[] {"EXTERNAL", "INTERNAL"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Trig. Mode:");
         deviceChoice2.setOffsetNid(14);
         deviceChoice2.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice2);
+        jPanel6.add(deviceChoice2);
+
+        jPanel4.add(jPanel6);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("Expression:");
+        deviceField11.setNumCols(60);
+        deviceField11.setOffsetNid(22);
+        jPanel4.add(deviceField11);
 
         jPanel1.add(jPanel4);
 
@@ -159,6 +177,7 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
+    private DeviceField deviceField11;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -172,5 +191,7 @@ public class ACQIPPSETUPSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     // End of variables declaration//GEN-END:variables
 }
