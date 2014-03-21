@@ -606,9 +606,10 @@ void TreeNode::setFlag(int flagOfs, bool flag)
 
 TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Data *validation)
 {
-	if(!tree)
-		tree = getActiveTree();
-	if(!tree)
+	this->tree = 0;
+	if(!tree && nid != 0)
+		this->tree = getActiveTree();
+	if(!tree && nid != 0) //exclude the case in which this constructor has been called in a TreePath instantiation 
 		throw MdsException("A Tree instance must be defined when ceating TreeNode instances");
 	this->nid = nid;
 	this->tree = tree;
@@ -1692,6 +1693,8 @@ void TreePath::resolveNid()
 	char *path = new char[length+1];
 	memcpy(path, ptr, length);
 	path[length] = 0;
+	if(!tree)
+		tree = getActiveTree();
 	int status = _TreeFindNode(tree->getCtx(), path, &nid);
 	if(!(status & 1))
 		nid = -1;
