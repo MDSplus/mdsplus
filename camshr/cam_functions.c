@@ -367,7 +367,10 @@ int Cam##pname(                                     \
 {                                                   \
 	int 		status;              				\
 	CamKey		Key;                                \
+        static  int debug=-1; \
                                                     \
+        if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
+        if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, data=%d, mem=%d\n",Name,A,F,Data ? *(int *)Data : -1,Mem); \
 	status = CamAssign( Name, &Key );               \
 	if( status == SUCCESS ) {                       \
 		status = SingleIo(                          \
@@ -401,6 +404,10 @@ int Cam##pname(                                     \
 	int 		status;              				\
 	CamKey		Key;                                \
                                                     \
+        static  int debug=-1; \
+                                                    \
+        if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
+        if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, Count=%d, data=%p, mem=%d\n",Name,A,F,Count,Data,Mem); \
 	status = CamAssign( Name, &Key );               \
 	if( status == SUCCESS ) {                       \
 		status = MultiIo(                           \
