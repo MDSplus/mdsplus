@@ -153,7 +153,7 @@ static void UserButton(Widget w, int stub,  XmPushButtonCallbackStruct *cb)
   }
 }
 
-static void cw_wvedit_size_func(unsigned long stub, int width, int height)
+static void cw_wvedit_size_func(IDL_ULONG stub, int width, int height)
 {
   char *stub_rec;
   unsigned long t_id, b_id;
@@ -462,23 +462,29 @@ static void Limits(Widget w, int stub, XmdsWaveformLimitsCBStruct *cb)
 }
 
 static void /*XtSelectionCallbackProc*/PasteComplete(Widget w, int stub, Atom *selection, Atom *type, 
-                                                     XtPointer value, unsigned int *length, int *format)
+                                                     XtPointer value, unsigned long *length, int *format)
 {
     static float *x;
     if (*type == XA_X_AXIS)
       x = (float *)value;
     else if (*type == XA_Y_AXIS)
     {
-      int num = *(length)*(*format)/32;
+      int num = (int)(*length*((float)*format)/32);
+      int i;
+      printf("num=%d,*format=%d,*length=%d\n",num,*format,*length);
+      float *y=(float *)value;
+      for (i=0;i<100;i++) printf("%d=(%g,%g)\n",i,x[i],y[i]);
       if (x)
       {
         EventInfo *e;
         Boolean *knots = (Boolean *)XtMalloc(num * sizeof(Boolean));
-        memset(knots,1,num * sizeof(Boolean));
+        for (i=0;i<num;i++) knots[i]=(Boolean)1;
+	//        memset(knots,1,num * sizeof(Boolean));
         XtVaSetValues(w, XmdsNcount, num, XmdsNxValue, x, XmdsNyValue, value, XmdsNselections, knots, XmdsNpenDown, knots,
             XmdsNxMax, NULL, XmdsNxMin, NULL, XmdsNyMax, NULL, XmdsNyMin, NULL, NULL);
         XtFree((String)knots);
         XtFree((String)x);
+	x=0;
         XtFree((String)value);
         e = NewEvent( w, stub, 0, 0,CB_PASTE);
         e = NewEvent( w, stub, 0, 18, CB_FIT);
@@ -542,7 +548,7 @@ static void LoseSelection(Widget w, Atom *selection)
   SelectedWidget = 0;
 }
 
-static Boolean ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *type, XtPointer *value, unsigned int *length, 
+static Boolean ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *type, XtPointer *value, unsigned long *length, 
                                 int *format)
 {
   int status = 0;
@@ -561,8 +567,8 @@ static Boolean ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *t
     {
       *type = *target;
       *value = (char *)memcpy(XtMalloc(count * sizeof(float)),x,count * sizeof(float));
-      *length = count;
-      *format = 8 * sizeof(float);
+      *length = count * sizeof(float);
+      *format = 8;
       status = 1;
     }
   }
@@ -575,8 +581,8 @@ static Boolean ConvertSelection(Widget w, Atom *selection, Atom *target, Atom *t
     {
       *type = *target;
       *value = (char *)memcpy(XtMalloc(count * sizeof(float)),y,count * sizeof(float));
-      *length = count;
-      *format = 8 * sizeof(float);
+      *length = count * sizeof(float);
+      *format = 8;
       status = 1;
     }
   }
