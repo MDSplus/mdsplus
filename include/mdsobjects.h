@@ -2008,6 +2008,7 @@ protected:
 	public:
 		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
 		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+		~TreePath();
 		void *convertToDsc();
 		void resolveNid();
 	};

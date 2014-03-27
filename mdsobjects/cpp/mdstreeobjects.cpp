@@ -1687,7 +1687,11 @@ TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Dat
 	memcpy(ptr, val, length);
 	setAccessory(units, error, help, validation);
 }
-
+TreePath::~TreePath()
+{
+	if(length > 0)
+		delete[]ptr;
+}
 void TreePath::resolveNid()
 {
 	char *path = new char[length+1];
