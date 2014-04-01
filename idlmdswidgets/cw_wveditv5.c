@@ -471,9 +471,7 @@ static void /*XtSelectionCallbackProc*/PasteComplete(Widget w, int stub, Atom *s
     {
       int num = (int)(*length*((float)*format)/32);
       int i;
-      printf("num=%d,*format=%d,*length=%d\n",num,*format,*length);
       float *y=(float *)value;
-      for (i=0;i<100;i++) printf("%d=(%g,%g)\n",i,x[i],y[i]);
       if (x)
       {
         EventInfo *e;
