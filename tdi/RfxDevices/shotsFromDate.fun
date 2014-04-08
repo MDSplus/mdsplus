@@ -1,4 +1,4 @@
-public fun shotsFromDate(in _numDays )
+public fun shotsFromDate(optional _numDays )
 {
 	private fun shotVal( in _y, in _m, in _d)
 	{
@@ -42,8 +42,13 @@ public fun shotsFromDate(in _numDays )
 
 	_shotNum = shotVal( _y, _m, _d);
 
-	if( _numDays == 0)
+	if( ! present( _numDays ) )
 		return ( _shotNum );
+
+
+	if( _numDays > 10 )
+		_numDays = 10;
+
 
 	_shots = [_shotNum];
 	for( _i = 0; _i < _numDays; _i++ )
