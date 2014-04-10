@@ -271,7 +271,7 @@ protected:
 		virtual std::vector<double> getDoubleArray();
 		virtual std::complex<double> * getComplexArray(int *numElements)
 		{
-			throw new MdsException("getComplexArray() not supported for non compelx data types");
+			throw MdsException("getComplexArray() not supported for non compelx data types");
 		}
 		virtual std::vector<std::complex<double> > getComplexArray();
 		virtual char ** getStringArray(int *numElements)
