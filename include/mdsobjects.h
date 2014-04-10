@@ -357,7 +357,7 @@ protected:
 		public:
 		int length;
 		char *ptr;
-		vritual ~Scalar()
+		virtual ~Scalar()
 		{
 			deleteNativeArray(ptr);
 		}
