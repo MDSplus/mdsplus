@@ -138,9 +138,9 @@ static int RegisterRead_(int sock) {
 }
 
 #ifdef HAVE_VXWORKS_H
-int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
+int MDSEventAst(char const * eventnam, void (*astadr)(), void *astprm, int *eventid) {}
 int MDSEventCan(void *eventid) {}
-int MDSEvent(char *evname){}
+int MDSEvent(char const * evname){}
 #elif (defined(HAVE_WINDOWS_H))
 #define NO_WINDOWS_H
 #include <process.h>
@@ -492,7 +492,7 @@ int MDSGetEventQueue(int eventid, int timeout,int *data_len, char **data) {
   return status;
 }
 
-int old_MDSEvent(char *evname_in, int data_len, char *data)
+int old_MDSEvent(char const * evname_in, int data_len, char *data)
 {
   int use_local;
   char *evname;
@@ -2511,7 +2511,7 @@ void RemoveAllDeadQueues() {
   return;
 }
 
-int old_MDSEvent(char *evname_in, int data_len, char *data)
+int old_MDSEvent(char const * evname_in, int data_len, char *data)
 {
   int i, j, name_idx, curr_id, use_local;
   unsigned int u;
@@ -2661,7 +2661,7 @@ void RemoveMessages()
 	
 #endif
 
-int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
+int MDSEventAst(char const * eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
   char *eventName=malloc(strlen(eventNameIn)+1);
   unsigned int i,j;
   int status;
@@ -2679,7 +2679,7 @@ int MDSEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astp
   return status;
 }
 
-int MDSEvent(char *eventNameIn, int bufLen, char *buf) {
+int MDSEvent(char const * eventNameIn, int bufLen, char *buf) {
   char *eventName=malloc(strlen(eventNameIn)+1);
   unsigned int i,j;
   int status;

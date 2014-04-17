@@ -300,7 +300,7 @@ static char *getMulticastAddressFormat(unsigned char *arange) {
   return ans;
 }
 
-static void getMulticastAddr(char *eventName, char *retIp)
+static void getMulticastAddr(char const * eventName, char *retIp)
 {
         static char *multicast_address_format=0;
 	int i;
@@ -316,7 +316,7 @@ static void getMulticastAddr(char *eventName, char *retIp)
 }
 
 
-int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
+int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
 {
 
     struct sockaddr_in serverAddr;
@@ -440,7 +440,7 @@ int MDSUdpEventCan(int eventid)
 }
 
 
-int MDSUdpEvent(char *evName, int bufLen, char *buf)
+int MDSUdpEvent(char const * eventName, int bufLen, char const * buf)
 {
 	char multiIp[64];
 	int udpSocket;
@@ -451,7 +451,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
 	struct hostent *hp =(struct hostent *) NULL;
 
 	initialize();
-	getMulticastAddr(evName, multiIp);
+	getMulticastAddr(eventName, multiIp);
 	udpSocket = getSocket();
 
 
@@ -480,7 +480,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
 		memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 	sin.sin_port = htons( getPort() );
 #endif
-	nameLen = strlen(evName);
+	nameLen = strlen(eventName);
 	if(bufLen < MAX_MSG_LEN - (4 + 4 + nameLen))
 		actBufLen = bufLen;
 	else
@@ -490,7 +490,7 @@ int MDSUdpEvent(char *evName, int bufLen, char *buf)
 	currPtr = msg;
 	*((unsigned int *)currPtr) = htonl(nameLen);
 	currPtr += 4;
-	memcpy(currPtr, evName, nameLen);
+	memcpy(currPtr, eventName, nameLen);
 	currPtr += nameLen;
 
 
