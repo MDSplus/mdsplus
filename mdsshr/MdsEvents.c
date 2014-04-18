@@ -839,16 +839,16 @@ STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
 
 STATIC_ROUTINE int getLocalId(int id)
 {
-    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
+    //LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
      return event_info[id].local_id;
-    UnlockMdsShrMutex(&event_infoMutex);
+    //UnlockMdsShrMutex(&event_infoMutex);
 }
 
 STATIC_ROUTINE int getRemoteId(int id, int ofs)
 {
-    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
+    //LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     return event_info[id].external_ids[ofs];
-    UnlockMdsShrMutex(&event_infoMutex);
+    //UnlockMdsShrMutex(&event_infoMutex);
 }
 
 STATIC_ROUTINE int sendRemoteEvent(char *evname, int data_len, char *data)
@@ -1730,16 +1730,16 @@ STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
 
 STATIC_ROUTINE int getLocalId(int id)
 {
-    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
+    //LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
      return event_info[id].local_id;
-    UnlockMdsShrMutex(&event_infoMutex);
+    //UnlockMdsShrMutex(&event_infoMutex);
 }
 
 STATIC_ROUTINE int getRemoteId(int id, int ofs)
 {
-    LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
+    //LockMdsShrMutex(&event_infoMutex,&event_infoMutex_initialized);
     return event_info[id].external_ids[ofs];
-    UnlockMdsShrMutex(&event_infoMutex);
+    //UnlockMdsShrMutex(&event_infoMutex);
 }
 
 
