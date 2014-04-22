@@ -1922,6 +1922,11 @@ protected:
 		char *getFullPath();
 		char *getNodeName();
 		char *getOriginalPartName();
+		std::string getPathStr();
+		std::string getMinPathStr();
+		std::string getFullPathStr();
+		std::string getNodeNameStr();
+		std::string getOriginalPartNameStr();
 		TreeNode *getNode(char const * relPath);
 		TreeNode *getNode(String *relPathStr);
 		virtual Data *getData();
