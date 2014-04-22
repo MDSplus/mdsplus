@@ -637,6 +637,15 @@ char *TreeNode::getPath()
 	return path;
 }
 
+std::string TreeNode::getPathStr()
+{
+	resolveNid();
+	char *currPath = _TreeGetPath(tree->getCtx(), nid);
+	std::string path(currPath);
+	TreeFree(currPath);
+	return path;
+}
+
 
 char *TreeNode::getMinPath()
 {
@@ -656,6 +665,15 @@ char *TreeNode::getMinPath()
 	return retPath;
 }
 
+std::string TreeNode::getMinPathStr()
+{
+	char *currPath = getMinPath();
+	std::string retPath(currPath);
+	delete [] currPath;
+	return retPath;
+}
+
+
 char *TreeNode::getFullPath()
 {
 	char path[1024];
@@ -674,6 +692,16 @@ char *TreeNode::getFullPath()
 	return retPath;
 }
 
+
+std::string TreeNode::getFullPathStr()
+{
+	char *currPath = getFullPath();
+	std::string retPath(currPath);
+	delete [] currPath;
+	return retPath;
+}
+
+
 char *TreeNode::getOriginalPartName()
 {
 	char path[1024];
@@ -689,6 +717,14 @@ char *TreeNode::getOriginalPartName()
 	path[pathLen] = 0;
 	char *retPath = new char[strlen(path)+1];
 	strcpy(retPath, path);
+	return retPath;
+}
+
+std::string TreeNode::getOriginalPartNameStr()
+{
+	char *currPath = getOriginalPartName();
+	std::string retPath(currPath);
+	delete [] currPath;
 	return retPath;
 }
 
@@ -712,6 +748,15 @@ char *TreeNode::getNodeName()
 			retPath[i] = 0;
 	return retPath;
 }
+
+std::string TreeNode::getNodeNameStr()
+{
+	char *currPath = getNodeName();
+	std::string retPath(currPath);
+	delete [] currPath;
+	return retPath;
+}
+
 
 
 Data *TreeNode::getData()
@@ -2044,6 +2089,6 @@ EXPORT Tree *MDSplus::getActiveTree()
 
 ostream &operator<<(ostream &stream, TreeNode *treeNode)
 {
-	return stream << treeNode->getPath();
+	return stream << treeNode->getPathStr();
 }
 
