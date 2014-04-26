@@ -192,8 +192,6 @@
 #define EXPORT
 #endif
 
-#define BLOCK_ALL 0xfffff
-
 #define MDSIP_CONNECTIONS 1
 #ifdef _WIN64
 #define SIZEOF_INT_P 8
