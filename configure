@@ -14163,7 +14163,7 @@ else
   ;;
   *)
   as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $jdk_dir/bin
+for as_dir in $jdk_dir/bin$PATH_SEPARATOR$PATH
 do
   IFS=$as_save_IFS
   test -z "$as_dir" && as_dir=.
@@ -14177,7 +14177,6 @@ done
 done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_path_JAVAC" && ac_cv_path_JAVAC="javac"
   ;;
 esac
 fi
@@ -14438,7 +14437,6 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
-
 
 
 
