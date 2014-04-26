@@ -237,7 +237,6 @@ AS_VAR_IF([with_idl], [no], [IDL_DIR=""], [IDL_DIR=$with_idl])
 
 FORLD=ld
 LD=ld
-GCCLIB=""
 LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
@@ -664,8 +663,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPE=".so";;
 esac
 
-#GCCLIB="`$CC -print-libgcc-file-name 2> /dev/null`";
-
 dnl see if we have libdc1394 libraries and what version
 AC_CHECK_LIB(dc1394,dc1394_new ,dc1394_v2=yes)
 AC_CHECK_LIB(dc1394,dc1394_get_camera_info ,dc1394_v1=yes)
@@ -1021,7 +1018,6 @@ AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(FOR_LINKSHARED)
-AC_SUBST(GCCLIB)
 AC_SUBST(GEN_DEVICE)
 AC_SUBST(GLOBUS_CFLAGS)
 AC_SUBST(GLOBUS_FLAVOR)
