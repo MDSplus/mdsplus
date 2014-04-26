@@ -10,260 +10,225 @@ SIZEOF_INT_P=$ac_cv_sizeof_int_p
 AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
 AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 dnl See if we need to use native compilers
-case "$target" in
-alpha-dec-osf*) : ${CC=cc};
-		: ${F77=f77};;
-sparc-sun-solaris2*) : ${CC=cc};;
-esac
+AS_CASE(["$target"],
+        [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
+        [sparc-sun-solaris2*], [${CC=cc}])
 
 MACOSX=""
 FOR_LINKSHARED=""
 
-if test "$NOF77"
-then
-:;
-else
-AC_PROG_F77([g77 gfortran f90 f95])
-fi
-
 dnl Check out the compiler
 AC_PROG_CC
 AC_PROG_CXX
+AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([g77 gfortran f90 f95])])
 
-MDSIP_CONNECTIONS="yes";
-AC_ARG_ENABLE(mdsip_connections,
-        [ --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.],MDSIP_CONNECTIONS="$enableval")
-AC_DEFINE(MDSIP_CONNECTIONS)
+AC_ARG_ENABLE([mdsip_connections],
+              [AS_HELP_STRING([--disable-mdsip_connections],
+                              [Prevent using mdsip connections.])],
+              [],
+              [AS_VAR_SET([enable_mdsip_connections], [yes])])
+AC_DEFINE([MDSIP_CONNECTIONS], [$enable_mdsip_connections])
 
-AC_ARG_ENABLE(nodebug,
-	[  --enable-nodebug        compile without debug info],
-	if test "$enableval" = yes; then
-               CFLAGS="";
-               FFLAGS="";
-	fi)
+dnl FIXME: This logic is confusingly reversed....
+AC_MSG_CHECKING([whether to compile debug info])
+AC_ARG_ENABLE([nodebug],
+              [AS_HELP_STRING([--enable-nodebug],
+                              [compile without debug info])],
+              [],
+              [AS_VAR_SET([enable_nodebug], [no])])
+dnl FIXME: This is bad form. Never mess with *FLAGS
+AS_CASE([$enable_nodebug],
+        [yes], [AS_UNSET(CFLAGS)]
+               [AS_UNSET(FFLAGS)])
+AC_MSG_RESULT([$enable_nodebug])
 
-AC_ARG_ENABLE(perf,
-	[  --enable-perf          enable MDSplus I/O statistics])
-	if test "$enableval" = yes; then
-		AC_DEFINE(USE_PERF)
-	fi
 
-AC_ARG_ENABLE(java,
-	[ --disable-java	do not build java libraries and applications],
-        java_enable="$enableval",
-        java_enable="yes"
-)
+AC_MSG_CHECKING([whether to enable statistics])
+AC_ARG_ENABLE([perf],
+              [AS_HELP_STRING([--enable-perf],
+                              [enable MDSplus I/O statistics])],
+              [],
+              [AS_VAR_SET([enable_perf], [no])])
+AS_CASE([$enable_perf],
+        [yes], [AC_DEFINE(USE_PERF)])
+AC_MSG_RESULT([$enable_perf])
+
+AC_MSG_CHECKING([whether to build the java components])
+AC_ARG_ENABLE([java],
+              [AS_HELP_STRING([--disable-java],
+                              [Do not build java libraries and applications])],
+              [],
+              [AS_VAR_SET([enable_java], [yes])])
+
+AC_ARG_ENABLE([universal],
+              [AS_HELP_STRING([--enable-universal],
+                              [Build MacOSX Universal Binary])],
+              [],
+              [AS_VAR_SET([enable_universal], [no])])
 
 dnl this new java section hoses macos x... why not use the autoconf java macros?
 dnl I'm faking a disable so I can enable by hand later...
-if test "$target_vendor" = "apple"
-then
-	dnl the java section breaks with macos x due to different structure
-	dnl this disables it for now..  is there a AC_PROG_JAVA?
-	java_enable="no"
-	AC_ARG_ENABLE(universal,
-		[ --enable-universal	Build MacOSX Universal Binary ],
-		universal_build="$enableval"
-		)
-	if test "$universal_build" = yes; then
-		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		F77=fort77
-	fi 
-fi
+AS_CASE([$target_vendor],
+        [apple], dnl the java section breaks with macos x due to different structure
+                 dnl this disables it for now..  is there a AC_PROG_JAVA?
+                 [AS_VAR_SET([enable_java], [no])]
+                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
+                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
+                                                       [F77=fort77])])
+AC_MSG_RESULT([$enable_java])
 
-if test "$java_enable" = "yes"
-then
-  if test -z "$JDK_DIR"
-  then
-    JDK_DIR="/etc/alternatives/java_sdk"
-  fi
-  AC_ARG_WITH(jdk,
-	[ --with-jdk=java-jdk-dir	specify location of java jdk],
-	jdk_dir="$withval",
-	jdk_dir="$JDK_DIR"
-  )
-dnl Look for java jdk
-  AC_MSG_CHECKING(for presence of Java Development Kit)
-  if [ test -r $jdk_dir/jre ]
-  then
-    AC_MSG_RESULT(found.)
-  else
-	cat <<EOF
+AC_ARG_WITH([jdk],
+            [AS_HELP_STRING([--with-jdk=JDKDIR],
+                            [specify location of java jdk])],
+            [],
+            [AS_VAR_SET([with_jdk], [no])])
 
+AS_CASE([$enable_java],
+        [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
+                AS_CASE([$with_jdk],
+                        [no], [AC_MSG_RESULT([none specified])],
+                        [yes], [AS_VAR_IF([JDK_DIR], [],
+                                          [AS_VAR_SET([JDK_DIR], [/etc/alternatives/java_sdk])])],
+                        [AS_VAR_SET([JDK_DIR], [$with_jdk])])
+                AS_IF([test -r $JDK_DIR/jre], [AC_MSG_RESULT([$JDK_DIR])],
+                      [AC_MSG_RESULT([not found])
+                       AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
+                       AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
+                       AC_MSG_WARN([variable or by using the --with-jdk=DIR option.])
+                       AC_MSG_WARN([You can disable java by using the --disable-java option.])
+                       AS_EXIT])
+                AC_MSG_RESULT([$JDK_DIR])])
 
-YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA
-The jdk directory can be specified by either defining a JDK_DIR environment
-variable or by using the --with-jdk=jdk-directory option.
-You can disable java by using the --disable-java option.
+AC_MSG_CHECKING([for use of globus for mdsip])
+AC_ARG_WITH([xio],
+            [AS_HELP_STRING([--with-xio=globus-location:flavor],
+                            [Use globus xio for mdsip communications])],
+            [],
+            [AS_VAR_SET([with_xio], [no])])
+AS_CASE([$with_xio],
+        [no], [AS_VAR_SET([MDSTCPIP], [mdstcpip])],
+        [*pthr*], [AC_MSG_WARN([Do NOT INCLUDE pthr in the globus flavor!])
+                   AS_EXIT],
+        [yes|""], [AC_MSG_WARN([YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option])
+                   AC_MSG_WARN([Format:   --with-xio=globus-install-directory:flavor])
+                   AC_MSG_WARN([Example:  --with-xio=/usr/local/gt3:gcc32dbg])
+                   AC_MSG_WARN([Note: Do not include pthr in the flavor as it is automatically added.])
+                   AS_EXIT],
+        [AS_VAR_SET([MDSTCPIP], ["mdsip_xio roam"])
+         GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+         GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`])
+AC_MSG_RESULT([$with_xio])
 
+AC_ARG_WITH([gsi],
+            [AS_HELP_STRING([--with-gsi=globus-location:flavor],
+                            [Use globus gsi for mdsip communications])],
+            [],
+            [AS_VAR_SET([with_gsi], [no])])
+AS_CASE([$with_gsi],
+        [no], [AS_VAR_SET([MDSTCPIP], [mdstcpip])],
+        [*pthr*], [AC_MSG_WARN([Do NOT INCLUDE pthr in the globus flavor!])
+                   AS_EXIT],
+        [MDSTCPIP="mdstcpip roam"
+         GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+         GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
+         AS_VAR_IF([GLOBUS_FLAVOR], [], 
+                   [AC_MSG_WARN([YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option])
+                    AC_MSG_WARN([Format:   --with-gsi=globus-install-directory:flavor])
+                    AC_MSG_WARN([Example:  --with-gsi=/usr/local/gt3:gcc32dbg])
+                    AC_MSG_WARN([])
+                    AC_MSG_WARN([Note do not include pthr in the flavor as it is automatically added.])
+                    AS_EXIT])])
 
-
-EOF
-	exit
-  fi
-fi
-
-JDK_DIR="$jdk_dir"
-
-AC_ARG_WITH(xio,
-	[  --with-xio=globus-location:flavor  use globus xio for mdsip communications],
-          MDSTCPIP="mdsip_xio roam"
-          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-          if test "$GLOBUS_FLAVOR" = ""
-	  then
-            cat <<EOF
-
-YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option
-Format:   --with-xio=globus-install-directory:flavor
-Example:  --with-xio=/usr/local/gt3:gcc32dbg
-
-Note do not include pthr in the flavor as it is automatically added.
-
-EOF
-            exit
-          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
-          then
-	    cat <<EOF
-
-Do NOT INCLUDE pthr in the globus flavor!
-
-EOF
-	    exit
-          fi 
-        ,
-          MDSTCPIP="mdstcpip"
-        )
-
-AC_ARG_WITH(gsi,
-	[  --with-gsi=globus-location:flavor  use globus xio for mdsip communications],
-          MDSTCPIP="mdstcpip roam"
-          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-          if test "$GLOBUS_FLAVOR" = ""
-	  then
-            cat <<EOF
-
-YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option
-Format:   --with-gsi=globus-install-directory:flavor
-Example:  --with-gsi=/usr/local/gt3:gcc32dbg
-
-Note do not include pthr in the flavor as it is automatically added.
-
-EOF
-            exit
-          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
-          then
-	    cat <<EOF
-
-Do NOT INCLUDE pthr in the globus flavor!
-
-EOF
-	    exit
-          fi 
-        ,
-          MDSTCPIP="mdstcpip"
-        )
-
-AC_ARG_WITH(srb,
-	[  --with-srb=srb-install-dir  Enable srb capabilities ],
-          SRB_LOCATION=$withval
-          if test "$SRB_LOCATION" = yes
-	  then
-		cat <<EOF
-
-YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation
-when using the --with-srb option
-
-Format:   --with-srb=srb-install-directory
-Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO 
-
-EOF
-	    exit
-          fi
-	  SRBLIB="-L${SRB_LOCATION} -lsrbUio"
-          SRBINCLUDE="-I${SRB_LOCATION}"
-          AC_DEFINE(SRB)
-        )
+AC_MSG_CHECKING([for an srb installation])
+AC_ARG_WITH([srb],
+            [AS_HELP_STRING([--with-srb=srb-install-dir],
+                            [Enable srb capabilities])],
+            [],
+            [AS_VAR_SET([with_srb], [no])])
+AS_CASE([$with_srb],
+        [yes], [AC_MSG_WARN([YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation])
+                AC_MSG_WARN([when using the --with-srb option])
+                AC_MSG_WARN([])
+                AC_MSG_WARN([Format:   --with-srb=srb-install-directory])
+                AC_MSG_WARN([Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO])
+                AS_EXIT],
+        [SRBLIB="-L${with_srb} -lsrbUio"
+         SRBINCLUDE="-I${with_srb}"
+         AC_DEFINE(SRB)])
+AC_MSG_RESULT([$with_srb])
 
 dnl Look for labview include file
-AC_ARG_WITH(labview,
-        [ --with-labview=labview-top-dir        specify location of idl such as /usr/local/natinst/Labview],
-        LV_DIR="$withval",
-        LV_DIR="$LABVIEW_DIR")
-AC_MSG_CHECKING(for labview)
-if test "$LV_DIR" != "" -a -r "$LV_DIR"
-then
-  LV_INC="-I$LV_DIR/cintools"
-  LV="mdsobjects/labview"
-  LV_LIB="-lLV"
-  AC_MSG_RESULT(have labview $LV_INC)
-else
-  LV_INC=""
-  LV=""
-  LV_LIB=""
-  AC_MSG_RESULT(no labview)
-fi
+AC_MSG_CHECKING([for labview])
+AC_ARG_WITH([labview],
+            [AS_HELP_STRING([--with-labview=labview-top-dir],
+                            [specify location of labview such as /usr/local/natinst/Labview])],
+            [],
+            [AS_VAR_SET_IF([LABVIEW_DIR], [with_labview=$LABVIEW_DIR], [with_labview=no])])
+AS_CASE([$with_labview],
+        [no], [],
+        [yes], [AC_MSG_ERROR([Labview location required])],
+        [LV_INC="-I$LV_DIR/cintools"
+         LV="mdsobjects/labview"
+         LV_LIB="-lLV"])
+AC_MSG_RESULT([$with_labview])
 
+AC_MSG_CHECKING([whether to use globus_io for mdsip])
+AC_ARG_ENABLE([globus],
+              [AS_HELP_STRING([--enable-globus],
+                             [use globus_io for mdsip communications])],
+              [],
+              [AS_VAR_SET([enable_globus], [no])])
+AS_CASE([$enable_globus],
+        [yes], [${GLOBUS_FLAVOR=gcc32dbg}
+                GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
+                GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
+                            -lglobus_common_$GLOBUS_FLAVOR"])
+AC_MSG_RESULT([$enable_globus])
 
-AC_ARG_ENABLE(globus,
-	[  --enable-globus        use globus_io for mdsip communications],
-	if test "$enableval" = yes; then
-               : ${GLOBUS_FLAVOR=gcc32dbg}
-               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
-               GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
-                            -lglobus_common_$GLOBUS_FLAVOR"
-        else
-               GLOBUS_CFLAGS=""
-               GLOBUS_LIBS=""
-	fi)
+AC_MSG_CHECKING([whether to enable memory debugging])
+AC_ARG_ENABLE([memcheck],
+              [AS_HELP_STRING([--enable-memcheck],
+                             [enable virtual memory debugging])],
+              [],
+              [AS_VAR_SET([enable_memcheck], [no])])
+AS_CASE([$enable_memcheck],
+        [yes], [MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
+                MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"])
+AC_MSG_RESULT([$enable_memcheck])
 
-AC_ARG_ENABLE(memcheck,
-	[  --enable-memcheck       enable virtual memory debugging],
-	if test "$enableval" = yes; then
-           MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
-           MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"
-        else
-           MEMCHK=""
-           MEMCHKLIB=""
-        fi)
+AC_MSG_CHECKING([whether to enable profiled code])
+AC_ARG_ENABLE([gcc_profiling],
+              [AS_HELP_STRING([--enable-gcc_profiling],
+                              [enable gcc profiling])],
+              [],
+              [with_gcc_profiling=no])
+AS_CASE([$with_gcc_profiling],
+        [yes], [GCCPROF="-pg"],
+        [no], [GCCPROF=""],
+        [AC_MSG_ERROR([--enable-gcc_profiling does not take an argument])])
+AC_MSG_RESULT([$with_gcc_profiling])
 
-AC_ARG_ENABLE(gcc_profiling,
-	[  --enable-gcc_profiling       enable gcc profiling],
-	if test "$enableval" = yes; then
-           GCCPROF="-pg"
-        else
-           GCCPROF=""
-        fi)
+AC_MSG_CHECKING([for idl])
+AC_ARG_WITH([idl],
+            [AS_HELP_STRING([--with-idl=idl-top-dir],
+                            [specify location of idl such as /usr/local/itt/idl])],
+            [],
+            [with_idl=yes])
+AS_CASE([$with_idl],
+        [yes], [AS_VAR_SET_IF([IDL_DIR],
+                              [with_idl=$IDL_DIR],
+                              [AS_IF([test -r /usr/local/itt/idl], [with_idl=/usr/local/itt/idl],
+                                     [test -r /usr/local/itt/idl], [with_idl=/usr/local/rsi/idl],
+                                     [with_idl=no])])])
+AS_CASE([$with_idl],
+        [no], [],
+        [IDL_INC="-I$with_idl/external"
+         IDLMDSEVENT="idlmdsevent"
+         IDLMDSWIDGETS="idlmdswidgets"])
+AC_MSG_RESULT([$with_idl])
 
-AC_ARG_WITH(idl,
-	[ --with-idl=idl-top-dir	specify location of idl such as /usr/local/itt/idl],
-	IDL_DIR="$withval",
-	IDL_DIR="")
-if test "$IDL_DIR" = ""
-then
-  if test -r /usr/local/itt/idl
-  then
-    IDL_DIR="/usr/local/itt/idl"
-  elif test -r /usr/local/rsi/idl
-  then
-    IDL_DIR="/usr/local/rsi/idl"
-  fi
-fi
-AC_MSG_CHECKING(for idl)
-if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
-then
-  IDL_INC="-I$IDL_DIR/external"
-  IDLMDSEVENT="idlmdsevent"
-  IDLMDSWIDGETS="idlmdswidgets"
-  AC_MSG_RESULT(have idl $IDL_INC)
-else
-  IDL_INC=""
-  IDLMDSEVENT=""
-  IDLMDSWIDGETS=""
-  AC_MSG_RESULT(no idl)
-fi
+dnl FIXME: Remove this hack
+AS_VAR_IF([with_idl], [no], [IDL_DIR=""], [IDL_DIR=$with_idl])
 
 FORLD=ld
 LD=ld
@@ -1280,7 +1245,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
   AC_MSG_WARN(The IDL application directory was not found.)
-  AC_MSG_WARN(The some libraries used for interfacing IDL with MDSplus will be skipped.)
+  AC_MSG_WARN(The libraries used for interfacing IDL with MDSplus will be skipped.)
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi

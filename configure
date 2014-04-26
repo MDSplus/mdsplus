@@ -749,12 +749,12 @@ X_PRE_LIBS
 X_CFLAGS
 XMKMF
 RANLIB
-ac_ct_CXX
-CXXFLAGS
-CXX
 ac_ct_F77
 FFLAGS
 F77
+ac_ct_CXX
+CXXFLAGS
+CXX
 EGREP
 GREP
 CPP
@@ -844,11 +844,11 @@ LDFLAGS
 LIBS
 CPPFLAGS
 CPP
-F77
-FFLAGS
 CXX
 CXXFLAGS
 CCC
+F77
+FFLAGS
 XMKMF'
 
 
@@ -1478,26 +1478,32 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
- --enable-mdsip_connections     Default. Use --enable-mdsip_connections=no to override.
+  --disable-mdsip_connections
+                          Prevent using mdsip connections.
   --enable-nodebug        compile without debug info
-  --enable-perf          enable MDSplus I/O statistics
- --disable-java	do not build java libraries and applications
- --enable-universal	Build MacOSX Universal Binary
-  --enable-globus        use globus_io for mdsip communications
+  --enable-perf           enable MDSplus I/O statistics
+  --disable-java          Do not build java libraries and applications
+  --enable-universal      Build MacOSX Universal Binary
+  --enable-globus         use globus_io for mdsip communications
   --enable-memcheck       enable virtual memory debugging
-  --enable-gcc_profiling       enable gcc profiling
+  --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
   --enable-staticmotif    build with static motif libraries
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
- --with-jdk=java-jdk-dir	specify location of java jdk
-  --with-xio=globus-location:flavor  use globus xio for mdsip communications
-  --with-gsi=globus-location:flavor  use globus xio for mdsip communications
-  --with-srb=srb-install-dir  Enable srb capabilities
- --with-labview=labview-top-dir        specify location of idl such as /usr/local/natinst/Labview
- --with-idl=idl-top-dir	specify location of idl such as /usr/local/itt/idl
+  --with-jdk=JDKDIR       specify location of java jdk
+  --with-xio=globus-location:flavor
+                          Use globus xio for mdsip communications
+  --with-gsi=globus-location:flavor
+                          Use globus gsi for mdsip communications
+  --with-srb=srb-install-dir
+                          Enable srb capabilities
+  --with-labview=labview-top-dir
+                          specify location of labview such as
+                          /usr/local/natinst/Labview
+  --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -1509,10 +1515,10 @@ Some influential environment variables:
   CPPFLAGS    C/C++/Objective C preprocessor flags, e.g. -I<include dir> if
               you have headers in a nonstandard directory <include dir>
   CPP         C preprocessor
-  F77         Fortran 77 compiler command
-  FFLAGS      Fortran 77 compiler flags
   CXX         C++ compiler command
   CXXFLAGS    C++ compiler flags
+  F77         Fortran 77 compiler command
+  FFLAGS      Fortran 77 compiler flags
   XMKMF       Path to xmkmf, Makefile generator for X Window System
 
 Use these variables to override the choices made by `configure' or to help
@@ -4172,285 +4178,13 @@ else
 fi
 
 case "$target" in
-alpha-dec-osf*) : ${CC=cc};
-		: ${F77=f77};;
-sparc-sun-solaris2*) : ${CC=cc};;
+  alpha-dec-osf*) ${CC=cc}; ${F77=f77} ;;
+  sparc-sun-solaris2*) ${CC=cc} ;;
 esac
+
 
 MACOSX=""
 FOR_LINKSHARED=""
-
-if test "$NOF77"
-then
-:;
-else
-ac_ext=f
-ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
-ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_f77_compiler_gnu
-if test -n "$ac_tool_prefix"; then
-  for ac_prog in g77 gfortran f90 f95
-  do
-    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
-set dummy $ac_tool_prefix$ac_prog; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_F77+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$F77"; then
-  ac_cv_prog_F77="$F77" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_F77="$ac_tool_prefix$ac_prog"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-F77=$ac_cv_prog_F77
-if test -n "$F77"; then
-  { $as_echo "$as_me:$LINENO: result: $F77" >&5
-$as_echo "$F77" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-    test -n "$F77" && break
-  done
-fi
-if test -z "$F77"; then
-  ac_ct_F77=$F77
-  for ac_prog in g77 gfortran f90 f95
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_prog_ac_ct_F77+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$ac_ct_F77"; then
-  ac_cv_prog_ac_ct_F77="$ac_ct_F77" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_prog_ac_ct_F77="$ac_prog"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-fi
-fi
-ac_ct_F77=$ac_cv_prog_ac_ct_F77
-if test -n "$ac_ct_F77"; then
-  { $as_echo "$as_me:$LINENO: result: $ac_ct_F77" >&5
-$as_echo "$ac_ct_F77" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$ac_ct_F77" && break
-done
-
-  if test "x$ac_ct_F77" = x; then
-    F77=""
-  else
-    case $cross_compiling:$ac_tool_warned in
-yes:)
-{ $as_echo "$as_me:$LINENO: WARNING: using cross tools not prefixed with host triplet" >&5
-$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
-ac_tool_warned=yes ;;
-esac
-    F77=$ac_ct_F77
-  fi
-fi
-
-
-# Provide some information about the compiler.
-$as_echo "$as_me:$LINENO: checking for Fortran 77 compiler version" >&5
-set X $ac_compile
-ac_compiler=$2
-{ (ac_try="$ac_compiler --version >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compiler --version >&5") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-{ (ac_try="$ac_compiler -v >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compiler -v >&5") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-{ (ac_try="$ac_compiler -V >&5"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compiler -V >&5") 2>&5
-  ac_status=$?
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-rm -f a.out
-
-# If we don't use `.F' as extension, the preprocessor is not run on the
-# input file.  (Note that this only needs to work for GNU compilers.)
-ac_save_ext=$ac_ext
-ac_ext=F
-{ $as_echo "$as_me:$LINENO: checking whether we are using the GNU Fortran 77 compiler" >&5
-$as_echo_n "checking whether we are using the GNU Fortran 77 compiler... " >&6; }
-if test "${ac_cv_f77_compiler_gnu+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-      program main
-#ifndef __GNUC__
-       choke me
-#endif
-
-      end
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_f77_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_compiler_gnu=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_compiler_gnu=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-ac_cv_f77_compiler_gnu=$ac_compiler_gnu
-
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_f77_compiler_gnu" >&5
-$as_echo "$ac_cv_f77_compiler_gnu" >&6; }
-ac_ext=$ac_save_ext
-ac_test_FFLAGS=${FFLAGS+set}
-ac_save_FFLAGS=$FFLAGS
-FFLAGS=
-{ $as_echo "$as_me:$LINENO: checking whether $F77 accepts -g" >&5
-$as_echo_n "checking whether $F77 accepts -g... " >&6; }
-if test "${ac_cv_prog_f77_g+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  FFLAGS=-g
-cat >conftest.$ac_ext <<_ACEOF
-      program main
-
-      end
-_ACEOF
-rm -f conftest.$ac_objext
-if { (ac_try="$ac_compile"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_compile") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_f77_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest.$ac_objext; then
-  ac_cv_prog_f77_g=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_prog_f77_g=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
-
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_prog_f77_g" >&5
-$as_echo "$ac_cv_prog_f77_g" >&6; }
-if test "$ac_test_FFLAGS" = set; then
-  FFLAGS=$ac_save_FFLAGS
-elif test $ac_cv_prog_f77_g = yes; then
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-g -O2"
-  else
-    FFLAGS="-g"
-  fi
-else
-  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-O2"
-  else
-    FFLAGS=
-  fi
-fi
-
-if test $ac_compiler_gnu = yes; then
-  G77=yes
-else
-  G77=
-fi
-ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-fi
 
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
@@ -5507,294 +5241,626 @@ ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
+if test "${NOF77+set}" = set; then
+  :
+else
+  ac_ext=f
+ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
+ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_f77_compiler_gnu
+if test -n "$ac_tool_prefix"; then
+  for ac_prog in g77 gfortran f90 f95
+  do
+    # Extract the first word of "$ac_tool_prefix$ac_prog", so it can be a program name with args.
+set dummy $ac_tool_prefix$ac_prog; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_F77+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$F77"; then
+  ac_cv_prog_F77="$F77" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_F77="$ac_tool_prefix$ac_prog"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
 
-MDSIP_CONNECTIONS="yes";
+fi
+fi
+F77=$ac_cv_prog_F77
+if test -n "$F77"; then
+  { $as_echo "$as_me:$LINENO: result: $F77" >&5
+$as_echo "$F77" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    test -n "$F77" && break
+  done
+fi
+if test -z "$F77"; then
+  ac_ct_F77=$F77
+  for ac_prog in g77 gfortran f90 f95
+do
+  # Extract the first word of "$ac_prog", so it can be a program name with args.
+set dummy $ac_prog; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_prog_ac_ct_F77+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_F77"; then
+  ac_cv_prog_ac_ct_F77="$ac_ct_F77" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_prog_ac_ct_F77="$ac_prog"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_F77=$ac_cv_prog_ac_ct_F77
+if test -n "$ac_ct_F77"; then
+  { $as_echo "$as_me:$LINENO: result: $ac_ct_F77" >&5
+$as_echo "$ac_ct_F77" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  test -n "$ac_ct_F77" && break
+done
+
+  if test "x$ac_ct_F77" = x; then
+    F77=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:$LINENO: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    F77=$ac_ct_F77
+  fi
+fi
+
+
+# Provide some information about the compiler.
+$as_echo "$as_me:$LINENO: checking for Fortran 77 compiler version" >&5
+set X $ac_compile
+ac_compiler=$2
+{ (ac_try="$ac_compiler --version >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compiler --version >&5") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+{ (ac_try="$ac_compiler -v >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compiler -v >&5") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+{ (ac_try="$ac_compiler -V >&5"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compiler -V >&5") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }
+rm -f a.out
+
+# If we don't use `.F' as extension, the preprocessor is not run on the
+# input file.  (Note that this only needs to work for GNU compilers.)
+ac_save_ext=$ac_ext
+ac_ext=F
+{ $as_echo "$as_me:$LINENO: checking whether we are using the GNU Fortran 77 compiler" >&5
+$as_echo_n "checking whether we are using the GNU Fortran 77 compiler... " >&6; }
+if test "${ac_cv_f77_compiler_gnu+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+      program main
+#ifndef __GNUC__
+       choke me
+#endif
+
+      end
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_f77_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_compiler_gnu=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_compiler_gnu=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+ac_cv_f77_compiler_gnu=$ac_compiler_gnu
+
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_f77_compiler_gnu" >&5
+$as_echo "$ac_cv_f77_compiler_gnu" >&6; }
+ac_ext=$ac_save_ext
+ac_test_FFLAGS=${FFLAGS+set}
+ac_save_FFLAGS=$FFLAGS
+FFLAGS=
+{ $as_echo "$as_me:$LINENO: checking whether $F77 accepts -g" >&5
+$as_echo_n "checking whether $F77 accepts -g... " >&6; }
+if test "${ac_cv_prog_f77_g+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  FFLAGS=-g
+cat >conftest.$ac_ext <<_ACEOF
+      program main
+
+      end
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_f77_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_prog_f77_g=yes
+else
+  $as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_prog_f77_g=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+fi
+{ $as_echo "$as_me:$LINENO: result: $ac_cv_prog_f77_g" >&5
+$as_echo "$ac_cv_prog_f77_g" >&6; }
+if test "$ac_test_FFLAGS" = set; then
+  FFLAGS=$ac_save_FFLAGS
+elif test $ac_cv_prog_f77_g = yes; then
+  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
+    FFLAGS="-g -O2"
+  else
+    FFLAGS="-g"
+  fi
+else
+  if test "x$ac_cv_f77_compiler_gnu" = xyes; then
+    FFLAGS="-O2"
+  else
+    FFLAGS=
+  fi
+fi
+
+if test $ac_compiler_gnu = yes; then
+  G77=yes
+else
+  G77=
+fi
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+fi
+
+
 # Check whether --enable-mdsip_connections was given.
 if test "${enable_mdsip_connections+set}" = set; then
-  enableval=$enable_mdsip_connections; MDSIP_CONNECTIONS="$enableval"
+  enableval=$enable_mdsip_connections;
+else
+  enable_mdsip_connections=yes
 fi
 
 cat >>confdefs.h <<\_ACEOF
-#define MDSIP_CONNECTIONS 1
+#define MDSIP_CONNECTIONS $enable_mdsip_connections
 _ACEOF
 
 
+{ $as_echo "$as_me:$LINENO: checking whether to compile debug info" >&5
+$as_echo_n "checking whether to compile debug info... " >&6; }
 # Check whether --enable-nodebug was given.
 if test "${enable_nodebug+set}" = set; then
-  enableval=$enable_nodebug; if test "$enableval" = yes; then
-               CFLAGS="";
-               FFLAGS="";
-	fi
+  enableval=$enable_nodebug;
+else
+  enable_nodebug=no
 fi
 
+case $enable_nodebug in
+  yes) $as_unset CFLAGS || test "${CFLAGS+set}" != set || { CFLAGS=; export CFLAGS; }
+               $as_unset FFLAGS || test "${FFLAGS+set}" != set || { FFLAGS=; export FFLAGS; } ;;
+esac
 
+{ $as_echo "$as_me:$LINENO: result: $enable_nodebug" >&5
+$as_echo "$enable_nodebug" >&6; }
+
+
+{ $as_echo "$as_me:$LINENO: checking whether to enable statistics" >&5
+$as_echo_n "checking whether to enable statistics... " >&6; }
 # Check whether --enable-perf was given.
 if test "${enable_perf+set}" = set; then
   enableval=$enable_perf;
+else
+  enable_perf=no
 fi
 
-	if test "$enableval" = yes; then
-		cat >>confdefs.h <<\_ACEOF
+case $enable_perf in
+  yes) cat >>confdefs.h <<\_ACEOF
 #define USE_PERF 1
 _ACEOF
+ ;;
+esac
 
-	fi
+{ $as_echo "$as_me:$LINENO: result: $enable_perf" >&5
+$as_echo "$enable_perf" >&6; }
 
+{ $as_echo "$as_me:$LINENO: checking whether to build the java components" >&5
+$as_echo_n "checking whether to build the java components... " >&6; }
 # Check whether --enable-java was given.
 if test "${enable_java+set}" = set; then
-  enableval=$enable_java; java_enable="$enableval"
+  enableval=$enable_java;
 else
-  java_enable="yes"
-
+  enable_java=yes
 fi
 
 
-if test "$target_vendor" = "apple"
-then
-			java_enable="no"
-	# Check whether --enable-universal was given.
+# Check whether --enable-universal was given.
 if test "${enable_universal+set}" = set; then
-  enableval=$enable_universal; universal_build="$enableval"
-
+  enableval=$enable_universal;
+else
+  enable_universal=no
 fi
 
-	if test "$universal_build" = yes; then
-		CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-		F77=fort77
-	fi
-fi
 
-if test "$java_enable" = "yes"
-then
-  if test -z "$JDK_DIR"
-  then
-    JDK_DIR="/etc/alternatives/java_sdk"
-  fi
+case $target_vendor in
+  apple)                                   enable_java=no
+                 if test "x$enable_universal" = x""yes; then
+  CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+                                                       LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
+                                                       F77=fort77
+fi
+ ;;
+esac
+
+{ $as_echo "$as_me:$LINENO: result: $enable_java" >&5
+$as_echo "$enable_java" >&6; }
+
 
 # Check whether --with-jdk was given.
 if test "${with_jdk+set}" = set; then
-  withval=$with_jdk; jdk_dir="$withval"
+  withval=$with_jdk;
 else
-  jdk_dir="$JDK_DIR"
-
+  with_jdk=no
 fi
 
-  { $as_echo "$as_me:$LINENO: checking for presence of Java Development Kit" >&5
+
+case $enable_java in
+  yes) { $as_echo "$as_me:$LINENO: checking for presence of Java Development Kit" >&5
 $as_echo_n "checking for presence of Java Development Kit... " >&6; }
-  if  test -r $jdk_dir/jre
-  then
-    { $as_echo "$as_me:$LINENO: result: found." >&5
-$as_echo "found." >&6; }
-  else
-	cat <<EOF
+                case $with_jdk in
+  no) { $as_echo "$as_me:$LINENO: result: none specified" >&5
+$as_echo "none specified" >&6; } ;;
+  yes) if test "x$JDK_DIR" = x""; then
+  JDK_DIR=/etc/alternatives/java_sdk
+fi
+ ;;
+  *) JDK_DIR=$with_jdk ;;
+esac
 
-
-YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA
-The jdk directory can be specified by either defining a JDK_DIR environment
-variable or by using the --with-jdk=jdk-directory option.
-You can disable java by using the --disable-java option.
-
-
-
-EOF
-	exit
-  fi
+                if test -r $JDK_DIR/jre; then
+  { $as_echo "$as_me:$LINENO: result: $JDK_DIR" >&5
+$as_echo "$JDK_DIR" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: not found" >&5
+$as_echo "not found" >&6; }
+                       { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA" >&5
+$as_echo "$as_me: WARNING: YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA" >&2;}
+                       { $as_echo "$as_me:$LINENO: WARNING: The jdk directory can be specified by either defining a JDK_DIR environment" >&5
+$as_echo "$as_me: WARNING: The jdk directory can be specified by either defining a JDK_DIR environment" >&2;}
+                       { $as_echo "$as_me:$LINENO: WARNING: variable or by using the --with-jdk=DIR option." >&5
+$as_echo "$as_me: WARNING: variable or by using the --with-jdk=DIR option." >&2;}
+                       { $as_echo "$as_me:$LINENO: WARNING: You can disable java by using the --disable-java option." >&5
+$as_echo "$as_me: WARNING: You can disable java by using the --disable-java option." >&2;}
+                       { (exit 1); exit 1; }
 fi
 
-JDK_DIR="$jdk_dir"
+                { $as_echo "$as_me:$LINENO: result: $JDK_DIR" >&5
+$as_echo "$JDK_DIR" >&6; } ;;
+esac
 
+
+{ $as_echo "$as_me:$LINENO: checking for use of globus for mdsip" >&5
+$as_echo_n "checking for use of globus for mdsip... " >&6; }
 
 # Check whether --with-xio was given.
 if test "${with_xio+set}" = set; then
-  withval=$with_xio; MDSTCPIP="mdsip_xio roam"
-          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-          if test "$GLOBUS_FLAVOR" = ""
-	  then
-            cat <<EOF
-
-YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option
-Format:   --with-xio=globus-install-directory:flavor
-Example:  --with-xio=/usr/local/gt3:gcc32dbg
-
-Note do not include pthr in the flavor as it is automatically added.
-
-EOF
-            exit
-          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
-          then
-	    cat <<EOF
-
-Do NOT INCLUDE pthr in the globus flavor!
-
-EOF
-	    exit
-          fi
-
+  withval=$with_xio;
 else
-  MDSTCPIP="mdstcpip"
-
+  with_xio=no
 fi
 
+case $with_xio in
+  no) MDSTCPIP=mdstcpip ;;
+  *pthr*) { $as_echo "$as_me:$LINENO: WARNING: Do NOT INCLUDE pthr in the globus flavor!" >&5
+$as_echo "$as_me: WARNING: Do NOT INCLUDE pthr in the globus flavor!" >&2;}
+                   { (exit 1); exit 1; } ;;
+  yes|"") { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option" >&5
+$as_echo "$as_me: WARNING: YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option" >&2;}
+                   { $as_echo "$as_me:$LINENO: WARNING: Format:   --with-xio=globus-install-directory:flavor" >&5
+$as_echo "$as_me: WARNING: Format:   --with-xio=globus-install-directory:flavor" >&2;}
+                   { $as_echo "$as_me:$LINENO: WARNING: Example:  --with-xio=/usr/local/gt3:gcc32dbg" >&5
+$as_echo "$as_me: WARNING: Example:  --with-xio=/usr/local/gt3:gcc32dbg" >&2;}
+                   { $as_echo "$as_me:$LINENO: WARNING: Note: Do not include pthr in the flavor as it is automatically added." >&5
+$as_echo "$as_me: WARNING: Note: Do not include pthr in the flavor as it is automatically added." >&2;}
+                   { (exit 1); exit 1; } ;;
+  *) MDSTCPIP="mdsip_xio roam"
+         GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+         GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'` ;;
+esac
+
+{ $as_echo "$as_me:$LINENO: result: $with_xio" >&5
+$as_echo "$with_xio" >&6; }
 
 
 # Check whether --with-gsi was given.
 if test "${with_gsi+set}" = set; then
-  withval=$with_gsi; MDSTCPIP="mdstcpip roam"
-          GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-          GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
-          if test "$GLOBUS_FLAVOR" = ""
-	  then
-            cat <<EOF
-
-YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option
-Format:   --with-gsi=globus-install-directory:flavor
-Example:  --with-gsi=/usr/local/gt3:gcc32dbg
-
-Note do not include pthr in the flavor as it is automatically added.
-
-EOF
-            exit
-          elif ( echo $GLOBUS_FLAVOR | grep pthr > /dev/null )
-          then
-	    cat <<EOF
-
-Do NOT INCLUDE pthr in the globus flavor!
-
-EOF
-	    exit
-          fi
-
+  withval=$with_gsi;
 else
-  MDSTCPIP="mdstcpip"
-
+  with_gsi=no
 fi
 
+case $with_gsi in
+  no) MDSTCPIP=mdstcpip ;;
+  *pthr*) { $as_echo "$as_me:$LINENO: WARNING: Do NOT INCLUDE pthr in the globus flavor!" >&5
+$as_echo "$as_me: WARNING: Do NOT INCLUDE pthr in the globus flavor!" >&2;}
+                   { (exit 1); exit 1; } ;;
+  *) MDSTCPIP="mdstcpip roam"
+         GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
+         GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`
+         if test "x$GLOBUS_FLAVOR" = x""; then
+  { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option" >&5
+$as_echo "$as_me: WARNING: YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-gsi option" >&2;}
+                    { $as_echo "$as_me:$LINENO: WARNING: Format:   --with-gsi=globus-install-directory:flavor" >&5
+$as_echo "$as_me: WARNING: Format:   --with-gsi=globus-install-directory:flavor" >&2;}
+                    { $as_echo "$as_me:$LINENO: WARNING: Example:  --with-gsi=/usr/local/gt3:gcc32dbg" >&5
+$as_echo "$as_me: WARNING: Example:  --with-gsi=/usr/local/gt3:gcc32dbg" >&2;}
+                    { $as_echo "$as_me:$LINENO: WARNING: " >&5
+$as_echo "$as_me: WARNING: " >&2;}
+                    { $as_echo "$as_me:$LINENO: WARNING: Note do not include pthr in the flavor as it is automatically added." >&5
+$as_echo "$as_me: WARNING: Note do not include pthr in the flavor as it is automatically added." >&2;}
+                    { (exit 1); exit 1; }
+fi
+ ;;
+esac
 
+
+{ $as_echo "$as_me:$LINENO: checking for an srb installation" >&5
+$as_echo_n "checking for an srb installation... " >&6; }
 
 # Check whether --with-srb was given.
 if test "${with_srb+set}" = set; then
-  withval=$with_srb; SRB_LOCATION=$withval
-          if test "$SRB_LOCATION" = yes
-	  then
-		cat <<EOF
+  withval=$with_srb;
+else
+  with_srb=no
+fi
 
-YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation
-when using the --with-srb option
-
-Format:   --with-srb=srb-install-directory
-Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO
-
-EOF
-	    exit
-          fi
-	  SRBLIB="-L${SRB_LOCATION} -lsrbUio"
-          SRBINCLUDE="-I${SRB_LOCATION}"
-          cat >>confdefs.h <<\_ACEOF
+case $with_srb in
+  yes) { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation" >&5
+$as_echo "$as_me: WARNING: YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation" >&2;}
+                { $as_echo "$as_me:$LINENO: WARNING: when using the --with-srb option" >&5
+$as_echo "$as_me: WARNING: when using the --with-srb option" >&2;}
+                { $as_echo "$as_me:$LINENO: WARNING: " >&5
+$as_echo "$as_me: WARNING: " >&2;}
+                { $as_echo "$as_me:$LINENO: WARNING: Format:   --with-srb=srb-install-directory" >&5
+$as_echo "$as_me: WARNING: Format:   --with-srb=srb-install-directory" >&2;}
+                { $as_echo "$as_me:$LINENO: WARNING: Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO" >&5
+$as_echo "$as_me: WARNING: Example:  --with-srb=/scratch/slocal/testc/SRB3_2client/unixIO" >&2;}
+                { (exit 1); exit 1; } ;;
+  *) SRBLIB="-L${with_srb} -lsrbUio"
+         SRBINCLUDE="-I${with_srb}"
+         cat >>confdefs.h <<\_ACEOF
 #define SRB 1
 _ACEOF
+ ;;
+esac
 
-
-fi
-
-
-
-# Check whether --with-labview was given.
-if test "${with_labview+set}" = set; then
-  withval=$with_labview; LV_DIR="$withval"
-else
-  LV_DIR="$LABVIEW_DIR"
-fi
+{ $as_echo "$as_me:$LINENO: result: $with_srb" >&5
+$as_echo "$with_srb" >&6; }
 
 { $as_echo "$as_me:$LINENO: checking for labview" >&5
 $as_echo_n "checking for labview... " >&6; }
-if test "$LV_DIR" != "" -a -r "$LV_DIR"
-then
-  LV_INC="-I$LV_DIR/cintools"
-  LV="mdsobjects/labview"
-  LV_LIB="-lLV"
-  { $as_echo "$as_me:$LINENO: result: have labview $LV_INC" >&5
-$as_echo "have labview $LV_INC" >&6; }
+
+# Check whether --with-labview was given.
+if test "${with_labview+set}" = set; then
+  withval=$with_labview;
 else
-  LV_INC=""
-  LV=""
-  LV_LIB=""
-  { $as_echo "$as_me:$LINENO: result: no labview" >&5
-$as_echo "no labview" >&6; }
+  if test "${LABVIEW_DIR+set}" = set; then
+  with_labview=$LABVIEW_DIR
+else
+  with_labview=no
 fi
 
+fi
 
+case $with_labview in
+  no) : ;;
+  yes) { { $as_echo "$as_me:$LINENO: error: Labview location required" >&5
+$as_echo "$as_me: error: Labview location required" >&2;}
+   { (exit 1); exit 1; }; } ;;
+  *) LV_INC="-I$LV_DIR/cintools"
+         LV="mdsobjects/labview"
+         LV_LIB="-lLV" ;;
+esac
+
+{ $as_echo "$as_me:$LINENO: result: $with_labview" >&5
+$as_echo "$with_labview" >&6; }
+
+{ $as_echo "$as_me:$LINENO: checking whether to use globus_io for mdsip" >&5
+$as_echo_n "checking whether to use globus_io for mdsip... " >&6; }
 # Check whether --enable-globus was given.
 if test "${enable_globus+set}" = set; then
-  enableval=$enable_globus; if test "$enableval" = yes; then
-               : ${GLOBUS_FLAVOR=gcc32dbg}
-               GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
-               GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
-                            -lglobus_common_$GLOBUS_FLAVOR"
-        else
-               GLOBUS_CFLAGS=""
-               GLOBUS_LIBS=""
-	fi
+  enableval=$enable_globus;
+else
+  enable_globus=no
 fi
 
+case $enable_globus in
+  yes) ${GLOBUS_FLAVOR=gcc32dbg}
+                GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
+                GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
+                            -lglobus_common_$GLOBUS_FLAVOR" ;;
+esac
 
+{ $as_echo "$as_me:$LINENO: result: $enable_globus" >&5
+$as_echo "$enable_globus" >&6; }
+
+{ $as_echo "$as_me:$LINENO: checking whether to enable memory debugging" >&5
+$as_echo_n "checking whether to enable memory debugging... " >&6; }
 # Check whether --enable-memcheck was given.
 if test "${enable_memcheck+set}" = set; then
-  enableval=$enable_memcheck; if test "$enableval" = yes; then
-           MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
-           MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"
-        else
-           MEMCHK=""
-           MEMCHKLIB=""
-        fi
+  enableval=$enable_memcheck;
+else
+  enable_memcheck=no
 fi
 
+case $enable_memcheck in
+  yes) MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
+                MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr" ;;
+esac
 
+{ $as_echo "$as_me:$LINENO: result: $enable_memcheck" >&5
+$as_echo "$enable_memcheck" >&6; }
+
+{ $as_echo "$as_me:$LINENO: checking whether to enable profiled code" >&5
+$as_echo_n "checking whether to enable profiled code... " >&6; }
 # Check whether --enable-gcc_profiling was given.
 if test "${enable_gcc_profiling+set}" = set; then
-  enableval=$enable_gcc_profiling; if test "$enableval" = yes; then
-           GCCPROF="-pg"
-        else
-           GCCPROF=""
-        fi
+  enableval=$enable_gcc_profiling;
+else
+  with_gcc_profiling=no
 fi
 
+case $with_gcc_profiling in
+  yes) GCCPROF="-pg" ;;
+  no) GCCPROF="" ;;
+  *) { { $as_echo "$as_me:$LINENO: error: --enable-gcc_profiling does not take an argument" >&5
+$as_echo "$as_me: error: --enable-gcc_profiling does not take an argument" >&2;}
+   { (exit 1); exit 1; }; } ;;
+esac
 
+{ $as_echo "$as_me:$LINENO: result: $with_gcc_profiling" >&5
+$as_echo "$with_gcc_profiling" >&6; }
+
+{ $as_echo "$as_me:$LINENO: checking for idl" >&5
+$as_echo_n "checking for idl... " >&6; }
 
 # Check whether --with-idl was given.
 if test "${with_idl+set}" = set; then
-  withval=$with_idl; IDL_DIR="$withval"
+  withval=$with_idl;
 else
-  IDL_DIR=""
+  with_idl=yes
 fi
 
-if test "$IDL_DIR" = ""
-then
-  if test -r /usr/local/itt/idl
-  then
-    IDL_DIR="/usr/local/itt/idl"
-  elif test -r /usr/local/rsi/idl
-  then
-    IDL_DIR="/usr/local/rsi/idl"
-  fi
-fi
-{ $as_echo "$as_me:$LINENO: checking for idl" >&5
-$as_echo_n "checking for idl... " >&6; }
-if test "$IDL_DIR" != "" -a -r "$IDL_DIR"
-then
-  IDL_INC="-I$IDL_DIR/external"
-  IDLMDSEVENT="idlmdsevent"
-  IDLMDSWIDGETS="idlmdswidgets"
-  { $as_echo "$as_me:$LINENO: result: have idl $IDL_INC" >&5
-$as_echo "have idl $IDL_INC" >&6; }
+case $with_idl in
+  yes) if test "${IDL_DIR+set}" = set; then
+  with_idl=$IDL_DIR
 else
-  IDL_INC=""
-  IDLMDSEVENT=""
-  IDLMDSWIDGETS=""
-  { $as_echo "$as_me:$LINENO: result: no idl" >&5
-$as_echo "no idl" >&6; }
+  if test -r /usr/local/itt/idl; then
+  with_idl=/usr/local/itt/idl
+elif test -r /usr/local/itt/idl; then
+  with_idl=/usr/local/rsi/idl
+else
+  with_idl=no
 fi
+
+fi
+ ;;
+esac
+
+case $with_idl in
+  no) : ;;
+  *) IDL_INC="-I$with_idl/external"
+         IDLMDSEVENT="idlmdsevent"
+         IDLMDSWIDGETS="idlmdswidgets" ;;
+esac
+
+{ $as_echo "$as_me:$LINENO: result: $with_idl" >&5
+$as_echo "$with_idl" >&6; }
+
+if test "x$with_idl" = x""no; then
+  IDL_DIR=""
+else
+  IDL_DIR=$with_idl
+fi
+
 
 FORLD=ld
 LD=ld
