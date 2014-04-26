@@ -723,7 +723,6 @@ GLOBUS_LOCATION
 GLOBUS_LIBS
 GLOBUS_FLAVOR
 GLOBUS_CFLAGS
-GEN_DEVICE
 FOR_LINKSHARED
 FOR_LDFLAGS
 FORLD
@@ -9848,7 +9847,6 @@ done
 REMCAM="remcam"
 CCL="ccl"
 MITDEVICES="mitdevices"
-GEN_DEVICE="gen_device"
 
 for ac_header in scsi/sg.h
 do
@@ -14296,7 +14294,6 @@ fi
 
 
 LIBS="$LIBPTHREAD $LIBS"
-
 
 
 

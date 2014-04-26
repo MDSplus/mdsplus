@@ -1,8 +1,9 @@
 #@(#)$RCSfile$ $Revision$
 # @configure_input@
 prefix=@prefix@
-SHELL=/bin/sh
+top_srcdir=@top_srcdir@
 exec_prefix=@exec_prefix@
+SHELL=/bin/sh
 
 JAVA_APS = javamds \
 	   javascope \
@@ -34,7 +35,7 @@ PARTS = \
         mdslibidl \
         cdu     \
         mdsdcl  \
-	@GEN_DEVICE@ \
+	gen_device \
 	@CAMSHR@ \
         @REMCAM@ \
         @CCL@     \
@@ -60,12 +61,16 @@ PARTS = \
 	@LV@ \
 	@MACOSX@
 
+
 .PHONY: all $(PARTS)
 all: $(PARTS)
 
-$(PARTS):
-	$(MAKE) -C $@
+DIRECTORIES = @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@
+$(sort $(DIRECTORIES)):
+	mkdir -p $@
 
+$(PARTS): $(DIRECTORIES)
+	$(MAKE) -C $@
 
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
@@ -138,5 +143,6 @@ tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 camshr: cdu mdsdcl
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
+rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 
