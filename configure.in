@@ -941,7 +941,6 @@ dnl Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 AC_HEADER_STDC
 AC_CHECK_FUNCS(gethostname gettimeofday select socket)
-AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(nis_local_host,mdsplus_ok=yes,mdsplus_ok=no)
 AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(sched_setscheduler)
