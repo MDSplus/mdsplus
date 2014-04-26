@@ -41,9 +41,6 @@
 /* Define NEED_SEMUN if sys/sem.h doesn't define union semun  */
 #undef NEED_SEMUN
 
-/* Define NEED_SIGVEC if signal.h doesn't define struct sigvec  */
-#undef NEED_SIGVEC
-#define NEED_SIGVEC
 #define SIGKILL   15
 #define SIGUSR1   16
 #define SIGUSR2   17

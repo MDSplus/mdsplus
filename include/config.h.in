@@ -36,9 +36,6 @@
 /* Define NEED_SEMUN if sys/sem.h doesn't define union semun  */
 #undef NEED_SEMUN
 
-/* Define NEED_SIGVEC if signal.h doesn't define struct sigvec  */
-#undef NEED_SIGVEC
-
 /* Define PS_SYSV if ps(1) uses sysv arguments  */
 #undef PS_SYSV
 
@@ -86,12 +83,6 @@
 
 /* Define if you have the select function.  */
 #undef HAVE_SELECT
-
-/* Define if you have the sigvec function.  */
-#undef HAVE_SIGVEC
-
-/* Define if you have the sigvector function.  */
-#undef HAVE_SIGVECTOR
 
 /* Define if you have the socket function.  */
 #undef HAVE_SOCKET
@@ -202,18 +193,6 @@
 #define LONG_LONG_CONSTANT(value) value
 #endif
 
-#undef HAS_SIGVEC
-#ifdef HAVE_SIGVEC
-#define SIGVEC sigvec
-#define HAS_SIGVEC
-#endif
-#ifdef HAVE_SIGVECTOR
-#define SIGVEC sigvector
-#define HAS_SIGVEC
-#endif
-#ifndef HAS_SIGVEC
-#define SIGVEC sigvec
-#endif
 #define BLOCK_ALL 0xfffff
 
 #ifdef HAVE_WINDOWS_H

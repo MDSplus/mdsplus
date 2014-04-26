@@ -921,13 +921,6 @@ if test $mdsplus_ok = no; then
 		 AC_DEFINE(NEED_SEMUN)
 fi
 AC_MSG_RESULT($mdsplus_ok)
-AC_MSG_CHECKING(for sigvec structure declaration)
-AC_TRY_COMPILE([#include <signal.h>],[struct sigvec arg;],
-							 mdsplus_ok=yes,mdsplus_ok=no)
-if test $mdsplus_ok = no; then
-		 AC_DEFINE(NEED_SIGVEC)
-fi
-AC_MSG_RESULT($mdsplus_ok)
 
 AC_MSG_CHECKING(whether we need to type shmat)
 AC_TRY_COMPILE([#include <sys/shm.h>],[char *shmat();],
@@ -948,7 +941,6 @@ dnl Checks for library functions.
 AC_PROG_GCC_TRADITIONAL
 AC_HEADER_STDC
 AC_CHECK_FUNCS(gethostname gettimeofday select socket)
-AC_CHECK_FUNCS(sigvec sigvector)
 AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(nis_local_host,mdsplus_ok=yes,mdsplus_ok=no)
 AC_CHECK_FUNC(malloc)
