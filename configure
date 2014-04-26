@@ -765,10 +765,6 @@ CPPFLAGS
 LDFLAGS
 CFLAGS
 CC
-target_os
-target_vendor
-target_cpu
-target
 host_os
 host_vendor
 host_cpu
@@ -1466,7 +1462,6 @@ X features:
 System types:
   --build=BUILD     configure for building on BUILD [guessed]
   --host=HOST       cross-compile to build programs to run on HOST [BUILD]
-  --target=TARGET   configure for building compilers for TARGET [HOST]
 _ACEOF
 fi
 
@@ -2076,49 +2071,6 @@ IFS=$ac_save_IFS
 case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
 
 
-{ $as_echo "$as_me:$LINENO: checking target system type" >&5
-$as_echo_n "checking target system type... " >&6; }
-if test "${ac_cv_target+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  if test "x$target_alias" = x; then
-  ac_cv_target=$ac_cv_host
-else
-  ac_cv_target=`$SHELL "$ac_aux_dir/config.sub" $target_alias` ||
-    { { $as_echo "$as_me:$LINENO: error: $SHELL $ac_aux_dir/config.sub $target_alias failed" >&5
-$as_echo "$as_me: error: $SHELL $ac_aux_dir/config.sub $target_alias failed" >&2;}
-   { (exit 1); exit 1; }; }
-fi
-
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_target" >&5
-$as_echo "$ac_cv_target" >&6; }
-case $ac_cv_target in
-*-*-*) ;;
-*) { { $as_echo "$as_me:$LINENO: error: invalid value of canonical target" >&5
-$as_echo "$as_me: error: invalid value of canonical target" >&2;}
-   { (exit 1); exit 1; }; };;
-esac
-target=$ac_cv_target
-ac_save_IFS=$IFS; IFS='-'
-set x $ac_cv_target
-shift
-target_cpu=$1
-target_vendor=$2
-shift; shift
-# Remember, the first character of IFS is used to create $*,
-# except with old shells:
-target_os=$*
-IFS=$ac_save_IFS
-case $target_os in *\ *) target_os=`echo "$target_os" | sed 's/ /-/g'`;; esac
-
-
-# The aliases save the names the user supplied, while $host etc.
-# will get canonicalized.
-test -n "$target_alias" &&
-  test "$program_prefix$program_suffix$program_transform_name" = \
-    NONENONEs,x,x, &&
-  program_prefix=${target_alias}-
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -4177,7 +4129,7 @@ else
   NSLLIB=""
 fi
 
-case "$target" in
+case "$host" in
   alpha-dec-osf*) ${CC=cc}; ${F77=f77} ;;
   sparc-sun-solaris2*) ${CC=cc} ;;
 esac
@@ -5589,7 +5541,7 @@ else
 fi
 
 
-case $target_vendor in
+case $host_vendor in
   apple)                                   enable_java=no
                  if test "x$enable_universal" = x""yes; then
   CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
@@ -5914,7 +5866,7 @@ RTEVENTS="rtevents"
 LIBPTHREAD=-lpthread
 IS_HP=0
 MITDEVICESIO_TARGETS=""
-case "$target" in
+case "$host" in
 hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        FFLAGS="$FFLAGS -O0 -g -fpic  -Wno-globals -fno-backslash";
        D3D_FFLAGS="+U77 +E1 -K";
@@ -6012,7 +5964,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null )
        then
-         if ( echo $target | grep 64 > /dev/null )
+         if ( echo $host| grep 64 > /dev/null )
          then
            if [ -d /usr/lib64 ]
            then
@@ -12098,7 +12050,7 @@ fi
 $as_echo "$ac_cv_func_sched_setscheduler" >&6; }
 
 
-if test "$target_cpu" = "arm"
+if test "$host_cpu" = "arm"
 then
    SYBASE_INC=""
    SYBASE_LIB=""
@@ -14359,19 +14311,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
-
-cat >>confdefs.h <<_ACEOF
-#define TARGET_OS ${target_os}
-_ACEOF
-
-cat >>confdefs.h <<_ACEOF
-#define TARGET_CPU ${target_cpu}
-_ACEOF
-
-cat >>confdefs.h <<_ACEOF
-#define TARGET_VENDOR ${target_vendor}
-_ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
