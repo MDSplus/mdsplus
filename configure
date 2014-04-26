@@ -5713,6 +5713,7 @@ else
 fi
 
 case $with_srb in
+  no) : ;;
   yes) { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation" >&5
 $as_echo "$as_me: WARNING: YOU NEED TO PROVIDE THE LOCATION OF THE unixIO subdirectory of your srb installation" >&2;}
                 { $as_echo "$as_me:$LINENO: WARNING: when using the --with-srb option" >&5
@@ -16214,8 +16215,8 @@ $as_echo "$as_me: WARNING: " >&2;}
 $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:$LINENO: WARNING: The IDL application directory was not found." >&5
 $as_echo "$as_me: WARNING: The IDL application directory was not found." >&2;}
-  { $as_echo "$as_me:$LINENO: WARNING: The some libraries used for interfacing IDL with MDSplus will be skipped." >&5
-$as_echo "$as_me: WARNING: The some libraries used for interfacing IDL with MDSplus will be skipped." >&2;}
+  { $as_echo "$as_me:$LINENO: WARNING: The libraries used for interfacing IDL with MDSplus will be skipped." >&5
+$as_echo "$as_me: WARNING: The libraries used for interfacing IDL with MDSplus will be skipped." >&2;}
   { $as_echo "$as_me:$LINENO: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:$LINENO: WARNING: " >&5
