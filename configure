@@ -12159,12 +12159,6 @@ fi
 { $as_echo "$as_me:$LINENO: result: $ac_cv_func_sched_setscheduler" >&5
 $as_echo "$ac_cv_func_sched_setscheduler" >&6; }
 
-if test $mdsplus_ok = yes; then
-		 cat >>confdefs.h <<\_ACEOF
-#define USE_NIS 1
-_ACEOF
-
-fi
 
 if test "$target_cpu" = "arm"
 then

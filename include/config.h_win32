@@ -54,9 +54,6 @@
 /* Define TYPE_SHMAT if sys/shm.h does not type shmat()  */
 #undef TYPE_SHMAT
 
-/* Define USE_NIS if system has nis_local_host() function  */
-#undef USE_NIS
-
 /* Define PROTECTED if shared memory should be mapped read only*/
 #undef PROTECTED
 
