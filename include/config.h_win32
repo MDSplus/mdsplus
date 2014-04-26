@@ -34,10 +34,6 @@
 #define _big_endian
 #endif
 
-#undef TARGET_CPU
-#undef TARGET_VENDOR
-#undef TARGET_OS
-
 /* Define NEED_SEMUN if sys/sem.h doesn't define union semun  */
 #undef NEED_SEMUN
 
@@ -47,9 +43,6 @@
 #define SIGIO     18
 #define SIGCLD    19
 #define SIGWINDOW 20
-
-/* Define PS_SYSV if ps(1) uses sysv arguments  */
-#undef PS_SYSV
 
 /* Define TYPE_SHMAT if sys/shm.h does not type shmat()  */
 #undef TYPE_SHMAT

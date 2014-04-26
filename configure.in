@@ -688,15 +688,6 @@ AC_CHECK_SIZEOF(_int64)
 
 dnl Checks for programs.
 AC_PROG_RANLIB
-AC_MSG_CHECKING(for ps sysv style arguments)
-mdsplus_ok=`ps -ef >/dev/null 2>/dev/null`
-if test $? = 0; then
-		 AC_DEFINE(PS_SYSV)
-		 mdsplus_ok=yes
-else
-		 mdsplus_ok=no
-fi
-AC_MSG_RESULT($mdsplus_ok)
 
 dnl Define build directories
 

@@ -7636,20 +7636,6 @@ else
   RANLIB="$ac_cv_prog_RANLIB"
 fi
 
-{ $as_echo "$as_me:$LINENO: checking for ps sysv style arguments" >&5
-$as_echo_n "checking for ps sysv style arguments... " >&6; }
-mdsplus_ok=`ps -ef >/dev/null 2>/dev/null`
-if test $? = 0; then
-		 cat >>confdefs.h <<\_ACEOF
-#define PS_SYSV 1
-_ACEOF
-
-		 mdsplus_ok=yes
-else
-		 mdsplus_ok=no
-fi
-{ $as_echo "$as_me:$LINENO: result: $mdsplus_ok" >&5
-$as_echo "$mdsplus_ok" >&6; }
 
 
 MAKEETCDIR="\$(top_srcdir)/etc/"
