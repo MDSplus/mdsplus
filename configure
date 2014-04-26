@@ -671,7 +671,6 @@ MEMCHKLIB
 MDSVME
 MDSTCPIP
 MDSSQL
-MDSIP_CONNECTIONS
 MAKEJAVADIR
 MAKEETCDIR
 MAKEUIDDIR
@@ -749,6 +748,7 @@ X_PRE_LIBS
 X_CFLAGS
 XMKMF
 RANLIB
+MDSIP_CONNECTIONS
 ac_ct_F77
 FFLAGS
 F77
@@ -5513,6 +5513,8 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 fi
 
 
+{ $as_echo "$as_me:$LINENO: checking whether to use the new mdsip connections" >&5
+$as_echo_n "checking whether to use the new mdsip connections... " >&6; }
 # Check whether --enable-mdsip_connections was given.
 if test "${enable_mdsip_connections+set}" = set; then
   enableval=$enable_mdsip_connections;
@@ -5520,10 +5522,17 @@ else
   enable_mdsip_connections=yes
 fi
 
-cat >>confdefs.h <<\_ACEOF
+case $enable_mdsip_connections in
+  yes) cat >>confdefs.h <<_ACEOF
 #define MDSIP_CONNECTIONS $enable_mdsip_connections
 _ACEOF
+ ;;
+esac
 
+MDSIP_CONNECTIONS=$enable_mdsip_connections
+
+{ $as_echo "$as_me:$LINENO: result: $enable_mdsip_connections" >&5
+$as_echo "$enable_mdsip_connections" >&6; }
 
 { $as_echo "$as_me:$LINENO: checking whether to compile debug info" >&5
 $as_echo_n "checking whether to compile debug info... " >&6; }
@@ -14737,7 +14746,6 @@ _ACEOF
 
 
 LIBS="$LIBPTHREAD $LIBS"
-
 
 
 

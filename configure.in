@@ -22,12 +22,16 @@ AC_PROG_CC
 AC_PROG_CXX
 AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([g77 gfortran f90 f95])])
 
+AC_MSG_CHECKING([whether to use the new mdsip connections])
 AC_ARG_ENABLE([mdsip_connections],
               [AS_HELP_STRING([--disable-mdsip_connections],
                               [Prevent using mdsip connections.])],
               [],
               [AS_VAR_SET([enable_mdsip_connections], [yes])])
-AC_DEFINE([MDSIP_CONNECTIONS], [$enable_mdsip_connections])
+AS_CASE([$enable_mdsip_connections],
+        [yes], [AC_DEFINE_UNQUOTED([MDSIP_CONNECTIONS], [$enable_mdsip_connections])])
+AC_SUBST([MDSIP_CONNECTIONS], $enable_mdsip_connections)
+AC_MSG_RESULT([$enable_mdsip_connections])
 
 dnl FIXME: This logic is confusingly reversed....
 AC_MSG_CHECKING([whether to compile debug info])
@@ -1106,7 +1110,6 @@ AC_SUBST(MAKESHLIBDIR_RULE)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MAKEETCDIR)
 AC_SUBST(MAKEJAVADIR)
-AC_SUBST(MDSIP_CONNECTIONS)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MDSVME)
