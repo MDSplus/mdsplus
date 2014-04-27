@@ -69,12 +69,6 @@ install:
 
 ifeq "@MACOSX@" ""
 
-clean:
-	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMdsMath@SHARETYPE@
-
-
 @MAKESHLIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS)
 
@@ -85,10 +79,7 @@ OBJ_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
 %.o_i386 : %.f
 	$(FC) -c $(FFLAGS) -m32 $< -o $@
 
-clean:
-	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) libMdsMath@SHARETYPE@* @MAKESHLIBDIR@libMdsMath@SHARETYPE@
+EXTRA_CLEANFILES = libMdsMath@SHARETYPE@*
 
 @MAKESHLIBDIR@libMdsMath@SHARETYPE@ : libMdsMath@SHARETYPE@ libMdsMath@SHARETYPE@_i386
 	lipo -create -o $@ $^
@@ -99,4 +90,10 @@ libMdsMath@SHARETYPE@ : $(OBJECTS)
 libMdsMath@SHARETYPE@_i386 : $(OBJECTS_i386)
 	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS_i386) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS) -m32
 endif
+
+clean:
+	$(RM) $(OBJECTS)
+	$(RM) so_locations
+	$(RM) @MAKESHLIBDIR@libMdsMath@SHARETYPE@
+	$(RM) $(EXTRA_CLEANFILES)
 
