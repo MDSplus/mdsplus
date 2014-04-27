@@ -43,7 +43,7 @@ $(RtEventsShr_shared): $(OBJECTS) @EXPORTS_FILE@
 
 $(RtEventsShr_static): $(OBJECTS)
 	$(AR) -cr $@ $^
-	@RANLIB@ $@
+	$(RANLIB) $@
 
 @MAKELIBDIR@ :
 	mkdir -p $@
