@@ -139,6 +139,7 @@ binaries :
 ccl: cdu mdsshr mdsdcl
 tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 camshr: cdu mdsdcl
+javatraverser: javascope
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
 mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
