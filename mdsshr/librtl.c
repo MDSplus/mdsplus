@@ -643,11 +643,7 @@ void pthread_lock_global_np()
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
 #ifndef __sun
-#ifdef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
-    pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#else
     pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#endif
 #endif
     pthread_mutex_init(&GlobalMutex,&m_attr);
     Initialized = 1;
@@ -673,11 +669,7 @@ void pthread_unlock_global_np()
 #if defined(PTHREAD_MUTEX_RECURSIVE) 
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
-#ifdef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
-    pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#else
     pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);       
-#endif
     pthread_mutex_init(&GlobalMutex,&m_attr);
 #else 
     pthread_mutex_init(&GlobalMutex,pthread_mutexattr_default);

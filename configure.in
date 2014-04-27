@@ -743,7 +743,6 @@ AC_CHECK_LIB(exc,__Ots_CSpecificHandler,LIBPTHREAD="$LIBPTHREAD -lexc")
 AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
-AC_CHECK_LIB(pthread,pthread_mutexattr_setkind_np,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETKIND))
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
 if test "$ac_cv_search_clock_gettime" = "no"
 then
