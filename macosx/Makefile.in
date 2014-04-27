@@ -1,7 +1,5 @@
-SHELL=/bin/sh
-top_srcdir=@top_srcdir@
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+include @top_srcdir@/Makefile.inc
+
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 

@@ -1,17 +1,7 @@
-SHELL=/bin/sh
-CC=@CC@
-FC=@F77@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-FFLAGS=@FFLAGS@
-LDFLAGS=@LDFLAGS@
+include @top_srcdir@/Makefile.inc
+
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 ifeq "@MDSTCPIP@" "mdsip_xio"
 include makefile-header

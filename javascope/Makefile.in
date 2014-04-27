@@ -1,11 +1,6 @@
-SHELL=/bin/sh
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
+include @top_srcdir@/Makefile.inc
+
 JAVADIR = @MAKEJAVADIR@classes
-JAVAC = @JAVAC@
-JAR = @JAR@
 INSTALL=@top_srcdir@/conf/install-sh -c
 DOCS=ConnectionEvent.html      DataProvider.html         UpdateEvent.html          WaveData.html\
 ConnectionListener.html   FrameData.html            UpdateEventListener.html  jScope.html    data_setup.jpg \

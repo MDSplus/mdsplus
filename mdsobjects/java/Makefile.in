@@ -1,17 +1,9 @@
-SHELL=/bin/sh
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+include @top_srcdir@/Makefile.inc
+
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@  -classpath .:../../java/classes/jScope.jar
-JAR = @JAR@
 
 RMIC = @RMIC@
-INSTALL=@top_srcdir@/conf/install-sh -c
-
-
-
 
 SOURCES = MDSplus/Action.java\
 MDSplus/Apd.java\

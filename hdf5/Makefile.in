@@ -1,12 +1,6 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-prefix=@prefix@
-top_srcdir=@top_srcdir@
-exec_prefix=@exec_prefix@
-RM=$(top_srcdir)/devscripts/rm_if
+include @top_srcdir@/Makefile.inc
+
 CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.  -DH5_USE_16_API
-LDFLAGS=@LDFLAGS@
 LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -lhdf5 @LIBS@
 INSTALL=@top_srcdir@/conf/install-sh -c
 

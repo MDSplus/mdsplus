@@ -1,11 +1,6 @@
-SHELL=/bin/sh
-CC=@CC@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+include @top_srcdir@/Makefile.inc
+
 GROFF_FLAGS=@GROFF_MAN_FLAGS@
-GROFF=@GROFF@
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 manpages = $(top_srcdir)/man/man1/mdsplus.1.gz \

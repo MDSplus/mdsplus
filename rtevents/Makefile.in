@@ -1,16 +1,9 @@
-SHELL=/bin/sh
-CXX=@CXX@
-CC=@CC@
+include @top_srcdir@/Makefile.inc
+
 LD=@CXX@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ @SRBINCLUDE@ -fPIC 
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@
-LDFLAGS=@LDFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\

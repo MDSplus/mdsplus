@@ -1,14 +1,7 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+include @top_srcdir@/Makefile.inc
+
 CFLAGS=@CFLAGS@ @SRBINCLUDE@
-LDFLAGS=@LDFLAGS@
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
 dummies.c \

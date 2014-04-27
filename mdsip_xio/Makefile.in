@@ -1,22 +1,16 @@
+include @top_srcdir@/Makefile.inc
+
 include makefile-header
 
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-SHELL=/bin/sh
 CFLAGS = @CFLAGS@ $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
 LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 EXPORTS = mdsipshr.export
-INSTALL=@top_srcdir@/conf/install-sh -c
-prefix=@prefix@
-exec_prefix=@exec_prefix@
 
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else
 	modules = @MAKESHLIBDIR@libMdsIpShr@SHARETYPEMOD@ 
 endif
-
-
 
 
 SERVER_SOURCES = \

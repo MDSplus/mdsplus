@@ -1112,7 +1112,8 @@ AC_SUBST(USE_TM_GMTOFF)
 AC_SUBST(DC1394_SUPPORT)
 AC_SUBST(DC1394_SUPPORT2)
 AC_CONFIG_HEADER(include/config.h)
-AC_OUTPUT(Makefile
+AC_OUTPUT(Makefile.inc
+Makefile
 envsyms
 actions/Makefile
 camshr/Makefile

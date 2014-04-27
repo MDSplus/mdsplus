@@ -1,8 +1,4 @@
-SHELL=/bin/sh
-CC=@CC@
-CXX=@CXX@
-LD=@LD@
-RANLIB=@RANLIB@
+include @top_srcdir@/Makefile.inc
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
 inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
@@ -10,15 +6,9 @@ COMPRESSION_OBJECTS = $(COMPRESSION_SOURCES:.c=.o)
 
 COMPRESSION_SWITCH=
 
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
 CFLAGS=@CFLAGS@ $(COMPRESSION_SWITCH)  -Iudt4/src -Iudt4/udtc
 CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/udtc -Iudt4/src @CFLAGS@ 
-LDFLAGS=@LDFLAGS@
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 MdsIpShr    = @MAKESHLIBDIR@libMdsIpShr@SHARETYPE@
 MdsIpSrvShr = @MAKESHLIBDIR@libMdsIpSrvShr@SHARETYPE@
@@ -298,7 +288,7 @@ ifdef MdsIpGSI
 #include makefile-header
 
 $(MdsIpGSI):  IoRoutinesGsi.c
-	$(CC) -o $@ $^ @CFLAGS@ $$(pkg-config --cflags globus-xio) -I$(top_srcdir)/include  @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
+	$(CC) -o $@ $^ @CFLAGS@ $$(pkg-config --cflags globus-xio) @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp $< $@

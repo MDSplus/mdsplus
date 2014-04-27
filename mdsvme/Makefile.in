@@ -1,14 +1,6 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-prefix=@prefix@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
+include @top_srcdir@/Makefile.inc
+
 LIBS=@LIBS@ @LIBDL@ 
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
         mdsvme.c

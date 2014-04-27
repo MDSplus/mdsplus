@@ -1,9 +1,4 @@
-SHELL=/bin/sh
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-INSTALL=@top_srcdir@/conf/install-sh -c
+include @top_srcdir@/Makefile.inc
 
 SCRIPTS = \
 	@MAKEBINDIR@remote_submit \
