@@ -143,4 +143,5 @@ mdsdcl: cdu mdsshr
 mdslib: mdstcpip
 rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
+traverser: xmdsshr
 
