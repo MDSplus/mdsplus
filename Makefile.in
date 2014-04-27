@@ -141,6 +141,7 @@ tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 camshr: cdu mdsdcl
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
+mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
 rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 traverser: xmdsshr
