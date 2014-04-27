@@ -4146,7 +4146,6 @@ case "$host" in
 esac
 
 
-MACOSX=""
 FOR_LINKSHARED=""
 
 ac_ext=c

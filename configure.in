@@ -15,7 +15,6 @@ AS_CASE(["$host"],
         [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
         [sparc-sun-solaris2*], [${CC=cc}])
 
-MACOSX=""
 FOR_LINKSHARED=""
 
 dnl Check out the compiler
