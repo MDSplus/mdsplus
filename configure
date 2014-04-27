@@ -6502,8 +6502,9 @@ else
 fi
 
 case $enable_perf in
-  yes) cat >>confdefs.h <<\_ACEOF
-#define USE_PERF 1
+  yes)
+cat >>confdefs.h <<\_ACEOF
+#define USE_PERF /**/
 _ACEOF
  ;;
 esac
