@@ -14,7 +14,7 @@ then
   env LANG=en_US.UTF-8 make
 else
   cd ${WORKSPACE}/i686/mdsplus
-  ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --target=i686-linux --enable-mdsip_connections --with-gsi=/usr:gcc32
+  ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 --enable-nodebug --host=i686-linux --enable-mdsip_connections --with-gsi=/usr:gcc32
   make clean
   env LANG=en_US.UTF-8 make
 fi
