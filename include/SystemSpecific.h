@@ -1,5 +1,5 @@
-#ifndef _SYSTEM_SPECIFIC_H
-#define SYSTEM_SPECIFIC_H
+#ifndef MDSPLUS_SYSTEM_SPECIFIC_H
+#define MDSPLUS_SYSTEM_SPECIFIC_H
 
 #include <mdstypes.h>
 
