@@ -27,8 +27,11 @@ install:
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libccl_commands@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl @bindir@
 
+cdudir = $(top_builddir)/cdu
+CDU = $(cdudir)/cdu
+
 ccl_commands.c:	ccl_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < ccl_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < ccl_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@libccl_commands@SHARETYPE@:	$(OBJECTS)

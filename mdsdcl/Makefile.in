@@ -42,7 +42,7 @@ install:
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsdcl	@bindir@
 
-cdudir = ../cdu
+cdudir = $(top_builddir)/cdu
 LINK_CDU = $(cdudir)/libCdu.a
 CDU = $(cdudir)/cdu
 

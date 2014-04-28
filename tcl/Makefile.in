@@ -65,8 +65,11 @@ install:
 	cp  tcl $@
 	chmod +x $@
 
+cdudir = $(top_builddir)/cdu
+CDU = $(cdudir)/cdu
+
 tcl_commands.c:	tcl_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < tcl_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < tcl_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)

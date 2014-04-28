@@ -86,8 +86,11 @@ install:
 	cp  cts $@
 	chmod +x $@
 
+cdudir = $(top_builddir)/cdu
+CDU = $(cdudir)/cdu
+
 cts_commands.c:	cts_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < cts_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < cts_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@libcts_commands@SHARETYPE@:	$(CTS_OBJECTS) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
