@@ -50,6 +50,8 @@ PROGRAMS = $(bin_PROGRAMS)
 am_wfevent_OBJECTS = wfevent.$(OBJEXT)
 wfevent_OBJECTS = $(am_wfevent_OBJECTS)
 wfevent_DEPENDENCIES =
+wfevent_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(wfevent_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
@@ -145,6 +147,8 @@ LIBPATH = @LIBPATH@
 LIBPTHREAD = @LIBPTHREAD@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
+
+#FIXME: Clean up LIBS in top level configure
 LIBS = 
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
@@ -158,6 +162,7 @@ LV = @LV@
 LV_INC = @LV_INC@
 LV_LIB = @LV_LIB@
 MACOSX = @MACOSX@
+MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
 MAKEINFO = @MAKEINFO@
@@ -254,7 +259,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
-libdir = @libdir@
+libdir = @MAKESHLIBDIR@
 libexecdir = @libexecdir@
 localedir = @localedir@
 localstatedir = @localstatedir@
@@ -275,12 +280,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 wfevent_SOURCES = wfevent.c
-wfevent_LDADD = -L@MAKESHLIBDIR@ -lTdiShr -lMdsShr
+wfevent_LDADD = -L$(libdir) -lTdiShr -lMdsShr
+#FIXME: Use rpath-link until build system is flattened
+wfevent_LDFLAGS = -Wl,-rpath-link=$(libdir)
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -305,9 +312,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 install-binPROGRAMS: $(bin_PROGRAMS)
@@ -349,7 +356,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 wfevent$(EXEEXT): $(wfevent_OBJECTS) $(wfevent_DEPENDENCIES) 
 	@rm -f wfevent$(EXEEXT)
-	$(LINK) $(wfevent_OBJECTS) $(wfevent_LDADD) $(LIBS)
+	$(wfevent_LINK) $(wfevent_OBJECTS) $(wfevent_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -573,13 +580,6 @@ uninstall-am: uninstall-binPROGRAMS
 	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
 	uninstall-am uninstall-binPROGRAMS
 
-
-#@MAKEBINDIR@wfevent : $(OBJECTS)
-#$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(OBJECTS)  -L@MAKESHLIBDIR@ -lTdiShr -lMdsShr -lTreeShr $(LIBS)
-#tdishr
-
-xx:
-	echo $(LIBS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
