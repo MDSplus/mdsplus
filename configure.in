@@ -4,6 +4,7 @@ AC_PREREQ([2.63])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AM_INIT_AUTOMAKE([1.11.1 foreign subdir-objects])
+AM_MAINTAINER_MODE
 
 #AC_CONFIG_HEADER(include/config.h)
 AC_CANONICAL_HOST
