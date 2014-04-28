@@ -6727,7 +6727,7 @@ case $with_labview in
   yes) { { $as_echo "$as_me:$LINENO: error: Labview location required" >&5
 $as_echo "$as_me: error: Labview location required" >&2;}
    { (exit 1); exit 1; }; } ;;
-  *) LV_INC="-I$LV_DIR/cintools"
+  *) LV_INC="-I$with_labview/cintools"
          LV="mdsobjects/labview"
          LV_LIB="-lLV" ;;
 esac
