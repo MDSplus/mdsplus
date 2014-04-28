@@ -655,7 +655,6 @@ SYBASE_INC
 SRBINCLUDE
 SRBLIB
 SOCKETLIB
-SIZEOF_INT_P
 SHARETYPEMOD
 SHARETYPEJNI
 SHARETYPE
@@ -4750,7 +4749,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
-SIZEOF_INT_P=$ac_cv_sizeof_int_p
 { $as_echo "$as_me:$LINENO: checking for socket in -lsocket" >&5
 $as_echo_n "checking for socket in -lsocket... " >&6; }
 if test "${ac_cv_lib_socket_socket+set}" = set; then
@@ -7029,7 +7027,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 *-solaris2*)
        GROFF=nroff;
        GROFF_MAN_FLAGS="-t -man ";
-       if test $SIZEOF_INT_P = 4; then CFLAGS="$CFLAGS -D_ILP32 "; else CFLAGS="$CFLAGS -D_LP64 "; fi;
        if test $CC = gcc; then
 	 LD=gcc;
 	 FORLD=gcc;
@@ -15274,7 +15271,6 @@ fi
 
 
 LIBS="$LIBPTHREAD $LIBS"
-
 
 
 
