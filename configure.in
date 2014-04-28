@@ -100,7 +100,10 @@ AS_CASE([$enable_java],
                        AC_MSG_WARN([variable or by using the --with-jdk=DIR option.])
                        AC_MSG_WARN([You can disable java by using the --disable-java option.])
                        AS_EXIT])
-                       AC_MSG_RESULT([$with_jdk])])
+                AC_MSG_RESULT([$with_jdk])
+                AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
+                AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
+                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
 
 AC_MSG_CHECKING([for use of globus for mdsip])
 AC_ARG_WITH([xio],
@@ -261,7 +264,7 @@ MAKEBINDIR="\$(top_srcdir)/bin/"
 MAKELIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
 JVM="-ljvm"
-JDK_LIVECONNECT="$jdk_dir/jre/lib/plugin.jar"
+JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 GROFF_MAN_FLAGS="-t -man -Tascii"
 GROFF=groff
@@ -392,7 +395,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
            MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
 	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
-           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
+           JVM="-L$with_jdk/jre/lib/amd64/server -ljvm -L$with_jdk/jre/lib/amd64  -ljava";
          else
            CFLAGS="$CFLAGS -m32";
            LD="gcc -m32"
@@ -404,11 +407,11 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib32/"
            MAKEUIDDIR="\$(top_srcdir)/uid32/"
            MAKEBINDIR="\$(top_srcdir)/bin32/"
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+           JVM="-L$with_jdk/jre/lib/i386/client -ljvm -L$with_jdk/jre/lib/i386  -ljava";
          fi
 	 CC_LDFLAGS="$CFLAGS"
        else
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+           JVM="-L$with_jdk/jre/lib/i386/client -ljvm -L$with_jdk/jre/lib/i386  -ljava";
        fi
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
@@ -434,8 +437,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPE=".so";
        TAR_EXCLUDE="--exclude";
        MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
+       jni_inc_dir="$with_jdk/include";
+       jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
@@ -475,9 +478,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
        TAR_EXCLUDE="--exclude";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       jni_inc_dir="$with_jdk/include";
+       jni_md_inc_dir="$with_jdk/include/linux";
+       JVM="-L$with_jdk/jre/lib/i386/client  -ljvm -L$with_jdk/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
@@ -509,9 +512,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
        TAR_EXCLUDE="--exclude";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       jni_inc_dir="$with_jdk/include";
+       jni_md_inc_dir="$with_jdk/include/linux";
+       JVM="-L$with_jdk/jre/lib/i386/client  -ljvm -L$with_jdk/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
@@ -987,9 +990,6 @@ else
   MOTIF_APS=""
   AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
-AC_PATH_PROG([JAVAC], [javac], [], [$jdk_dir/bin$PATH_SEPARATOR$PATH])
-AC_PATH_PROG([JAR], [jar], [], [$jdk_dir/bin$PATH_SEPARATOR$PATH])
-AC_PATH_PROG([RMIC], [rmic], [], [$jdk_dir/bin$PATH_SEPARATOR$PATH])
 
 XM_LIBS="-lMrm -lXm"
 if test "$X_CFLAGS"

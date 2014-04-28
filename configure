@@ -740,9 +740,6 @@ CLOCK_GETTIME_LIB
 CCL
 CC_LDFLAGS
 CAMSHR
-RMIC
-JAR
-JAVAC
 UIL
 X_EXTRA_LIBS
 X_LIBS
@@ -750,6 +747,9 @@ X_PRE_LIBS
 X_CFLAGS
 XMKMF
 RANLIB
+RMIC
+JAR
+JAVAC
 MDSIP_CONNECTIONS
 ac_ct_F77
 FFLAGS
@@ -6603,8 +6603,128 @@ $as_echo "$as_me: WARNING: You can disable java by using the --disable-java opti
                        { (exit 1); exit 1; }
 fi
 
-                       { $as_echo "$as_me:$LINENO: result: $with_jdk" >&5
-$as_echo "$with_jdk" >&6; } ;;
+                { $as_echo "$as_me:$LINENO: result: $with_jdk" >&5
+$as_echo "$with_jdk" >&6; }
+                # Extract the first word of "javac", so it can be a program name with args.
+set dummy javac; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_path_JAVAC+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  case $JAVAC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_JAVAC="$JAVAC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $with_jdk/bin$PATH_SEPARATOR$PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_JAVAC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+JAVAC=$ac_cv_path_JAVAC
+if test -n "$JAVAC"; then
+  { $as_echo "$as_me:$LINENO: result: $JAVAC" >&5
+$as_echo "$JAVAC" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+                # Extract the first word of "jar", so it can be a program name with args.
+set dummy jar; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_path_JAR+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  case $JAR in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_JAR="$JAR" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $with_jdk/bin$PATH_SEPARATOR$PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_JAR="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+JAR=$ac_cv_path_JAR
+if test -n "$JAR"; then
+  { $as_echo "$as_me:$LINENO: result: $JAR" >&5
+$as_echo "$JAR" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+                # Extract the first word of "rmic", so it can be a program name with args.
+set dummy rmic; ac_word=$2
+{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if test "${ac_cv_path_RMIC+set}" = set; then
+  $as_echo_n "(cached) " >&6
+else
+  case $RMIC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_RMIC="$RMIC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $with_jdk/bin$PATH_SEPARATOR$PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
+    ac_cv_path_RMIC="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+RMIC=$ac_cv_path_RMIC
+if test -n "$RMIC"; then
+  { $as_echo "$as_me:$LINENO: result: $RMIC" >&5
+$as_echo "$RMIC" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+ ;;
 esac
 
 
@@ -6861,7 +6981,7 @@ MAKEBINDIR="\$(top_srcdir)/bin/"
 MAKELIBDIR="\$(top_srcdir)/lib/"
 EXPORTS_FILE=""
 JVM="-ljvm"
-JDK_LIVECONNECT="$jdk_dir/jre/lib/plugin.jar"
+JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 GROFF_MAN_FLAGS="-t -man -Tascii"
 GROFF=groff
@@ -6992,7 +7112,7 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib${D64}/"
            MAKEUIDDIR="\$(top_srcdir)/uid${D64}/"
 	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
-           JVM="-L$jdk_dir/jre/lib/amd64/server -ljvm -L$jdk_dir/jre/lib/amd64  -ljava";
+           JVM="-L$with_jdk/jre/lib/amd64/server -ljvm -L$with_jdk/jre/lib/amd64  -ljava";
          else
            CFLAGS="$CFLAGS -m32";
            LD="gcc -m32"
@@ -7004,11 +7124,11 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            MAKESHLIBDIR="\$(top_srcdir)/lib32/"
            MAKEUIDDIR="\$(top_srcdir)/uid32/"
            MAKEBINDIR="\$(top_srcdir)/bin32/"
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+           JVM="-L$with_jdk/jre/lib/i386/client -ljvm -L$with_jdk/jre/lib/i386  -ljava";
          fi
 	 CC_LDFLAGS="$CFLAGS"
        else
-           JVM="-L$jdk_dir/jre/lib/i386/client -ljvm -L$jdk_dir/jre/lib/i386  -ljava";
+           JVM="-L$with_jdk/jre/lib/i386/client -ljvm -L$with_jdk/jre/lib/i386  -ljava";
        fi
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
@@ -7034,8 +7154,8 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        SHARETYPE=".so";
        TAR_EXCLUDE="--exclude";
        MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
+       jni_inc_dir="$with_jdk/include";
+       jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
@@ -7075,9 +7195,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
        TAR_EXCLUDE="--exclude";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       jni_inc_dir="$with_jdk/include";
+       jni_md_inc_dir="$with_jdk/include/linux";
+       JVM="-L$with_jdk/jre/lib/i386/client  -ljvm -L$with_jdk/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
@@ -7109,9 +7229,9 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";
        TAR_EXCLUDE="--exclude";
-       jni_inc_dir="$jdk_dir/include";
-       jni_md_inc_dir="$jdk_dir/include/linux";
-       JVM="-L$jdk_dir/jre/lib/i386/client  -ljvm -L$jdk_dir/jre/lib/i386 -ljava";
+       jni_inc_dir="$with_jdk/include";
+       jni_md_inc_dir="$with_jdk/include/linux";
+       JVM="-L$with_jdk/jre/lib/i386/client  -ljvm -L$with_jdk/jre/lib/i386 -ljava";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
@@ -15002,126 +15122,6 @@ else
   { $as_echo "$as_me:$LINENO: result: no uil so skipping openmotif apps.openmotif-devel not installed." >&5
 $as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6; }
 fi
-# Extract the first word of "javac", so it can be a program name with args.
-set dummy javac; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_path_JAVAC+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  case $JAVAC in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_JAVAC="$JAVAC" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $jdk_dir/bin$PATH_SEPARATOR$PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_JAVAC="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-JAVAC=$ac_cv_path_JAVAC
-if test -n "$JAVAC"; then
-  { $as_echo "$as_me:$LINENO: result: $JAVAC" >&5
-$as_echo "$JAVAC" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-# Extract the first word of "jar", so it can be a program name with args.
-set dummy jar; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_path_JAR+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  case $JAR in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_JAR="$JAR" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $jdk_dir/bin$PATH_SEPARATOR$PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_JAR="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-JAR=$ac_cv_path_JAR
-if test -n "$JAR"; then
-  { $as_echo "$as_me:$LINENO: result: $JAR" >&5
-$as_echo "$JAR" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-# Extract the first word of "rmic", so it can be a program name with args.
-set dummy rmic; ac_word=$2
-{ $as_echo "$as_me:$LINENO: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if test "${ac_cv_path_RMIC+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  case $RMIC in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_RMIC="$RMIC" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $jdk_dir/bin$PATH_SEPARATOR$PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if { test -f "$as_dir/$ac_word$ac_exec_ext" && $as_test_x "$as_dir/$ac_word$ac_exec_ext"; }; then
-    ac_cv_path_RMIC="$as_dir/$ac_word$ac_exec_ext"
-    $as_echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-done
-IFS=$as_save_IFS
-
-  ;;
-esac
-fi
-RMIC=$ac_cv_path_RMIC
-if test -n "$RMIC"; then
-  { $as_echo "$as_me:$LINENO: result: $RMIC" >&5
-$as_echo "$RMIC" >&6; }
-else
-  { $as_echo "$as_me:$LINENO: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
 
 XM_LIBS="-lMrm -lXm"
 if test "$X_CFLAGS"
