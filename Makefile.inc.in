@@ -62,8 +62,8 @@ sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
 top_build_prefix = @top_build_prefix@
-top_builddir = @top_builddir@
 #FIXME: Hack because this isn't really automake
+top_builddir = @abs_top_builddir@
 top_srcdir = @abs_top_srcdir@
 tooldir = $(exec_prefix)/$(target_alias)
 
