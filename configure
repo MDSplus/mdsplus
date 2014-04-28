@@ -6548,27 +6548,19 @@ $as_echo "$enable_java" >&6; }
 if test "${with_jdk+set}" = set; then
   withval=$with_jdk;
 else
-  with_jdk=no
+  if test "${JDK_DIR+set}" = set; then
+  with_jdk=$JDK_DIR
+else
+  with_jdk=/etc/alternatives/java_sdk
+fi
+
 fi
 
 
 case $enable_java in
   yes) { $as_echo "$as_me:$LINENO: checking for presence of Java Development Kit" >&5
 $as_echo_n "checking for presence of Java Development Kit... " >&6; }
-                case $with_jdk in
-  no) { $as_echo "$as_me:$LINENO: result: none specified" >&5
-$as_echo "none specified" >&6; } ;;
-  yes) if test "x$JDK_DIR" = x""; then
-  JDK_DIR=/etc/alternatives/java_sdk
-fi
- ;;
-  *) JDK_DIR=$with_jdk ;;
-esac
-
-                if test -r $JDK_DIR/jre; then
-  { $as_echo "$as_me:$LINENO: result: $JDK_DIR" >&5
-$as_echo "$JDK_DIR" >&6; }
-else
+                if test ! -d $with_jdk/jre; then
   { $as_echo "$as_me:$LINENO: result: not found" >&5
 $as_echo "not found" >&6; }
                        { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA" >&5
@@ -6582,8 +6574,8 @@ $as_echo "$as_me: WARNING: You can disable java by using the --disable-java opti
                        { (exit 1); exit 1; }
 fi
 
-                { $as_echo "$as_me:$LINENO: result: $JDK_DIR" >&5
-$as_echo "$JDK_DIR" >&6; } ;;
+                       { $as_echo "$as_me:$LINENO: result: $with_jdk" >&5
+$as_echo "$with_jdk" >&6; } ;;
 esac
 
 
