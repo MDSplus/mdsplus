@@ -37,4 +37,4 @@ install:
 	$(JAR) c0f $@ MdsPlus/*
 
 $(CLASSES): 	$(SOURCES)
-	$(JAVAC) -d . -classpath @JDK_LIVECONNECT@ $(SOURCES)
+	$(JAVAC) -d . $(SOURCES)
