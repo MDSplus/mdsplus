@@ -79,11 +79,7 @@ void LockTreeMutex(pthread_mutex_t *mutex,int *initialized)
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
 #endif
 #ifndef xxxx__sun
-#ifdef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
-    pthread_mutexattr_setkind_np(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#else
     pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#endif
 #endif
     pthread_mutex_init(mutex,&m_attr);
 #else
