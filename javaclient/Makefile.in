@@ -7,8 +7,7 @@ SOURCES = MdsPlusDescriptor.java\
 MdsPlusException.java\
 MdsPlusEvents.java\
 MdsPlusEvent.java\
-MdsPlus.java\
-MdsPlusEventMonitor.java
+MdsPlus.java
 
 CLASSES = $(SOURCES:%.java=MdsPlus/%.class)
 
