@@ -11523,12 +11523,13 @@ as_val=`eval 'as_val=${'$as_ac_File'}
   JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir"
 fi
 
-if test "$JDK_CFLAGS" -a "$java_enable" = "yes"
-then
-  JAVA_APS="\$(JAVA_APS)"
-else
-  JAVA_APS=""
+if test "${JDK_CFLAGS+set}" = set; then
+  case $enable_java in
+  yes) JAVA_APS="\$(JAVA_APS)" ;;
+esac
+
 fi
+
 
 { $as_echo "$as_me:$LINENO: checking for an ANSI C-conforming const" >&5
 $as_echo_n "checking for an ANSI C-conforming const... " >&6; }
