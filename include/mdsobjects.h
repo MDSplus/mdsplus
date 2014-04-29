@@ -2195,6 +2195,7 @@ protected:
 		{
 			waitingEvent = true;
 			MdsTimeout timeout(secs, 0);
+			//timedWait returns 0 if no timeout, 1 otherwise
 			int status = sem.timedWait(timeout);
 			waitingEvent = false;
 			if(status)
@@ -2202,20 +2203,12 @@ protected:
 		}
 		Data *waitData()
 		{
-			waitingEvent = true;
-			sem.wait();
-			waitingEvent = false;
+			wait();
 			return getData();
 		}
 		Data *waitData(int secs)
 		{
-			waitingEvent = true;
-			MdsTimeout timeout(secs, 0);
-			//timedWait returns 0 if no timeout, 1 otherwise
-			int status = sem.timedWait(timeout);
-			waitingEvent = false;
-			if(status)
-				throw MdsException("Timeout Occurred");
+			wait(secs);
 			return getData();
 		}
 		void abort()
