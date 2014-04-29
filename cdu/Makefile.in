@@ -81,8 +81,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am_cdu_OBJECTS = cdu.$(OBJEXT) cdu_util.$(OBJEXT) cdu_write.$(OBJEXT)
 cdu_OBJECTS = $(am_cdu_OBJECTS)
 cdu_DEPENDENCIES = libCdu.a
-cdu_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(cdu_LDFLAGS) $(LDFLAGS) -o \
-	$@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
@@ -191,6 +189,7 @@ LV = @LV@
 LV_INC = @LV_INC@
 LV_LIB = @LV_LIB@
 MACOSX = @MACOSX@
+MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
 MAKEINFO = @MAKEINFO@
@@ -232,7 +231,6 @@ SHARETYPE = @SHARETYPE@
 SHARETYPEJNI = @SHARETYPEJNI@
 SHARETYPEMOD = @SHARETYPEMOD@
 SHELL = @SHELL@
-SIZEOF_INT_P = @SIZEOF_INT_P@
 SOCKETLIB = @SOCKETLIB@
 SRBINCLUDE = @SRBINCLUDE@
 SRBLIB = @SRBLIB@
@@ -310,13 +308,12 @@ uiddir = @uiddir@
 lib_LIBRARIES = libCdu.a
 libCdu_a_SOURCES = cli_routines.c cli_util.c dasutil_routines1.c dasutil_routines2.c dasutil_routines3.c
 cdu_SOURCES = cdu.c cdu_util.c cdu_write.c
-cdu_LDADD = libCdu.a
-cdu_LDFLAGS = $(AM_LDFLAGS) -L$(libdir) -lMdsShr
+cdu_LDADD = libCdu.a -L$(libdir) -lMdsShr
 all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -341,9 +338,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 install-libLIBRARIES: $(lib_LIBRARIES)
@@ -421,7 +418,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 cdu$(EXEEXT): $(cdu_OBJECTS) $(cdu_DEPENDENCIES) 
 	@rm -f cdu$(EXEEXT)
-	$(cdu_LINK) $(cdu_OBJECTS) $(cdu_LDADD) $(LIBS)
+	$(LINK) $(cdu_OBJECTS) $(cdu_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

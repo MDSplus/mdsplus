@@ -7,6 +7,5 @@ bindir = @MAKEBINDIR@
 bin_PROGRAMS = cdu
 
 cdu_SOURCES = cdu.c cdu_util.c cdu_write.c
-cdu_LDADD = libCdu.a
-cdu_LDFLAGS = $(AM_LDFLAGS) -L$(libdir) -lMdsShr
+cdu_LDADD = libCdu.a -L$(libdir) -lMdsShr
 
