@@ -643,6 +643,9 @@ extern EXPORT int TreeSetDbiItm(int code, int value);
 extern EXPORT int64_t TreeGetDatafileSize();
 extern EXPORT int64_t _TreeGetDatafileSize(void *dbid);
 
+extern EXPORT int  TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag);
+extern EXPORT int TreeFindTagWildDsc(char *wild, int *nidout, void **ctx_inout, struct descriptor_xd *name);
+
 #endif
 
 #ifdef __cplusplus
