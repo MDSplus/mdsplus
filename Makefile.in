@@ -149,5 +149,6 @@ rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 tdishr: mdsshr treeshr
 traverser: xmdsshr
+wfevent: tdishr mdsshr
 
 am--refresh:
