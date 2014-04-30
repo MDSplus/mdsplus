@@ -198,13 +198,13 @@ RANLIB = @RANLIB@
 REMCAM = @REMCAM@
 REMCAMLIB = @REMCAMLIB@
 RMIC = @RMIC@
+RPATHLINK = @RPATHLINK@
 RTEVENTS = @RTEVENTS@
 SET_MAKE = @SET_MAKE@
 SHARETYPE = @SHARETYPE@
 SHARETYPEJNI = @SHARETYPEJNI@
 SHARETYPEMOD = @SHARETYPEMOD@
 SHELL = @SHELL@
-SIZEOF_INT_P = @SIZEOF_INT_P@
 SOCKETLIB = @SOCKETLIB@
 SRBINCLUDE = @SRBINCLUDE@
 SRBLIB = @SRBLIB@
@@ -282,7 +282,7 @@ uiddir = @uiddir@
 wfevent_SOURCES = wfevent.c
 wfevent_LDADD = -L$(libdir) -lTdiShr -lMdsShr
 #FIXME: Use rpath-link until build system is flattened
-wfevent_LDFLAGS = -Wl,-rpath-link=$(libdir)
+@RPATHLINK_TRUE@wfevent_LDFLAGS = -Wl,-rpath-link=$(libdir)
 all: all-am
 
 .SUFFIXES:

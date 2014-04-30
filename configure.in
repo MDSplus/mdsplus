@@ -23,6 +23,19 @@ AC_PROG_CC
 AC_PROG_CXX
 AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([g77 gfortran f90 f95])])
 
+dnl See if the linker supports -rpath-link
+AC_MSG_CHECKING([whether the linker supports -rpath-link])
+AS_VAR_SET_IF([LDFLAGS], [AS_VAR_SET([save_LDFLAGS], ["$LDFLAGS"])])
+AS_VAR_SET([LDFLAGS], [-Wl,-rpath-link])
+AC_LINK_IFELSE([AC_LANG_PROGRAM([], [])],
+               [AS_VAR_SET([RPATHLINK], [-Wl,-rpath-link])])
+AM_CONDITIONAL([RPATHLINK], [AS_VAR_TEST_SET([RPATHLINK])])
+AC_SUBST([RPATHLINK])
+AS_UNSET([LDFLAGS])
+AS_VAR_SET_IF([save_LDFLAGS], [AS_VAR_SET([LDFLAGS], ["$save_LDFLAGS"])])
+AS_UNSET([save_LDFLAGS])
+AM_COND_IF([RPATHLINK], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
+
 AC_MSG_CHECKING([whether to use the new mdsip connections])
 AC_ARG_ENABLE([mdsip_connections],
               [AS_HELP_STRING([--disable-mdsip_connections],
