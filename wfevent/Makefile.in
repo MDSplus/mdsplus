@@ -282,7 +282,7 @@ uiddir = @uiddir@
 wfevent_SOURCES = wfevent.c
 wfevent_LDADD = -L$(libdir) -lTdiShr -lMdsShr
 #FIXME: Use rpath-link until build system is flattened
-@RPATHLINK_TRUE@wfevent_LDFLAGS = -Wl,-rpath-link=$(libdir)
+@RPATHLINK_TRUE@wfevent_LDFLAGS = $(RPATHLINK)=$(libdir)
 all: all-am
 
 .SUFFIXES:

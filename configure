@@ -6489,7 +6489,7 @@ if test "${LDFLAGS+set}" = set; then
   save_LDFLAGS="$LDFLAGS"
 fi
 
-LDFLAGS=-Wl,-rpath-link
+LDFLAGS=-Wl,-rpath-link=dummy
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
