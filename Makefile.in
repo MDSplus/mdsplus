@@ -137,6 +137,7 @@ binaries :
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr
+cdu: mdsshr
 ccl: cdu mdsshr mdsdcl
 tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 camshr: cdu mdsdcl
