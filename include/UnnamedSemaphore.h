@@ -34,16 +34,12 @@ static void *handleTimeout(void *arg)
     	delete infoPtr;
     return NULL;
 }
-    
-    
 
 
 
 class EXPORT UnnamedSemaphore
 {
 	sem_t semStruct;
-
-	
 
 public:
 	void initialize(int initVal)
@@ -64,18 +60,17 @@ public:
 
 	int timedWait(MdsTimeout &timeout)
 	{
-		struct timespec waitTimeout;
-		waitTimeout.tv_sec = timeout.getSecs();
-		waitTimeout.tv_nsec = timeout.getNanoSecs();
 		bool timeoutOccurred = false;
 		struct TimeoutStruct *timout = new TimeoutStruct;
 		timout->sem = &semStruct;
-		timout->waitTimeout = waitTimeout;
+		timout->waitTimeout = timeout.getFutureTime();
 		timout->waitPending = true;
 		timout->timeoutOccurred = &timeoutOccurred;
 		pthread_t pid;
 		pthread_create(&pid, NULL, handleTimeout,  (void *)timout);
-		int status = sem_wait(&semStruct);
+
+		timespec futureTime = timeout.getFutureTime();
+		int status = sem_timedwait(&semStruct, &futureTime);
 		if(timeoutOccurred)
 		    delete timout;
 		else
