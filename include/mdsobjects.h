@@ -363,7 +363,11 @@ protected:
 	};
 	class EXPORT Scalar: public Data
 	{
-		public:
+	public:
+		Scalar() {
+			clazz = CLASS_S;
+		}
+
 		int length;
 		char *ptr;
 		virtual ~Scalar()
@@ -387,7 +391,6 @@ protected:
 	public:
 		Int8(char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_B;
 			length = 1;
 			ptr = new char[1];
@@ -410,7 +413,6 @@ protected:
 	public:
 		Uint8(unsigned char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_BU;
 			length = 1;
 			ptr = new char[1];
@@ -433,7 +435,6 @@ protected:
 	public:
 		Int16(short val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_W;
 			length = 2;
 			ptr = new char[2];
@@ -456,7 +457,6 @@ protected:
 	public:
 		Uint16(unsigned short val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_WU;
 			length = 2;
 			ptr = new char[2];
@@ -479,7 +479,6 @@ protected:
 	public:
 		Int32(int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_L;
 			length = sizeof(int);
 			ptr = new char[sizeof(int)];
@@ -502,7 +501,6 @@ protected:
 	public:
 		Uint32(unsigned int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_LU;
 			length = sizeof(int);
 			ptr = new char[sizeof(int)];
@@ -525,7 +523,6 @@ protected:
 	public:
 		Int64(int64_t val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_Q;
 			length = sizeof(int64_t);
 			ptr = new char[sizeof(int64_t)];
@@ -548,7 +545,6 @@ protected:
 	public:
 		Uint64(uint64_t val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_QU;
 			length = sizeof(int64_t);
 			ptr = new char[sizeof(int64_t)];
@@ -572,7 +568,6 @@ protected:
 	public:
 		Float32(float val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_FLOAT;
 			length = sizeof(float);
 			ptr = new char[sizeof(float)];
@@ -591,7 +586,6 @@ protected:
 	public:
 		Float64(double val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_DOUBLE;
 			length = sizeof(double);
 			ptr = new char[sizeof(double)];
@@ -610,7 +604,6 @@ protected:
 	public:
 		Complex32(float re, float im, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_FSC;
 			length = 2 * sizeof(float);
 			ptr = new char[2*sizeof(float)];
@@ -627,7 +620,6 @@ protected:
 	public:
 		Complex64(double re, double im, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_FTC;
 			length = 2 * sizeof(double);
 			ptr = new char[2*sizeof(double)];
@@ -644,7 +636,6 @@ protected:
 	public:
 		String(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_T;
 			length = strlen(val);
 			ptr = new char[length+1];
@@ -654,7 +645,6 @@ protected:
 		}
 		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_T;
 			length = len;
 			ptr = new char[length+1];
