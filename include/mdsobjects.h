@@ -341,10 +341,15 @@ protected:
 			validation = inValidation;
 			inValidation->refCount++;
 		}
+
 		friend std::ostream & operator << (std::ostream &outStream, Data *data)
 		{
-		    return outStream << data->decompile();
+			char * str = data->decompile();
+			outStream << str;
+			delete[] str;
+		    return outStream;
 		}
+
 		virtual void plot();
 	};
 	class Empty: public Data
