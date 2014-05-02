@@ -1,18 +1,21 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
+
+#include <config.h>
 #include <mdstypes.h>
+
 #include <stdio.h>
+#include <complex>
+#include <exception>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <complex>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <exception>
-#include <config.h>
-#include <ncidef.h>
+
 #include <dbidef.h>
+#include <ncidef.h>
+#include <stdarg.h>
+#include <stdlib.h>
+#include <string.h>
 #include <usagedef.h>
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
