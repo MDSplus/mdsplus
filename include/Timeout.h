@@ -41,7 +41,7 @@ public:
 	long getNanoSecs() { return timeout.tv_nsec; }
 	long getTotMilliSecs() { return timeout.tv_sec * 1000 + timeout.tv_nsec / 1000000; }
 
-	virtual ~MdsTimeout();
+	//virtual ~MdsTimeout();
 
 private:
 	Time timeout;
