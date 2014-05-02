@@ -764,7 +764,7 @@ else
   AC_DEFINE(HAVE_CLOCK_GETTIME)
 fi
 OLDLIBS="$LIBS"
-AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'],,,)
+AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
 LIBS="$OLDLIBS"
 if test "$ac_cv_search_readline" = "no"
 then
