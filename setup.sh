@@ -78,7 +78,7 @@ doExport()
 }
 
 if [ -n "$MDSPLUS_DIR" ]; then
-  ;
+  :
 elif [ -r /etc/.mdsplus_dir ]; then
   MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
 else
