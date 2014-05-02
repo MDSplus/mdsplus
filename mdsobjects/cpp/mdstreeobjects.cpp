@@ -150,6 +150,15 @@ void Tree::unlock()
 }
 #endif
 
+struct AutoLock {
+	AutoLock() {
+		Tree::lock();
+	}
+
+	~AutoLock() {
+		Tree::unlock();
+	}
+};
 
 Tree::Tree(char const *name, int shot) : shot(shot), ctx(nullptr)
 {
@@ -554,10 +563,9 @@ int64_t Tree::getDatafileSize()
 
 void *TreeNode::convertToDsc()
 {
-	Tree::lock();
+	AutoLock lock;
 	setActiveTree(tree);
 	void *retDsc = completeConversionToDsc(convertToScalarDsc(clazz, dtype, sizeof(int), (char *)&nid));
-	Tree::unlock();
 	return retDsc;
 }
 
