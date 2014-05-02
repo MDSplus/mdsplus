@@ -3,6 +3,7 @@
 #include <mdstypes.h>
 #include <stdio.h>
 #include <iostream>
+#include <string>
 #include <vector>
 #include <complex>
 #include <string.h>
