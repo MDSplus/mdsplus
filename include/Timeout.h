@@ -35,7 +35,7 @@ public:
 		return result;
 	}
 
-	timespec getDuration() { return ts; }
+	timespec getDuration() { return timeout; }
 
 	long getSecs() { return timeout.tv_sec; }
 	long getNanoSecs() { return timeout.tv_nsec; }
@@ -52,13 +52,13 @@ private:
 	}
 };
 
-
+/*
 class EXPORT WinTimeout: public MdsTimeout {
 public:
 	WinTimeout() {
 	}
 
 };
-
+*/
 
 #endif /*TIMEOUT_H_*/
