@@ -678,7 +678,6 @@ protected:
 		char *ptr;
 		void setSpecific(char *data, int length, int dtype, int nData)
 		{
-			clazz = CLASS_A;
 			this->dtype = dtype;
 			this->length = length;
 			arsize = nData * length;
@@ -689,7 +688,6 @@ protected:
 		}
 		void setSpecific(char *data, int length, int dtype, int nDims, int *dims)
 		{
-			clazz = CLASS_A;
 			this->dtype = dtype;
 			this->length = length;
 			arsize = length;
@@ -703,11 +701,14 @@ protected:
 			memcpy(ptr, data, arsize);
 		}
 	public:
-		Array() {clazz = CLASS_A;}
-		~Array()
-		{
+		Array() {
+			clazz = CLASS_A;
+		}
+
+		~Array() {
 			deleteNativeArray(ptr);
 		}
+
 		virtual int getSize() 
 		{
 			int retSize = 1;
