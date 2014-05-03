@@ -1,6 +1,7 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
 
+#include <mdsplus/mdsplus.h>
 #include <config.h>
 #include <dbidef.h>
 #include <ncidef.h>
@@ -25,11 +26,6 @@
 #include <sys/sem.h>
 #include <errno.h>
 #include <semaphore.h>
-#endif
-#ifdef HAVE_WINDOWS_H
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
 #endif
 #if __cplusplus >= 201103L
 #define NOEXCEPT noexcept
