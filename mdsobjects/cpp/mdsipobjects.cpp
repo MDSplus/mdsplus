@@ -184,15 +184,12 @@ void *putManyObj(char *serializedIn)
 	return resDsc;
 }
 
-
 #ifdef HAVE_WINDOWS_H
 bool Connection::globalSemHInitialized;
 HANDLE Connection::globalSemH;
 #else
 pthread_mutex_t Connection::globalMutex = PTHREAD_MUTEX_INITIALIZER;
-sem_t semStruct;
 #endif
-
 
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
