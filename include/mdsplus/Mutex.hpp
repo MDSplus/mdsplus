@@ -65,4 +65,6 @@ private:
 
 };
 
+}
+
 #endif /* MDS_MUTEX_HPP_ */
