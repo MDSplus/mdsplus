@@ -2325,7 +2325,7 @@ private:
 	static bool globalSemHInitialized;
 	void lock(HANDLE * mut) { WaitForSingleObject(semH, INFINITE); }
 	void unlock(HANDLE * mut) {ReleaseSemaphore(semH, 1, NULL); }
-	void destroy(pthread_mutex_t * mut) {}
+	void destroy(HANDLE * mut) {}
 #else
 	pthread_mutex_t mutex;
 	static pthread_mutex_t globalMutex;
