@@ -7,11 +7,13 @@
 
 #elif defined (__APPLE__)
 #define MDS_MAC
+#define MDS_PTHREAD
 #define EXPORT
 
 #elif defined (__gnu_linux__)
-#define EXPORT
 #define MDS_LINUX
+#define MDS_PTHREAD
+#define EXPORT
 
 #else
 #define EXPORT
