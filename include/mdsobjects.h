@@ -2298,7 +2298,6 @@ protected:
 		static bool globalSemHInitialized;
 #else
 		sem_t semStruct;
-		bool semInitialized;
 		static pthread_mutex_t globalMutex;
 #endif
 		int sockId;
