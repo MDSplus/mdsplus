@@ -2297,7 +2297,7 @@ protected:
 		static HANDLE globalSemH;
 		static bool globalSemHInitialized;
 #else
-		sem_t semStruct;
+		pthread_mutex_t mutex;
 		static pthread_mutex_t globalMutex;
 #endif
 		int sockId;

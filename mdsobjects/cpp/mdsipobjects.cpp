@@ -201,7 +201,7 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 	    globalSemHInitialized = true;
 	}
 #else
-	int status = sem_init(&semStruct, 0, 1);
+	int status = pthread_mutex_init(&mutex, NULL);
 	if(status != 0)
 		throw MdsException("Cannot create lock semaphore");
 #endif
@@ -219,7 +219,7 @@ Connection::~Connection()
 {
 #ifdef HAVE_WINDOWS_H
 #else
-	sem_destroy(&semStruct);
+	pthread_mutex_destroy(&mutex);
 #endif
 	DisconnectFromMds(sockId);
 }
@@ -248,13 +248,13 @@ void Connection::unlockGlobal()
 #else
 void Connection::lock() 
 {
-	sem_wait(&semStruct);
+	pthread_mutex_lock(&mutex);
 }
 void Connection::unlock()
 {
-	sem_post(&semStruct);
+	pthread_mutex_unlock(&mutex);
 }
-void Connection::lockGlobal() 
+void Connection::lockGlobal()
 {
 	pthread_mutex_lock(&globalMutex);
 }
