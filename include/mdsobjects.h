@@ -2290,22 +2290,10 @@ protected:
 		void execute();
 		void checkStatus(char *name);
 	};
-	class EXPORT Connection 
-	{
-#ifdef HAVE_WINDOWS_H
-		HANDLE semH;
-		static HANDLE globalSemH;
-		static bool globalSemHInitialized;
-#else
-		pthread_mutex_t mutex;
-		static pthread_mutex_t globalMutex;
-#endif
-		int sockId;
-		void lock();
-		void unlock();
-		void lockGlobal();
-		void unlockGlobal();
-	public:
+
+class EXPORT Connection
+{
+public:
 		Connection(char *mdsipAddr);
 		~Connection();
 		void openTree(char *tree, int shot);
@@ -2318,7 +2306,7 @@ protected:
 		Data *get(const char *expr, Data **args, int nArgs);
 		Data *get(const char *expr)
 		{
-		    return get(expr, 0, 0);
+			return get(expr, 0, 0);
 		}
 		void put(const char *path, char *expr, Data **args, int nArgs);
 		PutMany *putMany()
@@ -2329,7 +2317,30 @@ protected:
 		{
 			return new GetMany(this);
 		}
-	};
+
+private:
+#ifdef HAVE_WINDOWS_H
+	HANDLE mutex;
+	static HANDLE globalMutex;
+	static bool globalSemHInitialized;
+	void lock(HANDLE * mut) { WaitForSingleObject(semH, INFINITE); }
+	void unlock(HANDLE * mut) {ReleaseSemaphore(semH, 1, NULL); }
+	void destroy(pthread_mutex_t * mut) {}
+#else
+	pthread_mutex_t mutex;
+	static pthread_mutex_t globalMutex;
+	void lock(pthread_mutex_t * mut) { pthread_mutex_lock(mut); }
+	void unlock(pthread_mutex_t * mut) { pthread_mutex_unlock(mut); }
+	void destroy(pthread_mutex_t * mut) { pthread_mutex_destroy(mut); }
+#endif
+
+	void lockLocal();
+	void unlockLocal();
+	void lockGlobal();
+	void unlockGlobal();
+
+	int sockId;
+};
 	class EXPORT Scope 
 	{
 		int x, y, width, height;

@@ -217,55 +217,25 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 }
 Connection::~Connection()
 {
-#ifdef HAVE_WINDOWS_H
-#else
-	pthread_mutex_destroy(&mutex);
-#endif
+	destroy(&mutex);
 	DisconnectFromMds(sockId);
 }
 
-#ifdef HAVE_WINDOWS_H
-void Connection::lock() 
-{
-	if(semH)
-		WaitForSingleObject(semH, INFINITE);      
+void Connection::lockLocal() {
+	lock(&mutex);
 }
-void Connection::unlock()
-{
-	if(semH)
-		ReleaseSemaphore(semH, 1, NULL);
-}
-void Connection::lockGlobal() 
-{
-	if(globalSemH)
-		WaitForSingleObject(globalSemH, INFINITE);      
-}
-void Connection::unlockGlobal()
-{
-	if(globalSemH)
-		ReleaseSemaphore(globalSemH, 1, NULL);
-}
-#else
-void Connection::lock() 
-{
-	pthread_mutex_lock(&mutex);
-}
-void Connection::unlock()
-{
-	pthread_mutex_unlock(&mutex);
-}
-void Connection::lockGlobal()
-{
-	pthread_mutex_lock(&globalMutex);
-}
-void Connection::unlockGlobal()
-{
-	pthread_mutex_unlock(&globalMutex);
-}
-#endif
 
+void Connection::unlockLocal() {
+	unlock(&mutex);
+}
 
+void Connection::lockGlobal() {
+	lock(&globalMutex);
+}
 
+void Connection::unlockGlobal() {
+	unlock(&globalMutex);
+}
 
 void Connection::openTree(char *tree, int shot)
 {
@@ -298,12 +268,12 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
-	lock();
+	lockLocal();
 	lockGlobal();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen((char *)expr), 0, 0, (char *)expr);
 	if(!(status & 1))
 	{
-		unlock();
+		unlockLocal();
 		throw MdsException(status);
 	}
 	for(argIdx = 0; argIdx < nArgs; argIdx++)
@@ -312,14 +282,14 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1))
 		{
-			unlock();
+			unlockLocal();
 			throw MdsException(status);
 		}
 	}
 	unlockGlobal();
 	
     	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
-	unlock();
+	unlockLocal();
 	if(!(status & 1))
 	{
 		throw MdsException(status);
@@ -450,12 +420,12 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	sprintf(&putExpr[strlen(putExpr)], ")");
     delete [] path;
 
-	lock();
+	lockLocal();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
 	delete[] putExpr;
 	if(!(status & 1))
 	{
-		unlock();
+		unlockLocal();
 		throw MdsException(status);
 	}
 	for(argIdx = 0; argIdx < nArgs; argIdx++)
@@ -464,13 +434,13 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1))
 		{
-			unlock();
+			unlockLocal();
 			throw MdsException(status);
 		}
 	}
 
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
-	unlock();
+	unlockLocal();
     if (status & 1 && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
       memcpy(&status,ptr,numBytes);
     if (mem) FreeMessage(mem);
