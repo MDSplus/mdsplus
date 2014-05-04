@@ -311,13 +311,11 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			case DTYPE_DOUBLE_IP:
 				resData = new Float64(*(double *)ptr);
 				break;
-			case DTYPE_CSTRING_IP:
-				buf = new char[length + 1];
-				memcpy(buf, ptr, length);
-				buf[length] = 0;
-				resData = new String(buf);
-				delete[] buf;
+			case DTYPE_CSTRING_IP: {
+				std::string buf(reinterpret_cast<char *>(ptr), length);
+				resData = new String(buf.c_str());
 				break;
+			}
 			default: 
 				std::cerr << "Unexpected data type returned by mdsip: " << dtype << std::endl;
 				throw MdsException("Unexpected data type returned by mdsip");
