@@ -184,28 +184,10 @@ void *putManyObj(char *serializedIn)
 	return resDsc;
 }
 
-#ifdef HAVE_WINDOWS_H
-bool Connection::globalSemHInitialized;
-HANDLE Connection::globalSemH;
-#else
-pthread_mutex_t Connection::globalMutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
+Mutex Connection::globalMutex;
 
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
-#ifdef HAVE_WINDOWS_H
-	semH = CreateSemaphore(NULL, 1, 16, NULL);
-	if(!globalSemHInitialized)
-	{
-	    globalSemH = CreateSemaphore(NULL, 1, 16, NULL);
-	    globalSemHInitialized = true;
-	}
-#else
-	int status = pthread_mutex_init(&mutex, NULL);
-	if(status != 0)
-		throw MdsException("Cannot create lock semaphore");
-#endif
-
 	sockId = ConnectToMds(mdsipAddr);
 	if(sockId <= 0)
 	{
@@ -215,26 +197,26 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 		throw MdsException(currMsg);
 	}
 }
+
 Connection::~Connection()
 {
-	destroy(&mutex);
 	DisconnectFromMds(sockId);
 }
 
 void Connection::lockLocal() {
-	lock(&mutex);
+	mutex.lock();
 }
 
 void Connection::unlockLocal() {
-	unlock(&mutex);
+	mutex.unlock();
 }
 
 void Connection::lockGlobal() {
-	lock(&globalMutex);
+	globalMutex.lock();
 }
 
 void Connection::unlockGlobal() {
-	unlock(&globalMutex);
+	globalMutex.unlock();
 }
 
 void Connection::openTree(char *tree, int shot)

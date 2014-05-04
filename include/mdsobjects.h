@@ -2,6 +2,7 @@
 #define MDSOBJECTS_H
 
 #include <mdsplus/mdsplus.h>
+#include <mdsplus/Mutex.hpp>
 #include <config.h>
 #include <dbidef.h>
 #include <ncidef.h>
@@ -2319,27 +2320,14 @@ public:
 		}
 
 private:
-#ifdef HAVE_WINDOWS_H
-	HANDLE mutex;
-	static HANDLE globalMutex;
-	static bool globalSemHInitialized;
-	void lock(HANDLE * mut) { WaitForSingleObject(*mut, INFINITE); }
-	void unlock(HANDLE * mut) {ReleaseSemaphore(*mut, 1, NULL); }
-	void destroy(HANDLE * mut) {}
-#else
-	pthread_mutex_t mutex;
-	static pthread_mutex_t globalMutex;
-	void lock(pthread_mutex_t * mut) { pthread_mutex_lock(mut); }
-	void unlock(pthread_mutex_t * mut) { pthread_mutex_unlock(mut); }
-	void destroy(pthread_mutex_t * mut) { pthread_mutex_destroy(mut); }
-#endif
-
 	void lockLocal();
 	void unlockLocal();
 	void lockGlobal();
 	void unlockGlobal();
 
 	int sockId;
+	Mutex mutex;
+	static Mutex globalMutex;
 };
 	class EXPORT Scope 
 	{
