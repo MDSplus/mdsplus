@@ -1,4 +1,5 @@
 #include <mdsobjects.h>
+#include <mdsplus/Mutex.hpp>
 #include <usagedef.h>
 #include <treeshr.h>
 
@@ -107,58 +108,7 @@ static int convertUsage(std::string const & usage)
 		return TreeUSAGE_ANY;
 }
 
-#ifdef HAVE_WINDOWS_H
-#include <Windows.h>
-static HANDLE semH = 0;
-void Tree::lock() 
-{
-	if(!semH)
-		semH = CreateSemaphore(NULL, 1, 16, NULL);
-	if(!semH)
-		throw MdsException("Cannot create lock semaphore");
-    WaitForSingleObject(semH, INFINITE);      
-}
-void Tree::unlock()
-{
-	if(semH)
-		ReleaseSemaphore(semH, 1, NULL);
-}
-#else
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <errno.h>
-#include <semaphore.h>
-static 	sem_t semStruct;
-static bool semInitialized = false;
-
-void Tree::lock() 
-{
-	if(!semInitialized)
-	{
-		semInitialized = true;
-		int status = sem_init(&semStruct, 0, 1);
-		if(status != 0)
-			throw MdsException("Cannot create lock semaphore");
-	}
-	sem_wait(&semStruct);
-}
-
-void Tree::unlock()
-{
-	sem_post(&semStruct);
-}
-#endif
-
-struct AutoLock {
-	AutoLock() {
-		Tree::lock();
-	}
-
-	~AutoLock() {
-		Tree::unlock();
-	}
-};
+static Mutex treeMutex;
 
 Tree::Tree(char const *name, int shot) : shot(shot), ctx(nullptr)
 {
@@ -563,7 +513,7 @@ int64_t Tree::getDatafileSize()
 
 void *TreeNode::convertToDsc()
 {
-	AutoLock lock;
+	AutoLock lock(treeMutex);
 	setActiveTree(tree);
 	void *retDsc = completeConversionToDsc(convertToScalarDsc(clazz, dtype, sizeof(int), (char *)&nid));
 	return retDsc;
