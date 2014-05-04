@@ -391,7 +391,6 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 			sprintf(&putExpr[strlen(putExpr)], "$");
 	}
 	sprintf(&putExpr[strlen(putExpr)], ")");
-    delete [] path;
 
 	lockLocal();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
