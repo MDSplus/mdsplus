@@ -2,6 +2,7 @@
 #include "mdsobjects.h"
 
 #include <cstddef>
+#include <iostream>
 #include <string>
 
 #ifdef HAVE_WINDOWS_H
@@ -226,7 +227,7 @@ void Connection::unlockGlobal() {
 void Connection::openTree(char *tree, int shot)
 {
 	int status = MdsOpen(sockId, tree, shot);
-printf("SOCK ID: %d\n", sockId);
+	std::cout << "SOCK ID: " << sockId << std::endl;
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -318,7 +319,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				delete[] buf;
 				break;
 			default: 
-				printf("Unexpected data type returned by mdsip: %d\n", dtype);
+				std::cerr << "Unexpected data type returned by mdsip: " << dtype << std::endl;
 				throw MdsException("Unexpected data type returned by mdsip");
 		}
 	} else {
@@ -351,7 +352,9 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			case DTYPE_DOUBLE_IP:
 				resData = new Float64Array((double *)ptr, nDims, retDims);
 				break;
-			default: throw MdsException("Unexpected data type returned by mdsip");
+			default:
+				std::cerr << "Unexpected data type returned by mdsip: " << dtype << std::endl;
+				throw MdsException("Unexpected data type returned by mdsip");
 		}
 	}
 
