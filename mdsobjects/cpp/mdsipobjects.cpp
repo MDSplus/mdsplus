@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include "mdsobjects.h"
+
+#include <cstddef>
+#include <string>
+
 #ifdef HAVE_WINDOWS_H
 #include <Windows.h>
 #else
@@ -237,29 +241,28 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	char clazz, dtype, nDims;
 	short length;
 	int *dims;
-	int status, argIdx, numBytes;
+	int status, numBytes;
 	void *ptr, *mem = 0;
 	char *buf;
 	int retDims[MAX_DIMS];
 	Data *resData;
 
 	//Check whether arguments are compatible (Scalars or Arrays)
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
+
 	lockLocal();
 	lockGlobal();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen((char *)expr), 0, 0, (char *)expr);
-	if(!(status & 1))
-	{
+	if(!(status & 1)) {
 		unlockLocal();
 		throw MdsException(status);
 	}
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1))
@@ -273,11 +276,9 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
     	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
-	if(nDims == 0)
-	{
+
+	if(nDims == 0) {
 		switch(dtype) {
 			case DTYPE_CHAR_IP:
 				resData = new Int8(*(char *)ptr);
@@ -320,9 +321,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				printf("Unexpected data type returned by mdsip: %d\n", dtype);
 				throw MdsException("Unexpected data type returned by mdsip");
 		}
-	}
-	else //nDims > 0
-	{
+	} else {
+		//nDims > 0
 		switch(dtype) {
 			case DTYPE_CHAR_IP:
 				resData = new Int8Array((char *)ptr, nDims, retDims);
@@ -354,6 +354,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			default: throw MdsException("Unexpected data type returned by mdsip");
 		}
 	}
+
 	if(mem) FreeMessage(mem);
 	return resData;	
 }
@@ -363,37 +364,27 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	char clazz, dtype, nDims;
 	short length;
 	int *dims;
-	int status, argIdx, numBytes;
+	int status;
 	void *ptr, *mem = 0;
-	int retDims[MAX_DIMS];
-	int varIdx;
 
 	//Double backslashes!!
-	char *path = new char[strlen(inPath)+2];
-	if(inPath[0] == '\\')
-	{
-		path[0] = '\\';
-		strcpy(&path[1], inPath);
-	}
-	else
-		strcpy(path, inPath);
-
+	std::string path(inPath);
+	if (path.at(0) == '\\')
+		path.insert(path.begin(), '\\');
 
 	//Check whether arguments are compatible (Scalars or Arrays)
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 
-	char *putExpr = new char[strlen("TreePut(") + strlen(expr) +strlen(path) + 5 + nArgs * 2 + 2];
+	char *putExpr = new char[strlen("TreePut(") + strlen(expr) + path.length() + 5 + nArgs * 2 + 2];
 	if(nArgs > 0)
-		sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path, expr);
+		sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path.c_str(), expr);
 	else
-		sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path, expr);
-	for(varIdx = 0; varIdx < nArgs; varIdx++)
-	{
+		sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path.c_str(), expr);
+	for(int varIdx = 0; varIdx < nArgs; ++varIdx) {
 		if(varIdx < nArgs - 1)
 			sprintf(&putExpr[strlen(putExpr)], "$,");
 		else
@@ -405,25 +396,25 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	lockLocal();
 	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
 	delete[] putExpr;
-	if(!(status & 1))
-	{
+	if(!(status & 1)) {
 		unlockLocal();
 		throw MdsException(status);
 	}
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
-		if(!(status & 1))
-		{
+		if(!(status & 1)) {
 			unlockLocal();
 			throw MdsException(status);
 		}
 	}
 
+	int retDims[MAX_DIMS];
+	int numBytes;
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
-    if (status & 1 && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
+    if ((status & 1) && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
       memcpy(&status,ptr,numBytes);
     if (mem) FreeMessage(mem);
 	if(!(status & 1))
