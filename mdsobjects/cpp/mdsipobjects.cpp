@@ -367,11 +367,6 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	int status;
 	void *ptr, *mem = 0;
 
-	//Double backslashes!!
-	std::string path(inPath);
-	if (path.at(0) == '\\')
-		path.insert(path.begin(), '\\');
-
 	//Check whether arguments are compatible (Scalars or Arrays)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
@@ -379,22 +374,20 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 
-	char *putExpr = new char[strlen("TreePut(") + strlen(expr) + path.length() + 5 + nArgs * 2 + 2];
-	if(nArgs > 0)
-		sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path.c_str(), expr);
-	else
-		sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path.c_str(), expr);
-	for(int varIdx = 0; varIdx < nArgs; ++varIdx) {
-		if(varIdx < nArgs - 1)
-			sprintf(&putExpr[strlen(putExpr)], "$,");
-		else
-			sprintf(&putExpr[strlen(putExpr)], "$");
-	}
-	sprintf(&putExpr[strlen(putExpr)], ")");
+	//Double backslashes!!
+	std::string path(inPath);
+	if (path.at(0) == '\\')
+		path.insert(path.begin(), '\\');
+
+	std::string putExpr("TreePut(\'");
+	putExpr += path + "\',\'" + expr + "\'";
+	for(int varIdx = 0; varIdx < nArgs; ++varIdx)
+		putExpr += ",$";
+	putExpr += ")";
 
 	lockLocal();
-	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
-	delete[] putExpr;
+	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, putExpr.length(), 0, 0, const_cast<char *>(putExpr.c_str()));
+
 	if(!(status & 1)) {
 		unlockLocal();
 		throw MdsException(status);
