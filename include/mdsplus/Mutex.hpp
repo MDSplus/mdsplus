@@ -57,7 +57,7 @@ public:
 	}
 
 	~MutexGuard() {
-		mutex.unlock;
+		mutex.unlock();
 	}
 
 private:
