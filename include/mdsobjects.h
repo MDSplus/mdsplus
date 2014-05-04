@@ -2,6 +2,7 @@
 #define MDSOBJECTS_H
 
 #include <mdsplus/mdsplus.h>
+#include <mdsplus/ConditionVar.hpp>
 #include <mdsplus/Mutex.hpp>
 #include <config.h>
 #include <dbidef.h>
@@ -2154,13 +2155,7 @@ protected:
 /////////////////End CachedTree/////////
 #endif
 /////////////Class Event///////////
-#include <UnnamedSemaphore.h>
-	class EXPORT Event
-	{
-	UnnamedSemaphore sem;
-	protected:
-		virtual void connectToEvents();
-		virtual void disconnectFromEvents();
+class EXPORT Event {
 	public:
 		char *eventName;
 		char *eventBuf;
@@ -2168,60 +2163,56 @@ protected:
 		int eventId;
 		bool waitingEvent;
 		int64_t eventTime;
-		Event(){sem.initialize(0);}
+		Event() {}
 		Event(char *evName);
 		virtual ~Event();
-		char *getRaw(int *size)
-		{
+
+		char *getRaw(int *size) {
 			*size = eventBufSize;
 			return eventBuf;
 		}
-		Uint64 *getTime()
-		{
+
+		Uint64 *getTime() {
 			return new Uint64(eventTime);
 		}
-		char *getName() { return eventName;}
-	    Data *getData();
-		void wait()
-		{
-			waitingEvent = true;
-			sem.wait();
-			waitingEvent = false;
+
+		char *getName() {
+			return eventName;
 		}
-		void wait(int secs)
-		{
-			waitingEvent = true;
-			MdsTimeout timeout(secs, 0);
-			//timedWait returns 0 if no timeout, 1 otherwise
-			int status = sem.timedWait(timeout);
-			waitingEvent = false;
-			if(status)
+
+	    Data *getData();
+
+		void wait() {
+			condition.wait();
+		}
+
+		void wait(std::size_t secs) {
+			if (condition.waitTimeout(secs * 1000) == false)
 				throw MdsException("Timeout Occurred");
 		}
-		Data *waitData()
-		{
+
+		Data *waitData() {
 			wait();
 			return getData();
 		}
-		Data *waitData(int secs)
-		{
+
+		Data *waitData(std::size_t secs) {
 			wait(secs);
 			return getData();
 		}
-		void abort()
-		{
-			if(waitingEvent)
-				sem.post();
+
+		void abort() {
 		}
-		char *waitRaw(int *size)
-		{
-			sem.wait();
+
+		char *waitRaw(int *size) {
+			wait();
 			return getRaw(size);
 		}
-		virtual void run() 
-		{
-			sem.post();
+
+		virtual void run() {
+			condition.notify();
 		}
+
 		static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEvent(char *evName, Data *evData);
@@ -2229,7 +2220,15 @@ protected:
 		static void setevent(char *evName) {setEvent(evName); }
 		static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
 		static void setevent(char *evName, Data *evData);
-	};
+
+protected:
+	virtual void connectToEvents();
+	virtual void disconnectFromEvents();
+
+private:
+	ConditionVar condition;
+};
+
 	class  EXPORT REvent:public Event
 	{
 		void *reventId;

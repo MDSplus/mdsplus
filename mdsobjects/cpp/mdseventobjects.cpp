@@ -10,7 +10,6 @@ using namespace std;
 
 #define MAX_ARGS 512
 
-
 extern "C" {
 	int64_t convertAsciiToTime(const char *ascTime);
 	int MDSUdpEventAst(char *eventNameIn, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
@@ -25,7 +24,6 @@ extern "C" {
 	int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
-
 extern "C" void eventAst(void *arg, int len, char *buf)
 {
 	Event *ev = (Event *)arg;
@@ -35,6 +33,7 @@ extern "C" void eventAst(void *arg, int len, char *buf)
 	ev->eventTime = convertAsciiToTime("now");
 	ev->run();
 }
+
 extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
 {
 	eventAst(arg, len, buf);
@@ -56,7 +55,6 @@ Data *Event::getData()
 	if(eventBufSize == 0)
 		return NULL;
     return deserialize(eventBuf);
-
 }
 
 
@@ -64,6 +62,7 @@ void REvent::connectToEvents()
 {
 	reventId = MdsEventAddListener(eventName,  reventAst, this);
 }
+
 void REvent::disconnectFromEvents()
 {
 	MdsEventRemoveListener(reventId);
@@ -71,7 +70,6 @@ void REvent::disconnectFromEvents()
 
 Event::Event(char *evName)
 {
-	sem.initialize(0);
 	eventBufSize = 0;
 	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
@@ -79,6 +77,7 @@ Event::Event(char *evName)
 	eventId = -1;
 	connectToEvents();
 }
+
 REvent::REvent(char *evName)
 {
 	eventBufSize = 0;
@@ -89,15 +88,12 @@ REvent::REvent(char *evName)
 	connectToEvents();
 }
 
-
 Event::~Event()
 {
 	delete [] eventName;
 	if(eventId != -1)
 		disconnectFromEvents();
-		
 }
-
 
 void Event::setEvent(char *evName, Data *evData)
 {
@@ -106,6 +102,7 @@ void Event::setEvent(char *evName, Data *evData)
 //	MDSUdpEvent(eventId);
 	MDSEvent(evName, bufLen, buf);
 }
+
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
 {
 //	MDSUdpEvent(evName, bufLen, buf);
@@ -135,4 +132,3 @@ void REvent::setEventRawAndWait(char *evName, int bufLen, char *buf)
 {
 	MdsEventTriggerAndWait(evName, buf, bufLen);
 }
-
