@@ -50,13 +50,13 @@ private:
 	Mutex_t mutex;
 };
 
-class MutexGuard {
+class AutoLock {
 public:
-	MutexGuard(Mutex & mutex): mutex(mutex) {
+	AutoLock(Mutex & mutex): mutex(mutex) {
 		mutex.lock();
 	}
 
-	~MutexGuard() {
+	~AutoLock() {
 		mutex.unlock();
 	}
 
