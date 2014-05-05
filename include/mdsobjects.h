@@ -2228,20 +2228,23 @@ private:
 	ConditionVar condition;
 };
 
-	class  EXPORT REvent:public Event
-	{
-		void *reventId;
-	protected:
-		virtual void connectToEvents();
-		virtual void disconnectFromEvents();
-	public:
-		REvent(char *evName);
-		virtual ~REvent(){}
-		static void setEvent(char *evName, Data *data);
-		static void setEventRaw(char *evName, int bufLen, char *buf);
-		static void setEventAndWait(char *evName, Data *data);
-		static void setEventRawAndWait(char *evName, int bufLen, char *buf);
-	};
+class EXPORT REvent: public Event {
+public:
+	REvent(char *evName);
+	virtual ~REvent(){}
+
+	static void setEvent(char *evName, Data *data);
+	static void setEventRaw(char *evName, int bufLen, char *buf);
+	static void setEventAndWait(char *evName, Data *data);
+	static void setEventRawAndWait(char *evName, int bufLen, char *buf);
+
+protected:
+	virtual void connectToEvents();
+	virtual void disconnectFromEvents();
+
+private:
+	void *reventId;
+};
 //////////////End Class Event//////////////
 ///////////////remote data access classes ////////////////
 	class Connection;
