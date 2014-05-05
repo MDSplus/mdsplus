@@ -22,7 +22,7 @@ extern void EventReset();
 extern void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, char, int, char *, int), void *callbackArg);
 extern void * EventAddListener(char const * name,  void (*callback)(char *, char *, int, void *, char, int, char*, int), void *callbackArg);
 extern void EventRemoveListener(void *eventHandler);
-extern int EventTrigger(char *name, char *buf, int size);
+extern int EventTrigger(char const * name, char *buf, int size);
 extern int EventTriggerAndWait(char *name, char *buf, int size);
 extern int EventTriggerAndTimedWait(char *name, char *buf, int size, int millisecs);
 extern void EventClean();
@@ -305,7 +305,7 @@ EXPORT void *MdsEventAddListener(char *name,  void (*callback)(char *, char *, i
 	return id;
 }
 
-EXPORT int MdsEventTrigger(char *name, char *buf, int size)
+EXPORT int MdsEventTrigger(char const * name, char *buf, int size)
 {
 	return (EventTrigger(name, buf, size)==0)?1:0;
 }

@@ -99,7 +99,7 @@ EXPORT void EventRemoveListener(void *eventHandler)
 	
 }
 
-EXPORT  int EventTrigger(char *name, char *buf, int size)
+EXPORT int EventTrigger(char const * name, char *buf, int size)
 {
 	Event ev;
 	try {

@@ -60,7 +60,7 @@ public:
 	{
 		evManager->resizeListener(eventAddr, newSize, memManager);
 	}
-	void trigger(char *eventName, char *buf, int size, int type = 0, bool copyBuf = true)
+	void trigger(char const * eventName, char *buf, int size, int type = 0, bool copyBuf = true)
 	{
 		evManager->trigger(eventName, buf, size, type, memManager, copyBuf);
 	}
