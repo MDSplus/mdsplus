@@ -61,7 +61,7 @@ union __bswap { char   b[8];
 #if defined(WORDS_BIGENDIAN)
 
 #define swap(dtype,ptr,ans) \
-{ char *p = ptr;\
+{ char const * p = ptr;\
   union __bswap bswap;\
   unsigned int __i;\
   for (__i=0;__i<sizeof(dtype);__i++) bswap.b[sizeof(dtype)-__i-1] = p[__i];\
@@ -71,7 +71,7 @@ union __bswap { char   b[8];
 #else
 
 #define swap(dtype,ptr,ans) \
-{ char *p = ptr;\
+{ char const * p = ptr;\
   union __bswap bswap;\
   unsigned int __i;\
   for (__i=0;__i<sizeof(dtype);__i++) bswap.b[__i] = p[__i];\
@@ -80,7 +80,7 @@ union __bswap { char   b[8];
 
 #endif
 
-STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr, 
+STATIC_ROUTINE int copy_rec_dx(char const * in_ptr, struct descriptor_xd *out_dsc_ptr,
                         unsigned int *b_out, unsigned int *b_in)
 {
   unsigned int status = 1,
@@ -435,7 +435,7 @@ STATIC_ROUTINE int copy_rec_dx( char *in_ptr, struct descriptor_xd *out_dsc_ptr,
   return status;
 }
 
-int MdsSerializeDscIn(char *in, struct descriptor_xd *out)
+int MdsSerializeDscIn(char const * in, struct descriptor_xd *out)
 {
   unsigned int size_out;
   unsigned int size_in;

@@ -2340,7 +2340,7 @@ private:
 	};
 //////////////Support functions////////
 EXPORT void deleteData(Data *);
-EXPORT Data *deserialize(char *serialized);
+EXPORT Data *deserialize(char const * serialized);
 EXPORT Data *compile(const char *expr);
 EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
 EXPORT Data *compile(const char *expr, Tree *tree);

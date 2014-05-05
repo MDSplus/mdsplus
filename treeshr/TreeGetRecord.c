@@ -26,23 +26,13 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static int64_t ViewDate = -1;
 static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 
-int MdsSerializeDscIn(char *in, struct descriptor_xd *out_dsc_ptr);
-
-
 extern void **TreeCtx();
-
-
 
 #ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 #endif
 
-
-
-
 int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {return _TreeGetRecord(*TreeCtx(),nid_in,dsc);}
-
-
 
 int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 {

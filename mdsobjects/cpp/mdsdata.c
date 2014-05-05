@@ -31,7 +31,7 @@ extern void *createDictionaryData(int nData, char **dataPtr, void *unitsData, vo
 extern void *convertDataToDsc(void *data);
 extern void convertTime(int *time, char *retTime);
 extern char * serializeData(void *dsc, int *retSize, void **retDsc);
-extern void *deserializeData(char *serialized);
+extern void *deserializeData(char const * serialized);
 
 extern void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen);
 extern void *getManyObj(char *serializedIn);
@@ -750,9 +750,7 @@ char * serializeData(void *dsc, int *retSize, void **retDsc)
 	return arrPtr->pointer;
 }
 
-
-
-extern void *deserializeData(char *serialized)
+extern void *deserializeData(char const * serialized)
 {
 	EMPTYXD(emptyXd);
 	struct descriptor_xd *xdPtr;

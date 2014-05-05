@@ -28,7 +28,7 @@ extern "C" {
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
 	void *convertToApdDsc(int type, int ndescs, void **ptr);
 	char * serializeData(void *dsc, int *retSize, void **retDsc);
-	void *deserializeData(char *serialized);
+	void *deserializeData(char const * serialized);
 
 	void * convertToByte(void *dsc); 
 	void * convertToShort(void *dsc); 
@@ -1363,7 +1363,7 @@ EXPORT void *Apd::convertToDsc()
 }
 
 
-EXPORT Data *MDSplus::deserialize(char *serialized)
+EXPORT Data *MDSplus::deserialize(char const * serialized)
 {
 	void *dscPtr = deserializeData(serialized);
 	if(!dscPtr) throw MdsException("Cannot build Data instance from serialized content");

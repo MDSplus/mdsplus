@@ -44,7 +44,7 @@ EXPORT extern void MdsPk(char *nbits, int *nitems, int pack[], int items[], int 
 EXPORT extern int MDSQueueEvent(char *event, int *eventid);
 EXPORT extern int MDSGetEventQueue(int eventid, int timeout, int *data_len, char  **data);
 EXPORT extern int  MdsSetCurrentShotId(char *experiment,int shot);
-EXPORT extern int MdsSerializeDscIn(char *in, struct descriptor_xd *out);
+EXPORT extern int MdsSerializeDscIn(char const * in, struct descriptor_xd *out);
 EXPORT extern int MdsSerializeDscOutZ(struct descriptor *in,struct descriptor_xd *out,
     int (*fixupNid)(), void *fixupNidArg, int (*fixupPath)(),
     void *fixupPathArg, int compress, int *compressible,
