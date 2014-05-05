@@ -20,7 +20,7 @@ EXPORT int MdsEventTriggerAndWait(char *name, char *buf, int size);
 extern void EventWait(char *name, char *buf, int size, int *retSize);
 extern void EventReset();
 extern void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, char, int, char *, int), void *callbackArg);
-extern void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, char, int, char*, int), void *callbackArg);
+extern void * EventAddListener(char const * name,  void (*callback)(char *, char *, int, void *, char, int, char*, int), void *callbackArg);
 extern void EventRemoveListener(void *eventHandler);
 extern int EventTrigger(char *name, char *buf, int size);
 extern int EventTriggerAndWait(char *name, char *buf, int size);

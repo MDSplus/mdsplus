@@ -4,7 +4,7 @@
 extern "C" EXPORT void EventWait(char *name, char *buf, int size, int *retSize);
 extern "C" EXPORT void EventReset();
 extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char *, int), void *callbackArg);
-extern "C" EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg);
+extern "C" EXPORT void * EventAddListener(char const * name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg);
 extern "C" EXPORT void EventRemoveListener(void *eventHandler);
 extern "C" EXPORT  int EventTrigger(char *name, char *buf, int size);
 extern "C" EXPORT int EventTriggerAndWait(char *name, char *buf, int size);
@@ -70,7 +70,7 @@ extern "C" EXPORT void * EventAddListenerGlobal(char *name,  void (*callback)(ch
 		return NULL;
 	}
 }
-extern "C" EXPORT void * EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
+extern "C" EXPORT void * EventAddListener(char const * name,  void (*callback)(char *, char *, int, void *, bool, int, char*, int), void *callbackArg)
 {
 	Event ev;
 	try {

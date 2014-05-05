@@ -2,7 +2,7 @@
 #define EVENT_H
 #include "EventManager.h"
 ////////////////Extern C Interface////////////////
-extern "C" EXPORT void *EventAddListener(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
+extern "C" EXPORT void *EventAddListener(char const * name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
 extern "C" EXPORT void *EventAddListenerGlobal(char *name,  void (*callback)(char *, char *, int, void *, bool, int retSize, char *retData, int type), void *callbackArg);
 extern "C" EXPORT void EventRemoveListener(void *eventHandler);
 extern "C" EXPORT int EventTrigger(char *name, char *buf, int size);
