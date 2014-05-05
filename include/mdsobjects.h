@@ -2158,8 +2158,7 @@ protected:
 class EXPORT Event {
 	public:
 		char *eventName;
-		char *eventBuf;
-		int eventBufSize;
+		std::string eventBuf;
 		int eventId;
 		bool waitingEvent;
 		int64_t eventTime;
@@ -2167,9 +2166,9 @@ class EXPORT Event {
 		Event(char *evName);
 		virtual ~Event();
 
-		char *getRaw(int *size) {
-			*size = eventBufSize;
-			return eventBuf;
+		char const * getRaw(std::size_t * size) {
+			*size = eventBuf.length();
+			return eventBuf.c_str();
 		}
 
 		Uint64 *getTime() {
@@ -2204,7 +2203,7 @@ class EXPORT Event {
 		void abort() {
 		}
 
-		char *waitRaw(int *size) {
+		char const * waitRaw(std::size_t * size) {
 			wait();
 			return getRaw(size);
 		}
