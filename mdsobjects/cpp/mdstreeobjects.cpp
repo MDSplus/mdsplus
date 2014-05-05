@@ -277,12 +277,11 @@ TreeNode *Tree::getNode(String *path)
 
 TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
 {
-	int currNid, status; 
+	int status;
 	int numNids = 0;
 	void *wildCtx = 0;
 	int chunkSize = 10000;
 	int *currNids = new int[chunkSize];
-
 
 	while ((status = _TreeFindNodeWild(ctx, path,&currNids[numNids],&wildCtx, usageMask)) & 1)
 	{
@@ -306,8 +305,8 @@ TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
 		retNodes[i] = new TreeNode(currNids[i], this);
 	}
 	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, numNids);
-	delete [] retNodes;
-	delete[]currNids;
+	delete[] retNodes;
+	delete[] currNids;
 	return nodeArray;
 }
 
