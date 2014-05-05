@@ -44,10 +44,12 @@ public:
 
 private:
 #if defined (MDS_PTHREAD)
-	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t mutex;
 	pthread_cond_t condition;
 
 	void _create() {
+		//FIXME: Use PTHREAD_MUTEX_INITIALIZER when FC15 goes away
+		pthread_mutex_init(&mutex, NULL);
 		pthread_cond_init(&condition, NULL);
 	}
 
