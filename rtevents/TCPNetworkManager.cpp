@@ -139,7 +139,7 @@ bool TCPNetworkManager::connectReceiver(NetworkAddress *address, NetworkReceiver
 	int port = ((IPAddress *)address)->port;
 	int tcpSocket;
 
-	int addrSize = sizeof(struct sockaddr_in), retAddrSize = 0;
+	int addrSize = sizeof(struct sockaddr_in);
 	struct sockaddr_in inAddress, retAddress;
 	if((tcpSocket = socket(AF_INET, SOCK_STREAM, 0)) == 0)
 	{

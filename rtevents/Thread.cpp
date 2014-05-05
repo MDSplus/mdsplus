@@ -30,9 +30,8 @@ void handlerWithArg(WithArg *withArg)
 {
 	if(withArg->useAttr)
 	{
+		/* DOES NOT ADHERE TO LINUX STANDARDS
 		pid_t pid = getpid();
-		int status;
-		/* DOES NOT ADHERE TO LINUX STANDARDS 
 		status = sched_setaffinity(pid, CPU_MASK_SIZE * sizeof(int), (const cpu_set_t *)withArg->cpuMask);
 		if(status == -1)
 			printf("Failed to set Thread affinity\n");
@@ -40,15 +39,12 @@ void handlerWithArg(WithArg *withArg)
 #ifdef HAVE_SCHED_SETSCHEDULER
 		struct sched_param param;
 		param.sched_priority = withArg->priority;
-		status = sched_setscheduler(pid, withArg->policy, &param);
+		int status = sched_setscheduler(pid, withArg->policy, &param);
 		if(status == -1)
 			printf("Failed to set Thread attributes\n");
 #endif
 	}
-	
-		
-	
-	
+
 	withArg->rtn->run(withArg->arg);
 
 	if(withArg->deallocate)

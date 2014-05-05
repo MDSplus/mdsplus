@@ -66,10 +66,7 @@ bool UDPNetworkManager::connectReceiver(NetworkAddress *address, NetworkReceiver
 #endif
     serverAddr.sin_port = htons(((IPAddress *)address)->port);
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	char *ipAddress = ((IPAddress *)address)->ipAddress;
 	int port = ((IPAddress *)address)->port;
-
-	int addrSize = sizeof(struct sockaddr_in), retAddrSize = 0;
 
 	if((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == 0)
 	{
