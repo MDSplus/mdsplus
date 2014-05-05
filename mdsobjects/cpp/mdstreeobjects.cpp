@@ -427,7 +427,6 @@ void Tree::setViewDate(char *date)
 		throw MdsException(status);
 }
 
-
 void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 {
 	int status = setTreeTimeContext((start)?start->convertToDsc():0, (end)?end->convertToDsc():0, 
@@ -435,8 +434,6 @@ void Tree::setTimeContext(Data *start, Data *end, Data *delta)
 	if(!(status & 1))
 		throw MdsException(status);
 }
-
-
 
 void Tree::setCurrent(char const * treeName, int shot)
 {
@@ -573,7 +570,19 @@ EXPORT void TreeNode::operator delete(void *p)
 {
 	::operator delete(p);
 }
-		
+
+struct AutoString {
+	AutoString(char * str): strPtr(str), string(str) {
+	}
+
+	~AutoString() {
+		delete[] strPtr;
+	}
+
+	char * strPtr;
+	std::string string;
+};
+
 char *TreeNode::getPath()
 {
 	resolveNid();
@@ -587,12 +596,8 @@ char *TreeNode::getPath()
 std::string TreeNode::getPathStr()
 {
 	resolveNid();
-	char *currPath = _TreeGetPath(tree->getCtx(), nid);
-	std::string path(currPath);
-	TreeFree(currPath);
-	return path;
+	return AutoString(_TreeGetPath(tree->getCtx(), nid)).string;
 }
-
 
 char *TreeNode::getMinPath()
 {
@@ -614,12 +619,8 @@ char *TreeNode::getMinPath()
 
 std::string TreeNode::getMinPathStr()
 {
-	char *currPath = getMinPath();
-	std::string retPath(currPath);
-	delete [] currPath;
-	return retPath;
+	return AutoString(getMinPath()).string;
 }
-
 
 char *TreeNode::getFullPath()
 {
@@ -639,15 +640,10 @@ char *TreeNode::getFullPath()
 	return retPath;
 }
 
-
 std::string TreeNode::getFullPathStr()
 {
-	char *currPath = getFullPath();
-	std::string retPath(currPath);
-	delete [] currPath;
-	return retPath;
+	return AutoString(getFullPath()).string;
 }
-
 
 char *TreeNode::getOriginalPartName()
 {
@@ -669,10 +665,7 @@ char *TreeNode::getOriginalPartName()
 
 std::string TreeNode::getOriginalPartNameStr()
 {
-	char *currPath = getOriginalPartName();
-	std::string retPath(currPath);
-	delete [] currPath;
-	return retPath;
+	return AutoString(getOriginalPartName()).string;
 }
 
 char *TreeNode::getNodeName()
@@ -698,13 +691,8 @@ char *TreeNode::getNodeName()
 
 std::string TreeNode::getNodeNameStr()
 {
-	char *currPath = getNodeName();
-	std::string retPath(currPath);
-	delete [] currPath;
-	return retPath;
+	return AutoString(getNodeName()).string;
 }
-
-
 
 Data *TreeNode::getData()
 {
@@ -727,6 +715,7 @@ void TreeNode::putData(Data *data)
 		throw MdsException(status);
 	}
 }
+
 void TreeNode::deleteData()
 {
 	resolveNid();
@@ -737,14 +726,13 @@ void TreeNode::deleteData()
 	}
 }
 
-
-
 bool TreeNode::isOn()
 {
 	resolveNid();
 	bool retOn = (_TreeIsOn(tree->getCtx(), nid) & 1)?true:false;
 	return  retOn;
 }
+
 void TreeNode::setOn(bool on)
 {
 	resolveNid();
