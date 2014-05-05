@@ -92,8 +92,7 @@ void Event::setEvent(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
-//	MDSUdpEvent(eventId);
-	MDSEvent(evName, bufLen, buf);
+	setEventRaw(evName, bufLen, buf);
 }
 
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
@@ -106,14 +105,14 @@ void REvent::setEvent(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
-	MdsEventTrigger(evName, buf, bufLen);
+	setEventRaw(evName, bufLen, buf);
 }
 
 void REvent::setEventAndWait(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
-	MdsEventTriggerAndWait(evName, buf, bufLen);
+	setEventRawAndWait(evName, bufLen, buf);
 }
 
 void REvent::setEventRaw(char *evName, int bufLen, char *buf)
