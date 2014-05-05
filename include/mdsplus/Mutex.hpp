@@ -28,9 +28,13 @@ public:
 		_destroy();
 	}
 
-	void lock() { _lock(); }
+	void lock() {
+		_lock();
+	}
 
-	void unlock() { _unlock(); }
+	void unlock() {
+		_unlock();
+	}
 
 private:
 #if defined (MDS_PTHREAD)
