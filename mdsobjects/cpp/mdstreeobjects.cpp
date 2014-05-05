@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <string>
+#include <vector>
 #include <cctype>
 
 using namespace MDSplus;
@@ -277,36 +278,25 @@ TreeNode *Tree::getNode(String *path)
 
 TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
 {
+	// FIXME: This function doesn't need nids at all. Store a vector of TreeNodes
+	// built right in the while loop.  Need better testing before that change, though.
 	int status;
-	int numNids = 0;
 	void *wildCtx = 0;
-	int chunkSize = 10000;
-	int *currNids = new int[chunkSize];
 
-	while ((status = _TreeFindNodeWild(ctx, path,&currNids[numNids],&wildCtx, usageMask)) & 1)
-	{
-		numNids++;
-		if(numNids == chunkSize)
-		{
-			int* newNids = new int[2 * chunkSize];
-			memcpy(newNids, currNids, chunkSize * sizeof(int));
-			delete []currNids;
-			currNids = newNids;
-			chunkSize = 2 * chunkSize;
-		}
-	}
+	std::vector<int> nids;
+	nids.reserve(10000);
+
+	int temp = 0;
+	while ((status = _TreeFindNodeWild(ctx, path, &temp, &wildCtx, usageMask)) & 1)
+		nids.push_back(temp);
 	_TreeFindNodeEnd(ctx, &wildCtx);
 
-	//printf("%s\n", MdsGetMsg(status));
+	TreeNode **retNodes = new TreeNode *[nids.size()];
+	for(std::size_t i = 0; i < nids.size(); ++i)
+		retNodes[i] = new TreeNode(nids[i], this);
 
-	TreeNode **retNodes = new TreeNode *[numNids];
-	for(int i = 0; i < numNids; i++)
-	{
-		retNodes[i] = new TreeNode(currNids[i], this);
-	}
-	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, numNids);
+	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, nids.size());
 	delete[] retNodes;
-	delete[] currNids;
 	return nodeArray;
 }
 
