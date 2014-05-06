@@ -315,12 +315,12 @@ DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByte
 	try
 	{
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
-		int byteArrLen = 0;
+		size_t byteArrLen = 0;
 		byteArrOut = reventPtr->getRaw(&byteArrLen);
-		errorCode = NumericArrayResize(iB, 1, reinterpret_cast<UHandle *>(&lvByteArrHdlOut), static_cast<int32>(byteArrLen));
+		errorCode = NumericArrayResize(iB, 1, reinterpret_cast<UHandle *>(&lvByteArrHdlOut), byteArrLen);
 		if (!errorCode)
 		{
-			for (int i = 0; i < byteArrLen; i++)
+			for (size_t i = 0; i < byteArrLen; i++)
 				(*lvByteArrHdlOut)->elt[i] = static_cast<int8>(byteArrOut[i]);
 			(*lvByteArrHdlOut)->dimSize = static_cast<int32>(byteArrLen);
 		}
