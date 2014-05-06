@@ -1,5 +1,5 @@
-SOURCES = MdsPlus.java MdsPlusDescriptor.java MdsPlusEvent.java MdsPlusEventMonitor.java MdsPlusEvents.java \
-MdsPlusException.java MdsPlusJavascriptEvent.java
+SOURCES = MdsPlus.java MdsPlusDescriptor.java MdsPlusEvent.java MdsPlusEvents.java \
+MdsPlusException.java 
 
 CLASSES = $(SOURCES:.java=.class)
 
