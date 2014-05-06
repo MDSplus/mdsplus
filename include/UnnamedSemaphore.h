@@ -60,17 +60,18 @@ public:
 
 	int timedWait(MdsTimeout &timeout)
 	{
+		struct timespec waitTimeout;
+		waitTimeout.tv_sec = timeout.getSecs();
+		waitTimeout.tv_nsec = timeout.getNanoSecs();
 		bool timeoutOccurred = false;
 		struct TimeoutStruct *timout = new TimeoutStruct;
 		timout->sem = &semStruct;
-		timout->waitTimeout = timeout.getFutureTime();
+		timout->waitTimeout = waitTimeout;
 		timout->waitPending = true;
 		timout->timeoutOccurred = &timeoutOccurred;
 		pthread_t pid;
 		pthread_create(&pid, NULL, handleTimeout,  (void *)timout);
-
-		timespec futureTime = timeout.getFutureTime();
-		int status = sem_timedwait(&semStruct, &futureTime);
+		int status = sem_wait(&semStruct);
 		if(timeoutOccurred)
 		    delete timout;
 		else
