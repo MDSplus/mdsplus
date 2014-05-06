@@ -103,12 +103,6 @@ depend:
 CHANGELOG :
 	devscripts/MakeChangeLog
 
-RELEASE:
-	devscripts/MakeRelease
-
-RPM :
-	devscripts/MakeRpm
-
 MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php epics
 
 install: 
@@ -122,18 +116,6 @@ install:
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > @exec_prefix@/mdsobjects/python/mdsplus_version.py; fi
 	cp MDSplus-License.txt @exec_prefix@ 
 	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
-
-BINARIES = bin etc lib uid \
-           tdi idl trees envsyms \
-           setup.sh setup.csh java LabView \
-           include/ipdesc.h include/mdslib.inc
-
-CLIENT_BINARIES = include/ipdesc.h include/mdslib.inc lib/libMdsIpShr.* lib/libMdsLib*.* idl
-
-binaries :
-	tar cvf - $(BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.tar.Z
-	tar cvf - $(CLIENT_BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.client.tar.Z
-
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr
