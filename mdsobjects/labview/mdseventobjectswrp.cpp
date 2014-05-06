@@ -141,12 +141,12 @@ DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteA
 	try
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
-		int byteArrLen = 0;
+		size_t byteArrLen = 0;
 		byteArrOut = eventPtr->waitRaw(&byteArrLen);
 		errorCode = NumericArrayResize(iB, 1, reinterpret_cast<UHandle *>(&lvByteArrHdlOut), static_cast<int32>(byteArrLen));
 		if (!errorCode)
 		{
-			for (int i = 0; i < byteArrLen; i++)
+			for (size_t i = 0; i < byteArrLen; i++)
 				(*lvByteArrHdlOut)->elt[i] = static_cast<int8>(byteArrOut[i]);
 			(*lvByteArrHdlOut)->dimSize = static_cast<int32>(byteArrLen);
 		}
