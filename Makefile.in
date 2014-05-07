@@ -130,6 +130,7 @@ mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
 rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 tdishr: mdsshr treeshr
+tditest: tdishr
 traverser: xmdsshr
 wfevent: tdishr mdsshr
 
