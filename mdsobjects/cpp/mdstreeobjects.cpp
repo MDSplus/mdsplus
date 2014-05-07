@@ -111,25 +111,19 @@ static int convertUsage(std::string const & usage)
 
 static Mutex treeMutex;
 
-Tree::Tree(char const *name, int shot) : shot(shot), ctx(nullptr)
+Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
 {
 	int status = _TreeOpen(&ctx, name, shot, 0);
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
-	this->name = new char[strlen(name) + 1];
-	strcpy(this->name, name);
 	//setActiveTree(this);
 }
 
-Tree::Tree(void *dbid, char const *name, int shot) : shot(shot), ctx(dbid)
+Tree::Tree(void *dbid, char const *name, int shot): name(name), shot(shot), ctx(dbid)
 {
-	this->name = new char[strlen(name) + 1];
-	strcpy(this->name, name);
 }
 
-Tree::Tree(char const *name, int shot, char const *mode) : shot(shot), ctx(nullptr)
+Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr)
 {
 	std::string upMode(mode);
 	std::transform(upMode.begin(), upMode.end(), upMode.begin(), static_cast<int(*)(int)>(&std::toupper));
@@ -148,17 +142,13 @@ Tree::Tree(char const *name, int shot, char const *mode) : shot(shot), ctx(nullp
 
 	if(!(status & 1))
 		throw MdsException(status);
-
-	this->name = new char[strlen(name) + 1];
-	strcpy(this->name, name);
 }
 
 Tree::~Tree()
 {
-    int status = _TreeClose(&ctx, name, shot);
+    int status = _TreeClose(&ctx, name.c_str(), shot);
     if(status & 1)
     	TreeFreeDbid(ctx);
-    delete [] name;
 }
 
 EXPORT void *Tree::operator new(size_t sz)
@@ -173,11 +163,9 @@ EXPORT void Tree::operator delete(void *p)
 
 void Tree::edit()
 {
-	int status = _TreeOpenEdit(&ctx, name, shot);
+	int status = _TreeOpenEdit(&ctx, name.c_str(), shot);
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
 }
 
 Tree *Tree::create(char const * name, int shot)
@@ -185,28 +173,22 @@ Tree *Tree::create(char const * name, int shot)
 	void *dbid;
 	int status = _TreeOpenNew(&dbid, name, shot);
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
 	return new Tree(dbid, name, shot);
 }
 
 void Tree::write()
 {
-	int status = _TreeWriteTree(&ctx, name, shot);
+	int status = _TreeWriteTree(&ctx, name.c_str(), shot);
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
 }
 
 void Tree::quit()
 {
-	int status = _TreeQuitTree(&ctx, name, shot);
+	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
 }
 
 TreeNode *Tree::addNode(char const * name, char *usage)

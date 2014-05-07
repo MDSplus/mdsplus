@@ -2083,7 +2083,7 @@ protected:
 		Tree(void *dbid, char const * name, int shot);
 	protected:
 		Tree(){}
-		char *name;
+		std::string name;
 		int shot;
 		void *ctx;
 	
