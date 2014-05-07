@@ -13,7 +13,7 @@ Core applications, libraries and configuration files
 /usr/local/mdsplus/ChangeLog
 /usr/local/mdsplus/etc
 /usr/local/mdsplus/lib??
-/usr/local/mdsplus/man
+/usr/local/mdsplus/share/man
 /usr/local/mdsplus/rpm
 /usr/local/mdsplus/setup.csh
 /usr/local/mdsplus/setup.sh
