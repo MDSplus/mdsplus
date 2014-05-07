@@ -68,7 +68,7 @@ int TreeStartConglomerate(int size)
   return _TreeStartConglomerate(*TreeCtx(), size);
 }
 
-int TreeWriteTree(char *exp_ptr, int shotid)
+int TreeWriteTree(char const * exp_ptr, int shotid)
 {
   return _TreeWriteTree(TreeCtx(), exp_ptr, shotid);
 }
@@ -674,7 +674,7 @@ int64_t _TreeGetDatafileSize(void *dbid)
 
 
 
-int _TreeWriteTree(void **dbid, char *exp_ptr, int shotid)
+int _TreeWriteTree(void **dbid, char const * exp_ptr, int shotid)
 {
   PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
   int       status;

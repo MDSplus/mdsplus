@@ -590,8 +590,8 @@ extern EXPORT int TreeUsingPrivateCtx();
 extern EXPORT int TreeVerify();
 extern EXPORT int _TreeVerify(void *dbid);
 extern EXPORT int TreeWait();
-extern EXPORT int TreeWriteTree(char *tree, int shot);
-extern EXPORT int _TreeWriteTree(void **dbid, char *tree, int shot);
+extern EXPORT int TreeWriteTree(char const * tree, int shot);
+extern EXPORT int _TreeWriteTree(void **dbid, char const * tree, int shot);
 
 //Segments
 extern EXPORT int TreeBeginSegment(int nid, struct descriptor *start, struct descriptor *end, 
