@@ -1043,9 +1043,7 @@ protected:
 		}
 		Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
+			init();
 			nDescs = 3;
 			descs = new Data *[3];
 			descs[0] = data;
@@ -1056,9 +1054,7 @@ protected:
 		}
 		Signal(Data *data, Data *raw, Data *dimension1, Data *dimension2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
+			init();
 			nDescs = 4;
 			descs = new Data *[4];
 			descs[0] = data;
@@ -1070,9 +1066,7 @@ protected:
 		}
 		Signal(Data *data, Data *raw, int nDims, Data **dimensions, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
+			init();
 			nDescs = 2 + nDims;
 			descs = new Data *[nDescs];
 			descs[0] = data;
@@ -1101,6 +1095,12 @@ protected:
 		void setRaw(Data *raw){assignDescAt(raw, 1);}
 		void setDimension(Data *dimension) {assignDescAt(dimension, 2);}
 		void setDimensionAt(Data *dimension, int idx) {assignDescAt(dimension, 2 + idx);}
+	private:
+		void init() {
+			dtype = DTYPE_SIGNAL;
+			length = 0;
+			ptr = 0;
+		}
 	};
 	class Dimension: public Compound
 	{
