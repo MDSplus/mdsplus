@@ -48,7 +48,7 @@ int TreeEndConglomerate()
   return _TreeEndConglomerate(*TreeCtx());
 }
 
-int TreeQuitTree(char *exp_ptr, int shotid)
+int TreeQuitTree(char const * exp_ptr, int shotid)
 {
   return _TreeQuitTree(TreeCtx(), exp_ptr, shotid);
 }
@@ -992,7 +992,7 @@ int _TreeSetNoSubtree(void *dbid, int nid)
   return TreeNORMAL;
 }
 
-int _TreeQuitTree(void **dbid, char *exp_ptr, int shotid)
+int _TreeQuitTree(void **dbid, char const * exp_ptr, int shotid)
 {
   PINO_DATABASE **dblist = (PINO_DATABASE **)dbid;
   int       status;
