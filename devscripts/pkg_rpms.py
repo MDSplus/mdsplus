@@ -1,5 +1,5 @@
 import subprocess,datetime,os,sys
-from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, newRelease, getTopDir
+from pkg_utils import getDist, getWorkspace, getFlavor, getVersion, getRelease, getReleaseTag, checkRelease, getPackages, newRelease, getTopDir,Release
 def signrpmsCommand(args):
     print signrpms(args[2])
 
@@ -109,6 +109,7 @@ def makeRepoRpmsCommand(args):
 
 def makeRpmsCommand(args):
     """Make Redhat distributions rpms."""
+    r=Release()
     DIST=getDist()
     WORKSPACE=getWorkspace()
     FLAVOR=getFlavor()
