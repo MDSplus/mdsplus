@@ -11,7 +11,7 @@ then
   echo "deb file://${WORKSPACE}/REPO/ MDSplus $2" > apt/etc/apt/sources.list.d/mdsplus.list
 elif [ "$1" = "clean" ]
 then
-  rm -Rf apt
+  echo ""
 else
   if [ -z "$3" ]
   then
@@ -20,4 +20,5 @@ else
     apt-get -o Dir::State=${WORKSPACE}/apt/var/lib/apt/ -o Dir::Etc=${WORKSPACE}/apt/etc/apt $1 $2 "$3"
   fi
 fi
+chown -R twf apt
 exit $?
