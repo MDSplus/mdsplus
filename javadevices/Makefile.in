@@ -146,7 +146,8 @@ RFX_PROTECTIONSSetup.java\
 FLIRSC65XSetup.java\
 NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
-DIO2_ENCDECSetup.java
+DIO2_ENCDECSetup.java\
+MARTE_DEVICESetup.java
 
 all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar

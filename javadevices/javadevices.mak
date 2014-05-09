@@ -17,6 +17,7 @@ CHVPS_SETSetup.java\
 DEQUSetupSetup.java\
 DFLUSetupSetup.java\
 DIO2EncoderSetup.java\
+DIO2_ENCDECSetup.java\
 DIO2Setup.java\
 DIO4Setup.java\
 E1463Setup.java\
@@ -35,6 +36,7 @@ L6810Setup.java\
 LASER_NDSetup.java\
 LASER_RUSetup.java\
 MARTESetup.java\
+MARTE_DEVICESetup.java\
 MARTE_MHD_BRSetup.java\
 MARTE_MHD_CTRLSetup.java\
 MARTE_MHD_ISetup.java\
