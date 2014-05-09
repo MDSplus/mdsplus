@@ -388,7 +388,7 @@ int IdlMdsValue(int argc, void **argv)
 int IdlMdsPut(int argc, void **argv)
 {
   int status;
-  int arglistlen=3+(argc/2);
+  int arglistlen=4+(argc/2);
   void **arglist=(void **)alloca(arglistlen*sizeof(void *));
   struct descriptor expression = {0,DTYPE_T,CLASS_S,0};
   EMPTYXD(tmp);
