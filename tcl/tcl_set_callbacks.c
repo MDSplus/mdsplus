@@ -1,6 +1,6 @@
 #include        "tclsysdef.h"
 #include <STATICdef.h>
-
+#include <config.h>
 #ifdef HAVE_WINDOWS_H
 extern int pthread_cond_signal();
 extern int pthread_mutex_lock();
