@@ -3,37 +3,6 @@ import subprocess,sys,tarfile,os
 def getTopDir():
   return os.path.dirname(os.path.abspath(__file__+'/../'))
 
-class Release(object):
-  def __init__(self):
-
-    self.flavor=getFlavor()
-    p=subprocess.Popen('cvs log -h configure.in',stdout=subprocess.PIPE,shell=True,cwd=getTopDir())
-    out=p.stdout.readlines()
-    p.wait()
-    version_num=0
-    tag=self.flavor+'_release-'
-    for line in out:
-      if tag in line:
-        v=line.split(':')[0].split('-')
-        this_version=(int(v[1])<<24)+(int(v[2])<<16)+(int(v[3]))
-        if this_version > version_num:
-          version_num=this_version
-          self.version='%d.%d.%d' % (int(v[1]),int(v[2]),int(v[3]))
-          self.major=int(v[1])
-          self.minor=int(v[2])
-          self.sub=int(v[3])
-    p=subprocess.Popen('cvs -Q diff --brief -r %s 2>&1 | grep -c Index:' % self.rtag(),stdout=subprocess.PIPE,
-                       shell=True,cwd=getTopDir())
-    out=p.stdout.readlines()
-    p.wait()
-    num_changes=int(out[0][:-1])
-    print "%d modules have changed since the last release (%s)" % (num_changes,self.version)
-
-  def rtag(self):
-    return "%s_release-%d-%d-%d" % (self.flavor,self.major,self.minor,self.sub)
-
-    
-
 def shell(cwd,cmd,msg):
   print cmd
   sys.stdout.flush()
