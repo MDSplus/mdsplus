@@ -195,3 +195,5 @@ if __name__ == "__main__":
     b.build()
     b.test()
     b.deploy()
+  if not b.exists():
+    raise Exception("Current package still not found after build")
