@@ -65,14 +65,15 @@ class MDSplusVersion(object):
       try:      
         os.stat(tarball)
       except:
-        os.mkdir('/tmp/%s' % self.flavor)
-        os.symlink(self.topdir,'/tmp/%s/mdsplus' % self.flavor)
+        tempdir='/tmp/'+os.tmpname()
+        os.mkdir(tempdir)
+        os.symlink(self.topdir,tempdir+'/mdsplus')
         status=subprocess.Popen('tar zhcf %s --exclude CVS mdsplus' % tarball,
-                                shell=True,cwd='/tmp/%s' % self.flavor).wait()
+                                shell=True,cwd=tempdir).wait()
         if status != 0:
           raise Exception("Error creating source tarball: %s" % taball)
-        os.unlink('/tmp/%s/mdsplus' % self.flavor)
-        os.unlink('/tmp/%s' % self.flavor)
+        os.unlink(tempdir+'/mdsplus' % self.flavor)
+        os.rmdir(tempdir)
 
 
   def rtag(self):
