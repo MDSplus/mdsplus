@@ -50,19 +50,29 @@ class MDSplusVersion(object):
     #
     if num_changes > 0:
       self.release=self.release+1
+      status=subprocess.Popen('cvs -Q tag %(tag)s 2>&1' % self.rtag(),shell=True,cwd=self.topdir).wait()
+      if status != 0:
+        raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
+      print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
+    if self.dist != 'win':
       if self.flavor == 'stable':
         rflavor=""
       else:
         rflavor="-"+self.flavor
-      cmd=('if ( cvs -Q tag %(tag)s 2>&1 ); then '+
-           'mkdir /tmp/%(flavor)s; ln -sf $(pwd) /tmp/%(flavor)s/mdsplus;pushd /tmp/%(flavor)s;'+
-           'tar zcf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d --exclude CVS mdsplus;'+
-           'popd; rm -Rf /tmp/%(flavor)s;fi') % {'tag':self.rtag(),'rflavor':rflavor,'major':self.major,'minor':self.minor,'release':self.release,'flavor':self.flavor}
-      print(cmd)
-      status=subprocess.Popen(cmd,shell=True,cwd=self.topdir).wait()
-      if status != 0:
-        raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
-      print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
+      tarball='/repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz' % \
+          {'rflavor':rflavor,'major':self.major,'minor':self.minor,'release':self.release,'flavor':self.flavor}
+      try:      
+        os.stat(tarball)
+      except:
+        os.mkdir('/tmp/%s' % self.flavor)
+        os.symlink(self.topdir,'/tmp/%s/mdsplus' % self.flavor)
+        status=subprocess.Popen('tar zhcf %s --exclude CVS mdsplus' % tarball,
+                                shell=True,cwd='/tmp/%s' % self.flavor).wait()
+        if status != 0:
+          raise Exception("Error creating source tarball: %s" % taball)
+        os.unlink('/tmp/%s/mdsplus' % self.flavor)
+        os.unlink('/tmp/%s' % self.flavor)
+
 
   def rtag(self):
         return "%s_release-%d-%d-%d" % (self.flavor,self.major,self.minor,self.release)
