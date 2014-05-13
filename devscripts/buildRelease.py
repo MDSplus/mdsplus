@@ -50,10 +50,16 @@ class MDSplusVersion(object):
     #
     if num_changes > 0:
       self.release=self.release+1
+      if self.flavor == 'stable':
+        rflavor=""
+      else:
+        rflavor="-"+self.flavor
       subprocess.Popen(('cvs -Q tag %(tag)s 2>&1;'+
-                         'tar zcf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d')\
-                           % {'tag':self.rtag(),'rflavor':rflavor,'major':self.flavor,'minor':self.minor,'release':self.release),
-                         stdout=suprocess.PIPE,shell=True,cwd=self.topdir).wait()
+                        'mkdir /tmp/%{flavor}s; ln -sf %(topdir) /tmp/%{flavor}/mdsplus;pushd /tmp/%{flavor};'
+                        'tar zcf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d --exclude CVS mdsplus;'+
+                        'popd; rm -Rf /tmp/%{flavor}s;') % {'tag':self.rtag(),'rflavor':rflavor,'major':self.major,
+                                                            'minor':self.minor,'release':self.release,'flavor':self.flavor},
+                       stdout=suprocess.PIPE,shell=True,cwd=self.topdir).wait()
       print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
 
   def rtag(self):
