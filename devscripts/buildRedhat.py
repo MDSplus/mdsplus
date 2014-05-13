@@ -208,7 +208,6 @@ def test(self):
 
 def deploy(self):
     print("Deploying new release %d.%d-%d" % (self.major,self.minor,self.release))
-    return
     outpath='/repository/%s/%s' % (self.dist,self.flavor)
     status=subprocess.Popen(('rsync -av %(workspace)s/RPMS %(outpath)s/;'+
                              'rsync -av %(workspace)s/i686/mdsplus/mdsobjects/python/dist/*.egg /repository/EGGS/;'+

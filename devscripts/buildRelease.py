@@ -50,7 +50,7 @@ class MDSplusVersion(object):
     #
     if num_changes > 0:
       self.release=self.release+1
-      status=subprocess.Popen('cvs -Q tag %(tag)s 2>&1' % self.rtag(),shell=True,cwd=self.topdir).wait()
+      status=subprocess.Popen('cvs -Q tag %s 2>&1' % self.rtag(),shell=True,cwd=self.topdir).wait()
       if status != 0:
         raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
       print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
