@@ -144,7 +144,7 @@ fi
     else:
         rpmflavor="-"+self.flavor
         pythonflavor=self.flavor+"-"
-    specfile="%s/SPECS/mdsplus%s-%d.%d-%d.%s.spec" % (rpmflavor,self.major,self.minor,self.release,self.dist)
+    specfile="%s/SPECS/mdsplus%s-%d.%d-%d.%s.spec" % (self.workspace,rpmflavor,self.major,self.minor,self.release,self.dist)
     f=open(specfile,'w')
     f.write(rpm_spec_start % (self.major,self.minor,self.release));
     for pkg in self.packages:
