@@ -179,9 +179,9 @@ rpmbuild --target i686-linux --buildroot %(workspace)s/BUILDROOT/i686 -ba \
         writeRpmInfo("%s/RPMS/i686/mdsplus%s-%s-%d.%d-%d.%s.i686" % (self.workspace,rpmflavor,pkg,self.major,self.minor,self.release,self.dist))
     self.log("%s, Starting to build 64-bit rpms" % str(datetime.datetime.now()))
     status=subprocess.Popen(('rpmbuild --target x86_64-linux'+
-                            ' --buildroot %(workspace)s/BUILDROOT/x86_64 -ba' % (self.workspace,)+
-                           ' --define="_topdir %(workspace)s"' % (self.workspace,)+
-                       ' --define="_builddir %(workspace)s/x86_64/mdsplus"' % (self.workspace,)+
+                            ' --buildroot %(workspace)s/BUILDROOT/x86_64 -ba'+
+                           ' --define="_topdir %(workspace)s"'+
+                       ' --define="_builddir %(workspace)s/x86_64/mdsplus"'+
                        ' %(specfile)s') % {'workspace':self.workspace,'specfile':specfile},shell=True,cwd=self.topdir).wait()
     if status != 0:
         raise Exception("Error buildin x86_64 %s.%s rpms. rpmbuild returned with status=%d" % (self.flavor,self.dist,status))
