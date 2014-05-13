@@ -54,7 +54,7 @@ class MDSplusVersion(object):
         rflavor=""
       else:
         rflavor="-"+self.flavor
-      cmd=('if ( cvs -Q tag %(tag)s 2>&1 ); then'+
+      cmd=('if ( cvs -Q tag %(tag)s 2>&1 ); then '+
            'mkdir /tmp/%(flavor)s; ln -sf $(pwd) /tmp/%(flavor)s/mdsplus;pushd /tmp/%(flavor)s;'+
            'tar zcf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d --exclude CVS mdsplus;'+
            'popd; rm -Rf /tmp/%(flavor)s;fi') % {'tag':self.rtag(),'rflavor':rflavor,'major':self.major,'minor':self.minor,'release':self.release,'flavor':self.flavor}
