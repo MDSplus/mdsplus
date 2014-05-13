@@ -91,11 +91,11 @@ Summary: MDSplus Data Acquisition System
 AutoReqProv: yes
 """
     rpm_spec_middle="""
-%description
+%%description
 Main libraries and programs to get MDSplus operational
 
-%build
-if [ "%_target" != "i686-linux" ]
+%%build
+if [ "%%_target" != "i686-linux" ]
 then
   cd ${WORKSPACE}/x86_64/mdsplus
   ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 --enable-nodebug --enable-mdsip_connections --with-gsi=/usr:gcc64 --with-labview=$LABVIEW_DIR --with-jdk=$JDK_DIR --with-idl=$IDL_DIR
@@ -108,29 +108,29 @@ else
   env LANG=en_US.UTF-8 make
 fi
 
-%install
+%%install
 
-if [ "%_target" != "i686-linux" ]
+if [ "%%_target" != "i686-linux" ]
 then
   cd ${WORKSPACE}/x86_64/mdsplus
-  env MDSPLUS_VERSION="%s-%d.%d.%d" make install
+  env MDSPLUS_VERSION="%(pythonflavor)s-%(major)d.%(minor)d.%(release)d" make install
   rsync -a ${WORKSPACE}/i686/mdsplus/bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/mdsobjects/python/dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
 else
   cd ${WORKSPACE}/i686/mdsplus
-  env MDSPLUS_VERSION="%s-%d.%d.%d" make install
+  env MDSPLUS_VERSION="%(pythonflavor)s-%(major)d.%(minor)d.%(release)d" make install
   pushd mdsobjects/python
   python setup.py bdist_egg
   rsync -a dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
   popd
 fi
 
-%clean
+%%clean
 #rm -rf $RPM_BUILD_ROOT
 
-%files
+%%files
 
 """
     for d in ['RPMS','SOURCES','SPECS','SRPMS','EGGS']:
@@ -149,7 +149,7 @@ fi
     f.write(rpm_spec_start % (rpmflavor,self.major,self.minor,self.release,self.dist));
     for pkg in self.packages:
         f.write("requires: mdsplus%s-%s >= %d.%d-%d\n" % (rpmflavor,pkg,self.major,self.minor,self.release))
-    f.write(rpm_spec_middle % (pythonflavor,self.major,self.minor,self.release))
+    f.write(rpm_spec_middle % {'pythonflavor':pythonflavor,'major':self.major,'minor':self.minor,'release':self.release))
     for pkg in self.packages:
         f_in=open('%s/rpm/sbpackages/%s' % (self.topdir,pkg),'r')
         for line in f_in:
