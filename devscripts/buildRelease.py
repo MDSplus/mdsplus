@@ -65,7 +65,7 @@ class MDSplusVersion(object):
       try:      
         os.stat(tarball)
       except:
-        tempdir='/tmp/'+os.tmpnam()
+        tempdir=os.tmpnam()
         os.mkdir(tempdir)
         os.symlink(self.topdir,tempdir+'/mdsplus')
         status=subprocess.Popen('tar zhcf %s --exclude CVS mdsplus' % tarball,
