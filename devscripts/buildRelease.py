@@ -72,7 +72,7 @@ class MDSplusVersion(object):
                                 shell=True,cwd=tempdir).wait()
         if status != 0:
           raise Exception("Error creating source tarball: %s" % taball)
-        os.unlink(tempdir+'/mdsplus' % self.flavor)
+        os.unlink(tempdir+'/mdsplus')
         os.rmdir(tempdir)
 
 
