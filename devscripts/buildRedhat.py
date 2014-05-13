@@ -185,8 +185,8 @@ rpmbuild --target i686-linux --buildroot %(workspace)s/BUILDROOT/i686 -ba \
                        ' %(specfile)s') % {'workspace':self.workspace,'specfile':specfile},shell=True,cwd=self.topdir).wait()
     if status != 0:
         raise Exception("Error buildin x86_64 %s.%s rpms. rpmbuild returned with status=%d" % (self.flavor,self.dist,status))
-    self.log("%s, Done building 64-bit rpms - status=%d" % (str(datetime.datetime.now()),rpmbuild_status))
-    self.log("%s, Starting to sign 64-bit rpms" % (str(datetime.datetime.now()),))
+    self.log("%s, Done building 64-bit rpms" % str(datetime.datetime.now()))
+    self.log("%s, Starting to sign 64-bit rpms" % str(datetime.datetime.now()))
     signrpms(self,'x86_64')
     self.log("%s, Done signing 64-bit rpms" % str(datetime.datetime.now()))
     for pkg in self.packages:
