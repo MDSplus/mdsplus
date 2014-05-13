@@ -60,9 +60,7 @@ def exists(self):
         flavor_part=""
     else:
         flavor_part="-%s" % self.flavor
-    pkgs=self.packages
-    pkgs.insert(0,None)
-    for pkg in pkgs:
+    for pkg in [None]+self.packages:
         if pkg is not None:
             pkg_part="-%s" % pkg
         else:
