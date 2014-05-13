@@ -56,15 +56,10 @@ def writeRpmInfo(outfile):
 
 def exists(self):
     """Determine if package is available for this release. This becomes a method of the Package class in pkg_utils."""
-    flavor=self.version.flavor
-    if flavor == "stable":
+    if self.flavor == "stable":
         flavor_part=""
     else:
-        flavor_part="-%s" % flavor
-    dist=self.dist
-    major=self.version.major
-    minor=self.version.minor
-    release=self.version.release
+        flavor_part="-%s" % self.flavor
     pkgs=self.packages
     pkgs.insert(0,None)
     for pkg in pkgs:
@@ -72,8 +67,8 @@ def exists(self):
             pkg_part="-%s" % pkg
         else:
             pkg_part=""
-        rpms=('/mnt/dist/%s/RPMS/i686/mdsplus%s%s-%d.%d-%d.%s.i686.rpm' % (flavor,flavor_part,pkg_part,self.major,self.minor,self.release,self.dist),
-              '/mnt/dist/%s/RPMS/x86_54/mdsplus%s-%s-%d.%d-%d.%s.x86_64.rpm' % (flavor,flavor_part,pkg_part,major,minor,release,dist))
+        rpms=('/repository/%s/%s/RPMS/i686/mdsplus%s%s-%d.%d-%d.%s.i686.rpm' % (self.dist,self.flavor,flavor_part,pkg_part,self.major,self.minor,self.release,self.dist),
+              '/repository/%s/%s/RPMS/x86_54/mdsplus%s-%s-%d.%d-%d.%s.x86_64.rpm' % (self.dist,self.flavor,flavor_part,pkg_part,self.major,self.minor,self.release,self.dist))
         for rpm in rpms:
             try:
                 os.stat(rpm)
@@ -222,14 +217,18 @@ def deploy(self):
     except:
         dotar=False
     if dotar:
-        p=subprocess.Popen('tar zcf ../SOURCES/mdsplus%s-%s.tar.gz --exclude CVS mdsplus' % (rpmflavor,VERSION),shell=True,cwd="%s/source" % (self.workspace,))
+        p=subprocess.Popen('tar zcf ../SOURCES/mdsplus%s-%d.%d-%d.tar.gz --exclude CVS mdsplus' % (rpmflavor,self.major,self.minor,self.release),
+                           shell=True,cwd="%s/source" % (self.workspace,))
         pstat=p.wait()
         if pstat != 0:
             raise Exception("Error creating source tarball")
-    p=subprocess.Popen('rsync -av RPMS %s;rsync -av SOURCES %s;rsync -av ./i686/mdsplus/mdsobjects/python/dist/*.egg %s/EGGS/' % (DISTPATH,DISTPATH,DISTPATH),shell=True,cwd=self.workspace)
-    pstat=p.wait()
-    if pstat != 0:
+    outpath='/repository/%s/%s' % (self.dist,self.flavor)
+    status=subprocess.Popen(('rsync -av %(workspace)s/RPMS %(outpath)s/;\n'+
+                             'rsync -av %(workspace)s/SOURCES %(outpath)s/;\n'+
+                             'rm -Rf %(workspace)s/SOURCES;\n'+
+                             'rsync -av %(workspace)s/i686/mdsplus/mdsobjects/python/dist/*.egg %(outpath)s/EGGS/'+
+                             'rm -Rf %(workspace)s/EGGS;\n') % {'outpath':outpath,'workspace':self.workspace},
+                       shell=True).wait()
+    if status != 0:
         raise Exception("Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,))
-    sys.stdout.flush()
-    p=subprocess.Popen('rm -Rf SOURCES EGGS',shell=True,cwd=self.workspace)
-    pstat=p.wait()
+    self.log("Completed deployment")
