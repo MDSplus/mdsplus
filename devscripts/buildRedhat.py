@@ -149,7 +149,7 @@ fi
     f.write(rpm_spec_start % (rpmflavor,self.major,self.minor,self.release,self.dist));
     for pkg in self.packages:
         f.write("requires: mdsplus%s-%s >= %d.%d-%d\n" % (rpmflavor,pkg,self.major,self.minor,self.release))
-    f.write(rpm_spec_middle % {'pythonflavor':pythonflavor,'major':self.major,'minor':self.minor,'release':self.release))
+    f.write(rpm_spec_middle % {'pythonflavor':pythonflavor,'major':self.major,'minor':self.minor,'release':self.release})
     for pkg in self.packages:
         f_in=open('%s/rpm/sbpackages/%s' % (self.topdir,pkg),'r')
         for line in f_in:
