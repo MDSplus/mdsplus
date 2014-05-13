@@ -54,12 +54,14 @@ class MDSplusVersion(object):
         rflavor=""
       else:
         rflavor="-"+self.flavor
-      subprocess.Popen(('cvs -Q tag %(tag)s 2>&1;'+
-                        'mkdir /tmp/%(flavor)s; ln -sf $(pwd) /tmp/%(flavor)/mdsplus;pushd /tmp/%(flavor)s;'
+      status=subprocess.Popen(('if ( cvs -Q tag %(tag)s 2>&1);then'+
+                        'mkdir /tmp/%(flavor)s; ln -sf $(pwd) /tmp/%(flavor)s/mdsplus;pushd /tmp/%(flavor)s;'
                         'tar zcf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d --exclude CVS mdsplus;'+
-                        'popd; rm -Rf /tmp/%(flavor)s;') % {'tag':self.rtag(),'rflavor':rflavor,'major':self.major,
+                        'popd; rm -Rf /tmp/%(flavor)s;fi') % {'tag':self.rtag(),'rflavor':rflavor,'major':self.major,
                                                             'minor':self.minor,'release':self.release,'flavor':self.flavor},
                        stdout=suprocess.PIPE,shell=True,cwd=self.topdir).wait()
+      if status != 0:
+        raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
       print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
 
   def rtag(self):
