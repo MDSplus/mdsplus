@@ -82,7 +82,7 @@ def build(self):
     self.log("Building new release %d.%d-%d" % (self.major,self.minor,self.release))
     rpm_spec_start="""Name: mdsplus%s
 Version: %d.%d
-Release: %d%{?dist}
+Release: %d.%s
 License: BSD Open Source
 Summary: The MDSplus Data System
 Group: Applications/Acquisition
@@ -146,7 +146,7 @@ fi
         pythonflavor=self.flavor+"-"
     specfile="%s/SPECS/mdsplus%s-%d.%d-%d.%s.spec" % (self.workspace,rpmflavor,self.major,self.minor,self.release,self.dist)
     f=open(specfile,'w')
-    f.write(rpm_spec_start % (rpmflavor,self.major,self.minor,self.release));
+    f.write(rpm_spec_start % (rpmflavor,self.major,self.minor,self.release,self.dist));
     for pkg in self.packages:
         f.write("requires: mdsplus%s-%s >= %d.%d-%d\n" % (rpmflavor,pkg,self.major,self.minor,self.release))
     f.write(rpm_spec_middle % (pythonflavor,self.major,self.minor,self.release))
