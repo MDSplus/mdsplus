@@ -153,7 +153,7 @@ fi
         for line in f_in:
             line=line.replace("--RELEASE--","%d.%s" % (self.release,self.dist))
             line=line.replace("--RPMFLAVOR--",rpmflavor)
-            f.write(line[:-1])
+            f.write(line)
     f.close()
     if 'UPDATE_CHANGELOG' in os.environ:
         self.log("Updating ChangeLog")
