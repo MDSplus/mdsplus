@@ -66,7 +66,7 @@ def exists(self):
         else:
             pkg_part=""
         rpms=('/repository/%s/%s/RPMS/i686/mdsplus%s%s-%d.%d-%d.%s.i686.rpm' % (self.dist,self.flavor,flavor_part,pkg_part,self.major,self.minor,self.release,self.dist),
-              '/repository/%s/%s/RPMS/x86_54/mdsplus%s-%s-%d.%d-%d.%s.x86_64.rpm' % (self.dist,self.flavor,flavor_part,pkg_part,self.major,self.minor,self.release,self.dist))
+              '/repository/%s/%s/RPMS/x86_64/mdsplus%s%s-%d.%d-%d.%s.x86_64.rpm' % (self.dist,self.flavor,flavor_part,pkg_part,self.major,self.minor,self.release,self.dist))
         for rpm in rpms:
             try:
                 os.stat(rpm)
