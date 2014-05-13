@@ -55,7 +55,7 @@ class MDSplusVersion(object):
       else:
         rflavor="-"+self.flavor
       subprocess.Popen(('cvs -Q tag %(tag)s 2>&1;'+
-                        'mkdir /tmp/%{flavor}s; ln -sf %(topdir) /tmp/%{flavor}/mdsplus;pushd /tmp/%{flavor};'
+                        'mkdir /tmp/%(flavor)s; ln -sf $(pwd) /tmp/%{flavor}/mdsplus;pushd /tmp/%{flavor};'
                         'tar zcf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d --exclude CVS mdsplus;'+
                         'popd; rm -Rf /tmp/%{flavor}s;') % {'tag':self.rtag(),'rflavor':rflavor,'major':self.major,
                                                             'minor':self.minor,'release':self.release,'flavor':self.flavor},
