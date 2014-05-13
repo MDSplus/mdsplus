@@ -54,7 +54,7 @@ class MDSplusVersion(object):
       if status != 0:
         raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
       print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
-    self.dist = self.getdist()
+    self.dist = self.getDist()
     if self.dist != 'win':
       if self.flavor == 'stable':
         rflavor=""
