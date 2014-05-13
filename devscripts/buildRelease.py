@@ -54,6 +54,7 @@ class MDSplusVersion(object):
       if status != 0:
         raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
       print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
+    self.dist = self.getdist()
     if self.dist != 'win':
       if self.flavor == 'stable':
         rflavor=""
@@ -76,6 +77,38 @@ class MDSplusVersion(object):
 
   def rtag(self):
         return "%s_release-%d-%d-%d" % (self.flavor,self.major,self.minor,self.release)
+
+  def getDist(self):
+    """Determine the type of platform this is running on."""
+
+    def getLsbReleaseDist():
+      p=subprocess.Popen('lsb_release -a -s 2>/dev/null',stdout=subprocess.PIPE,shell=True)
+      info=p.stdout.readlines()
+      p.wait()
+      platform=info[0][0:-1]
+      version=info[2][0:-1].split('.')[0]
+      return platform+version
+
+    dist=None
+    if os.name=="nt":
+      dist="win"
+    elif os.uname()[0]=='SunOS':
+      dist=os.uname()[0]+"-"+os.uname()[3].split('.')[0]
+    elif os.uname()[0]=='Linux':
+      if 'Ubuntu' in os.uname()[3]:
+        dist=getLsbReleaseDist()+os.uname()[4]
+      else:
+        parts=os.uname()[2].split('.')
+        for p in parts:
+          if p.startswith('el') or p.startswith('fc'):
+            dist=p
+            break
+          elif os.uname()[0]=='Darwin':
+            dist='macosx'
+            break
+    if dist is None:
+      raise Exception("Error getting distribution information, uname=%s" % (str(os.uname()),))
+    return dist
 
 class MDSplusBuild(object):
   """This class will provide several methods:
@@ -102,8 +135,8 @@ class MDSplusBuild(object):
     self.minor=v.minor
     self.release=v.release
     self.topdir=v.topdir
+    self.dist=v.dist
     self.packages=self.getPackages()
-    self.dist=self.getDist()
     self.machine=os.uname()[-1]
     if self.machine=='x86_64':
       self.bits=64
@@ -139,37 +172,6 @@ class MDSplusBuild(object):
     """Deploy the new release to the download repository"""
     return self.deploy_rtn(self)
 
-  def getDist(self):
-    """Determine the type of platform this is running on."""
-
-    def getLsbReleaseDist():
-      p=subprocess.Popen('lsb_release -a -s 2>/dev/null',stdout=subprocess.PIPE,shell=True)
-      info=p.stdout.readlines()
-      p.wait()
-      platform=info[0][0:-1]
-      version=info[2][0:-1].split('.')[0]
-      return platform+version
-
-    dist=None
-    if os.name=="nt":
-      dist="win"
-    elif os.uname()[0]=='SunOS':
-      dist=os.uname()[0]+"-"+os.uname()[3].split('.')[0]
-    elif os.uname()[0]=='Linux':
-      if 'Ubuntu' in os.uname()[3]:
-        dist=getLsbReleaseDist()+os.uname()[4]
-      else:
-        parts=os.uname()[2].split('.')
-        for p in parts:
-          if p.startswith('el') or p.startswith('fc'):
-            dist=p
-            break
-          elif os.uname()[0]=='Darwin':
-            dist='macosx'
-            break
-    if dist is None:
-      raise Exception("Error getting distribution information, uname=%s" % (str(os.uname()),))
-    return dist
 
   def getPackages(self):
     """Get the list of subpackages."""
