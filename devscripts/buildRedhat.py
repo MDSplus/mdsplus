@@ -131,7 +131,7 @@ fi
 %%files
 
 """
-    for d in ['RPMS','SOURCES','SPECS','SRPMS','EGGS']:
+    for d in ['RPMS','SPECS','SRPMS','EGGS']:
         try:
             os.mkdir("%s/%s" % (self.workspace,d))
         except:
@@ -209,24 +209,11 @@ def test(self):
 def deploy(self):
     print("Deploying new release %d.%d-%d" % (self.major,self.minor,self.release))
     return
-    try:
-        os.stat("%s/source" % (self.workspace,))
-        dotar=True
-    except:
-        dotar=False
-    if dotar:
-        p=subprocess.Popen('tar zcf ../SOURCES/mdsplus%s-%d.%d-%d.tar.gz --exclude CVS mdsplus' % (rpmflavor,self.major,self.minor,self.release),
-                           shell=True,cwd="%s/source" % (self.workspace,))
-        pstat=p.wait()
-        if pstat != 0:
-            raise Exception("Error creating source tarball")
     outpath='/repository/%s/%s' % (self.dist,self.flavor)
-    status=subprocess.Popen(('rsync -av %(workspace)s/RPMS %(outpath)s/;\n'+
-                             'rsync -av %(workspace)s/SOURCES %(outpath)s/;\n'+
-                             'rm -Rf %(workspace)s/SOURCES;\n'+
-                             'rsync -av %(workspace)s/i686/mdsplus/mdsobjects/python/dist/*.egg %(outpath)s/EGGS/'+
-                             'rm -Rf %(workspace)s/EGGS;\n') % {'outpath':outpath,'workspace':self.workspace},
-                       shell=True).wait()
+    status=subprocess.Popen(('rsync -av %(workspace)s/RPMS %(outpath)s/;'+
+                             'rsync -av %(workspace)s/i686/mdsplus/mdsobjects/python/dist/*.egg /repository/EGGS/;'+
+                             'rm -Rf %(workspace)s/EGGS') % {'outpath':outpath,'workspace':self.workspace},
+                            shell=True).wait()
     if status != 0:
         raise Exception("Error copying files to final destination. Does the directory %s exist and is it writable by the account used by this hudson node?" % (DISTPATH,))
     self.log("Completed deployment")
