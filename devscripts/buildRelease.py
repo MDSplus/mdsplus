@@ -11,10 +11,13 @@ class MDSplusVersion(object):
     #
     #   Get the flavor from the environment variable "CVS_BRANCH" set by hudson.
     #
-    if 'CVS_BRANCH' in os.environ:
-      self.flavor=os.environ['CVS_BRANCH']
-    else:
-      self.flavor='alpha'
+    jobname=os.environ['JOB_NAME'].lower()
+    self.flavor=None
+    for flavor in ('alpha','beta','stable'):
+      if flavor in jobname:
+        self.flavor=flavor
+    if self.flavor is None:
+	raise Exception('No flavor specified. job name must contain either alpha,beta, or stable')
     #
     #   Find the cvs tags on module configure.in
     #
