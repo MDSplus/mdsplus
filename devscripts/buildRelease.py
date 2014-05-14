@@ -58,7 +58,7 @@ class MDSplusVersion(object):
       status=subprocess.Popen('cvs -Q tag %s 2>&1' % self.rtag(),shell=True,cwd=self.topdir).wait()
       if status != 0:
         raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
-      print "New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release)
+      self.log("New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
     self.dist = self.getDist()
     if self.dist != 'win':
       if self.flavor == 'stable':
@@ -83,6 +83,10 @@ class MDSplusVersion(object):
 
   def rtag(self):
         return "%s_release-%d-%d-%d" % (self.flavor,self.major,self.minor,self.release)
+
+  def log(self,text):
+    print(text)
+    sys.stdout.flush()
 
   def getDist(self):
     """Determine the type of platform this is running on."""
