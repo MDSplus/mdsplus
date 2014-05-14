@@ -22,6 +22,7 @@
 #include <mach/clock.h>
 #include <mach/mach.h>
 
+#define CLOCK_REALTIME 0
 static void clock_gettime(int dummyClock, timespec * ts) {
 	clock_serv_t cclock;
 	mach_timespec_t mts;
