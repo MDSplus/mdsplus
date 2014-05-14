@@ -180,7 +180,7 @@ class EXPORT Data
 		friend EXPORT Data *executeWithArgs(const char *expr, int nArgs ...);
 		friend EXPORT Data *execute(const char *expr, Tree *tree);
 		friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
-		friend EXPORT Data *deserialize(char *serialized);
+		friend EXPORT Data *deserialize(char const * serialized);
 		friend EXPORT Data *deserialize(Data *serialized);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
