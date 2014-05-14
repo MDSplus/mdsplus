@@ -35,7 +35,7 @@ public:
 		return result;
 	}
 
-	timespec getDuration() { return timeout; }
+	Time getDuration() { return timeout; }
 
 	long getSecs() { return timeout.tv_sec; }
 	long getNanoSecs() { return timeout.tv_nsec; }
