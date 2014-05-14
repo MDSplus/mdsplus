@@ -1,64 +1,25 @@
 #ifndef TIMEOUT_H_
 #define TIMEOUT_H_
 #include "SystemSpecific.h"
-
-#include <time.h>
-
 class EXPORT MdsTimeout
 {
+	long secs;
+	long nanoSecs;
 public:
-#ifdef HAVE_WINDOWS_H
-	typedef timeval Time;
-#else
-	typedef timespec Time;
-#endif
-
-	MdsTimeout(long sec, long nSec) {
-		set(sec + nSec / 1000000000, nSec % 1000000000);
+	MdsTimeout(long secs, long nanoSecs)
+	{
+		this->secs = secs + nanoSecs / 1000000000;	
+		this->nanoSecs = nanoSecs % 1000000000;
 	}
-
-	MdsTimeout(long milliSecs) {
-		set(milliSecs / 1000, (milliSecs % 1000) * 1000000);
+	MdsTimeout(long milliSecs)
+	{
+		this->secs = milliSecs / 1000;	
+		this->nanoSecs = (milliSecs % 1000) * 1000000;
 	}
-
-	Time getFutureTime() {
-		timespec result;
-		if(clock_gettime(CLOCK_REALTIME, &result) < 0) {
-			// FIXME: error
-		}
-		result.tv_sec += timeout.tv_sec;
-		result.tv_nsec += timeout.tv_nsec;
-		if (result.tv_nsec >= 1000000000L) {
-			++result.tv_sec;
-			result.tv_nsec -= 1000000000L;
-		}
-		return result;
-	}
-
-	Time getDuration() { return timeout; }
-
-	long getSecs() { return timeout.tv_sec; }
-	long getNanoSecs() { return timeout.tv_nsec; }
-	long getTotMilliSecs() { return timeout.tv_sec * 1000 + timeout.tv_nsec / 1000000; }
-
-	//virtual ~MdsTimeout();
-
-private:
-	Time timeout;
-
-	void set(long sec, long nSec) {
-		timeout.tv_sec = sec;
-		timeout.tv_nsec = nSec;
-	}
+	long getSecs(){return secs;}	
+	long getNanoSecs(){return nanoSecs;}
+	long getTotMilliSecs(){return secs * 1000 + nanoSecs / 1000000;}
 };
 
-/*
-class EXPORT WinTimeout: public MdsTimeout {
-public:
-	WinTimeout() {
-	}
-
-};
-*/
 
 #endif /*TIMEOUT_H_*/
