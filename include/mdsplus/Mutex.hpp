@@ -45,7 +45,7 @@ private:
 	void _destroy() { pthread_mutex_destroy(&mutex); }
 #elif defined (MDS_WINDOWS)
 	HANDLE mutex;
-	void _create() { mutex = CreateMutex(NULL, FALSE, NULL);
+	void _create() { mutex = CreateMutex(NULL, FALSE, NULL); }
 	void _lock() { WaitForSingleObject(mutex, INFINITE); }
 	void _unlock() { ReleaseMutex(mutex); }
 	void _destroy() { CloseHandle(mutex); }
