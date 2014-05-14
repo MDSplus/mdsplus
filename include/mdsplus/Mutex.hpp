@@ -38,20 +38,18 @@ public:
 
 private:
 #if defined (MDS_PTHREAD)
-	typedef pthread_mutex_t Mutex_t;
+	pthread_mutex_t mutex;
 	void _create() { pthread_mutex_init(&mutex, NULL); }
 	void _lock() { pthread_mutex_lock(&mutex); }
 	void _unlock() { pthread_mutex_unlock(&mutex); }
 	void _destroy() { pthread_mutex_destroy(&mutex); }
 #elif defined (MDS_WINDOWS)
-	typedef HANDLE Mutex_t;
+	HANDLE mutex;
 	void _create() { mutex = CreateMutex(NULL, FALSE, NULL);
 	void _lock() { WaitForSingleObject(mutex, INFINITE); }
 	void _unlock() { ReleaseMutex(mutex); }
 	void _destroy() { CloseHandle(mutex); }
 #endif
-
-	Mutex_t mutex;
 };
 
 class AutoLock {
