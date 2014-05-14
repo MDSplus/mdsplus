@@ -42,12 +42,14 @@ class MDSplusVersion(object):
     # Check to see if anything changed. cvs diff will output lines with Index: module-name
     # a module has changed.
     #
-    p=subprocess.Popen('cvs -Q diff --brief -r %s 2>&1 | grep -c Index:' % self.rtag(),stdout=subprocess.PIPE,
+    p=subprocess.Popen('cvs -Q diff --brief -r %s 2>&1 | grep Index:' % self.rtag(),stdout=subprocess.PIPE,
                        shell=True,cwd=self.topdir)
     out=p.stdout.readlines()
     p.wait()
-    num_changes=int(out[0][:-1])
-    print "%d modules have changed since the last release (%d.%d.%d)" % (num_changes,self.major,self.minor,self.release)
+    num_changes=len(out)
+    self.log("%d modules have changed since the last release (%d.%d.%d)" % (num_changes,self.major,self.minor,self.release))
+    for line in out:
+      self.log("     %s" % line)
     #
     # If something has changed, increment the release part of the tag and create a new tag of the current revisions
     #
