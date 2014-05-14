@@ -1,4 +1,6 @@
 #include "mdsobjects.h"
+
+#include <stdarg.h>
 //#include "mdstree.h"
 using namespace MDSplus;
 using namespace std;
