@@ -145,8 +145,8 @@ public class MARTE_DEVICESetup extends DeviceSetup {
         jPanel2.add(jPanel5);
 
         deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Control Name: ");
-        deviceField3.setOffsetNid(3);
+        deviceField3.setLabelString("Trigger time: ");
+        deviceField3.setOffsetNid(1087);
         deviceField3.setTextOnly(true);
         jPanel6.add(deviceField3);
 

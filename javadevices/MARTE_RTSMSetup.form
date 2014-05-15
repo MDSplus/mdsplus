@@ -72,7 +72,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Trig. Time: "/>
                 <Property name="numCols" type="int" value="20"/>
-                <Property name="offsetNid" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="1087"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField3">
@@ -80,7 +80,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Frequency: "/>
                 <Property name="numCols" type="int" value="15"/>
-                <Property name="offsetNid" type="int" value="3"/>
+                <Property name="offsetNid" type="int" value="1093"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -136,7 +136,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Num. States"/>
-                    <Property name="offsetNid" type="int" value="1339"/>
+                    <Property name="offsetNid" type="int" value="1039"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -158,7 +158,7 @@
                     <Property name="labelString" type="java.lang.String" value="Dead times: "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="1"/>
-                    <Property name="offsetNid" type="int" value="1345"/>
+                    <Property name="offsetNid" type="int" value="1045"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceTable" name="deviceTable2">
@@ -179,7 +179,7 @@
                     <Property name="labelString" type="java.lang.String" value="Num Next states: "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="1"/>
-                    <Property name="offsetNid" type="int" value="1351"/>
+                    <Property name="offsetNid" type="int" value="1051"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -209,7 +209,7 @@
                     <Property name="labelString" type="java.lang.String" value="Next States: "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="1357"/>
+                    <Property name="offsetNid" type="int" value="1057"/>
                     <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="8">
                         <StringItem index="0" value="State1"/>
@@ -242,7 +242,7 @@
                     <Property name="labelString" type="java.lang.String" value="Next Masks: "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="1363"/>
+                    <Property name="offsetNid" type="int" value="1063"/>
                     <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="8">
                         <StringItem index="0" value="State1"/>
@@ -275,7 +275,7 @@
                     <Property name="labelString" type="java.lang.String" value="Next Patterns: "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="1369"/>
+                    <Property name="offsetNid" type="int" value="1069"/>
                     <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="8">
                         <StringItem index="0" value="State1"/>
@@ -314,10 +314,10 @@
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Out Wave mode(1: absolute, 2: relative, 3: state-absolute, 4: periodic, 5: join) "/>
+                    <Property name="labelString" type="java.lang.String" value="Out Wave mode(1: absolute, 2: relative, 3: state-absolute, 4: join) "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="8"/>
-                    <Property name="offsetNid" type="int" value="1375"/>
+                    <Property name="offsetNid" type="int" value="1075"/>
                     <Property name="rowNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="8">
                         <StringItem index="0" value="State1"/>
@@ -350,7 +350,7 @@
                     <Property name="labelString" type="java.lang.String" value="Out Bits: "/>
                     <Property name="numCols" type="int" value="8"/>
                     <Property name="numRows" type="int" value="1"/>
-                    <Property name="offsetNid" type="int" value="1381"/>
+                    <Property name="offsetNid" type="int" value="1081"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -391,7 +391,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2875"/>
+                        <Property name="offsetNid" type="int" value="1099"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField5">
@@ -399,7 +399,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2876"/>
+                        <Property name="offsetNid" type="int" value="1100"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -420,7 +420,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2880"/>
+                        <Property name="offsetNid" type="int" value="1104"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField7">
@@ -428,7 +428,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2881"/>
+                        <Property name="offsetNid" type="int" value="1105"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -449,7 +449,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2885"/>
+                        <Property name="offsetNid" type="int" value="1109"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField9">
@@ -457,7 +457,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2886"/>
+                        <Property name="offsetNid" type="int" value="1110"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -478,7 +478,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2890"/>
+                        <Property name="offsetNid" type="int" value="1114"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField11">
@@ -486,7 +486,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2891"/>
+                        <Property name="offsetNid" type="int" value="1115"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -507,7 +507,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2895"/>
+                        <Property name="offsetNid" type="int" value="1119"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField13">
@@ -515,7 +515,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2896"/>
+                        <Property name="offsetNid" type="int" value="1120"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -536,7 +536,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2900"/>
+                        <Property name="offsetNid" type="int" value="1124"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField15">
@@ -544,7 +544,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2901"/>
+                        <Property name="offsetNid" type="int" value="1125"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -565,7 +565,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2905"/>
+                        <Property name="offsetNid" type="int" value="1129"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField17">
@@ -573,7 +573,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2906"/>
+                        <Property name="offsetNid" type="int" value="1130"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -594,7 +594,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2910"/>
+                        <Property name="offsetNid" type="int" value="1134"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField19">
@@ -602,7 +602,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2911"/>
+                        <Property name="offsetNid" type="int" value="1135"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -645,7 +645,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2915"/>
+                        <Property name="offsetNid" type="int" value="1139"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField21">
@@ -653,7 +653,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2916"/>
+                        <Property name="offsetNid" type="int" value="1140"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -674,7 +674,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2920"/>
+                        <Property name="offsetNid" type="int" value="1144"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField23">
@@ -682,7 +682,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2921"/>
+                        <Property name="offsetNid" type="int" value="1145"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -703,7 +703,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2925"/>
+                        <Property name="offsetNid" type="int" value="1149"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField25">
@@ -711,7 +711,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2926"/>
+                        <Property name="offsetNid" type="int" value="1150"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -732,7 +732,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2930"/>
+                        <Property name="offsetNid" type="int" value="1154"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField27">
@@ -740,7 +740,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2931"/>
+                        <Property name="offsetNid" type="int" value="1155"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -761,7 +761,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2935"/>
+                        <Property name="offsetNid" type="int" value="1159"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField29">
@@ -769,7 +769,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2936"/>
+                        <Property name="offsetNid" type="int" value="1160"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -790,7 +790,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2940"/>
+                        <Property name="offsetNid" type="int" value="1164"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField31">
@@ -798,7 +798,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2941"/>
+                        <Property name="offsetNid" type="int" value="1165"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -819,7 +819,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2945"/>
+                        <Property name="offsetNid" type="int" value="1169"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField33">
@@ -827,7 +827,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2946"/>
+                        <Property name="offsetNid" type="int" value="1170"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -848,7 +848,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2950"/>
+                        <Property name="offsetNid" type="int" value="1174"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField35">
@@ -856,7 +856,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2951"/>
+                        <Property name="offsetNid" type="int" value="1175"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -899,7 +899,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2955"/>
+                        <Property name="offsetNid" type="int" value="1179"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField37">
@@ -907,7 +907,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2956"/>
+                        <Property name="offsetNid" type="int" value="1180"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -928,7 +928,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2960"/>
+                        <Property name="offsetNid" type="int" value="1184"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField39">
@@ -936,7 +936,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2961"/>
+                        <Property name="offsetNid" type="int" value="1185"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -957,7 +957,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2965"/>
+                        <Property name="offsetNid" type="int" value="1189"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField41">
@@ -965,7 +965,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2966"/>
+                        <Property name="offsetNid" type="int" value="1190"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -986,7 +986,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2970"/>
+                        <Property name="offsetNid" type="int" value="1194"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField43">
@@ -994,7 +994,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2971"/>
+                        <Property name="offsetNid" type="int" value="1195"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1015,7 +1015,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2975"/>
+                        <Property name="offsetNid" type="int" value="1199"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField45">
@@ -1023,7 +1023,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2976"/>
+                        <Property name="offsetNid" type="int" value="1200"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1044,7 +1044,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2980"/>
+                        <Property name="offsetNid" type="int" value="1204"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField47">
@@ -1052,7 +1052,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2981"/>
+                        <Property name="offsetNid" type="int" value="1205"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1073,7 +1073,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2985"/>
+                        <Property name="offsetNid" type="int" value="1209"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField49">
@@ -1081,7 +1081,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2986"/>
+                        <Property name="offsetNid" type="int" value="1210"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1102,7 +1102,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2990"/>
+                        <Property name="offsetNid" type="int" value="1214"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField51">
@@ -1110,7 +1110,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2991"/>
+                        <Property name="offsetNid" type="int" value="1215"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1153,7 +1153,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2995"/>
+                        <Property name="offsetNid" type="int" value="1219"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField53">
@@ -1161,7 +1161,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="2996"/>
+                        <Property name="offsetNid" type="int" value="1220"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1182,7 +1182,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3000"/>
+                        <Property name="offsetNid" type="int" value="1224"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField55">
@@ -1190,7 +1190,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3001"/>
+                        <Property name="offsetNid" type="int" value="1225"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1211,7 +1211,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3005"/>
+                        <Property name="offsetNid" type="int" value="1229"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField57">
@@ -1219,7 +1219,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3006"/>
+                        <Property name="offsetNid" type="int" value="1230"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1240,7 +1240,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3010"/>
+                        <Property name="offsetNid" type="int" value="1234"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField59">
@@ -1248,7 +1248,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3011"/>
+                        <Property name="offsetNid" type="int" value="1235"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1269,7 +1269,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3015"/>
+                        <Property name="offsetNid" type="int" value="1239"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField61">
@@ -1277,7 +1277,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3016"/>
+                        <Property name="offsetNid" type="int" value="1240"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1298,7 +1298,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3020"/>
+                        <Property name="offsetNid" type="int" value="1244"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField63">
@@ -1306,7 +1306,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3021"/>
+                        <Property name="offsetNid" type="int" value="1245"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1327,7 +1327,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3025"/>
+                        <Property name="offsetNid" type="int" value="1249"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField65">
@@ -1335,7 +1335,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3026"/>
+                        <Property name="offsetNid" type="int" value="1250"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1356,7 +1356,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3030"/>
+                        <Property name="offsetNid" type="int" value="1254"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField67">
@@ -1364,7 +1364,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3031"/>
+                        <Property name="offsetNid" type="int" value="1255"/>
                         <Property name="showState" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1408,7 +1408,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3035"/>
+                        <Property name="offsetNid" type="int" value="1259"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField69">
@@ -1416,7 +1416,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3036"/>
+                        <Property name="offsetNid" type="int" value="1260"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1437,7 +1437,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3040"/>
+                        <Property name="offsetNid" type="int" value="1264"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField71">
@@ -1445,7 +1445,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3041"/>
+                        <Property name="offsetNid" type="int" value="1265"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1466,7 +1466,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3045"/>
+                        <Property name="offsetNid" type="int" value="1269"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField73">
@@ -1474,7 +1474,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3046"/>
+                        <Property name="offsetNid" type="int" value="1270"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1495,7 +1495,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3050"/>
+                        <Property name="offsetNid" type="int" value="1274"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField75">
@@ -1503,7 +1503,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3051"/>
+                        <Property name="offsetNid" type="int" value="1275"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1524,7 +1524,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3055"/>
+                        <Property name="offsetNid" type="int" value="1279"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField77">
@@ -1532,7 +1532,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3056"/>
+                        <Property name="offsetNid" type="int" value="1280"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1553,7 +1553,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3060"/>
+                        <Property name="offsetNid" type="int" value="1284"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField79">
@@ -1561,7 +1561,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3061"/>
+                        <Property name="offsetNid" type="int" value="1285"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1582,7 +1582,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3065"/>
+                        <Property name="offsetNid" type="int" value="1289"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField81">
@@ -1590,7 +1590,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3066"/>
+                        <Property name="offsetNid" type="int" value="1290"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1611,7 +1611,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3070"/>
+                        <Property name="offsetNid" type="int" value="1294"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField83">
@@ -1619,7 +1619,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3071"/>
+                        <Property name="offsetNid" type="int" value="1295"/>
                         <Property name="showState" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1663,7 +1663,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3075"/>
+                        <Property name="offsetNid" type="int" value="1299"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField85">
@@ -1671,7 +1671,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3076"/>
+                        <Property name="offsetNid" type="int" value="1300"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1692,7 +1692,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3080"/>
+                        <Property name="offsetNid" type="int" value="1304"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField87">
@@ -1700,7 +1700,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3081"/>
+                        <Property name="offsetNid" type="int" value="1305"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1721,7 +1721,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3085"/>
+                        <Property name="offsetNid" type="int" value="1309"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField89">
@@ -1729,7 +1729,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3086"/>
+                        <Property name="offsetNid" type="int" value="1310"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1750,7 +1750,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3090"/>
+                        <Property name="offsetNid" type="int" value="1314"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField91">
@@ -1758,7 +1758,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3091"/>
+                        <Property name="offsetNid" type="int" value="1315"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1779,7 +1779,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3095"/>
+                        <Property name="offsetNid" type="int" value="1319"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField93">
@@ -1787,7 +1787,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3096"/>
+                        <Property name="offsetNid" type="int" value="1320"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1808,7 +1808,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3100"/>
+                        <Property name="offsetNid" type="int" value="1324"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField95">
@@ -1816,7 +1816,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3101"/>
+                        <Property name="offsetNid" type="int" value="1325"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1837,7 +1837,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3105"/>
+                        <Property name="offsetNid" type="int" value="1329"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField97">
@@ -1845,7 +1845,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3106"/>
+                        <Property name="offsetNid" type="int" value="1330"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1866,7 +1866,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3110"/>
+                        <Property name="offsetNid" type="int" value="1334"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField99">
@@ -1874,7 +1874,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3111"/>
+                        <Property name="offsetNid" type="int" value="1335"/>
                         <Property name="showState" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -1918,7 +1918,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3115"/>
+                        <Property name="offsetNid" type="int" value="1339"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField101">
@@ -1926,7 +1926,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3116"/>
+                        <Property name="offsetNid" type="int" value="1340"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1947,7 +1947,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3120"/>
+                        <Property name="offsetNid" type="int" value="1344"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField103">
@@ -1955,7 +1955,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3121"/>
+                        <Property name="offsetNid" type="int" value="1345"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -1976,7 +1976,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3125"/>
+                        <Property name="offsetNid" type="int" value="1349"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField105">
@@ -1984,7 +1984,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3126"/>
+                        <Property name="offsetNid" type="int" value="1350"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2005,7 +2005,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3130"/>
+                        <Property name="offsetNid" type="int" value="1354"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField107">
@@ -2013,7 +2013,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3131"/>
+                        <Property name="offsetNid" type="int" value="1355"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2034,7 +2034,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3135"/>
+                        <Property name="offsetNid" type="int" value="1359"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField109">
@@ -2042,7 +2042,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3136"/>
+                        <Property name="offsetNid" type="int" value="1360"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2063,7 +2063,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3140"/>
+                        <Property name="offsetNid" type="int" value="1364"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField111">
@@ -2071,7 +2071,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3141"/>
+                        <Property name="offsetNid" type="int" value="1365"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2092,7 +2092,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3145"/>
+                        <Property name="offsetNid" type="int" value="1369"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField113">
@@ -2100,7 +2100,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3146"/>
+                        <Property name="offsetNid" type="int" value="1370"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2121,7 +2121,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3150"/>
+                        <Property name="offsetNid" type="int" value="1374"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField115">
@@ -2129,7 +2129,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3151"/>
+                        <Property name="offsetNid" type="int" value="1375"/>
                         <Property name="showState" type="boolean" value="true"/>
                       </Properties>
                     </Component>
@@ -2173,7 +2173,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3155"/>
+                        <Property name="offsetNid" type="int" value="1379"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField117">
@@ -2181,7 +2181,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3156"/>
+                        <Property name="offsetNid" type="int" value="1380"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2202,7 +2202,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3160"/>
+                        <Property name="offsetNid" type="int" value="1384"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField119">
@@ -2210,7 +2210,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3161"/>
+                        <Property name="offsetNid" type="int" value="1385"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2231,7 +2231,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3165"/>
+                        <Property name="offsetNid" type="int" value="1389"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField121">
@@ -2239,7 +2239,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3166"/>
+                        <Property name="offsetNid" type="int" value="1390"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2260,7 +2260,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3170"/>
+                        <Property name="offsetNid" type="int" value="1394"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField123">
@@ -2268,7 +2268,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3171"/>
+                        <Property name="offsetNid" type="int" value="1395"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2289,7 +2289,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3175"/>
+                        <Property name="offsetNid" type="int" value="1399"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField125">
@@ -2297,7 +2297,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3176"/>
+                        <Property name="offsetNid" type="int" value="1400"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2318,7 +2318,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3180"/>
+                        <Property name="offsetNid" type="int" value="1404"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField127">
@@ -2326,7 +2326,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3181"/>
+                        <Property name="offsetNid" type="int" value="1405"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2347,7 +2347,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3185"/>
+                        <Property name="offsetNid" type="int" value="1409"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField129">
@@ -2355,7 +2355,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3186"/>
+                        <Property name="offsetNid" type="int" value="1410"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2376,7 +2376,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="X: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3190"/>
+                        <Property name="offsetNid" type="int" value="1414"/>
                       </Properties>
                     </Component>
                     <Component class="DeviceField" name="deviceField131">
@@ -2384,7 +2384,7 @@
                         <Property name="identifier" type="java.lang.String" value=""/>
                         <Property name="labelString" type="java.lang.String" value="Y: "/>
                         <Property name="numCols" type="int" value="30"/>
-                        <Property name="offsetNid" type="int" value="3191"/>
+                        <Property name="offsetNid" type="int" value="1415"/>
                         <Property name="showState" type="boolean" value="true"/>
                       </Properties>
                     </Component>

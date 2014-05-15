@@ -68,8 +68,8 @@
             <Component class="DeviceField" name="deviceField3">
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Control Name: "/>
-                <Property name="offsetNid" type="int" value="3"/>
+                <Property name="labelString" type="java.lang.String" value="Trigger time: "/>
+                <Property name="offsetNid" type="int" value="1087"/>
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
