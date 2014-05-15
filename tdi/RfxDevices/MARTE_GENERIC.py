@@ -147,21 +147,25 @@ class MARTE_GENERIC(Device):
       Event.setevent(self.getEventName(), eventStr)
       return 1
  
+    def store(self, arg):
+      eventStr = "COLLECTION_COMPLETE"
+      Event.setevent(self.getEventName(), eventStr)
+      return 1
+ 
     def abort(self, arg):
       eventStr = "ABORT"
       Event.setevent(self.getEventName(), eventStr)
       return 1
  
- 
- 
-    def store(self,arg):
-      eventStr = "STORE " + str(self.id.data())
-      eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
-      eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
-      eventStr = eventStr + " " + str(self.signals_user.getNid())
+    def cacca(self,arg):
+      eventStr = "COLLECTION_COMPLETE"
       Event.setevent(self.getEventName(), eventStr)
-      time.sleep(10)
       return 1
+#       eventStr = "STORE " +str(self.id.data())
+#       print eventStr 
+#       Event.setevent(self.getEventName(), eventStr)
+#       time.sleep(10)
+#       return 1
       
     def seq_init(self,arg):
       self.abort(arg)
