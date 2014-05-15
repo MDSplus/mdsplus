@@ -106,7 +106,7 @@ class MDSplusVersion(object):
       dist=os.uname()[0]+"-"+os.uname()[3].split('.')[0]
     elif os.uname()[0]=='Linux':
       if 'Ubuntu' in os.uname()[3]:
-        dist=getLsbReleaseDist()+os.uname()[4]
+        dist=getLsbReleaseDist()
       else:
         parts=os.uname()[2].split('.')
         for p in parts:
