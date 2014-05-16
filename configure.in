@@ -278,8 +278,6 @@ EXPORTS_FILE=""
 JVM="-ljvm"
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
-GROFF_MAN_FLAGS="-t -man -Tascii"
-GROFF=groff
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
 UILCMD="uil"
@@ -322,8 +320,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";
        SHARETYPE=".so";;
 *-solaris2*)  
-       GROFF=nroff;
-       GROFF_MAN_FLAGS="-t -man ";
        if test $CC = gcc; then
 	 LD=gcc;
 	 FORLD=gcc;
@@ -365,7 +361,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
 alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        FFLAGS="$FFLAGS -pthread";
-       GROFF_MAN_FLAGS="-t -mgan -Tascii";
        IDL_LD="-expect_unresolved 'IDL_*'"
        LDSHARE="-Wl,-so_archive ";
        LDARC="-Wl,-no_so ";
@@ -1025,8 +1020,6 @@ AC_SUBST(GLOBUS_CFLAGS)
 AC_SUBST(GLOBUS_FLAVOR)
 AC_SUBST(GLOBUS_LIBS)
 AC_SUBST(GLOBUS_LOCATION)
-AC_SUBST(GROFF)
-AC_SUBST(GROFF_MAN_FLAGS)
 AC_SUBST(HDF5_INCS)
 AC_SUBST(HDF5_LIBS)
 AC_SUBST(HDF5_APS)
