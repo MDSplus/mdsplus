@@ -1,64 +1,9 @@
 import subprocess,datetime,os,sys
 
-def signrpms(self,arch):
-    """Sign the arpms"""
-    try:
-        cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" *.rpm'"
-    	child = pexpect.spawn(cmd,timeout=60,cwd=self.workspace+'/RPMS/'+arch)
-    	child.expect("Enter pass phrase: ")
-    	child.sendline("")
-        child.expect(pexpect.EOF)
-    	child.close()
-        if child.status != 0:
-            raise Exception("Error signing rpms. status=%d" % child.status)
-    	return child.status
-    except:
-        raise Exception("Error signing rpms: %s" % sys.exc_info()[1])
-
-def makeRepoRpms(self):
-    if self.flavor == "stable":
-      rpmflavor=""
-    else:
-      rpmflavor="-"+self.flavor
-    p=subprocess.Popen('rpmbuild -ba -vv' +\
-                ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
-                ' --define="_topdir %s"' % (self.workspace,)+\
-                ' --define="_builddir %s"' % (self.workspace,)+\
-                ' --define="flavor %s"' % (self.flavor,)+\
-                ' --define="rpmflavor %s"' % (rpmflavor,)+\
-                ' --define="s_dist %s"' % (self.dist,)+\
-                ' %s/x86_64/mdsplus/rpm/repos.spec' % (self.workspace,),shell=True,cwd=self.topdir)
-    rpmbuild_status=p.wait()
-    if rpmbuild_status != 0:
-        raise Exception("Error building repository rpm for x86_64 %s %s. rpmbuild returned status=%d." % (self.dist,self.flavor,rpmbuild_status))
-    else:
-        p=subprocess.Popen('rpmbuild -ba -vv'+\
-                    ' --target=i686-linux'+\
-                    ' --buildroot=$(mktemp -t -d mdsplus-repo-build.XXXXXXXXXX)'+\
-                    ' --define="_topdir %s"' % (self.workspace,)+\
-                    ' --define="_builddir %s"' % (self.workspace,)+\
-                    ' --define="flavor %s"' % (self.flavor,)+\
-                    ' --define="rpmflavor %s"' % (rpmflavor,)+\
-                    ' --define="s_dist %s"' % (self.dist,)+\
-                    ' %s/x86_64/mdsplus/rpm/repos.spec' % (self.workspace,),shell=True,cwd=self.topdir)
-        rpmbuild_status=p.wait()
-        if rpmbuild_status != 0:
-            raise Exception("Error building repository rpm for i686 %s %s. rpmbuild returned status=%d." % (self.dist,self.flavor,rpmbuild_status))
-
-def writeRpmInfo(outfile):
-    f=open(outfile+'-info.html','w')
-    url="http://hudson.mdsplus.org/job/%s/%s" % (os.environ['JOB_NAME'],os.environ['BUILD_NUMBER'])
-    f.write(('<html>\n<head>\n'+
-            '<meta http-equiv="Refresh" content="0; url=%(url)s" />\n'+ 
-            '</head>\n<body>\n<p>For more info please follow <a href="%(url)s">this link</a>.</p>\n'+
-            '</body>\n</html>\n') % {'url':url})
-    f.close()
-
 def shell(self,cwd,cmd,msg):
   self.log(cmd)
   status=subprocess.Popen(cmd,shell=True,cwd=cwd).wait()
-  stat=p.wait()
-  if stat != 0:
+  if status != 0:
       raise Exception(msg)
 
 def exists(self):
