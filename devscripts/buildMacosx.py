@@ -45,7 +45,7 @@ def build(self):
     shell(self,self.workspace,"""
 sudo chown -R root:admin ./build
 rm -f MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg
-/Developer/usr/bin/packagemaker --title "MDSplus%(pkgflavor)s" --version "%(major)d.$(minor)d.%(release)d" --scripts ./build/mdsplus/scripts \
+/Developer/usr/bin/packagemaker --title "MDSplus%(pkgflavor)s" --version "%(major)d.%(minor)d.%(release)d" --scripts ./build/mdsplus/scripts \
 --install-to "/usr/local" --target "10.5" -r ./build -v -i "MDSplus%(pkgflavor)s" -o MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg
 status=$?
 sudo chown -R $(id -un):$(id -gn) ./build
