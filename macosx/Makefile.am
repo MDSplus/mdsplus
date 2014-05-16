@@ -1,7 +1,7 @@
 etcdir = $(exex_prefix)/etc
-etc_DATA = mdsip.plist
+dist_etc_DATA = mdsip.plist
 
 scriptsdir = $(exec_prefix)/scripts
-scripts_SCRIPTS = scripts/preinstall scripts/postinstall
+dist_scripts_SCRIPTS = scripts/preinstall scripts/postinstall
 
-bin_SCRIPTS = mdsplus_launchconfig
+dist_bin_SCRIPTS = mdsplus_launchconfig
