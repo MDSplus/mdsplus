@@ -72,7 +72,7 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 dwscope_DEPENDENCIES = $(am__DEPENDENCIES_2)
-dwscope_LINK = $(CCLD) $(dwscope_CFLAGS) $(CFLAGS) $(dwscope_LDFLAGS) \
+dwscope_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(dwscope_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am__objects_1 = dwscope.$(OBJEXT) dwscopesubs.$(OBJEXT) \
 	evaluate.$(OBJEXT)
@@ -163,8 +163,6 @@ GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
-GROFF = @GROFF@
-GROFF_MAN_FLAGS = @GROFF_MAN_FLAGS@
 HDF5_APS = @HDF5_APS@
 HDF5_INCS = @HDF5_INCS@
 HDF5_LIBS = @HDF5_LIBS@
@@ -354,7 +352,6 @@ noinst_LIBRARIES = libXmdsWC.a
 libXmdsWC_a_SOURCES = ../xmdsshr/XmdsWidgetCallbacks.c
 libXmdsWC_a_CPPFLAGS = $(AM_CPPFLAGS) -D_NO_XDS
 dwscope_SOURCES = dwscope.c dwscopesubs.c evaluate.c
-dwscope_CFLAGS = 
 dwscope_CPPFLAGS = $(AM_CPPFLAGS) -D_LOCAL_ACCESS
 dwscope_LDADD = $(LDADD) -lMdsShr -lTdiShr -lTreeShr
 dwscope_LDFLAGS = 
@@ -544,46 +541,46 @@ distclean-compile:
 @am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXmdsWC_a_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o ../xmdsshr/libXmdsWC_a-XmdsWidgetCallbacks.obj `if test -f '../xmdsshr/XmdsWidgetCallbacks.c'; then $(CYGPATH_W) '../xmdsshr/XmdsWidgetCallbacks.c'; else $(CYGPATH_W) '$(srcdir)/../xmdsshr/XmdsWidgetCallbacks.c'; fi`
 
 dwscope-dwscope.o: dwscope.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -MT dwscope-dwscope.o -MD -MP -MF $(DEPDIR)/dwscope-dwscope.Tpo -c -o dwscope-dwscope.o `test -f 'dwscope.c' || echo '$(srcdir)/'`dwscope.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-dwscope.o -MD -MP -MF $(DEPDIR)/dwscope-dwscope.Tpo -c -o dwscope-dwscope.o `test -f 'dwscope.c' || echo '$(srcdir)/'`dwscope.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dwscope-dwscope.Tpo $(DEPDIR)/dwscope-dwscope.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dwscope.c' object='dwscope-dwscope.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -c -o dwscope-dwscope.o `test -f 'dwscope.c' || echo '$(srcdir)/'`dwscope.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dwscope-dwscope.o `test -f 'dwscope.c' || echo '$(srcdir)/'`dwscope.c
 
 dwscope-dwscope.obj: dwscope.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -MT dwscope-dwscope.obj -MD -MP -MF $(DEPDIR)/dwscope-dwscope.Tpo -c -o dwscope-dwscope.obj `if test -f 'dwscope.c'; then $(CYGPATH_W) 'dwscope.c'; else $(CYGPATH_W) '$(srcdir)/dwscope.c'; fi`
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-dwscope.obj -MD -MP -MF $(DEPDIR)/dwscope-dwscope.Tpo -c -o dwscope-dwscope.obj `if test -f 'dwscope.c'; then $(CYGPATH_W) 'dwscope.c'; else $(CYGPATH_W) '$(srcdir)/dwscope.c'; fi`
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dwscope-dwscope.Tpo $(DEPDIR)/dwscope-dwscope.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dwscope.c' object='dwscope-dwscope.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -c -o dwscope-dwscope.obj `if test -f 'dwscope.c'; then $(CYGPATH_W) 'dwscope.c'; else $(CYGPATH_W) '$(srcdir)/dwscope.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dwscope-dwscope.obj `if test -f 'dwscope.c'; then $(CYGPATH_W) 'dwscope.c'; else $(CYGPATH_W) '$(srcdir)/dwscope.c'; fi`
 
 dwscope-dwscopesubs.o: dwscopesubs.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -MT dwscope-dwscopesubs.o -MD -MP -MF $(DEPDIR)/dwscope-dwscopesubs.Tpo -c -o dwscope-dwscopesubs.o `test -f 'dwscopesubs.c' || echo '$(srcdir)/'`dwscopesubs.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-dwscopesubs.o -MD -MP -MF $(DEPDIR)/dwscope-dwscopesubs.Tpo -c -o dwscope-dwscopesubs.o `test -f 'dwscopesubs.c' || echo '$(srcdir)/'`dwscopesubs.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dwscope-dwscopesubs.Tpo $(DEPDIR)/dwscope-dwscopesubs.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dwscopesubs.c' object='dwscope-dwscopesubs.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -c -o dwscope-dwscopesubs.o `test -f 'dwscopesubs.c' || echo '$(srcdir)/'`dwscopesubs.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dwscope-dwscopesubs.o `test -f 'dwscopesubs.c' || echo '$(srcdir)/'`dwscopesubs.c
 
 dwscope-dwscopesubs.obj: dwscopesubs.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -MT dwscope-dwscopesubs.obj -MD -MP -MF $(DEPDIR)/dwscope-dwscopesubs.Tpo -c -o dwscope-dwscopesubs.obj `if test -f 'dwscopesubs.c'; then $(CYGPATH_W) 'dwscopesubs.c'; else $(CYGPATH_W) '$(srcdir)/dwscopesubs.c'; fi`
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-dwscopesubs.obj -MD -MP -MF $(DEPDIR)/dwscope-dwscopesubs.Tpo -c -o dwscope-dwscopesubs.obj `if test -f 'dwscopesubs.c'; then $(CYGPATH_W) 'dwscopesubs.c'; else $(CYGPATH_W) '$(srcdir)/dwscopesubs.c'; fi`
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dwscope-dwscopesubs.Tpo $(DEPDIR)/dwscope-dwscopesubs.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dwscopesubs.c' object='dwscope-dwscopesubs.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -c -o dwscope-dwscopesubs.obj `if test -f 'dwscopesubs.c'; then $(CYGPATH_W) 'dwscopesubs.c'; else $(CYGPATH_W) '$(srcdir)/dwscopesubs.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dwscope-dwscopesubs.obj `if test -f 'dwscopesubs.c'; then $(CYGPATH_W) 'dwscopesubs.c'; else $(CYGPATH_W) '$(srcdir)/dwscopesubs.c'; fi`
 
 dwscope-evaluate.o: evaluate.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -MT dwscope-evaluate.o -MD -MP -MF $(DEPDIR)/dwscope-evaluate.Tpo -c -o dwscope-evaluate.o `test -f 'evaluate.c' || echo '$(srcdir)/'`evaluate.c
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-evaluate.o -MD -MP -MF $(DEPDIR)/dwscope-evaluate.Tpo -c -o dwscope-evaluate.o `test -f 'evaluate.c' || echo '$(srcdir)/'`evaluate.c
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dwscope-evaluate.Tpo $(DEPDIR)/dwscope-evaluate.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='evaluate.c' object='dwscope-evaluate.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -c -o dwscope-evaluate.o `test -f 'evaluate.c' || echo '$(srcdir)/'`evaluate.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dwscope-evaluate.o `test -f 'evaluate.c' || echo '$(srcdir)/'`evaluate.c
 
 dwscope-evaluate.obj: evaluate.c
-@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -MT dwscope-evaluate.obj -MD -MP -MF $(DEPDIR)/dwscope-evaluate.Tpo -c -o dwscope-evaluate.obj `if test -f 'evaluate.c'; then $(CYGPATH_W) 'evaluate.c'; else $(CYGPATH_W) '$(srcdir)/evaluate.c'; fi`
+@am__fastdepCC_TRUE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT dwscope-evaluate.obj -MD -MP -MF $(DEPDIR)/dwscope-evaluate.Tpo -c -o dwscope-evaluate.obj `if test -f 'evaluate.c'; then $(CYGPATH_W) 'evaluate.c'; else $(CYGPATH_W) '$(srcdir)/evaluate.c'; fi`
 @am__fastdepCC_TRUE@	$(am__mv) $(DEPDIR)/dwscope-evaluate.Tpo $(DEPDIR)/dwscope-evaluate.Po
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='evaluate.c' object='dwscope-evaluate.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(dwscope_CFLAGS) $(CFLAGS) -c -o dwscope-evaluate.obj `if test -f 'evaluate.c'; then $(CYGPATH_W) 'evaluate.c'; else $(CYGPATH_W) '$(srcdir)/evaluate.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(dwscope_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o dwscope-evaluate.obj `if test -f 'evaluate.c'; then $(CYGPATH_W) 'evaluate.c'; else $(CYGPATH_W) '$(srcdir)/evaluate.c'; fi`
 install-dataDATA: $(data_DATA)
 	@$(NORMAL_INSTALL)
 	test -z "$(datadir)" || $(MKDIR_P) "$(DESTDIR)$(datadir)"

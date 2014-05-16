@@ -24,7 +24,6 @@ libXmdsWC_a_CPPFLAGS = $(AM_CPPFLAGS) -D_NO_XDS
 # dw programs
 bin_PROGRAMS = dwscope
 dwscope_SOURCES = dwscope.c dwscopesubs.c evaluate.c
-dwscope_CFLAGS=
 dwscope_CPPFLAGS = $(AM_CPPFLAGS) -D_LOCAL_ACCESS
 dwscope_LDADD = $(LDADD) -lMdsShr -lTdiShr -lTreeShr
 dwscope_LDFLAGS = 

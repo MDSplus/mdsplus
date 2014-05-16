@@ -7339,7 +7339,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
@@ -7384,7 +7383,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        	   	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include";
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
@@ -13755,6 +13753,7 @@ $as_echo "$as_me: error: unknown endianness
    { (exit 1); exit 1; }; } ;;
  esac
 
+
 { $as_echo "$as_me:$LINENO: checking for X" >&5
 $as_echo_n "checking for X... " >&6; }
 
@@ -15134,6 +15133,12 @@ fi
 
 fi
 
+case $host in
+  *darwin*|*apple*) X_CFLAGS+=" -I/usr/OpenMotif/include -D_NO_DXm" ;;
+esac
+
+#FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
+
 if test $UILCMD = uil32
 then
   X_LIBS=`echo $X_LIBS | sed s/lib64/lib/`
@@ -15195,12 +15200,6 @@ $as_echo "no uil so skipping openmotif apps.openmotif-devel not installed." >&6;
 fi
 
 XM_LIBS="-lMrm -lXm"
-if test "$X_CFLAGS"
-then
-	X_CFLAGS="$X_CFLAGS -D_NO_DXm"
-else
-	X_CFLAGS=-D_NO_DXm
-fi
 { $as_echo "$as_me:$LINENO: checking for XextAddDisplay in -lXext" >&5
 $as_echo_n "checking for XextAddDisplay in -lXext... " >&6; }
 if test "${ac_cv_lib_Xext_XextAddDisplay+set}" = set; then

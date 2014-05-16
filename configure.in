@@ -560,7 +560,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
            FOR_LINKSHARED="$LDFLAGS -shared";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include"
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
@@ -609,7 +608,6 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
 	   LINKSHARED="$LDFLAGS -dynamiclib -install_name $libdir/\$(@F) -headerpad_max_install_names -Wl,-single_module";
 	   LINKMODULE="$LDFLAGS -bundle -undefined dynamic_lookup";
        IDL_LD="";
-       X_CFLAGS="-I/usr/OpenMotif/include";
        LINKJNI="$LINKSHARED";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
@@ -975,7 +973,12 @@ fi
 
 AC_DEFINE_UNQUOTED(SHARELIB_TYPE,"${SHARETYPE}")
 AC_C_BIGENDIAN
+
 AC_PATH_XTRA
+AS_CASE([$host],
+        [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include -D_NO_DXm"])
+#FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
+
 if test $UILCMD = uil32
 then
   X_LIBS=`echo $X_LIBS | sed s/lib64/lib/`
@@ -993,12 +996,6 @@ else
 fi
 
 XM_LIBS="-lMrm -lXm"
-if test "$X_CFLAGS"
-then
-	X_CFLAGS="$X_CFLAGS -D_NO_DXm"
-else
-	X_CFLAGS=-D_NO_DXm
-fi
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
