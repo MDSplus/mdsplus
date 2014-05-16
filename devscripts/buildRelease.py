@@ -115,7 +115,6 @@ class MDSplusVersion(object):
             break
     elif os.uname()[0]=='Darwin':
       dist='macosx'
-      break
     if dist is None:
       raise Exception("Error getting distribution information, uname=%s" % (str(os.uname()),))
     return dist

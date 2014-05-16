@@ -1,4 +1,4 @@
-import subprocess,datetime,os,sys,pexpect
+import subprocess,datetime,os,sys
 
 def signrpms(self,arch):
     """Sign the arpms"""
