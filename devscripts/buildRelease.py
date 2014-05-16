@@ -113,9 +113,8 @@ class MDSplusVersion(object):
           if p.startswith('el') or p.startswith('fc'):
             dist=p
             break
-          elif os.uname()[0]=='Darwin':
-            dist='macosx'
-            break
+    elif os.uname()[0]=='Darwin':
+      dist='macosx'
     if dist is None:
       raise Exception("Error getting distribution information, uname=%s" % (str(os.uname()),))
     return dist
