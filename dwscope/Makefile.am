@@ -3,9 +3,9 @@
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS)
 
-LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(MOTIF_LIBS) $(X_LIBS) $(X_EXTRA_LIBS)
+LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
-#MOTIF_LIBS = @XM_LIBS@ @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
+#MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 
 #FIXME: Remove this when LIBS is cleaned up in configure
@@ -38,7 +38,7 @@ dwscope_remote_LDFLAGS = $(MLIBS)
 
 bin_PROGRAMS += dwpad
 dwpad_SOURCES = dwpad.c dwscopesubs.c $(XMDSSRC)
-dwpad_LDADD = libXmdsWC.a
+dwpad_LDADD = $(LDADD) libXmdsWC.a
 dwpad_LDFLAGS = $(MLIBS)
 
 # User interface descriptions, installed as generic data but with build rules

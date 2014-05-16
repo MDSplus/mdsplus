@@ -15134,7 +15134,8 @@ fi
 fi
 
 case $host in
-  *darwin*|*apple*) X_CFLAGS+=" -I/usr/OpenMotif/include -D_NO_DXm" ;;
+  *darwin*|*apple*) X_CFLAGS+=" -I/usr/OpenMotif/include -D_NO_DXm"
+                             X_LIBS+=" -L/usr/OpenMotif/lib" ;;
 esac
 
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)

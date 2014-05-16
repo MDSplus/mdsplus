@@ -15,6 +15,8 @@
 
 @SET_MAKE@
 
+# Global variables
+
 
 
 
@@ -62,15 +64,15 @@ am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(bindir)" \
 PROGRAMS = $(bin_PROGRAMS)
 am_dwpad_OBJECTS = dwpad.$(OBJEXT) dwscopesubs.$(OBJEXT)
 dwpad_OBJECTS = $(am_dwpad_OBJECTS)
-dwpad_DEPENDENCIES = libXmdsWC.a
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+dwpad_DEPENDENCIES = $(am__DEPENDENCIES_2) libXmdsWC.a
 dwpad_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(dwpad_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_dwscope_OBJECTS = dwscope-dwscope.$(OBJEXT) \
 	dwscope-dwscopesubs.$(OBJEXT) dwscope-evaluate.$(OBJEXT)
 dwscope_OBJECTS = $(am_dwscope_OBJECTS)
-am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 dwscope_DEPENDENCIES = $(am__DEPENDENCIES_2)
 dwscope_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(dwscope_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -336,11 +338,11 @@ top_srcdir = @top_srcdir@
 # User interface descriptions, installed as generic data but with build rules
 uiddir = @MAKEUIDDIR@
 
-# Global variables
-AM_CFLAGS = $(X_CFLAGS)
-LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(MOTIF_LIBS) $(X_LIBS) $(X_EXTRA_LIBS)
+#AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
+AM_CPPFLAGS = $(X_CFLAGS)
+LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
-#MOTIF_LIBS = @XM_LIBS@ @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
+#MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 data_DATA = dwscope_setup.ps
 
@@ -359,7 +361,7 @@ dwscope_remote_SOURCES = $(dwscope_SOURCES) $(XMDSSRC) RemoteDummies.c
 dwscope_remote_LDADD = $(LDADD) libXmdsWC.a -lMdsIpShr
 dwscope_remote_LDFLAGS = $(MLIBS)
 dwpad_SOURCES = dwpad.c dwscopesubs.c $(XMDSSRC)
-dwpad_LDADD = libXmdsWC.a
+dwpad_LDADD = $(LDADD) libXmdsWC.a
 dwpad_LDFLAGS = $(MLIBS)
 uid_DATA = dwscope.uid dwpad.uid
 all: all-am
