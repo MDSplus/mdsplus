@@ -313,7 +313,7 @@ uiddir = @MAKEUIDDIR@
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS)
-@RPATHLINK_TRUE@AM_LDFLAGS = $(RPATHLINK)=$(libdir)
+@RPATHLINK_TRUE@AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@
 LDADD = -L@MAKESHLIBDIR@ -lXmdsShr -lTreeShr -lTdiShr -lMdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 actions_SOURCES = actions.c

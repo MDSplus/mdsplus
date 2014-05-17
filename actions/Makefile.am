@@ -3,7 +3,7 @@
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS)
 if RPATHLINK
-AM_LDFLAGS = $(RPATHLINK)=$(libdir)
+AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@
 endif
 LDADD = -L@MAKESHLIBDIR@ -lXmdsShr -lTreeShr -lTdiShr -lMdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
