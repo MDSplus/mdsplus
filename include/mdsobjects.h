@@ -143,31 +143,26 @@ EXPORT void deleteString(char *str);
 class Tree;
 EXPORT void setActiveTree(Tree *tree);
 EXPORT Tree *getActiveTree();
+
 /////Exceptions//////////////
-	class EXPORT MdsException: public std::exception
-	{
-	protected:
-		const char *msg;
-	public:
-		MdsException(const char *msg) : msg(msg)
-		{
-		}
-		MdsException(int status) : msg(MdsGetMsg(status))
-		{
-		}
-		virtual ~MdsException() NOEXCEPT
-		{
-		}
-		virtual const char* what() const NOEXCEPT
-		{
-			return msg;
-		}
-		friend std::ostream & operator << (std::ostream &outStream, MdsException &exc)
-		{
-		    return outStream << exc.what();
-		}
-		
-	};
+class EXPORT MdsException: public std::exception {
+public:
+	MdsException(const char *msg): msg(msg) { }
+	MdsException(int status): msg(MdsGetMsg(status)) { }
+	virtual ~MdsException() NOEXCEPT { }
+
+	virtual const char* what() const NOEXCEPT {
+		return msg;
+	}
+
+	friend std::ostream & operator << (std::ostream &outStream, MdsException &exc) {
+		return outStream << exc.what();
+	}
+
+protected:
+	const char *msg;
+};
+
 ////////////////////Data class//////////////////////////////
 class EXPORT Data 
 {
