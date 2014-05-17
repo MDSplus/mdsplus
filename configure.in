@@ -976,7 +976,7 @@ AC_C_BIGENDIAN
 
 AC_PATH_XTRA
 AS_CASE([$host],
-        [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include -D_NO_DXm"
+        [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include"
                              X_LIBS+=" -L/usr/OpenMotif/lib"])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 

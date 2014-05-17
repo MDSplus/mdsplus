@@ -1,7 +1,7 @@
 # Global variables
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
-AM_CPPFLAGS = $(X_CFLAGS)
+AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm
 
 LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
