@@ -35,7 +35,7 @@ install:
 
 @MAKELIBDIR@libMdsSql.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
-	@RANLIB@ $@
+	$(RANLIB) $@
 
 @MAKELIBDIR@ :
 	mkdir @MAKELIBDIR@
