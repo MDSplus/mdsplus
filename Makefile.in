@@ -29,7 +29,7 @@ PARTS = \
         tditest \
 	xtreeshr \
         @MDSTCPIP@ \
-	@RTEVENTS@ \
+	rtevents \
         mdslibidl \
         cdu     \
         mdsdcl  \
