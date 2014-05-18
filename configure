@@ -742,6 +742,8 @@ X_PRE_LIBS
 X_CFLAGS
 XMKMF
 RANLIB
+GLOBUSLICENSE_FALSE
+GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
@@ -6801,6 +6803,14 @@ fi
  ;;
 esac
 
+
+ if test -r $exec_prefix/GLOBUS_LICENSE; then
+  GLOBUSLICENSE_TRUE=
+  GLOBUSLICENSE_FALSE='#'
+else
+  GLOBUSLICENSE_TRUE='#'
+  GLOBUSLICENSE_FALSE=
+fi
 
 { $as_echo "$as_me:$LINENO: checking for use of globus for mdsip" >&5
 $as_echo_n "checking for use of globus for mdsip... " >&6; }
@@ -15587,6 +15597,13 @@ if test -z "${RPATHLINK_TRUE}" && test -z "${RPATHLINK_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"RPATHLINK\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"RPATHLINK\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${GLOBUSLICENSE_TRUE}" && test -z "${GLOBUSLICENSE_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"GLOBUSLICENSE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"GLOBUSLICENSE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi

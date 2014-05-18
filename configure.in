@@ -117,6 +117,7 @@ AS_CASE([$enable_java],
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
 
+AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
 AC_MSG_CHECKING([for use of globus for mdsip])
 AC_ARG_WITH([xio],
             [AS_HELP_STRING([--with-xio=globus-location:flavor],
