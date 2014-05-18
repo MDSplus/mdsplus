@@ -1,7 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
 JAVADIR = @MAKEJAVADIR@classes
-JAVAC = @JAVAC@  -classpath ../java/classes/jScope.jar:../java/classes/jTraverser.jar:.
+JAVAC = @JAVAC@  -classpath ../java/classes/jTraverser.jar:.
 
 RMIC = @RMIC@
 INSTALL=@top_srcdir@/conf/install-sh -c
