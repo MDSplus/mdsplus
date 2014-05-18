@@ -68,21 +68,15 @@ am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 dwpad_DEPENDENCIES = $(am__DEPENDENCIES_2) libXmdsWC.a
-dwpad_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(dwpad_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am_dwscope_OBJECTS = dwscope-dwscope.$(OBJEXT) \
 	dwscope-dwscopesubs.$(OBJEXT) dwscope-evaluate.$(OBJEXT)
 dwscope_OBJECTS = $(am_dwscope_OBJECTS)
 dwscope_DEPENDENCIES = $(am__DEPENDENCIES_2)
-dwscope_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(dwscope_LDFLAGS) \
-	$(LDFLAGS) -o $@
 am__objects_1 = dwscope.$(OBJEXT) dwscopesubs.$(OBJEXT) \
 	evaluate.$(OBJEXT)
 am_dwscope_remote_OBJECTS = $(am__objects_1) RemoteDummies.$(OBJEXT)
 dwscope_remote_OBJECTS = $(am_dwscope_remote_OBJECTS)
 dwscope_remote_DEPENDENCIES = $(am__DEPENDENCIES_2) libXmdsWC.a
-dwscope_remote_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(dwscope_remote_LDFLAGS) $(LDFLAGS) -o $@
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -340,6 +334,7 @@ uiddir = @MAKEUIDDIR@
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm
+@RPATHLINK_TRUE@AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@
 LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
 #MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
@@ -356,13 +351,10 @@ libXmdsWC_a_CPPFLAGS = $(AM_CPPFLAGS) -D_NO_XDS
 dwscope_SOURCES = dwscope.c dwscopesubs.c evaluate.c
 dwscope_CPPFLAGS = $(AM_CPPFLAGS) -D_LOCAL_ACCESS
 dwscope_LDADD = $(LDADD) -lMdsShr -lTdiShr -lTreeShr
-dwscope_LDFLAGS = 
 dwscope_remote_SOURCES = $(dwscope_SOURCES) $(XMDSSRC) RemoteDummies.c
 dwscope_remote_LDADD = $(LDADD) libXmdsWC.a -lMdsIpShr
-dwscope_remote_LDFLAGS = $(MLIBS)
 dwpad_SOURCES = dwpad.c dwscopesubs.c $(XMDSSRC)
 dwpad_LDADD = $(LDADD) libXmdsWC.a
-dwpad_LDFLAGS = $(MLIBS)
 uid_DATA = dwscope.uid dwpad.uid
 all: all-am
 
@@ -453,13 +445,13 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 dwpad$(EXEEXT): $(dwpad_OBJECTS) $(dwpad_DEPENDENCIES) 
 	@rm -f dwpad$(EXEEXT)
-	$(dwpad_LINK) $(dwpad_OBJECTS) $(dwpad_LDADD) $(LIBS)
+	$(LINK) $(dwpad_OBJECTS) $(dwpad_LDADD) $(LIBS)
 dwscope$(EXEEXT): $(dwscope_OBJECTS) $(dwscope_DEPENDENCIES) 
 	@rm -f dwscope$(EXEEXT)
-	$(dwscope_LINK) $(dwscope_OBJECTS) $(dwscope_LDADD) $(LIBS)
+	$(LINK) $(dwscope_OBJECTS) $(dwscope_LDADD) $(LIBS)
 dwscope_remote$(EXEEXT): $(dwscope_remote_OBJECTS) $(dwscope_remote_DEPENDENCIES) 
 	@rm -f dwscope_remote$(EXEEXT)
-	$(dwscope_remote_LINK) $(dwscope_remote_OBJECTS) $(dwscope_remote_LDADD) $(LIBS)
+	$(LINK) $(dwscope_remote_OBJECTS) $(dwscope_remote_LDADD) $(LIBS)
 install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
