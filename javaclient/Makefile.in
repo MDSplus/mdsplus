@@ -280,11 +280,12 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVAROOT = $(builddir)
-javadir = @MAKEJAVADIR@classes
+CLASSES = $(JAVAROOT)/MdsPlus/*.class
+javadir = $(exec_prefix)/java/classes
 java_JAVA = MdsPlus.java MdsPlusEvent.java MdsPlusEvents.java \
 	MdsPlusException.java MdsPlusDescriptor.java
 java_DATA = MdsPlus.jar
-CLEANFILES = $(JAVAROOT)/MdsPlus/*.class
+CLEANFILES = $(CLASSES) MdsPlus.jar
 all: all-am
 
 .SUFFIXES:
@@ -517,7 +518,7 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 	uninstall-javaJAVA
 
 MdsPlus.jar: classjava.stamp
-	$(JAR) c0f $@ $(JAVAROOT)/MdsPlus/*
+	$(JAR) c0f $@ $(CLASSES)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

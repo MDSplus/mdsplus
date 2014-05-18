@@ -1,6 +1,7 @@
 JAVAROOT = $(builddir)
-javadir = @MAKEJAVADIR@classes
+CLASSES = $(JAVAROOT)/MdsPlus/*.class
 
+javadir = $(exec_prefix)/java/classes
 java_JAVA = MdsPlus.java
 java_JAVA += MdsPlusEvent.java
 java_JAVA += MdsPlusEvents.java
@@ -9,6 +10,6 @@ java_JAVA += MdsPlusDescriptor.java
 
 java_DATA = MdsPlus.jar
 MdsPlus.jar: classjava.stamp
-	$(JAR) c0f $@ $(JAVAROOT)/MdsPlus/*
+	$(JAR) c0f $@ $(CLASSES)
 
-CLEANFILES = $(JAVAROOT)/MdsPlus/*.class
+CLEANFILES = $(CLASSES) MdsPlus.jar
