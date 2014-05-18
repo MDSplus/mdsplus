@@ -124,6 +124,7 @@ ccl: cdu mdsshr mdsdcl
 tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 camshr: cdu mdsdcl
 dwscope: xmdsshr
+javadispatcher: javascope javatraverser
 javatraverser: javascope
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
