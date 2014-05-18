@@ -514,7 +514,7 @@ class MdsServer extends MdsConnection
             Descriptor reply = ms.monitorCheckin();
 
             Frame f = new Frame();
-            f.show();
+            f.setVisible(true);
             /*
             do
             {
