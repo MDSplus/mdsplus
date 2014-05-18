@@ -198,7 +198,7 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
      }
   }
 
-  public void setServersInfo(Hashtable serversInfo)
+  public void setServersInfo(Hashtable<String, ServerInfo> serversInfo)
   {
       this.serversInfo = serversInfo;
   }

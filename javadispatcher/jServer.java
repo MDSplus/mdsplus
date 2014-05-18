@@ -33,7 +33,7 @@ public class jServer
 
     public static int doingNid;
 
-    Vector retSocketsV = new Vector();
+    Vector<Socket> retSocketsV = new Vector<Socket>();
     Database mdsTree = null;
     ActionQueue actionQueue = new ActionQueue();
     Worker worker = new Worker();
@@ -99,7 +99,7 @@ public class jServer
 //Inner class ActionQueue keeps a queue of ActionDesctor objects and manages synchronization
     class ActionQueue
     {
-        Vector actionV = new Vector();
+        Vector<ActionDescriptor> actionV = new Vector<ActionDescriptor>();
         synchronized void enqueueAction(ActionDescriptor actionDescr)
         {
             actionV.addElement(actionDescr);
@@ -117,7 +117,7 @@ public class jServer
                 }
                 catch (InterruptedException exc) {}
             }
-            ActionDescriptor retAction = (ActionDescriptor) actionV.elementAt(0);
+            ActionDescriptor retAction = actionV.elementAt(0);
             actionV.removeElementAt(0);
             return retAction;
         }

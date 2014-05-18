@@ -8,7 +8,7 @@ class jDispatcherIp
     extends MdsIp {
     jDispatcher dispatcher;
     int shot;
-    static Vector servers = new Vector();
+    static Vector<Server> servers = new Vector<Server>();
     String treeName;
     String currTreeName;
 
@@ -377,7 +377,7 @@ class jDispatcherIp
             "jDispatcher.default_server_idx");
         try {
             int default_server_idx = Integer.parseInt(default_server) - 1;
-            Server server = (Server) servers.elementAt(default_server_idx);
+            Server server = servers.elementAt(default_server_idx);
             dispatcher.setDefaultServer(server);
         }
         catch (Exception exc) {}
@@ -390,15 +390,11 @@ class jDispatcherIp
         i = 1;
         while (true) 
         {
-            String phaseName = properties.getProperty("jDispatcher.phase_" +
-                i +
-                ".name");
+            String phaseName = properties.getProperty("jDispatcher.phase_" + i + ".name");
             if (phaseName == null)
                 break;
-            Vector currSynchNumbers = new Vector();
-            String currSynchStr = properties.getProperty("jDispatcher.phase_" +
-            i +
-            ".synch_seq_numbers");
+            Vector<Integer> currSynchNumbers = new Vector<Integer>();
+            String currSynchStr = properties.getProperty("jDispatcher.phase_" + i + ".synch_seq_numbers");
             if(currSynchStr != null)
             {
                 StringTokenizer st = new StringTokenizer(currSynchStr, " ,");

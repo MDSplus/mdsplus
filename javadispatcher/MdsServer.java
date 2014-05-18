@@ -43,8 +43,8 @@ class MdsServer extends MdsConnection
 
     protected boolean rcv_connected = false;
 
-    transient Vector server_event_listener = new Vector();
-    transient Vector curr_listen_sock = new Vector();
+    transient Vector<MdsServerListener> server_event_listener = new Vector<MdsServerListener>();
+    transient Vector<Socket> curr_listen_sock = new Vector<Socket>();
 
     boolean useJavaServer = true;
 
@@ -198,7 +198,7 @@ class MdsServer extends MdsConnection
 
     public  String getFullPath(String tree, int shot, int nid)
     {
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
 
         args.add(new Descriptor(null, tree));
         args.add(new Descriptor(null, new int[]{shot}));
@@ -225,7 +225,7 @@ class MdsServer extends MdsConnection
             if(curr_listen_sock.size() != 0)
             {
             	for(int i = 0; i < curr_listen_sock.size(); i++)
-                ((Socket)curr_listen_sock.elementAt(i)).close();
+                    curr_listen_sock.elementAt(i).close();
             	curr_listen_sock.removeAllElements();
             }
 	}catch(Exception exc){}
@@ -240,12 +240,12 @@ class MdsServer extends MdsConnection
    }
 
 
-    public Descriptor sendMessage(int id, int op, Vector args, boolean wait) throws IOException
+    public Descriptor sendMessage(int id, int op, Vector<Descriptor> args, boolean wait) throws IOException
     {
         return sendMessage(id, op, false, args, wait);
     }
 
-    public Descriptor sendMessage(int id, int op, boolean before_notify, Vector args, boolean wait) throws IOException
+    public Descriptor sendMessage(int id, int op, boolean before_notify, Vector<Descriptor> args, boolean wait) throws IOException
     {
         String cmd = new String("ServerQAction");
         //int flags = before_notify?SrvJobBEFORE_NOTIFY:0;
@@ -254,7 +254,7 @@ class MdsServer extends MdsConnection
 //System.out.println("PARTE SEND MESSAGE");
 
         if(args == null)
-            args = new Vector();
+            args = new Vector<Descriptor>();
 
 /*
         args.add(0, new Descriptor(Descriptor.DTYPE_LONG,    null, Descriptor.dataToByteArray(new Integer(id))));
@@ -285,12 +285,11 @@ class MdsServer extends MdsConnection
 
     public Descriptor abort(boolean do_flush) throws IOException
     {
-        Vector args = new Vector();
-
         int flush[] = new int[1];
         flush[0] = (do_flush)?1:0;
-        args.add(new Descriptor(null, flush));
 
+        Vector<Descriptor> args = new Vector<Descriptor>();
+        args.add(new Descriptor(null, flush));
         Descriptor reply = sendMessage(0, SrvAbort, args, true);
         return reply;
     }
@@ -303,7 +302,7 @@ class MdsServer extends MdsConnection
 
     public Descriptor createPulse(String tree, int shot) throws IOException
     {
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
         args.add(new Descriptor(null, tree));
       //  args.add(new Descriptor(null, new int[]{rcv_port}));
         args.add(new Descriptor(null, new int[]{shot}));
@@ -313,7 +312,7 @@ class MdsServer extends MdsConnection
 
     public Descriptor dispatchAction(String tree, int shot, String name, int id) throws IOException
     {
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
         args.add(new Descriptor(null, tree));
         args.add(new Descriptor(null, new int[]{shot}));
         if(useJavaServer)
@@ -326,7 +325,7 @@ class MdsServer extends MdsConnection
 
     public Descriptor setWatchdogPort(int port) throws IOException
     {
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
         args.add(new Descriptor(null, new int[]{port}));
         Descriptor reply = sendMessage(0, SrvWatchdogPort, true, args, true);
         return reply;
@@ -344,7 +343,7 @@ class MdsServer extends MdsConnection
 
     public Descriptor dispatchCommand(String cli, String command) throws IOException
     {
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
         args.add(new Descriptor(null, cli));
         args.add(new Descriptor(null, command));
         Descriptor reply = sendMessage(0, SrvCommand, args, true);
@@ -354,7 +353,7 @@ class MdsServer extends MdsConnection
     public Descriptor monitorCheckin() throws IOException
     {
         String cmd = "";
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
         args.add(new Descriptor(null, new int[]{0}));
         args.add(new Descriptor(null, new int[]{0}));
         args.add(new Descriptor(null, new int[]{0}));
@@ -370,7 +369,7 @@ class MdsServer extends MdsConnection
     {
         byte data[] = new byte[1];
         data[0] = logging_mode;
-        Vector args = new Vector();
+        Vector<Descriptor> args = new Vector<Descriptor>();
         /*
         args.add(new Descriptor(Descriptor.DTYPE_CHAR,  null, data));
         */
@@ -415,7 +414,7 @@ class MdsServer extends MdsConnection
         {
             for(int i = 0; i < server_event_listener.size(); i++)
             {
-                MdsServerListener curr_server = (MdsServerListener)server_event_listener.elementAt(i);
+                MdsServerListener curr_server = server_event_listener.elementAt(i);
                 curr_server.processMdsServerEvent(e);
             }
         }

@@ -5,7 +5,7 @@ class Balancer implements ServerListener
 Ensures action dispatching to servers, keeping load balancing.
 */
 {
-    Hashtable servers = new Hashtable();
+    Hashtable<String, Vector<Server>> servers = new Hashtable<String, Vector<Server>>();
     /**
     indexed by server class. Stores the vector of servers associated with the server class.
     */
@@ -19,10 +19,10 @@ Ensures action dispatching to servers, keeping load balancing.
 
     public synchronized void addServer(Server server)
     {
-        Vector server_vect = (Vector)servers.get(server.getServerClass().toUpperCase());
+        Vector<Server> server_vect = servers.get(server.getServerClass().toUpperCase());
         if(server_vect == null)
         {
-            server_vect = new Vector();
+            server_vect = new Vector<Server>();
             servers.put(server.getServerClass().toUpperCase(), server_vect);
         }
         server_vect.addElement(server);
@@ -31,7 +31,7 @@ Ensures action dispatching to servers, keeping load balancing.
     
     public String getActServer(String serverClass)
     {
-        Vector serverV = (Vector)servers.get(serverClass.toUpperCase());
+        Vector<Server> serverV = servers.get(serverClass.toUpperCase());
         if(serverV == null || serverV.size() == 0)
             return default_server.getServerClass();
         return serverClass;
@@ -54,8 +54,8 @@ Ensures action dispatching to servers, keeping load balancing.
         }
 
 
-        Vector server_vect = new Vector();
-        Vector all_server_vect = (Vector)servers.get(server_class.toUpperCase());
+        Vector<Server> server_vect = new Vector<Server>();
+        Vector<Server> all_server_vect = servers.get(server_class.toUpperCase());
          if(all_server_vect == null)
          {
              if(default_server != null)
@@ -65,13 +65,11 @@ Ensures action dispatching to servers, keeping load balancing.
              }
              else
                  return false;
-         }
-         else
-          {
+         } else {
               for (int i = 0; i < all_server_vect.size(); i++) {
-                  Server curr_server = (Server) all_server_vect.elementAt(i);
+                  Server curr_server = all_server_vect.elementAt(i);
                   if (curr_server.isReady())
-                      server_vect.addElement(all_server_vect.elementAt(i));
+                      server_vect.addElement(curr_server);
               }
               if (server_vect.size() == 0) {
                   if (default_server != null) {
@@ -81,15 +79,15 @@ Ensures action dispatching to servers, keeping load balancing.
                   else
                       return false;
               }
-          }
+         }
      /////////////////////////////
 
-        Enumeration server_list = server_vect.elements();
+        Enumeration<Server> server_list = server_vect.elements();
         int curr_load, min_load = 1000000;
         Server curr_server, min_server = null;
         while(server_list.hasMoreElements())
         {
-            curr_server = (Server)server_list.nextElement();
+            curr_server = server_list.nextElement();
             curr_load = curr_server.getQueueLength();
             if(curr_load == 0 && curr_server.isActive())
             {
@@ -120,17 +118,17 @@ Ensures action dispatching to servers, keeping load balancing.
         try{
             server = ((DispatchData)event.getAction().getAction().getDispatch()).getIdent().getString();
         }catch(Exception exc) {return; }
-        Vector server_vect = (Vector)servers.get(server.toUpperCase());
+        Vector<Server> server_vect = servers.get(server.toUpperCase());
         if(server_vect == null) //it is the default server
             return;
         if(!isBalanced(server_vect))
         {
             Server min_loaded = null, max_loaded = null;
             int max_load = 0;
-            Enumeration server_list = server_vect.elements();
+            Enumeration<Server> server_list = server_vect.elements();
             while (server_list.hasMoreElements())
             {
-                Server curr_server = (Server)server_list.nextElement();
+                Server curr_server = server_list.nextElement();
                 int curr_len = curr_server.getQueueLength();
                 if(curr_len == 0)
                     min_loaded = curr_server;
@@ -149,14 +147,14 @@ Ensures action dispatching to servers, keeping load balancing.
         }
     }
 
-    protected boolean isBalanced(Vector server_vect)
+    protected boolean isBalanced(Vector<Server> server_vect)
     {
         if(server_vect.size() <= 1) return true; //No load balancing if one server in the server class
-        Enumeration server_list = server_vect.elements();
+        Enumeration<Server> server_list = server_vect.elements();
         int min_load = 1000000, max_load = 0;
         while(server_list.hasMoreElements())
         {
-            Server curr_server = (Server)server_list.nextElement();
+            Server curr_server = server_list.nextElement();
             if(!curr_server.isActive()) continue;
             int curr_load = curr_server.getQueueLength();
             if(curr_load < min_load) min_load = curr_load;
@@ -167,16 +165,13 @@ Ensures action dispatching to servers, keeping load balancing.
 
     public void abort()
     {
-        Enumeration server_vects = servers.elements();
+        Enumeration<Vector<Server>> server_vects = servers.elements();
         while(server_vects.hasMoreElements())
         {
-            Vector server_vect = (Vector)server_vects.nextElement();
-            Enumeration server_list = server_vect.elements();
+            Vector<Server> server_vect = server_vects.nextElement();
+            Enumeration<Server> server_list = server_vect.elements();
             while(server_list.hasMoreElements())
-            {
-                Server curr_server = (Server)server_list.nextElement();
-                curr_server.abort(true);
-            }
+                server_list.nextElement().abort(true);
         }
     }
 

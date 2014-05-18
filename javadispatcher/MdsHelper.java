@@ -2,7 +2,8 @@ import java.util.*;
 import java.io.*;
 class MdsHelper
 {
-    static Hashtable name_to_id = new Hashtable(), id_to_name = new Hashtable();
+    static Hashtable<String, Integer> name_to_id = new Hashtable<String, Integer>();
+    static Hashtable<Integer, String> id_to_name = new Hashtable<Integer, String>();
     static String dispatcher_ip = null;
     static int dispatcherPort = 0;
     static {

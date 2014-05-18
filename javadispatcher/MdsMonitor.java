@@ -5,8 +5,8 @@ import jScope.*;
 
 class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 {
-    Vector outstream_vect = new Vector();
-    Vector msg_vect = new Vector();
+    Vector<BufferedOutputStream> outstream_vect = new Vector<BufferedOutputStream>();
+    Vector<MdsMonitorEvent> msg_vect = new Vector<MdsMonitorEvent>();
 
     public MdsMonitor(int port)
     {

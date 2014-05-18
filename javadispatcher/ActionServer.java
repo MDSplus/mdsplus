@@ -4,9 +4,9 @@ import jScope.*;
 
 class ActionServer implements Server, MdsServerListener, ConnectionListener
 {
-    Vector enqueued_actions = new Vector();
-    Hashtable doing_actions = new Hashtable();
-    Vector server_listeners = new Vector();
+    Vector<Action> enqueued_actions = new Vector<Action>();
+    Hashtable<Integer, Action> doing_actions = new Hashtable<Integer, Action>();
+    Vector<ServerListener> server_listeners = new Vector<ServerListener>();
     Hashtable actions       = new Hashtable();
     MdsServer mds_server    = null;
     String tree;
@@ -111,10 +111,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             startServerPoll();
                         }
                         if (doing_actions.size() > 0) {
-                            Enumeration doing_list = doing_actions.elements();
+                            Enumeration<Action> doing_list = doing_actions.elements();
                             while (doing_list.hasMoreElements())
-                                processAbortedNoSynch( (Action) doing_list.
-                                    nextElement()); //in any case aborts action currently being executed
+                                processAbortedNoSynch(doing_list.nextElement()); //in any case aborts action currently being executed
                             doing_actions.clear();
                         }
                         Action action;
@@ -123,8 +122,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             {
                                 if (enqueued_actions.size() > 0) {
                                     while (enqueued_actions.size() > 0) {
-                                        if ( (action = (Action)
-                                              enqueued_actions.elementAt(0)) != null)
+                                        if ( (action = enqueued_actions.elementAt(0)) != null)
                                             processAbortedNoSynch(action);
                                         enqueued_actions.removeElementAt(0);
                                     }
@@ -136,7 +134,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                             //synchronized(enqueued_actions)
                             {
                                 for (int i = 0; i < enqueued_actions.size(); i++) {
-                                    action = (Action) enqueued_actions.elementAt(i);
+                                    action = enqueued_actions.elementAt(i);
                                     try {
                                         //mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
                                         action.setServerAddress(ip_address);
@@ -187,7 +185,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
             case MdsServerEvent.SrvJobSTARTING:
                 synchronized(enqueued_actions)
                 {
-                    doing_action = (Action)enqueued_actions.firstElement();
+                    doing_action = enqueued_actions.firstElement();
  //                   doing_action.setServerAddress(this.ip_address);
                     doing_actions.put(new Integer(e.getJobid()), doing_action);
                     enqueued_actions.removeElement(doing_action);
@@ -238,7 +236,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 //System.out.println("JOBID: " + e.getJobid());
 
                 if(e.getJobid() == 0) return; //SrvJobFINISHED messages are generated also by SrvCreatePulse and SrvClose
-                Action done_action = (Action)doing_actions.remove(new Integer(e.getJobid()));
+                Action done_action = doing_actions.remove(new Integer(e.getJobid()));
                 if(done_action == null)
                 {
                     System.out.println("INTERNAL ERROR: received finish message for an action which did not start. Try to restart mdsip server "+ip_address);
@@ -253,7 +251,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
                 try {
                     timer.cancel();
                 }catch(Exception exc){}
-                Action aborted_action = (Action)doing_actions.remove(new Integer(e.getJobid()));
+                Action aborted_action = doing_actions.remove(new Integer(e.getJobid()));
                 if(aborted_action == null)
                 {
                     System.out.println("INTERNAL ERROR: received abort message for an action which did not start. Try to restart mdsip server "+ip_address);
@@ -265,10 +263,10 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
     protected void processFinished(Action action)
     {
-        Enumeration listeners = server_listeners.elements();
+        Enumeration<ServerListener> listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
-            ServerListener listener = (ServerListener)listeners.nextElement();
+            ServerListener listener = listeners.nextElement();
             listener.actionFinished(new ServerEvent(this, action));
         }
     }
@@ -276,11 +274,10 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
     protected void processDoing(Action action)
     {
         action.setServerAddress(this.ip_address);
-        Enumeration listeners = server_listeners.elements();
+        Enumeration<ServerListener> listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
-            ServerListener listener = (ServerListener)listeners.nextElement();
-
+            ServerListener listener = listeners.nextElement();
             listener.actionStarting(new ServerEvent(this, action));
         }
     }
@@ -292,10 +289,10 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
         action.setServerAddress(this.ip_address);
 
-	Enumeration listeners = server_listeners.elements();
+        Enumeration<ServerListener> listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
-            ServerListener listener = (ServerListener)listeners.nextElement();
+            ServerListener listener = listeners.nextElement();
             listener.actionAborted(new ServerEvent(this, action));
         }
     }
@@ -308,20 +305,20 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
     protected void processDisconnected(String msg)
     {
-        Enumeration listeners = server_listeners.elements();
+        Enumeration<ServerListener> listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
-            ServerListener listener = (ServerListener)listeners.nextElement();
+            ServerListener listener = listeners.nextElement();
             listener.disconnected(new ServerEvent(this, msg));
         }
     }
 
     protected void processConnected(String msg)
     {
-        Enumeration listeners = server_listeners.elements();
+        Enumeration<ServerListener> listeners = server_listeners.elements();
         while(listeners.hasMoreElements())
         {
-            ServerListener listener = (ServerListener)listeners.nextElement();
+            ServerListener listener = listeners.nextElement();
             listener.connected(new ServerEvent(this, msg));
         }
     }
@@ -337,7 +334,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
         {
            synchronized(enqueued_actions)
            {
-                Action removed = (Action)enqueued_actions.lastElement();
+                Action removed = enqueued_actions.lastElement();
                 removed.setServerAddress(null);
                 enqueued_actions.removeElement(removed);
                 return removed;

@@ -228,7 +228,7 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       }
   }
 
-  public void setServersInfo(Hashtable serversInfo)
+  public void setServersInfo(Hashtable<String, ServerInfo> serversInfo)
   {
       this.serversInfo = serversInfo;
   }
