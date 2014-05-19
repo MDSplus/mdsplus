@@ -106,7 +106,7 @@ def build(self):
     self.log("%s, Java build completed" % str(datetime.datetime.now()))
     self.log("%s, Starting to build 32-bit apps" % str(datetime.datetime.now()))
     status=subprocess.Popen('devenv /build "Release|Win32" mdsplus.sln',shell=True,cwd=self.workspace).wait()
-    if statis != 0:
+    if status != 0:
         raise Exception('Build falied')
     self.log("%s, 32-bit apps build completed" % str(datetime.datetime.now()))
     self.log("%s, Starting to build 64-bit apps" % str(datetime.datetime.now()))
