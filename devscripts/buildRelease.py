@@ -21,6 +21,7 @@ class MDSplusVersion(object):
     #
     #   Find the cvs tags on module configure.in
     #
+    self.dist = self.getDist()
     p=subprocess.Popen('cvs log -h configure.in',stdout=subprocess.PIPE,shell=True,cwd=self.topdir)
     out=p.stdout.readlines()
     p.wait()
@@ -42,8 +43,11 @@ class MDSplusVersion(object):
     # Check to see if anything changed. cvs diff will output lines with Index: module-name
     # a module has changed.
     #
-    p=subprocess.Popen('cvs -Q diff --brief -r %s 2>&1 | grep Index:' % self.rtag(),stdout=subprocess.PIPE,
-                       shell=True,cwd=self.topdir)
+    if self.dist == "win":
+      cmd='cvs -Q diff --brief -r %s | find "Index:"'
+    else:
+      cmd='cvs -Q diff --brief -r %s 2>&1 | grep Index:'
+    p=subprocess.Popen(cmd % self.rtag(),stdout=subprocess.PIPE,shell=True,cwd=self.topdir)
     out=p.stdout.readlines()
     p.wait()
     num_changes=len(out)
@@ -59,7 +63,6 @@ class MDSplusVersion(object):
       if status != 0:
         raise Exception("Error tagging new release - %s %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
       self.log("New MDSplus %s release: %d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
-    self.dist = self.getDist()
     if self.dist != 'win':
       if self.flavor == 'stable':
         rflavor=""
