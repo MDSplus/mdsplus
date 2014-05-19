@@ -2,10 +2,6 @@ import os,subprocess,datetime
 
 def exists(self):
     """See if installation kit exists for this flavor and version"""
-    status = subprocess.Popen("""
-NET USE Z: /DELETE /Y
-NET USE Z: \\alchome\mdsplus-dist
-""",shell=True).wait()
     if status != 0:
         raise Exception("Error mounting repository")
     try:
@@ -52,7 +48,7 @@ def msiUpdateSetup(self,bits,msiflavor,outfile):
         elif '"OutputFilename"' in line:
             line='        "OutputFilename" = "8:%s.msi"' % (outfile.replace('\\','\\\\'),)
         elif '"PostBuildEvent"' in line:
-            line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\..\\\\%s\\\\%s\\\\%d.%d.%d\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (self.workspace.replace('\\','\\\\'),self.flavor,setupdir,self.major,self.minor,self.release)
+            line='        "PostBuildEvent" = "8:\\"$(ProjectDir)..\\\\devscripts\\\\sign_kit.bat\\" \\"%s\\\\%s\\\\%s\\\\%d.%d.%d\\\\Setup.exe\\" \\"$(BuiltOuputPath)\\""' % (self.workspace.replace('\\','\\\\'),self.flavor,setupdir,self.major,self.minor,self.release)
         elif '"Url"' in line:
             line='        "Url" = "8:http://www.mdsplus.org/dist/Windows/%s/%s/%d.%d.%d"' % (self.flavor,setupdir,self.major,self.minor,self.release)
         print >>f_out,line
@@ -83,21 +79,21 @@ def build(self):
         msiflavor="-"+self.flavor
         pythonflavor=self.flavor+"-"
     try:
-      os.mkdir("%s\\..\\%s" % (self.workspace,self.flavor))
+      os.mkdir("%s\\%s" % (self.workspace,self.flavor))
     except Exception:
       pass
     for p in ('x86','x86_64'):
         try:
-            os.mkdir("%s\\..\\%s\\%s" % (self.workspace,self.flavor,p))
+            os.mkdir("%s\\%s\\%s" % (self.workspace,self.flavor,p))
         except:
             pass
         try:
-            os.mkdir("%s\\..\\%s\\%s\\%d.%d.%d" % (self.workspace,self.flavor,p,self.major,self.minor,self.release))
+            os.mkdir("%s\\%s\\%s\\%d.%d.%d" % (self.workspace,self.flavor,p,self.major,self.minor,self.release))
         except Exception,e:
             pass
-    msi32="%(workspace)s\\..\\%(flavor)s\\x86\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release)d.x86" % \
+    msi32="%(workspace)s\\%(flavor)s\\x86\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release)d.x86" % \
         {'workspace':self.workspace,'flavor':self.flavor,'major':self.major,'minor':self.minor,'release':self.release,'msiflavor':msiflavor}
-    msi64="%(workspace)s\\..\\%(flavor)s\\x86_64\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release).x86_64" % \
+    msi64="%(workspace)s\\%(flavor)s\\x86_64\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release).x86_64" % \
         {'workspace':self.workspace,'flavor':self.flavor,'major':self.major,'minor':self.minor,'release':self.release,'msiflavor':msiflavor}
     self.log("%s, Starting build of java apps" % str(datetime.datetime.now()))
     status=subprocess.Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=self.workspace).wait()
@@ -133,6 +129,6 @@ def test(self):
     self.log("No automated testing for windows. Skipping")
 
 def deploy(self):
-    status=subprocess.Popen('xcopy /Y/I/E %s\\..\\%s Z:\\' % (self.workspace,self.flavor),shell=True).wait()
+    status=subprocess.Popen('xcopy /Y/I/E %s\\%s Z:\\' % (self.workspace,self.flavor),shell=True).wait()
     if status != 0:
         raise Exception('Error during deployment to repository')
