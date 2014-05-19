@@ -2,8 +2,6 @@ import os,subprocess,datetime
 
 def exists(self):
     """See if installation kit exists for this flavor and version"""
-    if status != 0:
-        raise Exception("Error mounting repository")
     try:
         os.stat("Z:\%s\%d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
         return True
