@@ -149,11 +149,12 @@ class MDSplusBuild(object):
     self.topdir=v.topdir
     self.dist=v.dist
     self.packages=self.getPackages()
-    self.machine=os.uname()[-1]
-    if self.machine=='x86_64':
-      self.bits=64
-    else:
-      self.bits=32
+    if self.dist != 'win':
+      self.machine=os.uname()[-1]
+      if self.machine=='x86_64':
+        self.bits=64
+      else:
+        self.bits=32
     if self.dist.startswith('fc') or self.dist.startswith('el'):
       from buildRedhat import exists,build,test,deploy
     elif self.dist == 'macosx':
