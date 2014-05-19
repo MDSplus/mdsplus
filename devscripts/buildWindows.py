@@ -3,7 +3,7 @@ import os,subprocess,datetime
 def exists(self):
     """See if installation kit exists for this flavor and version"""
     status = subprocess.Popen("""
-NET USE Z: /DELETE
+NET USE Z: /DELETE /Y
 NET USE Z: \\alchome\mdsplus-dist
 """,shell=True).wait()
     if status != 0:
