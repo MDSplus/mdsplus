@@ -1,14 +1,17 @@
-bindir = @MAKEBINDIR@
-bin_PROGRAMS = wfevent
-
 libdir=@MAKESHLIBDIR@
 
-wfevent_SOURCES = wfevent.c
-wfevent_LDADD = -L$(libdir) -lTdiShr -lMdsShr
 #FIXME: Use rpath-link until build system is flattened
 if RPATHLINK
-wfevent_LDFLAGS = $(RPATHLINK)=$(libdir)
+RPATHFLAGS = $(RPATHLINK)=$(libdir)
+else
+RPATHFLAGS =
 endif
+
+AM_LDFLAGS = $(RPATHFLAGS)
+LDADD = -L$(libdir) -lTdiShr -lMdsShr
+
+bin_PROGRAMS = wfevent
+wfevent_SOURCES = wfevent.c
 
 #FIXME: Clean up LIBS in top level configure
 LIBS=

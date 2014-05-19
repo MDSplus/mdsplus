@@ -50,8 +50,7 @@ PROGRAMS = $(bin_PROGRAMS)
 am_setevent_OBJECTS = setevent.$(OBJEXT)
 setevent_OBJECTS = $(am_setevent_OBJECTS)
 setevent_LDADD = $(LDADD)
-setevent_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(setevent_LDFLAGS) \
-	$(LDFLAGS) -o $@
+setevent_DEPENDENCIES =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
@@ -145,7 +144,9 @@ LIBPATH = @LIBPATH@
 LIBPTHREAD = @LIBPTHREAD@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
-LIBS = @LIBS@
+
+#FIXME: Clean up LIBS in top level configure
+LIBS = 
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
 LIBXP = @LIBXP@
@@ -274,11 +275,13 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-AM_LDFLAGS = -L$(libdir) -lMdsShr
 @RPATHLINK_FALSE@RPATHFLAGS = 
+
+#FIXME: Use rpath-link until build system is flattened
 @RPATHLINK_TRUE@RPATHFLAGS = $(RPATHLINK)=$(libdir)
+AM_LDFLAGS = $(RPATHFLAGS)
+LDADD = -L$(libdir) -lMdsShr
 setevent_SOURCES = setevent.c
-setevent_LDFLAGS = $(AM_LDFLAGS) $(RPATHFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -352,7 +355,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 setevent$(EXEEXT): $(setevent_OBJECTS) $(setevent_DEPENDENCIES) 
 	@rm -f setevent$(EXEEXT)
-	$(setevent_LINK) $(setevent_OBJECTS) $(setevent_LDADD) $(LIBS)
+	$(LINK) $(setevent_OBJECTS) $(setevent_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

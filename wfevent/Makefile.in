@@ -49,9 +49,8 @@ am__installdirs = "$(DESTDIR)$(bindir)"
 PROGRAMS = $(bin_PROGRAMS)
 am_wfevent_OBJECTS = wfevent.$(OBJEXT)
 wfevent_OBJECTS = $(am_wfevent_OBJECTS)
+wfevent_LDADD = $(LDADD)
 wfevent_DEPENDENCIES =
-wfevent_LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(wfevent_LDFLAGS) \
-	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
@@ -154,6 +153,7 @@ LIBXP = @LIBXP@
 LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
+LINKWHOLE = @LINKWHOLE@
 LOC = @LOC@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
@@ -234,7 +234,7 @@ am__leading_dot = @am__leading_dot@
 am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
-bindir = @MAKEBINDIR@
+bindir = @bindir@
 build = @build@
 build_alias = @build_alias@
 build_cpu = @build_cpu@
@@ -275,10 +275,13 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-wfevent_SOURCES = wfevent.c
-wfevent_LDADD = -L$(libdir) -lTdiShr -lMdsShr
+@RPATHLINK_FALSE@RPATHFLAGS = 
+
 #FIXME: Use rpath-link until build system is flattened
-@RPATHLINK_TRUE@wfevent_LDFLAGS = $(RPATHLINK)=$(libdir)
+@RPATHLINK_TRUE@RPATHFLAGS = $(RPATHLINK)=$(libdir)
+AM_LDFLAGS = $(RPATHFLAGS)
+LDADD = -L$(libdir) -lTdiShr -lMdsShr
+wfevent_SOURCES = wfevent.c
 all: all-am
 
 .SUFFIXES:
@@ -352,7 +355,7 @@ clean-binPROGRAMS:
 	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
 wfevent$(EXEEXT): $(wfevent_OBJECTS) $(wfevent_DEPENDENCIES) 
 	@rm -f wfevent$(EXEEXT)
-	$(wfevent_LINK) $(wfevent_OBJECTS) $(wfevent_LDADD) $(LIBS)
+	$(LINK) $(wfevent_OBJECTS) $(wfevent_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
