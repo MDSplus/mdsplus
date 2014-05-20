@@ -21,7 +21,7 @@ class NI6259AI(Device):
         parts.append({'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'})
         parts.append({'path':'.CHANNEL_%d:POLARITY'%(i+1), 'type':'text', 'value':'BIPOLAR'})
         parts.append({'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'text', 'value':'10V'})
-        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal','options':('no_write_model', 'no_compress_on_put')})
+        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
     del i
     parts.append({'path':':END_IDX', 'type':'numeric'})
     parts.append({'path':':INIT_ACTION','type':'action',
@@ -36,7 +36,7 @@ class NI6259AI(Device):
 
     parts.append({'path':':START_IDX', 'type':'numeric', 'value':0})
     parts.append({'path':':ACQ_MODE', 'type':'text','value':'TRANSIENT REC.'})
-    parts.append({'path':':TRIG_MODE', 'type':'text','value':'EXTERNAL'})
+    parts.append({'path':':TRIG_MODE', 'type':'text','value':'INTERNAL'})
     parts.append({'path':':TRIG_SOURCE', 'type':'numeric','value':0})
 
     parts.append({'path':':USE_TIME', 'type':'text', 'value':'YES'})
@@ -46,6 +46,7 @@ class NI6259AI(Device):
     
 #File descriptor
     fd = 0
+
 #Driver constants
     AI_CHANNEL_TYPE_CALIBRATION = c_int(0)
     AI_CHANNEL_TYPE_DIFFERENTIAL = c_int(1)
@@ -61,6 +62,10 @@ class NI6259AI(Device):
 
     AI_START_SELECT_PULSE  = c_int(0)
     AI_START_SELECT_PFI1 = c_int(2)
+
+    AI_START_SELECT_RTSI0 = c_int(11)
+    AI_START_SELECT_RTSI1 = c_int(12)
+
     AI_START_SELECT = c_int(9)
     AI_START_POLARITY = c_int(10)
     AI_START_POLARITY_RISING_EDGE = c_int(0)
@@ -70,6 +75,10 @@ class NI6259AI(Device):
     AI_REFERENCE_SELECT = c_int(11)
     AI_REFERENCE_POLARITY = c_int(12)
     AI_REFERENCE_POLARITY_RISING_EDGE = c_int(0)
+
+    PXI6259_AI_START_TRIGGER = c_int(3)
+    PXI6259_RTSI1 = c_int(3)
+    PXI6259_RTSI2 = c_int(4)
 
 #Dictionaries and maps
     inputModeDict = {'RSE':AI_CHANNEL_TYPE_RSE, 'NRSE':AI_CHANNEL_TYPE_NRSE, 'DIFFERENTIAL':AI_CHANNEL_TYPE_DIFFERENTIAL}
@@ -82,6 +91,7 @@ class NI6259AI(Device):
     def saveInfo(self):
       global ni6259Fds
       global ni6259Nids
+
       try:
         ni6259Fds
       except:
@@ -124,6 +134,15 @@ class NI6259AI(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
                 return 0
+	"""
+        try: 
+	    if( niLib.pxi6259_reset_ai(self.fd) ):
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ fileName)
+                return 0
+        except:
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ fileName)
+            return 0
+	"""
         return 1
 
     def closeInfo(self):
@@ -134,6 +153,15 @@ class NI6259AI(Device):
             self.fd = ni6259Fds[idx]
             ni6259Fds.remove(self.fd)
             ni6259Nids.remove(self.getNid())
+
+            try: 
+	        if( niLib.pxi6259_reset_ai(self.fd) ):
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ fileName)
+                    return 0
+            except:
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot reset device '+ fileName)
+                return 0
+
             os.close(self.fd)
         except:
             print ' '
@@ -380,7 +408,8 @@ class NI6259AI(Device):
 #trigger mode        
         try:
             trigMode = self.trig_mode.data()
-            if(trigMode == 'EXTERNAL'):
+            print trigMode
+            if(trigMode == 'EXTERNAL_PFI1' or  trigMode == 'EXTERNAL_RTSI1' ):
                 #print "AI_START_SELECT ", self.AI_START_SELECT
                 #print "aiConf ", aiConf
                 #print "AI_START_SELECT_PFI1 ", self.AI_START_SELECT_PFI1
@@ -399,20 +428,43 @@ class NI6259AI(Device):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
                         return 0
                     """
-                    status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+                    # Sostituzione temporanea per gestire acquisizione a IPP trigger preso dal 6368 
+                    # status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+
+                    if( trigMode == 'EXTERNAL_PFI1' ): 
+                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+                    else:
+                         print "1 OK AI_START_SELECT_RTSI1"
+                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_RTSI1)
+
                     if( status == 0 ):                    
                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        return 0
-                    
+                        return 0                    
                 else:
-                    status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+                    # Sostituzione etmporanea per gestire acquisizione a IPP trigger preso dal 6368  
+                    # status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+
+                    if( trigMode == 'EXTERNAL_PFI1' ): 
+                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+                    else:
+                         print "2 OK AI_START_SELECT_RTSI1"
+                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_RTSI1)
+
                     if( status == 0 ):                    
                         status = niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
                         return 0
+
+
+                if( trigMode == 'EXTERNAL_PFI1' ): 
+                    status = niLib.pxi6259_export_ai_signal( aiConf, self.PXI6259_AI_START_TRIGGER,  self.PXI6259_RTSI1 )
+                    if( status != 0 ):
+                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot route PFI1 signal to RTSI1')
+                        return 0
+
 	    else:
                 #print "AI_START_SELECT ", self.AI_START_SELECT
                 #print "aiConf ", aiConf
@@ -441,7 +493,7 @@ class NI6259AI(Device):
 
 #trigger source    
         try:
-            if(trigMode == 'EXTERNAL'):
+            if(trigMode == 'EXTERNAL_PFI1' or trigMode == 'EXTERNAL_RTSI1'):
                 trigSource = self.trig_source.data()
             else:
                 trigSource = 0
