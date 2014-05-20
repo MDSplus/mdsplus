@@ -3,7 +3,8 @@ import os,subprocess,datetime,shutil
 def exists(self):
     """See if installation kit exists for this flavor and version"""
     try:
-        os.stat("\repository\Windows\%s\%d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
+        for arch in ('x86','x86_64'):
+            os.stat("/repository/Windows/%s/%s/%d.%d.%d" % (self.flavor,arch,self.major,self.minor,self.release))
         return True
     except:
         return False
