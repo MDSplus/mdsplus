@@ -91,7 +91,7 @@ def build(self):
             pass
     msi32="%(workspace)s\\%(flavor)s\\x86\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release)d.x86" % \
         {'workspace':self.workspace,'flavor':self.flavor,'major':self.major,'minor':self.minor,'release':self.release,'msiflavor':msiflavor}
-    msi64="%(workspace)s\\%(flavor)s\\x86_64\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release).x86_64" % \
+    msi64="%(workspace)s\\%(flavor)s\\x86_64\\%(major)d.%(minor)d.%(release)d\\MDSplus%(msiflavor)s-%(major)d.%(minor)d.%(release)d.x86_64" % \
         {'workspace':self.workspace,'flavor':self.flavor,'major':self.major,'minor':self.minor,'release':self.release,'msiflavor':msiflavor}
     self.log("%s, Starting build of java apps" % str(datetime.datetime.now()))
     status=subprocess.Popen('devenv /build "Release|Java" mdsplus.sln',shell=True,cwd=self.workspace).wait()
