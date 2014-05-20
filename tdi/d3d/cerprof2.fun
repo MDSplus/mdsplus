@@ -1,5 +1,5 @@
 
-PUBLIC FUN CERPROF(IN _code, IN _profile, OPTIONAL IN _system, OPTIONAL IN
+PUBLIC FUN CERPROF2(IN _code, IN _profile, OPTIONAL IN _system, OPTIONAL IN
                    _nocorrect, OPTIONAL IN _norotcorrect)
 
 /* 
@@ -131,15 +131,49 @@ PUBLIC FUN CERPROF(IN _code, IN _profile, OPTIONAL IN _system, OPTIONAL IN
 	      *  _t < _sigt+_sigdt.  Array is size(_t)
 	      */
 
-	     _ix = X_TO_I(_sigt, _t);  
-             _ixd = X_TO_I(_sigt+_sigdt, _t);
+	     _ix  = X_TO_I(_t,_sigt);  
+             _ixd = X_TO_I(_t,_sigt+_sigdt);
 
 	     /*  calculate difference in time between _t and corresponding
               *  values of _sigt 
               */
 
-	     _diff = _t - DATA(_sigt)[_ix];
-	     _diffd = _t - DATA(_sigt)[_ixd];
+     	     /* SMF fix this - we do not want to reduce the array size to size(_sigt) */  
+	     _diff  = _t[_ix]  - DATA(_sigt)[_ix];
+	     _diffd = _t[_ixd] - DATA(_sigt)[_ixd];
+
+write(*,size(_diff),size(_diffd));
+
+  	     _temp_diff  = *;
+             _temp_diffd = *;
+             _z  = 0;
+	     _zd = 0;
+	     for (_y=0;_y<size(_t);_y++) {
+
+if (_i eq 26) { write(*,size(_ix),_y,_ix[_z]); }
+
+ 		/* build new diff array */
+                if ( _ix[_z] eq _y ) {
+ 	           _temp_diff = [_temp_diff,_diff[_z]];
+ 		   _z = _z + 1;
+                   if (_z gt size(_diff)) { _z = _z-1; }
+                } else {
+                   _temp_diff = [_temp_diff,_t[_y]];
+                }
+
+		/* build new diffd array */
+                if (_ixd[_zd] eq _y) {
+                   _temp_diffd = [_temp_diffd,_diffd[_zd]];
+                   _zd = _zd + 1;
+  		   if (_zd gt size(_diffd)) { _zd = _zd-1; }
+                } else {
+                   _temp_diffd = [_temp_diffd,_t[_y]];
+                }
+	     }
+	     _diff  = _temp_diff;
+  	     _diffd = _temp_diffd;
+
+/*if (_i eq 26) { write (*,_diff,'------',_diffd); }*/
 
 
 	     /*  get indecies where this difference is within allowable limit

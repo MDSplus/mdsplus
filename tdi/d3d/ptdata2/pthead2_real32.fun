@@ -1,16 +1,31 @@
-FUN PUBLIC PTHEAD2_REAL32(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
-{
+/**************************************************************************************************************************
+        PUBLIC FUN PTHEAD2_REAL32(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error)
+        
+        This TDI function retrieves the REAL32 PTDATA header for the requested PTDATA pointname.
+
+        Input Parameters:  POINTNAME : string - pointname requested from PTDATA 
+                           SHOT      : long   - d3d shot number to retrieve
+       
+        Optional Output:   ERROR  - Return variable for PTDATA error code  
+
+        Author:         Sean Flanagan (flanagan@fusion.gat.com) 
+
+**************************************************************************************************************************/
+
+
+PUBLIC FUN PTHEAD2_REAL32(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error) {
+
 	IF (NOT PRESENT(_shot)) _shot=$SHOT;
 
 	_fullpoint = _pointname//"          ";
 
 	_error=0;
 	_size=PTHEAD2_SIZE(_fullpoint,_shot,_error);
-        if (_size[5] == 0) {
-	  if (_error == 0)  _error=-1; 
+        IF (_size[5] == 0) {
+	  IF (_error == 0)  _error=-1; 
 	}
 
-	if ( EQ(_error,0) || EQ(_error,2) ) {
+	IF ( EQ(_error,0) || EQ(_error,2) ) {
                 _type = 6;
                 _file = ".PLA";
   
@@ -29,7 +44,7 @@ FUN PUBLIC PTHEAD2_REAL32(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
                              REF(_ascii), REF(_int16), REF(_int32), REF(_real32));
 	}
 
-	if ( EQ(_error,0) || EQ(_error,2) ) { return(_real32); }  
-	else { abort(); } 
+	IF ( EQ(_error,0) || EQ(_error,2) ) { RETURN(_real32); }  
+	ELSE { ABORT(); } 
 }
 	
