@@ -4,7 +4,7 @@ FUN PUBLIC PTDATA(IN _pointname,OPTIONAL IN _shot, OPTIONAL OUT _error, OPTIONAL
 	_error=0;
         _npts=0;
 
-       WRITE(*, "In RD version of PTDATA, Pointname = " // _pointname );
+        /*WRITE(*, "In RD version of PTDATA, Pointname = " // _pointname );*/
 
         _npts = ptnpts(_pointname,_shot,_error);
         if (_error == 0) {
