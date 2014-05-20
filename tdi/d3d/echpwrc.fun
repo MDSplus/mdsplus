@@ -1,7 +1,5 @@
-/* what is the purpose of this TDI function? */
 public fun echpwrc(in _shot) {
 
-   /* why is this list hard-coded? */
    _gyrotrons = ["BORIS","CHEWBACCA","HAN","KATYA","LEIA","LION","LUKE","NATASHA","SCARECROW","TINMAN"];
    _calibpath = "";
    _calibcopw = 0.0; 

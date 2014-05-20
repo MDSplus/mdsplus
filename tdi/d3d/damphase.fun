@@ -1,24 +1,30 @@
-/* Those who were responsible for the previous comment have been sacked. */
-/* Flanagan wrote this, so there are no comments.                        */
-/* Somebody edited this later, so now there are comments...
-   This TDI fun is used to tell DAM about MDSplus phases.  All it does
-   is do a sendpost with info about the phase that was just dispatched.
-   It should be used in the action nodes in the PHASES branch of the D3D
-   tree. -jrb 20030313
+/* DAMPHASE(IN _damid, IN _shot)
+   This TDI function sends a DAM phase post to the data analysis monitor
+   and declares and MDSplus event for the phase.
+   20081111 SF
+
+   20110419 SMF - use metis.gat.com
+
+   20110504 SMF - Does anything even use events based on the phase name?
+                  Turning this off until someone contacts DAAG since these
+                  phases are probably useless.  
+
 */
 
 PUBLIC FUN DAMPHASE(IN _damid, IN _shot) {
-        _machine = "delphi";
+
+        /* Declare the phase to the data analysis monitor */
+        _machine = "metis";
         _damid = ADJUSTL(""//_damid);
-        _command = "/f/mdsplus/dispatching/sendpost id="//_damid//" ok=TRUE shot="//_shot//" >& /dev/null &";
-        write (*,_command);
-        _cmd = "/usr/bin/rsh -n "//_machine//" \""//_command//"\"";
+	_shot  = ADJUSTL(""//_shot);
+        _command = "/f/mdsplus/dispatching/sendpost id="//_damid//" ok=TRUE shot="//_shot; /*//" >& /dev/null &";*/
+        _cmd = "/usr/bin/ssh -q "//_machine//" \""//_command//"\"";
+	write (*,_cmd);
         SPAWN(_cmd);
 
-        /* Changing over to id driven posting.  Web page is being done through DAM. _PHASE no longer passed. */ 
-        /* write this info to a file on the web server for Qian's web page stuff 
-        _cmd2 = "/usr/local/bin/mds-postweb.sh " // _phase // " " // _shot // " >& /dev/null &";
-        SPAWN(_cmd2); */
+        /* Declare the phase to the event server 
+        _cmd = "/f/mdsplus/dispatching/mdsplus_phase_event.sh "//_damid//" &";
+        SPAWN(_cmd); */  
 
         return(1);
 }

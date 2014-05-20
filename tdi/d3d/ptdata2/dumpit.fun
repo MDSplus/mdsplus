@@ -1,14 +1,18 @@
-/* 
-   This code mimics dumpit.f, which uses PTDATA call type 7. 
-   20060504 - SF
-*/
+/********************************************************************************************
+        PUBLIC FUN DUMPIT(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
+        
+        This TDI function mimics dumpit.f, which uses PTDATA call type 7.
+
+        Author:         Sean Flanagan (flanagan@fusion.gat.com) 20060504
+
+********************************************************************************************/
 
 FUN PUBLIC dumpit(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error) {
 
         IF (NOT PRESENT(_shot)) _shot=$SHOT;
         _file = ".PLA";
         _error  = 0.0;
-        _data   = ZERO(1048576,0.0);
+        _data   = ZERO(1048576,0);
         _iarray = [1048576,0,1,1];
         _rarray = [0.0,0.0];
         _ascii  = [0.0,0.0];

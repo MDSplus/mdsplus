@@ -15,6 +15,10 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 		  EFIT02 models.
 
    Created: 98.02.03  Jeff Schachter
+
+   20100828 SMF - Remove FINDCER.fun call.  Use the tag names instead of
+                  the old translation routine as cerprof.fun is retired.
+
 */
 
 {
@@ -40,18 +44,32 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 	  return (_node);
 	}
 
-	_stat = FINDCER(_tag, _tree, _node, _revert);
+        /* check transport */
+        _stat=TreeShr->TreeOpen(ref("TRANSPORT\0"),val(_shotcheck));
+        _close="TRANSPORT\0";
+
+        /* search open tree(s) for _tag  */
         if (_stat) {
-          return (_node);
+           _tree='';
+           _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
         }
+
+        if (_closetree) {
+           _dummy = TreeShr->TreeClose(ref(_close),val(_shotcheck));   /* DO NOT CLOSE TREE - performace hit!!! */
+        }
+
+	if (_stat) {
+	   return (_node);
+  	}
+
 
 	/* Open D3D tree for next check */
 	_stat=TreeShr->TreeOpen(ref("D3D\0"),val(_shotcheck));
 	_close="D3D\0";
 
 	/* search open tree(s) for _tag  */
-
 	if (_stat) {
+           _tree='';
 	   _stat=FINDSIGTAG(_tag, _tree, _node, _revert);
 	}
 
@@ -62,8 +80,7 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 	/* if the signal was not found in any of the D3D subtrees, */
 	/*    and it is not a special EFIT signal, check EFIT01    */
 
-
-	if (not(_stat)) {
+	if ( not(_stat) ) {
 
 	  /* Now check EFIT */
 	  _stat = FINDEFIT(_tag, _tree);
@@ -79,7 +96,6 @@ PUBLIC FUN FINDSIG (IN _tag, OPTIONAL OUT _tree, OPTIONAL OUT _revert,
 
 	/* if the signal was not found in any of the D3D subtrees, */
 	/*    and it is not a special EFIT signal, check EFIT01    */
-
 
 	if (not(_stat) && (_tree eq "") ) {
 	  _stat = TreeShr->TreeOpen(ref("EFIT01\0"),val(_shotcheck));

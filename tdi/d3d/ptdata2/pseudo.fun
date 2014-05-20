@@ -1,70 +1,32 @@
-/*
-Name:  
-	PSEUDO 
+/**************************************************************************************************************************
+        PUBLIC FUN PSEUDO(IN _pointname, OPTIONAL IN _shot, OPTIONAL OUT _error)
+        
+        This TDI function retrieves time history DIII-D data from pseudo-pointname through MDSplus.
 
-Purpose: 
-	
-	Retrieve time history DIII-D data from pseudo-pointnames through MDSplus
+        Input Parameters:  POINTNAME : string - pointname requested from the pseudo-pointname FORTRAN library
+                           SHOT      : long   - d3d shot number to retrieve
+        
+        Optional Output:   ERROR  - Return variable for PTDATA error code  
 
-Calling Sequence:
+        Author:         Sean Flanagan (flanagan@fusion.gat.com) 20051010
 
-	Y = MDSVALUE (' PSEUDO(  IN _pointname, 
-      	                         OPTIONAL IN      _shot, 
-                                 OPTIONAL OUT     _error  ) ')
+**************************************************************************************************************************/
 
-Input Parameters: 
-
-	POINTNAME 	:  string	- pointname requested from the pseudo-pointname FORTRAN library.
-	SHOT		:  long		- shot number from which to retrieve pseudo-pointname.  
-                    			  if not specified, defaults to current DIII-D shot.
-
-Outputs:
-
-	Y	: data from the requested pseudo-pointname.
-	ERROR   : long -  PTDATA error code.
-
-Restrictions:
-
-	PSEUDO retrieves pseudo-pointname data from the FORTRAN shared library libidl_ga.  This TDI routine 
-	is currently only supported on the DIII-D MDSplus server, atlas.gat.com.  Users must mdsconnect 
-	to atlas.gat.com to retrieve pseudo-pointname data through TDI.  
-
-Procedure:
-
-	PSEUDO is a TDI function used to retrieve DIII-D pseudo-pointnames.  Users need to specify the 
-	pointname and shot number.  The routine call the FORTRAN shared library libidl_ga to calculate 
-	the pseudo-pointname.
-
-Retrieving time dimension from requested PTDATA pointname: 
-
-	PSEUDO returns the data from DIII-D pseuo-pointanames by default.  To retrieve the time dimension 
-	from the pseudo-pointname, an additional call needs to be made after calling PSEUDO.  
-
-	For example:
-
-		Y = MDSVALUE(' PSEUDO(MSEP13,111203)   ')
-		X = MDSVALUE(' DIM_OF(__pseduo_signal) ')
-
-	The results from the PSEUDO call are stored in a public TDI variable (denoted by the double underscore 
-	before the variable name __pseudo_signal).  The routine builds an MDSplus signal out of the data 
-	retrieved from the pseudo-pointname.  So, a typical MDSplus call for the first dimension will return 
-	the desired time array.
-
-Required Software: Currently, only supported by the DIII-D MDSPlus server, atlas.gat.com. 
-
-Author:  Sean Flanagan
-
-Updated: 2005-10-10
-*/
 FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
    
         _err = 0;
         _execute = 0;
+
+ 	/* Some old psuedopointnames are also in ptdata, but we want to give preference
+           to their pseudopointname version.  So provide a way to skip the check */
+	_skipcheck = 0;
+        if ( EQ(UPCASE(_pointname),'LOGFNR') ) { _skipcheck=1;}
+
         _pointname = UPCASE(_pointname//"          ");
 
-        /* Check for PTDATA first, return if not pseudo-pointname. */
+        /* Check for PTDATA first, return if not pseudo-pointname. */ 
         _idfi = PTHEAD2(_pointname,_shot)[30];   
-        if ( NE(_idfi,0) ) { return([0]); }
+        if ( NE(_idfi,0) && EQ(_skipcheck,0) ) { return([0]); }   
 
         /* If not in PTDATA, then try getallbig_camac for pseduo-pointname data */
         /* Some pseudo-pointnames are special cases                             */
@@ -85,7 +47,10 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
            _ibksub = 0;
            _msefitfun = 1;
            _label = ARRAY(11,1b);
-           _status = BUILD_CALL(0, '/c/linux/lib/libidl_ga.so', 'mset_multi_c_f_',
+           if ( translatelogical("VENDOR") == "hp") {
+                    _pseudo_function = 'mset_multi_c_f';   
+           } else { _pseudo_function = 'mset_multi_c_f_'; }
+           _status = BUILD_CALL(0, PSEUDO_LIBRARY(), _pseudo_function,
                                    _shot, _msefitfun, REF(_label), REF(_xmin), REF(_xmax),
                                    REF(_x), REF(_y), REF(_npts), _nchan, REF(_err), _npts,
                                   _ibksub);
@@ -103,7 +68,10 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
            _ibksub = 0;
            _msefitfun = 1;
            _label = ARRAY(11,1b);
-           _status = BUILD_CALL(0, '/c/linux/lib/libidl_ga.so', 'msep_multi_c_f_',
+           if ( translatelogical("VENDOR") == "hp") {
+                    _pseudo_function = 'msep_multi_c_f';
+           } else { _pseudo_function = 'msep_multi_c_f_'; }
+           _status = BUILD_CALL(0, PSEUDO_LIBRARY(), _pseudo_function,
                                    _shot, _msefitfun, REF(_label), REF(_xmin), REF(_xmax),
                                    REF(_x), REF(_y), REF(_npts), _nchan, REF(_err), _npts,
                                    _ibksub);
@@ -117,7 +85,10 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
            _nwrite    = 10;                /* always 10 in gadat      */
            _ulab      = ARRAY(16,1b);    
            _label     = ARRAY(27,1b);  
-           _status = BUILD_CALL(0, '/c/linux/lib/libidl_ga.so', "spred_data_f_c_",
+           if ( translatelogical("VENDOR") == "hp") {
+                    _pseudo_function = 'spred_data_f_c';
+           } else { _pseudo_function = 'spred_data_f_c_'; }
+           _status = BUILD_CALL(0, PSEUDO_LIBRARY(), _pseudo_function,
                                    _shot, _pointname, REF(_x), REF(_y), REF(_npts), REF(_ulab), REF(_label), 
                                    REF(_TMIN), REF(_TMAX), REF(_XMIN), REF(_XMAX),REF(_err), REF(_nwrite) );
            _x = _x[0.._npts-1];
@@ -139,7 +110,10 @@ FUN PUBLIC PSEUDO(IN _pointname,IN _shot,OPTIONAL OUT _err) {
         _idouble   = 0;                 /* no double precision     */
         _time64    = ZERO(_npts+2,0d0);           /* defunct                 */
 
-        _status = BUILD_CALL(0, '/c/linux/lib/libidl_ga.so', "getallbig_camac_", 
+        if ( translatelogical("VENDOR") == "hp") {
+                    _pseudo_function = 'getallbig_camac';
+           } else { _pseudo_function = 'getallbig_camac_'; }
+        _status = BUILD_CALL(0, PSEUDO_LIBRARY(), _pseudo_function, 
                                 _shot, _pointname, REF(_err), REF(_label), REF(_ULAB), _ical,
                                 REF(_x), REF(_y), REF(_npts), REF(_TMIN), REF(_TMAX), REF(_XMIN),
                                 REF(_XMAX), REF(_IWAIT), REF(_NWRITE), REF(_IAVTYPE),
