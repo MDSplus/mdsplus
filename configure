@@ -751,6 +751,7 @@ MDSIP_CONNECTIONS
 RPATHLINK
 RPATHLINK_FALSE
 RPATHLINK_TRUE
+LINKWHOLE
 ac_ct_F77
 FFLAGS
 F77
@@ -855,6 +856,7 @@ ac_user_opts='
 enable_option_checking
 enable_maintainer_mode
 enable_dependency_tracking
+enable_shared
 enable_mdsip_connections
 enable_nodebug
 enable_perf
@@ -1526,6 +1528,7 @@ Optional Features:
 			  (and sometimes confusing) to the casual installer
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
+  --disable-shared        Prevent building shared libraries
   --disable-mdsip_connections
                           Prevent using mdsip connections.
   --enable-nodebug        compile without debug info
@@ -6480,6 +6483,30 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 fi
 
+
+{ $as_echo "$as_me:$LINENO: checking whether to build shared libraries" >&5
+$as_echo_n "checking whether to build shared libraries... " >&6; }
+# Check whether --enable-shared was given.
+if test "${enable_shared+set}" = set; then
+  enableval=$enable_shared;
+else
+  enable_shared=yes
+fi
+
+
+LINKWHOLEON=
+LINKWHOLEOFF=
+case $enable_shared in
+  yes) case $host in
+  *apple*) LINKWHOLEON=-Wl,-force_load ;;
+  *linux*) LINKWHOLEON=-Wl,--whole-archive;LINKWHOLEOFF=-Wl,--no-whole-archive ;;
+esac
+ ;;
+esac
+
+
+{ $as_echo "$as_me:$LINENO: result: $enable_shared" >&5
+$as_echo "$enable_shared" >&6; }
 
 { $as_echo "$as_me:$LINENO: checking whether the linker supports -rpath-link" >&5
 $as_echo_n "checking whether the linker supports -rpath-link... " >&6; }
