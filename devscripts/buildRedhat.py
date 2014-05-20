@@ -112,9 +112,9 @@ if [ "%%_target" != "i686-linux" ]
 then
   cd ${WORKSPACE}/x86_64/mdsplus
   env MDSPLUS_VERSION="%(pythonflavor)s-%(major)d.%(minor)d.%(release)d" make install
-  rsync -a ${WORKSPACE}/i686/mdsplus/bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-  rsync -a ${WORKSPACE}/i686/mdsplus/lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
-  rsync -a ${WORKSPACE}/i686/mdsplus/uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+  rsync -a ${WORKSPACE}/BUILDROOT/i686/usr/local/mdsplus/bin32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+  rsync -a ${WORKSPACE}/BUILDROOT/i686/usr/local/mdsplus/lib32 $RPM_BUILD_ROOT/usr/local/mdsplus/
+  rsync -a ${WORKSPACE}/BUILDROOT/i686/usr/local/mdsplus/uid32 $RPM_BUILD_ROOT/usr/local/mdsplus/
   rsync -a ${WORKSPACE}/i686/mdsplus/mdsobjects/python/dist $RPM_BUILD_ROOT/usr/local/mdsplus/mdsobjects/python/
 else
   cd ${WORKSPACE}/i686/mdsplus
