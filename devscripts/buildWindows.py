@@ -129,5 +129,5 @@ def test(self):
 def deploy(self):
     for arch in ('x86','x86_64'):
     	shutil.copytree('%s/%s/%s/%d.%d.%d' % (self.workspace.replace('\\','/'),self.flavor,arch,self.major,self.minor,self.release),
-                    '/repository/Windows/%s/%s/%d.%d.%d' % (self.flavor,arch,self.major,self.minor,self.release)
+                        '/repository/Windows/%s/%s/%d.%d.%d' % (self.flavor,arch,self.major,self.minor,self.release))
     self.log("Completed deployment to repository")
