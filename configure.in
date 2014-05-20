@@ -797,20 +797,6 @@ AC_ARG_ENABLE(d3d,
           fi
         fi)
 
-AC_ARG_ENABLE(staticmotif,
-	[  --enable-staticmotif    build with static motif libraries ],
-        if test "$enableval" = yes; then
-          MOTIF_LDARC=$LDARC;
-          MOTIF_LDSHARE="$LDSHARE";
-          MOTIF_LD_LDARC=$LD_LDARC;
-          MOTIF_LD_LDSHARE="$LD_LDSHARE";
-        else
-          MOTIF_LDARC="";
-          MOTIF_LDSHARE="";
-          MOTIF_LD_LDARC="";
-          MOTIF_LD_LDSHARE="";
-        fi)
-  
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h)
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readline.h)
