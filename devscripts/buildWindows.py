@@ -1,9 +1,9 @@
-import os,subprocess,datetime
+import os,subprocess,datetime,shutil
 
 def exists(self):
     """See if installation kit exists for this flavor and version"""
     try:
-        os.stat("Z:\%s\%d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
+        os.stat("\repository\Windows\%s\%d.%d.%d" % (self.flavor,self.major,self.minor,self.release))
         return True
     except:
         return False
@@ -127,6 +127,6 @@ def test(self):
     self.log("No automated testing for windows. Skipping")
 
 def deploy(self):
-    status=subprocess.Popen('xcopy /Y/I/E %s\\%s Z:\\' % (self.workspace,self.flavor),shell=True).wait()
-    if status != 0:
-        raise Exception('Error during deployment to repository')
+    shutil.copytree('%s\\%s\%d.%d.%d' % (self.workspace,self.flavor,self.major,self.minor,self.release),
+                    '\\repository\\Windows\\%s' % self.flavor)
+    self.log("Completed deployment to repository")
