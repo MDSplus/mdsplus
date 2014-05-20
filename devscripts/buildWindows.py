@@ -127,6 +127,7 @@ def test(self):
     self.log("No automated testing for windows. Skipping")
 
 def deploy(self):
-    shutil.copytree('%s\\%s\%d.%d.%d' % (self.workspace,self.flavor,self.major,self.minor,self.release),
-                    '\\repository\\Windows\\%s' % self.flavor)
+    for arch in ('x86','x86_64'):
+    	shutil.copytree('%s/%s/%s/%d.%d.%d' % (self.workspace.replace('\\','/'),self.flavor,arch,self.major,self.minor,self.release),
+                    '/repository/Windows/%s/%s/%d.%d.%d' % (self.flavor,arch,self.major,self.minor,self.release)
     self.log("Completed deployment to repository")
