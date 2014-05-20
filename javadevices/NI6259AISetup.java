@@ -258,12 +258,12 @@ public class NI6259AISetup extends DeviceSetup {
         jPanel5.add(deviceField6);
 
         jPanel1.add(jPanel5);
-/*
+
         deviceChoice100.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
         deviceChoice100.setLabelString("Trig. Mode:");
         deviceChoice100.setOffsetNid(175);
         jPanel6.add(deviceChoice100);
-*/
+
         deviceField8.setLabelString("Trig. Source:");
         deviceField8.setNumCols(50);
         deviceField8.setOffsetNid(176);
