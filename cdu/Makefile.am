@@ -3,5 +3,5 @@ libCdu_a_SOURCES = cli_routines.c cli_util.c dasutil_routines1.c dasutil_routine
 
 bin_PROGRAMS = cdu
 cdu_SOURCES = cdu.c cdu_util.c cdu_write.c
-cdu_LDADD = libCdu.a -L$(libdir) -lMdsShr
+cdu_LDADD = libCdu.a -L@MAKELIBDIR@ -lMdsShr
 
