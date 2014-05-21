@@ -857,7 +857,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
     else if (shot == -1)
       sprintf(name,"%s_model",tree_lower);
     else
-      return TreeINVSHOT;
+      return -3;
 
     for (i=0,part=path;(i<(pathlen+1)) && (fd==-1);i++)
     {
@@ -955,6 +955,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
   {
   case -1: status = TreeFILE_NOT_FOUND; break;
   case -2: status = TreeOPEN_EDIT & 0xfffffffa; break;
+  case -3: status = TreeFILE_NOT_FOUND; break;
   default:
     info->alq = (int)MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512;
     if (info->alq < 1)
@@ -1277,7 +1278,7 @@ int       _TreeOpenNew(void **dbid, char const * tree_in, int shot_in)
         info->treenam = strcpy(malloc(strlen(tree)+1),tree);
         info->shot = (*dblist)->shotid;
         fd = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0);
-        if (fd != -1)
+        if (fd > -1)
         {
           char *resnam = 0;
           MDS_IO_CLOSE(fd);
@@ -1285,17 +1286,17 @@ int       _TreeOpenNew(void **dbid, char const * tree_in, int shot_in)
           fd = OpenOne(info, tree, (*dblist)->shotid, TREE_NCIFILE_TYPE, 1, &resnam, 0, 0);
           if (resnam)
             free(resnam);
-          if (fd != -1)
+          if (fd > -1)
           {
             MDS_IO_CLOSE(fd);
             fd = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0, 0);
             if (resnam)
               free(resnam);
-            if (fd != -1)
+            if (fd > -1)
               MDS_IO_CLOSE(fd);
           }
         }
-        if (fd != -1)
+        if (fd > -1)
         {
           TreeCallHook(OpenTreeEdit, info,0);
           info->edit = (TREE_EDIT *)malloc(sizeof(TREE_EDIT));
@@ -1380,7 +1381,7 @@ struct descriptor *TreeFileName(char *tree, int shot)
   TREE_INFO dummy_info;
 
   fd = OpenOne(&dummy_info, tree, shot, TREE_TREEFILE_TYPE, 0, &ans, 0, 0);
-  if (fd != -1) {
+  if (fd > -1) {
     MDS_IO_CLOSE(fd);
     ans_dsc.pointer = ans;
     ans_dsc.length = (unsigned short)strlen(ans);
