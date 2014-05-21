@@ -100,13 +100,14 @@ then
               --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus \
               --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin64 \
               --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib64 \
-              --uiddir=$RPM_BUILD_ROOT/usr/local/mdsplus/uid64 \
               --enable-nodebug \
               --enable-mdsip_connections \
               --with-gsi=/usr:gcc64 \
               --with-labview=$LABVIEW_DIR \
               --with-jdk=$JDK_DIR \
-              --with-idl=$IDL_DIR
+              --with-idl=$IDL_DIR \
+              uiddir=$RPM_BUILD_ROOT/usr/local/mdsplus/uid
+
   make clean
   env LANG=en_US.UTF-8 make
 else
@@ -115,14 +116,14 @@ else
               --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus \
               --bindir=$RPM_BUILD_ROOT/usr/local/mdsplus/bin32 \
               --libdir=$RPM_BUILD_ROOT/usr/local/mdsplus/lib32 \
-              --uiddir=$RPM_BUILD_ROOT/usr/local/mdsplus/uid32 \
               --enable-nodebug \
               --host=i686-linux \
               --enable-mdsip_connections \
               --with-gsi=/usr:gcc32 \
               --with-labview=$LABVIEW_DIR \
               --with-jdk=$JDK_DIR \
-              --with-idl=$IDL_DIR
+              --with-idl=$IDL_DIR \
+              uiddir=$RPM_BUILD_ROOT/usr/local/mdsplus/uid
   make clean
   env LANG=en_US.UTF-8 make
 fi
