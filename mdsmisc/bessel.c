@@ -255,7 +255,7 @@ double BessJn(int n, double x)
 {
     int iacc = 40;
 static     double bigno = 1E10, bigni = 1E-10;
-    double ax, result, tox, bjm, bj, bjp, jsum, sum, bessj;
+    double ax, tox, bjm, bj, bjp, jsum, sum, bessj;
     int j, m;	   	   
 
     if(n < 0)
@@ -329,8 +329,6 @@ double BessJnD(int n, double x)
 	2 * Jn'(x) = Jn-1(x) - Jn+1(x)
     and
 	J0'(x) = -J1(x)	    */
-
-    double result;
 
     if(n == 0)
 	return - BessJ1(x);
@@ -503,8 +501,8 @@ double **BesselStartRebuild(double r, int mc_max, int ms_max, int l_max)
 
 double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, double **j_temp, int mode, int is_cosine)
 {
-    double result = 0, sum, toggle = 1;
-    int m, l, m_max, curr_idx;
+    double result = 0;
+    int l, curr_idx;
 
 /* Compute emissivity */
 
@@ -524,7 +522,7 @@ double BesselRebuildModes(double *a, int mc_max, int ms_max, int l_max, double *
 double BesselRebuild(double r, double theta, double *a, int mc_max, int ms_max, int l_max, double **j_temp)
 {
     double result = 0, sum;
-    int m, l, m_max, curr_idx;
+    int m, l, curr_idx;
 
 /* Compute emissivity */
     for(m = curr_idx = 0; m <= mc_max; m++)

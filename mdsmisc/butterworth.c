@@ -112,13 +112,11 @@ Filter *ChebBilinear(float * fp, float * fs, float * ap, float * as, float * fc,
 
 static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc, int *N, double *gain)
 {
-    double n_real, Wc, l10, A, fc2;
+    double n_real, Wc, l10;
     int n, j, i;
     Complex *poles;
 
     l10 = log(10.);
-    fc2 = fc * fc;
-
 
     if(*N == 0)
     {

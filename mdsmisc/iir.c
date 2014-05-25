@@ -63,19 +63,19 @@ which actually perform digital filtering.
 Complex *FindFactors(Complex *poles, double fc, int n, double gain)
 {
     int i, j;
-    double A, currA;	
+    double currA;	
     Complex *Ak;
-    Complex temp, temp1;
-/* Ak :denominators of single factors */
-
-    
-/*    if(n % 2)
+/*
+    double A;
+    if(n % 2)
 	for(A = -poles[0].re/fc, i = 1; i < n; i+=2)
 	    A *= poles[i].re * poles[i].re + poles[i].im * poles[i].im;
     else
 	for(A = 1/fc, i = 0; i < n; i+=2)
 	    A *= poles[i].re * poles[i].re + poles[i].im * poles[i].im;
 */
+
+/* Ak :denominators of single factors */
     Ak = (Complex *)malloc(2 * n * sizeof(Complex));
 
     for(i = 0; i < n; i++)
@@ -115,8 +115,8 @@ Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *ou
 {
     Complex *poles, *Ak, cplx1, cplx2; 
     Filter *filter;
-    int n, num_filter_units, i, j;
-    double T, A, Ws, Wp, gain;	
+    int n, i;
+    double T, Ws, Wp, gain;	
     Complex Tc;
 
     Ws = 2 * PI * fs;
@@ -219,9 +219,9 @@ Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out
 {
     Complex *poles, *Ak, cplx;
     Filter *filter;
-    int n, num_filter_units, i, j;
+    int n, i;
     double T, T2, Ws, Wp, ws, wp, gain;	
-    Complex Tc, ac, a1c, bc, b1c, Ac, A1c, T2c;
+    Complex ac, a1c, bc, b1c, Ac, A1c, T2c;
 
 /* Pre distorsion */
     wp = 2 * PI * fp/fc;
@@ -232,8 +232,6 @@ Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out
 
     T = 1/fc;
     T2 = T/2;
-    Tc.re = T;
-    Tc.im = 0;
 
     poles = FindPoles(Wp, Ws, ap, as, fc, out_n, &gain);
     n = *out_n;

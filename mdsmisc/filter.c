@@ -266,7 +266,7 @@ void 	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_s, int *
         
 void	TestFilter(Filter *filter, float fc, int n_points, float *module, float *phase)
 {
-    float curr_f, step_f, *in, *out, t_in, t_out;
+    float curr_f, step_f;
     int i, j, k, idx;
     Complex curr_fc, curr_c, curr_fac, curr_num, curr_den, curr_z;
 

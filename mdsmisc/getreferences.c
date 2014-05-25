@@ -45,7 +45,6 @@ static void FillRefs(struct descriptor *src, int *ans, int *idx)
     }
   else if (src->class == CLASS_R) {
     struct descriptor_r *rptr = (struct descriptor_r *)src;
-    int count = 0;
     int i;
     for (i=0; i<rptr->ndesc; i++)
       FillRefs(rptr->dscptrs[i], ans, idx);
