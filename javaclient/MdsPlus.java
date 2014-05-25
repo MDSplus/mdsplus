@@ -70,7 +70,7 @@ public class MdsPlus extends Object implements Runnable
 			}
 			else
 			{
-				mds = (MdsPlus)m_connectionHash.get(key);
+				mds = m_connectionHash.get(key);
 				if (mds.s == null)
 				{
 					mds.connect(host,port);
@@ -157,7 +157,7 @@ public class MdsPlus extends Object implements Runnable
 		out.writeByte(descr.dtype);
 		out.writeByte((byte)(JAVA_CLIENT | BIG_ENDIAN));
 		out.writeByte(descr.dims.length);
-		for (i=0;i<8;i++) out.writeInt(i < descr.dims.length ? descr.dims[i] : (int)0);
+		for (i=0;i<8;i++) out.writeInt(i < descr.dims.length ? descr.dims[i] : 0);
 		out.write(descr.data,0,descr.data.length);
 		out.flush();
 		buffer.writeTo(s.getOutputStream());
@@ -391,7 +391,7 @@ public class MdsPlus extends Object implements Runnable
 				}
 				if (mds.m_eventHash.containsKey(""+event_id))
 				{
-					Cancel((MdsPlusEvent)mds.m_eventHash.get(""+event_id));
+					Cancel(mds.m_eventHash.get(""+event_id));
 				}
 			 	byte idarr[] = new byte[1];
 				idarr[0] = event_id;
@@ -470,7 +470,7 @@ public class MdsPlus extends Object implements Runnable
 			{
 				return;
 			}
-			MdsPlusEvent ev = (MdsPlusEvent)m_eventHash.get(""+eventid);
+			MdsPlusEvent ev = m_eventHash.get(""+eventid);
 			if (ev != null)
 			{
 				ev.m_data = event_data;
