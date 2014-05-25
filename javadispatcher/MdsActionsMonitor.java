@@ -53,7 +53,7 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
         {
             while(msg_vect.size() != 0)
             {
-                MdsMonitorEvent msg = (MdsMonitorEvent)msg_vect.elementAt(0);
+                MdsMonitorEvent msg = msg_vect.elementAt(0);
                 msg_vect.removeElementAt(0);
                 byte [] bin_msg = msg.toBytes();
                 Enumeration outstream_list = outstream_vect.elements();

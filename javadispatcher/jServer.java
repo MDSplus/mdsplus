@@ -233,7 +233,7 @@ public class jServer
     synchronized Socket getRetSocket(InetAddress ip, int port)
     {
         for (int i = 0; i < retSocketsV.size(); i++) {
-            Socket currSock = (Socket) retSocketsV.elementAt(i);
+            Socket currSock = retSocketsV.elementAt(i);
             if (currSock.getInetAddress().equals(ip) &&
                 currSock.getPort() == port && !currSock.isInputShutdown()) {
                 return currSock;
@@ -253,7 +253,7 @@ public class jServer
     synchronized Socket updateRetSocket(InetAddress ip, int port)
     {
          for (int i = 0; i < retSocketsV.size(); i++) {
-            Socket currSock = (Socket) retSocketsV.elementAt(i);
+            Socket currSock = retSocketsV.elementAt(i);
             if (currSock.getInetAddress().equals(ip) &&
                 currSock.getPort() == port && !currSock.isInputShutdown())
             {
@@ -621,7 +621,7 @@ public class jServer
     public void closeAll()
     {
         for (int i = 0; i < retSocketsV.size(); i++) {
-            Socket currSock = (Socket) retSocketsV.elementAt(i);
+            Socket currSock = retSocketsV.elementAt(i);
             if (currSock != null) {
                 try {
                     currSock.shutdownInput();

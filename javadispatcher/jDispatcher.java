@@ -342,7 +342,7 @@ class jDispatcher
         while(serverClasses.hasMoreElements())
         {
             String serverClass = (String)serverClasses.nextElement();
-            if(!((Boolean)phaseTerminated.get(serverClass)).booleanValue())
+            if(!(phaseTerminated.get(serverClass)).booleanValue())
                 return false;
         }
         return true;
@@ -639,7 +639,7 @@ class jDispatcher
             try {
 
                 if (seq instanceof PathData)
-                    nid = ( (NidData) tree.resolve( (PathData) seq, 0)).getInt();
+                    nid = (tree.resolve( (PathData) seq, 0)).getInt();
                 else
                     nid = seq.getInt();
                 Vector<Action> actVect = nidDependencies.get(new Integer(nid));

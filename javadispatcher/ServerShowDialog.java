@@ -233,7 +233,7 @@ private void startAllServerActionPerformed(java.awt.event.ActionEvent evt) {//GE
                 //System.out.println(serversInfo.get(addressSrv));
                 DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-                ServerInfo si = (ServerInfo)serversInfo.get(addressSrv);
+                ServerInfo si = serversInfo.get(addressSrv);
                 si.setActive(active);
 
 
@@ -326,10 +326,9 @@ class JTableButtonMouseListener implements MouseListener {
       return;
 
     button = (JButton)value;
-
-    buttonEvent =
-      (MouseEvent)SwingUtilities.convertMouseEvent(table, e, button);
+    buttonEvent = SwingUtilities.convertMouseEvent(table, e, button);
     button.dispatchEvent(buttonEvent);
+
     // This is necessary so that when a button is pressed and released
     // it gets rendered properly.  Otherwise, the button may still appear
     // pressed down when it has been released.

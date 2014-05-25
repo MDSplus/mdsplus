@@ -37,13 +37,13 @@ class MdsHelper
     public static int toPhaseId(String phase_name)
     {
         try{
-            return ((Integer)name_to_id.get(phase_name)).intValue();
+            return (name_to_id.get(phase_name)).intValue();
         }catch(Exception exc) {return -1; }
     }
 
     public static String toPhaseName(int phase_id)
     {
-        return (String)id_to_name.get(new Integer(phase_id));
+        return id_to_name.get(new Integer(phase_id));
     }
 
     public static String getDispatcher()

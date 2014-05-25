@@ -217,7 +217,7 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
       {
          DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
         
-        ServerInfo si = (ServerInfo)serversInfo.get(serverAddress);
+        ServerInfo si = serversInfo.get(serverAddress);
         if(si != null)
             md.setValueAt(new Boolean(state), si.getPos(), 0);
       }
@@ -267,7 +267,7 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                 //System.out.println(serversInfo.get(addressSrv));
                 DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-                ServerInfo si = (ServerInfo)serversInfo.get(addressSrv);
+                ServerInfo si = serversInfo.get(addressSrv);
                 if( si == null)
                 {
                     System.out.println("ERROR : Server Address "+ addressSrv +" for server class "+serverClass+" not found");
@@ -324,7 +324,7 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                 //System.out.println(serversInfo.get(addressSrv));
                 DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
-                ServerInfo si = (ServerInfo)serversInfo.get(addressSrv);
+                ServerInfo si = serversInfo.get(addressSrv);
                 if( si == null)
                 {
                     System.out.println("ERROR : Server Address "+ addressSrv +" for server class "+serverClass+" not found");
@@ -363,7 +363,7 @@ private void stopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
         DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
         
         int numRow = md.getRowCount();
-        ServerInfo si = (ServerInfo)serversInfo.get(event.server_address);
+        ServerInfo si = serversInfo.get(event.server_address);
         if(si != null)
         {
             System.out.println("Update server Action "+ event + " pos " + si.getPos());
@@ -466,10 +466,9 @@ class JTableButtonMouseListener implements MouseListener {
       return;
 
     button = (JButton)value;
-
-    buttonEvent =
-      (MouseEvent)SwingUtilities.convertMouseEvent(table, e, button);
+    buttonEvent = SwingUtilities.convertMouseEvent(table, e, button);
     button.dispatchEvent(buttonEvent);
+
     // This is necessary so that when a button is pressed and released
     // it gets rendered properly.  Otherwise, the button may still appear
     // pressed down when it has been released.
