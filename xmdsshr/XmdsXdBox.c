@@ -404,7 +404,6 @@ Boolean XmdsXdBoxGetState(Widget w)
 void XmdsXdBoxSetNid(Widget w,int nid)
 {
   XmdsXdBoxWidget xdbw = (XmdsXdBoxWidget) w;
-  int status;
   if (xdbw->xdbox.xd)
     MdsFree1Dx(xdbw->xdbox.xd, 0);
   else
@@ -416,7 +415,7 @@ void XmdsXdBoxSetNid(Widget w,int nid)
     xdbw->xdbox.nid = XmdsGetDeviceNid();
   else
     xdbw->xdbox.nid = nid;
-  status = TreeGetRecord(xdbw->xdbox.nid,xdbw->xdbox.xd);
+  TreeGetRecord(xdbw->xdbox.nid,xdbw->xdbox.xd);
   GenericGet(xdbw);
   if (xdbw->xdbox.loaded)
   {
@@ -1319,7 +1318,6 @@ static void TaskLoad(Widget w,struct descriptor_xd *xd)
 struct descriptor_xd *TaskUnload(Widget w)
 {
   struct descriptor_xd *data = 0;
-  Widget menu_widget = XtNameToWidget(w, "task_menu");
   Widget expr_widget = XtNameToWidget(w, "task_expr");
   Widget routine_widget = XtNameToWidget(w, "routine_box");
   XmdsXdBoxWidget method_widget = (XmdsXdBoxWidget) XtNameToWidget(w, "method_box");
@@ -1493,8 +1491,6 @@ struct descriptor_xd *WindowUnload(Widget w)
 {
   struct descriptor_xd *ans = (struct descriptor_xd *) XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
-  Widget menu_widget = XtNameToWidget(w, "window_menu");
-  Widget units_widget = XtNameToWidget(w, "window_units");
   Widget window_expr = XtNameToWidget(w, "window_expr");
   Widget window_box = XtNameToWidget(w, "window_box");
 

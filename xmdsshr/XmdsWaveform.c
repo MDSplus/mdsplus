@@ -1280,7 +1280,6 @@ static void DrawGrid(XmdsWaveformWidget w)
     char *tptr;
     char *eptr;
     int line;
-    int yoffset;
     int length;
     int lineheight = waveformFontStruct(w)->max_bounds.ascent + waveformFontStruct(w)->max_bounds.descent + 2;
     float lasty = -1E20;
@@ -2076,7 +2075,6 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   static unsigned long fatom;
   float xstart,ystart,xend,yend;
   XFontStruct *fs = waveformFontStruct(w);
-  int first_frame = 0;
   int i;
   char *fontinfo = 0;
 
@@ -2087,7 +2085,6 @@ static void Print(XmdsWaveformWidget w,FILE *filefid,int inp_total_width,int inp
   if (ftell(printfid) == 0)
   {
     char fontname[80];
-    first_frame = 1;
     if (inp_rotate == 1)
     {				/* Portrait */
       rotate = 0;
@@ -2660,7 +2657,7 @@ static void DrawLines(Display *display,Window win,GC gc,XPoint *point,int kp, Di
 
 static void DrawRectangles(Display *display,Window win,GC gc,XRectangle *rectangle,int num, Dimension pwidth, Dimension pheight)
 {
-  static int i,rec_height,rec_width;
+  static int i;
   if (!waveformPrint)
   {
     int n=0;
@@ -2706,7 +2703,6 @@ static GC dash_gc;
 static void SetDashes(Display *display,GC gc,int offset,char *dashes,int num)
 {
   int i;
-  float count = 0;
   if (dashes_ps)
     XtFree((char *)dashes_ps);
   dashes_ps = (float *) XtMalloc(sizeof(float) * num);
@@ -2771,7 +2767,6 @@ static void DrawString(XmdsWaveformWidget w,Display *display,Window win,GC gc,fl
   }
   else
   {
-    int i;
     SetScale(1);
     if (x < 0)
       fprintf(printfid,"(%s) %g %g centershow\n",label,-x*2,825. - y);

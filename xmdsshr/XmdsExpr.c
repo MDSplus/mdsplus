@@ -498,8 +498,6 @@ static void Initialize(Widget req,Widget new,ArgList args,Cardinal *num_args,Boo
 			{XmNtraversalOn, FALSE}
 		     };
   int nid;
-  int want_height;
-  int want_width;
   change_quotes_callback_list[0].closure = (XtPointer) w;
   w->manager.navigation_type = XmTAB_GROUP;
   if (w->expr.auto_quote)
@@ -631,7 +629,6 @@ static void ChangeQuotes(Widget q_w,XmdsExprWidget e_w)
   char *text = GetString(e_w->expr.text_widget);
   int text_len = strlen(text);
   char *new_text = XtMalloc(text_len + 3);
-  char *quote = "\"";
   new_text[0] = '\"';
   strcpy(&new_text[1],text);
   new_text[text_len + 1] = '\"';
