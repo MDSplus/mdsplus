@@ -60,13 +60,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 						struct descriptor_xd *outSignal)
 {
 	int status;
-	uint64_t start, end;
-	int numSegments;
-	uint64_t currStart, currEnd;
-	int segmentIdx, startIdx, endIdx, actNumSegments, currIdx, currSegIdx;
-	int numDimensions;
+	int actNumSegments, currSegIdx;
 	int i, nameLen;
-	int firstSegmentTruncated = 0, lastSegmentTruncated = 0;
 	char resampleFunName[MAX_FUN_NAMELEN], squishFunName[MAX_FUN_NAMELEN];
 
 	struct descriptor resampleFunNameD = {0, DTYPE_T, CLASS_S, resampleFunName};
@@ -77,14 +72,10 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	struct descriptor_a *segmentsApd;
 	EMPTYXD(segmentsXd);
 	EMPTYXD(xd);
-	EMPTYXD(retStartXd);
-	EMPTYXD(retEndXd);
 	EMPTYXD(emptyXd);
-	struct descriptor_xd *resampledXds, *dataXds, *dimensionXds;
-	uint64_t *startEndTimes;
+	struct descriptor_xd *resampledXds;
 
 	DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMENSION_SIGNAL, 0, 0);
-	struct descriptor_a *currApd;
 	DESCRIPTOR_APD(signalsApd, DTYPE_SIGNAL, 0, 0); 
 	struct descriptor_signal **signals;
 

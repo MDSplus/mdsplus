@@ -91,7 +91,6 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
 	int i;
 	EMPTYXD(emptyXd);
 	struct descriptor_xd *startTimeXds, *endTimeXds;
-	struct descriptor_a *currApd;
 	DESCRIPTOR_APD(startTimesApd, DTYPE_SIGNAL, 0, 0); 
 	DESCRIPTOR_APD(endTimesApd, DTYPE_SIGNAL, 0, 0); 
 	DESCRIPTOR_A(startTimesArray, 0, 0, 0, 0); 
