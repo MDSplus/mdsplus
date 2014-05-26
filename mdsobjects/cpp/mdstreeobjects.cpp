@@ -1745,7 +1745,7 @@ EXPORT Int32Array *TreeNodeArray::getNid()
 
 EXPORT Int8Array *TreeNodeArray::isOn()
 {
-	std:vector<char> info;
+	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info.push_back(nodes[i]->isOn());
 
@@ -1764,7 +1764,7 @@ EXPORT void TreeNodeArray::setOn(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isSetup()
 {
-	std:vector<char> info;
+	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isSetup();
 
@@ -1774,7 +1774,7 @@ EXPORT Int8Array *TreeNodeArray::isSetup()
 
 EXPORT Int8Array *TreeNodeArray::isWriteOnce()
 {
-	std:vector<char> info;
+	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isWriteOnce();
 
@@ -1793,7 +1793,7 @@ EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
 {
-	std:vector<char> info;
+	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isCompressOnPut();
 
@@ -1812,7 +1812,7 @@ EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
 {
-	std:vector<char> info;
+	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteModel();
 
@@ -1831,7 +1831,7 @@ EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
 {
-	std:vector<char> info;
+	std::vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteShot();
 
