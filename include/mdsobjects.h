@@ -182,6 +182,10 @@ public:
 	{
 	}
 
+	void *operator new(size_t sz);
+	void operator delete(void *p);
+
+
 private:
 		friend EXPORT Data *compile(const char *expr);
 		friend EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
@@ -195,10 +199,6 @@ private:
 		friend EXPORT Data *deserialize(Data *serialized);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
-		Data *units;
-		Data *error;
-		Data *validation;
-		Data *help;
 protected:
 		bool changed;
 		Data *dataCache;
@@ -219,8 +219,6 @@ public:
 			*ptr = 0;
 		}
 		virtual void *convertToDsc() = 0;
-		void *operator new(size_t sz);
-		void operator delete(void *p);
 		virtual bool equals(Data *data) {return false;}
 		Data *evaluate();
 		virtual Data *data();
@@ -351,6 +349,11 @@ protected:
 		this->validation = validation;
 	}
 
+private:
+	Data *units;
+	Data *error;
+	Data *validation;
+	Data *help;
 };
 
 	class Empty: public Data
