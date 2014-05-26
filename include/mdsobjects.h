@@ -208,14 +208,6 @@ public:
 		int clazz, dtype;
 		virtual bool hasChanged() {return !isImmutable() || changed;}
 		void *completeConversionToDsc(void *dsc);
-		void setAccessory(Data *units, Data *error, Data *help, Data *validation)
-		{
-			this->units = units;
-			this->error = error;
-			this->help = help;
-			this->validation = validation;
-		}
-		
 		int refCount;
 		virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
 		{
@@ -350,7 +342,17 @@ public:
 		}
 
 		virtual void plot();
-	};
+
+protected:
+	void setAccessory(Data *units, Data *error, Data *help, Data *validation) {
+		this->units = units;
+		this->error = error;
+		this->help = help;
+		this->validation = validation;
+	}
+
+};
+
 	class Empty: public Data
 	{
 	public:
