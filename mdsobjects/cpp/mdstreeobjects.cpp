@@ -1429,7 +1429,6 @@ void TreeNode::beginTimestampedSegment(Array *initData)
 
 void TreeNode::makeTimestampedSegment(Array *data, int64_t *times)
 {
-	int nTimesArray;
 	int numDims;
 	int *shape = data->getShape(&numDims);
 
@@ -1444,7 +1443,6 @@ void TreeNode::makeTimestampedSegment(Array *data, int64_t *times)
 
 void TreeNode::putTimestampedSegment(Array *data, int64_t *times)
 {
-	int nTimesArray;
 	resolveNid();
 	//if(tree) tree->lock();
 	int status = putTreeTimestampedSegment(tree->getCtx(), getNid(), data->convertToDsc(), times);
