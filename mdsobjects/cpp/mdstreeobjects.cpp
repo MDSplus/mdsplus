@@ -287,7 +287,6 @@ TreeNodeArray *Tree::getNodeWild(char const *path)
 	return getNodeWild(path, -1);
 }
 
-
 void Tree::setDefault(TreeNode *treeNode)
 {
 	int status = _TreeSetDefaultNid(ctx, treeNode->getNid());
@@ -1711,272 +1710,170 @@ EXPORT void TreeNodeArray::operator delete(void *p)
 
 EXPORT StringArray *TreeNodeArray::getPath()
 {
-#ifdef HAVE_WINDOWS_H
-	char **paths = new char *[numNodes];
-#else
-	char * paths[numNodes];
-#endif
+	std::vector<char *> paths;
 	for(int i = 0; i < numNodes; ++i)
-		paths[i] = nodes[i]->getPath();
+		paths.push_back(nodes[i]->getPath());
 
-	StringArray *retData = new StringArray(paths, numNodes);
+	StringArray *retData = new StringArray(&paths[0], numNodes);
 	for(int i = 0; i < numNodes; ++i)
 		deleteString(paths[i]);
-#ifdef HAVE_WINDOWS_H
-	delete [] paths;
-#endif
 
 	return retData;
 }
 
 EXPORT StringArray *TreeNodeArray::getFullPath()
 {
-#ifdef HAVE_WINDOWS_H
-	char **paths = new char *[numNodes];
-#else
-	char * paths[numNodes];
-#endif
-
+	std::vector<char *> paths;
 	for(int i = 0; i < numNodes; ++i)
-		paths[i] = nodes[i]->getFullPath();
+		paths.push_back(nodes[i]->getFullPath());
 
-	StringArray *retData = new StringArray(paths, numNodes);
+	StringArray *retData = new StringArray(&paths[0], numNodes);
 	for(int i = 0; i < numNodes; ++i)
 		deleteString(paths[i]);
-
-#ifdef HAVE_WINDOWS_H
-	delete [] paths;
-#endif
 
 	return  retData;
 }
 
 EXPORT Int32Array *TreeNodeArray::getNid()
 {
-#ifdef HAVE_WINDOWS_H
-	int *nids = new int[numNodes];
-#else
-	int nids[numNodes];
-#endif
+	std::vector<int> nids;
 	for(int i = 0; i < numNodes; ++i)
-		nids[i] = nodes[i]->getNid();
+		nids.push_back(nodes[i]->getNid());
 
-#ifdef HAVE_WINDOWS_H
-	delete [] nids;
-#endif
-	return new Int32Array(nids, numNodes);;
+	return new Int32Array(&nids[0], numNodes);;
 }
-
 
 EXPORT Int8Array *TreeNodeArray::isOn()
 {
-#ifdef HAVE_WINDOWS_H
-	char *info = new char[numNodes];
-#else
-	char info[numNodes];
-#endif
+	std:vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
-		info[i] = nodes[i]->isOn();
+		info.push_back(nodes[i]->isOn());
 
-	Int8Array *retData = new Int8Array(info, numNodes);
-#ifdef HAVE_WINDOWS_H
-	delete [] info;
-#endif
-	return  retData;
+	return new Int8Array(&info[0], numNodes);
 }
 
 EXPORT void TreeNodeArray::setOn(Int8Array *info)
 {
-	int numInfo;
-	char *infoArray = info->getByteArray(&numInfo);
-	if(numInfo > numNodes)
-		numInfo = numNodes;
+	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
-	for(int i = 0; i < numInfo; ++i)
+	//FIXME: numNodes should be size_t
+	std::size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
+	for(std::size_t i = 0; i < MAX; ++i)
 		nodes[i]->setOn((infoArray[i]) ? true : false);
-
-	delete [] infoArray;
 }
 
 EXPORT Int8Array *TreeNodeArray::isSetup()
 {
-#ifdef HAVE_WINDOWS_H
-	char *info = new char[numNodes];
-#else
-	char info[numNodes];
-#endif
+	std:vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isSetup();
 
-#ifdef HAVE_WINDOWS_H
-	delete [] info;
-#endif
-	return new Int8Array(info, numNodes);
+	return new Int8Array(&info[0], numNodes);
 }
 
 
 EXPORT Int8Array *TreeNodeArray::isWriteOnce()
 {
-#ifdef HAVE_WINDOWS_H
-	char *info = new char[numNodes];
-#else
-	char info[numNodes];
-#endif
+	std:vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isWriteOnce();
 
-#ifdef HAVE_WINDOWS_H
-	delete [] info;
-#endif
-	return new Int8Array(info, numNodes);
+	return new Int8Array(&info[0], numNodes);
 }
 
 EXPORT void TreeNodeArray::setWriteOnce(Int8Array *info)
 {
-	int numInfo;
-	char *infoArray = info->getByteArray(&numInfo);
-	if(numInfo > numNodes)
-		numInfo = numNodes;
+	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
-	for(int i = 0; i < numInfo; ++i)
-		nodes[i]->setWriteOnce((infoArray[i])?true:false);
-
-	delete [] infoArray;
+	//FIXME: numNodes should be size_t
+	std::size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
+	for(std::size_t i = 0; i < MAX; ++i)
+		nodes[i]->setWriteOnce((infoArray[i]) ? true : false);
 }
 
 EXPORT Int8Array *TreeNodeArray::isCompressOnPut()
 {
-#ifdef HAVE_WINDOWS_H
-	char *info = new char[numNodes];
-#else
-	char info[numNodes];
-#endif
+	std:vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isCompressOnPut();
 
-#ifdef HAVE_WINDOWS_H
-	delete [] info;
-#endif
-	return new Int8Array(info, numNodes);
+	return new Int8Array(&info[0], numNodes);
 }
 
 EXPORT void TreeNodeArray::setCompressOnPut(Int8Array *info)
 {
-	int numInfo;
-	char *infoArray = info->getByteArray(&numInfo);
-	if(numInfo > numNodes)
-		numInfo = numNodes;
+	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
-	for(int i = 0; i < numInfo; ++i)
-		nodes[i]->setCompressOnPut((infoArray[i])?true:false);
-
-	delete [] infoArray;
+	//FIXME: numNodes should be size_t
+	std::size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
+	for(std::size_t i = 0; i < MAX; ++i)
+		nodes[i]->setCompressOnPut((infoArray[i]) ? true : false);
 }
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteModel()
 {
-#ifdef HAVE_WINDOWS_H
-	char *info = new char[numNodes];
-#else
-	char info[numNodes];
-#endif
+	std:vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteModel();
 
-#ifdef HAVE_WINDOWS_H
-	delete [] info;
-#endif
-	return new Int8Array(info, numNodes);
+	return new Int8Array(&info[0], numNodes);
 }
 
 EXPORT void TreeNodeArray::setNoWriteModel(Int8Array *info)
 {
-	int numInfo;
-	char *infoArray = info->getByteArray(&numInfo);
-	if(numInfo > numNodes)
-		numInfo = numNodes;
+	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
-	for(int i = 0; i < numInfo; ++i)
-		nodes[i]->setNoWriteModel((infoArray[i])?true:false);
-
-	delete [] infoArray;
+	//FIXME: numNodes should be size_t
+	std::size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
+	for(std::size_t i = 0; i < MAX; ++i)
+		nodes[i]->setNoWriteModel((infoArray[i]) ? true : false);
 }
 
 EXPORT Int8Array *TreeNodeArray::isNoWriteShot()
 {
-#ifdef HAVE_WINDOWS_H
-	char *info = new char[numNodes];
-#else
-	char info[numNodes];
-#endif
+	std:vector<char> info;
 	for(int i = 0; i < numNodes; ++i)
 		info[i] = nodes[i]->isNoWriteShot();
 
-#ifdef HAVE_WINDOWS_H
-	delete [] info;
-#endif
-	return new Int8Array(info, numNodes);
+	return new Int8Array(&info[0], numNodes);
 }
 
 EXPORT void TreeNodeArray::setNoWriteShot(Int8Array *info)
 {
-	int numInfo;
-	char *infoArray = info->getByteArray(&numInfo);
-	if(numInfo > numNodes)
-		numInfo = numNodes;
+	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
-	for(int i = 0; i < numInfo; ++i)
-		nodes[i]->setNoWriteShot((infoArray[i])?true:false);
-
-	delete [] infoArray;
+	//FIXME: numNodes should be size_t
+	std::size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
+	for(std::size_t i = 0; i < MAX; ++i)
+		nodes[i]->setNoWriteShot((infoArray[i]) ? true : false);
 }
 
 EXPORT Int32Array *TreeNodeArray::getLength()
 {
-#ifdef HAVE_WINDOWS_H
-	int *sizes = new int[numNodes];
-#else
-	int sizes[numNodes];
-#endif
+	std::vector<int> sizes;
 	for(int i = 0; i < numNodes; ++i)
-		sizes[i] = nodes[i]->getLength();
+		sizes.push_back(nodes[i]->getLength());
 
-#ifdef HAVE_WINDOWS_H
-	delete [] sizes;
-#endif
-	return new Int32Array(sizes, numNodes);
+	return new Int32Array(&sizes[0], numNodes);
 }
 
 EXPORT Int32Array *TreeNodeArray::getCompressedLength()
 {
-#ifdef HAVE_WINDOWS_H
-	int *sizes = new int[numNodes];
-#else
-	int sizes[numNodes];
-#endif
+	std::vector<int> sizes;
 	for(int i = 0; i < numNodes; ++i)
-		sizes[i] = nodes[i]->getCompressedLength();
+		sizes.push_back(nodes[i]->getCompressedLength());
 
-#ifdef HAVE_WINDOWS_H
-	delete [] sizes;
-#endif
-	return new Int32Array(sizes, numNodes);
+	return new Int32Array(&sizes[0], numNodes);
 }
 
 EXPORT StringArray *TreeNodeArray::getUsage()
 {
-#ifdef HAVE_WINDOWS_H
-	const char **usages = new const char *[numNodes];
-#else
-	const char *usages[numNodes];
-#endif
+	std::vector<char const *> usages;
 	for(int i = 0; i < numNodes; ++i)
-		usages[i] = nodes[i]->getUsage();
+		usages.push_back(nodes[i]->getUsage());
 
-#ifdef HAVE_WINDOWS_H
-	delete [] usages;
-#endif
-	return new StringArray((char **)usages, numNodes);
+	// FIXME: Change StringArray ctor to handle const
+	return new StringArray(const_cast<char **>(&usages[0]), numNodes);
 }
 
 
