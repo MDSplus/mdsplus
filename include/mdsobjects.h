@@ -166,6 +166,23 @@ protected:
 ////////////////////Data class//////////////////////////////
 class EXPORT Data 
 {
+public:
+	Data():
+		units(nullptr),
+		error(nullptr),
+		validation(nullptr),
+		help(nullptr),
+		changed(true),
+		dataCache(nullptr),
+		refCount(0)
+	{
+	}
+
+	virtual ~Data()
+	{
+	}
+
+private:
 		friend EXPORT Data *compile(const char *expr);
 		friend EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
 		friend EXPORT Data *compile(const char *expr, Tree *tree);
@@ -187,7 +204,7 @@ protected:
 		Data *dataCache;
 		virtual bool isImmutable() {return true;}
 	
-	public: 
+public:
 		int clazz, dtype;
 		virtual bool hasChanged() {return !isImmutable() || changed;}
 		void *completeConversionToDsc(void *dsc);
@@ -213,20 +230,6 @@ protected:
 		void *operator new(size_t sz);
 		void operator delete(void *p);
 		virtual bool equals(Data *data) {return false;}
-		Data():
-			units(nullptr),
-			error(nullptr),
-			validation(nullptr),
-			help(nullptr),
-			changed(true),
-			dataCache(nullptr),
-			refCount(0)
-		{
-		}
-
-		virtual ~Data()
-		{
-		}
 		Data *evaluate();
 		virtual Data *data();
 		char *decompile();
