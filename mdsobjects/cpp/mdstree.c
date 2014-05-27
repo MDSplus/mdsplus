@@ -143,7 +143,7 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 	struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
 	struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
 	struct descriptor_xd *dimXd = (struct descriptor_xd *)dimDsc;
-	int status, nRows; 
+	int status;
 	
 	status = _TreeMakeSegment(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer, 
 		(struct descriptor_a *)dataXd->pointer, -1, rowsFilled);
