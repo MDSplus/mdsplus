@@ -167,9 +167,55 @@ EXPORT void *Data::operator new(size_t sz)
 {
 	return ::operator new(sz);
 }
+
 EXPORT void Data::operator delete(void *p)
 {
 	::operator delete(p);
+}
+
+static Data * getMember(Data * member) {
+	if (member)
+		member->refCount++;
+	return member;
+}
+
+EXPORT Data * Data::getUnits() {
+	return getMember(units);
+}
+
+EXPORT Data * Data::getError() {
+	return getMember(error);
+}
+
+EXPORT Data * Data::getHelp() {
+	return getMember(help);
+}
+
+EXPORT Data * Data::getValidation() {
+	return getMember(validation);
+}
+
+static void setMember(Data * oldMbr, Data * newMbr) {
+	if (oldMbr)
+		deleteData(oldMbr);
+	oldMbr = newMbr;
+	oldMbr->refCount++;
+}
+
+EXPORT void Data::setUnits(Data * inUnits) {
+	setMember(units, inUnits);
+}
+
+EXPORT void Data::setError(Data * inError) {
+	setMember(error, inError);
+}
+
+EXPORT void Data::setHelp(Data * inHelp) {
+	setMember(help, inHelp);
+}
+
+EXPORT void Data::setValidation(Data * inValidation) {
+	setMember(validation, inValidation);
 }
 
 Data *Data::data()

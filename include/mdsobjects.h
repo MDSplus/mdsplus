@@ -170,8 +170,8 @@ public:
 	Data():
 		units(nullptr),
 		error(nullptr),
-		validation(nullptr),
 		help(nullptr),
+		validation(nullptr),
 		changed(true),
 		dataCache(nullptr),
 		refCount(0)
@@ -185,6 +185,14 @@ public:
 	void *operator new(size_t sz);
 	void operator delete(void *p);
 
+	virtual Data *getUnits();
+	virtual Data *getError();
+	virtual Data *getHelp();
+	virtual Data *getValidation();
+	virtual void setUnits(Data *inUnits);
+	virtual void setError(Data *inError);
+	virtual void setHelp(Data *inHelp);
+	virtual void setValidation(Data *inValidation);
 
 private:
 		friend EXPORT Data *compile(const char *expr);
@@ -270,66 +278,6 @@ public:
 		}
 		virtual Data *getDimensionAt(int dimIdx);
 		virtual int getSize() {return 1;}
-		virtual Data *getUnits()
-		{
-			if(units)
-				units->refCount++;
-			return units;
-		}
-		virtual void setUnits(Data *inUnits)
-		{
-			if(units)
-			{
-				deleteData(units);
-			}
-			units = inUnits;
-			inUnits->refCount++;
-		}
-		virtual Data *getError()
-		{
-			if(error)
-				error->refCount++;
-			return error;
-		}
-		virtual void setError(Data *inError)
-		{
-			if(error)
-			{
-				deleteData(error);
-			}
-			error = inError;
-			inError->refCount++;
-		}
-		virtual Data *getHelp()
-		{
-			if(help)
-				help->refCount++;
-			return help;
-		}
-		virtual void setHelp(Data *inHelp)
-		{
-			if(help)
-			{
-				deleteData(help);
-			}
-			help = inHelp;
-			inHelp->refCount++;
-		}
-		virtual Data *getValidation()
-		{
-			if(validation)
-				validation->refCount++;
-			return validation;
-		}
-		virtual void setValidation(Data *inValidation)
-		{
-			if(validation)
-			{
-				deleteData(validation);
-			}
-			validation = inValidation;
-			inValidation->refCount++;
-		}
 
 		friend std::ostream & operator << (std::ostream &outStream, Data *data)
 		{
@@ -352,8 +300,8 @@ protected:
 private:
 	Data *units;
 	Data *error;
-	Data *validation;
 	Data *help;
+	Data *validation;
 };
 
 	class Empty: public Data
