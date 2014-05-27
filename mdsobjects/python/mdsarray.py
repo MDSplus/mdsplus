@@ -171,7 +171,7 @@ class Array(_data.Data):
         if str(self._value.dtype).startswith('|S'):
             cl=_scalar.String
         else:
-            cl=globals()[str(self._value.dtype).capitalize()]
+            cl=_scalar.__dict__[str(self._value.dtype).capitalize()]
         return arrayDecompile(self._value,cl)
 
 class Int8Array(Array):
