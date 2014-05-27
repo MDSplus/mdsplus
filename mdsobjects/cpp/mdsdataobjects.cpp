@@ -296,6 +296,12 @@ int * Data::getShape(int *numDim)
 	return res;
 }
 
+struct AutoData {
+	AutoData(Data * d): data(d) {}
+	~AutoData() { deleteData(data); }
+	Data * data;
+};
+
 template<class T>
 static std::vector<T> getArray(T * data, int size) {
 	std::vector<T> v(data, data+size);
@@ -317,10 +323,8 @@ Data * Data::getArrayData() {
 
 char *Data::getByteArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	char *res = retData->getByteArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getByteArray(numElements);
 }
 
 std::vector<char> Data::getByteArray()
@@ -332,10 +336,8 @@ std::vector<char> Data::getByteArray()
 
 unsigned char *Data::getByteUnsignedArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	unsigned char *res = retData->getByteUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getByteUnsignedArray(numElements);
 }
 
 std::vector<unsigned char> Data::getByteUnsignedArray()
@@ -347,10 +349,8 @@ std::vector<unsigned char> Data::getByteUnsignedArray()
 
 short * Data::getShortArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	short *res = retData->getShortArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getShortArray(numElements);
 }
 
 std::vector<short> Data::getShortArray()
@@ -362,10 +362,8 @@ std::vector<short> Data::getShortArray()
 
 unsigned short * Data::getShortUnsignedArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	unsigned short *res = retData->getShortUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getShortUnsignedArray(numElements);
 }
 
 std::vector<unsigned short> Data::getShortUnsignedArray()
@@ -377,10 +375,8 @@ std::vector<unsigned short> Data::getShortUnsignedArray()
 
 int * Data::getIntArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	int *res = retData->getIntArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getIntArray(numElements);
 }
 
 std::vector<int> Data::getIntArray()
@@ -392,10 +388,8 @@ std::vector<int> Data::getIntArray()
 
 unsigned int * Data::getIntUnsignedArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	unsigned int *res = retData->getIntUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getIntUnsignedArray(numElements);
 }
 
 std::vector<unsigned int> Data::getIntUnsignedArray()
@@ -407,10 +401,8 @@ std::vector<unsigned int> Data::getIntUnsignedArray()
 
 int64_t * Data::getLongArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	int64_t *res = retData->getLongArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getLongArray(numElements);
 }
 
 std::vector<int64_t> Data::getLongArray()
@@ -422,10 +414,8 @@ std::vector<int64_t> Data::getLongArray()
 
 uint64_t * Data::getLongUnsignedArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	uint64_t *res = retData->getLongUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getLongUnsignedArray(numElements);
 }
 
 std::vector<uint64_t> Data::getLongUnsignedArray()
@@ -437,10 +427,8 @@ std::vector<uint64_t> Data::getLongUnsignedArray()
 
 float * Data::getFloatArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	float *res = retData->getFloatArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getFloatArray(numElements);
 }
 
 std::vector<float> Data::getFloatArray()
@@ -452,10 +440,8 @@ std::vector<float> Data::getFloatArray()
 
 double * Data::getDoubleArray(int *numElements)
 {
-	Data * retData = getArrayData();
-	double *res = retData->getDoubleArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoData array(getArrayData());
+	return array.data->getDoubleArray(numElements);
 }
 
 std::vector<double> Data::getDoubleArray()
