@@ -168,13 +168,13 @@ class EXPORT Data
 {
 public:
 	Data():
+		refCount(0),
 		changed(true),
+		dataCache(nullptr),
 		units(nullptr),
 		error(nullptr),
 		help(nullptr),
-		validation(nullptr),
-		dataCache(nullptr),
-		refCount(0)
+		validation(nullptr)
 	{
 	}
 
@@ -207,9 +207,6 @@ private:
 		friend EXPORT Data *deserialize(Data *serialized);
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
-protected:
-		Data *dataCache;
-		virtual bool isImmutable() {return true;}
 	
 public:
 		int clazz, dtype;
@@ -289,13 +286,17 @@ public:
 		virtual void plot();
 
 protected:
+	virtual bool isImmutable() { return true; }
+
 	void setAccessory(Data *units, Data *error, Data *help, Data *validation) {
 		this->units = units;
 		this->error = error;
 		this->help = help;
 		this->validation = validation;
 	}
+
 	bool changed;
+	Data *dataCache;
 
 private:
 	Data *units;
