@@ -302,23 +302,31 @@ struct AutoData {
 	Data * data;
 };
 
+Data * Data::getData(int classType) {
+	void *dscPtr = convertToDsc();
+	void *retDsc = convertToByte(dscPtr);
+	Data *retData = (Data *)convertFromDsc(retDsc);
+	if(!retData || retData->clazz != classType)
+		throw MdsException("Cannot convert to desired type");
+	freeDsc(dscPtr);
+	freeDsc(retDsc);
+
+	return retData;
+}
+
+Data * Data::getArrayData() {
+	return getData(CLASS_A);
+}
+
+Data * Data::getScalarData() {
+	return getData(CLASS_S);
+}
+
 template<class T>
 static std::vector<T> getArray(T * data, int size) {
 	std::vector<T> v(data, data+size);
 	delete[] data;
 	return v;
-}
-
-Data * Data::getArrayData() {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-
-	return retData;
 }
 
 char *Data::getByteArray(int *numElements)
@@ -477,174 +485,72 @@ char *	Data::serialize(int *size)
 	return retSerialized;
 }
 
-
-
-
 char Data::getByte()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Byte");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	char res = retData->getByte();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getByte();
 }
 
 short Data::getShort()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Short");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	short res = retData->getShort();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getShort();
 }
 
 int Data::getInt()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Int");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int res = retData->getInt();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getInt();
 }
 
 int64_t Data::getLong()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Long");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int64_t res = retData->getLong();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getLong();
 }
 
 unsigned char Data::getByteUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Byte");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned char res = retData->getByteUnsigned();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getByteUnsigned();
 }
 
 unsigned short Data::getShortUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Short");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned short res = retData->getShortUnsigned();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getShortUnsigned();
 }
 
 unsigned int Data::getIntUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Int");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned int res = retData->getIntUnsigned();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getIntUnsigned();
 }
+
 #ifdef HAVE_WINDOWS_H
 uint64_t Data::getLongUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Long");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	uint64_t res = retData->getLongUnsigned();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getLongUnsigned();
 }
 #else
 uint64_t Data::getLongUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Long");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	uint64_t res = retData->getLongUnsigned();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getLongUnsigned();
 }
 #endif
 
-
 float Data::getFloat()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToFloat(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Float");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	float res = retData->getFloat();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getFloat();
 }
 
 double Data::getDouble()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToDouble(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Double");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	double res = retData->getDouble();
-	deleteData(retData);
-	return res;
+	AutoData scalar(getScalarData());
+	return scalar.data->getDouble();
 }
 
 Data *Data::getDimensionAt(int dimIdx)
