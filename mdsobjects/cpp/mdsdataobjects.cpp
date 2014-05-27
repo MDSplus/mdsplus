@@ -527,19 +527,11 @@ unsigned int Data::getIntUnsigned()
 	return scalar.data->getIntUnsigned();
 }
 
-#ifdef HAVE_WINDOWS_H
 uint64_t Data::getLongUnsigned()
 {
 	AutoData scalar(getScalarData());
 	return scalar.data->getLongUnsigned();
 }
-#else
-uint64_t Data::getLongUnsigned()
-{
-	AutoData scalar(getScalarData());
-	return scalar.data->getLongUnsigned();
-}
-#endif
 
 float Data::getFloat()
 {
