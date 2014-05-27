@@ -168,11 +168,11 @@ class EXPORT Data
 {
 public:
 	Data():
+		changed(true),
 		units(nullptr),
 		error(nullptr),
 		help(nullptr),
 		validation(nullptr),
-		changed(true),
 		dataCache(nullptr),
 		refCount(0)
 	{
@@ -208,7 +208,6 @@ private:
 		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
 protected:
-		bool changed;
 		Data *dataCache;
 		virtual bool isImmutable() {return true;}
 	
@@ -296,6 +295,7 @@ protected:
 		this->help = help;
 		this->validation = validation;
 	}
+	bool changed;
 
 private:
 	Data *units;
