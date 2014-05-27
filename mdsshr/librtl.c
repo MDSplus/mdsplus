@@ -865,7 +865,6 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
   {
   /*-------------> child process: execute cmd	*/
     char  *arglist[4];
-    char  *p;
     int i=0;
     if (!waitflag) {
       pid = fork();
