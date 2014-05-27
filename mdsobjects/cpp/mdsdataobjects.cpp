@@ -296,16 +296,28 @@ int * Data::getShape(int *numDim)
 	return res;
 }
 
-char *Data::getByteArray(int *numElements)
-{
+template<class T>
+static std::vector<T> getArray(T * data, int size) {
+	std::vector<T> v(data, data+size);
+	delete[] data;
+	return v;
+}
+
+Data * Data::getArrayData() {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToByte(dscPtr);
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Byte Array");
+		throw MdsException("Cannot convert to Array");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
-	
+
+	return retData;
+}
+
+char *Data::getByteArray(int *numElements)
+{
+	Data * retData = getArrayData();
 	char *res = retData->getByteArray(numElements);
 	deleteData(retData);
 	return res;
@@ -315,223 +327,149 @@ std::vector<char> Data::getByteArray()
 {
 	int numElements;
 	char *retData = getByteArray(&numElements);
-	std::vector<char> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
-
-
 
 unsigned char *Data::getByteUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByteUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Byte Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	unsigned char *res = retData->getByteUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<unsigned char> Data::getByteUnsignedArray()
 {
 	int numElements;
 	unsigned char *retData = getByteUnsignedArray(&numElements);
-	std::vector<unsigned char> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 short * Data::getShortArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Short Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	short *res = retData->getShortArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<short> Data::getShortArray()
 {
 	int numElements;
 	short *retData = getShortArray(&numElements);
-	std::vector<short> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 unsigned short * Data::getShortUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShortUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Short Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	unsigned short *res = retData->getShortUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<unsigned short> Data::getShortUnsignedArray()
 {
 	int numElements;
 	unsigned short *retData = getShortUnsignedArray(&numElements);
-	std::vector<unsigned short> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 int * Data::getIntArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Int Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	int *res = retData->getIntArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<int> Data::getIntArray()
 {
 	int numElements;
 	int *retData = getIntArray(&numElements);
-	std::vector<int> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 unsigned int * Data::getIntUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToIntUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Int Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	unsigned int *res = retData->getIntUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<unsigned int> Data::getIntUnsignedArray()
 {
 	int numElements;
 	unsigned int *retData = getIntUnsignedArray(&numElements);
-	std::vector<unsigned int> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 int64_t * Data::getLongArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Long Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	int64_t *res = retData->getLongArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<int64_t> Data::getLongArray()
 {
 	int numElements;
 	int64_t *retData = getLongArray(&numElements);
-	std::vector<int64_t> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
+
 uint64_t * Data::getLongUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLongUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Long Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
+	Data * retData = getArrayData();
 	uint64_t *res = retData->getLongUnsignedArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<uint64_t> Data::getLongUnsignedArray()
 {
 	int numElements;
 	uint64_t *retData = getLongUnsignedArray(&numElements);
-	std::vector<uint64_t> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
+
 float * Data::getFloatArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToFloat(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Float Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	float *res = retData->getFloatArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<float> Data::getFloatArray()
 {
 	int numElements;
 	float *retData = getFloatArray(&numElements);
-	std::vector<float> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 double * Data::getDoubleArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToDouble(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Double Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
+	Data * retData = getArrayData();
 	double *res = retData->getDoubleArray(numElements);
 	deleteData(retData);
 	return res;
 }
+
 std::vector<double> Data::getDoubleArray()
 {
 	int numElements;
 	double *retData = getDoubleArray(&numElements);
-	std::vector<double> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
+
 std::vector<std::complex<double> > Data::getComplexArray()
 {
 	int numElements;
 	std::complex<double> *retData = getComplexArray(&numElements);
-	std::vector<std::complex<double> > retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 char *	Data::serialize(int *size)
