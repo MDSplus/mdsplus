@@ -163,12 +163,24 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 
 
 ///////////////////Data methods implementation////////////////////////
+Data::~Data() {
+	--refCount;
+}
+
 void *Data::operator new(size_t sz) {
 	return ::operator new(sz);
 }
 
 void Data::operator delete(void *p) {
-	::operator delete(p);
+	Data * data = reinterpret_cast<Data *>(p);
+	if (data->refCount <= 0) {
+		delete data->units;
+		delete data->error;
+		delete data->help;
+		delete data->validation;
+
+		::operator delete(p);
+	}
 }
 
 static Data * getMember(Data * member) {
@@ -734,28 +746,8 @@ void * Data::completeConversionToDsc(void *dsc) {
 	return retDsc;
 }
 
-
-//Controlled deletion of dynamic data
-static void checkDelete(Data * data) {
-	if (data)
-		deleteData(data);
-	data = 0;
-}
-
 void MDSplus::deleteData(Data *data) {
-	if (!data)
-		return;
-
-	data->refCount--;
-	if(data->refCount <= 0) {
-		checkDelete(data->dataCache);
-		checkDelete(data->units);
-		checkDelete(data->error);
-		checkDelete(data->help);
-		checkDelete(data->validation);
-		data->propagateDeletion();
-		delete data;
-	}
+	delete data;
 }
 
 int *Array::getShape(int *numDims)

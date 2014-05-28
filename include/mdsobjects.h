@@ -174,9 +174,7 @@ public:
 	{
 	}
 
-	virtual ~Data()
-	{
-	}
+	virtual ~Data();
 
 	void *operator new(size_t sz);
 	void operator delete(void *p);
@@ -201,7 +199,6 @@ private:
 		friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
 		friend EXPORT Data *deserialize(char const * serialized);
 		friend EXPORT Data *deserialize(Data *serialized);
-		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
 	
 public:
@@ -922,9 +919,8 @@ private:
 		void assignDescAt(Data *data, int idx)
 		{
 			if(descs[idx])
-			{
-				deleteData(descs[idx]);
-			}
+				delete descs[idx];
+
 			descs[idx] = data;
 			if(data) data->refCount++;
 			changed = true;
@@ -975,12 +971,8 @@ private:
 		virtual void propagateDeletion()
 		{
 			for(int i = 0; i < nDescs; i++)
-			{
 				if(descs[i])
-				{
-					deleteData(descs[i]);
-				}
-			}
+					delete descs[i];
 		}
 		void *convertToDsc();
 	};
@@ -1658,12 +1650,8 @@ private:
 			if(nDescs > 0)
 			{
 				for(int i = 0; i < nDescs; i++)
-				{
 					if(descs[i])
-					{
-						deleteData(descs[i]);
-					}
-				}
+						delete descs[i];
 			}
 		}
 		virtual bool hasChanged()
@@ -1737,7 +1725,7 @@ private:
 			{
 				if(descs[i] == data)
 				{
-					deleteData(descs[i]);
+					delete descs[i];
 					for(int j = i; j < nDescs-1; j++)
 						descs[j] = descs[j+1];
 					nDescs--;
@@ -1749,7 +1737,7 @@ private:
 		{
 			if(idx < 0 || idx >= nDescs)
 				return;
-			deleteData(descs[idx]);
+			delete descs[idx];
 			for(int j = idx; j < nDescs-1; j++)
 				descs[j] = descs[j+1];
 			nDescs--;
@@ -1816,10 +1804,10 @@ private:
 			{
 				if(strData->equals(descs[2*i]))
 				{
-					deleteData(descs[2*i]);
+					delete descs[2*i];
 					descs[2*i] = strData;
 					strData->refCount++;
-					deleteData(descs[2*i+1]);
+					delete descs[2*i+1];
 					descs[2*i+1] = data;
 					data->refCount++;
 					return ;
@@ -2211,7 +2199,7 @@ private:
 		~GetMany()
 		{
 			if(evalRes)
-				deleteData(evalRes);
+				delete evalRes;
 		}
 		void append(char *name, char *expr, Data **args, int nArgs);
 		void insert(int idx, char *name, char *expr, Data **args, int nArgs);
@@ -2233,7 +2221,7 @@ private:
 		~PutMany()
 		{
 			if(evalRes)
-				deleteData(evalRes);
+				delete evalRes;
 		}
 		void append(char *name, char *expr, Data **args, int nArgs);
 		void insert(int idx, char *name, char *expr, Data **args, int nArgs);
