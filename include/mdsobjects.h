@@ -299,8 +299,9 @@ protected:
 	Data *dataCache;
 
 private:
+	Data * getData(int classType);
 	Data * getArrayData();
-
+	Data * getScalarData();
 	Data *units;
 	Data *error;
 	Data *help;
