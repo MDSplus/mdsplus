@@ -782,29 +782,24 @@ int *Array::getShape(int *numDims)
 //Array Methods setElementAt and getElementAt
 Data * Array::getElementAt(int *getDims, int getNumDims)
 {
-	int i;
-
 	//Check Dimensionality
 	if(getNumDims > nDims)
 		throw MdsException("Invalid passed dimensions in Array::getElementAt");
-	for(i = 0; i < getNumDims; i++)
-	{
+
+	for(int i = 0; i < getNumDims; ++i)
 		if(getDims[i] < 0 || getDims[i] >= dims[i])
 			throw MdsException("Invalid passed dimensions in Array::getElementAt");
-	}
 
 	//Prepare actual row dimensions
-	int *rowDims = new int[nDims];
+	std::vector<int> rowDims(nDims);
 	rowDims[nDims - 1] = 1;
-	for(i = nDims - 2; i >= 0; i--)
+	for(int i = nDims - 2; i >= 0; --i)
 		rowDims[i] = rowDims[i+1] * dims[i+1];
 
 	//Compute startIdx of selected data portion
 	int startIdx = 0;
-	for(i = 0; i < getNumDims; i++)
+	for(int i = 0; i < getNumDims; ++i)
 		startIdx += getDims[i] * rowDims[i];
-
-	delete [] rowDims;
 
 	if(getNumDims == nDims) //return a scalar
 		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0, 0);
