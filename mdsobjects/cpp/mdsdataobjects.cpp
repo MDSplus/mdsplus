@@ -163,13 +163,11 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 
 
 ///////////////////Data methods implementation////////////////////////
-EXPORT void *Data::operator new(size_t sz)
-{
+void *Data::operator new(size_t sz) {
 	return ::operator new(sz);
 }
 
-EXPORT void Data::operator delete(void *p)
-{
+void Data::operator delete(void *p) {
 	::operator delete(p);
 }
 
@@ -179,19 +177,19 @@ static Data * getMember(Data * member) {
 	return member;
 }
 
-EXPORT Data * Data::getUnits() {
+Data * Data::getUnits() {
 	return getMember(units);
 }
 
-EXPORT Data * Data::getError() {
+Data * Data::getError() {
 	return getMember(error);
 }
 
-EXPORT Data * Data::getHelp() {
+Data * Data::getHelp() {
 	return getMember(help);
 }
 
-EXPORT Data * Data::getValidation() {
+Data * Data::getValidation() {
 	return getMember(validation);
 }
 
@@ -202,19 +200,19 @@ static void setMember(Data * oldMbr, Data * newMbr) {
 	oldMbr->refCount++;
 }
 
-EXPORT void Data::setUnits(Data * inUnits) {
+void Data::setUnits(Data * inUnits) {
 	setMember(units, inUnits);
 }
 
-EXPORT void Data::setError(Data * inError) {
+void Data::setError(Data * inError) {
 	setMember(error, inError);
 }
 
-EXPORT void Data::setHelp(Data * inHelp) {
+void Data::setHelp(Data * inHelp) {
 	setMember(help, inHelp);
 }
 
-EXPORT void Data::setValidation(Data * inValidation) {
+void Data::setValidation(Data * inValidation) {
 	setMember(validation, inValidation);
 }
 
@@ -551,10 +549,9 @@ Data *Data::getDimensionAt(int dimIdx)
 }
 
 
-	EXPORT	Data *MDSplus::compile(const char *expr)
-	{
-		return compileWithArgs(expr, 0);
-	}
+Data *MDSplus::compile(const char *expr) {
+	return compileWithArgs(expr, 0);
+}
 	
 		
 	EXPORT	Data *MDSplus::compileWithArgs(const char *expr, int nArgs ...)
