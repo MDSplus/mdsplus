@@ -1047,7 +1047,7 @@ TreeNode **TreeNode::getDescendants(int *numDescendants)
 		{sizeof(int) * nChildren, NciCHILDREN_NIDS, &childrenNids[numMembers], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = _TreeGetNci(tree->getCtx(), nid, nciList);
+	status = _TreeGetNci(tree->getCtx(), nid, nciList1);
 	if(!(status & 1))
 	{
 		delete [] childrenNids;
