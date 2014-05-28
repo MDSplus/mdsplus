@@ -747,23 +747,24 @@ void * Data::completeConversionToDsc(void *dsc)
 
 
 //Controlled deletion of dynamic data
+static void checkDelete(Data * data) {
+	if (data)
+		deleteData(data);
+	data = 0;
+}
+
 EXPORT void MDSplus::deleteData(Data *data)
 {
-	if(!data) return;
+	if (!data)
+		return;
+
 	data->refCount--;
-	if(data->refCount <= 0)
-	{
-		if(data->dataCache)
-			deleteData(data->dataCache);
-		if(data->error)
-			deleteData(data->error);
-		if(data->units)
-			deleteData(data->units);
-		if(data->help)
-			deleteData(data->help);
-		if(data->validation)
-		deleteData(data->validation);
-		data->error = data->units = data->help = data->validation = 0;
+	if(data->refCount <= 0) {
+		checkDelete(data->dataCache);
+		checkDelete(data->units);
+		checkDelete(data->error);
+		checkDelete(data->help);
+		checkDelete(data->validation);
 		data->propagateDeletion();
 		delete data;
 	}
