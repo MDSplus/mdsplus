@@ -1198,8 +1198,9 @@ EXPORT void *Array::convertToDsc()
 
 EXPORT void *Compound::convertToDsc()
 {
-	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, length, ptr, nDescs, (void **)descs));
+	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, length, ptr, descs.size(), (void **)(&descs[0])));
 }
+
 EXPORT void *Apd::convertToDsc()
 {
 	return completeConversionToDsc(convertToApdDsc(dtype, nDescs, (void **)descs));

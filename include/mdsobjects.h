@@ -907,14 +907,12 @@ private:
 	protected:
 		int length;
 		char *ptr;
-		int nDescs;
-		Data **descs;
+		std::vector<Data *> descs;
 		void incrementRefCounts()
 		{
-			for(int i = 0; i < nDescs; i++)
-			{
-				if(descs[i]) descs[i]->refCount++;
-			}
+			for(std::size_t i = 0; i < descs.size(); ++i)
+				if(descs[i])
+					descs[i]->refCount++;
 		}
 		void assignDescAt(Data *data, int idx)
 		{
@@ -928,7 +926,7 @@ private:
 		bool hasChanged()
 		{
 			if (changed || !isImmutable()) return true;
-			for(int i = 0; i < nDescs; i++)
+			for(std::size_t i = 0; i < descs.size(); ++i)
 				if(descs[i] && descs[i]->hasChanged())
 					return true;
 			return false;
@@ -946,31 +944,24 @@ private:
 			}
 			else
 				this->ptr = 0;
-			this->nDescs = nDescs;
-			if(nDescs > 0)
-			{
-				this->descs = new Data *[nDescs];
-				for(int i = 0; i < nDescs; i++)
-				{
+			if(nDescs > 0) {
+				this->descs.resize(nDescs);
+				for(int i = 0; i < nDescs; ++i) {
 					this->descs[i] = (Data *)descs[i];
-					if(this->descs[i])
+					if (this->descs[i])
 						this->descs[i]->refCount++;
 				}
 			}
-			else
-				this->descs = 0;
 			setAccessory(units, error, help, validation);
 		}
 		virtual ~Compound()
 		{
 			if(length > 0)
 				deleteNativeArray(ptr);
-			if(nDescs > 0)
-				deleteNativeArray(descs);
 		}
 		virtual void propagateDeletion()
 		{
-			for(int i = 0; i < nDescs; i++)
+			for(std::size_t i = 0; i < descs.size(); ++i)
 				if(descs[i])
 					delete descs[i];
 		}
@@ -986,37 +977,29 @@ private:
 		Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			init();
-			nDescs = 3;
-			descs = new Data *[3];
-			descs[0] = data;
-			descs[1] = raw;
-			descs[2] = dimension;
+			descs.push_back(data);
+			descs.push_back(raw);
+			descs.push_back(dimension);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
 		Signal(Data *data, Data *raw, Data *dimension1, Data *dimension2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			init();
-			nDescs = 4;
-			descs = new Data *[4];
-			descs[0] = data;
-			descs[1] = raw;
-			descs[2] = dimension1;
-			descs[3] = dimension2;
+			descs.push_back(data);
+			descs.push_back(raw);
+			descs.push_back(dimension1);
+			descs.push_back(dimension2);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
 		Signal(Data *data, Data *raw, int nDims, Data **dimensions, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			init();
-			nDescs = 2 + nDims;
-			descs = new Data *[nDescs];
-			descs[0] = data;
-			descs[1] = raw;
+			descs.push_back(data);
+			descs.push_back(raw);
 			for(int i = 0; i < nDims; i++)
-			{
-				descs[2+i] = dimensions[i];
-			}
+				descs.push_back(dimensions[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1027,7 +1010,7 @@ private:
 			descs[2]->refCount++;
 			return descs[2];
 		}
-		int genNumDimensions() {return nDescs - 2;}
+		int genNumDimensions() { return descs.size() - 2; }
 		Data *getDimensionAt(int idx) 
 		{	
 			if(descs[2+idx]) descs[2 + idx]->refCount++;
@@ -1056,10 +1039,8 @@ private:
 			dtype = DTYPE_DIMENSION;
 			length = 0;
 			ptr = 0;
-			nDescs = 2;
-			descs = new Data *[2];
-			descs[0] = window;
-			descs[1] = axis;
+			descs.push_back(window);
+			descs.push_back(axis);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1086,11 +1067,9 @@ private:
 			dtype = DTYPE_WINDOW;
 			length = 0;
 			ptr = 0;
-			nDescs = 3;
-			descs = new Data *[3];
-			descs[0] = startidx;
-			descs[1] = endidx;
-			descs[2] = value_at_idx0;
+			descs.push_back(startidx);
+			descs.push_back(endidx);
+			descs.push_back(value_at_idx0);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1114,15 +1093,13 @@ private:
 			length = 1;
 			ptr = new char[1];
 			*ptr = opcode;
-			nDescs = nargs;
-			descs = new Data *[nargs];
 			for(int i = 0; i < nargs; i++)
-				descs[i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
 		char getOpcode() { return *ptr;}
-		int getNumArguments() { return nDescs;}
+		int getNumArguments() { return descs.size(); }
 		Data *getArgumentAt(int idx) 
 		{
 			if(descs[idx]) descs[idx]->refCount++;
@@ -1142,12 +1119,10 @@ private:
 			dtype = DTYPE_CONGLOM;
 			length = 0;
 			ptr = 0;
-			nDescs = 4;
-			descs = new Data *[4];
-			descs[0] = image;
-			descs[1] = model;
-			descs[2] = name;
-			descs[3] = qualifiers;
+			descs.push_back(image);
+			descs.push_back(model);
+			descs.push_back(name);
+			descs.push_back(qualifiers);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1189,11 +1164,9 @@ private:
 			dtype = DTYPE_RANGE;
 			length = 0;
 			ptr = 0;
-			nDescs = 3;
-			descs = new Data *[3];
-			descs[0] = begin;
-			descs[1] = ending;
-			descs[2] = deltaval;
+			descs.push_back(begin);
+			descs.push_back(ending);
+			descs.push_back(deltaval);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1228,13 +1201,11 @@ private:
 			dtype = DTYPE_ACTION;
 			length = 0;
 			ptr = 0;
-			nDescs = 5;
-			descs = new Data *[5];
-			descs[0] = dispatch;
-			descs[1] = task;
-			descs[2] = errorlogs;
-			descs[3] = completion_message;
-			descs[4] = performance;
+			descs.push_back(dispatch);
+			descs.push_back(task);
+			descs.push_back(errorlogs);
+			descs.push_back(completion_message);
+			descs.push_back(performance);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1281,12 +1252,10 @@ private:
 			dtype = DTYPE_DISPATCH;
 			length = 0;
 			ptr = 0;
-			nDescs = 4;
-			descs = new Data *[4];
-			descs[0] = ident;
-			descs[1] = phase;
-			descs[2] = when;
-			descs[3] = completion;
+			descs.push_back(ident);
+			descs.push_back(phase);
+			descs.push_back(when);
+			descs.push_back(completion);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1327,10 +1296,8 @@ private:
 			dtype = DTYPE_PROGRAM;
 			length = 0;
 			ptr = 0;
-			nDescs = 2;
-			descs = new Data *[2];
-			descs[0] = timeout;
-			descs[1] = program;
+			descs.push_back(timeout);
+			descs.push_back(program);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1361,13 +1328,11 @@ private:
 			dtype = DTYPE_ROUTINE;
 			length = 0;
 			ptr = 0;
-			nDescs = 3 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = timeout;
-			descs[1] = image;
-			descs[2] = routine;
+			descs.push_back(timeout);
+			descs.push_back(image);
+			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
-				descs[3+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1409,13 +1374,11 @@ private:
 			dtype = DTYPE_PROCEDURE;
 			length = 0;
 			ptr = 0;
-			nDescs = 3 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = timeout;
-			descs[1] = language;
-			descs[2] = procedure;
+			descs.push_back(timeout);
+			descs.push_back(language);
+			descs.push_back(procedure);
 			for(int i = 0; i < nargs; i++)
-				descs[3+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1454,13 +1417,11 @@ private:
 			dtype = DTYPE_METHOD;
 			length = 0;
 			ptr = 0;
-			nDescs = 3 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = timeout;
-			descs[1] = method;
-			descs[2] = object;
+			descs.push_back(timeout);
+			descs.push_back(method);
+			descs.push_back(object);
 			for(int i = 0; i < nargs; i++)
-				descs[3+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1501,10 +1462,8 @@ private:
 			length = 1;
 			ptr = new char[1];
 			*ptr = opcode;
-			nDescs = 2;
-			descs = new Data *[2];
-			descs[0] = arg1;
-			descs[1] = arg2;
+			descs.push_back(arg1);
+			descs.push_back(arg2);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1537,9 +1496,7 @@ private:
 			length = 1;
 			ptr = new char[1];
 			*ptr = opcode;
-			nDescs = 1;
-			descs = new Data *[1];
-			descs[0] = arg;
+			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
@@ -1567,12 +1524,10 @@ private:
 			length = 1;
 			ptr = new char;
 			*ptr = retType;
-			nDescs = 2 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = image;
-			descs[1] = routine;
+			descs.push_back(image);
+			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
-				descs[2+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 		}
 		char getRetType() {return *ptr;}
