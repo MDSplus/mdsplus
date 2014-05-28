@@ -70,17 +70,19 @@ class MDSplusVersion(object):
         rflavor="-"+self.flavor
       tarball='/repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz' % \
           {'rflavor':rflavor,'major':self.major,'minor':self.minor,'release':self.release,'flavor':self.flavor}
+      dirnam='mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d' % \
+          {'rflavor':rflavor,'major':self.major,'minor':self.minor,'release':self.release,'flavor':self.flavor}
       try:      
         os.stat(tarball)
       except:
         tempdir=os.tmpnam()
         os.mkdir(tempdir)
-        os.symlink(self.topdir,tempdir+'/mdsplus')
-        status=subprocess.Popen('tar zhcf %s --exclude CVS mdsplus' % tarball,
+        os.symlink(self.topdir,tempdir+'/'+dirnam)
+        status=subprocess.Popen('tar zhcf %s --exclude CVS %s' % (tarball,dirnam),
                                 shell=True,cwd=tempdir).wait()
         if status != 0:
           raise Exception("Error creating source tarball: %s" % taball)
-        os.unlink(tempdir+'/mdsplus')
+        os.unlink(tempdir+'/'+dirnam)
         os.rmdir(tempdir)
 
 
