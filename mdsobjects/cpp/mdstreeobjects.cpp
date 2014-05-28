@@ -1563,17 +1563,15 @@ void TreeNode::rename(std::string const & newName)
 void TreeNode::move(TreeNode *parent, std::string const & newName)
 {
 	resolveNid();
-	char *parentPath = parent->getFullPath();
-	rename(std::string(parentPath) + ":" + newName);
-	delete [] parentPath;
+	AutoString parentPath(parent->getFullPath());
+	rename(parentPath.string + ":" + newName);
 }
 
 void TreeNode::move(TreeNode *parent)
 {
 	resolveNid();
-	char *name = getNodeName();
-	move(parent, name);
-	delete [] name;
+	AutoString name(getNodeName());
+	move(parent, name.string);
 }
 
 void TreeNode::addTag(std::string const & tagName)
