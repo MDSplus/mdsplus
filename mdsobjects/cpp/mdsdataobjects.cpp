@@ -178,7 +178,7 @@ void Data::operator delete(void *p) {
 		delete data->error;
 		delete data->help;
 		delete data->validation;
-
+		data->propagateDeletion();
 		::operator delete(p);
 	}
 }
