@@ -92,11 +92,7 @@
 #define CLASS_R 194 
 #define CLASS_APD 196 
 #define MAX_DIMS 32
-#ifndef HAVE_WINDOWS_H
-#define EXPORT
-#else
-#define EXPORT __declspec(dllexport)
-#endif
+
 extern "C" char *MdsGetMsg(int status);
 /*
 extern "C" {
