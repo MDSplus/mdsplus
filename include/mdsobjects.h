@@ -20,6 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 #ifdef HAVE_WINDOWS_H
+#define NOMINMAX
 #include <Windows.h>
 #else
 #include <sys/types.h>
