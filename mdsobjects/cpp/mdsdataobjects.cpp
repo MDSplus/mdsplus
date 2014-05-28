@@ -543,19 +543,15 @@ double Data::getDouble()
 	return scalar.data->getDouble();
 }
 
-Data *Data::getDimensionAt(int dimIdx)
-{
+Data * Data::getDimensionAt(int dimIdx) {
 	return executeWithArgs("DIM_OF($)", 1, this);
 }
 
-
-Data *MDSplus::compile(const char *expr) {
+Data * MDSplus::compile(const char *expr) {
 	return compileWithArgs(expr, 0);
 }
-	
 		
-	EXPORT	Data *MDSplus::compileWithArgs(const char *expr, int nArgs ...)
-	{
+Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 		int i;
 		void *args[MAX_ARGS];
 
@@ -578,14 +574,13 @@ Data *MDSplus::compile(const char *expr) {
 		if(!(status & 1))
 			throw MdsException(status);
 		return res;
+}
 
-	}
-	EXPORT	Data *MDSplus::compile(const char *expr, Tree *tree)
-	{
-		return  compileWithArgs(expr, tree, 0);
-	}
-	EXPORT	Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...)
-	{
+Data * MDSplus::compile(const char *expr, Tree *tree) {
+	return  compileWithArgs(expr, tree, 0);
+}
+
+Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		int i;
 		void *args[MAX_ARGS];
 
@@ -604,16 +599,13 @@ Data *MDSplus::compile(const char *expr) {
 		if(!(status & 1))
 			throw MdsException(status);
 		return res;
-	}
+}
 
-	EXPORT	Data *MDSplus::execute(const char *expr)
-	{
-		return executeWithArgs(expr, 0);
-	}
+Data * MDSplus::execute(const char *expr) {
+	return executeWithArgs(expr, 0);
+}
 
-	EXPORT	Data *MDSplus::executeWithArgs(const char *expr, int nArgs ...)
-	{
-
+Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 		void *args[MAX_ARGS];
 
 		va_list v;
@@ -638,14 +630,13 @@ Data *MDSplus::compile(const char *expr) {
 		if(actTree)
 			delete(actTree);
 		return evalData;
-	}
+}
 
-	EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree)
-	{
-		return executeWithArgs(expr, tree, 0);
-	}
-	EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...)
-	{
+Data * MDSplus::execute(const char *expr, Tree *tree) {
+	return executeWithArgs(expr, tree, 0);
+}
+
+Data * MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		void *args[MAX_ARGS];
 
 		va_list v;
@@ -674,10 +665,10 @@ Data *MDSplus::compile(const char *expr) {
 		for(int i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
 		return evalData;
-	}
+}
 
 /*
-EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nArgs)
+Data * MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nArgs)
 	{
 		void *args[MAX_ARGS];
 		int i;
@@ -703,15 +694,13 @@ EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nAr
 		    freeDsc(args[i]);
 
 		return evalData;
-	}
+}
 */
 
 //Complete Conversion to Dsc by condsidering help, units and error
 
-void * Data::completeConversionToDsc(void *dsc)
-{
+void * Data::completeConversionToDsc(void *dsc) {
 	void *retDsc = dsc;
-
 
 	if(help || validation)
 	{
@@ -753,8 +742,7 @@ static void checkDelete(Data * data) {
 	data = 0;
 }
 
-EXPORT void MDSplus::deleteData(Data *data)
-{
+void MDSplus::deleteData(Data *data) {
 	if (!data)
 		return;
 
