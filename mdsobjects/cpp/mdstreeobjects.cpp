@@ -1073,7 +1073,7 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 		{{retLen, NciMEMBER_NIDS, &memberNids[0], &retLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
-	status = _TreeGetNci(tree->getCtx(), nid, nciList);
+	status = _TreeGetNci(tree->getCtx(), nid, nciList1);
 	if(!(status & 1))
 	{
 		delete [] memberNids;
