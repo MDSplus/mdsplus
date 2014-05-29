@@ -109,6 +109,18 @@ static int convertUsage(std::string const & usage)
 		return TreeUSAGE_ANY;
 }
 
+struct AutoString {
+	AutoString(char * str): strPtr(str), string(str) {
+	}
+
+	~AutoString() {
+		delete[] strPtr;
+	}
+
+	char * strPtr;
+	std::string string;
+};
+
 static Mutex treeMutex;
 
 Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
@@ -234,28 +246,14 @@ TreeNode *Tree::getNode(char const * path)
 
 TreeNode *Tree::getNode(TreePath *path)
 {
-	int nid, status;
-	char *pathName = path->getString();
-	status = _TreeFindNode(ctx, pathName, &nid);
-	delete[] pathName;
-	if(!(status & 1))
-	{
-		throw MdsException(status);
-	}
-	return new TreeNode(nid, this);
+	AutoString pathName(path->getString());
+	return getNode(pathName.strPtr);
 }
 
 TreeNode *Tree::getNode(String *path)
 {
-	int nid, status;
-	char *pathName = path->getString();
-	status = _TreeFindNode(ctx, pathName, &nid);
-	delete[] pathName;
-	if(!(status & 1))
-	{
-		throw MdsException(status);
-	}
-	return new TreeNode(nid, this);
+	AutoString pathName(path->getString());
+	return getNode(pathName.strPtr);
 }
 
 TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
@@ -551,18 +549,6 @@ EXPORT void TreeNode::operator delete(void *p)
 {
 	::operator delete(p);
 }
-
-struct AutoString {
-	AutoString(char * str): strPtr(str), string(str) {
-	}
-
-	~AutoString() {
-		delete[] strPtr;
-	}
-
-	char * strPtr;
-	std::string string;
-};
 
 char *TreeNode::getPath()
 {
