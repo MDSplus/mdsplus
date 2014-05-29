@@ -302,97 +302,61 @@ TreeNode *Tree::getDefault()
 	return new TreeNode(nid, this);
 }
 
-bool Tree::versionsInPulseEnabled()
-{
-	int supports, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_PULSE, &supports, &len},
-	{0, DbiEND_OF_LIST,0,0}};
+static bool dbiTest(void * ctx, short int code) {
+	int supports;
+	int len;
+	struct dbi_itm dbiList[] = {
+			{ sizeof(int), code, &supports, &len },
+			{ 0, DbiEND_OF_LIST, 0, 0 }
+	};
 
-	status = _TreeGetDbi(ctx, dbiList);
-	if(!(status & 1)) 
+	int status = _TreeGetDbi(ctx, dbiList);
+	if ( !(status & 1) )
 		throw MdsException(status);
-	return (supports)?true:false;
+
+	return supports ? true : false;
 }
 
-bool Tree::versionsInModelEnabled()
-{
-	int supports, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_MODEL, &supports, &len},
-	{0, DbiEND_OF_LIST,0,0}};
-
-	status = _TreeGetDbi(ctx, dbiList);
-	if(!(status & 1)) 
-		throw MdsException(status);
-	return (supports)?true:false;
+bool Tree::versionsInPulseEnabled() {
+	return dbiTest(ctx, DbiVERSIONS_IN_PULSE);
 }
 
-bool Tree::isModified()
-{
-	int modified, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiMODIFIED, &modified, &len},
-	{0, DbiEND_OF_LIST,0,0}};
-
-	status = _TreeGetDbi(ctx, dbiList);
-	if(!(status & 1)) 
-		throw MdsException(status);
-	return (modified)?true:false;
+bool Tree::versionsInModelEnabled() {
+	return dbiTest(ctx, DbiVERSIONS_IN_MODEL);
 }
 
-bool Tree::isOpenForEdit()
-{
-	int edit, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiOPEN_FOR_EDIT, &edit, &len},
-	{0, DbiEND_OF_LIST,0,0}};
-
-	status = _TreeGetDbi(ctx, dbiList);
-	if(!(status & 1)) 
-		throw MdsException(status);
-	return (edit)?true:false;
+bool Tree::isModified() {
+	return dbiTest(ctx, DbiMODIFIED);
 }
 
-bool Tree::isReadOnly()
-{
-	int readOnly, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiOPEN_READONLY, &readOnly, &len},
-	{0, DbiEND_OF_LIST,0,0}};
-
-	status = _TreeGetDbi(ctx, dbiList);
-	if(!(status & 1)) 
-		throw MdsException(status);
-	return (readOnly)?true:false;
+bool Tree::isOpenForEdit() {
+	return dbiTest(ctx, DbiOPEN_FOR_EDIT);
 }
 
-void Tree::setVersionsInModel(bool verEnabled)
-{
-	int supports, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_MODEL, &supports, &len},
-	{0, DbiEND_OF_LIST,0,0}};
+bool Tree::isReadOnly() {
+	return dbiTest(ctx, DbiOPEN_READONLY);
+}
 
-	supports = (verEnabled)?1:0;
-	status = _TreeSetDbi(ctx, dbiList);
-	if(!(status & 1)) 
+static void dbiSet(void * ctx, short int code, bool value) {
+	int len;
+	int intVal = value ? 1 : 0;
+	struct dbi_itm dbiList[] = {
+			{ sizeof(int), code, &intVal, &len },
+			{ 0, DbiEND_OF_LIST, 0, 0 }
+	};
+
+	int status = _TreeSetDbi(ctx, dbiList);
+	if( !(status & 1) )
 		throw MdsException(status);
 }
 
-void Tree::setVersionsInPulse(bool verEnabled)
-{
-	int supports, len, status;
-	struct dbi_itm dbiList[] = 
-	{{sizeof(int), DbiVERSIONS_IN_PULSE, &supports, &len},
-	{0, DbiEND_OF_LIST,0,0}};
-
-	supports = (verEnabled)?1:0;
-	status = _TreeSetDbi(ctx, dbiList);
-	if(!(status & 1)) 
-		throw MdsException(status);
+void Tree::setVersionsInModel(bool verEnabled) {
+	dbiSet(ctx, DbiVERSIONS_IN_MODEL, verEnabled);
 }
 
+void Tree::setVersionsInPulse(bool verEnabled) {
+	dbiSet(ctx, DbiVERSIONS_IN_PULSE, verEnabled);
+}
 
 void Tree::setViewDate(char *date)
 {
