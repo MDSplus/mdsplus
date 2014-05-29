@@ -488,12 +488,6 @@ static std::string getNci(void * ctx, int nid, short int code) {
 	return value;
 }
 
-int TreeNode::getFlag(int flagOfs) {
-	resolveNid();
-	int nciFlags = getNci<int>(tree->getCtx(), nid, NciGET_FLAGS);
-	return (nciFlags & flagOfs) ? true : false;
-}
-
 void TreeNode::setFlag(int flagOfs, bool flag)
 {
 	int nciFlags;
@@ -685,68 +679,62 @@ void TreeNode::doMethod(char *method)
 		throw MdsException(status);
 }
 
-bool TreeNode::isSetup()
-{
-	return getFlag(NciM_SETUP_INFORMATION)?true:false;
+bool TreeNode::getFlag(int flagOfs) {
+	resolveNid();
+	int nciFlags = getNci<int>(tree->getCtx(), nid, NciGET_FLAGS);
+	return (nciFlags & flagOfs) ? true : false;
 }
 
-bool TreeNode::isWriteOnce()
-{
-	return getFlag(NciM_WRITE_ONCE)?true:false;
+bool TreeNode::isSetup() {
+	return getFlag(NciM_SETUP_INFORMATION);
 }
 
-void TreeNode::setWriteOnce(bool flag)
-{
+bool TreeNode::isWriteOnce() {
+	return getFlag(NciM_WRITE_ONCE);
+}
+
+void TreeNode::setWriteOnce(bool flag) {
 	setFlag(NciM_WRITE_ONCE, flag);
 }
 
-bool TreeNode::isCompressOnPut()
-{
-	return getFlag(NciM_COMPRESS_ON_PUT)?true:false;
+bool TreeNode::isCompressOnPut() {
+	return getFlag(NciM_COMPRESS_ON_PUT);
 }
 
-void TreeNode::setCompressOnPut(bool flag)
-{
+void TreeNode::setCompressOnPut(bool flag) {
 	setFlag(NciM_COMPRESS_ON_PUT, flag);
 }
 
-bool TreeNode::isNoWriteModel()
-{
-	return getFlag(NciM_NO_WRITE_MODEL)?true:false;
+bool TreeNode::isNoWriteModel() {
+	return getFlag(NciM_NO_WRITE_MODEL);
 }
 
-void TreeNode::setNoWriteModel(bool flag)
-{
+void TreeNode::setNoWriteModel(bool flag) {
 	setFlag(NciM_NO_WRITE_MODEL, flag);
 }
 
-bool TreeNode::isEssential()
-{
-	return getFlag(NciM_ESSENTIAL)?true:false;
+bool TreeNode::isEssential() {
+	return getFlag(NciM_ESSENTIAL);
 }
 
-void TreeNode::setEssential(bool flag)
-{
+void TreeNode::setEssential(bool flag) {
 	setFlag(NciM_ESSENTIAL, flag);
 }
 
-bool TreeNode::isNoWriteShot()
-{
-	return getFlag(NciM_NO_WRITE_SHOT)?true:false;
+bool TreeNode::isNoWriteShot() {
+	return getFlag(NciM_NO_WRITE_SHOT);
 }
 
-void TreeNode::setNoWriteShot(bool flag)
-{
+void TreeNode::setNoWriteShot(bool flag) {
 	setFlag(NciM_NO_WRITE_SHOT, flag);
 }
 
-bool TreeNode::isIncludedInPulse()
-{
-	return getFlag(NciM_INCLUDE_IN_PULSE)?true:false;
+bool TreeNode::isIncludedInPulse() {
+	return getFlag(NciM_INCLUDE_IN_PULSE);
 }
-bool TreeNode::containsVersions()
-{
-	return getFlag(NciM_VERSIONS)?true:false;
+
+bool TreeNode::containsVersions() {
+	return getFlag(NciM_VERSIONS);
 }
 
 bool TreeNode::isMember() {

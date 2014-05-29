@@ -1798,7 +1798,7 @@ private:
 //From Data
 		virtual bool isImmutable() {return false;}
 		virtual void *convertToDsc();
-		int getFlag(int flagOfs);
+		bool getFlag(int flagOfs);
 		void setFlag(int flagOfs, bool val);
 	public:
 		virtual Data *data();
