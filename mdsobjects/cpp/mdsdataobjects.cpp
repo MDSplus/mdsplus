@@ -1149,7 +1149,7 @@ char *Uint64::getDate()
 
 EXPORT void *TreePath::convertToDsc()
 {
-	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, length, ptr));
+	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, path.length(), const_cast<char *>(path.c_str())));
 }
 
 EXPORT void *Array::convertToDsc()

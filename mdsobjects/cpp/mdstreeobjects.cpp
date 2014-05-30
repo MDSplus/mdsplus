@@ -1262,39 +1262,30 @@ StringArray *TreeNode::findTags()
 
 //////////////////TreePath Methods//////////////////
 
-TreePath::TreePath(char *val, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
+TreePath::TreePath(std::string const & path, Tree *tree, Data *units, Data *error, Data *help, Data *validation):
+		TreeNode(0, tree, units, error, help, validation),
+		path(path)
 {
 	clazz = CLASS_S;
 	dtype = DTYPE_PATH;
-	length = strlen(val);
-	ptr = new char[length];
-	memcpy(ptr, val, length);
 }
 
-TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
+TreePath::TreePath(char const * path, int len, Tree *tree, Data *units, Data *error, Data *help, Data *validation):
+		TreeNode(0, tree, units, error, help, validation),
+		path(path)
 {
 	clazz = CLASS_S;
 	dtype = DTYPE_PATH;
-	length = len;
-	ptr = new char[length];
-	memcpy(ptr, val, length);
 }
 
-TreePath::~TreePath()
-{
-	if(length > 0)
-		delete[]ptr;
-}
 void TreePath::resolveNid()
 {
-	std::string path(ptr, length);
-	if(!tree)
+	if (!tree)
 		tree = getActiveTree();
 	int status = _TreeFindNode(tree->getCtx(), path.c_str(), &nid);
 	if(!(status & 1))
 		nid = -1;
 }
-	
 
 ///////////////TreeNode methods
 

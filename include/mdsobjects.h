@@ -1896,19 +1896,21 @@ private:
 		void removeTag(std::string const & tagName);
 		void setSubtree(bool isSubtree);
 	};
+
 /////////////////End Class TreeTreeNode///////////////
-	class EXPORT TreePath : public TreeNode
-	{
-		int length;
-		char *ptr;
-	public:
-		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
-		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
-		~TreePath();
-		void *convertToDsc();
-		void resolveNid();
-	};
-	
+
+class EXPORT TreePath: public TreeNode
+{
+public:
+	TreePath(std::string const & path, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+	TreePath(char const * path, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+	void *convertToDsc();
+	void resolveNid();
+
+private:
+	std::string path;
+};
+
 #ifdef CACHEDTREES	
 /////////////////CachedTreeNode/////////////////////////////
 #define MDS_WRITE_THROUGH 1
