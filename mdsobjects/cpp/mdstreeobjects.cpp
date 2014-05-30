@@ -630,11 +630,9 @@ void TreeNode::deleteData()
 	}
 }
 
-bool TreeNode::isOn()
-{
+bool TreeNode::isOn() {
 	resolveNid();
-	bool retOn = (_TreeIsOn(tree->getCtx(), nid) & 1)?true:false;
-	return  retOn;
+	return (_TreeIsOn(tree->getCtx(), nid) & 1) ? true : false;
 }
 
 void TreeNode::setOn(bool on)
