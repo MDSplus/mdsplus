@@ -1272,7 +1272,7 @@ TreePath::TreePath(std::string const & path, Tree *tree, Data *units, Data *erro
 
 TreePath::TreePath(char const * path, int len, Tree *tree, Data *units, Data *error, Data *help, Data *validation):
 		TreeNode(0, tree, units, error, help, validation),
-		path(path)
+		path(path, len)
 {
 	clazz = CLASS_S;
 	dtype = DTYPE_PATH;
