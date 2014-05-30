@@ -1,4 +1,5 @@
 #include <mdsobjects.h>
+#include <mdsplus/AutoPointer.hpp>
 #include <mdsplus/Mutex.hpp>
 #include <usagedef.h>
 #include <treeshr.h>
@@ -108,18 +109,6 @@ static int convertUsage(std::string const & usage)
 	else
 		return TreeUSAGE_ANY;
 }
-
-struct AutoString {
-	AutoString(char * str): strPtr(str), string(str) {
-	}
-
-	~AutoString() {
-		delete[] strPtr;
-	}
-
-	char * strPtr;
-	std::string string;
-};
 
 static Mutex treeMutex;
 

@@ -1,5 +1,7 @@
 #include "mdsobjects.h"
 
+#include <mdsplus/AutoPointer.hpp>
+
 #include <stdarg.h>
 //#include "mdstree.h"
 using namespace MDSplus;
@@ -306,12 +308,6 @@ int * Data::getShape(int *numDim)
 	return res;
 }
 
-struct AutoData {
-	AutoData(Data * d): data(d) {}
-	~AutoData() { deleteData(data); }
-	Data * data;
-};
-
 Data * Data::getData(int classType) {
 	void *dscPtr = convertToDsc();
 	void *retDsc = convertToByte(dscPtr);
@@ -341,8 +337,8 @@ static std::vector<T> getArray(T * data, int size) {
 
 char *Data::getByteArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getByteArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getByteArray(numElements);
 }
 
 std::vector<char> Data::getByteArray()
@@ -354,8 +350,8 @@ std::vector<char> Data::getByteArray()
 
 unsigned char *Data::getByteUnsignedArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getByteUnsignedArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getByteUnsignedArray(numElements);
 }
 
 std::vector<unsigned char> Data::getByteUnsignedArray()
@@ -367,8 +363,8 @@ std::vector<unsigned char> Data::getByteUnsignedArray()
 
 short * Data::getShortArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getShortArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getShortArray(numElements);
 }
 
 std::vector<short> Data::getShortArray()
@@ -380,8 +376,8 @@ std::vector<short> Data::getShortArray()
 
 unsigned short * Data::getShortUnsignedArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getShortUnsignedArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getShortUnsignedArray(numElements);
 }
 
 std::vector<unsigned short> Data::getShortUnsignedArray()
@@ -393,8 +389,8 @@ std::vector<unsigned short> Data::getShortUnsignedArray()
 
 int * Data::getIntArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getIntArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getIntArray(numElements);
 }
 
 std::vector<int> Data::getIntArray()
@@ -406,8 +402,8 @@ std::vector<int> Data::getIntArray()
 
 unsigned int * Data::getIntUnsignedArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getIntUnsignedArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getIntUnsignedArray(numElements);
 }
 
 std::vector<unsigned int> Data::getIntUnsignedArray()
@@ -419,8 +415,8 @@ std::vector<unsigned int> Data::getIntUnsignedArray()
 
 int64_t * Data::getLongArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getLongArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getLongArray(numElements);
 }
 
 std::vector<int64_t> Data::getLongArray()
@@ -432,8 +428,8 @@ std::vector<int64_t> Data::getLongArray()
 
 uint64_t * Data::getLongUnsignedArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getLongUnsignedArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getLongUnsignedArray(numElements);
 }
 
 std::vector<uint64_t> Data::getLongUnsignedArray()
@@ -445,8 +441,8 @@ std::vector<uint64_t> Data::getLongUnsignedArray()
 
 float * Data::getFloatArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getFloatArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getFloatArray(numElements);
 }
 
 std::vector<float> Data::getFloatArray()
@@ -458,8 +454,8 @@ std::vector<float> Data::getFloatArray()
 
 double * Data::getDoubleArray(int *numElements)
 {
-	AutoData array(getArrayData());
-	return array.data->getDoubleArray(numElements);
+	AutoPointer<Data> array(getArrayData());
+	return array.ptr->getDoubleArray(numElements);
 }
 
 std::vector<double> Data::getDoubleArray()
@@ -497,62 +493,62 @@ char *	Data::serialize(int *size)
 
 char Data::getByte()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getByte();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getByte();
 }
 
 short Data::getShort()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getShort();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getShort();
 }
 
 int Data::getInt()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getInt();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getInt();
 }
 
 int64_t Data::getLong()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getLong();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getLong();
 }
 
 unsigned char Data::getByteUnsigned()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getByteUnsigned();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getByteUnsigned();
 }
 
 unsigned short Data::getShortUnsigned()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getShortUnsigned();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getShortUnsigned();
 }
 
 unsigned int Data::getIntUnsigned()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getIntUnsigned();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getIntUnsigned();
 }
 
 uint64_t Data::getLongUnsigned()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getLongUnsigned();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getLongUnsigned();
 }
 
 float Data::getFloat()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getFloat();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getFloat();
 }
 
 double Data::getDouble()
 {
-	AutoData scalar(getScalarData());
-	return scalar.data->getDouble();
+	AutoPointer<Data> scalar(getScalarData());
+	return scalar.ptr->getDouble();
 }
 
 Data * Data::getDimensionAt(int dimIdx) {
