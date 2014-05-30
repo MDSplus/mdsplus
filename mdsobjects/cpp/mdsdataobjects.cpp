@@ -1026,7 +1026,7 @@ int64_t *Array::getLongArray(int *numElements)
 	*numElements = size;
 	return retArr;
 }
-#ifdef HAVE_WINDOWS_H
+
 uint64_t *Array::getLongUnsignedArray(int *numElements)
 {
 	int size = arsize/length;
@@ -1049,30 +1049,6 @@ uint64_t *Array::getLongUnsignedArray(int *numElements)
 	*numElements = size;
 	return retArr;
 }
-#else
-uint64_t *Array::getLongUnsignedArray(int *numElements)
-{
-	int size = arsize/length;
-	uint64_t *retArr = new uint64_t[size];
-	for(int i = 0; i < size; i++)
-		switch(dtype) {
-			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
-			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
-			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
-			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
-			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
-			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(uint64_t *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(uint64_t *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = (uint64_t)*(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = (uint64_t)*(double *)&ptr[i * length]; break;
-			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getLongUnsignedArray() not supported for Complex data type");
-		}
-	*numElements = size;
-	return retArr;
-}
-#endif
 
 float *Array::getFloatArray(int *numElements)
 {
