@@ -1,5 +1,6 @@
 #include "mdsobjects.h"
 
+#include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
 
 #include <stdarg.h>
@@ -7,15 +8,7 @@
 using namespace MDSplus;
 using namespace std;
 
-#ifdef HAVE_WINDOWS_H
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
 #define MAX_ARGS 512
-
-
 
 extern "C" {
 	char * MdsGetMsg(int status);

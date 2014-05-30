@@ -1,4 +1,5 @@
 #include <mdsobjects.h>
+#include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
 #include <mdsplus/Mutex.hpp>
 #include <usagedef.h>
@@ -69,12 +70,6 @@ extern "C" {
 	// From TreeFindTagWild.c
 	char * _TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout);
 }
-
-#ifdef HAVE_WINDOWS_H
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
 
 #define MAX_ARGS 512
 
