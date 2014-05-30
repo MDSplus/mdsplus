@@ -457,7 +457,7 @@ Data *TreeNode::data()
 }
 
 template<class T>
-T getNci(void * ctx, int nid, short int code) {
+static T getNci(void * ctx, int nid, short int code) {
 	T value;
 	int len;
 	struct nci_itm nciList[] =  {
