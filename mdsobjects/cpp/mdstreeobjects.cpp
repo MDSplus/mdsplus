@@ -1269,7 +1269,6 @@ TreePath::TreePath(char *val, Tree *tree, Data *units, Data *error, Data *help, 
 	length = strlen(val);
 	ptr = new char[length];
 	memcpy(ptr, val, length);
-	setAccessory(units, error, help, validation);
 }
 
 TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Data *help, Data *validation):TreeNode(0, tree, units, error, help,validation)
@@ -1279,8 +1278,8 @@ TreePath::TreePath(char *val, int len, Tree *tree, Data *units, Data *error, Dat
 	length = len;
 	ptr = new char[length];
 	memcpy(ptr, val, length);
-	setAccessory(units, error, help, validation);
 }
+
 TreePath::~TreePath()
 {
 	if(length > 0)
