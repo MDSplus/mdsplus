@@ -208,9 +208,8 @@ TreeNode *Tree::addDevice(char const * name, char *type)
 void Tree::remove(char const * name)
 {
 	int count;
-	TreeNode *delNode = getNode(name);
-	int status = _TreeDeleteNodeInitialize(ctx, delNode->getNid(), &count, 1);
-	delete delNode;
+	AutoPointer<TreeNode> delNode(getNode(name));
+	int status = _TreeDeleteNodeInitialize(ctx, delNode.ptr->getNid(), &count, 1);
 	if(status & 1)_TreeDeleteNodeExecute(ctx);
 	if(!(status & 1))
 		throw MdsException(status);
@@ -1137,14 +1136,13 @@ TreeNode *TreeNode::getNode(String *relPathStr)
 	int defNid;
 	int newNid;
 	resolveNid();
-	char *relPath = relPathStr->getString();
+	AutoString relPath(relPathStr->getString());
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
+	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath.strPtr, &newNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
 		throw MdsException(status);
-	delete [] relPath;
 	return new TreeNode(newNid, tree);
 }
 
@@ -1169,9 +1167,8 @@ void TreeNode::remove(char const * name)
 	resolveNid();
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	TreeNode *delNode = getNode(name);
-	status = _TreeDeleteNodeInitialize(tree->getCtx(), delNode->nid, &count, 1);
-	delete delNode;
+	AutoPointer<TreeNode> delNode(getNode(name));
+	status = _TreeDeleteNodeInitialize(tree->getCtx(), delNode.ptr->nid, &count, 1);
 	if(status & 1)_TreeDeleteNodeExecute(tree->getCtx());
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
@@ -1291,15 +1288,12 @@ TreePath::~TreePath()
 }
 void TreePath::resolveNid()
 {
-	char *path = new char[length+1];
-	memcpy(path, ptr, length);
-	path[length] = 0;
+	std::string path(ptr, length);
 	if(!tree)
 		tree = getActiveTree();
-	int status = _TreeFindNode(tree->getCtx(), path, &nid);
+	int status = _TreeFindNode(tree->getCtx(), path.c_str(), &nid);
 	if(!(status & 1))
 		nid = -1;
-	delete [] path;
 }
 	
 

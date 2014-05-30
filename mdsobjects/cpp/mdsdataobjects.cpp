@@ -564,14 +564,10 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 			args[i] = currArg->convertToDsc();
 		}
 		int status;
-		Tree *actTree = 0;
-		try {
-			actTree = getActiveTree();
-		}catch(MdsException const & exc){actTree = 0;}
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
+		AutoPointer<Tree> actTree(getActiveTree());
+		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree.ptr, &status);
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
-		if(actTree) delete actTree;
 		if(!(status & 1))
 			throw MdsException(status);
 		return res;
@@ -1231,12 +1227,10 @@ EXPORT void Scope::show()
 }
 EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
 {
-	char *expr = new char[64+strlen(name)];
-	sprintf(expr, "JavaNewWindow(\"%s\", -1)", name);
-	Data *ris = execute(expr);
+	std::string expr("JavaNewWindow(" + std::string(name) + ", -1");
+	Data *ris = execute(expr.c_str());
 	idx = ris->getInt();
 	deleteData(ris);
-	delete [] expr;
 	this->x = x;
 	this->y = y;
 	this->width = width;
