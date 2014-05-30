@@ -773,7 +773,7 @@ TreeNode *TreeNode::getChild() {
 
 TreeNode *TreeNode::getMember() {
 	resolveNid();
-	int nodeId = getNci<int>(tree->getCtx(), nid, NciCHILD);
+	int nodeId = getNci<int>(tree->getCtx(), nid, NciMEMBER);
 	return new TreeNode(nodeId, tree);
 }
 
