@@ -19,8 +19,6 @@ __doc__="""Deploy installation packages
    * Test new installation packages.
    * Deploy installation packages to repository.
 
-  NOTE: SRCDIR environment variable designating the location of the source tarballs
-        must be defined!
   NOTE: DIST environment variable designating the platform (i.e. el6,fc20,Ubuntu12)
         must be defined!
 
@@ -28,12 +26,6 @@ __doc__="""Deploy installation packages
 def flushPrint(text):
   print(text)
   sys.stdout.flush()
-
-if __name__ == "__main__":
-  if "SRCDIR" not in os.environ:
-    flushPrint("SRCDIR not defined!")
-    flushPrint(__doc__)
-    sys.exit(1)
 
   if "DIST" not in os.environ:
     flushPrint("DIST not defined!")
@@ -54,7 +46,7 @@ if __name__ == "__main__":
   if os.environ['DIST'].startswith('el') or os.environ['DIST'].startswith('fc'):
     module=__import__('rpms',globals())
   elif os.environ['DIST'].startswith('Ubuntu'):
-    module=__import__('rpms',globals())
+    module=__import__('ubuntu',globals())
   elif os.environ['DIST'].startswith('solaris'):
     module=__import__('solaris',globals())
   elif os.environ['DIST'].startswith('win'):
