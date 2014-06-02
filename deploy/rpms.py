@@ -37,7 +37,7 @@ class InstallationPackage(object):
 
     def build(self):
         """Build rpms using rpmbuild"""
-        if len(self['rflavor'])==0:
+        if len(self.info['rflavor'])==0:
             self.info['D_RFLAVOR']=""
         else:
             self.info['D_RFLAVOR']="-D 'rflavor %(rflavor)s'" % self.info
