@@ -27,6 +27,8 @@ class InstallationPackage(object):
                 rpm='/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s-%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
             try:
                 os.stat(rpm)
+                print("Found %s" % (rpm,))
+                sys.stdout.flush()
                 found.append(arch)
             except:
                 pass

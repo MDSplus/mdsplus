@@ -97,6 +97,8 @@ if __name__ == "__main__":
   elif sys.argv[1]=='deploy':
     if len(sys.argv) == 3:
       flavors=sys.argv[2].split(',')
+    elif 'BUILD_FLAVOR' in os.environ and os.environ['BUILD_FLAVOR'] in ('alpha','beta','stable'):
+      flavors=[os.environ['BUILD_FLAVOR'],]
     else:
       flavors=('alpha','beta','stable')
     errors=""
