@@ -12,20 +12,14 @@ import subprocess,os,sys
         the modules were tagged with this latest release.
     2c) If changes:
         2c1) Checkout a copy of the branch
-        2c2) Make a tar file in $SRCDIR/SOURCES with name=mdsplus[-flavor]-m-n-o(+1).tgz
+        2c2) Make a tar file in /repository/SOURCES with name=mdsplus[-flavor]-m-n-o(+1).tgz
         2c3) Add a new tag to the branch with release incremented
-
-  NOTE:  SRCDIR environment variables must be defined!
 
 """
 
 def flushPrint(text):
   print(text)
   sys.stdout.flush()
-
-if "SRCDIR" not in os.environ:
-  flushPrint("SRCDIR not defined!")
-  sys.exit(1)
 
 def getLatestRelease(flavor):
   """Get latest releases for all flavors"""
@@ -79,8 +73,8 @@ def processChanges(flavor):
 #      Checkout the source and make a source tarball and if successful tag the new release
     status=subprocess.Popen("""
 rm -Rf /tmp/mdsplus-*
-cvs -Q co -d %(src)s -r %(branch)s mdsplus
-if ( tar zvhcf $SRCDIR/%(src)s.tgz --exclude CVS %(src)s )
+cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
+if ( tar zvhcf /repository/SOURCES/%(src)s.tgz --exclude-vcs %(src)s )
 then
   cd %(src)s
   cvs -Q tag %(tag)s
@@ -109,21 +103,14 @@ if __name__ == "__main__":
     for flavor in flavors:
       processChanges(flavor)
       info = getLatestRelease(flavor)
-      cmd="""
-####### Eventually use deploy directory in mdsplus src tree
-tar zxf ${SRCDIR}/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
-python  mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/deploy.py %(flavor)s %(major)s %(minor)d %(release)d 
-""" % info
-####### During development use hudson module
-      cmd="""
-tar zxf ${SRCDIR}/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/devscripts && \
-python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d 
-""" % info
-      status = subprocess.Popen(cmd,shell=True).wait()
-      if status != 0:
+      if subprocess.Popen("""
+tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
+mv mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/* ./ && \
+rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
+python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
+""" % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
         flushPrint("x"*100+"\n\n%s\n\n" % error + "x"*100)
         errors=errors+error+"\n"
-      subprocess.Popen("rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info,shell=True)
     if len(errors) > 0:
       sys.exit(1)

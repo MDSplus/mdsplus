@@ -37,20 +37,24 @@ class InstallationPackage(object):
 
     def build(self):
         """Build rpms using rpmbuild"""
+        if len(self['rflavor'])==0:
+            self.info['D_RFLAVOR']=""
+        else:
+            self.info['D_RFLAVOR']="-D 'rflavor %(rflavor)s'" % self.info
         if subprocess.Popen("""
 mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
-ln -sf $SRCDIR %(workspace)s/%(flavor)s/SOURCES && \
+ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
 rpmbuild -bb  \
   -D '_topdir %(workspace)s/%(flavor)s' \
   -D 'version %(major)d.%(minor)d' \
   -D 'release_num %(release)d' \
-  -D 'rflavor %(rflavor)s' \
+  %(D_RFLAVOR)s \
   -D 'flavor %(flavor)s' rpm.spec && \
 rpmbuild -bb  \
   -D '_topdir %(workspace)s/%(flavor)s' \
   -D 'version %(major)d.%(minor)d' \
   -D 'release_num %(release)d' \
-  -D 'rflavor %(rflavor)s' \
+  %(D_RFLAVOR)s \
   -D 'flavor %(flavor)s' \
   --target=i686-linux rpm.spec
 """ % self.info,shell=True).wait() != 0:
@@ -130,4 +134,7 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
             raise Exception('\n'.join(errors))
 
     def deploy(self):
+        """Deploy release to repository"""
+        if subprocess.Popen("rsync -a %(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/" % self.info,shell=True).wait() != 0:
+            raise Exception("Error deploying %(flavor)s release to repository" % self.info)
             pass
