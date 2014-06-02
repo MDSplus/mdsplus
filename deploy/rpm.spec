@@ -84,7 +84,7 @@ else
 fi
 cat - >> $outfile <<EOF
 name=MDSplus-%flavor 
-baseurl=http://www.mdsplus.org/dist/%{dist}/%{flavor}/RPMS
+baseurl=http://www.mdsplus.org/dist/%{DIST}/%{flavor}/RPMS
 enabled=1
 EOF
 cat - >>$outfile <<EOF 
