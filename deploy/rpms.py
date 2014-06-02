@@ -43,7 +43,7 @@ class InstallationPackage(object):
             self.info['D_RFLAVOR']="-D 'rflavor %(rflavor)s'" % self.info
         if subprocess.Popen("""
 mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
-ln -sf $SRCDIR %(workspace)s/%(flavor)s/SOURCES && \
+ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
 rpmbuild -bb  \
   -D '_topdir %(workspace)s/%(flavor)s' \
   -D 'version %(major)d.%(minor)d' \

@@ -74,7 +74,7 @@ def processChanges(flavor):
     status=subprocess.Popen("""
 rm -Rf /tmp/mdsplus-*
 cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
-if ( tar zvhcf /repository/%(src)s.tgz --exclude-vcs %(src)s )
+if ( tar zvhcf /repository/SOURCES/%(src)s.tgz --exclude-vcs %(src)s )
 then
   cd %(src)s
   cvs -Q tag %(tag)s
@@ -104,7 +104,7 @@ if __name__ == "__main__":
       processChanges(flavor)
       info = getLatestRelease(flavor)
       if subprocess.Popen("""
-tar zxf /repository/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
+tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
 mv mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/* ./ && \
 rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
 python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
