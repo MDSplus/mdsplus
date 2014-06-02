@@ -107,12 +107,12 @@ if __name__ == "__main__":
       flavors=('alpha','beta','stable')
     errors=""
     for flavor in flavors:
-      processChanges(flavor)
+#      processChanges(flavor)
       info = getLatestRelease(flavor)
       if subprocess.Popen("""
 tar zxf ${SRCDIR}/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
-rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
 mv mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/* ./ && \
+rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
 python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
