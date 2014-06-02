@@ -37,7 +37,7 @@ that you need such as mdsplus-python or mdsplus-java which will pull in any othe
 required packages automatically.
 
 %prep
-%setup -q -n mdsplus%{?rflavor}-%{version}-%{release_num}
+%setup -q -n mdsplus%{?rflavor}-%{version}-%{release_num} >/dev/null
 
 %ifarch x86_64
 %define gsi_bits 64
