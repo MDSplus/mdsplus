@@ -43,7 +43,7 @@ if __name__ == "__main__":
     info['rflavor']=""
   else:
     info['rflavor']="-"+info['flavor']
-
+  info['DIST']=os.environ['DIST']
   if os.environ['DIST'].startswith('el') or os.environ['DIST'].startswith('fc'):
     module=__import__('rpms',globals())
   elif os.environ['DIST'].startswith('Ubuntu'):
