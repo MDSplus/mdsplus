@@ -80,7 +80,7 @@ def processChanges(flavor):
     status=subprocess.Popen("""
 rm -Rf /tmp/mdsplus-*
 cvs -Q co -d %(src)s -r %(branch)s mdsplus
-if ( tar zvhcf $SRCDIR/%(src)s.tgz --exclude CVS %(src)s )
+if ( tar zvhcf $SRCDIR/%(src)s.tgz --exclude-vcs %(src)s )
 then
   cd %(src)s
   cvs -Q tag %(tag)s
@@ -109,21 +109,14 @@ if __name__ == "__main__":
     for flavor in flavors:
       processChanges(flavor)
       info = getLatestRelease(flavor)
-      cmd="""
-####### Eventually use deploy directory in mdsplus src tree
+      if subprocess.Popen("""
 tar zxf ${SRCDIR}/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
-python  mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/deploy.py %(flavor)s %(major)s %(minor)d %(release)d 
-""" % info
-####### During development use hudson module
-      cmd="""
-tar zxf ${SRCDIR}/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/devscripts && \
-python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d 
-""" % info
-      status = subprocess.Popen(cmd,shell=True).wait()
-      if status != 0:
+rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
+mv mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/* ./ && \
+python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
+""" % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
         flushPrint("x"*100+"\n\n%s\n\n" % error + "x"*100)
         errors=errors+error+"\n"
-      subprocess.Popen("rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info,shell=True)
     if len(errors) > 0:
       sys.exit(1)
