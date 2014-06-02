@@ -27,6 +27,7 @@ def flushPrint(text):
   print(text)
   sys.stdout.flush()
 
+if __name__ == "__main__":
   if "DIST" not in os.environ:
     flushPrint("DIST not defined!")
     flushPrint(__doc__)
