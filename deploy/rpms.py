@@ -25,13 +25,13 @@ class InstallationPackage(object):
             for arch in ('i686','noarch','x86_64'):
                 self.info['arch']=arch
                 rpm='/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s-%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
-            try:
-                os.stat(rpm)
-                print("Found %s" % (rpm,))
-                sys.stdout.flush()
-                found.append(arch)
-            except:
-                pass
+                try:
+                    os.stat(rpm)
+                    print("Found %s" % (rpm,))
+                    sys.stdout.flush()
+                    found.append(arch)
+                except:
+                    pass
             if not ((len(found) == 1 and found[0]=='noarch') or (len(found) == 2 and found[0]=='i686' and found[1]=='x86_64')):
                 print("/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s-%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s rpm's not found" % self.info)
                 sys.stdout.flush()
