@@ -1,8 +1,8 @@
-Name: mdsplus%{rflavor}
+Name: mdsplus%{?rflavor}
 Version: %{version}
 Release: %{release_num}%{dist}
 License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
-Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%{rflavor}-%{version}-%{release_num}.tgz
+Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%{?rflavor}-%{version}-%{release_num}.tgz
 URL: http://www.mdsplus.org
 Vendor: Massachusetts Institute of Technology
 Packager: Plasma Science and Fusion Center <mdsplus@www.mdsplus.org>
@@ -11,24 +11,24 @@ Group: Applications/Archiving
 Prefix: /usr/local
 Summary: MDSplus Data Acquisition System
 AutoReqProv: yes
-requires: mdsplus%{rflavor}-java = %{version}-%{release}
-#requires: mdsplus%{rflavor}-mitdevices = %{version}-%{release}
-#requires: mdsplus%{rflavor}-epics = %{version}-%{release}
-#requires: mdsplus%{rflavor}-idl = %{version}-%{release}
-#requires: mdsplus%{rflavor}-gsi = %{version}-%{release}
-#requires: mdsplus%{rflavor}-rfxdevices = %{version}-%{release}
-#requires: mdsplus%{rflavor}-php = %{version}-%{release}
-#requires: mdsplus%{rflavor}-kbsidevices = %{version}-%{release}
-#requires: mdsplus%{rflavor}-labview = %{version}-%{release}
-#requires: mdsplus%{rflavor}-matlab = %{version}-%{release}
-requires: mdsplus%{rflavor}-motif = %{version}-%{release}
-requires: mdsplus%{rflavor}-python = %{version}-%{release}
-#requires: mdsplus%{rflavor}-hdf5 = %{version}-%{release}
-#requires: mdsplus%{rflavor}-devel = %{version}-%{release}
-#requires: mdsplus%{rflavor}-camac = %{version}-%{release}
-requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
-#requires: mdsplus%{rflavor}-d3d = %{version}-%{release}
-#requires: mdsplus%{rflavor}-mssql = %{version}-%{release}
+requires: mdsplus%{?rflavor}-java = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-mitdevices = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-epics = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-idl = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-gsi = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-rfxdevices = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-php = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-kbsidevices = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-labview = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-matlab = %{version}-%{release}
+requires: mdsplus%{?rflavor}-motif = %{version}-%{release}
+requires: mdsplus%{?rflavor}-python = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-hdf5 = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-devel = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-camac = %{version}-%{release}
+requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-d3d = %{version}-%{release}
+#requires: mdsplus%{?rflavor}-mssql = %{version}-%{release}
 
 %description
 The top level MDSplus installation package. Install this package only if you want all
@@ -37,7 +37,7 @@ that you need such as mdsplus-python or mdsplus-java which will pull in any othe
 required packages automatically.
 
 %prep
-%setup -q -n mdsplus%{rflavor}-%{version}-%{release_num}
+%setup -q -n mdsplus%{?rflavor}-%{version}-%{release_num}
 
 %ifarch x86_64
 %define gsi_bits 64
@@ -62,7 +62,7 @@ env LANG=en_US.UTF-8 %__make
 
 %install
 
-pyflavor=%{rflavor}
+pyflavor=%{?rflavor}
 pyflavor=${pyflavor:1}-
 env MDSPLUS_VERSION="${pyflavor}%{version}.%{release}" %__make install
 %ifarch x86_64
@@ -104,7 +104,7 @@ EOF
 %package java
 Summary: Java Applications
 BuildArch: noarch
-requires: mdsplus%{rflavor}-java_bin = %{version}-%{release}
+requires: mdsplus%{?rflavor}-java_bin = %{version}-%{release}
 %description java
 Java applications and classes
 %files java
@@ -147,8 +147,8 @@ fi
 %package mitdevices
 Summary: Support for MIT data acquisition devices
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-python = %{version}-%{release}
-Requires: mdsplus%{rflavor}-mitdevices_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-python = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-mitdevices_bin = %{version}-%{release}
 %description mitdevices
 Support for MIT Data acquisition devices
 %files mitdevices
@@ -186,7 +186,7 @@ ldconfig >/dev/null 2>&1
 %package idl
 Summary: ITT IDL extensions
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-idl_bin = %{version}-%{release} 
+Requires: mdsplus%{?rflavor}-idl_bin = %{version}-%{release} 
 %description idl
 IDL (ITT Interactive Data Language) extensions for MDSplus
 %files idl
@@ -196,7 +196,7 @@ IDL (ITT Interactive Data Language) extensions for MDSplus
 
 %package idl_bin
 Summary: ITT IDL extensions
-Requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description idl_bin
 IDL (ITT Interactive Data Language) extensions for MDSplus
 %files idl_bin
@@ -212,8 +212,8 @@ ldconfig >/dev/null 2>&1
 %package gsi
 Summary: Support for secure MDSplus and Fusiongrid
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-gsi_bin = %{version}-%{release}
-Requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-gsi_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description gsi
 Support for secure MDSplus and Fusiongrid
 %files gsi
@@ -250,8 +250,8 @@ fi
 %package labview
 Summary: National Instruments Labview extensions
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-labview_bin = %{version}-%{release}
-Requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-labview_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description labview
 National Instruments Labview interface to MDSplus
 %files labview
@@ -271,8 +271,8 @@ National Instruments Labview interface to MDSplus
 %package motif
 Summary: X-Windows Motif based application
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-motif_bin = %{version}-%{release}
-Requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-motif_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description motif
 X-Windows applications which use the Motif window system. This package provides the following applications:
 dwscope, dwpad, traverser, actions, actmon
@@ -332,8 +332,8 @@ fi
 %package hdf5
 Summary: MDSplus/HDF5 integration
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-hdf5_bin = %{version}-%{release}
-Requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-hdf5_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description hdf5
 MDSplus/HDF5 integration
 %files hdf5
@@ -361,7 +361,7 @@ ldconfig >/dev/null 2>&1
 %package devel
 Summary: Header files and static libraries for code development
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-devel_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-devel_bin = %{version}-%{release}
 %description devel
 Header files and static libraries for code development
 %files devel
@@ -381,8 +381,8 @@ Header files and static libraries for code development
 %package camac
 Summary: Support for CAMAC devices
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-camac_bin = %{version}-%{release}
-Requires: mdsplus%{rflavor}-kernel = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-camac_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description camac
 Support for accessing CAMAC devices
 %files camac
@@ -413,7 +413,7 @@ ldconfig >/dev/null 2>&1
 %package kernel
 Summary: MDSplus core system
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-kernel_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel_bin = %{version}-%{release}
 %description kernel
 Core applications, libraries and configuration files
 %files kernel
@@ -612,8 +612,8 @@ MDSplus/EPICS integration
 %package rfxdevices
 Summary: Support for RFX data acquisition devices
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-java = %{version}-%{release}
-Requires: mdsplus%{rflavor}-python = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-java = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-python = %{version}-%{release}
 %description rfxdevices
 Support for RFX Data acquisition devices
 %files rfxdevices
@@ -645,7 +645,7 @@ Support for KBSI Data acquisition devices
 %package matlab
 Summary: Mathworks MATLAB extensions
 BuildArch: noarch
-Requires: mdsplus%{rflavor}-java = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-java = %{version}-%{release}
 %description matlab
 Mathworks MATLAB extensions
 %files matlab
@@ -655,7 +655,7 @@ Mathworks MATLAB extensions
 ################### Python Interface #############################
 %package python
 Summary: Python interface to MDSplus
-requires: mdsplus%{rflavor}-kernel,python,numpy,python-ctypes
+requires: mdsplus%{?rflavor}-kernel,python,numpy,python-ctypes
 BuildArch: noarch
 %description python
 Python interface to MDSplus
