@@ -423,7 +423,7 @@ Core applications, libraries and configuration files
 /usr/local/mdsplus/MDSplus-License.txt
 /usr/local/mdsplus/ChangeLog
 /usr/local/mdsplus/etc
-/usr/local/mdsplus/share
+/usr/local/mdsplus/man
 /usr/local/mdsplus/rpm
 /usr/local/mdsplus/setup.csh
 /usr/local/mdsplus/setup.sh
