@@ -79,7 +79,7 @@ def processChanges(flavor):
 #      Checkout the source and make a source tarball and if successful tag the new release
     status=subprocess.Popen("""
 rm -Rf /tmp/mdsplus-*
-cvs -Q co -d %(src)s -r %(branch)s mdsplus
+cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
 if ( tar zvhcf $SRCDIR/%(src)s.tgz --exclude-vcs %(src)s )
 then
   cd %(src)s
