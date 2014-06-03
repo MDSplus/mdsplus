@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 %global _missing_build_ids_terminate_build 0
 Name: mdsplus%{?rflavor}
 Version: %{version}
