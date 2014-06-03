@@ -1,4 +1,4 @@
-%_missing_build_ids_terminate_build 0
+%global _missing_build_ids_terminate_build 0
 Name: mdsplus%{?rflavor}
 Version: %{version}
 Release: %{release_num}%{dist}
