@@ -41,13 +41,6 @@ required packages automatically.
 %prep
 %setup -q -n mdsplus%{?rflavor}-%{version}-%{release_num}
 
-%ifarch x86_64
-%define gsi_bits 64
-%else
-%define gsi_bits 32
-%endif
-
-
 %build
 
 ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus \
@@ -57,7 +50,7 @@ required packages automatically.
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
 	    --with-idl=$IDL_DIR \
-	    --with-gsi=/usr:gcc%{gsi_bits} \
+	    --with-gsi=/usr:gcc%{BITS} \
             --host=%{_arch}-linux
 %__make clean
 env LANG=en_US.UTF-8 %__make
@@ -67,13 +60,8 @@ env LANG=en_US.UTF-8 %__make
 pyflavor=%{?rflavor}
 pyflavor=${pyflavor:1}-
 env MDSPLUS_VERSION="${pyflavor}%{version}.%{release}" %__make install
-%ifarch x86_64
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib64
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin64
-%else
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib32
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin32
-%endif
+%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib%{BITS}
+%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin%{BITS}
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 cp ${WORKSPACE}/RPM-GPG-KEY-MDSplus $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
