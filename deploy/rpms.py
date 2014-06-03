@@ -100,6 +100,7 @@ skip_if_unavailable=1
         if subprocess.Popen("""
 sudo yum remove -y 'mdsplus*' 
 sudo yum-config-manager --add-repo test-mdsplus%(rflavor)s.repo &&
+sudo yum-config-manager --enable test-mdsplus%(rflavor)s >/dev/null
 sudo yum clean metadata &&
 sudo yum makecache""" % self.info,shell=True).wait() != 0:
             errors.append("Erro preparing repository")
