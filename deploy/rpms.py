@@ -48,6 +48,7 @@ mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
 ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
 rpmbuild -bb  \
   -D 'DIST %(DIST)s' \
+  -D 'BITS 64' \
   -D '_topdir %(workspace)s/%(flavor)s' \
   -D 'version %(major)d.%(minor)d' \
   -D 'release_num %(release)d' \
@@ -55,6 +56,7 @@ rpmbuild -bb  \
   -D 'flavor %(flavor)s' rpm.spec && \
 rpmbuild -bb  \
   -D 'DIST %(DIST)s' \
+  -D 'BITS 32' \
   -D '_topdir %(workspace)s/%(flavor)s' \
   -D 'version %(major)d.%(minor)d' \
   -D 'release_num %(release)d' \

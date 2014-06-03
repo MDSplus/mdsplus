@@ -74,7 +74,7 @@ def processChanges(flavor):
     status=subprocess.Popen("""
 rm -Rf /tmp/mdsplus-*
 cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
-if ( tar zhcf /repository/SOURCES/%(src)s.tgz --exclude-vcs %(src)s )
+if ( tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s )
 then
   cd %(src)s
   cvs -Q tag %(tag)s

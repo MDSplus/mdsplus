@@ -1,3 +1,4 @@
+%define debug_package %{nil}
 %global _missing_build_ids_terminate_build 0
 Name: mdsplus%{?rflavor}
 Version: %{version}
@@ -40,13 +41,6 @@ required packages automatically.
 %prep
 %setup -q -n mdsplus%{?rflavor}-%{version}-%{release_num}
 
-%ifarch x86_64
-%define gsi_bits 64
-%else
-%define gsi_bits 32
-%endif
-
-
 %build
 
 ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus \
@@ -56,7 +50,7 @@ required packages automatically.
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
 	    --with-idl=$IDL_DIR \
-	    --with-gsi=/usr:gcc%{gsi_bits} \
+	    --with-gsi=/usr:gcc%{BITS} \
             --host=%{_arch}-linux
 %__make clean
 env LANG=en_US.UTF-8 %__make
@@ -66,13 +60,8 @@ env LANG=en_US.UTF-8 %__make
 pyflavor=%{?rflavor}
 pyflavor=${pyflavor:1}-
 env MDSPLUS_VERSION="${pyflavor}%{version}.%{release}" %__make install
-%ifarch x86_64
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib64
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin64
-%else
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib32
-%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin32
-%endif
+%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib%{BITS}
+%__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin%{BITS}
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
 mkdir -p $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
 cp ${WORKSPACE}/RPM-GPG-KEY-MDSplus $RPM_BUILD_ROOT/etc/pki/rpm-gpg/
@@ -104,6 +93,7 @@ EOF
 ######################### JAVA APPS ###############################
 %package java
 Summary: Java Applications
+Group: Applications/Archiving
 BuildArch: noarch
 requires: mdsplus%{?rflavor}-java_bin = %{version}-%{release}
 %description java
@@ -129,6 +119,7 @@ fi
 
 %package java_bin
 Summary: Java Applications
+Group: Applications/Archiving
 %description java_bin
 Java applications and classes
 %files java_bin
@@ -147,6 +138,7 @@ fi
 ################ MIT Devices ###################################
 %package mitdevices
 Summary: Support for MIT data acquisition devices
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-python = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-mitdevices_bin = %{version}-%{release}
@@ -170,6 +162,7 @@ fi
 
 %package mitdevices_bin
 Summary: Support for MIT data acquisition devices
+Group: Applications/Archiving
 %description mitdevices_bin
 Support for MIT Data acquisition devices
 %files mitdevices_bin
@@ -186,6 +179,7 @@ ldconfig >/dev/null 2>&1
 ############## IDL #############################################
 %package idl
 Summary: ITT IDL extensions
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-idl_bin = %{version}-%{release} 
 %description idl
@@ -197,6 +191,7 @@ IDL (ITT Interactive Data Language) extensions for MDSplus
 
 %package idl_bin
 Summary: ITT IDL extensions
+Group: Applications/Archiving
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description idl_bin
 IDL (ITT Interactive Data Language) extensions for MDSplus
@@ -212,6 +207,7 @@ ldconfig >/dev/null 2>&1
 ############## Globus Security ################################
 %package gsi
 Summary: Support for secure MDSplus and Fusiongrid
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-gsi_bin = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
@@ -223,6 +219,7 @@ Support for secure MDSplus and Fusiongrid
 
 %package gsi_bin
 Summary: Support for secure MDSplus and Fusiongrid
+Group: Applications/Archiving
 %description gsi_bin
 Support for secure MDSplus and Fusiongrid
 %files gsi_bin
@@ -250,6 +247,7 @@ fi
 ####################### LabView ##############################
 %package labview
 Summary: National Instruments Labview extensions
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-labview_bin = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
@@ -261,6 +259,7 @@ National Instruments Labview interface to MDSplus
 
 %package labview_bin
 Summary: National Instruments Labview extensions
+Group: Applications/Archiving
 %description labview_bin
 National Instruments Labview interface to MDSplus
 %files labview_bin
@@ -271,6 +270,7 @@ National Instruments Labview interface to MDSplus
 ##################### Motif APPS #############################
 %package motif
 Summary: X-Windows Motif based application
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-motif_bin = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
@@ -296,6 +296,7 @@ fi
 
 %package motif_bin
 Summary: X-Windows Motif based application
+Group: Applications/Archiving
 %description motif_bin
 X-Windows applications which use the Motif window system. This package provides the following applications:
 dwscope, dwpad, traverser, actions, actmon
@@ -332,6 +333,7 @@ fi
 ################## HDF5 APPS
 %package hdf5
 Summary: MDSplus/HDF5 integration
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-hdf5_bin = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
@@ -343,6 +345,7 @@ MDSplus/HDF5 integration
 
 %package hdf5_bin
 Summary: MDSplus/HDF5 integration
+Group: Applications/Archiving
 %description hdf5_bin
 MDSplus/HDF5 integration
 %files hdf5_bin
@@ -361,6 +364,7 @@ ldconfig >/dev/null 2>&1
 ################# Development Files ##########################
 %package devel
 Summary: Header files and static libraries for code development
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-devel_bin = %{version}-%{release}
 %description devel
@@ -371,6 +375,7 @@ Header files and static libraries for code development
 
 %package devel_bin
 Summary: Header files and static libraries for code development
+Group: Applications/Archiving
 %description devel_bin
 Header files and static libraries for code development
 %files devel_bin
@@ -381,6 +386,7 @@ Header files and static libraries for code development
 ################# CAMAC Support ##############################
 %package camac
 Summary: Support for CAMAC devices
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-camac_bin = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
@@ -393,6 +399,7 @@ Support for accessing CAMAC devices
 
 %package camac_bin
 Summary: Support for CAMAC devices
+Group: Applications/Archiving
 %description camac_bin
 Support for accessing CAMAC devices
 %files camac_bin
@@ -413,6 +420,7 @@ ldconfig >/dev/null 2>&1
 ####################### MDSplus Kernel ###########################
 %package kernel
 Summary: MDSplus core system
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-kernel_bin = %{version}-%{release}
 %description kernel
@@ -495,6 +503,7 @@ fi
 
 %package kernel_bin
 Summary: MDSplus core system
+Group: Applications/Archiving
 %description kernel_bin
 Core applications, libraries and configuration files
 %files kernel_bin
@@ -587,6 +596,7 @@ fi
 ################### Microsoft SQL Server connection ############
 %package mssql
 Summary: Interface to mssql databases
+Group: Applications/Archiving
 %description mssql
 Interface to mssql databases
 %files mssql
@@ -602,6 +612,7 @@ ldconfig >/dev/null 2>&1
 ################### EPICS Interface Configuration files ############
 %package epics
 Summary: MDSplus/EPICS integration
+Group: Applications/Archiving
 BuildArch: noarch
 %description epics
 MDSplus/EPICS integration
@@ -612,6 +623,7 @@ MDSplus/EPICS integration
 ################### RFX Device Support #############################
 %package rfxdevices
 Summary: Support for RFX data acquisition devices
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-java = %{version}-%{release}
 Requires: mdsplus%{?rflavor}-python = %{version}-%{release}
@@ -625,6 +637,7 @@ Support for RFX Data acquisition devices
 ################## PHP CGI Support ##############################
 %package php
 Summary: php interface to MDSplus
+Group: Applications/Archiving
 BuildArch: noarch
 %description php
 php interface to MDSplus
@@ -635,6 +648,7 @@ php interface to MDSplus
 ################### KBSI Device Support ###########################
 %package kbsidevices
 Summary: Support for KBSI data acquisition devices
+Group: Applications/Archiving
 BuildArch: noarch
 %description kbsidevices
 Support for KBSI Data acquisition devices
@@ -645,6 +659,7 @@ Support for KBSI Data acquisition devices
 #################### MATLAB Interface #############################
 %package matlab
 Summary: Mathworks MATLAB extensions
+Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-java = %{version}-%{release}
 %description matlab
@@ -656,6 +671,7 @@ Mathworks MATLAB extensions
 ################### Python Interface #############################
 %package python
 Summary: Python interface to MDSplus
+Group: Applications/Archiving
 requires: mdsplus%{?rflavor}-kernel,python,numpy,python-ctypes
 BuildArch: noarch
 %description python
@@ -679,6 +695,7 @@ fi
 ######################## D3D Data Interface ########################
 %package d3d
 Summary: TDI functions used at D3D experiment at General Atomics
+Group: Applications/Archiving
 BuildArch: noarch
 %description d3d
 TDI functions used at the D3D experiment at General Atomics.
@@ -689,6 +706,7 @@ TDI functions used at the D3D experiment at General Atomics.
 ####################### Yum Repository Setup ############################
 %package repo
 Summary: Yum Repository Setup
+Group: Applications/Archiving
 Prefix: /
 Summary: MDSplus Data Acquisition System
 AutoReqProv: no
