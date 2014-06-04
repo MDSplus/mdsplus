@@ -44,10 +44,10 @@ class InstallationPackage(object):
         else:
             self.info['D_RFLAVOR']="--define='rflavor %(rflavor)s'" % self.info
         cmds="""
-mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
-ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
-if [ "%(DIST)s" != "el5" ] \
-then \
+mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS}
+ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/
+if [ "%(DIST)s" != "el5" ]
+then
   rpmbuild -bb  \
   --define='DIST %(DIST)s' \
   --define='BITS 64' \
@@ -67,8 +67,8 @@ then \
   %(D_RFLAVOR)s \
   --define='flavor %(flavor)s' \
   --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
-  --target=i686-linux rpm.spec \
-else \
+  --target=i686-linux rpm.spec \n
+else
   rpmbuild -bb  \
   --define='do_noarch 0' \
   --define='DIST %(DIST)s' \
@@ -101,7 +101,7 @@ else \
   %(D_RFLAVOR)s \
   --define='flavor %(flavor)s' \
   --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
-  --target=x86_64-linux rpm.spec \
+  --target=x86_64-linux rpm.spec
 fi
 """ % self.info
         print(cmds)
