@@ -42,27 +42,29 @@ class InstallationPackage(object):
         if len(self.info['rflavor'])==0:
             self.info['D_RFLAVOR']=""
         else:
-            self.info['D_RFLAVOR']="-D 'rflavor %(rflavor)s'" % self.info
+            self.info['D_RFLAVOR']="--define='rflavor %(rflavor)s'" % self.info
         if subprocess.Popen("""
 mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
 ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
 rpmbuild -bb  \
-  -D 'DIST %(DIST)s' \
-  -D 'BITS 64' \
-  -D '_topdir %(workspace)s/%(flavor)s' \
-  -D 'mdsplus_version %(major)d.%(minor)d' \
-  -D 'mdsplus_release %(release)d' \
+  --define='DIST %(DIST)s' \
+  --define='BITS 64' \
+  --define='_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
   %(D_RFLAVOR)s \
-  -D 'flavor %(flavor)s' \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
   --target=x86_64-linux rpm.spec && \
 rpmbuild -bb  \
-  -D 'DIST %(DIST)s' \
-  -D 'BITS 32' \
-  -D '_topdir %(workspace)s/%(flavor)s' \
-  -D 'mdsplus_version %(major)d.%(minor)d' \
-  -D 'mdsplus_release %(release)d' \
+  --define='DIST %(DIST)s' \
+  --define='BITS 32' \
+  --define '_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
   %(D_RFLAVOR)s \
-  -D 'flavor %(flavor)s' \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
   --target=i686-linux rpm.spec
 """ % self.info,shell=True).wait() != 0:
             sys.stdout.flush()
