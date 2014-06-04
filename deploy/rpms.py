@@ -43,7 +43,43 @@ class InstallationPackage(object):
             self.info['D_RFLAVOR']=""
         else:
             self.info['D_RFLAVOR']="--define='rflavor %(rflavor)s'" % self.info
-        if subprocess.Popen("""
+        if "el5" in self.info['DIST']:
+            cmds="""
+mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
+ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
+rpmbuild -bb  \
+  --define='DIST %(DIST)s' \
+  --define='BITS 64' \
+  --define='_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
+  %(D_RFLAVOR)s \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
+  --target=x86_64-linux rpm_el5_bin.spec && \
+rpmbuild -bb  \
+  --define='DIST %(DIST)s' \
+  --define='BITS 32' \
+  --define '_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
+  %(D_RFLAVOR)s \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
+  --target=i686-linux rpm_el5_bin.spec && \
+rpmbuild -bb  \
+  --define='DIST %(DIST)s' \
+  --define='BITS 32' \
+  --define '_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
+  %(D_RFLAVOR)s \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
+  --target=i686-linux rpm_el5_noarch.spec
+""" % self.info
+        else:
+            cmds="""
 mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
 ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
 rpmbuild -bb  \
@@ -66,7 +102,8 @@ rpmbuild -bb  \
   --define='flavor %(flavor)s' \
   --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
   --target=i686-linux rpm.spec
-""" % self.info,shell=True).wait() != 0:
+""" % self.info
+        if subprocess.Popen(cmds,shell=True).wait() != 0:
             sys.stdout.flush()
             raise Exception("Problem building %s rpms" % self.info['flavor'])
         try:
