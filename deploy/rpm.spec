@@ -32,8 +32,6 @@ requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 #requires: mdsplus%{?rflavor}-d3d = %{version}-%{release}
 #requires: mdsplus%{?rflavor}-mssql = %{version}-%{release}
 
-%define do_noarch %{?do_noarch:1}
-%define do_bin %{?do_bin:1}
 %description
 The top level MDSplus installation package. Install this package only if you want all
 of the MDSplus packages installed on your system. Otherwise select only the packages
@@ -48,11 +46,11 @@ required packages automatically.
 ./configure --prefix=$RPM_BUILD_ROOT/usr/local/mdsplus \
             --exec_prefix=$RPM_BUILD_ROOT/usr/local/mdsplus \
             --enable-nodebug \
-            --enable-mdsip_connections \
+	    --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
-            --with-idl=$IDL_DIR \
-            --with-gsi=/usr:gcc%{BITS} \
+	    --with-idl=$IDL_DIR \
+	    --with-gsi=/usr:gcc%{BITS} \
             --host=%{_arch}-linux
 %__make clean
 env LANG=en_US.UTF-8 %__make
@@ -93,7 +91,6 @@ EOF
 %defattr(-,root,root)
 
 ######################### JAVA APPS ###############################
-%if %do_noarch
 %package java
 Summary: Java Applications
 Group: Applications/Archiving
@@ -119,8 +116,7 @@ if [ "$1" == "0" ]
 then
  %__rm -f /usr/share/applications/mdsplus/java 2>/dev/null
 fi
-%endif
-%if %do_bin
+
 %package java_bin
 Summary: Java Applications
 Group: Applications/Archiving
@@ -138,9 +134,8 @@ then
  %__rm -f /usr/share/applications/mdsplus/java 2>/dev/null
  ldconfig >/dev/null 2>&1
 fi
-%endif
+
 ################ MIT Devices ###################################
-%if %do_noarch
 %package mitdevices
 Summary: Support for MIT data acquisition devices
 Group: Applications/Archiving
@@ -164,9 +159,7 @@ if [ "$1" == "0" ]
 then
   %__rm -Rf %{python_sitearch}/MitDevices*
 fi
-%endif
 
-%if %do_bin
 %package mitdevices_bin
 Summary: Support for MIT data acquisition devices
 Group: Applications/Archiving
@@ -182,9 +175,7 @@ Support for MIT Data acquisition devices
 ldconfig >/dev/null 2>&1
 %postun mitdevices_bin
 ldconfig >/dev/null 2>&1
-%endif
 
-%if %do_noarch
 ############## IDL #############################################
 %package idl
 Summary: ITT IDL extensions
@@ -197,9 +188,7 @@ IDL (ITT Interactive Data Language) extensions for MDSplus
 %defattr(-,root,root)
 /usr/local/mdsplus/idl
 %exclude /usr/local/mdsplus/idl/camac
-%endif
 
-%if %do_bin
 %package idl_bin
 Summary: ITT IDL extensions
 Group: Applications/Archiving
@@ -214,9 +203,7 @@ IDL (ITT Interactive Data Language) extensions for MDSplus
 ldconfig >/dev/null 2>&1
 %postun idl_bin
 ldconfig >/dev/null 2>&1
-%endif
 
-%if %do_noarch
 ############## Globus Security ################################
 %package gsi
 Summary: Support for secure MDSplus and Fusiongrid
@@ -229,9 +216,7 @@ Support for secure MDSplus and Fusiongrid
 %files gsi
 %defattr(-,root,root)
 /usr/local/mdsplus/tdi/roam
-%endif
 
-%if %do_bin
 %package gsi_bin
 Summary: Support for secure MDSplus and Fusiongrid
 Group: Applications/Archiving
@@ -258,9 +243,7 @@ then
   fi
 fi
 /sbin/service xinetd reload
-%endif
 
-%if %do_noarch
 ####################### LabView ##############################
 %package labview
 Summary: National Instruments Labview extensions
@@ -273,9 +256,7 @@ National Instruments Labview interface to MDSplus
 %files labview
 %defattr(-,root,root)
 /usr/local/mdsplus/LabView
-%endif
 
-%if %do_bin
 %package labview_bin
 Summary: National Instruments Labview extensions
 Group: Applications/Archiving
@@ -285,9 +266,7 @@ National Instruments Labview interface to MDSplus
 %defattr(-,root,root)
 /usr/local/mdsplus/lib??/*LV*
 %exclude /usr/local/mdsplus/lib??/*.a
-%endif
 
-%if %do_noarch
 ##################### Motif APPS #############################
 %package motif
 Summary: X-Windows Motif based application
@@ -314,8 +293,7 @@ if [ "$1" == "0" ]
 then
   %__rm -f /usr/share/applications/mdsplus/motif 2>/dev/null
 fi
-%endif
-%if %do_bin
+
 %package motif_bin
 Summary: X-Windows Motif based application
 Group: Applications/Archiving
@@ -351,9 +329,7 @@ if [ "$1" == "0" ]
 then
   ldconfig >/dev/null 2>&1
 fi
-%endif
 
-%if %do_noarch
 ################## HDF5 APPS
 %package hdf5
 Summary: MDSplus/HDF5 integration
@@ -366,9 +342,7 @@ MDSplus/HDF5 integration
 %files hdf5
 %defattr(-,root,root)
 /usr/local/mdsplus/tdi/hdf5
-%endif
 
-%if %do_bin
 %package hdf5_bin
 Summary: MDSplus/HDF5 integration
 Group: Applications/Archiving
@@ -385,9 +359,8 @@ MDSplus/HDF5 integration
 ldconfig >/dev/null 2>&1
 %postun hdf5_bin
 ldconfig >/dev/null 2>&1
-%endif
 
-%if %do_noarch
+
 ################# Development Files ##########################
 %package devel
 Summary: Header files and static libraries for code development
@@ -399,9 +372,7 @@ Header files and static libraries for code development
 %files devel
 %defattr(-,root,root)
 /usr/local/mdsplus/include
-%endif
 
-%if %do_bin
 %package devel_bin
 Summary: Header files and static libraries for code development
 Group: Applications/Archiving
@@ -410,9 +381,8 @@ Header files and static libraries for code development
 %files devel_bin
 %defattr(-,root,root)
 /usr/local/mdsplus/lib??/*.a
-%endif
 
-%if %do_noarch
+
 ################# CAMAC Support ##############################
 %package camac
 Summary: Support for CAMAC devices
@@ -426,9 +396,7 @@ Support for accessing CAMAC devices
 %defattr(-,root,root)
 /usr/local/mdsplus/idl/camac
 /usr/local/mdsplus/tdi/camac
-%endif
 
-%if %do_bin
 %package camac_bin
 Summary: Support for CAMAC devices
 Group: Applications/Archiving
@@ -447,9 +415,8 @@ Support for accessing CAMAC devices
 ldconfig >/dev/null 2>&1
 %postun camac_bin
 ldconfig >/dev/null 2>&1
-%endif
 
-%if %do_noarch
+
 ####################### MDSplus Kernel ###########################
 %package kernel
 Summary: MDSplus core system
@@ -533,19 +500,7 @@ if [ "$1" == "0" ]
 then
   %__rm -Rf $RPM_INSTALL_PREFIX/mdsplus/{desktop,pixmaps}
 fi
-%triggerin kernel -- xinetd
-if [ ! -r /etx/xinetd.d/mdsip ]
-then
-  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
-  if ( ! grep '^mdsip[[:space:]]' /etc/services >/dev/null 2>&1)
-  then
-    echo 'mdsip 8000/tcp # MDSplus mdsip service' >> /etc/services
-  fi
-fi
-/sbin/service xinetd reload
-%endif
 
-%if %do_bin
 %package kernel_bin
 Summary: MDSplus core system
 Group: Applications/Archiving
@@ -581,7 +536,6 @@ Core applications, libraries and configuration files
 %exclude /usr/local/mdsplus/lib??/libhdf5*
 %exclude /usr/local/mdsplus/bin??/hdf5*
 %exclude /usr/local/mdsplus/bin??/*HDF5
-
 %post kernel_bin
 if [ -d /etc/ld.so.conf.d ]
 then
@@ -628,9 +582,17 @@ then
   %__rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null 
   ldconfig
 fi
-%endif
+%triggerin kernel_bin -- xinetd
+if [ ! -r /etx/xinetd.d/mdsip ]
+then
+  cp $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+  if ( ! grep '^mdsip[[:space:]]' /etc/services >/dev/null 2>&1)
+  then
+    echo 'mdsip 8000/tcp # MDSplus mdsip service' >> /etc/services
+  fi
+fi
+/sbin/service xinetd reload
 
-%if %do_bin
 ################### Microsoft SQL Server connection ############
 %package mssql
 Summary: Interface to mssql databases
@@ -645,9 +607,8 @@ Interface to mssql databases
 ldconfig >/dev/null 2>&1
 %postun mssql
 ldconfig >/dev/null 2>&1
-%endif
 
-%if %do_noarch
+
 ################### EPICS Interface Configuration files ############
 %package epics
 Summary: MDSplus/EPICS integration
@@ -658,9 +619,7 @@ MDSplus/EPICS integration
 %files epics
 %defattr(-,root,root)
 /usr/local/mdsplus/epics
-%endif
 
-%if %do_noarch
 ################### RFX Device Support #############################
 %package rfxdevices
 Summary: Support for RFX data acquisition devices
@@ -674,9 +633,7 @@ Support for RFX Data acquisition devices
 %defattr(-,root,root)
 /usr/local/mdsplus/tdi/RfxDevices
 /usr/local/mdsplus/java/classes/jDevices.jar
-%endif
 
-%if %do_noarch
 ################## PHP CGI Support ##############################
 %package php
 Summary: php interface to MDSplus
@@ -687,9 +644,7 @@ php interface to MDSplus
 %files php
 %defattr(-,root,root)
 /usr/local/mdsplus/php
-%endif
 
-%if %do_noarch
 ################### KBSI Device Support ###########################
 %package kbsidevices
 Summary: Support for KBSI data acquisition devices
@@ -700,9 +655,7 @@ Support for KBSI Data acquisition devices
 %files kbsidevices
 %defattr(-,root,root)
 /usr/local/mdsplus/tdi/KbsiDevices
-%endif
 
-%if %do_noarch
 #################### MATLAB Interface #############################
 %package matlab
 Summary: Mathworks MATLAB extensions
@@ -714,9 +667,7 @@ Mathworks MATLAB extensions
 %files matlab
 %defattr(-,root,root)
 /usr/local/mdsplus/matlab
-%endif
 
-%if %do_noarch
 ################### Python Interface #############################
 %package python
 Summary: Python interface to MDSplus
@@ -740,9 +691,7 @@ if [ "$1" == "0" ]
 then
   %__rm -Rf %{python_sitelib}/MDSplus-*
 fi
-%endif
 
-%if %do_noarch
 ######################## D3D Data Interface ########################
 %package d3d
 Summary: TDI functions used at D3D experiment at General Atomics
@@ -753,13 +702,10 @@ TDI functions used at the D3D experiment at General Atomics.
 %files d3d
 %defattr(-,root,root)
 /usr/local/mdsplus/tdi/d3d
-%endif
 
-%if %do_noarch
 ####################### Yum Repository Setup ############################
 %package repo
 Summary: Yum Repository Setup
-BuildArch: noarch
 Group: Applications/Archiving
 Prefix: /
 Summary: MDSplus Data Acquisition System
@@ -774,4 +720,4 @@ MDSplus Yum repository setup
 dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2>/dev/null)
 %postun repo
 nohup rpm -e gpg-pubkey-b09cb563 >dev/null 2>&1 &
-%endif
+
