@@ -1,10 +1,10 @@
 %define debug_package %{nil}
 %global _missing_build_ids_terminate_build 0
 Name: mdsplus%{?rflavor}
-Version: %{version}
-Release: %{release_num}%{dist}
+Version: %{mdsplus_version}
+Release: %{mdsplus_release}%{dist}
 License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
-Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%{?rflavor}-%{version}-%{release_num}.tgz
+Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%{?rflavor}-%{mdsplus_version}-%{mdsplus_release}.tgz
 URL: http://www.mdsplus.org
 Vendor: Massachusetts Institute of Technology
 Packager: Plasma Science and Fusion Center <mdsplus@www.mdsplus.org>
@@ -39,7 +39,7 @@ that you need such as mdsplus-python or mdsplus-java which will pull in any othe
 required packages automatically.
 
 %prep
-%setup -q -n mdsplus%{?rflavor}-%{version}-%{release_num}
+%setup -q -n mdsplus%{?rflavor}-%{mdsplus_version}-%{mdsplus_release}
 
 %build
 

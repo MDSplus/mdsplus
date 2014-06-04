@@ -50,16 +50,17 @@ rpmbuild -bb  \
   -D 'DIST %(DIST)s' \
   -D 'BITS 64' \
   -D '_topdir %(workspace)s/%(flavor)s' \
-  -D 'version %(major)d.%(minor)d' \
-  -D 'release_num %(release)d' \
+  -D 'mdsplus_version %(major)d.%(minor)d' \
+  -D 'mdsplus_release %(release)d' \
   %(D_RFLAVOR)s \
-  -D 'flavor %(flavor)s' rpm.spec && \
+  -D 'flavor %(flavor)s' \
+  --target=x86_64-linux rpm.spec && \
 rpmbuild -bb  \
   -D 'DIST %(DIST)s' \
   -D 'BITS 32' \
   -D '_topdir %(workspace)s/%(flavor)s' \
-  -D 'version %(major)d.%(minor)d' \
-  -D 'release_num %(release)d' \
+  -D 'mdsplus_version %(major)d.%(minor)d' \
+  -D 'mdsplus_release %(release)d' \
   %(D_RFLAVOR)s \
   -D 'flavor %(flavor)s' \
   --target=i686-linux rpm.spec
