@@ -96,7 +96,7 @@ EOF
 Summary: Java Applications
 Group: Applications/Archiving
 BuildArch: noarch
-requires: mdsplus%{?rflavor}-java_bin = %{version}-%{release}
+requires: mdsplus%{?rflavor}-java_bin = %{version}-%{release}.%{_arch}
 %description java
 Java applications and classes
 %files java
@@ -125,7 +125,7 @@ Summary: Support for MIT data acquisition devices
 Group: Applications/Archiving
 BuildArch: noarch
 Requires: mdsplus%{?rflavor}-python = %{version}-%{release}
-Requires: mdsplus%{?rflavor}-mitdevices_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-mitdevices_bin = %{version}-%{release}.%{_arch}
 %description mitdevices
 Support for MIT Data acquisition devices
 %files mitdevices
@@ -149,7 +149,7 @@ fi
 Summary: ITT IDL extensions
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-idl_bin = %{version}-%{release} 
+Requires: mdsplus%{?rflavor}-idl_bin = %{version}-%{release}.%{_arch} 
 %description idl
 IDL (ITT Interactive Data Language) extensions for MDSplus
 %files idl
@@ -162,7 +162,7 @@ IDL (ITT Interactive Data Language) extensions for MDSplus
 Summary: Support for secure MDSplus and Fusiongrid
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-gsi_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-gsi_bin = %{version}-%{release}.%{_arch}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description gsi
 Support for secure MDSplus and Fusiongrid
@@ -175,7 +175,7 @@ Support for secure MDSplus and Fusiongrid
 Summary: National Instruments Labview extensions
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-labview_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-labview_bin = %{version}-%{release}.%{_arch}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description labview
 National Instruments Labview interface to MDSplus
@@ -188,7 +188,7 @@ National Instruments Labview interface to MDSplus
 Summary: X-Windows Motif based application
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-motif_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-motif_bin = %{version}-%{release}.%{_arch}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description motif
 X-Windows applications which use the Motif window system. This package provides the following applications:
@@ -216,7 +216,7 @@ fi
 Summary: MDSplus/HDF5 integration
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-hdf5_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-hdf5_bin = %{version}-%{release}.%{_arch}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description hdf5
 MDSplus/HDF5 integration
@@ -229,7 +229,7 @@ MDSplus/HDF5 integration
 Summary: Header files and static libraries for code development
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-devel_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-devel_bin = %{version}-%{release}.%{_arch}
 %description devel
 Header files and static libraries for code development
 %files devel
@@ -241,7 +241,7 @@ Header files and static libraries for code development
 Summary: Support for CAMAC devices
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-camac_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-camac_bin = %{version}-%{release}.%{_arch}
 Requires: mdsplus%{?rflavor}-kernel = %{version}-%{release}
 %description camac
 Support for accessing CAMAC devices
@@ -255,7 +255,7 @@ Support for accessing CAMAC devices
 Summary: MDSplus core system
 Group: Applications/Archiving
 BuildArch: noarch
-Requires: mdsplus%{?rflavor}-kernel_bin = %{version}-%{release}
+Requires: mdsplus%{?rflavor}-kernel_bin = %{version}-%{release}.%{_arch}
 %description kernel
 Core applications, libraries and configuration files
 %files kernel
