@@ -46,7 +46,9 @@ class InstallationPackage(object):
         if subprocess.Popen("""
 mkdir -p %(workspace)s/%(flavor)s/{BUILD,RPMS,SPECS,SRPMS} && \
 ln -sf /repository/SOURCES %(workspace)s/%(flavor)s/ && \
-rpmbuild -bb  \
+if [ "%(DIST)s" != "el5" ] \
+then \
+  rpmbuild -bb  \
   --define='DIST %(DIST)s' \
   --define='BITS 64' \
   --define='_topdir %(workspace)s/%(flavor)s' \
@@ -56,7 +58,7 @@ rpmbuild -bb  \
   --define='flavor %(flavor)s' \
   --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
   --target=x86_64-linux rpm.spec && \
-rpmbuild -bb  \
+  rpmbuild -bb  \
   --define='DIST %(DIST)s' \
   --define='BITS 32' \
   --define '_topdir %(workspace)s/%(flavor)s' \
@@ -65,7 +67,42 @@ rpmbuild -bb  \
   %(D_RFLAVOR)s \
   --define='flavor %(flavor)s' \
   --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
-  --target=i686-linux rpm.spec
+  --target=i686-linux rpm.spec \
+else \
+  rpmbuild -bb  \
+  --define='do_noarch 0' \
+  --define='DIST %(DIST)s' \
+  --define='BITS 64' \
+  --define='_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
+  %(D_RFLAVOR)s \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
+  --target=x86_64-linux rpm.spec && \
+  rpmbuild -bb  \
+  --define='do_noarch 0' \
+  --define='DIST %(DIST)s' \
+  --define='BITS 32' \
+  --define '_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
+  %(D_RFLAVOR)s \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
+  --target=i686-linux rpm.spec && \
+  rpmbuild -bb  \
+  --define='do_bin 0' \
+  --define='DIST %(DIST)s' \
+  --define='BITS 64' \
+  --define='_topdir %(workspace)s/%(flavor)s' \
+  --define='mdsplus_version %(major)d.%(minor)d' \
+  --define='mdsplus_release %(release)d' \
+  %(D_RFLAVOR)s \
+  --define='flavor %(flavor)s' \
+  --buildroot=%(workspace)s/%(flavor)s/BUILDROOT \
+  --target=x86_64-linux rpm.spec \
+fi
 """ % self.info,shell=True).wait() != 0:
             sys.stdout.flush()
             raise Exception("Problem building %s rpms" % self.info['flavor'])
