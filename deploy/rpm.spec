@@ -59,7 +59,7 @@ env LANG=en_US.UTF-8 %__make
 
 pyflavor=%{?rflavor}
 pyflavor=${pyflavor:1}-
-env MDSPLUS_VERSION="${pyflavor}%{version}.%{release}" %__make install
+env MDSPLUS_VERSION="${pyflavor}%{mdsplus_version}.%{mdsplus_release}" %__make install
 %__mv $RPM_BUILD_ROOT/usr/local/mdsplus/lib $RPM_BUILD_ROOT/usr/local/mdsplus/lib%{BITS}
 %__mv $RPM_BUILD_ROOT/usr/local/mdsplus/bin $RPM_BUILD_ROOT/usr/local/mdsplus/bin%{BITS}
 mkdir -p $RPM_BUILD_ROOT/etc/yum.repos.d
