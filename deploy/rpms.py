@@ -182,6 +182,11 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
 
     def deploy(self):
         """Deploy release to repository"""
-        if subprocess.Popen("rsync -a %(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/" % self.info,shell=True).wait() != 0:
+        if subprocess.Popen("""
+rsync -a %(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
+""" % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
-            pass
+        if subprocess.Popen("""
+python setup.py -q bdist_egg -d /repository/EGGS
+""" % self.info,shell=True,cwd="%s/BUILDROOT/usr/local/mdsplus/mdsobjects/python).wait() != 0:
+            raise Exception("Error deploying python release egg to repository" % self.info)
