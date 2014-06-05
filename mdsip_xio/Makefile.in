@@ -135,8 +135,7 @@ install:
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
 	fi;
 	if [ ! -d $(exec_prefix)/etc ] ; then \
-                @MAKEBINDIR@mkdirhier $(exec_prefix)/etc; \
-                chmod 755 $(exec_prefix)/etc; \
+                $(MKDIR_P) -m 755 $(exec_prefix)/etc; \
         fi;
 	$(INSTALL) -m 755  mdsip.hosts $(exec_prefix)/etc
 

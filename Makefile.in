@@ -106,8 +106,8 @@ CHANGELOG :
 MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php epics
 
 install: 
-	devscripts/mkdirhier @exec_prefix@/local/tdi
-	devscripts/mkdirhier @exec_prefix@/java
+	$(MKDIR_P) @exec_prefix@/local/tdi
+	$(MKDIR_P) @exec_prefix@/java
 	cdir=`pwd`;\
 	set -e; for dir in $(PARTS) ; do\
 	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\

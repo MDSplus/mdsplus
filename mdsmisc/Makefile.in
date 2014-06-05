@@ -36,8 +36,7 @@ clean :
 
 install:
 	if [ ! -d @libdir@ ] ; then \
-                @MAKEBINDIR@mkdirhier @libdir@; \
-                chmod 755 @libdir@; \
+                $(MKDIR_P) -m 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \

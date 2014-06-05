@@ -75,7 +75,7 @@ depend: ; @ :
 
 install:
 	if [ ! -d @exec_prefix@/java/classes ] ; then \
-                @MAKEBINDIR@mkdirhier @exec_prefix@/java/classes ; \
+                $(MKDIR_P) -m 755 @exec_prefix@/java/classes ; \
                 chmod -R 755 @exec_prefix@/java; \
         fi;
 	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jScope.jar @exec_prefix@/java/classes
