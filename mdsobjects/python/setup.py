@@ -29,7 +29,6 @@ def getRelease():
 
 from setuptools import setup, Extension, find_packages
 version,name=getRelease()
-print (version,name)
 setup(name=name,
       version=version,
       description='MDSplus Python Objects',
