@@ -27,7 +27,7 @@ clean :
 	@ $(RM) @MAKEBINDIR@MDSplus2HDF5
 
 install:
-	[ ! -d @libdir@ ] ; then \
+	if [ ! -d @libdir@ ] ; then \
                 $(MKDIR_P) -m 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @libdir@
