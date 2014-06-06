@@ -134,25 +134,6 @@ AS_CASE([$enable_java],
                 AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
-AC_MSG_CHECKING([for use of globus for mdsip])
-AC_ARG_WITH([xio],
-            [AS_HELP_STRING([--with-xio=globus-location:flavor],
-                            [Use globus xio for mdsip communications])],
-            [],
-            [AS_VAR_SET([with_xio], [no])])
-AS_CASE([$with_xio],
-        [no], [AS_VAR_SET([MDSTCPIP], [mdstcpip])],
-        [*pthr*], [AC_MSG_WARN([Do NOT INCLUDE pthr in the globus flavor!])
-                   AS_EXIT],
-        [yes|""], [AC_MSG_WARN([YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option])
-                   AC_MSG_WARN([Format:   --with-xio=globus-install-directory:flavor])
-                   AC_MSG_WARN([Example:  --with-xio=/usr/local/gt3:gcc32dbg])
-                   AC_MSG_WARN([Note: Do not include pthr in the flavor as it is automatically added.])
-                   AS_EXIT],
-        [AS_VAR_SET([MDSTCPIP], ["mdsip_xio roam"])
-         GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-         GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'`])
-AC_MSG_RESULT([$with_xio])
 
 AC_ARG_WITH([gsi],
             [AS_HELP_STRING([--with-gsi=globus-location:flavor],

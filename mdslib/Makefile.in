@@ -3,12 +3,6 @@ include @top_srcdir@/Makefile.inc
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
-ifeq "@MDSTCPIP@" "mdsip_xio"
-include makefile-header
-CFLAGS = $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
-LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) --allow-multiple-definition
-endif
-
 ifeq "@MDSIP_CONNECTIONS@" "yes"
 MdsIpUtil="MdsIpShr"
 else
@@ -87,5 +81,3 @@ MdsLib_client.o : MdsLib.c
 @MAKEBINDIR@dtype_test : dtype_test.c
 	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 
-makefile-header:  
-	@GLOBUS_LOCATION@/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio > makefile-header

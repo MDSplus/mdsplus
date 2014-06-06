@@ -863,7 +863,6 @@ enable_perf
 enable_java
 enable_universal
 with_jdk
-with_xio
 with_gsi
 with_srb
 with_labview
@@ -1543,8 +1542,6 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-jdk=JDKDIR       specify location of java jdk
-  --with-xio=globus-location:flavor
-                          Use globus xio for mdsip communications
   --with-gsi=globus-location:flavor
                           Use globus gsi for mdsip communications
   --with-srb=srb-install-dir
@@ -6837,37 +6834,7 @@ else
   GLOBUSLICENSE_FALSE=
 fi
 
-{ $as_echo "$as_me:$LINENO: checking for use of globus for mdsip" >&5
-$as_echo_n "checking for use of globus for mdsip... " >&6; }
-
-# Check whether --with-xio was given.
-if test "${with_xio+set}" = set; then
-  withval=$with_xio;
-else
-  with_xio=no
-fi
-
-case $with_xio in
-  no) MDSTCPIP=mdstcpip ;;
-  *pthr*) { $as_echo "$as_me:$LINENO: WARNING: Do NOT INCLUDE pthr in the globus flavor!" >&5
-$as_echo "$as_me: WARNING: Do NOT INCLUDE pthr in the globus flavor!" >&2;}
-                   { (exit 1); exit 1; } ;;
-  yes|"") { $as_echo "$as_me:$LINENO: WARNING: YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option" >&5
-$as_echo "$as_me: WARNING: YOU NEED TO PROVIDE GLOBUS_LOCATION and FLAVOR when using the --with-xio option" >&2;}
-                   { $as_echo "$as_me:$LINENO: WARNING: Format:   --with-xio=globus-install-directory:flavor" >&5
-$as_echo "$as_me: WARNING: Format:   --with-xio=globus-install-directory:flavor" >&2;}
-                   { $as_echo "$as_me:$LINENO: WARNING: Example:  --with-xio=/usr/local/gt3:gcc32dbg" >&5
-$as_echo "$as_me: WARNING: Example:  --with-xio=/usr/local/gt3:gcc32dbg" >&2;}
-                   { $as_echo "$as_me:$LINENO: WARNING: Note: Do not include pthr in the flavor as it is automatically added." >&5
-$as_echo "$as_me: WARNING: Note: Do not include pthr in the flavor as it is automatically added." >&2;}
-                   { (exit 1); exit 1; } ;;
-  *) MDSTCPIP="mdsip_xio roam"
-         GLOBUS_LOCATION=`echo $withval | awk -F: '{print $1}'`
-         GLOBUS_FLAVOR=`echo $withval | awk -F: '{print $2}'` ;;
-esac
-
-{ $as_echo "$as_me:$LINENO: result: $with_xio" >&5
-$as_echo "$with_xio" >&6; }
+MDSTCPIP=mdstcpip
 
 
 # Check whether --with-gsi was given.
