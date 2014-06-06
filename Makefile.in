@@ -129,6 +129,7 @@ javadispatcher: javascope javatraverser
 javatraverser: javascope
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
+mdstcpip: tdishr
 mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
 rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
