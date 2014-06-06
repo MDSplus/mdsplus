@@ -932,7 +932,10 @@ private:
 			return false;
 		}
 	public:
-		Compound() {clazz = CLASS_R;}
+		Compound(): ptr(0), length(0) {
+			clazz = CLASS_R;
+		}
+
 		Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			clazz = CLASS_R;
