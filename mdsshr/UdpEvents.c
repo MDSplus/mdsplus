@@ -447,7 +447,7 @@ int MDSUdpEvent(char const * eventName, int bufLen, char const * buf)
 	struct sockaddr_in sin;
 	char *msg, *currPtr;
 	int msgLen, nameLen, actBufLen;
-	int status, error;
+	int status;
 	struct hostent *hp =(struct hostent *) NULL;
 
 	initialize();
@@ -504,8 +504,7 @@ int MDSUdpEvent(char const * eventName, int bufLen, char const * buf)
     {
 		perror("Error sending UDP message!\n");
 #ifdef HAVE_WINDOWS_H
-		error = WSAGetLastError();
-		switch(error)
+		switch(WSAGetLastError())
 		{
 			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
 			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
@@ -527,10 +526,6 @@ int MDSUdpEvent(char const * eventName, int bufLen, char const * buf)
     UnlockMdsShrMutex(&sendEventMutex);
 	return status;
 }
-
-
-
-
 
 
 /**********************
