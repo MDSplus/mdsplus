@@ -160,16 +160,14 @@ static void initialize()
 #ifdef HAVE_WINDOWS_H
 	static int initialized = 0;
 
-		WSADATA wsaData;
-		WORD wVersionRequested;
-		wVersionRequested = MAKEWORD(1,1);
+	WSADATA wsaData;
+	WORD wVersionRequested;
+	wVersionRequested = MAKEWORD(1,1);
 
-		if(!initialized)
-		{
-			initialized = 1;
-			WSAStartup(wVersionRequested,&wsaData);
-		}
-
+	if(!initialized) {
+		initialized = 1;
+		WSAStartup(wVersionRequested,&wsaData);
+	}
 #endif 
 }
 
