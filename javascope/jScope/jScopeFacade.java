@@ -3449,7 +3449,7 @@ class ServerDialog
     JLabel server_label, user_label;
     JTextField server_l, server_a, server_u;
     JCheckBox automatic;
-    JComboBox data_provider_list;
+    JComboBox<String> data_provider_list;
 
     JCheckBox tunneling;
     JTextField tunnel_port;
@@ -3502,8 +3502,7 @@ class ServerDialog
                     server_l.setText(dw.server_ip_list[idx].name);
                     server_a.setText(dw.server_ip_list[idx].argument);
                     server_u.setText(dw.server_ip_list[idx].user);
-                    data_provider_list.setSelectedItem(dw.server_ip_list[idx].
-                        class_name);
+                    data_provider_list.setSelectedItem(dw.server_ip_list[idx].class_name);
                     if (dw.server_ip_list[idx].tunnel_port != null)
                     {
                         if (dw.server_ip_list[idx].tunnel_port.trim().length() ==
@@ -3629,16 +3628,15 @@ class ServerDialog
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
-        data_provider_list = new JComboBox();
+        data_provider_list = new JComboBox<String>();
         gridbag.setConstraints(data_provider_list, c);
         getContentPane().add(data_provider_list);
-        data_provider_list.addActionListener(new ActionListener()
-        {
+        data_provider_list.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 try
                 {
-                    String srv = (String) data_provider_list.getSelectedItem();
+                    String srv = (String)data_provider_list.getSelectedItem();
                     if (srv != null)
                     {
                         Class cl = Class.forName("jScope."+srv);
@@ -3877,8 +3875,7 @@ class ServerDialog
 
                 addServerIp(new DataServerItem(srv, server_a.getText().trim(),
                                                server_u.getText().trim(),
-                                               (String) data_provider_list.
-                                               getSelectedItem(),
+                                               (String)data_provider_list.getSelectedItem(),
                                                null, null, tunnel_port.getText(), false));
             }
         }
@@ -3926,8 +3923,7 @@ class ServerDialog
                     }
                     dw.server_ip_list[idx].argument = server_a.getText().trim();
                     dw.server_ip_list[idx].user = server_u.getText().trim();
-                    dw.server_ip_list[idx].class_name = (String)
-                    data_provider_list.getSelectedItem();
+                    dw.server_ip_list[idx].class_name = (String)data_provider_list.getSelectedItem();
                     dw.server_ip_list[idx].tunnel_port = tunnel_port.getText();
                     server_list.repaint();
                     //It is need to update the current data server if it is
