@@ -318,10 +318,13 @@ static void getMulticastAddr(char const * eventName, char *retIp)
 
 int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
 {
-
     struct sockaddr_in serverAddr;
+#ifdef HAVE_WINDOWS_H
 	char flag = 1;
-	int intFlag = 1;
+#else
+	int flag = 1;
+	int const SOCKET_ERROR = -1;
+#endif
 	int udpSocket;
 	char ipAddress[64]; 
     struct ip_mreq ipMreq;
@@ -344,13 +347,8 @@ int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), vo
     serverAddr.sin_port = htons(getPort());
     serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-//Allow multiple connections
-#ifdef HAVE_WINDOWS_H
-   if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, (const char *)&flag, sizeof(char)) == SOCKET_ERROR)
-#else
-   if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &intFlag, sizeof(int)) < 0)
-#endif
-	{   
+	// Allow multiple connections
+	if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {   
 		printf("Cannot set REUSEADDR option\n");
 #ifdef HAVE_WINDOWS_H
 		error = WSAGetLastError();
