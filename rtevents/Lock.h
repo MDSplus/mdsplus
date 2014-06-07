@@ -9,36 +9,34 @@
 //Class Lock handles a critical section using a unnamed semaphore
 class EXPORT Lock
 {
-
-	UnnamedSemaphore sem;
-	
 public:
 	//Initialize the semaphore structure. If the semaphore is shared among processes
 	//(i.e. the object instance is located in shared memory, initialization is to 
 	//be carried out only once.
-	void initialize()
-	{
+	void initialize() {
 		sem.initialize(1);
 	}
 	
 
-	void dispose()
-	{
+	void dispose() {
 		sem.dispose();
 	}
 	
 	
-	void lock()
-	{
+	void lock() {
 		try {
 			sem.wait();
-		}catch(SystemException *exc) {sem.initialize(0); }
+		} catch(SystemException *exc) {
+			sem.initialize(0);
+		}
 	}
 
-	void unlock()
-	{
+	void unlock() {
 		sem.post();
 	}
+
+private:
+	UnnamedSemaphore sem;
 };
 
 #endif /* MDS_LOCK_H_ */
