@@ -1,5 +1,6 @@
-#ifndef LOCK_H_
-#define LOCK_H_
+#ifndef MDS_LOCK_H_
+#define MDS_LOCK_H_
+
 #include "SystemSpecific.h"
 #include "UnnamedSemaphore.h"
 #include "SystemException.h"
@@ -40,4 +41,4 @@ public:
 	}
 };
 
-#endif /*LOCK_H_*/
+#endif /* MDS_LOCK_H_ */
