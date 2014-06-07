@@ -29,9 +29,9 @@ public class MdsConnection
         public boolean connected;
         int pending_count = 0;
 
-        transient Vector   connection_listener = new Vector<EventItem>();
-        transient boolean  event_flags[]       = new boolean[MAX_NUM_EVENTS];
-        transient Vector<EventItem>   event_list          = new Vector<EventItem>();
+        transient Vector<ConnectionListener> connection_listener = new Vector<ConnectionListener>();
+        transient Vector<EventItem> event_list = new Vector<EventItem>();
+        transient boolean event_flags[] = new boolean[MAX_NUM_EVENTS];
 
         transient Hashtable< String, EventItem > hashEventName = new Hashtable< String, EventItem >();
         transient Hashtable< Integer, EventItem > hashEventId = new Hashtable< Integer, EventItem >();
@@ -45,13 +45,13 @@ public class MdsConnection
         {
             String  name;
             int     eventid;
-            Vector  listener = new Vector();
+            Vector<UpdateEventListener>  listener = new Vector<UpdateEventListener>();
 
             public EventItem (String name, int eventid, UpdateEventListener l)
             {
                 this.name = name;
                 this.eventid = eventid;
-                listener.addElement((Object) l);
+                listener.addElement(l);
             }
 
             public String toString()
@@ -632,7 +632,7 @@ public class MdsConnection
        if( hashEventName.containsKey(eventName) )
        {
            eventItem = hashEventName.get(eventName);
-           if(!eventItem.listener.contains((Object)l))
+           if(!eventItem.listener.contains(l))
                 eventItem.listener.addElement(l);
        }
        else
@@ -687,10 +687,10 @@ public class MdsConnection
 
     private void dispatchUpdateEvent(EventItem eventItem)
     {
-        Vector eventListener = eventItem.listener;
+        Vector<UpdateEventListener> eventListener = eventItem.listener;
         UpdateEvent e = new UpdateEvent(this, eventItem.name);
         for(int i = 0; i < eventListener.size(); i++)
-            ((UpdateEventListener)eventListener.elementAt(i)).processUpdateEvent(e);
+            eventListener.elementAt(i).processUpdateEvent(e);
 
     }
 
@@ -767,7 +767,7 @@ public class MdsConnection
         {
             for(int i = 0; i < connection_listener.size(); i++)
             {
-                ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
+                connection_listener.elementAt(i).processConnectionEvent(e);
             }
         }
     }

@@ -352,11 +352,11 @@ public class WaveformMetrics
         catch(Exception exc) {};
     }
 
-    public Vector ToPolygonsDoubleX(Signal sig, Dimension d)
+    public Vector<Polygon> ToPolygonsDoubleX(Signal sig, Dimension d)
     {
         int i, j, curr_num_points, curr_x, start_x, max_points;
         double max_y, min_y, curr_y;
-        Vector curr_vect = new Vector(5);
+        Vector<Polygon> curr_vect = new Vector<Polygon>(5);
         int xpoints[], ypoints[];
         Polygon curr_polygon = null;
         int pol_idx = 0;
@@ -586,12 +586,12 @@ public class WaveformMetrics
 
         if (sig.getMode1D() == Signal.MODE_STEP)
         {
-            Vector v = new Vector();
+            Vector<Polygon> v = new Vector<Polygon>();
             int x[];
             int y[];
             for (i = 0; i < curr_vect.size(); i++)
             {
-                curr_polygon = (Polygon) curr_vect.elementAt(i);
+                curr_polygon = curr_vect.elementAt(i);
                 int np = curr_polygon.npoints * 2 - 1;
                 x = new int[np];
                 y = new int[np];
@@ -613,7 +613,7 @@ public class WaveformMetrics
         return curr_vect;
     }
 
-    public Vector ToPolygons_OLD(Signal sig, Dimension d)
+    public Vector<Polygon> ToPolygons_OLD(Signal sig, Dimension d)
     {
         try {
             if (sig.isDoubleX())
@@ -621,7 +621,7 @@ public class WaveformMetrics
 
             int i, j, curr_num_points, curr_x, start_x, max_points;
             double max_y, min_y, curr_y;
-            Vector curr_vect = new Vector(5);
+            Vector<Polygon> curr_vect = new Vector<Polygon>(5);
             int xpoints[], ypoints[];
             Polygon curr_polygon = null;
             int pol_idx = 0;
@@ -683,8 +683,7 @@ public class WaveformMetrics
                         curr_num_points++;
                     }
                     if (j == sig.n_points || j == end_point || Double.isNaN(sig.getY(j))) { // || sig.x[j] >= xmax_nolog)
-                        curr_polygon = new Polygon(xpoints, ypoints,
-                                                   curr_num_points);
+                        curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
                         curr_vect.addElement(curr_polygon);
                         pol_idx++;
                         curr_num_points = 0;
@@ -795,8 +794,7 @@ public class WaveformMetrics
                         curr_num_points++;
                     }
                     if (j == sig.n_points || j >= end_point || Double.isNaN(sig.getY(j))) { // || sig.x[j] >= xmax)
-                        curr_polygon = new Polygon(xpoints, ypoints,
-                                                   curr_num_points);
+                        curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
                         curr_vect.addElement(curr_polygon);
                         pol_idx++;
                         curr_num_points = 0;
@@ -816,11 +814,11 @@ public class WaveformMetrics
             }
 
             if (sig.getMode1D() == Signal.MODE_STEP) {
-                Vector v = new Vector();
+                Vector<Polygon> v = new Vector<Polygon>();
                 int x[];
                 int y[];
                 for (i = 0; i < curr_vect.size(); i++) {
-                    curr_polygon = (Polygon) curr_vect.elementAt(i);
+                    curr_polygon = curr_vect.elementAt(i);
                     int np = curr_polygon.npoints * 2 - 1;
                     x = new int[np];
                     y = new int[np];
@@ -844,12 +842,12 @@ public class WaveformMetrics
         return null;
     }
 
-    public Vector ToPolygons(Signal sig, Dimension d)
+    public Vector<Polygon> ToPolygons(Signal sig, Dimension d)
     {
         return ToPolygons(sig, d, false);
     }
 
-    public Vector ToPolygons(Signal sig, Dimension d, boolean appendMode)
+    public Vector<Polygon> ToPolygons(Signal sig, Dimension d, boolean appendMode)
     {
         try
         {
@@ -859,7 +857,7 @@ public class WaveformMetrics
 
             int   i, j, curr_num_points, curr_x, start_x, max_points;
             double max_y, min_y, curr_y;
-            Vector curr_vect = new Vector(5);
+            Vector<Polygon> curr_vect = new Vector<Polygon>(5);
             int xpoints[], ypoints[];
             Polygon curr_polygon = null;
             int pol_idx = 0;
@@ -950,8 +948,7 @@ public class WaveformMetrics
                     if (j == sig.n_points || j == end_point ||
                         Double.isNaN(sig.getY(j)))
                     {
-                        curr_polygon = new Polygon(xpoints, ypoints,
-                            curr_num_points);
+                        curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
                         curr_vect.addElement(curr_polygon);
                         pol_idx++;
                         curr_num_points = 0;
@@ -1098,8 +1095,7 @@ public class WaveformMetrics
                     if (j == sig.n_points || j >= end_point ||
                         Double.isNaN(sig.getY(j)))
                     { // || sig.x[j] >= xmax)
-                        curr_polygon = new Polygon(xpoints, ypoints,
-                            curr_num_points);
+                        curr_polygon = new Polygon(xpoints, ypoints, curr_num_points);
                         curr_vect.addElement(curr_polygon);
                         pol_idx++;
                         curr_num_points = 0;
@@ -1122,12 +1118,12 @@ public class WaveformMetrics
 
             if (sig.getMode1D() == Signal.MODE_STEP)
             {
-                Vector v = new Vector();
+                Vector<Polygon> v = new Vector<Polygon>();
                 int x[];
                 int y[];
                 for (i = 0; i < curr_vect.size(); i++)
                 {
-                    curr_polygon = (Polygon) curr_vect.elementAt(i);
+                    curr_polygon = curr_vect.elementAt(i);
                     int np = curr_polygon.npoints * 2 - 1;
                     x = new int[np];
                     y = new int[np];

@@ -297,8 +297,8 @@ public class Signal
 
     ContourSignal cs;
     private float contourLevels[];
-    Vector contourSignals = new Vector();
-    Vector contourLevelValues = new Vector();
+    Vector<Vector> contourSignals = new Vector<Vector>();
+    Vector<Float> contourLevelValues = new Vector<Float>();
 
     //Float flo;
     //Integer inte;

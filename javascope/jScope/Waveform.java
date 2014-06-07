@@ -120,9 +120,9 @@ public class Waveform
 
   private static boolean bug_image = true;
 
-  private Vector waveform_listener = new Vector();
+  private Vector<WaveformListener> waveform_listener = new Vector<WaveformListener>();
 
-  private Vector undo_zoom = new Vector();
+  private Vector<ZoomRegion> undo_zoom = new Vector<ZoomRegion>();
   private boolean send_profile = false;
 
   protected Border unselect_border;
@@ -2704,7 +2704,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       return;
     }
 
-    ZoomRegion r = (ZoomRegion) undo_zoom.lastElement();
+    ZoomRegion r = undo_zoom.lastElement();
     //if(undo_zoom.size() == 0)
     {
       ReportLimits(r, false);
@@ -2921,8 +2921,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     }
     if (waveform_listener != null) {
       for (int i = 0; i < waveform_listener.size(); i++) {
-        ( (WaveformListener) waveform_listener.elementAt(i)).
-            processWaveformEvent(e);
+        waveform_listener.elementAt(i).processWaveformEvent(e);
       }
     }
   }

@@ -120,10 +120,10 @@ public class ContourSignal
     return out;
   }
 
-  public Vector contour(float level)
+  public Vector<Vector> contour(float level)
   {
-    Vector contours = new Vector();
-    Vector contour = new Vector();
+    Vector<Vector> contours = new Vector<Vector>();
+    Vector<Point2D.Float> contour = new Vector<Point2D.Float>();
 
     float x1, y1, z1;
     float x2, y2, z2;
@@ -454,7 +454,7 @@ public class ContourSignal
                 if (contour.size() >= 2)
                 {
                   contours.addElement(contour);
-                  contour = new Vector();
+                  contour = new Vector<Point2D.Float>();
                 }
                 else
                 {
@@ -494,7 +494,7 @@ public class ContourSignal
           if (contour.size() >= 2)
           {
             contours.addElement(contour);
-            contour = new Vector();
+            contour = new Vector<Point2D.Float>();
           }
           else
           {

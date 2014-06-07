@@ -245,10 +245,10 @@ import javax.swing.event.*;
    class SList extends JPanel implements ItemListener
    {
     private JList            sig_list;
-    private DefaultListModel list_model = new DefaultListModel();
+    private DefaultListModel<String> list_model = new DefaultListModel<String>();
     private JComboBox        mode1D, mode2D, color, marker;
     private JTextField	     marker_step_t;
-    private Vector	         signals = new Vector();
+    private Vector<Data>     signals = new Vector<Data>();
     private long		     shots[]=null;
     private int              list_num_shot = 0;
     private int              sel_signal = -1;
@@ -660,7 +660,7 @@ import javax.swing.event.*;
 
       private void addSignalSetup(Data ws)
       {
-	    signals.addElement((Object)ws);
+	    signals.addElement(ws);
       }
 
       public void addSignals()
@@ -763,15 +763,15 @@ import javax.swing.event.*;
 			        signals.setElementAt(signals.elementAt(j+i),k);
 		        } else {
 			        Data ws = new Data();
-			        ws.copy(((Data)signals.elementAt(j)));
+			        ws.copy(signals.elementAt(j));
 			        color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
 			        ws.color_idx = color_idx;
 			        signals.insertElementAt(ws, k);
 		        }
 		        if(shots != null)
-		            ((Data)signals.elementAt(k)).shot = shots[i];
+		            signals.elementAt(k).shot = shots[i];
 		        else
-		            ((Data)signals.elementAt(k)).shot = UNDEF_SHOT;
+		            signals.elementAt(k).shot = UNDEF_SHOT;
 
 		        k++;
 		    }
@@ -802,10 +802,10 @@ import javax.swing.event.*;
 	            for (i = 0,  j = 0 ; i < num_signal; i++)
 		            if(i >= start_idx && i < end_idx)
 		            {
-		                ((Data)signals.elementAt(i)).label     = signal_label.getText();
-		                ((Data)signals.elementAt(i)).x_expr    = x_expr.getText();
-		                ((Data)signals.elementAt(i)).y_expr    = y_expr.getText();
-		                signalListReplace(i + 1, (Data)signals.elementAt(i));
+		                signals.elementAt(i).label  = signal_label.getText();
+		                signals.elementAt(i).x_expr = x_expr.getText();
+		                signals.elementAt(i).y_expr = y_expr.getText();
+		                signalListReplace(i + 1, signals.elementAt(i));
 		            }
 	            signalSelect(start_idx);
 	        }
@@ -815,7 +815,7 @@ import javax.swing.event.*;
 	 {
 	    if(getSignalSelect() == -1)
 		    return;
-	    error_w.setError((Data)signals.elementAt(getSignalSelect()));
+	    error_w.setError(signals.elementAt(getSignalSelect()));
 	 }
 
 	 public void signalListRefresh()
@@ -826,7 +826,7 @@ import javax.swing.event.*;
             list_model.removeRange(1, list_model.size() - 1);
 		}
 	    for(int i = 0; i < signals.size(); i++)
-		    signalListAdd((Data)signals.elementAt(i));
+		    signalListAdd(signals.elementAt(i));
 	  }
 
 	  private String getExpressionList(String expr)
@@ -902,7 +902,7 @@ import javax.swing.event.*;
 	    if(ob == marker_step_t && getSignalSelect() != -1)
 	    {
 		    try {
-		        ((Data)signals.elementAt(getSignalSelect())).marker_step = new Integer(marker_step_t.getText()).intValue();
+		        signals.elementAt(getSignalSelect()).marker_step = new Integer(marker_step_t.getText()).intValue();
 		    } catch (NumberFormatException ex) {
 		        marker_step_t.setText("1");
 		    }
@@ -923,22 +923,22 @@ import javax.swing.event.*;
 	    if(ob == marker)
 	    {
 	        int m_idx =  marker.getSelectedIndex();
-	        ((Data)signals.elementAt(getSignalSelect())).marker = m_idx;
+	        signals.elementAt(getSignalSelect()).marker = m_idx;
 	        setMarkerTextState(m_idx);
     	}
 
 	    if(ob == mode1D)
 	    {
-	        setPlotMode1D( ((Data)signals.elementAt(getSignalSelect())), mode1D.getSelectedIndex());
+	        setPlotMode1D(signals.elementAt(getSignalSelect()), mode1D.getSelectedIndex());
 	    }
 
 	    if(ob == mode2D)
 	    {
-	        setPlotMode2D( ((Data)signals.elementAt(getSignalSelect())), mode2D.getSelectedIndex());
+	        setPlotMode2D(signals.elementAt(getSignalSelect()), mode2D.getSelectedIndex());
 	    }
 
 	    if(ob == color) {
-	        ((Data)signals.elementAt(getSignalSelect())).color_idx = color.getSelectedIndex();
+	        signals.elementAt(getSignalSelect()).color_idx = color.getSelectedIndex();
 	    }
 
       }
