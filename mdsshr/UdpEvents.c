@@ -157,8 +157,8 @@ static void *handleMessage(void *arg)
 
 static void initialize()
 {
+#ifdef HAVE_WINDOWS_H
 	static int initialized = 0;
-	#ifdef HAVE_WINDOWS_H
 
 		WSADATA wsaData;
 		WORD wVersionRequested;
