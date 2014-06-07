@@ -329,7 +329,6 @@ int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), vo
 	char ipAddress[64]; 
     struct ip_mreq ipMreq;
 	struct EventInfo *currInfo;
-	int error;
 
 	initialize();
 
@@ -351,8 +350,7 @@ int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), vo
 	if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {   
 		printf("Cannot set REUSEADDR option\n");
 #ifdef HAVE_WINDOWS_H
-		error = WSAGetLastError();
-		switch(error)
+		switch(WSAGetLastError())
 		{
 			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
 			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
@@ -389,8 +387,7 @@ int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), vo
     {	
   	   	perror("Error setting socket options IP_ADD_MEMBERSHIPin udpStartReceiver\n");
 #ifdef HAVE_WINDOWS_H
-		error = WSAGetLastError();
-		switch(error)
+		switch(WSAGetLastError())
 		{
 			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
 			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
