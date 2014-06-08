@@ -1644,32 +1644,23 @@ private:
 			changed = true;
 		}
 	};
+
 ///////////////////LIST///////////////
-	class EXPORT List: public Apd
+class EXPORT List: public Apd
+{
+public:
+	List(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(units, error, help, validation)
 	{
-	public:
-		List(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_LIST; 
-			nDescs = 0;
-			setAccessory(units, error, help, validation);
-		}
-		List(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_LIST; 
-			nDescs = nData;
-			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = new Data *[descsSize];
-			for(int i = 0; i < nData; i++)
-			{
-				if(descs[i])
-					descs[i]->refCount++;
-				this->descs[i] = descs[i];
-			}
-			setAccessory(units, error, help, validation);
-		}
+		dtype = DTYPE_LIST;
+	}
+
+	List(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(nData, descs, units, error, help, validation)
+	{
+		dtype = DTYPE_LIST;
+	}
+
 		void append(Data *data)
 		{
 			if(nDescs == descsSize)
@@ -1718,32 +1709,23 @@ private:
 			return descs[idx];
 		}
 	};
+
 /////Dictionary///////
-	class EXPORT Dictionary: public Apd
+class EXPORT Dictionary: public Apd
+{
+public:
+	Dictionary(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(units, error, help, validation)
 	{
-	public:
-		Dictionary(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DICTIONARY; 
-			nDescs = 0;
-			setAccessory(units, error, help, validation);
-		}
-		Dictionary(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DICTIONARY; 
-			nDescs = nData;
-			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = new Data *[descsSize];
-			for(int i = 0; i < nData; i++)
-			{
-				if(descs[i])
-					descs[i]->refCount++;
-				this->descs[i] = descs[i];
-			}
-			setAccessory(units, error, help, validation);
-		}
+		dtype = DTYPE_DICTIONARY;
+	}
+
+	Dictionary(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(nData, descs, units, error, help, validation)
+	{
+		dtype = DTYPE_DICTIONARY;
+	}
+
 		Data *getItem(String *strData)
 		{
 			for(int i = 0; i < nDescs/2; i++)
