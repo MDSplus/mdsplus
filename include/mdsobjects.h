@@ -1626,10 +1626,11 @@ private:
 					return true;
 			return false;
 		}
-		virtual int len()
-		{
-			return nDescs;
+
+		virtual std::size_t len() {
+			return (std::size_t)nDescs;
 		}
+
 		Data **getDscs()
 		{
 			return descs;
@@ -1767,11 +1768,11 @@ public:
 			data->refCount++;
 			nDescs+=2;
 		}
-		int len()
-		{
-			return nDescs/2;
-		}
-	};
+
+	std::size_t len() {
+		return Apd::len()/2;
+	}
+};
 /////////////////////////////////////////////////////////////////
 //              Tree Objects
 /////////////////////////////////////////////////////////////////
