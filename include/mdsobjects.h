@@ -179,6 +179,11 @@ public:
 	void *operator new(size_t sz);
 	void operator delete(void *p);
 
+	static void decRefCount(Data * d);
+	static void incRefCount(Data * d);
+	void decRefCount();
+	void incRefCount();
+
 	virtual Data *getUnits();
 	virtual Data *getError();
 	virtual Data *getHelp();
@@ -287,11 +292,6 @@ protected:
 		this->help = help;
 		this->validation = validation;
 	}
-
-	static void decRefCount(Data * d);
-	static void incRefCount(Data * d);
-	void decRefCount();
-	void incRefCount();
 
 	bool changed;
 	Data *dataCache;
