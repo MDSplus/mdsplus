@@ -1562,7 +1562,6 @@ private:
 	};
 
 /////////////////////APD///////////////////////
-#define DSCS_STEP 64
 class EXPORT Apd: public Data
 {
 public:
