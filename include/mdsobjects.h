@@ -1692,7 +1692,7 @@ public:
 	}
 
 	Data * getItem(String *strData) {
-		for(std::size_t i = 0; i < len(); i += 2) {
+		for(std::size_t i = 0; i < descs.size(); i += 2) {
 			if(strData->equals(descs[i])) {
 				descs[i+1]->incRefCount();
 				return descs[i+1];
@@ -1702,7 +1702,7 @@ public:
 	}
 
 	void setItem(String *strData, Data *data) {
-		for(std::size_t i = 0; i < len(); i += 2) {
+		for(std::size_t i = 0; i < descs.size(); i += 2) {
 			if(strData->equals(descs[i])) {
 				descs[i]->decRefCount();
 				descs[i] = strData;
