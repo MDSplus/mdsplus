@@ -1180,7 +1180,7 @@ EXPORT void *Compound::convertToDsc()
 
 EXPORT void *Apd::convertToDsc()
 {
-	return completeConversionToDsc(convertToApdDsc(dtype, nDescs, (void **)descs));
+	return completeConversionToDsc(convertToApdDsc(dtype, descs.size(), (void **)&descs[0]));
 }
 
 

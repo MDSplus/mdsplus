@@ -10,6 +10,7 @@
 #include <mdstypes.h>
 #include <usagedef.h>
 
+#include <algorithm>
 #include <complex>
 #include <exception>
 #include <iostream>
@@ -179,10 +180,10 @@ public:
 	void *operator new(size_t sz);
 	void operator delete(void *p);
 
-	static void decRefCount(Data * d);
 	static void incRefCount(Data * d);
-	void decRefCount();
+	static void decRefCount(Data * d);
 	void incRefCount();
+	void decRefCount();
 
 	virtual Data *getUnits();
 	virtual Data *getError();
@@ -1559,97 +1560,79 @@ private:
 		void setRoutine(Data *routine) {assignDescAt(routine, 1);}
 		void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 2 + idx);}
 	};
+
 /////////////////////APD///////////////////////
 #define DSCS_STEP 64
-	class EXPORT Apd: public Data
-	{
-	protected:
-		int nDescs;
-		int descsSize;
-		Data **descs;
-		void resize()
-		{
-			descsSize += DSCS_STEP;
-			Data **newDescs = new Data *[descsSize];
-			for(int i = 0; i < nDescs; i++)
-				newDescs[i] = descs[i];
-			if(descs)
-				deleteNativeArray(descs);
-			descs = newDescs;
-		}
-		
-	public:
-		Apd(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DSC; 
-			nDescs = descsSize = 0;
-			descs = 0;
-			setAccessory(units, error, help, validation);
-		}
-		Apd(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DSC; 
-			nDescs = nData;
-			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = new Data *[descsSize];
-			for(int i = 0; i < nData; i++)
-			{
-				if(descs[i])
-					descs[i]->refCount++;
-				this->descs[i] = descs[i];
-			}
-			setAccessory(units, error, help, validation);
-		}
-		virtual ~Apd()
-		{
-			if(descsSize > 0)
-			{
-				deleteNativeArray(descs);
-			}
-		}
-		virtual void propagateDeletion()
-		{
-			if(nDescs > 0)
-			{
-				for(int i = 0; i < nDescs; i++)
-					if(descs[i])
-						delete descs[i];
-			}
-		}
-		virtual bool hasChanged()
-		{
-			if (changed || !isImmutable()) return true;
-			for(int i = 0; i < nDescs; i++)
-				if(descs[i] && descs[i]->hasChanged())
-					return true;
-			return false;
-		}
+class EXPORT Apd: public Data
+{
+public:
+	Apd(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+		clazz = CLASS_APD;
+		dtype = DTYPE_DSC;
+		setAccessory(units, error, help, validation);
+	}
 
-		virtual std::size_t len() {
-			return (std::size_t)nDescs;
+	Apd(std::size_t nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+		clazz = CLASS_APD;
+		dtype = DTYPE_DSC;
+		for(std::size_t i = 0; i < nData; ++i) {
+			descs[i]->incRefCount();
+			this->descs.push_back(descs[i]);
 		}
+		setAccessory(units, error, help, validation);
+	}
 
-		Data **getDscs()
-		{
-			return descs;
-		}
-		void *convertToDsc();
-		int getDimension() {return nDescs;}
-		Data **getDscArray() {return descs;}
-		Data *getDescAt(int idx) 
-		{
-			if(descs[idx]) descs[idx]->refCount++;
-			return descs[idx];
-		}
-		void setDescAt(int idx, Data *data)
-		{
-			descs[idx] = data;
-			data->refCount++;
-			changed = true;
-		}
-	};
+	virtual ~Apd() {
+		std::for_each(descs.begin(), descs.end(), (void (&)(Data *))decRefCount);
+	}
+
+	virtual bool hasChanged() {
+		if (changed || !isImmutable())
+			return true;
+
+		struct Lambda {
+			static bool changed(Data * d) {
+				return d->hasChanged();
+			}
+		};
+		if (std::find_if(descs.begin(), descs.end(), Lambda::changed) != descs.end())
+			return true;
+		return false;
+	}
+
+	virtual std::size_t len() {
+		return descs.size();
+	}
+
+	Data ** getDscs() {
+		// FIXME: This doesn't increment refCounts.
+		return &descs[0];
+	}
+
+	std::size_t getDimension() {
+		return Apd::len();
+	}
+
+	Data ** getDscArray() {
+		return getDscs();
+	}
+
+	Data * getDescAt(std::size_t i) {
+		descs.at(i)->incRefCount();
+		return descs.at(i);
+	}
+
+	void setDescAt(std::size_t i, Data * data) {
+		descs.insert(descs.begin() + i, data);
+		data->incRefCount();
+		changed = true;
+	}
+
+	void *convertToDsc();
+
+protected:
+	std::vector<Data*> descs;
+};
 
 ///////////////////LIST///////////////
 class EXPORT List: public Apd
@@ -1667,54 +1650,31 @@ public:
 		dtype = DTYPE_LIST;
 	}
 
-		void append(Data *data)
-		{
-			if(nDescs == descsSize)
-			    resize();
-			descs[nDescs++] = data;
-			data->refCount++;
-		}
+	void append(Data * data) {
+		descs.push_back(data);
+		data->incRefCount();
+	}
 		
-		void remove(Data *data)
-		{
-			for(int i = 0; i < nDescs; i++)
-			{
-				if(descs[i] == data)
-				{
-					delete descs[i];
-					for(int j = i; j < nDescs-1; j++)
-						descs[j] = descs[j+1];
-					nDescs--;
-					return;
-				}
-			}
-		}
-		void remove(int idx)
-		{
-			if(idx < 0 || idx >= nDescs)
-				return;
-			delete descs[idx];
-			for(int j = idx; j < nDescs-1; j++)
-				descs[j] = descs[j+1];
-			nDescs--;
-		}
-		void insert(int idx, Data *data)
-		{
-			if(nDescs == descsSize)
-			    resize();
-			for(int i = nDescs; i > idx; i--)
-				descs[i] = descs[i-1];
-			descs[idx] = data;
-			data->refCount++;
-		}
-		Data *getElementAt(int idx)
-		{
-			if(idx < 0 || idx > nDescs) return 0;
-			if(descs[idx])
-				descs[idx]->refCount++;
-			return descs[idx];
-		}
-	};
+	void remove(Data * data) {
+		descs.erase(std::remove(descs.begin(), descs.end(), data), descs.end());
+		data->decRefCount();
+	}
+
+	void remove(std::size_t i) {
+		descs.at(i)->decRefCount();
+		descs.erase(descs.begin() + i);
+	}
+
+	void insert(std::size_t i, Data *data) {
+		descs.insert(descs.begin() + i, data);
+		data->incRefCount();
+	}
+
+	Data * getElementAt(std::size_t i) {
+		descs.at(i)->incRefCount();
+		return descs[i];
+	}
+};
 
 /////Dictionary///////
 class EXPORT Dictionary: public Apd
@@ -1732,42 +1692,35 @@ public:
 		dtype = DTYPE_DICTIONARY;
 	}
 
-		Data *getItem(String *strData)
-		{
-			for(int i = 0; i < nDescs/2; i++)
-			{
-				if(strData->equals(descs[2*i]))
-				{
-					if(descs[2*i+1])
-						descs[2*i+1]->refCount++;
-					return descs[2*i+1];
-				}
+	Data * getItem(String *strData) {
+		for(std::size_t i = 0; i < len(); i += 2) {
+			if(strData->equals(descs[i])) {
+				descs[i+1]->incRefCount();
+				return descs[i+1];
 			}
-			return 0;
 		}
-		void setItem(String *strData, Data *data)
-		{
-			for(int i = 0; i < nDescs/2; i++)
-			{
-				if(strData->equals(descs[2*i]))
-				{
-					delete descs[2*i];
-					descs[2*i] = strData;
-					strData->refCount++;
-					delete descs[2*i+1];
-					descs[2*i+1] = data;
-					data->refCount++;
-					return ;
-				}
+		return 0;
+	}
+
+	void setItem(String *strData, Data *data) {
+		for(std::size_t i = 0; i < len(); i += 2) {
+			if(strData->equals(descs[i])) {
+				descs[i]->decRefCount();
+				descs[i] = strData;
+				strData->incRefCount();
+
+				descs[i+1]->decRefCount();
+				descs[i+1] = data;
+				data->incRefCount();
+				return;
 			}
-			if(nDescs+2 > descsSize)
-				resize();
-			descs[nDescs] = strData;
-			strData->refCount++;
-			descs[nDescs + 1] = data;
-			data->refCount++;
-			nDescs+=2;
 		}
+
+		descs.push_back(strData);
+		descs.push_back(data);
+		strData->incRefCount();
+		data->incRefCount();
+	}
 
 	std::size_t len() {
 		return Apd::len()/2;
