@@ -288,6 +288,11 @@ protected:
 		this->validation = validation;
 	}
 
+	static void decRefCount(Data * d);
+	static void incRefCount(Data * d);
+	void decRefCount();
+	void incRefCount();
+
 	bool changed;
 	Data *dataCache;
 

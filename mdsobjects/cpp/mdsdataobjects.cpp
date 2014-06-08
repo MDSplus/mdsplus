@@ -159,7 +159,7 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 
 ///////////////////Data methods implementation////////////////////////
 Data::~Data() {
-	--refCount;
+	decRefCount();
 }
 
 void *Data::operator new(size_t sz) {
@@ -176,6 +176,22 @@ void Data::operator delete(void *p) {
 		data->propagateDeletion();
 		::operator delete(p);
 	}
+}
+
+void decRefCount(Data * d) {
+	d->refCount--;
+}
+
+void incRefCount(Data * d) {
+	d->refCount++;
+}
+
+void Data::decRefCount() {
+	decRefCount(this);
+}
+
+void Data::incRefCount() {
+	incRefCount(this);
 }
 
 static Data * getMember(Data * member) {
