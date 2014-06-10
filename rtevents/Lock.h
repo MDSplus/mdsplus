@@ -23,10 +23,12 @@ public:
 	}
 	
 	
-	void lock() try {
+	void lock() {
+		try {
 		sem.wait();
-	} catch(SystemException *exc) {
-		sem.initialize(0);
+		} catch(SystemException *exc) {
+			sem.initialize(0);
+		}
 	}
 
 	void unlock() {

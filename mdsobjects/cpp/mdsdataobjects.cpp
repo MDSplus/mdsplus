@@ -178,11 +178,11 @@ void Data::operator delete(void *p) {
 	}
 }
 
-void decRefCount(Data * d) {
+void Data::decRefCount(Data * d) {
 	d->refCount--;
 }
 
-void incRefCount(Data * d) {
+void Data::incRefCount(Data * d) {
 	d->refCount++;
 }
 
@@ -1196,7 +1196,7 @@ EXPORT Data *MDSplus::deserialize(char const * serialized)
 EXPORT Data *MDSplus::deserialize(Data *serializedData)
 {
 	Uint8Array *serializedArr = (Uint8Array *)serializedData;
-	return deserialize(serializedArr->ptr);
+	return deserialize((const char *)serializedArr->ptr);
 }
 
 ostream& operator<<(ostream& output, Data *data)

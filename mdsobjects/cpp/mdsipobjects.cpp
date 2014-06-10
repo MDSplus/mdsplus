@@ -66,7 +66,7 @@ static int convertType(int mdsType)
 void *getManyObj(char *serializedIn)
 {
 	bool dataReported = false, errorReported = false;
-	List *inArgs = (List *)deserialize(serializedIn);
+	List *inArgs = (List *)deserialize((const char *)serializedIn);
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
 	{
 		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
@@ -131,7 +131,7 @@ void *getManyObj(char *serializedIn)
 
 void *putManyObj(char *serializedIn)
 {
-	List *inArgs = (List *)deserialize(serializedIn);
+	List *inArgs = (List *)deserialize((const char *)serializedIn);
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
 	{
 		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
