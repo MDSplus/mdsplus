@@ -8,7 +8,7 @@ else:
 def load(gbls):
   def loadmod(name,level,gbls):
     mod=_mimport(name,level)
-    for key in mod.__dict__.iterkeys():
+    for key in mod.__dict__.keys():
       if not key.startswith('_'):
         gbls[key]=mod.__dict__[key]
 
