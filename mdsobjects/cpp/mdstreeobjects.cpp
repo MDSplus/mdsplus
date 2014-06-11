@@ -1,3 +1,6 @@
+#ifdef HAVE_WINDOWS_H
+#define NOMINMAX
+#endif
 #include <mdsobjects.h>
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
@@ -12,6 +15,7 @@
 
 using namespace MDSplus;
 using namespace std;
+
 
 extern "C" {
 	// From treeshrp.h
@@ -1377,7 +1381,7 @@ EXPORT void TreeNodeArray::setOn(Int8Array *info)
 	std::vector<char> infoArray = dynamic_cast<Data *>(info)->getByteArray();
 
 	//FIXME: numNodes should be size_t
-	std::size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
+	size_t const MAX = std::min(infoArray.size(), (size_t)numNodes);
 	for(std::size_t i = 0; i < MAX; ++i)
 		nodes[i]->setOn((infoArray[i]) ? true : false);
 }
