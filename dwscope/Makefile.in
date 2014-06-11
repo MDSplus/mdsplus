@@ -329,7 +329,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 
 # User interface descriptions, installed as generic data but with build rules
-uiddir = @MAKEUIDDIR@
+uiddir = @uiddir@
 
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm

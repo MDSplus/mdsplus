@@ -40,7 +40,7 @@ dwpad_SOURCES = dwpad.c dwscopesubs.c $(XMDSSRC)
 dwpad_LDADD = $(LDADD) libXmdsWC.a
 
 # User interface descriptions, installed as generic data but with build rules
-uiddir = @MAKEUIDDIR@
+uiddir = @uiddir@
 uid_DATA = dwscope.uid dwpad.uid
 %.uid: %.uil
 	@UIL@ -I$(top_srcdir)/include -o $@ $<
