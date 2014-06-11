@@ -20,7 +20,7 @@ actmon_SOURCES = actmon.c
 actmon_LDADD = $(LDADD) -lMdsIpShr -lMdsServerShr
 
 # User interface descriptions, installed as generic data but with build rules
-uiddir = @MAKEUIDDIR@
+uiddir = @uiddir@
 uid_DATA = actions.uid actmon.uid
 %.uid: %.uil
 	@UIL@ -I$(top_srcdir)/include -o $@ $<
