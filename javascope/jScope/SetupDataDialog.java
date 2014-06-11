@@ -245,7 +245,7 @@ import javax.swing.event.*;
    class SList extends JPanel implements ItemListener
    {
     private JList            sig_list;
-    private DefaultListModel<String> list_model = new DefaultListModel<String>();
+    private DefaultListModel list_model = new DefaultListModel();
     private JComboBox        mode1D, mode2D, color, marker;
     private JTextField	     marker_step_t;
     private Vector<Data>     signals = new Vector<Data>();
