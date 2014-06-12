@@ -1627,6 +1627,10 @@ public:
 		changed = true;
 	}
 
+	void appendDesc(Data * data)
+	{
+		descs.push_back(data);
+	}
 	void *convertToDsc();
 
 protected:
