@@ -827,7 +827,7 @@ TreeNode **TreeNode::getChildren(int *numChildren)
 
 TreeNode **TreeNode::getMembers(int *numMembers)
 {
-	int nidCnt = getNumChildren();
+	int nidCnt = getNumMembers();
 	std::vector<int> nids(nidCnt);
 	*numMembers = nidCnt;
 
