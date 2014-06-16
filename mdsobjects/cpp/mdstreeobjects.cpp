@@ -834,7 +834,7 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 	//FIXME: int and short as size == bad
 	int retLen = sizeof(int) * (nidCnt);
 	struct nci_itm nciList1[] = {
-		{ (short)retLen, NciNUMBER_OF_MEMBERS, &nids[0], &retLen },
+		{ (short)retLen, NciMEMBERS_NIDS, &nids[0], &retLen },
 		{ NciEND_OF_LIST, 0, 0, 0 }
 	};
 
