@@ -137,8 +137,7 @@ if __name__ == "__main__":
       info = getLatestRelease(flavor)
       if subprocess.Popen("""
 tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
-mv mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/* ./ && \
-rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
+cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
 python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info

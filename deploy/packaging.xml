@@ -1,0 +1,735 @@
+<?xml version="1.0"?>
+<deploy>
+ <packages>
+  <package name="MDSplus"
+	   arch="bin"
+	   summary="MDSplus Data Acquisition System"
+	   description="MDSplus Data Acquisition System">
+    <requires package="kernel"/>
+    <requires package="java" />
+    <requires package="python" />
+    <requires package="motif" />
+  </package>
+
+  <package name="java" 
+	   arch="noarch" 
+	   summary="Java Applications" 
+	   description="Java applications and classes">
+    <requires package="java_bin"/>
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/java"/>
+    <include dir="/usr/local/mdsplus/desktop/java"/>
+    <include dir="/usr/local/mdsplus/tdi/java"/>
+    <exclude file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
+    <include file="/usr/local/mdsplus/bin/jDispatch*"/>
+    <include file="/usr/local/mdsplus/bin/jScope"/>
+    <include file="/usr/local/mdsplus/bin/jServer"/>
+    <include file="/usr/local/mdsplus/bin/jTraverser"/>
+    <postinst>
+
+if [ -d /usr/share/applications/mdsplus ]
+then
+  ln -sf __INSTALL_PREFIX__/mdsplus/desktop/java /usr/share/applications/mdsplus/
+fi
+
+    </postinst>
+    <postrm>
+
+if [ "$1" == "0" ]
+then
+   rm -f /usr/share/applications/mdsplus/java 2>&amp;1
+fi
+
+    </postrm>
+  </package>
+
+  <package name="java_bin" 
+	   arch="bin" 
+	   summary="Java libraries" 
+	   description="Java libraries to connect to MDSplus">
+    <include file="/usr/local/mdsplus/lib/libJava*"/>
+    <postinst>ldconfig >/dev/null 2>/dev/null</postinst>
+    <postrm>
+ 
+if [ "$1" == "0" ]
+then
+  rm -f /usr/share/applications/mdsplus/java 2>/dev/null
+  ldconfig >/dev/null 2>&amp;1
+fi
+
+    </postrm>
+  </package>
+
+  <package name="mitdevices"
+	   arch="noarch" 
+	   summary="Support for MIT Data acquisition devices" 
+	   description="Support for MIT Data acquisition devices">
+    <requires package="kernel"/>
+    <requires package="camac"/>
+    <requires package="python"/>
+    <requires package="motif"/>
+    <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
+    <include file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
+    <include file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
+    <include file="/usr/local/mdsplus/lib/acq_root_filesystem*"/>
+    <include file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
+    <postinst>
+
+pushd __INSTALL_PREFIX__/mdsplus/tdi/MitDevices
+rm -Rf %{python_sitelib}/MitDevices*
+rm -Rf build dist
+python setup.py -q install
+rm -Rf build dist MitDevices.egg-info
+popd
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf %{python_sitearch}/MitDevices*
+fi
+
+    </prerm>
+  </package>
+
+  <package name="mitdevices_bin"
+	   arch="bin"
+	   summary="Libraries used for mitdevices"
+	   description="Libraries used for mitdevices">
+    <include file="/usr/local/mdsplus/lib/libMit*"/>
+    <include file="/usr/local/mdsplus/lib/libMIT*"/>
+    <include file="/usr/local/mdsplus/uid/A*"/>
+    <include file="/usr/local/mdsplus/uid/B*"/>
+    <include file="/usr/local/mdsplus/uid/C*"/>
+    <include file="/usr/local/mdsplus/uid/D*"/>
+    <include file="/usr/local/mdsplus/uid/E*"/>
+    <include file="/usr/local/mdsplus/uid/F*"/>
+    <include file="/usr/local/mdsplus/uid/H*"/>
+    <include file="/usr/local/mdsplus/uid/I*"/>
+    <include file="/usr/local/mdsplus/uid/J*"/>
+    <include file="/usr/local/mdsplus/uid/L*"/>
+    <include file="/usr/local/mdsplus/uid/M*"/>
+    <include file="/usr/local/mdsplus/uid/P*"/>
+    <include file="/usr/local/mdsplus/uid/R*"/>
+    <include file="/usr/local/mdsplus/uid/T*"/>
+    <include file="/usr/local/mdsplus/uid/U*"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="idl"
+	   arch="noarch"
+	   summary="ITT IDL extensions"
+
+	   description="IDL (ITT Interactive Data Language) extensions for MDSplus">
+    <requires package="kernel"/>
+    <requires package="idl_bin"/>
+    <include dir="/usr/local/mdsplus/idl"/>
+    <exclude dir="/usr/local/mdsplus/idl/camac"/>
+  </package>
+
+  <package name="idl_bin"
+	   arch="bin"
+	   summary="ITT IDL Binary Extensions"
+	   description="IDL Intereactive Data Language libraries">
+    <include file="/usr/local/mdsplus/lib/lib*Idl*"/>
+    <exclude file="/usr/local/mdsplus/lib/*Sql*"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="gsi"
+	   arch="noarch"
+	   summary="Globus Security Ifrastructure Support"
+	   description="Support for secure MDSplus and Fusiongrid">
+    <requires package="gsi_bin"/>
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/tdi/roam"/>
+    <include file="/usr/local/mdsplus/bin/roam_check_access"/>
+    <include file="/usr/local/mdsplus/bin/mdsipsd"/>
+  </package>
+
+  <package name="gsi_bin"
+	   arch="bin"
+	   summary="Libraries for GSI"
+	   description="Libraries for GSI">
+    <include file="/usr/local/mdsplus/lib/libRoam*"/>
+    <include file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig > /dev/null 2>&amp;1</postrm>
+    <triggerin trigger="xinetd">
+
+if [ ! -r /etc/xinetd.d/mdsips ]
+then
+  cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipsd.xinetd /etc/xinetd.d/mdsips
+  if ( ! grep '^mdsips[[:space:]]' /etc/services >/dev/null 2>&amp;1)
+  then
+    echo 'mdsips 8200/tcp # MDSplus mdsip service' >> /etc/services
+  fi
+fi
+/sbin/service xinetd reload
+
+    </triggerin>
+  </package>
+
+  <package name="labview"
+	   arch="noarch"
+	   summary="National Instruments Labview extensions"
+	   description="National Instruments Labview extensions">
+    <requires package="labview_bin"/>
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/LabView"/>
+  </package>
+
+  <package name="labview_bin"
+	   arch="bin"
+	   summary="Libraries required for LabView interface"
+	   description="Libraries required for LabView interface">
+    <include file="/usr/local/mdsplus/lib/*LV*"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="motif"
+	   arch="noarch"
+	   summary="X-Windows Motif based applications"
+	   description="X-Windows Motif based applications such as dwscope, dwpad, traverser,actions, and actmon">
+    <requires package="motif_bin"/>
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/desktop/motif"/>
+    <include file="/usr/local/mdsplus/pixmaps/dwpad.png"/>
+    <include file="/usr/local/mdsplus/bin/dwscopePrint"/>
+    <include file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
+    <postinst>
+
+if [ -d /usr/share/applications/mdsplus ]
+then
+  ln -sf __INSTALL_PREFIX__/mdsplus/desktop/motif /usr/share/applications/mdsplus/
+fi
+
+    </postinst>
+    <postrm>
+
+if [ "$1" == "0" ]
+then
+  rm -f /usr/share/applications/mdsplus/motif 2>/dev/null
+fi
+
+    </postrm>
+  </package>
+
+  <package name="motif_bin"
+	   arch="bin"
+	   summary="Libraries, UIDS and binary applications required for Motif APS"
+	   description="Libraries, UIDS and binary applications required for Motif APS">
+    <include file="/usr/local/mdsplus/bin/dw*"/>
+    <exclude file="/usr/local/mdsplus/bin/dwscopePrint"/>
+    <include file="/usr/local/mdsplus/bin/actmon"/>
+    <include file="/usr/local/mdsplus/bin/actions"/>
+    <include file="/usr/local/mdsplus/bin/traverser"/>
+    <include file="/usr/local/mdsplus/lib/libXmds*"/>
+    <include dir="/usr/local/mdsplus/uid*"/>
+    <exclude file="/usr/local/mdsplus/uid/A*"/>
+    <exclude file="/usr/local/mdsplus/uid/B*"/>
+    <exclude file="/usr/local/mdsplus/uid/C*"/>
+    <exclude file="/usr/local/mdsplus/uid/D*"/>
+    <exclude file="/usr/local/mdsplus/uid/E*"/>
+    <exclude file="/usr/local/mdsplus/uid/F*"/>
+    <exclude file="/usr/local/mdsplus/uid/H*"/>
+    <exclude file="/usr/local/mdsplus/uid/I*"/>
+    <exclude file="/usr/local/mdsplus/uid/J*"/>
+    <exclude file="/usr/local/mdsplus/uid/L*"/>
+    <exclude file="/usr/local/mdsplus/uid/M*"/>
+    <exclude file="/usr/local/mdsplus/uid/P*"/>
+    <exclude file="/usr/local/mdsplus/uid/R*"/>
+    <exclude file="/usr/local/mdsplus/uid/T*"/>
+    <exclude file="/usr/local/mdsplus/uid/U*"/>
+    <exclude_staticlibs/>
+    <postinst>
+
+if [ ! -d __INSTALL_PREFIX__/mdsplus/uid ]
+then
+  if [ -d __INSTALL_PREFIX__/mdsplus/uid64 ]
+  then
+    ln -sf uid64 __INSTALL_PREFIX__/mdsplus/uid
+  else
+    ln -sf uid32 __INSTALL_PREFIX__/mdsplus/uid
+  fi
+fi
+ldconfig >/dev/null 2>&amp;1
+
+    </postinst>
+    <prerm>
+
+if [ -h __INSTALL_PREFIX__/mdsplus/uid ]
+then
+  rm -f __INSTALL_PREFIX__/mdsplus/uid
+fi
+
+    </prerm>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="hdf5"
+	   arch="noarch"
+	   summary="MDSplus/HDF5 integration"
+	   description="MDSplus/HDF5 integration">
+    <requires package="hdf5_bin"/>
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/tdi/hdf5"/>
+  </package>
+
+  <package name="hdf5_bin"
+	   arch="bin"
+	   summary="Binary libraries and applications for HDF5 integration"
+	   description="Binary libraries and applications for HDF5 integration">
+    <include file="/usr/local/mdsplus/lib/libhdf5*"/>
+    <include file="/usr/local/mdsplus/bin/hdf5ToMds"/>
+    <include file="/usr/local/mdsplus/bin/MDSplus2HDF5"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="devel"
+	   arch="noarch"
+	   summary="Header files for code development"
+	   description="Header files for code development">
+    <include dir="/usr/local/mdsplus/include"/>
+  </package>
+
+  <package name="devel_bin"
+	   arch="bin"
+	   summary="Static Libraries for code development"
+	   description="Static libraries for code development">
+    <include_staticlibs/>
+  </package>
+
+  <package name="camac"
+	   arch="noarch"
+	   summary="Support for CAMAC devices"
+	   description="Support for CAMAC devices">
+    <requires package="camac_bin"/>
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/idl/camac"/>
+    <include dir="/usr/local/mdsplus/tdi/camac"/>
+    <include file="/usr/local/mdsplus/bin/mdsccl"/>
+    <include file="/usr/local/mdsplus/bin/mdscts"/>
+  </package>
+
+  <package name="camac_bin"
+	   arch="bin"
+	   summary="Binary libraries for CAMAC access"
+	   description="Binary libraries for CAMAC access">
+    <include file="/usr/local/mdsplus/lib/libCam*"/>
+    <include file="/usr/local/mdsplus/lib/libcts_commands*"/>
+    <include file="/usr/local/mdsplus/lib/libccl_commands*"/>
+    <include file="/usr/local/mdsplus/lib/libRemCam*"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="kernel"
+	   arch="noarch"
+	   summary="MDSplus core system"
+	   description="MDSplus core system">
+    <requires package="kernel_bin"/>
+    <include dironly="/usr/local/mdsplus/idl"/>
+    <include dironly="/usr/local/mdsplus/mdsobjects"/>
+    <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
+    <include file="/usr/local/mdsplus/ChangeLog"/>
+    <include dir="/usr/local/mdsplus/etc"/>
+    <include dir="/usr/local/mdsplus/share"/>
+    <include dir="/usr/local/mdsplus/rpm"/>
+    <include file="/usr/local/mdsplus/setup.*"/>
+    <include dir="/usr/local/mdsplus/tdi"/>
+    <include dir="/usr/local/mdsplus/trees"/>
+    <include file="/usr/local/mdsplus/bin/mdstcl"/>
+    <include file="/usr/local/mdsplus/desktop/mdsplus.directory"/>
+    <include file="/usr/local/mdsplus/desktop/mdsplus.menu"/>
+    <include dir="/usr/local/mdsplus/desktop/kernel"/>
+    <include file="/usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg"/>
+    <include file="/usr/local/mdsplus/pixmaps/Tcl.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/Tdi.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
+    <include file="/usr/local/mdsplus/bin/unix_submit"/>
+    <include file="/usr/local/mdsplus/bin/synchronize_unix"/>
+    <include file="/usr/local/mdsplus/bin/remote_submit"/>
+    <include file="/usr/local/mdsplus/bin/mdsipd"/>
+    <include file="/usr/local/mdsplus/bin/mdsip_server"/>
+    <include file="/usr/local/mdsplus/bin/mdsip-server-*"/>
+    <include file="/usr/local/mdsplus/bin/mdsip-client-*"/>
+    <include file="/usr/local/mdsplus/bin/job_*"/>
+    <include file="/usr/local/mdsplus/bin/ScopePrinters"/>
+    <include file="/usr/local/mdsplus/bin/SetMdsplusFileProtection"/>
+    <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
+    <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>
+    <exclude dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
+    <exclude dir="/usr/local/mdsplus/tdi/camac"/>
+    <exclude dir="/usr/local/mdsplus/tdi/java"/>
+    <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
+    <exclude dir="/usr/local/mdsplus/tdi/roam"/>
+    <exclude dir="/usr/local/mdsplus/tdi/hdf5"/>
+    <include file="/usr/local/mdsplus/bin/mkdirhier"/>
+    <postinst>
+
+if [ -d /etc/profile.d ]
+then
+  ln -sf __INSTALL_PREFIX__/mdsplus/setup.sh /etc/profile.d/mdsplus.sh
+  ln -sf __INSTALL_PREFIX__/mdsplus/setup.csh /etc/profile.d/mdsplus.csh
+fi
+if [ -d /etc/xdg/menus/applications-merged ]
+then
+  ln -sf __INSTALL_PREFIX__/mdsplus/desktop/mdsplus.menu /etc/xdg/menus/applications-merged/
+fi
+if [ -d /usr/share/desktop-directories ]
+then
+  ln -sf __INSTALL_PREFIX__/mdsplus/desktop/mdsplus.directory /usr/share/desktop-directories/
+fi
+if [ -d /usr/share/applications ]
+then
+  mkdir /usr/share/applications/mdsplus
+  ln -sf __INSTALL_PREFIX__/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
+fi
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -f /etc/profile.d/mdsplus.sh 2>/dev/null
+  rm -f /etc/profile.d/mdsplus.csh 2>/dev/null
+  rm -f /etc/.mdsplus_dir 2>/dev/null
+  rm -f /etc/xdg/menus/applications-merged/mdsplus.menu
+  rm -f /usr/share/desktop-directories/mdsplus.directory
+  rm -Rf /usr/share/applications/mdsplus
+  if [ -r /etc/xinetd.d/mdsip ]
+  then
+    rm -f /etc/xinetd.d/mdsip
+    /sbin/service xinetd reload
+  fi
+  if ( grep '^mdsip[[:space::]]' /etc/services >/dev/null 2>&amp;1 )
+  then
+    tmpfile=$(mktemp)
+    if ( grep -v '^mdsip[[:space::]]' /etc/services > $tmpfile )
+    then
+      mv /etc/services /etc/services.rpmsave
+      mv $tmpfile /etc/services
+    fi
+  fi 
+fi
+
+    </prerm>
+    <postrm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf __INSTALL_PREFIX__/mdsplus/{desktop,pixmaps}
+fi
+
+    </postrm>
+    <triggerin trigger="xinetd">
+
+if [ ! -r /etx/xinetd.d/mdsip ]
+then
+  cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+  if ( ! grep '^mdsip[[:space:]]' /etc/services >/dev/null 2>&amp;1)
+  then
+    echo 'mdsip 8000/tcp # MDSplus mdsip service' >> /etc/services
+  fi
+fi
+/sbin/service xinetd reload
+
+    </triggerin>
+  </package>
+
+  <package name="kernel_bin"
+	   arch="bin"
+	   summary="MDSplus core binaries"
+	   description="MDSplus core binaries">
+    <include dir="/usr/local/mdsplus/bin"/>
+    <include dir="/usr/local/mdsplus/lib"/>
+    <exclude file="/usr/local/mdsplus/bin/dw*"/>
+    <exclude file="/usr/local/mdsplus/bin/act*"/>
+    <exclude file="/usr/local/mdsplus/bin/traverser*"/>
+    <exclude file="/usr/local/mdsplus/lib/libXmds*"/>
+    <exclude file="/usr/local/mdsplus/bin/jScope"/>
+    <exclude file="/usr/local/mdsplus/bin/jServer"/>
+    <exclude file="/usr/local/mdsplus/bin/jTraverser"/>
+    <exclude file="/usr/local/mdsplus/lib/libJava*"/>
+    <exclude file="/usr/local/mdsplus/lib/*LV*"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsccl"/>
+    <exclude file="/usr/local/mdsplus/bin/mdscts"/>
+    <exclude file="/usr/local/mdsplus/bin/mdstcl"/>
+    <exclude file="/usr/local/mdsplus/lib/libCam*"/>
+    <exclude file="/usr/local/mdsplus/lib/libcts*"/>
+    <exclude file="/usr/local/mdsplus/lib??/libccl*"/>
+    <exclude file="/usr/local/mdsplus/lib??/libRemCam*"/>
+    <exclude_staticlibs/>
+    <exclude file="/usr/local/mdsplus/lib/lib*Idl*"/>
+    <exclude file="/usr/local/mdsplus/lib/lib*Sql*"/>
+    <exclude file="/usr/local/mdsplus/lib/libMit*"/>
+    <exclude file="/usr/local/mdsplus/lib/libMIT*"/>
+    <exclude file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
+    <exclude file="/usr/local/mdsplus/lib/libRoam*"/>
+    <exclude file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
+    <exclude file="/usr/local/mdsplus/bin/roam_check_access"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsipsd"/>
+    <exclude file="/usr/local/mdsplus/lib/libhdf5*"/>
+    <exclude file="/usr/local/mdsplus/bin/hdf5*"/>
+    <exclude file="/usr/local/mdsplus/bin/*HDF5"/>
+    <exclude file="/usr/local/mdsplus/bin/unix_submit"/>
+    <exclude file="/usr/local/mdsplus/bin/synchronize_unix"/>
+    <exclude file="/usr/local/mdsplus/bin/remote_submit"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsipd"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsip_server"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsip-server-*"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsip-client-*"/>
+    <exclude file="/usr/local/mdsplus/bin/job_*"/>
+    <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
+    <exclude file="/usr/local/mdsplus/bin/jDispatch*"/>
+    <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
+    <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
+    <exclude file="/usr/local/mdsplus/lib/acq_root_filesystem*"/>
+    <exclude file="/usr/local/mdsplus/bin/SetMdsplusFileProtection"/>
+    <exclude file="/usr/local/mdsplus/bin/dwscopePrint"/>
+    <exclude file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
+    <exclude file="/usr/local/mdsplus/bin/mkdirhier"/>
+    <exclude file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
+    <postinst>
+
+if [ -d /etc/ld.so.conf.d ]
+then
+  rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null
+  touch /etc/ld.so.conf.d/mdsplus.conf
+  for l in lib lib32 lib64
+  do
+    if [ ! -h __INSTALL_PREFIX__/mdsplus/$l -a -d __INSTALL_PREFIX__/mdsplus/$l ]
+    then
+      echo "__INSTALL_PREFIX__/mdsplus/$l" >> /etc/ld.so.conf.d/mdsplus.conf
+    fi
+  done
+  ldconfig > /dev/null 2>&amp;1
+fi
+if [ -d __INSTALL_PREFIX__/mdsplus/bin64 ]
+then
+  bits=64
+else
+  bits=32
+fi
+if [ -d __INSTALL_PREFIX__/mdsplus/bin${bits} ]
+then
+  if [ ! -h __INSTALL_PREFIX__/mdsplus/bin ]
+  then
+    ln -sf bin${bits} __INSTALL_PREFIX__/mdsplus/bin
+  fi
+fi
+if [ -d __INSTALL_PREFIX__/mdsplus/lib${bits} ]
+then
+  if [ ! -h __INSTALL_PREFIX__/mdsplus/lib ]
+  then
+    ln -sf lib${bits} __INSTALL_PREFIX__/mdsplus/lib
+  fi
+fi
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -f __INSTALL_PREFIX__/mdsplus/bin
+  rm -f __INSTALL_PREFIX__/mdsplus/lib
+fi
+
+    </prerm>
+    <postrm>
+
+if [ "$1" == "0" ]
+then
+  rm -f /etc/ld.so.conf.d/mdsplus.conf 2>/dev/null 
+  ldconfig >/dev/null 2>&amp;1
+fi
+
+    </postrm>
+  </package>
+
+  <package name="mssql"
+	   arch="bin"
+	   summary="Interface to mssql databases"
+	   description="Interface to mssql databases">
+    <requires package="kernel"/>
+    <include file="/usr/local/mdsplus/lib/lib*Sql*"/>
+    <exclude_staticlibs/>
+    <postinst>ldconfig >/dev/null 2>&amp;1</postinst>
+    <postrm>ldconfig >/dev/null 2>&amp;1</postrm>
+  </package>
+
+  <package name="epics"
+	   arch="noarch"
+	   summary="MDSplus/EPICS integration"
+	   description="MDSplus/EPICS integration">
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/epics"/>
+  </package>
+
+  <package name="rfxdevices"
+	   arch="noarch"
+	   summary="Support for RFX data acquisition devices"
+	   description="Support for RFX data acquisition devices">
+    <requires package="java"/>
+    <requires package="python"/>
+    <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
+    <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
+  </package>
+
+  <package name="kbsidevices"
+	   arch="noarch"
+	   summary="Support for KBSI data acquisition devices"
+	   description="Support for KBSI data acquisition devices">
+    <include dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
+  </package>
+
+  <package name="matlab"
+	   arch="noarch"
+	   summary="Mathworks MATLAB extensions"
+	   description="Mathworks MATLAB extensions">
+    <requires package="java"/>
+    <include dir="/usr/local/mdsplus/matlab"/>
+  </package>
+
+  <package name="python"
+	   arch="noarch"
+	   summary="Python interface to MDSplus"
+	   description="Python interface to MDSplus">
+    <requires package="kernel"/>
+    <include dir="/usr/local/mdsplus/mdsobjects/python"/>
+    <postinst>
+
+rm -Rf %{python_sitelib}/MDSplus-*
+pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python >/dev/null 2>&amp;1
+python setup.py -q install
+rm -Rf build dist MDSplus.egg-info
+popd >/dev/null 2>&amp;1
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf %{python_sitelib}/MDSplus-*
+fi
+
+    </prerm>
+  </package>
+
+  <package name="d3d"
+	   arch="noarch"
+	   summary="TDI functions used at D3D experiment at General Atomics"
+	   description="TDI functions used at D3D experiment at General Atomics">
+    <include dir="/usr/local/mdsplus/tdi/d3d"/>
+  </package>
+
+  <package name="php"
+	   arch="noarch"
+	   summary="php interface to MDSplus"
+	   description="php interface to MDSplus">
+    <include di="/usr/local/mdsplus/php"/>
+  </package>
+
+  <package name="repo"
+	   arch="noarch"
+	   summary="Yum Repository Setup for MDSplus"
+	   description="Yum Repository Setup for MDSplus">
+    <include file="/etc/yum.repos.d/mdsplus%(rflavor)s.repo"/>
+    <include file="/etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus"/>
+    <postinst type="rpm">dummy=$(rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus 2>/dev/null)</postinst>
+    <postrm type="rpm">nohup rpm -e gpg-pubkey-b09cb563 >dev/null 2>&amp;1 &amp;</postrm>
+  </package>
+
+ </packages>
+ <rpm>
+   <install_script>
+
+#!/bin/sh
+set -e
+rm -Rf %(workspace)s/%(flavor)s
+export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
+export RPM_DIR="%(workspace)s/%(flavor)s/RPMS"
+mkdir -p $BUILDROOT $RPM_DIR
+pwd
+cd ..
+./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
+            --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
+            --enable-nodebug \
+            --enable-mdsip_connections \
+            --with-labview=$LABVIEW_DIR \
+            --with-jdk=$JDK_DIR \
+            --with-idl=$IDL_DIR \
+            --with-gsi=/usr:gcc64 \
+            --host=x86-64-linux
+make clean >/dev/null
+env LANG=en_US.UTF-8 make
+env MDSPLUS_VERSION=%(mdsplus_version)s make install
+mv ${BUILDROOT}/usr/local/mdsplus/lib ${BUILDROOT}/usr/local/mdsplus/lib64
+mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin64
+make clean >/dev/null
+./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
+            --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
+            --enable-nodebug \
+            --enable-mdsip_connections \
+            --with-labview=$LABVIEW_DIR \
+            --with-jdk=$JDK_DIR \
+            --with-idl=$IDL_DIR \
+            --with-gsi=/usr:gcc32 \
+            --host=i686-linux
+make clean >/dev/null
+env LANG=en_US.UTF-8 make
+env MDSPLUS_VERSION=%(mdsplus_version)s make install
+mv ${BUILDROOT}/usr/local/mdsplus/lib ${BUILDROOT}/usr/local/mdsplus/lib32
+mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin32
+make clean >/dev/null
+mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d
+mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+cp %(workspace)s/RPM-GPG-KEY-MDSplus %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+outfile=%(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d/mdsplus%(rflavor)s.repo
+echo [MDSplus%(rflavor)s] > $outfile
+cat - >> $outfile &lt;&lt;EOF
+name=MDSplus%(rflavor)s 
+baseurl=http://www.mdsplus.org/dist/%(dist)s/%(flavor)s/RPMS
+enabled=1
+EOF
+cat - >>$outfile &lt;&lt;EOF
+gpgcheck=1
+gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
+metadata_expire=300
+EOF
+
+   </install_script>
+   <spec_start>
+
+%%define debug_package %%{nil}
+%%global _missing_build_ids_terminate_build 0
+%%global _unpackaged_files_terminate_build 0
+Name: mdsplus%(rflavor)s%(packagename)s
+Version: %(major)d.%(minor)d
+Release: %(release)s.%(dist)s
+License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
+Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)s.tgz
+URL: http://www.mdsplus.org
+Vendor: Massachusetts Institute of Technology
+Packager: Plasma Science and Fusion Center &lt;mdsplus@www.mdsplus.org>
+Summary: %(summary)s
+Group: Applications/Archiving
+Prefix: /usr/local
+AutoReqProv: yes
+
+   </spec_start>
+ </rpm>
+</deploy>
