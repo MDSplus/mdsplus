@@ -219,7 +219,6 @@ if __name__ == "__main__":
   elif os.environ['DIST'].startswith('win'):
     module=__import__('windows',globals())
   InstallationPackage=module.InstallationPackage(info)
-  print sys.argv
   if len(sys.argv)==5:
     if not InstallationPackage.exists():
       if subprocess.Popen("tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
