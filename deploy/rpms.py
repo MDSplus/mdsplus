@@ -285,7 +285,7 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
     def deploy(self):
         """Deploy release to repository"""
         if subprocess.Popen("""
-rsync -a %(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
+rsync -a %(workspace)s/%(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
         if subprocess.Popen("""
