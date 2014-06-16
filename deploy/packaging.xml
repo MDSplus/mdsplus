@@ -697,7 +697,7 @@ mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin32
 make clean >/dev/null
 mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d
 mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
-cp %(workspace)s/RPM-GPG-KEY-MDSplus %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+cp deploy/RPM-GPG-KEY-MDSplus %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
 outfile=%(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d/mdsplus%(rflavor)s.repo
 echo [MDSplus%(rflavor)s] > $outfile
 cat - >> $outfile &lt;&lt;EOF
@@ -732,4 +732,47 @@ AutoReqProv: yes
 
    </spec_start>
  </rpm>
+ <ubuntu>
+   <install_script>
+
+#!/bin/sh
+set -e
+rm -Rf %(workspace)s/%(flavor)s
+export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
+mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,debian,REPO,DEBS}
+mkdir -p %(workspace)s/%(flavor)s/REPO/{conf,pool,dists,db}
+cat - &lt;&lt;EOF &gt; %(workspace)s/%(flavor)s/REPO/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: 1.0
+Architectures: i386 amd64 noarch source
+Components: alpha beta stable
+Description: MDSplus packages
+SignWith: MDSplus
+EOF
+if [ "$(uname -p)" == "x86_64" ]
+then
+  bits=64
+else
+  bit2=32
+fi
+cd ..
+./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
+            --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
+            --enable-nodebug \
+            --enable-mdsip_connections \
+            --with-labview=$LABVIEW_DIR \
+            --with-jdk=$JDK_DIR \
+            --with-idl=$IDL_DIR \
+            --with-gsi=/usr:gcc${bits}
+make clean >/dev/null
+env LANG=en_US.UTF-8 make
+env MDSPLUS_VERSION=%(mdsplus_version)s make install
+make clean >/dev/null
+cd ${BUILDROOT}/mdsobjects/python
+python setup.py -q bdist_egg
+
+   </install_script>
+ </ubuntu>
 </deploy>
