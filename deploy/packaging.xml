@@ -737,15 +737,20 @@ AutoReqProv: yes
 
 #!/bin/sh
 set -e
+if [ ! -r ~/.gnupg ]
+then
+  rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
+  tar zxfC ~/rpm-signing-keys.tgz ~/
+fi
 rm -Rf %(workspace)s/%(flavor)s
 export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
-mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,debian,REPO,DEBS}
+mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,REPO,DEBS}
 mkdir -p %(workspace)s/%(flavor)s/REPO/{conf,pool,dists,db}
 cat - &lt;&lt;EOF &gt; %(workspace)s/%(flavor)s/REPO/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
-Version: 1.0
+Version: %(major)d.%(minor)d.%(release)d
 Architectures: i386 amd64 noarch source
 Components: alpha beta stable
 Description: MDSplus packages
