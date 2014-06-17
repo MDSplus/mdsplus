@@ -129,11 +129,12 @@ if __name__ == "__main__":
     for flavor in flavors:
       processChanges(flavor)
       info = getLatestRelease(flavor)
+      info['executable']=sys.executable
       if subprocess.Popen("""
 set -e
 tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
-python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
+%(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
         flushPrint("x"*100+"\n\n%s\n\n" % error + "x"*100)
