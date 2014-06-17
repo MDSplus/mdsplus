@@ -11,14 +11,18 @@ class InstallationPackage(object):
         tree=ET.parse('packaging.xml')
         root=tree.getroot()
         for package in root.getiterator('package'):
-            self.info['package']=package.attrib['name']
+            pkg=package.attrib['name']
+            if pkg == "MDSplus":
+                self.info['package']=""
+            else:
+                self.info['package']="-%s" % pkg
             if package.attrib['arch']=='noarch':
                 arches=('noarch',)
             else:
                 arches=('x86_64','i686')
             for arch in arches:
                 self.info['arch']=arch
-                rpm='/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s-%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
+                rpm='/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
                 try:
                     os.stat(rpm)
                 except:
