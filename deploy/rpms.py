@@ -1,5 +1,4 @@
 import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
-from deploy import packages
 
 class InstallationPackage(object):
     """Provides exists,build,test and deploy methods"""
@@ -9,21 +8,23 @@ class InstallationPackage(object):
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
-        for pkg in packages('packaging.xml'):
-            self.info['package']=pkg
-            found=list()
-            for arch in ('i686','noarch','x86_64'):
+        tree=ET.parse('packaging.xml')
+        root=tree.getroot()
+        for package in root.getiterator('package'):
+            self.info['package']=package.attrib['name']
+            if package.attrib['arch']=='noarch':
+                arches=('noarch',)
+            else:
+                arches=('x86_64','i686')
+            for arch in arches:
                 self.info['arch']=arch
                 rpm='/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s-%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
                 try:
                     os.stat(rpm)
-                    found.append(arch)
                 except:
-                    pass
-            if not ((len(found) == 1 and found[0]=='noarch') or (len(found) == 2 and found[0]=='i686' and found[1]=='x86_64')):
-                print("/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s-%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s rpm's not found" % self.info)
-                sys.stdout.flush()
-                return False
+                    print("%s not found" % rpm)
+                    sys.stdout.flush()
+                    return False
         print("Latest %(flavor) release %(major)d.%(minor)d-%(release)d is already available. Nothing to do for this release." % self.info)
         sys.stdout.flush()
         return True
@@ -251,8 +252,10 @@ sudo yum makecache""" % self.info,shell=True).wait() != 0:
         else:
             print("Testing package installation")
             sys.stdout.flush()
-            pkgs=packages('packaging.xml')
-            for pkg in pkgs:
+            tree=ET.parse('packaging.xml')
+            root=tree.getroot()
+            for package in root.getiterator('package'):
+                pkg=package.attrib['name']
                 if pkg != 'repo':
                     if pkg=='MDSplus':
                         pkg=""
