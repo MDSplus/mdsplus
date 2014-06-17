@@ -21,6 +21,36 @@ def flushPrint(text):
   print(text)
   sys.stdout.flush()
 
+def makeAllSourceTars():
+  """Create missing source tarballs"""
+  p=subprocess.Popen("cvs -Q rlog -h -S mdsplus/configure.in | grep _release",stdout=subprocess.PIPE,shell=True)
+  tags=p.stdout.readlines()
+  p.wait()
+  for tag in tags:
+    tag=tag.split(':')[0].lstrip()
+    v=tag.split('-')[1:]
+    major=int(v[0])
+    minor=int(v[1])
+    release=int(v[2])
+    flavor=tag.split('-')[0].split('_')[0]
+    if flavor == "stable":
+      rflavor=""
+    else:
+      rflavor="-%s" % flavor
+    src="mdsplus%s-%d.%d-%d" % (rflavor,major,minor,release)
+    tarball='/repository/SOURCES/'+src+'.tgz'
+    try:
+      os.stat(tarball)
+      print "%s exists" % tarball
+    except:
+      print "%s not found, creating" % tarball
+      status=subprocess.Popen("""
+rm -Rf %(src)s
+cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(tag)s mdsplus
+tar zhcf %(tarball)s --exclude CVS %(src)s
+rm -Rf %(src)s
+""" % {'tag':tag,'tarball':tarball,'src':src},shell=True,cwd="/tmp").wait()
+
 def getLatestRelease(flavor):
   """Get latest releases for all flavors"""
 #  Get release tags
@@ -72,20 +102,14 @@ def processChanges(flavor):
     src="mdsplus%s-%d.%d-%d" % (info['rflavor'],info['major'],info['minor'],info['release']+1)
 #      Checkout the source and make a source tarball and if successful tag the new release
     status=subprocess.Popen("""
+set -e
 rm -Rf /tmp/mdsplus-*
 cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
-if ( tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s )
-then
-  cd %(src)s
-  cvs -Q tag %(tag)s
-  status=$?
-  cd ..
-else
-  status=1
-fi
+tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s
+cd %(src)s
+cvs -Q tag %(tag)s
+cd ..
 rm -Rf /tmp/mdsplus-*
-echo status=$status
-exit $status
 """ % {'branch':info['branch'],'src':src,'tag':tag},shell=True,cwd="/tmp").wait()
     if status != 0:
       raise Exception("Error handling new release")
@@ -106,9 +130,9 @@ if __name__ == "__main__":
       processChanges(flavor)
       info = getLatestRelease(flavor)
       if subprocess.Popen("""
-tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
-mv mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/* ./ && \
-rm -Rf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d && \
+set -e
+tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
+cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
@@ -116,3 +140,5 @@ python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
         errors=errors+error+"\n"
     if len(errors) > 0:
       sys.exit(1)
+  elif sys.argv[1]=='sources':
+    makeAllSourceTars()
