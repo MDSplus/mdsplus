@@ -345,7 +345,7 @@ fi
     <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
     <include file="/usr/local/mdsplus/ChangeLog"/>
     <include dir="/usr/local/mdsplus/etc"/>
-    <include dir="/usr/local/mdsplus/share"/>
+    <include dir="/usr/local/mdsplus/man"/>
     <include dir="/usr/local/mdsplus/rpm"/>
     <include file="/usr/local/mdsplus/setup.*"/>
     <include dir="/usr/local/mdsplus/tdi"/>
