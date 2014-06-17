@@ -662,8 +662,7 @@ set -e
 rm -Rf %(workspace)s/%(flavor)s
 export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
 export RPM_DIR="%(workspace)s/%(flavor)s/RPMS"
-mkdir -p $BUILDROOT $RPM_DIR
-pwd
+mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,RPMS,BUILD}
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
