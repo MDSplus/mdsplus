@@ -290,5 +290,5 @@ rsync -a %(workspace)s/%(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
         if subprocess.Popen("""
 python setup.py -q bdist_egg -d /repository/EGGS
-""" % self.info,shell=True,cwd="%(workspace)s%(flavor)s/BUILDROOT/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
+""" % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/BUILDROOT/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
             raise Exception("Error deploying python release egg to repository" % self.info)
