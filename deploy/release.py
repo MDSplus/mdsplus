@@ -102,20 +102,14 @@ def processChanges(flavor):
     src="mdsplus%s-%d.%d-%d" % (info['rflavor'],info['major'],info['minor'],info['release']+1)
 #      Checkout the source and make a source tarball and if successful tag the new release
     status=subprocess.Popen("""
+set -e
 rm -Rf /tmp/mdsplus-*
 cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
-if ( tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s )
-then
-  cd %(src)s
-  cvs -Q tag %(tag)s
-  status=$?
-  cd ..
-else
-  status=1
-fi
+tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s
+cd %(src)s
+cvs -Q tag %(tag)s
+cd ..
 rm -Rf /tmp/mdsplus-*
-echo status=$status
-exit $status
 """ % {'branch':info['branch'],'src':src,'tag':tag},shell=True,cwd="/tmp").wait()
     if status != 0:
       raise Exception("Error handling new release")
@@ -136,8 +130,9 @@ if __name__ == "__main__":
       processChanges(flavor)
       info = getLatestRelease(flavor)
       if subprocess.Popen("""
-tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
-cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy && \
+set -e
+tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
+cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 python  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:
         error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info

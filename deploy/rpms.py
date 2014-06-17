@@ -241,10 +241,11 @@ skip_if_unavailable=1
 """ % self.info)
         f.close()
         if subprocess.Popen("""
-sudo yum remove -y 'mdsplus*' 
-sudo yum-config-manager --add-repo test-mdsplus%(rflavor)s.repo &&
+sudo yum remove -y 'mdsplus*'
+set -e
+sudo yum-config-manager --add-repo test-mdsplus%(rflavor)s.repo
 sudo yum-config-manager --enable test-mdsplus%(rflavor)s >/dev/null
-sudo yum clean metadata &&
+sudo yum clean metadata
 sudo yum makecache""" % self.info,shell=True).wait() != 0:
             errors.append("Erro preparing repository")
         else:
@@ -262,7 +263,8 @@ sudo yum makecache""" % self.info,shell=True).wait() != 0:
                         errors.append("Error installing package mdsplus%(rflavor)s%(package)s" % self.info)
         if len(errors) == 0:
             if subprocess.Popen("""
-sudo yum install -y mdsplus%(rflavor)s-mitdevices &&
+set -e
+sudo yum install -y mdsplus%(rflavor)s-mitdevices
 . /etc/profile.d/mdsplus.sh
 python <<EOF
 import sys,os
