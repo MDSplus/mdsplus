@@ -2925,43 +2925,23 @@ DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPt
 
 
 DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error)
-
 {
-
 	Data *dataPtr = NULL;
-
 	Data *dataPtrIn = NULL;
-
 	MgErr errorCode = noErr;
-
 	const char *errorSource = __FUNCTION__;
+	char const * errorMessage = "";
 
-	char *errorMessage = "";
-
-	try
-
-	{
-
+	try {
 		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
 		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
-
 		dataPtr->setValidation(dataPtrIn);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
+	} catch (const MdsException &e) {
 		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
+		errorMessage = e.what();
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
 }
 
 
