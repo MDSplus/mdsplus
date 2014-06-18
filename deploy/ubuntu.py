@@ -94,7 +94,7 @@ cp %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
                         raise Exception("Error building deb")
                 depends=list()
                 for require in package.getiterator("requires"):
-                    depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package']))
+                    depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package'].replace('_','-')))
                 if len(depends)==0:
                     self.info['depends']=''
                 else:
