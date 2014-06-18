@@ -1510,7 +1510,7 @@ DLLEXPORT void mdsplus_data_getByte(const void *lvDataPtr, char *byteOut, ErrorC
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1520,15 +1520,11 @@ DLLEXPORT void mdsplus_data_getByte(const void *lvDataPtr, char *byteOut, ErrorC
 
 		*byteOut = dataPtr->getByte();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1554,7 +1550,7 @@ DLLEXPORT void mdsplus_data_getByteArray(const void *lvDataPtr, LByteArrHdl lvBy
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1584,17 +1580,13 @@ DLLEXPORT void mdsplus_data_getByteArray(const void *lvDataPtr, LByteArrHdl lvBy
 
 		deleteNativeArray(byteArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(byteArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1618,7 +1610,7 @@ DLLEXPORT void mdsplus_data_getDouble(const void *lvDataPtr, double *doubleOut, 
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1628,15 +1620,11 @@ DLLEXPORT void mdsplus_data_getDouble(const void *lvDataPtr, double *doubleOut, 
 
 		*doubleOut = dataPtr->getDouble();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1662,7 +1650,7 @@ DLLEXPORT void mdsplus_data_getDoubleArray(const void *lvDataPtr, LDblArrHdl lvD
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1692,17 +1680,13 @@ DLLEXPORT void mdsplus_data_getDoubleArray(const void *lvDataPtr, LDblArrHdl lvD
 
 		deleteNativeArray(doubleArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(doubleArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1728,7 +1712,7 @@ DLLEXPORT void mdsplus_data_getError(const void *lvDataPtr, void **lvDataPtrOut,
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1740,17 +1724,13 @@ DLLEXPORT void mdsplus_data_getError(const void *lvDataPtr, void **lvDataPtrOut,
 
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 
-	}
-
-	catch (const MdsException & e)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -1770,7 +1750,7 @@ DLLEXPORT void mdsplus_data_getFloat(const void *lvDataPtr, float *floatOut, Err
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1780,15 +1760,11 @@ DLLEXPORT void mdsplus_data_getFloat(const void *lvDataPtr, float *floatOut, Err
 
 		*floatOut = dataPtr->getFloat();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1814,7 +1790,7 @@ DLLEXPORT void mdsplus_data_getFloatArray(const void *lvDataPtr, LFltArrHdl lvFl
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1844,17 +1820,13 @@ DLLEXPORT void mdsplus_data_getFloatArray(const void *lvDataPtr, LFltArrHdl lvFl
 
 		deleteNativeArray(floatArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(floatArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1880,7 +1852,7 @@ DLLEXPORT void mdsplus_data_getHelp(const void *lvDataPtr, void **lvDataPtrOut, 
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1892,17 +1864,13 @@ DLLEXPORT void mdsplus_data_getHelp(const void *lvDataPtr, void **lvDataPtrOut, 
 
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -1932,7 +1900,7 @@ DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char 
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -1972,7 +1940,7 @@ DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char 
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -1992,7 +1960,7 @@ DLLEXPORT void mdsplus_data_getInt(const void *lvDataPtr, int *intOut, ErrorClus
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2002,15 +1970,11 @@ DLLEXPORT void mdsplus_data_getInt(const void *lvDataPtr, int *intOut, ErrorClus
 
 		*intOut = dataPtr->getInt();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2036,7 +2000,7 @@ DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntA
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2066,17 +2030,13 @@ DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntA
 
 		deleteNativeArray(intArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(intArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2100,7 +2060,7 @@ DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, int64_t *longOut, Err
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2110,15 +2070,11 @@ DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, int64_t *longOut, Err
 
 		*longOut = dataPtr->getLong();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2144,7 +2100,7 @@ DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLng
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2174,17 +2130,13 @@ DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLng
 
 		deleteNativeArray(longArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(longArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2210,7 +2162,7 @@ DLLEXPORT void mdsplus_data_getShape(const void *lvDataPtr, LIntArrHdl lvIntArrH
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2240,17 +2192,13 @@ DLLEXPORT void mdsplus_data_getShape(const void *lvDataPtr, LIntArrHdl lvIntArrH
 
 		deleteNativeArray(intArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(intArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2274,7 +2222,7 @@ DLLEXPORT void mdsplus_data_getShort(const void *lvDataPtr, short *shortOut, Err
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2284,15 +2232,11 @@ DLLEXPORT void mdsplus_data_getShort(const void *lvDataPtr, short *shortOut, Err
 
 		*shortOut = dataPtr->getShort();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2318,7 +2262,7 @@ DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvSh
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2350,17 +2294,13 @@ DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvSh
 
 		deleteNativeArray(shortArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & me) {
 
 		deleteNativeArray(shortArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2384,7 +2324,7 @@ DLLEXPORT void mdsplus_data_getSize(const void *lvDataPtr, int *sizeOut, ErrorCl
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2394,15 +2334,11 @@ DLLEXPORT void mdsplus_data_getSize(const void *lvDataPtr, int *sizeOut, ErrorCl
 
 		*sizeOut = dataPtr->getSize();
 
-	}
-
-	catch (const MdsException &e)
-
-	{
+	} catch (const MdsException &e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -2424,7 +2360,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2464,7 +2400,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -2488,7 +2424,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2574,11 +2510,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 		deleteNativeArray(stringArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		for (int i = 0; i < stringArrLen; i++)
 
@@ -2588,7 +2520,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2614,7 +2546,7 @@ DLLEXPORT void mdsplus_data_getUnits(const void *lvDataPtr, void **lvDataPtrOut,
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2636,7 +2568,7 @@ DLLEXPORT void mdsplus_data_getUnits(const void *lvDataPtr, void **lvDataPtrOut,
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -2658,7 +2590,7 @@ DLLEXPORT void mdsplus_data_getValidation(const void *lvDataPtr, void **lvDataPt
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2680,7 +2612,7 @@ DLLEXPORT void mdsplus_data_getValidation(const void *lvDataPtr, void **lvDataPt
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -2700,7 +2632,7 @@ DLLEXPORT void mdsplus_data_plot(const void *lvDataPtr, ErrorCluster *error)
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2710,15 +2642,11 @@ DLLEXPORT void mdsplus_data_plot(const void *lvDataPtr, ErrorCluster *error)
 
 		dataPtr->plot();
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2744,7 +2672,7 @@ DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteA
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2774,17 +2702,13 @@ DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteA
 
 		deleteNativeArray(byteArrOut);
 
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(byteArrOut);
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(mdsE.what());
+		errorMessage = e.what();
 
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
@@ -2810,7 +2734,7 @@ DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPt
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2830,7 +2754,7 @@ DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPt
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -2852,7 +2776,7 @@ DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtr
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2872,7 +2796,7 @@ DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtr
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
@@ -2894,7 +2818,7 @@ DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPt
 
 	const char *errorSource = __FUNCTION__;
 
-	char *errorMessage = "";
+	char const * errorMessage = "";
 
 	try
 
@@ -2914,7 +2838,7 @@ DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPt
 
 		errorCode = bogusError;
 
-		errorMessage = const_cast<char *>(e.what());
+		errorMessage = e.what();
 
 	}
 
