@@ -136,7 +136,7 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
 
     def test(self):
         errors=list()
-        self.info['apt-get']="apt-get -o Dir::State=%(workspace)s/%(flavor)s/apt/var/lib/apt/ -o Dir::Etc=%(workspace)/apt/etc/apt" % self.info
+        self.info['apt-get']="apt-get -o Dir::State=%(workspace)s/%(flavor)s/apt/var/lib/apt/ -o Dir::Etc=%(workspace)s/%(flavor)s/apt/etc/apt" % self.info
         print("Preparing test repository")
         sys.stdout.flush()
         if subprocess.Popen("""
