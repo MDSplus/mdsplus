@@ -4,6 +4,7 @@
 #if defined (_WIN32)
 #define MDS_WINDOWS
 #define EXPORT __declspec(dllexport)
+#define NOMINMAX
 
 #elif defined (__APPLE__)
 #define MDS_MAC

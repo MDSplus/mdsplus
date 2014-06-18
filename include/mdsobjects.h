@@ -20,8 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef HAVE_WINDOWS_H
-#define NOMINMAX
+#ifdef MDS_WINDOWS
 #include <Windows.h>
 #else
 #include <sys/types.h>
