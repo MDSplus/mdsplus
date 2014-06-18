@@ -5,6 +5,10 @@ using namespace std;
 
 namespace MDSplus {
 
+static void deleteLvData(void ** data) {
+	deleteData(dynamic_cast<MDSplus::Data *>(*data));
+}
+
 void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
 {
 	if (code) {
@@ -50,7 +54,7 @@ DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *err
 
 DLLEXPORT void mdsplus_array_destructor(void **lvArrayPtr)
 {
-	deleteData(reinterpret_cast<Array *>(*lvArrayPtr));
+	deleteLvData(lvArrayPtr);
 }
 
 DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
@@ -107,17 +111,10 @@ DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lv
 
 		errorMessage = const_cast<char *>(mdsE.what());
 
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
 }
-
-
 
 DLLEXPORT void mdsplus_array_getDoubleArray(const void *lvArrayPtr, LDblArrHdl lvDblArrHdlOut, ErrorCluster *error)
 
@@ -218,18 +215,10 @@ DLLEXPORT void mdsplus_array_getElementAt(const void *lvArrayPtr, void **lvDataP
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(mdsE.what());
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
 }
-
-
 
 DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lvDataPtrOut, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
 
@@ -280,15 +269,9 @@ DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lv
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(mdsE.what());
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
 }
 
 DLLEXPORT void mdsplus_array_getFloatArray(const void *lvArrayPtr, LFltArrHdl lvFltArrHdlOut, ErrorCluster *error)
@@ -1019,21 +1002,10 @@ DLLEXPORT void mdsplus_compound_constructor(void **lvCompoundPtrOut, ErrorCluste
 
 }
 
-
-
 DLLEXPORT void mdsplus_compound_destructor(void **lvCompoundPtr)
-
 {
-
-	Compound *compoundPtr = reinterpret_cast<Compound *>(*lvCompoundPtr);
-
-	deleteData(compoundPtr);
-
-	*lvCompoundPtr = NULL;
-
+	deleteLvData(lvCompoundPtr);
 }
-
-
 
 /********************************************************************************************************
 
@@ -1335,21 +1307,10 @@ DLLEXPORT void mdsplus_data_deserialize_data(void **lvDataPtrOut, const void *lv
 
 }
 
-
-
 DLLEXPORT void mdsplus_data_destructor(void **lvDataPtr)
-
 {
-
-	Data *dataPtr = reinterpret_cast<Data *>(*lvDataPtr);
-
-	deleteData(dataPtr);
-
-	*lvDataPtr = NULL;
-
+	deleteLvData(lvDataPtr);
 }
-
-
 
 DLLEXPORT void mdsplus_data_evaluate(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error)
 
@@ -2867,21 +2828,10 @@ DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvD
 
  ********************************************************************************************************/
 
-
-
 DLLEXPORT void mdsplus_empty_destructor(void **lvEmptyPtr)
-
 {
-
-	Empty *emptyPtr = reinterpret_cast<Empty *>(*lvEmptyPtr);
-
-	deleteData(emptyPtr);
-
-	*lvEmptyPtr = NULL;
-
+	deleteLvData(lvEmptyPtr);
 }
-
-
 
 /********************************************************************************************************
 
@@ -2929,21 +2879,10 @@ DLLEXPORT void mdsplus_float32_constructor(void **lvFloat32PtrOut, float valIn, 
 
 }
 
-
-
 DLLEXPORT void mdsplus_float32_destructor(void **lvFloat32Ptr)
-
 {
-
-	Float32 *float32Ptr = reinterpret_cast<Float32 *>(*lvFloat32Ptr);
-
-	deleteData(float32Ptr);
-
-	*lvFloat32Ptr = NULL;
-
+	deleteLvData(lvFloat32Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_float32_getByte(const void *lvFloat32Ptr, char *byteOut, ErrorCluster *error)
 
@@ -3301,21 +3240,10 @@ DLLEXPORT void mdsplus_float32array_constructor_dims(void **lvFloat32ArrayPtrOut
 
 }
 
-
-
 DLLEXPORT void mdsplus_float32array_destructor(void **lvFloat32ArrayPtr)
-
 {
-
-	Float32Array *float32ArrayPtr = reinterpret_cast<Float32Array *>(*lvFloat32ArrayPtr);
-
-	deleteData(float32ArrayPtr);
-
-	*lvFloat32ArrayPtr = NULL;
-
+	deleteLvData(lvFloat32ArrayPtr);
 }
-
-
 
 /********************************************************************************************************
 
@@ -3363,21 +3291,10 @@ DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn,
 
 }
 
-
-
 DLLEXPORT void mdsplus_float64_destructor(void **lvFloat64Ptr)
-
 {
-
-	Float64 *float64Ptr = reinterpret_cast<Float64 *>(*lvFloat64Ptr);
-
-	deleteData(float64Ptr);
-
-	*lvFloat64Ptr = NULL;
-
+	deleteLvData(lvFloat64Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, ErrorCluster *error)
 
@@ -3735,23 +3652,10 @@ DLLEXPORT void mdsplus_float64array_constructor_dims(void **lvFloat64ArrayPtrOut
 
 }
 
-
-
 DLLEXPORT void mdsplus_float64array_destructor(void **lvFloat64ArrayPtr)
-
 {
-
-	Float64Array *float64ArrayPtr = reinterpret_cast<Float64Array *>(*lvFloat64ArrayPtr);
-
-	deleteData(float64ArrayPtr);
-
-	*lvFloat64ArrayPtr = NULL;
-
+	deleteLvData(lvFloat64ArrayPtr);
 }
-
-
-
-
 
 /********************************************************************************************************
 
@@ -3799,21 +3703,10 @@ DLLEXPORT void mdsplus_int16_constructor(void **lvInt16PtrOut, short valIn, Erro
 
 }
 
-
-
 DLLEXPORT void mdsplus_int16_destructor(void **lvInt16Ptr)
-
 {
-
-	Int16 *int16Ptr = reinterpret_cast<Int16 *>(*lvInt16Ptr);
-
-	deleteData(int16Ptr);
-
-	*lvInt16Ptr = NULL;
-
+	deleteLvData(lvInt16Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_int16_getByte(const void *lvInt16Ptr, char *byteOut, ErrorCluster *error)
 
@@ -4171,21 +4064,10 @@ DLLEXPORT void mdsplus_int16array_constructor_dims(void **lvInt16ArrayPtrOut, co
 
 }
 
-
-
 DLLEXPORT void mdsplus_int16array_destructor(void **lvInt16ArrayPtr)
-
 {
-
-	Int16Array *int16ArrayPtr = reinterpret_cast<Int16Array *>(*lvInt16ArrayPtr);
-
-	deleteData(int16ArrayPtr);
-
-	*lvInt16ArrayPtr = NULL;
-
+	deleteLvData(lvInt16ArrayPtr);
 }
-
-
 
 /********************************************************************************************************
 
@@ -4233,21 +4115,10 @@ DLLEXPORT void mdsplus_int32_constructor(void **lvInt32PtrOut, int valIn, ErrorC
 
 }
 
-
-
 DLLEXPORT void mdsplus_int32_destructor(void **lvInt32Ptr)
-
 {
-
-	Int32 *int32Ptr = reinterpret_cast<Int32 *>(*lvInt32Ptr);
-
-	deleteData(int32Ptr);
-
-	*lvInt32Ptr = NULL;
-
+	deleteLvData(lvInt32Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_int32_getByte(const void *lvInt32Ptr, char *byteOut, ErrorCluster *error)
 
@@ -4605,21 +4476,10 @@ DLLEXPORT void mdsplus_int32array_constructor_dims(void **lvInt32ArrayPtrOut, co
 
 }
 
-
-
 DLLEXPORT void mdsplus_int32array_destructor(void **lvInt32ArrayPtr)
-
 {
-
-	Int32Array *int32ArrayPtr = reinterpret_cast<Int32Array *>(*lvInt32ArrayPtr);
-
-	deleteData(int32ArrayPtr);
-
-	*lvInt32ArrayPtr = NULL;
-
+	deleteLvData(lvInt32ArrayPtr);
 }
-
-
 
 /********************************************************************************************************
 
@@ -4667,21 +4527,10 @@ DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, int64_t valIn, Er
 
 }
 
-
-
 DLLEXPORT void mdsplus_int64_destructor(void **lvInt64Ptr)
-
 {
-
-	Int64 *int64Ptr = reinterpret_cast<Int64 *>(*lvInt64Ptr);
-
-	deleteData(int64Ptr);
-
-	*lvInt64Ptr = NULL;
-
+	deleteLvData(lvInt64Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCluster *error)
 
@@ -5039,22 +4888,10 @@ DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, co
 
 }
 
-
-
-
 DLLEXPORT void mdsplus_int64array_destructor(void **lvInt64ArrayPtr)
-
 {
-
-	Int64Array *int64ArrayPtr = reinterpret_cast<Int64Array *>(*lvInt64ArrayPtr);
-
-	deleteData(int64ArrayPtr);
-
-	*lvInt64ArrayPtr = NULL;
-
+	deleteLvData(lvInt64ArrayPtr);
 }
-
-
 
 /********************************************************************************************************
 
@@ -5102,21 +4939,10 @@ DLLEXPORT void mdsplus_int8_constructor(void **lvInt8PtrOut, char valIn, ErrorCl
 
 }
 
-
-
 DLLEXPORT void mdsplus_int8_destructor(void **lvInt8Ptr)
-
 {
-
-	Int8 *int8Ptr = reinterpret_cast<Int8 *>(*lvInt8Ptr);
-
-	deleteData(int8Ptr);
-
-	*lvInt8Ptr = NULL;
-
+	deleteLvData(lvInt8Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_int8_getByte(const void *lvInt8Ptr, char *byteOut, ErrorCluster *error)
 
@@ -5474,23 +5300,10 @@ DLLEXPORT void mdsplus_int8array_constructor_dims(void **lvInt8ArrayPtrOut, cons
 
 }
 
-
-
 DLLEXPORT void mdsplus_int8array_destructor(void **lvInt8ArrayPtr)
-
 {
-
-	Int8Array *int8ArrayPtr = reinterpret_cast<Int8Array *>(*lvInt8ArrayPtr);
-
-	deleteData(int8ArrayPtr);
-
-	*lvInt8ArrayPtr = NULL;
-
+	deleteLvData(lvInt8ArrayPtr);
 }
-
-
-
-
 
 /********************************************************************************************************
 
@@ -5550,21 +5363,10 @@ DLLEXPORT void mdsplus_range_constructor(void **lvRangePtrOut, const void *lvBeg
 
 }
 
-
-
 DLLEXPORT void mdsplus_range_destructor(void **lvRangePtr, ErrorCluster *error)
-
 {
-
-	Range *rangePtr = reinterpret_cast<Range *>(*lvRangePtr);
-
-	deleteData(rangePtr);
-
-	*lvRangePtr = NULL;
-
+	deleteLvData(lvRangePtr);
 }
-
-
 
 DLLEXPORT void mdsplus_range_getBegin(const void *lvRangePtr, void **lvDataPtrOut, ErrorCluster *error)
 
@@ -5882,21 +5684,10 @@ DLLEXPORT void mdsplus_signal_constructor(void **lvSignalPtrOut, const void *lvD
 
 }
 
-
-
 DLLEXPORT void mdsplus_signal_destructor(void **lvSignalPtr, ErrorCluster *error)
-
 {
-
-	Range *signalPtr = reinterpret_cast<Range *>(*lvSignalPtr);
-
-	deleteData(signalPtr);
-
-	*lvSignalPtr = NULL;
-
+	deleteLvData(lvSignalPtr);
 }
-
-
 
 DLLEXPORT void mdsplus_signal_getData(const void *lvSignalPtr, void **lvDataPtrOut, ErrorCluster *error)
 
@@ -6206,21 +5997,10 @@ DLLEXPORT void mdsplus_scalar_constructor(void **lvScalarPtrOut, ErrorCluster *e
 
 }
 
-
-
 DLLEXPORT void mdsplus_scalar_destructor(void **lvScalarPtr)
-
 {
-
-	Scalar *scalarPtr = reinterpret_cast<Scalar *>(*lvScalarPtr);
-
-	deleteData(scalarPtr);
-
-	*lvScalarPtr = NULL;
-
+	deleteLvData(lvScalarPtr);
 }
-
-
 
 DLLEXPORT void mdsplus_scalar_getInfo(const void *lvScalarPtr, char *clazzOut, char *dtypeOut, short *lengthOut, LIntArrHdl lvIntArrHdlOut, ErrorCluster *error)
 
@@ -6388,21 +6168,10 @@ DLLEXPORT void mdsplus_string_constructor_len(void **lvStringPtrOut, const LByte
 
 }
 
-
-
 DLLEXPORT void mdsplus_string_destructor(void **lvStringPtr)
-
 {
-
-	String *stringPtr = reinterpret_cast<String *>(*lvStringPtr);
-
-	deleteData(stringPtr);
-
-	*lvStringPtr = NULL;
-
+	deleteLvData(lvStringPtr);
 }
-
-
 
 DLLEXPORT void mdsplus_string_equals(const void *lvStringPtr, LVBoolean *equalsOut, const void *lvDataPtrIn, ErrorCluster *error)
 
@@ -6642,23 +6411,10 @@ DLLEXPORT void mdsplus_stringarray_constructor_stringLen(void **lvStringArrayPtr
 
 }
 
-
-
 DLLEXPORT void mdsplus_stringarray_destructor(void **lvStringArrayPtr)
-
 {
-
-	StringArray *stringArrayPtr = reinterpret_cast<StringArray *>(*lvStringArrayPtr);
-
-	deleteData(stringArrayPtr);
-
-	*lvStringArrayPtr = NULL;
-
+	deleteLvData(lvStringArrayPtr);
 }
-
-
-
-
 
 /********************************************************************************************************
 
@@ -6706,21 +6462,10 @@ DLLEXPORT void mdsplus_uint16_constructor(void **lvUint16PtrOut, unsigned short 
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint16_destructor(void **lvUint16Ptr)
-
 {
-
-	Uint16 *uint16Ptr = reinterpret_cast<Uint16 *>(*lvUint16Ptr);
-
-	deleteData(uint16Ptr);
-
-	*lvUint16Ptr = NULL;
-
+	deleteLvData(lvUint16Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_uint16_getByte(const void *lvUint16Ptr, char *byteOut, ErrorCluster *error)
 
@@ -7078,23 +6823,10 @@ DLLEXPORT void mdsplus_uint16array_constructor_dims(void **lvUint16ArrayPtrOut, 
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint16array_destructor(void **lvUint16ArrayPtr)
-
 {
-
-	Uint16Array *uint16ArrayPtr = reinterpret_cast<Uint16Array *>(*lvUint16ArrayPtr);
-
-	deleteData(uint16ArrayPtr);
-
-	*lvUint16ArrayPtr = NULL;
-
+	deleteLvData(lvUint16ArrayPtr);
 }
-
-
-
-
 
 /********************************************************************************************************
 
@@ -7142,21 +6874,10 @@ DLLEXPORT void mdsplus_uint32_constructor(void **lvUint32PtrOut, unsigned int va
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint32_destructor(void **lvUint32Ptr)
-
 {
-
-	Uint32 *uint32Ptr = reinterpret_cast<Uint32 *>(*lvUint32Ptr);
-
-	deleteData(uint32Ptr);
-
-	*lvUint32Ptr = NULL;
-
+	deleteLvData(lvUint32Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_uint32_getByte(const void *lvUint32Ptr, char *byteOut, ErrorCluster *error)
 
@@ -7514,23 +7235,10 @@ DLLEXPORT void mdsplus_uint32array_constructor_dims(void **lvUint32ArrayPtrOut, 
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint32array_destructor(void **lvUint32ArrayPtr)
-
 {
-
-	Uint32Array *uint32ArrayPtr = reinterpret_cast<Uint32Array *>(*lvUint32ArrayPtr);
-
-	deleteData(uint32ArrayPtr);
-
-	*lvUint32ArrayPtr = NULL;
-
+	deleteLvData(lvUint32ArrayPtr);
 }
-
-
-
-
 
 /********************************************************************************************************
 
@@ -7578,21 +7286,10 @@ DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn,
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint64_destructor(void **lvUint64Ptr)
-
 {
-
-	Uint64 *uint64Ptr = reinterpret_cast<Uint64 *>(*lvUint64Ptr);
-
-	deleteData(uint64Ptr);
-
-	*lvUint64Ptr = NULL;
-
+	deleteLvData(lvUint64Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_uint64_getByte(const void *lvUint64Ptr, char *byteOut, ErrorCluster *error)
 
@@ -8012,23 +7709,10 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint64array_destructor(void **lvUint64ArrayPtr)
-
 {
-
-	Uint64Array *uint64ArrayPtr = reinterpret_cast<Uint64Array *>(*lvUint64ArrayPtr);
-
-	deleteData(uint64ArrayPtr);
-
-	*lvUint64ArrayPtr = NULL;
-
+	deleteLvData(lvUint64ArrayPtr);
 }
-
-
-
-
 
 /********************************************************************************************************
 
@@ -8076,21 +7760,10 @@ DLLEXPORT void mdsplus_uint8_constructor(void **lvUint8PtrOut, unsigned char val
 
 }
 
-
-
 DLLEXPORT void mdsplus_uint8_destructor(void **lvUint8Ptr)
-
 {
-
-	Uint8 *uint8Ptr = reinterpret_cast<Uint8 *>(*lvUint8Ptr);
-
-	deleteData(uint8Ptr);
-
-	*lvUint8Ptr = NULL;
-
+	deleteLvData(lvUint8Ptr);
 }
-
-
 
 DLLEXPORT void mdsplus_uint8_getByte(const void *lvUint8Ptr, char *byteOut, ErrorCluster *error)
 
@@ -8493,15 +8166,8 @@ DLLEXPORT void mdsplus_uint8array_deserialize(const void *lvUint8ArrayPtr, void 
 }
 
 DLLEXPORT void mdsplus_uint8array_destructor(void **lvUint8ArrayPtr)
-
 {
-
-	Uint8Array *uint8ArrayPtr = reinterpret_cast<Uint8Array *>(*lvUint8ArrayPtr);
-
-	deleteData(uint8ArrayPtr);
-
-	*lvUint8ArrayPtr = NULL;
-
+	deleteLvData(lvUint8ArrayPtr);
 }
 
 
