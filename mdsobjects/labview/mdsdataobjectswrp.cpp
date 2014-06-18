@@ -3,6 +3,8 @@
 
 using namespace std;
 
+namespace MDSplus {
+
 void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
 {
 	if (code) {
@@ -8502,3 +8504,5 @@ DLLEXPORT void mdsplus_uint8array_destructor(void **lvUint8ArrayPtr)
 
 }
 
+
+} /* namespace MDSplus */
