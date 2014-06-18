@@ -733,9 +733,7 @@ AutoReqProv: yes
    </spec_start>
  </rpm>
  <ubuntu>
-   <install_script>
-
-#!/bin/sh
+   <install_script>#!/bin/bash
 set -e
 if [ ! -r ~/.gnupg ]
 then
@@ -775,8 +773,6 @@ make clean >/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
 make clean >/dev/null
-cd ${BUILDROOT}/mdsobjects/python
-python setup.py -q bdist_egg
 
    </install_script>
  </ubuntu>
