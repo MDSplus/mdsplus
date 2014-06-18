@@ -23,8 +23,6 @@ void fillErrorCluster(MgErr code, const char *source, const char *message, Error
 	}
 }
 
-using namespace MDSplus;
-
 /********************************************************************************************************
 												ARRAY
  ********************************************************************************************************/
@@ -49,18 +47,9 @@ DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *err
 }
 
 DLLEXPORT void mdsplus_array_destructor(void **lvArrayPtr)
-
 {
-
-	Array *arrayPtr = reinterpret_cast<Array *>(*lvArrayPtr);
-
-	deleteData(arrayPtr);
-
-	*lvArrayPtr = NULL;
-
+	deleteData(reinterpret_cast<Array *>(*lvArrayPtr));
 }
-
-
 
 DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
 
