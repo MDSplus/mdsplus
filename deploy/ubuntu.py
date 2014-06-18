@@ -147,7 +147,7 @@ mkdir -p ./{apt/etc,apt/var/lib/apt}
 rsync -a /etc/apt apt/etc/
 apt-key add rpm/mdsplus.gpg.key
 echo "deb file://$(pwd)/REPO/ MDSplus %(flavor)s" > apt/etc/apt/sources.list.d/mdsplus.list
-""" % self.info,shell=True).wait() != 0:
+""" % self.info,shell=True,cwd="%(workspace)s/%(flavor)s" % self.info).wait() != 0:
             raise Exception("Failed to create test apt confiration files")
         if subprocess.Popen("sudo %(apt-get)s autoremove -y 'mdsplus*'" % self.info,shell=True).wait() != 0:
             errors.append("Error removing MDSplus installs")
