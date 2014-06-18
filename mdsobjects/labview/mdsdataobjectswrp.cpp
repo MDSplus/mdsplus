@@ -30,44 +30,23 @@ using namespace MDSplus;
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *error)
-
 {
-
 	Array *arrayPtrOut = NULL;
-
 	MgErr errorCode = noErr;
-
 	const char *errorSource = __FUNCTION__;
+	char const * errorMessage = "";
 
-	char *errorMessage = "";
-
-	try
-
-	{
-
+	try	{
 		arrayPtrOut = new Array();
-
 		*lvArrayPtrOut = reinterpret_cast<void *>(arrayPtrOut);
-
-	}
-
-	catch (const MdsException & e)
-
-	{
-
+	} catch (const MdsException & e) {
 		deleteData(arrayPtrOut);
-
 		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
+		errorMessage = e.what();
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
 }
-
-
 
 DLLEXPORT void mdsplus_array_destructor(void **lvArrayPtr)
 
