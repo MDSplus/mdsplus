@@ -1,4 +1,5 @@
 import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
+from deploy import getPackageFiles
 
 class InstallationPackage(object):
     """Provides exists,build,test and deploy methods"""
