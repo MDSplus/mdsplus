@@ -1,66 +1,33 @@
 #include "mdsobjectswrp.h"
-
-
+#include <string>
 
 using namespace std;
 
-
-
 void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
-
 {
+	if (code) {
+		std::string errMsg(source);
+		errMsg += ".<ERR>.";
+		errMsg += message;
+		errMsg += ".";
 
-	if (code)
-
-	{
-
-		char *errMsg = new char[strlen(source) + strlen(message) + strlen("<ERR>..")];
-
-		strcpy(errMsg, source);
-
-		strcat(errMsg, ".");
-
-		strcat(errMsg, "<ERR>");
-
-		strcat(errMsg, message);
-
-		strcat(errMsg, ".");
-
-		int32 errMsgLen = static_cast<int32>(strlen(errMsg));
+		int32 errMsgLen = static_cast<int32>(errMsg.size());
 
 		error->status = LVBooleanTrue;
-
 		error->code = static_cast<int32>(code);
 
-		if (!NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen))
-
-		{
-
-			MoveBlock(reinterpret_cast<uChar *>(errMsg), LStrBuf(*error->source), errMsgLen);
-
+		if (!NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen)) {
+			MoveBlock(errMsg.c_str(), LStrBuf(*error->source), errMsgLen);
 			(*error->source)->cnt = errMsgLen;
-
 		}
-
-		delete[] errMsg;
-
 	}
-
 }
-
-
 
 using namespace MDSplus;
 
-
-
 /********************************************************************************************************
-
 												ARRAY
-
  ********************************************************************************************************/
-
-
 
 DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *error)
 
