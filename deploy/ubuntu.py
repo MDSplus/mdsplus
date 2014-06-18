@@ -143,8 +143,8 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
 sudo %(apt-get)s autoremove -y 'mdsplus*'
 set -e
 rm -Rf apt
-mkdir -p ./{apt/etc,apt/var/lib/apt}
-rsync -a /etc/apt apt/etc/
+mkdir -p apt/{etc,var/lib/apt}
+sudo rsync -a /etc/apt apt/etc/
 apt-key add rpm/mdsplus.gpg.key
 echo "deb file://$(pwd)/REPO/ MDSplus %(flavor)s" > apt/etc/apt/sources.list.d/mdsplus.list
 """ % self.info,shell=True,cwd="%(workspace)s/%(flavor)s" % self.info).wait() != 0:
