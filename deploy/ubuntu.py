@@ -95,15 +95,17 @@ cp %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
                 depends=list()
                 for require in package.getiterator("requires"):
                     depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package']))
-                self.info['depends']=','.join(depends)
+                if len(depends)==0:
+                    self.info['depends']=''
+                else:
+                    self.info['depends']="\nDepends: %s" % ','.join(depends)
                 self.info['name']=self.info['packagename'].replace('_','-')
                 f=open("%(tmpdir)s/DEBIAN/control" % self.info,"w")
                 f.write("""Package: mdsplus%(rflavor)s%(name)s
 Version: %(major)d.%(minor)d.%(release)d
 Section: admin
 Priority: optional
-Architecture: %(arch)s
-Depends: %(depends)s
+Architecture: %(arch)s%(depends)s
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: %(description)s
 """ % self.info)
@@ -141,16 +143,18 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
         sys.stdout.flush()
         if subprocess.Popen("""
 sudo %(apt-get)s autoremove -y 'mdsplus*'
-set -e
-rm -Rf apt
-mkdir -p apt/{etc,var/lib/apt}
-sudo rsync -a /etc/apt apt/etc/
-apt-key add rpm/mdsplus.gpg.key
-echo "deb file://$(pwd)/REPO/ MDSplus %(flavor)s" > apt/etc/apt/sources.list.d/mdsplus.list
-""" % self.info,shell=True,cwd="%(workspace)s/%(flavor)s" % self.info).wait() != 0:
-            raise Exception("Failed to create test apt confiration files")
-        if subprocess.Popen("sudo %(apt-get)s autoremove -y 'mdsplus*'" % self.info,shell=True).wait() != 0:
-            errors.append("Error removing MDSplus installs")
+sudo rm -Rf %(workspace)s/%(flavor)s/apt
+mkdir -v -p %(workspace)s/%(flavor)s/apt/etc
+mkdir -v -p %(workspace)s/%(flavor)s/apt/var/lib/apt
+#mkdir -v -p %(workspace)s/%(flavor)s/apt/{etc,var/lib/apt}
+sudo rsync -a /etc/apt %(workspace)s/%(flavor)s/apt/etc/
+sudo apt-key add mdsplus.gpg.key
+echo "deb file:%(workspace)s/%(flavor)s/REPO/ MDSplus %(flavor)s" > mdsplus.list
+sudo rsync -a mdsplus.list %(workspace)s/%(flavor)s/apt/etc/apt/sources.list.d/
+sudo %(apt-get)s update
+""" % self.info,shell=True).wait() != 0:
+            errors.append("Failed to create test apt confiration files")
+        subprocess.Popen("sudo %(apt-get)s autoremove -y 'mdsplus*'" % self.info,shell=True).wait()
         if len(errors) == 0:
             print("Testing package installation")
             sys.stdout.flush()
@@ -164,7 +168,11 @@ echo "deb file://$(pwd)/REPO/ MDSplus %(flavor)s" > apt/etc/apt/sources.list.d/m
                     else:
                         pkg="-"+pkg
                     self.info['package']=pkg
-                    if subprocess.Popen("sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s && sudo %(apt-get)s autoremove -y 'mdsplus*'" % self.info,shell=True).wait() != 0:
+                    if subprocess.Popen("""
+set -e
+echo sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
+sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
+sudo %(apt-get)s autoremove -y 'mdsplus*'""" % self.info,shell=True).wait() != 0:
                         errors.append("Error installing package mdsplus%(rflavor)s%(package)s" % self.info)
         if len(errors) == 0:
             if subprocess.Popen("""
@@ -182,7 +190,10 @@ if not result.wasSuccessful():
   sys.exit(1)
 EOF""" % self.info,shell=True).wait() != 0:
                 errors.append("Error running regression tests")
-        subprocess.Popen("sudo %(apt-get)s autoremove -y 'mdsplus*'" % self.info,shell=True).wait()
+        subprocess.Popen("""
+sudo %(apt-get)s autoremove -y 'mdsplus*'
+#sudo rm -Rf %(workspace)s/%(flavor)s/apt
+""" % self.info,shell=True).wait()
         if len(errors) > 0:
             errors.insert(0,"Testing failed")
             raise Exception('\n'.join(errors))
