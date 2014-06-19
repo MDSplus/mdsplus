@@ -3,7 +3,7 @@
 
 using namespace std;
 
-static void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
+void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
 {
 	if (code) {
 		std::string errMsg(source);
