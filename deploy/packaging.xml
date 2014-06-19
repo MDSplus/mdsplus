@@ -395,7 +395,7 @@ then
 fi
 if [ -d /usr/share/applications ]
 then
-  mkdir /usr/share/applications/mdsplus
+  mkdir -p /usr/share/applications/mdsplus
   ln -sf __INSTALL_PREFIX__/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
 fi
 
@@ -470,8 +470,8 @@ fi
     <exclude file="/usr/local/mdsplus/bin/mdstcl"/>
     <exclude file="/usr/local/mdsplus/lib/libCam*"/>
     <exclude file="/usr/local/mdsplus/lib/libcts*"/>
-    <exclude file="/usr/local/mdsplus/lib??/libccl*"/>
-    <exclude file="/usr/local/mdsplus/lib??/libRemCam*"/>
+    <exclude file="/usr/local/mdsplus/lib/libccl*"/>
+    <exclude file="/usr/local/mdsplus/lib/libRemCam*"/>
     <exclude_staticlibs/>
     <exclude file="/usr/local/mdsplus/lib/lib*Idl*"/>
     <exclude file="/usr/local/mdsplus/lib/lib*Sql*"/>
@@ -616,6 +616,7 @@ rm -Rf %{python_sitelib}/MDSplus-*
 pushd __INSTALL_PREFIX__/mdsplus/mdsobjects/python >/dev/null 2>&amp;1
 python setup.py -q install
 rm -Rf build dist MDSplus.egg-info
+rm -f mdsplus_version.pyc
 popd >/dev/null 2>&amp;1
 
     </postinst>
@@ -740,6 +741,7 @@ then
   rsync -a alchome:/mnt/scratch/mdsplus/rpm-signing-keys.tgz ~
   tar zxfC ~/rpm-signing-keys.tgz ~/
 fi
+sudo rm -Rf %(workspace)s/%(flavor)s/apt
 rm -Rf %(workspace)s/%(flavor)s
 export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
 mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,REPO,DEBS}

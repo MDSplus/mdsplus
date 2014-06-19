@@ -53,7 +53,7 @@ class InstallationPackage(object):
 
     def buildDebs(self):
         tree=ET.parse('packaging.xml')
-        bin_arch={'x86_64':'amd64','i686':'i386'}[os.uname()[-1]]
+        self.info['bin_arch']={'x86_64':'amd64','i686':'i386'}[os.uname()[-1]]
         root=tree.getroot()
         for package in root.getiterator('package'):
             pkg = package.attrib['name']
@@ -61,7 +61,7 @@ class InstallationPackage(object):
                 self.info['packagename']=""
             else:
                 self.info['packagename']="-%s" % pkg
-            self.info['arch']={'bin':bin_arch,'noarch':'noarch'}[package.attrib['arch']]
+            self.info['arch']={'bin':self.info['bin_arch'],'noarch':'noarch'}[package.attrib['arch']]
             self.info['description']=package.attrib['description']
             self.info['tmpdir']=tempfile.mkdtemp()
             try:
@@ -89,7 +89,7 @@ set -e
 dn=$(dirname %(file)s)
 mkdir -p %(tmpdir)s/DEBIAN
 mkdir -p "%(tmpdir)s/${dn}"
-cp %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
+cp -av %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
 """ % self.info,shell=True).wait() != 0:
                         raise Exception("Error building deb")
                 depends=list()
@@ -105,7 +105,7 @@ cp %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
 Version: %(major)d.%(minor)d.%(release)d
 Section: admin
 Priority: optional
-Architecture: %(arch)s%(depends)s
+Architecture: %(bin_arch)s%(depends)s
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: %(description)s
 """ % self.info)
@@ -115,7 +115,8 @@ Description: %(description)s
                     if script is not None and ("type" not in script.attrib or script.attrib["type"]!="rpm"):
                         self.info['script']=s
                         f=open("%(tmpdir)s/DEBIAN/%(script)s" % self.info,"w")
-                        f.write("%s" % (script.text.replace("__INSTALL_PREFIX__","/usr/local/mdsplus")))
+                        f.write("#!/bin/bash\n")
+                        f.write("%s" % (script.text.replace("__INSTALL_PREFIX__","/usr/local")))
                         f.close()
                         os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % self.info,0775)
                 self.info['debfile']="%(workspace)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % self.info
@@ -142,7 +143,8 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
         print("Preparing test repository")
         sys.stdout.flush()
         if subprocess.Popen("""
-sudo %(apt-get)s autoremove -y 'mdsplus*'
+set -e
+sudo %(apt-get)s autoremove -y 'mdsplus*' >/dev/null 2>&1
 sudo rm -Rf %(workspace)s/%(flavor)s/apt
 mkdir -v -p %(workspace)s/%(flavor)s/apt/etc
 mkdir -v -p %(workspace)s/%(flavor)s/apt/var/lib/apt
@@ -151,17 +153,16 @@ sudo rsync -a /etc/apt %(workspace)s/%(flavor)s/apt/etc/
 sudo apt-key add mdsplus.gpg.key
 echo "deb file:%(workspace)s/%(flavor)s/REPO/ MDSplus %(flavor)s" > mdsplus.list
 sudo rsync -a mdsplus.list %(workspace)s/%(flavor)s/apt/etc/apt/sources.list.d/
-sudo %(apt-get)s update
+sudo %(apt-get)s update >/dev/null 2>&1
 """ % self.info,shell=True).wait() != 0:
-            errors.append("Failed to create test apt confiration files")
-        subprocess.Popen("sudo %(apt-get)s autoremove -y 'mdsplus*'" % self.info,shell=True).wait()
+            errors.append("Failed to create test apt configuration files")
         if len(errors) == 0:
             print("Testing package installation")
             sys.stdout.flush()
             tree=ET.parse('packaging.xml')
             root=tree.getroot()
             for package in root.getiterator('package'):
-                pkg=package.attrib['name']
+                pkg=package.attrib['name'].replace('_','-')
                 if pkg != 'repo':
                     if pkg=='MDSplus':
                         pkg=""
@@ -170,9 +171,8 @@ sudo %(apt-get)s update
                     self.info['package']=pkg
                     if subprocess.Popen("""
 set -e
-echo sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
 sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
-sudo %(apt-get)s autoremove -y 'mdsplus*'""" % self.info,shell=True).wait() != 0:
+sudo %(apt-get)s autoremove -y 'mdsplus%(rflavor)s%(package)s'""" % self.info,shell=True).wait() != 0:
                         errors.append("Error installing package mdsplus%(rflavor)s%(package)s" % self.info)
         if len(errors) == 0:
             if subprocess.Popen("""
