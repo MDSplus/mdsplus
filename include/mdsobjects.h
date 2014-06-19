@@ -1629,6 +1629,7 @@ public:
 	void appendDesc(Data * data)
 	{
 		descs.push_back(data);
+		data->incRefCount();
 	}
 	void *convertToDsc();
 
