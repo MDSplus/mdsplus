@@ -266,7 +266,7 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
                      ((nci->dtype >= DTYPE_OU) &&\
                       (nci->dtype <= DTYPE_HC)) ||\
                      ((nci->dtype >= DTYPE_FS) &&\
-                      (nci->dtype <= DTYPE_FTC))  )
+                      (nci->dtype <= DTYPE_FTC)) || (nci->dtype == DTYPE_DSC) )
 
 
   NODE     *node_ptr;
@@ -318,7 +318,8 @@ static int CheckUsage(PINO_DATABASE *dblist, NID *nid_ptr, NCI *nci)
     status = check((nci->dtype == DTYPE_T) ||
 		   (nci->dtype == DTYPE_PARAM) ||
 		   (nci->dtype == DTYPE_WITH_UNITS) || 
-                   (nci->dtype == DTYPE_OPAQUE) || is_expression);
+                   (nci->dtype == DTYPE_OPAQUE) || 
+                   (nci->dtype == DTYPE_DSC) || is_expression);
     break;
    case TreeUSAGE_WINDOW:
     status = check((nci->dtype == DTYPE_WINDOW) || is_expression);
