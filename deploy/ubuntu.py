@@ -201,11 +201,12 @@ sudo rm -Rf %(workspace)s/%(flavor)s/apt
     def deploy(self):
         """Deploy release to repository"""
         print("Deploying new release %(major)d.%(minor)d-%(release)d" % self.info)
+        sys.stdout.flush()
         self.info['repo']="/repository/%(DIST)s/repo" % self.info
         if subprocess.Popen("""
 set -e
 mkdir -p %(repo)s/{conf,pool,dists,db}
-cp %(workspace)s/%(flavor)s/REPO/conf/distribution conf/
+cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
 """ % self.info,shell=True,cwd="%(repo)s" % self.info).wait() !=0:
             raise Exception("Error preparing repository")
         if subprocess.Popen('find %( -name "*.deb" -exec reprepro -V --waitforlock 20 -b %(repo)s -C %(flavor)s includedeb MDSplus {} \;' \

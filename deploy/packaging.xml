@@ -660,7 +660,7 @@ Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
 Version: %(major)d.%(minor)d.%(release)d
-Architectures: i386 amd64 noarch source
+Architectures: i386 amd64 source
 Components: alpha beta stable
 Description: MDSplus packages
 SignWith: MDSplus
