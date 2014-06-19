@@ -2283,7 +2283,7 @@ DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvSh
 
 		deleteNativeArray(shortArrOut);
 
-	} catch (const MdsException & me) {
+	} catch (const MdsException & e) {
 
 		deleteNativeArray(shortArrOut);
 
