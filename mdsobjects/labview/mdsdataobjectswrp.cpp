@@ -53,8 +53,10 @@ T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorCluster * 
 	MgErr errorCode = noErr;
 	char const * errorMessage = "";
 
+	T x = 0;
 	try {
-		T x = ((reinterpret_cast<MDSplus::Data *>(b))->*getX)();
+		MDSplus::Data * data = reinterpret_cast<MDSplus::Data *>(const_cast<void *>(b));
+		x = (data->*getX)();
 	} catch ( const MdsException & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
