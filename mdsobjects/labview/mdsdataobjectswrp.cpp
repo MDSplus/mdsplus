@@ -49,7 +49,7 @@ static T * scalarConstructor(V value, char const * src, ErrorCluster * error) {
 // FIXME: If this doesn't work, add in another template param to cast to instead of
 // casting to Data directly (like Float32)
 template<class T>
-T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorCluster * error) {
+static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorCluster * error) {
 	MgErr errorCode = noErr;
 	char const * errorMessage = "";
 
