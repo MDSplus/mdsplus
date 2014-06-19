@@ -317,9 +317,42 @@ int * Data::getShape(int *numDim)
 	return res;
 }
 
-Data * Data::getData(int classType) {
+Data * Data::getData(int classType, int dataType) {
 	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
+	void *retDsc;
+	switch(dataType)  
+	{
+	  case DTYPE_B: 
+	    retDsc = convertToByte(dscPtr); 
+	    break;
+	  case DTYPE_BU:
+	    retDsc = convertToByteUnsigned(dscPtr); 
+	    break;
+	  case DTYPE_W:
+	    retDsc = convertToShort(dscPtr); 
+	    break;
+	  case DTYPE_WU:
+	    retDsc = convertToShortUnsigned(dscPtr);
+	    break;
+	  case DTYPE_L:
+	    retDsc = convertToInt(dscPtr);
+	    break;
+	  case DTYPE_LU:
+	    retDsc = convertToIntUnsigned(dscPtr);
+	    break;
+	  case DTYPE_Q:
+	    retDsc = convertToLong(dscPtr);
+	    break;
+	  case DTYPE_QU:
+	    retDsc = convertToLongUnsigned(dscPtr);
+	    break;
+	  case DTYPE_FLOAT:
+	    retDsc = convertToFloat(dscPtr);
+	    break;
+	  case DTYPE_DOUBLE:
+	    retDsc = convertToDouble(dscPtr);
+	    break;
+	}
 	Data *retData = (Data *)convertFromDsc(retDsc);
 	if(!retData || retData->clazz != classType)
 		throw MdsException("Cannot convert to desired type");
@@ -329,12 +362,12 @@ Data * Data::getData(int classType) {
 	return retData;
 }
 
-Data * Data::getArrayData() {
-	return getData(CLASS_A);
+Data * Data::getArrayData(int dtype) {
+	return getData(CLASS_A, dtype);
 }
 
-Data * Data::getScalarData() {
-	return getData(CLASS_S);
+Data * Data::getScalarData(int dtype) {
+	return getData(CLASS_S, dtype);
 }
 
 template<class T>
@@ -346,7 +379,7 @@ static std::vector<T> getArray(T * data, int size) {
 
 char *Data::getByteArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_B));
 	return array.ptr->getByteArray(numElements);
 }
 
@@ -359,7 +392,7 @@ std::vector<char> Data::getByteArray()
 
 unsigned char *Data::getByteUnsignedArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_BU));
 	return array.ptr->getByteUnsignedArray(numElements);
 }
 
@@ -372,7 +405,7 @@ std::vector<unsigned char> Data::getByteUnsignedArray()
 
 short * Data::getShortArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_W));
 	return array.ptr->getShortArray(numElements);
 }
 
@@ -385,7 +418,7 @@ std::vector<short> Data::getShortArray()
 
 unsigned short * Data::getShortUnsignedArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_WU));
 	return array.ptr->getShortUnsignedArray(numElements);
 }
 
@@ -398,7 +431,7 @@ std::vector<unsigned short> Data::getShortUnsignedArray()
 
 int * Data::getIntArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_L));
 	return array.ptr->getIntArray(numElements);
 }
 
@@ -411,7 +444,7 @@ std::vector<int> Data::getIntArray()
 
 unsigned int * Data::getIntUnsignedArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_LU));
 	return array.ptr->getIntUnsignedArray(numElements);
 }
 
@@ -424,7 +457,7 @@ std::vector<unsigned int> Data::getIntUnsignedArray()
 
 int64_t * Data::getLongArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_Q));
 	return array.ptr->getLongArray(numElements);
 }
 
@@ -437,7 +470,7 @@ std::vector<int64_t> Data::getLongArray()
 
 uint64_t * Data::getLongUnsignedArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_QU));
 	return array.ptr->getLongUnsignedArray(numElements);
 }
 
@@ -450,7 +483,7 @@ std::vector<uint64_t> Data::getLongUnsignedArray()
 
 float * Data::getFloatArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_FLOAT));
 	return array.ptr->getFloatArray(numElements);
 }
 
@@ -463,7 +496,7 @@ std::vector<float> Data::getFloatArray()
 
 double * Data::getDoubleArray(int *numElements)
 {
-	AutoPointer<Data> array(getArrayData());
+	AutoPointer<Data> array(getArrayData(DTYPE_DOUBLE));
 	return array.ptr->getDoubleArray(numElements);
 }
 
@@ -502,61 +535,61 @@ char *	Data::serialize(int *size)
 
 char Data::getByte()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_B));
 	return scalar.ptr->getByte();
 }
 
 short Data::getShort()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_W));
 	return scalar.ptr->getShort();
 }
 
 int Data::getInt()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_L));
 	return scalar.ptr->getInt();
 }
 
 int64_t Data::getLong()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_Q));
 	return scalar.ptr->getLong();
 }
 
 unsigned char Data::getByteUnsigned()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_BU));
 	return scalar.ptr->getByteUnsigned();
 }
 
 unsigned short Data::getShortUnsigned()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_WU));
 	return scalar.ptr->getShortUnsigned();
 }
 
 unsigned int Data::getIntUnsigned()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_LU));
 	return scalar.ptr->getIntUnsigned();
 }
 
 uint64_t Data::getLongUnsigned()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_QU));
 	return scalar.ptr->getLongUnsigned();
 }
 
 float Data::getFloat()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_FLOAT));
 	return scalar.ptr->getFloat();
 }
 
 double Data::getDouble()
 {
-	AutoPointer<Data> scalar(getScalarData());
+	AutoPointer<Data> scalar(getScalarData(DTYPE_DOUBLE));
 	return scalar.ptr->getDouble();
 }
 
@@ -580,8 +613,14 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 			args[i] = currArg->convertToDsc();
 		}
 		int status;
-		AutoPointer<Tree> actTree(getActiveTree());
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree.ptr, &status);
+		Tree *actTree;
+		try {
+			actTree = getActiveTree();
+		}catch(MdsException const & exc){actTree = 0;}
+
+		//AutoPointer<Tree> actTree(getActiveTree());
+		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
+		if(actTree) delete actTree;
 		for(i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
 		if(!(status & 1))
