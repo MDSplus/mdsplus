@@ -26,7 +26,7 @@ void fillErrorCluster(MgErr code, const char *source, const char *message, Error
 namespace MDSplus {
 
 static void deleteLvData(void ** data) {
-	deleteData(dynamic_cast<MDSplus::Data *>(*data));
+	deleteData(reinterpret_cast<MDSplus::Data *>(*data));
 }
 
 template <class T, class V>
