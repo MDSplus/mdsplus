@@ -202,7 +202,7 @@ sudo rm -Rf %(workspace)s/%(flavor)s/apt
         """Deploy release to repository"""
         print("Deploying new release %(major)d.%(minor)d-%(release)d" % self.info)
         self.info['repo']="/repository/%(DIST)s/repo" % self.info
-        if subprocess.Po pen("""
+        if subprocess.Popen("""
 set -e
 mkdir -p %(repo)s/{conf,pool,dists,db}
 cp %(workspace)s/%(flavor)s/REPO/conf/distribution conf/
