@@ -47,7 +47,9 @@ static T * scalarConstructor(V value, char const * src, ErrorCluster * error) {
 }
 
 // FIXME: If this doesn't work, add in another template param to cast to instead of
-// casting to Data directly (like Float32)
+// FIXME: casting to Data directly (like Float32)
+// FIXME: If this does work, then every derived type can just call the data function
+// FIXME: for instance, mdsplus_float32_getInt can just call mdsplus_data_getInt
 template<class T>
 static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorCluster * error) {
 	MgErr errorCode = noErr;
