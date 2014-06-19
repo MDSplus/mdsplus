@@ -4,7 +4,10 @@
 #if defined (_WIN32)
 #define MDS_WINDOWS
 #define EXPORT __declspec(dllexport)
+
+// Workarounds for the broken windows compilers
 #define NOMINMAX
+#define __func__ __FUNCTION__
 
 #elif defined (__APPLE__)
 #define MDS_MAC
