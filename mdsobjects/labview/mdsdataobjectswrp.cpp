@@ -3,6 +3,26 @@
 
 using namespace std;
 
+static void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
+{
+	if (code) {
+		std::string errMsg(source);
+		errMsg += ".<ERR>.";
+		errMsg += message;
+		errMsg += ".";
+
+		int32 errMsgLen = static_cast<int32>(errMsg.size());
+
+		error->status = LVBooleanTrue;
+		error->code = static_cast<int32>(code);
+
+		if (!NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen)) {
+			MoveBlock(errMsg.c_str(), LStrBuf(*error->source), errMsgLen);
+			(*error->source)->cnt = errMsgLen;
+		}
+	}
+}
+
 namespace MDSplus {
 
 static void deleteLvData(void ** data) {
@@ -42,26 +62,6 @@ T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorCluster * 
 	fillErrorCluster(errorCode, src, errorMessage, error);
 
 	return x;
-}
-
-void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
-{
-	if (code) {
-		std::string errMsg(source);
-		errMsg += ".<ERR>.";
-		errMsg += message;
-		errMsg += ".";
-
-		int32 errMsgLen = static_cast<int32>(errMsg.size());
-
-		error->status = LVBooleanTrue;
-		error->code = static_cast<int32>(code);
-
-		if (!NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen)) {
-			MoveBlock(errMsg.c_str(), LStrBuf(*error->source), errMsgLen);
-			(*error->source)->cnt = errMsgLen;
-		}
-	}
 }
 
 /********************************************************************************************************
