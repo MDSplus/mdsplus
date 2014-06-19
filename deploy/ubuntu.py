@@ -192,7 +192,7 @@ EOF""" % self.info,shell=True).wait() != 0:
                 errors.append("Error running regression tests")
         subprocess.Popen("""
 sudo %(apt-get)s autoremove -y 'mdsplus*'
-#sudo rm -Rf %(workspace)s/%(flavor)s/apt
+sudo rm -Rf %(workspace)s/%(flavor)s/apt
 """ % self.info,shell=True).wait()
         if len(errors) > 0:
             errors.insert(0,"Testing failed")
@@ -202,7 +202,7 @@ sudo %(apt-get)s autoremove -y 'mdsplus*'
         """Deploy release to repository"""
         print("Deploying new release %(major)d.%(minor)d-%(release)d" % self.info)
         self.info['repo']="/repository/%(DIST)s/repo" % self.info
-        if subprocess.Popen("""
+        if subprocess.Po pen("""
 set -e
 mkdir -p %(repo)s/{conf,pool,dists,db}
 cp %(workspace)s/%(flavor)s/REPO/conf/distribution conf/
