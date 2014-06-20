@@ -13,7 +13,6 @@
     <requires package="kernel"/>
     <include dir="/usr/local/mdsplus/java"/>
     <include dir="/usr/local/mdsplus/desktop/java"/>
-    <include dir="/usr/local/mdsplus/tdi/java"/>
     <exclude file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
     <include file="/usr/local/mdsplus/bin/jDispatch*"/>
     <include file="/usr/local/mdsplus/bin/jScope"/>
@@ -312,7 +311,6 @@ fi
     <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/camac"/>
-    <exclude dir="/usr/local/mdsplus/tdi/java"/>
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
     <exclude dir="/usr/local/mdsplus/tdi/roam"/>
     <exclude dir="/usr/local/mdsplus/tdi/hdf5"/>
