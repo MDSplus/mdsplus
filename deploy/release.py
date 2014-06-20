@@ -105,10 +105,16 @@ def processChanges(flavor):
 set -e
 rm -Rf /tmp/mdsplus-*
 cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
-tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s
 cd %(src)s
 cvs -Q tag %(tag)s
+echo "%(tag)s" > header.tmp
+echo "" >> header.tmp
+echo "" >> header.tmp
+touch ChangeLog
+devscripts/cvs2cl.pl --prune --accum --header header.tmp --separate-header -b 2> /dev/null
+rm header.tmp
 cd ..
+tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s
 rm -Rf /tmp/mdsplus-*
 """ % {'branch':info['branch'],'src':src,'tag':tag},shell=True,cwd="/tmp").wait()
     if status != 0:
