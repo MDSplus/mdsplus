@@ -6,6 +6,7 @@ class InstallationPackage(object):
     def __init__(self,info):
         self.info=info
         self.info['workspace']=os.environ['WORKSPACE']
+        self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
@@ -18,7 +19,6 @@ class InstallationPackage(object):
             else:
                 pkg = "-%s" % pkg
             self.info['package']=pkg
-            self.info['arch']={"noarch-x86_64":"noarch","noarch-i686":"noarch","bin-x86_64":"amd64","bin-i686":"i386"}["%s-%s" % (package.attrib['arch'],os.uname()[-1])]
             rpm='/repository/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
             try:
                 os.stat(rpm)
@@ -53,7 +53,6 @@ class InstallationPackage(object):
 
     def buildDebs(self):
         tree=ET.parse('packaging.xml')
-        self.info['bin_arch']={'x86_64':'amd64','i686':'i386'}[os.uname()[-1]]
         root=tree.getroot()
         for package in root.getiterator('package'):
             pkg = package.attrib['name']
@@ -61,7 +60,6 @@ class InstallationPackage(object):
                 self.info['packagename']=""
             else:
                 self.info['packagename']="-%s" % pkg
-            self.info['arch']={'bin':self.info['bin_arch'],'noarch':'noarch'}[package.attrib['arch']]
             self.info['description']=package.attrib['description']
             self.info['tmpdir']=tempfile.mkdtemp()
             try:
@@ -105,7 +103,7 @@ cp -av %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
 Version: %(major)d.%(minor)d.%(release)d
 Section: admin
 Priority: optional
-Architecture: %(bin_arch)s%(depends)s
+Architecture: %(arch)s%(depends)s
 Maintainer: Tom Fredian <twf@www.mdsplus.org>
 Description: %(description)s
 """ % self.info)
