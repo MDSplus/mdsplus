@@ -14,7 +14,6 @@ OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsLib.export
 
 OBJECTS_CLIENT = MdsLib_client.o 
-OBJECTS_CLIENT_ARCHIVE = ../mdstcpip/mdsiputil.o
 
 all: @MAKEBINDIR@ @MAKELIBDIR@ \
          @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ \
@@ -60,7 +59,7 @@ install:
 @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
 	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) $(LIBS) @MEMCHKLIB@  $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
 
-@MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT) $(OBJECTS_CLIENT_ARCHIVE)
+@MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT) 
 	$(AR) -cr $@ $^
 
 MdsLib_client.o : MdsLib.c
