@@ -305,6 +305,10 @@ MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 dist_java_DATA = jScope.properties MindTerm.jar
 java_DATA = jScope.jar WaveDisplay.jar
+dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
+COMMON_CLASS = $(COMMON_SRC:.java=*.class)
+JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)
+WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
 	jScope/Base64.java                    jScope/ColorDialog.java             jScope/ColorMapDialog.java        \
@@ -351,10 +355,6 @@ JSCOPE_SRC = \
 	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java
 
-dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
-COMMON_CLASS = $(COMMON_SRC:.java=*.class)
-JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)
-WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
 all: all-am
 
 .SUFFIXES:

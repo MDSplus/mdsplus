@@ -38,6 +38,12 @@ jScope.jar: colors1.tbl
 WaveDisplay.jar:
 	$(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
 
+dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
+COMMON_CLASS = $(COMMON_SRC:.java=*.class)
+JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)
+WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
+CLEANFILES += $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS)
+
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
 	jScope/Base64.java                    jScope/ColorDialog.java             jScope/ColorMapDialog.java        \
@@ -84,10 +90,4 @@ JSCOPE_SRC = \
 	jScope/MdsIOException.java       \
 	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java
-
-dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
-COMMON_CLASS = $(COMMON_SRC:.java=*.class)
-JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)
-WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
-CLEANFILES += $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS)
 
