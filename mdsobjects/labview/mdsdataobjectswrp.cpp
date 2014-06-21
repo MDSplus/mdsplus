@@ -60,7 +60,7 @@ static T * scalarConstructor(V value, char const * src, ErrorCluster * error) {
 	}
 
 	fillErrorCluster(errorCode, src, errorMessage, error);
-	return new T(value);
+	return t;
 }
 
 // FIXME: If this doesn't work, add in another template param to cast to instead of
