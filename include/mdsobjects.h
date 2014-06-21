@@ -626,16 +626,11 @@ private:
 		int nDims;
 		int dims[MAX_DIMS];
 		char *ptr;
-		void setSpecific(char *data, int length, int dtype, int nData)
-		{
-			this->dtype = dtype;
-			this->length = length;
-			arsize = nData * length;
-			nDims = 1;
-			dims[0] = nData;
-			ptr = new char[arsize];
-			memcpy(ptr, data, arsize);
+
+		void setSpecific(char *data, int length, int dtype, int nData) {
+			setSpecific(data, length, dtype, 1, &nData);
 		}
+
 		void setSpecific(char *data, int length, int dtype, int nDims, int *dims)
 		{
 			this->dtype = dtype;
