@@ -284,12 +284,12 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = jScope.template colors1.tbl
+JAVAROOT = $(builddir)
+EXTRA_DIST = $(MINDTERM) jScope.template colors1.tbl
 CLEANFILES = $(bin_SCRIPTS) $(java_DATA) $(JSCOPE_CLASS) \
 	$(WAVEDISPLAY_CLASS)
-JAVAROOT = $(builddir)
-javadir = $(exec_prefix)/java/classes
-docsdir = $(exec_prefix)/java/classes/docs
+MINDTERM = $(srcdir)/MindTerm.jar
+CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 
 # Create the shell script that runs the program
 bin_SCRIPTS = scripts/jScope
@@ -301,10 +301,10 @@ dist_docs_DATA = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	ReadMe.html data_popup.jpg data_setup.jpg frame_popup.jpg \
 	image_setup.jpg UpdateEvent.html UpdateEventListener.html \
 	WaveData.html WaveDisplay.html
-MINDTERM = $(srcdir)/MindTerm.jar
-CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
+docsdir = $(exec_prefix)/java/classes/docs
 dist_java_DATA = jScope.properties MindTerm.jar
 java_DATA = jScope.jar WaveDisplay.jar
+javadir = $(exec_prefix)/java/classes
 dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
 COMMON_CLASS = $(COMMON_SRC:.java=*.class)
 JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)

@@ -1,12 +1,12 @@
-EXTRA_DIST =
-CLEANFILES =
 JAVAROOT = $(builddir)
-javadir = $(exec_prefix)/java/classes
-docsdir = $(exec_prefix)/java/classes/docs
+EXTRA_DIST = $(MINDTERM)
+CLEANFILES = $(bin_SCRIPTS) $(java_DATA)
+
+MINDTERM = $(srcdir)/MindTerm.jar
+CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 
 # Create the shell script that runs the program
 bin_SCRIPTS = scripts/jScope
-CLEANFILES += $(bin_SCRIPTS)
 EXTRA_DIST += jScope.template
 $(bin_SCRIPTS): jScope.template
 	$(INSTALL) -D $< $@
@@ -20,15 +20,12 @@ dist_docs_DATA += FrameData.html
 dist_docs_DATA += ReadMe.html data_popup.jpg data_setup.jpg frame_popup.jpg image_setup.jpg
 dist_docs_DATA += UpdateEvent.html UpdateEventListener.html
 dist_docs_DATA += WaveData.html WaveDisplay.html
-
-
-MINDTERM = $(srcdir)/MindTerm.jar
-CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
+docsdir = $(exec_prefix)/java/classes/docs
 
 dist_java_DATA = jScope.properties MindTerm.jar
 
 java_DATA = jScope.jar WaveDisplay.jar
-CLEANFILES += $(java_DATA)
+javadir = $(exec_prefix)/java/classes
 $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
