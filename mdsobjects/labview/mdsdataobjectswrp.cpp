@@ -3043,238 +3043,32 @@ DLLEXPORT void mdsplus_float64_destructor(void **lvFloat64Ptr) {
 	deleteLvData(lvFloat64Ptr);
 }
 
-DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, ErrorCluster *error)
-
-{
-
-	Float64 *float64Ptr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
-
-		*byteOut = float64Ptr->getByte();
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, ErrorCluster *error) {
+	*byteOut = getScalar<char>(lvFloat64Ptr, &MDSplus::Data::getByte, __func__, error);
 }
 
-
-
-DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubleOut, ErrorCluster *error)
-
-{
-
-	Float64 *float64Ptr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
-
-		*doubleOut = float64Ptr->getDouble();
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubleOut, ErrorCluster *error) {
+	*doubleOut = getScalar<double>(lvFloat64Ptr, &MDSplus::Data::getDouble, __func__, error);
 }
 
-
-
-DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOut, ErrorCluster *error)
-
-{
-
-	Float64 *float64Ptr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
-
-		*floatOut = float64Ptr->getFloat();
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOut, ErrorCluster *error) {
+	*floatOut = getScalar<float>(lvFloat64Ptr, &MDSplus::Data::getFloat, __func__, error);
 }
 
-
-
-DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, ErrorCluster *error)
-
-{
-
-	Float64 *float64Ptr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
-
-		*intOut = float64Ptr->getInt();
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, ErrorCluster *error) {
+	*intOut = getScalar<int>(lvFloat64Ptr, &MDSplus::Data::getInt, __func__, error);
 }
 
-
-
-DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOut, ErrorCluster *error)
-
-{
-
-	Float64 *float64Ptr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
-
-		*longOut = float64Ptr->getLong();
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOut, ErrorCluster *error) {
+	*longOut = getScalar<int64_t>(lvFloat64Ptr, &MDSplus::Data::getLong, __func__, error);
 }
 
-
-
-DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOut, ErrorCluster *error)
-
-{
-
-	Float64 *float64Ptr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
-
-		*shortOut = float64Ptr->getShort();
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOut, ErrorCluster *error) {
+	*shortOut = getScalar<short>(lvFloat64Ptr, &MDSplus::Data::getShort, __func__, error);
 }
-
-
 
 /********************************************************************************************************
-
 												FLOAT64ARRAY
-
  ********************************************************************************************************/
 
 
