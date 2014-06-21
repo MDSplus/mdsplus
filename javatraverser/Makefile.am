@@ -6,11 +6,12 @@ javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 
 # Create the shell script that runs the program
-bin_SCRIPTS = scripts/jTraverser
+bin_SCRIPTS = jTraverser
 EXTRA_DIST += jTraverser.template
-$(bin_SCRIPTS): jTraverser.template
-	$(INSTALL) -D $< $@
+$(bin_SCRIPTS): $(srcdir)/jTraverser.template
+	cp $< $@
 
+#$(INSTALL) -D $< $@
 # Build the class files
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 java_JAVA = $(SOURCES)
