@@ -167,14 +167,17 @@ void *Data::operator new(size_t sz) {
 }
 
 void Data::operator delete(void *p) {
-	Data * data = reinterpret_cast<Data *>(p);
+	::operator delete(p);
+}
+
+void MDSplus::deleteData(Data *data) {
 	if (data->refCount <= 0) {
 		delete data->units;
 		delete data->error;
 		delete data->help;
 		delete data->validation;
 		data->propagateDeletion();
-		::operator delete(p);
+		delete data;
 	}
 }
 
@@ -784,10 +787,6 @@ void * Data::completeConversionToDsc(void *dsc) {
 	}
 
 	return retDsc;
-}
-
-void MDSplus::deleteData(Data *data) {
-	delete data;
 }
 
 int *Array::getShape(int *numDims)
