@@ -627,11 +627,11 @@ private:
 		int dims[MAX_DIMS];
 		char *ptr;
 
-		void setSpecific(void *data, int length, int dtype, int nData) {
+		void setSpecific(void const * data, int length, int dtype, int nData) {
 			setSpecific(data, length, dtype, 1, &nData);
 		}
 
-		void setSpecific(void *data, int length, int dtype, int nDims, int *dims)
+		void setSpecific(void const * data, int length, int dtype, int nDims, int *dims)
 		{
 			this->dtype = dtype;
 			this->length = length;
@@ -703,12 +703,12 @@ private:
 	class Int8Array: public Array
 	{
 	public:
-		Int8Array(char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int8Array(char const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 1, DTYPE_B, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int8Array(char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int8Array(char const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 1, DTYPE_B, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -718,12 +718,12 @@ private:
 	{
 	friend Data *MDSplus::deserialize(Data *serializedData);
 	public:
-		Uint8Array(unsigned char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint8Array(unsigned char const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 1, DTYPE_BU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint8Array(unsigned char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint8Array(unsigned char const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 1, DTYPE_BU, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -733,12 +733,12 @@ private:
 	class Int16Array: public Array
 	{
 	public:
-		Int16Array(short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int16Array(short const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 2, DTYPE_W, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int16Array(short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int16Array(short const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 2, DTYPE_W, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -747,12 +747,12 @@ private:
 	class Uint16Array: public Array
 	{
 	public:
-		Uint16Array(unsigned short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint16Array(unsigned short const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 2, DTYPE_WU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint16Array(unsigned short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint16Array(unsigned short const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 2, DTYPE_WU, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -761,12 +761,12 @@ private:
 	class Int32Array: public Array
 	{
 	public:
-		Int32Array(int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int32Array(int const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(int), DTYPE_L, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int32Array(int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int32Array(int const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(int), DTYPE_L, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -775,12 +775,12 @@ private:
 	class Uint32Array: public Array
 	{
 	public:
-		Uint32Array(unsigned int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint32Array(unsigned int const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(int), DTYPE_LU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint32Array(unsigned int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint32Array(unsigned int const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(int), DTYPE_LU, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -789,12 +789,12 @@ private:
 	class Int64Array: public Array
 	{
 	public:
-		Int64Array(int64_t *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int64Array(int64_t const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 8, DTYPE_Q, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int64Array(int64_t *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int64Array(int64_t const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 8, DTYPE_Q, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -803,12 +803,12 @@ private:
 	class Uint64Array: public Array
 	{
 	public:
-		Uint64Array(uint64_t *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(uint64_t const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 8, DTYPE_QU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint64Array(uint64_t *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(uint64_t const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 8, DTYPE_QU, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -817,12 +817,12 @@ private:
 	class Float32Array: public Array
 	{
 	public:
-		Float32Array(float *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float32Array(float const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(float), DTYPE_FLOAT, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Float32Array(float *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float32Array(float const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(float), DTYPE_FLOAT, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -831,12 +831,12 @@ private:
 	class Float64Array: public Array
 	{
 	public:
-		Float64Array(double *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float64Array(double const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(double), DTYPE_DOUBLE, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Float64Array(double *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float64Array(double const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, sizeof(double), DTYPE_DOUBLE, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -845,12 +845,12 @@ private:
 	class Complex32Array: public Array
 	{
 	public:
-		Complex32Array(float *reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex32Array(float const * reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(reIm, 2*sizeof(float), DTYPE_FSC, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Complex32Array(float *reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex32Array(float const * reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(reIm, 2*sizeof(float), DTYPE_FSC, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -859,12 +859,12 @@ private:
 	class Complex64Array: public Array
 	{
 	public:
-		Complex64Array(double *reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex64Array(double const * reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(reIm, 2*sizeof(double), DTYPE_FTC, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Complex64Array(double *reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex64Array(double const * reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(reIm, 2*sizeof(double), DTYPE_FTC, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -895,7 +895,7 @@ private:
 			setAccessory(units, error, help, validation);
 			delete[] padData;
 		}
-		StringArray(char *data, int nStrings, int stringLen, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) //For contiuguous
+		StringArray(char const * data, int nStrings, int stringLen, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) //For contiuguous
 		{
 			setSpecific(data, stringLen, DTYPE_T, nStrings);
 			setAccessory(units, error, help, validation);
