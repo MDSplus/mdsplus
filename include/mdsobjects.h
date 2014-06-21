@@ -627,11 +627,11 @@ private:
 		int dims[MAX_DIMS];
 		char *ptr;
 
-		void setSpecific(char *data, int length, int dtype, int nData) {
+		void setSpecific(void *data, int length, int dtype, int nData) {
 			setSpecific(data, length, dtype, 1, &nData);
 		}
 
-		void setSpecific(char *data, int length, int dtype, int nDims, int *dims)
+		void setSpecific(void *data, int length, int dtype, int nDims, int *dims)
 		{
 			this->dtype = dtype;
 			this->length = length;
@@ -720,12 +720,12 @@ private:
 	public:
 		Uint8Array(unsigned char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 1, DTYPE_BU, nData);
+			setSpecific(data, 1, DTYPE_BU, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Uint8Array(unsigned char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 1, DTYPE_BU, nDims, dims);
+			setSpecific(data, 1, DTYPE_BU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 		Data* deserialize();
@@ -735,12 +735,12 @@ private:
 	public:
 		Int16Array(short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_W, nData);
+			setSpecific(data, 2, DTYPE_W, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Int16Array(short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_W, nDims, dims);
+			setSpecific(data, 2, DTYPE_W, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -749,12 +749,12 @@ private:
 	public:
 		Uint16Array(unsigned short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_WU, nData);
+			setSpecific(data, 2, DTYPE_WU, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Uint16Array(unsigned short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_WU, nDims, dims);
+			setSpecific(data, 2, DTYPE_WU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -763,12 +763,12 @@ private:
 	public:
 		Int32Array(int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_L, nData);
+			setSpecific(data, sizeof(int), DTYPE_L, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Int32Array(int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_L, nDims, dims);
+			setSpecific(data, sizeof(int), DTYPE_L, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -777,12 +777,12 @@ private:
 	public:
 		Uint32Array(unsigned int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_LU, nData);
+			setSpecific(data, sizeof(int), DTYPE_LU, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Uint32Array(unsigned int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_LU, nDims, dims);
+			setSpecific(data, sizeof(int), DTYPE_LU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -791,12 +791,12 @@ private:
 	public:
 		Int64Array(int64_t *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_Q, nData);
+			setSpecific(data, 8, DTYPE_Q, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Int64Array(int64_t *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_Q, nDims, dims);
+			setSpecific(data, 8, DTYPE_Q, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -805,12 +805,12 @@ private:
 	public:
 		Uint64Array(uint64_t *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_QU, nData);
+			setSpecific(data, 8, DTYPE_QU, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Uint64Array(uint64_t *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_QU, nDims, dims);
+			setSpecific(data, 8, DTYPE_QU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -819,12 +819,12 @@ private:
 	public:
 		Float32Array(float *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(float), DTYPE_FLOAT, nData);
+			setSpecific(data, sizeof(float), DTYPE_FLOAT, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Float32Array(float *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(float), DTYPE_FLOAT, nDims, dims);
+			setSpecific(data, sizeof(float), DTYPE_FLOAT, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -833,12 +833,12 @@ private:
 	public:
 		Float64Array(double *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(double), DTYPE_DOUBLE, nData);
+			setSpecific(data, sizeof(double), DTYPE_DOUBLE, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Float64Array(double *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(double), DTYPE_DOUBLE, nDims, dims);
+			setSpecific(data, sizeof(double), DTYPE_DOUBLE, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -847,12 +847,12 @@ private:
 	public:
 		Complex32Array(float *reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(float), DTYPE_FSC, nData);
+			setSpecific(reIm, 2*sizeof(float), DTYPE_FSC, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Complex32Array(float *reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(float), DTYPE_FSC, nDims, dims);
+			setSpecific(reIm, 2*sizeof(float), DTYPE_FSC, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -861,12 +861,12 @@ private:
 	public:
 		Complex64Array(double *reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(double), DTYPE_FTC, nData);
+			setSpecific(reIm, 2*sizeof(double), DTYPE_FTC, nData);
 			setAccessory(units, error, help, validation);
 		}
 		Complex64Array(double *reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(double), DTYPE_FTC, nDims, dims);
+			setSpecific(reIm, 2*sizeof(double), DTYPE_FTC, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
