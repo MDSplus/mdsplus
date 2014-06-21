@@ -29,6 +29,23 @@ static void deleteLvData(void ** data) {
 	deleteData(reinterpret_cast<MDSplus::Data *>(*data));
 }
 
+template <class T>
+static void * genericConstructor(char const * src, ErrorCluster * error) {
+	void * t = NULL;
+	MgErr errorCode = noErr;
+	char const * errorMessage = "";
+
+	try {
+		t = reinterpret_cast<void *>(new T());
+	} catch (MDSplus::MdsException const & e) {
+		errorCode = bogusError;
+		errorMessage = e.what();
+	}
+
+	fillErrorCluster(errorCode, src, errorMessage, error);
+	return t;
+}
+
 template <class T, class V>
 static T * scalarConstructor(V value, char const * src, ErrorCluster * error) {
 	T * t = NULL;
@@ -72,27 +89,11 @@ static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorClu
 												ARRAY
  ********************************************************************************************************/
 
-DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *error)
-{
-	Array *arrayPtrOut = NULL;
-	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
-	char const * errorMessage = "";
-
-	try	{
-		arrayPtrOut = new Array();
-		*lvArrayPtrOut = reinterpret_cast<void *>(arrayPtrOut);
-	} catch (const MdsException & e) {
-		deleteData(arrayPtrOut);
-		errorCode = bogusError;
-		errorMessage = e.what();
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *error) {
+	*lvArrayPtrOut = genericConstructor<MDSplus::Array>(__func__, error);
 }
 
-DLLEXPORT void mdsplus_array_destructor(void **lvArrayPtr)
-{
+DLLEXPORT void mdsplus_array_destructor(void **lvArrayPtr) {
 	deleteLvData(lvArrayPtr);
 }
 
@@ -989,60 +990,15 @@ DLLEXPORT void mdsplus_array_setElementAt_dims(const void *lvArrayPtr, const LIn
 
 }
 
-
-
-
-
 /********************************************************************************************************
-
 												COMPOUND
-
  ********************************************************************************************************/
 
-
-
-DLLEXPORT void mdsplus_compound_constructor(void **lvCompoundPtrOut, ErrorCluster *error)
-
-{
-
-	Compound *compoundPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		compoundPtrOut = new Compound();
-
-		*lvCompoundPtrOut = reinterpret_cast<void *>(compoundPtrOut);
-
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(mdsE.what());
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_compound_constructor(void **lvCompoundPtrOut, ErrorCluster *error) {
+	*lvCompoundPtrOut = genericConstructor<MDSplus::Compound>(__func__, error);
 }
 
-DLLEXPORT void mdsplus_compound_destructor(void **lvCompoundPtr)
-{
+DLLEXPORT void mdsplus_compound_destructor(void **lvCompoundPtr) {
 	deleteLvData(lvCompoundPtr);
 }
 
@@ -2905,126 +2861,38 @@ DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOu
 												FLOAT32ARRAY
  ********************************************************************************************************/
 
-
-
-DLLEXPORT void mdsplus_float32array_constructor(void **lvFloat32ArrayPtrOut, const LFltArrHdl lvFltArrHdlIn, ErrorCluster *error)
-
-{
-
-	Float32Array *float32ArrayPtrOut = NULL;
-
-	float *float32Arr = NULL;	
-
+template <class T, class V>
+static T * arrayConstructor(V inPtr, const LIntArrHdl dims, char const * src, ErrorCluster * error) {
 	MgErr errorCode = noErr;
+	char const * errorMessage = "";
 
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		int float32ArrLen = static_cast<int>((*lvFltArrHdlIn)->dimSize);
-
-		float32Arr = new float[float32ArrLen];
-
-		for (int i = 0; i < float32ArrLen; i++)
-
-			float32Arr[i] = static_cast<float>((*lvFltArrHdlIn)->elt[i]);
-
-		float32ArrayPtrOut = new Float32Array(float32Arr, float32ArrLen);
-
-		delete[] float32Arr;
-
-		*lvFloat32ArrayPtrOut = reinterpret_cast<void *>(float32ArrayPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		delete[] float32Arr;
-
-		deleteData(float32ArrayPtrOut);
-
+	T * outPtr = NULL;
+	try {
+		outPtr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize), (*dims)->elt);
+	} catch (MDSplus::MdsException const & e) {
 		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
+		errorMessage = e.what();
 	}
 
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+	fillErrorCluster(errorCode, src, errorMessage, error);
+	return outPtr;
 }
 
+template <class T, class V>
+static T * arrayConstructor(V inPtr, char const * src, ErrorCluster * error) {
+	LIntArr dims;
+	dims.dimSize = 1;
+	dims.elt = (*inPtr)->dimSize;
+	LIntArr * dimPtr;
+	return arrayConstructor<T>(inPtr, &dimPtr, src, error);
+}
 
+DLLEXPORT void mdsplus_float32array_constructor(void **lvFloat32ArrayPtrOut, const LFltArrHdl lvFltArrHdlIn, ErrorCluster *error) {
+	*lvFloat32ArrayPtrOut = arrayConstructor<MDSplus::Float32Array>(lvFltArrHdlIn, __func__, error);
+}
 
-DLLEXPORT void mdsplus_float32array_constructor_dims(void **lvFloat32ArrayPtrOut, const LFltArrHdl lvFltArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
-
-{
-
-	Float32Array *float32ArrayPtrOut = NULL;
-
-	float *float32Arr = NULL;
-
-	int *intArr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		int float32ArrLen = static_cast<int>((*lvFltArrHdlIn)->dimSize);
-
-		float32Arr = new float[float32ArrLen];
-
-		for (int i = 0; i < float32ArrLen; i++)
-
-			float32Arr[i] = static_cast<float>((*lvFltArrHdlIn)->elt[i]);
-
-		int intArrLen = static_cast<int>((*lvIntArrHdlIn)->dimSize);
-
-		intArr = new int[intArrLen];
-
-		for (int i = 0; i < intArrLen; i++)
-
-			intArr[i] = static_cast<int>((*lvIntArrHdlIn)->elt[i]);
-
-		float32ArrayPtrOut = new Float32Array(float32Arr, intArrLen, intArr);
-
-		delete[] float32Arr;
-
-		delete[] intArr;
-
-		*lvFloat32ArrayPtrOut = reinterpret_cast<void *>(float32ArrayPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		delete[] float32Arr;
-
-		delete[] intArr;
-
-		deleteData(float32ArrayPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_float32array_constructor_dims(void **lvFloat32ArrayPtrOut, const LFltArrHdl lvFltArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error) {
+	*lvFloat32ArrayPtrOut = arrayConstructor<MDSplus::Float32Array>(lvFltArrHdlIn, lvIntArrHdlIn, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float32array_destructor(void **lvFloat32ArrayPtr) {
@@ -5339,53 +5207,14 @@ DLLEXPORT void mdsplus_signal_setDim(const void *lvSignalPtr, const void *lvDim0
 
 
 /********************************************************************************************************
-
 												SCALAR
-
  ********************************************************************************************************/
 
-
-
-DLLEXPORT void mdsplus_scalar_constructor(void **lvScalarPtrOut, ErrorCluster *error)
-
-{
-
-	Scalar *scalarPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		scalarPtrOut = new Scalar();
-
-		*lvScalarPtrOut = reinterpret_cast<void *>(scalarPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		deleteData(scalarPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_scalar_constructor(void **lvScalarPtrOut, ErrorCluster *error) {
+	*lvScalarPtrOut = genericConstructor<MDSplus::Scalar>(__func__, error);
 }
 
-DLLEXPORT void mdsplus_scalar_destructor(void **lvScalarPtr)
-{
+DLLEXPORT void mdsplus_scalar_destructor(void **lvScalarPtr) {
 	deleteLvData(lvScalarPtr);
 }
 
