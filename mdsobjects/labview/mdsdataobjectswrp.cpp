@@ -1,8 +1,6 @@
 #include "mdsobjectswrp.h"
 #include <string>
 
-using namespace std;
-
 void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
 {
 	if (code) {
