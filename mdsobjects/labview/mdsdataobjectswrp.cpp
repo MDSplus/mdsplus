@@ -32,7 +32,7 @@ static void safeCall(char const * src, ErrorCluster * error, T f) {
 
 	try {
 		f();
-	} catch (MDSplus::MdsException const & e) {
+	} catch (MdsException const & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
 	}
@@ -46,7 +46,7 @@ struct Lambda {
 };
 
 static void deleteLvData(void ** data) {
-	deleteData(reinterpret_cast<MDSplus::Data *>(*data));
+	deleteData(reinterpret_cast<Data *>(*data));
 }
 
 template<class T>
@@ -60,12 +60,12 @@ struct Constructor: public Lambda {
 };
 
 template <class T, class V>
-struct ScalarConstructor: public Constructor<T> {
+struct ScalarConstructor: public Constructor<Scalar> {
 	ScalarConstructor(void ** ptr, V value):
-		Constructor<T>(ptr), value(value) {}
+		Constructor(ptr), value(value) {}
 	V value;
 	void operator()() {
-		Constructor<T>::ptr = reinterpret_cast<void *>(new T(value));
+		ptr = reinterpret_cast<void *>(new T(value));
 	}
 };
 
@@ -75,13 +75,13 @@ static void scalarConstructor(char const * src, ErrorCluster * error, void ** pt
 }
 
 template <class T, class V>
-struct ArrayConstructor: public Constructor<T> {
+struct ArrayConstructor: public Constructor<Array> {
 	ArrayConstructor(void ** ptr, V inPtr, const LIntArrHdl dims):
-		Constructor<T>(ptr), inPtr(inPtr), dims(dims) {}
+		Constructor(ptr), inPtr(inPtr), dims(dims) {}
 	V inPtr;
 	const LIntArrHdl dims;
 	void operator()() {
-		Constructor<T>::ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize), (*dims)->elt);
+		ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize), (*dims)->elt);
 	}
 };
 
@@ -110,7 +110,7 @@ static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorClu
 
 	T x = 0;
 	try {
-		MDSplus::Data * data = reinterpret_cast<MDSplus::Data *>(const_cast<void *>(b));
+		Data * data = reinterpret_cast<Data *>(const_cast<void *>(b));
 		x = (data->*getX)();
 	} catch ( const MdsException & e) {
 		errorCode = bogusError;
@@ -126,7 +126,7 @@ static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorClu
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *error) {
-	safeCall(__func__, error, Constructor<MDSplus::Array>(lvArrayPtrOut));
+	safeCall(__func__, error, Constructor<Array>(lvArrayPtrOut));
 }
 
 DLLEXPORT void mdsplus_array_destructor(void **lvArrayPtr) {
@@ -1031,7 +1031,7 @@ DLLEXPORT void mdsplus_array_setElementAt_dims(const void *lvArrayPtr, const LIn
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_compound_constructor(void **lvCompoundPtrOut, ErrorCluster *error) {
-	safeCall(__func__, error, Constructor<MDSplus::Compound>(lvCompoundPtrOut));
+	safeCall(__func__, error, Constructor<Compound>(lvCompoundPtrOut));
 }
 
 DLLEXPORT void mdsplus_compound_destructor(void **lvCompoundPtr) {
@@ -2747,7 +2747,7 @@ DLLEXPORT void mdsplus_empty_destructor(void **lvEmptyPtr) {
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_float32_constructor(void **lvFloat32PtrOut, float valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Float32>(__func__, error, lvFloat32PtrOut, valIn);
+	scalarConstructor<Float32>(__func__, error, lvFloat32PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_float32_destructor(void **lvFloat32Ptr) {
@@ -2755,27 +2755,27 @@ DLLEXPORT void mdsplus_float32_destructor(void **lvFloat32Ptr) {
 }
 
 DLLEXPORT void mdsplus_float32_getByte(const void *lvFloat32Ptr, char *byteOut, ErrorCluster *error) {
-	*byteOut = getScalar<char>(lvFloat32Ptr, &MDSplus::Data::getByte, __func__, error);
+	*byteOut = getScalar<char>(lvFloat32Ptr, &Data::getByte, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float32_getDouble(const void *lvFloat32Ptr, double *doubleOut, ErrorCluster *error) {
-	*doubleOut = getScalar<double>(lvFloat32Ptr, &MDSplus::Data::getDouble, __func__, error);
+	*doubleOut = getScalar<double>(lvFloat32Ptr, &Data::getDouble, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float32_getFloat(const void *lvFloat32Ptr, float *floatOut, ErrorCluster *error) {
-	*floatOut = getScalar<float>(lvFloat32Ptr, &MDSplus::Data::getFloat, __func__, error);
+	*floatOut = getScalar<float>(lvFloat32Ptr, &Data::getFloat, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float32_getInt(const void *lvFloat32Ptr, int *intOut, ErrorCluster *error) {
-	*intOut = getScalar<int>(lvFloat32Ptr, &MDSplus::Data::getInt, __func__, error);
+	*intOut = getScalar<int>(lvFloat32Ptr, &Data::getInt, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, int64_t *longOut, ErrorCluster *error) {
-	*longOut = getScalar<int64_t>(lvFloat32Ptr, &MDSplus::Data::getLong, __func__, error);
+	*longOut = getScalar<int64_t>(lvFloat32Ptr, &Data::getLong, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOut, ErrorCluster *error) {
-	*shortOut = getScalar<short>(lvFloat32Ptr, &MDSplus::Data::getShort, __func__, error);
+	*shortOut = getScalar<short>(lvFloat32Ptr, &Data::getShort, __func__, error);
 }
 
 /********************************************************************************************************
@@ -2783,11 +2783,11 @@ DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOu
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_float32array_constructor(void **lvFloat32ArrayPtrOut, const LFltArrHdl lvFltArrHdlIn, ErrorCluster *error) {
-	arrayConstructor<MDSplus::Float32Array>(__func__, error, lvFloat32ArrayPtrOut, lvFltArrHdlIn);
+	arrayConstructor<Float32Array>(__func__, error, lvFloat32ArrayPtrOut, lvFltArrHdlIn);
 }
 
 DLLEXPORT void mdsplus_float32array_constructor_dims(void **lvFloat32ArrayPtrOut, const LFltArrHdl lvFltArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error) {
-	arrayConstructor<MDSplus::Float32Array>(__func__, error, lvFloat32ArrayPtrOut, lvFltArrHdlIn, lvIntArrHdlIn);
+	arrayConstructor<Float32Array>(__func__, error, lvFloat32ArrayPtrOut, lvFltArrHdlIn, lvIntArrHdlIn);
 }
 
 DLLEXPORT void mdsplus_float32array_destructor(void **lvFloat32ArrayPtr) {
@@ -2799,7 +2799,7 @@ DLLEXPORT void mdsplus_float32array_destructor(void **lvFloat32ArrayPtr) {
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Float64>(__func__, error, lvFloat64PtrOut, valIn);
+	scalarConstructor<Float64>(__func__, error, lvFloat64PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_float64_destructor(void **lvFloat64Ptr) {
@@ -2807,27 +2807,27 @@ DLLEXPORT void mdsplus_float64_destructor(void **lvFloat64Ptr) {
 }
 
 DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, ErrorCluster *error) {
-	*byteOut = getScalar<char>(lvFloat64Ptr, &MDSplus::Data::getByte, __func__, error);
+	*byteOut = getScalar<char>(lvFloat64Ptr, &Data::getByte, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubleOut, ErrorCluster *error) {
-	*doubleOut = getScalar<double>(lvFloat64Ptr, &MDSplus::Data::getDouble, __func__, error);
+	*doubleOut = getScalar<double>(lvFloat64Ptr, &Data::getDouble, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOut, ErrorCluster *error) {
-	*floatOut = getScalar<float>(lvFloat64Ptr, &MDSplus::Data::getFloat, __func__, error);
+	*floatOut = getScalar<float>(lvFloat64Ptr, &Data::getFloat, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, ErrorCluster *error) {
-	*intOut = getScalar<int>(lvFloat64Ptr, &MDSplus::Data::getInt, __func__, error);
+	*intOut = getScalar<int>(lvFloat64Ptr, &Data::getInt, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOut, ErrorCluster *error) {
-	*longOut = getScalar<int64_t>(lvFloat64Ptr, &MDSplus::Data::getLong, __func__, error);
+	*longOut = getScalar<int64_t>(lvFloat64Ptr, &Data::getLong, __func__, error);
 }
 
 DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOut, ErrorCluster *error) {
-	*shortOut = getScalar<short>(lvFloat64Ptr, &MDSplus::Data::getShort, __func__, error);
+	*shortOut = getScalar<short>(lvFloat64Ptr, &Data::getShort, __func__, error);
 }
 
 /********************************************************************************************************
@@ -2835,11 +2835,11 @@ DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOu
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_float64array_constructor(void **lvFloat64ArrayPtrOut, const LDblArrHdl lvDblArrHdlIn, ErrorCluster *error) {
-	arrayConstructor<MDSplus::Float64Array>(__func__, error, lvFloat64ArrayPtrOut, lvDblArrHdlIn);
+	arrayConstructor<Float64Array>(__func__, error, lvFloat64ArrayPtrOut, lvDblArrHdlIn);
 }
 
 DLLEXPORT void mdsplus_float64array_constructor_dims(void **lvFloat64ArrayPtrOut, const LDblArrHdl lvDblArrHdlIn, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error) {
-	arrayConstructor<MDSplus::Float64Array>(__func__, error, lvFloat64ArrayPtrOut, lvDblArrHdlIn, lvIntArrHdlIn);
+	arrayConstructor<Float64Array>(__func__, error, lvFloat64ArrayPtrOut, lvDblArrHdlIn, lvIntArrHdlIn);
 }
 
 DLLEXPORT void mdsplus_float64array_destructor(void **lvFloat64ArrayPtr)
@@ -2852,7 +2852,7 @@ DLLEXPORT void mdsplus_float64array_destructor(void **lvFloat64ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_int16_constructor(void **lvInt16PtrOut, short valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Int16>(__func__, error, lvInt16PtrOut, valIn);
+	scalarConstructor<Int16>(__func__, error, lvInt16PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_int16_destructor(void **lvInt16Ptr) {
@@ -3225,7 +3225,7 @@ DLLEXPORT void mdsplus_int16array_destructor(void **lvInt16ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_int32_constructor(void **lvInt32PtrOut, int valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Int32>(__func__, error, lvInt32PtrOut, valIn);
+	scalarConstructor<Int32>(__func__, error, lvInt32PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_int32_destructor(void **lvInt32Ptr) {
@@ -3598,7 +3598,7 @@ DLLEXPORT void mdsplus_int32array_destructor(void **lvInt32ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_int64_constructor(void **lvInt64PtrOut, int64_t valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Int64>(__func__, error, lvInt64PtrOut, valIn);
+	scalarConstructor<Int64>(__func__, error, lvInt64PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_int64_destructor(void **lvInt64Ptr) {
@@ -3973,7 +3973,7 @@ DLLEXPORT void mdsplus_int64array_destructor(void **lvInt64ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_int8_constructor(void **lvInt8PtrOut, char valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Int8>(__func__, error, lvInt8PtrOut, valIn);
+	scalarConstructor<Int8>(__func__, error, lvInt8PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_int8_destructor(void **lvInt8Ptr) {
@@ -4984,7 +4984,7 @@ DLLEXPORT void mdsplus_signal_setDim(const void *lvSignalPtr, const void *lvDim0
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_scalar_constructor(void **lvScalarPtrOut, ErrorCluster *error) {
-	safeCall(__func__, error, Constructor<MDSplus::Scalar>(lvScalarPtrOut));
+	safeCall(__func__, error, Constructor<Scalar>(lvScalarPtrOut));
 }
 
 DLLEXPORT void mdsplus_scalar_destructor(void **lvScalarPtr) {
@@ -5410,7 +5410,7 @@ DLLEXPORT void mdsplus_stringarray_destructor(void **lvStringArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_uint16_constructor(void **lvUint16PtrOut, unsigned short valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Uint16>(__func__, error, lvUint16PtrOut, valIn);
+	scalarConstructor<Uint16>(__func__, error, lvUint16PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_uint16_destructor(void **lvUint16Ptr) {
@@ -5783,7 +5783,7 @@ DLLEXPORT void mdsplus_uint16array_destructor(void **lvUint16ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_uint32_constructor(void **lvUint32PtrOut, unsigned int valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Uint32>(__func__, error, lvUint32PtrOut, valIn);
+	scalarConstructor<Uint32>(__func__, error, lvUint32PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_uint32_destructor(void **lvUint32Ptr) {
@@ -6156,7 +6156,7 @@ DLLEXPORT void mdsplus_uint32array_destructor(void **lvUint32ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_uint64_constructor(void **lvUint64PtrOut, uint64_t valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Uint64>(__func__, error, lvUint64PtrOut, valIn);
+	scalarConstructor<Uint64>(__func__, error, lvUint64PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_uint64_destructor(void **lvUint64Ptr) {
@@ -6591,7 +6591,7 @@ DLLEXPORT void mdsplus_uint64array_destructor(void **lvUint64ArrayPtr)
  ********************************************************************************************************/
 
 DLLEXPORT void mdsplus_uint8_constructor(void **lvUint8PtrOut, unsigned char valIn, ErrorCluster *error) {
-	scalarConstructor<MDSplus::Uint8>(__func__, error, lvUint8PtrOut, valIn);
+	scalarConstructor<Uint8>(__func__, error, lvUint8PtrOut, valIn);
 }
 
 DLLEXPORT void mdsplus_uint8_destructor(void **lvUint8Ptr) {
