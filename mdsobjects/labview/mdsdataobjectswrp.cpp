@@ -94,7 +94,7 @@ template<class T, class V>
 static void arrayConstructor(char const * src, ErrorCluster * error, void ** ptr, V inPtr) {
 	LIntArr dims;
 	dims.dimSize = 1;
-	dims.elt = (*inPtr)->dimSize;
+	dims.elt[1] = (*inPtr)->dimSize;
 	LIntArr * dimPtr;
 	safeCall(src, error, ArrayConstructor<T, V>(ptr, inPtr, &dimPtr));
 }
@@ -2709,7 +2709,7 @@ static void setAccessory(char const * src, ErrorCluster * error, void * outPtr, 
 
 	try {
 		Data * data = reinterpret_cast<Data *>(outPtr);
-		data->*setX(reinterpret_cast<Data *>(const_cast<void *>(inPtr)));
+		(data->*setX)(reinterpret_cast<Data *>(const_cast<void *>(inPtr)));
 	} catch (const MdsException & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
