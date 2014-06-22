@@ -2667,150 +2667,35 @@ DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteA
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrIn = NULL;
-
+static void setAccessory(char const * src, ErrorCluster * error, void * outPtr, void const * inPtr, void (Data::*setX)(Data *)) {
 	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
-
-		dataPtr->setError(dataPtrIn);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-}
-
-
-
-DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrIn = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
-
-		dataPtr->setHelp(dataPtrIn);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-}
-
-
-
-DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrIn = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
-
-		dataPtr->setUnits(dataPtrIn);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-}
-
-DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error)
-{
-	Data *dataPtr = NULL;
-	Data *dataPtrIn = NULL;
-	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = "";
 
 	try {
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-		dataPtrIn = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn));
-		dataPtr->setValidation(dataPtrIn);
-	} catch (const MdsException &e) {
+		Data * data = reinterpret_cast<Data *>(outPtr);
+		data->*setX(reinterpret_cast<Data *>(const_cast<void *>(inPtr)));
+	} catch (const MdsException & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
 	}
 
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+	fillErrorCluster(errorCode, src, errorMessage, error);
+}
+
+DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setError);
+}
+
+DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setHelp);
+}
+
+DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setUnits);
+}
+
+DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setValidation);
 }
 
 /********************************************************************************************************
