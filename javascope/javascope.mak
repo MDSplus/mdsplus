@@ -28,7 +28,7 @@ class.stamp: $(SOURCES)
 $(JARDIR)\jScope.jar: class.stamp
 	- del/q/f/s docs
 	- mkdir docs
-	copy $(DOCS) docs
+	xcopy $(DOCS) docs
 	$(JAR) -cf $@ $(CLASSES) docs
 	- del/q/f/s docs
 	- rmdir docs
