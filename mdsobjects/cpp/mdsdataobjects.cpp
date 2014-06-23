@@ -605,15 +605,13 @@ Data * MDSplus::compile(const char *expr) {
 }
 		
 Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
-		void *args[MAX_ARGS];
-
+	std::vector<void *> args;
 		va_list v;
 		va_start(v, nArgs);
-	for(int i = 0; i < nArgs; ++i) {
-			Data *currArg = va_arg(v, Data *);
-			args[i] = currArg->convertToDsc();
-	}
+	for(int i = 0; i < nArgs; ++i)
+		args.push_back((va_arg(v, Data *))->convertToDsc());
 	va_end(v);
+
 		int status;
 		Tree *actTree;
 		try {
@@ -621,10 +619,9 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 		}catch(MdsException const & exc){actTree = 0;}
 
 		//AutoPointer<Tree> actTree(getActiveTree());
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
+	Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, args.data(), actTree, &status);
 		if(actTree) delete actTree;
-	for(int i = 0; i < nArgs; ++i)
-		    freeDsc(args[i]);
+	std::for_each(args.begin(), args.end(), freeDsc);
 		if(!(status & 1))
 			throw MdsException(status);
 		return res;
