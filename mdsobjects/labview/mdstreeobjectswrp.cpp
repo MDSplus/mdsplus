@@ -295,7 +295,7 @@ DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeO
 	Tree *treePtr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
+	char const * errorMessage = "";
 	*lvhasNodeOut = LVBooleanTrue;
 	try
 	{
@@ -304,7 +304,7 @@ DLLEXPORT void mdsplus_tree_hasNode(const void *lvTreePtr, LVBoolean *lvhasNodeO
 		delete node;
 
 	}
-	catch (const MdsException &mdsE)
+	catch (...)
 	{
 		*lvhasNodeOut = LVBooleanFalse;
 	}
