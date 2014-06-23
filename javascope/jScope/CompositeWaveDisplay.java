@@ -155,12 +155,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         public void run()
         {
-            Signal s;
-            float x[];
-            float y[];
-            int numElem, numMsg = 0;
-            UpdSignalData usd;
-
             while(true)
             {
                 try {
@@ -168,12 +162,12 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
                     long start, end, end1;
 
                     Object obj[] = updSignalDataQeue.dequeue();
-                    numMsg += obj.length;
                     d = new Date();
                     start = d.getTime();
                     for (int j = 0; j < obj.length; j++) {
-                        usd = (UpdSignalData) obj[j];
-                        if (usd == null)break;
+                        UpdSignalData usd = (UpdSignalData) obj[j];
+                        if (usd == null)
+                            break;
                         if(usd.operation == CompositeWaveDisplay.CMND_STOP)
                             return;
                         processPacket(usd);
@@ -271,8 +265,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         private void processsSignals1DPacket( UpdSignalData usd )
         {
             float x[];
-            float y[];
-            y = new float[usd.numPointsPerSignal];
+            float y[] = new float[usd.numPointsPerSignal];
 
             for (int i = 0; i < signals1DVector.size(); i++)
             {
@@ -320,12 +313,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         private void processsSignals2DPacket( UpdSignalData usd )
         {
-            float x[];
-            float y[];
             int nPoints[] = new int[1];
             int totPoints = usd.numPointsPerSignal * usd.times.length;
-            y = new float[totPoints];
-            x = new float[totPoints];
+            float y[] = new float[totPoints];
+            float x[] = new float[totPoints];
 
 //          System.out.println("N point per sig "+ usd.numPointsPerSignal +" tot point "+ totPoints +" time len "+ usd.times.length);
 
@@ -403,13 +394,11 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         } catch (Exception exc){}
     }
 
-
     private CompositeWaveDisplay(boolean isApplet)
     {
         super();
         this.isApplet = isApplet;
     }
-
 
     private void setDataAccess()
     {
@@ -431,12 +420,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             ((JRadioButton)e.nextElement()).setEnabled(state);
     }
 
-
     JCheckBox liveUpdate;
 
     public void init()
     {
-
         if(isApplet)
         {
             Waveform.zoom_on_mb1 = false;
@@ -491,12 +478,10 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	//liveUpdate.setSelected(false);
 	liveUpdate.setVisible(false);
 
-
         pointer_mode = new ButtonGroup();
         pointer_mode.add(point);
         pointer_mode.add(zoom);
         pointer_mode.add(pan);
-
 
         JPanel panel1 = new JPanel();
         panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 1, 4));
@@ -504,7 +489,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         panel1.add(zoom);
         panel1.add(pan);
         panel1.add(liveUpdate);
-
 
         JPanel panel = new JPanel()
         {
@@ -557,8 +541,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         setEnabledMode(true);
         wave_container.SetMode(Waveform.MODE_ZOOM);
-
-
     }
 
     public void enableLiveUpdate()
@@ -584,7 +566,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 	}
         if( state )
         {
-
             setEnabledMode(false);
             wave_container.SetMode(Waveform.MODE_WAIT);
             appendThread.resumeThread();
@@ -603,7 +584,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         validate();
     }
 
-
     private boolean translateToBoolean(String value)
     {
         if(value.toUpperCase().equals("TRUE"))
@@ -611,7 +591,6 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
         else
             return false;
     }
-
 
     private void getSignalsParameter()
     {
