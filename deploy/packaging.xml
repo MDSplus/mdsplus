@@ -663,6 +663,7 @@ Components: alpha beta stable
 Description: MDSplus packages
 SignWith: MDSplus
 EOF
+
 if [ "$(uname -p)" == "x86_64" ]
 then
   bits=64
