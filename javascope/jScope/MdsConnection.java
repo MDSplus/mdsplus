@@ -173,13 +173,10 @@ public class MdsConnection
             }
         }
 
-
-
         class PMET extends Thread //Process Mds Event Thread
         {
             int eventId = -1;
             String eventName;
-
 
             public void run()
             {
@@ -203,7 +200,6 @@ public class MdsConnection
                     eventName = name;
             }
         }
-
 
 	class MRT extends Thread // Mds Receive Thread
 	{
@@ -720,7 +716,6 @@ public class MdsConnection
        } catch(IOException e) {error = new String("Could not get IO for "+provider + e);}
     }
 
-
     public synchronized void MdsRemoveEvent(UpdateEventListener l, String event)
     {
            int eventid;
@@ -728,48 +723,39 @@ public class MdsConnection
                 return;
 
            if( processUdpEvent != null )
-           {
                processUdpEvent.removeEvent(event);
-           }
 
-	   try {
+        try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)2, null,
                         MdsMessage.EVENTCANREQUEST.getBytes());
 
             byte data[] = {(byte)eventid};
 
-            sendArg((byte)1, Descriptor.DTYPE_CSTRING,
-                        (byte)2, null, data);
-      } catch(IOException e) {error = new String("Could not get IO for "+provider + e);}
+            sendArg((byte)1, Descriptor.DTYPE_CSTRING, (byte)2, null, data);
+        } catch(IOException e) {error = new String("Could not get IO for "+provider + e);}
     }
 
 
     public synchronized void addConnectionListener(ConnectionListener l)
     {
-	    if (l == null) {
-	        return;
-	    }
+        if (l == null)
+            return;
         connection_listener.addElement(l);
     }
 
     public synchronized void removeConnectionListener(ConnectionListener l)
     {
-	    if (l == null) {
-	        return;
-	    }
+        if (l == null)
+            return;
         connection_listener.removeElement(l);
     }
 
     protected void dispatchConnectionEvent(ConnectionEvent e)
     {
         if (connection_listener != null)
-        {
             for(int i = 0; i < connection_listener.size(); i++)
-            {
                 connection_listener.elementAt(i).processConnectionEvent(e);
-            }
-        }
     }
-  }
+}
 
