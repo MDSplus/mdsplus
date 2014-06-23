@@ -1,43 +1,38 @@
 CLASSPATH = -classpath .;..\java\classes\MindTerm.jar
 JAVAC = "$(JDK_DIR)\bin\javac.exe"
 JAR = "$(JDK_DIR)\bin\jar.exe"
+JARDIR = ..\java\classes
 
-.SUFFIXES: .java .class
-
-.java.class:
-	$(JAVAC) $(CLASSPATH) $<
-
-CLASSES = $(SOURCES:.java=.class)
-
-all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\WaveDisplay.jar ..\java\classes\jScope.properties
+SOURCES = $(COMMON_SRC) $(JSCOPE_SRC) $(WAVEDISPLAY_SRC)
+WAVECLASSES = $(COMMON_SRC:.java=*.class)
+CLASSES = $(WAVECLASSES) $(JSCOPE_SRC:.java=*.class)
+all: $(JARDIR) $(JARDIR)\jScope.properties $(JARDIR)\MindTerm.jar $(JARDIR)\jScope.jar $(JARDIR)\WaveDisplay.jar
 	rem done
 
-..\java\classes\jScope.jar: jScope.class CompositeWaveDisplay.class $(CLASSES)
+$(JARDIR):
+	- mkdir ..\java
+	- mkdir $@
+
+$(JARDIR)\jScope.properties: jScope.properties
+	copy $** $@
+
+$(JARDIR)\MindTerm.jar: MindTerm.jar
+	copy $** $@
+
+class.stamp: $(SOURCES)
+	$(JAVAC) $(CLASSPATH) $(SOURCES)
+	echo x > class.stamp
+
+$(JARDIR)\jScope.jar: class.stamp
 	- del/q/f/s docs
 	- mkdir docs
 	copy $(DOCS) docs
-	$(JAR) -cf $@ *.class jScope\*.class *.html docs
+	$(JAR) -cf $@ $(CLASSES) docs
 	- del/q/f/s docs
 	- rmdir docs
 
-..\java\classes\MindTerm.jar: MindTerm.jar
-	- mkdir ..\java
-	- mkdir ..\java\classes
-	copy MindTerm.jar $@
-
-jScope.class : $(SOURCES)
-	$(JAVAC) $(CLASSPATH) $(SOURCES)
-
-..\java\classes\jScope.properties: jScope.properties
-	copy jScope.properties $@
-
-..\java\classes\WaveDisplay.jar: $(COMMON_SRC) $(WAVEDISPLAY_SRC)
-	del/q *.class
-	$(JAVAC) $(CLASSPATH) $**
-	$(JAR) -cf $@ $(**:.java=*.class)
+$(JARDIR)\WaveDisplay.jar: class.stamp
+	$(JAR) -cf $@ $(WAVECLASSES)
 	
-CompositeWaveDisplay.class : $(SOURCES)
-	$(JAVAC) $(CLASSPATH) jScope\CompositeWaveDisplay.java
-
 include Makefile.common
 
