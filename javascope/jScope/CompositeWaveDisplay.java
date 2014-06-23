@@ -29,10 +29,9 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
         synchronized public Object[] dequeue() throws InterruptedException
         {
-            int numObj;
             Object objects[] = null;
-            while( ( numObj = data.size() ) == 0 )
-              this.wait();
+            while(data.size() == 0)
+                this.wait();
             objects = data.toArray();
             Object o;
             for(int i = objects.length - 1; i > 0; i--)
