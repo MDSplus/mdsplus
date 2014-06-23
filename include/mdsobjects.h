@@ -902,9 +902,39 @@ private:
 		}
 	};
 /////////////////////////COMPOUND DATA//////////////////////////////////
-	class EXPORT Compound: public Data
+class EXPORT Compound: public Data {
+public:
+	Compound(): length(0), ptr(0) {
+		clazz = CLASS_R;
+	}
+
+	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		length(length), ptr(0)
 	{
-	protected:
+		clazz = CLASS_R;
+		this->dtype = dtype;
+		if(length > 0) {
+			this->ptr = new char[length];
+			memcpy(this->ptr, ptr, length);
+		}
+
+		if(nDescs > 0) {
+			this->descs.resize(nDescs);
+			for(int i = 0; i < nDescs; ++i) {
+				this->descs[i] = (Data *)descs[i];
+				if (this->descs[i])
+					this->descs[i]->refCount++;
+			}
+		}
+
+		setAccessory(units, error, help, validation);
+	}
+	virtual ~Compound()
+	{
+		if(length > 0)
+			deleteNativeArray(ptr);
+	}
+protected:
 		int length;
 		char *ptr;
 		std::vector<Data *> descs;
@@ -931,38 +961,8 @@ private:
 					return true;
 			return false;
 		}
-	public:
-		Compound(): ptr(0), length(0) {
-			clazz = CLASS_R;
-		}
 
-		Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_R;
-			this->dtype = dtype;
-			this->length = length;
-			if(length > 0)
-			{
-				this->ptr = new char[length];
-				memcpy(this->ptr, ptr, length);
-			}
-			else
-				this->ptr = 0;
-			if(nDescs > 0) {
-				this->descs.resize(nDescs);
-				for(int i = 0; i < nDescs; ++i) {
-					this->descs[i] = (Data *)descs[i];
-					if (this->descs[i])
-						this->descs[i]->refCount++;
-				}
-			}
-			setAccessory(units, error, help, validation);
-		}
-		virtual ~Compound()
-		{
-			if(length > 0)
-				deleteNativeArray(ptr);
-		}
+public:
 		virtual void propagateDeletion()
 		{
 			for(std::size_t i = 0; i < descs.size(); ++i)
