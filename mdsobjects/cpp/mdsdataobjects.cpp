@@ -605,16 +605,14 @@ Data * MDSplus::compile(const char *expr) {
 }
 		
 Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
-		int i;
 		void *args[MAX_ARGS];
 
 		va_list v;
 		va_start(v, nArgs);
-		for(i = 0; i < nArgs; i++)
-		{
+	for(int i = 0; i < nArgs; ++i) {
 			Data *currArg = va_arg(v, Data *);
 			args[i] = currArg->convertToDsc();
-		}
+	}
 		int status;
 		Tree *actTree;
 		try {
@@ -624,7 +622,7 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 		//AutoPointer<Tree> actTree(getActiveTree());
 		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
 		if(actTree) delete actTree;
-		for(i = 0; i < nArgs; i++)
+	for(int i = 0; i < nArgs; ++i)
 		    freeDsc(args[i]);
 		if(!(status & 1))
 			throw MdsException(status);
