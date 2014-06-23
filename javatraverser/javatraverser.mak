@@ -138,7 +138,6 @@ NodeId.java\
 NodeInfo.java\
 NodeInfoPropertyEditor.java\
 NodeModifyData.java\
-NodePropertyEditor.java\
 OctaArray.java\
 ParameterEditor.java\
 PythonEditor.java\

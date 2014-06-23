@@ -434,10 +434,6 @@ SOURCE=.\NodeModifyData.java
 # End Source File
 # Begin Source File
 
-SOURCE=.\NodePropertyEditor.java
-# End Source File
-# Begin Source File
-
 SOURCE=.\OctaArray.java
 # End Source File
 # Begin Source File
