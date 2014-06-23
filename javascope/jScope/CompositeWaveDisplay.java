@@ -1157,21 +1157,15 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 		        w.Update(wi.signals);
 
             }
-        }
-        catch(Exception e)
-        {
-            if(e instanceof  AccessControlException)
+        } catch(Exception e) {
+            if(e instanceof AccessControlException)
             {
-		        JOptionPane.showMessageDialog(this,
-		                                        e.toString()+"\n url "+url +
-		                                        "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
-		                                        "alert",
-		                                        JOptionPane.ERROR_MESSAGE);
+	        JOptionPane.showMessageDialog(this, e.toString()+"\n url "+url +
+		                              "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
+		                              "alert",
+		                              JOptionPane.ERROR_MESSAGE);
             } else {
-		        JOptionPane.showMessageDialog(this,
-		                                        e.toString(),
-		                                        "alert",
-		                                        JOptionPane.ERROR_MESSAGE);
+		JOptionPane.showMessageDialog(this, e.toString(), "alert", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
