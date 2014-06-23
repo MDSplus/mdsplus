@@ -1583,12 +1583,13 @@ public:
 		if (changed || !isImmutable())
 			return true;
 
-		struct Lambda {
+		// FIXME: VS2008 doesn't properly mangle scoped classes, so this can't be called Lambda
+		struct LambdaApd{
 			static bool changed(Data * d) {
 				return d->hasChanged();
 			}
 		};
-		if (std::find_if(descs.begin(), descs.end(), Lambda::changed) != descs.end())
+		if (std::find_if(descs.begin(), descs.end(), LambdaApd::changed) != descs.end())
 			return true;
 		return false;
 	}
