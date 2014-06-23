@@ -39,12 +39,15 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         deviceField8 = new DeviceField();
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
         deviceField11 = new DeviceField();
         deviceField12 = new DeviceField();
+        jPanel8 = new javax.swing.JPanel();
+        deviceField13 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe Configuration");
@@ -122,6 +125,8 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
+        jPanel6.setLayout(new java.awt.GridLayout(2, 0));
+
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("ffwdOn: ");
         deviceField8.setNumCols(4);
@@ -152,7 +157,19 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
         deviceField12.setOffsetNid(13);
         jPanel4.add(deviceField12);
 
-        jPanel1.add(jPanel4);
+        jPanel6.add(jPanel4);
+
+        jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("TOKAMAK Vertical Shift Ctrl : ");
+        deviceField13.setNumCols(4);
+        deviceField13.setOffsetNid(15);
+        jPanel8.add(deviceField13);
+
+        jPanel6.add(jPanel8);
+
+        jPanel1.add(jPanel6);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
@@ -166,6 +183,7 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
     private DeviceField deviceField10;
     private DeviceField deviceField11;
     private DeviceField deviceField12;
+    private DeviceField deviceField13;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -179,5 +197,7 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel8;
     // End of variables declaration//GEN-END:variables
 }
