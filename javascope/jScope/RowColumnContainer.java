@@ -55,7 +55,7 @@ public class RowColumnContainer extends JComponent
     */
    protected float pw[];
 
-   private Vector real_position = new Vector();
+   private Vector<Point> real_position = new Vector<Point>();
 
    private Point split_pos = null;
 
@@ -218,7 +218,7 @@ public class RowColumnContainer extends JComponent
     {
        for(int j = 1; j < real_position.size(); j+=2)
        {
-            Point real_pos = (Point)real_position.elementAt(j);
+            Point real_pos = real_position.elementAt(j);
             if(rrow <= real_pos.y && rcol == real_pos.x)
             {
                 real_position.setElementAt(new Point(real_pos.x, real_pos.y++), j);
@@ -231,11 +231,11 @@ public class RowColumnContainer extends JComponent
     {
         for(int i = 1; i < real_position.size(); i+=2)
         {
-            Point real_pos = (Point)real_position.elementAt(i);
+            Point real_pos = real_position.elementAt(i);
             if(pos.x == real_pos.x && pos.y == real_pos.y)
             {
                // real_pos.y++;
-               // Point in_pos = (Point)real_position.elementAt(i - 1);
+               // Point in_pos = real_position.elementAt(i - 1);
                // if(in_pos.x == real_pos.x && in_pos.y == real_pos.y)
                // {
                //     real_position.removeElementAt(i);
@@ -262,9 +262,9 @@ public class RowColumnContainer extends JComponent
     {
         for(int i = 0; i < real_position.size(); i+=2)
         {
-            Point p = (Point)real_position.elementAt(i);
+            Point p = real_position.elementAt(i);
             if(in_pos.x == p.x && in_pos.y == p.y)
-                return (Point)real_position.elementAt(i+1);
+                return real_position.elementAt(i+1);
         }
         return null;
     }

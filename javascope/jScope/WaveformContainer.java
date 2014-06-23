@@ -38,10 +38,9 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    protected Font         font = new Font("Helvetica", Font.PLAIN, 12);
    protected WavePopup    wave_popup;
 
-   private   Vector       wave_container_listener = new Vector();
    protected boolean      print_with_legend = false;
    protected boolean      print_bw = false;
-
+   private   Vector<WaveContainerListener> wave_container_listener = new Vector<WaveContainerListener>();
 
     /**
      * Constructs a new WaveformContainer with a number of column and component in column.
@@ -174,10 +173,9 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     */
    public synchronized void addWaveContainerListener(WaveContainerListener l)
    {
-	    if (l == null) {
-	        return;
-	    }
-        wave_container_listener.addElement(l);
+	if (l == null)
+            return;
+	wave_container_listener.addElement(l);
    }
 
     /**
@@ -206,7 +204,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         {
             for(int i = 0; i < wave_container_listener.size(); i++)
             {
-                ((WaveContainerListener)wave_container_listener.elementAt(i)).processWaveContainerEvent(e);
+                wave_container_listener.elementAt(i).processWaveContainerEvent(e);
             }
         }
     }
