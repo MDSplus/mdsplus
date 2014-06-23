@@ -383,12 +383,16 @@ static int tcp_reuseCheck(char *host, char *unique, size_t buflen) {
   struct sockaddr_in6 sin;
   int status = getHostAndPort(host,&sin);
   if (status == 1) {
-    snprintf(unique,buflen,"tcpv6://%d.%d.%d.%d:%d",
-	     sin.sin6_addr.s6_addr32[0],
-	     sin.sin6_addr.s6_addr32[1],
-	     sin.sin6_addr.s6_addr32[2],
-	     sin.sin6_addr.s6_addr32[3],
-	     ntohs(sin.sin6_port));
+    snprintf(unique, buflen, "tcpv6://%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%02x%02x:%d",
+      sin.sin6_addr.s6_addr[ 0], sin.sin6_addr.s6_addr[ 1],
+      sin.sin6_addr.s6_addr[ 2], sin.sin6_addr.s6_addr[ 3],
+      sin.sin6_addr.s6_addr[ 4], sin.sin6_addr.s6_addr[ 5],
+      sin.sin6_addr.s6_addr[ 6], sin.sin6_addr.s6_addr[ 7],
+      sin.sin6_addr.s6_addr[ 8], sin.sin6_addr.s6_addr[ 9],
+      sin.sin6_addr.s6_addr[10], sin.sin6_addr.s6_addr[11],
+      sin.sin6_addr.s6_addr[12], sin.sin6_addr.s6_addr[13],
+      sin.sin6_addr.s6_addr[14], sin.sin6_addr.s6_addr[15],
+      ntohs(sin.sin6_port) );
     return 0;
   } else {
     *unique=0;
