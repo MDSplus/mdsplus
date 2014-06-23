@@ -1,3 +1,5 @@
+include Makefile.common
+
 CLASSPATH = -classpath .;..\java\classes\MindTerm.jar
 JAVAC = "$(JDK_DIR)\bin\javac.exe"
 JAR = "$(JDK_DIR)\bin\jar.exe"
@@ -34,5 +36,4 @@ $(JARDIR)\jScope.jar: class.stamp
 $(JARDIR)\WaveDisplay.jar: class.stamp
 	$(JAR) -cf $@ $(WAVECLASSES)
 	
-include Makefile.common
 
