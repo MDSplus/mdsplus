@@ -26,7 +26,7 @@ public:
 	void lock() {
 		try {
 		sem.wait();
-		} catch(SystemException *exc) {
+		} catch(...) {
 			sem.initialize(0);
 		}
 	}
