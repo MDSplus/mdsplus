@@ -440,7 +440,11 @@ static int tcp_connect(int conid, char *protocol, char *host) {
 	fcntl(s,F_SETFL,0);
     } else
 #endif
-	  status=setsockopt(s,SOL_SOCKET,SO_BINDTODEVICE,"eth0",strlen("eth0"));
+#ifdef SO_BINDTODEVICE
+      status=setsockopt(s,SOL_SOCKET,SO_BINDTODEVICE,"eth0",strlen("eth0"));
+#else
+      // BSD and derivatives do not have SO_BINDTODEVICE
+#endif  
       status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
     if (status == -1) {
       shutdown(s,2);
