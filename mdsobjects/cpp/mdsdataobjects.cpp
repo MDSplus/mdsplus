@@ -613,6 +613,7 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 			Data *currArg = va_arg(v, Data *);
 			args[i] = currArg->convertToDsc();
 	}
+	va_end(v);
 		int status;
 		Tree *actTree;
 		try {
