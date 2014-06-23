@@ -1,7 +1,11 @@
+CLASSPATH = -classpath .;..\java\classes\MindTerm.jar
+JAVAC = "$(JDK_DIR)\bin\javac.exe"
+JAR = "$(JDK_DIR)\bin\jar.exe"
+
 .SUFFIXES: .java .class
 
 .java.class:
-	"$(JDK_DIR)\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $<
+	$(JAVAC) $(CLASSPATH) $<
 
 CLASSES = $(SOURCES:.java=.class)
 
@@ -12,7 +16,7 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 	- del/q/f/s docs
 	- mkdir docs
 	copy $(DOCS) docs
-	"$(JDK_DIR)\bin\jar.exe" -cf $@ *.class jScope\*.class *.html docs
+	$(JAR) -cf $@ *.class jScope\*.class *.html docs
 	- del/q/f/s docs
 	- rmdir docs
 
@@ -22,18 +26,18 @@ all : ..\java\classes\MindTerm.jar ..\java\classes\jScope.jar ..\java\classes\Wa
 	copy MindTerm.jar $@
 
 jScope.class : $(SOURCES)
-	"$(JDK_DIR)\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $(SOURCES)
+	$(JAVAC) $(CLASSPATH) $(SOURCES)
 
 ..\java\classes\jScope.properties: jScope.properties
 	copy jScope.properties $@
 
-..\java\classes\WaveDisplay.jar: $(APPLETSOURCES)
+..\java\classes\WaveDisplay.jar: $(COMMON_SRC) $(WAVEDISPLAY_SRC)
 	del/q *.class
-	"$(JDK_DIR)\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar $(APPLETSOURCES)
-	"$(JDK_DIR)\bin\jar.exe" -cf $@ jScope\*.class
+	$(JAVAC) $(CLASSPATH) $**
+	$(JAR) -cf $@ $(**:.java=*.class)
 	
 CompositeWaveDisplay.class : $(SOURCES)
-	"$(JDK_DIR)\bin\javac.exe" -classpath .;..\java\classes\MindTerm.jar jScope\CompositeWaveDisplay.java
+	$(JAVAC) $(CLASSPATH) jScope\CompositeWaveDisplay.java
 
 include Makefile.common
 
