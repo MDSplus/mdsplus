@@ -19,7 +19,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
     public class myQueue
     {
-        Vector data = new Vector();
+        Vector<Object> data = new Vector<Object>();
 
         synchronized public void add(Object o)
         {
