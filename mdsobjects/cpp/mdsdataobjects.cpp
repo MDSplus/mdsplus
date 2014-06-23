@@ -605,9 +605,16 @@ Data * MDSplus::compile(const char *expr) {
 }
 		
 Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
-	std::vector<void *> args;
-		va_list v;
-		va_start(v, nArgs);
+	struct Lambda {
+		std::vector<void *> args;
+		~Lambda() {
+			std::for_each(args.begin(), args.end(), freeDsc);
+		}
+	} lambda;
+
+	std::vector<void *> & args = lambda.args;
+	va_list v;
+	va_start(v, nArgs);
 	for(int i = 0; i < nArgs; ++i)
 		args.push_back((va_arg(v, Data *))->convertToDsc());
 	va_end(v);
@@ -615,7 +622,6 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	int status;
 	AutoPointer<Tree> actTree(getActiveTree());
 	Data * res = (Data *)compileFromExprWithArgs(expr, nArgs, args.data(), actTree.ptr, &status);
-	std::for_each(args.begin(), args.end(), freeDsc);
 	if(!(status & 1))
 		throw MdsException(status);
 	return res;
