@@ -35,5 +35,4 @@ $(JARDIR)\jScope.jar: class.stamp
 
 $(JARDIR)\WaveDisplay.jar: class.stamp
 	$(JAR) -cf $@ $(WAVECLASSES)
-	
 
