@@ -1,7 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
 JAVADIR = @MAKEJAVADIR@classes
-JAVAC = @JAVAC@  -classpath .:../../java/classes/jScope.jar
+JAVAC = @JAVAC@  -classpath .:../../javascope/jScope.jar
 
 RMIC = @RMIC@
 
