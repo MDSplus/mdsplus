@@ -612,19 +612,13 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 		args.push_back((va_arg(v, Data *))->convertToDsc());
 	va_end(v);
 
-		int status;
-		Tree *actTree;
-		try {
-			actTree = getActiveTree();
-		}catch(MdsException const & exc){actTree = 0;}
-
-		//AutoPointer<Tree> actTree(getActiveTree());
-	Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, args.data(), actTree, &status);
-		if(actTree) delete actTree;
+	int status;
+	AutoPointer<Tree> actTree(getActiveTree());
+	Data * res = (Data *)compileFromExprWithArgs(expr, nArgs, args.data(), actTree.ptr, &status);
 	std::for_each(args.begin(), args.end(), freeDsc);
-		if(!(status & 1))
-			throw MdsException(status);
-		return res;
+	if(!(status & 1))
+		throw MdsException(status);
+	return res;
 }
 
 Data * MDSplus::compile(const char *expr, Tree *tree) {
