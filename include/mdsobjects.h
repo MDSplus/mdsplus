@@ -904,19 +904,15 @@ private:
 /////////////////////////COMPOUND DATA//////////////////////////////////
 class EXPORT Compound: public Data {
 public:
-	Compound(): length(0), ptr(0) {
+	Compound(): length(0), str(0) {
 		clazz = CLASS_R;
 	}
 
 	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
-		length(length), ptr(0)
+		length(length), str(0)
 	{
-		clazz = CLASS_R;
-		this->dtype = dtype;
-		if(length > 0) {
-			this->ptr = new char[length];
-			memcpy(this->ptr, ptr, length);
-		}
+		if(length > 0)
+			str = ptr;
 
 		if(nDescs > 0) {
 			this->descs.resize(nDescs);
@@ -927,16 +923,16 @@ public:
 			}
 		}
 
+		this->dtype = dtype;
+		clazz = CLASS_R;
 		setAccessory(units, error, help, validation);
 	}
-	virtual ~Compound()
-	{
-		if(length > 0)
-			deleteNativeArray(ptr);
-	}
+
+	virtual ~Compound() {}
+
 protected:
-		int length;
-		char *ptr;
+	int length;
+	std::string str;
 		std::vector<Data *> descs;
 		void incrementRefCounts()
 		{
@@ -1027,8 +1023,6 @@ public:
 	private:
 		void init() {
 			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
 		}
 	};
 	class Dimension: public Compound
@@ -1041,8 +1035,6 @@ public:
 		Dimension(Data *window, Data *axis, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DIMENSION;
-			length = 0;
-			ptr = 0;
 			descs.push_back(window);
 			descs.push_back(axis);
 			incrementRefCounts();
@@ -1069,8 +1061,6 @@ public:
 		Window(Data *startidx, Data *endidx, Data *value_at_idx0, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_WINDOW;
-			length = 0;
-			ptr = 0;
 			descs.push_back(startidx);
 			descs.push_back(endidx);
 			descs.push_back(value_at_idx0);
@@ -1095,14 +1085,17 @@ public:
 		{
 			dtype = DTYPE_FUNCTION;
 			length = 1;
-			ptr = new char[1];
-			*ptr = opcode;
+			str = opcode;
 			for(int i = 0; i < nargs; i++)
 				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		char getOpcode() { return *ptr;}
+
+		char getOpcode() {
+			return str.at(0);
+		}
+
 		int getNumArguments() { return descs.size(); }
 		Data *getArgumentAt(int idx) 
 		{
@@ -1121,8 +1114,6 @@ public:
 		Conglom(Data *image, Data *model, Data *name, Data *qualifiers, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONGLOM;
-			length = 0;
-			ptr = 0;
 			descs.push_back(image);
 			descs.push_back(model);
 			descs.push_back(name);
@@ -1166,8 +1157,6 @@ public:
 		Range(Data *begin, Data *ending, Data *deltaval, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_RANGE;
-			length = 0;
-			ptr = 0;
 			descs.push_back(begin);
 			descs.push_back(ending);
 			descs.push_back(deltaval);
@@ -1203,8 +1192,6 @@ public:
 		Action(Data *dispatch, Data *task, Data *errorlogs, Data *completion_message, Data *performance, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_ACTION;
-			length = 0;
-			ptr = 0;
 			descs.push_back(dispatch);
 			descs.push_back(task);
 			descs.push_back(errorlogs);
@@ -1254,8 +1241,6 @@ public:
 		Dispatch(Data *ident, Data *phase, Data *when, Data *completion, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DISPATCH;
-			length = 0;
-			ptr = 0;
 			descs.push_back(ident);
 			descs.push_back(phase);
 			descs.push_back(when);
@@ -1298,8 +1283,6 @@ public:
 		Program(Data *timeout, Data *program, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_PROGRAM;
-			length = 0;
-			ptr = 0;
 			descs.push_back(timeout);
 			descs.push_back(program);
 			incrementRefCounts();
@@ -1330,8 +1313,6 @@ public:
 		Routine(Data *timeout, Data *image, Data *routine, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_ROUTINE;
-			length = 0;
-			ptr = 0;
 			descs.push_back(timeout);
 			descs.push_back(image);
 			descs.push_back(routine);
@@ -1376,8 +1357,6 @@ public:
 		Procedure(Data *timeout, Data *language, Data *procedure, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_PROCEDURE;
-			length = 0;
-			ptr = 0;
 			descs.push_back(timeout);
 			descs.push_back(language);
 			descs.push_back(procedure);
@@ -1419,8 +1398,6 @@ public:
 		Method(Data *timeout, Data *method, Data *object, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_METHOD;
-			length = 0;
-			ptr = 0;
 			descs.push_back(timeout);
 			descs.push_back(method);
 			descs.push_back(object);
@@ -1463,27 +1440,31 @@ public:
 		Dependency(char opcode, Data *arg1, Data *arg2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DEPENDENCY;
-			length = 1;
-			ptr = new char[1];
-			*ptr = opcode;
+			str = opcode;
 			descs.push_back(arg1);
 			descs.push_back(arg2);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		char getOpcode(){return *ptr;}
+
+		char getOpcode() {
+			return str.at(0);
+		}
+
 		Data *getArg1(){
 			if(descs[0]) descs[0]->refCount++;
 			return descs[0];
 		}
+
 		Data *getArg2(){
 			if(descs[1]) descs[1]->refCount++;
 			return descs[1];
 		}
-		void setOpcode(char opcode)
-		{
-			*ptr = opcode;
+
+		void setOpcode(char opcode) {
+			str = opcode;
 		}
+
 		void setArg1(Data *arg1) {assignDescAt(arg1, 0);}
 		void setArg2(Data *arg2) {assignDescAt(arg2, 0);}
 	};
@@ -1498,25 +1479,29 @@ public:
 		{
 			dtype = DTYPE_CONDITION;
 			length = 1;
-			ptr = new char[1];
-			*ptr = opcode;
+			str = opcode;
 			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		char getOpcode(){return *ptr;}
+
+		char getOpcode() {
+			return str.at(0);
+		}
+
 		Data *getArg(){
 			if(descs[0]) descs[0]->refCount++;
 			return descs[0];
 		}
-		void setOpcode(char opcode)
-		{
-			*ptr = opcode;
+
+		void setOpcode(char opcode) {
+			str = opcode;
 		}
+
 		void setArg(Data *arg) {assignDescAt(arg, 0);}
 	};
-	class Call: public Compound
-	{
+
+class Call: public Compound {
 	public: 
 		Call(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
 		{
@@ -1526,16 +1511,22 @@ public:
 		{
 			dtype = DTYPE_CALL;
 			length = 1;
-			ptr = new char;
-			*ptr = retType;
+			str = retType;
 			descs.push_back(image);
 			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
 				descs.push_back(args[i]);
 			incrementRefCounts();
 		}
-		char getRetType() {return *ptr;}
-		void setRetType(char retType){*ptr = retType;}
+
+		char getRetType() {
+			return str.at(0);
+		}
+
+		void setRetType(char retType) {
+			str = retType;
+		}
+
 		Data *getImage()
 		{
 			if(descs[0]) descs[0]->refCount++;
