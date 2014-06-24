@@ -971,39 +971,38 @@ public:
 	class Signal: public Compound
 	{
 	public: 
-		Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+		Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+			Compound(dtype, length, ptr, nDescs, descs)
 		{
 			setAccessory(units, error, help, validation);
 		}
+
 		Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			init();
 			descs.push_back(data);
 			descs.push_back(raw);
 			descs.push_back(dimension);
-			incrementRefCounts();
-			setAccessory(units, error, help, validation);
+			init(units, error, help, validation);
 		}
+
 		Signal(Data *data, Data *raw, Data *dimension1, Data *dimension2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			init();
 			descs.push_back(data);
 			descs.push_back(raw);
 			descs.push_back(dimension1);
 			descs.push_back(dimension2);
-			incrementRefCounts();
-			setAccessory(units, error, help, validation);
+			init(units, error, help, validation);
 		}
+
 		Signal(Data *data, Data *raw, int nDims, Data **dimensions, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			init();
 			descs.push_back(data);
 			descs.push_back(raw);
 			for(int i = 0; i < nDims; i++)
 				descs.push_back(dimensions[i]);
-			incrementRefCounts();
-			setAccessory(units, error, help, validation);
+			init(units, error, help, validation);
 		}
+
 		Data *getData(){return descs[0];}
 		Data *getRaw(){return descs[1];}
 		Data *getDimension()
@@ -1021,9 +1020,12 @@ public:
 		void setRaw(Data *raw){assignDescAt(raw, 1);}
 		void setDimension(Data *dimension) {assignDescAt(dimension, 2);}
 		void setDimensionAt(Data *dimension, int idx) {assignDescAt(dimension, 2 + idx);}
+
 	private:
-		void init() {
+		void init(Data * units, Data * error, Data * help, Data * validation) {
 			dtype = DTYPE_SIGNAL;
+			incrementRefCounts();
+			setAccessory(units, error, help, validation);
 		}
 	};
 	class Dimension: public Compound
