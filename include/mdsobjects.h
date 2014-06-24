@@ -904,12 +904,11 @@ private:
 /////////////////////////COMPOUND DATA//////////////////////////////////
 class EXPORT Compound: public Data {
 public:
-	Compound(): length(0), str(0) {
+	Compound(): str(0) {
 		clazz = CLASS_R;
 	}
 
-	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
-		length(length), str(0)
+	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0): str(0)
 	{
 		if(length > 0)
 			str = ptr;
@@ -931,7 +930,6 @@ public:
 	virtual ~Compound() {}
 
 protected:
-	int length;
 	std::string str;
 		std::vector<Data *> descs;
 		void incrementRefCounts()
@@ -1084,7 +1082,6 @@ public:
 		Function(char opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_FUNCTION;
-			length = 1;
 			str = opcode;
 			for(int i = 0; i < nargs; i++)
 				descs.push_back(args[i]);
@@ -1478,8 +1475,7 @@ public:
 		Condition(char opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONDITION;
-			length = 1;
-			str = opcode;
+]			str = opcode;
 			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
@@ -1510,8 +1506,7 @@ class Call: public Compound {
 		Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CALL;
-			length = 1;
-			str = retType;
+]			str = retType;
 			descs.push_back(image);
 			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
