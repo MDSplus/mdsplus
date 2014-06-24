@@ -1475,7 +1475,7 @@ public:
 		Condition(char opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONDITION;
-]			str = opcode;
+			str = opcode;
 			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
