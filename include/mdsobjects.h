@@ -1506,7 +1506,7 @@ class Call: public Compound {
 		Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CALL;
-]			str = retType;
+			str = retType;
 			descs.push_back(image);
 			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
