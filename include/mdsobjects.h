@@ -1020,15 +1020,14 @@ class Signal: public Compound {
 			return getDescAt(2);
 		}
 
+		Data *getDimensionAt(int idx) {
+			return getDescAt(idx + 2);
+		}
+
 		int getNumDimensions() {
 			return descs.size() - 2;
 		}
 
-		Data *getDimensionAt(int idx) 
-		{	
-			if(descs[2+idx]) descs[2 + idx]->refCount++;
-			return descs[2 + idx];
-		}
 		void setData(Data *data) {assignDescAt(data, 0);}
 		void setRaw(Data *raw){assignDescAt(raw, 1);}
 		void setDimension(Data *dimension) {assignDescAt(dimension, 2);}
