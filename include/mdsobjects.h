@@ -914,9 +914,8 @@ public:
 			str = ptr;
 
 		if(nDescs > 0) {
-			this->descs.resize(nDescs);
 			for(int i = 0; i < nDescs; ++i) {
-				this->descs[i] = (Data *)descs[i];
+				this->descs.push_back((Data *)descs[i]);
 				if (this->descs[i])
 					this->descs[i]->refCount++;
 			}
@@ -931,30 +930,34 @@ public:
 
 protected:
 	std::string str;
-		std::vector<Data *> descs;
-		void incrementRefCounts()
-		{
-			for(std::size_t i = 0; i < descs.size(); ++i)
-				if(descs[i])
-					descs[i]->refCount++;
-		}
-		void assignDescAt(Data *data, int idx)
-		{
-			if(descs[idx])
-				delete descs[idx];
+	std::vector<Data *> descs;
 
-			descs[idx] = data;
-			if(data) data->refCount++;
-			changed = true;
-		}
-		bool hasChanged()
-		{
-			if (changed || !isImmutable()) return true;
-			for(std::size_t i = 0; i < descs.size(); ++i)
-				if(descs[i] && descs[i]->hasChanged())
-					return true;
-			return false;
-		}
+	void incrementRefCounts() {
+		for(std::size_t i = 0; i < descs.size(); ++i)
+			if(descs[i])
+				descs[i]->refCount++;
+	}
+
+	void assignDescAt(Data *data, int idx) {
+		if (descs.at(idx))
+			deleteData(descs[idx]);
+
+		descs.at(idx) = data;
+		changed = true;
+		if (data)
+			data->refCount++;
+	}
+
+	bool hasChanged() {
+		if (changed || !isImmutable())
+			return true;
+
+		for(std::size_t i = 0; i < descs.size(); ++i)
+			if(descs[i] && descs[i]->hasChanged())
+				return true;
+
+		return false;
+	}
 
 public:
 		virtual void propagateDeletion()
