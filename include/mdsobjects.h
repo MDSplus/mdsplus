@@ -926,6 +926,14 @@ public:
 		setAccessory(units, error, help, validation);
 	}
 
+	virtual void propagateDeletion() {
+		for(std::size_t i = 0; i < descs.size(); ++i)
+			if (descs[i])
+				deleteData(descs[i]);
+	}
+
+	void * convertToDsc();
+
 	virtual ~Compound() {}
 
 protected:
@@ -964,18 +972,9 @@ protected:
 
 		return false;
 	}
+};
 
-public:
-		virtual void propagateDeletion()
-		{
-			for(std::size_t i = 0; i < descs.size(); ++i)
-				if(descs[i])
-					delete descs[i];
-		}
-		void *convertToDsc();
-	};
-	class Signal: public Compound
-	{
+class Signal: public Compound {
 	public: 
 		Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
 			Compound(dtype, length, ptr, nDescs, descs)
