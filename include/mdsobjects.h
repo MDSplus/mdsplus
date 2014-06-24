@@ -1010,7 +1010,11 @@ public:
 			descs[2]->refCount++;
 			return descs[2];
 		}
-		int genNumDimensions() { return descs.size() - 2; }
+
+		int getNumDimensions() {
+			return descs.size() - 2;
+		}
+
 		Data *getDimensionAt(int idx) 
 		{	
 			if(descs[2+idx]) descs[2 + idx]->refCount++;
