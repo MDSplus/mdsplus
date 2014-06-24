@@ -308,11 +308,9 @@ private:
 	Data *validation;
 };
 
-	class Empty: public Data
-	{
-	public:
-		Empty(){};
-	};
+class Empty: public Data {
+};
+
 	class EXPORT Scalar: public Data
 	{
 	public:
