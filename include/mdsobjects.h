@@ -593,6 +593,17 @@ class Empty: public Data {
 			memcpy(ptr, val, length);
 			setAccessory(units, error, help, validation);
 		}
+		String(unsigned char *uval, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			// FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
+			// FIXME: Warning: Do not use this constructor in user code
+			char * val = reinterpret_cast<char *>(uval);
+			dtype = DTYPE_T;
+			length = strlen(val);
+			ptr = new char[length+1];
+			ptr[length] = 0;
+			memcpy(ptr, val, length);
+			setAccessory(units, error, help, validation);
+		}
 		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_T;
