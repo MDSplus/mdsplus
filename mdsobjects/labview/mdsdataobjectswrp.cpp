@@ -5053,156 +5053,40 @@ DLLEXPORT void mdsplus_scalar_getInfo(const void *lvScalarPtr, char *clazzOut, c
 
 }
 
-
-
 /********************************************************************************************************
-
 												STRING
-
  ********************************************************************************************************/
 
-
-
-DLLEXPORT void mdsplus_string_constructor(void **lvStringPtrOut, const char *valIn, ErrorCluster *error)
-
-{
-
-	String *stringPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		stringPtrOut = new String(valIn);
-
-		*lvStringPtrOut = reinterpret_cast<void *>(stringPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		deleteData(stringPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_string_constructor(void **lvStringPtrOut, const char *valIn, ErrorCluster *error) {
+	scalarConstructor<String>(__func__, error, lvStringPtrOut, valIn);
 }
 
-
-
-DLLEXPORT void mdsplus_string_constructor_len(void **lvStringPtrOut, const LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
-
-{
-
-	String *stringPtrOut = NULL;
-
-	char *byteArr = NULL;	
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		int byteArrLen = static_cast<int>((*lvByteArrHdlIn)->dimSize);
-
-		byteArr = new char[byteArrLen];
-
-		for (int i = 0; i < byteArrLen; i++)
-
-			byteArr[i] = static_cast<char>((*lvByteArrHdlIn)->elt[i]);
-
-		stringPtrOut = new String(byteArr, byteArrLen);
-
-		delete[] byteArr;
-
-		*lvStringPtrOut = reinterpret_cast<void *>(stringPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		delete[] byteArr;
-
-		deleteData(stringPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_string_constructor_len(void **lvStringPtrOut, const LUByteArrHdl lvUByteArrHdlIn, ErrorCluster *error) {
+	arrayConstructor<String>(__func__, error, lvStringPtrOut, lvUByteArrHdlIn);
 }
 
-DLLEXPORT void mdsplus_string_destructor(void **lvStringPtr)
-{
+DLLEXPORT void mdsplus_string_destructor(void **lvStringPtr) {
 	deleteLvData(lvStringPtr);
 }
 
-DLLEXPORT void mdsplus_string_equals(const void *lvStringPtr, LVBoolean *equalsOut, const void *lvDataPtrIn, ErrorCluster *error)
+struct StringEquals: public Lambda {
+	StringEquals(void * in1Ptr, void * in2Ptr, LVBoolean * & outPtr):
+		in1Ptr(in1Ptr), in2Ptr(in2Ptr), outPtr(outPtr) {}
+	void * in1Ptr;
+	void * in2Ptr;
+	LVBoolean * & outPtr;
 
-{
-
-	String *stringPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		stringPtr = reinterpret_cast<String *>(const_cast<void *>(lvStringPtr));
-
-		if (stringPtr->equals(reinterpret_cast<Data *>(const_cast<void *>(lvDataPtrIn))))
-
-			*equalsOut = TRUE;
-
+	void operator()() {
+		if (reinterpret_cast<String *>(in1Ptr)->equals(reinterpret_cast<Data *>(in2Ptr)))
+			*outPtr = TRUE;
 		else
-
-			*equalsOut = FALSE;
-
+			*outPtr = FALSE;
 	}
+};
 
-	catch (const MdsException &e)
-
-	{
-
-		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(e.what());
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_string_equals(const void *lvStringPtr, LVBoolean *equalsOut, const void *lvDataPtrIn, ErrorCluster *error) {
+	safeCall(__func__, error, StringEquals(const_cast<void *>(lvStringPtr), const_cast<void *>(lvDataPtrIn), equalsOut));
 }
-
-
 
 DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 
