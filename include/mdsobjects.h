@@ -1648,8 +1648,7 @@ public:
 	}
 
 	void append(Data * data) {
-		descs.push_back(data);
-		data->incRefCount();
+		appendDesc(data);
 	}
 		
 	void remove(Data * data) {
