@@ -596,13 +596,13 @@ void PutMany::remove(char *nodeName)
 {
 	int nItems = len();
 	int idx;
-	String *nodeKey = new String("node");
-	String *nodeNameStr = new String(nodeName);
+	String nodeKey("node");
+	String nodeNameStr(nodeName);
 	for(idx = 0; idx < nItems; idx++)
 	{
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
-		String *currName = (String *)currDict->getItem(nodeKey);
-		if(currName->equals(nodeNameStr))
+		String *currName = (String *)currDict->getItem(&nodeKey);
+		if(currName->equals(&nodeNameStr))
 		{
 			deleteData(currName);
 			deleteData(currDict);
@@ -611,8 +611,6 @@ void PutMany::remove(char *nodeName)
 		deleteData(currName);
 		deleteData(currDict);
 	}
-	deleteData(nodeKey);
-	deleteData(nodeNameStr);
 	List::remove(idx);
 }
 
