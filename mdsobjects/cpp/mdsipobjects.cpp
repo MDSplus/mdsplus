@@ -408,7 +408,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
     if ((status & 1) && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
-      memcpy(&status,ptr,numBytes);
+    	status = *(reinterpret_cast<int *>(ptr));
     if (mem) FreeMessage(mem);
 	if(!(status & 1))
 		throw MdsException(status);
