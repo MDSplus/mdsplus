@@ -633,7 +633,7 @@ void PutMany::execute()
 void PutMany::checkStatus(char *nodeName)
 {
 	if(!evalRes)
-		throw MdsException("Data have not written yet");
+		throw MdsException("Data not yet written");
 	String *nodeNameStr = new String(nodeName);
 	String *resItem = (String *)evalRes->getItem(nodeNameStr);
 	deleteData(nodeNameStr);
