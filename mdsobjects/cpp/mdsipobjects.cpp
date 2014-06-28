@@ -600,12 +600,9 @@ void PutMany::remove(char *nodeName)
 	for(std::size_t idx = 0; idx < nItems; ++idx) {
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
 		String *currName = (String *)currDict->getItem(&nodeKey);
-		if(currName->equals(&nodeNameStr)) {
-			deleteData(currName);
-			deleteData(currDict);
+		if(currName->equals(&nodeNameStr))
 			List::remove(idx);
-			break;
-		}
+
 		deleteData(currName);
 		deleteData(currDict);
 	}
