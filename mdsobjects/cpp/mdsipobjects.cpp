@@ -594,16 +594,13 @@ void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args,
 
 void PutMany::remove(char *nodeName)
 {
-	int nItems = len();
-	int idx;
+	std::size_t nItems = len();
 	String nodeKey("node");
 	String nodeNameStr(nodeName);
-	for(idx = 0; idx < nItems; idx++)
-	{
+	for(std::size_t idx = 0; idx < nItems; ++idx) {
 		Dictionary *currDict = (Dictionary *)getElementAt(idx);
 		String *currName = (String *)currDict->getItem(&nodeKey);
-		if(currName->equals(&nodeNameStr))
-		{
+		if(currName->equals(&nodeNameStr)) {
 			deleteData(currName);
 			deleteData(currDict);
 			List::remove(idx);
