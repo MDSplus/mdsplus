@@ -1592,14 +1592,9 @@ public:
 		if (changed || !isImmutable())
 			return true;
 
-		// FIXME: VS2008 doesn't properly mangle scoped classes, so this can't be called Lambda
-		struct LambdaApd{
-			static bool changed(Data * d) {
-				return d->hasChanged();
-			}
-		};
-		if (std::find_if(descs.begin(), descs.end(), LambdaApd::changed) != descs.end())
+		if (std::find_if(descs.begin(), descs.end(), Apd::changed) != descs.end())
 			return true;
+
 		return false;
 	}
 
@@ -1640,6 +1635,11 @@ public:
 
 protected:
 	std::vector<Data*> descs;
+
+private:
+	static bool changed(Data * d) {
+		return d->hasChanged();
+	}
 };
 
 ///////////////////LIST///////////////
