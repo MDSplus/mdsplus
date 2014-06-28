@@ -606,12 +606,12 @@ void PutMany::remove(char *nodeName)
 		{
 			deleteData(currName);
 			deleteData(currDict);
+			List::remove(idx);
 			break;
 		}
 		deleteData(currName);
 		deleteData(currDict);
 	}
-	List::remove(idx);
 }
 
 void PutMany::execute()
