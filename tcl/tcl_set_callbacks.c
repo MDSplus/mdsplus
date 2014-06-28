@@ -130,7 +130,7 @@ void TclNodeTouched(		/* Returns: void			*/
 STATIC_ROUTINE void AppendOut(char *text)
 {
 	char *msg = text ? text : "";
-	int len = strlen(msg);
+	size_t len = strlen(msg);
         char *old_saved_output;
 #ifndef HAVE_WINDOWS_H
         pthread_mutex_lock(&saved_output_mutex);
