@@ -166,7 +166,7 @@ class EXPORT Data
 {
 public:
 	Data():
-		refCount(0),
+		refCount(1),
 		changed(true),
 		dataCache(nullptr),
 		units(nullptr),
