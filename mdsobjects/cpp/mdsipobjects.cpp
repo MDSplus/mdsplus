@@ -547,8 +547,7 @@ Data *GetMany::get(char *name)
 
 /////////////////
 
-void PutMany::insert(int idx, char *nodeName, char *expr, Data **args, int nArgs)
-{
+void PutMany::insert(int idx, char *nodeName, char *expr, Data **args, int nArgs) {
 	String *nodeNameStr = new String(nodeName);
 	String *exprStr = new String(expr);
 	Dictionary *dict = new Dictionary();
@@ -565,14 +564,11 @@ void PutMany::insert(int idx, char *nodeName, char *expr, Data **args, int nArgs
 		List::insert(idx, dict);
 }
 
-
-void PutMany::append(char *name, char *expr, Data **args, int nArgs)
-{
+void PutMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args, int nArgs)
-{
+void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args, int nArgs) {
 	int nItems = len();
 	int idx;
 	String *nameKey = new String("node");
@@ -595,8 +591,7 @@ void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args,
 	deleteData(nodeNameStr);
 }
 
-void PutMany::remove(char *nodeName)
-{
+void PutMany::remove(char *nodeName) {
 	std::size_t nItems = len();
 	String nodeKey("node");
 	String nodeNameStr(nodeName);
@@ -611,8 +606,7 @@ void PutMany::remove(char *nodeName)
 	}
 }
 
-void PutMany::execute()
-{
+void PutMany::execute() {
 	int serSize;
 	char *ser = serialize(&serSize);
 
@@ -624,9 +618,7 @@ void PutMany::execute()
 	deleteData(serEvalRes);
 }
 
-
-void PutMany::checkStatus(char *nodeName)
-{
+void PutMany::checkStatus(char *nodeName) {
 	if(!evalRes)
 		throw MdsException("Data not yet written");
 
@@ -643,7 +635,3 @@ void PutMany::checkStatus(char *nodeName)
 
 	deleteData(resItem);
 }
-
-
-
-
