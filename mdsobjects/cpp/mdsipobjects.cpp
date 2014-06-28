@@ -634,23 +634,18 @@ void PutMany::checkStatus(char *nodeName)
 {
 	if(!evalRes)
 		throw MdsException("Data not yet written");
-	String *nodeNameStr = new String(nodeName);
-	String *resItem = (String *)evalRes->getItem(nodeNameStr);
-	deleteData(nodeNameStr);
+
+	String nodeNameStr(nodeName);
+	String *resItem = (String *)evalRes->getItem(&nodeNameStr);
 	if(!resItem)
 		throw MdsException("Missing data item in evaluation list");
 
-	String *successStr = new String("Success");
-	if(!successStr->equals(resItem))
-	{
-		char *errMsg = resItem->getString();
-		MdsException *exc = new MdsException(errMsg);
-		delete [] errMsg;
-		deleteData(successStr);
+	if(!String("Success").equals(resItem)) {
+		AutoString errMsg = resItem->getString();
 		deleteData(resItem);
-		throw exc;
+		throw MdsException(errMsg.strPtr);
 	}
-	deleteData(successStr);
+
 	deleteData(resItem);
 }
 
