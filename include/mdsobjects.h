@@ -314,7 +314,7 @@ class Empty: public Data {
 	class EXPORT Scalar: public Data
 	{
 	public:
-		Scalar() {
+		Scalar(): length(0), ptr(0) {
 			clazz = CLASS_S;
 		}
 
