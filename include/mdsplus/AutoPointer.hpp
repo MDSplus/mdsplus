@@ -25,27 +25,26 @@ struct AutoPointer {
 	T * ptr;
 };
 
-template<class T> struct AutoVector {
-	AutoVector(T * vBeg, T* vEnd): vPtr(vBeg), vector(vBeg, vEnd) {
+template<class T>
+struct AutoArray {
+	AutoArray(T * t): ptr(t) {
 	}
 
-	~AutoVector() {
-		delete[] vPtr;
+	virtual ~AutoArray() {
+		delete[] ptr;
 	}
 
-	T * vPtr;
+	T * ptr;
+};
+
+template<class T>
+struct AutoVector: public AutoArray<T> {
+	AutoVector(T * vBeg, T* vEnd): AutoArray<T>(vBeg), vector(vBeg, vEnd) {}
 	std::vector<T> vector;
 };
 
-struct AutoString {
-	AutoString(char * cstr): strPtr(cstr), string(cstr) {
-	}
-
-	~AutoString() {
-		delete[] strPtr;
-	}
-
-	char * strPtr;
+struct AutoString: public AutoArray<char> {
+	AutoString(char * cstr): AutoArray(cstr), string(cstr) {}
 	std::string string;
 };
 

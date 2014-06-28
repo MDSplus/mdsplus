@@ -1,5 +1,8 @@
+#include <mdsobjects.h>
+#include <mdsplus/mdsplus.h>
+#include <mdsplus/AutoPointer.hpp>
+
 #include <stdio.h>
-#include "mdsobjects.h"
 
 #include <cstddef>
 #include <iostream>
@@ -633,9 +636,9 @@ void PutMany::checkStatus(char *nodeName)
 		throw MdsException("Missing data item in evaluation list");
 
 	if(!String("Success").equals(resItem)) {
-		AutoString errMsg = resItem->getString();
+		AutoArray<char> errMsg(resItem->getString());
 		deleteData(resItem);
-		throw MdsException(errMsg.strPtr);
+		throw MdsException(errMsg.ptr);
 	}
 
 	deleteData(resItem);

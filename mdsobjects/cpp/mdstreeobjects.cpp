@@ -233,14 +233,14 @@ TreeNode *Tree::getNode(char const * path)
 
 TreeNode *Tree::getNode(TreePath *path)
 {
-	AutoString pathName(path->getString());
-	return getNode(pathName.strPtr);
+	AutoArray<char> pathName(path->getString());
+	return getNode(pathName.ptr);
 }
 
 TreeNode *Tree::getNode(String *path)
 {
-	AutoString pathName(path->getString());
-	return getNode(pathName.strPtr);
+	AutoArray<char> pathName(path->getString());
+	return getNode(pathName.ptr);
 }
 
 TreeNodeArray *Tree::getNodeWild(char const * path, int usageMask)
@@ -1140,10 +1140,10 @@ TreeNode *TreeNode::getNode(String *relPathStr)
 	int defNid;
 	int newNid;
 	resolveNid();
-	AutoString relPath(relPathStr->getString());
+	AutoArray<char> relPath(relPathStr->getString());
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath.strPtr, &newNid);
+	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath.ptr, &newNid);
 	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 	if(!(status & 1))
 		throw MdsException(status);
