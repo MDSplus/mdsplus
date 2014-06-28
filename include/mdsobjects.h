@@ -1592,7 +1592,7 @@ public:
 		if (changed || !isImmutable())
 			return true;
 
-		if (std::find_if(descs.begin(), descs.end(), Apd::changed) != descs.end())
+		if (std::find_if(descs.begin(), descs.end(), Apd::lambdaChanged) != descs.end())
 			return true;
 
 		return false;
@@ -1637,7 +1637,7 @@ protected:
 	std::vector<Data*> descs;
 
 private:
-	static bool changed(Data * d) {
+	static bool lambdaChanged(Data * d) {
 		return d->hasChanged();
 	}
 };
