@@ -2310,20 +2310,20 @@ static void setAccessory(char const * src, ErrorCluster * error, void * outPtr, 
 	fillErrorCluster(errorCode, src, errorMessage, error);
 }
 
-DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
-	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setError);
+DLLEXPORT void mdsplus_data_setError(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, lvDataPtr, lvDataPtrIn, &Data::setError);
 }
 
-DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
-	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setHelp);
+DLLEXPORT void mdsplus_data_setHelp(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, lvDataPtr, lvDataPtrIn, &Data::setHelp);
 }
 
-DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
-	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setUnits);
+DLLEXPORT void mdsplus_data_setUnits(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, lvDataPtr, lvDataPtrIn, &Data::setUnits);
 }
 
-DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
-	setAccessory(__func__, error, const_cast<void *>(lvDataPtr), lvDataPtrIn, &Data::setValidation);
+DLLEXPORT void mdsplus_data_setValidation(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error) {
+	setAccessory(__func__, error, lvDataPtr, lvDataPtrIn, &Data::setValidation);
 }
 
 /********************************************************************************************************

@@ -155,10 +155,10 @@ DLLEXPORT void mdsplus_data_getUnits(const void *lvDataPtr, void **lvDataPtrOut,
 DLLEXPORT void mdsplus_data_getValidation(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_plot(const void *lvDataPtr, ErrorCluster *error);
 DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error);
-DLLEXPORT void mdsplus_data_setError(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_data_setHelp(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_data_setUnits(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_data_setValidation(const void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_data_setError(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_data_setHelp(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_data_setUnits(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_data_setValidation(void *lvDataPtr, const void *lvDataPtrIn, ErrorCluster *error);
 
 /********** EMPTY **********/
 DLLEXPORT void mdsplus_empty_destructor(void **lvEmptyPtr);
