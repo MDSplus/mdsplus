@@ -1334,28 +1334,26 @@ EXPORT void TreeNodeArray::operator delete(void *p)
 
 EXPORT StringArray *TreeNodeArray::getPath()
 {
-	std::vector<char *> paths;
+	std::vector<AutoArray<char> > paths;
 	for(int i = 0; i < numNodes; ++i)
 		paths.push_back(nodes[i]->getPath());
 
-	StringArray *retData = new StringArray(&paths[0], numNodes);
-	for(int i = 0; i < numNodes; ++i)
-		deleteString(paths[i]);
-
-	return retData;
+	std::vector<char *> nativePaths;
+	for(std::vector<AutoArray<char> >::iterator i = paths.begin(); i != paths.end(); ++i)
+		nativePaths.push_back(i->get());
+	return new StringArray(&nativePaths[0], numNodes);
 }
 
 EXPORT StringArray *TreeNodeArray::getFullPath()
 {
-	std::vector<char *> paths;
+	std::vector<AutoArray<char> > paths;
 	for(int i = 0; i < numNodes; ++i)
 		paths.push_back(nodes[i]->getFullPath());
 
-	StringArray *retData = new StringArray(&paths[0], numNodes);
-	for(int i = 0; i < numNodes; ++i)
-		deleteString(paths[i]);
-
-	return  retData;
+	std::vector<char *> nativePaths;
+	for(std::vector<AutoArray<char> >::iterator i = paths.begin(); i != paths.end(); ++i)
+		nativePaths.push_back(i->get());
+	return new StringArray(&nativePaths[0], numNodes);
 }
 
 EXPORT Int32Array *TreeNodeArray::getNid()
@@ -1364,7 +1362,7 @@ EXPORT Int32Array *TreeNodeArray::getNid()
 	for(int i = 0; i < numNodes; ++i)
 		nids.push_back(nodes[i]->getNid());
 
-	return new Int32Array(&nids[0], numNodes);;
+	return new Int32Array(&nids[0], numNodes);
 }
 
 EXPORT Int8Array *TreeNodeArray::isOn()
