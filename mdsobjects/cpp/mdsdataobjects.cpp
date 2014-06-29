@@ -1279,18 +1279,3 @@ EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
-
-//Required in Windows Debug configuation to propely de-allocate native arrays and strings
-EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
-#if (SIZEOF_LONG != 8)
-EXPORT void MDSplus::deleteNativeArray(int64_t *array){delete [] array;}
-#endif
-EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(Data **array){delete [] array;}
-EXPORT void MDSplus::deleteString(char *str){delete[] str;}
-

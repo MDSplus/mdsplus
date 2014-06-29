@@ -120,22 +120,10 @@ extern "C" {
 namespace MDSplus  {
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
-EXPORT void deleteNativeArray(char *array);
-EXPORT void deleteNativeArray(short *array);
-EXPORT void deleteNativeArray(int *array);
-EXPORT void deleteNativeArray(long *array);
-#if (SIZEOF_LONG != 8)
-EXPORT void deleteNativeArray(int64_t *array);
-#endif
-EXPORT void deleteNativeArray(float *array);
-EXPORT void deleteNativeArray(double *array);
-EXPORT void deleteNativeArray(char **array);
-class Data;
-EXPORT void deleteNativeArray(Data **array);
-	
-	
-	
-EXPORT void deleteString(char *str);
+template<class T>
+EXPORT void deleteNativeArray(T * array) { delete[] array; }
+EXPORT void deleteString(char *str) { deleteNativeArray(str); }
+
 class Tree;
 EXPORT void setActiveTree(Tree *tree);
 EXPORT Tree *getActiveTree();
@@ -160,6 +148,7 @@ protected:
 };
 
 ////////////////////Data class//////////////////////////////
+class Data;
 EXPORT void deleteData(Data *);
 
 class EXPORT Data 
