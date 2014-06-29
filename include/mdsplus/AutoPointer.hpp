@@ -36,6 +36,9 @@ struct AutoPointerBase {
 };
 
 template<class T>
+AutoPointerBase<T>::~AutoPointerBase() {}
+
+template<class T>
 struct AutoPointer: public AutoPointerBase<T> {
 	AutoPointer(T * t): AutoPointerBase<T>(t) {
 	}
