@@ -1481,43 +1481,9 @@ DLLEXPORT void mdsplus_data_execute_tree(void **lvDataPtrOut, const char *exprIn
 
 
 
-DLLEXPORT void mdsplus_data_getByte(const void *lvDataPtr, char *byteOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*byteOut = dataPtr->getByte();
-
-	} catch (const MdsException & e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getByte(const void *lvDataPtr, char *byteOut, ErrorCluster *error) {
+	*byteOut = getScalar<char>(lvDataPtr, &Data::getByte, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getByteArray(const void *lvDataPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
 
@@ -1579,45 +1545,9 @@ DLLEXPORT void mdsplus_data_getByteArray(const void *lvDataPtr, LByteArrHdl lvBy
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_getDouble(const void *lvDataPtr, double *doubleOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*doubleOut = dataPtr->getDouble();
-
-	} catch (const MdsException & e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getDouble(const void *lvDataPtr, double *doubleOut, ErrorCluster *error) {
+	*doubleOut = getScalar<double>(lvDataPtr, &Data::getDouble, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getDoubleArray(const void *lvDataPtr, LDblArrHdl lvDblArrHdlOut, ErrorCluster *error)
 
@@ -1679,85 +1609,13 @@ DLLEXPORT void mdsplus_data_getDoubleArray(const void *lvDataPtr, LDblArrHdl lvD
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_getError(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrOut = dataPtr->getError();
-
-		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
-
-	} catch (const MdsException & e) {
-
-		deleteData(dataPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getError(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error) {
+	*lvDataPtrOut = reinterpret_cast<void *>(getScalar<Data *>(lvDataPtr, &Data::getError, __func__, error));
 }
 
-
-
-DLLEXPORT void mdsplus_data_getFloat(const void *lvDataPtr, float *floatOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*floatOut = dataPtr->getFloat();
-
-	} catch (const MdsException & e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getFloat(const void *lvDataPtr, float *floatOut, ErrorCluster *error) {
+	*floatOut = getScalar<float>(lvDataPtr, &Data::getFloat, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getFloatArray(const void *lvDataPtr, LFltArrHdl lvFltArrHdlOut, ErrorCluster *error)
 
@@ -1819,51 +1677,9 @@ DLLEXPORT void mdsplus_data_getFloatArray(const void *lvDataPtr, LFltArrHdl lvFl
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_getHelp(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrOut = dataPtr->getHelp();
-
-		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
-
-	} catch (const MdsException & e) {
-
-		deleteData(dataPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getHelp(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error) {
+	*lvDataPtrOut = reinterpret_cast<void *>(getScalar<Data *>(lvDataPtr, &Data::getHelp, __func__, error));
 }
-
-
 
 DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char *dtypeOut, short *lengthOut, LIntArrHdl lvIntArrHdlOut, ErrorCluster *error)
 
@@ -1931,43 +1747,9 @@ DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char 
 
 
 
-DLLEXPORT void mdsplus_data_getInt(const void *lvDataPtr, int *intOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*intOut = dataPtr->getInt();
-
-	} catch (const MdsException & e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getInt(const void *lvDataPtr, int *intOut, ErrorCluster *error) {
+	*intOut = getScalar<int>(lvDataPtr, &Data::getInt, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntArrHdlOut, ErrorCluster *error)
 
@@ -2031,43 +1813,9 @@ DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntA
 
 
 
-DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, int64_t *longOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*longOut = dataPtr->getLong();
-
-	} catch (const MdsException & e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getLong(const void *lvDataPtr, int64_t *longOut, ErrorCluster *error) {
+	*longOut = getScalar<int64_t>(lvDataPtr, &Data::getLong, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLngArrHdlOut, ErrorCluster *error)
 
@@ -2191,45 +1939,9 @@ DLLEXPORT void mdsplus_data_getShape(const void *lvDataPtr, LIntArrHdl lvIntArrH
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_getShort(const void *lvDataPtr, short *shortOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*shortOut = dataPtr->getShort();
-
-	} catch (const MdsException & e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getShort(const void *lvDataPtr, short *shortOut, ErrorCluster *error) {
+	*shortOut = getScalar<short>(lvDataPtr, &Data::getShort, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvShtArrHdlOut, ErrorCluster *error)
 
@@ -2293,41 +2005,9 @@ DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvSh
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_getSize(const void *lvDataPtr, int *sizeOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		*sizeOut = dataPtr->getSize();
-
-	} catch (const MdsException &e) {
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getSize(const void *lvDataPtr, int *sizeOut, ErrorCluster *error) {
+	*sizeOut = getScalar<int>(lvDataPtr, &Data::getSize, __func__, error);
 }
-
-
 
 DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdlOut, ErrorCluster *error)
 
@@ -2388,8 +2068,6 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
 }
-
-
 
 DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvStrArrHdlOut, ErrorCluster *error)
 
@@ -2513,95 +2191,13 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 }
 
-
-
-DLLEXPORT void mdsplus_data_getUnits(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrOut = dataPtr->getUnits();
-
-		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		deleteData(dataPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getUnits(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error) {
+	*lvDataPtrOut = reinterpret_cast<void *>(getScalar<Data *>(lvDataPtr, &Data::getUnits, __func__, error));
 }
 
-
-
-DLLEXPORT void mdsplus_data_getValidation(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error)
-
-{
-
-	Data *dataPtr = NULL;
-
-	Data *dataPtrOut = NULL;
-
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char const * errorMessage = "";
-
-	try
-
-	{
-
-		dataPtr = reinterpret_cast<Data *>(const_cast<void *>(lvDataPtr));
-
-		dataPtrOut = dataPtr->getValidation();
-
-		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
-
-	}
-
-	catch (const MdsException &e)
-
-	{
-
-		deleteData(dataPtrOut);
-
-		errorCode = bogusError;
-
-		errorMessage = e.what();
-
-	}
-
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
+DLLEXPORT void mdsplus_data_getValidation(const void *lvDataPtr, void **lvDataPtrOut, ErrorCluster *error) {
+	*lvDataPtrOut = reinterpret_cast<void *>(getScalar<Data *>(lvDataPtr, &Data::getValidation, __func__, error));
 }
-
-
 
 DLLEXPORT void mdsplus_data_plot(const void *lvDataPtr, ErrorCluster *error)
 
@@ -2638,8 +2234,6 @@ DLLEXPORT void mdsplus_data_plot(const void *lvDataPtr, ErrorCluster *error)
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 
 }
-
-
 
 DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteArrHdlOut, ErrorCluster *error)
 
