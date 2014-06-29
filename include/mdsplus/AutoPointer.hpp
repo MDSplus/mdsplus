@@ -14,42 +14,58 @@
 namespace MDSplus {
 
 template<class T>
-struct AutoPointer {
-	AutoPointer(T * t): ptr(t) {
+struct AutoPointerBase {
+	AutoPointerBase(T * t): ptr(t) {
 	}
 
-	~AutoPointer() {
-		delete ptr;
+	virtual ~AutoPointerBase() = 0;
+
+	T * get() {
+		return ptr;
+	}
+
+	T * operator->() {
+		return ptr;
+	}
+
+	T & operator*() {
+		return *ptr;
 	}
 
 	T * ptr;
+};
+
+template<class T>
+struct AutoPointer: public AutoPointerBase<T> {
+	AutoPointer(T * t): AutoPointerBase<T>(t) {
+	}
+
+	virtual ~AutoPointer() {
+		delete AutoPointerBase<T>::ptr;
+	}
 };
 
 // FIXME: AutoData can't be a specialization of AutoPointer
 // FIXME: until we use a more recent version of VS that supports
 // FIXME: the TR1 type traits.
 template<class T>
-struct AutoData {
-	AutoData(T * d): ptr(d) {
+struct AutoData: public AutoPointerBase<T> {
+	AutoData(T * t): AutoPointerBase<T>(t) {
 	}
 
-	~AutoData() {
-		deleteData(ptr);
+	virtual ~AutoData() {
+		deleteData(AutoPointerBase<T>::ptr);
 	}
-
-	T * ptr;
 };
 
 template<class T>
-struct AutoArray {
-	AutoArray(T * t): ptr(t) {
+struct AutoArray: public AutoPointerBase<T> {
+	AutoArray(T * t): AutoPointerBase<T>(t) {
 	}
 
 	virtual ~AutoArray() {
-		delete[] ptr;
+		delete[] AutoPointerBase<T>::ptr;
 	}
-
-	T * ptr;
 };
 
 template<class T>
