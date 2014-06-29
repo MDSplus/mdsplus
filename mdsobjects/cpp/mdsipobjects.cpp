@@ -2,8 +2,6 @@
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
 
-#include <stdio.h>
-
 #include <cstddef>
 #include <iostream>
 #include <string>
@@ -70,10 +68,7 @@ void *getManyObj(char *serializedIn)
 {
 	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
-	{
-		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
-		return 0;
-	}
+		throw MdsException("INTERNAL ERROR: Get Multi did not receive a LIST argument");
 
 	int nArgs = inArgs->len();
 	String nameKey("name");
@@ -84,10 +79,8 @@ void *getManyObj(char *serializedIn)
 	{
 		AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
 		if(currArg->clazz != CLASS_APD)// || currArg->dtype != DTYPE_DICTIONARY)
-		{
-			printf("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument\n");
-			return 0;
-		}
+			throw MdsException("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument");
+
 		AutoData<String> nameData((String *)currArg->getItem(&nameKey));
 		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
 		AutoArray<char> expr(exprData->getString());
@@ -118,10 +111,7 @@ void *putManyObj(char *serializedIn)
 {
 	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
-	{
-		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
-		return 0;
-	}
+		throw MdsException("INTERNAL ERROR: Get Multi did not receive a LIST argument");
 
 	int nArgs = inArgs->len();
 	String nodeKey("node");
@@ -131,10 +121,7 @@ void *putManyObj(char *serializedIn)
 	for(int idx = 0; idx < nArgs; idx++) {
 		AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
 		if(currArg->clazz != CLASS_APD)// || currArg->dtype != DTYPE_DICTIONARY)
-		{
-			printf("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument\n");
-			return 0;
-		}
+			throw MdsException("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument");
 
 		AutoData<String> nodeNameData((String *)currArg->getItem(&nodeKey));
 		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
