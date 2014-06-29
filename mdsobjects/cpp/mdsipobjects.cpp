@@ -160,8 +160,7 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 	}
 }
 
-Connection::~Connection()
-{
+Connection::~Connection() {
 	DisconnectFromMds(sockId);
 }
 
@@ -181,19 +180,19 @@ void Connection::unlockGlobal() {
 	globalMutex.unlock();
 }
 
-void Connection::openTree(char *tree, int shot)
-{
+void Connection::openTree(char *tree, int shot) {
 	int status = MdsOpen(sockId, tree, shot);
 	std::cout << "SOCK ID: " << sockId << std::endl;
 	if(!(status & 1))
 		throw MdsException(status);
 }
-void Connection::closeAllTrees()
-{
+
+void Connection::closeAllTrees() {
 	int status = MdsClose(sockId);
 	if(!(status & 1))
 		throw MdsException(status);
 }
+
 Data *Connection::get(const char *expr, Data **args, int nArgs)
 {
 	char clazz, dtype, nDims;
