@@ -25,6 +25,18 @@ struct AutoPointer {
 	T * ptr;
 };
 
+template<>
+struct AutoPointer<Data> {
+	AutoPointer(Data * d): ptr(d) {
+	}
+
+	~AutoPointer() {
+		deleteData(ptr);
+	}
+
+	Data * ptr;
+};
+
 template<class T>
 struct AutoArray {
 	AutoArray(T * t): ptr(t) {
