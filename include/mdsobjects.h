@@ -578,7 +578,7 @@ class Empty: public Data {
 			length = strlen(val);
 			ptr = new char[length+1];
 			ptr[length] = 0;
-			memcpy(ptr, val, length);
+			std::copy(&val[0], &val[length], ptr);
 			setAccessory(units, error, help, validation);
 		}
 		String(unsigned char *uval, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
@@ -589,7 +589,7 @@ class Empty: public Data {
 			length = strlen(val);
 			ptr = new char[length+1];
 			ptr[length] = 0;
-			memcpy(ptr, val, length);
+			std::copy(&val[0], &val[length], ptr);
 			setAccessory(units, error, help, validation);
 		}
 		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -597,24 +597,20 @@ class Empty: public Data {
 			dtype = DTYPE_T;
 			length = len;
 			ptr = new char[length+1];
-			memcpy(ptr, val, length);
+			std::copy(&val[0], &val[length], ptr);
 			ptr[length] = 0;
 			setAccessory(units, error, help, validation);
 		}
+
 		char *getString()
 		{
 			char *res = new char[length + 1];
-			memcpy(res, ptr, length);
+			std::copy(&ptr[0], &ptr[length + 1], res);
 			res[length] = 0;
 			return res;
 		}
-		bool equals(Data *data)
-		{
-			if(data->clazz != clazz || data->dtype != dtype) return false;
-			String *dataStr = (String *)data;
-			if (dataStr->length != length) return false;
-			return !strncmp(dataStr->ptr, ptr, length);
-		}
+
+		bool equals(Data *data);
 	};
 ////////////////ARRAYS/////////////////////
 	class EXPORT Array: public Data

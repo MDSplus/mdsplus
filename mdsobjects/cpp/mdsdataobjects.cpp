@@ -4,6 +4,8 @@
 #include <mdsplus/AutoPointer.hpp>
 
 #include <stdarg.h>
+#include <string.h>
+
 //#include "mdstree.h"
 using namespace MDSplus;
 using namespace std;
@@ -519,7 +521,7 @@ std::vector<std::complex<double> > Data::getComplexArray()
 	return getArray(retData, numElements);
 }
 
-char *	Data::serialize(int *size)
+char * Data::serialize(int *size)
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc;
@@ -1185,6 +1187,15 @@ char **Array::getStringArray(int *numElements)
 		}
 	*numElements = size;
 	return retArr;
+}
+
+bool String::equals(Data *data) {
+	if(data->clazz != clazz || data->dtype != dtype)
+		return false;
+
+	AutoString first(ptr);
+	AutoString second(((String *)data)->getString());
+	return first.string == second.string;
 }
 
 char *Uint64::getDate()
