@@ -68,8 +68,7 @@ static int convertType(int mdsType)
 
 void *getManyObj(char *serializedIn)
 {
-	bool dataReported = false, errorReported = false;
-	List *inArgs = (List *)deserialize((const char *)serializedIn);
+	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
 	{
 		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
@@ -77,64 +76,47 @@ void *getManyObj(char *serializedIn)
 	}
 
 	int nArgs = inArgs->len();
-	String *nameKey = new String("name");
-	String *exprKey = new String("exp");
-	String *argsKey = new String("args");
-	String *valueKey = new String("value");
-	String *errorKey = new String("error");
-	Dictionary *result = new Dictionary();
+	String nameKey("name");
+	String exprKey("exp");
+	String argsKey("args");
+	AutoData<Dictionary> result(new Dictionary());
 	for(int idx = 0; idx < nArgs; idx++)
 	{
-		Dictionary *currArg = (Dictionary* )inArgs->getElementAt(idx);
+		AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
 		if(currArg->clazz != CLASS_APD)// || currArg->dtype != DTYPE_DICTIONARY)
 		{
 			printf("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument\n");
 			return 0;
 		}
-		String *nameData = (String *)currArg->getItem(nameKey);
-		String *exprData = (String *)currArg->getItem(exprKey);
-		char *expr = exprData->getString();
-		List *argsData = (List *)currArg->getItem(argsKey);
-		
-		Dictionary *answDict = new Dictionary();
-		Data *currAnsw;
-		try {
-			if(argsData && argsData->len() > 0)
-				currAnsw = executeWithArgs(expr, 2, argsData->getDscs(), argsData->len());
-			else
-				currAnsw = execute(expr);
+		AutoData<String> nameData((String *)currArg->getItem(&nameKey));
+		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
+		AutoArray<char> expr(exprData->getString());
+		AutoData<List> argsData((List *)currArg->getItem(&argsKey));
 
-			answDict->setItem(valueKey, currAnsw);
-			dataReported = true;
-		}catch(MdsException const & exc)
-		{
-			String *errorData = new String(exc.what());
-			answDict->setItem(errorKey, errorData);
-			errorReported = true;
+		AutoData<Dictionary> answDict(new Dictionary());
+		try {
+			Data *currAnsw;
+			if(argsData.get() && argsData->len() > 0)
+				currAnsw = executeWithArgs(expr.get(), 2, argsData->getDscs(), argsData->len());
+			else
+				currAnsw = execute(expr.get());
+
+			AutoData<String> valueKey(new String("value"));
+			answDict->setItem(valueKey.get(), currAnsw);
+		} catch(MdsException const & e) {
+			AutoData<String> errorKey(new String("error"));
+			AutoData<String> errorData(new String(e.what()));
+			answDict->setItem(errorKey.get(), errorData.get());
 		}
-		result->setItem(nameData, answDict);
-		deleteData(exprData);
-		deleteData(nameData);
-		delete [] expr;
-		deleteData(argsData);
-		deleteData(currArg);
+		result->setItem(nameData.get(), answDict.get());
 	}
-	void *resDsc = result->convertToDsc();
-	deleteData(nameKey);
-	deleteData(exprKey);
-	deleteData(argsKey);
-	if(!dataReported)
-		deleteData(valueKey);
-	if(!errorReported)
-		deleteData(errorKey);
-	deleteData(result);
-	deleteData(inArgs);
-	return resDsc;
+
+	return result->convertToDsc();
 }
 
 void *putManyObj(char *serializedIn)
 {
-	List *inArgs = (List *)deserialize((const char *)serializedIn);
+	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
 	{
 		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
@@ -142,54 +124,41 @@ void *putManyObj(char *serializedIn)
 	}
 
 	int nArgs = inArgs->len();
-	String *nodeKey = new String("node");
-	String *exprKey = new String("exp");
-	String *argsKey = new String("args");
-	Dictionary *result = new Dictionary();
-	for(int idx = 0; idx < nArgs; idx++)
-	{
-		Dictionary *currArg = (Dictionary* )inArgs->getElementAt(idx);
+	String nodeKey("node");
+	String exprKey("exp");
+	String argsKey("args");
+	AutoData<Dictionary> result(new Dictionary());
+	for(int idx = 0; idx < nArgs; idx++) {
+		AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
 		if(currArg->clazz != CLASS_APD)// || currArg->dtype != DTYPE_DICTIONARY)
 		{
 			printf("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument\n");
 			return 0;
 		}
-		String *nodeNameData = (String *)currArg->getItem(nodeKey);
-		String *exprData = (String *)currArg->getItem(exprKey);
-		char *expr = exprData->getString();
-		List *argsData = (List *)currArg->getItem(argsKey);
+
+		AutoData<String> nodeNameData((String *)currArg->getItem(&nodeKey));
+		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
+		AutoArray<char> expr(exprData->getString());
+		AutoData<List> argsData((List *)currArg->getItem(&argsKey));
+
 		int nPutArgs = 0;
-		if(argsData)
+		if(argsData.get())
 			nPutArgs = argsData->len();
 
 		try {
-			Tree *tree = getActiveTree();
-			Data *compiledData = (Data *)compileFromExprWithArgs(expr, nPutArgs, (argsData)?argsData->getDscs():0, tree);
-			TreeNode *node = tree->getNode(nodeNameData);
-			node->putData(compiledData);
-			delete node;
-			deleteData(compiledData);
-			String *successData = new String("Success");
-			result->setItem(nodeNameData, successData);
-			delete tree;
-		}catch(MdsException const & exc)
-		{
-			String *errorData = new String(exc.what());
-			result->setItem(nodeNameData, errorData);
+			AutoPointer<Tree> tree(getActiveTree());
+			AutoData<Data> compiledData = (Data *)compileFromExprWithArgs(expr.get(), nPutArgs, (argsData.get())?argsData->getDscs():0, tree.get());
+			AutoPointer<TreeNode> node = tree->getNode(nodeNameData.get());
+			node->putData(compiledData.get());
+			AutoData<String> successData(new String("Success"));
+			result->setItem(nodeNameData.get(), successData.get());
+		} catch(MdsException const & e) {
+			AutoData<String> errorData(new String(e.what()));
+			result->setItem(nodeNameData.get(), errorData.get());
 		}
-		delete [] expr;
-		deleteData(exprData);
-		deleteData(argsData);
-		deleteData(currArg);
-		deleteData(nodeNameData);
 	}
-	void *resDsc = result->convertToDsc();
-	deleteData(nodeKey);
-	deleteData(exprKey);
-	deleteData(argsKey);
-	deleteData(inArgs);
-	deleteData(result);
-	return resDsc;
+
+	return result->convertToDsc();
 }
 
 Mutex Connection::globalMutex;
