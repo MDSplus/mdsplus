@@ -122,7 +122,6 @@ namespace MDSplus  {
 //in Debug configuration
 template<class T>
 EXPORT void deleteNativeArray(T * array) { delete[] array; }
-EXPORT void deleteString(char *str) { deleteNativeArray(str); }
 
 class Tree;
 EXPORT void setActiveTree(Tree *tree);
