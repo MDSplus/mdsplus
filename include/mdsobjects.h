@@ -19,7 +19,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #ifdef MDS_WINDOWS
 #include <Windows.h>
 #else
@@ -624,6 +623,7 @@ class Empty: public Data {
 		void setSpecific(void const * data, int length, int dtype, int nDims, int *dims)
 		{
 			this->dtype = dtype;
+			this->nDims = nDims;
 			this->length = length;
 			arsize = length;
 			for(int i = 0; i < nDims; i++)
@@ -631,12 +631,13 @@ class Empty: public Data {
 				arsize *= dims[i];
 				this->dims[i] = dims[i];
 			}
-			this->nDims = nDims;
+
+			char const * dataBytes = reinterpret_cast<char const *>(data);
 			ptr = new char[arsize];
-			memcpy(ptr, data, arsize);
+			std::copy(&dataBytes[0], &dataBytes[arsize], ptr);
 		}
 	public:
-		Array() {
+		Array(): length(0), arsize(0), nDims(0), ptr(0) {
 			clazz = CLASS_A;
 		}
 
@@ -866,20 +867,15 @@ class Empty: public Data {
 		StringArray(char **data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			//Pad all string to longest 
-			int i;
 			int maxLen = 0;
-			for(i = 0; i < nData; i++)
-			{
-				if(strlen(data[i]) > (unsigned int)maxLen)
-					maxLen = strlen(data[i]);
-			}
+			for(int i = 0; i < nData; i++)
+				maxLen = std::max(std::string(data[i]).size(), (std::size_t)maxLen);
+
 			char *padData = new char[nData * maxLen];
-			for(i = 0; i < nData; i++)
-			{
-				int currLen = strlen(data[i]);
-				memcpy(&padData[i * maxLen], data[i], currLen);
-				if(currLen < maxLen)
-					memset(&padData[i*maxLen + currLen], ' ', maxLen - currLen);
+			for(int i = 0; i < nData; i++) {
+				std::size_t currLen = std::string(data[i]).size();
+				std::copy(&data[i][0], &data[i][currLen], &padData[i * maxLen]);
+				std::fill(&padData[i*maxLen + currLen], &padData[i*maxLen + maxLen], ' ');
 			}
 			setSpecific(padData, maxLen, DTYPE_T, nData);
 			setAccessory(units, error, help, validation);

@@ -13,6 +13,8 @@
 #include <vector>
 #include <cctype>
 
+#include <string.h>
+
 using namespace MDSplus;
 using namespace std;
 
