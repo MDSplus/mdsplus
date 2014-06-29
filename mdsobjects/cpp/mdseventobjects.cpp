@@ -1,4 +1,7 @@
 #include "mdsobjects.h"
+
+#include <string>
+
 using namespace MDSplus;
 using namespace std;
 
@@ -67,16 +70,20 @@ void REvent::disconnectFromEvents()
 
 Event::Event(char *evName)
 {
-	eventName = new char[strlen(evName) + 1];
-	strcpy(eventName, evName);
+	std::size_t size = std::string(evName).size();
+	eventName = new char[size + 1];
+	std::copy(&evName[0], &evName[size], eventName);
+	evName[size] = 0;
 	eventId = -1;
 	connectToEvents();
 }
 
 REvent::REvent(char *evName)
 {
-	eventName = new char[strlen(evName) + 1];
-	strcpy(eventName, evName);
+	std::size_t size = std::string(evName).size();
+	eventName = new char[size + 1];
+	std::copy(&evName[0], &evName[size], eventName);
+	evName[size] = 0;
 	eventId = -1;
 	connectToEvents();
 }
