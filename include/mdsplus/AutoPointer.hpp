@@ -25,16 +25,19 @@ struct AutoPointer {
 	T * ptr;
 };
 
-template<>
-struct AutoPointer<Data> {
-	AutoPointer(Data * d): ptr(d) {
+// FIXME: AutoData can't be a specialization of AutoPointer
+// FIXME: until we use a more recent version of VS that supports
+// FIXME: the TR1 type traits.
+template<class T>
+struct AutoData {
+	AutoData(T * d): ptr(d) {
 	}
 
-	~AutoPointer() {
+	~AutoData() {
 		deleteData(ptr);
 	}
 
-	Data * ptr;
+	T * ptr;
 };
 
 template<class T>
