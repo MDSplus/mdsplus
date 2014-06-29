@@ -572,34 +572,19 @@ class Empty: public Data {
 	class  EXPORT String : public Scalar
 	{
 	public:
-		String(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			dtype = DTYPE_T;
-			length = strlen(val);
-			ptr = new char[length+1];
-			ptr[length] = 0;
-			std::copy(&val[0], &val[length], ptr);
-			setAccessory(units, error, help, validation);
+		String(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			init(val, std::string(val).size(), units, error, help, validation);
 		}
+
 		String(unsigned char *uval, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 			// FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
 			// FIXME: Warning: Do not use this constructor in user code
 			char * val = reinterpret_cast<char *>(uval);
-			dtype = DTYPE_T;
-			length = strlen(val);
-			ptr = new char[length+1];
-			ptr[length] = 0;
-			std::copy(&val[0], &val[length], ptr);
-			setAccessory(units, error, help, validation);
+			init(val, std::string(val).size(), units, error, help, validation);
 		}
-		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			dtype = DTYPE_T;
-			length = len;
-			ptr = new char[length+1];
-			std::copy(&val[0], &val[length], ptr);
-			ptr[length] = 0;
-			setAccessory(units, error, help, validation);
+
+		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			init(val, len, units, error, help, validation);
 		}
 
 		char *getString()
@@ -611,6 +596,16 @@ class Empty: public Data {
 		}
 
 		bool equals(Data *data);
+
+	private:
+		void init(char const * val, int len, Data * units, Data * error, Data * help, Data * validation) {
+			dtype = DTYPE_T;
+			length = len;
+			ptr = new char[length+1];
+			std::copy(&val[0], &val[length], ptr);
+			ptr[length] = 0;
+			setAccessory(units, error, help, validation);
+		}
 	};
 ////////////////ARRAYS/////////////////////
 	class EXPORT Array: public Data
