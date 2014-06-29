@@ -153,12 +153,10 @@ Mutex Connection::globalMutex;
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
 	sockId = ConnectToMds(mdsipAddr);
-	if(sockId <= 0)
-	{
-		char currMsg[256];
-		strcpy(currMsg, "Cannot connect to ");
-		strncpy(&currMsg[strlen(currMsg)], mdsipAddr, 255 - strlen(currMsg));
-		throw MdsException(currMsg);
+	if(sockId <= 0) {
+		std::string msg("Cannot connect to ");
+		msg += mdsipAddr;
+		throw MdsException(msg.c_str());
 	}
 }
 
