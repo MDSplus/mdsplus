@@ -1,5 +1,10 @@
 include @top_srcdir@/Makefile.inc
 
+ifeq "@MINGW@" "yes"
+	IMPLIB=@MAKELIBDIR@XTreeShr.dll.a
+	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+endif
+
 CFLAGS=@CFLAGS@ @SRBINCLUDE@
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@
 
@@ -13,13 +18,16 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = XXTreeShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libXTreeShr@SHARETYPE@ @MAKELIBDIR@libXTreeShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@XTreeShr.a
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libXTreeShr@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libXTreeShr.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@XTreeShr.a
+ifdef IMPLIB
+	@ $(RM) $(IMPLIB)
+endif
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -29,16 +37,19 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libXTreeShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ @libdir@
+ifdef IMPLIB
+	$(INSTALL) -m 755 $(IMPLIB) @libdir@
+endif
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libXTreeShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@XTreeShr.a @libdir@; \
 	fi;
 
 
-@MAKESHLIBDIR@libXTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+@MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
 	$(CC) -o $@ @LINKSHARED@ @CFLAGS@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr
 
-@MAKELIBDIR@libXTreeShr.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@XTreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 

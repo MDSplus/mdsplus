@@ -15,8 +15,8 @@
 #include <sys/filio.h>
 #endif
 #ifdef HAVE_WINDOWS_H
-#include<winsock2.h>
-#include<Ws2tcpip.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #include "udtc.h"
 typedef int socklen_t;
 #define snprintf _snprintf
@@ -415,7 +415,7 @@ VOID CALLBACK ShutdownEvent(PVOID arg,BOOLEAN fired) {
   exit(0);
 }
 
-static int GetSocketHandle(char *name) {
+static int getSocketHandle(char *name) {
   char logfile[1024];
   HANDLE h;
   int ppid;
@@ -613,7 +613,7 @@ static int UDTV6_listen(int argc, char **argv) {
     }
   } else {
 #ifdef HAVE_WINDOWS_H
-    int sock=GetSocketHandle(options[1].value);
+    int sock=getSocketHandle(options[1].value);
 #else
     UDTSOCKET sock=0;
 #endif

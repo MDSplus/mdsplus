@@ -11,7 +11,6 @@
 #include <strroutines.h>
 #ifdef _WIN32
 #include <io.h>
-extern char *index(char *str,char c);
 #define alloca _alloca
 #else
 #include <unistd.h>
@@ -767,7 +766,7 @@ char *MaskReplace(char *path_in,char *tree,int shot)
     sprintf(ShotMask,"%012u",shot);
   else
     memset(ShotMask,'X',12);
-  for(tilde=(char *)index(path, '~'); tilde != 0; tilde=(char *)index(path, '~'))
+  for(tilde=strchr(path, '~'); tilde != 0; tilde=strchr(path, '~'))
   {
     char *tmp,*tmp2;
     switch (tilde[1])

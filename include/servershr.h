@@ -3,9 +3,13 @@
 
 #include <config.h>
 #ifdef HAVE_WINDOWS_H
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
 typedef void *pthread_cond_t;
 typedef void *pthread_t;
 typedef void *pthread_mutex_t;
+#endif
 #else
 #define _GNU_SOURCE /* glibc2 needs this */
 #if defined(__sparc__)

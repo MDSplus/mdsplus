@@ -181,9 +181,8 @@ STATIC_ROUTINE int GetAddr(char *host,struct sockaddr_in *sockaddr) {
   }
   return status;
 }
-
 #else 
-STATIC_THREADSAFE struct _host_list {void *dbid, char *host; int socket; int connections; time_t time; struct _host_list *next;} *host_list = 0;
+STATIC_THREADSAFE struct _host_list {void *dbid; char *host; int socket; int connections; time_t time; struct _host_list *next;} *host_list = 0;
 #endif
 
 STATIC_ROUTINE void MdsIpFree(void *ptr)

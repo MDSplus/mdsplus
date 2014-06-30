@@ -147,13 +147,6 @@ struct dirent *readdir(DIR *dir)
 		return 0;
 }
 
-char *index(char *str, char c)
-{
-	char match[2]={c,'\0'};
-	unsigned int pos = strcspn(str,match);
-  return (pos == 0) ? ((str[0] == c) ? str : 0) : ((pos == strlen(str)) ? 0 : &str[pos]);
-}
-
 STATIC_ROUTINE char *GetRegistry(char *where, char *pathname)
 {
   HKEY regkey=(HKEY)0;
@@ -191,8 +184,7 @@ char *TranslateLogical(char *pathname)
   return path;
 }
 
-int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
-{
+int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag) {
 
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
@@ -200,7 +192,7 @@ int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
   char *tok;
   tok = strtok(cmd_c," ");
   arglist[0] = (char *)6;
-  arglist[1] = (char *)(waitFlag ? _P_WAIT :  _P_NOWAIT);
+  arglist[1] = (char *)(NULL+(waitFlag ? _P_WAIT :  _P_NOWAIT));
   arglist[2] = "cmd";
   arglist[3] = arglist[2];
   arglist[4] = "/C";
@@ -209,9 +201,9 @@ int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
   {
 
 	  if (strlen(tok) > 0)
-		arglist[(int)(arglist[0]++)] = tok;
+	    arglist[(arglist[0]++) - (char *)NULL] = tok;
   }
-  arglist[((int)arglist[0])] = (char *)0;
+  arglist[((int)arglist[0])] = NULL;
   status = (char *)LibCallg(arglist,_spawnlp)-(char *)0;
   /*if (status != 0) perror("Error doing spawn"); */
   free(cmd_c);
@@ -316,168 +308,6 @@ void *LibCallg(void **arglist, void * (*routine)())
   return 0;
 }
 
-/*
-void *LibCallg(void **arglist, FARPROC *routine)
-{
-  int a_idx;
-
-  void *retval;
-  for (a_idx=*(int *)arglist; a_idx > 0; a_idx--)
-  {
-
-	  void *arg = arglist[a_idx];
-    __asm mov eax, arg
-
-	__asm push eax
-  }
-  __asm call routine
-  __asm mov retval, eax
-  for (a_idx=*(int *)arglist; a_idx > 0; a_idx--) __asm pop eax
-
-  return retval;
-}
-*/
-#define ETIMEDOUT 42
-
-
-void pthread_detach(HANDLE *thread)
-{
-	return;
-}
-
-int pthread_cond_init(HANDLE *cond, void *def)
-{
-  *cond = CreateEvent(NULL,TRUE,FALSE,NULL);
-  return (*cond == NULL);
-}
-
-BOOL pthread_cond_destroy(HANDLE *cond)
-{
-   return CloseHandle(*cond);
-}
-
-int pthread_cond_signal(HANDLE *cond)
-{
-  BOOL status;
-#ifdef ___DEBUG_IT
-  printf("signalling event %p\n",*cond);
-#endif
-  status = SetEvent(*cond);
-#ifdef ___DEBUG_IT
-  printf("SetEvent on %p completed with status = %d\n",*cond,status);
-#endif
-  if (status)
-	  status = ResetEvent(*cond);
-#ifdef ___DEBUG_IT
-  printf("ResetEvent on %p completed with status = %d\n",*cond,status);
-#endif
-  return status == 0;
-}
-
-int pthread_cond_wait(HANDLE *cond, HANDLE *mutex)
-{
-	int status;
-#ifdef ___DEBUG_IT
-   printf("waiting for condition %p\n",*cond);
-#endif
-   pthread_mutex_unlock(mutex);
-   status = WaitForSingleObject(*cond,INFINITE);
-   pthread_mutex_lock(mutex);
-#ifdef ___DEBUG_IT
-   printf("got condition %p\n",*cond);
-#endif
-   return(status == WAIT_FAILED);
-}
-
-int pthread_cond_timedwait(HANDLE *cond, HANDLE *mutex, int msec)
-{
-   int status;
-   pthread_mutex_unlock(mutex);
-   status = WaitForSingleObject(*cond,msec);
-   pthread_mutex_lock(mutex);
-   if (status == WAIT_TIMEOUT)
-     status = ETIMEDOUT;
-   else
-     status = 0;
-   return status;
-}
-
-int pthread_mutex_init(HANDLE *mutex, void *dummy)
-{
-  *mutex = CreateMutex(0,FALSE,NULL);
-  return (*mutex == NULL);
-}
-
-BOOL pthread_mutex_destroy(HANDLE *mutex)
-{
-  return CloseHandle(*mutex);
-}
-
-STATIC_THREADSAFE HANDLE global_mutex = NULL;
-STATIC_THREADSAFE int global_mutex_initialized = 0;
-void pthread_unlock_global_np()
-{
-  if (!global_mutex_initialized)
-  {
-    global_mutex_initialized = 1;
-    pthread_mutex_init(&global_mutex,NULL);
-  }
-  pthread_mutex_unlock(&global_mutex);
-
-}
-void pthread_lock_global_np()
-{
-  if (!global_mutex_initialized)
-  {
-    global_mutex_initialized = 1;
-    pthread_mutex_init(&global_mutex,NULL);
-  }
-  pthread_mutex_lock(&global_mutex);
-}
-
-int pthread_exit(int status)
-{
-	return status;
-}
-
-int pthread_create(pthread_t *thread, void *dummy, void *(*rtn)(void *), void *rtn_param)
-{
-  *thread = (pthread_t)_beginthread( (void (*)(void *))rtn, 0, rtn_param);
-  return *thread == 0;
-}
-void pthread_cleanup_pop(){}
-void pthread_cleanup_push(){}
-
-int pthread_mutex_lock(HANDLE *mutex)
-{
-	int status;
-#ifdef ___DEBUG_IT
-   printf("Trying to lock mutex %p\n",*mutex);
-#endif
-   status = WaitForSingleObject(*mutex,INFINITE);
-#ifdef ___DEBUG_IT
-   printf("Locked mutex %p\n",*mutex);
-#endif
-   return status;
-}
-
-int pthread_mutex_unlock(HANDLE *mutex)
-{
-	int status;
-#ifdef ___DEBUG_IT
-	printf("Unlocking mutex %p\n",*mutex);
-#endif
-	status = ReleaseMutex(*mutex);
-#ifdef ___DEBUG_IT
-	printf("Unlocked mutex %p with status=%d\n",*mutex,status);
-#endif
-	return status;
-}
-
-void pthread_cancel(HANDLE thread)
-{
-	printf("Abort not supported");
-}
 
 #else /* WIN32 */
 #ifdef HAVE_VXWORKS_H
@@ -1648,6 +1478,9 @@ int LibTimeToVMSTime(time_t *time_in,int64_t *time_out) {
   time_t t;
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tm;
+#ifdef HAVE_WINDOWS_H
+  typedef long long suseconds_t;
+#endif
   suseconds_t microseconds=0;
   if (time_in == NULL) {
     gettimeofday(&tm,0);
@@ -2297,7 +2130,7 @@ STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx,
   CSTRING_FROM_DESCRIPTOR(fspec, filespec)
 
   lctx->next_index = lctx->next_dir_index = 0;
-  colon = (char *)index(fspec, ':');
+  colon = strchr(fspec, ':');
   if (colon == 0) {
     lctx->env = 0;
     colon = fspec-1;
@@ -2341,7 +2174,7 @@ STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx,
 		  env = tmp;
       }
 	  free(env_sav);
-      for(semi=(char *)index(env, ';'); semi!= 0; num++, semi=(char *)index(semi+1, ';'));
+      for(semi=strchr(env, ';'); semi!= 0; num++, semi=strchr(semi+1, ';'));
       if (num > 0) {
 		  char *ptr;
 		  int i;
@@ -2349,7 +2182,7 @@ STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx **ctx,
 		  lctx->env_strs = (char **)malloc(num*sizeof(char *));
 		  for (ptr=env,i=0; i<num; i++) {
 			  char *cptr;
-			  int len = ((cptr= (char *)index(ptr, ';'))==(char *)0) ? (int)strlen(ptr) : cptr-ptr; 
+			  int len = ((cptr=strchr(ptr, ';'))==(char *)0) ? (int)strlen(ptr) : cptr-ptr; 
 			  lctx->env_strs[i] = strncpy(malloc(len+1),ptr,len);
 			  lctx->env_strs[i][len] = '\0';
 			  ptr=cptr+1;

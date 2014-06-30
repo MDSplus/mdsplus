@@ -35,6 +35,9 @@
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#endif
 #else
 #ifndef HAVE_VXWORKS_H
 #include <pthread.h>
@@ -701,11 +704,11 @@ static int SetNodeParentState(PINO_DATABASE *db, NODE *node, NCI *nci, unsigned 
   }
   return status;
 }
-#ifdef HAVE_WINDOWS_H
+#if defined HAVE_WINDOWS_H && !defined HAVE_PTHREAD_H
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
-#endif
+#else
 #ifdef HAVE_VXWORKS_H
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
@@ -715,22 +718,20 @@ extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 
 #endif
-
+#endif
 
 
 STATIC_THREADSAFE pthread_mutex_t NCIMutex;
 STATIC_THREADSAFE int NCIMutex_initialized;
 
-int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted)
-{
+int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted) {
   int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,
 	  nodenum * 42,42,readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT,deleted);
   LockMdsShrMutex(&NCIMutex,&NCIMutex_initialized);
   return status;
 }
 
-int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum)
-{
+int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum) {
   int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put,nodenum * 42,42,MDS_IO_LOCK_NONE,0);
   UnlockMdsShrMutex(&NCIMutex);
   return status;

@@ -5,7 +5,9 @@
 #include <config.h>
 #include <mdsdescrip.h>
 #ifdef HAVE_WINDOWS_H
+#ifndef __SIZE_TYPE__
 typedef int ssize_t;
+#endif
 #include <Winsock2.h>
 #else
 #include <sys/types.h>

@@ -47,7 +47,7 @@ written by
    #include <sys/socket.h>
    #include <netinet/in.h>
 #else
-   #ifdef __MINGW__
+   #if defined __MINGW__ || defined __MINGW64__
       #include <stdint.h>
       #include <ws2tcpip.h>
    #endif
@@ -69,7 +69,7 @@ written by
 
 
 #ifdef WIN32
-   #ifndef __MINGW__
+   #if !defined __MINGW__ && !defined __MINGW64__
       // Explicitly define 32-bit and 64-bit numbers
       typedef __int32 int32_t;
       typedef __int64 int64_t;
@@ -96,7 +96,7 @@ written by
 #define NO_BUSY_WAITING
 
 #ifdef WIN32
-   #ifndef __MINGW__
+   #if !defined __MINGW__ && !defined __MINGW64__
       typedef SOCKET SYSSOCKET;
    #else
       typedef int SYSSOCKET;

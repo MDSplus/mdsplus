@@ -39,9 +39,6 @@ extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
 extern int TreeSetCurrentShotIdRemote();
 extern char *MaskReplace();
-#ifndef index
-extern char *index();
-#endif
 
 extern char *TranslateLogical();
 
@@ -71,7 +68,7 @@ static char *GetFileName(char *experiment,char **ctx)
   {
     char *delim = TREE_PATH_DELIM;
     char *tmp;
-    if ((semi = (char *)index(part, ';')) != 0)
+    if ((semi = strchr(part, ';')) != 0)
       *semi = '\0';
     strncpy(pathname,part,500);
     if (semi == 0) 

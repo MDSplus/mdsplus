@@ -15,7 +15,11 @@
 #endif
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
 extern int  pthread_cond_timedwait();
+#endif
 #else
 typedef int SOCKET;
 #include <sys/socket.h>
@@ -730,14 +734,14 @@ static void KillThread()
 
 static void LockQueue()
 {
-  pthread_lock_global_np();
+  MdsGlobalLock();
   QueueLocked = 1;
 }
 
 static void UnlockQueue()
 {
   QueueLocked = 0;
-  pthread_unlock_global_np();
+  MdsGlobalUnlock();
 }
 
 static void WaitForJob()

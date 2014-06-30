@@ -87,6 +87,15 @@ AS_CASE([$enable_perf],
         [yes], [AC_DEFINE([USE_PERF], [], [Define if you want to collect performance statistics -- linux only])])
 AC_MSG_RESULT([$enable_perf])
 
+AC_ARG_ENABLE([mingw],
+              [AS_HELP_STRING([--enable-mingw],
+                              [enable cross-platform build for Windows on linux])],
+              [],
+              [AS_VAR_SET([enable_mingw], [no])])
+AS_CASE([$enable_mingw],
+        [yes], [AC_DEFINE([USE_MINGW], [], [Define if you want to build for Windows platform -- linux only])])
+AC_MSG_RESULT([$enable_mingw])
+
 AC_MSG_CHECKING([whether to build the java components])
 AC_ARG_ENABLE([java],
               [AS_HELP_STRING([--disable-java],
@@ -255,6 +264,7 @@ IDL_LD=""
 MDSVME=""
 LOC="%loc"
 VAL="%val"
+LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
 FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
@@ -281,10 +291,12 @@ HUP_TO_INETD=""
 UILCMD="uil"
 CC_LDFLAGS=""
 FOR_LDFLAGS=""
+MINGW="no"
 
 LIBPTHREAD=-lpthread
 IS_HP=0
 MITDEVICESIO_TARGETS=""
+GEN_DEVICE=gen_device
 case "$host" in
 hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        FFLAGS="$FFLAGS -O0 -g -fpic  -Wno-globals -fno-backslash";
@@ -356,23 +368,41 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_inc_dir="${JDK_DIR}/include";
        jni_md_inc_dir="${JDK_DIR}/include/solaris";
        HUP_TO_INETD="kill -HUP \`ps -e -o pid -o command | grep /usr/sbin/inetd | grep -v grep | awk '{print $1}'\`";;
-alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
-       FFLAGS="$FFLAGS -pthread";
-       IDL_LD="-expect_unresolved 'IDL_*'"
-       LDSHARE="-Wl,-so_archive ";
-       LDARC="-Wl,-no_so ";
-       LD_LDARC="-no_so ";
-       LD_LDSHARE="-so_archive ";
+*mingw*)
+       IDLMDSEVENT=""
+       F77=gfortran
+       MINGW="yes"
+       LIBPRE=""
+       GEN_DEVICE=""
+       LIBPTHREAD=-pthread
+       SOCKETLIB="-lws2_32"
+       CFLAGS="$CFLAGS -fpic -static-libgcc -fno-strict-aliasing -mthreads";
+       LD="gcc"
+       CFLAGS="$CFLAGS -m64"
+       LD="gcc -m64 -static-libgcc"
+       FFLAGS="$FFLAGS -m64 -fno-range-check"
+       LOC="loc"
+       FORLD="gfortran -m64 -static-libgcc"
+       BINDIR=bin_x86_64
+       MAKELIBDIR="\$(top_srcdir)/$BINDIR"
+       MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
+       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
+       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
        LINKSHARED="-shared ";
        FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FOR_LDFLAGS="-lfor";
+       LIBPATH="PATH";
+       FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
-       MDSVME="mdsvme";
-       SHARETYPE=".so";
-       jni_inc_dir="/usr/include/java";
-       jni_md_inc_dir="/usr/include/java/`uname -m`";;
+       SHARETYPE=".dll";
+       TAR_EXCLUDE="--exclude";;
+
 *86*linux*)
+     if [ "$USE_MINGW" != "yes" ]
+     then 
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FORLD="$F77";
        LD="gcc"
@@ -442,7 +472,41 @@ alpha*-dec-osf*) CFLAGS="$CFLAGS -pthread -ieee";
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
-       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
+       HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
+     else
+       CC=/usr/bin/x86_64-w64-mingw32-gcc
+       F77=/usr/bin/x86_64-w64-mingw32-gfortran
+       CPP=/usr/bin/x86_64-w64-mingw32-c++
+       MINGW="yes"
+       IDLMDSEVENT=""
+       LIBPRE=""
+       GEN_DEVICE=""
+       LIBPTHREAD=-pthread
+       SOCKETLIB="-lws2_32"
+       CFLAGS="$CFLAGS -fpic -static-libgcc -fno-strict-aliasing -mthreads";
+       LD="gcc"
+       CFLAGS="$CFLAGS -m64"
+       LD="gcc -m64 -static-libgcc"
+       FFLAGS="$FFLAGS -m64 -fno-range-check"
+       LOC="loc"
+       FORLD="gfortran -m64 -static-libgcc"
+       BINDIR=bin_x86_64
+       MAKELIBDIR="\$(top_srcdir)/$BINDIR"
+       MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
+       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
+       FFLAGS="$FFLAGS -fpic -fno-backslash";
+       LDSHARE="-Wl,-Bdynamic ";
+       LDARC="-Wl,-Bstatic ";
+       LD_LDSHARE="-Bdynamic ";
+       LD_LDARC="-Bstatic ";
+       LINKSHARED="-shared ";
+       FOR_LINKSHARED="$LINKSHARED";
+       LIBPATH="PATH";
+       FOR_LDFLAGS="";
+       FEXECLIBDIR="-L";
+       SHARETYPE=".dll";
+       TAR_EXCLUDE="--exclude";
+     fi;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
@@ -738,8 +802,6 @@ AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocke
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 AC_CHECK_LIB(pthread,pthread_kill,LIBPTHREAD=$LIBPTHREAD,AC_CHECK_LIB(cma,pthread_create,LIBPTHREAD="-lcma",LIBPTHREAD=""))
 AC_CHECK_LIB(exc,__Ots_CSpecificHandler,LIBPTHREAD="$LIBPTHREAD -lexc")
-AC_CHECK_LIB(pthread,pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
-AC_CHECK_LIB(pthread,__pthread_lock_global_np,AC_DEFINE(HAVE_PTHREAD_LOCK_GLOBAL_NP))
 AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
 if test "$ac_cv_search_clock_gettime" = "no"
@@ -782,7 +844,7 @@ AC_ARG_ENABLE(d3d,
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h)
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readline.h)
-AC_CHECK_HEADERS(malloc.h)
+AC_CHECK_HEADERS(malloc.h pthread.h)
 
 REMCAM="remcam"
 CCL="ccl"
@@ -993,6 +1055,7 @@ AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(FOR_LINKSHARED)
+AC_SUBST(GEN_DEVICE)
 AC_SUBST(GLOBUS_CFLAGS)
 AC_SUBST(GLOBUS_FLAVOR)
 AC_SUBST(GLOBUS_LIBS)
@@ -1021,6 +1084,7 @@ AC_SUBST(LIBDLD)
 AC_SUBST(LIBM)
 AC_SUBST(LIBNSL)
 AC_SUBST(LIBPATH)
+AC_SUBST(LIBPRE)
 AC_SUBST(LIBPTHREAD)
 AC_SUBST(LIBREADLINE)
 AC_SUBST(LIBRESOLV)
@@ -1047,6 +1111,7 @@ AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MDSVME)
 AC_SUBST(MEMCHKLIB)
+AC_SUBST(MINGW)
 AC_SUBST(MITDEVICES)
 AC_SUBST(MITDEVICESIO_TARGETS)
 AC_SUBST(MOTIF_APS)

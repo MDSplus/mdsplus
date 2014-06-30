@@ -62,7 +62,7 @@ m_ListLock()
    }
 
    // sender list needs mutex protection
-   #ifndef WIN32
+   #if !defined WIN32 || defined __MINGW64__
       pthread_mutex_init(&m_ListLock, 0);
    #else
       m_ListLock = CreateMutex(NULL, false, NULL);
@@ -75,7 +75,7 @@ CSndLossList::~CSndLossList()
    delete [] m_piData2;
    delete [] m_piNext;
 
-   #ifndef WIN32
+   #if !defined WIN32 || defined __MINGW64__
       pthread_mutex_destroy(&m_ListLock);
    #else
       CloseHandle(m_ListLock);

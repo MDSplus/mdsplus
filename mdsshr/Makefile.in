@@ -2,6 +2,16 @@ include @top_srcdir@/Makefile.inc
 
 CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@
+ifeq "@MEMCHKLIB@" ""
+	MDSMALLOC =
+else
+	MDSMALLOC = MdsMalloc.c
+endif
+
+ifeq "@MINGW@" "yes"
+	IMPLIB=@MAKELIBDIR@MdsShr.dll.a
+	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+endif
 
 SOURCES = \
         librtl.c \
@@ -19,7 +29,7 @@ SOURCES = \
         MdsSerialize.c \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \
-	MdsMalloc.c \
+	$(MDSMALLOC) \
 	mds_dsc_string.c \
 	MdsFloatToTime.c \
 	UdpEvents.c
@@ -27,7 +37,7 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @MAKELIBDIR@libMdsShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsShr.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -36,21 +46,27 @@ clean :
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libMdsShr.a 
-	@ $(RM) @MAKESHLIBDIR@libMdsShr@SHARETYPE@ 
+	@ $(RM) @MAKESHLIBDIR@libMdsShr@SHARETYPE@
+ifdef IMPLIB
+	@ $(RM) $(IMPLIB)
+endif
 
 install:
 	if [ ! -d @libdir@ ] ; then \
                 $(MKDIR_P) -m 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @libdir@
+ifdef IMPLIB
+	$(INSTALL) -m 755 $(IMPLIB) @libdir@
+endif
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsShr.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+@MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
 
-@MAKELIBDIR@libMdsShr.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 

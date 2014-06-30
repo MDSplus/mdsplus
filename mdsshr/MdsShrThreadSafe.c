@@ -1,8 +1,4 @@
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#else
-#define NULL 0
-#endif
 #include <STATICdef.h>
 #include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
@@ -16,33 +12,116 @@ STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 
 STATIC_ROUTINE void buffer_key_alloc();
 
-#ifdef HAVE_WINDOWS_H
-
-void pthread_once(pthread_once_t *one_time,void (*key_alloc)())
-{
-  if (*one_time == PTHREAD_ONCE_INIT)
-  {
-    *one_time = 1;
-    key_alloc();
-  }
+#if defined _MSC_VER
+############### Emulate pthreads for Visual C applications #######################
+void pthread_detach(HANDLE *thread) {
+	return;
 }
 
-void *pthread_getspecific(pthread_key_t buffer_key)
-{
-  return TlsGetValue(buffer_key);
+int pthread_cond_init(HANDLE *cond, void *def) {
+  *cond = CreateEvent(NULL,TRUE,FALSE,NULL);
+  return (*cond == NULL);
 }
 
-void pthread_setspecific(pthread_key_t buffer_key, void *p)
-{
-  TlsSetValue(buffer_key,p);
+BOOL pthread_cond_destroy(HANDLE *cond) {
+   return CloseHandle(*cond);
 }
 
-void pthread_key_create(pthread_key_t *buffer_key,void *d2){*buffer_key=TlsAlloc();}
+int pthread_cond_signal(HANDLE *cond) {
+  BOOL status;
+#ifdef ___DEBUG_IT
+  printf("signalling event %p\n",*cond);
 #endif
-#ifdef HAVE_VXWORKS_H
-#define HANDLE void*
-void pthread_once(pthread_once_t *one_time,void (*key_alloc)())
-{
+  status = SetEvent(*cond);
+#ifdef ___DEBUG_IT
+  printf("SetEvent on %p completed with status = %d\n",*cond,status);
+#endif
+  if (status)
+	  status = ResetEvent(*cond);
+#ifdef ___DEBUG_IT
+  printf("ResetEvent on %p completed with status = %d\n",*cond,status);
+#endif
+  return status == 0;
+}
+
+int pthread_cond_wait(HANDLE *cond, HANDLE *mutex) {
+	int status;
+#ifdef ___DEBUG_IT
+   printf("waiting for condition %p\n",*cond);
+#endif
+   pthread_mutex_unlock(mutex);
+   status = WaitForSingleObject(*cond,INFINITE);
+   pthread_mutex_lock(mutex);
+#ifdef ___DEBUG_IT
+   printf("got condition %p\n",*cond);
+#endif
+   return(status == WAIT_FAILED);
+}
+
+#define ETIMEDOUT 138
+int pthread_cond_timedwait(HANDLE *cond, HANDLE *mutex, int msec) {
+   int status;
+   pthread_mutex_unlock(mutex);
+   status = WaitForSingleObject(*cond,msec);
+   pthread_mutex_lock(mutex);
+   if (status == WAIT_TIMEOUT)
+     status = ETIMEDOUT;
+   else
+     status = 0;
+   return status;
+}
+
+int pthread_mutex_init(HANDLE *mutex, void *dummy) {
+  *mutex = CreateMutex(0,FALSE,NULL);
+  return (*mutex == NULL);
+}
+
+BOOL pthread_mutex_destroy(HANDLE *mutex) {
+  return CloseHandle(*mutex);
+}
+
+int pthread_exit(int status) {
+	return status;
+}
+
+int pthread_create(pthread_t *thread, void *dummy, void *(*rtn)(void *), void *rtn_param) {
+  *thread = (pthread_t)_beginthread( (void (*)(void *))rtn, 0, rtn_param);
+  return *thread == 0;
+}
+
+void pthread_cleanup_pop(){}
+
+void pthread_cleanup_push(){}
+
+int pthread_mutex_lock(HANDLE *mutex) {
+	int status;
+#ifdef ___DEBUG_IT
+   printf("Trying to lock mutex %p\n",*mutex);
+#endif
+   status = WaitForSingleObject(*mutex,INFINITE);
+#ifdef ___DEBUG_IT
+   printf("Locked mutex %p\n",*mutex);
+#endif
+   return status;
+}
+
+int pthread_mutex_unlock(HANDLE *mutex) {
+	int status;
+#ifdef ___DEBUG_IT
+	printf("Unlocking mutex %p\n",*mutex);
+#endif
+	status = ReleaseMutex(*mutex);
+#ifdef ___DEBUG_IT
+	printf("Unlocked mutex %p with status=%d\n",*mutex,status);
+#endif
+	return status;
+}
+
+void pthread_cancel(HANDLE thread) {
+	printf("Abort not supported");
+}
+
+void pthread_once(pthread_once_t *one_time,void (*key_alloc)()) {
   if (*one_time == PTHREAD_ONCE_INIT)
   {
     *one_time = 1;
@@ -50,53 +129,17 @@ void pthread_once(pthread_once_t *one_time,void (*key_alloc)())
   }
 }
 
-static int bufferKeys[1024];
-static void *pthreadKeys[1024];
-static int numKeys;
-
-static void TlsSetValue(int bufferKey, void *p)
-{
-	int i;
-	for(i = 0; i < numKeys; i++)
-	{
-		if(bufferKeys[i] == bufferKey)
-			break;
-	}
-	if(i == numKeys)
-		numKeys++;
-	bufferKeys[i] = bufferKey;
-	pthreadKeys[i] = p;
-}
-
-static void *TlsGetValue(int bufferKey)
-{
-	int i;
-	for(i = 0; i < numKeys; i++)
-	{
-		if(bufferKeys[i] == bufferKey)
-			break;
-	}
-	return pthreadKeys[i];
-}
-
-
-
-
-void *pthread_getspecific(pthread_key_t buffer_key)
-{
+void *pthread_getspecific(pthread_key_t buffer_key) {
   return TlsGetValue(buffer_key);
 }
 
-void pthread_setspecific(pthread_key_t buffer_key, void *p)
-{
+void pthread_setspecific(pthread_key_t buffer_key, void *p) {
   TlsSetValue(buffer_key,p);
 }
 
-//void pthread_key_create(pthread_key_t *buffer_key,void *d2){*buffer_key=TlsAlloc();}
-void pthread_key_create(pthread_key_t *buffer_key,void *d2){*buffer_key=malloc(sizeof(int *));}
-extern void pthread_mutex_init(HANDLE *mutex);
-extern void pthread_mutex_lock(HANDLE *mutex);
-extern void pthread_mutex_unlock(HANDLE *mutex);
+void pthread_key_create(pthread_key_t *buffer_key,void *d2){
+  *buffer_key=TlsAlloc();
+}
 #endif
 
 /* Return the thread-specific buffer */
@@ -132,24 +175,19 @@ STATIC_ROUTINE void buffer_key_alloc()
    pthread_key_create(&buffer_key, buffer_destroy);
 }
 
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
+#ifndef _MSC_VER
 pthread_mutex_t  initMutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
 #endif
 
 
 void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 {
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
+#ifndef _MSC_VER
   pthread_mutex_lock(&initMutex);
-#endif
 #endif
   if(!*initialized)
   {
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
+#ifndef _MSC_VER
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
@@ -162,13 +200,10 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 #else
     pthread_mutex_init(mutex);
 #endif
-#endif
     *initialized = 1;
   }
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
+#ifndef _MSC_VER
   pthread_mutex_unlock(&initMutex);
-#endif
 #endif
   pthread_mutex_lock(mutex);
 
@@ -177,6 +212,33 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 void UnlockMdsShrMutex(pthread_mutex_t *mutex)
 {
   pthread_mutex_unlock(mutex);
+}
+
+#ifdef _MSC_VER
+STATIC_THREADSAFE HANDLE global_mutex = NULL;
+#else
+STATIC_THREADSAFE pthread_mutex_t global_mutex;
+#endif
+
+STATIC_THREADSAFE int global_mutex_initialized = 0;
+void MdsGlobalUnlock()
+{
+  if (!global_mutex_initialized)
+  {
+    global_mutex_initialized = 1;
+    pthread_mutex_init(&global_mutex,NULL);
+  }
+  pthread_mutex_unlock(&global_mutex);
+
+}
+void MdsGlobalLock()
+{
+  if (!global_mutex_initialized)
+  {
+    global_mutex_initialized = 1;
+    pthread_mutex_init(&global_mutex,NULL);
+  }
+  pthread_mutex_lock(&global_mutex);
 }
 
 

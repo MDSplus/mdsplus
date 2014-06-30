@@ -4,18 +4,15 @@
 #ifndef NO_WINDOWS_H
 #include <windows.h>
 #endif
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
 #define pthread_mutex_t HANDLE
 #define pthread_once_t int
 #define PTHREAD_ONCE_INIT 0
-#else
-#ifndef HAVE_VXWORKS_H
-#include <pthread.h>
-#else
-#define pthread_mutex_t void *
-#define pthread_key_t int
-#define pthread_once_t int
-#define PTHREAD_ONCE_INIT 0
 #endif
+#else
+#include <pthread.h>
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL

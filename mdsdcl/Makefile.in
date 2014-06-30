@@ -1,5 +1,10 @@
 include @top_srcdir@/Makefile.inc
 
+ifeq "@MINGW@" "yes"
+	IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
+	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+endif
+
 INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = 		\
@@ -30,6 +35,9 @@ clean:
 	@ $(RM) @MAKELIBDIR@libMdsdcl.a
 	@ $(RM) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsdcl
+	ifdef IMPLIB
+	@ $(RM) $(IMPLIB)
+	endif
 
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c
@@ -40,6 +48,8 @@ install:
                 chmod 755 @libdir@; \
         fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @libdir@
+	ifdef IMPLIB
+	$(INSTALL) -m 755  $(IMPLIB) @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsdcl	@bindir@
 
 cdudir = $(top_builddir)/cdu
@@ -47,14 +57,15 @@ LINK_CDU = $(cdudir)/libCdu.a
 CDU = $(cdudir)/cdu
 
 mdsdcl_tables.c:	mdsdcl_tables.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < mdsdcl_tables.ocld
+	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < mdsdcl_tables.ocld;\
+              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < mdsdcl_tables.ocld; fi
 
 @MAKELIBDIR@libMdsdcl.a:	$(OBJECTS)
 		$(AR) -cr $@ $(OBJECTS)
 		@RANLIB@ $@
 
 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsShr  $(LIBS) $(LDFLAGS)
+	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsShr  $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
 
 @MAKEBINDIR@mdsdcl:	mdsdcl.o
 	$(CC) $(CFLAGS) @CC_LDFLAGS@ -o $@ mdsdcl.o -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -L@MAKELIBDIR@ $(LINK_CDU)

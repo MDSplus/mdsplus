@@ -69,7 +69,8 @@ cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu
 
 tcl_commands.c:	tcl_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < tcl_commands.ocld
+	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < tcl_commands.ocld;\
+              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < tcl_commands.ocld; fi
 	$(MAKE) depend
 
 @MAKESHLIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)

@@ -7,7 +7,9 @@
 #define write _write
 #define open _open
 #define close _close
+#ifndef HAVE_PTHREAD_H
 typedef int mode_t;
+#endif
 #else
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -660,7 +662,7 @@ Message *ProcessMessage(Connection *c, Message *message) {
       fd = open(filename,fopts | O_BINARY | O_RANDOM,mode);
       if (fd == -1) {
 	int retry_open=0;
-	while (fd == -1 && ((ptr = index(filename,'\\')) != 0)) {
+	while (fd == -1 && ((ptr = strchr(filename,'\\')) != 0)) {
 	  retry_open=1;
 	  *ptr='/';
 	}

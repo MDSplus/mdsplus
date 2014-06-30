@@ -16,15 +16,23 @@
 #endif
 #ifdef HAVE_WINDOWS_H
 typedef int socklen_t;
+#define ioctl ioctlsocket
+#define FIONREAD_TYPE u_long
+#include <winsock2.h>
+#include <ws2tcpip.h>
 #define snprintf _snprintf
 #define MSG_DONTWAIT 0
 #include <io.h>
 #define close closesocket
 #include <process.h>
 #define getpid _getpid
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
 extern int pthread_mutex_init();
 extern int pthread_mutex_lock();
 extern int pthread_mutex_unlock();
+#endif
 #else
 #include <sys/socket.h>
 #include <netdb.h>
@@ -475,7 +483,7 @@ VOID CALLBACK ShutdownEvent(PVOID arg,BOOLEAN fired) {
   exit(0);
 }
 
-static int GetSocketHandle(char *name) {
+static int getSocketHandle(char *name) {
   char logfile[1024];
   HANDLE h;
   int ppid;
@@ -640,7 +648,7 @@ static int tcp_listen(int argc, char **argv) {
     }
   } else {
 #ifdef HAVE_WINDOWS_H
-    int sock=GetSocketHandle(options[1].value);
+    int sock=getSocketHandle(options[1].value);
 #else
     int sock=0;
 #endif

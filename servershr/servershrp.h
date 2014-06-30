@@ -3,8 +3,12 @@
 #include <config.h>
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
 typedef void *pthread_t;
 #define close closesocket
+#endif
 #else
 #include <pthread.h>
 #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP

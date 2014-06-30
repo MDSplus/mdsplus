@@ -1,7 +1,12 @@
 include @top_srcdir@/Makefile.inc
 
 CFLAGS=@CFLAGS@ @SRBINCLUDE@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@ @SOCKETLIB@
+
+ifeq "@MINGW@" "yes"
+	IMPLIB=@MAKELIBDIR@TreeShr.dll.a
+	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+endif
 
 SOURCES = \
 dummies.c \
@@ -36,13 +41,16 @@ RemoteAccess.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TreeShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTreeShr@SHARETYPE@ @MAKELIBDIR@libTreeShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@TreeShr.a
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libTreeShr@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libTreeShr.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@TreeShr.a
+ifdef IMPLIB
+	@ $(RM) $(IMPLIB)
+endif
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -52,16 +60,19 @@ install:
                 mkdir @libdir@; \
                 chmod 755 @libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libTreeShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ @libdir@
+ifdef IMPLIB
+	$(INSTALL) -m 755 $(IMPLIB) @libdir@
+endif
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TreeShr.a @libdir@; \
 	fi;
 
 
-@MAKESHLIBDIR@libTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+@MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
 
-@MAKELIBDIR@libTreeShr.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@TreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 

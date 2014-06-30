@@ -33,7 +33,7 @@ PARTS = \
         mdslibidl \
         cdu     \
         mdsdcl  \
-	gen_device \
+	@GEN_DEVICE@ \
 	@CAMSHR@ \
         @REMCAM@ \
         @CCL@     \

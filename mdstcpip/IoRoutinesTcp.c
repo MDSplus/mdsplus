@@ -15,6 +15,8 @@
 #include <sys/filio.h>
 #endif
 #ifdef HAVE_WINDOWS_H
+#define ioctl ioctlsocket
+#define FIONREAD_TYPE u_long
 typedef int socklen_t;
 #define snprintf _snprintf
 #define MSG_DONTWAIT 0
@@ -22,10 +24,15 @@ typedef int socklen_t;
 #define close closesocket
 #include <process.h>
 #define getpid _getpid
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#else
 extern int pthread_mutex_init();
 extern int pthread_mutex_lock();
 extern int pthread_mutex_unlock();
+#endif
 #else
+#define FIONREAD_TYPE int
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -262,7 +269,7 @@ static int tcp_flush(int conid) {
 #if !defined(__sparc__)
     struct timeval timout = {0,1};
     int status;
-    int nbytes;
+    FIONREAD_TYPE nbytes;
     int tries = 0;
     char buffer[1000];
     fd_set readfds, writefds;
@@ -485,7 +492,7 @@ VOID CALLBACK ShutdownEvent(PVOID arg,BOOLEAN fired) {
   exit(0);
 }
 
-static int GetSocketHandle(char *name) {
+static int getSocketHandle(char *name) {
   char logfile[1024];
   HANDLE h;
   int ppid;
@@ -651,7 +658,7 @@ static int tcp_listen(int argc, char **argv) {
     }
   } else {
 #ifdef HAVE_WINDOWS_H
-    int sock=GetSocketHandle(options[1].value);
+    int sock=getSocketHandle(options[1].value);
 #else
     int sock=0;
 #endif

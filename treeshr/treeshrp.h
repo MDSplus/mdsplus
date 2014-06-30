@@ -776,7 +776,9 @@ extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef HAVE_WINDOWS_H
+#ifndef HAVE_PTHREAD_H
 typedef int mode_t;
+#endif
 #define ssize_t int64_t
 #endif
 extern int MDS_IO_OPEN(char *filename, int options, mode_t mode);

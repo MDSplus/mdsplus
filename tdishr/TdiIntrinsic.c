@@ -222,11 +222,11 @@ STATIC_ROUTINE int interlude(int (*f1) (),
                              struct descriptor_xd *out_ptr)
 {
     int status;
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
     __try {
 #endif
         status = (*f1) (opcode, narg, list, out_ptr);
-#if defined(_WIN32)
+#if defined(_WIN32) && !defined(HAVE_PTHREAD_H)
     }
     __except(EXCEPTION_EXECUTE_HANDLER) {
         status = TdiBOMB;
