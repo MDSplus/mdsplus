@@ -401,7 +401,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        TAR_EXCLUDE="--exclude";;
 
 *86*linux*)
-     if [ "$USE_MINGW" != "yes" ]
+     if [[ "$USE_MINGW" != "yes" ]]
      then 
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FORLD="$F77";
