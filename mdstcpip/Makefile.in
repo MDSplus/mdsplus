@@ -147,18 +147,18 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsIpUDTV6@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpSSH@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpHTTP@SHARETYPE@
-	ifdef IMPLIB_MdsIpShr
+        ifdef IMPLIB_MdsIpShr
 	@ $(RM) $(IMPLIB_MdsIpShr)
 	@ $(RM) $(IMPLIB_MdsIpSrvShr)
-	endif
+        endif
 	@ $(RM) $(MDSIP_CLIENT_SSH)
 	@ $(RM) $(MDSIP_SERVER_SSH)
 	@ $(RM) $(MDSIP_CLIENT_HTTP)
 	@ $(RM) $(MDSIP_SERVER_HTTP)
-	ifdef IMPLIB_MdsIpShr
+        ifdef IMPLIB_MdsIpShr
 	@ $(RM) $(IMPLIB_MdsIpShr)
 	@ $(RM) $(IMPLIB_MdsIpSrvShr)
-	endif
+        endif
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
