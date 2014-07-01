@@ -1,6 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
-CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
+CFLAGS += @GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@
 ifeq "@MEMCHKLIB@" ""
 	MDSMALLOC =
