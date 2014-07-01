@@ -15342,7 +15342,6 @@ else
 fi
 
 
-LIBS="$LIBPTHREAD $LIBS"
 
 
 
