@@ -28,26 +28,17 @@ depend:
 
 clean:
 	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT) mdslib_ftest.o
-	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMdsLib_client.a
-	@ $(RM) @MAKESHLIBDIR@libMdsLib@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMdsLib.a
-	@ $(RM) @MAKEBINDIR@mdslib_*test
-	@ $(RM) @MAKEBINDIR@dtype_test
+	@ $(RM) @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a
+	@ $(RM) @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@
+	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib_client.a @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ @libdir@
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @libdir@
+	$(MKDIR_P) @libdir@
+	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ @libdir@
 
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
+@MAKELIBDIR@ @MAKEBINDIR@:
+	$(MKDIR_P) $@
 
 @MAKESHLIBDIR@libMdsLib@SHARETYPE@ : $(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
@@ -64,9 +55,6 @@ install:
 
 MdsLib_client.o : MdsLib.c
 	$(CC) -o $@ -c $(CFLAGS) $^ -D_CLIENT_ONLY
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 @MAKEBINDIR@mdslib_ctest : mdslib_ctest.c
 	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
