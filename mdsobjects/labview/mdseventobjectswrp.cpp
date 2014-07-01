@@ -120,11 +120,11 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &e)
 	{
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 		errorCode = bogusError;
 		errorMessage = e.what();
 	}
@@ -294,11 +294,11 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &e)
 	{
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 		errorCode = bogusError;
 		errorMessage = e.what();
 	}

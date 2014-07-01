@@ -1070,7 +1070,7 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		//deleteString(strOut);
+		//deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1247,7 +1247,7 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		//deleteString(strOut);
+		//deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1279,7 +1279,7 @@ DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandl
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1391,7 +1391,7 @@ DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1492,7 +1492,7 @@ DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandl
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1630,7 +1630,7 @@ DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, L
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1706,7 +1706,7 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -1803,7 +1803,7 @@ DLLEXPORT void mdsplus_treenode_getTimeInserted(const void *lvTreeNodePtr, int64
 
 		MoveBlock(reinterpret_cast<uChar *>(retStr), LStrBuf(*lvStrHdlOut), retLen);
 		(*lvStrHdlOut)->cnt = retLen;
-		deleteString(retStr);
+		deleteNativeArray(retStr);
 		deleteData(retTimeStr);
 		deleteData(timeInsertedData);
 	}
@@ -1860,7 +1860,7 @@ DLLEXPORT void mdsplus_treenode_getUsage(const void *lvTreeNodePtr, LStrHandle l
 		}
 		else
 			errorMessage = "NumericArrayResize error";
-		//deleteString(strOut);
+		//deleteNativeArray(strOut);
 	}
 	catch (const MdsException &mdsE)
 	{
