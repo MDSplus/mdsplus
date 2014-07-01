@@ -9,7 +9,7 @@ else
 endif
 
 ifeq "@MINGW@" "yes"
-	IMPLIB=@MAKELIBDIR@MdsShr.dll.a
+	IMPLIB=@MAKELIBDIR@/MdsShr.dll.a
 	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 endif
 
