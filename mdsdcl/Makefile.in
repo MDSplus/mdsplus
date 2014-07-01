@@ -1,11 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
-ifeq "@MINGW@" "yes"
-	IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
-	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-endif
-
-INSTALL=@top_srcdir@/conf/install-sh -c
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
 
 SOURCES = 		\
 mdsdcl_dcl_parse.c		\
@@ -38,10 +33,8 @@ depend:
 
 install:
 	$(MKDIR_P) @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @libdir@
-	ifdef IMPLIB
-	$(INSTALL) -m 755  $(IMPLIB) @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@mdsdcl	@bindir@
+	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl @bindir@
+	$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB) @libdir@
 
 cdudir = $(top_builddir)/cdu
 LINK_CDU = $(cdudir)/libCdu.a
@@ -55,8 +48,9 @@ mdsdcl_tables.c:	mdsdcl_tables.ocld
 		$(AR) -cr $@ $(OBJECTS)
 		@RANLIB@ $@
 
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@:	$(OBJECTS)
 	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsShr  $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
 
-@MAKEBINDIR@mdsdcl:	mdsdcl.o
+@MAKEBINDIR@mdsdcl: mdsdcl.o
 	$(CC) $(CFLAGS) @CC_LDFLAGS@ -o $@ mdsdcl.o -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -L@MAKELIBDIR@ $(LINK_CDU)
