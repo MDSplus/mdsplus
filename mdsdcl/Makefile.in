@@ -30,7 +30,6 @@ all:	@MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a  @MAKESHLIBDIR@libMdsdcl@
 
 clean:
 	@ $(RM) $(OBJECTS) mdsdcl.o
-	@ $(RM) so_locations
 	@ $(RM) mdsdcl_tables.c
 	@ $(RM) @MAKELIBDIR@libMdsdcl.a
 	@ $(RM) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@
