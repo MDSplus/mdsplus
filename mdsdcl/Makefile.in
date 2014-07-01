@@ -37,10 +37,7 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+	$(MKDIR_P) @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @libdir@
 	ifdef IMPLIB
 	$(INSTALL) -m 755  $(IMPLIB) @libdir@
