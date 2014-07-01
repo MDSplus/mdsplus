@@ -1,7 +1,7 @@
 #include "SystemSpecific.h"
 #include "SystemException.h"
 #include "Timeout.h"
-#include <Windows.h>
+#include <windows.h>
 
 #define MAX_SEM_COUNT 256
 class EXPORT NamedSemaphore

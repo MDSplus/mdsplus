@@ -1,6 +1,7 @@
 #ifndef _INC_SQLFRONT
 #define _INC_SQLFRONT
 
+#define DBNTWIN32
 #ifdef DBNTWIN32
 	#ifndef _WINDOWS_
 		#pragma message (__FILE__ " : db-library error: windows.h must be included before sqlfront.h.")
