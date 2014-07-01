@@ -216,7 +216,7 @@ endif
 	mkdir $@
 
 @MAKEBINDIR@mdsiptest: t.c $(MdsIpShr)
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $< -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
+	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 ifdef MDSIP_CONNECTIONS
 MDSIP_EXTRALIB = -lMdsIpSrvShr
@@ -225,7 +225,7 @@ endif
 
 @MAKEBINDIR@mdsip: $(MdsIpShr)
 @MAKEBINDIR@mdsip: $(SERVER_OBJECTS)
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
+	$(LINK.c) $< $(OUTPUT_OPTION) $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
 @MAKEBINDIR@mdsipd: mdsipd
 	cp $< $@
@@ -237,15 +237,12 @@ ifdef MDSIP_CONNECTIONS
 MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr
 endif
 
-$(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $^ $(MDSIPSHR_EXTRALIBS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB_MdsIpShr)
-
 @MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS)
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
 $(modules): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKMODULE@ $(OBJECTS) $(LIBS)
 
 $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJECTS)
 	$(AR) -cr $@ $^
@@ -263,23 +260,27 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 @MAKEBINDIR@mkdirhier : mkdirhier
 	cp $< $@
 
+$(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
+	$(LINK.o) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
+
+LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr
 $(MdsIpSrvShr): $(SERVER_LIB_OBJECTS) $(MdsIpShr)
-	$(LD) -o $@ @LINKSHARED@ $(SERVER_LIB_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB_MdsIpSrvShr)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(SERVER_LIB_OBJECTS) $(LINK_MDSIPSHR) -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(MAKE_IMPLIB_MdsIpSrvShr)
 
 $(MdsIpTunnel): $(TUNNEL_OBJECTS) $(MdsIpShr)
-	$(LD) -o $@ @LINKSHARED@ $(TUNNEL_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(TUNNEL_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
 
 $(MdsIpTCP): $(TCP_OBJECTS) $(MdsIpShr)
-	$(LD) -o $@ @LINKSHARED@ $(TCP_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(TCP_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
 
 $(MdsIpTCPV6): $(TCPV6_OBJECTS) $(MdsIpShr)
-	$(LD) -o $@ @LINKSHARED@ $(TCPV6_OBJECTS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(TCPV6_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
 
 $(MdsIpUDT): $(UDT_OBJECTS) $(MdsIpShr)
-	$(CXX) -o $@ @LINKSHARED@ $(UDT_OBJECTS) $(CXXFLAGS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(CXX) $(OUTPUT_OPTION) @LINKSHARED@ $(UDT_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS) $(LDFLAGS)
 
 $(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
-	$(CXX) -o $@ @LINKSHARED@ $(UDTV6_OBJECTS) $(CXXFLAGS) -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS) $(LDFLAGS)
+	$(CXX) $(OUTPUT_OPTION) @LINKSHARED@ $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS) $(LDFLAGS)
 
 $(MdsIpSSH):
 	ln -sf libMdsIpTunnel@SHARETYPE@ $@
@@ -309,7 +310,7 @@ ifdef MdsIpGSI
 #include makefile-header
 
 $(MdsIpGSI):  IoRoutinesGsi.c
-	$(CC) -o $@ $^ @CFLAGS@ $$(pkg-config --cflags globus-xio) @LINKSHARED@ -L@MAKESHLIBDIR@ -lMdsIpShr
+	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LINK_MDSIPSHR)
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp $< $@
