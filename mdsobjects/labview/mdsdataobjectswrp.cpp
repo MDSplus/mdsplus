@@ -790,135 +790,65 @@ DLLEXPORT void mdsplus_array_getSize(const void *lvArrayPtr, int *sizeOut, Error
 
 }
 
-
-
-DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl lvStrArrHdlOut, ErrorCluster *error)
-
-{
-
-	Array *arrayPtr = NULL;
+DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl lvStrArrHdlOut, ErrorCluster *error) {
+	MgErr errorCode = noErr;
+	char const * errorSource = __func__;
+	char const * errorMessage = "";
 
 	char **stringArrOut = NULL;
-
 	int stringArrLen = 0;
 
-	MgErr errorCode = noErr;
-
-	const char *errorSource = __FUNCTION__;
-
-	char *errorMessage = "";
-
-	try
-
-	{
-
-		arrayPtr = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtr));	
-
+	try {
+		Array * arrayPtr = reinterpret_cast<Array *>(const_cast<void *>(lvArrayPtr));
 		stringArrOut = arrayPtr->getStringArray(&stringArrLen);
 
 		// checks whether the size of a pointer is 32 bit or 64 bit depending upon the system architecture
-
 		int32 typeCode = (sizeof(LStrHandle) > sizeof(int32)) ? iQ : iL;
 
 		// resizes string array
-
 		errorCode = NumericArrayResize(typeCode, 1, reinterpret_cast<UHandle *>(&lvStrArrHdlOut), static_cast<int32>(stringArrLen));
 
-		if (!errorCode)
-
-		{
-
+		if (!errorCode) {
 			int i = 0;
 
 			// creates LStrHandle strings and fills them with the stringArrOut corrispondent strings
-
-			while (!errorCode && i < stringArrLen)
-
-			{
-
-				char *currStr = stringArrOut[i];
-
-				int32 currStrLen = static_cast<int32>(strlen(currStr));
-
+			while (!errorCode && i < stringArrLen) {
 				LStrHandle currLStrHdl = reinterpret_cast<LStrHandle>(DSNewHandle(sizeof(LStrHandle)));
 
 				errorCode = currLStrHdl == NULL;
 
-				if (!errorCode)
+				if (!errorCode) {
+					std::string currStr(stringArrOut[i]);
 
-				{
+					errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&currLStrHdl), currStr.size());
 
-					errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&currLStrHdl), currStrLen);
-
-					if (!errorCode)
-
-					{
-
-						MoveBlock(reinterpret_cast<uChar *>(currStr), LStrBuf(*currLStrHdl), currStrLen);
-
-						(*currLStrHdl)->cnt = currStrLen;
-
+					if (!errorCode) {
+						MoveBlock(currStr.c_str(), LStrBuf(*currLStrHdl), currStr.size());
+						(*currLStrHdl)->cnt = currStr.size();
 						(*lvStrArrHdlOut)->elm[i++] = currLStrHdl;
-
-					}
-
-					else
-
+					} else
 						errorMessage = "NumericArrayResize error";
-
-				}
-
-				else
-
+				} else
 					errorMessage = "DSNewHandle error";
-
 			}
 
 			// keeps only well allocated string handles, till the ith string
-
 			(*lvStrArrHdlOut)->dimSize = static_cast<int32>(i);
-
-		}
-
-		else
-
+		} else
 			errorMessage = "NumericArrayResize error";
 
-		// frees memory
-
-		for (int i = 0; i < stringArrLen; i++)
-
-			deleteNativeArray(stringArrOut[i]);
-
-		deleteNativeArray(stringArrOut);
-
-	}
-
-	catch (const MdsException & mdsE)
-
-	{
-
-		for (int i = 0; i < stringArrLen; i++)
-
-			deleteNativeArray(stringArrOut[i]);
-
-		deleteNativeArray(stringArrOut);
-
+	} catch (const MdsException & e) {
 		errorCode = bogusError;
-
-		errorMessage = const_cast<char *>(mdsE.what());
-
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
-		return;
-
+		errorMessage = e.what();
 	}
+
+	// free memory
+	for (std::size_t i = 0; i < stringArrLen; ++i)
+		deleteNativeArray(stringArrOut[i]);
+	deleteNativeArray(stringArrOut);
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
-
 }
-
-
 
 DLLEXPORT void mdsplus_array_setElementAt(const void *lvArrayPtr, int dimIn, const void *lvDataPtrIn, ErrorCluster *error)
 
