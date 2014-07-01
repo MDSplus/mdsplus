@@ -9061,6 +9061,12 @@ $as_echo "$ac_cv_path_SED" >&6; }
   rm -f conftest.sed
 
 
+#FIXME: Remove this when Makefile.inc goes away
+case "$MKDIR_P" in
+  *install-sh*) MKDIR_P="\$(top_srcdir)/$MKDIR_P" ;;
+esac
+
+
 
 MAKEETCDIR="\$(top_srcdir)/etc/"
 MAKEJAVADIR="\$(top_srcdir)/java/"

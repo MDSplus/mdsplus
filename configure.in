@@ -694,6 +694,10 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 
+#FIXME: Remove this when Makefile.inc goes away
+AS_CASE(["$MKDIR_P"],
+        [*install-sh*], [MKDIR_P="\$(top_srcdir)/$MKDIR_P"])
+
 dnl Define build directories
 
 MAKEETCDIR="\$(top_srcdir)/etc/"
