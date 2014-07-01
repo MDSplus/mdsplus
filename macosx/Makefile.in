@@ -36,8 +36,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 subdir = macosx
-DIST_COMMON = $(dist_bin_SCRIPTS) $(dist_etc_DATA) \
-	$(dist_scripts_SCRIPTS) $(srcdir)/Makefile.am \
+DIST_COMMON = $(dist_bin_SCRIPTS) $(dist_scripts_SCRIPTS) \
+	$(dist_sysconf_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.in
@@ -69,11 +69,11 @@ am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
 am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(scriptsdir)" \
-	"$(DESTDIR)$(etcdir)"
+	"$(DESTDIR)$(sysconfdir)"
 SCRIPTS = $(dist_bin_SCRIPTS) $(dist_scripts_SCRIPTS)
 SOURCES =
 DIST_SOURCES =
-DATA = $(dist_etc_DATA)
+DATA = $(dist_sysconf_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -114,6 +114,7 @@ FFLAGS = @FFLAGS@
 FORLD = @FORLD@
 FOR_LDFLAGS = @FOR_LDFLAGS@
 FOR_LINKSHARED = @FOR_LINKSHARED@
+GEN_DEVICE = @GEN_DEVICE@
 GLOBUS_CFLAGS = @GLOBUS_CFLAGS@
 GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
@@ -152,6 +153,7 @@ LIBM = @LIBM@
 LIBNSL = @LIBNSL@
 LIBOBJS = @LIBOBJS@
 LIBPATH = @LIBPATH@
+LIBPRE = @LIBPRE@
 LIBPTHREAD = @LIBPTHREAD@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
@@ -183,6 +185,7 @@ MDSSQL = @MDSSQL@
 MDSTCPIP = @MDSTCPIP@
 MDSVME = @MDSVME@
 MEMCHKLIB = @MEMCHKLIB@
+MINGW = @MINGW@
 MITDEVICES = @MITDEVICES@
 MITDEVICESIO_TARGETS = @MITDEVICESIO_TARGETS@
 MKDIR_P = @MKDIR_P@
@@ -206,6 +209,7 @@ REMCAM = @REMCAM@
 REMCAMLIB = @REMCAMLIB@
 RMIC = @RMIC@
 RPATHLINK = @RPATHLINK@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHARETYPE = @SHARETYPE@
 SHARETYPEJNI = @SHARETYPEJNI@
@@ -219,6 +223,7 @@ SYBASE_INC = @SYBASE_INC@
 SYBASE_LIB = @SYBASE_LIB@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
+THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_SEMAPHORE_H = @USE_SEMAPHORE_H@
@@ -284,11 +289,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-etcdir = $(exex_prefix)/etc
-dist_etc_DATA = mdsip.plist
+dist_sysconf_DATA = mdsip.plist
+dist_bin_SCRIPTS = mdsplus_launchconfig
 scriptsdir = $(exec_prefix)/scripts
 dist_scripts_SCRIPTS = scripts/preinstall scripts/postinstall
-dist_bin_SCRIPTS = mdsplus_launchconfig
 all: all-am
 
 .SUFFIXES:
@@ -390,26 +394,26 @@ uninstall-dist_scriptsSCRIPTS:
 	test -n "$$list" || exit 0; \
 	echo " ( cd '$(DESTDIR)$(scriptsdir)' && rm -f" $$files ")"; \
 	cd "$(DESTDIR)$(scriptsdir)" && rm -f $$files
-install-dist_etcDATA: $(dist_etc_DATA)
+install-dist_sysconfDATA: $(dist_sysconf_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(etcdir)" || $(MKDIR_P) "$(DESTDIR)$(etcdir)"
-	@list='$(dist_etc_DATA)'; test -n "$(etcdir)" || list=; \
+	test -z "$(sysconfdir)" || $(MKDIR_P) "$(DESTDIR)$(sysconfdir)"
+	@list='$(dist_sysconf_DATA)'; test -n "$(sysconfdir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(etcdir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(etcdir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(sysconfdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(sysconfdir)" || exit $$?; \
 	done
 
-uninstall-dist_etcDATA:
+uninstall-dist_sysconfDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_etc_DATA)'; test -n "$(etcdir)" || list=; \
+	@list='$(dist_sysconf_DATA)'; test -n "$(sysconfdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	test -n "$$files" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(etcdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(etcdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(sysconfdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(sysconfdir)" && rm -f $$files
 tags: TAGS
 TAGS:
 
@@ -451,7 +455,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(SCRIPTS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(scriptsdir)" "$(DESTDIR)$(etcdir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(scriptsdir)" "$(DESTDIR)$(sysconfdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -499,13 +503,13 @@ info: info-am
 
 info-am:
 
-install-data-am: install-dist_etcDATA install-dist_scriptsSCRIPTS
+install-data-am: install-dist_scriptsSCRIPTS
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-dist_binSCRIPTS
+install-exec-am: install-dist_binSCRIPTS install-dist_sysconfDATA
 
 install-html: install-html-am
 
@@ -543,24 +547,24 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-dist_binSCRIPTS uninstall-dist_etcDATA \
-	uninstall-dist_scriptsSCRIPTS
+uninstall-am: uninstall-dist_binSCRIPTS uninstall-dist_scriptsSCRIPTS \
+	uninstall-dist_sysconfDATA
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic distclean \
 	distclean-generic distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am \
-	install-dist_binSCRIPTS install-dist_etcDATA \
-	install-dist_scriptsSCRIPTS install-dvi install-dvi-am \
+	install-dist_binSCRIPTS install-dist_scriptsSCRIPTS \
+	install-dist_sysconfDATA install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-pdf \
 	install-pdf-am install-ps install-ps-am install-strip \
 	installcheck installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
 	pdf-am ps ps-am uninstall uninstall-am \
-	uninstall-dist_binSCRIPTS uninstall-dist_etcDATA \
-	uninstall-dist_scriptsSCRIPTS
+	uninstall-dist_binSCRIPTS uninstall-dist_scriptsSCRIPTS \
+	uninstall-dist_sysconfDATA
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
