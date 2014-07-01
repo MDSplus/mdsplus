@@ -4,6 +4,7 @@ DOCS = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	DataProvider.html \
 	FrameData.html \
 	ReadMe.html data_popup.jpg data_setup.jpg frame_popup.jpg image_setup.jpg \
+	TWU_image_message.html \
 	UpdateEvent.html UpdateEventListener.html \
 	WaveData.html WaveDisplay.html
 
