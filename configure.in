@@ -461,6 +461,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
+       ;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
