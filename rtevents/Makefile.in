@@ -31,10 +31,7 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+	$(MKDIR_P) @libdir@
 	$(INSTALL) -m 755 $(RtEventsShr_shared) @libdir@
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644 $(RtEventsShr_static) @libdir@; \
