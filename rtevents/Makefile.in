@@ -5,14 +5,10 @@ CFLAGS=@CFLAGS@ @SRBINCLUDE@ -fPIC
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr @SOCKETLIB@
 
-ifeq "@MINGW@" "yes"
-  WIN_CXXSOURCES = WindowsSharedMemory.cpp
-else
-  WIN_CXXSOURCES =
-endif
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
 	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp $(WIN_CXXSOURCES)
+@MINGW_TRUE@ CXXSOURCES += WindowsSharedMemory.cpp
 
 SOURCES = MdsEvents.c
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
