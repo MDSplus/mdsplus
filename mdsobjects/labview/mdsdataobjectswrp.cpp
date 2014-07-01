@@ -888,7 +888,7 @@ DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl l
 
 		for (int i = 0; i < stringArrLen; i++)
 
-			deleteString(stringArrOut[i]);
+			deleteNativeArray(stringArrOut[i]);
 
 		deleteNativeArray(stringArrOut);
 
@@ -900,7 +900,7 @@ DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl l
 
 		for (int i = 0; i < stringArrLen; i++)
 
-			deleteString(stringArrOut[i]);
+			deleteNativeArray(stringArrOut[i]);
 
 		deleteNativeArray(stringArrOut);
 
@@ -1222,7 +1222,7 @@ DLLEXPORT void mdsplus_data_decompile(const void *lvDataPtr, LStrHandle lvStrHdl
 
 			errorMessage = "NumericArrayResize error";
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 	}
 
@@ -2049,7 +2049,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 
 			errorMessage = "NumericArrayResize error";
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 	}
 
@@ -2057,7 +2057,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 
 	{
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 		errorCode = bogusError;
 
@@ -2165,7 +2165,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 		for (int i = 0; i < stringArrLen; i++)
 
-			deleteString(stringArrOut[i]);
+			deleteNativeArray(stringArrOut[i]);
 
 		deleteNativeArray(stringArrOut);
 
@@ -2173,7 +2173,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 		for (int i = 0; i < stringArrLen; i++)
 
-			deleteString(stringArrOut[i]);
+			deleteNativeArray(stringArrOut[i]);
 
 		deleteNativeArray(stringArrOut);
 
@@ -4722,7 +4722,7 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 
 			errorMessage = "NumericArrayResize error";
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 	}
 
@@ -4730,7 +4730,7 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 
 	{
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 		errorCode = bogusError;
 
@@ -5717,7 +5717,7 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 
 			errorMessage = "NumericArrayResize error";
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 	}
 
@@ -5725,7 +5725,7 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 
 	{
 
-		deleteString(strOut);
+		deleteNativeArray(strOut);
 
 		errorCode = bogusError;
 
