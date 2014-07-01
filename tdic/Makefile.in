@@ -16,16 +16,12 @@ depend:
 
 clean :
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libTdiShrExt.a
 	@ $(RM) @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@tdic
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+	$(MKDIR_P) @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShrExt.a @libdir@; \
@@ -39,16 +35,13 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKEBINDIR@tdic : tdic.c
-	$(CC) -o $@ @CC_LDFLAGS@ tdic.c $(CFLAGS) $(TDIC_LIBS)
+@MAKEBINDIR@tdic: tdic.c
+	$(LINK.c) $(OUTPUT_OPTION) $^ $(TDIC_LIBS)
 
-@MAKELIBDIR@ :
-	mkdir -p @MAKELIBDIR@
-
-@MAKEBINDIR@ :
-	mkdir -p @MAKEBINDIR@
+@MAKELIBDIR@ @MAKEBINDIR@:
+	$(MKDIR_P) $@
 
 @MAKESHLIBDIR_RULE@
 
 tdishrext.exports: tdishrext.def
-	sed -e /LIBRARY/\;/\;/d tdishrext.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d tdishrext.def > $@
