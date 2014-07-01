@@ -745,6 +745,8 @@ X_PRE_LIBS
 X_CFLAGS
 XMKMF
 RANLIB
+MINGW_FALSE
+MINGW_TRUE
 GLOBUSLICENSE_FALSE
 GLOBUSLICENSE_TRUE
 RMIC
@@ -863,7 +865,6 @@ enable_shared
 enable_mdsip_connections
 enable_nodebug
 enable_perf
-enable_mingw
 enable_java
 enable_universal
 with_jdk
@@ -1535,7 +1536,6 @@ Optional Features:
                           Prevent using mdsip connections.
   --enable-nodebug        compile without debug info
   --enable-perf           enable MDSplus I/O statistics
-  --enable-mingw          enable cross-platform build for Windows on linux
   --disable-java          Do not build java libraries and applications
   --enable-universal      Build MacOSX Universal Binary
   --enable-globus         use globus_io for mdsip communications
@@ -6644,24 +6644,6 @@ esac
 { $as_echo "$as_me:$LINENO: result: $enable_perf" >&5
 $as_echo "$enable_perf" >&6; }
 
-# Check whether --enable-mingw was given.
-if test "${enable_mingw+set}" = set; then
-  enableval=$enable_mingw;
-else
-  enable_mingw=no
-fi
-
-case $enable_mingw in
-  yes)
-cat >>confdefs.h <<\_ACEOF
-#define USE_MINGW /**/
-_ACEOF
- ;;
-esac
-
-{ $as_echo "$as_me:$LINENO: result: $enable_mingw" >&5
-$as_echo "$enable_mingw" >&6; }
-
 { $as_echo "$as_me:$LINENO: checking whether to build the java components" >&5
 $as_echo_n "checking whether to build the java components... " >&6; }
 # Check whether --enable-java was given.
@@ -7052,6 +7034,29 @@ else
 fi
 
 
+
+{ $as_echo "$as_me:$LINENO: checking for mingw" >&5
+$as_echo_n "checking for mingw... " >&6; }
+case $host in
+  *mingw*) MINGW= ;;
+esac
+
+ if test "${MINGW+set}" = set; then
+  MINGW_TRUE=
+  MINGW_FALSE='#'
+else
+  MINGW_TRUE='#'
+  MINGW_FALSE=
+fi
+
+if test "${MINGW+set}" = set; then
+  { $as_echo "$as_me:$LINENO: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
 FORLD=ld
 LD=ld
 LD_LDARC=""
@@ -7089,7 +7094,7 @@ CC_LDFLAGS=""
 FOR_LDFLAGS=""
 MINGW="no"
 
-LIBPTHREAD=-lpthread
+LIBPTHREAD=-pthread
 IS_HP=0
 MITDEVICESIO_TARGETS=""
 GEN_DEVICE=gen_device
@@ -7169,15 +7174,13 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MINGW="yes"
        LIBPRE=""
        GEN_DEVICE=""
-       LIBPTHREAD=-pthread
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -fpic -static-libgcc -fno-strict-aliasing";
        LD="gcc"
-       CFLAGS="$CFLAGS -m64"
-       LD="gcc -m64 -static-libgcc"
-       FFLAGS="$FFLAGS -m64 -fno-range-check"
+       LD="gcc -static-libgcc"
+       FFLAGS="$FFLAGS -fno-range-check"
        LOC="loc"
-       FORLD="gfortran -m64 -static-libgcc"
+       FORLD="gfortran -static-libgcc"
        BINDIR=bin_x86_64
        MAKELIBDIR="\$(top_srcdir)/$BINDIR"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
@@ -7196,8 +7199,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        TAR_EXCLUDE="--exclude";;
 
 *86*linux*)
-     if [ "$USE_MINGW" != "yes" ]
-     then
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FORLD="$F77";
        LD="gcc"
@@ -7260,37 +7261,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
-     else
-       MINGW="yes"
-       IDLMDSEVENT=""
-       LIBPRE=""
-       GEN_DEVICE=""
-       LIBPTHREAD=-pthread
-       SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -fpic -static-libgcc -fno-strict-aliasing";
-       LD="gcc"
-       CFLAGS="$CFLAGS -m64"
-       LD="gcc -m64 -static-libgcc"
-       FFLAGS="$FFLAGS -m64 -fno-range-check"
-       LOC="loc"
-       FORLD="gfortran -m64 -static-libgcc"
-       BINDIR=bin_x86_64
-       MAKELIBDIR="\$(top_srcdir)/$BINDIR"
-       MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
-       FFLAGS="$FFLAGS -fpic -fno-backslash";
-       LDSHARE="-Wl,-Bdynamic ";
-       LDARC="-Wl,-Bstatic ";
-       LD_LDSHARE="-Bdynamic ";
-       LD_LDARC="-Bstatic ";
-       LINKSHARED="-shared ";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="PATH";
-       FOR_LDFLAGS="";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".dll";
-       TAR_EXCLUDE="--exclude";
-     fi;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
@@ -15530,6 +15500,13 @@ if test -z "${GLOBUSLICENSE_TRUE}" && test -z "${GLOBUSLICENSE_FALSE}"; then
   { { $as_echo "$as_me:$LINENO: error: conditional \"GLOBUSLICENSE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 $as_echo "$as_me: error: conditional \"GLOBUSLICENSE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
+  { { $as_echo "$as_me:$LINENO: error: conditional \"MINGW\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+$as_echo "$as_me: error: conditional \"MINGW\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
