@@ -1,5 +1,6 @@
 #include "mdsobjectswrp.h"
 #include <string>
+#include <cstring>
 
 void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
 {
@@ -1134,7 +1135,7 @@ DLLEXPORT void mdsplus_data_decompile(const void *lvDataPtr, LStrHandle lvStrHdl
 
 		strOut = dataPtr->decompile();
 
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 
@@ -1144,7 +1145,7 @@ DLLEXPORT void mdsplus_data_decompile(const void *lvDataPtr, LStrHandle lvStrHdl
 
 			MoveBlock(reinterpret_cast<uChar *>(strOut), LStrBuf(*lvStrHdlOut), strOutLen);
 
-			(*lvStrHdlOut)->cnt = strOutLen;
+			(*lvStrHdlOut)->cnt = static_cast<int32>(strOutLen);
 
 		}
 
@@ -1961,7 +1962,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 
 		strOut = dataPtr->getString();
 
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 
@@ -2045,7 +2046,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 				char *currStr = stringArrOut[i];
 
-				int32 currStrLen = static_cast<int32>(strlen(currStr));
+				std::size_t currStrLen = std::strlen(currStr);
 
 				LStrHandle currLStrHdl = reinterpret_cast<LStrHandle>(DSNewHandle(sizeof(LStrHandle)));
 
@@ -4634,7 +4635,7 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 
 		strOut = stringPtr->getString();
 
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 
@@ -5629,7 +5630,7 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 
 		strOut = uint64Ptr->getDate();
 
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 
