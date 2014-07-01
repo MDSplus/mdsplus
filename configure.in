@@ -375,13 +375,13 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LIBPRE=""
        GEN_DEVICE=""
        SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -fpic -static-libgcc -fno-strict-aliasing";
-       LD="$CPP -static-libgcc"
+       CFLAGS="$CFLAGS -fpic -static-libgcc -fno-strict-aliasing -pthread";
+       LD="$CXX -static-libgcc -pthread"
        FFLAGS="$FFLAGS -fno-range-check"
        LOC="loc"
        FORLD="$F77 -static-libgcc"
        BINDIR=bin_x86_64
-       MAKELIBDIR="\$(top_srcdir)/$BINDIR"
+       MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
        FFLAGS="$FFLAGS -fpic -fno-backslash";
@@ -830,12 +830,12 @@ fi
 fi
 
 dnl Check for jdk files
-OLD_CFLAGS=$CFLAGS
-CFLAGS="$CFLAGS -I$jni_inc_dir -I$jni_md_inc_dir"
+OLD_CPPFLAGS=$CPPFLAGS
+CPPFLAGS="$CPPFLAGS -I$jni_inc_dir -I$jni_md_inc_dir"
 AC_CHECK_HEADER(jni.h,JDK_CFLAGS="-I$jni_inc_dir")
 AC_CHECK_HEADER(jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir")
 AS_VAR_SET_IF([JDK_CFLAGS], [AS_CASE([$enable_java], [yes], [JAVA_APS="\$(JAVA_APS)"])])
-CFLAGS="$OLD_CFLAGS"
+CPPFLAGS="$OLD_CPPFLAGS"
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
