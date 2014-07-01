@@ -50,6 +50,5 @@ $(RtEventsShr_static): $(OBJECTS)
 $(EventConnector): $(RtEventsShr_shared)
 	$(LINK.cc) $(OUTPUT_OPTION) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
 
-
 RtEventsShr.exports: RtEventsShr.def
-	sed -e /LIBRARY/\;/\;/d RtEventsShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d RtEventsShr.def > $@
