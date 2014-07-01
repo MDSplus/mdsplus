@@ -139,10 +139,8 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsIpUDTV6@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpSSH@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpHTTP@SHARETYPE@
-        ifdef IMPLIB_MdsIpShr
-	@ $(RM) $(IMPLIB_MdsIpShr)
-	@ $(RM) $(IMPLIB_MdsIpSrvShr)
-        endif
+	@MINGW_TRUE@ @ $(RM) $(IMPLIB_MdsIpShr)
+	@MINGW_TRUE@ @ $(RM) $(IMPLIB_MdsIpSrvShr)
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
@@ -154,10 +152,8 @@ install:
 	$(INSTALL) -m 755 $(PROGRAMS) @bindir@
 	$(MKDIR_P) @libdir@
 	$(INSTALL) -m 755 $(MdsIpShr) @libdir@
-	ifdef IMPLIB_MdsIpShr
-	$(INSTALL) -m 755 $(IMPLIB_MdsIpShr)
-	$(INSTALL) -m 755 $(IMPLIB_MdsIpSrvShr)
-	endif
+	@MINGW_TRUE@$(INSTALL) -m 755 $(IMPLIB_MdsIpShr)
+	@MINGW_TRUE@$(INSTALL) -m 755 $(IMPLIB_MdsIpSrvShr)
         ifdef modules
 		$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ @libdir@
         endif
