@@ -1,5 +1,7 @@
 #include "mdsobjectswrp.h"
 
+#include <cstring>
+
 using namespace MDSplus;
 using namespace std;
 /********************************************************************************************************
@@ -111,7 +113,7 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 		strOut = eventPtr->getName();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -285,7 +287,7 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 	{
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
 		strOut = reventPtr->getName();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
