@@ -48,7 +48,7 @@ $(RtEventsShr_static): $(OBJECTS)
 	$(RANLIB) $@
 
 @MAKELIBDIR@ :
-	mkdir -p $@
+	$(MKDIR_P) $@
 
 $(EventConnector): $(RtEventsShr_shared)
 	$(CXX) -o $@ $(CXXFLAGS) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
