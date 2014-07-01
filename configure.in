@@ -21,7 +21,7 @@ FOR_LINKSHARED=""
 dnl Check out the compiler
 AC_PROG_CC
 AC_PROG_CXX
-AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([g77 gfortran f90 f95])])
+AS_VAR_SET_IF([NOF77], [], [AC_PROG_F77([gfortran g77 f90 f95])])
 
 AC_MSG_CHECKING([whether to build shared libraries])
 AC_ARG_ENABLE([shared],
