@@ -20,6 +20,7 @@ RANLIB = @RANLIB@
 #FIXME: why need this?
 RM = @abs_top_srcdir@/devscripts/rm_if
 SED = @SED@
+THREAD = @THREAD@
 
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
