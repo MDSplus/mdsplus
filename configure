@@ -7068,8 +7068,8 @@ LOC="%loc"
 VAL="%val"
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF $MEMCHK -I\$(top_srcdir)/include"
-FFLAGS="$FFLAGS  -I\$(top_srcdir)/include"
+CFLAGS="$CFLAGS $GCCPROF $MEMCHK"
+CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
 then
