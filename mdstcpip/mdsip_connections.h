@@ -8,7 +8,7 @@
 #ifndef __SIZE_TYPE__
 typedef int ssize_t;
 #endif
-#include <Winsock2.h>
+#include <winsock2.h>
 #else
 #include <sys/types.h>
 #endif
