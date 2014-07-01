@@ -52,16 +52,8 @@ ifdef IMPLIB
 endif
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                $(MKDIR_P) -m 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @libdir@
-ifdef IMPLIB
-	$(INSTALL) -m 755 $(IMPLIB) @libdir@
-endif
-	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsShr.a @libdir@; \
-	fi;
+	$(MKDIR_P) -m 755 @libdir@;
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsShr.a $(IMPLIB) @libdir@
 
 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
