@@ -3,7 +3,7 @@
 #ifdef HAVE_WINDOWS_H
 #include <winsock2.h>
 #include <ws2tcpip.h>
-#include <Wspiapi.h>
+#include <wspiapi.h>
 #include <windows.h>
 #include <io.h>
 #define write _write
