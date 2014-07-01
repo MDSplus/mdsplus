@@ -1,9 +1,9 @@
 include @top_srcdir@/Makefile.inc
 
-LD=@CXX@
 CPPFLAGS += @SRBINCLUDE@
 CXXFLAGS = $(CFLAGS) $(THREAD) -Wno-deprecated
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr @SOCKETLIB@
+LDFLAGS += $(THREAD)
 
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
@@ -41,17 +41,17 @@ install:
 	fi;
 
 $(RtEventsShr_shared): $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $^ $(LIBS) $(THREAD)
+	$(CXX) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
 
 $(RtEventsShr_static): $(OBJECTS)
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
-@MAKELIBDIR@ :
+@MAKELIBDIR@:
 	$(MKDIR_P) $@
 
 $(EventConnector): $(RtEventsShr_shared)
-	$(CXX) -o $@ $(CXXFLAGS) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(THREAD) $(LIBS) @NSLLIB@
+	$(LINK.cc) $(OUTPUT_OPTION) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
 
 
 RtEventsShr.exports: RtEventsShr.def
