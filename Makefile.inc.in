@@ -9,8 +9,7 @@ FC = @F77@
 FFLAGS = @FFLAGS@
 GREP = @GREP@
 GROFF = @GROFF@
-#FIXME: Use AC_PROG_INSTALL
-INSTALL = @abs_top_srcdir@/conf/install-sh -c
+INSTALL = @INSTALL@
 JAR = @JAR@
 JAVAC = @JAVAC@
 LD = @LD@

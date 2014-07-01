@@ -687,6 +687,7 @@ AC_CHECK_SIZEOF(_int64)
 dnl Checks for programs.
 AC_PROG_RANLIB
 AC_PROG_MKDIR_P
+AC_PROG_INSTALL
 
 dnl Define build directories
 
