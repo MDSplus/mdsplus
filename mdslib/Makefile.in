@@ -54,17 +54,17 @@ install:
 	$(AR) -cr $@ $^
 
 MdsLib_client.o : MdsLib.c
-	$(CC) -o $@ -c $(CFLAGS) $^ -D_CLIENT_ONLY
+	$(COMPILE.c) $< $(OUTPUT_OPTION) -D_CLIENT_ONLY
+
+@MAKEBINDIR@dtype_test : dtype_test.c
+	$(COMPILE.c) $< $(OUTPUT_OPTION) @CC_LDFLAGS@ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
 @MAKEBINDIR@mdslib_ctest : mdslib_ctest.c
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
+	$(COMPILE.c) $< $(OUTPUT_OPTION) @CC_LDFLAGS@ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
 
 @MAKEBINDIR@mdslib_ftest : mdslib_ftest.f
 	$(LINK.F) $(OUTPUT_OPTION) $^ @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
 @MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f
 	$(LINK.F) $(OUTPUT_OPTION) $^ @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
-
-@MAKEBINDIR@dtype_test : dtype_test.c
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
