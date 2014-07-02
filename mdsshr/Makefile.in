@@ -51,8 +51,7 @@ ifdef IMPLIB
 	@ $(RM) $(IMPLIB)
 endif
 
-install:
-	$(MKDIR_P) -m 755 @libdir@;
+install: @libdir@
 	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsShr.a $(IMPLIB) @libdir@
 
 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
@@ -62,10 +61,9 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
-@MAKESHLIBDIR_RULE@
-
 MdsShr.exports: MdsShr.def
 	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
+
+@MAKELIBDIR@ @MAKESHLIBDIR@ @libdir@:
+	$(MKDIR_P) $@
+
