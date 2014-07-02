@@ -261,19 +261,19 @@ install: $(bindir) $(libdir)
 @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ : mitdevices_msg.o
 	$(LD) -o $@ @LINKSHARED@ mitdevices_msg.o $(LIBS) $(LDFLAGS)
 
-@MAKELIBDIR@libMitDevices.a : $(OBJECTS)
-	$(AR) -cr $@ $(OBJECTS)
-	@RANLIB@ $@
+@MAKELIBDIR@libMitDevices.a: $(OBJECTS)
+	$(AR) -cr $@ $^
+	$(RANLIB) $@
 
 @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ : $(IO_OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(IO_OBJECTS) $(LIBS) $(MATH_LIBS) $(LDFLAGS)
 
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
-	@RANLIB@ $@
+	$(RANLIB) $@
 
 MitDevices.exports: MitDevices.def
-	sed -e /LIBRARY/\;/\;/d io.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d io.def > $@
 
 @MAKEUIDDIR@A12.uid : A12.uil ; $(UIL) -o @MAKEUIDDIR@A12.uid A12.uil
 @MAKEUIDDIR@A14.uid : A14.uil ; $(UIL) -o @MAKEUIDDIR@A14.uid A14.uil
