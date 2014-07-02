@@ -680,7 +680,6 @@ AC_CHECK_LIB(dld,shl_load,LIBDLD="-ldld",LIBDLD="")
 AC_CHECK_LIB(c,gethostbyname,LIBNSL="",AC_CHECK_LIB(socket,gethostbyname,LIBNSL="-lsocket",AC_CHECK_LIB(nsl,gethostbyname,LIBNSL="-lnsl",LIBNSL="")))
 AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET=""))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
-AC_CHECK_LIB(pthread,pthread_mutexattr_settype,AC_DEFINE(HAVE_PTHREAD_MUTEXATTR_SETTYPE))
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
 if test "$ac_cv_search_clock_gettime" = "no"
 then
