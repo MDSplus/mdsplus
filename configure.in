@@ -610,16 +610,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";;
-*)     CFLAGS="$CFLAGS";
-       FFLAGS="$FFLAGS";
-       FOR_LDFLAGS="";
-       LDSHARE="";
-       LDARC="";
-       LINKSHARED="";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";;
 esac
 
 dnl see if we have libdc1394 libraries and what version

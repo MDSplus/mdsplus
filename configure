@@ -7410,16 +7410,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        SHARETYPE=".so";;
-*)     CFLAGS="$CFLAGS";
-       FFLAGS="$FFLAGS";
-       FOR_LDFLAGS="";
-       LDSHARE="";
-       LDARC="";
-       LINKSHARED="";
-       FOR_LINKSHARED="$LINKSHARED";
-       LIBPATH="LD_LIBRARY_PATH";
-       FEXECLIBDIR="-L";
-       SHARETYPE=".so";;
 esac
 
 { $as_echo "$as_me:$LINENO: checking for dc1394_new  in -ldc1394" >&5
