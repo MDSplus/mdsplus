@@ -198,7 +198,7 @@ void LockMdsShrMutex(pthread_mutex_t *mutex,int *initialized)
 #endif
     pthread_mutex_init(mutex,&m_attr);
 #else
-    pthread_mutex_init(mutex);
+    pthread_mutex_init(mutex, NULL);
 #endif
     *initialized = 1;
   }
