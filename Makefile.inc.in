@@ -15,6 +15,7 @@ JAVAC = @JAVAC@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
+LIBM = @LIBM@
 MKDIR_P = @MKDIR_P@
 RANLIB = @RANLIB@
 #FIXME: why need this?
