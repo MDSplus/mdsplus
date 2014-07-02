@@ -2,7 +2,7 @@ include @top_srcdir@/Makefile.inc
 
 LD=@FORLD@
 INSTALL=@top_srcdir@/conf/install-sh -c
-LIBS=@LIBS@ @LIBM@
+LDLIBS = $(LIBM)
 
 SOURCES = \
 	caxpy.f \
@@ -54,12 +54,12 @@ install: $(libdir)
 
 ifeq "@MACOSX@" ""
 
-@MAKESHLIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS)
+@MAKESHLIBDIR@libMdsMath@SHARETYPE@ libMdsMath@SHARETYPE@_i386: $(OBJECTS) 
+	$(LINK.o) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LDLIBS)
 
 else
 
-OBJ_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
+OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
 
 %.o_i386 : %.f
 	$(FC) -c $(FFLAGS) -m32 $< -o $@
@@ -69,16 +69,13 @@ EXTRA_CLEANFILES = libMdsMath@SHARETYPE@*
 @MAKESHLIBDIR@libMdsMath@SHARETYPE@ : libMdsMath@SHARETYPE@ libMdsMath@SHARETYPE@_i386
 	lipo -create -o $@ $^
 
-libMdsMath@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS)
-
-libMdsMath@SHARETYPE@_i386 : $(OBJECTS_i386)
-	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS_i386) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS) -m32
+libMdsMath@SHARETYPE@_i386: TARGET_ARCH = -m32
+libMdsMath@SHARETYPE@_i386: $(OBJECTS_i386)
+	$(LINK.o) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LDLIBS)
 endif
 
 clean:
 	$(RM) $(OBJECTS)
-	$(RM) so_locations
 	$(RM) @MAKESHLIBDIR@libMdsMath@SHARETYPE@
 	$(RM) $(EXTRA_CLEANFILES)
 
