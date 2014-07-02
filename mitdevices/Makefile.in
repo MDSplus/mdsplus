@@ -280,7 +280,7 @@ MitDevices.exports: MitDevices.def
 
 # This build must be done on a glibc 2.2.2 system (RedHat 7.x) or idl will have undefined references
 @MAKESHLIBDIR@libIdl.so : callidl.c
-	cc -o @MAKESHLIBDIR@libIdl.so callidl.c -shared \
+	cc -o $@ $< -shared \
                -I/usr/local/itt/idl/external \
                -L/usr/local/itt/idl/bin/bin.linux.x86/ -lidl \
                -L/usr/X11R6/lib -lXm -lXp -lXpm -lXext -lXt -lSM -lICE -lX11 \
