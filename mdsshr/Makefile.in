@@ -13,6 +13,11 @@ ifeq "@MINGW@" "yes"
 	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 endif
 
+lib_LIBRARIES = MdsShr
+libStatic = $(addsuffix .a, $(addprefix @MAKELIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
+libShared = $(addsuffix @SHARETYPE@, $(addprefix @MAKESHLIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
+libs = $(libStatic) $(libShared) $(IMPLIB)
+
 SOURCES = \
         librtl.c \
         dasutil_routines4.c \
@@ -37,33 +42,28 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@ $(libs)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-clean :
+clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libMdsShr.a 
-	@ $(RM) @MAKESHLIBDIR@libMdsShr@SHARETYPE@
-ifdef IMPLIB
-	@ $(RM) $(IMPLIB)
-endif
+	@ $(RM) $(libs)
 
-install: @libdir@
-	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsShr.a $(IMPLIB) @libdir@
+install: $(libdir)
+	$(INSTALL) -m 755 $(libs) $(libdir)
 
-@MAKESHLIBDIR@@LIBPRE@MdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
+%.dll %.dll.a: %.exports $(OBJECTS)
+	$(LINK.o) -o %.dll @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
-@MAKELIBDIR@@LIBPRE@MdsShr.a : $(OBJECTS)
+%.so %.dylib: $(OBJECTS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
+
+%.a: $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-MdsShr.exports: MdsShr.def
-	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
-
-@MAKELIBDIR@ @MAKESHLIBDIR@ @libdir@:
-	$(MKDIR_P) $@
+%.exports: MdsShr.def
+	$(SED) -e /LIBRARY/\;/\;/d $< > $@
 
