@@ -1,7 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
 CFLAGS += $(THREAD) @JDK_CFLAGS@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c mdsobjects.c
 OBJECTS = $(SOURCES:.c=.o)
