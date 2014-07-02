@@ -229,9 +229,7 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs
 
 install: $(bindir) $(libdir)
-	set -e; for uid in $(UIDS) ; do\
-	  $(INSTALL) -m 644 $${uid} @uiddir@;\
-	done
+	$(INSTALL) -m 644 $(UIDS) @uiddir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @libdir@
 	if [ -x @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ ] ; then \
 		$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ @libdir@ ;\
