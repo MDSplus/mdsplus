@@ -670,9 +670,6 @@ fi
 
 dnl Checks for libraries.
 
-if test $IS_HP = 0; then
-  AC_CHECK_LIB(c,printf)
-fi
 AC_CHECK_LIB(m,pow,LIBM="-lm",LIBM="")
 AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
