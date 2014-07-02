@@ -32,13 +32,10 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
 
-install:
+install: $(libdir)
 	$(MKDIR_P) @libdir@
 	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ @libdir@
-
-@MAKELIBDIR@ @MAKEBINDIR@:
-	$(MKDIR_P) $@
 
 @MAKESHLIBDIR@libMdsLib@SHARETYPE@ : $(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS)

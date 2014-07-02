@@ -26,11 +26,7 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsEvent.a @libdir@
 	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsEvent@SHARETYPEMOD@ @libdir@
 
@@ -41,5 +37,3 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@

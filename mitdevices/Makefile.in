@@ -228,27 +228,18 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz
 	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs
 
-install:
+install: $(bindir) $(libdir)
 	set -e; for uid in $(UIDS) ; do\
 	  $(INSTALL) -m 644 $${uid} @uiddir@;\
 	done
-	if [ ! -d @libdir@ ] ; then \
-	        mkdir @libdir@; \
-	        chmod 755 @libdir@; \
-	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @libdir@
 	if [ -x @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ ] ; then \
 		$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ @libdir@ ;\
 	fi;
-
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ @libdir@
 	ln -sf libMitDevices@SHARETYPE@ @libdir@/libMIT\$$DEVICES@SHARETYPE@
 	if (test @SHARETYPE@ != .a) then \
 	  $(INSTALL) -m 644  @MAKELIBDIR@libMitDevices.a @libdir@; \
-	fi;
-	if [ ! -d @bindir@ ] ; then \
-		mkdir @bindir@; \
-		chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@dtaq_update_board.sh @bindir@
@@ -650,9 +641,6 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 	echo '#include <mitdevices_msg.h>' | cat - u_of_m_spect_gentmp.c > u_of_m_spect_gen.c
 	rm u_of_m_spect_gentmp.c
 
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
-
 @MAKEBINDIR@daq_server : daq_server
 	cp daq_server @MAKEBINDIR@daq_server
 
@@ -676,9 +664,6 @@ u_of_m_spect_gen.c : u_of_m_spect.gen
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
 	@RANLIB@ $@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 MitDevices.exports: MitDevices.def
 	sed -e /LIBRARY/\;/\;/d io.def > $@

@@ -30,8 +30,7 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	$(MKDIR_P) @libdir@
+install: $(libdir)
 	$(INSTALL) -m 755 $(RtEventsShr_shared) @libdir@
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644 $(RtEventsShr_static) @libdir@; \
@@ -43,9 +42,6 @@ $(RtEventsShr_shared): $(OBJECTS) @EXPORTS_FILE@
 $(RtEventsShr_static): $(OBJECTS)
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
-
-@MAKELIBDIR@:
-	$(MKDIR_P) $@
 
 $(EventConnector): $(RtEventsShr_shared)
 	$(LINK.cc) $(OUTPUT_OPTION) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@

@@ -149,10 +149,8 @@ clean :
         endif
         endif
 
-install:
-	$(MKDIR_P) @bindir@
+install: $(bindir) $(libdir) $(sysconfdir)
 	$(INSTALL) -m 755 $(PROGRAMS) @bindir@
-	$(MKDIR_P) @libdir@
 	$(INSTALL) -m 755 $(MdsIpShr) @libdir@
 	@MINGW_TRUE@$(INSTALL) -m 755 $(IMPLIB_MdsIpShr)
 	@MINGW_TRUE@$(INSTALL) -m 755 $(IMPLIB_MdsIpSrvShr)
@@ -167,7 +165,6 @@ ifndef MDSIP_CONNECTIONS
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsIpUtil.a @libdir@; \
 	fi;
 endif
-	$(MKDIR_P) -m 755 $(sysconfdir)
 	$(INSTALL) -m 755  mdsip.hosts $(sysconfdir)
         ifdef MDSIP_CONNECTIONS
 		$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@

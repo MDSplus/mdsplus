@@ -37,15 +37,7 @@ clean:
 	@ $(RM) @MAKEBINDIR@roam_check_access
 
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	if [ ! -d @bindir@ ] ; then \
-		mkdir @bindir@; \
-		chmod 755 @bindir@; \
-	fi;
+install: $(bindir) $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@
 	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @libdir@/libRoam@SHARETYPE@
 	chmod 755 @libdir@/libRoam@SHARETYPE@
@@ -78,5 +70,3 @@ ifdef modules
 	$(LD) -o $@ @LINKMODULE@ $(OBJECTS) $(LIBS) 
 endif
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@

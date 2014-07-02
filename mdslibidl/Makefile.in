@@ -11,9 +11,6 @@ all : @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsLibIdl@SHARETYPEMOD@
 @MAKESHLIBDIR@libMdsLibIdl@SHARETYPEMOD@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) $(LDFLAGS)
 
-@MAKESHLIBDIR@ :
-	mkdir @MAKESHLIBDIR@
-
 clean :
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
@@ -22,9 +19,5 @@ clean :
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLibIdl@SHARETYPEMOD@ @libdir@

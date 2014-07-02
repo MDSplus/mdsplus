@@ -53,11 +53,7 @@ clean:
 	@ $(RM) @MAKEBINDIR@mdstcl
 	@ $(RM) @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libtcl_commands@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdstcl @bindir@
 

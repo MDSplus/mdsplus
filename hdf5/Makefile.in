@@ -26,17 +26,10 @@ clean :
 	@ $(RM) @MAKEBINDIR@hdf5ToMds
 	@ $(RM) @MAKEBINDIR@MDSplus2HDF5
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                $(MKDIR_P) -m 755 @libdir@; \
-        fi;
+install: $(libdir) $(bindir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libhdf5tdi.a @libdir@; \
-	fi;
-	if [ ! -d @bindir@ ] ; then \
-	        mkdir @bindir@; \
-	        chmod 755 @bindir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@hdf5ToMds @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 @bindir@
@@ -47,14 +40,6 @@ install:
 @MAKELIBDIR@libhdf5tdi.a : hdf5tdi.o 
 	$(AR) -cr $@ hdf5tdi.o 
 	@RANLIB@ $@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
-
-@MAKESHLIBDIR_RULE@
 
 hdf5tdi.exports: hdf5tdi.def
 	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@

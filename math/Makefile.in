@@ -49,15 +49,8 @@ all: @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsMath@SHARETYPE@
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMath@SHARETYPE@ @libdir@
-
-@MAKESHLIBDIR@ :
-	mkdir @MAKESHLIBDIR@
 
 ifeq "@MACOSX@" ""
 

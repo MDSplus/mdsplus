@@ -34,19 +34,13 @@ clean :
 	@ $(RM) @MAKEUIDDIR@traverser.uid
 
 
-install:
+install: $(bindir) @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@traverser.uid @uiddir@
 	$(INSTALL) -m 755  @MAKEBINDIR@traverser @bindir@
 
 
 @MAKEBINDIR@traverser : $(OBJECTS)
 	 $(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS) $(LIBS)
-
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
-
-@MAKEUIDDIR@ :
-	mkdir @MAKEUIDDIR@
 
 @MAKEUIDDIR@traverser.uid : traverser.uil
 	$(UIL) -o $@ traverser.uil

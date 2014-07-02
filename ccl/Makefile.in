@@ -19,11 +19,7 @@ clean:
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libccl_commands@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl @bindir@
 

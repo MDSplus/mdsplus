@@ -27,11 +27,7 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libCacheShr@SHARETYPE@ @libdir@
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libCacheShr.a @libdir@; \
@@ -51,6 +47,4 @@ install:
 CacheShr.exports: CacheShr.def
 	sed -e /LIBRARY/\;/\;/d CacheShr.def > $@
 
-
-	
 

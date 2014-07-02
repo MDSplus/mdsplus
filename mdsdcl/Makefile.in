@@ -31,8 +31,7 @@ clean:
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c
 
-install:
-	$(MKDIR_P) @libdir@
+install: $(libdir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl @bindir@
 	$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB) @libdir@
 

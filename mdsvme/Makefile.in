@@ -19,11 +19,7 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsVme.a
 	@ $(RM) @MAKESHLIBDIR@libMdsVme@SHARETYPE@
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsVme@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsVme.a @libdir@; \
@@ -35,11 +31,6 @@ install:
 @MAKELIBDIR@libMdsVme.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
-@MAKESHLIBDIR_RULE@
 
 MdsVme.exports: MdsVme.def
 	sed -e /LIBRARY/\;/\;/d MdsVme.def > $@

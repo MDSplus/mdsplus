@@ -64,15 +64,7 @@ clean :
 	@ $(RM) @MAKEUIDDIR@XmdsXdBox.uid
 
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	if [ ! -d @uiddir@ ] ; then \
-	        mkdir @uiddir@; \
-	        chmod 755 @uiddir@; \
-	fi;
+install: $(libdir) @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@xmds_usage_icons.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsDigChans.uid @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsInput.uid @uiddir@
@@ -81,12 +73,6 @@ install:
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@; \
 	fi;
-
-@MAKEUIDDIR@:
-	mkdir @MAKEUIDDIR@
-
-@MAKELIBDIR@:
-	mkdir @MAKELIBDIR@
 
 @MAKEUIDDIR@xmds_usage_icons.uid: xmds_usage_icons.uil
 	$(UIL) -o $@ xmds_usage_icons.uil

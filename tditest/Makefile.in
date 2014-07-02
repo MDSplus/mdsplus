@@ -8,11 +8,7 @@ all : @MAKEBINDIR@ @MAKEBINDIR@tditest
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @bindir@ ] ; then \
-                mkdir @bindir@; \
-                chmod 755 @bindir@; \
-        fi;
+install: $(bindir)
 	$(INSTALL) -m 755  @MAKEBINDIR@tditest @bindir@
 
 clean :
@@ -21,7 +17,4 @@ clean :
 
 @MAKEBINDIR@tditest : $(OBJECTS)
 	$(CC) -o $@ $(OBJECTS) $(CFLAGS) @CC_LDFLAGS@ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) @SOCKETLIB@
-
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
 

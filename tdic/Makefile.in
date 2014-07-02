@@ -20,8 +20,7 @@ clean :
 	@ $(RM) @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@tdic
 
-install:
-	$(MKDIR_P) @libdir@
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShrExt.a @libdir@; \
@@ -37,11 +36,6 @@ install:
 
 @MAKEBINDIR@tdic: tdic.c
 	$(LINK.c) $(OUTPUT_OPTION) $^ $(TDIC_LIBS)
-
-@MAKELIBDIR@ @MAKEBINDIR@:
-	$(MKDIR_P) $@
-
-@MAKESHLIBDIR_RULE@
 
 tdishrext.exports: tdishrext.def
 	$(SED) -e /LIBRARY/\;/\;/d tdishrext.def > $@

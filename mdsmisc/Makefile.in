@@ -34,10 +34,7 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsMisc.a 
 	@ $(RM) @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ 
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                $(MKDIR_P) -m 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsMisc.a @libdir@; \
@@ -50,7 +47,3 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
-@MAKESHLIBDIR_RULE@

@@ -32,11 +32,7 @@ endif
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ @libdir@
 ifdef IMPLIB
 	$(INSTALL) -m 755 $(IMPLIB) @libdir@
@@ -52,9 +48,6 @@ endif
 @MAKELIBDIR@@LIBPRE@XTreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 XTreeShr.exports: XTreeShr.def
 	sed -e /LIBRARY/\;/\;/d XTreeShr.def > $@

@@ -16,15 +16,8 @@ clean :
 	@ $(RM) $(OBJECTS)
 	@ $(RM) @MAKELIBDIR@libMdsD3D@SHARETYPE@
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKELIBDIR@libMdsD3D@SHARETYPE@ @libdir@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 @MAKELIBDIR@libMdsD3D@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  $(D3DLIB) -ld3 $(LIBS) @FOR_LDFLAGS@ 

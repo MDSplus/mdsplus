@@ -109,11 +109,7 @@ ifdef IMPLIB
 	@ $(RM) $(IMPLIB)
 endif
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
 ifdef IMPLIB
@@ -129,9 +125,6 @@ endif
 @MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 TdiShr.exports: TdiShr.def
 	sed -e /LIBRARY/\;/\;/d TdiShr.def > $@

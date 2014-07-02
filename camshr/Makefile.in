@@ -70,11 +70,7 @@ clean:
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
 	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
 	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@
@@ -99,12 +95,6 @@ cts_commands.c:	cts_commands.ocld
 @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
 	$(CC) -g $(CFLAGS) -nostartfiles -shared -Wl,-soname=lib$(LIBRARYNAME)@SHARETYPE@ \
 		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr -lc
-	if [ ! -d @MAKESHLIBDIR@ ] ; then \
-		mkdir @MAKESHLIBDIR@; \
-		chmod 755 @MAKESHLIBDIR@; \
-	fi;
 	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
 	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
 
-@MAKESHLIBDIR@ :
-	mkdir @MAKESHLIBDIR@
