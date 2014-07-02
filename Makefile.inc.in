@@ -71,3 +71,5 @@ tooldir = $(exec_prefix)/$(target_alias)
 
 $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@ @uiddir@ $(bindir) $(libdir) $(sysconfdir)):
 	$(MKDIR_P) $@
+
+.DEFAULT_GOAL := all
