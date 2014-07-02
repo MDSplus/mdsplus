@@ -13,7 +13,7 @@ STATIC_THREADSAFE pthread_once_t buffer_key_once = PTHREAD_ONCE_INIT;
 STATIC_ROUTINE void buffer_key_alloc();
 
 #if defined _MSC_VER
-############### Emulate pthreads for Visual C applications #######################
+// Emulate pthreads for Visual C applications
 void pthread_detach(HANDLE *thread) {
 	return;
 }
