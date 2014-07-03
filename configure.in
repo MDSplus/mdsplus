@@ -578,7 +578,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        dnl HDF5_LIBS="-lz -lsz";
        dnl HDF5_DIR="/usr/local";
        X_EXTRA_LIBS="-lXmu";;
-       ;;
 *aix*) CFLAGS="$CFLAGS -fpic -fno-strict-aliasing";
        FFLAGS="$FFLAGS -qpic -qnoescape";
        LDSHARE="";
