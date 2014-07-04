@@ -244,6 +244,7 @@ install: $(bindir) $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs @libdir@
 
+l8590_mem.c: l8590_sclr_gen.c
 %_gen.c: %.gen
 	@MAKEBINDIR@/gen_device $< sx _gen
 	$(SED) -i.tmp $$'1s/^/#include <mitdevices_msg.h>\\\n/' $@; $(RM) $@.tmp
