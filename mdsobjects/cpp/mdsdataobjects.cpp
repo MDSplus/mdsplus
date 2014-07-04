@@ -21,7 +21,6 @@ extern "C" {
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
 	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree, int *retStatus);
-	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
 	void *convertToApdDsc(int type, int ndescs, void **ptr);
@@ -285,15 +284,10 @@ Data *Data::evaluate()
 char *Data::decompile()
 {
 	void *dscPtr = convertToDsc();
-	char *dec = decompileDsc(dscPtr);
-	char *retStr = new char[strlen(dec)+1];
-	strcpy(retStr, dec);
-	freeChar(dec);
+	char * retStr = decompileDsc(dscPtr);
 	freeDsc(dscPtr);
 	return retStr;
 }
-
-
 
 void *Scalar::convertToDsc()
 {
