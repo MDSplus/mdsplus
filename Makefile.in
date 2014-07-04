@@ -103,17 +103,18 @@ CHANGELOG :
 
 MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php epics
 
-install: 
-	$(MKDIR_P) @exec_prefix@/local/tdi
-	$(MKDIR_P) @exec_prefix@/java
-	cdir=`pwd`;\
-	set -e; for dir in $(PARTS) ; do\
-	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
-	done
-	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
-	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > @exec_prefix@/mdsobjects/python/mdsplus_version.py; fi
-	cp MDSplus-License.txt @exec_prefix@ 
-	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
+install_DIRS = $(addprefix install_, $(PARTS))
+$(install_DIRS):
+	$(MAKE) -C $(@:install_%=%) install
+
+.PHONY: install
+install: $(install_DIRS)
+	$(MKDIR_P) $(prefix)/local/tdi
+	$(MKDIR_P) $(prefix)/java
+	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd $(exec_prefix); tar xf -)
+	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
+	$(INSTALL) MDSplus-License.txt $(exec_prefix)
+	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr
