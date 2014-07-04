@@ -40,7 +40,7 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f
 
-.SECONDEXPANSION
+.SECONDEXPANSION:
 all: @MAKESHLIBDIR@ $$(LIBRARIES)
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
