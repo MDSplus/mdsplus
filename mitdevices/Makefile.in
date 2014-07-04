@@ -246,7 +246,7 @@ install: $(bindir) $(libdir)
 
 %_gen.c: %.gen
 	@MAKEBINDIR@/gen_device $< sx _gen
-	$(SED) -i '' $$'1s/^/#include <mitdevices_msg.h>\\\n/' $@
+	$(SED) -i.c $$'1s/^/#include <mitdevices_msg.h>\\\n/' $@
 
 @MAKEBINDIR@daq_server : daq_server
 	cp daq_server @MAKEBINDIR@daq_server
