@@ -1,7 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
 LIBRARYNAME=CamShr
 
 #MAJOR	=	$(shell awk '{split($$0,a,"_"); print a[2];}' CVS/Tag)
