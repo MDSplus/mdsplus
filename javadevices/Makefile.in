@@ -146,7 +146,7 @@ ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
 MARTE_DEVICESetup.java
 
-all: @MAKEJAVADIR@ @MAKEJAVADIR@classes \
+all: @MAKEJAVADIR@classes \
      @MAKEJAVADIR@classes/jDevices.jar
 
 clean:
@@ -158,9 +158,8 @@ depend: ; @ :
 install:
 	$(INSTALL) -m 644  @MAKEJAVADIR@classes/jDevices.jar @exec_prefix@/java/classes
 
-@MAKEJAVADIR@ : ; mkdir @MAKEJAVADIR@
-
-@MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
+@MAKEJAVADIR@classes:
+	$(MKDIR_P) $@
 
 @MAKEJAVADIR@classes/jDevices.jar: ParameterSetting.class
 	$(JAR) c0f $@ *.class
