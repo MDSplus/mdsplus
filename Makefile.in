@@ -125,6 +125,7 @@ dwscope: xmdsshr
 javadevices: javatraverser
 javadispatcher: javascope javatraverser
 javatraverser: javascope
+math: mdsshr
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
 mdstcpip: tdishr
