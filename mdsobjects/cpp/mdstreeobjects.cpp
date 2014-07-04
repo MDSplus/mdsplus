@@ -31,7 +31,6 @@ extern "C" {
 	const char *MdsDtypeString(int id);
 
 	// From mdsdata.c
-	void freeChar(void *);
 	void freeDsc(void *dscPtr);
 	void * compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
 	void * evaluateData(void *dscPtr, int isEvaluate);
