@@ -40,6 +40,7 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f
 
+libMdsMath = @MAKESHLIBDIR@libMdsMath@SHARETYPE@
 all: @MAKESHLIBDIR@ $(libMdsMath)
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
@@ -49,7 +50,6 @@ OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
 
 EXPORTS = MdsMath.export
 
-libMdsMath = @MAKESHLIBDIR@libMdsMath@SHARETYPE@
 locallibMdsMath = libMdsMath@SHARETYPE@
 locallibMdsMath32 = libMdsMath@SHARETYPE@_i386
 
