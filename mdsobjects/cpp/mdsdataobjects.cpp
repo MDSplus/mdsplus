@@ -3,6 +3,8 @@
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
 
+#include <mdsshr.h>
+
 #include <stdarg.h>
 #include <string.h>
 
@@ -13,13 +15,10 @@ using namespace std;
 #define MAX_ARGS 512
 
 extern "C" {
-	char * MdsGetMsg(int status);
-
 	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
 	void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus);
 	void freeDsc(void *dscPtr);
 	void *convertFromDsc(void *dscPtr);
-	char *decompileDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
 	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree, int *retStatus);
 	void freeChar(void *);
