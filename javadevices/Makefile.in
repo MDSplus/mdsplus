@@ -4,7 +4,6 @@ JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@  -classpath ../javatraverser/jTraverser.jar:.
 
 RMIC = @RMIC@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 DEVICES = ParameterSetting.java \
 ParameterSettingOld.java\

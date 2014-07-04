@@ -3,7 +3,6 @@ include @top_srcdir@/Makefile.inc
 CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
 EXE_LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @LIBS@
 LIB_LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @LIBS@ 
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 EXE_SOURCES = gen_device.c gen_device.tab.c lex.gen_device.c
 LIB_SOURCES = GenDeviceCallData.c GenDeviceCvtFloatCode.c GenDeviceCvtIntCode.c GenDeviceCvtStringCode.c \

@@ -2,7 +2,6 @@ include @top_srcdir@/Makefile.inc
 
 FFLAGS=@FFLAGS@ @D3D_FFLAGS@
 D3DLIB=@D3DLIB@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = mdsptdata.f
 OBJECTS = $(SOURCES:.f=.o)

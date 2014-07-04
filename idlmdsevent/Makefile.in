@@ -7,7 +7,6 @@ X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
 XLIBS = $(X_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS)
 LIBS=$(XLIBS) @LIBS@ @DNET_STUB@ @LIBSOCKET@ -lMdsIpShr -lMdsShr
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
 mdsevent.c 

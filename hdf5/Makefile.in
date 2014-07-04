@@ -2,7 +2,6 @@ include @top_srcdir@/Makefile.inc
 
 CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.  -DH5_USE_16_API
 LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -lhdf5 @LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = \
         hdf5tdi.c  \
