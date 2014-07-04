@@ -161,7 +161,8 @@ static void cw_wvedit_size_func(IDL_ULONG stub, int width, int height)
 
   IDL_WidgetStubLock(TRUE);
 
-  if (stub_rec = IDL_WidgetStubLookup(stub)) {
+  stub_rec = IDL_WidgetStubLookup(stub);
+  if (stub_rec) {
     IDL_WidgetGetStubIds(stub_rec, &t_id, &b_id);
     XtVaSetValues((Widget) b_id, XmNwidth, width, XmNheight, height, NULL);
   }
@@ -999,7 +1000,8 @@ static EventInfo *NewEvent(Widget w,unsigned long stub, XEvent *event, int reaso
   {
     char *rec;
     IDL_WidgetStubLock(TRUE);
-    if (rec = IDL_WidgetStubLookup(stub))
+    rec = IDL_WidgetStubLookup(stub);
+    if (rec)
     {
       EventInfo *e = (EventInfo *)XtMalloc(sizeof(EventInfo));
       e->wave_idx = WaveToIdx(w);
