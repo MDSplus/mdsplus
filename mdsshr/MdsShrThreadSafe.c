@@ -14,6 +14,7 @@ STATIC_ROUTINE void buffer_key_alloc();
 
 #if defined _MSC_VER
 // Emulate pthreads for Visual C applications
+#include <process.h>
 void pthread_detach(HANDLE *thread) {
 	return;
 }
