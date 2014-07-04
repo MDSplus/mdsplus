@@ -3,8 +3,6 @@ include @top_srcdir@/Makefile.inc
 JAVADIR = @MAKEJAVADIR@classes
 JAVAC = @JAVAC@  -classpath ../javatraverser/jTraverser.jar:.
 
-RMIC = @RMIC@
-
 DEVICES = ParameterSetting.java \
 ParameterSettingOld.java\
 DIO4Setup.java\
