@@ -40,10 +40,6 @@ install: $(libdir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
 CacheShr.exports: CacheShr.def
 	sed -e /LIBRARY/\;/\;/d CacheShr.def > $@
-
 
