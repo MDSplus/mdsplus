@@ -1,8 +1,16 @@
+#ifndef MDS_MDSSHR_H_
+#define MDS_MDSSHR_H_
+
 #define MdsCOMPRESSIBLE 3
 #include <config.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <stdio.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 EXPORT extern int MdsCmprs(int *nitems, struct descriptor_a *items, struct descriptor_a *pack, int *bit);
 EXPORT extern int MdsCompress(struct descriptor *cimage, struct descriptor *centry, struct descriptor *in, struct descriptor_xd *out);
 EXPORT extern int MdsDecompress(struct descriptor_r *rec_ptr, struct descriptor_xd *out_ptr);
@@ -78,3 +86,9 @@ EXPORT extern int pthread_cond_destroy(void **cond);
 EXPORT extern int pthread_mutex_destroy(void **mutex);
 EXPORT extern void pthread_cancel(void *thread);
 #endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MDS_MDSSHR_H_ */
