@@ -697,13 +697,8 @@ Data * MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		if(!(status & 1))
 			throw MdsException(status);
 		if(!compData)
-		{
-			char *msg = new char[20 + strlen(expr)];
-			sprintf(msg, "Cannot compile %s", expr);
-			MdsException *exc = new MdsException(msg);
-			delete [] msg;
-			throw exc;
-		}
+			throw MdsException("Cannot compile expression");
+
 		Data *evalData = compData->data();
 		deleteData(compData);
 		for(int i = 0; i < nArgs; i++)
