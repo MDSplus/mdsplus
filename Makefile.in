@@ -135,6 +135,7 @@ servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 tdishr: mdsshr treeshr
 tditest: tdishr
 traverser: xmdsshr
+treeshr: mdsshr
 wfevent: tdishr mdsshr
 xtreeshr: tdishr
 
