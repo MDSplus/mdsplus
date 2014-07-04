@@ -108,7 +108,8 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 	else
 		squishFunName[0] = 0;
 
-/*** Not Necessary using TreeGetSegments
+// Not Necessary using TreeGetSegments
+/*
 //Evaluate start, end to int64
 	if(startD)
 	{
@@ -120,25 +121,20 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 		status = XTreeConvertToLongTime(endD, &end);
 		if(!(status & 1)) return status;
 	}
-***/
+*/
 	//Get segment limits. If not evaluated to 64 bit int, make the required conversion.
 
-	/********* Old management of start and end times per segment 
-
-
+/*
+	// Old management of start and end times per segment
 	status = (dbid)?_TreeGetNumSegments(dbid, nid, &numSegments):TreeGetNumSegments(nid, &numSegments);
 	if(!(status & 1))
 		return status;
 
-
-
     startIdx = 0;
 	if(!startD)     //If no start time specified, take all initial segments
 		startIdx = 0;
-	else
-	{
-		while(startIdx < numSegments)
-		{
+	else {
+		while(startIdx < numSegments) {
 			status = (dbid)?_TreeGetSegmentLimits(dbid, nid, startIdx, &retStartXd, &retEndXd):TreeGetSegmentLimits(nid, startIdx, &retStartXd, &retEndXd);
 			if(!(status & 1)) return status;
 			status = XTreeConvertToLongTime(retStartXd.pointer, &currStart);
@@ -148,8 +144,7 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 			if(!(status & 1)) 
 				return status;
 
-			if(currEnd > start) //First overlapping segment
-			{
+			if(currEnd > start) { //First overlapping segment
 				if(currStart < start)
 					firstSegmentTruncated = 1;
 				break;
@@ -166,11 +161,9 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 
 	if(!endD)
 		endIdx = numSegments - 1;
-	else
-	{
+	else {
 		segmentIdx = startIdx;
-		while(segmentIdx < numSegments)
-		{
+		while(segmentIdx < numSegments) {
 			status = (dbid)?_TreeGetSegmentLimits(dbid, nid, segmentIdx, &retStartXd, &retEndXd):TreeGetSegmentLimits(nid, segmentIdx, &retStartXd, &retEndXd);
 			if(!(status & 1)) return status;
 			status = XTreeConvertToLongTime(retStartXd.pointer, &currStart);
@@ -198,7 +191,9 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 			endIdx = segmentIdx;
 	}
 */
-/******** New management based on TreeGetSegmentLimits() ***********
+
+/*
+// New management based on TreeGetSegmentLimits()
 	status = (dbid)?_TreeGetSegmentTimes(dbid, nid, &numSegments, &startEndTimes):TreeGetSegmentTimes(nid, &numSegments, &startEndTimes);
 	if(!(status & 1)) return status;
     startIdx = 0;
@@ -248,9 +243,9 @@ EXPORT int _XTreeGetTimedRecord(void *dbid, int nid, struct descriptor *startD, 
 			endIdx = segmentIdx;
 	}
 	TreeFree(startEndTimes);
-/********************************************************/
+*/
 
-/************** Even newer implementation based on TreeGetSegments */
+// Even newer implementation based on TreeGetSegments
 
 	status = (dbid)?_TreeGetSegments(dbid, nid, startD, endD, &segmentsXd):TreeGetSegments(nid, startD, endD, &segmentsXd);
 	if(!(status & 1)) return status;
