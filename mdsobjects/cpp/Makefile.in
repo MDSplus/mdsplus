@@ -23,11 +23,7 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ @libdir@
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsObjectsCppShr.a @libdir@; \
@@ -41,12 +37,6 @@ install:
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
 ObjectsCppShr.exports: MdsObjectsCppShr.def
 	sed -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
-
-
-	
 
