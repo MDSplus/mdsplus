@@ -206,9 +206,6 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
-@MAKEBINDIR@ @MAKELIBDIR@ @MAKEETCDIR@:
-	$(MKDIR_P) $@
-
 $(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) $(LIBS) $(LIBPTHREAD) $(MAKE_IMPLIB_MdsIpShr)
 

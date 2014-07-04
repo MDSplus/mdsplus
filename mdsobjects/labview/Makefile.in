@@ -10,7 +10,6 @@ CSOURCES = lv.c
 
 CXXSOURCES = \
 	mdsdataobjectswrp.cpp  mdseventobjectswrp.cpp  mdsipobjectswrp.cpp  mdstreeobjectswrp.cpp
-	
 
 COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
@@ -31,16 +30,9 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @exec_prefix@/LabView ] ; then \
-                mkdir @exec_prefix@/LabView; \
-                chmod 755 @exec_prefix@/LabView; \
-        fi;
+install: $(libdir)
+	$(MKDIR_P) $(exec_prefix)/LabView
 	tar cf - --exclude="CVS" MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
-	if [ ! -d @libdir@ ] ; then \
-		mkdir @libdir@; \
-		chmod 755 @libdir@; \
-	fi;
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
@@ -51,7 +43,6 @@ install:
 		$(INSTALL) -m 644  @MAKESHLIBDIR@libLV.a @libdir@;\
 	fi;
 
-	
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
 
@@ -59,16 +50,12 @@ install:
 	$(AR) -cr $@ $(COBJECTS)
 	@RANLIB@ $@
 
-
 @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
 	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(CXXLIBS)
 
 @MAKELIBDIR@libMDSobjectsLVShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 @MAKESHLIBDIR@libMDSobjectsLVShr :
 	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
