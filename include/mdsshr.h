@@ -36,7 +36,7 @@ EXPORT extern int MdsSerializeDscOutZ(struct descriptor *in,struct descriptor_xd
     int (*fixupNid)(), void *fixupNidArg, int (*fixupPath)(),
     void *fixupPathArg, int compress, int *compressible,
     unsigned int *length, unsigned int *reclen,  unsigned char *dtype,
-    unsigned char *class, int  altbuflen, void *altbuf, int *data_in_altbuf);
+    unsigned char *classType, int  altbuflen, void *altbuf, int *data_in_altbuf);
 EXPORT extern int MdsSerializeDscOut(struct descriptor *in,struct descriptor_xd *out);
 EXPORT extern void MdsUnpk(char *nbits, int *nitems, int pack[], int items[], int *bit);
 EXPORT extern int MdsXpand(int *nitems, struct descriptor_a *pack, struct descriptor_a *items, int *bit);
