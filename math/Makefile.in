@@ -40,7 +40,8 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f
 
-all: @MAKESHLIBDIR@ $(LIBRARIES)
+.SECONDEXPANSION
+all: @MAKESHLIBDIR@ $$(LIBRARIES)
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
