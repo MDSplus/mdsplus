@@ -164,6 +164,6 @@ install:
 @MAKEJAVADIR@classes/jDevices.jar: ParameterSetting.class
 	$(JAR) c0f $@ *.class
 
-ParameterSetting.class: 	$(DEVICES)
-	$(JAVAC) -g $(DEVICES)
+ParameterSetting.class: $(DEVICES)
+	$(JAVAC) -g $^
 
