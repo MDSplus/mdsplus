@@ -3,6 +3,7 @@
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
 
+#include <cstdio>
 #include <stdarg.h>
 #include <string.h>
 
@@ -1245,7 +1246,7 @@ EXPORT Data *Uint8Array::deserialize()
 EXPORT void Scope::show()
 {
 	char expr[256];
-	sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
+	std::sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
 	Data *ris = execute(expr);
 	deleteData(ris);
 }
@@ -1264,14 +1265,14 @@ EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
 EXPORT void Scope::plot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
-	sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+	std::sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
 EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
-	sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+	std::sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
