@@ -396,8 +396,6 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 	return buf;
 }
 
- void freeChar(void *ptr){free(ptr);}
-
  void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
 {
 	int varIdx;
