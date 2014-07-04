@@ -41,5 +41,5 @@ install: $(libdir)
 	@RANLIB@ $@
 
 CacheShr.exports: CacheShr.def
-	sed -e /LIBRARY/\;/\;/d CacheShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d CacheShr.def > $@
 
