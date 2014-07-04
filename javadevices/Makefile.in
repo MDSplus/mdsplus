@@ -163,7 +163,7 @@ install:
 @MAKEJAVADIR@classes : ; mkdir @MAKEJAVADIR@classes
 
 @MAKEJAVADIR@classes/jDevices.jar: ParameterSetting.class
-	$(JAR) c0f $@ *.class $(GIFS)
+	$(JAR) c0f $@ *.class
 
 ParameterSetting.class: 	$(DEVICES)
 	$(JAVAC) -g $(DEVICES)
