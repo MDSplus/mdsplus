@@ -37,7 +37,7 @@ install: $(libdir)
 	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr -lRtEventsShr
 
 @MAKELIBDIR@libCacheShr.a : $(OBJECTS)
-	$(AR) -cr $@ $(OBJECTS)
+	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
 CacheShr.exports: CacheShr.def
