@@ -38,5 +38,5 @@ install: $(libdir)
 	@RANLIB@ $@
 
 ObjectsCppShr.exports: MdsObjectsCppShr.def
-	sed -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
 
