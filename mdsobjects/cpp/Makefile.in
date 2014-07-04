@@ -16,7 +16,6 @@ all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ @
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
 	@ $(RM) @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsObjectsCppShr.a
 

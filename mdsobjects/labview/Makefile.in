@@ -21,7 +21,6 @@ all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@li
 clean:
 	@ $(RM) $(COBJECTS)
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
 	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr
 	@ $(RM) @MAKESHLIBDIR@MDSobjectsLVShr
 	@ $(RM) @MAKESHLIBDIR@libLV@SHARETYPE@
