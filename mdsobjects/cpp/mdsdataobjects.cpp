@@ -46,7 +46,6 @@ extern "C" {
 	void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen);
 }
 
-
 //////Wrapper functions called by C code to build a Data class instance from a MDSplus descriptor///////////
 
 extern "C" void *convertDataToDsc(void *data)
@@ -83,7 +82,6 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 	}
 	return 0;
 }
-
 
 extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
 								 Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
@@ -247,10 +245,8 @@ void Data::setValidation(Data * inValidation) {
 Data *Data::data()
 {
 	if(!hasChanged() && !dataCache)
-	{
-		printf("FATAL: has changed and no data cached\n");
-		exit(0);
-	}
+		throw MdsException("FATAL: has changed and no data cached");
+
 	if(!hasChanged())
 		return dataCache->clone();
 
