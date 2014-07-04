@@ -289,7 +289,7 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
           first_waveform = waveform;
       }
       XtVaSetValues(first_waveform,XmdsNpanWith,waveform,NULL);
-      XtVaGetValues(pane,XmNnumChildren,&numchildren,XmNchildren,&child,0);
+      XtVaGetValues(pane,XmNnumChildren,&numchildren,XmNchildren,&child,NULL);
       for (j=0;j<numchildren;j++)
       {
 	String name = XtName(child[j]);
@@ -301,7 +301,7 @@ int CW_WVEDIT(unsigned long *parent_id,unsigned long *stub_id,int *cols, int *ro
       XtManageChildren(child,numchildren);
     }
     MrmCloseHierarchy(hierarchy);
-    XtVaGetValues(*plots,XmNnumChildren,&numchildren,XmNchildren,&child,0);
+    XtVaGetValues(*plots,XmNnumChildren,&numchildren,XmNchildren,&child,NULL);
     XtManageChildren(child,numchildren);
     XtManageChild(*plots);
     for (i=0;i < *cols;i++)
