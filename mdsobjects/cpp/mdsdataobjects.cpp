@@ -3,8 +3,6 @@
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/AutoPointer.hpp>
 
-#include <mdsshr.h>
-
 #include <stdarg.h>
 #include <string.h>
 
@@ -15,6 +13,9 @@ using namespace std;
 #define MAX_ARGS 512
 
 extern "C" {
+	// From mdsshr.h. Can't include because of class keyword usage in mdsdescrip.h
+	char *MdsGetMsg(int sts);
+
 	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
 	void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus);
 	void freeDsc(void *dscPtr);
