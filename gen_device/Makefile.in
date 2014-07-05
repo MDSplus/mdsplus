@@ -1,6 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
-CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
+CFLAGS += @GLOBUS_CFLAGS@
 EXE_LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @LIBS@
 LIB_LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @LIBS@ 
 
@@ -40,11 +40,11 @@ lex.gen_device.c : gen_device.x
 	lex -Pgen_device gen_device.x
 
 @MAKESHLIBDIR@libGenDevShr@SHARETYPE@ : $(LIB_OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(LIB_OBJECTS) $(LIB_LIBS) ${LDFLAGS}
+	$(LINK.o) $(TARGET_ARCH) @LINKSHARED@ $(LIB_OBJECTS) $(LIB_LIBS)
 
 @MAKELIBDIR@libGenDevShr.a : $(LIB_OBJECTS)
-	$(AR) -cr $@ $(LIB_OBJECTS)
+	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
 MdsShr.exports: MdsShr.def
-	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d $^ > $@
