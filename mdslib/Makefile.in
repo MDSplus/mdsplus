@@ -33,23 +33,24 @@ clean:
 	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
 
 install: $(libdir)
-	$(MKDIR_P) @libdir@
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ @libdir@
+	$(MKDIR_P) $(libdir)
+	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ $(libdir)
 
 MdsLib = @MAKESHLIBDIR@libMdsLib@SHARETYPE@
 $(MdsLib): $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS)
 
-@MAKELIBDIR@libMdsLib.a : $(OBJECTS)
+@MAKELIBDIR@libMdsLib.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
 @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
-	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) $(LIBS) @MEMCHKLIB@  $(GLOBUS_LDFLAGS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) $(LIBS) @MEMCHKLIB@  $(GLOBUS_LDFLAGS)
 
 @MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT) 
 	$(AR) -cr $@ $^
+	@RANLIB@ $@
 
 MdsLib_client.o : MdsLib.c
 	$(COMPILE.c) $< $(OUTPUT_OPTION) -D_CLIENT_ONLY
