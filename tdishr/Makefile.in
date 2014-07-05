@@ -120,14 +120,14 @@ endif
 	fi;
 
 @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 TdiShr.exports: TdiShr.def
-	sed -e /LIBRARY/\;/\;/d TdiShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d $< > $@
 
 TdiSql.o : TdiSql.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< $(SYBASE_INC)
