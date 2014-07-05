@@ -290,10 +290,9 @@ UILCMD="uil"
 FOR_LDFLAGS=""
 MINGW="no"
 
-THREAD=-pthread
-AC_SUBST(THREAD)
+THREAD="-pthread"
+AC_SUBST([THREAD])
 
-LIBPTHREAD=-pthread
 MITDEVICESIO_TARGETS=""
 case "$host" in
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
@@ -354,8 +353,8 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing -pthread";
-       LD="$CXX -static-libgcc -pthread"
+       CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing";
+       LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
        LOC="loc"
        FORLD="$F77 -static-libgcc"
@@ -538,7 +537,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
        SHARETYPEMOD=".dylib";
-       LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
        JDK_DIR=/Library/Java/Home
        jni_inc_dir="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers";
@@ -930,7 +928,6 @@ AC_SUBST(LIBM)
 AC_SUBST(LIBNSL)
 AC_SUBST(LIBPATH)
 AC_SUBST(LIBPRE)
-AC_SUBST(LIBPTHREAD)
 AC_SUBST(LIBREADLINE)
 AC_SUBST(LIBRESOLV)
 AC_SUBST(LIBSOCKET)

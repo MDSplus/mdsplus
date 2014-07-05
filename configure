@@ -694,7 +694,6 @@ LIBXP
 LIBSOCKET
 LIBRESOLV
 LIBREADLINE
-LIBPTHREAD
 LIBPRE
 LIBPATH
 LIBNSL
@@ -7093,10 +7092,9 @@ UILCMD="uil"
 FOR_LDFLAGS=""
 MINGW="no"
 
-THREAD=-pthread
+THREAD="-pthread"
 
 
-LIBPTHREAD=-pthread
 MITDEVICESIO_TARGETS=""
 case "$host" in
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
@@ -7157,8 +7155,8 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing -pthread";
-       LD="$CXX -static-libgcc -pthread"
+       CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing";
+       LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
        LOC="loc"
        FORLD="$F77 -static-libgcc"
@@ -7339,7 +7337,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SHARETYPE=".dylib";
        SHARETYPEJNI=".dylib";
        SHARETYPEMOD=".dylib";
-       LIBPTHREAD="";
        TAR_EXCLUDE="--exclude";
        JDK_DIR=/Library/Java/Home
        jni_inc_dir="/System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers";
@@ -15188,7 +15185,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
 
 
 
