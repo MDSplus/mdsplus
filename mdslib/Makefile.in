@@ -37,8 +37,9 @@ install: $(libdir)
 	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ @libdir@
 
-@MAKESHLIBDIR@libMdsLib@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS)
+MdsLib = @MAKESHLIBDIR@libMdsLib@SHARETYPE@
+$(MdsLib): $(OBJECTS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS)
 
 @MAKELIBDIR@libMdsLib.a : $(OBJECTS)
 	$(AR) -cr $@ $^
@@ -53,15 +54,15 @@ install: $(libdir)
 MdsLib_client.o : MdsLib.c
 	$(COMPILE.c) $< $(OUTPUT_OPTION) -D_CLIENT_ONLY
 
-@MAKEBINDIR@dtype_test : dtype_test.c
-	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
+@MAKEBINDIR@dtype_test : dtype_test.c $(MdsLib)
+	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@mdslib_ctest : mdslib_ctest.c
-	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
+@MAKEBINDIR@mdslib_ctest : mdslib_ctest.c $(MdsLib)
+	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@mdslib_ftest : mdslib_ftest.f
-	$(LINK.F) $(OUTPUT_OPTION) $^ @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
+@MAKEBINDIR@mdslib_ftest : mdslib_ftest.f $(MdsLib)
+	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f
-	$(LINK.F) $(OUTPUT_OPTION) $^ @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
+@MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f $(MdsLib)
+	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
