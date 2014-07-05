@@ -48,18 +48,16 @@ depend:
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
 	@ $(RM) tcl_commands.c
 	@ $(RM) @MAKEBINDIR@mdstcl
 	@ $(RM) @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libtcl_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@mdstcl @bindir@
+install: $(libdir) $(bindir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@libtcl_commands@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755 @MAKEBINDIR@mdstcl $(bindir)
 
-@MAKEBINDIR@mdstcl:	tcl
-	cp  tcl $@
-	chmod +x $@
+@MAKEBINDIR@mdstcl: tcl
+	$(INSTALL) -m 755 $< $@
 
 cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu
@@ -69,5 +67,5 @@ tcl_commands.c:	tcl_commands.ocld
               else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < tcl_commands.ocld; fi
 	$(MAKE) depend
 
-@MAKESHLIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS) $(LDFLAGS)
+@MAKESHLIBDIR@libtcl_commands@SHARETYPE@: $(OBJECTS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS)
