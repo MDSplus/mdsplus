@@ -56,22 +56,18 @@ DLLEXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 
 DLLEXPORT void mdsplus_event_waitData(const void *lvEventPtr, void **lvDataPtrOut, int *timeoutOccurred, ErrorCluster *error)
 {
-	Event *eventPtr = NULL;
-	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
+	char const * errorSource = __func__;
 	char const * errorMessage = "";
-	*timeoutOccurred = 0;
-	try
-	{
-		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
+	try {
+		*timeoutOccurred = 0;
+		Event * eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 //1 Second timeout
-		dataPtrOut = eventPtr->waitData(1);
+		Data * dataPtrOut = eventPtr->waitData(1);
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 	}
 	catch (const MdsException & e)
 	{
-		deleteData(dataPtrOut);
 		*timeoutOccurred = 1;
 //		errorCode = bogusError;
 //		errorMessage = e.what();
@@ -256,20 +252,17 @@ DLLEXPORT void mdsplus_revent_destructor(void **lvREventPtr)
 
 DLLEXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrOut, ErrorCluster *error)
 {
-	REvent *reventPtr = NULL;
-	Data *dataPtrOut = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = "";
 	try
 	{
-		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
-		dataPtrOut = reventPtr->getData();
+		REvent * reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
+		Data * dataPtrOut = reventPtr->getData();
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 	}
 	catch (const MdsException &e)
 	{
-		deleteData(dataPtrOut);
 		errorCode = bogusError;
 		errorMessage = e.what();
 	}
