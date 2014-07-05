@@ -1,7 +1,7 @@
 CLEANFILES = $(java_DATA)
 
 JAVAROOT = $(builddir)
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
+CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/javascope/jScope.jar
 javadir = $(exec_prefix)/java/classes
 java_JAVA = $(SOURCES)
 
