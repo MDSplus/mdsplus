@@ -1,5 +1,7 @@
 #include "mdsobjectswrp.h"
 
+#include <cstring>
+
 using namespace MDSplus;
 using namespace std;
 /********************************************************************************************************
@@ -1061,7 +1063,7 @@ DLLEXPORT void mdsplus_treenode_getClass(const void *lvTreeNodePtr, LStrHandle l
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = const_cast<char *>(treeNodePtr->getClass());
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -1238,7 +1240,7 @@ DLLEXPORT void mdsplus_treenode_getDType(const void *lvTreeNodePtr, LStrHandle l
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = const_cast<char *>(treeNodePtr->getDType());
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -1270,7 +1272,7 @@ DLLEXPORT void mdsplus_treenode_getFullPath(const void *lvTreeNodePtr, LStrHandl
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = treeNodePtr->getFullPath();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -1382,7 +1384,7 @@ DLLEXPORT void mdsplus_treenode_getMinPath(const void *lvTreeNodePtr, LStrHandle
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = treeNodePtr->getMinPath();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -1483,7 +1485,7 @@ DLLEXPORT void mdsplus_treenode_getNodeName(const void *lvTreeNodePtr, LStrHandl
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = treeNodePtr->getNodeName();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -1621,7 +1623,7 @@ DLLEXPORT void mdsplus_treenode_getOriginalPartName(const void *lvTreeNodePtr, L
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = treeNodePtr->getOriginalPartName();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
@@ -1697,7 +1699,7 @@ DLLEXPORT void mdsplus_treenode_getPath(const void *lvTreeNodePtr, LStrHandle lv
 	{
 		treeNodePtr = reinterpret_cast<TreeNode *>(const_cast<void *>(lvTreeNodePtr));
 		strOut = treeNodePtr->getPath();
-		int32 strOutLen = static_cast<int32>(strlen(strOut));
+		std::size_t strOutLen = std::strlen(strOut);
 		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
 		if (!errorCode)
 		{
