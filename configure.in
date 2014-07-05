@@ -294,7 +294,6 @@ THREAD=-pthread
 AC_SUBST(THREAD)
 
 LIBPTHREAD=-pthread
-IS_HP=0
 MITDEVICESIO_TARGETS=""
 GEN_DEVICE=gen_device
 case "$host" in
