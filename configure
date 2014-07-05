@@ -671,10 +671,8 @@ MITDEVICESIO_TARGETS
 MITDEVICES
 MINGW
 MEMCHKLIB
-MDSVME
 MDSTCPIP
 MDSSQL
-MAKEJAVADIR
 MAKEETCDIR
 MAKEUIDDIR
 MAKESHLIBDIR
@@ -7060,7 +7058,6 @@ LD=ld
 LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
-MDSVME=""
 LOC="%loc"
 VAL="%val"
 LIBPRE="lib"
@@ -8968,7 +8965,6 @@ esac
 
 
 MAKEETCDIR="\$(top_srcdir)/etc/"
-MAKEJAVADIR="\$(top_srcdir)/java/"
 
 
 ac_ext=c
@@ -15176,9 +15172,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
-
-
 
 
 
