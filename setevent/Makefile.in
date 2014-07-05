@@ -250,6 +250,8 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+
+#FIXME: Use rpath-link until build system is flattened
 libdir = @MAKESHLIBDIR@
 libexecdir = @libexecdir@
 localedir = @localedir@
@@ -270,9 +272,8 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+AM_CFLAGS = $(TARGET_ARCH)
 @RPATHLINK_FALSE@RPATHFLAGS = 
-
-#FIXME: Use rpath-link until build system is flattened
 @RPATHLINK_TRUE@RPATHFLAGS = $(RPATHLINK)=$(libdir)
 AM_LDFLAGS = $(RPATHFLAGS)
 LDADD = -L$(libdir) -lMdsShr

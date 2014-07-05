@@ -1,6 +1,7 @@
-libdir=@MAKESHLIBDIR@
+AM_CFLAGS = $(TARGET_ARCH)
 
 #FIXME: Use rpath-link until build system is flattened
+libdir=@MAKESHLIBDIR@
 if RPATHLINK
 RPATHFLAGS = $(RPATHLINK)=$(libdir)
 else
