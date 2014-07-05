@@ -78,7 +78,6 @@ AWK = @AWK@
 CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
-CCL = @CCL@
 CFLAGS = @CFLAGS@
 CLOCK_GETTIME_LIB = @CLOCK_GETTIME_LIB@
 CPP = @CPP@
@@ -127,7 +126,7 @@ INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
-JAVAC = @JAVAC@  -classpath .:../../javascope/jScope.jar
+JAVAC = @JAVAC@
 JAVA_APS = @JAVA_APS@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
@@ -139,7 +138,6 @@ LDSHARE = @LDSHARE@
 LD_LDARC = @LD_LDARC@
 LD_LDSHARE = @LD_LDSHARE@
 LIBDL = @LIBDL@
-LIBDLD = @LIBDLD@
 LIBM = @LIBM@
 LIBNSL = @LIBNSL@
 LIBOBJS = @LIBOBJS@
@@ -216,7 +214,6 @@ UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_SEMAPHORE_H = @USE_SEMAPHORE_H@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
-VAL = @VAL@
 VERSION = @VERSION@
 XMKMF = @XMKMF@
 XM_LIBS = @XM_LIBS@
@@ -277,14 +274,16 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+CLEANFILES = $(java_DATA)
 JAVAROOT = $(builddir)
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javatraverser/jTraverser.jar
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 javadir = $(exec_prefix)/java/classes
 java_JAVA = $(SOURCES)
 
 # Build the final jar
 java_DATA = mdsobjects.jar
-JAVADIR = @MAKEJAVADIR@classes
+
+# Giant list of source files follow
 SOURCES = MDSplus/Action.java\
 MDSplus/Apd.java\
 MDSplus/Array.java\
@@ -486,6 +485,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -577,12 +577,6 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 
 mdsobjects.jar: classjava.stamp
 	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
-
-@MAKEJAVADIR@classes/mdsobjects.jar: MDSplus/Data.class
-	$(JAR) c0f $@ MDSplus/*.class $(GIFS)
-
-MDSplus/Data.class: 	$(SOURCES) 
-	$(JAVAC) -g $(SOURCES)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

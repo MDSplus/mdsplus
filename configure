@@ -673,13 +673,11 @@ MINGW
 MEMCHKLIB
 MDSTCPIP
 MDSSQL
-MAKEETCDIR
 MAKEUIDDIR
 MAKESHLIBDIR
 MAKELIBDIR
 MAKEBINDIR
 MACOSX
-VAL
 LV_INC
 LV_LIB
 LV
@@ -696,7 +694,6 @@ LIBPRE
 LIBPATH
 LIBNSL
 LIBM
-LIBDLD
 LIBDL
 LD_LDARC
 LD_LDSHARE
@@ -730,7 +727,6 @@ D3D_FFLAGS
 D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
-CCL
 CAMSHR
 UIL
 X_EXTRA_LIBS
@@ -738,6 +734,7 @@ X_LIBS
 X_PRE_LIBS
 X_CFLAGS
 XMKMF
+MAKEETCDIR
 SED
 RANLIB
 THREAD
@@ -7059,7 +7056,6 @@ LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
 LOC="%loc"
-VAL="%val"
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF $MEMCHK"
@@ -7157,7 +7153,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        BINDIR=bin_x86_64
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
@@ -7302,7 +7297,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
           FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
 		  FORLD="$CC"
 		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
        elif (test "$F77" = "gfortran"); then
           FFLAGS="$FFLAGS -fno-range-check"
           FORLD="gfortran"
@@ -8964,7 +8958,9 @@ esac
 
 
 
+# Stuff that only non-automake dirs need
 MAKEETCDIR="\$(top_srcdir)/etc/"
+
 
 
 ac_ext=c
@@ -9264,77 +9260,6 @@ if test "x$ac_cv_lib_dl_dlopen" = x""yes; then
   LIBDL="-ldl"
 else
   LIBDL=""
-fi
-
-{ $as_echo "$as_me:$LINENO: checking for shl_load in -ldld" >&5
-$as_echo_n "checking for shl_load in -ldld... " >&6; }
-if test "${ac_cv_lib_dld_shl_load+set}" = set; then
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-ldld  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char shl_load ();
-int
-main ()
-{
-return shl_load ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
-$as_echo "$ac_try_echo") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext && {
-	 test "$cross_compiling" = yes ||
-	 $as_test_x conftest$ac_exeext
-       }; then
-  ac_cv_lib_dld_shl_load=yes
-else
-  $as_echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_dld_shl_load=no
-fi
-
-rm -rf conftest.dSYM
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:$LINENO: result: $ac_cv_lib_dld_shl_load" >&5
-$as_echo "$ac_cv_lib_dld_shl_load" >&6; }
-if test "x$ac_cv_lib_dld_shl_load" = x""yes; then
-  LIBDLD="-ldld"
-else
-  LIBDLD=""
 fi
 
 { $as_echo "$as_me:$LINENO: checking for gethostbyname in -lc" >&5
@@ -10593,7 +10518,6 @@ done
 
 
 REMCAM="remcam"
-CCL="ccl"
 MITDEVICES="mitdevices"
 
 for ac_header in scsi/sg.h
@@ -15172,10 +15096,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
-
-
-
 
 
 

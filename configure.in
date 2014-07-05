@@ -260,7 +260,6 @@ LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
 LOC="%loc"
-VAL="%val"
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF $MEMCHK"
@@ -358,7 +357,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        BINDIR=bin_x86_64
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
-       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
@@ -503,7 +501,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
           FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
 		  FORLD="$CC"
 		  LOC="F2C_LOC"
-		  VAL="F2C_VAL"
        elif (test "$F77" = "gfortran"); then
           FFLAGS="$FFLAGS -fno-range-check"
           FORLD="gfortran"
@@ -598,7 +595,8 @@ AS_CASE(["$MKDIR_P"],
 
 dnl Define build directories
 
-MAKEETCDIR="\$(top_srcdir)/etc/"
+# Stuff that only non-automake dirs need
+AC_SUBST([MAKEETCDIR], ["\$(top_srcdir)/etc/"])
 
 dnl Check for 0xnnnnll (long long constants)
 AC_LANG_SAVE
@@ -632,7 +630,6 @@ dnl Checks for libraries.
 AC_CHECK_LIB([m], [pow], [LIBM="-lm"], [LIBM=""])
 AC_CHECK_LIB(resolv,__dn_skipname,LIBRESOLV="-lresolv",LIBRESOLV="")
 AC_CHECK_LIB(dl,dlopen,LIBDL="-ldl",LIBDL="")
-AC_CHECK_LIB(dld,shl_load,LIBDLD="-ldld",LIBDLD="")
 AC_CHECK_LIB(c,gethostbyname,LIBNSL="",AC_CHECK_LIB(socket,gethostbyname,LIBNSL="-lsocket",AC_CHECK_LIB(nsl,gethostbyname,LIBNSL="-lnsl",LIBNSL="")))
 AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocket",LIBSOCKET=""))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
@@ -680,7 +677,6 @@ AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readli
 AC_CHECK_HEADERS(malloc.h pthread.h)
 
 REMCAM="remcam"
-CCL="ccl"
 MITDEVICES="mitdevices"
 AC_CHECK_HEADERS(scsi/sg.h,DO_CAMSHR="yes",DO_CAMSHR="no")
 if test "$DO_CAMSHR" = yes
@@ -878,7 +874,6 @@ AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
 AC_SUBST(CAMSHR)
-AC_SUBST(CCL)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
@@ -912,7 +907,6 @@ AC_SUBST(LDARC)
 AC_SUBST(LD_LDSHARE)
 AC_SUBST(LD_LDARC)
 AC_SUBST(LIBDL)
-AC_SUBST(LIBDLD)
 AC_SUBST(LIBM)
 AC_SUBST(LIBNSL)
 AC_SUBST(LIBPATH)
@@ -929,13 +923,11 @@ AC_SUBST(LOC)
 AC_SUBST(LV)
 AC_SUBST(LV_LIB)
 AC_SUBST(LV_INC)
-AC_SUBST(VAL)
 AC_SUBST(MACOSX)
 AC_SUBST(MAKEBINDIR)
 AC_SUBST(MAKELIBDIR)
 AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKEUIDDIR)
-AC_SUBST(MAKEETCDIR)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
 AC_SUBST(MEMCHKLIB)
