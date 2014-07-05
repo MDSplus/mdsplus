@@ -31,7 +31,7 @@ install: $(libdir)
 
 
 @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(CXX) $(OUTPUT_OPTION) $(CXXFLAGS) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
+	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
 
 @MAKELIBDIR@libMdsObjectsCppShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
