@@ -1,13 +1,12 @@
 include @top_srcdir@/Makefile.inc
 
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-LIBRARYNAME=CamShr
-
-#MAJOR	=	$(shell awk '{split($$0,a,"_"); print a[2];}' CVS/Tag)
-#MINOR	=	$(shell awk '{split($$0,a,"_"); print a[3];}' CVS/Tag)
 
 MAJOR = 1
 MINOR = 8
+LIBRARYNAME=CamShr
+SHLIB = lib$(LIBRARYNAME)@SHARETYPE@
+SHLIB_BUILD = @MAKESHLIBDIR@$(SHLIB)
 
 SOURCES	= \
 		add_entry.c              \
@@ -50,50 +49,48 @@ CTS_SOURCES = cts_commands.c verbs.c
 
 CTS_OBJECTS = $(CTS_SOURCES:.c=.o)
 
-all : @MAKESHLIBDIR@ @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ \
-      @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @MAKEBINDIR@mdscts
+all : @MAKEBINDIR@ @MAKESHLIBDIR@ \
+	@MAKEBINDIR@mdscts \
+	$(SHLIB_BUILD) \
+	@MAKESHLIBDIR@libcts_commands@SHARETYPE@ 
 
 .PHONY: clean
 clean:
 	@ $(RM) $(OBJECTS) $(CTS_OBJECTS)
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR)
+	@ $(RM) $(SHLIB_BUILD)
+	@ $(RM) $(SHLIB_BUILD).$(MAJOR)
+	@ $(RM) $(SHLIB_BUILD).$(MAJOR).$(MINOR)
 	@ $(RM) @MAKESHLIBDIR@libRem$(LIBRARYNAME)@SHARETYPE@
-	@ $(RM) so_locations
 	@ $(RM) cts_commands.c
 	@ $(RM) @MAKEBINDIR@mdscts
 	@ $(RM) @MAKESHLIBDIR@libcts_commands@SHARETYPE@
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
 
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@mdscts @bindir@
+install: $(libdir) $(bindir)
+	$(INSTALL) -m 755 @MAKEBINDIR@mdscts $(bindir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@libcts_commands@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(libdir)
+	ln -sf $(libdir)/$(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
+	ln -sf $(libdir)/$(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
 
-
-@MAKEBINDIR@mdscts:	cts
-	cp  cts $@
+@MAKEBINDIR@mdscts: cts
+	cp $< $@
 	chmod +x $@
 
 cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu
 
 cts_commands.c:	cts_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < cts_commands.ocld
+	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<
 	$(MAKE) depend
 
-@MAKESHLIBDIR@libcts_commands@SHARETYPE@:	$(CTS_OBJECTS) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
-	$(LD)  -o $@ @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lCamShr $(LIBS)
+@MAKESHLIBDIR@libcts_commands@SHARETYPE@: $(CTS_OBJECTS) $(SHLIB_BUILD)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)
 
-@MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
-	$(CC) -g $(CFLAGS) -nostartfiles -shared -Wl,-soname=lib$(LIBRARYNAME)@SHARETYPE@ \
-		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr -lc
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+$(SHLIB_BUILD): $(OBJECTS)
+	$(LINK.o) @LINKSHARED@ -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L@MAKESHLIBDIR@ -lMdsShr
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $@.$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $@
 
