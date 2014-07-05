@@ -724,7 +724,6 @@ GLOBUS_LOCATION
 GLOBUS_LIBS
 GLOBUS_FLAVOR
 GLOBUS_CFLAGS
-GEN_DEVICE
 FOR_LINKSHARED
 FOR_LDFLAGS
 FORLD
@@ -7099,7 +7098,6 @@ THREAD=-pthread
 
 LIBPTHREAD=-pthread
 MITDEVICESIO_TARGETS=""
-GEN_DEVICE=gen_device
 case "$host" in
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
@@ -7158,7 +7156,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        IDLMDSEVENT=""
        MINGW="yes"
        LIBPRE=""
-       GEN_DEVICE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing -pthread";
        LD="$CXX -static-libgcc -pthread"
@@ -15191,7 +15188,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
 
 
 

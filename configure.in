@@ -295,7 +295,6 @@ AC_SUBST(THREAD)
 
 LIBPTHREAD=-pthread
 MITDEVICESIO_TARGETS=""
-GEN_DEVICE=gen_device
 case "$host" in
 mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FFLAGS="$FFLAGS -D_BSD_SIGNALS -KPIC";
@@ -354,7 +353,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        IDLMDSEVENT=""
        MINGW="yes"
        LIBPRE=""
-       GEN_DEVICE=""
        SOCKETLIB="-lws2_32"
        CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing -pthread";
        LD="$CXX -static-libgcc -pthread"
@@ -903,7 +901,6 @@ AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
 AC_SUBST(FOR_LINKSHARED)
-AC_SUBST(GEN_DEVICE)
 AC_SUBST(GLOBUS_CFLAGS)
 AC_SUBST(GLOBUS_FLAVOR)
 AC_SUBST(GLOBUS_LIBS)
