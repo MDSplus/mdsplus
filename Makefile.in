@@ -54,7 +54,6 @@ PARTS = \
 	@MOTIF_APS@ \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
-	@MDSVME@ \
 	@HDF5_APS@ \
 	@LV@ \
 	LabView \
