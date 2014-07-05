@@ -1,7 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
 SOURCES = tditest.c
-OBJECTS = $(SOURCES:.c=.o)
 
 all : @MAKEBINDIR@ @MAKEBINDIR@tditest
 
@@ -12,9 +11,8 @@ install: $(bindir)
 	$(INSTALL) -m 755  @MAKEBINDIR@tditest @bindir@
 
 clean :
-	@ $(RM) $(OBJECTS)
 	@ $(RM) @MAKEBINDIR@tditest
 
-@MAKEBINDIR@tditest : $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(CFLAGS) @CC_LDFLAGS@ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) @SOCKETLIB@
+@MAKEBINDIR@tditest : $(SOURCES)
+	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) @SOCKETLIB@
 
