@@ -36,7 +36,7 @@ PARTS = \
 	gen_device \
 	@CAMSHR@ \
         @REMCAM@ \
-        @CCL@     \
+        ccl \
 	servershr \
         tcl \
         @TDIC@ \
