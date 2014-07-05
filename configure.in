@@ -430,7 +430,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            MAKEBINDIR="\$(top_srcdir)/bin32/"
            JVM="-L$with_jdk/jre/lib/i386/client -ljvm -L$with_jdk/jre/lib/i386  -ljava";
          fi
-	 CC_LDFLAGS="$CFLAGS"
        else
            JVM="-L$with_jdk/jre/lib/i386/client -ljvm -L$with_jdk/jre/lib/i386  -ljava";
        fi
