@@ -1036,6 +1036,7 @@ javamds/Makefile
 javascope/Makefile
 javatraverser/Makefile
 javadevices/Makefile
+LabView/Makefile
 manpages/Makefile
 macosx/Makefile
 math/Makefile 
