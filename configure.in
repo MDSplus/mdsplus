@@ -401,7 +401,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
            MAKEUIDDIR="\$(top_srcdir)/uid32/"
            MAKEBINDIR="\$(top_srcdir)/bin32/"
          fi
-       else
        fi
        FFLAGS="$FFLAGS -fno-range-check"
        LOC="loc"
