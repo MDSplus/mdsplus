@@ -19,5 +19,5 @@ install: $(libdir)
 	$(INSTALL) -m 755  @MAKELIBDIR@libJavaMds@SHARETYPEJNI@ @libdir@
 
 @MAKELIBDIR@libJavaMds@SHARETYPEJNI@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKJNI@ $(THREAD) $(OBJECTS) -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr -lRtEventsShr $(LIBS)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKJNI@ $(THREAD) $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr -lRtEventsShr $(LIBS)
 
