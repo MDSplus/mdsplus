@@ -66,11 +66,11 @@ endif
 
 
 @MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS) $(MAKE_IMPLIB)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 TreeShr.exports: TreeShr.def
-	sed -e /LIBRARY/\;/\;/d TreeShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d TreeShr.def > $@
