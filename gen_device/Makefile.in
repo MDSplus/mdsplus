@@ -31,7 +31,7 @@ install: $(libdir)
 	fi;
 
 @MAKEBINDIR@gen_device : $(EXE_OBJECTS)
-	$(CC) -o $@ $(CFLAGS) $(EXE_OBJECTS) $(EXE_LIBS)
+	$(LINK.o) $(OUTPUT_OPTION) $^ $(EXE_LIBS)
 
 gen_device.tab.c : gen_device.y
 	yacc -d -p gen_device -b gen_device gen_device.y
