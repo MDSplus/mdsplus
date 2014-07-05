@@ -1,8 +1,9 @@
 # @configure_input@
 
+DEFAULT_CFLAGS=-g -O2
 CC = @CC@
-CFLAGS = @CFLAGS@
-CPPFLAGS = @CPPFLAGS@
+CFLAGS = $(DEFAULT_CFLAGS) @CFLAGS@
+CPPFLAGS = $(DEFAULT_CFLAGS) @CPPFLAGS@
 CPP = @CPP@
 CXX = @CXX@
 FC = @F77@
@@ -19,7 +20,7 @@ LIBM = @LIBM@
 MKDIR_P = @MKDIR_P@
 RANLIB = @RANLIB@
 #FIXME: why need this?
-RM = @abs_top_srcdir@/devscripts/rm_if
+#RM = @abs_top_srcdir@/devscripts/rm_if
 SED = @SED@
 TARGET_ARCH = @TARGET_ARCH@
 THREAD = @THREAD@
