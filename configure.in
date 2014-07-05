@@ -412,10 +412,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
              D64=""
            fi
            SYB64=$D64
-           CFLAGS="$CFLAGS -m64"
-           LD="gcc -m64"
-           FFLAGS="$FFLAGS -m64"
-           FORLD="$F77 -m64"
+           TARGET_ARCH="-m64"
            UILCMD=uil
            uiddir="${uiddir}${D64}"
 	   MAKELIBDIR="\$(top_srcdir)/lib${D64}/"
@@ -424,10 +421,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 	   MAKEBINDIR="\$(top_srcdir)/bin${D64}/"
            JVM="-L$with_jdk/jre/lib/amd64/server -ljvm -L$with_jdk/jre/lib/amd64  -ljava";
          else
-           CFLAGS="$CFLAGS -m32";
-           LD="gcc -m32"
-           FFLAGS="$FFLAGS -m32"
-           FORLD="$F77 -m32"
+           TARGET_ARCH="-m32"
            UILCMD=uil32
            uiddir="${uiddir}32"
            MAKELIBDIR="\$(top_srcdir)/lib32/"
@@ -1005,6 +999,7 @@ AC_SUBST(SRBLIB)
 AC_SUBST(SRBINCLUDE)
 AC_SUBST(SYBASE_INC)
 AC_SUBST(SYBASE_LIB)
+AC_SUBST([TARGET_ARCH])
 AC_SUBST(host)
 AC_SUBST(TAR_EXCLUDE)
 AC_SUBST(TDIC)

@@ -21,6 +21,7 @@ RANLIB = @RANLIB@
 #FIXME: why need this?
 RM = @abs_top_srcdir@/devscripts/rm_if
 SED = @SED@
+TARGET_ARCH = @TARGET_ARCH@
 THREAD = @THREAD@
 
 abs_builddir = @abs_builddir@
