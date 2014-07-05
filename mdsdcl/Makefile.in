@@ -51,5 +51,5 @@ mdsdcl_tables.c: mdsdcl_tables.ocld
 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@: $(OBJECTS) $(LINK_CDU)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB)
 
-@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU)
-	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr
+@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@
+	$(LINK.c) $(OUTPUT_OPTION) $< $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr
