@@ -13,20 +13,15 @@ DLLEXPORT void mdsplus_tree_addDevice(const void *lvTreePtr, void **lvTreeNodePt
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
-	try
-	{
+	char const * errorSource = __func__;
+	char const * errorMessage = "";
+	try {
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treeNodePtrOut = treePtr->addDevice(const_cast<char *>(nameIn), const_cast<char *>(typeIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
-	}
-	catch (const MdsException &mdsE)
-	{
+	} catch (const MdsException &e) {
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE.what());
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-		return;
+		errorMessage = e.what();
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -36,20 +31,15 @@ DLLEXPORT void mdsplus_tree_addNode(const void *lvTreePtr, void **lvTreeNodePtrO
 	Tree *treePtr = NULL;
 	TreeNode *treeNodePtrOut = NULL;
 	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
-	try
-	{
+	char const * errorSource = __func__;
+	char const * errorMessage = "";
+	try {
 		treePtr = reinterpret_cast<Tree *>(const_cast<void *>(lvTreePtr));
 		treeNodePtrOut = treePtr->addNode(const_cast<char *>(nameIn), const_cast<char *>(usageIn));
 		*lvTreeNodePtrOut = reinterpret_cast<void *>(treeNodePtrOut);
-	}
-	catch (const MdsException &mdsE)
-	{
+	} catch (const MdsException &e) {
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE.what());
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-		return;
+		errorMessage = e.what();
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -58,19 +48,14 @@ DLLEXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn,
 {
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
-	try
-	{
+	char const * errorSource = __func__;
+	char const * errorMessage = "";
+	try {
 		treePtrOut = new Tree(const_cast<char *>(nameIn), shotIn);
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
-	}
-	catch (const MdsException &mdsE)
-	{
+	} catch (const MdsException &e) {
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE.what());
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-		return;
+		errorMessage = e.what();
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -79,19 +64,14 @@ DLLEXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *na
 {
 	Tree *treePtrOut = NULL;
 	MgErr errorCode = noErr;
-	const char *errorSource = __FUNCTION__;
-	char *errorMessage = "";
-	try
-	{
+	char const * errorSource = __func__;
+	char const * errorMessage = "";
+	try {
 		treePtrOut = new Tree(const_cast<char *>(nameIn), shotIn, const_cast<char *>(modeIn));
 		*lvTreePtrOut = reinterpret_cast<void *>(treePtrOut);
-	}
-	catch (const MdsException &mdsE)
-	{
+	} catch (const MdsException &e) {
 		errorCode = bogusError;
-		errorMessage = const_cast<char *>(mdsE.what());
-		fillErrorCluster(errorCode, errorSource, errorMessage, error);
-		return;
+		errorMessage = e.what();
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
