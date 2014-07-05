@@ -1,7 +1,8 @@
 include @top_srcdir@/Makefile.inc
 
-CFLAGS=@CFLAGS@ @SRBINCLUDE@ -I../../tdishr
-CXXFLAGS=-g -O2 -Wno-deprecated @CFLAGS@
+CPPFLAGS += -I$(top_srcdir)/tdishr
+CFLAGS += @SRBINCLUDE@
+CXXFLAGS += -Wno-deprecated $(CFLAGS)
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr @LIBS@ @SRBLIB@
 
 CXXSOURCES = \
@@ -23,14 +24,14 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ $(libdir)
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsObjectsCppShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsObjectsCppShr.a $(libdir); \
 	fi;
 
 
 @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(CXX) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
+	$(CXX) $(OUTPUT_OPTION) $(CXXFLAGS) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
 
 @MAKELIBDIR@libMdsObjectsCppShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
