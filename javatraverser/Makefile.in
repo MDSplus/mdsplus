@@ -746,7 +746,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 $(bin_SCRIPTS): $(srcdir)/jTraverser.template
 	cp $< $@
 
-TreeServer_Stub.class:
+TreeServer_Stub.class: classjava.stamp
 	$(RMIC) TreeServer
 
 jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp

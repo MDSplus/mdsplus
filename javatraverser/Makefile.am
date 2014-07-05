@@ -19,7 +19,7 @@ java_JAVA = $(SOURCES)
 # Build the final jar
 java_DATA = jTraverser.jar TreeServer_Stub.class
 
-TreeServer_Stub.class:
+TreeServer_Stub.class: classjava.stamp
 	$(RMIC) TreeServer
 
 jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
