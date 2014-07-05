@@ -117,27 +117,37 @@ install: $(install_DIRS)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 # Interdependent directories:
-actions: mdsshr tdishr treeshr xmdsshr
-cdu: mdsshr
-ccl: cdu mdsshr mdsdcl
-tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
+actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
 camshr: cdu mdsdcl
+ccl: camshr cdu mdsshr mdsdcl
+cdu: mdsshr
+tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
+gen_device: tdishr
 javadevices: javatraverser
 javadispatcher: javascope javatraverser
+javamds: mdstcpip rtevents
 javatraverser: javascope
 math: mdsshr
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
+mdslibidl: tdishr
+mdsmisc: tdishr
+mdsobjects/cpp: mdstcpip rtevents
+mdsobjects/java: javascope
 mdstcpip: tdishr
 mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
+remcam: mdstcpip
 rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
+setevent: mdsshr
+tdic: mdstcpip
 tdishr: mdsshr treeshr
 tditest: tdishr
 traverser: xmdsshr
 treeshr: mdsshr
 wfevent: tdishr mdsshr
+xmdsshr: tdishr
 xtreeshr: tdishr
 
 am--refresh:
