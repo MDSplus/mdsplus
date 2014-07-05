@@ -35,15 +35,15 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ $(libdir)
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsServerShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsServerShr.a $(libdir); \
 	fi;
 
-@MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) $(LDFLAGS) @SOCKETLIB@
+@MAKESHLIBDIR@libMdsServerShr@SHARETYPE@: $(OBJECTS) 
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@
 
-@MAKELIBDIR@libMdsServerShr.a : $(OBJECTS)
-	$(AR) -cr $@ $(OBJECTS)
+@MAKELIBDIR@libMdsServerShr.a: $(OBJECTS)
+	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
