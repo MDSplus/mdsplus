@@ -681,7 +681,6 @@ MACOSX
 LV_INC
 LV_LIB
 LV
-LOC
 LINKMODULE
 LINKJNI
 LINKSHARED
@@ -7055,7 +7054,6 @@ LD=ld
 LD_LDARC=""
 LD_LDSHARE=""
 IDL_LD=""
-LOC="%loc"
 LIBPRE="lib"
 
 CFLAGS="$CFLAGS $GCCPROF $MEMCHK"
@@ -7148,7 +7146,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        CFLAGS="$CFLAGS -static-libgcc -fno-strict-aliasing";
        LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
-       LOC="loc"
        FORLD="$F77 -static-libgcc"
        BINDIR=bin_x86_64
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
@@ -7199,7 +7196,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          fi
        fi
        FFLAGS="$FFLAGS -fno-range-check"
-       LOC="loc"
        FOR_LDFLAGS="-lg2c"
        FFLAGS="$FFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
@@ -7231,16 +7227,13 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
          FFLAGS="$FFLAGS -Wno-globals"
          FOR_LDFLAGS="-lg2c"
          FORLD="$F77"
-         LOC="%loc"
        elif (test "$F77" = "gfortran"); then
          FFLAGS="$FFLAGS -fno-range-check";
          FORLD="$F77"
-         LOC="loc"
          FOR_LDFLAGS="-lg2c"
        elif (($F77 --version | grep 'GNU Fortran') >/dev/null 2>&1); then
          FFLAGS="$FFLAGS -fno-range-check"
          FORLD="$F77"
-         LOC="loc"
          FOR_LDFLAGS="-lg2c"
        fi
        FFLAGS="$FFLAGS -fpic -fno-backslash";
@@ -7261,7 +7254,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
 *linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
        FFLAGS="$FFLAGS -fno-range-check";
        FORLD="$F77"
-       LOC="loc"
        FOR_LDFLAGS="-lg2c"
        FFLAGS="$FFLAGS -fpic -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
@@ -7292,12 +7284,10 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
           FFLAGS="$FFLAGS -!bs -Wf,-!it";
           FOR_LDFLAGS="-L/usr/local/lib/ -lf2c";
 		  FORLD="$CC"
-		  LOC="F2C_LOC"
        elif (test "$F77" = "gfortran"); then
           FFLAGS="$FFLAGS -fno-range-check"
           FORLD="gfortran"
           FOR_LDFLAGS="-shared"
-          LOC="loc"
        fi;
        FEXECLIBDIR="-L";
        LD="$CC"
@@ -7336,7 +7326,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        EXPORTS_FILE="\$(EXPORTS)";
        FEXECLIBDIR="-L";
        SHARETYPE=".a";
-       LOC="loc";
        HUP_TO_INETD="kill -HUP \`ps -e | grep inetd | grep -v grep | awk '{print $1}'\`";;
 *qnx*) CFLAGS="$CFLAGS -fpic";
        LDSHARE="-Wl,-Bdynamic ";
@@ -15092,7 +15081,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
 
 
 
