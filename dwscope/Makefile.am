@@ -45,11 +45,3 @@ uid_DATA = dwscope.uid dwpad.uid
 %.uid: %.uil
 	@UIL@ -I$(top_srcdir)/include -o $@ $<
 
-
-#@MAKEBINDIR@dwscope : dwscope.o dwscopesubs.o evaluate_local.o
-#	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ dwscope.o dwscopesubs.o  evaluate_local.o -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS)
-                        
-#@MAKEBINDIR@dwscope_remote : dwscope.o dwscopesubs.o evaluate.o RemoteDummies.o 
-#	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ dwscope.o  dwscopesubs.o evaluate.o RemoteDummies.o XmdsWidgetCallbacks.o \
-#              -L@MAKELIBDIR@ @LDARC@ -lXmdsShr @LDSHARE@ -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(MLIBS) @LIBM@ -L@MAKESHLIBDIR@ @MEMCHKLIB@
-

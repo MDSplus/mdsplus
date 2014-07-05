@@ -736,7 +736,6 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CCL
-CC_LDFLAGS
 CAMSHR
 UIL
 X_EXTRA_LIBS
@@ -7092,7 +7091,6 @@ TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
 UILCMD="uil"
-CC_LDFLAGS=""
 FOR_LDFLAGS=""
 MINGW="no"
 
@@ -7113,7 +7111,6 @@ hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        LD_LDARC="-a archive";
        LINKSHARED="-b +s +b /usr/lib:/usr/local/lib";
        FOR_LINKSHARED="$LINKSHARED";
-       CC_LDFLAGS="-Wl,+s"
        FOR_LDFLAGS="-Wl,+s";
        LIBPATH="SHLIB_PATH";
        IDL_LD="-L${IDL_DIR}/bin/bin.hp -lidl";
@@ -15211,7 +15208,6 @@ if test "x$ac_cv_lib_Xp_XpGetDocumentData" = x""yes; then
 else
   LIBXP=""
 fi
-
 
 
 

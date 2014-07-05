@@ -287,7 +287,6 @@ TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
 UILCMD="uil"
-CC_LDFLAGS=""
 FOR_LDFLAGS=""
 MINGW="no"
 
@@ -308,7 +307,6 @@ hppa*) CFLAGS="$CFLAGS -O0 -g -fpic -D_XOPEN_SOURCE_EXTENDED";
        LD_LDARC="-a archive";
        LINKSHARED="-b +s +b /usr/lib:/usr/local/lib";
        FOR_LINKSHARED="$LINKSHARED";
-       CC_LDFLAGS="-Wl,+s"
        FOR_LDFLAGS="-Wl,+s";
        LIBPATH="SHLIB_PATH";
        IDL_LD="-L${IDL_DIR}/bin/bin.hp -lidl";
@@ -911,7 +909,6 @@ AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")
 AC_CHECK_LIB(Xp,XpGetDocumentData,LIBXP="-lXp",LIBXP="")
 
 AC_SUBST(CAMSHR)
-AC_SUBST(CC_LDFLAGS)
 AC_SUBST(CCL)
 AC_SUBST(CLOCK_GETTIME_LIB)
 AC_SUBST(D3D_PACKAGE)
