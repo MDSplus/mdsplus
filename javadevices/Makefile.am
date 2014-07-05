@@ -10,7 +10,7 @@ java_JAVA = $(SOURCES)
 java_DATA = jDevices.jar
 
 jDevices.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $<
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
 
 
 # Giant list of source files follow

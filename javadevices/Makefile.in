@@ -665,7 +665,7 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 
 
 jDevices.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $<
+	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
