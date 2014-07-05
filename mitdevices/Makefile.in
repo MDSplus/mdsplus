@@ -312,3 +312,6 @@ dc1394_support2.o : dc1394_support2.c
 
 @MAKEBINDIR@dtaq_update_board.sh : dtaq_update_board.sh
 	cp $< $@
+
+.NOTPARALLEL:
+
