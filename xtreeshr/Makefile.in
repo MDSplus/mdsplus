@@ -5,8 +5,7 @@ ifeq "@MINGW@" "yes"
 	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 endif
 
-CFLAGS=@CFLAGS@ @SRBINCLUDE@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@ @SRBLIB@
+CPPFLAGS+=@SRBINCLUDE@
 
 SOURCES = \
 	XTreeConvertToLongTime.c\
@@ -22,7 +21,6 @@ all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ @MAK
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@XTreeShr.a
 ifdef IMPLIB
@@ -30,24 +28,23 @@ ifdef IMPLIB
 endif
 
 depend:
-	 @makedepend -- $(CFLAGS) -- $(SOURCES)
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(libdir)
 ifdef IMPLIB
-	$(INSTALL) -m 755 $(IMPLIB) @libdir@
+	$(INSTALL) -m 755 $(IMPLIB) $(libdir)
 endif
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@XTreeShr.a @libdir@; \
+		$(INSTALL) -m 644 @MAKELIBDIR@@LIBPRE@XTreeShr.a $(libdir); \
 	fi;
 
+@MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@: $(OBJECTS) @EXPORTS_FILE@ 
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @SRBLIB@
 
-@MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(CC) -o $@ @LINKSHARED@ @CFLAGS@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr
-
-@MAKELIBDIR@@LIBPRE@XTreeShr.a : $(OBJECTS)
-	$(AR) -cr $@ $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@XTreeShr.a: $(OBJECTS)
+	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
 XTreeShr.exports: XTreeShr.def
-	sed -e /LIBRARY/\;/\;/d XTreeShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d $< > $@
