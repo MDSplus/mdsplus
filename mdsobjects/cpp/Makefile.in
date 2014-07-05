@@ -1,7 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
-CFLAGS=@CFLAGS@ @SRBINCLUDE@ -fPIC -I../../tdishr
-CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@
+CFLAGS=@CFLAGS@ @SRBINCLUDE@ -I../../tdishr
+CXXFLAGS=-g -O2 -Wno-deprecated @CFLAGS@
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr @LIBS@ @SRBLIB@
 
 CXXSOURCES = \
