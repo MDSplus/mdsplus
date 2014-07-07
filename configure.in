@@ -352,9 +352,15 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
        FORLD="$F77 -static-libgcc"
-       BINDIR=bin_x86_64
+       if ( echo $host | grep i686 > /dev/null )
+       then
+         BINDIR=bin_x86
+       else
+         BINDIR=bin_x86_64
+       fi
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
+       MAKEBINDIR="\$(top_srcdir)/$BINDIR/"
        FFLAGS="$FFLAGS -fno-backslash";
        LDSHARE="-Wl,-Bdynamic ";
        LDARC="-Wl,-Bstatic ";
@@ -365,8 +371,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        LIBPATH="PATH";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
-       SHARETYPE=".dll";
-       TAR_EXCLUDE="--exclude";;
+       SHARETYPE=".dll";;
 
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
