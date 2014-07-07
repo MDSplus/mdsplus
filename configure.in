@@ -796,6 +796,12 @@ then
    SYBASE_LIB=""
    SYBASE=""
    AC_MSG_RESULT(no sybase open/client)
+elif ( echo $host | grep "mingw" >/dev/null )
+then
+    SYBASE_INC="-DSYBASE"
+    SYBASE_LIB="-L\$(top_srcdir) -lntwdblib"
+    SYBASE="SYBASE"
+    AC_MSG_RESULT(using Windows mssql)
 else
     OLDLIBS="$LIBS"
     AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
