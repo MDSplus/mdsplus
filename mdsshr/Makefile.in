@@ -54,8 +54,8 @@ clean:
 install: $(libdir)
 	$(INSTALL) -m 755 $(libs) $(libdir)
 
-%.dll %.dll.a: $(OBJECTS)
-	$(LINK.o) -o %.dll @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
+@MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS)
+	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 %.so %.dylib: $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
