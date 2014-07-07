@@ -41,7 +41,6 @@ SOURCES = \
 	UdpEvents.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsShr.exports
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@ $(libs)
 
@@ -55,7 +54,7 @@ clean:
 install: $(libdir)
 	$(INSTALL) -m 755 $(libs) $(libdir)
 
-%.dll %.dll.a: %.exports $(OBJECTS)
+%.dll %.dll.a: $(OBJECTS)
 	$(LINK.o) -o %.dll @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 %.so %.dylib: $(OBJECTS)
@@ -64,7 +63,4 @@ install: $(libdir)
 %.a: $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
-
-%.exports: MdsShr.def
-	$(SED) -e /LIBRARY/\;/\;/d $< > $@
 
