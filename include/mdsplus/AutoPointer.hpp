@@ -78,7 +78,7 @@ struct AutoVector: public AutoArray<T> {
 };
 
 struct AutoString: public AutoArray<char> {
-	AutoString(char * cstr): AutoArray(cstr), string(cstr) {}
+	AutoString(char * cstr): AutoArray<char>(cstr), string(cstr) {}
 	std::string string;
 };
 
