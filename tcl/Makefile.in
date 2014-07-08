@@ -48,7 +48,6 @@ depend:
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) tcl_commands.c
 	@ $(RM) @MAKEBINDIR@mdstcl
 	@ $(RM) @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
 

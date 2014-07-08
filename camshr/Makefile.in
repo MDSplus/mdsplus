@@ -61,7 +61,6 @@ clean:
 	@ $(RM) $(SHLIB_BUILD).$(MAJOR)
 	@ $(RM) $(SHLIB_BUILD).$(MAJOR).$(MINOR)
 	@ $(RM) @MAKESHLIBDIR@libRem$(LIBRARYNAME)@SHARETYPE@
-	@ $(RM) cts_commands.c
 	@ $(RM) @MAKEBINDIR@mdscts
 	@ $(RM) @MAKESHLIBDIR@libcts_commands@SHARETYPE@
 

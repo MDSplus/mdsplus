@@ -25,7 +25,6 @@ all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a @MAKESHLIBDIR@libMdsdcl@S
 
 clean:
 	$(RM) $(OBJECTS)
-	$(RM) mdsdcl_tables.c
 	$(RM) @MAKELIBDIR@libMdsdcl.a @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl $(IMPLIB)
 
 depend: 
@@ -49,7 +48,7 @@ mdsdcl_tables.c: mdsdcl_tables.ocld
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@: $(OBJECTS) $(LINK_CDU)
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD)
 
 @MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@
 	$(LINK.c) $(OUTPUT_OPTION) $< $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr

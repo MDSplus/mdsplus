@@ -8,7 +8,6 @@ all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@libccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKE
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) ccl_commands.c
 	@ $(RM) @MAKESHLIBDIR@libccl_commands@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsccl
 
