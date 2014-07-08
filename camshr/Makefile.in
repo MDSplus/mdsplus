@@ -72,8 +72,8 @@ install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdscts $(bindir)
 	$(INSTALL) -m 755 @MAKESHLIBDIR@libcts_commands@SHARETYPE@ $(libdir)
 	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(libdir)
-	ln -sf $(libdir)/$(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
-	ln -sf $(libdir)/$(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
 
 @MAKEBINDIR@mdscts: cts
 	cp $< $@
