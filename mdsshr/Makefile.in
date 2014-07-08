@@ -9,10 +9,7 @@ else
 	MDSMALLOC = MdsMalloc.c
 endif
 
-ifeq "@MINGW@" "yes"
-	IMPLIB=@MAKELIBDIR@MdsShr.dll.a
-	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-endif
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
 
 lib_LIBRARIES = MdsShr
 libStatic = $(addsuffix .a, $(addprefix @MAKELIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
@@ -54,6 +51,7 @@ clean:
 install: $(libdir)
 	$(INSTALL) -m 755 $(libs) $(libdir)
 
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS)
 	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 

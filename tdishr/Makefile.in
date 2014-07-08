@@ -1,11 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
-ifeq "@MINGW@" "yes"
-	IMPLIB=@MAKELIBDIR@TdiShr.dll.a
-	MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-else
-	IMPLIB=
-endif
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TdiShr.dll.a
 
 LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD)
 SYBASE_INC=@SYBASE_INC@
@@ -92,7 +87,7 @@ TdiYacc.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TdiShr.exports
 
-all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@TdiShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@TdiShr.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -103,23 +98,17 @@ depend:
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@TdiShr.a
-ifdef IMPLIB
-	@ $(RM) $(IMPLIB)
-endif
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
-ifdef IMPLIB
-	$(INSTALL) -m 755 $(IMPLIB) @libdir@
-endif
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) @libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) @EXPORTS_FILE@
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)

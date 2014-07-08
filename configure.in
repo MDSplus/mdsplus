@@ -867,6 +867,10 @@ else
   MOTIF_APS=""
   AC_MSG_RESULT(no uil so skipping openmotif apps.openmotif-devel not installed.)
 fi
+if [[ "$MINGW" = "yes" ]]
+then
+  MOTIF_APS=""
+fi
 
 XM_LIBS="-lMrm -lXm"
 AC_CHECK_LIB(Xext,XextAddDisplay,LIBXEXT="-lXext",LIBXEXT="")

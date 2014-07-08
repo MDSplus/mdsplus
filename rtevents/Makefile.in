@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@RtEventsShr.dll.a
+
 CPPFLAGS += @SRBINCLUDE@
 CXXFLAGS = $(CFLAGS) $(THREAD) -Wno-deprecated
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr @SOCKETLIB@
@@ -15,7 +17,7 @@ OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = RtEventsShr.exports
 
 EventConnector = @MAKEBINDIR@EventConnector
-RtEventsShr_shared = @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@
+RtEventsShr_shared = @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ $(IMPLIB)
 RtEventsShr_static = @MAKELIBDIR@libRtEventsShr.a
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(EventConnector) $(RtEventsShr_shared) $(RtEventsShr_static)
@@ -36,8 +38,9 @@ install: $(libdir)
 		$(INSTALL) -m 644 $(RtEventsShr_static) @libdir@; \
 	fi;
 
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 $(RtEventsShr_shared): $(OBJECTS) @EXPORTS_FILE@ 
-	$(CXX) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
+	$(CXX) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) $(MAKE_IMPLIB)
 
 $(RtEventsShr_static): $(OBJECTS)
 	$(AR) -cr $@ $^

@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
+
 SOURCES = \
       ServerDispatchAction.c\
       ServerFreeDispatchTable.c\
@@ -23,25 +25,26 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = servershr.export
 
-all: @MAKELIBDIR@ @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ @MAKELIBDIR@libMdsServerShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@libMdsServerShr.a
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ $(IMPLIB)
 	@ $(RM) @MAKELIBDIR@libMdsServerShr.a
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@ $(IMPLIB) $(libdir)
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsServerShr.a $(libdir); \
 	fi;
 
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@: $(OBJECTS) 
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@ $(THREAD)
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@ $(THREAD) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@libMdsServerShr.a: $(OBJECTS)
 	$(AR) -cr $@ $^

@@ -21,7 +21,7 @@ mdsdcl_wait.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsdclshr.export
 
-all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl
+all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl
 
 clean:
 	$(RM) $(OBJECTS)
@@ -47,8 +47,8 @@ mdsdcl_tables.c: mdsdcl_tables.ocld
 		@RANLIB@ $@
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@libMdsdcl@SHARETYPE@: $(OBJECTS) $(LINK_CDU)
+@MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(LINK_CDU)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD)
 
-@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@
+@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB)
 	$(LINK.c) $(OUTPUT_OPTION) $< $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr

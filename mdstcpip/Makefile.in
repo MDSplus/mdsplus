@@ -1,19 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
-ifeq "@MINGW@" "yes"
-	IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
-	MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
-	IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
-	MAKE_IMPLIB_MdsIpSrvShr=-Wl,--out-implib,$(IMPLIB_MdsIpSrvShr)
-        MdsIpTCPV6=
-        MdsIpUDT=
-        MdsIpUDTV6=
-
-else
-        MdsIpTCPV6  = @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@
-        MdsIpUDT    = @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@
-        MdsIpUDTV6  = @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@
-endif
+@MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
+@MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
 inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
@@ -27,13 +15,20 @@ LDFLAGS += $(THREAD)
 CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/src -Iudt4/udtc @CFLAGS@ 
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @MEMCHKLIB@ @SOCKETLIB@
 
-MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@
-MdsIpSrvShr = @MAKESHLIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@
+MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@ $(IMPLIB_MdsIpShr)
+MdsIpSrvShr = @MAKESHLIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@ $(IMPLIB_MdsIpSrvShr)
 MdsIpTunnel = @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@
 MdsIpTCP    = @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@
 MdsIpSSH    = @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@
 MdsIpHTTP   = @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@
+MdsIpTCPV6  = @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@
+MdsIpUDT    = @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@
+MdsIpUDTV6  = @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@
 
+# fix this
+ifneq "@MINGW@" "yes"
+        IPV6_UDT = $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6)
+endif
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else
@@ -115,9 +110,7 @@ all : $(MAKEFILE_HEADER) \
       $(MdsIpSrvShr) \
       $(MdsIpTunnel) \
       $(MdsIpTCP) \
-      $(MdsIpTCPV6) \
-      $(MdsIpUDT) \
-      $(MdsIpUDTV6) \
+      $(IPV6_UDT) \
       $(MdsIpGSI) \
       $(MdsIpSSH) \
       $(MdsIpHTTP) \
@@ -137,7 +130,7 @@ clean :
 	@ $(RM) $(PROGRAMS)
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
         ifdef MDSIP_CONNECTIONS
-	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@
+	@ $(RM) $(MdsIpSrvShr)
 	@ $(RM) @MAKELIBDIR@libMdsIpTunnel@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpTCP@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpTCPV6@SHARETYPE@
@@ -145,8 +138,6 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsIpUDTV6@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpSSH@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@libMdsIpHTTP@SHARETYPE@
-	@MINGW_TRUE@ @ $(RM) $(IMPLIB_MdsIpShr)
-	@MINGW_TRUE@ @ $(RM) $(IMPLIB_MdsIpSrvShr)
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
@@ -156,8 +147,6 @@ clean :
 install: $(bindir) $(libdir) $(sysconfdir)
 	$(INSTALL) -m 755 $(PROGRAMS) @bindir@
 	$(INSTALL) -m 755 $(MdsIpShr) @libdir@
-	@MINGW_TRUE@$(INSTALL) -m 755 $(IMPLIB_MdsIpShr)
-	@MINGW_TRUE@$(INSTALL) -m 755 $(IMPLIB_MdsIpSrvShr)
         ifdef modules
 		$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ @libdir@
         endif
@@ -210,10 +199,12 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
+@MINGW_TRUE@ MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
 $(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
 
 LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr
+@MINGW_TRUE@ MAKE_IMPLIB_MdsIpSrvShr=-Wl,--out-implib,$(IMPLIB_MdsIpSrvShr)
 $(MdsIpSrvShr): $(SERVER_LIB_OBJECTS) $(MdsIpShr)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(SERVER_LIB_OBJECTS) $(LINK_MDSIPSHR) -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(MAKE_IMPLIB_MdsIpSrvShr)
 
