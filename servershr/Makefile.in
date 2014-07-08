@@ -41,7 +41,7 @@ install: $(libdir)
 	fi;
 
 @MAKESHLIBDIR@libMdsServerShr@SHARETYPE@: $(OBJECTS) 
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@ $(THREAD)
 
 @MAKELIBDIR@libMdsServerShr.a: $(OBJECTS)
 	$(AR) -cr $@ $^

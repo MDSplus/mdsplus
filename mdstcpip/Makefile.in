@@ -5,6 +5,14 @@ ifeq "@MINGW@" "yes"
 	MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
 	IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 	MAKE_IMPLIB_MdsIpSrvShr=-Wl,--out-implib,$(IMPLIB_MdsIpSrvShr)
+        MdsIpTCPV6=
+        MdsIpUDT=
+        MdsIpUDTV6=
+
+else
+        MdsIpTCPV6  = @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@
+        MdsIpUDT    = @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@
+        MdsIpUDTV6  = @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@
 endif
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
@@ -23,11 +31,8 @@ MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@
 MdsIpSrvShr = @MAKESHLIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@
 MdsIpTunnel = @MAKESHLIBDIR@libMdsIpTunnel@SHARETYPE@
 MdsIpTCP    = @MAKESHLIBDIR@libMdsIpTCP@SHARETYPE@
-MdsIpTCPV6  = @MAKESHLIBDIR@libMdsIpTCPV6@SHARETYPE@
 MdsIpSSH    = @MAKESHLIBDIR@libMdsIpSSH@SHARETYPE@
 MdsIpHTTP   = @MAKESHLIBDIR@libMdsIpHTTP@SHARETYPE@
-MdsIpUDT    = @MAKESHLIBDIR@libMdsIpUDT@SHARETYPE@
-MdsIpUDTV6  = @MAKESHLIBDIR@libMdsIpUDTV6@SHARETYPE@
 
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
