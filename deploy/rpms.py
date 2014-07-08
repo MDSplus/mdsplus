@@ -298,7 +298,6 @@ rsync -a %(workspace)s/%(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
         if subprocess.Popen("""
-set -e
 if ( which python3 > /dev/null 2>&1 )
 then
   python3 setup.py -q bdist_egg -d /repository/EGGS
