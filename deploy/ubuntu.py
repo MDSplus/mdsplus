@@ -19,7 +19,7 @@ class InstallationPackage(object):
             else:
                 pkg = "-%s" % pkg
             self.info['package']=pkg
-            rpm='/repository/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
+            rpm='/repository/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
             try:
                 os.stat(rpm)
             except:
