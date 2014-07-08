@@ -6,6 +6,7 @@
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <string.h>
 #define MDS_IO_OPEN_K   1
 #define MDS_IO_CLOSE_K  2
 #define MDS_IO_LSEEK_K  3
