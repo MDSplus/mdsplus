@@ -1,6 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
-CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.  -DH5_USE_16_API
+CFLAGS=@CFLAGS@ @HDF5_INCS@ -I.  -DH5_USE_16_API @TARGET_ARCH@
+LD_FLAGS=$(LDFLAGS) @TARGET_ARCH@
 LIBS=-L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @HDF5_LIBS@ -lhdf5 @LIBS@
 
 SOURCES = \
@@ -34,7 +35,7 @@ install: $(libdir) $(bindir)
 	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 @bindir@
 
 @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS) $(LDFLAGS)
+	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS) $(LD_FLAGS)
 
 @MAKELIBDIR@libhdf5tdi.a: hdf5tdi.o 
 	$(AR) -cr $@ $^

@@ -1,8 +1,8 @@
 include @top_srcdir@/Makefile.inc
 
 LD=@CXX@
-CFLAGS=@CFLAGS@ @LV_INC@ -fPIC
-CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@ @LV_INC@
+CFLAGS=@CFLAGS@ @LV_INC@ -fPIC @TARGET_ARCH@
+CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@ @LV_INC@ @TARGET_ARCH@
 CLIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
 CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr -lMdsObjectsCppShr -lLV @LIBS@ 
 
