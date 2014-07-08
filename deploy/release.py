@@ -138,6 +138,7 @@ if __name__ == "__main__":
       info['executable']=sys.executable
       if subprocess.Popen("""
 set -e
+rm -Rf mdsplus* alpha beta stable
 tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
