@@ -7,7 +7,7 @@
 #include <string>
 
 #ifdef HAVE_WINDOWS_H
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <sys/types.h>
 #include <sys/ipc.h>
