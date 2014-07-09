@@ -6,8 +6,8 @@ import MARTE_GENERIC
 class MARTE_EDA3(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe EDA3'
     parNames = ['tauVTheta','tauVTor','tauD','kp','ki','kd','vCompOn','iCompOn','iFBOn','iPTrig','tTrig',
-       'deltaVTorTrig','deltaTBT1','deltaTBT2','rVesselTuningFactor']
-    parValues = [0.002,0.0005,0.002,1.367,0.,0.,0.,1.,1.,0.,0.002,0.,0.01,0.01,1.] 
+       'deltaVTorTrig','deltaTBT1','deltaTBT2','rVesselTuningFactor', 'thetaNom,', 'tTrigVth', 'deltaTBT1Vth', 'DeadTimeCompOn', 'kDeadTimeComp', 'DeTiMinHystCurrThreshold', 'DeTiMaxHystCurrThreshold']
+    parValues = [0.002,0.0005,0.002,1.367,0.,0.,0.,1.,1.,0.,0.002,0.,0.01,0.01,1.,1.42,0, 0, 0,0,0,0] 
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])

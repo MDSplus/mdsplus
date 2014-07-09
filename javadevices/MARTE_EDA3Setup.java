@@ -67,6 +67,10 @@ public class MARTE_EDA3Setup extends DeviceSetup {
         deviceField102 = new DeviceField();
         deviceField103 = new DeviceField();
         deviceField104 = new DeviceField();
+        jPanel3 = new javax.swing.JPanel();
+        deviceField11 = new DeviceField();
+        deviceField12 = new DeviceField();
+        deviceField13 = new DeviceField();
         jScrollPane3 = new javax.swing.JScrollPane();
         jPanel11 = new javax.swing.JPanel();
         jPanel52 = new javax.swing.JPanel();
@@ -258,6 +262,11 @@ public class MARTE_EDA3Setup extends DeviceSetup {
         deviceField171 = new DeviceField();
         jPanel168 = new javax.swing.JPanel();
         deviceField172 = new DeviceField();
+        jPanel12 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
+        deviceField14 = new DeviceField();
+        deviceField15 = new DeviceField();
+        deviceField16 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA3Setup");
@@ -332,7 +341,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
 
         jPanel1.setLayout(new java.awt.BorderLayout());
 
-        jPanel14.setLayout(new java.awt.GridLayout(4, 0));
+        jPanel14.setLayout(new java.awt.GridLayout(5, 1));
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("tauVTheta: ");
@@ -431,6 +440,26 @@ public class MARTE_EDA3Setup extends DeviceSetup {
         jPanel18.add(deviceField104);
 
         jPanel14.add(jPanel18);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("thetaNom:");
+        deviceField11.setNumCols(4);
+        deviceField11.setOffsetNid(1429);
+        jPanel3.add(deviceField11);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("tTrigVth:");
+        deviceField12.setNumCols(4);
+        deviceField12.setOffsetNid(1435);
+        jPanel3.add(deviceField12);
+
+        deviceField13.setIdentifier("");
+        deviceField13.setLabelString("deltaTBT1Vth:");
+        deviceField13.setNumCols(4);
+        deviceField13.setOffsetNid(1441);
+        jPanel3.add(deviceField13);
+
+        jPanel14.add(jPanel3);
 
         jTabbedPane2.addTab("F Control", jPanel14);
 
@@ -1237,6 +1266,34 @@ public class MARTE_EDA3Setup extends DeviceSetup {
 
         jTabbedPane2.addTab("FeedForward Refs", jScrollPane4);
 
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice2.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("DeadTimeComp: ");
+        deviceChoice2.setOffsetNid(1447);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel12.add(deviceChoice2);
+
+        deviceField14.setIdentifier("");
+        deviceField14.setLabelString("kDeadTimeComp:");
+        deviceField14.setNumCols(15);
+        deviceField14.setOffsetNid(1453);
+        jPanel12.add(deviceField14);
+
+        deviceField15.setIdentifier("");
+        deviceField15.setLabelString("DeTiMinHystCurrThreshold: ");
+        deviceField15.setOffsetNid(1459);
+        jPanel12.add(deviceField15);
+
+        deviceField16.setIdentifier("");
+        deviceField16.setLabelString("DeTiMaxHystCurrThreshold: ");
+        deviceField16.setNumCols(4);
+        deviceField16.setOffsetNid(1465);
+        jPanel12.add(deviceField16);
+
+        jTabbedPane2.addTab("Inverter Error Compensation", jPanel12);
+
         jPanel1.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -1246,6 +1303,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField100;
@@ -1258,6 +1316,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField107;
     private DeviceField deviceField108;
     private DeviceField deviceField109;
+    private DeviceField deviceField11;
     private DeviceField deviceField110;
     private DeviceField deviceField111;
     private DeviceField deviceField112;
@@ -1268,6 +1327,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField117;
     private DeviceField deviceField118;
     private DeviceField deviceField119;
+    private DeviceField deviceField12;
     private DeviceField deviceField120;
     private DeviceField deviceField121;
     private DeviceField deviceField122;
@@ -1278,6 +1338,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField127;
     private DeviceField deviceField128;
     private DeviceField deviceField129;
+    private DeviceField deviceField13;
     private DeviceField deviceField130;
     private DeviceField deviceField131;
     private DeviceField deviceField132;
@@ -1288,6 +1349,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField137;
     private DeviceField deviceField138;
     private DeviceField deviceField139;
+    private DeviceField deviceField14;
     private DeviceField deviceField140;
     private DeviceField deviceField141;
     private DeviceField deviceField142;
@@ -1298,6 +1360,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField147;
     private DeviceField deviceField148;
     private DeviceField deviceField149;
+    private DeviceField deviceField15;
     private DeviceField deviceField150;
     private DeviceField deviceField151;
     private DeviceField deviceField152;
@@ -1308,6 +1371,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private DeviceField deviceField157;
     private DeviceField deviceField158;
     private DeviceField deviceField159;
+    private DeviceField deviceField16;
     private DeviceField deviceField160;
     private DeviceField deviceField161;
     private DeviceField deviceField162;
@@ -1366,6 +1430,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel117;
     private javax.swing.JPanel jPanel118;
     private javax.swing.JPanel jPanel119;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel120;
     private javax.swing.JPanel jPanel121;
     private javax.swing.JPanel jPanel122;
@@ -1421,6 +1486,7 @@ public class MARTE_EDA3Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel17;
     private javax.swing.JPanel jPanel18;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel40;
     private javax.swing.JPanel jPanel41;
