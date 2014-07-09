@@ -2,8 +2,6 @@ include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
-@MINGW_TRUE@ LN=cp
-@MINGW_FALSE@ LN=ln -sf
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
 inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
@@ -225,8 +223,10 @@ $(MdsIpUDT): $(UDT_OBJECTS) $(MdsIpShr)
 $(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
+@MINGW_TRUE@ LN_TUNNEL=cp @MAKESHRLIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
+@MINGW_FALSE@ LN_TUNNEL=ln -sf @LIBPRE@MdsIpTunnel@SHARETYPE@
 $(MdsIpSSH) $(MdsIpHTTP):
-	$(LN) $(MdsIpTunnel) $@
+	$(LN_TUNNEL) $@
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts
 	cp $< $@
