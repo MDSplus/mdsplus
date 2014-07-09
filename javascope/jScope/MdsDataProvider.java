@@ -989,7 +989,13 @@ public class MdsDataProvider
     public FrameData GetFrameData(String in_y, String in_x, float time_min,
                                   float time_max) throws IOException
     {
-        int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+        int[] numSegments = null;
+        
+        try
+        {
+            numSegments = GetIntArray("GetNumSegments("+in_y+")");
+        } catch (Exception e) { error = null; }
+
         if(numSegments != null && numSegments[0] > 0)
             return new SegmentedFrameData(in_y, in_x, time_min, time_max, numSegments[0]);
         else
@@ -1519,7 +1525,7 @@ public class MdsDataProvider
                 break;
             default:
                 error = "Data type code : " + desc.dtype +
-                    " not yet supported ";
+                    " not yet supported " + (desc.error != null ? desc.error : "");
         }
 
         return out;
@@ -1582,7 +1588,7 @@ public class MdsDataProvider
                 throw new IOException(error);
             default:
                 error = "Data type code : " + desc.dtype +
-                    " not yet supported ";
+                    " not yet supported " + (desc.error != null ? desc.error : "");
         }
         throw new IOException(error);
      }
@@ -1660,7 +1666,7 @@ public class MdsDataProvider
                 throw new IOException(error);
             default:
                 error = "Data type code : " + desc.dtype +
-                    " not yet supported ";
+                    " not yet supported " + (desc.error != null ? desc.error : "");
         }
         throw new IOException(error);
     }
