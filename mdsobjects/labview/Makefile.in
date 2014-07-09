@@ -44,7 +44,7 @@ install: $(libdir)
 	fi;
 
 @MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
+	$(LD) -o $@ $(CFLAGS) @LINKSHARED@ $(COBJECTS) $(CLIBS) $(LIBS) 
 
 @MAKELIBDIR@libLV.a : $(COBJECTS)
 	$(AR) -cr $@ $(COBJECTS)
