@@ -20,7 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef MDS_WINDOWS
-#include <Windows.h>
+#include <windows.h>
 #else
 #include <sys/types.h>
 #include <sys/ipc.h>
