@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
+
 CPPFLAGS += -I$(top_srcdir)/tdishr
 CFLAGS += @SRBINCLUDE@
 CXXFLAGS += -Wno-deprecated $(CFLAGS)
@@ -7,33 +9,33 @@ LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr @LIBS
 
 CXXSOURCES = \
 	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp
-	
+
 SOURCES = mdsdata.c mdstree.c
 
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ @MAKELIBDIR@libMdsObjectsCppShr.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMdsObjectsCppShr.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB)
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(libdir)
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsObjectsCppShr.a $(libdir); \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(libdir); \
 	fi;
 
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr $(MAKE_IMPLIB)
 
-@MAKESHLIBDIR@libMdsObjectsCppShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr 
-
-@MAKELIBDIR@libMdsObjectsCppShr.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
