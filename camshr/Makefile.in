@@ -1,11 +1,13 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@CamShr.dll.a
+
 LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
 
 MAJOR = 1
 MINOR = 8
 LIBRARYNAME=CamShr
-SHLIB = lib$(LIBRARYNAME)@SHARETYPE@
+SHLIB = @LIBPRE@$(LIBRARYNAME)@SHARETYPE@
 SHLIB_BUILD = @MAKESHLIBDIR@$(SHLIB)
 
 SOURCES	= \
@@ -52,24 +54,23 @@ CTS_OBJECTS = $(CTS_SOURCES:.c=.o)
 all : @MAKEBINDIR@ @MAKESHLIBDIR@ \
 	@MAKEBINDIR@mdscts \
 	$(SHLIB_BUILD) \
-	@MAKESHLIBDIR@libcts_commands@SHARETYPE@ 
+	@MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@ 
 
 .PHONY: clean
 clean:
 	@ $(RM) $(OBJECTS) $(CTS_OBJECTS)
-	@ $(RM) $(SHLIB_BUILD)
+	@ $(RM) $(SHLIB_BUILD) $(IMPLIB)
 	@ $(RM) $(SHLIB_BUILD).$(MAJOR)
 	@ $(RM) $(SHLIB_BUILD).$(MAJOR).$(MINOR)
-	@ $(RM) @MAKESHLIBDIR@libRem$(LIBRARYNAME)@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdscts
-	@ $(RM) @MAKESHLIBDIR@libcts_commands@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@
 
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdscts $(bindir)
-	$(INSTALL) -m 755 @MAKESHLIBDIR@libcts_commands@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@ $(libdir)
 	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(libdir)
 	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
 	ln -sf $(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
@@ -85,11 +86,12 @@ cts_commands.c:	cts_commands.ocld
 	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<
 	$(MAKE) depend
 
-@MAKESHLIBDIR@libcts_commands@SHARETYPE@: $(CTS_OBJECTS) $(SHLIB_BUILD)
+@MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@: $(CTS_OBJECTS) $(SHLIB_BUILD)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)
 
-$(SHLIB_BUILD): $(OBJECTS)
-	$(LINK.o) @LINKSHARED@ -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L@MAKESHLIBDIR@ -lMdsShr
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+$(SHLIB_BUILD) $(IMPLIB): $(OBJECTS)
+	$(LINK.o) @LINKSHARED@ -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L@MAKESHLIBDIR@ -lMdsShr $(MAKE_IMPLIB)
 	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $@.$(MAJOR)
 	ln -sf $(SHLIB).$(MAJOR) $@
 
