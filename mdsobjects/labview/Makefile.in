@@ -1,7 +1,8 @@
 include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@LV.dll.a
-
+@MINGW_TRUE@ LN=cp
+@MINGW_FALSE@ LN=ln-sf
 LD=@CXX@
 CFLAGS=@CFLAGS@ @LV_INC@ -fPIC @TARGET_ARCH@
 CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@ @LV_INC@ @TARGET_ARCH@
@@ -61,8 +62,8 @@ install: $(libdir)
 	@RANLIB@ $@
 
 @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr :
-	ln -sf  @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
+	$(LN)  @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
 
 @MAKESHLIBDIR@MDSobjectsLVShr :
-	ln -sf  @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
+	$(LN)  @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
 
