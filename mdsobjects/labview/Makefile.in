@@ -59,8 +59,8 @@ install: $(libdir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MINGW_TRUE@ LN_MDSobjectsLVShr=cp @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVSHR@SHARETYPE@
-@MINGW_FALSE@ LN_MDSobjectsLVShr=ln-sf @LIBPRE@MDSobjectsLVSHR@SHARETYPE@
+@MINGW_TRUE@ LN_MDSobjectsLVShr=cp @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@
+@MINGW_FALSE@ LN_MDSobjectsLVShr=ln-sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@
 @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr :
 	$(LN_MDSobjectsLVShr)  $@
 
