@@ -9,11 +9,22 @@
  *
  *   Josh Stillerman 10/19/12
  */
+#include <stdint.h>
+#ifdef __MINGW32__
+  #undef WIN32
+  #undef _WIN32
+  #undef __WIN32__
+  #define linux 1
+#endif
+#include  <platdefines.h>
 #include <extcode.h>
-/*
- #include <lv_prolog.h>
- #include <lv_epilog.h>
-*/
+#include <fundtypes.h>
+#ifdef __MINGW32__
+  #undef linux
+  #define WIN32 1
+  #define _WIN32 1
+  #define __WIN32__ 1
+#endif
 #include <mdsdescrip.h>
 #include <libroutines.h>
 
