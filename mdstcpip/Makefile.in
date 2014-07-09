@@ -226,7 +226,7 @@ $(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
 $(MdsIpSSH) $(MdsIpHTTP):
-	$(LN) @LIBPRE@MdsIpTunnel@SHARETYPE@ $@
+	$(LN) $(MdsIpTunnel) $@
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts
 	cp $< $@
