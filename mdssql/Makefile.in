@@ -11,25 +11,25 @@ dbstubs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsSql.export
 
-all : @MAKELIBDIR@ @MAKELIBDIR@libMdsSql@SHARETYPE@ @MAKELIBDIR@libMdsSql.a
+all : @MAKELIBDIR@ @MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsSql.a
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libMdsSql@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMdsSql.a
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsSql.a
 
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsSql.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsSql@SHARETYPE@ @libdir@
+	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsSql.a @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@ @libdir@
 
-@MAKELIBDIR@libMdsSql@SHARETYPE@ : $(OBJECTS) 
+@MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@ : $(OBJECTS) 
 	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS)
 
-@MAKELIBDIR@libMdsSql.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsSql.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	$(RANLIB) $@

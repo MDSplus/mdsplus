@@ -37,8 +37,8 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f
 
-libMdsMath = @MAKESHLIBDIR@libMdsMath@SHARETYPE@
-all: @MAKESHLIBDIR@ $(libMdsMath)
+@LIBPRE@MdsMath = @MAKESHLIBDIR@@LIBPRE@MdsMath@SHARETYPE@
+all: @MAKESHLIBDIR@ $(@LIBPRE@MdsMath)
 
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
@@ -47,19 +47,19 @@ OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
 
 EXPORTS = MdsMath.export
 
-locallibMdsMath = libMdsMath@SHARETYPE@
-locallibMdsMath32 = libMdsMath@SHARETYPE@_i386
+local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
+local@LIBPRE@MdsMath32 = @LIBPRE@MdsMath@SHARETYPE@_i386
 
 ifeq "@MACOSX@" ""
-LIBRARIES = $(libMdsMath)
+LIBRARIES = $(@LIBPRE@MdsMath)
 else
-LIBRARIES = $(locallibMdsMath)
-$(libMdsMath): libMdsMath@SHARETYPE@ libMdsMath@SHARETYPE@_i386
+LIBRARIES = $(local@LIBPRE@MdsMath)
+$(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@ @LIBPRE@MdsMath@SHARETYPE@_i386
 	lipo -create -o $@ $^
 endif
 
-$(locallibMdsMath32) %.o_i386: TARGET_ARCH = -m32
-$(locallibMdsMath32): $(OBJECTS_i386)
+$(local@LIBPRE@MdsMath32) %.o_i386: TARGET_ARCH = -m32
+$(local@LIBPRE@MdsMath32): $(OBJECTS_i386)
 	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 $(LIBRARIES): $(OBJECTS) 
@@ -69,9 +69,9 @@ depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(libdir)
-	$(INSTALL) -m 755 $(libMdsMath) $(libdir)
+	$(INSTALL) -m 755 $(@LIBPRE@MdsMath) $(libdir)
 
 clean:
 	$(RM) $(OBJECTS) $(OBJECTS_i386)
-	$(RM) $(libMdsMath) $(locallibMdsMath) $(locallibMdsMath32)
+	$(RM) $(@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath32)
 

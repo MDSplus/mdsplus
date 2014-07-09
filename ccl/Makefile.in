@@ -4,18 +4,18 @@ SOURCES = ccl_commands.c ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 
-all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@libccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
+all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKESHLIBDIR@libccl_commands@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsccl
 
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 install: $(libdir) $(bindir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libccl_commands@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@ $(libdir)
 	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(bindir)
 
 cdudir = $(top_builddir)/cdu
@@ -26,7 +26,7 @@ ccl_commands.c:	ccl_commands.ocld
               else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < ccl_commands.ocld; fi
 	$(MAKE) depend
 
-@MAKESHLIBDIR@libccl_commands@SHARETYPE@: $(OBJECTS)
+@MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
 @MAKEBINDIR@mdsccl: ccl

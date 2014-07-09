@@ -23,26 +23,26 @@ SOURCES = boxsmooth.c \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsMisc.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ @MAKELIBDIR@libMdsMisc.a
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsMisc.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKELIBDIR@libMdsMisc.a 
-	@ $(RM) @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ 
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsMisc.a 
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ 
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMisc@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ @libdir@
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsMisc.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsMisc.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@libMdsMisc@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr
 
-@MAKELIBDIR@libMdsMisc.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsMisc.a : $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 

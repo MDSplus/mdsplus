@@ -17,8 +17,8 @@ OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = RtEventsShr.exports
 
 EventConnector = @MAKEBINDIR@EventConnector
-RtEventsShr_shared = @MAKESHLIBDIR@libRtEventsShr@SHARETYPE@ $(IMPLIB)
-RtEventsShr_static = @MAKELIBDIR@libRtEventsShr.a
+RtEventsShr_shared = @MAKESHLIBDIR@@LIBPRE@RtEventsShr@SHARETYPE@ $(IMPLIB)
+RtEventsShr_static = @MAKELIBDIR@@LIBPRE@RtEventsShr.a
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(EventConnector) $(RtEventsShr_shared) $(RtEventsShr_static)
 

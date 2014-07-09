@@ -19,10 +19,10 @@ EXPORTS = MdsLib.export
 OBJECTS_CLIENT = MdsLib_client.o 
 
 all: @MAKEBINDIR@ @MAKELIBDIR@ \
-         @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
-         @MAKESHLIBDIR@libMdsLib@SHARETYPE@ $(IMPLIB_MdsLib)\
-         @MAKELIBDIR@libMdsLib_client.a \
-         @MAKELIBDIR@libMdsLib.a @MAKEBINDIR@mdslib_ctest  \
+         @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
+         @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)\
+         @MAKELIBDIR@@LIBPRE@MdsLib_client.a \
+         @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKEBINDIR@mdslib_ctest  \
          @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest \
 	 @MAKEBINDIR@dtype_test
 
@@ -31,30 +31,30 @@ depend:
 
 clean:
 	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT) mdslib_ftest.o
-	@ $(RM) @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a
-	@ $(RM) @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client)
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client)
 	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
 
 install: $(libdir)
 	$(MKDIR_P) $(libdir)
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @MAKELIBDIR@libMdsLib_client.a $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client) $(libdir)
+	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client) $(libdir)
 
-MdsLib = @MAKESHLIBDIR@libMdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
+MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsLib=-Wl,--out-implib,$(IMPLIB_MdsLib)
 $(MdsLib): $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
 
-@MAKELIBDIR@libMdsLib.a: $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsLib_client=-Wl,--out-implib,$(IMPLIB_MdsLib_client)
-@MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
+@MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) $(LIBS) @MEMCHKLIB@  $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib_client)
 
-@MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT) 
+@MAKELIBDIR@@LIBPRE@MdsLib_client.a : $(OBJECTS_CLIENT) 
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 

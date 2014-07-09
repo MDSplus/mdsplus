@@ -21,18 +21,18 @@ mdsdcl_wait.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsdclshr.export
 
-all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@libMdsdcl.a @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl
+all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl
 
 clean:
 	$(RM) $(OBJECTS)
-	$(RM) @MAKELIBDIR@libMdsdcl.a @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl $(IMPLIB)
+	$(RM) @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl $(IMPLIB)
 
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c
 
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl $(bindir)
-	$(INSTALL) -m 755 @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB) $(libdir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) $(libdir)
 
 cdudir = $(top_builddir)/cdu
 LINK_CDU = $(cdudir)/libCdu.a
@@ -42,13 +42,13 @@ mdsdcl_tables.c: mdsdcl_tables.ocld
 	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < $<;\
               else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<; fi
 
-@MAKELIBDIR@libMdsdcl.a: $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@Mdsdcl.a: $(OBJECTS)
 		$(AR) -cr $@ $^
 		@RANLIB@ $@
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(LINK_CDU)
+@MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(LINK_CDU)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD)
 
-@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@libMdsdcl@SHARETYPE@ $(IMPLIB)
+@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)
 	$(LINK.c) $(OUTPUT_OPTION) $< $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr

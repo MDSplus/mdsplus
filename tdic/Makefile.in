@@ -9,28 +9,28 @@ SOURCES = \
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = tdishrext.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ @MAKELIBDIR@libTdiShrExt.a @MAKEBINDIR@tdic
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ @MAKELIBDIR@@LIBPRE@TdiShrExt.a @MAKEBINDIR@tdic
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean :
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKELIBDIR@libTdiShrExt.a
-	@ $(RM) @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@TdiShrExt.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@tdic
 
 install: $(libdir) $(bindir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ $(libdir)
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShrExt.a $(libdir); \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShrExt.a $(libdir); \
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@tdic $(bindir)
 
-@MAKESHLIBDIR@libTdiShrExt@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS)
 
-@MAKELIBDIR@libTdiShrExt.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@TdiShrExt.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
