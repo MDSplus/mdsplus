@@ -2,10 +2,10 @@
 #define MDSOBJECTSWRP_H
 
 #include <mdsobjects.h>
-#define _CVI_ 910
-#   define _NI_HRESULT_DEFINED_
 #include <stdint.h>
 #ifdef __MINGW32__
+  #define _CVI_ 910
+  #define _NI_HRESULT_DEFINED_
   #undef WIN32
   #undef _WIN32
   #undef __WIN32__
