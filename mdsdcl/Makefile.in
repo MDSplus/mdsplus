@@ -1,6 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
+@MINGW_TRUE@ EXE=.exe
 
 SOURCES = 		\
 mdsdcl_dcl_parse.c		\
@@ -21,17 +22,17 @@ mdsdcl_wait.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdsdclshr.export
 
-all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl
+all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl$(EXE)
 
 clean:
 	$(RM) $(OBJECTS)
-	$(RM) @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl $(IMPLIB)
+	$(RM) @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl$(EXE) $(IMPLIB)
 
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c
 
 install: $(libdir) $(bindir)
-	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl $(bindir)
+	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl$(EXE) $(bindir)
 	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) $(libdir)
 
 cdudir = $(top_builddir)/cdu
@@ -50,5 +51,5 @@ mdsdcl_tables.c: mdsdcl_tables.ocld
 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(LINK_CDU)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD)
 
-@MAKEBINDIR@mdsdcl: mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)
+@MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)
 	$(LINK.c) $(OUTPUT_OPTION) $< $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr

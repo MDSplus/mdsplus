@@ -1,18 +1,20 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ EXE=.exe
+
 SOURCES = tditest.c
 
-all : @MAKEBINDIR@ @MAKEBINDIR@tditest
+all : @MAKEBINDIR@ @MAKEBINDIR@tditest$(EXE)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install: $(bindir)
-	$(INSTALL) -m 755  @MAKEBINDIR@tditest $(bindir)
+	$(INSTALL) -m 755  @MAKEBINDIR@tditest$(EXE) $(bindir)
 
 clean :
-	@ $(RM) @MAKEBINDIR@tditest
+	@ $(RM) @MAKEBINDIR@tditest$(EXE)
 
-@MAKEBINDIR@tditest : $(SOURCES)
+@MAKEBINDIR@tditest$(EXE) : $(SOURCES)
 	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) @SOCKETLIB@
 
