@@ -1,6 +1,6 @@
 #include <config.h>
 #ifdef HAVE_WINDOWS_H
-#include <winsock.h>
+#include <ws2tcpip.h>
 #include <stdio.h>
 #else
 
@@ -92,65 +92,54 @@ extern int pthread_create(pthread_t  *thread, void *dummy, void (*rtn)(void *), 
 extern void pthread_detach(HANDLE *thread);
 #endif
 
-#ifndef HAVE_PTHREAD_H
-static void handleMessage(void *arg)
-#else
-static void *handleMessage(void *arg)
-#endif
-{
-	int recBytes;
-	char recBuf[MAX_MSG_LEN];
-	struct sockaddr clientAddr;
-	int addrSize = sizeof(clientAddr);
-	int nameLen, bufLen;
-	char *eventName;
-	char *currPtr;
-	int thisNameLen;
+static void *handleMessage(void *arg) {
+  int recBytes;
+  char recBuf[MAX_MSG_LEN];
+  struct sockaddr clientAddr;
+  int addrSize = sizeof(clientAddr);
+  int nameLen, bufLen;
+  char *eventName;
+  char *currPtr;
+  int thisNameLen;
 
-	struct EventInfo *eventInfo = (struct EventInfo *)arg;
-	thisNameLen=strlen(eventInfo->eventName);
-	while(1)
-	{
+  struct EventInfo *eventInfo = (struct EventInfo *)arg;
+  thisNameLen=strlen(eventInfo->eventName);
+  while(1){
 #ifdef HAVE_WINDOWS_H
-		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0) 
-				if (WSAGetLastError() == WSAESHUTDOWN){
-					return;
-				} else
+    if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
+			    (struct sockaddr *)&clientAddr, &addrSize)) < 0) { 
+      if (WSAGetLastError() == WSAESHUTDOWN){
+      } else {
+	fprintf("Error getting data - %d\n",WSAGetLastError());
+	
+      }
+      continue;
+    }
 #else
-#ifdef HAVE_VXWORKS_H
-		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0)
-#else
-		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, (socklen_t *)&addrSize)) < 0)
-#endif
-#endif
-    	        {
-		  perror("Error receiving UDP messages\n");
-		  continue;
-                }
-    	
-		if (recBytes < (int)(sizeof(int)*2+thisNameLen))
-		  continue;
-		currPtr = recBuf;
-		nameLen = ntohl(*((unsigned int *)currPtr));
-		if (nameLen != thisNameLen)
-		  continue;
-		currPtr += sizeof(int);
-                eventName=currPtr;
-		currPtr += nameLen;
-		bufLen = ntohl(*((unsigned int *)currPtr));
-		currPtr += sizeof(int);
-                if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
-		  continue;
-                if (strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
-		  continue;
-		eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
-	}
-#ifdef HAVE_PTHREAD_H
-	return 0;
-#endif
+    if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
+			    (struct sockaddr *)&clientAddr, (socklen_t *)&addrSize)) < 0) {
+      perror("Error receiving UDP messages\n");
+      continue;
+    }
+#endif    
+    if (recBytes < (int)(sizeof(int)*2+thisNameLen))
+      continue;
+    currPtr = recBuf;
+    nameLen = ntohl(*((unsigned int *)currPtr));
+    if (nameLen != thisNameLen)
+      continue;
+    currPtr += sizeof(int);
+    eventName=currPtr;
+    currPtr += nameLen;
+    bufLen = ntohl(*((unsigned int *)currPtr));
+    currPtr += sizeof(int);
+    if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
+      continue;
+    if (strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
+      continue;
+    eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
+  }
+  return 0;
 }
 
 static void initialize()
@@ -233,7 +222,12 @@ static int getSocket()
     {
       if((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
 	{
+#ifdef HAVE_WINDOWS_H
+          int error=WSAGetLastError();
+	  fprintf(stderr,"Error creating socket - errcode=%d\n",error);
+#else
 	  perror("Error creating socket\n");
+#endif
 	  sendSocket = -1;
 	}
     }
@@ -312,105 +306,112 @@ static void getMulticastAddr(char const * eventName, char *retIp)
 }
 
 
-int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid)
-{
-    struct sockaddr_in serverAddr;
+int MDSUdpEventAst(char const * eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid) {
+  struct sockaddr_in serverAddr;
 #ifdef HAVE_WINDOWS_H
-	char flag = 1;
+  char flag = 1;
 #else
-	int flag = 1;
-	int const SOCKET_ERROR = -1;
+  int flag = 1;
+  int const SOCKET_ERROR = -1;
 #endif
-	int udpSocket;
-	char ipAddress[64]; 
-    struct ip_mreq ipMreq;
-	struct EventInfo *currInfo;
+  int udpSocket;
+  char ipAddress[64]; 
+  struct ip_mreq ipMreq;
+  struct EventInfo *currInfo;
+  memset(&ipMreq,0,sizeof(ipMreq));
 
-	initialize();
+  initialize();
 
-	if((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
-	{
-		perror("Error creating socket\n");
-		return 0;
-	}
+  if((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1){
+#ifdef HAVE_WINDOWS_H
+    int error=WSAGetLastError();
+    fprintf(stderr,"Error creating socket - errcode=%d\n",error);
+#else
+    perror("Error creating socket\n");
+#endif
+    return 0;
+  }
 	
-	//    serverAddr.sin_len = sizeof(serverAddr);
-    serverAddr.sin_family = AF_INET;
-#ifdef HAVE_WXWORKS_H
-    serverAddr.sin_len = (u_char)sizeof(struct sockaddr_in);
-#endif
-    serverAddr.sin_port = htons(getPort());
-    serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
+  //    serverAddr.sin_len = sizeof(serverAddr);
+  serverAddr.sin_family = AF_INET;
+  serverAddr.sin_port = htons(getPort());
+  serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	// Allow multiple connections
-	if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {   
-		printf("Cannot set REUSEADDR option\n");
+  // Allow multiple connections
+  if(setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {   
+    printf("Cannot set REUSEADDR option\n");
 #ifdef HAVE_WINDOWS_H
-		switch(WSAGetLastError())
-		{
-			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
-			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
-			case WSAEADDRINUSE: printf("WSAEADDRINUSE\n"); break;
-			case WSAEINTR : printf("WSAEINTR\n"); break;
-			case WSAEINPROGRESS: printf("WSAEINPROGRESS\n"); break;
-			case WSAEALREADY: printf("WSAEALREADY\n"); break;
-			case WSAEADDRNOTAVAIL: printf("WSAEADDRNOTAVAIL\n"); break;
-			case WSAEAFNOSUPPORT: printf("WSAEAFNOSUPPORT\n"); break;
-			case WSAECONNREFUSED : printf("WSAECONNREFUSED\n"); break;
-			case WSAEFAULT : printf("WSAEFAULT\n"); break;
-			default: printf("BOH\n");
-		}
-#else
-	perror("\n");
-#endif
-		return 0;
-	}
-
-#ifdef HAVE_WINDOWS_H
-	if(bind(udpSocket, (SOCKADDR *)&serverAddr, sizeof(serverAddr)) != 0)
-#else
-	if(bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0)
-#endif
-	{   
-		perror("Cannot bind socket\n");
-		return 0;
-	}
-
-	getMulticastAddr(eventName, ipAddress);
-	ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
-        ipMreq.imr_interface.s_addr = INADDR_ANY;
-	if(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0)
-    {	
-  	   	perror("Error setting socket options IP_ADD_MEMBERSHIPin udpStartReceiver\n");
-#ifdef HAVE_WINDOWS_H
-		switch(WSAGetLastError())
-		{
-			case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
-			case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
-			case WSAEADDRINUSE: printf("WSAEADDRINUSE\n"); break;
-			case WSAEINTR : printf("WSAEINTR\n"); break;
-			case WSAEINPROGRESS: printf("WSAEINPROGRESS\n"); break;
-			case WSAEALREADY: printf("WSAEALREADY\n"); break;
-			case WSAEADDRNOTAVAIL: printf("WSAEADDRNOTAVAIL\n"); break;
-			case WSAEAFNOSUPPORT: printf("WSAEAFNOSUPPORT\n"); break;
-			case WSAECONNREFUSED : printf("WSAECONNREFUSED\n"); break;
-			case WSAEFAULT : printf("WSAEFAULT\n"); break;
-			default: printf("BOH\n");
-		}
-#endif
+    switch(WSAGetLastError()) {
+    case WSANOTINITIALISED: printf("WSAENETDOWN\n"); break;
+    case WSAENETDOWN: printf("WSAENETDOWN\n"); break; 
+    case WSAEADDRINUSE: printf("WSAEADDRINUSE\n"); break;
+    case WSAEINTR : printf("WSAEINTR\n"); break;
+    case WSAEINPROGRESS: printf("WSAEINPROGRESS\n"); break;
+    case WSAEALREADY: printf("WSAEALREADY\n"); break;
+    case WSAEADDRNOTAVAIL: printf("WSAEADDRNOTAVAIL\n"); break;
+    case WSAEAFNOSUPPORT: printf("WSAEAFNOSUPPORT\n"); break;
+    case WSAECONNREFUSED : printf("WSAECONNREFUSED\n"); break;
+    case WSAEFAULT : printf("WSAEFAULT\n"); break;
+    default: printf("BOH\n");
     }
+#else
+    perror("\n");
+#endif
+    return 0;
+  }
+  
+#ifdef HAVE_WINDOWS_H
+  if(bind(udpSocket, (SOCKADDR *)&serverAddr, sizeof(serverAddr)) != 0)
+#else
+  if(bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0)
+#endif
+  {   
+    perror("Cannot bind socket\n");
+    return 0;
+  }
 
-	currInfo = (struct EventInfo *)malloc(sizeof(struct EventInfo));
-	currInfo->eventName = malloc(strlen(eventName) + 1);
-	strcpy(currInfo->eventName, eventName);
-	currInfo->socket = udpSocket;
-	currInfo->arg = astprm;
-	currInfo->astadr = astadr;
+  getMulticastAddr(eventName, ipAddress);
+  ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
+  ipMreq.imr_interface.s_addr = INADDR_ANY;
+  if(setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0){	
+#ifdef HAVE_WINDOWS_H
+    int error=WSAGetLastError();
+    char *errorstr=0;
+    switch(error) {
+    case WSANOTINITIALISED: errorstr="WSAENETDOWN"; break;
+    case WSAENETDOWN: errorstr="WSAENETDOWN"; break; 
+    case WSAEADDRINUSE: errorstr="WSAEADDRINUSE"; break;
+    case WSAEINTR : errorstr="WSAEINTR"; break;
+    case WSAEINPROGRESS: errorstr="WSAEINPROGRESS"; break;
+    case WSAEALREADY: errorstr="WSAEALREADY"; break;
+    case WSAEADDRNOTAVAIL: errorstr="WSAEADDRNOTAVAIL"; break;
+    case WSAEAFNOSUPPORT: errorstr="WSAEAFNOSUPPORT"; break;
+    case WSAECONNREFUSED : errorstr="WSAECONNREFUSED"; break;
+    case WSAENOPROTOOPT: errorstr="WSAENOPROTOOPT"; break;
+    case WSAEFAULT : errorstr="WSAEFAULT"; break;
+    default: errorstr=0;
+    }
+    if (errorstr)
+      fprintf(stderr,"Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver - %s\n",errorstr);
+    else
+      fprintf(stderr,"Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver - error code %d\n",error);
+#else
+    perror("Error setting socket options IP_ADD_MEMBERSHIP in udpStartReceiver\n");  
+#endif
+    return 0;
+  }
 
-	pthread_create(&currInfo->thread, 0, handleMessage, (void *)currInfo);
-        pthread_detach(currInfo->thread);
-	*eventid = getEventId((void *)currInfo);
-	return 1;
+  currInfo = (struct EventInfo *)malloc(sizeof(struct EventInfo));
+  currInfo->eventName = malloc(strlen(eventName) + 1);
+  strcpy(currInfo->eventName, eventName);
+  currInfo->socket = udpSocket;
+  currInfo->arg = astprm;
+  currInfo->astadr = astadr;
+
+  pthread_create(&currInfo->thread, 0, handleMessage, (void *)currInfo);
+  pthread_detach(currInfo->thread);
+  *eventid = getEventId((void *)currInfo);
+  return 1;
 }
 
 int MDSUdpEventCan(int eventid) 

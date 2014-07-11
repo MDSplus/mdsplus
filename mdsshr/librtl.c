@@ -147,25 +147,24 @@ struct dirent *readdir(DIR *dir)
 		return 0;
 }
 
-STATIC_ROUTINE char *GetRegistry(char *where, char *pathname)
+STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
 {
-  HKEY regkey=(HKEY)0;
+  HKEY regkey;
   unsigned char *path = NULL;
   int status1=-1,status2=-1,status3=-1;
-  if ((status1 = RegOpenKeyEx((HKEY)where,"SOFTWARE\\MIT\\MDSplus",0,KEY_READ,&regkey)) == ERROR_SUCCESS)
+  if ((status1 = RegOpenKeyEx(where,L"SOFTWARE\\MIT\\MDSplus",0,KEY_READ,&regkey)) == ERROR_SUCCESS)
   {
     unsigned long valtype;
     unsigned long valsize;
-    if (RegQueryValueEx(regkey,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS)
-    {
+    if (RegQueryValueEx(regkey,pathname,0,&valtype,NULL,&valsize) == ERROR_SUCCESS) {
       int plen;
-	  valsize += 2;
+      valsize += 2;
       path = malloc(valsize+1);
       RegQueryValueEx(regkey,pathname,0,&valtype,path,&valsize);
-	  plen = strlen(path);
+      plen = strlen(path);
     }
+    RegCloseKey(regkey);
   }
-  if (regkey) RegCloseKey(regkey);
   return (char *)path;
 }
 
@@ -176,11 +175,12 @@ char *TranslateLogical(char *pathname)
   if (tpath)
     path = strcpy((char *)malloc(strlen(tpath)+1),tpath);
   if (!path)
-	path = GetRegistry((char *)HKEY_CURRENT_USER, pathname);
+	path = GetRegistry(HKEY_CURRENT_USER, pathname);
   if (!path)
-	path = GetRegistry((char *)HKEY_LOCAL_MACHINE, pathname);
-  if (!path)
+	path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+  /*  if (!path)
     path = GetTdiLogical(pathname);
+  */
   return path;
 }
 
