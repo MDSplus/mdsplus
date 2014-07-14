@@ -1,5 +1,8 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ MDSTCL=mdstcl.bat
+@MINGW_FALSE@ MDSTCL=mdstcl
+
 SOURCES = 			\
 	tcl_dummy.c		\
 	tcl_add_node.c	\
@@ -41,21 +44,24 @@ SOURCES = 			\
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = tcl_commands.export
 
-all:	@MAKEBINDIR@mdstcl @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
+all:	@MAKEBINDIR@$(MDSTCL) @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
 
 depend: 
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKEBINDIR@mdstcl
+	@ $(RM) @MAKEBINDIR@$(MDSTCL)
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
 
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@ $(libdir)
-	$(INSTALL) -m 755 @MAKEBINDIR@mdstcl $(bindir)
+	$(INSTALL) -m 755 @MAKEBINDIR@$(MDSTCL) $(bindir)
 
 @MAKEBINDIR@mdstcl: tcl
+	$(INSTALL) -m 755 $< $@
+
+@MAKEBINDIR@mdstcl.bat: mdstcl.bat
 	$(INSTALL) -m 755 $< $@
 
 cdudir = $(top_builddir)/cdu
