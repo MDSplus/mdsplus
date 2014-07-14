@@ -163,7 +163,7 @@ endif
 		$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
 		$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
 		$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
-		$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
+@MINGW_TRUE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
 		$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
 		$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
           ifdef MdsIpGSI
