@@ -57,7 +57,8 @@ PARTS = \
 	@HDF5_APS@ \
 	@LV@ \
 	LabView \
-	@MACOSX@
+	@MACOSX@ \
+	@WinInstall@
 
 
 .PHONY: all $(PARTS)
