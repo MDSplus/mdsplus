@@ -1,4 +1,4 @@
-labviewdir = $(pkgdatadir)/LabView
+labviewdir = $(prefix)/LabView
 dist_labview_DATA = \
 	MdsClose.vi \
 	MdsConnect.vi \
