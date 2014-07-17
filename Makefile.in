@@ -114,7 +114,7 @@ install: $(install_DIRS)
 	$(MKDIR_P) $(prefix)/java
 	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd $(exec_prefix); tar xf -)
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
-	$(INSTALL) MDSplus-License.txt $(exec_prefix)
+	$(INSTALL) MDSplus-License.txt MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 # Interdependent directories:
