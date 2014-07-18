@@ -19,7 +19,7 @@ dist_java_DATA = jScope.properties MindTerm.jar
 
 java_DATA = jScope.jar WaveDisplay.jar
 javadir = $(exec_prefix)/java/classes
-$(java_DATA): classdist_java.stamp
+$(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 jScope.jar: colors1.tbl
