@@ -58,7 +58,7 @@ install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@ $(libdir)
 	$(INSTALL) -m 755 @MAKEBINDIR@$(MDSTCL) $(bindir)
 
-@MAKEBINDIR@$(MDSTCL): tcl
+@MAKEBINDIR@$(MDSTCL): $(MDSTCL)
 	$(INSTALL) -m 755 $< $@
 
 cdudir = $(top_builddir)/cdu
