@@ -10,8 +10,8 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #ifdef _WIN32
+#include <windows.h>
 #include <io.h>
-#define alloca _alloca
 #else
 #include <unistd.h>
 #include <sys/mman.h>
@@ -956,7 +956,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
   case -2: status = TreeOPEN_EDIT & 0xfffffffa; break;
   case -3: status = TreeFILE_NOT_FOUND; break;
   default:
-    info->alq = (int)MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512;
+    info->alq = (int)(MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512);
     if (info->alq < 1)
     {
       fprintf(stderr,"Corrupted/truncated tree file: %s\n",resnam);

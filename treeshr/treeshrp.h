@@ -15,10 +15,6 @@
 #include <sys/types.h>
 #endif
 
-#ifdef HAVE_VXWORKS_H
-#define int64_t long long
-#define uint64_t long long
-#endif
 #define MDS_IO_LOCK_RD  0x01
 #define MDS_IO_LOCK_WRT 0x02
 #define MDS_IO_LOCK_NONE 0x00
@@ -692,9 +688,9 @@ to databases
 #if defined(__VMS)
 #define TREE_PATH_SUFFIX "$DATA"
 #define TREE_PATH_DELIM  ":"
-#elif defined(_MSC_VER)
+#elif defined(WIN32)
 #define TREE_PATH_SUFFIX "_path"
-#define TREE_PATH_DELIM  "/"
+#define TREE_PATH_DELIM  "\\"
 #else
 #define TREE_PATH_SUFFIX "_path"
 #define TREE_PATH_DELIM  "/"
@@ -777,9 +773,9 @@ extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef HAVE_WINDOWS_H
 #ifndef HAVE_PTHREAD_H
+#define ssize_t int64_t
 typedef int mode_t;
 #endif
-#define ssize_t int64_t
 #endif
 extern int MDS_IO_OPEN(char *filename, int options, mode_t mode);
 extern int MDS_IO_CLOSE(int fd);

@@ -1,25 +1,26 @@
-#include <config.h>
-#include <mdstypes.h>
 #ifdef HAVE_WINDOWS_H
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
+#endif
+#include "treeshrp.h"
+#include <config.h>
+#include <mdstypes.h>
+#ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>
-#define write _write
+/*#define write _write
 #define lseek _lseeki64
 #define open _open
 #define close _close
 #define read _read
-#include "treeshrp.h"
+*/
 #else
-#include "treeshrp.h"
 #include <unistd.h>
 #ifndef HAVE_VXWORKS_H
 #include <pthread.h>
 #endif
 #endif
-#include "treeshrp.h"
 #include <STATICdef.h>
 #include <time.h>
 #include <fcntl.h>
@@ -1107,7 +1108,7 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
 	    try_again = 0;
 	  }
 	else
-	  printf("Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n",sts,length);
+	  fprintf(stderr,"Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n",sts,length);
 	if (msg)
 	  free(msg);
 	if (fd == -1)
@@ -1115,13 +1116,13 @@ STATIC_ROUTINE int io_open_remote(char *host, char *filename, int options, mode_
       }
       else
       {
-	printf("Err in SendArg in io_open_remote: status = %d\n",status);
+	fprintf(stderr,"Err in SendArg in io_open_remote: status = %d\n",status);
 	RemoteAccessDisconnect(*sock,1);
       }
     }
     else
     {
-      printf("Error connecting to host /%s/ in io_open_remote\n",host);
+      fprintf(stderr,"Error connecting to host /%s/ in io_open_remote\n",host);
       try_again = 0;
     }
   }
@@ -1262,8 +1263,7 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
 }
 
 
-off_t MDS_IO_LSEEK(int fd, off_t offset, int whence)
-{
+off_t MDS_IO_LSEEK(int fd, off_t offset, int whence) {
   off_t pos;
   LOCKFDS
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd-1].in_use)
