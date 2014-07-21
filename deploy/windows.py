@@ -23,8 +23,7 @@ class InstallationPackage(object):
         """Build MDSplus from the sources and install into a 'flavor' directory"""
         status = subprocess.Popen("""
 set -e
-mkdir %(flavor)s
-pushd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d
+mkdir %(workspace)%(flavor)s
 ./configure --host=x86_64-w64-mingw32 --build=x86_64-redhat-linux-gnu --target=x86_64-w64-mingw32 \
         --prefix=%(workspace)s/%(flavor)s --exec-prefix=%(workspace)s/%(flavor)s \
         --libdir=%(workspace)s/%(flavor)s/bin_x86_64 \
@@ -41,10 +40,9 @@ make install
 make clean
 make
 make install
-popd
-pushd %(flavor)s
+pushd %(workspace)%(flavor)s
 makensis -DMAJOR=%(major)s -DMINOR=%(minor)s -DRELEASE=%(release)s -DFLAVOR=%(rflavor)s -NOCD \
-        -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus.nsi 
+        -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi 
 """ % self.info,shell=True).wait()
         if status != 0:
             print(''.join(messages))
