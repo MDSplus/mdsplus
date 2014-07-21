@@ -1,7 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
-TDIC_LIBS= -ldl
+TDIC_LIBS= $(LIBS) -ldl -lreadline
 
 SOURCES = \
         TdiShrExt.c
