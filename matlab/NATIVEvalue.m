@@ -29,6 +29,8 @@ else
                 result = reshape(mdsthing.getShortArray, shape);
             case 'MDSplus.Int8Array'
                 result = reshape(mdsthing.getByteArray, shape);
+            case 'MDSplus.Uint8Array'
+                result = reshape(mdsthing.getByteArray, shape);
             case 'MDSplus.Float64Array'
                 result = double(reshape(mdsthing.getDoubleArray, shape));
             case 'MDSplus.Float32Array'
@@ -47,6 +49,8 @@ else
             case 'MDSplus.Int16'
                 result = mdsthing.getShort;
             case 'MDSplus.Int8'
+                result = mdsthing.getByte;
+            case 'MDSplus.Uint8'
                 result = mdsthing.getByte;
             case 'MDSplus.Float64'
                 result = mdsthing.getDouble;
