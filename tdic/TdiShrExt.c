@@ -35,6 +35,7 @@ ldconfig
 #include <stdlib.h>
 #include <ipdesc.h>
 #include <ctype.h>
+#include <mdsshr.h>
 #ifdef DTYPE_EVENT
 #undef DTYPE_EVENT
 #endif
@@ -46,10 +47,8 @@ ldconfig
 #endif
 extern int   MdsOpen(int sock, char *tree, int shot);
 extern int   MdsClose(int sock);
-extern int   MdsCopyDxXd(struct descriptor *in, struct descriptor_xd *out);
 extern int   TdiCvt();
 extern int   GetAnswerInfoTS();
-extern int   MdsFree1Dx();
 extern int   MdsIpFree();
 extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
 #ifndef _WIN32
