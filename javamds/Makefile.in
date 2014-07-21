@@ -6,18 +6,18 @@ SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c mdsobjects.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = javamds.export
 
-all: 	@MAKELIBDIR@ @MAKELIBDIR@libJavaMds@SHARETYPEJNI@
+all: 	@MAKELIBDIR@ @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKELIBDIR@libJavaMds@SHARETYPEJNI@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@
 
 install: $(libdir)
-	$(INSTALL) -m 755  @MAKELIBDIR@libJavaMds@SHARETYPEJNI@ @libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ @libdir@
 
-@MAKELIBDIR@libJavaMds@SHARETYPEJNI@ : $(OBJECTS) 
+@MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ : $(OBJECTS) 
 	$(LINK.o) $(OUTPUT_OPTION) @LINKJNI@ $(THREAD) $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr -lRtEventsShr $(LIBS)
 
