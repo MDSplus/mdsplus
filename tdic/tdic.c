@@ -1,7 +1,8 @@
+#ifndef WIN32
 #define DYNreadline "libreadline.so"
 #define DYNcurses   "libcurses.so"
 #define DYNTdiShr "libTdiShr.so"
-
+#endif
 #include <string.h>
 #include <stdio.h>
 #include <mdsdescrip.h>
@@ -18,8 +19,8 @@
 #endif
 
 static void *TDIhandle = NULL;
-#ifdef DYNTdiShr
 #include <dlfcn.h>
+#ifdef DYNTdiShr
 int (*BTdiExecute)() = NULL;
 #else
 extern int TdiExecute();
