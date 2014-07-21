@@ -10,7 +10,7 @@ class InstallationPackage(object):
         """Check to see if install kit for this release already exist."""
         for arch in ('x86_64','x86'):
             self.info['arch']=arch
-            kit="/repository/Windows/%(flavor)s/%(arch)s/MDSplus%(rflavor)s-%(major)d.%(minor)d.$(release)d.exe" % self.info
+            kit="/repository/Windows/%(flavor)s/%(arch)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
             try:
                 os.stat(kit)
             except:
@@ -23,11 +23,13 @@ class InstallationPackage(object):
         """Build MDSplus from the sources and install into a 'flavor' directory"""
         status = subprocess.Popen("""
 set -e
-mkdir %(workspace)%(flavor)s
+rm -Rf %(workspace)s/%(flavor)s
+mkdir -p %(workspace)s/%(flavor)s
+cd ..
 ./configure --host=x86_64-w64-mingw32 --build=x86_64-redhat-linux-gnu --target=x86_64-w64-mingw32 \
         --prefix=%(workspace)s/%(flavor)s --exec-prefix=%(workspace)s/%(flavor)s \
         --libdir=%(workspace)s/%(flavor)s/bin_x86_64 \
-        --bindir=%(workspace)s/%(flavor)s/bin_x86_64 --enable-mdsip_connections --with-labview=$LABVIEWDIR \
+        --bindir=%(workspace)s/%(flavor)s/bin_x86_64 --enable-mdsip_connections --with-labview=$LABVIEW_DIR \
         --with-jdk=$JDK_DIR --with-idl=$IDL_DIR
 make clean
 make
@@ -35,7 +37,7 @@ make install
 ./configure --host=i686-w64-mingw32 --build=i686-redhat-linux-gnu --target=i686-w64-mingw32 \
         --prefix=%(workspace)s/%(flavor)s --exec-prefix=%(workspace)s/%(flavor)s \
         --libdir=%(workspace)s/%(flavor)s/bin_x86 \
-        --bindir=%(workspace)s/%(flavor)s/bin_x86 --enable-mdsip_connections --with-labview=$LABVIEWDIR \
+        --bindir=%(workspace)s/%(flavor)s/bin_x86 --enable-mdsip_connections --with-labview=$LABVIEW_DIR \
         --with-jdk=$JDK_DIR --with-idl=$IDL_DIR
 make clean
 make
@@ -45,7 +47,6 @@ makensis -DMAJOR=%(major)s -DMINOR=%(minor)s -DRELEASE=%(release)s -DFLAVOR=%(rf
         -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi 
 """ % self.info,shell=True).wait()
         if status != 0:
-            print(''.join(messages))
             raise Exception("Error building windows kit for package mdsplus%(rflavor).%(major)d.%(minor)d-%(release)d.exe" % self.info)
         print("Done building mdsplus%(rflavor).%(major)d.%(minor)d-%(release)d.exe" % self.info)
 
