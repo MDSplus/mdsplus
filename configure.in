@@ -361,9 +361,11 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        then
          SQL_ARCH=32
          BINDIR=bin_x86
+	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
+	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32
        fi
        MAKELIBDIR="\$(top_srcdir)/$BINDIR/"
        MAKESHLIBDIR="\$(top_srcdir)/$BINDIR/"
