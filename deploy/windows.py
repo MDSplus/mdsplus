@@ -45,7 +45,7 @@ popd
 pushd %(flavor)s
 makensis -DMAJOR=%(major)s -DMINOR=%(minor)s -DRELEASE=%(release)s -DFLAVOR=%(rflavor)s -NOCD \
         -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus.nsi 
-""" % self.info,shell=True),wait()
+""" % self.info,shell=True).wait()
         if status != 0:
             print(''.join(messages))
             raise Exception("Error building windows kit for package mdsplus%(rflavor).%(major)d.%(minor)d-%(release)d.exe" % self.info)
