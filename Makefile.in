@@ -102,7 +102,7 @@ depend:
 CHANGELOG :
 	devscripts/MakeChangeLog
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico java include mdsobjects/python desktop pixmaps matlab php epics
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics
 
 install_DIRS = $(addprefix install_, $(PARTS))
 $(install_DIRS):
