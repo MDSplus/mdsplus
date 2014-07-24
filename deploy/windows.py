@@ -42,7 +42,7 @@ make install
 make clean
 make
 make install
-pushd %(workspace)%(flavor)s
+pushd %(workspace)s%(flavor)s
 makensis -DMAJOR=%(major)s -DMINOR=%(minor)s -DRELEASE=%(release)s -DFLAVOR=%(rflavor)s -NOCD \
         -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi 
 """ % self.info,shell=True).wait()
