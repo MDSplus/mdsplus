@@ -41,8 +41,13 @@ jDispatcher.jar: classjava.stamp
 
 CLEANFILES = $(CLASSES) jDispatcher.jar
 
+if NOT_MINGW 
 bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
+else
+bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
+endif
+
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@
