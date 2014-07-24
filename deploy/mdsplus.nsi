@@ -55,13 +55,13 @@ DetailPrint "WinInstall returned $0"
 File /r /x local  tdi
 File /r /x *.a bin_x86_64
 File /r /x *.a bin_x86
-File "/oname=$INSTDIR\bin_x86_64\$PTHREADLIB" $MINGWLIB64/$PTHREADLIB
-File "/oname=$INSTDIR\bin_x86\$PTHREADLIB" $MINGWLIB32/$PTHREADLIB
-File "/oname=$INSTDIR\bin_x86\$GCC_S_SJLJ_LIB" $MINGWLIB32/$GCC_S_SJLJ_LIB
-File "/oname=$INSTDIR\bin_x86_64\$DLLIB" $MINGWLIB64/$DLLIB
-File "/oname=$INSTDIR\bin_x86\$DLLIB" $MINGWLIB32/$DLLIB
-File "/oname=$INSTDIR\bin_x86_64\$READLINELIB" $MINGWLIB64/$READLINELIB
-File "/oname=$INSTDIR\bin_x86\$READLINELIB" $MINGWLIB32/$READLINELIB
+File "/oname=$INSTDIR\bin_x86_64\${PTHREADLIB}" ${MINGWLIB64}/${PTHREADLIB}
+File "/oname=$INSTDIR\bin_x86\${PTHREADLIB}" ${MINGWLIB32}/${PTHREADLIB}
+File "/oname=$INSTDIR\bin_x86\${GCC_S_SJLJ_LIB}" ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
+File "/oname=$INSTDIR\bin_x86_64\${DLLIB}" ${MINGWLIB64}/${DLLIB}
+File "/oname=$INSTDIR\bin_x86\${DLLIB}" ${MINGWLIB32}/${DLLIB}
+File "/oname=$INSTDIR\bin_x86_64\${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
+File "/oname=$INSTDIR\bin_x86\${READLINELIB}" ${MINGWLIB32}/${READLINELIB}
 
 # Registry information for add/remove programs
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayName" "MDSplus${FLAVOR}"
