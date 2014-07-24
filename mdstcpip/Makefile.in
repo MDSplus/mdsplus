@@ -67,12 +67,17 @@ TUNNEL_OBJECTS = $(TUNNEL_SOURCES:.c=.o)
 CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(TCPV6_OBJECTS) $(UDT_OBJECTS) $(UDTV6_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS)
 ALL_SOURCES = $(LIB_SOURCES) $(TUNNEL_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURCES) $(SERVER_SOURCES)
 
+ifneq "@MINGW@" "yes"
 bin_SCRIPTS = \
       @MAKEBINDIR@mdsipd \
       @MAKEBINDIR@mdsip_server \
       @MAKEBINDIR@mkdirhier
+endif
+
 ifdef MDSIP_CONNECTIONS
+ifneq "@MINGW@" "yes"
 bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh @MAKEBINDIR@mdsip-client-http @MAKEBINDIR@mdsip-server-ssh @MAKEBINDIR@mdsip-server-http
+endif
 endif
 
 ifneq "@GLOBUS_FLAVOR@" ""
