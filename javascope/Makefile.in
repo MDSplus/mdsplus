@@ -79,6 +79,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@NOT_MINGW_TRUE@am__append_1 = jScope.template
 DIST_COMMON = $(srcdir)/Makefile.common $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(dist_java_JAVA) $(dist_docs_DATA) \
 	$(dist_java_DATA)
@@ -354,14 +355,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVAROOT = $(builddir)
-EXTRA_DIST = $(MINDTERM) jScope.template colors1.tbl
+EXTRA_DIST = $(MINDTERM) $(am__append_1) colors1.tbl
 CLEANFILES = $(bin_SCRIPTS) $(java_DATA) $(JSCOPE_CLASS) \
 	$(WAVEDISPLAY_CLASS)
 MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
+@NOT_MINGW_FALSE@bin_SCRIPTS = jScope.bat
 
 # Create the shell script that runs the program
-bin_SCRIPTS = scripts/jScope
+@NOT_MINGW_TRUE@bin_SCRIPTS = scripts/jScope
 
 # Documentation
 dist_docs_DATA = $(DOCS)
@@ -751,6 +753,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 	uninstall-binSCRIPTS uninstall-dist_docsDATA \
 	uninstall-dist_javaDATA uninstall-dist_javaJAVA \
 	uninstall-javaDATA
+
 
 $(bin_SCRIPTS): jScope.template
 	$(INSTALL) -D $< $@
