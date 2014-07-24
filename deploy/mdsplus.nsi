@@ -120,6 +120,20 @@ SetOutPath "$INSTDIR"
 File /r mdsobjects/python
 SectionEnd
 
+Section "DEVEL"
+SetOutPath "$INSTDIR"
+File /r include
+File "/oname=$INSTDIR\devtools\lib\mdsshr.lib" bin_x86_64/MdsShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\treeshr.lib" bin_x86_64/TreeShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\tdishr.lib" bin_x86_64/TdiShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\mdsdcl.lib" bin_x86_64/MdsDcl.dll.a
+File "/oname=$INSTDIR\devtools\lib\mdsipshr.lib" bin_x86_64/MdsIpShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\mdslib_client.lib" bin_x86_64/MdsLib_client.dll.a
+File "/oname=$INSTDIR\devtools\lib\mdslib.lib" bin_x86_64/MdsLib.dll.a
+File "/oname=$INSTDIR\devtools\lib\mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\rteventsshr.lib" bin_x86_64/RtEventsShr.dll.a
+File "/oname=$INSTDIR\devtools\lib\xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
  
 # Uninstaller
  
@@ -140,6 +154,8 @@ SetOutPath "$INSTDIR"
 delete ChangeLog
 delete MDSplus-License.rtf
 RMdir /r $INSTDIR\tdi
+RMdir /r $INSTDIR\include
+RMdir /r $INSTDIR\devtools
 delete uninstall.exe
 RMdir /r /REBOOTOK $INSTDIR\bin_x86_64
 RMdir /r /REBOOTOK $INSTDIR\bin_x86
