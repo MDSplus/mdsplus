@@ -1,3 +1,4 @@
+if NOT_MINGW
 dist_bin_SCRIPTS = job_finish
 dist_bin_SCRIPTS += job_functions
 dist_bin_SCRIPTS += job_output
@@ -9,4 +10,4 @@ dist_bin_SCRIPTS += remote_submit
 dist_bin_SCRIPTS += SetMdsplusFileProtection
 dist_bin_SCRIPTS += synchronize_unix
 dist_bin_SCRIPTS += unix_submit
-
+endif
