@@ -714,6 +714,8 @@ D3DLIB
 D3D_PACKAGE
 CLOCK_GETTIME_LIB
 CAMSHR
+NOT_MINGW_FALSE
+NOT_MINGW_TRUE
 UIL
 X_EXTRA_LIBS
 X_LIBS
@@ -10160,6 +10162,15 @@ else
 fi
 
 
+ if test "$MINGW" != "yes"; then
+  NOT_MINGW_TRUE=
+  NOT_MINGW_FALSE='#'
+else
+  NOT_MINGW_TRUE='#'
+  NOT_MINGW_FALSE=
+fi
+
+
 
 
 
@@ -10412,6 +10423,10 @@ if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
+if test -z "${NOT_MINGW_TRUE}" && test -z "${NOT_MINGW_FALSE}"; then
+  as_fn_error $? "conditional \"NOT_MINGW\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
 
 : "${CONFIG_STATUS=./config.status}"
 ac_write_fail=0
