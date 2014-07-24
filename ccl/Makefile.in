@@ -4,7 +4,10 @@ SOURCES = ccl_commands.c ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 
-all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
+@MINGW_TRUE@ MDSCCL=mdsccl.bat
+@MINGW_FALSE@ MDSCCL=mdsccl
+
+all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@$(MDSCCL) 
 
 clean:
 	@ $(RM) $(OBJECTS)
@@ -16,7 +19,8 @@ depend:
 
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@ $(libdir)
-	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(bindir)
+	@MINGW_FALSE@ $(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(bindir)
+	@MINGW_TRUE@ $(INSTALL) -m 755 @MAKEBINDIR@mdsccl.bat $(bindir)
 
 cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu
@@ -29,7 +33,13 @@ ccl_commands.c:	ccl_commands.ocld
 @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
+ifneq "@MINGW@" "yes"
 @MAKEBINDIR@mdsccl: ccl
 	cp $< $@
 	chmod +x $@
+else
+@MAKEBINDIR@mdsccl.bat: mdsccl.bat
+	cp $< $@
+	chmod +x $@
+endif
 
