@@ -43,12 +43,12 @@ make clean
 make
 make install
 pushd %(workspace)s/%(flavor)s
-makensis -DMAJOR=%(major)s -DMINOR=%(minor)s -DRELEASE=%(release)s -DFLAVOR=%(rflavor)s -NOCD \
+makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rflavor)s -NOCD \
         -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi 
 """ % self.info,shell=True).wait()
         if status != 0:
-            raise Exception("Error building windows kit for package mdsplus%(rflavor).%(major)d.%(minor)d-%(release)d.exe" % self.info)
-        print("Done building mdsplus%(rflavor).%(major)d.%(minor)d-%(release)d.exe" % self.info)
+            raise Exception("Error building windows kit for package mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)
+        print("Done building mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)
 
     def test(self):
         return
