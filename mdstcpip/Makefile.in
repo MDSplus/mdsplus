@@ -28,6 +28,8 @@ MdsIpUDTV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
 # fix this
 ifneq "@MINGW@" "yes"
         IPV6_UDT = $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6)
+else
+	MDSIP_SERVICE = @MAKEBINDIR@mdsip_service.exe
 endif
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
@@ -72,6 +74,9 @@ bin_SCRIPTS = \
       @MAKEBINDIR@mdsipd \
       @MAKEBINDIR@mdsip_server \
       @MAKEBINDIR@mkdirhier
+else
+bin_SCRIPTS = \
+      @MAKEBINDIR@mdsip_service.exe.manifest
 endif
 
 ifdef MDSIP_CONNECTIONS
@@ -103,7 +108,7 @@ MDSIP_UTIL = @MAKELIBDIR@@LIBPRE@MdsIpUtil.a
 
 endif
 
-PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip @MAKEBINDIR@mdsiptest
+PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip @MAKEBINDIR@mdsiptest $(MDSIP_SERVICE)
 
 EXPORTS = mdsipshr.export
 
@@ -178,6 +183,9 @@ endif
 
 @MAKEBINDIR@mdsiptest: t.c $(MdsIpShr)
 	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
+
+@MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)
+	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS) -lmsvcr90
 
 ifdef MDSIP_CONNECTIONS
 MDSIP_EXTRALIB = -lMdsIpSrvShr
