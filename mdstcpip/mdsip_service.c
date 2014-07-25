@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <config.h>
 #include <process.h>
 #include <stdio.h>
@@ -43,7 +44,7 @@ static int SpawnWorker(SOCKET sock) {
 }
 
 static SERVICE_STATUS_HANDLE hService;
-int ServiceMain(int,char**);
+static int ServiceMain(int,char**);
 static SERVICE_STATUS serviceStatus;
 
 static void SetThisServiceStatus(int state,int hint) {
