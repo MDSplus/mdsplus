@@ -50,6 +50,13 @@ CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86_64\mdstcl.bat"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "notepad.exe" "$INSTDIR\ChangeLog"
+CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -s -p 8100 -h \"C:\mdsip.hosts\""
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -p 8000 -h \"C:\mdsip.hosts\""
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8100"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8000"
+
 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe"/Install' $0
 DetailPrint "WinInstall returned $0"
 File /r /x local  tdi
@@ -98,6 +105,8 @@ SectionEnd
 Section "JAVA"
 SetOutPath $INSTDIR
 File /r /x desktop java
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat"
 SectionEnd
 
 Section LabView
@@ -134,6 +143,7 @@ File "/oname=$INSTDIR\devtools\lib\mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCp
 File "/oname=$INSTDIR\devtools\lib\mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
 File "/oname=$INSTDIR\devtools\lib\rteventsshr.lib" bin_x86_64/RtEventsShr.dll.a
 File "/oname=$INSTDIR\devtools\lib\xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
+SectionEnd
  
 # Uninstaller
  
