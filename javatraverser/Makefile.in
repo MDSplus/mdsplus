@@ -79,7 +79,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@NOT_MINGW_TRUE@am__append_1 = jTraverser.template
+@NOT_MINGW_TRUE@am__append_1 = $(bin_SCRIPTS)
+@NOT_MINGW_TRUE@am__append_2 = jTraverser.template
 subdir = javatraverser
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -369,8 +370,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 EXTRA_DIST = $(NETBEANS_FILES) servlet-2_3-fcs-classfiles.zip \
-	$(am__append_1)
-CLEANFILES = $(bin_SCRIPTS) $(java_DATA)
+	$(am__append_2)
+CLEANFILES = $(java_DATA) $(am__append_1)
 JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs

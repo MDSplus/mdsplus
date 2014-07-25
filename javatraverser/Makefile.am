@@ -1,5 +1,8 @@
 EXTRA_DIST = $(NETBEANS_FILES) servlet-2_3-fcs-classfiles.zip
-CLEANFILES = $(bin_SCRIPTS) $(java_DATA)
+CLEANFILES = $(java_DATA)
+if NOT_MINGW
+CLEANFILES += $(bin_SCRIPTS)
+endif
 
 JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
