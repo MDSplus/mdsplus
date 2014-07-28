@@ -685,6 +685,7 @@ LD_LDSHARE
 LDARC
 LDSHARE
 LD
+JTARGET
 JDK_LIVECONNECT
 JDK_DIR
 JDK_CFLAGS
@@ -856,6 +857,7 @@ enable_perf
 enable_java
 enable_universal
 with_jdk
+with_java_target
 with_gsi
 with_srb
 with_labview
@@ -1528,6 +1530,9 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-jdk=JDKDIR       specify location of java jdk
+  --with-java_target=version
+                          specify version of compiled classes (i.e. 6)
+            JTARGET="-target=$java_target"
   --with-gsi=globus-location:flavor
                           Use globus gsi for mdsip communications
   --with-srb=srb-install-dir
@@ -6266,6 +6271,12 @@ fi
 fi
 
 
+# Check whether --with-java_target was given.
+if test "${with_java_target+set}" = set; then :
+  withval=$with_java_target; JTARGET=""
+fi
+
+
 case $enable_java in #(
   yes) :
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for presence of Java Development Kit" >&5
@@ -10169,6 +10180,7 @@ else
   NOT_MINGW_TRUE='#'
   NOT_MINGW_FALSE=
 fi
+
 
 
 

@@ -118,6 +118,10 @@ AC_ARG_WITH([jdk],
             [AS_VAR_SET_IF([JDK_DIR],
                            [AS_VAR_SET([with_jdk], [$JDK_DIR])],
                            [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
+AC_ARG_WITH([java_target],
+	    [AS_HELP_STRING([--with-java_target=version],
+                            [specify version of compiled classes (i.e. 6)])]
+            [JTARGET="-target=$java_target"],[JTARGET=""])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
@@ -916,6 +920,7 @@ AC_SUBST(JAVA_APS)
 AC_SUBST(JDK_CFLAGS)
 AC_SUBST(JDK_DIR)
 AC_SUBST(JDK_LIVECONNECT)
+AC_SUBST(JTARGET)
 AC_SUBST(LD)
 AC_SUBST(LDSHARE)
 AC_SUBST(LDARC)
