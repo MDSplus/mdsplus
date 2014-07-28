@@ -9,12 +9,13 @@ CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 if NOT_MINGW
 bin_SCRIPTS = scripts/jScope
 EXTRA_DIST += jScope.template
+
+$(bin_SCRIPTS): jScope.template
+	$(INSTALL) -D $< $@
 else
 bin_SCRIPTS = jScope.bat
 endif
 
-$(bin_SCRIPTS): jScope.template
-	$(INSTALL) -D $< $@
 
 # Documentation
 dist_docs_DATA = $(DOCS)

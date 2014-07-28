@@ -755,8 +755,8 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 	uninstall-javaDATA
 
 
-$(bin_SCRIPTS): jScope.template
-	$(INSTALL) -D $< $@
+@NOT_MINGW_TRUE@$(bin_SCRIPTS): jScope.template
+@NOT_MINGW_TRUE@	$(INSTALL) -D $< $@
 $(java_DATA): classjava.stamp
 jScope.jar: colors1.tbl
 	$(JAR) c0f $@ $(JSCOPE_CLASS) $(dist_docs_DATA) $<
