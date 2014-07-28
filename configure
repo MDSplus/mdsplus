@@ -858,6 +858,7 @@ enable_java
 enable_universal
 with_jdk
 with_java_target
+with_java_bootclasspath
 with_gsi
 with_srb
 with_labview
@@ -1532,7 +1533,10 @@ Optional Packages:
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
-            JAVACFLAGS="$JAVACFLAGS -target=$java_target"
+  --with-java_bootclasspath=bootclasspath
+                          specify the bootclasspath option for use with
+                          --with-java_target (i.e.
+                          /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)
   --with-gsi=globus-location:flavor
                           Use globus gsi for mdsip communications
   --with-srb=srb-install-dir
@@ -6275,7 +6279,14 @@ fi
 
 # Check whether --with-java_target was given.
 if test "${with_java_target+set}" = set; then :
-  withval=$with_java_target;
+  withval=$with_java_target; JAVACFLAGS="$JAVACFLAGS -source $withval -target $withval"
+fi
+
+
+
+# Check whether --with-java_bootclasspath was given.
+if test "${with_java_bootclasspath+set}" = set; then :
+  withval=$with_java_bootclasspath; JAVACFLAGS="$JAVACFLAGS -bootclasspath $withval"
 fi
 
 
