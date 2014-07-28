@@ -16,6 +16,8 @@ AS_CASE(["$host"],
         [alpha-dec-osf*], [${CC=cc}; ${F77=f77}],
         [sparc-sun-solaris2*], [${CC=cc}])
 
+
+JAVACFLAGS=""
 FOR_LINKSHARED=""
 
 dnl Check out the compiler
@@ -121,7 +123,7 @@ AC_ARG_WITH([jdk],
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
                             [specify version of compiled classes (i.e. 6)])]
-            [JTARGET="-target=$java_target"],[JTARGET=""])
+            [JAVACFLAGS="$JAVACFLAGS -target=$java_target"])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
@@ -917,10 +919,10 @@ AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)
 AC_SUBST(IDLMDSWIDGETS)
 AC_SUBST(JAVA_APS)
+AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)
 AC_SUBST(JDK_DIR)
 AC_SUBST(JDK_LIVECONNECT)
-AC_SUBST(JTARGET)
 AC_SUBST(LD)
 AC_SUBST(LDSHARE)
 AC_SUBST(LDARC)

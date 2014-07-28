@@ -685,10 +685,10 @@ LD_LDSHARE
 LDARC
 LDSHARE
 LD
-JTARGET
 JDK_LIVECONNECT
 JDK_DIR
 JDK_CFLAGS
+JAVACFLAGS
 JAVA_APS
 IDLMDSWIDGETS
 IDLMDSEVENT
@@ -1532,7 +1532,7 @@ Optional Packages:
   --with-jdk=JDKDIR       specify location of java jdk
   --with-java_target=version
                           specify version of compiled classes (i.e. 6)
-            JTARGET="-target=$java_target"
+            JAVACFLAGS="$JAVACFLAGS -target=$java_target"
   --with-gsi=globus-location:flavor
                           Use globus gsi for mdsip communications
   --with-srb=srb-install-dir
@@ -4820,6 +4820,8 @@ case "$host" in #(
      ;;
 esac
 
+
+JAVACFLAGS=""
 FOR_LINKSHARED=""
 
 ac_ext=c
@@ -6273,7 +6275,7 @@ fi
 
 # Check whether --with-java_target was given.
 if test "${with_java_target+set}" = set; then :
-  withval=$with_java_target; JTARGET=""
+  withval=$with_java_target;
 fi
 
 
