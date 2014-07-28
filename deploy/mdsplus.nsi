@@ -132,6 +132,7 @@ SectionEnd
 Section "DEVEL"
 SetOutPath "$INSTDIR"
 File /r include
+CreateDirectory "$INSTDIR\devtools\lib"
 File "/oname=$INSTDIR\devtools\lib\mdsshr.lib" bin_x86_64/MdsShr.dll.a
 File "/oname=$INSTDIR\devtools\lib\treeshr.lib" bin_x86_64/TreeShr.dll.a
 File "/oname=$INSTDIR\devtools\lib\tdishr.lib" bin_x86_64/TdiShr.dll.a
