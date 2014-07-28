@@ -1,6 +1,6 @@
 JAVAROOT = $(builddir)
 EXTRA_DIST = $(MINDTERM)
-CLEANFILES = $(bin_SCRIPTS) $(java_DATA)
+CLEANFILES = $(java_DATA)
 
 MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
@@ -9,6 +9,7 @@ CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 if NOT_MINGW
 bin_SCRIPTS = scripts/jScope
 EXTRA_DIST += jScope.template
+CLEANFILES += $(bin_SCRIPTS)
 
 $(bin_SCRIPTS): jScope.template
 	$(INSTALL) -D $< $@

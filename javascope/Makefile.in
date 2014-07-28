@@ -80,6 +80,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 @NOT_MINGW_TRUE@am__append_1 = jScope.template
+@NOT_MINGW_TRUE@am__append_2 = $(bin_SCRIPTS)
 DIST_COMMON = $(srcdir)/Makefile.common $(srcdir)/Makefile.in \
 	$(srcdir)/Makefile.am $(dist_java_JAVA) $(dist_docs_DATA) \
 	$(dist_java_DATA)
@@ -206,6 +207,7 @@ INSTALL_SCRIPT = @INSTALL_SCRIPT@
 INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JAVAC = @JAVAC@
+JAVACFLAGS = @JAVACFLAGS@
 JAVA_APS = @JAVA_APS@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
@@ -356,7 +358,7 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVAROOT = $(builddir)
 EXTRA_DIST = $(MINDTERM) $(am__append_1) colors1.tbl
-CLEANFILES = $(bin_SCRIPTS) $(java_DATA) $(JSCOPE_CLASS) \
+CLEANFILES = $(java_DATA) $(am__append_2) $(JSCOPE_CLASS) \
 	$(WAVEDISPLAY_CLASS)
 MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
