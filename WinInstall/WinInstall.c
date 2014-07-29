@@ -2,11 +2,7 @@
 #include <stdio.h>
 
 
-#ifndef _64BITxxxxxxxxxxxxxxxxx
 const char *mdspath=";%MDSPLUSDIR%\\bin_x86_64;%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
-#else
-const char *mdspath=";%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
-#endif
 const char *envkey="SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
 static void AddMdsPath() {
@@ -23,13 +19,19 @@ static void AddMdsPath() {
 	strcat(path,mdspath);
 	if (RegSetValueEx(key,"Path",0,REG_EXPAND_SZ,path,(DWORD)strlen(path)) != ERROR_SUCCESS)
 	  printf("Error setting PATH=%s\n",path); 
+      } else {
+        fprintf(stderr,"Error retrieving original Path value\n");
       }
       free(path);
+    } else {
+      fprintf(stderr,"Error retrieving original Path value length\n");
     }
     RegCloseKey(key);
     SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
 		       (LPARAM) "Environment", SMTO_ABORTIFHUNG,
 		       5000, &resultptr);
+  } else {
+    fprintf(stderr,"Error opening Environment registry key\n");
   }
 }
 
