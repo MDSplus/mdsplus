@@ -57,7 +57,7 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data serve
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8100"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8000"
 
-ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe"/Install' $0
+ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
 DetailPrint "WinInstall returned $0"
 File /r /x local  tdi
 File /r /x *.a bin_x86_64
@@ -159,7 +159,7 @@ function un.onInit
 functionEnd
  
 section "uninstall"
-ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe"/Uninstall' $0
+ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
 DetailPrint "WinInstall returned $0"
 SetOutPath "$INSTDIR"
 delete ChangeLog
