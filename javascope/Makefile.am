@@ -30,15 +30,18 @@ $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 jScope.jar: colors1.tbl
-	$(JAR) c0f $@ $(JSCOPE_CLASS) $(dist_docs_DATA) $<
+	mkdir docs
+	cp $(SUBDOCS) ./docs
+	$(JAR) c0f $@ $(TOPDOCS) $(JSCOPE_CLASS) docs $<
+	rm -Rf docs
 
 WaveDisplay.jar:
 	$(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
 
 dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
 COMMON_CLASS = $(COMMON_SRC:.java=*.class)
-JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)
+JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
 WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
-CLEANFILES += $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS)
+CLEANFILES += $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
 
 include Makefile.common

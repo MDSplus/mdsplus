@@ -359,7 +359,7 @@ uiddir = @uiddir@
 JAVAROOT = $(builddir)
 EXTRA_DIST = $(MINDTERM) $(am__append_1) colors1.tbl
 CLEANFILES = $(java_DATA) $(am__append_2) $(JSCOPE_CLASS) \
-	$(WAVEDISPLAY_CLASS)
+	$(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
 MINDTERM = $(srcdir)/MindTerm.jar
 CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
 @NOT_MINGW_FALSE@bin_SCRIPTS = jScope.bat
@@ -375,7 +375,7 @@ java_DATA = jScope.jar WaveDisplay.jar
 javadir = $(exec_prefix)/java/classes
 dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
 COMMON_CLASS = $(COMMON_SRC:.java=*.class)
-JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class)
+JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
 WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
 DOCS = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	CompositeWaveDisplay.html \
@@ -386,6 +386,25 @@ DOCS = jScope.html jScope.jpg popup.jpg about_jscope.jpg \
 	TWU_image_message.html \
 	UpdateEvent.html UpdateEventListener.html \
 	WaveData.html WaveDisplay.html
+
+TOPDOCS = jScope.html \
+	CompositeWaveDisplay.html \
+	ConnectionEvent.html ConnectionListener.html \
+	DataProvider.html \
+	FrameData.html \
+	ReadMe.html \
+	TWU_image_message.html \
+	UpdateEvent.html UpdateEventListener.html \
+	WaveData.html WaveDisplay.html
+
+SUBDOCS = jScope.html jScope.jpg popup.jpg \
+	CompositeWaveDisplay.html \
+	ConnectionEvent.html ConnectionListener.html \
+	DataProvider.html \
+	FrameData.html \
+	data_setup.jpg frame_popup.jpg image_setup.jpg \
+	UpdateEvent.html UpdateEventListener.html \
+	WaveData.html
 
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
@@ -424,6 +443,7 @@ COMMON_SRC = \
 
 WAVEDISPLAY_SRC = 
 JSCOPE_SRC = \
+	jScope.java \
 	jScope/CompositeWaveDisplay.java \
 	jScope/DemoAccess.java           \
 	jScope/DemoDataProvider.java     \
@@ -432,6 +452,14 @@ JSCOPE_SRC = \
 	jScope/MdsIOException.java       \
 	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java
+
+EXTRA_CLASS = \
+	jScope/AsynchUpdater.class \
+        jScope/ContinuousUpdater.class \
+        jScope/FakeTWUProperties.class \
+        jScope/FontPanel.class \
+	jScope/ServerDialog*.class \
+        jScope/WindowDialog.class
 
 all: all-am
 
@@ -761,7 +789,10 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 @NOT_MINGW_TRUE@	$(INSTALL) -D $< $@
 $(java_DATA): classjava.stamp
 jScope.jar: colors1.tbl
-	$(JAR) c0f $@ $(JSCOPE_CLASS) $(dist_docs_DATA) $<
+	mkdir docs
+	cp $(SUBDOCS) ./docs
+	$(JAR) c0f $@ $(TOPDOCS) $(JSCOPE_CLASS) docs $<
+	rm -Rf docs
 
 WaveDisplay.jar:
 	$(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
