@@ -16,6 +16,7 @@ RequestExecutionLevel admin
 !define READLINELIB libreadline6.dll
 !define GCC_S_SJLJ_LIB libgcc_s_sjlj-1.dll
 LicenseData "MDSplus-License.rtf"
+SetShellVarContext all
  
 !include LogicLib.nsh
  
@@ -105,8 +106,8 @@ SectionEnd
 Section "JAVA"
 SetOutPath $INSTDIR
 File /r /x desktop java
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat" "" "" "" SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat" "" "" "" SW_SHOWMINIMIZED
 SectionEnd
 
 Section LabView
