@@ -28,7 +28,7 @@ static void AddMdsPath() {
     }
     RegCloseKey(key);
     SendMessageTimeout(HWND_BROADCAST, WM_SETTINGCHANGE, 0,
-		       (LPARAM) "Environment", SMTO_ABORTIFHUNG,
+		       (LPARAM) TEXT("Environment"), SMTO_ABORTIFHUNG,
 		       5000, &resultptr);
   } else {
     fprintf(stderr,"Error opening Environment registry key\n");
