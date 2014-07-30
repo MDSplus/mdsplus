@@ -185,7 +185,7 @@ endif
 	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 @MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)
-	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS) -lmsvcr90
+	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 ifdef MDSIP_CONNECTIONS
 MDSIP_EXTRALIB = -lMdsIpSrvShr
