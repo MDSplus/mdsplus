@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0">
-  <assemblyIdentity type="win32" processorArchitecture="*" version="1.0.0.0" name="WinInstall.exe"/>
+  <assemblyIdentity type="win32" processorArchitecture="*" version="1.0.0.0" name="mdsip_service.exe"/>
   <description>MDSplus Installation Program to install mdsip service</description>
   <dependency>
     <dependentAssembly>
