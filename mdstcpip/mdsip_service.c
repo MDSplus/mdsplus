@@ -10,6 +10,11 @@ static int shut=0;
 static HANDLE shutdownEventHandle;
 static int extra_argc;
 static char **extra_argv;
+#ifdef _WIN64
+static char *dirname="bin_x86_64";
+#else
+static char *dirname="bin_x86";
+#endif
 
 static char *ServiceName(int generic) {
   char *name=strcpy((char *)malloc(512),"MDSplus ");
@@ -25,17 +30,14 @@ static int SpawnWorker(SOCKET sock) {
   PROCESS_INFORMATION pinfo;
   char cmd[1024];
   SECURITY_ATTRIBUTES sc_atts;
-  char *pgm,*lslash;
-  _get_pgmptr(&pgm);
-  lslash=strrchr(pgm,'\\');
   sc_atts.nLength=sizeof(sc_atts);
   sc_atts.bInheritHandle=TRUE;
   sc_atts.lpSecurityDescriptor=NULL;
-  sprintf(cmd,"%.*s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",lslash-pgm,pgm,
+  sprintf(cmd,"%%MDSPLUSDIR%%\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",dirname,
 	  GetPortname(),GetHostfile(),GetMaxCompressionLevel(),_getpid(),sock);
   memset(&startupinfo,0,sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
-  status = CreateProcess(NULL,cmd,NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
+  status = CreateProcess(NULL,TEXT(cmd),NULL,NULL,FALSE,0,NULL,NULL,&startupinfo, &pinfo);
   printf("CreateProcess returned %d with cmd=%s\n",status,cmd);
   fflush(stdout);
   CloseHandle(pinfo.hProcess);
@@ -81,9 +83,9 @@ static void InitializeService() {
 }
 
 static void RemoveService() {
-  SC_HANDLE hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE); 
+  SC_HANDLE hSCManager = OpenSCManager(NULL,NULL,SC_MANAGER_CREATE_SERVICE);
   if (hSCManager) {
-    SC_HANDLE hService = OpenService(hSCManager, ServiceName(1), DELETE);
+    SC_HANDLE hService = OpenService(hSCManager, TEXT(ServiceName(1)), DELETE);
     if (hService) {
       BOOL status;
       status = DeleteService(hService);
@@ -124,9 +126,8 @@ static void InstallService() {
 	       GetPortname());
     }
     sd.lpDescription=description;
-    _get_pgmptr(&pgm);
-    cmd = (char *)malloc(strlen(pgm)+strlen(GetPortname())+strlen(GetHostfile())+100);
-    sprintf(cmd,"%s --port=%s --hostfile=\"%s\" %s",pgm,GetPortname(),GetHostfile(),opts);
+    cmd = (char *)malloc(strlen(GetPortname())+strlen(GetHostfile())+500);
+    sprintf(cmd,"%%MDSPLUSDIR%%\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" %s",dirname,GetPortname(),GetHostfile(),opts);
     hService = CreateService(hSCManager, ServiceName(1), ServiceName(0), SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 			     SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
@@ -252,7 +253,6 @@ static int ServiceMain(int argc, char **argv) {
     return 1;
   }
 }
-
 
 int main( int argc, char **argv) {
   int x_argc;
