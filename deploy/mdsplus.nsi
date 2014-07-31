@@ -54,7 +54,7 @@ CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86_64\mdstcl.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 1
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "notepad.exe" "$INSTDIR\ChangeLog.txt"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
@@ -169,7 +169,7 @@ section "uninstall"
 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
 DetailPrint "WinInstall returned $0"
 SetOutPath "$INSTDIR"
-delete ChangeLog
+delete ChangeLog.rtf
 delete MDSplus-License.rtf
 RMdir /r $INSTDIR\tdi
 RMdir /r $INSTDIR\include
