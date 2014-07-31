@@ -1,3 +1,5 @@
+!include WinMessages.nsh
+
 Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}.${RELEASE}"
 Icon mdsplus.ico
 InstallDir $PROGRAMFILES64\MDSplus${FLAVOR}
@@ -42,17 +44,17 @@ functionEnd
 Section
 SetOutPath "$INSTDIR"
 SetShellVarContext all
-File ChangeLog
+File "/oname=$INSTDIR\ChangeLog.rtf" ChangeLog
 File mdsplus.ico
 File MDSplus-License.rtf
 writeUninstaller "$INSTDIR\uninstall.exe"
 WriteRegStr HKLM "${ENVREG}" MDS_PATH "$INSTDIR\tdi"
 WriteRegStr HKLM "${ENVREG}" MDSPLUSDIR "$INSTDIR"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 1
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 1
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86_64\mdstcl.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 2
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "notepad.exe" "$INSTDIR\ChangeLog"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86_64\mdstcl.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 1
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "notepad.exe" "$INSTDIR\ChangeLog.txt"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -s -p 8100 -h \"C:\mdsip.hosts\""
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -p 8000 -h \"C:\mdsip.hosts\""
@@ -61,6 +63,7 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on p
 
 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
 DetailPrint "WinInstall returned $0"
+SendMessage WM_SETTINGCHANGE 0 "STR:Environment" /TIMEOUT=5000
 File /r /x local  tdi
 File /r /x *.a bin_x86_64
 File /r /x *.a bin_x86
@@ -109,8 +112,8 @@ Section "JAVA"
 SetOutPath $INSTDIR
 SetShellVarContext all
 File /r /x desktop java
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat" "" "$INSTDIR\bin_x86_64\icons.exe" "5" SW_SHOWMINIMIZED
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat" "" $INSTDIR\bin_x86_64\icons.exe" "4" SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 4 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat" "" $INSTDIR\bin_x86_64\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd
 
 Section LabView
