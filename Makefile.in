@@ -58,7 +58,8 @@ PARTS = \
 	@LV@ \
 	LabView \
 	@MACOSX@ \
-	@WinInstall@
+	@WinInstall@ \
+	@ICONS@
 
 
 .PHONY: all $(PARTS)
