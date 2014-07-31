@@ -257,7 +257,7 @@ class Tree(object):
             exec( str(q[0]))
         try:
             exec( str('status=_data.makeData('+model+'(n).'+method+'(_data.Data.getTdiVar("__do_method_arg__")))'))
-	    status.setTdiVar('_result')
+            status.setTdiVar('_result')
             if isinstance(status,_mimport('mdsscalar',1).Int32):        
                 status.setTdiVar("_method_status")
             else:
