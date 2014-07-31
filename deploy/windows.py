@@ -56,6 +56,6 @@ makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rf
     def deploy(self):
         """Deploy release to repository"""
         if subprocess.Popen("""
-rsync -a %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe /repository/%(dist)s/%(flavor)s/
+rsync -a %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe /repository/Windows/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
