@@ -77,6 +77,10 @@ static public final int  TreeUSAGE_ANY  = 0,
             
 	}
 
+        public void close() throws MdsException
+        {
+            closeTree(ctx1, ctx2, name, shot);
+        }
         public java.lang.String toString()
         {
             return("Tree("+ name + ", " +getShot() + ", " + mode + ")");
@@ -113,6 +117,7 @@ static public final int  TreeUSAGE_ANY  = 0,
         public java.lang.String getMode() { return mode;}
  	public native static Tree getActiveTree() throws MdsException;
         native void openTree(java.lang.String name, int shot, boolean readonly) throws MdsException;
+        native void closeTree(int ctx1, int ctx2, java.lang.String name, int shot) throws MdsException;
         native void editTree(java.lang.String name, int shot, boolean isNew) throws MdsException;
         native static void writeTree(int ctx1, int ctx2, java.lang.String name, int shot) throws MdsException;
         native static void quitTree(int ctx1, int ctx2, java.lang.String name, int shot) throws MdsException;
