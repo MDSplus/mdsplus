@@ -581,7 +581,8 @@ cd ..
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc64 \
-            --host=x86-64-linux
+            --host=x86-64-linux \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
@@ -596,7 +597,8 @@ make clean &gt;/dev/null
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc32 \
-            --host=i686-linux
+            --host=i686-linux \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
@@ -678,6 +680,7 @@ cd ..
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc${bits}
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
