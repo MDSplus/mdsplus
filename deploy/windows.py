@@ -48,23 +48,14 @@ makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rf
 """ % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error building windows kit for package mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)
-        print("Done building mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)
+        print("Done building mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info)
 
     def test(self):
         return
 
     def deploy(self):
         """Deploy release to repository"""
-        return
         if subprocess.Popen("""
-rsync -a %(workspace)s/%(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
+rsync -a %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe /repository/%(dist)s/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
-        if subprocess.Popen("""
-if ( which python3 > /dev/null 2>&1 )
-then
-  python3 setup.py -q bdist_egg -d /repository/EGGS
-fi
-python setup.py -q bdist_egg -d /repository/EGGS
-""" % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/%(flavor)s/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
-            raise Exception("Error deploying python release egg to repository" % self.info)
