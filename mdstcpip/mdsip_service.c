@@ -76,9 +76,9 @@ VOID WINAPI serviceHandler(DWORD fdwControl) {
 
 static void InitializeService() {
   char name[120];
-  hService = RegisterServiceCtrlHandler(ServiceName(1),(LPHANDLER_FUNCTION) serviceHandler);
+  hService = RegisterServiceCtrlHandler(TEXT(ServiceName(1)),(LPHANDLER_FUNCTION) serviceHandler);
   sprintf(name,"MDSIP_%s_SHUTDOWN",GetPortname());
-  shutdownEventHandle=CreateEvent(NULL,FALSE,FALSE,name);
+  shutdownEventHandle=CreateEvent(NULL,FALSE,FALSE,TEXT(name));
   SetThisServiceStatus(SERVICE_START_PENDING,1000);
 }
 
