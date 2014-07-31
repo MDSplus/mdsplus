@@ -190,7 +190,7 @@ endif
 
 ifdef MDSIP_CONNECTIONS
 MDSIP_EXTRALIB = -lMdsIpSrvShr
-@MAKEBINDIR@mdsip: $(MdsIpSrvShr)
+@MAKEBINDIR@mdsip$(EXE): $(MdsIpSrvShr)
 endif
 
 @MAKEBINDIR@mdsip$(EXE): $(MdsIpShr)
