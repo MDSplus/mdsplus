@@ -63,7 +63,7 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on p
 
 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
 DetailPrint "WinInstall returned $0"
-SendMessage WM_SETTINGCHANGE 0 "STR:Environment" /TIMEOUT=5000
+SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 File /r /x local  tdi
 File /r /x *.a bin_x86_64
 File /r /x *.a bin_x86
