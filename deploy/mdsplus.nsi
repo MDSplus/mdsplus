@@ -43,6 +43,7 @@ Section
 SetOutPath "$INSTDIR"
 SetShellVarContext all
 File ChangeLog
+File mdsplus.ico
 File MDSplus-License.rtf
 writeUninstaller "$INSTDIR\uninstall.exe"
 WriteRegStr HKLM "${ENVREG}" MDS_PATH "$INSTDIR\tdi"
@@ -73,15 +74,16 @@ File "/oname=$INSTDIR\bin_x86\${READLINELIB}" ${MINGWLIB32}/${READLINELIB}
 
 # Registry information for add/remove programs
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayName" "MDSplus${FLAVOR}"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "InstallLocation" "$\"$INSTDIR$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayIcon" "$\"$INSTDIR\mdsplus.ico$\""
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "UninstallString" "$INSTDIR\uninstall.exe"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "InstallLocation" "$INSTDIR"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayIcon" "INSTDIR\mdsplus.ico"
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "Publisher" "MDSplus Collaboratory"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "HelpLink" "$\"${HELPURL}$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "URLUpdateInfo" "$\"${UPDATEURL}$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "URLInfoAbout" "$\"${ABOUTURL}$\""
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayVersion" "$\"${MAJOR}.${MINOR}.${RELEASE}$\""
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "HelpLink" "${HELPURL}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "Source" "http://www.mdsplus.org/dist/SOURCES/mdsplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.tgz"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "URLUpdateInfo" "${UPDATEURL}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "URLInfoAbout" "${ABOUTURL}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "VersionMajor" ${MAJOR}
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "VersionMinor" ${MINOR}
 # There is no option for modifying or repairing the install
