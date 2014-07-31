@@ -75,6 +75,14 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
 
 /*
  * Class:     MDSplus_Tree
+ * Method:    closeTree
+ * Signature: (IILjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Tree_closeTree
+  (JNIEnv *, jobject, jint, jint, jstring, jint);
+
+/*
+ * Class:     MDSplus_Tree
  * Method:    editTree
  * Signature: (Ljava/lang/String;IZ)V
  */

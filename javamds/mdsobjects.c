@@ -1392,6 +1392,29 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
 	(*env)->SetIntField(env, jobj, ctx1Fid, ctx1);
 	(*env)->SetIntField(env, jobj, ctx2Fid, ctx2);
 }
+/*
+ * Class:     MDSplus_Tree
+ * Method:    closeTree
+ * Signature: (LIIjava/lang/String;I)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_Tree_closeTree
+  (JNIEnv *env, jobject jobj, jint ctx1, jint ctx2, jstring jname, jint shot)
+{
+	int status;
+	const char *name;
+	void *ctx = 0;		   
+	jfieldID ctx1Fid, ctx2Fid;
+	jclass cls;
+	
+	name = (*env)->GetStringUTFChars(env, jname, 0);
+	ctx = getCtx(ctx1, ctx2);
+	status = _TreeClose(&ctx, (char *)name, shot);
+	(*env)->ReleaseStringUTFChars(env, jname, name);
+	if(!(status & 1))
+	{
+		throwMdsException(env, status);
+	}
+}
 
 /*
  * Class:     MDSplus_Tree
@@ -1532,7 +1555,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
 	wildCtx = 0;
 	for(i = 0; i < numNids; i++)
 	{
-		_TreeFindNodeWild(ctx, (char *)path,&nids[i],&wildCtx, usage);
+		_TreeFindNodeWild(ctx, (char *)path,&nids[i],&wildCtx, (1 << usage));
 	}
 	_TreeFindNodeEnd(ctx, &wildCtx);
 
