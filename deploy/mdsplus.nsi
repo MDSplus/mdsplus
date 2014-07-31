@@ -16,7 +16,6 @@ RequestExecutionLevel admin
 !define READLINELIB libreadline6.dll
 !define GCC_S_SJLJ_LIB libgcc_s_sjlj-1.dll
 LicenseData "MDSplus-License.rtf"
-SetShellVarContext all
  
 !include LogicLib.nsh
  
@@ -42,6 +41,7 @@ functionEnd
  
 Section
 SetOutPath "$INSTDIR"
+SetShellVarContext all
 File ChangeLog
 File MDSplus-License.rtf
 writeUninstaller "$INSTDIR\uninstall.exe"
@@ -105,6 +105,7 @@ SectionEnd
 
 Section "JAVA"
 SetOutPath $INSTDIR
+SetShellVarContext all
 File /r /x desktop java
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat" "" "$INSTDIR\bin_x86_64\icons.exe" "5" SW_SHOWMINIMIZED
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat" "" $INSTDIR\bin_x86_64\icons.exe" "4" SW_SHOWMINIMIZED
