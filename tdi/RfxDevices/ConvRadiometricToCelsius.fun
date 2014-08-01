@@ -3,7 +3,7 @@ public fun ConvRadiometricToCelsius(as_is _DevicePath, in _tStart, in _tEnd, opt
 	_devType = model_of(_DevicePath);
     _sigOut = 0;
 
-	if( _devType == "FLIRSC65X" )
+	if( _devType == "FLIRSC65X"  )
 	{
 		_path = getnci( _DevicePath , "FULLPATH" );
 		_framesPath = build_path(_path//":FRAMES");
@@ -79,5 +79,7 @@ public fun ConvRadiometricToCelsius(as_is _DevicePath, in _tStart, in _tEnd, opt
 		_sigOut = 0;
 	
 	}
+	if( !(_status & 1 ) )
+		write(*, "Error : "//getmsg(_status));
 	return ( _sigOut  );
 }
