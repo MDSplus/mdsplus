@@ -93,7 +93,6 @@ WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus$
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "EstimatedSize" ${INSTALLSIZE}
 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
 DetailPrint "WinInstall returned $0"
-SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
 
 Section "Sample Trees"
