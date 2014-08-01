@@ -3,6 +3,7 @@
 
 Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}.${RELEASE}"
 Icon mdsplus.ico
+UninstallIcon mdsplus.ico
 
 InstallDirRegKey HKLM Software\MDSplus${FLAVOR} InstallLocation
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
