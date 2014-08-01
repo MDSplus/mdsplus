@@ -127,7 +127,7 @@ static void InstallService() {
     }
     sd.lpDescription=description;
     cmd = (char *)malloc(strlen(GetPortname())+strlen(GetHostfile())+500);
-    sprintf(cmd,"%%MDSPLUSDIR%%\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" %s",dirname,GetPortname(),GetHostfile(),opts);
+    sprintf(cmd,"%%MDSPLUSDIR%%\\%s\\mdsip_service.exe --port=%s --hostfile=\"%s\" %s",dirname,GetPortname(),GetHostfile(),opts);
     hService = CreateService(hSCManager, ServiceName(1), ServiceName(0), SERVICE_ALL_ACCESS, SERVICE_WIN32_OWN_PROCESS,
 			     SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd, NULL, NULL, NULL, NULL, NULL);
     if (hService == NULL)
