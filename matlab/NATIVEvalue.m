@@ -63,10 +63,7 @@ else
             case 'MDSplus.Int8'
                 result = mdsthing.getByteArray();
             case 'MDSplus.Uint8'
-                'making a uint8 from and MDSplus.Uint8'
-                result = mdsthing.getByteArray();
-                class(result)
-                class(typecast(result, 'uint8'))
+                result = typecast(mdsthing.getByteArray(), 'uint8'))
             case 'MDSplus.Float64'
                 result = mdsthing.getDoubleArray();
             case 'MDSplus.Float32'
