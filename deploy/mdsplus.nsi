@@ -1,8 +1,8 @@
-!include WinMessages.nsh
+!include LogicLib.nsh
+!include x64.nsh
 
 Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}.${RELEASE}"
 Icon mdsplus.ico
-InstallDir $PROGRAMFILES64\MDSplus${FLAVOR}
 InstallDirRegKey HKLM Software\MDSplus${FLAVOR} InstallLocation
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
 RequestExecutionLevel admin 
@@ -18,8 +18,6 @@ RequestExecutionLevel admin
 !define READLINELIB libreadline6.dll
 !define GCC_S_SJLJ_LIB libgcc_s_sjlj-1.dll
 LicenseData "MDSplus-License.rtf"
- 
-!include LogicLib.nsh
  
 Page license
 Page directory
@@ -39,10 +37,19 @@ ${EndIf}
 function .onInit
 	setShellVarContext all
 	!insertmacro VerifyUserIsAdmin
+	${If} ${RunningX64}
+	      InstallDir ${PROGRAMFILES64}\MDSplus${FLAVOR}
+	${Else}
+	      InstallDir ${PROGRAMFILES32}\MDSplus${FLAVOR}
+	${EndIf}
 functionEnd
 
 function .onINstSuccess
-	 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
+	 ${If} ${RunningX64}
+	       ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
+	 ${Else}
+	       ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
+	 ${EndIf}
 functionEnd
  
 Section
@@ -55,23 +62,37 @@ writeUninstaller "$INSTDIR\uninstall.exe"
 WriteRegStr HKLM "${ENVREG}" MDS_PATH "$INSTDIR\tdi"
 WriteRegStr HKLM "${ENVREG}" MDSPLUSDIR "$INSTDIR"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86_64\mdstcl.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 1
+${If} ${RunningX64}
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86_64\mdstcl.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 1
+${Else}
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest.lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86\mdstcl.bat" "" "$INSTDIR\bin_x86\icons.exe" 1
+${EndIf}
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8100"
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8000"
+${If} ${RunningX64}
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8100"
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8000"
+${Else}
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-r -p 8100"
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-r -p 8000"
+${EndIf}
 
 File /r /x local  tdi
+${If} ${RunningX64}
 File /r /x *.a bin_x86_64
-File /r /x *.a bin_x86
 SetOutPath "$INSTDIR\bin_x86_64"
 File "/oname=${PTHREADLIB}" ${MINGWLIB64}/${PTHREADLIB}
 File "/oname=${DLLIB}" ${MINGWLIB64}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
+${EndIf}
+File /r /x *.a bin_x86
 SetOutPath "$INSTDIR\bin_x86"
 File "/oname=${PTHREADLIB}" ${MINGWLIB32}/${PTHREADLIB}
 File "/oname=${GCC_S_SJLJ_LIB}" ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
@@ -119,8 +140,8 @@ Section "JAVA"
 SetOutPath $INSTDIR
 SetShellVarContext all
 File /r /x desktop java
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86_64\jScope.bat" "" "$INSTDIR\bin_x86_64\icons.exe" 4 SW_SHOWMINIMIZED
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86_64\traverser.bat" "" $INSTDIR\bin_x86_64\icons.exe" 3 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$INSTDIR\bin_x86\jScope.bat" "" "$INSTDIR\bin_x86\icons.exe" 4 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$INSTDIR\bin_x86\traverser.bat" "" $INSTDIR\bin_x86\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd
 
 Section LabView
@@ -146,18 +167,34 @@ SectionEnd
 Section "DEVEL"
 SetOutPath "$INSTDIR"
 File /r include
-CreateDirectory "$INSTDIR\devtools\lib"
-File "/oname=$INSTDIR\devtools\lib\mdsshr.lib" bin_x86_64/MdsShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\treeshr.lib" bin_x86_64/TreeShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\tdishr.lib" bin_x86_64/TdiShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\mdsdcl.lib" bin_x86_64/MdsDcl.dll.a
-File "/oname=$INSTDIR\devtools\lib\mdsipshr.lib" bin_x86_64/MdsIpShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\mdslib_client.lib" bin_x86_64/MdsLib_client.dll.a
-File "/oname=$INSTDIR\devtools\lib\mdslib.lib" bin_x86_64/MdsLib.dll.a
-File "/oname=$INSTDIR\devtools\lib\mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\rteventsshr.lib" bin_x86_64/RtEventsShr.dll.a
-File "/oname=$INSTDIR\devtools\lib\xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
+${If} ${RunningX64}
+CreateDirectory "$INSTDIR\devtools\lib64"
+SetOutPath "$INSTDIR\devtools\lib64"
+File "/oname=mdsshr.lib" bin_x86_64/MdsShr.dll.a
+File "/oname=treeshr.lib" bin_x86_64/TreeShr.dll.a
+File "/oname=tdishr.lib" bin_x86_64/TdiShr.dll.a
+File "/oname=mdsdcl.lib" bin_x86_64/MdsDcl.dll.a
+File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.dll.a
+File "/oname=mdslib_client.lib" bin_x86_64/MdsLib_client.dll.a
+File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
+File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
+File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
+File "/oname=rteventsshr.lib" bin_x86_64/RtEventsShr.dll.a
+File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
+${EndIf}
+CreateDirectory "$INSTDIR\devtools\lib32"
+SetOutPath "$INSTDIR\devtools\lib32"
+File "/oname=mdsshr.lib" bin_x86/MdsShr.dll.a
+File "/oname=treeshr.lib" bin_x86/TreeShr.dll.a
+File "/oname=tdishr.lib" bin_x86/TdiShr.dll.a
+File "/oname=mdsdcl.lib" bin_x86/MdsDcl.dll.a
+File "/oname=mdsipshr.lib" bin_x86/MdsIpShr.dll.a
+File "/oname=mdslib_client.lib" bin_x86/MdsLib_client.dll.a
+File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
+File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
+File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
+File "/oname=rteventsshr.lib" bin_x86/RtEventsShr.dll.a
+File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
 SectionEnd
  
 # Uninstaller
@@ -170,7 +207,12 @@ function un.onInit
 		Abort
 	next:
 	!insertmacro VerifyUserIsAdmin
-	ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
+	${If} ${RunningX64}
+	  ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
+	${Else}
+	  ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Uninstall' $0
+	${EndIf}
+
 functionEnd
  
 section "uninstall"
