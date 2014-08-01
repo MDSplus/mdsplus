@@ -3,6 +3,7 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 @MINGW_TRUE@ EXE=.exe
+@MINGW_TRUE@ WIN=.win
 
 COMPRESSION_SOURCES=adler32.c compress.c deflate.c infblock.c infcodes.c\
 inffast.c inflate.c inftrees.c infutil.c trees.c uncompr.c zutil.c
@@ -169,7 +170,7 @@ ifndef MDSIP_CONNECTIONS
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpUtil.a @libdir@; \
 	fi;
 endif
-	$(INSTALL) -m 755  mdsip.hosts $(sysconfdir)
+	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(sysconfdir)
         ifdef MDSIP_CONNECTIONS
 		$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
 		$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
@@ -241,7 +242,7 @@ $(MdsIpUDTV6): $(UDTV6_OBJECTS) $(MdsIpShr)
 $(MdsIpSSH) $(MdsIpHTTP):
 	$(LN_TUNNEL) $@
 
-@MAKEETCDIR@mdsip.hosts : mdsip.hosts
+@MAKEETCDIR@mdsip.hosts : mdsip.hosts$(WIN)
 	cp $< $@
 
 $(bin_SCRIPTS): @MAKEBINDIR@%: %
