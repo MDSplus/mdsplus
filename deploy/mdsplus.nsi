@@ -3,7 +3,12 @@
 
 Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}.${RELEASE}"
 Icon mdsplus.ico
-InstallDir $INSTDIR
+
+${If} ${RunningX64}
+      InstallDir ${PROGRAMFILES64}\MDSplus${FLAVOR}
+${Else}
+      InstallDir ${PROGRAMFILES32}\MDSplus${FLAVOR}
+${EndIf}
 InstallDirRegKey HKLM Software\MDSplus${FLAVOR} InstallLocation
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
 RequestExecutionLevel admin 
@@ -38,11 +43,6 @@ ${EndIf}
 function .onInit
 	setShellVarContext all
 	!insertmacro VerifyUserIsAdmin
-	${If} ${RunningX64}
-	      StrCpy $instdir ${PROGRAMFILES64}\MDSplus${FLAVOR}
-	${Else}
-	      StrCpy $instdir ${PROGRAMFILES32}\MDSplus${FLAVOR}
-	${EndIf}
 functionEnd
 
 function .onINstSuccess
