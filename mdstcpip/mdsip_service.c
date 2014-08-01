@@ -33,7 +33,7 @@ static int SpawnWorker(SOCKET sock) {
   sc_atts.nLength=sizeof(sc_atts);
   sc_atts.bInheritHandle=TRUE;
   sc_atts.lpSecurityDescriptor=NULL;
-  sprintf(cmd,"%%MDSPLUSDIR%%\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",dirname,
+  sprintf(cmd,"%s\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",getenv("MDSPLUSDIR"),dirname,
 	  GetPortname(),GetHostfile(),GetMaxCompressionLevel(),_getpid(),sock);
   memset(&startupinfo,0,sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
