@@ -61,9 +61,6 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data serve
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8100"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8000"
 
-ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
-DetailPrint "WinInstall returned $0"
-SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 File /r /x local  tdi
 File /r /x *.a bin_x86_64
 File /r /x *.a bin_x86
@@ -94,6 +91,9 @@ WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus$
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "NoRepair" 1
 # Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "EstimatedSize" ${INSTALLSIZE}
+ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
+DetailPrint "WinInstall returned $0"
+SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 SectionEnd
 
 Section "Sample Trees"
