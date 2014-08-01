@@ -23,14 +23,20 @@ else
         switch class(mdsthing)
             case 'MDSplus.Int64Array'
                 result = reshape(mdsthing.getLongArray, shape);
+            case 'MDSplus.Uint64Array'
+                result = typecast(reshape(mdsthing.getLongArray, shape), 'uint64');
             case 'MDSplus.Int32Array'
                 result = reshape(mdsthing.getIntArray, shape);
+            case 'MDSplus.Uint32Array'
+                result = typecast(reshape(mdsthing.getIntArray, shape), 'uint32');
             case 'MDSplus.Int16Array'
                 result = reshape(mdsthing.getShortArray, shape);
+            case 'MDSplus.Uint16Array'
+                result = typecast(reshape(mdsthing.getShortArray, shape), 'uint16');
             case 'MDSplus.Int8Array'
                 result = reshape(mdsthing.getByteArray, shape);
             case 'MDSplus.Uint8Array'
-                result = reshape(mdsthing.getByteArray, shape);
+                result = typecast(reshape(mdsthing.getByteArray, shape), 'uint8');
             case 'MDSplus.Float64Array'
                 result = double(reshape(mdsthing.getDoubleArray, shape));
             case 'MDSplus.Float32Array'
@@ -43,19 +49,28 @@ else
     elseif isa (mdsthing, 'MDSplus.Scalar')
         switch class(mdsthing)
             case 'MDSplus.Int64'
-                result = mdsthing.getLong;
+                result = mdsthing.getLongArray();
+            case 'MDSplus.Uint64'
+                result = typecast(mdsthing.getLongArray(), 'uint64');
             case 'MDSplus.Int32'
-                result = int32(mdsthing.getInt);
+                result = int32(mdsthing.getIntArray());
+            case 'MDSplus.Uint32'
+                result = typecast(mdsthing.getIntArray(), 'uint32');
             case 'MDSplus.Int16'
-                result = mdsthing.getShort;
+                result = mdsthing.getShortArray();
+            case 'MDSplus.Uint16'
+                result = typecast(mdsthing.getShortArray(), 'uint16');
             case 'MDSplus.Int8'
-                result = mdsthing.getByte;
+                result = mdsthing.getByteArray();
             case 'MDSplus.Uint8'
-                result = mdsthing.getByte;
+                'making a uint8 from and MDSplus.Uint8'
+                result = mdsthing.getByteArray();
+                class(result)
+                class(typecast(result, 'uint8'))
             case 'MDSplus.Float64'
-                result = mdsthing.getDouble;
+                result = mdsthing.getDoubleArray();
             case 'MDSplus.Float32'
-                result = double(mdsthing.getFloat);
+                result = double(mdsthing.getFloatArray());
             case 'MDSplus.String'
                 result = mdsthing.getString;
             otherwise
