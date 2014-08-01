@@ -40,6 +40,10 @@ function .onInit
 	setShellVarContext all
 	!insertmacro VerifyUserIsAdmin
 functionEnd
+
+function .onINstSuccess
+	 ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
+functionEnd
  
 Section
 SetOutPath "$INSTDIR"
@@ -91,8 +95,6 @@ WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus$
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "NoRepair" 1
 # Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
 WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "EstimatedSize" ${INSTALLSIZE}
-ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
-DetailPrint "WinInstall returned $0"
 SectionEnd
 
 Section "Sample Trees"
@@ -162,11 +164,10 @@ function un.onInit
 		Abort
 	next:
 	!insertmacro VerifyUserIsAdmin
+	ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
 functionEnd
  
 section "uninstall"
-ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
-DetailPrint "WinInstall returned $0"
 SetOutPath "$INSTDIR"
 delete ChangeLog.rtf
 delete MDSplus-License.rtf
