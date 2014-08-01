@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ DEF=tdishrext.def
+
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
 TDIC_LIBS= $(LIBS) -ldl -lreadline
 
@@ -27,7 +29,7 @@ install: $(libdir) $(bindir)
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@tdic $(bindir)
 
-@MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@@LIBPRE@TdiShrExt.a : $(OBJECTS)

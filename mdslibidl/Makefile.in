@@ -1,12 +1,13 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ DEF=mdslibidl.def
 SOURCES = MdsLibIdl.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = mdslibidl.export
 
 all : @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsLibIdl@SHARETYPEMOD@
 
-@MAKESHLIBDIR@@LIBPRE@MdsLibIdl@SHARETYPEMOD@ : $(OBJECTS) 
+@MAKESHLIBDIR@@LIBPRE@MdsLibIdl@SHARETYPEMOD@ : $(OBJECTS) $(DEF)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBM) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
 
 clean :

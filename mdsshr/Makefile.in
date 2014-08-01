@@ -10,6 +10,7 @@ else
 endif
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
+@MINGW_TRUE@ DEF=MdsShr.def
 
 lib_LIBRARIES = MdsShr
 libStatic = $(addsuffix .a, $(addprefix @MAKELIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
@@ -52,8 +53,8 @@ install: $(libdir)
 	$(INSTALL) -m 755 $(libs) $(libdir)
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS)
-	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
+@MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS) $(DEF)
+	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
 
 %.so %.dylib: $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)

@@ -1,6 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
+@MINGW_TRUE@ DEF=servershr.def
 
 SOURCES = \
       ServerDispatchAction.c\
@@ -43,7 +44,7 @@ install: $(libdir)
 	fi;
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@: $(OBJECTS) 
+@MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@: $(OBJECTS) $(DEF)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) @SOCKETLIB@ $(THREAD) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@MdsServerShr.a: $(OBJECTS)

@@ -2,6 +2,7 @@ include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@Mdsdcl.dll.a
 @MINGW_TRUE@ EXE=.exe
+@MINGW_TRUE@ DEF=mdsdclshr.def
 
 SOURCES = 		\
 mdsdcl_dcl_parse.c		\
@@ -48,7 +49,7 @@ mdsdcl_tables.c: mdsdcl_tables.ocld
 		@RANLIB@ $@
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(LINK_CDU)
+@MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF) $(LINK_CDU)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD)
 
 @MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)

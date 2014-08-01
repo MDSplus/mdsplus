@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ DEF=mdsmisc.def
+
 CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ 
 
@@ -39,8 +41,8 @@ install: $(libdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsMisc.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr
+@MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
+	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr
 
 @MAKELIBDIR@@LIBPRE@MdsMisc.a : $(OBJECTS)
 	$(AR) -cr $@ $^

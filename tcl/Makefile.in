@@ -2,6 +2,7 @@ include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ MDSTCL=mdstcl.bat
 @MINGW_FALSE@ MDSTCL=mdstcl
+@MINGW_TRUE@ DEF=tcl_commands.def
 
 SOURCES = 			\
 	tcl_dummy.c		\
@@ -69,5 +70,5 @@ tcl_commands.c:	tcl_commands.ocld
               else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < tcl_commands.ocld; fi
 	$(MAKE) depend
 
-@MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@: $(OBJECTS)
+@MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@: $(OBJECTS) $(DEF)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS)

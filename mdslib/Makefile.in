@@ -2,6 +2,7 @@ include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ IMPLIB_MdsLib=@MAKELIBDIR@MdsLib.dll.a
 @MINGW_TRUE@ IMPLIB_MdsLib_client=@MAKELIBDIR@MdsLib_client.dll.a
+@MINGW_TRUE@ DEF=MdsLib.def
 
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
@@ -43,7 +44,7 @@ install: $(libdir)
 MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsLib=-Wl,--out-implib,$(IMPLIB_MdsLib)
-$(MdsLib): $(OBJECTS)
+$(MdsLib): $(OBJECTS) $(DEF)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
 
 @MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS)
@@ -51,7 +52,7 @@ $(MdsLib): $(OBJECTS)
 	@RANLIB@ $@
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsLib_client=-Wl,--out-implib,$(IMPLIB_MdsLib_client)
-@MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
+@MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT) $(DEF)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) $(LIBS) @MEMCHKLIB@  $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib_client)
 
 @MAKELIBDIR@@LIBPRE@MdsLib_client.a : $(OBJECTS_CLIENT) 

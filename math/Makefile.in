@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ DEF=MdsMath.def
+
 SOURCES = \
 	caxpy.f \
 	cgeco.f \
@@ -59,10 +61,10 @@ $(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@ @LIBPRE@MdsMath@SHARETYPE@_i386
 endif
 
 $(local@LIBPRE@MdsMath32) %.o_i386: TARGET_ARCH = -m32
-$(local@LIBPRE@MdsMath32): $(OBJECTS_i386)
+$(local@LIBPRE@MdsMath32): $(OBJECTS_i386) $(DEF)
 	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
-$(LIBRARIES): $(OBJECTS) 
+$(LIBRARIES): $(OBJECTS)  $(DEF)
 	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 depend:

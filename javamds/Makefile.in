@@ -1,5 +1,7 @@
 include @top_srcdir@/Makefile.inc
 
+@MINGW_TRUE@ DEF=javamds.def
+
 CFLAGS += $(THREAD) @JDK_CFLAGS@
 
 SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c mdsobjects.c
@@ -18,6 +20,6 @@ clean:
 install: $(libdir)
 	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ @libdir@
 
-@MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ : $(OBJECTS) 
+@MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ : $(OBJECTS) $(DEF)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKJNI@ $(THREAD) $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr -lRtEventsShr $(LIBS)
 
