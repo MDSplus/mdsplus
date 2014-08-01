@@ -93,6 +93,7 @@ File "/oname=${PTHREADLIB}" ${MINGWLIB64}/${PTHREADLIB}
 File "/oname=${DLLIB}" ${MINGWLIB64}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
 ${EndIf}
+SetOutPath "$INSTDIR"
 File /r /x *.a bin_x86
 SetOutPath "$INSTDIR\bin_x86"
 File "/oname=${PTHREADLIB}" ${MINGWLIB32}/${PTHREADLIB}
