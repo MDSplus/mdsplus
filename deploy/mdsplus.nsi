@@ -16,6 +16,7 @@ RequestExecutionLevel admin
 !define MINGWLIB64 /usr/x86_64-w64-mingw32/sys-root/mingw/bin
 !define MINGWLIB32 /usr/i686-w64-mingw32/sys-root/mingw/bin
 !define PTHREADLIB libwinpthread-1.dll
+!define TERMCAPLIB libtermcap-0.dll
 !define DLLIB libdl.dll
 !define READLINELIB libreadline6.dll
 !define GCC_S_SJLJ_LIB libgcc_s_sjlj-1.dll
@@ -93,6 +94,7 @@ SetOutPath "$INSTDIR\bin_x86_64"
 File "/oname=${PTHREADLIB}" ${MINGWLIB64}/${PTHREADLIB}
 File "/oname=${DLLIB}" ${MINGWLIB64}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
+File "/oname=${TERMCAPLIB}" ${MINGWLIB64}/${TERMCAPLIB}
 ${EndIf}
 SetOutPath "$INSTDIR"
 File /r /x *.a bin_x86
@@ -101,6 +103,7 @@ File "/oname=${PTHREADLIB}" ${MINGWLIB32}/${PTHREADLIB}
 File "/oname=${GCC_S_SJLJ_LIB}" ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
 File "/oname=${DLLIB}" ${MINGWLIB32}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB32}/${READLINELIB}
+File "/oname=${TERMCAPLIB}" ${MINGWLIB32}/${TERMCAPLIB}
 SetOutPath "\"
 SetOverWrite off
 File "/oname=mdsip.hosts" etc\mdsip.hosts
