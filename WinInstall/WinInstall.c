@@ -4,7 +4,7 @@
 #ifdef _WIN64
 const char *mdspath=";%MDSPLUSDIR%\\bin_x86_64;%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
 #else
-const char *mdspath="%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
+const char *mdspath=";%MDSPLUSDIR%\\bin_x86;%MDSPLUSDIR%";
 #endif
 const char *envkey="SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment";
 
