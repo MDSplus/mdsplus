@@ -473,10 +473,6 @@ PACK_STOP
 
 #define MAX_SEARCH_LEVELS 32
 
-#ifdef HAVE_VXWORKS_H
-#undef NONE
-#endif
-
 typedef enum search_type
 {
   NONE,

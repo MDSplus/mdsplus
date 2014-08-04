@@ -5,11 +5,7 @@
 extern "C" {
 #endif
 
-#ifdef HAVE_VXWORKS_H
-//typedef long long  int64_t;
-#else
 #include <config.h>
-#endif
 #ifdef HAVE_WINDOWS_H
 #define EXPORT __declspec(dllexport)
 #else

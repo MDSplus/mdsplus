@@ -8,9 +8,6 @@ char *SharedDataManager::startAddress;
 Lock SharedDataManager::lock;
 SharedMemTree SharedDataManager::sharedTree;
 
-#ifdef HAVE_VXWORKS_H
-SEM_ID *LockManager::semaphores;
-#endif
 
 //SharedDataManager reserves the first _int64 of the shared memory to hold the address(offset)
 //of the node tree root.

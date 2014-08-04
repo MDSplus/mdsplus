@@ -28,32 +28,6 @@ class SemEvent
 };
 
 #else
-#ifdef HAVE_VXWORKS_H
-#include <vxWorks.h>
-#include <semLib.h>
-class SemEvent
-{
-    SEM_ID semaphore;
- 
- public: 
-	SemEvent(){initialize();}
-    void initialize()
-    {
-	semaphore = semBCreate(SEM_Q_FIFO, SEM_EMPTY);
-    }
-    
-    void wait()
-    {
-    	semTake(semaphore, WAIT_FOREVER);
-    }
-    void signal()
-    {
-    	semGive(semaphore);
-    }
-};
-
-
-#else
 #include <semaphore.h>
 #include <stdio.h>
 #include <errno.h>
@@ -85,7 +59,6 @@ class SemEvent
 };
 
 
-#endif
 #endif
 
 

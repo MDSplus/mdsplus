@@ -930,11 +930,6 @@ int TreeNode::getDepth() {
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
 #endif
-#ifdef HAVE_VXWORKS_H
-#define pthread_mutex_t int
-static void LockMdsShrMutex(){}
-static void UnlockMdsShrMutex(){}
-#endif
 
 void TreeNode::makeSegment(Data *start, Data *end, Data *time, Array *initialData)
 {

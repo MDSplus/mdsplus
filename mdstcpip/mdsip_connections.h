@@ -172,7 +172,7 @@ typedef struct _io_routines {
     __p[__n - __i - 1] = __tmp;\
   }\
 }
-#if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
+#if HAVE_PTHREAD_H
 #include <pthread.h>
 #else
 typedef void *pthread_mutex_t;

@@ -19,13 +19,8 @@ void UDPServer::run(void *arg)
 		if((recBytes = recvfrom(sock, (char *)recBuf, MAX_MSG_LEN, 0, 
 			(struct sockaddr *)&clientAddr, &addrSize)) < 0)
 #else
-#ifdef HAVE_VXWORKS_H
-		if((recBytes = recvfrom(sock, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0)
-#else
 		if((recBytes = recvfrom(sock, (char *)recBuf, MAX_MSG_LEN, 0, 
 			(struct sockaddr *)&clientAddr, (socklen_t *)&addrSize)) < 0)
-#endif
 #endif
     	{
 			printf("Error receiving UDP messages\n");

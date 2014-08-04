@@ -10,14 +10,6 @@
 #include <stdio.h>
 #else
 
-#ifdef HAVE_VXWORKS_H
-#include <vxWorks.h>
-#include <sockLib.h>
-#include <inetLib.h>
-#include <hostlib.h>
-#include <stdio.h>
-#include <semLib.h>
-#else
 #include <stdio.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -25,7 +17,6 @@
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <netinet/tcp.h>
-#endif
 
 #endif
 
@@ -58,18 +49,6 @@ public:
 		}
 
 #endif 
-#ifdef HAVE_VXWORKS_H
-		bzero((char *)&sin, sizeof(struct sockaddr_in));
-		
-		sin.sin_family = AF_INET;
-		sin.sin_port = htons( port );
-		sin.sin_len = (u_char)(sizeof(struct sockaddr_in));
-
-      		if(((sin.sin_addr.s_addr = inet_addr(ipAddress)) == ERROR) &&
-	     		((sin.sin_addr.s_addr = hostGetByName(ipAddress)) == ERROR))  
-
-	    		printf("Unknown recipient name in IP address  initialization\n");
-#else
 		memset((char *)&sin, 0, sizeof(sin));
 		sin.sin_family = AF_INET;
 		struct hostent *hp =(struct hostent *) NULL;
@@ -83,7 +62,6 @@ public:
 		if(hp != NULL)
 			memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 		sin.sin_port = htons( port );
-#endif
 	}
 	//Adresses are of the form <IP address>:<port>
 

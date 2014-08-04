@@ -29,11 +29,7 @@
 #ifdef FIONREAD
 #define I_NREAD FIONREAD
 #else
-#if defined(HAVE_VXWORKS_H)
-#include <vxWorks.h>
-#include <ioLib.h>
-#define I_NREAD FIONREAD
-#elif !defined(__sparc__) && !defined(__QNX__)
+#if !defined(__sparc__) && !defined(__QNX__)
 #include <stropts.h>
 #endif
 #endif
@@ -49,14 +45,7 @@
 #elif defined (__QNX__)
 #include <errno.h>
 #else
-#ifndef HAVE_VXWORKS_H
 #include <sys/errno.h>
-#endif
-#endif
-#ifdef HAVE_VXWORKS_H
-#include <types/vxTypesOld.h>
-#include <errno.h>
-#include <time.h>
 #endif
 #if defined(_WIN32)
 //#include <windows.h>
@@ -69,21 +58,15 @@
 #ifdef __APPLE__
 #include <pwd.h>
 #endif
-#ifndef HAVE_VXWORKS_H
-#ifndef __VMS
 #include <fcntl.h>
-#endif
 #include <sys/time.h>
-#endif
 #ifdef _XOPEN_SOURCE_EXTENDED
 #include <arpa/inet.h>      
 #else
 #include <netinet/in.h>
 #endif
 #include <sys/socket.h>
-#ifndef HAVE_VXWORKS_H
 #include <netdb.h>
-#endif
 #include "signal.h"
 #include <netinet/tcp.h>
 #endif

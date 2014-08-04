@@ -125,13 +125,6 @@
 /* Define if you have the <dl.h> header file. */
 #undef HAVE_DL_H
 
-/* Define if you have the <vxWorks.h> header file. */
-#undef HAVE_VXWORKS_H
-
-#if defined(HAVE_VXWORKS_H) && !defined(vxWorks)
-#define vxWorks
-#endif 
-
 /* Set SHARELIB_TYPE to ".so",".sl",".a" etc... */
 #undef SHARELIB_TYPE
 
