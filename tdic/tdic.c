@@ -74,8 +74,27 @@ int main(int argc, char **argv) {
    FILE *in = stdin;
    int status;
    char temp[MAXEXPR];		       /* temp strings for command */
-   char hfile[32];
 
+/*
+  static char expr[MAXEXPR] = "WRITE(_OUTPUT_UNIT,`DECOMPILE(`";
+*/
+   static char expr[MAXEXPR] = "";
+   static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, (char *)expr};
+   static EMPTYXD(ans);
+   static EMPTYXD(output_unit);
+   static DESCRIPTOR(out_unit_stdout,"PUBLIC _OUTPUT_UNIT=*");
+   static DESCRIPTOR(out_unit_other,"PUBLIC _OUTPUT_UNIT=FOPEN($,'w')");
+   static DESCRIPTOR(reset_output_unit,"PUBLIC _OUTPUT_UNIT=$");
+   int prefixlen = strlen(expr);
+   char line_in[MAXEXPR];
+   char last_line[MAXEXPR];
+#ifdef _WIN32
+    char *hfile="%HOMEDRIVE%%HOMEPATH%\\AppData\\Local\\tdic";
+#else
+   char hfile[32];
+   strcpy(hfile,getenv("HOME"));
+   strcat(hfile,HFILE);
+#endif
 #ifdef DYNTdiShr
     if(TDIhandle == NULL) {
 	TDIhandle = dlopen(DYNTdiShr, RTLD_LAZY);
@@ -105,22 +124,7 @@ int main(int argc, char **argv) {
     *(void **)(&Breadline)		= dlsymget(READhandle, "readline");
    }
 #endif
-   strcpy(hfile,getenv("HOME"));
-   strcat(hfile,HFILE);
-   Busing_history();
-/*
-  static char expr[MAXEXPR] = "WRITE(_OUTPUT_UNIT,`DECOMPILE(`";
-*/
-   static char expr[MAXEXPR] = "";
-   static struct descriptor expr_dsc = {0, DTYPE_T, CLASS_S, (char *)expr};
-   static EMPTYXD(ans);
-   static EMPTYXD(output_unit);
-   static DESCRIPTOR(out_unit_stdout,"PUBLIC _OUTPUT_UNIT=*");
-   static DESCRIPTOR(out_unit_other,"PUBLIC _OUTPUT_UNIT=FOPEN($,'w')");
-   static DESCRIPTOR(reset_output_unit,"PUBLIC _OUTPUT_UNIT=$");
-   int prefixlen = strlen(expr);
-   char line_in[MAXEXPR];
-   char last_line[MAXEXPR];
+    Busing_history();
    *last_line=0;
 /* get input from file */
    if (argc > 1) {
@@ -137,8 +141,9 @@ int main(int argc, char **argv) {
       out_d.pointer = argv[2];
       BTdiExecute(&out_unit_other,&out_d,&output_unit MDS_END_ARG);
    }
-   else
+   else {
      BTdiExecute(&out_unit_stdout, &output_unit MDS_END_ARG);
+}
 /* get history loaded */
    Bread_history(hfile);
 /* main loop to get characters */
