@@ -41,9 +41,9 @@ function .onInit
 	setShellVarContext all
 	!insertmacro VerifyUserIsAdmin
 	${If} ${RunningX64}
-      	      StrCpy $INSTDIR $PROGRAMFILES64\MDSplus${FLAVOR}
+      	      StrCpy $INSTDIR $PROGRAMFILES64\MDSplus
 	${Else}
-	      StrCpy $INSTDIR $PROGRAMFILES32\MDSplus${FLAVOR}
+	      StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
 	${EndIf}
 functionEnd
 
