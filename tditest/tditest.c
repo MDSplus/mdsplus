@@ -8,11 +8,7 @@ extern int TdiExecute();
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static void tdiputs(char *line);
-#ifdef HAVE_VXWORKS_H
-int tditest(int argc, char **argv)
-#else
 int main(int argc, char **argv)
-#endif
 {
   FILE *in = stdin;
   int status;

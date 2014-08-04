@@ -23,9 +23,7 @@ extern int StrFree1Dx();
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
 
 #define read_nci \
  if (nci_version != version)\
@@ -778,19 +776,6 @@ void TreeFree(void *ptr)
     free(ptr);
 }
 
-#ifdef HAVE_VXWORKS_H
-int64_t RfaToSeek(unsigned char *rfa)
-{
-  int64_t ans = (((int64_t)rfa[0] << 9) |
-            ((int64_t)rfa[1] << 17) |
-            ((int64_t)rfa[2] << 25) |
-            ((int64_t)rfa[4]) |
-            (((int64_t)rfa[5] & 1) << 8));
-    ans =- 512;
-    ans |= ((int64_t)rfa[3] << 33);
-  return ans;
-}
-#else
 int64_t RfaToSeek(unsigned char *rfa)
 {
   int64_t ans = (((int64_t)rfa[0] << 9) |
@@ -801,7 +786,6 @@ int64_t RfaToSeek(unsigned char *rfa)
     ans |= ((int64_t)rfa[3] << 33);
   return ans;
 }
-#endif
 void SeekToRfa(int64_t seek, unsigned char *rfa)
 {
   int64_t tmp = seek + 512;

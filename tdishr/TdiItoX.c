@@ -24,9 +24,6 @@
 #define end     1
 #define delta   2
 #define HUGE (1<<28)
-#ifndef HAVE_VXWORKS_H
-#define const
-#endif
 extern int IsRoprand();
 #define ROPRAND(fptr) IsRoprand(DTYPE_NATIVE_FLOAT,fptr)
 #define ROPRAND_TYPED(type, fptr) IsRoprand(type, fptr)

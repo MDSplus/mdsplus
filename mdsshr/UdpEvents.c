@@ -5,14 +5,6 @@
 #else
 
 #include <stdlib.h>
-#ifdef HAVE_VXWORKS_H
-#include <vxWorks.h>
-#include <sockLib.h>
-#include <inetLib.h>
-#include <hostlib.h>
-#include <stdio.h>
-#include <semLib.h>
-#else
 #include <stdio.h>
 #include <string.h>
 #include <sys/socket.h>
@@ -23,7 +15,6 @@
 #include <netinet/tcp.h>
 #include <errno.h>
 #include <unistd.h>
-#endif
 
 #endif
 #include <mdsshr.h>
@@ -447,18 +438,6 @@ int MDSUdpEvent(char const * eventName, int bufLen, char const * buf)
 	udpSocket = getSocket();
 
 
-#ifdef HAVE_VXWORKS_H
-	bzero((char *)&sin, sizeof(struct sockaddr_in));
-	
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons( getPort() );
-	sin.sin_len = (u_char)(sizeof(struct sockaddr_in));
-
-      	if(((sin.sin_addr.s_addr = inet_addr(multiIp)) == ERROR) &&
-	     	((sin.sin_addr.s_addr = hostGetByName(multiIp)) == ERROR))  
-
-	    	perror("Unknown recipient name in IP address  initialization\n");
-#else
 	memset((char *)&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
 	hp = gethostbyname(multiIp);
@@ -471,7 +450,6 @@ int MDSUdpEvent(char const * eventName, int bufLen, char const * buf)
 	if(hp != NULL)
 		memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 	sin.sin_port = htons( getPort() );
-#endif
 	nameLen = strlen(eventName);
 	if(bufLen < MAX_MSG_LEN - (4 + 4 + nameLen))
 		actBufLen = bufLen;

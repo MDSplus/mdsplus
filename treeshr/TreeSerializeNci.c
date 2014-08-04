@@ -1,6 +1,4 @@
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#endif
 #include <string.h>
 #include <ncidef.h>
 #include "treeshrp.h"

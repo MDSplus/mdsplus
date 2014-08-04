@@ -160,9 +160,6 @@ static int tcp_authorize(int conid, char *username) {
   socklen_t n=sizeof(sin);
   int ans=0;
   struct hostent *hp=0;
-#ifdef HAVE_VXWORKS_H
-  char hostent_buf[512];
-#endif
   if (getpeername(s, (struct sockaddr *)&sin, &n)==0) {
     char *matchString[2]={0,0};
     int num=1;
@@ -231,9 +228,6 @@ static int tcp_disconnect(int conid) {
   struct sockaddr_in sin;
   socklen_t n=sizeof(sin);
   struct hostent *hp=0;
-#ifdef HAVE_VXWORKS_H
-  char hostent_buf[512];
-#endif
   if (s != -1) {
     Client *c,**p;
     for (p=&ClientList,c=ClientList;c && c->id != conid; p=&c->next,c=c->next);
@@ -361,23 +355,16 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin) {
   } else {
     service = mdsip;
   } 
-#ifndef HAVE_VXWORKS_H
   hp = gethostbyname(host);
-#endif
   if (hp == NULL) {
     addr = inet_addr(host);
-#ifndef HAVE_VXWORKS_H
     if (addr != 0xffffffff)
     	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
-#endif
   }
   if (hp == 0) {
     free(host);
     return 0;
   }
-#ifdef HAVE_VXWORKS_H
-  portnum = htons((atoi(service) == 0) ? 8000 : atoi(service));
-#else
   if (atoi(service) == 0) {
     struct servent *sp;
     sp = getservbyname(service,"tcp");
@@ -395,12 +382,9 @@ static int getHostAndPort(char *hostin, struct sockaddr_in *sin) {
     free(host);
     return 2;
   }
-#endif
   sin->sin_port = portnum;
   sin->sin_family = AF_INET;
-#if defined( HAVE_VXWORKS_H )
-  memcpy(&sin->sin_addr, &addr, sizeof(addr));
-#elif defined(ANET)
+#if defined(ANET)
   memcpy(&sin->sin_addr, hp->h_addr, sizeof(sin->sin_addr));
 #else
   memcpy(&sin->sin_addr, hp->h_addr_list[0], hp->h_length);

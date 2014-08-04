@@ -160,9 +160,6 @@ static int tcp_authorize(int conid, char *username) {
   socklen_t n=sizeof(sin);
   int ans=0;
   struct hostent *hp=0;
-#ifdef HAVE_VXWORKS_H
-  char hostent_buf[512];
-#endif
   if (getpeername(s, (struct sockaddr *)&sin, &n)==0) {
     char *matchString[2]={0,0};
     int num=1;
@@ -232,9 +229,6 @@ static int tcp_disconnect(int conid) {
   struct sockaddr_in6 sin;
   socklen_t n=sizeof(sin);
   struct hostent *hp=0;
-#ifdef HAVE_VXWORKS_H
-  char hostent_buf[512];
-#endif
   if (s != -1) {
     Client *c,**p;
     for (p=&ClientList,c=ClientList;c && c->id != conid; p=&c->next,c=c->next);

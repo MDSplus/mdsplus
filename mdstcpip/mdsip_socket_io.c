@@ -562,7 +562,7 @@ void SetSocketOptions(SOCKET s, int reuse)
 }
 
 #ifndef GLOBUS
-#if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
+#if !defined(__VMS) && !defined(_WIN32)
 static struct timeval connectTimer = {0,0};
 
 int SetMdsConnectTimeout(int sec)
@@ -583,9 +583,7 @@ SOCKET MConnect(char *host, unsigned short port)
   struct sockaddr_in sin;
   struct hostent *hp = NULL;
   int addr;
-#ifndef HAVE_VXWORKS_H
   hp = gethostbyname(host);
-#endif
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
   {
@@ -599,16 +597,10 @@ SOCKET MConnect(char *host, unsigned short port)
   if (hp == NULL)
   {
     addr = inet_addr(host);
-#ifndef HAVE_VXWORKS_H
     if (addr != 0xffffffff)
     	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
-#endif
   }
-#ifdef HAVE_VXWORKS_H
-  if (addr == 0xffffffff)
-#else
   if (hp == NULL)
-#endif
   {
     printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
     return INVALID_SOCKET;
@@ -617,14 +609,12 @@ SOCKET MConnect(char *host, unsigned short port)
   if (s == INVALID_SOCKET) return INVALID_SOCKET;
   sin.sin_port = port;
   sin.sin_family = AF_INET;
-#if defined( HAVE_VXWORKS_H )
-  memcpy(&sin.sin_addr, &addr, sizeof(addr));
-#elif defined(ANET)
+#if defined(ANET)
   memcpy(&sin.sin_addr, hp->h_addr, sizeof(sin.sin_addr));
 #else
   memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
 #endif
-#if !defined(__VMS) && !defined(_WIN32) && !defined(HAVE_VXWORKS_H)
+#if !defined(__VMS) && !defined(_WIN32)
   if (connectTimer.tv_sec)
   {
     status = fcntl(s,F_SETFL,O_NONBLOCK);

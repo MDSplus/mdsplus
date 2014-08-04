@@ -27,9 +27,7 @@
 
 +-----------------------------------------------------------------------------*/
 #include "treeshrp.h" /* must be first or off_t wrong */
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#endif
 #include <stdio.h>
 #include <stdlib.h>
 #include <mdstypes.h>
@@ -49,20 +47,9 @@
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>
-#define alloca _alloca
 #else
 #include <unistd.h>
-#ifdef HAVE_VXWORKS_H
-#include <time.h>
-#else
 #include <sys/time.h>
-#endif
-#endif
-
-#ifdef HAVE_VXWORKS_H
-static int timezone = 0;
-static int daylight = 0;
-#define LONG_LONG_CONSTANT(value) value##ll
 #endif
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -108,7 +95,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   int extended = 0;
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H)
+#if !defined(HAVE_WINDOWS_H)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -649,12 +636,6 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 	   LockSize, 0) == 0 ? TreeFAILURE : TreeSUCCESS;
 }
 #else
-#ifdef HAVE_VXWORKS_H 
-int TreeLockDatafile(TREE_INFO *info, int readonly, int nodenum)
-{ return TreeSUCCESS; }
-int TreeUnLockDatafile(TREE_INFO *info, int readonly, int nodenum)
-{ return TreeSUCCESS; }
-#else
 int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
 {
   struct flock flock_info;
@@ -676,6 +657,5 @@ int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t offset)
   return (fcntl(readonly ? info->data_file->get : info->data_file->put,F_SETLKW, &flock_info) != -1) ? 
           TreeSUCCESS : TreeLOCK_FAILURE;
 }
-#endif
 #endif
 #endif

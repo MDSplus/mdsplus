@@ -22,12 +22,6 @@
 #include <sys/wait.h>
 #endif
 
-#ifdef HAVE_VXWORKS_H
-int CheckClient(char *username, int num, char **matchString) {
-  return 1;
-}
-  
-#else
 
 static void CompressString(struct descriptor *in, int upcase) {
   unsigned short len;
@@ -203,5 +197,4 @@ int CheckClient(char *username, int num, char **matchString) {
   return ok;
 }
 
-#endif
 

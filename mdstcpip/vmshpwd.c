@@ -52,9 +52,7 @@ Comments:	The overall speed of this routine is not great.  This is
 
 
 #ifndef VMS
-#ifndef HAVE_VXWORKS_H
 #include <memory.h>			/* for memset/memcpy */
-#endif
 #endif
 
 #ifdef VMS

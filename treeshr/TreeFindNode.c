@@ -11,10 +11,7 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void **TreeCtx();
 
-#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
-
 
 STATIC_ROUTINE int IsMember(NODE *node);
 STATIC_ROUTINE int Compare(char *string, int len, char *matchstring, int mlen);

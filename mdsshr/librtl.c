@@ -29,11 +29,7 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 int LibTimeToVMSTime(time_t *time_in,int64_t *time_out);  
-#ifndef HAVE_VXWORKS_H
 STATIC_CONSTANT int64_t addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
-#else
-STATIC_CONSTANT int64_t addin = 0x7c95674beb4000;
-#endif
 
 extern int MdsCopyDxXd();
 STATIC_ROUTINE char *GetTdiLogical(char *name);
@@ -310,132 +306,10 @@ void *LibCallg(void **arglist, void * (*routine)())
 
 
 #else /* WIN32 */
-#ifdef HAVE_VXWORKS_H
-
-#include <vxWorks.h>
-#include <wdLib.h>
-#include <semLib.h>
-#include <taskLib.h>
-#include <ioLib.h>
-#include <dirent.h>
-
-int pthread_mutex_init(SEM_ID *mutex);
-void pthread_mutex_lock(SEM_ID *mutex);
-void pthread_mutex_unlock(SEM_ID *mutex);
-
-
-void pthread_detach(int *thread)
-{
-	return;
-}
-
-int pthread_cond_init(SEM_ID *cond)
-{
-  *cond = semBCreate(SEM_Q_FIFO, SEM_EMPTY);
-  return (*cond ==NULL);
-}
-
-BOOL pthread_cond_destroy(SEM_ID *cond)
-{
-  int status = semDelete(*cond);
-  return (status == ERROR);
-}
-
-int pthread_cond_signal(SEM_ID *cond)
-{
-  int status;
-  status = semGive(*cond);
-  status = semTake(*cond, WAIT_FOREVER);
-  return (status == ERROR);
-}
-
-
-
-int pthread_cond_wait(SEM_ID *cond)
-{
-  int status;
-  status = semTake(*cond, WAIT_FOREVER);
-  if(status != ERROR)
-    status = semGive(*cond);
-  return (status == ERROR);
-}
-
-void pthread_cond_timedwait(SEM_ID *cond, int msec)
-{
-  STATUS status;
-  status = semTake(*cond, (sysClkRateGet() * msec) / 1000);
-  if(status != ERROR)
-    status = semGive(*cond);
-}
-
-int pthread_mutex_init(SEM_ID *mutex)
-{
-  *mutex = semBCreate(SEM_Q_FIFO, SEM_FULL);
-  return (*mutex == NULL);
-}
-
-BOOL pthread_mutex_destroy(SEM_ID *mutex)
-{
-  return (semDelete(*mutex) != ERROR);
-}
-
-STATIC_THREADSAFE SEM_ID global_mutex = NULL;
-STATIC_THREADSAFE int global_mutex_initialized = 0;
-void pthread_unlock_global_np()
-{
-  if (!global_mutex_initialized)
-  {
-    global_mutex_initialized = 1;
-    pthread_mutex_init(&global_mutex);
-  }
-  pthread_mutex_unlock(&global_mutex);
-
-}
-void pthread_lock_global_np()
-{
-  if (!global_mutex_initialized)
-  {
-    global_mutex_initialized = 1;
-    pthread_mutex_init(&global_mutex);
-  }
-  pthread_mutex_lock(&global_mutex);
-}
-
-int pthread_exit(int status)
-{
-	return status;
-}
-
-int pthread_create(unsigned long *thread, void *dummy, void (*rtn)(void *), void *rtn_param)
-{
-  *thread = taskSpawn(NULL, 90, 0, 20000, (FUNCPTR)rtn, (int)rtn_param, 0,0,0,0,0,0,0,0,0);
-  return (*thread == ERROR);
-}
-
-void pthread_cleanup_pop(){}
-void pthread_cleanup_push(){}
-
-void pthread_mutex_lock(SEM_ID *mutex)
-{
-  semTake(*mutex, WAIT_FOREVER);
-}
-
-void pthread_mutex_unlock(SEM_ID *mutex)
-{
-  semGive(*mutex);
-}
-
-
-void pthread_cancel(unsigned long *thread)
-{
-  taskDelete(*thread);
-}
-
-#else /* VXWORKS */
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
+#endif /*HAVE_INISTD_H */
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h>
@@ -444,7 +318,7 @@ void pthread_cancel(unsigned long *thread)
 
 #ifdef _AIX
 #define pthread_mutexattr_default NULL
-#endif
+#endif /*_AIX*/
 
 #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
 #include <inttypes.h>
@@ -456,9 +330,9 @@ STATIC_THREADSAFE int LockCount = 0;
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
 #define pthread_condattr_default NULL
-#else
+#else /*DECTHREADS*/
 #undef select
-#endif
+#endif /*DECTHREADS*/
 STATIC_THREADSAFE pthread_t current_locked_thread = 0;
 
 void pthread_lock_global_np()
@@ -468,13 +342,13 @@ void pthread_lock_global_np()
   {
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#endif
+#endif /*PTHREAD_MUTEX_RECURSIVE*/
 
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
 #ifndef __sun
     pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);
-#endif
+#endif /*__sub*/
     pthread_mutex_init(&GlobalMutex,&m_attr);
     Initialized = 1;
   }
@@ -483,12 +357,12 @@ void pthread_lock_global_np()
     printf("global currently locked by thread %d\n",current_locked_thread);
 
   printf("Thread %d is about to lock global\n",thread);
-#endif
+#endif /*DEBUG*/
   pthread_mutex_lock(&GlobalMutex);
 #ifdef ___DEBUG_IT
   printf("Global locked - %d\n",++LockCount);
   current_locked_thread = thread;
-#endif
+#endif /*DEBUG*/
 }
 
 void pthread_unlock_global_np()
@@ -501,23 +375,23 @@ void pthread_unlock_global_np()
     pthread_mutexattr_init(&m_attr);
     pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);       
     pthread_mutex_init(&GlobalMutex,&m_attr);
-#else 
+#else /*RECURSIVE*/ 
     pthread_mutex_init(&GlobalMutex,pthread_mutexattr_default);
-#endif
-#endif
+#endif /*RECURSIVE*/
+#endif /*__sub*/
     Initialized = 1;
   }
 #ifdef ___DEBUG_IT
   printf("Thread %d is about to unlock global - %d\n",pthread_self(),LockCount--);
-#endif
+#endif /* DEBUG */
   pthread_mutex_unlock(&GlobalMutex);
 #ifdef ___DEBUG_IT
   printf("Unlocked global - %d\n",LockCount);
   if (LockCount == 0)
     current_locked_thread = 0;
-#endif
+#endif /* DEBUG */
 }
-#endif
+#endif /* pthread_unlock_global_np */
 
 #ifdef HAVE_DL_H
 #include <dl.h>
@@ -538,11 +412,9 @@ void *dlsym(void *handle, char *name)
 #elif HAVE_DLFCN_H
 #include <dlfcn.h>
 
-#else 
+#else /* HAVE_DL_H */
 #error "No supported dynamic library API"
-#endif
-
-#endif
+#endif /* HAVE_DL_H */
 
 STATIC_ROUTINE char *nonblank( char *p)
 {
@@ -660,7 +532,6 @@ void *LibCallg(void **arglist, void * (*routine)())
 }
 
 
-#ifndef HAVE_VXWORKS_H
 STATIC_ROUTINE void  child_done(	/* Return: meaningless sts		*/
     int   sig			/* <r> signal number			*/
    )
@@ -742,32 +613,6 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
   return sts >> 8;
 }
 
-#endif
-#ifdef HAVE_VXWORKS_H
-
-
-static WDOG_ID wd;   /* vxworks NEED TO MAKE THREADSAFE */
-static SEM_ID sem;   /* vxworks NEED TO MAKE THREADSAFE */
-
-STATIC_ROUTINE void TimerExpired(int par)
-{
-  semGive(sem);
-}
-
-int LibWait(float *secs)
-{
-  if((sem = semBCreate(SEM_Q_FIFO, SEM_EMPTY)) == NULL)
-    return;
-  if((wd = wdCreate()) == NULL)
-    return;
-
-  wdStart(wd, sysClkRateGet() * *secs, (FUNCPTR)TimerExpired, 0);
-  semTake(sem, WAIT_FOREVER);
-  wdDelete(wd);
-  semDelete(sem);
-}
-
-#else
 
 
 int LibWait(float *secs)
@@ -779,8 +624,6 @@ int LibWait(float *secs)
 
   return 1;
 }
-
-#endif
 
 #endif
 
@@ -834,75 +677,6 @@ char *MdsDescrToCstring(struct descriptor *in)
 
 int LibSigToRet(){return 1;}
 
-#ifdef HAVE_VXWORKS_H
-#include <symLib.h>
-#include <taskLib.h>
-
-int LibSpawn(struct descriptor *cmd,int waitFlag, int notifyFlag)
-{
-/* In vxWorks it is possible to spawn function calls */
-
-    char *funcall = MdsDescrToCstring(cmd);
-    extern SYMTAB_ID sysSymTbl;
-    int status;
-    char *full_funcall;
-    SYM_TYPE type;
-    FUNCPTR fun;
-
-    full_funcall = malloc(strlen(funcall) + 2);
-    full_funcall[0] = '_';
-    strcpy(&full_funcall[1], funcall);
-    status = symFindByName(sysSymTbl, full_funcall, (char **)fun, &type);
-    if(status == ERROR)
-	return 0; /* Failed function lookup */
-    sp(fun, 0,0,0,0,0,0,0,0,0);
-    free(full_funcall);
-    free(funcall);
-    return 0;
-}
-
-int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
-{
-  extern SYMTAB_ID sysSymTbl;
-  int status;
-  char *full_symbol, *full_filename;
-  SYM_TYPE type;
-  char *c_symbol = MdsDescrToCstring(symbol), *c_filename;
-
-  full_symbol = malloc(strlen(c_symbol) + 2);
-#ifdef AXPVME
-  strcpy(&full_symbol[0], c_symbol);
-#else
-  full_symbol[0] = '_';
-  strcpy(&full_symbol[1], c_symbol);
-#endif
-  status = symFindByName(sysSymTbl, full_symbol, (char **)symbol_value, &type);
-  if(status == ERROR)
-    {
-      c_filename =  MdsDescrToCstring(filename);
-      full_filename = malloc(strlen(c_filename) + 3);
-      strcpy(full_filename, c_filename);
-      strcpy(&full_filename[strlen(c_filename)], ".o");
-      ld(1,0,full_filename);
-      status = symFindByName(sysSymTbl, full_symbol, (char **)symbol_value, &type);
-      free(c_filename);
-      free(full_filename);
-    }
-  free(full_symbol);
-  free(c_symbol);
-  if(status == ERROR) {
-
-    return LibKEYNOTFOU;
-  } else
-    return 1;  
-}
-
-char *LibFindImageSymbolErrString()
-{
-  return 0;
-}
-
-#else
 STATIC_THREADSAFE char *FIS_Error = 0;
 
 char *LibFindImageSymbolErrString()
@@ -1030,8 +804,6 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     return 1;  
 }
 
-#endif
-
 int StrConcat( struct descriptor *out, struct descriptor *first, ...)
 {
   int i;
@@ -1120,12 +892,6 @@ int StrGet1Dx(unsigned short *len, struct descriptor *out)
   out->pointer = *len ? malloc(*len) : NULL;
   return 1;
 }
-
-#ifdef HAVE_VXWORKS_H
-static int timezone = 0;   /* vxworks THREADSAFE ? */
-#endif
-
-
 
 int LibEmul(int *m1, int *m2, int *add, int64_t *prod)
 {
@@ -1423,7 +1189,6 @@ int LibConvertDateString(char *asc_time, int64_t *qtime)
       asc_time=time_out;
     }
   
-#ifndef HAVE_VXWORKS_H
 	{
     struct tm tm = {0,0,0,0,0,0,0,0,0};
     char *tmp;
@@ -1461,9 +1226,6 @@ int LibConvertDateString(char *asc_time, int64_t *qtime)
     tim -= _timezone;
 #endif
 }
-#else
-    tim = 0; /*It is vxWorks */
-#endif
   }
   if (tim > 0) {
     LibTimeToVMSTime(&tim,qtime);
@@ -1511,7 +1273,6 @@ time_t LibCvtTim(int *time_in,double *t)
 {
   double t_out;
   time_t bintim = time(&bintim);
-#ifndef HAVE_VXWORKS_H
   if (time_in)
   {
     int64_t time_local;
@@ -1534,19 +1295,12 @@ time_t LibCvtTim(int *time_in,double *t)
   }
   else
     bintim = (long)(t_out = (double)time(0));
-#else
-  bintim = t_out = time(0);
-#endif
   if (t != 0)
     *t = t_out;
   return(bintim);
 }
 #ifndef HAVE_WINDOWS_H
-#ifdef HAVE_VXWORKS_H
-#include <time.h>
-#else
 #include <sys/time.h>
-#endif
 #endif
 int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
@@ -1556,11 +1310,9 @@ int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
   time_t bintim = LibCvtTim(time_in,0);
   int64_t chunks=0;
   int64_t *time_q=(int64_t *)time_in;
-#ifndef HAVE_VXWORKS_H
   tzset();
-#endif
   if (time_in != NULL) {
-#ifdef HAVE_GETTIMEOFDAYx
+#ifdef HAVE_GETTIMEOFDAY
     int64_t tmp;
     struct timeval tv;
 	struct timezone tz;

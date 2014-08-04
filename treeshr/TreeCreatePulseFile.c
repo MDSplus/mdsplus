@@ -30,9 +30,6 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 ------------------------------------------------------------------------------*/
 #include "treeshrp.h" /* must be first or off_t is defined wrong */
 #include <STATICdef.h>
-#ifdef HAVE_VXWORKS_H
-#include <ioLib.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <mdsdescrip.h>

@@ -11,9 +11,7 @@
 #undef calloc
 #endif
 #include <stdlib.h>
-#ifndef HAVE_VXWORKS_H
 #include <pthread.h>
-#endif
 #include <stdio.h>
 #include <string.h>
 #include <signal.h>

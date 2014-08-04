@@ -15,9 +15,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifndef HAVE_VXWORKS_H
 #include <pwd.h>
-#endif
 #endif
 #define MAX_STREAMS 32
 static unsigned char message_id = 1;
@@ -330,9 +328,6 @@ static int ConnectToPort(char *host, char *service)
   struct servent *sp;
   static int one=1;
 
-#ifdef HAVE_VXWORKS_H
-  portnum = htons((atoi(service) == 0) ? 8000 : (unsigned short)atoi(service));
-#else
   if (atoi(service) == 0)
   {
     sp = getservbyname(service,"tcp");
@@ -347,7 +342,6 @@ static int ConnectToPort(char *host, char *service)
   }
   else
     portnum = htons((short)atoi(service));
-#endif
   if (portnum == 0)
   {
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",service,service);
@@ -385,9 +379,6 @@ static int ConnectToPort(char *host, char *service)
     user_p = pwd->pw_name;
 #else
     char *user_p;
-#ifdef HAVE_VXWORKS_H
-    user_p = "vxWorks";
-#else
 	struct passwd *passStruct = getpwuid(geteuid());
 	if(!passStruct) {
         /*
@@ -403,7 +394,6 @@ static int ConnectToPort(char *host, char *service)
       else
         user_p = passStruct->pw_name;
 
-#endif
 #endif
     m = malloc(sizeof(MsgHdr) + strlen(user_p));
     memset(m,0,sizeof(MsgHdr) + strlen(user_p));
@@ -475,9 +465,7 @@ int HostToIp(char *host, int *addr, short *port)
     *port = 0;
     return 1;
   }
-#ifndef HAVE_VXWORKS_H
   hp = gethostbyname(hostpart);
-#endif
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED))
   {
@@ -491,28 +479,14 @@ int HostToIp(char *host, int *addr, short *port)
   if (hp == NULL)
   {
     *addr = inet_addr(hostpart);
-#ifndef HAVE_VXWORKS_H
     if (*addr != 0xffffffff)
       hp = gethostbyaddr((void *) addr, (int) sizeof(* addr), AF_INET);
-#endif
   }
-#ifdef HAVE_VXWORKS_H
-  if (*addr == 0xffffffff)
-#else
   if (hp == NULL)
-#endif
   {
     printf("Error in MDSplus ConnectToPort: %s unknown\n",host);
     return INVALID_SOCKET;
   }
-#ifdef HAVE_VXWORKS_H
-  if (atoi(portpart) == 0)
-  {
-    *port=8000;
-  }
-  else
-    *port = (short)atoi(portpart);
-#else
   if (atoi(portpart) == 0)
   {
     sp = getservbyname(portpart,"tcp");
@@ -526,19 +500,15 @@ int HostToIp(char *host, int *addr, short *port)
   }
   else
     *port = (short)atoi(portpart);
-#endif
   if (*port == 0)
   {
     printf("Error in MDSplus ConnectToPort: Unknown service: %s\nSet environment variable %s if port is known\n",portpart,portpart);
     return INVALID_SOCKET;
   }
-/* for vxWorks addr is already filled in */
-#ifndef HAVE_VXWORKS_H
 #ifdef ANET
   memcpy(addr, hp->h_addr, sizeof(*addr));
 #else
   memcpy(addr, hp->h_addr_list[0], sizeof(*addr));
-#endif
 #endif
   return 1;
 }

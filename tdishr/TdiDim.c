@@ -59,12 +59,6 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <mdsdescrip.h>
 #include <tdimessages.h>
 #include <STATICdef.h>
-#ifdef HAVE_VXWORKS_H
-/*#define int64_t  long long
-#define uint64_t unsigned long long*/
-
-#define LONG_LONG_CONSTANT(value) value##ll
-#endif
 
 STATIC_CONSTANT char *cvsrev =
     "@(#)$RCSfile$ $Revision$ $Date$";
@@ -670,10 +664,8 @@ int Tdi3Ishft(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_WU:OperateU(unsigned short, short)
         case DTYPE_L:Operate(int)
         case DTYPE_LU:OperateU(unsigned int, int)
-#ifndef HAVE_VXWORKS_H
         case DTYPE_Q:Operate(int64_t)
         case DTYPE_QU:OperateU(uint64_t, int64_t)
-#endif
         default:return TdiINVDTYDSC;
     }
     return 1;
@@ -709,10 +701,8 @@ int Tdi3ShiftRight(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_WU:Operate(unsigned short, >>)
         case DTYPE_L:Operate(int, >>)
         case DTYPE_LU:Operate(unsigned int, >>)
-#ifndef HAVE_VXWORKS_H
         case DTYPE_Q:Operate(int64_t, >>)
         case DTYPE_QU:Operate(uint64_t, >>)
-#endif
         default:return TdiINVDTYDSC;
     }
     return 1;
@@ -729,10 +719,8 @@ int Tdi3ShiftLeft(struct descriptor *in1, struct descriptor *in2,
         case DTYPE_WU:Operate(unsigned short, <<)
         case DTYPE_L:Operate(int, <<)
         case DTYPE_LU:Operate(unsigned int, <<)
-#ifndef HAVE_VXWORKS_H
         case DTYPE_Q:Operate(int64_t, <<)
         case DTYPE_QU:Operate(uint64_t, <<)
-#endif
         default:return TdiINVDTYDSC;
     }
     return 1;

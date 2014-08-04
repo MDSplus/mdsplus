@@ -16,10 +16,8 @@ extern unsigned short OpcCompile;
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <STATICdef.h>
-#ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
+#ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-#endif
 #endif
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL

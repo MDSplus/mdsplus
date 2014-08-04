@@ -8,7 +8,7 @@
 #if defined(WIN32)
 #include <io.h>
 #include <windows.h>
-#elif !defined(HAVE_VXWORKS_H)
+#else
 #include <pwd.h>
 #endif
 struct descriptor *whoami() {
@@ -25,15 +25,11 @@ struct descriptor *whoami() {
     pwd = getpwuid(geteuid());
     ans.pointer = pwd->pw_name;
 #else
-#ifdef HAVE_VXWORKS_H
-    ans.pointer = "vxWorks";
-#else
     struct passwd *passStruct = getpwuid(geteuid());
     if(!passStruct)
       ans.pointer = "Linux";
     else
       ans.pointer = passStruct->pw_name;
-#endif
 #endif
     ans.length=(unsigned short)strlen(ans.pointer);
   }

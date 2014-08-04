@@ -15,9 +15,6 @@
 #include <stdlib.h>
 #include <tdimessages.h>
 #include "tdirefstandard.h"
-#ifdef HAVE_VXWORKS_H
-#undef MAX
-#endif
 
 #include <mdsshr.h>
 

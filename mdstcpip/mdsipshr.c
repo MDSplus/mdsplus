@@ -459,7 +459,6 @@ void MdsSetClientAddr(int addr) { ClientAddr = addr; }
 char *MdsGetServerPortname() {return ServerPortname;}
 int MdsGetClientAddr() {return ClientAddr;}
 
-#ifndef HAVE_VXWORKS_H
 
 int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
@@ -576,4 +575,3 @@ int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
   return MdsSetCompression((SOCKET)((char *)lpvArgv[0] - (char *)0),(int)((char *)lpvArgv[1] - (char *)0));
 }
 
-#endif //HAVE_VXWORKS_H

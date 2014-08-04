@@ -1,6 +1,4 @@
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#endif
 #include <libroutines.h>
 #include <STATICdef.h>
 #include "treethreadsafe.h"
@@ -72,7 +70,6 @@ void LockTreeMutex(pthread_mutex_t *mutex,int *initialized)
   if(!*initialized)
   {
 #ifndef HAVE_WINDOWS_H
-#ifndef HAVE_VXWORKS_H
     pthread_mutexattr_t m_attr;
     pthread_mutexattr_init(&m_attr);
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
@@ -82,9 +79,6 @@ void LockTreeMutex(pthread_mutex_t *mutex,int *initialized)
     pthread_mutexattr_settype(&m_attr,PTHREAD_MUTEX_RECURSIVE);
 #endif
     pthread_mutex_init(mutex,&m_attr);
-#else
-    pthread_mutex_init(mutex);
-#endif
 #endif
     *initialized = 1;
   }

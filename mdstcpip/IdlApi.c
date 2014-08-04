@@ -57,7 +57,6 @@ void main () {}
 
 // End of Mac Changes
 #endif
-#ifndef HAVE_VXWORKS_H
 
 EXPORT int  IdlMdsClose(int lArgc, void * * lpvArgv)
 {
@@ -165,4 +164,3 @@ EXPORT int IdlSetCompressionLevel(int lArgc, void * * lpvArgv)
   return MdsSetCompression((int)((char *)lpvArgv[0] - (char *)0),(int)((char *)lpvArgv[1] - (char *)0));
 }
 
-#endif //HAVE_VXWORKS_H

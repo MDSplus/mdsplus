@@ -52,9 +52,6 @@ static int DoLogin(int id) {
   user_p = pwd->pw_name;
 #else
   char *user_p;
-#ifdef HAVE_VXWORKS_H
-  user_p = "vxWorks";
-#else
   struct passwd *passStruct = getpwuid(geteuid());
   if(!passStruct){
     /* 
@@ -69,7 +66,6 @@ static int DoLogin(int id) {
   }
   else
     user_p = passStruct->pw_name;
-#endif
 #endif
   m = malloc(sizeof(MsgHdr) + strlen(user_p));
   memset(m,0,sizeof(MsgHdr) + strlen(user_p));

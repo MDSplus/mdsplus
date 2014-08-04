@@ -6,6 +6,9 @@
 #include "treeshrp.h"
 #include <config.h>
 #include <mdstypes.h>
+#ifdef HAVE_PTHREAD_H
+#include <pthread.h>
+#endif
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>
@@ -17,9 +20,6 @@
 */
 #else
 #include <unistd.h>
-#ifndef HAVE_VXWORKS_H
-#include <pthread.h>
-#endif
 #endif
 #include <STATICdef.h>
 #include <time.h>
@@ -50,9 +50,7 @@
 #endif
 
 
-#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
 #define MAX_DIMS 7
 struct descrip { char dtype;
                  char ndims;
@@ -69,19 +67,13 @@ extern void TranslateLogicalFree(char *);
 extern int LibFindImageSymbol();
 
 
-#ifdef HAVE_WINDOWS_H
-#define pthread_mutex_t int
-static void LockMdsShrMutex(){}
-static void UnlockMdsShrMutex(){}
-#else
-#ifdef HAVE_VXWORKS_H
+#if !defined(HAVE_PTHREAD_H)
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}
 #else
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
-#endif
 #endif
 
 extern void TreePerfWrite(int);
@@ -1557,8 +1549,6 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
         HANDLE h = (HANDLE)_get_osfhandle(FDS[fd-1].fd);
 	status = UnlockFileEx(h,0,(DWORD)size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
       }
-#elif defined (HAVE_VXWORKS_H)
-        status = TreeSUCCESS;
 #else
         struct flock flock_info;
         struct stat stat;
@@ -1574,7 +1564,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
     }
     else
       status = io_lock_remote(fd,offset,size,mode_in,deleted);
-#if !(defined(HAVE_VXWORKS) || defined(HAVE_WINDOWS_H))
+#if !defined(HAVE_WINDOWS_H)
     //ThreadLock(fd,offset,size,mode_in);
 #endif
   }
@@ -1750,13 +1740,7 @@ int MDS_IO_RENAME(char *filename_old, char *filename_new)
   }
   else
   {
-#ifdef HAVE_VXWORKS_H
-    status = copy(filename_old, filename_new);
-    if (status != -1)
-      remove(filename_old);
-#else
     status = rename(filename_old, filename_new);
-#endif
   }
   free(tmp_old);
   free(tmp_new);

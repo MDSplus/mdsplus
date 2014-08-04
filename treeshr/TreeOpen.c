@@ -22,10 +22,6 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef HAVE_VXWORKS_H
-#include <ioLib.h>
-#endif
-
 #ifdef HAVE_SYS_RESOURCE_H
 #ifdef __APPLE__
 #include <sys/time.h>
@@ -40,9 +36,7 @@ extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 
 int treeshr_errno = 0;
-#ifndef HAVE_VXWORKS_H
 extern int MDSEventCan();
-#endif
 static void RemoveBlanksAndUpcase(char * out, char const * in);
 static int CloseTopTree(PINO_DATABASE *dblist, int call_hook);
 static int ConnectTree(PINO_DATABASE *dblist, char *tree, NODE *parent, char *subtree_list);
@@ -330,15 +324,13 @@ static int CloseTopTree(PINO_DATABASE *dblist, int call_hook)
       {
         if (local_info->blockid == TreeBLOCKID)
         {
-#ifndef HAVE_VXWORKS_H
           if (local_info->rundown_id)
           MDSEventCan(local_info->rundown_id);
-#endif
 	  if (local_info->channel)
 	    MDS_IO_CLOSE(local_info->channel);
           if (local_info->section_addr[0])
           {
-#if (!defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
+#if !defined(HAVE_WINDOWS_H)
 	    if (local_info->mapped) {
 	      status = (munmap(local_info->section_addr[0],local_info->alq * 512) == 0) ? TreeSUCCESS : TreeFAILURE; 
 	    }
@@ -886,7 +878,7 @@ static int  OpenOne(TREE_INFO *info, char *tree, int shot, char *type,int new,ch
         else
         {
           fd = MDS_IO_OPEN(resnam,edit_flag ? O_RDWR : O_RDONLY,0);
-#if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__)) && !defined(HAVE_VXWORKS_H)
+#if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__))
           info->mapped = (MDS_IO_SOCKET(fd) == -1);
 #endif
         }
@@ -1017,7 +1009,7 @@ static int MapFile(int fd, TREE_INFO *info, int edit_flag, int nomap)
     {
 		status = (MDS_IO_READ(fd,(void *)info->section_addr[0], 512 * info->alq) == (512*info->alq)) ? TreeNORMAL : TreeFAILURE;
     }
-#if (!defined (HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H))
+#if (!defined (HAVE_WINDOWS_H))
     else
     {
 #ifndef MAP_FILE

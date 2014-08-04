@@ -60,11 +60,6 @@ extern int TdiUnary();
 extern int Tdi3Multiply();
 extern int CvtConvertFloat();
 
-#ifdef HAVE_VXWORKS_H
-#undef min
-#undef max
-#endif
-
 #define min(a,b) ((a)<(b)) ? (a) : (b)
 #define max(a,b) ((a)<(b)) ? (b) : (a)
 

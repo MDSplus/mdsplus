@@ -17,9 +17,7 @@ int RemoveConnection(int conid) {
     for (e=c->event; e; e=nexte) {
       nexte = e->next;
     /**/
-#ifndef HAVE_VXWORKS_H
       MDSEventCan(e->eventid);
-#endif
     /**/
       if (e->info_len > 0) free(e->info);
       free(e);

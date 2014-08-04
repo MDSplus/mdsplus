@@ -28,9 +28,7 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 
 extern void **TreeCtx();
 
-#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
 
 int TreeGetRecord(int nid_in, struct descriptor_xd *dsc) {return _TreeGetRecord(*TreeCtx(),nid_in,dsc);}
 

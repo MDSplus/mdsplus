@@ -83,8 +83,6 @@ static int lock_file(int fd, int64_t offset,  int size, int mode_in, int *delete
     HANDLE h = (HANDLE)_get_osfhandle(fd);
     status = UnlockFileEx(h,0,size,0,&overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
   }
-#elif defined (HAVE_VXWORKS_H)
-  status = TreeSUCCESS;
 #else
   struct stat stat;
   struct flock flock_info;
@@ -419,9 +417,7 @@ static Message *ExecuteMessage(Connection *c) {
     memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
     evname[c->descrip[1]->length] = 0;
     
- #ifndef HAVE_VXWORKS_H
     status = MDSEventAst(evname,(void (*)(void *,int,char *))ClientEventAst,newe,&newe->eventid);
-#endif
     free(evname); 
  /**/
     if (java) {
@@ -466,9 +462,7 @@ static Message *ExecuteMessage(Connection *c) {
       for(p=&c->event,e=c->event;e && (e->eventid != eventid) ;p=&e->next,e=e->next);
       if (e) {
 	/**/
-#ifndef HAVE_VXWORKS_H
         MDSEventCan(e->eventid);
-#endif
 	/**/
         *p = e->next;
         free(e);
@@ -784,16 +778,7 @@ Message *ProcessMessage(Connection *c, Message *message) {
     case MDS_IO_RENAME_K:
       {
         DESCRIPTOR_LONG(status_d,0);
-#ifdef HAVE_VXWORKS_H
-        int status = copy(message->bytes,message->bytes+strlen(message->bytes)+1);
-        if (status == 0) {
-          status = remove(message->bytes);
-          if (status != 0)
-            remove(message->bytes+strlen(message->bytes)+1);
-        }
-#else
         int status = rename(message->bytes,message->bytes+strlen(message->bytes)+1);
-#endif
         status_d.pointer = (char *)&status;
         ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&status_d);
 	break;

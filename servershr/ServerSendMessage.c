@@ -815,9 +815,7 @@ static void RemoveClient(Client *c, fd_set *fdactive) {
 static unsigned int GetHostAddr(char *host) {
   unsigned int addr = 0;
   struct hostent *hp = NULL;
-#ifndef vxWorks
   hp = gethostbyname(host);
-#endif
 #ifdef _WIN32
   if ((hp == NULL) && (WSAGetLastError() == WSANOTINITIALISED)){
 	  WSADATA wsaData;
@@ -829,14 +827,10 @@ static unsigned int GetHostAddr(char *host) {
 #endif
   if (hp == NULL) {
     addr = inet_addr(host);
-#ifndef vxWorks
     if (addr != 0xffffffff)
     	hp = gethostbyaddr((void *) &addr, (int) sizeof(addr), AF_INET);
-#endif
   }
-#ifndef vxWorks
   addr = (hp == NULL) ? 0 : *(unsigned int *)hp->h_addr_list[0];
-#endif
   return addr == 0xffffffff ? 0 : addr;
 }
 

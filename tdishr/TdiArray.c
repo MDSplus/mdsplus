@@ -15,9 +15,7 @@
         Limitation: product of dimensions must not exceed virtual-memory paging space.
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#endif
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <tdimessages.h>
@@ -225,15 +223,9 @@ int Tdi3Random(struct descriptor_a *out_ptr)
         srand((unsigned int)time(0) + _getpid());
         Tdi_RandomSeed = rand();
 #else
-#ifdef HAVE_VXWORKS_H
-        srandom(time(0));
-        Tdi_RandomSeed = random();
-
-#else
         srandom(time(0) + getpid());
         Tdi_RandomSeed = random();
 
-#endif
 #endif
     }
     N_ELEMENTS(out_ptr, n);

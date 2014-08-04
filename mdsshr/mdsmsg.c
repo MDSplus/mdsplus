@@ -22,8 +22,6 @@
 #include        <libroutines.h>
 #define isatty(a) _isatty(a)
 #define fileno _fileno
-#elif defined(HAVE_VXWORKS_H)
-#include 	<time.h>
 #else
 #include        <sys/time.h>
 #include        <unistd.h>
@@ -44,9 +42,7 @@
 		 *=======================================================*/
 #define ALREADY_DISPLAYED  0x80000000
 
-#ifndef HAVE_VXWORKS_H
 #include        "servershr.h"
-#endif
 /**********************************************************************
 * MDSMSG.C --
 *
@@ -65,10 +61,8 @@
 		 * Function prototypes ...
 		 *=======================================================*/
 extern void StrCopyDx();
-#ifndef HAVE_VXWORKS_H
 extern int MDSprintf( char *fmt , ... );
 extern int MDSfprintf( FILE *fp , char *fmt , ... );
-#endif
 
 	/*****************************************************************
 	 * getFacility:
@@ -101,14 +95,12 @@ STATIC_ROUTINE int   getFacility(	/* Return: num entries in stsText[]	*/
         *facilityText = "CCL";
         max = sizeof(ccl_stsText)/sizeof(ccl_stsText[0]);
        }
-#ifndef HAVE_VXWORKS_H
     else if (facility == SERVERSHR_FACILITY)
        {
         *stsText = servershr_stsText;		/* point to array		*/
         *facilityText = "SERVER";
         max = sizeof(servershr_stsText)/sizeof(servershr_stsText[0]);
        }
-#endif
     else if (facility == TDI_FACILITY)
        {
         *stsText = tdi_stsText;		/* point to array		*/

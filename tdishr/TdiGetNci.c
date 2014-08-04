@@ -23,9 +23,7 @@
         NEED to be careful about any new names. They could take away uniqueness from existing code.
 */
 #include <STATICdef.h>
-#ifndef HAVE_VXWORKS_H
 #undef MAX
-#endif
 #define EOL {0,NciEND_OF_LIST,0,0}
 #define NID_NUMBER -1
 #define RECORDIDX -2

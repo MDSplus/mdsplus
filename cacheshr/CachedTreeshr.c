@@ -1285,14 +1285,6 @@ EXPORT void RTreeCacheReset()
 
 }
 #else 
-#ifdef HAVE_VXWORKS_H
-EXPORT void RTreeCacheReset()
-{
-	if(!cache) cache = getCache(cacheSize);
-
-}
-#else
-
 //For Linux only: remove all persistent semaphores
 EXPORT void RTreeCacheReset()
 {
@@ -1306,9 +1298,6 @@ EXPORT void RTreeCacheReset()
 	if(!cache) cache = getCache(cacheSize);
  }
 
-
-
-#endif
 #endif
 
 

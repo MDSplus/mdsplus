@@ -265,9 +265,6 @@ static int UDTV6_disconnect(int conid) {
   struct sockaddr_in6 sin;
   socklen_t n=sizeof(sin);
   struct hostent *hp=0;
-#ifdef HAVE_VXWORKS_H
-  char hostent_buf[512];
-#endif
   if (s != -1) {
     Client *c,**p;
     for (p=&ClientList,c=ClientList;c && c->id != conid; p=&c->next,c=c->next);

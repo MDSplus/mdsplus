@@ -28,9 +28,7 @@
 	Description:
 
 +-----------------------------------------------------------------------------*/
-#ifndef HAVE_VXWORKS_H
 #include <config.h>
-#endif
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>

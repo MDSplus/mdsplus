@@ -11,7 +11,6 @@ int TreeCallHook(TreeshrHookType htype, TREE_INFO *info, int nid)
   STATIC_CONSTANT DESCRIPTOR(rtnname,"Notify");
   STATIC_THREADSAFE int (*Notify)(TreeshrHookType,char *, int,int) = 0;
   int status = 1;
-#ifndef HAVE_VXWORKS_H
   if (Notify != (int (*)(TreeshrHookType,char *,int,int))-1)
   {
     if (Notify == 0)
@@ -24,6 +23,5 @@ int TreeCallHook(TreeshrHookType htype, TREE_INFO *info, int nid)
       status = 1;
     }
   }
-#endif
   return status;
 }
