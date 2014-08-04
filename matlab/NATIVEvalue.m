@@ -24,19 +24,19 @@ else
             case 'MDSplus.Int64Array'
                 result = reshape(mdsthing.getLongArray, shape);
             case 'MDSplus.Uint64Array'
-                result = typecast(reshape(mdsthing.getLongArray, shape), 'uint64');
+                result = reshape(typecast(mdsthing.getLongArray, 'uint64'), shape);
             case 'MDSplus.Int32Array'
                 result = reshape(mdsthing.getIntArray, shape);
             case 'MDSplus.Uint32Array'
-                result = typecast(reshape(mdsthing.getIntArray, shape), 'uint32');
+                result = reshape(typecast(mdsthing.getIntArray, 'uint32'), shape);
             case 'MDSplus.Int16Array'
                 result = reshape(mdsthing.getShortArray, shape);
             case 'MDSplus.Uint16Array'
-                result = typecast(reshape(mdsthing.getShortArray, shape), 'uint16');
+                result = reshape(typecast(mdsthing.getShortArray, 'uint16'), shape);
             case 'MDSplus.Int8Array'
                 result = reshape(mdsthing.getByteArray, shape);
             case 'MDSplus.Uint8Array'
-                result = typecast(reshape(mdsthing.getByteArray, shape), 'uint8');
+                result = reshape(typecast(mdsthing.getByteArray, 'uint8'), shape);
             case 'MDSplus.Float64Array'
                 result = double(reshape(mdsthing.getDoubleArray, shape));
             case 'MDSplus.Float32Array'
@@ -63,7 +63,7 @@ else
             case 'MDSplus.Int8'
                 result = mdsthing.getByteArray();
             case 'MDSplus.Uint8'
-                result = typecast(mdsthing.getByteArray(), 'uint8'))
+                result = typecast(mdsthing.getByteArray(), 'uint8');
             case 'MDSplus.Float64'
                 result = mdsthing.getDoubleArray();
             case 'MDSplus.Float32'
