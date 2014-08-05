@@ -1337,6 +1337,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
 	jclass treeCls;
 	jmethodID constr;
 	jvalue args[2];
+	void *ctx;
 	
 	DBI_ITM dbiItems[] = {
 		{1024, DbiNAME, name, &retNameLen},
@@ -1349,10 +1350,9 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
 		throwMdsException(env, status);
 		return NULL;
 	}
-
 	treeCls = (*env)->FindClass(env, "MDSplus/Tree");
 	constr = (*env)->GetStaticMethodID(env, treeCls, "getTree", "(Ljava/lang/String;I)LMDSplus/Tree;");
-	args[0].l = (*env)->NewStringUTF(env, name);
+	args[0].l = (*env)->NewStringUTF(env, "");
 	args[1].i = shot;
 
 	return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
@@ -1369,14 +1369,19 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
 JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
   (JNIEnv *env, jobject jobj, jstring jname, jint shot, jboolean readonly)
 {
-	int status, ctx1, ctx2;
+	int status=1, ctx1, ctx2;
 	const char *name;
 	void *ctx = 0;		   
 	jfieldID ctx1Fid, ctx2Fid;
 	jclass cls;
 	
 	name = (*env)->GetStringUTFChars(env, jname, 0);
-	status = _TreeOpen(&ctx, (char *)name, shot, readonly?1:0);
+        if (strlen(name)>0)
+	  status = _TreeOpen(&ctx, (char *)name, shot, readonly?1:0);
+        else {
+	  ctx=TreeSwitchDbid(NULL);
+	  TreeSwitchDbid(ctx);
+        }
 	(*env)->ReleaseStringUTFChars(env, jname, name);
 	if(!(status & 1))
 	{
