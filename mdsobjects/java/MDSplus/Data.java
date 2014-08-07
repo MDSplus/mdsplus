@@ -93,6 +93,8 @@ public class Data {
         // like a function call) a clone of the cache is returned by method data()
 	Data dataCache;
 	boolean changed = true;
+        //Tree context information. Possibly set by TreeNode.getData() and used in compile(), execute() and data()
+        Tree ctxTree = null;
 	boolean isImmutable() {return false;}
         boolean hasChanged() {return !isImmutable() || changed;}
         public Data(){}
@@ -105,7 +107,10 @@ public class Data {
         }
 
         public double[]toDouble()throws Exception {return getDoubleArray();}
-        
+        public void setCtxTree(Tree ctxTree)
+        {
+            this.ctxTree = ctxTree;
+        }
         
         static {
             try {
@@ -130,6 +135,22 @@ public class Data {
             return compile(expr, new Data[0]);
         }
 	public static native Data compile(java.lang.String expr, Data[] args);
+        public Data executeWithContext(java.lang.String expr, Data[] args)
+        {
+            if(ctxTree != null && ctxTree.isOpen())
+            {
+                 try {
+                    Data data;
+                    Tree currTree = Tree.getActiveTree();
+                    Tree.setActiveTree(ctxTree);
+                    data = execute(expr, args);
+                    Tree.setActiveTree(ctxTree);
+                    return data;
+                }catch(Exception exc){return execute(expr, args); }
+            }
+            else
+              return  execute(expr, args); 
+        }
 	public static native Data execute(java.lang.String expr, Data[] args);
 
 	/**
@@ -151,7 +172,18 @@ public class Data {
         {
             if(hasChanged())
             {
-                dataCache = dataData();
+                //Set the right context is any assiotated with this Data instance
+                if(ctxTree != null && ctxTree.isOpen())
+                {
+                    try {
+                        Tree currTree = Tree.getActiveTree();
+                        Tree.setActiveTree(ctxTree);
+                        dataCache = dataData();
+                        Tree.setActiveTree(currTree);
+                    }catch(Exception exc){}
+                }
+                else
+                    dataCache = dataData();
                 changed = false;
             }
             return dataCache.cloneData();
@@ -179,7 +211,7 @@ public class Data {
 	 */
 	public  byte getByte() throws MdsException
         {
-            Data data = execute("BYTE($1)", new Data[]{this});
+            Data data = executeWithContext("BYTE($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot convert Data to byte");
             return data.getByte();
@@ -192,7 +224,7 @@ public class Data {
 	 */
 	public  short getShort() throws MdsException
         {
-            Data data = execute("WORD($1)", new Data[]{this});
+            Data data = executeWithContext("WORD($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot convert Data to byte");
             return data.getShort();
@@ -205,7 +237,7 @@ public class Data {
 	 */
 	public  int getInt() throws MdsException
         {
-            Data data = execute("LONG($1)", new Data[]{this});
+            Data data = executeWithContext("LONG($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot convert Data to int");
             return data.getInt();
@@ -219,7 +251,7 @@ public class Data {
 	 */
 	public  long getLong() throws MdsException
         {
-            Data data = execute("QUADWORD($1)", new Data[]{this});
+            Data data = executeWithContext("QUADWORD($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot convert Data to long");
             return data.getLong();
@@ -232,7 +264,7 @@ public class Data {
 	 */
 	public  float getFloat()throws MdsException
         {
-            Data data = execute("FLOAT($1)", new Data[]{this});
+            Data data = executeWithContext("FLOAT($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot convert Data to float");
             return data.getFloat();
@@ -245,7 +277,7 @@ public class Data {
 	 */
 	public  double getDouble()throws MdsException
         {
-            Data data = execute("FT_FLOAT($1)", new Data[]{this});
+            Data data = executeWithContext("FT_FLOAT($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot convert Data to double");
             return data.getDouble();
@@ -258,7 +290,7 @@ public class Data {
 	 */
 	public  int[] getShape() throws MdsException
         {
-            Data data = execute("SHAPE($1)", new Data[]{this});
+            Data data = executeWithContext("SHAPE($1)", new Data[]{this});
             if(!(data instanceof Scalar))
                 throw new MdsException("Cannot get data shape");
             return data.getIntArray();
@@ -273,7 +305,7 @@ public class Data {
 	 */
 	public  byte[] getByteArray() throws MdsException
         {
-            Data data = execute("BYTE($1)", new Data[]{this});
+            Data data = executeWithContext("BYTE($1)", new Data[]{this});
             if(!(data instanceof Scalar) && !(data instanceof Array))
                 throw new MdsException("Cannot convert Data to byte array");
             return data.getByteArray();
@@ -288,7 +320,7 @@ public class Data {
 	 */
 	public  short[] getShortArray()throws MdsException
         {
-            Data data = execute("WORD($1)", new Data[]{this});
+            Data data = executeWithContext("WORD($1)", new Data[]{this});
             if(!(data instanceof Scalar) && !(data instanceof Array))
                 throw new MdsException("Cannot convert Data to short array");
             return data.getShortArray();
@@ -303,7 +335,7 @@ public class Data {
 	 */
 	public  int[] getIntArray()throws MdsException
         {
-            Data data = execute("LONG($1)", new Data[]{this});
+            Data data = executeWithContext("LONG($1)", new Data[]{this});
             if(!(data instanceof Scalar) && !(data instanceof Array))
                 throw new MdsException("Cannot convert Data to int array");
             return data.getIntArray();
@@ -317,7 +349,7 @@ public class Data {
 	 */
 	public  long[] getLongArray()throws MdsException
         {
-            Data data = execute("QUADWORD($1)", new Data[]{this});
+            Data data = executeWithContext("QUADWORD($1)", new Data[]{this});
             if(!(data instanceof Scalar) && !(data instanceof Array))
                 throw new MdsException("Cannot convert Data to long array");
             return data.getLongArray();
@@ -331,7 +363,7 @@ public class Data {
 	 */
 	public  float[] getFloatArray()throws MdsException
         {
-            Data data = execute("FLOAT($1)", new Data[]{this});
+            Data data = executeWithContext("FLOAT($1)", new Data[]{this});
             if(!(data instanceof Scalar) && !(data instanceof Array))
                 throw new MdsException("Cannot convert Data to float array");
             return data.getFloatArray();
@@ -345,7 +377,7 @@ public class Data {
 	 */
 	public  double[] getDoubleArray()throws MdsException
         {
-            Data data = execute("FT_FLOAT($1)", new Data[]{this});
+            Data data = executeWithContext("FT_FLOAT($1)", new Data[]{this});
             if(!(data instanceof Scalar) && !(data instanceof Array))
                 throw new MdsException("Cannot convert Data to double array");
             return data.getDoubleArray();
@@ -455,7 +487,7 @@ public class Data {
 
         public Data getDimensionAt(int idx)
         {
-            return Data.execute("DIM_OF($)", new Data[]{this});
+            return executeWithContext("DIM_OF($)", new Data[]{this});
         }
         public void plot()
         {
