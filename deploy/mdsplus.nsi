@@ -172,8 +172,12 @@ SectionEnd
 
 Section LabView
 SetOutPath "$INSTDIR"
-File /r LabView
-File 
+File /r /x MDSplus LabView
+SetOutPath "$INSTDIR\mdsobjects\LabView"
+File /r MDSplus
+SetOutPath "$INSTDIR\mdsobjects\LabView\MDSplus"
+File "/oname=MdsObjectsCppShr.dll" bin_x86/MdsObjectsCppShr.dll
+File "/oname=MDSobjectsLVShr.dll" bin_x86/MDSobjectsLVShr.dll
 SectionEnd
 
 Section EPICS
