@@ -679,7 +679,7 @@ cd ..
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
-            --with-gsi=/usr:gcc${bits}
+            --with-gsi=/usr:gcc${bits} \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
