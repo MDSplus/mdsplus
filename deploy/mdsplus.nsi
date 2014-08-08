@@ -112,7 +112,7 @@ File "/oname=${DLLIB}" ${MINGWLIB64}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
 File "/oname=${TERMCAPLIB}" ${MINGWLIB64}/${TERMCAPLIB}
 File "/oname=${GCC_STDCPP_LIB}" ${MINGWLIB64}/${GCC_STDCPP_LIB}
-File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB64}/${GCC_S_SW2_LIB}
+;File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB64}/${GCC_S_SW2_LIB}
 ${EndIf}
 SetOutPath "$INSTDIR"
 File /r /x *.a bin_x86
@@ -123,7 +123,7 @@ File "/oname=${DLLIB}" ${MINGWLIB32}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB32}/${READLINELIB}
 File "/oname=${TERMCAPLIB}" ${MINGWLIB32}/${TERMCAPLIB}
 File "/oname=${GCC_STDCPP_LIB}" ${MINGWLIB32}/${GCC_STDCPP_LIB}
-File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB32}/${GCC_S_SW2_LIB}
+;File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB32}/${GCC_S_SW2_LIB}
 SetOutPath "\"
 SetOverWrite off
 File "/oname=mdsip.hosts" etc\mdsip.hosts
@@ -173,6 +173,7 @@ SectionEnd
 Section LabView
 SetOutPath "$INSTDIR"
 File /r LabView
+File 
 SectionEnd
 
 Section EPICS
