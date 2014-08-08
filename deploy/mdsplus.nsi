@@ -20,6 +20,8 @@ RequestExecutionLevel admin
 !define DLLIB libdl.dll
 !define READLINELIB libreadline6.dll
 !define GCC_S_SJLJ_LIB libgcc_s_sjlj-1.dll
+!define GCC_STDCPP_LIB libstdc++-6.dll
+!define GCC_S_SW2_LIB libgcc-s_dw2-1.dll
 LicenseData "MDSplus-License.rtf"
  
 Page license
@@ -45,6 +47,20 @@ function .onInit
 	${Else}
 	      StrCpy $INSTDIR $PROGRAMFILES32\MDSplus
 	${EndIf}
+  	ReadRegStr $R0 HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString"
+  	StrCmp $R0 "" done
+ 
+	MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+  	"MDSplus is already installed. $\n$\nClick `OK` to remove the \
+  	previous version or `Cancel` to cancel this upgrade." \
+  	IDOK uninst
+  	Abort
+ 
+;Run the uninstaller
+uninst:
+	ClearErrors
+  	ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+ done:
 functionEnd
 
 function .onINstSuccess
@@ -68,7 +84,7 @@ CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
 ${If} ${RunningX64}
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '$SYSDIR\cmd.exe /c "$INSTDIR\bin_x86_64\mdstcl.bat"' "" "$INSTDIR\bin_x86_64\icons.exe" 1
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$SYSDIR\cmd.exe $\/c $\"$INSTDIR\bin_x86_64\mdstcl.bat$\"" "" "$INSTDIR\bin_x86_64\icons.exe" 1
 ${Else}
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest.lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86\mdstcl.bat" "" "$INSTDIR\bin_x86\icons.exe" 1
@@ -95,6 +111,8 @@ File "/oname=${PTHREADLIB}" ${MINGWLIB64}/${PTHREADLIB}
 File "/oname=${DLLIB}" ${MINGWLIB64}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
 File "/oname=${TERMCAPLIB}" ${MINGWLIB64}/${TERMCAPLIB}
+File "/oname=${GCC_STDCPP_LIB}" ${MINGWLIB64}/${GCC_STTCPP_LIB}
+File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB64}/${GCC_S_SW2_LIB}
 ${EndIf}
 SetOutPath "$INSTDIR"
 File /r /x *.a bin_x86
@@ -104,30 +122,32 @@ File "/oname=${GCC_S_SJLJ_LIB}" ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
 File "/oname=${DLLIB}" ${MINGWLIB32}/${DLLIB}
 File "/oname=${READLINELIB}" ${MINGWLIB32}/${READLINELIB}
 File "/oname=${TERMCAPLIB}" ${MINGWLIB32}/${TERMCAPLIB}
+File "/oname=${GCC_STDCPP_LIB}" ${MINGWLIB32}/${GCC_STTCPP_LIB}
+File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB32}/${GCC_S_SW2_LIB}
 SetOutPath "\"
 SetOverWrite off
 File "/oname=mdsip.hosts" etc\mdsip.hosts
 SetOverWrite on
 
 # Registry information for add/remove programs
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayName" "MDSplus${FLAVOR}"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "UninstallString" "$INSTDIR\uninstall.exe"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "InstallLocation" "$INSTDIR"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayIcon" "INSTDIR\mdsplus.ico"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "Publisher" "MDSplus Collaboratory"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "HelpLink" "${HELPURL}"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "InstallSource" "http://www.mdsplus.org/dist/SOURCES/mdsplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.tgz"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "URLUpdateInfo" "${UPDATEURL}"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "URLInfoAbout" "${ABOUTURL}"
-WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "VersionMajor" ${MAJOR}
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "VersionMinor" ${MINOR}
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "UninstallString" "$INSTDIR\uninstall.exe"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "QuietUninstallString" "$INSTDIR\uninstall.exe /S"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallLocation" "$INSTDIR"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayIcon" "INSTDIR\mdsplus.ico"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "Publisher" "MDSplus Collaboratory"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "HelpLink" "${HELPURL}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "InstallSource" "http://www.mdsplus.org/dist/SOURCES/mdsplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.tgz"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLUpdateInfo" "${UPDATEURL}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "URLInfoAbout" "${ABOUTURL}"
+WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayVersion" "${MAJOR}.${MINOR}.${RELEASE}"
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMajor" ${MAJOR}
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "VersionMinor" ${MINOR}
 # There is no option for modifying or repairing the install
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "NoModify" 1
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "NoRepair" 1
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoModify" 1
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "NoRepair" 1
 # Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
-WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}" "EstimatedSize" ${INSTALLSIZE}
+WriteRegDWORD HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "EstimatedSize" ${INSTALLSIZE}
 SectionEnd
 
 Section "Sample Trees"
@@ -146,8 +166,8 @@ Section "JAVA"
 SetOutPath $INSTDIR
 SetShellVarContext all
 File /r /x desktop java
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" '$SYSDIR\cmd.exe /c "$INSTDIR\bin_x86\jScope.bat"' "" "$INSTDIR\bin_x86\icons.exe" 4 SW_SHOWMINIMIZED
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" '$SYSDIR\cmd.exe /c "$INSTDIR\bin_x86\traverser.bat"' "" $INSTDIR\bin_x86\icons.exe" 3 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$SYSDIR\cmd.exe \$/c $\"$INSTDIR\bin_x86\jScope.bat$\"" "" "$INSTDIR\bin_x86\icons.exe" 4 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$SYSDIR\cmd.exe \$/c $\"$INSTDIR\bin_x86\traverser.bat$\"" "" $INSTDIR\bin_x86\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd
 
 Section LabView
