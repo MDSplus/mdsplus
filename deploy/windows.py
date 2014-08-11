@@ -52,7 +52,7 @@ echo mdsplus | signcode -spc /mnt/scratch/mdsplus/mdsplus.spc \
          -n MDSplus  \
          -i http://www.mdsplus.org/ \
          -t http://timestamp.verisign.com/scripts/timestamp.dll \
-         -tr 10
+         -tr 10 %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe
 """ % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error building windows kit for package mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)
