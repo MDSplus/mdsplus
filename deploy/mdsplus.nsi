@@ -65,9 +65,9 @@ functionEnd
 
 function .onINstSuccess
 	 ${If} ${RunningX64}
-	       ExecWait '"$SYSDIR/cmd.exe" /c "$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
+	       ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
 	 ${Else}
-	       ExecWait '"SYSDIR/cmd.exe" /c "$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
+	       ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
 	 ${EndIf}
 functionEnd
  
@@ -239,9 +239,9 @@ function un.onInit
 	next:
 	!insertmacro VerifyUserIsAdmin
 	${If} ${RunningX64}
-	  ExecWait '"$SYSDIR/cmd.exe" /c "$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
+	  ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
 	${Else}
-	  ExecWait '"$SYSDIR/cmd.exe" /c "$INSTDIR\bin_x86\WinInstall.exe" /Uninstall' $0
+	  ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Uninstall' $0
 	${EndIf}
 
 functionEnd
