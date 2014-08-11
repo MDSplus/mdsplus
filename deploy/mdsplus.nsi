@@ -84,10 +84,10 @@ CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
 ${If} ${RunningX64}
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$SYSDIR\cmd.exe /c $\"$INSTDIR\bin_x86_64\mdstcl.bat$\"" "" "$INSTDIR\bin_x86_64\icons.exe" 1
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86_64\mdstcl.bat"' "" "$INSTDIR\bin_x86_64\icons.exe" 1
 ${Else}
   CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest.lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" "$INSTDIR\bin_x86\mdstcl.bat" "" "$INSTDIR\bin_x86\icons.exe" 1
+  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86\mdstcl.bat"' "" "$INSTDIR\bin_x86\icons.exe" 1
 ${EndIf}
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
@@ -166,8 +166,8 @@ Section "JAVA"
 SetOutPath $INSTDIR
 SetShellVarContext all
 File /r /x desktop java
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" "$SYSDIR\cmd.exe /c $\"$INSTDIR\bin_x86\jScope.bat$\"" "" "$INSTDIR\bin_x86\icons.exe" 4 SW_SHOWMINIMIZED
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" "$SYSDIR\cmd.exe /c $\"$INSTDIR\bin_x86\traverser.bat$\"" "" $INSTDIR\bin_x86\icons.exe" 3 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86\jScope.bat"' "" "$INSTDIR\bin_x86\icons.exe" 4 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86\traverser.bat"' "" $INSTDIR\bin_x86\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd
 
 Section LabView
