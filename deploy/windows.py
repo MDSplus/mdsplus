@@ -8,13 +8,13 @@ class InstallationPackage(object):
 
     def exists(self):
         """Check to see if install kit for this release already exist."""
-            kit="/repository/Windows/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
-            try:
-                os.stat(kit)
-            except:
-                print("%s not found" % kit)
-                sys.stdout.flush()
-                return False
+        kit="/repository/Windows/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
+        try:
+            os.stat(kit)
+        except:
+            print("%s not found" % kit)
+            sys.stdout.flush()
+            return False
         return True
 
     def build(self):
