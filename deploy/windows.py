@@ -8,9 +8,7 @@ class InstallationPackage(object):
 
     def exists(self):
         """Check to see if install kit for this release already exist."""
-        for arch in ('x86_64','x86'):
-            self.info['arch']=arch
-            kit="/repository/Windows/%(flavor)s/%(arch)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
+            kit="/repository/Windows/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
             try:
                 os.stat(kit)
             except:
