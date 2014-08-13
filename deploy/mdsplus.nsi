@@ -74,7 +74,7 @@ functionEnd
 Section
 SetOutPath "$INSTDIR"
 SetShellVarContext all
-File "/oname=$INSTDIR\ChangeLog.rtf" ChangeLog
+File "/oname=ChangeLog.rtf" ChangeLog
 File mdsplus.ico
 File MDSplus-License.rtf
 writeUninstaller "$INSTDIR\uninstall.exe"
@@ -107,26 +107,24 @@ File /r /x local  tdi
 ${If} ${RunningX64}
 File /r /x *.a bin_x86_64
 SetOutPath "$INSTDIR\bin_x86_64"
-File "/oname=${PTHREADLIB}" ${MINGWLIB64}/${PTHREADLIB}
-File "/oname=${DLLIB}" ${MINGWLIB64}/${DLLIB}
-File "/oname=${READLINELIB}" ${MINGWLIB64}/${READLINELIB}
-File "/oname=${TERMCAPLIB}" ${MINGWLIB64}/${TERMCAPLIB}
-File "/oname=${GCC_STDCPP_LIB}" ${MINGWLIB64}/${GCC_STDCPP_LIB}
-;File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB64}/${GCC_S_SW2_LIB}
+File ${MINGWLIB64}/${PTHREADLIB}
+File ${MINGWLIB64}/${DLLIB}
+File ${MINGWLIB64}/${READLINELIB}
+File ${MINGWLIB64}/${TERMCAPLIB}
+File ${MINGWLIB64}/${GCC_STDCPP_LIB}
 ${EndIf}
 SetOutPath "$INSTDIR"
 File /r /x *.a bin_x86
 SetOutPath "$INSTDIR\bin_x86"
-File "/oname=${PTHREADLIB}" ${MINGWLIB32}/${PTHREADLIB}
-File "/oname=${GCC_S_SJLJ_LIB}" ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
-File "/oname=${DLLIB}" ${MINGWLIB32}/${DLLIB}
-File "/oname=${READLINELIB}" ${MINGWLIB32}/${READLINELIB}
-File "/oname=${TERMCAPLIB}" ${MINGWLIB32}/${TERMCAPLIB}
-File "/oname=${GCC_STDCPP_LIB}" ${MINGWLIB32}/${GCC_STDCPP_LIB}
-;File "/oname=${GCC_S_SW2_LIB}" ${MINGWLIB32}/${GCC_S_SW2_LIB}
+File ${MINGWLIB32}/${PTHREADLIB}
+File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
+File ${MINGWLIB32}/${DLLIB}
+File ${MINGWLIB32}/${READLINELIB}
+File ${MINGWLIB32}/${TERMCAPLIB}
+File ${MINGWLIB32}/${GCC_STDCPP_LIB}
 SetOutPath "\"
 SetOverWrite off
-File "/oname=mdsip.hosts" etc\mdsip.hosts
+File etc\mdsip.hosts
 SetOverWrite on
 
 # Registry information for add/remove programs
@@ -176,8 +174,8 @@ File /r /x MDSplus LabView
 SetOutPath "$INSTDIR\mdsobjects\LabView"
 File /r MDSplus
 SetOutPath "$INSTDIR\mdsobjects\LabView\MDSplus"
-File "/oname=MdsObjectsCppShr.dll" bin_x86/MdsObjectsCppShr.dll
-File "/oname=MDSobjectsLVShr.dll" bin_x86/MDSobjectsLVShr.dll
+File bin_x86/MdsObjectsCppShr.dll
+File bin_x86/MDSobjectsLVShr.dll
 SectionEnd
 
 Section EPICS
