@@ -105,17 +105,16 @@ ${EndIf}
 
 File /r /x local  tdi
 ${If} ${RunningX64}
-File /r /x *.a bin_x86_64
 SetOutPath "$INSTDIR\bin_x86_64"
+File /x *.a bin_x86_64/*
 File ${MINGWLIB64}/${PTHREADLIB}
 File ${MINGWLIB64}/${DLLIB}
 File ${MINGWLIB64}/${READLINELIB}
 File ${MINGWLIB64}/${TERMCAPLIB}
 File ${MINGWLIB64}/${GCC_STDCPP_LIB}
 ${EndIf}
-SetOutPath "$INSTDIR"
-File /r /x *.a bin_x86
 SetOutPath "$INSTDIR\bin_x86"
+File /x *.a bin_x86/*
 File ${MINGWLIB32}/${PTHREADLIB}
 File ${MINGWLIB32}/${GCC_S_SJLJ_LIB}
 File ${MINGWLIB32}/${DLLIB}
@@ -269,7 +268,7 @@ DeleteRegValue HKLM "${ENVREG}" MDS_PATH
 DeleteRegValue HKLM "${ENVREG}" MDSPLUSDIR
 DeleteRegValue HKLM "${ENVREG}" main_path
 DeleteRegValue HKLM "${ENVREG}" subtree_path
-DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus${FLAVOR}"
+DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
 SectionEnd
 
 
