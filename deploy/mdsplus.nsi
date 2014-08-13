@@ -23,7 +23,6 @@ RequestExecutionLevel admin
 !define GCC_STDCPP_LIB libstdc++-6.dll
 !define GCC_S_SW2_LIB libgcc-s_dw2-1.dll
 LicenseData "MDSplus-License.rtf"
-LogSet on 
 Page license
 Page directory
 Page components /ENABLECANCEL
@@ -72,6 +71,7 @@ function .onINstSuccess
 functionEnd
  
 Section
+LogSet on 
 SetOutPath "$INSTDIR"
 SetShellVarContext all
 File "/oname=ChangeLog.rtf" ChangeLog
