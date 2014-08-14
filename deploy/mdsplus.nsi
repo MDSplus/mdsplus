@@ -64,7 +64,9 @@ uninst:
 functionEnd
 
 ;function .onINstSuccess
+;	 RMDir "$INSTDIR\bin_x86"
 ;	 ${If} ${RunningX64}
+;              RMDir "$INSTDIR\bin_x86_64"
 ;	       ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
 ;	 ${Else}
 ;	       ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
@@ -114,7 +116,8 @@ loop_64:
 done_64:
 FindClose $1
 ${EnableX64FSRedirection}
-RMdir "$INSTDIR\bin_x86_64"
+SetOutPath "$INSTDIR"
+RMDir "$INSTDIR\bin_x86_64"
 ${EndIf}
 SetOutPath "$INSTDIR\bin_x86"
 File /x *.a bin_x86/*
@@ -135,11 +138,12 @@ loop_32:
 done_32:
 FindClose $1
 FileClose $0
+SetOutPath "$INSTDIR"
+RMDir "$INSTDIR\bin_x86"
 SetOutPath "\"
 SetOverWrite off
 File etc\mdsip.hosts
 SetOverWrite on
-RMdir "$INSTDIR\bin_x86"
 
 # Registry information for add/remove programs
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
@@ -203,7 +207,7 @@ File /r matlab
 SectionEnd
 
 Section "PYTHON"
-SetOutPath "$INSTDIR/mdsobjects"
+SetOutPath "$INSTDIR\mdsobjects"
 File /r mdsobjects/python
 SectionEnd
 
@@ -263,19 +267,19 @@ SetOutPath "$INSTDIR"
 delete ChangeLog.rtf
 delete MDSplus-License.rtf
 delete mdsplus.ico
-RMdir /r $INSTDIR\tdi
-RMdir /r $INSTDIR\include
-RMdir /r $INSTDIR\devtools
 delete uninstall.exe
-RMdir /r $INSTDIR\trees
-RMdir /r "$INSTDIR\idl"
-RMdir /r "$INSTDIR\java"
-RMdir /r "$INSTDIR\LabView"
-RMdir /r "$INSTDIR\epics"
-RMdir /r "$INSTDIR\matlab"
-RMdir /r "$INSTDIR\mdsobjects"
-RMdir /r "$INSTDIR\devtools"
-RMdir /r "$SMPROGRAMS\MDSplus${FLAVOR}"
+RMDir /r "$INSTDIR\tdi"
+RMDir /r "$INSTDIR\include"
+RMDir /r "$INSTDIR\devtools"
+RMDir /r "$INSTDIR\trees"
+RMDir /r "$INSTDIR\idl"
+RMDir /r "$INSTDIR\java"
+RMDir /r "$INSTDIR\LabView"
+RMDir /r "$INSTDIR\epics"
+RMDir /r "$INSTDIR\matlab"
+RMDir /r "$INSTDIR\mdsobjects"
+RMDir /r "$INSTDIR\devtools"
+RMDir /r "$SMPROGRAMS\MDSplus${FLAVOR}"
 FileOpen $0 "$INSTDIR\installer.dat" r
 ${DisableX64FSRedirection}
 loop_u:
@@ -291,7 +295,8 @@ done_u:
 FileClose $0
 ${EnableX64FSRedirection}
 delete installer.dat
-RMdir "$INSTDIR"
+SetOutPath "$SYSDIR"
+RMDir "$INSTDIR"
 # Registry information for add/remove programs
 DeleteRegValue HKLM "${ENVREG}" MDS_PATH
 DeleteRegValue HKLM "${ENVREG}" MDSPLUSDIR
