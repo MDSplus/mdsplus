@@ -79,7 +79,8 @@ bin_SCRIPTS = \
       @MAKEBINDIR@mkdirhier
 else
 bin_SCRIPTS = \
-      @MAKEBINDIR@mdsip_service.exe.manifest
+      @MAKEBINDIR@mdsip_service.exe.manifest \
+      @MAKEBINDIR@mdsip-client-ssh.bat
 endif
 
 ifdef MDSIP_CONNECTIONS
