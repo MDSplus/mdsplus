@@ -286,10 +286,7 @@ loop_u:
   FileRead $0 $1
   StrCmp $1 "" done_u
   ${UnStrTrimNewLines} $2 $1
-  DetailPrint "About to delete $2"
-  IfFileExists $2 0 +3
-    DetailPrint "Delete $2"
-    Delete $2
+  Delete $2
   Goto loop_u
 done_u:
 FileClose $0
