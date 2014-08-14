@@ -1,4 +1,4 @@
-LIBRARY	RemCamShr
+LIBRARY	CamShr
 EXPORTS
 ;
 CamBytcnt
