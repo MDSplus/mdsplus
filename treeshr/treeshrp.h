@@ -681,16 +681,8 @@ to databases
 #define IS_OPEN_FOR_EDIT(db) (IS_OPEN(db) ? (db)->open_for_edit : 0)
 
 
-#if defined(__VMS)
-#define TREE_PATH_SUFFIX "$DATA"
-#define TREE_PATH_DELIM  ":"
-#elif defined(WIN32)
-#define TREE_PATH_SUFFIX "_path"
-#define TREE_PATH_DELIM  "\\"
-#else
 #define TREE_PATH_SUFFIX "_path"
 #define TREE_PATH_DELIM  "/"
-#endif
 
 /************* Prototypes for internal functions *************/
 extern int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list, char *, int status);
