@@ -2,7 +2,7 @@
 !include x64.nsh
 !include "StrFunc.nsh"
 
-Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}.${RELEASE}"
+Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 Icon mdsplus.ico
 UninstallIcon mdsplus.ico
 
@@ -209,6 +209,8 @@ SectionEnd
 Section "PYTHON"
 SetOutPath "$INSTDIR\mdsobjects"
 File /r mdsobjects/python
+SetOutPath "$INSTDIR\mdsobjects\python"
+Exec "python setup.py install version=${MAJOR}.${MINOR}-${RELEASE}"
 SectionEnd
 
 Section "DEVEL"
