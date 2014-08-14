@@ -57,6 +57,7 @@ MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
 MdsGetMsg
+MdsGetMsgDsc
 MdsGlobalLock
 MdsGlobalUnlock
 MdsMsg
