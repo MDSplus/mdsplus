@@ -297,7 +297,6 @@ UILCMD="uil"
 FOR_LDFLAGS=""
 MINGW="no"
 SHARETYPE=".so"
-WinInstall=""
 
 THREAD="-pthread"
 AC_SUBST([THREAD])
@@ -361,7 +360,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        ICONS=icons
        IDLMDSEVENT=""
        GEN_DEVICE=""
-       WinInstall="WinInstall"
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
@@ -992,7 +990,6 @@ AC_SUBST(USE_PIPED_MESSAGING)
 AC_SUBST(USE_TM_GMTOFF)
 AC_SUBST(DC1394_SUPPORT)
 AC_SUBST(DC1394_SUPPORT2)
-AC_SUBST(WinInstall)
 AC_SUBST(WINDRES)
 AC_CONFIG_HEADER(include/config.h)
 AC_OUTPUT(Makefile.inc
@@ -1048,7 +1045,6 @@ treeshr/Makefile
 wfevent/Makefile 
 xmdsshr/Makefile
 xtreeshr/Makefile
-WinInstall/Makefile
 icons/Makefile
 )
 AC_OUTPUT_COMMANDS(make depend)

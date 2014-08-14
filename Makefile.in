@@ -58,7 +58,6 @@ PARTS = \
 	@LV@ \
 	LabView \
 	@MACOSX@ \
-	@WinInstall@ \
 	@ICONS@
 
 
