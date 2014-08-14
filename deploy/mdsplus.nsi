@@ -1,5 +1,6 @@
 !include LogicLib.nsh
 !include x64.nsh
+!include "StrFunc.nsh"
 
 Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}.${RELEASE}"
 Icon mdsplus.ico
@@ -37,7 +38,7 @@ ${If} $0 != "admin" ;Require admin rights on NT4+
         quit
 ${EndIf}
 !macroend
- 
+${UnStrTrimNewLines} 
 function .onInit
 	setShellVarContext all
 	!insertmacro VerifyUserIsAdmin
@@ -62,16 +63,15 @@ uninst:
  done:
 functionEnd
 
-function .onINstSuccess
-	 ${If} ${RunningX64}
-	       ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
-	 ${Else}
-	       ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
-	 ${EndIf}
-functionEnd
+;function .onINstSuccess
+;	 ${If} ${RunningX64}
+;	       ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
+;	 ${Else}
+;	       ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
+;	 ${EndIf}
+;functionEnd
  
 Section
-LogSet on 
 SetOutPath "$INSTDIR"
 SetShellVarContext all
 File "/oname=ChangeLog.rtf" ChangeLog
@@ -81,30 +81,20 @@ writeUninstaller "$INSTDIR\uninstall.exe"
 WriteRegStr HKLM "${ENVREG}" MDS_PATH "$INSTDIR\tdi"
 WriteRegStr HKLM "${ENVREG}" MDSPLUSDIR "$INSTDIR"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
-${If} ${RunningX64}
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(64).lnk" "$INSTDIR\bin_x86_64\tditest.exe" "" "$INSTDIR\bin_x86_64\icons.exe" 0
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest(32).lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86_64\mdstcl.bat"' "$INSTDIR\bin_x86_64\icons.exe" 1
-${Else}
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\tditest.lnk" "$INSTDIR\bin_x86\tditest.exe" "" "$INSTDIR\bin_x86\icons.exe" 0
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86\mdstcl.bat"' "$INSTDIR\bin_x86\icons.exe" 1
-${EndIf}
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$SYSDIR\tditest.exe" "" "$SYSDIR\icons.exe" 0
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$SYSDIR\cmd.exe"' '/c "mdstcl"' "$SYSDIR\icons.exe" 1
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
-${If} ${RunningX64}
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8100"
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86_64\mdsip_service.exe" "-r -p 8000"
-${Else}
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-r -p 8100"
-  CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$INSTDIR\bin_x86\mdsip_service.exe" "-r -p 8000"
-${EndIf}
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
 
 File /r /x local  tdi
+FileOpen $0 "$INSTDIR\installer.dat" w
+StrCpy $5 "$SYSDIR"
 ${If} ${RunningX64}
+StrCpy $5 "$WINDIR\SysWOW64"
 SetOutPath "$INSTDIR\bin_x86_64"
 File /x *.a bin_x86_64/*
 File ${MINGWLIB64}/${PTHREADLIB}
@@ -112,6 +102,18 @@ File ${MINGWLIB64}/${DLLIB}
 File ${MINGWLIB64}/${READLINELIB}
 File ${MINGWLIB64}/${TERMCAPLIB}
 File ${MINGWLIB64}/${GCC_STDCPP_LIB}
+${DisableX64FSRedirection}
+FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
+loop_64:
+  StrCmp $2 "" done_64
+  FileWrite $0 "$SYSDIR\$2$\n"
+  Delete "$SYSDIR\$2"
+  Rename "$INSTDIR\bin_x86_64\$2" "$SYSDIR\$2"
+  FindNext $1 $2
+  Goto loop_64
+done_64:
+FindClose $1
+${EnableX64FSRedirection}
 ${EndIf}
 SetOutPath "$INSTDIR\bin_x86"
 File /x *.a bin_x86/*
@@ -121,6 +123,17 @@ File ${MINGWLIB32}/${DLLIB}
 File ${MINGWLIB32}/${READLINELIB}
 File ${MINGWLIB32}/${TERMCAPLIB}
 File ${MINGWLIB32}/${GCC_STDCPP_LIB}
+FindFirst $1 $2 "$INSTDIR\bin_x86\*"
+loop_32:
+  StrCmp $2 "" done_32
+  FileWrite $0 "$5\$2$\n"
+  Delete "$5\$2"
+  Rename "$INSTDIR\bin_x86\$2" "$5\$2"
+  FindNext $1 $2
+  Goto loop_32
+done_32:
+FindClose $1
+FileClose $0
 SetOutPath "\"
 SetOverWrite off
 File etc\mdsip.hosts
@@ -163,8 +176,8 @@ Section "JAVA"
 SetOutPath $INSTDIR
 SetShellVarContext all
 File /r /x desktop java
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86\jScope.bat"' "$INSTDIR\bin_x86\icons.exe" 4 SW_SHOWMINIMIZED
-CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" '"$SYSDIR\cmd.exe"' '/c "$INSTDIR\bin_x86\traverser.bat"' $INSTDIR\bin_x86\icons.exe" 3 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Scope.lnk" '"$SYSDIR\cmd.exe"' '/c "jScope.bat"' "$SYSDIR\icons.exe" 4 SW_SHOWMINIMIZED
+CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" '"$SYSDIR\cmd.exe"' '/c "traverser.bat"' $SYSDIR\icons.exe" 3 SW_SHOWMINIMIZED
 SectionEnd
 
 Section LabView
@@ -188,7 +201,7 @@ File /r matlab
 SectionEnd
 
 Section "PYTHON"
-SetOutPath "$INSTDIR"
+SetOutPath "$INSTDIR/mdsobjects"
 File /r mdsobjects/python
 SectionEnd
 
@@ -235,11 +248,11 @@ function un.onInit
 		Abort
 	next:
 	!insertmacro VerifyUserIsAdmin
-	${If} ${RunningX64}
-	  ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
-	${Else}
-	  ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Uninstall' $0
-	${EndIf}
+;	${If} ${RunningX64}
+;	  ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Uninstall' $0
+;	${Else}
+;	  ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Uninstall' $0
+;	${EndIf}
 
 functionEnd
  
@@ -260,8 +273,24 @@ RMdir /r "$INSTDIR\java"
 RMdir /r "$INSTDIR\LabView"
 RMdir /r "$INSTDIR\epics"
 RMdir /r "$INSTDIR\matlab"
-RMdir /r "$INSTDIR\python"
+RMdir /r "$INSTDIR\mdsobjects"
+RMdir /r "$INSTDIR\devtools"
 RMdir /r "$SMPROGRAMS\MDSplus${FLAVOR}"
+FileOpen $0 "$INSTDIR\installer.dat" r
+${DisableX64FSRedirection}
+loop_u:
+  FileRead $0 $1
+  StrCmp $1 "" done_u
+  ${UnStrTrimNewLines} $2 $1
+  DetailPrint "About to delete $2"
+  IfFileExists $2 0 +3
+    DetailPrint "Delete $2"
+    Delete $2
+  Goto loop_u
+done_u:
+FileClose $0
+${EnableX64FSRedirection}
+delete installer.dat
 RMdir "$INSTDIR"
 # Registry information for add/remove programs
 DeleteRegValue HKLM "${ENVREG}" MDS_PATH
