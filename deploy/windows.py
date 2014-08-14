@@ -65,14 +65,15 @@ echo mdsplus | signcode -spc /mnt/scratch/mdsplus/mdsplus.spc \
         self.info['build_number']=os.environ['BUILD_NUMBER']
         if subprocess.Popen("""
 rsync -a %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe /repository/Windows/%(flavor)s/
-cat - > /repository/Windows/%(flavor)s/hudson_build-%(rflavor)s-%(major)d.%(minor)d-%(release)d.html <<EOF
+cat - > /repository/Windows/%(flavor)s/hudson_build%(rflavor)s-%(major)d.%(minor)d-%(release)d.html <<EOF
 <html>
 <head>
-<meta http-equiv="Refresh" content="0; url=http://hudson/mdsplus.org/job/%(job_name)s/%(build_number)s" />
+<meta http-equiv="Refresh" content="0; url=http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s" />
 </head>
 <body>
-<p>For build information please follow <a href="http://hudson/mdsplus.org/job/%(job_name)s/%(build_number)s">this link</a></p>
+<p>For build information please follow <a href="http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s">this link</a></p>
 </body>
 </html>
+EOF
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to repository" % self.info)
