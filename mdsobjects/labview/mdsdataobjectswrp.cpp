@@ -123,6 +123,7 @@ static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorClu
 /********************************************************************************************************
 												ARRAY
  ********************************************************************************************************/
+extern "C" {
 
 DLLEXPORT void mdsplus_array_constructor(void **lvArrayPtrOut, ErrorCluster *error) {
 	safeCall(__func__, error, Constructor<Array>(lvArrayPtrOut));
@@ -6409,6 +6410,7 @@ DLLEXPORT void mdsplus_uint8array_destructor(void **lvUint8ArrayPtr)
 {
 	deleteLvData(lvUint8ArrayPtr);
 }
+}
+}
 
 
-} /* namespace MDSplus */
