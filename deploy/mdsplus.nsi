@@ -114,6 +114,7 @@ loop_64:
 done_64:
 FindClose $1
 ${EnableX64FSRedirection}
+RMdir /r /REBOOTOK $INSTDIR\bin_x86_64
 ${EndIf}
 SetOutPath "$INSTDIR\bin_x86"
 File /x *.a bin_x86/*
@@ -138,6 +139,7 @@ SetOutPath "\"
 SetOverWrite off
 File etc\mdsip.hosts
 SetOverWrite on
+RMdir /r /REBOOTOK $INSTDIR\bin_x86
 
 # Registry information for add/remove programs
 WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus" "DisplayName" "MDSplus${FLAVOR}"
@@ -265,8 +267,6 @@ RMdir /r $INSTDIR\tdi
 RMdir /r $INSTDIR\include
 RMdir /r $INSTDIR\devtools
 delete uninstall.exe
-RMdir /r /REBOOTOK $INSTDIR\bin_x86_64
-RMdir /r /REBOOTOK $INSTDIR\bin_x86
 RMdir /r $INSTDIR\trees
 RMdir /r "$INSTDIR\idl"
 RMdir /r "$INSTDIR\java"
