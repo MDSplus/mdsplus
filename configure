@@ -850,7 +850,6 @@ enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
 enable_shared
-enable_nodebug
 enable_perf
 enable_java
 enable_universal
@@ -1512,7 +1511,6 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --disable-shared        Prevent building shared libraries
-  --enable-nodebug        compile without debug info
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
   --enable-universal      Build MacOSX Universal Binary
@@ -6160,26 +6158,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to compile debug info" >&5
-$as_echo_n "checking whether to compile debug info... " >&6; }
-# Check whether --enable-nodebug was given.
-if test "${enable_nodebug+set}" = set; then :
-  enableval=$enable_nodebug;
-else
-  enable_nodebug=no
-fi
-
-case $enable_nodebug in #(
-  yes) :
-    { CFLAGS=; unset CFLAGS;}
-               { FFLAGS=; unset FFLAGS;} ;; #(
-  *) :
-     ;;
-esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_nodebug" >&5
-$as_echo "$enable_nodebug" >&6; }
-
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable statistics" >&5
 $as_echo_n "checking whether to enable statistics... " >&6; }
