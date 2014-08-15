@@ -75,8 +75,7 @@ ALL_SOURCES = $(LIB_SOURCES) $(TUNNEL_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURC
 ifneq "@MINGW@" "yes"
 bin_SCRIPTS = \
       @MAKEBINDIR@mdsipd \
-      @MAKEBINDIR@mdsip_server \
-      @MAKEBINDIR@mkdirhier
+      @MAKEBINDIR@mdsip_server
 else
 bin_SCRIPTS = \
       @MAKEBINDIR@mdsip_service.exe.manifest \

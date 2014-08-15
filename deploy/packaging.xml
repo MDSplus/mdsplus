@@ -314,7 +314,6 @@ fi
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
     <exclude dir="/usr/local/mdsplus/tdi/roam"/>
     <exclude dir="/usr/local/mdsplus/tdi/hdf5"/>
-    <include file="/usr/local/mdsplus/bin/mkdirhier"/>
     <postinst>
 
 if [ -d /etc/profile.d ]
@@ -435,7 +434,6 @@ fi
     <exclude file="/usr/local/mdsplus/bin/SetMdsplusFileProtection"/>
     <exclude file="/usr/local/mdsplus/bin/dwscopePrint"/>
     <exclude file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
-    <exclude file="/usr/local/mdsplus/bin/mkdirhier"/>
     <exclude file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
     <postinst>
 
