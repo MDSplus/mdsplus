@@ -265,7 +265,7 @@ function un.onInit
 functionEnd
  
 section "uninstall"
-IfFileExists "$INSTDIR\mdsobjects\python 0 +2
+IfFileExists "$INSTDIR\mdsobjects\python" 0 +2
   Exec "python -c "import MDSplus; MDSplus.remove()"
 SetOutPath "$INSTDIR"
 delete ChangeLog.rtf
