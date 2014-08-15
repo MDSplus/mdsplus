@@ -10,32 +10,32 @@ public fun PLRM__add(in _path, out _nidout)
 
 	/******** ANGLES ********/
 
-	_cn = _path // '.ANGLE_01';
+	_cn = _path // '.ANGLE_01';
 	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
 	DevAddNode(_cn // ':SA', 'NUMERIC', 0., *, _nid);
 	DevAddNode(_cn // ':GA', 'NUMERIC', 0., *, _nid);
 
-	_cn = _path // '.ANGLE_02';
+	_cn = _path // '.ANGLE_02';
 	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
 	DevAddNode(_cn // ':SA', 'NUMERIC', 0., *, _nid);
 	DevAddNode(_cn // ':GA', 'NUMERIC', 0., *, _nid);
 
-	_cn = _path // '.ANGLE_03';
+	_cn = _path // '.ANGLE_03';
 	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
 	DevAddNode(_cn // ':SA', 'NUMERIC', 0., *, _nid);
 	DevAddNode(_cn // ':GA', 'NUMERIC', 0., *, _nid);
 
-	_cn = _path // '.ANGLE_04';
+	_cn = _path // '.ANGLE_04';
 	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
 	DevAddNode(_cn // ':SA', 'NUMERIC', 0., *, _nid);
 	DevAddNode(_cn // ':GA', 'NUMERIC', 0., *, _nid);
 
-	_cn = _path // '.ANGLE_05';
+	_cn = _path // '.ANGLE_05';
 	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
 	DevAddNode(_cn // ':SA', 'NUMERIC', 0., *, _nid);
 	DevAddNode(_cn // ':GA', 'NUMERIC', 0., *, _nid);
 
-	_cn = _path // '.ANGLE_06';
+	_cn = _path // '.ANGLE_06';
 	DevAddNode(_cn, 'STRUCTURE', *, *, _nid);
 	DevAddNode(_cn // ':SA', 'NUMERIC', 0., *, _nid);
 	DevAddNode(_cn // ':GA', 'NUMERIC', 0., *, _nid);
