@@ -63,15 +63,9 @@ uninst:
  done:
 functionEnd
 
-;function .onINstSuccess
-;	 RMDir "$INSTDIR\bin_x86"
-;	 ${If} ${RunningX64}
-;              RMDir "$INSTDIR\bin_x86_64"
-;	       ExecWait '"$INSTDIR\bin_x86_64\WinInstall.exe" /Install' $0
-;	 ${Else}
-;	       ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Install' $0
-;	 ${EndIf}
-;functionEnd
+function .onGUIEnd
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+functionEnd
  
 Section
 SetOutPath "$INSTDIR"
@@ -262,6 +256,10 @@ function un.onInit
 ;	  ExecWait '"$INSTDIR\bin_x86\WinInstall.exe" /Uninstall' $0
 ;	${EndIf}
 
+functionEnd
+
+function un.onGUIEnd
+  SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
 functionEnd
  
 section "uninstall"
