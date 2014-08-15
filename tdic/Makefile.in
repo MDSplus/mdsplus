@@ -4,7 +4,7 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ EXE=.exe
 
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
-TDIC_LIBS= $(LIBS) -ldl -lreadline -lncurses
+TDIC_LIBS= $(LIBS) -ldl @LIBREADLINE@
 
 SOURCES = \
         TdiShrExt.c
