@@ -200,30 +200,6 @@ AS_CASE([$with_labview],
          LV_LIB="-lLV"])
 AC_MSG_RESULT([$with_labview])
 
-AC_MSG_CHECKING([whether to use globus_io for mdsip])
-AC_ARG_ENABLE([globus],
-              [AS_HELP_STRING([--enable-globus],
-                             [use globus_io for mdsip communications])],
-              [],
-              [AS_VAR_SET([enable_globus], [no])])
-AS_CASE([$enable_globus],
-        [yes], [${GLOBUS_FLAVOR=gcc32dbg}
-                GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
-                GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
-                            -lglobus_common_$GLOBUS_FLAVOR"])
-AC_MSG_RESULT([$enable_globus])
-
-AC_MSG_CHECKING([whether to enable memory debugging])
-AC_ARG_ENABLE([memcheck],
-              [AS_HELP_STRING([--enable-memcheck],
-                             [enable virtual memory debugging])],
-              [],
-              [AS_VAR_SET([enable_memcheck], [no])])
-AS_CASE([$enable_memcheck],
-        [yes], [MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
-                MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr"])
-AC_MSG_RESULT([$enable_memcheck])
-
 AC_MSG_CHECKING([whether to enable profiled code])
 AC_ARG_ENABLE([gcc_profiling],
               [AS_HELP_STRING([--enable-gcc_profiling],
@@ -272,7 +248,7 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF $MEMCHK"
+CFLAGS="$CFLAGS $GCCPROF"
 CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
@@ -958,7 +934,6 @@ AC_SUBST(MAKESHLIBDIR)
 AC_SUBST(MAKEUIDDIR)
 AC_SUBST(MDSSQL)
 AC_SUBST(MDSTCPIP)
-AC_SUBST(MEMCHKLIB)
 AC_SUBST(MINGW)
 AC_SUBST(MITDEVICES)
 AC_SUBST(MITDEVICESIO_TARGETS)

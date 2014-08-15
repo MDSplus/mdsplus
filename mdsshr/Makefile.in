@@ -3,12 +3,6 @@ include @top_srcdir@/Makefile.inc
 CFLAGS += $(THREAD) @GLOBUS_CFLAGS@
 LDFLAGS += $(THREAD)
 LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@
-ifeq "@MEMCHKLIB@" ""
-	MDSMALLOC =
-else
-	MDSMALLOC = MdsMalloc.c
-endif
-
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
 @MINGW_TRUE@ DEF=MdsShr.def
 
@@ -33,7 +27,6 @@ SOURCES = \
         MdsSerialize.c \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \
-	$(MDSMALLOC) \
 	mds_dsc_string.c \
 	MdsFloatToTime.c \
 	UdpEvents.c

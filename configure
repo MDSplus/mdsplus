@@ -656,7 +656,6 @@ MOTIF_APS
 MITDEVICESIO_TARGETS
 MITDEVICES
 MINGW
-MEMCHKLIB
 MDSTCPIP
 MDSSQL
 MAKEUIDDIR
@@ -863,8 +862,6 @@ with_java_bootclasspath
 with_gsi
 with_srb
 with_labview
-enable_globus
-enable_memcheck
 enable_gcc_profiling
 with_idl
 enable_d3d
@@ -1523,8 +1520,6 @@ Optional Features:
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
   --enable-universal      Build MacOSX Universal Binary
-  --enable-globus         use globus_io for mdsip communications
-  --enable-memcheck       enable virtual memory debugging
   --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
 
@@ -6538,46 +6533,6 @@ esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_labview" >&5
 $as_echo "$with_labview" >&6; }
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to use globus_io for mdsip" >&5
-$as_echo_n "checking whether to use globus_io for mdsip... " >&6; }
-# Check whether --enable-globus was given.
-if test "${enable_globus+set}" = set; then :
-  enableval=$enable_globus;
-else
-  enable_globus=no
-fi
-
-case $enable_globus in #(
-  yes) :
-    ${GLOBUS_FLAVOR=gcc32dbg}
-                GLOBUS_CFLAGS="-DGLOBUS -I\$(GLOBUS_LOCATION)/include/$GLOBUS_FLAVOR"
-                GLOBUS_LIBS="-L\$(GLOBUS_LOCATION)/lib -lglobus_io_$GLOBUS_FLAVOR \
-                            -lglobus_common_$GLOBUS_FLAVOR" ;; #(
-  *) :
-     ;;
-esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_globus" >&5
-$as_echo "$enable_globus" >&6; }
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable memory debugging" >&5
-$as_echo_n "checking whether to enable memory debugging... " >&6; }
-# Check whether --enable-memcheck was given.
-if test "${enable_memcheck+set}" = set; then :
-  enableval=$enable_memcheck;
-else
-  enable_memcheck=no
-fi
-
-case $enable_memcheck in #(
-  yes) :
-    MEMCHK="-Dmalloc=MdsMALLOC -Dfree=MdsFREE -Drealloc=MdsREALLOC -Dcalloc=MdsCALLOC"
-                MEMCHKLIB="-L\$(top_srcdir)/lib/ -lMdsShr" ;; #(
-  *) :
-     ;;
-esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_memcheck" >&5
-$as_echo "$enable_memcheck" >&6; }
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable profiled code" >&5
 $as_echo_n "checking whether to enable profiled code... " >&6; }
 # Check whether --enable-gcc_profiling was given.
@@ -6673,7 +6628,7 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF $MEMCHK"
+CFLAGS="$CFLAGS $GCCPROF"
 CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
@@ -10195,7 +10150,6 @@ else
   NOT_MINGW_TRUE='#'
   NOT_MINGW_FALSE=
 fi
-
 
 
 

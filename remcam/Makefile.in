@@ -2,7 +2,7 @@ include @top_srcdir@/Makefile.inc
 
 @MINGW_TRUE@ DEF=remcam.def
 
-LIBS=@LIBS@ @MEMCHKLIB@
+LIBS=@LIBS@
 
 SOURCES = CamIosb.c CamMulti.c CamSingle.c
 OBJECTS = $(SOURCES:.c=.o)
