@@ -66,5 +66,5 @@ try:
       test_suite='tests.test_all',
       zip_safe = False,
      )
-except:
+except Exception:
     print "Error installing MDSplus: %s" % (sys.exc_info()[1])
