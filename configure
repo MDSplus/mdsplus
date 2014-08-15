@@ -734,7 +734,6 @@ GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
-MDSIP_CONNECTIONS
 RPATHLINK
 RPATHLINK_FALSE
 RPATHLINK_TRUE
@@ -851,7 +850,6 @@ enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
 enable_shared
-enable_mdsip_connections
 enable_nodebug
 enable_perf
 enable_java
@@ -1514,8 +1512,6 @@ Optional Features:
   --disable-dependency-tracking
                           speeds up one-time build
   --disable-shared        Prevent building shared libraries
-  --disable-mdsip_connections
-                          Prevent using mdsip connections.
   --enable-nodebug        compile without debug info
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
@@ -6164,29 +6160,6 @@ else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to use the new mdsip connections" >&5
-$as_echo_n "checking whether to use the new mdsip connections... " >&6; }
-# Check whether --enable-mdsip_connections was given.
-if test "${enable_mdsip_connections+set}" = set; then :
-  enableval=$enable_mdsip_connections;
-else
-  enable_mdsip_connections=yes
-fi
-
-case $enable_mdsip_connections in #(
-  yes) :
-    cat >>confdefs.h <<_ACEOF
-#define MDSIP_CONNECTIONS $enable_mdsip_connections
-_ACEOF
- ;; #(
-  *) :
-     ;;
-esac
-MDSIP_CONNECTIONS=$enable_mdsip_connections
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_mdsip_connections" >&5
-$as_echo "$enable_mdsip_connections" >&6; }
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to compile debug info" >&5
 $as_echo_n "checking whether to compile debug info... " >&6; }

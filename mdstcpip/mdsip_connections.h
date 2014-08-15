@@ -15,10 +15,6 @@ typedef int ssize_t;
 #include <ipdesc.h>
 #include <mds_stdarg.h>
 
-#ifndef MDSIP_CONNECTIONS
-#define MDSIP_CONNECTIONS
-#endif
-
 #define MAX_ARGS 256
 #define MAX_COMPRESS 9
 

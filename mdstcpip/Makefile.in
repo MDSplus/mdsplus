@@ -31,17 +31,15 @@ MdsIpUDTV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
 # fix this
 ifneq "@MINGW@" "yes"
         IPV6_UDT = $(MdsIpTCPV6) $(MdsIpUDT) $(MdsIpUDTV6)
-else
+else #MINGW
 	MDSIP_SERVICE = @MAKEBINDIR@mdsip_service.exe
-endif
+endif #MINGW
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
-else
+else #SHARETYPE
 	modules = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ 
-endif
+endif #SHARETYPE
 
-ifeq "@MDSIP_CONNECTIONS@" "yes"
-MDSIP_CONNECTIONS = yes
 LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventAst.c\
 	  MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
 	  IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c\
@@ -76,17 +74,15 @@ ifneq "@MINGW@" "yes"
 bin_SCRIPTS = \
       @MAKEBINDIR@mdsipd \
       @MAKEBINDIR@mdsip_server
-else
+else #MINGW
 bin_SCRIPTS = \
       @MAKEBINDIR@mdsip_service.exe.manifest \
       @MAKEBINDIR@mdsip-client-ssh.bat
-endif
+endif #MINGW
 
-ifdef MDSIP_CONNECTIONS
 ifneq "@MINGW@" "yes"
 bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh @MAKEBINDIR@mdsip-client-http @MAKEBINDIR@mdsip-server-ssh @MAKEBINDIR@mdsip-server-http
-endif
-endif
+endif #MINGW
 
 ifneq "@GLOBUS_FLAVOR@" ""
 
@@ -97,19 +93,7 @@ CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OB
 	 $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS) IoRoutinesGsi.o 
 MDSIPSD = @MAKEBINDIR@mdsipsd
 
-endif
-
-else
-
-LIB_SOURCES = mdsipshr.c mdsiputil.c vmshpwd.c mdsip_socket_io.c mdsip_parallel.c
-LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
-SERVER_SOURCES = mdsip_u.c
-SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
-CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(SERVER_OBJECTS)
-ALL_SOURCES = $(LIB_SOURCES) $(SERVER_SOURCES)
-MDSIP_UTIL = @MAKELIBDIR@@LIBPRE@MdsIpUtil.a
-
-endif
+endif #GLOBUS_FLAVOR
 
 PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip$(EXE) @MAKEBINDIR@mdsiptest$(EXE) $(MDSIP_SERVICE)
 
@@ -129,8 +113,7 @@ all : $(MAKEFILE_HEADER) \
       $(MdsIpHTTP) \
       $(MDSIPSD) \
       @MAKEETCDIR@mdsip.hosts \
-      @MAKELIBDIR@@LIBPRE@MdsIpShr.a \
-      $(MDSIP_UTIL)
+      @MAKELIBDIR@@LIBPRE@MdsIpShr.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(ALL_SOURCES)
@@ -142,7 +125,6 @@ clean :
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpUtil.a
 	@ $(RM) $(PROGRAMS)
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
-        ifdef MDSIP_CONNECTIONS
 	@ $(RM) $(MdsIpSrvShr)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTCP@SHARETYPE@
@@ -155,7 +137,6 @@ clean :
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
         endif
-        endif
 
 install: $(bindir) $(libdir) $(sysconfdir)
 	$(INSTALL) -m 755 $(PROGRAMS) @bindir@
@@ -166,22 +147,15 @@ install: $(bindir) $(libdir) $(sysconfdir)
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpShr.a @libdir@; \
 	fi;
-ifndef MDSIP_CONNECTIONS
-	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpUtil.a @libdir@; \
-	fi;
-endif
 	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(sysconfdir)
-        ifdef MDSIP_CONNECTIONS
-		$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
-		$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
-		$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
+	$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
+	$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
+	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
-		$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
-		$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
-          ifdef MdsIpGSI
+	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
+	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
+        ifdef MdsIpGSI
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
-          endif
         endif
 
 @MAKEBINDIR@mdsiptest$(EXE): t.c $(MdsIpShr)
@@ -190,18 +164,14 @@ endif
 @MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)
 	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
-ifdef MDSIP_CONNECTIONS
 MDSIP_EXTRALIB = -lMdsIpSrvShr
 @MAKEBINDIR@mdsip$(EXE): $(MdsIpSrvShr)
-endif
 
 @MAKEBINDIR@mdsip$(EXE): $(MdsIpShr)
 @MAKEBINDIR@mdsip$(EXE): $(SERVER_OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
-ifdef MDSIP_CONNECTIONS
 MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr
-endif
 
 @MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS)
 	$(AR) -cr $@ $^

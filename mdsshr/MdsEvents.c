@@ -9,11 +9,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifdef MDSIP_CONNECTIONS
 #include "../mdstcpip/mdsip_connections.h"
-#else
-#include "../mdstcpip/mdsip.h"
-#endif
 #include "mdsshrthreadsafe.h"
 //extern int MDSUdpEventAst(char *eventName, void (*astadr)(void *,int,char *), void *astprm, int *eventid);
 //extern int MDSUdpEvent(char *name, int bufLen, char *buf);      
@@ -59,7 +55,6 @@ static int DisconnectFromMds_(int id) {
 }
 
 static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t *len) {
-#ifdef MDSIP_CONNECTIONS
   static DESCRIPTOR(routine_d,"GetConnectionInfo");
   STATIC_THREADSAFE void *(*rtn)() = 0;
   int status = (rtn == 0) ? LibFindImageSymbol(&library_d, &routine_d, &rtn) : 1;
@@ -67,9 +62,6 @@ static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t *len) {
     return (*rtn)(id, name, readfd, len);
   }
   return 0;
-#else
-  *readfd = id;
-#endif
 }
 
 static int  MdsEventAst_(int sock, char *eventnam, void (*astadr)(), void *astprm, int *eventid) {

@@ -126,7 +126,6 @@ static void lock_job_list();
 static void unlock_job_list();
 extern int pthread_cond_timedwait();
 
-#ifdef MDSIP_CONNECTIONS
 extern void *GetConnectionInfo();
 static int getSocket(int conid) {
   size_t len;
@@ -135,7 +134,6 @@ static int getSocket(int conid) {
   void *info = GetConnectionInfo(conid,&info_name, &readfd, &len);
   return (info_name && strcmp(info_name,"tcp")==0) ? readfd : -1;
 }
-#endif
 
 int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *conid_out,
                          void (*ast)(), void *astparam, void (*before_ast)(),
@@ -163,11 +161,7 @@ int ServerSendMessage( int *msgid, char *server, int op, int *retstatus, int *co
     struct descrip *arg;
     if (conid_out) *conid_out = conid;
     if (addr == 0) {
-#ifdef MDSIP_CONNECTIONS
       int sock=getSocket(conid);
-#else
-      int sock=conid;
-#endif
       struct sockaddr_in addr_struct;
       unsigned int len=sizeof(addr_struct);
       if (getsockname(sock,(struct sockaddr *)&addr_struct,&len) == 0)
@@ -701,11 +695,7 @@ int ServerConnect(char *server_in) {
         for (c=ClientList; c && (c->addr != addr || c->port != port); c=c->next);
         unlock_client_list();
         if (c) {
-#ifdef MDSIP_CONNECTIONS
 	  if (ServerBadSocket(getSocket(c->conid)))
-#else
-          if (ServerBadSocket(c->conid))
-#endif
             RemoveClient(c,0);
           else {
             conid = c->conid;
