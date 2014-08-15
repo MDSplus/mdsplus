@@ -67,4 +67,4 @@ try:
       zip_safe = False,
      )
 except Exception:
-    print "Error installing MDSplus: %s" % (sys.exc_info()[1])
+    print("Error installing MDSplus: %s" % (sys.exc_info()[1]))

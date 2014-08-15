@@ -25,7 +25,7 @@ try:
   _mimport('_loadglobals',1).load(globals())
 
 except:
-  print "Error importing MDSplus package: %s" % (_sys.exc_info()[1])
+  print("Error importing MDSplus package: %s" % (_sys.exc_info()[1]))
 
 
 def remove():
