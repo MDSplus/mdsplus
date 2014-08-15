@@ -99,9 +99,6 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-CHANGELOG :
-	devscripts/MakeChangeLog
-
 MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics
 
 install_DIRS = $(addprefix install_, $(PARTS))
