@@ -181,13 +181,11 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Traverser.lnk" '"$SYSDIR\cmd.exe"' 
 SectionEnd
 
 Section LabView
-SetOutPath "$INSTDIR"
-File /r /x MDSplus LabView
+SetOutPath "$INSTDIR\LabView"
+File LabView/*.vi
 SetOutPath "$INSTDIR\mdsobjects\LabView"
-File /r MDSplus
+File /r LabView/MDSplus
 SetOutPath "$INSTDIR\mdsobjects\LabView\MDSplus"
-File bin_x86/MdsObjectsCppShr.dll
-File bin_x86/MDSobjectsLVShr.dll
 SectionEnd
 
 Section EPICS
