@@ -663,8 +663,7 @@ MAKESHLIBDIR
 MAKELIBDIR
 MAKEBINDIR
 MACOSX
-LV_INC
-LV_LIB
+LV_CINTOOLS
 LV
 LINKMODULE
 LINKJNI
@@ -6477,9 +6476,8 @@ case $with_labview in #(
   yes) :
     as_fn_error $? "Labview location required" "$LINENO" 5 ;; #(
   *) :
-    LV_INC="-I$with_labview/cintools"
-         LV="mdsobjects/labview"
-         LV_LIB="-lLV" ;;
+    LV_CINTOOLS="$with_labview/cintools"
+         LV="mdsobjects/labview" ;;
 esac
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $with_labview" >&5
 $as_echo "$with_labview" >&6; }
@@ -10101,7 +10099,6 @@ else
   NOT_MINGW_TRUE='#'
   NOT_MINGW_FALSE=
 fi
-
 
 
 
