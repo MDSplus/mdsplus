@@ -3,23 +3,26 @@
 
 #include <mdsobjects.h>
 #include <stdint.h>
+#include <stdint.h>
 #ifdef __MINGW32__
-  #define _CVI_ 910
-  #define _NI_HRESULT_DEFINED_
-  #undef WIN32
-  #undef _WIN32
-  #undef __WIN32__
-  #define linux 1
+  #define _platdefines_H
+  #define _fundtypes_H
+  typedef uint8_t uChar;
+  typedef uint8_t uInt8;
+  typedef uint16_t uInt16;
+  typedef uint32_t uInt32;
+  typedef uint64_t uInt64;
+  typedef int8_t int8;
+  typedef int16_t int16;
+  typedef int32_t int32;
+  typedef int64_t int64;
+  typedef float float32;
+  typedef double float64;
+  typedef uint32_t Bool32;
 #endif
 #include  <platdefines.h>
 #include <extcode.h>
 #include <fundtypes.h>
-#ifdef __MINGW32__
-  #undef linux
-  #define WIN32 1
-  #define _WIN32 1
-  #define __WIN32__ 1
-#endif
 
 /* lv_prolog.h and lv_epilog.h set up the correct alignment for LabVIEW data. */
 #include <lv_prolog.h>
@@ -104,7 +107,7 @@ typedef LPtrArr **LPtrArrHdl;
 
 #include <lv_epilog.h>
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define DLLEXPORT __declspec(dllexport)
 #else
 #define DLLEXPORT
