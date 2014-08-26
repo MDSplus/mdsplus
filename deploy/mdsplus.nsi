@@ -24,6 +24,8 @@ RequestExecutionLevel admin
 !define GCC_STDCPP_LIB libstdc++-6.dll
 !define GCC_S_SW2_LIB libgcc-s_dw2-1.dll
 !define GCC_S_SEH_LIB libgcc_s_seh-1.dll
+!define GFORTRAN_LIB libgfortran-3.dll
+!define QUADMATH_LIB libquadmath-0.dll
 LicenseData "MDSplus-License.rtf"
 Page license
 Page directory
@@ -100,6 +102,8 @@ File ${MINGWLIB64}/${READLINELIB}
 File ${MINGWLIB64}/${TERMCAPLIB}
 File ${MINGWLIB64}/${GCC_STDCPP_LIB}
 File ${MINGWLIB64}/${GCC_S_SEH_LIB}
+File ${MINGWLIB64}/$(GFORTRAN_LIB}
+File ${MINGWLIB64}/${QUADMATH_LIB}
 ${DisableX64FSRedirection}
 FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
 loop_64:
@@ -123,6 +127,8 @@ File ${MINGWLIB32}/${DLLIB}
 File ${MINGWLIB32}/${READLINELIB}
 File ${MINGWLIB32}/${TERMCAPLIB}
 File ${MINGWLIB32}/${GCC_STDCPP_LIB}
+File ${MINGWLIB32}/${GFORTRAN_LIB}
+File ${MINGWLIB32}/${QUADMATH_LIB}
 FindFirst $1 $2 "$INSTDIR\bin_x86\*"
 loop_32:
   StrCmp $2 "" done_32
