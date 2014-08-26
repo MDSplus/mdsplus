@@ -23,6 +23,7 @@ RequestExecutionLevel admin
 !define GCC_S_SJLJ_LIB libgcc_s_sjlj-1.dll
 !define GCC_STDCPP_LIB libstdc++-6.dll
 !define GCC_S_SW2_LIB libgcc-s_dw2-1.dll
+!define GCC_S_SEH_LIB libgcc_s_seh-1.dll
 LicenseData "MDSplus-License.rtf"
 Page license
 Page directory
@@ -98,6 +99,7 @@ File ${MINGWLIB64}/${DLLIB}
 File ${MINGWLIB64}/${READLINELIB}
 File ${MINGWLIB64}/${TERMCAPLIB}
 File ${MINGWLIB64}/${GCC_STDCPP_LIB}
+File ${MINGWLIB64}/${GCC_S_SEH_LIB}
 ${DisableX64FSRedirection}
 FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
 loop_64:
