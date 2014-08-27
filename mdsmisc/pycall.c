@@ -1,7 +1,11 @@
+#include <config.h>
 #include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifndef HAVE_WINDOWS_H
+#include <signal.h>
+#endif
 static void *(*PyGILState_Ensure)()=0;
 static void *(*PyGILState_GetThisThreadState)()=0;
 static void (*Py_Initialize)()=0;
@@ -18,6 +22,9 @@ static void (*PyGILState_Release)(void *)=0;
 }
 
 int PyCall(char *cmd,int lock) {
+#ifndef HAVE_WINDOWS_H
+  void  (*old_handler)(int);
+#endif
   void *GIL;
   if (!PyGILState_Ensure) {
     void *handle;
@@ -36,7 +43,9 @@ int PyCall(char *cmd,int lock) {
       strcat(lib,".so");
     }
     /*** See if python routines are already available ***/
+#ifndef HAVE_WINDOWS_H
     handle = dlopen(0,RTLD_NOLOAD);
+#endif
     loadrtn(PyGILState_Ensure,0);
     /*** If not, load the python library ***/
     if (!PyGILState_Ensure) {
@@ -60,7 +69,13 @@ int PyCall(char *cmd,int lock) {
   }
   if (lock) 
     GIL=(*PyGILState_Ensure)();
+#ifndef HAVE_WINDOWS_H
+  old_handler=signal(SIGCHLD,SIG_DFL);
+#endif
   (*PyRun_SimpleString)(cmd);
+#ifndef HAVE_WINDOWS_H
+  signal(SIGCHLD,old_handler);
+#endif
   if (lock)
     (*PyGILState_Release)(GIL);
   return 1;
