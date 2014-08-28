@@ -14,7 +14,7 @@ void fillErrorCluster(MgErr code, const char *source, const char *message, Error
 
 	{
 
-		char *errMsg = new char[strlen(source) + strlen(message) + strlen("<ERR>..")];
+		char *errMsg = new char[strlen(source) + strlen(message) + strlen("<ERR>..")+1];
 
 		strcpy(errMsg, source);
 
