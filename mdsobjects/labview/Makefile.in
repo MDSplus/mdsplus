@@ -62,4 +62,4 @@ install: $(libdir)
 	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
 
 @MAKESHLIBDIR@MDSobjectsLVShr :
-	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@$ $@
+	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
