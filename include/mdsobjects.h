@@ -359,7 +359,9 @@ protected:
 		char *ptr;
 		~Scalar()
 		{
-			deleteNativeArray(ptr);
+
+			delete ptr;
+//			deleteNativeArray(ptr);
 		}
 		 
 		virtual void *convertToDsc();
