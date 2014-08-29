@@ -55,6 +55,7 @@ fi
     <requires package="camac"/>
     <requires package="python"/>
     <requires package="motif"/>
+    <requires package="mitdevices_bin"/>
     <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <include file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
     <include file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
@@ -250,6 +251,7 @@ fi
   </package>
 
   <package name="devel" arch="noarch" summary="Header files for code development" description="Header files for code development">
+    <requires package="devel_bin"/>
     <include dir="/usr/local/mdsplus/include"/>
   </package>
 
