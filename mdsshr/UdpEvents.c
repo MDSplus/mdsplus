@@ -118,8 +118,9 @@ static void *handleMessage(void *arg)
 	{
 #ifdef HAVE_WINDOWS_H
 		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0) 
-				if (WSAGetLastError() == WSAESHUTDOWN){
+			(struct sockaddr *)&clientAddr, &addrSize)) < 0) {
+				int errorcode=WSAGetLastError();
+				if (errorcode==WSAESHUTDOWN || errorcode==WSAENOTSOCK || errorcode==WSAEINTR) {
 					return;
 				} else
 #else
@@ -135,6 +136,7 @@ static void *handleMessage(void *arg)
 			perror("Error receiving UDP messages\n");
 			continue;
         }
+	}
     	
 		if (recBytes < (int)(sizeof(int)*2+thisNameLen))
 		  continue;
@@ -152,7 +154,7 @@ static void *handleMessage(void *arg)
                 if (strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
 		  continue;
 		eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
-	}
+}
 }
 
 static void initialize()
