@@ -11,6 +11,83 @@ using namespace std;
 
 #define MAX_ARGS 512
 
+//Required in Windows Debug configuation to propely de-allocate native arrays and strings
+typedef struct {
+	char *ptr;
+	int deleted;
+	char *allocated_in_function;
+	char *deallocated_in_function;
+} arrayPtr;
+static arrayPtr ArrayPtrs[10000];
+static int arrayPtrs_Initialized=0;
+EXPORT char *allocateArray(int numbytes, char *funname) {
+	return new char[numbytes];
+	int i;
+	char *ans;
+	if (!arrayPtrs_Initialized) {
+		memset(ArrayPtrs,0,sizeof(arrayPtr)*10000);
+		arrayPtrs_Initialized=1;
+	}
+	ans=new char[numbytes];
+	for (i=0;i<10000 && ArrayPtrs[i].ptr!=ans && ArrayPtrs[i].ptr; i++);
+	if (i<10000) {
+		if (ArrayPtrs[i].ptr==ans && ArrayPtrs[i].deleted==0) {
+			FILE *f=fopen("GUB","w");
+		}
+		ArrayPtrs[i].ptr=ans;
+		ArrayPtrs[i].allocated_in_function=funname;
+		ArrayPtrs[i].deleted=0;
+	}
+	return ans;
+}
+
+EXPORT void deleteArray(char *array, char *funname) {
+	delete [] array;
+	return;
+	int i;
+	if (!arrayPtrs_Initialized) {
+		memset(ArrayPtrs,0,sizeof(arrayPtr)*10000);
+		arrayPtrs_Initialized=1;
+	}
+	for (i=0;i<10000;i++) {
+		if (array == ArrayPtrs[i].ptr) {
+			if (ArrayPtrs[i].deleted) {
+				FILE *f=fopen("C:\\Users\twf.000\\bug.txt","W");
+				fprintf(f,"ptr freed twice! Allocated in %s and previously deallocated in %s and now in %s!\n",
+					ArrayPtrs[i].allocated_in_function,ArrayPtrs[i].deallocated_in_function,funname);
+				fclose(f);
+				exit(1);
+			}
+			else {
+				delete [] array;
+				ArrayPtrs[i].deleted=1;
+				ArrayPtrs[i].deallocated_in_function=funname;
+				break;
+			}
+		}
+	}
+	if (i==1000) {
+		FILE *f=fopen("C:\\Users\twf.000\\bug.txt","W");
+		fprintf(f,"Attempt to free unknown array in %s!\n",funname);
+		fclose(f);
+		exit(1);
+	}
+}
+
+#define dArray(array) MDSplus::deleteNativeArray((char *)array)
+EXPORT void MDSplus::deleteNativeArray(char *array){deleteArray(array,"MDSplus::deleteNativeArray");}
+EXPORT void MDSplus::deleteNativeArray(short *array){dArray(array);}
+EXPORT void MDSplus::deleteNativeArray(int *array){dArray(array);}
+EXPORT void MDSplus::deleteNativeArray(long *array){dArray(array);}
+#if (SIZEOF_LONG != 8)
+EXPORT void MDSplus::deleteNativeArray(int64_t *array){dArray(array);}
+#endif
+EXPORT void MDSplus::deleteNativeArray(float *array){dArray(array);}
+EXPORT void MDSplus::deleteNativeArray(double *array){dArray(array);}
+EXPORT void MDSplus::deleteNativeArray(char **array){dArray(array);}
+EXPORT void MDSplus::deleteNativeArray(Data **array){dArray(array);}
+EXPORT void MDSplus::deleteString(char *str){dArray(str);}
+
 
 
 extern "C" {
@@ -904,7 +981,7 @@ EXPORT void MDSplus::deleteData(Data *data)
 
 int *Array::getShape(int *numDims)
 {
-	int *retDims = new int[nDims];
+	int *retDims = (int *)allocateArray(nDims*sizeof(int),"Array::getShape");
 	*numDims = nDims;
 	for(int i = 0; i < nDims; i++)
 		retDims[i] = dims[i];
@@ -960,7 +1037,7 @@ Array *Array::getSubArray(int startDim, int nSamples)
 
 	//Compute startIdx of selected data portion
 	int startIdx = startDim * rowItems;
-	int *newDims = new int[nDims];
+	int *newDims = (int *)allocateArray(nDims*sizeof(int),"getSubarray");
 	for(i = 1; i < nDims; i++)
 		newDims[i] = dims[i];
 	newDims[0] = nSamples;
@@ -1424,18 +1501,4 @@ EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
-
-//Required in Windows Debug configuation to propely de-allocate native arrays and strings
-EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
-#if (SIZEOF_LONG != 8)
-EXPORT void MDSplus::deleteNativeArray(int64_t *array){delete [] array;}
-#endif
-EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(Data **array){delete [] array;}
-EXPORT void MDSplus::deleteString(char *str){delete[] str;}
 
