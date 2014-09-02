@@ -103,8 +103,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="0"
 			>
@@ -127,7 +127,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)\tdishr&quot;;&quot;$(SolutionDir)\mdsobjects\cpp&quot;;&quot;$(SolutionDir)\include&quot;;&quot;$(LABVIEW_DIR)\cintools&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\tdishr&quot;;&quot;$(SolutionDir)\mdsobjects\cpp&quot;;&quot;$(SolutionDir)\include&quot;;&quot;$(LABVIEW64_DIR)\cintools&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CRT_SECURE_NO_WARNINGS;HAVE_WINDOWS_H"
 				MinimalRebuild="false"
 				ExceptionHandling="2"
@@ -151,8 +151,8 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="&quot;$(LABVIEW_DIR)\cintools\labview.lib&quot;"
-				LinkIncremental="2"
+				AdditionalDependencies="&quot;$(LABVIEW64_DIR)\cintools\labview.lib&quot;"
+				LinkIncremental="1"
 				AdditionalLibraryDirectories=""
 				IgnoreAllDefaultLibraries="false"
 				GenerateDebugInformation="true"

@@ -96,8 +96,6 @@
 #else
 #define EXPORT __declspec(dllexport)
 #endif
-EXPORT extern char *allocateArray(int,char *);
-EXPORT extern void deleteArray(char *,char *);
 extern "C" char *MdsGetMsg(int status);
 /*
 extern "C" {
@@ -361,7 +359,7 @@ protected:
 		char *ptr;
 		~Scalar()
 		{
-			deleteArray(ptr,"Scalar destuctor");
+			deleteNativeArray(ptr);
 		}
 		 
 		virtual void *convertToDsc();
@@ -383,7 +381,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_B;
 			length = 1;
-			ptr = allocateArray(1,"Int8 constructor");
+			ptr = new char[1];
 			ptr[0] = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -406,7 +404,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_BU;
 			length = 1;
-			ptr = allocateArray(1,"UInt constructor");
+			ptr = new char[1];
 			ptr[0] = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -429,7 +427,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_W;
 			length = 2;
-			ptr = allocateArray(2,"Int16 constructor");
+			ptr = new char[2];
 			*(short *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -452,7 +450,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_WU;
 			length = 2;
-			ptr = allocateArray(2,"UInt16 constructor");
+			ptr = new char[2];
 			*(unsigned short *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -475,7 +473,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_L;
 			length = sizeof(int);
-			ptr = allocateArray(sizeof(int),"Int32 constructor");
+			ptr = new char[sizeof(int)];
 			*(int *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -498,7 +496,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_LU;
 			length = sizeof(int);
-			ptr = allocateArray(sizeof(int),"Uint32 constructor");
+			ptr = new char[sizeof(int)];
 			*(unsigned int *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -521,7 +519,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_Q;
 			length = sizeof(int64_t);
-			ptr = allocateArray(sizeof(int64_t),"Int64 constructor");
+			ptr = new char[sizeof(int64_t)];
 			*(int64_t *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -544,7 +542,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_QU;
 			length = sizeof(int64_t);
-			ptr = allocateArray(sizeof(int64_t),"UInt64 constructor");
+			ptr = new char[sizeof(int64_t)];
 			*(uint64_t *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -568,7 +566,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_FLOAT;
 			length = sizeof(float);
-			ptr = allocateArray(sizeof(float),"Float32 constructor");
+			ptr = new char[sizeof(float)];
 			*(float *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -587,7 +585,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_DOUBLE;
 			length = sizeof(double);
-			ptr = allocateArray(sizeof(double),"Float64 constructor");
+			ptr = new char[sizeof(double)];
 			*(double *)ptr = val;
 			setAccessory(units, error, help, validation);
 		}
@@ -606,7 +604,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_FSC;
 			length = 2 * sizeof(float);
-			ptr = allocateArray(2*sizeof(float),"Complex32 constructor");
+			ptr = new char[2*sizeof(float)];
 			((float *)ptr)[0] = re;
 			((float *)ptr)[1] = im;
 			setAccessory(units, error, help, validation);
@@ -623,7 +621,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_FTC;
 			length = 2 * sizeof(double);
-			ptr = allocateArray(2*sizeof(double),"Complex64 constructor");
+			ptr = new char[2*sizeof(double)];
 			((double *)ptr)[0] = re;
 			((double *)ptr)[1] = im;
 			setAccessory(units, error, help, validation);
@@ -640,7 +638,7 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_T;
 			length = strlen(val);
-			ptr = allocateArray(length+1,"String constructor 1");
+			ptr = new char[length+1];
 			ptr[length] = 0;
 			memcpy(ptr, val, length);
 			setAccessory(units, error, help, validation);
@@ -650,14 +648,14 @@ protected:
 			clazz = CLASS_S;
 			dtype = DTYPE_T;
 			length = len;
-			ptr = allocateArray(length+1,"String constructor 2");
+			ptr = new char[length+1];
 			memcpy(ptr, val, length);
 			ptr[length] = 0;
 			setAccessory(units, error, help, validation);
 		}
 		char *getString()
 		{
-			char *res = allocateArray(length + 1,"String constructor 3");
+			char *res = new char[length + 1];
 			memcpy(res, ptr, length);
 			res[length] = 0;
 			return res;
@@ -679,37 +677,14 @@ protected:
 		int nDims;
 		int dims[MAX_DIMS];
 		char *ptr;
-		void setSpecific(char *data, int length, int dtype, int nData)
-		{
-			clazz = CLASS_A;
-			this->dtype = dtype;
-			this->length = length;
-			arsize = nData * length;
-			nDims = 1;
-			dims[0] = nData;
-			ptr = allocateArray(arsize,"Array constructor");
-			memcpy(ptr, data, arsize);
-		}
-		void setSpecific(char *data, int length, int dtype, int nDims, int *dims)
-		{
-			clazz = CLASS_A;
-			this->dtype = dtype;
-			this->length = length;
-			arsize = length;
-			for(int i = 0; i < nDims; i++)
-			{
-				arsize *= dims[i];
-				this->dims[i] = dims[i];
-			}
-			this->nDims = nDims;
-			ptr = allocateArray(arsize,"Array constructor 2");
-			memcpy(ptr, data, arsize);
-		}
+		//Gabriele September 2014. Move code in cpp file
+		void setSpecific(char *data, int length, int dtype, int nData);
+		void setSpecific(char *data, int length, int dtype, int nDims, int *dims);
 	public:
 		Array() {clazz = CLASS_A;}
 		~Array()
 		{
-			deleteArray(ptr,"Array destructor");
+			deleteNativeArray(ptr);
 		}
 		virtual int getSize() 
 		{
@@ -724,7 +699,7 @@ protected:
 			*dtype = this->dtype;
 			*length = this->length;
 			*nDims = this->nDims;
-			*dims = (int *)allocateArray(this->nDims * sizeof(int),"Array getInfo");
+			*dims = new int[this->nDims];
 			for(int i = 0; i < this->nDims; i++)
 			    (*dims)[i] = this->dims[i];
 			*ptr = this->ptr;
@@ -999,7 +974,7 @@ protected:
 			this->length = length;
 			if(length > 0)
 			{
-				this->ptr = allocateArray(length,"Compound constructor");
+				this->ptr = new char[length];
 				memcpy(this->ptr, ptr, length);
 			}
 			else
@@ -1007,7 +982,7 @@ protected:
 			this->nDescs = nDescs;
 			if(nDescs > 0)
 			{
-				this->descs = (Data **)allocateArray(sizeof(Data)*nDescs,"Compound descs");
+				this->descs = new Data *[nDescs];
 				for(int i = 0; i < nDescs; i++)
 				{
 					this->descs[i] = (Data *)descs[i];
@@ -1022,9 +997,9 @@ protected:
 		virtual ~Compound()
 		{
 			if(length > 0)
-				deleteArray(ptr,"Compound dest");
+				deleteNativeArray(ptr);
 			if(nDescs > 0)
-				deleteArray((char *)descs,"Compound dest desc");
+				deleteNativeArray(descs);
 		}
 		virtual void propagateDeletion()
 		{
@@ -1051,7 +1026,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 3;
-			descs = (Data **)allocateArray(sizeof(Data) *3,"Signal constructor");
+			descs = new Data *[3];
 			descs[0] = data;
 			descs[1] = raw;
 			descs[2] = dimension;
@@ -1064,7 +1039,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 4;
-			descs = (Data **)allocateArray(sizeof(Data) *4,"Signal constructor 2");
+			descs = new Data *[4];
 			descs[0] = data;
 			descs[1] = raw;
 			descs[2] = dimension1;
@@ -1078,7 +1053,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 2 + nDims;
-			descs = (Data **)allocateArray(sizeof(Data) *nDescs,"Signal constructor 3");
+			descs = new Data *[nDescs];
 			descs[0] = data;
 			descs[1] = raw;
 			for(int i = 0; i < nDims; i++)
@@ -1119,7 +1094,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 2;
-			descs = (Data **)allocateArray(sizeof(Data) * 2,"Dimension constructor");
+			descs = new Data *[2];
 			descs[0] = window;
 			descs[1] = axis;
 			incrementRefCounts();
@@ -1149,7 +1124,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 3;
-			descs = (Data **)allocateArray(sizeof(Data) *3,"Window constructor");
+			descs = new Data *[3];
 			descs[0] = startidx;
 			descs[1] = endidx;
 			descs[2] = value_at_idx0;
@@ -1174,10 +1149,10 @@ protected:
 		{
 			dtype = DTYPE_FUNCTION;
 			length = 1;
-			ptr = allocateArray(1,"Fcuntion opcode");
+			ptr = new char[1];
 			*ptr = opcode;
 			nDescs = nargs;
-			descs = (Data **)allocateArray(sizeof(Data) *nargs,"Function Args");
+			descs = new Data *[nargs];
 			for(int i = 0; i < nargs; i++)
 				descs[i] = args[i];
 			incrementRefCounts();
@@ -1205,7 +1180,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 4;
-			descs = (Data **)allocateArray(sizeof(Data) *4,"CONGLOM CONSTRUCTOR");
+			descs = new Data *[4];
 			descs[0] = image;
 			descs[1] = model;
 			descs[2] = name;
@@ -1252,7 +1227,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 3;
-			descs = (Data **)allocateArray(sizeof(Data) *3,"RANGE CONSTRUCTOR");
+			descs = new Data *[3];
 			descs[0] = begin;
 			descs[1] = ending;
 			descs[2] = deltaval;
@@ -1291,7 +1266,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 5;
-			descs = (Data **)allocateArray(sizeof(Data) *5,"ACTION CONSTRUCTOR");
+			descs = new Data *[5];
 			descs[0] = dispatch;
 			descs[1] = task;
 			descs[2] = errorlogs;
@@ -1344,7 +1319,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 4;
-			descs = (Data **)allocateArray(sizeof(Data) *4,"DISPATCH Constructor");
+			descs = new Data *[4];
 			descs[0] = ident;
 			descs[1] = phase;
 			descs[2] = when;
@@ -1390,7 +1365,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 2;
-			descs = (Data **)allocateArray(sizeof(Data) *2,"Program constructor");
+			descs = new Data *[2];
 			descs[0] = timeout;
 			descs[1] = program;
 			incrementRefCounts();
@@ -1424,7 +1399,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 3 + nargs;
-			descs = (Data **)allocateArray(sizeof(Data) *nDescs,"Routine constructor");
+			descs = new Data *[nDescs];
 			descs[0] = timeout;
 			descs[1] = image;
 			descs[2] = routine;
@@ -1472,7 +1447,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 3 + nargs;
-			descs = (Data **)allocateArray(sizeof(Data) *nDescs,"Procedure constructor");
+			descs = new Data *[nDescs];
 			descs[0] = timeout;
 			descs[1] = language;
 			descs[2] = procedure;
@@ -1517,7 +1492,7 @@ protected:
 			length = 0;
 			ptr = 0;
 			nDescs = 3 + nargs;
-			descs = (Data **)allocateArray(sizeof(Data) *nDescs,"METHO constructor");
+			descs = new Data *[nDescs];
 			descs[0] = timeout;
 			descs[1] = method;
 			descs[2] = object;
@@ -1561,10 +1536,10 @@ protected:
 		{
 			dtype = DTYPE_DEPENDENCY;
 			length = 1;
-			ptr = allocateArray(1,"DEPENDENCY");
+			ptr = new char[1];
 			*ptr = opcode;
 			nDescs = 2;
-			descs = (Data **)allocateArray(sizeof(Data) *2,"DEPENDENCY");
+			descs = new Data *[2];
 			descs[0] = arg1;
 			descs[1] = arg2;
 			incrementRefCounts();
@@ -1597,10 +1572,10 @@ protected:
 		{
 			dtype = DTYPE_CONDITION;
 			length = 1;
-			ptr = allocateArray(1,"CONDITION");
+			ptr = new char[1];
 			*ptr = opcode;
 			nDescs = 1;
-			descs = (Data **)allocateArray(sizeof(Data),"CONDITION args");
+			descs = new Data *[1];
 			descs[0] = arg;
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
@@ -1630,7 +1605,7 @@ protected:
 			ptr = new char;
 			*ptr = retType;
 			nDescs = 2 + nargs;
-			descs = (Data **)allocateArray(sizeof(Data) *nDescs,"CALL");
+			descs = new Data *[nDescs];
 			descs[0] = image;
 			descs[1] = routine;
 			for(int i = 0; i < nargs; i++)
@@ -1668,11 +1643,11 @@ protected:
 		void resize()
 		{
 			descsSize += DSCS_STEP;
-			Data **newDescs = (Data **)allocateArray(sizeof(Data) *descsSize,"APD");
+			Data **newDescs = new Data *[descsSize];
 			for(int i = 0; i < nDescs; i++)
 				newDescs[i] = descs[i];
 			if(descs)
-				deleteArray((char *)descs,"resize APD");
+				deleteNativeArray(descs);
 			descs = newDescs;
 		}
 		
@@ -1691,7 +1666,7 @@ protected:
 			dtype = DTYPE_DSC; 
 			nDescs = nData;
 			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = (Data **)allocateArray(sizeof(Data) *descsSize,"APD descs");
+			this->descs = new Data *[descsSize];
 			for(int i = 0; i < nData; i++)
 			{
 				if(descs[i])
@@ -1704,7 +1679,7 @@ protected:
 		{
 			if(descsSize > 0)
 			{
-				deleteArray((char *)descs,"APD Destru");
+				deleteNativeArray(descs);
 			}
 		}
 		virtual void propagateDeletion()
@@ -1768,7 +1743,7 @@ protected:
 			dtype = DTYPE_LIST; 
 			nDescs = nData;
 			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = (Data **)allocateArray(sizeof(Data) *descsSize,"APD");
+			this->descs = new Data *[descsSize];
 			for(int i = 0; i < nData; i++)
 			{
 				if(descs[i])
@@ -1842,7 +1817,7 @@ protected:
 			dtype = DTYPE_DICTIONARY; 
 			nDescs = nData;
 			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = (Data **)allocateArray(sizeof(Data) *descsSize,"APD");
+			this->descs = new Data *[descsSize];
 			for(int i = 0; i < nData; i++)
 			{
 				if(descs[i])
