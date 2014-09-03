@@ -1,6 +1,7 @@
 #include <config.h>
 #ifdef HAVE_WINDOWS_H
-#include <winsock.h>
+//#include <winsock.h>
+#include <WS2tcpip.h>
 #include <stdio.h>
 #else
 
@@ -93,69 +94,53 @@ struct EventInfo {
 ***********************/
 
 #ifdef HAVE_WINDOWS_H
-extern int pthread_create(pthread_t  *thread, void *dummy, void (*rtn)(void *), void *rtn_param);
+extern int pthread_create(pthread_t  *thread, void *dummy, void *(*rtn)(void *), void *rtn_param);
 extern void pthread_detach(HANDLE *thread);
 #endif
 
-#ifdef HAVE_WINDOWS_H
-static void handleMessage(void *arg)
-#else
-static void *handleMessage(void *arg)
-#endif
-{
-	int recBytes;
-	char recBuf[MAX_MSG_LEN];
-	struct sockaddr clientAddr;
-	int addrSize = sizeof(clientAddr);
-	int nameLen, bufLen;
-	char *eventName;
-	char *currPtr;
-	int thisNameLen;
+static void *handleMessage(void *arg) {
+  int recBytes;
+  char recBuf[MAX_MSG_LEN];
+  struct sockaddr clientAddr;
+  socklen_t addrSize = sizeof(clientAddr);
+  int nameLen, bufLen;
+  char *eventName;
+  char *currPtr;
+  int thisNameLen;
 
-	struct EventInfo *eventInfo = (struct EventInfo *)arg;
-	thisNameLen=strlen(eventInfo->eventName);
-	while(1)
-	{
+  struct EventInfo *eventInfo = (struct EventInfo *)arg;
+  thisNameLen=strlen(eventInfo->eventName);
+  while(1)	{
+    recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
+			(struct sockaddr *)&clientAddr, &addrSize);
+    if (recBytes < 0) {
 #ifdef HAVE_WINDOWS_H
-		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0) {
-				int errorcode=WSAGetLastError();
-				if (errorcode==WSAESHUTDOWN || errorcode==WSAENOTSOCK || errorcode==WSAEINTR) {
-					return;
-				} else
-#else
-#ifdef HAVE_VXWORKS_H
-		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, &addrSize)) < 0)
-#else
-		if((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0, 
-			(struct sockaddr *)&clientAddr, (socklen_t *)&addrSize)) < 0)
+      int errorcode=WSAGetLastError();
+      if (errorcode==WSAESHUTDOWN || errorcode==WSAENOTSOCK || errorcode==WSAEINTR)
+	return 0;
 #endif
-#endif
-    	{
-			perror("Error receiving UDP messages\n");
-			continue;
-        }
-	}
-    	
-		if (recBytes < (int)(sizeof(int)*2+thisNameLen))
-		  continue;
-		currPtr = recBuf;
-		nameLen = ntohl(*((unsigned int *)currPtr));
-		if (nameLen != thisNameLen)
-		  continue;
-		currPtr += sizeof(int);
-                eventName=currPtr;
-		currPtr += nameLen;
-		bufLen = ntohl(*((unsigned int *)currPtr));
-		currPtr += sizeof(int);
-                if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
-		  continue;
-                if (strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
-		  continue;
-		eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
+      perror("Error receiving UDP messages\n");
+      continue;
+    }	
+    if (recBytes < (int)(sizeof(int)*2+thisNameLen))
+      continue;
+    currPtr = recBuf;
+    nameLen = ntohl(*((unsigned int *)currPtr));
+    if (nameLen != thisNameLen)
+      continue;
+    currPtr += sizeof(int);
+    eventName=currPtr;
+    currPtr += nameLen;
+    bufLen = ntohl(*((unsigned int *)currPtr));
+    currPtr += sizeof(int);
+    if (recBytes != (nameLen+bufLen+8)) /*** check for invalid buffer ***/
+      continue;
+    if (strncmp(eventInfo->eventName,eventName,nameLen)) /*** check to see if this message matches the event name ***/
+      continue;
+    eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
+  }
 }
-}
+
 
 static void initialize()
 {
