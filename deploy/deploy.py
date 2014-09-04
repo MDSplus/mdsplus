@@ -233,6 +233,10 @@ if __name__ == "__main__":
       if subprocess.Popen("tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
+    elif sys.argv[5]=='build-http':
+      if subprocess.Popen("wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz && tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
+        raise Exception("Error unpacking sources for this release")
+      InstallationPackage.build()
     elif sys.argv[5]=='test':
       InstallationPackage.test()
     elif sys.argv[5]=='deploy':
