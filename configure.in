@@ -17,7 +17,7 @@ AS_CASE(["$host"],
         [sparc-sun-solaris2*], [${CC=cc}])
 
 
-JAVACFLAGS=""
+JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
 
 dnl Check out the compiler

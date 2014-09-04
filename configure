@@ -4814,7 +4814,7 @@ case "$host" in #(
 esac
 
 
-JAVACFLAGS=""
+JAVACFLAGS="-encoding UTF-8"
 FOR_LINKSHARED=""
 
 ac_ext=c
