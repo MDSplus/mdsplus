@@ -139,7 +139,13 @@ if __name__ == "__main__":
       if subprocess.Popen("""
 set -e
 rm -Rf mdsplus%(rflavor)s-?.* %(flavor)s
-tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
+if [ -d /repository/SOURCES/ ]
+then
+  tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
+else
+  wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+  tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
+fi
 cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:

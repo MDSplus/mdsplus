@@ -221,7 +221,15 @@ if __name__ == "__main__":
   InstallationPackage=module.InstallationPackage(info)
   if len(sys.argv)==5:
     if not InstallationPackage.exists():
-      if subprocess.Popen("tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
+      if subprocess.Popen("""
+set -e
+if [ -d /repository/SOURCES ]
+then
+  tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+else
+  wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+  tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+fi" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
       InstallationPackage.test()
@@ -231,10 +239,6 @@ if __name__ == "__main__":
       print(InstallationPackage.exists())
     elif sys.argv[5]=='build':
       if subprocess.Popen("tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
-        raise Exception("Error unpacking sources for this release")
-      InstallationPackage.build()
-    elif sys.argv[5]=='build-http':
-      if subprocess.Popen("wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz && tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
     elif sys.argv[5]=='test':
