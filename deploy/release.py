@@ -143,7 +143,7 @@ if [ -d /repository/SOURCES/ ]
 then
   tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 else
-  wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+  wget -q http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
   tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 fi
 cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy

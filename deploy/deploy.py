@@ -227,7 +227,7 @@ if [ -d /repository/SOURCES ]
 then
   tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
 else
-  wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+  wget -q http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
   tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
 fi""" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
