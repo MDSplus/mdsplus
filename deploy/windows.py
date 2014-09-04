@@ -27,8 +27,8 @@ cd ..
 ./configure --host=x86_64-w64-mingw32 --build=x86_64-redhat-linux-gnu --target=x86_64-w64-mingw32 \
         --prefix=%(workspace)s/%(flavor)s --exec-prefix=%(workspace)s/%(flavor)s \
         --libdir=%(workspace)s/%(flavor)s/bin_x86_64 \
-        --bindir=%(workspace)s/%(flavor)s/bin_x86_64 --enable-mdsip_connections --with-labview=$LABVIEW_DIR \
-        --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+        --bindir=%(workspace)s/%(flavor)s/bin_x86_64 --enable-mdsip_connections --with-labview=$LABVIEW64_DIR \
+        --with-jdk=$JDK_DIR --with-idl=$IDL64_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean
 make
 make install
