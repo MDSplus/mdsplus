@@ -246,8 +246,7 @@ LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
-LV_INC = @LV_INC@
-LV_LIB = @LV_LIB@
+LV_CINTOOLS = @LV_CINTOOLS@
 MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
@@ -370,6 +369,7 @@ JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javatraverser/jTraverser.jar
 javadir = $(exec_prefix)/java/classes
 java_JAVA = $(SOURCES)
+java_JAVACFLAGS = -encoding UTF-8
 
 # Build the final jar
 java_DATA = jDevices.jar

@@ -5,6 +5,7 @@ JAVAROOT = $(builddir)
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javatraverser/jTraverser.jar
 javadir = $(exec_prefix)/java/classes
 java_JAVA = $(SOURCES)
+java_JAVACFLAGS = -encoding UTF-8
 
 # Build the final jar
 java_DATA = jDevices.jar
