@@ -229,7 +229,7 @@ then
 else
   wget http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
   tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
-fi" % info,shell=True,cwd=info['workspace']).wait() != 0:
+fi""" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
       InstallationPackage.test()
