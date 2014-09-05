@@ -19,7 +19,7 @@ class InstallationPackage(object):
             else:
                 pkg = "-%s" % pkg
             self.info['package']=pkg
-            rpm='/repository/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
+            rpm='${MDSPLUS_DIST}/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
             try:
                 os.stat(rpm)
             except:
@@ -197,10 +197,10 @@ sudo rm -Rf %(workspace)s/%(flavor)s/apt
             raise Exception('\n'.join(errors))
 
     def deploy(self):
-        """Deploy release to repository"""
+        """Deploy release to ${MDSPLUS_DIST}"""
         print("Deploying new release %(major)d.%(minor)d-%(release)d" % self.info)
         sys.stdout.flush()
-        self.info['repo']="/repository/%(DIST)s/repo" % self.info
+        self.info['repo']="${MDSPLUS_DIST}/%(DIST)s/repo" % self.info
         if subprocess.Popen("""
 set -e
 mkdir -p %(repo)s/{conf,pool,dists,db}
@@ -210,7 +210,7 @@ cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
         if subprocess.Popen('find . -name "*.deb" -exec reprepro -V --waitforlock 20 -b %(repo)s -C %(flavor)s includedeb MDSplus {} \;' \
                              % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/DEBS" % self.info).wait() != 0:
             raise Exception("Error putting deb's in repository")
-        status=subprocess.Popen('rsync -av %(workspace)s/%(flavor)s/DEBS /repository/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
+        status=subprocess.Popen('rsync -av %(workspace)s/%(flavor)s/DEBS ${MDSPLUS_DIST}/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error copying files to destination")
         print("Completed deployment")
