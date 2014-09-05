@@ -7,6 +7,7 @@ class InstallationPackage(object):
         self.info=info
         self.info['workspace']=os.environ['WORKSPACE']
         self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
+        self.info['mdsplus_dist']=os.environ['MDSPLUS_DIST']
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
@@ -19,11 +20,11 @@ class InstallationPackage(object):
             else:
                 pkg = "-%s" % pkg
             self.info['package']=pkg
-            rpm='${MDSPLUS_DIST}/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
+            deb='%(mdsplus_disr)s/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
             try:
-                os.stat(rpm)
+                os.stat(deb)
             except:
-                print("%s not found" % rpm)
+                print("%s not found" % deb)
                 sys.stdout.flush()
                 return False
         print("Latest %(flavor) release %(major)d.%(minor)d.%(release)d is already available. Nothing to do for this release." % self.info)
@@ -200,7 +201,7 @@ sudo rm -Rf %(workspace)s/%(flavor)s/apt
         """Deploy release to ${MDSPLUS_DIST}"""
         print("Deploying new release %(major)d.%(minor)d-%(release)d" % self.info)
         sys.stdout.flush()
-        self.info['repo']="${MDSPLUS_DIST}/%(DIST)s/repo" % self.info
+        self.info['repo']="%(mdsplus_dist)s/%(DIST)s/repo" % self.info
         if subprocess.Popen("""
 set -e
 mkdir -p %(repo)s/{conf,pool,dists,db}
@@ -210,7 +211,7 @@ cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
         if subprocess.Popen('find . -name "*.deb" -exec reprepro -V --waitforlock 20 -b %(repo)s -C %(flavor)s includedeb MDSplus {} \;' \
                              % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/DEBS" % self.info).wait() != 0:
             raise Exception("Error putting deb's in repository")
-        status=subprocess.Popen('rsync -av %(workspace)s/%(flavor)s/DEBS ${MDSPLUS_DIST}/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
+        status=subprocess.Popen('rsync -av %(workspace)s/%(flavor)s/DEBS %(mdsplus_dist)s/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error copying files to destination")
         print("Completed deployment")
