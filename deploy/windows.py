@@ -43,8 +43,8 @@ make install
 pushd %(workspace)s/%(flavor)s
 makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rflavor)s -NOCD \
         -DOUTDIR=%(workspace)s/%(flavor)s %(workspace)s/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi
-echo mdsplus | signcode -spc /mnt/scratch/mdsplus/mdsplus.spc \
-         -v /mnt/scratch/mdsplus/mdsplus.pvk \
+echo mdsplus | signcode -spc ${MDSPLUS_CERTS}/mdsplus.spc \
+         -v ${MDSPLUS_CERTS}/mdsplus.pvk \
          -a sha1 \
          -$ individual \
          -n MDSplus  \
