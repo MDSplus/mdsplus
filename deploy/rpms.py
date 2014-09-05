@@ -5,6 +5,7 @@ class InstallationPackage(object):
     def __init__(self,info):
         self.info=info
         self.info['workspace']=os.environ['WORKSPACE']
+        self.info['mdsplus_dist']=os.environ['MDSPLUS_DIST']
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
@@ -22,7 +23,7 @@ class InstallationPackage(object):
                 arches=('x86_64','i686')
             for arch in arches:
                 self.info['arch']=arch
-                rpm='${MDSPLUS_DIST}%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
+                rpm='%(mdsplus_dist)s/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
                 try:
                     os.stat(rpm)
                 except:
@@ -294,14 +295,14 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
     def deploy(self):
         """Deploy release to ${MDSPLUS_DIST}"""
         if subprocess.Popen("""
-rsync -a %(workspace)s/%(flavor)s/RPMS ${MDSPLUS_DIST}/%(dist)s/%(flavor)s/
+rsync -a %(workspace)s/%(flavor)s/RPMS %(mdsplus_dist)s/%(dist)s/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
-            raise Exception("Error deploying %(flavor)s release to ${MDSPLUS_DIST}" % self.info)
+            raise Exception("Error deploying %(flavor)s release to %(mdsplus_dist)s" % self.info)
         if subprocess.Popen("""
 if ( which python3 > /dev/null 2>&1 )
 then
-  python3 setup.py -q bdist_egg -d ${MDSPLUS_DIST}/EGGS
+  python3 setup.py -q bdist_egg -d %(mdsplus_dist)s/EGGS
 fi
-python setup.py -q bdist_egg -d ${MDSPLUS_DIST}/EGGS
+python setup.py -q bdist_egg -d %(mdsplus_dist)s/EGGS
 """ % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/BUILDROOT/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
-            raise Exception("Error deploying python release egg to ${MDSPLUS_DIST}" % self.info)
+            raise Exception("Error deploying python release egg to %(mdsplus_dist)s" % self.info)
