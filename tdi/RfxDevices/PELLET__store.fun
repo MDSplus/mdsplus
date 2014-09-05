@@ -33,6 +33,7 @@ public fun PELLET__store(as_is _nid, optional _method)
  	private _N_TOFA = 14;
  	private _N_TOFB = 15;
  
+	private _VALVE_STATE = 144;
 
 	_status = 0;
 
@@ -63,6 +64,16 @@ public fun PELLET__store(as_is _nid, optional _method)
 		return (1);
 	}
 */
+
+
+	_valveState = if_error(data(DevNodeRef(_nid, _VALVE_STATE)), _status = 1);
+	if( _valveState == "DISABLE" )
+	{
+		DevLogErr(_nid, "Pellet DISABLED");
+		return ( 1 );
+	}
+
+
 	_name = if_error(data(DevNodeRef(_nid, _N_RS232_MAME)), _status = 1);
 
 	if( _status )
