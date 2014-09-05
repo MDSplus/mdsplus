@@ -22,7 +22,7 @@ class InstallationPackage(object):
                 arches=('x86_64','i686')
             for arch in arches:
                 self.info['arch']=arch
-                rpm='/repository/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
+                rpm='${MDSPLUS_DIST}%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
                 try:
                     os.stat(rpm)
                 except:
@@ -292,16 +292,16 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
             raise Exception('\n'.join(errors))
 
     def deploy(self):
-        """Deploy release to repository"""
+        """Deploy release to ${MDSPLUS_DIST}"""
         if subprocess.Popen("""
-rsync -a %(workspace)s/%(flavor)s/RPMS /repository/%(dist)s/%(flavor)s/
+rsync -a %(workspace)s/%(flavor)s/RPMS ${MDSPLUS_DIST}/%(dist)s/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
-            raise Exception("Error deploying %(flavor)s release to repository" % self.info)
+            raise Exception("Error deploying %(flavor)s release to ${MDSPLUS_DIST}" % self.info)
         if subprocess.Popen("""
 if ( which python3 > /dev/null 2>&1 )
 then
-  python3 setup.py -q bdist_egg -d /repository/EGGS
+  python3 setup.py -q bdist_egg -d ${MDSPLUS_DIST}/EGGS
 fi
-python setup.py -q bdist_egg -d /repository/EGGS
+python setup.py -q bdist_egg -d ${MDSPLUS_DIST}/EGGS
 """ % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/BUILDROOT/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
-            raise Exception("Error deploying python release egg to repository" % self.info)
+            raise Exception("Error deploying python release egg to ${MDSPLUS_DIST}" % self.info)
