@@ -39,4 +39,4 @@ def remove():
       import shutil
       shutil.rmtree(packagedir)
     except:
-      print "Error removing %s: %s" % (_pkgdir,sys.error_sys()[1])
+      print("Error removing %s: %s" % (_pkgdir,sys.error_sys()[1]))
