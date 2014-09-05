@@ -100,8 +100,8 @@ def processChanges(flavor):
       flushPrint("     %s" % change)
     info['release']=info['release']+1
     info['tag'] = "%(branch)s_release-%(major)d-%(minor)d-%(release)d" % info
-    info['src']="mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
-#      Checkout the source and make a source tarball and if successful tag the new release
+  #      Checkout the source and make a source tarball and if successful tag the new release
+  info['src']="mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
   status=subprocess.Popen("""
 set -e
 if [ ! -r ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz ]
