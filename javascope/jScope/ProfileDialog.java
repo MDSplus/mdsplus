@@ -206,7 +206,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
             case WaveformEvent.PROFILE_UPDATE:
                 if(isShowing())
                 {
-                    if(e.frame_type == FrameData.BITMAP_IMAGE_32 || e.frame_type == FrameData.BITMAP_IMAGE_16 )
+                    if(e.frame_type == FrameData.BITMAP_IMAGE_32 || e.frame_type == FrameData.BITMAP_IMAGE_16)
                     {
                         updateProfiles(e.name,
                                                   e.values_x, e.start_pixel_x,

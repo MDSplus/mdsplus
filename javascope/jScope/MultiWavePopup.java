@@ -59,6 +59,7 @@ public class MultiWavePopup
         signalList.setEnabled(false);
 
     }
+    protected Waveform getWave() {return super.wave;}
 
     protected void RemoveLegend()
     {

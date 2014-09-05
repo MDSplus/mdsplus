@@ -5,7 +5,6 @@ import jScope.TwuAccess;
 import jScope.Signal;
 import jScope.SetupWaveformParams;
 import jScope.ProfileDialog;
-import jScope.RdaAccess;
 import jScope.MultiWaveform;
 import jScope.Frames;
 import jScope.Grid;
@@ -27,7 +26,6 @@ public class WaveDisplay
   ProfileDialog profDialog;
 
   public WaveDisplay() {
-    DataAccessURL.addProtocol(new RdaAccess());
     DataAccessURL.addProtocol(new MdsAccess());
     DataAccessURL.addProtocol(new TwuAccess());
 
@@ -226,7 +224,7 @@ public class WaveDisplay
           w.Erase();
    }
    
-   public void addSignal(String signalParams, String globalAutentication, boolean asyncUpdate, boolean image)
+   public void addSignal(String signalParams, String globalAutentication, boolean image)
    {
         String url = null, color, marker, name, title;
         String param;
@@ -268,7 +266,6 @@ public class WaveDisplay
 
           wi.AddSignal(da.getSignalName());
  
-          wi.full_flag = !asyncUpdate; 
           wi.setShotArray(da.getShot());
           
           if( wi.StartEvaluate() == 1 )
@@ -366,15 +363,10 @@ public class WaveDisplay
     String sig_param;
     String param;
     String global_autentication;
-    boolean async_update = false;
     boolean image = false;
 
     global_autentication = getParameter("AUTENTICATION");
 
-    param = getParameter("ASYNC_UPDATE");
-    if (param != null) {
-      async_update = this.translateToBoolean(param);
-    }
         
     if ( (sig_param = getParameter("SIGNAL")) == null)
     {
@@ -382,7 +374,7 @@ public class WaveDisplay
         image = true;
     }   
     
-    addSignal(sig_param, global_autentication, async_update, image);
+    addSignal(sig_param, global_autentication, image);
 
   }
 

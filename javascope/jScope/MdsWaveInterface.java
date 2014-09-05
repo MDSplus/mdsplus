@@ -347,7 +347,6 @@ Fix bug : shot expression must be always evaluated.
     public MdsWaveInterface(MdsWaveInterface wi)
     {
         previous_shot = wi.previous_shot;
-        full_flag = wi.full_flag;
         cache_enabled = wi.cache_enabled;
         provider = wi.provider;
         num_waves = wi.num_waves;
@@ -642,7 +641,7 @@ Fix bug : shot expression must be always evaluated.
         previous_shot = "";
     }
 
-    public synchronized void refresh()
+    public synchronized void refresh() throws Exception
     {
         try
         {
@@ -864,6 +863,10 @@ Fix bug : shot expression must be always evaluated.
             WaveInterface.WriteLine(out, prompt + "time_min: ", cin_timemin);
             WaveInterface.WriteLine(out, prompt + "time_max: ", cin_timemax);
         }
+        //GAB 2014
+        WaveInterface.WriteLine(out, prompt + "strip_chart: ", isStripChart?"1":"0");
+        /////////
+        
         WaveInterface.WriteLine(out, prompt + "title: ", cin_title);
         WaveInterface.WriteLine(out, prompt + "global_defaults: ",
                                 "" + defaults);
@@ -1006,6 +1009,12 @@ Fix bug : shot expression must be always evaluated.
             cin_def_node = pr.getProperty(prompt + ".default_node");
 
             cin_upd_event = pr.getProperty(prompt + ".event");
+            
+            String stripChartStr = pr.getProperty(prompt + ".strip_chart");
+            if(stripChartStr != null && stripChartStr.trim().equals("1"))
+                isStripChart = true;
+            else
+                isStripChart = false;
 
             prop = pr.getProperty(prompt + ".x_log");
             if (prop != null)
@@ -1252,7 +1261,7 @@ Fix bug : shot expression must be always evaluated.
                         in_up_err[expr_idx + j] = prop;
                 }
 
-                prop = pr.getProperty(prompt + ".in_low_err" + idx);
+                prop = pr.getProperty(prompt + ".in_low_err_" + idx);
                 if (prop != null)
                 {
                     expr_idx = (idx - 1) * num_shot;

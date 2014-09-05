@@ -6,7 +6,7 @@ import java.io.IOException;
 
 /**
  * When a Frame sequence is requested to a DataProvider implementation, it is returned by means of an object
- * implemenmting the FrameData interface. FrameData defines therefore all the access methods required to handle 
+ * implementing the FrameData interface. FrameData defines therefore all the access methods required to handle 
  * a sequence of frames.
  * 
  * @see DataProvider
@@ -34,15 +34,15 @@ interface FrameData
      * @return The type of the corresponding frame.
      * @exception java.io.IOException
      */
-    public int GetFrameType() throws IOException;
+    public int GetFrameType() throws Exception;
 
     /**
-     * Returns thenumber of frames in the sequence.
+     * Returns the number of frames in the sequence.
      * 
      * @return The number of frames in the sequence.
      * @exception java.io.IOException
      */
-    public int GetNumFrames() throws IOException;
+    public int GetNumFrames() throws Exception;
 
     /**
      * Return the dimension of a frame. All the frames in the sequence must have the same dimension.
@@ -50,7 +50,7 @@ interface FrameData
      * @return The frame dimension.
      * @exception java.io.IOException
      */
-    public Dimension GetFrameDimension()throws IOException;
+    public Dimension GetFrameDimension()throws Exception;
 
     /**
      * Return the times associated with every frame of the sequence. This information is required to correlate 
@@ -59,7 +59,7 @@ interface FrameData
      * @return The time array for the frame sequence.
      * @exception java.io.IOException
      */
-    public float[] GetFrameTimes() throws IOException;
+    public float[] GetFrameTimes() throws Exception;
 
     /**
      * Return the frame at the given position.

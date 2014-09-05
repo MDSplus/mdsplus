@@ -1,7 +1,7 @@
 package jScope;
 
 /* $Id$ */
-import jScope.Waveform;
+import jScope.WaveformOLD;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.*;
@@ -87,7 +87,7 @@ class ColorDialog
         getContentPane().add(colorName);
 
         if (GetNumColor() == 0)
-            ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
+            ColorSetItems(WaveformOLD.COLOR_NAME, WaveformOLD.COLOR_SET);
 
         SetColorVector();
         GetColorsName();
@@ -398,8 +398,8 @@ class ColorDialog
         if (ob == color)
         {
             int color_idx = color.getSelectedIndex();
-            colorName.setText(Waveform.COLOR_NAME[color_idx]);
-            SetSliderToColor(Waveform.COLOR_SET[color_idx]);
+            colorName.setText(WaveformOLD.COLOR_NAME[color_idx]);
+            SetSliderToColor(WaveformOLD.COLOR_SET[color_idx]);
 
         }
     }
@@ -580,7 +580,7 @@ class ColorDialog
             if (main_scope.js_prop != null)
                 GetPropertiesValue();
             else
-                ColorSetItems(Waveform.COLOR_NAME, Waveform.COLOR_SET);
+                ColorSetItems(WaveformOLD.COLOR_NAME, WaveformOLD.COLOR_SET);
         }
         SetColorVector();
         GetColorsName();
@@ -626,7 +626,7 @@ class ColorDialog
             removeAllColorItems();
             if (listModel.getSize() > 0)
                 listModel.clear();
-            AddUpdateItem(Waveform.COLOR_NAME[0], Waveform.COLOR_SET[0]);
+            AddUpdateItem(WaveformOLD.COLOR_NAME[0], WaveformOLD.COLOR_SET[0]);
             SetColorVector();
         }
 

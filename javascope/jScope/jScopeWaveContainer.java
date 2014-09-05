@@ -166,7 +166,6 @@ class jScopeWaveContainer
         for (int i = 0; i < c.length; i++)
         {
             wave = BuildjScopeMultiWave(dp, def_vals);
-            wave.wi.full_flag = !GetFastNetworkState();
             wave.addWaveformListener(this);
             SetWaveParams(wave);
             c[i] = wave;
@@ -700,7 +699,6 @@ remove 28/06/2005
             w = (jScopeMultiWave) getGridComponent(i);
             if (w != null && w.wi != null)
             {
-                w.wi.full_flag = !state;
                 w.wi.setModified(true);
             }
         }
@@ -1881,7 +1879,7 @@ remove 28/06/2005
                                 if (wi.signals[i] != null && wi.signals[i].hasX())
                                 {
                                     for (j = start_idx[k][i];
-                                         j < wi.signals[i].getLength(); j++)
+                                         j < wi.signals[i].getNumPoints(); j++)
                                     {
                                         if (wi.signals[i].getX(j) > xmin &&
                                             wi.signals[i].getX(j) < xmax)

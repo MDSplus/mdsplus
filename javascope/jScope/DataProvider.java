@@ -72,10 +72,10 @@ public interface DataProvider
         public double   GetFloat(String in) throws IOException;
 
         /**
-         * Method GetWaveData is called by jScope when a waveform has to be avaluated and only the Y
+         * Method GetWaveData is called by jScope when a waveform has to be evaluated and only the Y
          * axis is defined. In this case jScope assumes that the specification is enough and it is up
          * to the data provider implementation to retrieve X and Y axis.
-         * The evaluated signal is not directly treturned as a vector, rather as a object implementing
+         * The evaluated signal is not directly returned as a vector, rather as a object implementing
          * the WaveData interface. The WaveData interface defines the following methods:
          *
          * <br>- int GetNumDimensions() returns the number of dimensions. Currently only signals (dimension=1)
@@ -109,47 +109,6 @@ public interface DataProvider
          */
         public WaveData GetWaveData(String in_y, String in_x);
 
-        /**
-         * When the network->fast network access option is enabled, jScope uses GetResampledWaveData
-         * instead of GetWaveData to evaluate waveformes. Method GetResampledWaveData should
-         * return the resampled version of the specified waveform, and resampling should be done
-         * at the data server site in orer to reduce network transfer time for large signals.
-         * GetResampledData is also asynchronously called when users zoom a resampled waveform
-         * in order to collect more points of the selected region.
-         * DataProvider implementations can enable the ast network access option by returning true
-         * in method SupportsFastNetwork. Otherwise an empty implementation of GetResampledWaveData
-         * suffices.
-         *
-         * @param in Y axisi definition as typed in the setup data source popup dialog.
-         * @param start Start X value for the requested region.
-         * @param end End X valus for the requested region.
-         * @param n_points Number of points for the resampled signal.
-         * @return The evaluated signal, embedded in a WaveData object, or null if an error is encountered.
-         * @see WaveData
-         */
-        public WaveData GetResampledWaveData(String in, double start, double end, int n_points);
-
-        /**
-         * Same as the GetResampledWaveData, except that it is called when both X and Y axis are
-         * specified.
-         *
-         * @param in_y Y axis definition for the requested signal.
-         * @param in_x X axis definition for the requested signal.
-         * @param start Start X value.
-         * @param end End X value.
-         * @param n_points Number of points for the resampling.
-         * @return The evaluated signal, embedded in a WaveData object, or null if an error is encountered.
-         * @see WaveData
-         */
-        public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points);
-
-
-         /**
-         * Called by jScope to verify whether the DataProvider implementation supports
-         * Secure Shell (ssh) tunneling option.
-         *
-         * @return The ability of supporting ssh tunneling.
-         */
 
         public boolean SupportsTunneling();
 

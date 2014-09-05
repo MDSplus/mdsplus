@@ -665,6 +665,7 @@ public class WavePopup
             markerStep.setEnabled(false);
             set_point.setEnabled(false);
         }
+        //undo_zoom.setEnabled(wave.undoZoomPendig());
         undo_zoom.setEnabled(wave.undoZoomPendig());
 
     }

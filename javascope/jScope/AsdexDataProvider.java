@@ -54,7 +54,7 @@ class AsdexDataProvider extends MdsDataProvider
             v_idx = var_idx;
         }
 
-        public int GetNumDimension() throws IOException
+        public int getNumDimension() throws IOException
         {
 
             String expr;
@@ -410,6 +410,30 @@ class AsdexDataProvider extends MdsDataProvider
             return out;
             //           return GetDefaultZLabel(in_y);
         }
+                public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+         public XYData getData(int numPoints)throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+
+        public float[] getZ(){System.out.println("BADABUM!!"); return null;}
+        public float[] getX2D(){System.out.println("BADABUM!!"); return null;}
+        public float[] getY2D(){System.out.println("BADABUM!!"); return null;} 
+        public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
+        public long []getXLong(){System.out.println("BADABUM!!"); return null;}
+        public boolean isXLong(){return false;}
+        public void addWaveDataListener(WaveDataListener listener){}
+        public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
+
+
+
     }
 
 

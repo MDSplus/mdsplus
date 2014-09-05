@@ -58,6 +58,10 @@ import javax.swing.event.*;
     JTextField time_min = new JTextField(10);
     JCheckBox x_max_b = new JCheckBox("X max");
 
+    //GAB 2014
+    JCheckBox strip_chart_b = new JCheckBox("Strip Chart");
+    
+    
     JCheckBox upd_limits_b = new JCheckBox("");
     JCheckBox upd_limits = new JCheckBox("Upd. Limits");
 
@@ -245,7 +249,7 @@ import javax.swing.event.*;
    class SList extends JPanel implements ItemListener
    {
     private JList            sig_list;
-    private DefaultListModel list_model = new DefaultListModel();
+    private DefaultListModel<String> list_model = new DefaultListModel<String>();
     private JComboBox        mode1D, mode2D, color, marker;
     private JTextField	     marker_step_t;
     private Vector<Data>     signals = new Vector<Data>();
@@ -1122,16 +1126,10 @@ import javax.swing.event.*;
 
 		p6.add(x_max_b);
 		p6.add(x_max);
+                
+                p6.add(strip_chart_b);
 
-        p6.add(upd_limits_b);
-        JPanel pp1 = new JPanel();
-
-        upd_limits.setMargin(new Insets(1,1,1,1));
-        BevelBorder bb = (BevelBorder)BorderFactory.createBevelBorder(BevelBorder.LOWERED);
-        pp1.setBorder(bb);
-		pp1.add(upd_limits);
-		p6.add(pp1);
-
+ 
 
 		p6.add(keep_ratio_b);
 		keep_ratio_b.setVisible(false);
@@ -1142,6 +1140,16 @@ import javax.swing.event.*;
 		p7.add(shot_b);
 		p7.add(shot);
 
+       p7.add(upd_limits_b);
+        JPanel pp1 = new JPanel();
+
+        upd_limits.setMargin(new Insets(1,1,1,1));
+        BevelBorder bb = (BevelBorder)BorderFactory.createBevelBorder(BevelBorder.LOWERED);
+        pp1.setBorder(bb);
+		pp1.add(upd_limits);
+		p7.add(pp1);
+                
+                
 		p7.add(horizontal_flip_b);
 		horizontal_flip_b.setVisible(false);
 
@@ -1502,6 +1510,10 @@ import javax.swing.event.*;
        y_expr.setText("");
        x_log.setSelected(wi.x_log);
        y_log.setSelected(wi.y_log);
+       
+       //GAB 2014
+       strip_chart_b.setSelected(wi.isStripChart);
+       
        //upd_limits.setSelected(wi.cin_upd_limits);
 //	}
 //	else {
@@ -1532,7 +1544,9 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(true);
 		x_max_b.setVisible(false);
 		x_min_b.setVisible(false);
-
+                //GAB 2014
+                strip_chart_b.setVisible(false);
+                
 		pix_y_max.setVisible(true);
 		pix_y_min.setVisible(true);
 		y_max_b.setVisible(false);
@@ -1569,6 +1583,7 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(false);
 		x_max_b.setVisible(true);
 		x_min_b.setVisible(true);
+                strip_chart_b.setVisible(true);
 
 		pix_y_max.setVisible(false);
 		pix_y_min.setVisible(false);
@@ -1684,8 +1699,10 @@ import javax.swing.event.*;
 	    if(!main_scope.equalsString(s[i].up_err,  wave_wi.in_up_err[i]))   return true;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
+        //GAB 2014
+        if(strip_chart_b.isSelected() != wave_wi.isStripChart) return true;
 
-	return false;
+        return false;
     }
 
     private void updateDataSetup()
@@ -1735,6 +1752,9 @@ import javax.swing.event.*;
 	    wi.cin_xlabel    = x_label.getText();
       if(!y_label_b.isSelected() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
 	    wi.cin_ylabel    = y_label.getText();
+      
+      //GAB 2014
+      wi.isStripChart = strip_chart_b.isSelected();
 
    }
 
@@ -1762,7 +1782,6 @@ import javax.swing.event.*;
 
           if(!wi.getModified())
           {
-                wave.wi.full_flag = !main_scope.wave_panel.GetFastNetworkState();
                 if(wi.is_image)
                 {
                     if( wave.frames != null )
@@ -1811,7 +1830,6 @@ import javax.swing.event.*;
           wi.x_log        = x_log.isSelected();
           wi.y_log        = y_log.isSelected();
           wi.in_upd_limits   = upd_limits.isSelected();
-          wi.full_flag    = !main_scope.wave_panel.GetFastNetworkState();
           wi.num_shot     = signalList.getNumShot();
           wi.defaults     = getDefaultFlags();
 
@@ -1827,6 +1845,8 @@ import javax.swing.event.*;
       wi.interpolates = new boolean[num_signal];
       wi.mode2D       = new int[num_signal];
       wi.mode1D       = new int[num_signal];
+      //GAB 2014
+      wi.isStripChart = strip_chart_b.isSelected();
 
       if(s[0].shot != UNDEF_SHOT)
         wi.shots        = new long[num_signal];

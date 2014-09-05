@@ -73,7 +73,12 @@ public class jScopeMultiWave
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
                 boolean cache_state = mwi.cache_enabled;
                 mwi.cache_enabled = false;
-                mwi.refresh();
+                try {
+                    mwi.refresh();
+                }catch(Exception exc)
+                {
+                    System.out.println(exc);
+                }
                 mwi.cache_enabled = cache_state;
 
                 SwingUtilities.invokeLater(new Runnable()
@@ -107,9 +112,9 @@ public class jScopeMultiWave
             {
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
                 boolean cache_state = mwi.cache_enabled;
-                mwi.cache_enabled = false;
-                mwi.refresh();
-                mwi.cache_enabled = cache_state;
+                try {
+                    mwi.refresh();
+                }catch(Exception exc){}
 
                 SwingUtilities.invokeLater(new Runnable()
                     {

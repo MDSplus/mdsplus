@@ -3449,7 +3449,7 @@ class ServerDialog
     JLabel server_label, user_label;
     JTextField server_l, server_a, server_u;
     JCheckBox automatic;
-    JComboBox data_provider_list;
+    JComboBox<String> data_provider_list;
 
     JCheckBox tunneling;
     JTextField tunnel_port;
@@ -3628,7 +3628,7 @@ class ServerDialog
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
-        data_provider_list = new JComboBox();
+        data_provider_list = new JComboBox<String>();
         gridbag.setConstraints(data_provider_list, c);
         getContentPane().add(data_provider_list);
         data_provider_list.addActionListener(new ActionListener() {

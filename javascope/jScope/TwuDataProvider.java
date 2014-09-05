@@ -127,13 +127,14 @@ class TwuDataProvider
         else
           is_time = false;
 
-        WaveData wd   = GetWaveData  (in) ;
+        TwuWaveData wd   = (TwuWaveData)GetWaveData  (in) ;
         float [] data = null ;
         try
         {
-            data = wd.GetFloatData() ;
+//            data = wd.GetFloatData() ;
+            data = wd.getData(4000).y ;
         }
-        catch (  IOException e )
+        catch (  Exception e )
         {
             resetErrorstring(e.toString());
             data = null ;
@@ -148,10 +149,13 @@ class TwuDataProvider
     public synchronized float[]
     GetFloatArray (String in, boolean is_time) throws IOException
     {
-        WaveData wd = GetWaveData(in) ; // TwuAccess wants to get the full signal data .
+        TwuWaveData wd = (TwuWaveData)GetWaveData(in) ; // TwuAccess wants to get the full signal data .
         return is_time ? wd.GetXData() : wd.GetYData() ;
     }
 
+    
+    
+    
     public synchronized String GetSignalProperty (String prop, String in) throws IOException
     {
         TwuWaveData wd = (TwuWaveData) GetWaveData(in) ;

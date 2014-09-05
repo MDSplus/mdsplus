@@ -86,12 +86,12 @@ public class ContourSignal
   {
 	if(s.getType() == Signal.TYPE_2D)
 	{
-	    x = s.getX2D();
-	    y = s.getY2D();
-	    z = s.getZ2D();
 	    this.setMinMaxX(s.getX2Dmin(), s.getX2Dmax());
 	    this.setMinMaxY(s.getY2Dmin(), s.getY2Dmax());
 	    this.setMinMaxZ(s.getZ2Dmin(), s.getZ2Dmax());
+            this.x = s.getX2D();
+            this.y = s.getY2D();
+            this.z = s.getZ2D();
 	}
   }
 
