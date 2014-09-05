@@ -1,7 +1,0 @@
-#!/bin/sh
-if [ -e /tmp/ready ]
-then
-  echo "Ready"
-else
-  /usr/local/bin/acqcmd getState
-fi

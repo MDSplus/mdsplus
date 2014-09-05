@@ -1,7 +1,0 @@
-#!/bin/sh
-MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
-export MDSPLUS_DIR
-. $MDSPLUS_DIR/setup.sh
-MDS_PATH=$MDSPLUS_DIR/local/tdi\;$MDS_PATH
-export MDS_PATH
-$MDSPLUS_DIR/bin/mdsip --protocol=gsi --security=integrity --hostfile=TDIcheck_access_mdsips >> /var/log/mdsips.log 2>> /var/log/mdsips.error

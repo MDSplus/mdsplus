@@ -1,3 +1,0 @@
-#!/bin/sh
-sed -f FixUserDefined.sed $1 > temp.tmp
-mv temp.tmp $1

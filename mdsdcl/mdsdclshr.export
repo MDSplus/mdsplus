@@ -1,9 +1,0 @@
-mdsdcl_do_command
-mdsdcl_get_input
-mdsdcl_get_input_nosymbols
-cli_present
-cli_get_value
-cmd_lookup
-l2u
-yesno
-mdsdcl_ctrl_address

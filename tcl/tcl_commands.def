@@ -1,8 +1,0 @@
-LIBRARY	tcl_commands
-EXPORTS
-;
-tcl_commands
-TclGetOut
-TclOutLen
-TclSaveOut
-TclSetCallbacks
