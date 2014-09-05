@@ -452,8 +452,6 @@ JSCOPE_SRC = \
 	jScope/TextorBrowseSignals.java
 
 EXTRA_CLASS = \
-	jScope/AsynchUpdater.class \
-        jScope/ContinuousUpdater.class \
         jScope/FakeTWUProperties.class \
         jScope/FontPanel.class \
 	jScope/ServerDialog*.class \
