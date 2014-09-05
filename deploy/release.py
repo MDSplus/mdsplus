@@ -106,6 +106,7 @@ def processChanges(flavor):
 set -e
 if [ ! -r ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz ]
 then
+  echo ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz not found. Creating source tarball.
   rm -Rf mdsplus-*
   cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
   cd %(src)s
