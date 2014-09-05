@@ -93,16 +93,15 @@ def processChanges(flavor):
   changes=p.stdout.readlines()
   info['numchanges']=len(changes)
   p.wait()
-  flushPrint(str(info))
   if info['numchanges'] > 0:
     #    If changes
     flushPrint("There were %(numchanges)d changes to the %(branch)s branch since release %(tag)s" % info)
     for change in changes:
       flushPrint("     %s" % change)
     info['release']=info['release']+1
-    info['tag'] = "%(branch)s_release-%(major)d-%(minor)d-%(release)d" % info
+    info['tag'] = "%(flavor)s_release-%(major)d-%(minor)d-%(release)d" % info
+    flushPrint("Making new release %(tag)s" % info)
   #      Checkout the source and make a source tarball and if successful tag the new release
-  flushPrint(str(info))
   info['src']="mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
   status=subprocess.Popen("""
 set -e
