@@ -124,6 +124,8 @@ then
   tar zhcf ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz --exclude CVS %(src)s
   cd /tmp
   rm -Rf mdsplus-*
+else
+  echo ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz exists
 fi
 """ % info,shell=True,cwd="/tmp").wait()
   if status != 0:
