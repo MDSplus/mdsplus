@@ -12,7 +12,7 @@ import subprocess,os,sys
         the modules were tagged with this latest release.
     2c) If changes:
         2c1) Checkout a copy of the branch
-        2c2) Make a tar file in /repository/SOURCES with name=mdsplus[-flavor]-m-n-o(+1).tgz
+        2c2) Make a tar file in ${MDSPLUS_DIST}/SOURCES with name=mdsplus[-flavor]-m-n-o(+1).tgz
         2c3) Add a new tag to the branch with release incremented
 
 """
@@ -38,10 +38,9 @@ def makeAllSourceTars():
     else:
       rflavor="-%s" % flavor
     src="mdsplus%s-%d.%d-%d" % (rflavor,major,minor,release)
-    tarball='/repository/SOURCES/'+src+'.tgz'
+    tarball='${MDSPLUS_DIST}/SOURCES/'+src+'.tgz'
     try:
       os.stat(tarball)
-      print "%s exists" % tarball
     except:
       print "%s not found, creating" % tarball
       status=subprocess.Popen("""
@@ -92,33 +91,42 @@ def processChanges(flavor):
   p=subprocess.Popen("cvs -Q rdiff -s -r %s -r %s mdsplus" % (info['tag'],info['branch']),
                      stdout=subprocess.PIPE,shell=True)
   changes=p.stdout.readlines()
+  info['numchanges']=len(changes)
   p.wait()
-  if len(changes) > 0:
+  if info['numchanges'] > 0:
     #    If changes
-    flushPrint("There were %d changes to the %s branch since release %s" % (len(changes),flavor,info['tag']))
+    flushPrint("There were %(numchanges)d changes to the %(branch)s branch since release %(tag)s" % info)
     for change in changes:
       flushPrint("     %s" % change)
-    tag = "%s_release-%d-%d-%d" % (flavor,info['major'],info['minor'],info['release']+1)
-    src="mdsplus%s-%d.%d-%d" % (info['rflavor'],info['major'],info['minor'],info['release']+1)
+    info['release']=info['release']+1
+    info['tag'] = "%(branch)s_release-%(major)d-%(minor)d-%(release)d" % info
+    info['src']="mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
 #      Checkout the source and make a source tarball and if successful tag the new release
-    status=subprocess.Popen("""
+  status=subprocess.Popen("""
 set -e
-rm -Rf /tmp/mdsplus-*
-cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
-cd %(src)s
-cvs -Q tag %(tag)s
-echo "%(tag)s" > header.tmp
-echo "" >> header.tmp
-echo "" >> header.tmp
-touch ChangeLog
-devscripts/cvs2cl.pl --prune --accum --header header.tmp --separate-header -b 2> /dev/null
-rm header.tmp
-cd ..
-tar zhcf /repository/SOURCES/%(src)s.tgz --exclude CVS %(src)s
-rm -Rf /tmp/mdsplus-*
-""" % {'branch':info['branch'],'src':src,'tag':tag},shell=True,cwd="/tmp").wait()
-    if status != 0:
-      raise Exception("Error handling new release")
+if [ ! -r ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz ]
+then
+  rm -Rf mdsplus-*
+  cvs -Q -d :pserver:MDSguest:MDSguest@www.mdsplus.org:/mdsplus/repos co -d %(src)s -r %(branch)s mdsplus
+  cd %(src)s
+  if [ %(numchanges)d -gt 0 ]
+  then
+    cvs -Q tag %(tag)s
+  fi
+  echo "%(tag)s" > header.tmp
+  echo "" >> header.tmp
+  echo "" >> header.tmp
+  touch ChangeLog
+  devscripts/cvs2cl.pl --prune --accum --header header.tmp --separate-header -b 2> /dev/null
+  rm header.tmp
+  cd ..
+  tar zhcf ${MDSPLUS_DIST}/SOURCES/%(src)s.tgz --exclude CVS %(src)s
+  cd /tmp
+  rm -Rf mdsplus-*
+fi
+""" % info,shell=True,cwd="/tmp").wait()
+  if status != 0:
+    raise Exception("Error handling new release")
 
 if __name__ == "__main__":
   if len(sys.argv) == 1 or sys.argv[1]=='release':
@@ -139,13 +147,7 @@ if __name__ == "__main__":
       if subprocess.Popen("""
 set -e
 rm -Rf mdsplus%(rflavor)s-?.* %(flavor)s
-if [ -d /repository/SOURCES/ ]
-then
-  tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
-else
-  wget -q http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
-  tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
-fi
+tar zxf ${MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 cd mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 """ % info,shell=True).wait() != 0:

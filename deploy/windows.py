@@ -8,7 +8,7 @@ class InstallationPackage(object):
 
     def exists(self):
         """Check to see if install kit for this release already exist."""
-        kit="/repository/Windows/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
+        kit="${MDSPLUS_DIST}/Windows/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe" % self.info
         try:
             os.stat(kit)
         except:
@@ -60,12 +60,12 @@ echo mdsplus | signcode -spc ${MDSPLUS_CERTS}/mdsplus.spc \
         return
 
     def deploy(self):
-        """Deploy release to repository"""
+        """Deploy release to ${MDSPLUS_DIST}"""
         self.info['job_name']=os.environ['JOB_NAME']
         self.info['build_number']=os.environ['BUILD_NUMBER']
         if subprocess.Popen("""
-rsync -a %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe /repository/Windows/%(flavor)s/
-cat - > /repository/Windows/%(flavor)s/hudson_build%(rflavor)s-%(major)d.%(minor)d-%(release)d.html <<EOF
+rsync -a %(workspace)s/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe ${MDSPLUS_DIST}/Windows/%(flavor)s/
+cat - > ${MDSPLUS_DIST}/Windows/%(flavor)s/hudson_build%(rflavor)s-%(major)d.%(minor)d-%(release)d.html <<EOF
 <html>
 <head>
 <meta http-equiv="Refresh" content="0; url=http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s" />
@@ -76,4 +76,4 @@ cat - > /repository/Windows/%(flavor)s/hudson_build%(rflavor)s-%(major)d.%(minor
 </html>
 EOF
 """ % self.info,shell=True).wait() != 0:
-            raise Exception("Error deploying %(flavor)s release to repository" % self.info)
+            raise Exception("Error deploying %(flavor)s release to ${MDSPLUS_DIST}" % self.info)

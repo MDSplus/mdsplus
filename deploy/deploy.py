@@ -14,11 +14,10 @@ __doc__="""Deploy installation packages
    Deploy does the following:
 
    * Determine platform and import platform specific packaging class instance.
-   * Check if installation packages for this flavor and version already exits in the
-     repository and just exit if they do.
+   * Check if installation packages for this flavor and version already exits and just exit if they do.
    * Build new installation packages.
    * Test new installation packages.
-   * Deploy installation packages to repository.
+   * Deploy installation packages to ${MDSPLUS_DIST}.
 
   NOTE: DIST environment variable designating the platform (i.e. el6,fc20,Ubuntu12)
         must be defined!
@@ -223,13 +222,8 @@ if __name__ == "__main__":
     if not InstallationPackage.exists():
       if subprocess.Popen("""
 set -e
-if [ -d /repository/SOURCES ]
-then
-  tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
-else
-  wget -q http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
-  tar zxf mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
-fi""" % info,shell=True,cwd=info['workspace']).wait() != 0:
+tar zxf ${MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+""" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
       InstallationPackage.test()
@@ -238,7 +232,7 @@ fi""" % info,shell=True,cwd=info['workspace']).wait() != 0:
     if sys.argv[5]=='exists':
       print(InstallationPackage.exists())
     elif sys.argv[5]=='build':
-      if subprocess.Popen("tar zxf /repository/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
+      if subprocess.Popen("tar zxf %{MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
     elif sys.argv[5]=='test':
