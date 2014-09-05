@@ -336,7 +336,7 @@ public class TwuSingleSignal
         ce = makeConnectionEvent((isAbscissa ? "Load X" : "Load Y"), 0, 0);
         DispatchConnectionEvent(ce);
 
-        int inc = WaveformOLD.MAX_POINTS!=0 ? n_point/WaveformOLD.MAX_POINTS : 0;
+        int inc = Waveform.MAX_POINTS!=0 ? n_point/Waveform.MAX_POINTS : 0;
         if (inc<10) 
           inc=10;
 
@@ -437,7 +437,7 @@ public class TwuSingleSignal
     protected static void
     handleException (Exception e) 
     {
-        if (WaveformOLD.is_debug) 
+        if (Waveform.is_debug) 
           e.printStackTrace (System.out) ;
 
         // this method exists only to improve consistency.
