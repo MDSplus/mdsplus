@@ -20,7 +20,8 @@ SOURCES = boxsmooth.c \
 	  iir.c \
 	  MdsFilter.c \
 	  whoami.c \
-	  pycall.c
+	  pycall.c \
+	  ScopeUtilities.c
 
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = MdsMisc.exports
