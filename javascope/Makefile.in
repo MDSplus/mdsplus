@@ -426,7 +426,7 @@ COMMON_SRC = \
 	jScope/MdsDataProvider.java           jScope/MdsMessage.java              jScope/MdsplusParser.java         \
 	jScope/MdsWaveInterface.java          jScope/MultiWaveform.java           jScope/MultiWavePopup.java        \
 	jScope/NotConnectedDataProvider.java  jScope/ProfileDialog.java           jScope/PropertiesEditor.java      \
-	jScope/RandomAccessData.java          jScope/RdaAccess.java               jScope/RowColumnContainer.java    \
+	jScope/RandomAccessData.java          jScope/RowColumnContainer.java                                        \
 	jScope/RowColumnLayout.java           jScope/SetupDataDialog.java         jScope/SetupDefaults.java         \
 	jScope/SetupWaveformParams.java       jScope/SignalBox.java               jScope/SignalCache.java           \
 	jScope/Signal.java                    jScope/SignalsBoxDialog.java        jScope/SshTunneling.java          \
@@ -444,8 +444,6 @@ WAVEDISPLAY_SRC =
 JSCOPE_SRC = \
 	jScope.java \
 	jScope/CompositeWaveDisplay.java \
-	jScope/DemoAccess.java           \
-	jScope/DemoDataProvider.java     \
 	jScope/LocalDataProvider.java    \
 	jScope/MdsDataClient.java        \
 	jScope/MdsIOException.java       \
