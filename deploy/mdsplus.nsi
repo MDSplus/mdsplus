@@ -1,6 +1,7 @@
 !include LogicLib.nsh
 !include x64.nsh
-!include "StrFunc.nsh"
+!include StrFunc.nsh
+!include WinMessages.nsh
 
 Name "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 Icon mdsplus.ico
