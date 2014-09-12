@@ -252,11 +252,16 @@ public class Node
                 }
                 catch (Exception e)
                 {
-                    JOptionPane.showMessageDialog(FrameRepository.frame,
-                                                  e.getMessage(),
-                                                  "Error in device setup: " + e,
-                                                  JOptionPane.WARNING_MESSAGE);
-                    e.printStackTrace();
+                    try {
+                        experiment.doDeviceMethod(nid, "SETUP", Tree.context);
+                    }catch(Exception exc)
+                    {
+                        JOptionPane.showMessageDialog(FrameRepository.frame,
+                                                      e.getMessage(),
+                                                      "Error in device setup: " + e,
+                                                      JOptionPane.WARNING_MESSAGE);
+                        e.printStackTrace();
+                    }
                     return;
                 }
             }
