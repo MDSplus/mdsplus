@@ -336,7 +336,7 @@ DLLEXPORT void mdsplus_scalar_getInfo(const void *lvScalarPtr, char *clazzOut, c
 
 /********** STRING **********/
 DLLEXPORT void mdsplus_string_constructor(void **lvStringPtrOut, const char *valIn, ErrorCluster *error);
-DLLEXPORT void mdsplus_string_constructor_len(void **lvStringPtrOut, const LByteArrHdl lvByteArrHdlIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_string_constructor_len(void **lvStringPtrOut, const LUByteArrHdl lvUByteArrHdlIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_string_destructor(void **lvStringPtr);
 DLLEXPORT void mdsplus_string_equals(const void *lvStringPtr, LVBoolean *equalsOut, const void *lvDataPtrIn, ErrorCluster *error);
 DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvStrHdlOut, ErrorCluster *error);
