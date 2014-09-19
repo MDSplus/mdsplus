@@ -142,17 +142,17 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
         print("Preparing test repository")
         sys.stdout.flush()
         if subprocess.Popen("""
+sudo %(apt-get)s autoremove -y 'mdsplus*' >/dev/null 2>&1
 set -e
-${SUDO} %(apt-get)s autoremove -y 'mdsplus*' >/dev/null 2>&1
-${SUDO} rm -Rf %(workspace)s/%(flavor)s/apt
+sudo rm -Rf %(workspace)s/%(flavor)s/apt
 mkdir -v -p %(workspace)s/%(flavor)s/apt/etc
 mkdir -v -p %(workspace)s/%(flavor)s/apt/var/lib/apt
 #mkdir -v -p %(workspace)s/%(flavor)s/apt/{etc,var/lib/apt}
-${SUDO} rsync -a /etc/apt %(workspace)s/%(flavor)s/apt/etc/
-${SUDO} apt-key add mdsplus.gpg.key
+sudo rsync -a /etc/apt %(workspace)s/%(flavor)s/apt/etc/
+sudo apt-key add mdsplus.gpg.key
 echo "deb file:%(workspace)s/%(flavor)s/REPO/ MDSplus %(flavor)s" > mdsplus.list
-${SUDO} rsync -a mdsplus.list %(workspace)s/%(flavor)s/apt/etc/apt/sources.list.d/
-${SUDO} %(apt-get)s update >/dev/null 2>&1
+sudo rsync -a mdsplus.list %(workspace)s/%(flavor)s/apt/etc/apt/sources.list.d/
+sudo %(apt-get)s update >/dev/null 2>&1
 """ % self.info,shell=True).wait() != 0:
             errors.append("Failed to create test apt configuration files")
         if len(errors) == 0:
@@ -170,13 +170,13 @@ ${SUDO} %(apt-get)s update >/dev/null 2>&1
                     self.info['package']=pkg
                     if subprocess.Popen("""
 set -e
-${SUDO} %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
-${SUDO} %(apt-get)s autoremove -y 'mdsplus%(rflavor)s%(package)s'""" % self.info,shell=True).wait() != 0:
+sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
+sudo %(apt-get)s autoremove -y 'mdsplus%(rflavor)s%(package)s'""" % self.info,shell=True).wait() != 0:
                         errors.append("Error installing package mdsplus%(rflavor)s%(package)s" % self.info)
         if len(errors) == 0:
             if subprocess.Popen("""
 set -e
-${SUDO} %(apt-get)s install -y mdsplus%(rflavor)s-mitdevices
+sudo %(apt-get)s install -y mdsplus%(rflavor)s-mitdevices
 . /etc/profile.d/mdsplus.sh
 python <<EOF
 import sys,os
@@ -190,8 +190,8 @@ if not result.wasSuccessful():
 EOF""" % self.info,shell=True).wait() != 0:
                 errors.append("Error running regression tests")
         subprocess.Popen("""
-${SUDO} %(apt-get)s autoremove -y 'mdsplus*'
-${SUDO} rm -Rf %(workspace)s/%(flavor)s/apt
+sudo %(apt-get)s autoremove -y 'mdsplus*'
+sudo rm -Rf %(workspace)s/%(flavor)s/apt
 """ % self.info,shell=True).wait()
         if len(errors) > 0:
             errors.insert(0,"Testing failed")
