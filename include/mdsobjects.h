@@ -126,7 +126,7 @@ namespace MDSplus  {
 EXPORT void deleteNativeArray(char *array);
 EXPORT void deleteNativeArray(short *array);
 EXPORT void deleteNativeArray(int *array);
-EXPORT void deleteNativeArray(long *array);
+//EXPORT void deleteNativeArray(long *array);
 EXPORT void deleteNativeArray(int64_t *array);
 EXPORT void deleteNativeArray(float *array);
 EXPORT void deleteNativeArray(double *array);
@@ -675,32 +675,9 @@ protected:
 		int nDims;
 		int dims[MAX_DIMS];
 		char *ptr;
-		void setSpecific(char *data, int length, int dtype, int nData)
-		{
-			clazz = CLASS_A;
-			this->dtype = dtype;
-			this->length = length;
-			arsize = nData * length;
-			nDims = 1;
-			dims[0] = nData;
-			ptr = new char[arsize];
-			memcpy(ptr, data, arsize);
-		}
-		void setSpecific(char *data, int length, int dtype, int nDims, int *dims)
-		{
-			clazz = CLASS_A;
-			this->dtype = dtype;
-			this->length = length;
-			arsize = length;
-			for(int i = 0; i < nDims; i++)
-			{
-				arsize *= dims[i];
-				this->dims[i] = dims[i];
-			}
-			this->nDims = nDims;
-			ptr = new char[arsize];
-			memcpy(ptr, data, arsize);
-		}
+		//Gabriele September 2014. Move code in cpp file
+		void setSpecific(char *data, int length, int dtype, int nData);
+		void setSpecific(char *data, int length, int dtype, int nDims, int *dims);
 	public:
 		Array() {clazz = CLASS_A;}
 		~Array()
