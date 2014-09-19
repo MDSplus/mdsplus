@@ -3488,7 +3488,7 @@ DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn,
 
 {
 
-	Float64 *float64PtrOut = NULL;
+  MDSplus::Float64 *float64PtrOut = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3528,7 +3528,7 @@ DLLEXPORT void mdsplus_float64_destructor(void **lvFloat64Ptr)
 
 {
 
-	Float64 *float64Ptr = reinterpret_cast<Float64 *>(*lvFloat64Ptr);
+  MDSplus::Float64 *float64Ptr = reinterpret_cast<Float64 *>(*lvFloat64Ptr);
 
 	deleteData(float64Ptr);
 
@@ -3542,7 +3542,7 @@ DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, 
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3580,7 +3580,7 @@ DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubl
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3618,7 +3618,7 @@ DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOu
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3656,7 +3656,7 @@ DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, Err
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3694,7 +3694,7 @@ DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOu
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3732,7 +3732,7 @@ DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOu
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3778,7 +3778,7 @@ DLLEXPORT void mdsplus_float64array_constructor(void **lvFloat64ArrayPtrOut, con
 
 {
 
-	Float64Array *float64ArrayPtrOut = NULL;
+  Float64Array *float64ArrayPtrOut = NULL;
 
 	double *float64Arr = NULL;	
 
