@@ -142,8 +142,8 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
         print("Preparing test repository")
         sys.stdout.flush()
         if subprocess.Popen("""
-set -e
 sudo %(apt-get)s autoremove -y 'mdsplus*' >/dev/null 2>&1
+set -e
 sudo rm -Rf %(workspace)s/%(flavor)s/apt
 mkdir -v -p %(workspace)s/%(flavor)s/apt/etc
 mkdir -v -p %(workspace)s/%(flavor)s/apt/var/lib/apt
