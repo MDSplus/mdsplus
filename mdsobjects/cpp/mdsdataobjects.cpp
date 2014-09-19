@@ -1455,7 +1455,7 @@ EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
+//EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int64_t *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
