@@ -3054,7 +3054,7 @@ DLLEXPORT void mdsplus_float32_constructor(void **lvFloat32PtrOut, float valIn, 
 
 {
 
-	Float32 *float32PtrOut = NULL;
+	MDSplus::Float32 *float32PtrOut = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3066,7 +3066,7 @@ DLLEXPORT void mdsplus_float32_constructor(void **lvFloat32PtrOut, float valIn, 
 
 	{
 
-		float32PtrOut = new Float32(valIn);
+		float32PtrOut = new MDSplus::Float32(valIn);
 
 		*lvFloat32PtrOut = reinterpret_cast<void *>(float32PtrOut);
 
@@ -3094,7 +3094,7 @@ DLLEXPORT void mdsplus_float32_destructor(void **lvFloat32Ptr)
 
 {
 
-	Float32 *float32Ptr = reinterpret_cast<Float32 *>(*lvFloat32Ptr);
+	MDSplus::Float32 *float32Ptr = reinterpret_cast<MDSplus::Float32 *>(*lvFloat32Ptr);
 
 	deleteData(float32Ptr);
 
@@ -3108,7 +3108,7 @@ DLLEXPORT void mdsplus_float32_getByte(const void *lvFloat32Ptr, char *byteOut, 
 
 {
 
-	Float32 *float32Ptr = NULL;
+	MDSplus::Float32 *float32Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3120,7 +3120,7 @@ DLLEXPORT void mdsplus_float32_getByte(const void *lvFloat32Ptr, char *byteOut, 
 
 	{
 
-		float32Ptr = reinterpret_cast<Float32 *>(const_cast<void *>(lvFloat32Ptr));
+		float32Ptr = reinterpret_cast<MDSplus::Float32 *>(const_cast<void *>(lvFloat32Ptr));
 
 		*byteOut = float32Ptr->getByte();
 
@@ -3146,7 +3146,7 @@ DLLEXPORT void mdsplus_float32_getDouble(const void *lvFloat32Ptr, double *doubl
 
 {
 
-	Float32 *float32Ptr = NULL;
+	MDSplus::Float32 *float32Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3158,7 +3158,7 @@ DLLEXPORT void mdsplus_float32_getDouble(const void *lvFloat32Ptr, double *doubl
 
 	{
 
-		float32Ptr = reinterpret_cast<Float32 *>(const_cast<void *>(lvFloat32Ptr));
+		float32Ptr = reinterpret_cast<MDSplus::Float32 *>(const_cast<void *>(lvFloat32Ptr));
 
 		*doubleOut = float32Ptr->getDouble();
 
@@ -3184,7 +3184,7 @@ DLLEXPORT void mdsplus_float32_getFloat(const void *lvFloat32Ptr, float *floatOu
 
 {
 
-	Float32 *float32Ptr = NULL;
+	MDSplus::Float32 *float32Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3196,7 +3196,7 @@ DLLEXPORT void mdsplus_float32_getFloat(const void *lvFloat32Ptr, float *floatOu
 
 	{
 
-		float32Ptr = reinterpret_cast<Float32 *>(const_cast<void *>(lvFloat32Ptr));
+		float32Ptr = reinterpret_cast<MDSplus::Float32 *>(const_cast<void *>(lvFloat32Ptr));
 
 		*floatOut = float32Ptr->getFloat();
 
@@ -3222,7 +3222,7 @@ DLLEXPORT void mdsplus_float32_getInt(const void *lvFloat32Ptr, int *intOut, Err
 
 {
 
-	Float32 *float32Ptr = NULL;
+	MDSplus::Float32 *float32Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3234,7 +3234,7 @@ DLLEXPORT void mdsplus_float32_getInt(const void *lvFloat32Ptr, int *intOut, Err
 
 	{
 
-		float32Ptr = reinterpret_cast<Float32 *>(const_cast<void *>(lvFloat32Ptr));
+		float32Ptr = reinterpret_cast<MDSplus::Float32 *>(const_cast<void *>(lvFloat32Ptr));
 
 		*intOut = float32Ptr->getInt();
 
@@ -3260,7 +3260,7 @@ DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, int64_t *longOu
 
 {
 
-	Float32 *float32Ptr = NULL;
+	MDSplus::Float32 *float32Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3272,7 +3272,7 @@ DLLEXPORT void mdsplus_float32_getLong(const void *lvFloat32Ptr, int64_t *longOu
 
 	{
 
-		float32Ptr = reinterpret_cast<Float32 *>(const_cast<void *>(lvFloat32Ptr));
+		float32Ptr = reinterpret_cast<MDSplus::Float32 *>(const_cast<void *>(lvFloat32Ptr));
 
 		*longOut = float32Ptr->getLong();
 
@@ -3298,7 +3298,7 @@ DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOu
 
 {
 
-	Float32 *float32Ptr = NULL;
+	MDSplus::Float32 *float32Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3310,7 +3310,7 @@ DLLEXPORT void mdsplus_float32_getShort(const void *lvFloat32Ptr, short *shortOu
 
 	{
 
-		float32Ptr = reinterpret_cast<Float32 *>(const_cast<void *>(lvFloat32Ptr));
+		float32Ptr = reinterpret_cast<MDSplus::Float32 *>(const_cast<void *>(lvFloat32Ptr));
 
 		*shortOut = float32Ptr->getShort();
 
