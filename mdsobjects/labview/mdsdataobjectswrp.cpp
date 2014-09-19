@@ -3488,7 +3488,7 @@ DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn,
 
 {
 
-	Float64 *float64PtrOut = NULL;
+  MDSplus::Float64 *float64PtrOut = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3500,7 +3500,7 @@ DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn,
 
 	{
 
-		float64PtrOut = new Float64(valIn);
+	  float64PtrOut = new MDSplus::Float64(valIn);
 
 		*lvFloat64PtrOut = reinterpret_cast<void *>(float64PtrOut);
 
@@ -3528,7 +3528,7 @@ DLLEXPORT void mdsplus_float64_destructor(void **lvFloat64Ptr)
 
 {
 
-	Float64 *float64Ptr = reinterpret_cast<Float64 *>(*lvFloat64Ptr);
+  MDSplus::Float64 *float64Ptr = reinterpret_cast<MDSplus::Float64 *>(*lvFloat64Ptr);
 
 	deleteData(float64Ptr);
 
@@ -3542,7 +3542,7 @@ DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, 
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3554,7 +3554,7 @@ DLLEXPORT void mdsplus_float64_getByte(const void *lvFloat64Ptr, char *byteOut, 
 
 	{
 
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
+	  float64Ptr = reinterpret_cast<MDSplus::Float64 *>(const_cast<void *>(lvFloat64Ptr));
 
 		*byteOut = float64Ptr->getByte();
 
@@ -3580,7 +3580,7 @@ DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubl
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3592,7 +3592,7 @@ DLLEXPORT void mdsplus_float64_getDouble(const void *lvFloat64Ptr, double *doubl
 
 	{
 
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
+	  float64Ptr = reinterpret_cast<MDSplus::Float64 *>(const_cast<void *>(lvFloat64Ptr));
 
 		*doubleOut = float64Ptr->getDouble();
 
@@ -3618,7 +3618,7 @@ DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOu
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3630,7 +3630,7 @@ DLLEXPORT void mdsplus_float64_getFloat(const void *lvFloat64Ptr, float *floatOu
 
 	{
 
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
+	  float64Ptr = reinterpret_cast<MDSplus::Float64 *>(const_cast<void *>(lvFloat64Ptr));
 
 		*floatOut = float64Ptr->getFloat();
 
@@ -3656,7 +3656,7 @@ DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, Err
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3668,7 +3668,7 @@ DLLEXPORT void mdsplus_float64_getInt(const void *lvFloat64Ptr, int *intOut, Err
 
 	{
 
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
+	  float64Ptr = reinterpret_cast<MDSplus::Float64 *>(const_cast<void *>(lvFloat64Ptr));
 
 		*intOut = float64Ptr->getInt();
 
@@ -3694,7 +3694,7 @@ DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOu
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3706,7 +3706,7 @@ DLLEXPORT void mdsplus_float64_getLong(const void *lvFloat64Ptr, int64_t *longOu
 
 	{
 
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
+	  float64Ptr = reinterpret_cast<MDSplus::Float64 *>(const_cast<void *>(lvFloat64Ptr));
 
 		*longOut = float64Ptr->getLong();
 
@@ -3732,7 +3732,7 @@ DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOu
 
 {
 
-	Float64 *float64Ptr = NULL;
+  MDSplus::Float64 *float64Ptr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -3744,7 +3744,7 @@ DLLEXPORT void mdsplus_float64_getShort(const void *lvFloat64Ptr, short *shortOu
 
 	{
 
-		float64Ptr = reinterpret_cast<Float64 *>(const_cast<void *>(lvFloat64Ptr));
+	  float64Ptr = reinterpret_cast<MDSplus::Float64 *>(const_cast<void *>(lvFloat64Ptr));
 
 		*shortOut = float64Ptr->getShort();
 
@@ -3778,7 +3778,7 @@ DLLEXPORT void mdsplus_float64array_constructor(void **lvFloat64ArrayPtrOut, con
 
 {
 
-	Float64Array *float64ArrayPtrOut = NULL;
+  Float64Array *float64ArrayPtrOut = NULL;
 
 	double *float64Arr = NULL;	
 
