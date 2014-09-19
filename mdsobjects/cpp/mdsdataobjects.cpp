@@ -901,6 +901,32 @@ EXPORT void MDSplus::deleteData(Data *data)
 		delete data;
 	}
 }
+void Array::setSpecific(char *data, int length, int dtype, int nData)
+{
+	clazz = CLASS_A;
+	this->dtype = dtype;
+	this->length = length;
+	arsize = nData * length;
+	nDims = 1;
+	dims[0] = nData;
+	ptr = new char[arsize];
+	memcpy(ptr, data, arsize);
+}
+void Array::setSpecific(char *data, int length, int dtype, int nDims, int *dims)
+{
+	clazz = CLASS_A;
+	this->dtype = dtype;
+	this->length = length;
+	arsize = length;
+	for(int i = 0; i < nDims; i++)
+	{
+		arsize *= dims[i];
+		this->dims[i] = dims[i];
+	}
+	this->nDims = nDims;
+	ptr = new char[arsize];
+	memcpy(ptr, data, arsize);
+}
 
 int *Array::getShape(int *numDims)
 {
@@ -1429,10 +1455,8 @@ EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
-#if (SIZEOF_LONG != 8)
+//EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(int64_t *array){delete [] array;}
-#endif
 EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
 EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
