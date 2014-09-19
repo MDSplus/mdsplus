@@ -350,10 +350,10 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 				resData = new Uint32(*(unsigned int *)ptr);
 				break;
 			case DTYPE_LONGLONG_IP:
-				resData = new Int64(*(long *)ptr);
+				resData = new Int64(*(int64_t *)ptr);
 				break;
 			case DTYPE_ULONGLONG_IP:
-				resData = new Uint64(*(unsigned long *)ptr);
+				resData = new Uint64(*(uint64_t *)ptr);
 				break;
 			case DTYPE_FLOAT_IP:
 				resData = new Float32(*(float *)ptr);
