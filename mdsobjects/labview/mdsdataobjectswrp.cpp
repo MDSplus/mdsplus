@@ -3500,7 +3500,7 @@ DLLEXPORT void mdsplus_float64_constructor(void **lvFloat64PtrOut, double valIn,
 
 	{
 
-		float64PtrOut = new Float64(valIn);
+	  float64PtrOut = new MDSplus::Float64(valIn);
 
 		*lvFloat64PtrOut = reinterpret_cast<void *>(float64PtrOut);
 
