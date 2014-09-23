@@ -890,15 +890,20 @@ class Empty: public Data {
 /////////////////////////COMPOUND DATA//////////////////////////////////
 class EXPORT Compound: public Data {
 public:
-	Compound(): str(0) {
+	Compound()/*: str(0) */{
 		clazz = CLASS_R;
 	}
 
-	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0): str(0)
+	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)//: str(0)
 	{
-		if(length > 0)
-			str = ptr;
-
+		//if(length > 0)
+		//	str = ptr;
+		if(length ==1)
+		  opcode = *ptr;
+		else if(length == 2)
+		  opcode = *(short *)ptr;
+		else
+		  opcode = 0;
 		if(nDescs > 0) {
 			for(int i = 0; i < nDescs; ++i) {
 				this->descs.push_back((Data *)descs[i]);
@@ -923,7 +928,8 @@ public:
 	virtual ~Compound() {}
 
 protected:
-	std::string str;
+	//std::string str;
+	short opcode;
 	std::vector<Data *> descs;
 
 	void incrementRefCounts() {
@@ -1095,7 +1101,7 @@ class Signal: public Compound {
 		Function(char opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_FUNCTION;
-			str = opcode;
+			this->opcode = opcode;
 			for(int i = 0; i < nargs; i++)
 				descs.push_back(args[i]);
 			incrementRefCounts();
@@ -1103,7 +1109,8 @@ class Signal: public Compound {
 		}
 
 		char getOpcode() {
-			return str.at(0);
+			//return str.at(0);
+			return opcode;
 		}
 
 		int getNumArguments() { return descs.size(); }
@@ -1439,7 +1446,7 @@ class Signal: public Compound {
 		Dependency(char opcode, Data *arg1, Data *arg2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DEPENDENCY;
-			str = opcode;
+			this->opcode = opcode;
 			descs.push_back(arg1);
 			descs.push_back(arg2);
 			incrementRefCounts();
@@ -1447,7 +1454,8 @@ class Signal: public Compound {
 		}
 
 		char getOpcode() {
-			return str.at(0);
+//			return str.at(0);
+			return opcode;
 		}
 
 		Data *getArg1(){
@@ -1459,7 +1467,8 @@ class Signal: public Compound {
 		}
 
 		void setOpcode(char opcode) {
-			str = opcode;
+//			str = opcode;
+			this->opcode = opcode;
 		}
 
 		void setArg1(Data *arg1) {assignDescAt(arg1, 0);}
@@ -1476,14 +1485,16 @@ class Signal: public Compound {
 		Condition(char opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONDITION;
-			str = opcode;
+			//str = opcode;
+			this->opcode = opcode;
 			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
 
 		char getOpcode() {
-			return str.at(0);
+			//return str.at(0);
+			return opcode;
 		}
 
 		Data *getArg(){
@@ -1491,7 +1502,8 @@ class Signal: public Compound {
 		}
 
 		void setOpcode(char opcode) {
-			str = opcode;
+//			str = opcode;
+			this->opcode = opcode;
 		}
 
 		void setArg(Data *arg) {assignDescAt(arg, 0);}
@@ -1506,7 +1518,8 @@ class Call: public Compound {
 		Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CALL;
-			str = retType;
+			//str = retType;
+			opcode = retType;
 			descs.push_back(image);
 			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
@@ -1515,11 +1528,13 @@ class Call: public Compound {
 		}
 
 		char getRetType() {
-			return str.at(0);
+			//return str.at(0);
+			return opcode;
 		}
 
 		void setRetType(char retType) {
-			str = retType;
+			//str = retType;
+			opcode = retType;
 		}
 
 		Data *getImage() {
@@ -1799,6 +1814,7 @@ public:
 		void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
 		void putSegment(Array *data, int ofs);
 		void updateSegment(Data *start, Data *end, Data *time);
+		void updateSegment(int segIdx, Data *start, Data *end, Data *time);
 		int getNumSegments();
 		void getSegmentLimits(int segmentIdx, Data **start, Data **end);
 		Array *getSegment(int segIdx);

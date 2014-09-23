@@ -61,7 +61,7 @@ extern "C" {
 	int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
 									void *timeDsc, int rowsFilled);
 	int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
-	int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc,
+	int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc,
 									void *timeDsc);
 	int getTreeNumSegments(void *dbid, int nid, int *numSegments);
 	int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
@@ -970,7 +970,18 @@ void TreeNode::updateSegment(Data *start, Data *end, Data *time)
 {
 	resolveNid();
 	//if(tree) tree->lock();
-	int status = updateTreeSegment(tree->getCtx(), getNid(), start->convertToDsc(), 
+	int status = updateTreeSegment(tree->getCtx(), getNid(), -1, start->convertToDsc(), 
+		end->convertToDsc(), time->convertToDsc());
+	//if(tree) tree->unlock();
+	if(!(status & 1))
+		throw MdsException(status);
+}
+
+void TreeNode::updateSegment(int segIdx, Data *start, Data *end, Data *time)
+{
+	resolveNid();
+	//if(tree) tree->lock();
+	int status = updateTreeSegment(tree->getCtx(), getNid(), segIdx, start->convertToDsc(), 
 		end->convertToDsc(), time->convertToDsc());
 	//if(tree) tree->unlock();
 	if(!(status & 1))

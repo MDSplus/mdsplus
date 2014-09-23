@@ -49,7 +49,7 @@ extern int TreeGetSegment(int nid, int segidx, struct descriptor_xd *data, struc
 								void *timeDsc, int rowsFilled);
 
  int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
- int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc, 
+ int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc, 
 								void *timeDsc);
  int getTreeNumSegments(void *dbid, int nid, int *numSegments); 
  int getTreeSegmentLimits(void *dbid, int nid, int idx, void **startDsc, void **endDsc);
@@ -181,16 +181,25 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
 
 
 
- int updateTreeSegment(void *dbid, int nid, void *startDsc, void *endDsc, 
+ int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc, 
 								void *timeDsc)
 {
 	struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
 	struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
 	struct descriptor_xd *timeXd = (struct descriptor_xd *)timeDsc;
-	int status;
-
+	int status, numSegments, segmentIdx;
+	
+	if(segIdx == -1)
+	{
+	  status = _TreeGetNumSegments(dbid, nid, &numSegments);
+	  if(!(status & 1))
+	    return status;
+	  segmentIdx = numSegments - 1;
+	}
+	else
+	  segmentIdx = segIdx;
 	status = _TreeUpdateSegment(dbid, nid, (struct descriptor *)startXd->pointer, 
-			(struct descriptor *)endXd->pointer, (struct descriptor *)timeXd->pointer, -1);
+			(struct descriptor *)endXd->pointer, (struct descriptor *)timeXd->pointer, segmentIdx);
 	freeDsc(startXd);
 	freeDsc(endXd);
 	freeDsc(timeXd);
