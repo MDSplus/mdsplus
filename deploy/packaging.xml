@@ -575,8 +575,6 @@ pwd
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --enable-nodebug \
-            --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
