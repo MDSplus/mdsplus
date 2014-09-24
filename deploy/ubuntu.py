@@ -6,7 +6,10 @@ class InstallationPackage(object):
     def __init__(self,info):
         self.info=info
         self.info['workspace']=os.environ['WORKSPACE']
-        self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
+        if 'ARCH' in os.environ:
+          self.info['arch']=os.environ['ARCH']
+        else:
+          self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
         self.info['mdsplus_dist']=os.environ['MDSPLUS_DIST']
 
     def exists(self):
@@ -27,7 +30,7 @@ class InstallationPackage(object):
                 print("%s not found" % deb)
                 sys.stdout.flush()
                 return False
-        print("Latest %(flavor) release %(major)d.%(minor)d.%(release)d is already available. Nothing to do for this release." % self.info)
+        print("Latest %(flavor)s release %(major)d.%(minor)d.%(release)d is already available. Nothing to do for this release." % self.info)
         sys.stdout.flush()
         return True
 
