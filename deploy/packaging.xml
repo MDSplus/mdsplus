@@ -665,21 +665,27 @@ Description: MDSplus packages
 SignWith: MDSplus
 EOF
 
-if [ "$(uname -p)" == "x86_64" ]
+if [ -z "$ARCH" ]
+then
+  ARCH=$(uname -p)
+fi
+
+if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
   bits=64
+  host=x86_64-linux
 else
   bit2=32
+  host=i686-linux
 fi
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --enable-nodebug \
-            --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
-            --with-gsi=/usr:gcc${bits}
+            --with-gsi=/usr:gcc${bits} \
+            --host=$host
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
