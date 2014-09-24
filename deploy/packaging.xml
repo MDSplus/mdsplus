@@ -668,10 +668,10 @@ fi
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
   bits=64
-  host=linux-x86_64
+  host=x86_64-linux
 else
   bit2=32
-  host=linux-i686
+  host=i686-linux
 fi
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
