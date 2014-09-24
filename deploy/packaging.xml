@@ -589,8 +589,6 @@ mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin64
 make clean &gt;/dev/null
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --enable-nodebug \
-            --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
@@ -662,22 +660,28 @@ Components: alpha beta stable
 Description: MDSplus packages
 SignWith: MDSplus
 EOF
-if [ "$(uname -p)" == "x86_64" ]
+
+if [ -z "$ARCH" ]
+then
+  ARCH=$(uname -p)
+fi
+if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
   bits=64
+  host=linux-x86_64
 else
   bit2=32
+  host=linux-i686
 fi
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --enable-nodebug \
-            --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc${bits} \
-	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+            --host=$host
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
