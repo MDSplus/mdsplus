@@ -207,7 +207,7 @@ sudo rm -Rf %(workspace)s/%(flavor)s/apt
         self.info['repo']="%(mdsplus_dist)s/%(DIST)s/repo" % self.info
         if subprocess.Popen("""
 set -e
-mkdir -p %(repo)s/{conf,pool,dists,db}
+mkdir -p %(repo)s/conf %(repo)s/pool %(repo)s/dists %(repo)s/db
 cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
 """ % self.info,shell=True,cwd="%(repo)s" % self.info).wait() !=0:
             raise Exception("Error preparing repository")
