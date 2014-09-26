@@ -10,7 +10,11 @@ public class TestMdsObjects
 
 
             Tree tree = new Tree("test",1);
-            TreeNode sig=tree.getNode("\\sig_1");
+            TreeNode sig=tree.getNode("time");
+            Data d = sig.data();
+            int[] shape = d.getShape();
+            System.exit(0);
+            
             sig.deleteData();
             sig.beginTimestampedSegment(new Int8Array(new byte[]{0,0,0,0}));
             sig.putTimestampedSegment(new Int8Array(new byte[]{1,2,3,4}), new long[]{1,2,3,4});
@@ -103,6 +107,9 @@ public class TestMdsObjects
    
     public static void main(java.lang.String args[])
     {
+        
+        
+        testRows();
         try {
            int m[][];
            m = new int[2][2];

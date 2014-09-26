@@ -291,7 +291,7 @@ public class Data {
 	public  int[] getShape() throws MdsException
         {
             Data data = executeWithContext("SHAPE($1)", new Data[]{this});
-            if(!(data instanceof Scalar))
+            if(!(data instanceof Array))
                 throw new MdsException("Cannot get data shape");
             return data.getIntArray();
             

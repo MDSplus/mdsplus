@@ -160,7 +160,9 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public TreeNode getNode(java.lang.String path) throws MdsException
         {
-            return new TreeNode(findNode(ctx1, ctx2, path), this);
+            TreeNode t = new TreeNode(findNode(ctx1, ctx2, path), this);
+            t.setCtxTree(this);
+            return t;
 	}
 
 	/**
