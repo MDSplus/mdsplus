@@ -182,6 +182,17 @@ def checkPackageFiles(buildroot,packagingXml,mode):
             for f in allfiles:
                 print("%s in a package but not in buildroot" % f)
 
+def logIt(inf):
+  """Write build log file"""
+  try:
+    import urllib2
+    html=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/consoleFull" % info).read()
+    f=open("%(mdsplus_dist)s/%(DIST)s/%(flavor)s/logs/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.html" % info,"w")
+    f.write(html)
+    f.close
+  except Exception,e:
+    print e
+
 if __name__ == "__main__":
 
   if len(sys.argv) > 1 and sys.argv[1]=='check':
@@ -206,7 +217,7 @@ if __name__ == "__main__":
   info={'flavor':sys.argv[1],'major':int(sys.argv[2]),'minor':int(sys.argv[3]),
         'release':int(sys.argv[4]),'dist':os.environ['DIST'],
         'job_name':os.environ['JOB_NAME'],'build_number':os.environ['BUILD_NUMBER'],
-        'workspace':os.environ['WORKSPACE']}
+        'workspace':os.environ['WORKSPACE'],'mdsplus_dist':os.environ['MDSPLUS_DIST']}
   if info['flavor']=='stable':
     info['rflavor']=""
   else:
@@ -226,11 +237,13 @@ if __name__ == "__main__":
       if subprocess.Popen("""
 set -e
 tar zxf ${MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
+mkdir -p %(mdsplus_dist)s/%(DIST)s/%(flavor)s/logs
 """ % info,shell=True,cwd=info['workspace']).wait() != 0:
         raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
       InstallationPackage.test()
       InstallationPackage.deploy()
+      logIt(info)
   else:
     if sys.argv[5]=='exists':
       print(InstallationPackage.exists())
@@ -242,4 +255,5 @@ tar zxf ${MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release
       InstallationPackage.test()
     elif sys.argv[5]=='deploy':
       InstallationPackage.deploy()
+      logIt(info)
        
