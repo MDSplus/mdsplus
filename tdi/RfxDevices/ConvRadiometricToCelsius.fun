@@ -1,4 +1,4 @@
-public fun ConvRadiometricToCelsius(as_is _DevicePath, in _tStart, in _tEnd, optional in _atmTemp, optional in _emissivity, optional in _objectDistance, optional in _ambTemp, optional in _relHum )
+public fun ConvRadiometricToCelsius(as_is _DevicePath, in _tStart, in _tEnd, optional in _emissivity, optional in _atmTemp, optional in _objectDistance, optional in _ambTemp, optional in _relHum )
 {
 	_devType = model_of(_DevicePath);
     _sigOut = 0;
@@ -31,32 +31,32 @@ public fun ConvRadiometricToCelsius(as_is _DevicePath, in _tStart, in _tEnd, opt
 				if( present( _atmTemp ) ) 
 					_objectParam = 1;
 				else
-					_atmTemp = float(data(build_path(_path//":OBJ_ATM_TMP")));
+					_atmTemp = float(data(build_path(_path//".OBJECT:ATM_TEMP")));
 
 				_atmTemp = _atmTemp + 273.15;
 
 				if( present( _emissivity) ) 
 					_objectParam = 1;
 				else
-					_emissivity = float(data(build_path(_path//":OBJ_EMIS")));
+					_emissivity = float(data(build_path(_path//".OBJECT:EMISSIVITY")));
 
 				if( present( _objectDistance ) ) 
 					_objectParam = 1;
 				else
-					_objectDistance = float(data(build_path(_path//":OBJ_DIST")));
+					_objectDistance = float(data(build_path(_path//".OBJECT:DISTANCE")));
 
 
 				if( present( _ambTemp ) ) 
 					_objectParam = 1;
 				else
-					_ambTemp = float(data(build_path(_path//":OBJ_ATM_TMP"))) ;
+					_ambTemp = float(data(build_path(_path//".OBJECT:OPTIC_TEMP"))) ;
 
 				_ambTemp = _ambTemp + 273.15;
 
 				if( present( _relHum) ) 
 					_objectParam = 1;
 				else
-					_relHum = float(data(build_path(_path//":OBJ_ATM_HUM")));
+					_relHum = float(data(build_path(_path//".OBJECT:ATM_HUM")));
 
 				_relHum = _relHum / 100.;
 
