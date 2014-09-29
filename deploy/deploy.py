@@ -203,7 +203,10 @@ if __name__ == "__main__":
     flushPrint(__doc__)
     sys.exit(1)
 
-  info={'flavor':sys.argv[1],'major':int(sys.argv[2]),'minor':int(sys.argv[3]),'release':int(sys.argv[4]),'dist':os.environ['DIST'],'workspace':os.environ['WORKSPACE']}
+  info={'flavor':sys.argv[1],'major':int(sys.argv[2]),'minor':int(sys.argv[3]),
+        'release':int(sys.argv[4]),'dist':os.environ['DIST'],
+        'job_name':os.environ['JOB_NAME'],'build_number':os.environ['BUILD_NUMBER'],
+        'workspace':os.environ['WORKSPACE']}
   if info['flavor']=='stable':
     info['rflavor']=""
   else:

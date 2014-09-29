@@ -207,7 +207,7 @@ sudo rm -Rf %(workspace)s/%(flavor)s/apt
         self.info['repo']="%(mdsplus_dist)s/%(DIST)s/repo" % self.info
         if subprocess.Popen("""
 set -e
-mkdir -p %(repo)s/conf %(repo)s/pool %(repo)s/dists %(repo)s/db
+mkdir -p %(mdsplus_dist)s/%(DIST)s/%(flavor)s/logs %(repo)s/conf %(repo)s/pool %(repo)s/dists %(repo)s/db
 cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
 """ % self.info,shell=True,cwd="%(repo)s" % self.info).wait() !=0:
             raise Exception("Error preparing repository")
@@ -217,5 +217,14 @@ cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
         status=subprocess.Popen('rsync -av %(workspace)s/%(flavor)s/DEBS %(mdsplus_dist)s/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error copying files to destination")
+        else:
+            try:
+                import urllib2
+                html=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/consoleFull").read()
+                f=open("%(mdsplus_dist)s/%(DIST)s/%(flavor)s/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.log" % self.info,"w")
+                f.write(html)
+                f.close
+            except:
+                pass
         print("Completed deployment")
         sys.stdout.flush()
