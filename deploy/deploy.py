@@ -186,9 +186,9 @@ def logIt(inf):
   """Write build log file"""
   try:
     import urllib2
-    html=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/consoleFull" % info).read()
-    f=open("%(mdsplus_dist)s/%(DIST)s/%(flavor)s/logs/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.html" % info,"w")
-    f.write(html)
+    logtext=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/logText/progressiveHtml" % info).read()
+    f=open("%(mdsplus_dist)s/%(DIST)s/%(flavor)s/logs/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.log.txt" % info,"w")
+    f.write(logtext)
     f.close
   except Exception,e:
     print e
