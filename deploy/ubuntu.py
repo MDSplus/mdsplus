@@ -220,7 +220,7 @@ cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
         else:
             try:
                 import urllib2
-                html=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/consoleFull").read()
+                html=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/consoleFull" % self.info).read()
                 f=open("%(mdsplus_dist)s/%(DIST)s/%(flavor)s/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.log" % self.info,"w")
                 f.write(html)
                 f.close
