@@ -224,7 +224,8 @@ cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
                 f=open("%(mdsplus_dist)s/%(DIST)s/%(flavor)s/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.log" % self.info,"w")
                 f.write(html)
                 f.close
-            except:
+            except Exception,e:
+                print e
                 pass
         print("Completed deployment")
         sys.stdout.flush()
