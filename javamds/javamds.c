@@ -739,14 +739,15 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
 	struct descriptor nodeNameD = {strlen(nodeName), DTYPE_T, CLASS_S, (char *)nodeName};
 	int status, frameSize;
 	jbyteArray jarr;
+	char tmp;
+	char *buf;
+	int i, nSamples;	
 
     status = TdiCompile(&nodeNameD, &xd MDS_END_ARG);
 	(*env)->ReleaseStringUTFChars(env, jNodeName, nodeName);
 	if(status & 1) status = TdiData(&xd, &xd MDS_END_ARG);
 	if(!(status & 1))
-	{
-
-		
+	{	
 		strncpy(error_message, MdsGetMsg(status), 512);
 		return NULL;
 	}
@@ -770,6 +771,34 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
 	}
 
 	frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
+	if(needSwap())
+	{
+		buf = arrPtr->pointer;
+		nSamples = arrPtr->arsize/arrPtr->length;
+		switch (arrPtr->length)
+		{
+			case 2:
+				for (i = 0; i < nSamples; i++)
+				{
+					tmp = buf[2*i];
+					buf[2*i] = buf[2*i+1];
+					buf[2*i+1] = tmp;
+				}
+				break;
+			case 4:
+				for (i = 0; i < nSamples; i++)
+				{
+					tmp = buf[2*i];
+					buf[2*i] = buf[2*i+3];
+					buf[2*i+3] = tmp;
+					tmp = buf[2*i+1];
+					buf[2*i+1] = buf[2*i+2];
+					buf[2*i+2] = tmp;
+				}
+				break;
+		}
+	}
+
     jarr = (*env)->NewByteArray(env, frameSize * (endIdx - startIdx));
     (*env)->SetByteArrayRegion(env, jarr, 0, frameSize * (endIdx - startIdx), (const jbyte *)arrPtr->pointer + (int)startIdx * frameSize);
 	MdsFree1Dx(&xd, 0);
