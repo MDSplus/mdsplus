@@ -1,6 +1,6 @@
 import traceback as _tb
 
-def execPy(varname=None):
+def execPy(varname=None,traceback=False):
     """Get array of python commands from tdi public variable ___TDI___cmds
     and execute them. The ___TDI___cmds variable should be either a scalar string
     or a string array. If varname is defined
@@ -41,7 +41,8 @@ def execPy(varname=None):
 
         ___TDI___makeData(ans).setTdiVar("___TDI___answer")
     except Exception:
-        _tb.print_exc()
+        if traceback:
+          _tb.print_exc()
         import sys
         e=sys.exc_info()[1]    
         ___TDI___String("Error: "+str(e)).setTdiVar("___TDI___exception")
