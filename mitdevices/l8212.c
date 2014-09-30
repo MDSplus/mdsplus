@@ -654,10 +654,12 @@ static void reset_proc(Widget w)
 
 static void reset(Widget w)
 {
+  XtPointer user_data;
   int nid;
   int mems;
   Widget mems_scale = XtNameToWidget(w, "mems_scale");
-  XtVaGetValues(mems_scale, XmNuserData, &nid, NULL);
+  XtVaGetValues(mems_scale, XmNuserData, &user_data, NULL);
+  nid = (intptr_t)user_data;
   DevLong(&nid, &mems);  
   XmdsResetAllXds(w);
   XmScaleSetValue(mems_scale, mems);
@@ -703,8 +705,10 @@ static Boolean apply_proc(Widget w)
   Widget mem_scale = XtNameToWidget(XtParent(w), "mems_scale");
   static int mems;
   struct descriptor_s mems_dsc = {sizeof(int), DTYPE_L, CLASS_S, (char *)&mems};
+  XtPointer user_data;
   int nid;
-  XtVaGetValues(mem_scale, XmNuserData, &nid, NULL);
+  XtVaGetValues(mem_scale, XmNuserData, &user_data, NULL);
+  nid = (intptr_t)user_data;
   XmScaleGetValue(mem_scale, &mems);
   status = TreePutRecord(nid, (struct descriptor *)&mems_dsc,0) & 1;
   if (!status)
