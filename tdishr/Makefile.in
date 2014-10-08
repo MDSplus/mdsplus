@@ -85,9 +85,6 @@ TdiXxx.c \
 TdiYaccSubs.c \
 TdiYacc.c
 
-OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TdiShr.exports
-
 all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@TdiShr.a
 
 depend:
@@ -108,8 +105,18 @@ install: $(libdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a @libdir@; \
 	fi;
 
+ifneq "@PYTHON_INCLUDE_DIR@" ""
+TdiExtPython = TdiExtPython.o
+
+TdiExtPython.o : TdiExtPython.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $< -I @PYTHON_INCLUDE_DIR@
+endif
+
+OBJECTS = $(SOURCES:.c=.o) $(TdiExtPython)
+EXPORTS = TdiShr.exports
+
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF) @EXPORTS_FILE@
+@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(TdiExtPython) $(DEF) @EXPORTS_FILE@
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)
@@ -121,3 +128,4 @@ TdiShr.exports: TdiShr.def
 
 TdiSql.o : TdiSql.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< $(SYBASE_INC)
+

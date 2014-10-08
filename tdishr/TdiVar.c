@@ -36,6 +36,7 @@
         Ken Klare, LANL P-4     (c)1989,1990,1991,1992
         NEED subscripted assignment.
 */
+#include <config.h>
 #include "STATICdef.h"
 #include "tdithreadsafe.h"
 #include "tdirefstandard.h"
@@ -703,6 +704,10 @@ int TdiDoFun(struct descriptor *ident_ptr,
     MdsFree1Dx(&tmp, NULL);
     private->head = old_head;
     *new_narg = old_narg;
+#ifdef HAVE_PYTHON_INCLUDE
+    if (status == TdiUNKNOWN_VAR)
+      status = TdiExtPython(ident_ptr,nactual,actual_arg_ptr,out_ptr);
+#endif
     return status;
 }
 
