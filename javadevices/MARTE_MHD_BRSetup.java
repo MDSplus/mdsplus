@@ -195,11 +195,11 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
 
         jPanel11.setLayout(new java.awt.BorderLayout());
 
-        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
+        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4"});
         deviceTable2.setDisplayRowNumber(true);
         deviceTable2.setIdentifier("");
-        deviceTable2.setNumCols(48);
-        deviceTable2.setNumRows(4);
+        deviceTable2.setNumCols(4);
+        deviceTable2.setNumRows(48);
         deviceTable2.setOffsetNid(1369);
         deviceTable2.setPreferredColumnWidth(100);
         jPanel11.add(deviceTable2, java.awt.BorderLayout.CENTER);
