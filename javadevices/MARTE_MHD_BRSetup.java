@@ -57,6 +57,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceField11 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
+        jScrollPane1 = new javax.swing.JScrollPane();
         jPanel11 = new javax.swing.JPanel();
         deviceTable2 = new DeviceTable();
 
@@ -200,9 +201,12 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceTable2.setNumCols(48);
         deviceTable2.setNumRows(4);
         deviceTable2.setOffsetNid(1369);
+        deviceTable2.setPreferredColumnWidth(100);
         jPanel11.add(deviceTable2, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("Br Correction", jPanel11);
+        jScrollPane1.setViewportView(jPanel11);
+
+        jTabbedPane1.addTab("Br Corrections", jScrollPane1);
 
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -240,6 +244,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 
