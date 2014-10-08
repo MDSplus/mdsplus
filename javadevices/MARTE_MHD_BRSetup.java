@@ -29,6 +29,7 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        deviceTableBeanInfo1 = new DeviceTableBeanInfo();
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
@@ -56,6 +57,8 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
         deviceField11 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         deviceTable1 = new DeviceTable();
+        jPanel11 = new javax.swing.JPanel();
+        deviceTable2 = new DeviceTable();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe MhdBr Setup");
@@ -189,6 +192,18 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("In Calibration", jPanel10);
 
+        jPanel11.setLayout(new java.awt.BorderLayout());
+
+        deviceTable2.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
+        deviceTable2.setDisplayRowNumber(true);
+        deviceTable2.setIdentifier("");
+        deviceTable2.setNumCols(48);
+        deviceTable2.setNumRows(4);
+        deviceTable2.setOffsetNid(1369);
+        jPanel11.add(deviceTable2, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Br Correction", jPanel11);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -210,10 +225,13 @@ public class MARTE_MHD_BRSetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private DeviceTable deviceTable1;
+    private DeviceTable deviceTable2;
     private DeviceTable deviceTable3;
     private DeviceTable deviceTable4;
+    private DeviceTableBeanInfo deviceTableBeanInfo1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
