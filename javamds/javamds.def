@@ -11,6 +11,7 @@ Java_Database_close
 Java_Database_quit
 Java_Database_getData
 Java_Database_evaluateData
+Java_Database_evaluateSimpleData
 Java_Database_putData
 Java_Database_getInfo
 Java_Database_setTags
