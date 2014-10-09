@@ -1,4 +1,4 @@
-EXTRA_DIST = $(NETBEANS_FILES) servlet-2_3-fcs-classfiles.zip
+EXTRA_DIST = EventMonitor.properties servlet-2_3-fcs-classfiles.zip
 CLEANFILES = $(java_DATA)
 if NOT_MINGW
 CLEANFILES += $(bin_SCRIPTS)
@@ -24,7 +24,7 @@ CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
 java_JAVA = $(SOURCES)
 
 # Build the final jar
-java_DATA = jTraverser.jar TreeServer_Stub.class
+java_DATA = jTraverser.jar DeviceBeans.jar TreeServer_Stub.class
 
 TreeServer_Stub.class: classjava.stamp
 	$(RMIC) TreeServer
@@ -32,6 +32,8 @@ TreeServer_Stub.class: classjava.stamp
 jTraverser.jar: TreeServer_Stub.class $(GIFS) classjava.stamp
 	$(JAR) c0f $@ $(java_JAVA:.java=*.class) $< $(GIFS)
 
+DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
+	$(JAR) c0fm $@ DeviceBeansManifest.mf $(java_JAVA:.java=*.class) $(GIFS)
 
 # Giant list of source files follow
 
@@ -83,6 +85,8 @@ SOURCES = \
 	DeviceSetup.java\
 	DeviceSetupBeanInfo.java\
 	DeviceTable.java\
+	DeviceTableBeanInfo.java\
+	DeviceTableCustomizer.java\
 	DeviceUpdateListener.java \
 	DeviceWave.java\
 	DeviceWaveDisplay.java\
@@ -161,7 +165,30 @@ SOURCES = \
 	WindowEditor.java\
 	WithErrorData.java\
 	WithUnitsData.java\
-	jTraverser.java
+	jTraverser.java\
+	DeviceApplyBeanInfo.java \
+	DeviceButtonsBeanInfo.java \
+	DeviceButtonsCustomizer.java \
+	DeviceCancelBeanInfo.java \
+	DeviceChannelBeanInfo.java \
+	DeviceChannelCustomizer.java \
+	DeviceChoiceBeanInfo.java \
+	DeviceChoiceCustomizer.java \
+	DeviceDispatchBeanInfo.java \
+	DeviceFieldBeanInfo.java \
+	DeviceFieldCustomizer.java \
+	DeviceLabelBeanInfo.java \
+	DeviceLabelCustomizer.java \
+	DeviceOkBeanInfo.java \
+	DeviceResetBeanInfo.java \
+	DeviceTableBeanInfo.java \
+	DeviceTableCustomizer.java \
+	DeviceWaveBeanInfo.java \
+	DeviceWaveCustomizer.java \
+	FloatArrayEditor.java \
+	IntArrayEditor.java \
+	LoadFile.java \
+	StoreFile.java
 
 GIFS = \
 	DeviceApply.gif    \
@@ -186,33 +213,4 @@ GIFS = \
 	task.gif           \
 	text.gif           \
 	window.gif
-
-NETBEANS_FILES = \
-	DeviceBeansManifest.mf \
-	\
-	EventMonitor.properties \
-	\
-	DeviceApplyBeanInfo.java \
-	DeviceButtonsBeanInfo.java \
-	DeviceButtonsCustomizer.java \
-	DeviceCancelBeanInfo.java \
-	DeviceChannelBeanInfo.java \
-	DeviceChannelCustomizer.java \
-	DeviceChoiceBeanInfo.java \
-	DeviceChoiceCustomizer.java \
-	DeviceDispatchBeanInfo.java \
-	DeviceFieldBeanInfo.java \
-	DeviceFieldCustomizer.java \
-	DeviceLabelBeanInfo.java \
-	DeviceLabelCustomizer.java \
-	DeviceOkBeanInfo.java \
-	DeviceResetBeanInfo.java \
-	DeviceTableBeanInfo.java \
-	DeviceTableCustomizer.java \
-	DeviceWaveBeanInfo.java \
-	DeviceWaveCustomizer.java \
-	FloatArrayEditor.java \
-	IntArrayEditor.java \
-	LoadFile.java \
-	StoreFile.java
 
