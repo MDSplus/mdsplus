@@ -279,13 +279,13 @@ int TdiExtPython(struct descriptor *modname_d,
   /* Try to locate a python module in the MDS_PATH search list and if found execute a function with the same name
      as the module in that module passing the arguments and get the answer back from python. */
   int status=TdiUNKNOWN_VAR;
-  if (Initialize()) {
-    PyObject *ans;
-    PyObject *pyargs;
-    PyThreadState *tstate = Py_NewInterpreter();
-    char *filename;
-    char *dirspec=findModule(modname_d,&filename);
-    if (dirspec) {
+  char *filename;
+  char *dirspec=findModule(modname_d,&filename);
+  if (dirspec) {
+    if (Initialize()) {
+      PyObject *ans;
+      PyObject *pyargs;
+      PyThreadState *tstate = Py_NewInterpreter();
       PyObject *pyFunction;
       PyObject *pyArgs;
       addToPath(dirspec);
@@ -307,8 +307,8 @@ int TdiExtPython(struct descriptor *modname_d,
 	  status=1;
 	}
       }
+      Py_EndInterpreter(tstate);
     }
-    Py_EndInterpreter(tstate);
   }
   return status;
 }      
