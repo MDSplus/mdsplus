@@ -37,7 +37,7 @@ static void report(char *msg)
 struct descriptor_xd *getDeviceFields(char *deviceName)
 {
 	int status, nid, curr_nid, i;
-	char *names;
+	char *names, *path;
 	static int conglomerate_nids, conglomerate_nids_len;
 	struct nci_itm nci_list[] = 
 	{{4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len}, 
@@ -49,10 +49,14 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 
 
 	conglomerate_nids = 0;
-	sprintf(log_string, "device_beans_path=%s", getenv("HOME"));
-	putenv(log_string);
-	printf("\n%s\n", getenv("device_beans_path"));
-	status = TreeOpenNew("device_beans", 1);
+	path =  getenv("device_beans_path");
+	if(!path || !*path)
+	{
+	  sprintf(log_string, "device_beans_path=%s", getenv("HOME"));
+	  putenv(log_string);
+	}
+	printf("device_beans_path = %s\n", getenv("device_beans_path"));
+	status = TreeOpenNew("device_beans", -1);
 	printf("%s\n",MdsGetMsg(status));
 	if(!(status & 1)) return &xd;
 	status = TreeAddNode("Boh", &nid, TreeUSAGE_STRUCTURE);
@@ -63,7 +67,7 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	if(status & 1) status = TreeGetNci(nid, nci_list);
 	if(!(status & 1) || conglomerate_nids == 0) 
 	{
-		TreeQuitTree("TEST", -1);
+		TreeQuitTree("device_beans", -1);
 		return &xd;
 	}
 	conglomerate_nids--;
@@ -73,13 +77,12 @@ struct descriptor_xd *getDeviceFields(char *deviceName)
 	names[0] = 0;
 	for(i = 0; i < conglomerate_nids; i++, curr_nid++)
 	    sprintf(&names[strlen(names)], "%s ", TreeGetMinimumPath(&nid, curr_nid));
-	TreeQuitTree("TEST", -1);
-//	dsc.length = strlen(names);
 	dsc.arsize = strlen(names);
 	dsc.pointer = names;
 	MdsCopyDxXd((struct descriptor *)&dsc, &xd);
 	printf("%s\n",names);
 	free(names);
+	status = TreeQuitTree("device_beans", -1);
 	return &xd;
 }
 
@@ -126,16 +129,13 @@ JNIEXPORT jint JNICALL Java_Database_open
 {
   int status;
   jfieldID name_fid, readonly_fid, editable_fid, shot_fid;
-  jclass cls = (*env)->GetObjectClass(env, obj);
+  jclass cls;
   const char *name;
   jobject jname;
   int is_editable, is_readonly, shot;
 static char buf[1000];
-
- 
-//printf("Parte Open\n");
-
-
+//printf(Start Open \n");
+  cls = (*env)->GetObjectClass(env, obj);
   name_fid =  (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
   readonly_fid = (*env)->GetFieldID(env, cls, "is_readonly", "Z");
   editable_fid = (*env)->GetFieldID(env, cls, "is_editable", "Z");
@@ -157,10 +157,9 @@ static char buf[1000];
  { 
     status = TreeOpen((char *)name, shot, is_readonly);
   (*env)->ReleaseStringUTFChars(env, jname, name);
-  //printf("APERTO: %s\n", MdsGetMsg(status));
  }
 
-  //printf("Aperto %d\n", status);
+//  printf("Tree Open %d\n", status);
 
   if(!(status & 1))
     RaiseException(env, MdsGetMsg(status), status);
@@ -356,9 +355,6 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateData
   MdsFree1Dx(&xd, NULL);
   return ris;
 }
-
-
-
 
 
 JNIEXPORT jobject JNICALL Java_Database_evaluateSimpleData
@@ -1024,8 +1020,10 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
   strcpy(mymodel, model);
 
   TreeGetDefaultNid(&tempNid);
- 
+ printf("CHIAMO TREE ADD CONGLOM %s %s\n", mypath, mymodel);
   status = TreeAddConglom((char *)mypath, (char *)mymodel, &nid);
+ printf("CHIAMATO status: %d %s\n", status, MdsGetMsg(status)); 
+  
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   (*env)->ReleaseStringUTFChars(env, jmodel, model);
   if(!(status & 1))

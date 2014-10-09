@@ -7,7 +7,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
+
+
+  /*
  * Class:     Database
  * Method:    open
  * Signature: ()I
