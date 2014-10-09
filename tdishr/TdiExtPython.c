@@ -34,6 +34,28 @@ static PyObject *(*DynPyDict_GetItemString)()=0;
 static PyObject *(*DynPy_BuildValue)()=0;
 #define Py_BuildValue (*DynPy_BuildValue)
 static PyObject *Dyn_Py_NoneStruct;
+static PyObject *(*DynPy_EndInterpreter)()=0;
+#define Py_EndInterpreter (*DynPy_EndInterpreter)
+static PyThreadState *(*DynPy_NewInterpreter)()=0;
+#define Py_NewInterpreter (*DynPy_NewInterpreter)
+static PyObject *(*DynPyList_Append)()=0;
+#define PyList_Append (*DynPyList_Append)
+static PyObject *(*DynPyObject_CallFunction)()=0;
+#define PyObject_CallFunction (*DynPyObject_CallFunction)
+static PyObject *(*DynPySys_GetObject)()=0;
+#define PySys_GetObject (*DynPySys_GetObject)
+static long (*DynPyLong_AsLong)()=0;
+#define PyLong_AsLong (*DynPyLong_AsLong)
+static char *(*DynPyString_AsString)()=0;
+#define PyString_AsString (*DynPyString_AsString)
+static Py_ssize_t (*DynPyList_Size)()=0;
+#define PyList_Size (*DynPyList_Size)
+static int (*DynPyCallable_Check)()=0;
+#define PyCallable_Check (*DynPyCallable_Check)
+static PyObject *(*DynPyList_GetItem)()=0;
+#define PyList_GetItem (*DynPyList_GetItem)
+
+
 
 #define loadrtn(prefix,name,check) prefix ## name=dlsym(handle,#name);	\
   if (check && !prefix ## name) { \
@@ -88,6 +110,16 @@ static int Initialize() {
     loadrtn(Dyn,PyDict_GetItemString,1);
     loadrtn(Dyn,Py_BuildValue,1);
     loadrtn(Dyn,_Py_NoneStruct,1);
+    loadrtn(Dyn,Py_EndInterpreter,1);
+    loadrtn(Dyn,Py_NewInterpreter,1);
+    loadrtn(Dyn,PyList_Append,1);
+    loadrtn(Dyn,PyObject_CallFunction,1);
+    loadrtn(Dyn,PySys_GetObject,1);
+    loadrtn(Dyn,PyLong_AsLong,1);
+    loadrtn(Dyn,PyString_AsString,1);
+    loadrtn(Dyn,PyList_Size,1);
+    loadrtn(Dyn,PyCallable_Check,1);
+    loadrtn(Dyn,PyList_GetItem,1);
   }
   return 1;
 }
