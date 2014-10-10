@@ -3,7 +3,7 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TdiShr.dll.a
 @MINGW_TRUE@ DEF=TdiShr.def
 
-LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD)
+LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD) @LIBDL@
 SYBASE_INC=@SYBASE_INC@
 
 SOURCES = \
