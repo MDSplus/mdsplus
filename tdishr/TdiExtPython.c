@@ -6,6 +6,10 @@
 #include <string.h>
 #include <tdimessages.h>
 #include <dlfcn.h>
+
+#if PY_MINOR_VERSION==4
+typedef ssize_t Py_ssize_t;
+#endif
   
 static PyObject *(*DynPyTuple_New)()=0;
 #define PyTuple_New (*DynPyTuple_New)
