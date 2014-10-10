@@ -7,10 +7,6 @@
 #include <tdimessages.h>
 #include <dlfcn.h>
 
-#if PY_MINOR_VERSION==4
-typedef ssize_t Py_ssize_t;
-#endif
-  
 static PyObject *(*DynPyTuple_New)()=0;
 #define PyTuple_New (*DynPyTuple_New)
 static PyObject *(*DynPyString_FromString)()=0;
@@ -85,10 +81,12 @@ static int Initialize() {
       strcat(lib,envsym);
       strcat(lib,".so");
     }
+#ifdef RTLD_NOLOAD
     /*** See if python routines are already available ***/
     handle = dlopen(0,RTLD_NOLOAD);
     loadrtn(tmp,Py_Initialize,0);
     /*** If not, load the python library ***/
+#endif
     if (!tmpPy_Initialize) {
       handle = dlopen(lib,RTLD_NOW|RTLD_GLOBAL);
       if (!handle) {
