@@ -20,6 +20,9 @@
   typedef double float64;
   typedef uint32_t Bool32;
 #endif
+  
+#pragma pack(1)
+  
 #include  <platdefines.h>
 #include <extcode.h>
 #include <fundtypes.h>

@@ -24,6 +24,8 @@ DLLEXPORT void mdsplus_event_constructor(void **lvEventPtrOut, const char *evNam
 		delete eventPtrOut;
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -50,6 +52,8 @@ DLLEXPORT void mdsplus_event_abort(const void *lvEventPtr, ErrorCluster *error)
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -110,7 +114,7 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 		strOut = eventPtr->getName();
 		std::size_t strOutLen = std::strlen(strOut);
-		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
+		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 		if (!errorCode)
 		{
 			MoveBlock(reinterpret_cast<uChar *>(strOut), LStrBuf(*lvStrHdlOut), strOutLen);
@@ -125,6 +129,8 @@ DLLEXPORT void mdsplus_event_getName(const void *lvEventPtr, LStrHandle lvStrHdl
 		deleteNativeArray(strOut);
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -155,6 +161,8 @@ DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteA
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -172,6 +180,8 @@ DLLEXPORT void mdsplus_event_setEvent(const char *evNameIn, ErrorCluster *error)
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -191,6 +201,8 @@ DLLEXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvD
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -215,6 +227,8 @@ DLLEXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByt
 		delete[] int8Arr;
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -239,6 +253,8 @@ DLLEXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evN
 		delete reventPtrOut;
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -265,6 +281,8 @@ DLLEXPORT void mdsplus_revent_getData(const void *lvREventPtr, void **lvDataPtrO
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -281,7 +299,7 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 		reventPtr = reinterpret_cast<REvent *>(const_cast<void *>(lvREventPtr));
 		strOut = reventPtr->getName();
 		std::size_t strOutLen = std::strlen(strOut);
-		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
+		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 		if (!errorCode)
 		{
 			MoveBlock(reinterpret_cast<uChar *>(strOut), LStrBuf(*lvStrHdlOut), strOutLen);
@@ -296,6 +314,8 @@ DLLEXPORT void mdsplus_revent_getName(const void *lvREventPtr, LStrHandle lvStrH
 		deleteNativeArray(strOut);
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -326,6 +346,8 @@ DLLEXPORT void mdsplus_revent_getRaw(const void *lvREventPtr, LByteArrHdl lvByte
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -348,6 +370,8 @@ DLLEXPORT void mdsplus_revent_getTime(const void *lvREventPtr, void **lvUint64Pt
 		deleteData(uint64PtrOut);
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -367,6 +391,8 @@ DLLEXPORT void mdsplus_revent_run(const void *lvREventPtr, ErrorCluster *error)
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -386,6 +412,8 @@ DLLEXPORT void mdsplus_revent_setEvent(const char *evNameIn, const void *lvDataP
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -405,6 +433,8 @@ DLLEXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *
 	{
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -429,6 +459,8 @@ DLLEXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvBy
 		delete[] int8Arr;
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -453,6 +485,8 @@ DLLEXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrH
 		delete[] int8Arr;
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }

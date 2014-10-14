@@ -119,7 +119,8 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 extern "C" void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
 									Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
-	switch (dtype) {
+//printf("CREATE COMPOUND DATA nDescs = %d ptr= %x\n", nDescs, ptr);
+  switch (dtype) {
 		case DTYPE_SIGNAL: return new Signal(dtype, length, ptr, nDescs, descs, unitsData, errorData, helpData, validationData);
 		case DTYPE_DIMENSION: return new Dimension(dtype, length, ptr, nDescs, descs, unitsData, errorData, helpData, validationData);
 		case DTYPE_WINDOW: return new Window(dtype, length, ptr, nDescs, descs, unitsData, errorData, helpData, validationData);
@@ -656,6 +657,7 @@ Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 
 		va_list v;
 		va_start(v, nArgs);
+		
 		for(int i = 0; i < nArgs; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
@@ -675,6 +677,7 @@ Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 		    freeDsc(args[i]);
 		if(actTree)
 			delete(actTree);
+
 		return evalData;
 }
 
@@ -1208,8 +1211,7 @@ EXPORT void *Array::convertToDsc()
 
 EXPORT void *Compound::convertToDsc()
 {
-//	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, str.size(), (void *)str.data(), descs.size(), (void **)(&descs[0])));
-	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, 2, (void *)&opcode, descs.size(), (void **)(&descs[0])));
+	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, sizeof(short), (void *)&opcode, descs.size(), (void **)(&descs[0])));
 }
 
 EXPORT void *Apd::convertToDsc()
@@ -1277,3 +1279,4 @@ EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
+

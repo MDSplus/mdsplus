@@ -255,6 +255,9 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 	dscPtr = (struct descriptor *)dscRPtr;
 
 
+//printf("CONVERTFROMDSC class %d  type %d\n", dscPtr->class, dscPtr->dtype);	
+	
+	
 	switch(dscPtr->class) {
 		case CLASS_S : return createScalarData(dscPtr->dtype, dscPtr->length, dscPtr->pointer, unitsData,
 						   errorData, helpData, validationData, tree);
@@ -424,10 +427,13 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
 	arglist[varIdx++] = &xd;
 	arglist[varIdx++] = MdsEND_ARG;
 	*(int *)&arglist[0] = varIdx-1;
+	
 	status = *retStatus = (char *)LibCallg(arglist, TdiCompile) - (char *)0;
 	if(!(status & 1))
 		return NULL;
+
 	data = convertFromDsc(&xd, tree);
+
 	MdsFree1Dx(&xd, 0);
 	//for(i = 0; i < nArgs; i++)
 	//	freeDsc(arglistXd[i]);

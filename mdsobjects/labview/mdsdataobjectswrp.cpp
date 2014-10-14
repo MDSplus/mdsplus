@@ -15,12 +15,49 @@ void fillErrorCluster(MgErr code, const char *source, const char *message, Error
 		error->status = LVBooleanTrue;
 		error->code = static_cast<int32>(code);
 
-		if (!NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen)) {
+		if(NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen + sizeof(int32)) == noErr)
+		{
 			MoveBlock(errMsg.c_str(), LStrBuf(*error->source), errMsgLen);
 			(*error->source)->cnt = errMsgLen;
 		}
 	}
 }
+
+/*
+
+void fillErrorCluster(MgErr code, const char *source, const char *message, ErrorCluster *error)
+
+{
+	if (code)
+	{
+		char *errMsg = new char[strlen(source) + strlen(message) + strlen("<ERR>..")+1];
+		strcpy(errMsg, source);
+		strcat(errMsg, ".");
+		strcat(errMsg, "<ERR>");
+		strcat(errMsg, message);
+		strcat(errMsg, ".");
+		int32 errMsgLen = static_cast<int32>(strlen(errMsg));
+		error->status = LVBooleanTrue;
+		error->code = static_cast<int32>(code);
+		NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), sizeof(int32) + errMsgLen);
+		MoveBlock(reinterpret_cast<uChar *>(errMsg), LStrBuf(*error->source), errMsgLen);
+		//strncpy((char *)((*(error->source))->str), reinterpret_cast<const char *>(errMsg), errMsgLen);
+		(*(error->source))->cnt = errMsgLen;
+		delete[] errMsg;
+	}
+
+}
+
+*/
+/*
+typedef struct {
+	LVBoolean status;
+	int32 code;
+	LStrHandle source;
+} ErrorCluster;
+*/
+
+
 
 namespace MDSplus {
 
@@ -31,12 +68,14 @@ static void safeCall(char const * src, ErrorCluster * error, T f) {
 
 	try {
 		f();
+		fillErrorCluster(errorCode, src, errorMessage, error);
 	} catch (MdsException const & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, src, errorMessage, error);
 	}
 
-	fillErrorCluster(errorCode, src, errorMessage, error);
+//	fillErrorCluster(errorCode, src, errorMessage, error); errorMessage reters to an exception out of scope???
 }
 
 struct Lambda {
@@ -80,7 +119,8 @@ struct ArrayConstructor: public Constructor<Array> {
 	V inPtr;
 	const LIntArrHdl dims;
 	void operator()() {
-		ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize), (*dims)->elt);
+//WRONG. Make LabVIEW crash!!!!	ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize), (*dims)->elt);
+		ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize, (*dims)->elt));
 	}
 };
 
@@ -93,8 +133,10 @@ template<class T, class V>
 static void arrayConstructor(char const * src, ErrorCluster * error, void ** ptr, V inPtr) {
 	LIntArr dims;
 	dims.dimSize = 1;
-	dims.elt[1] = (*inPtr)->dimSize;
-	LIntArr * dimPtr;
+// WRONG. make labVIEW crash!!!	dims.elt[1] = (*inPtr)->dimSize;
+	dims.elt[0] = (*inPtr)->dimSize;
+//WRONG. make LabVIEW crash !!! LIntArr * dimPtr;
+	LIntArr * dimPtr = &dims;
 	safeCall(src, error, ArrayConstructor<T, V>(ptr, inPtr, &dimPtr));
 }
 
@@ -111,11 +153,13 @@ static T getScalar(void const * b, T (Data::*getX)(), char const * src, ErrorClu
 	try {
 		Data * data = reinterpret_cast<Data *>(const_cast<void *>(b));
 		x = (data->*getX)();
+		fillErrorCluster(errorCode, src, errorMessage, error);
 	} catch ( const MdsException & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, src, errorMessage, error);
 	}
-	fillErrorCluster(errorCode, src, errorMessage, error);
+//	fillErrorCluster(errorCode, src, errorMessage, error);
 
 	return x;
 }
@@ -175,6 +219,7 @@ DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lv
 
 		deleteNativeArray(byteArrOut);
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
 
 	catch (const MdsException & e)
@@ -187,9 +232,10 @@ DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lv
 
 		errorMessage = e.what();
 
+	      fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
 
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+//	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
 DLLEXPORT void mdsplus_array_getDoubleArray(const void *lvArrayPtr, LDblArrHdl lvDblArrHdlOut, ErrorCluster *error)
@@ -280,6 +326,7 @@ DLLEXPORT void mdsplus_array_getElementAt(const void *lvArrayPtr, void **lvDataP
 
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
 
 	catch (const MdsException & e)
@@ -291,9 +338,10 @@ DLLEXPORT void mdsplus_array_getElementAt(const void *lvArrayPtr, void **lvDataP
 		errorCode = bogusError;
 
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
 
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+//	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
 DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lvDataPtrOut, const LIntArrHdl lvIntArrHdlIn, ErrorCluster *error)
@@ -332,6 +380,7 @@ DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lv
 
 		*lvDataPtrOut = reinterpret_cast<void *>(dataPtrOut);
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
 
 	catch (const MdsException & e)
@@ -345,9 +394,10 @@ DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lv
 		errorCode = bogusError;
 
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 	}
 
-	fillErrorCluster(errorCode, errorSource, errorMessage, error);
+//	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
 
 DLLEXPORT void mdsplus_array_getFloatArray(const void *lvArrayPtr, LFltArrHdl lvFltArrHdlOut, ErrorCluster *error)
@@ -822,7 +872,7 @@ DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl l
 				if (!errorCode) {
 					std::string currStr(stringArrOut[i]);
 
-					errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&currLStrHdl), currStr.size());
+					errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&currLStrHdl), currStr.size() + sizeof(int32));
 
 					if (!errorCode) {
 						MoveBlock(currStr.c_str(), LStrBuf(*currLStrHdl), currStr.size());
@@ -842,6 +892,8 @@ DLLEXPORT void mdsplus_array_getStringArray(const void *lvArrayPtr, LStrArrHdl l
 	} catch (const MdsException & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	// free memory
@@ -1138,7 +1190,7 @@ DLLEXPORT void mdsplus_data_decompile(const void *lvDataPtr, LStrHandle lvStrHdl
 
 		std::size_t strOutLen = std::strlen(strOut);
 
-		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
+		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 
 		if (!errorCode)
 
@@ -1671,6 +1723,8 @@ DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char 
 
 		errorMessage = e.what();
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -1965,7 +2019,7 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 
 		std::size_t strOutLen = std::strlen(strOut);
 
-		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
+		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 
 		if (!errorCode)
 
@@ -1994,7 +2048,9 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 		errorCode = bogusError;
 
 		errorMessage = e.what();
-
+  
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2057,7 +2113,7 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 				{
 
-					errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&currLStrHdl), currStrLen);
+					errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&currLStrHdl), currStrLen+sizeof(int32));
 
 					if (!errorCode)
 
@@ -2237,6 +2293,8 @@ static void setAccessory(char const * src, ErrorCluster * error, void * outPtr, 
 	} catch (const MdsException & e) {
 		errorCode = bogusError;
 		errorMessage = e.what();
+		fillErrorCluster(errorCode, src, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, src, errorMessage, error);
@@ -2413,6 +2471,8 @@ DLLEXPORT void mdsplus_int16_getByte(const void *lvInt16Ptr, char *byteOut, Erro
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2451,6 +2511,8 @@ DLLEXPORT void mdsplus_int16_getDouble(const void *lvInt16Ptr, double *doubleOut
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2489,6 +2551,8 @@ DLLEXPORT void mdsplus_int16_getFloat(const void *lvInt16Ptr, float *floatOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2527,6 +2591,8 @@ DLLEXPORT void mdsplus_int16_getInt(const void *lvInt16Ptr, int *intOut, ErrorCl
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2565,6 +2631,8 @@ DLLEXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, int64_t *longOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2603,6 +2671,8 @@ DLLEXPORT void mdsplus_int16_getShort(const void *lvInt16Ptr, short *shortOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2665,6 +2735,8 @@ DLLEXPORT void mdsplus_int16array_constructor(void **lvInt16ArrayPtrOut, const L
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2733,6 +2805,8 @@ DLLEXPORT void mdsplus_int16array_constructor_dims(void **lvInt16ArrayPtrOut, co
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2786,6 +2860,8 @@ DLLEXPORT void mdsplus_int32_getByte(const void *lvInt32Ptr, char *byteOut, Erro
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2824,6 +2900,8 @@ DLLEXPORT void mdsplus_int32_getDouble(const void *lvInt32Ptr, double *doubleOut
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2862,6 +2940,8 @@ DLLEXPORT void mdsplus_int32_getFloat(const void *lvInt32Ptr, float *floatOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2900,6 +2980,8 @@ DLLEXPORT void mdsplus_int32_getInt(const void *lvInt32Ptr, int *intOut, ErrorCl
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2938,6 +3020,8 @@ DLLEXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, int64_t *longOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -2976,6 +3060,8 @@ DLLEXPORT void mdsplus_int32_getShort(const void *lvInt32Ptr, short *shortOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3038,6 +3124,8 @@ DLLEXPORT void mdsplus_int32array_constructor(void **lvInt32ArrayPtrOut, const L
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3106,6 +3194,8 @@ DLLEXPORT void mdsplus_int32array_constructor_dims(void **lvInt32ArrayPtrOut, co
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3159,6 +3249,8 @@ DLLEXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, Erro
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3197,6 +3289,8 @@ DLLEXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3235,6 +3329,8 @@ DLLEXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3273,6 +3369,8 @@ DLLEXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorCl
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3311,6 +3409,8 @@ DLLEXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, int64_t *longOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3349,6 +3449,8 @@ DLLEXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3479,6 +3581,8 @@ DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, co
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3534,6 +3638,8 @@ DLLEXPORT void mdsplus_int8_getByte(const void *lvInt8Ptr, char *byteOut, ErrorC
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3572,6 +3678,8 @@ DLLEXPORT void mdsplus_int8_getDouble(const void *lvInt8Ptr, double *doubleOut, 
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3610,6 +3718,8 @@ DLLEXPORT void mdsplus_int8_getFloat(const void *lvInt8Ptr, float *floatOut, Err
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3648,6 +3758,8 @@ DLLEXPORT void mdsplus_int8_getInt(const void *lvInt8Ptr, int *intOut, ErrorClus
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3686,6 +3798,8 @@ DLLEXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, int64_t *longOut, Err
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3724,6 +3838,8 @@ DLLEXPORT void mdsplus_int8_getShort(const void *lvInt8Ptr, short *shortOut, Err
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3786,6 +3902,8 @@ DLLEXPORT void mdsplus_int8array_constructor(void **lvInt8ArrayPtrOut, const LBy
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3854,6 +3972,8 @@ DLLEXPORT void mdsplus_int8array_constructor_dims(void **lvInt8ArrayPtrOut, cons
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3917,6 +4037,8 @@ DLLEXPORT void mdsplus_range_constructor(void **lvRangePtrOut, const void *lvBeg
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -3964,6 +4086,8 @@ DLLEXPORT void mdsplus_range_getBegin(const void *lvRangePtr, void **lvDataPtrOu
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4010,6 +4134,8 @@ DLLEXPORT void mdsplus_range_getEnding(const void *lvRangePtr, void **lvDataPtrO
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4054,6 +4180,8 @@ DLLEXPORT void mdsplus_range_getDeltaVal(const void *lvRangePtr, void **lvDataPt
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4094,6 +4222,8 @@ DLLEXPORT void mdsplus_range_setBegin(const void *lvRangePtr, const void *lvData
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4138,6 +4268,8 @@ DLLEXPORT void mdsplus_range_setEnding(const void *lvRangePtr, const void *lvDat
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4180,6 +4312,8 @@ DLLEXPORT void mdsplus_range_setDeltaVal(const void *lvRangePtr, const void *lvD
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4238,6 +4372,8 @@ DLLEXPORT void mdsplus_signal_constructor(void **lvSignalPtrOut, const void *lvD
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4285,6 +4421,8 @@ DLLEXPORT void mdsplus_signal_getData(const void *lvSignalPtr, void **lvDataPtrO
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4329,6 +4467,8 @@ DLLEXPORT void mdsplus_signal_getRaw(const void *lvSignalPtr, void **lvRawPtrOut
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4371,6 +4511,8 @@ DLLEXPORT void mdsplus_signal_getDim(const void *lvSignalPtr, void **lvDim0PtrOu
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4411,6 +4553,8 @@ DLLEXPORT void mdsplus_signal_setData(const void *lvSignalPtr, const void *lvDat
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4455,6 +4599,8 @@ DLLEXPORT void mdsplus_signal_setRaw(const void *lvSignalPtr, const void *lvRawP
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4497,6 +4643,8 @@ DLLEXPORT void mdsplus_signal_setDim(const void *lvSignalPtr, const void *lvDim0
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4573,6 +4721,8 @@ DLLEXPORT void mdsplus_scalar_getInfo(const void *lvScalarPtr, char *clazzOut, c
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4638,7 +4788,7 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 
 		std::size_t strOutLen = std::strlen(strOut);
 
-		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
+		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 
 		if (!errorCode)
 
@@ -4668,6 +4818,8 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4762,6 +4914,8 @@ DLLEXPORT void mdsplus_stringarray_constructor(void **lvStringArrayPtrOut, const
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4802,6 +4956,8 @@ DLLEXPORT void mdsplus_stringarray_constructor_stringLen(void **lvStringArrayPtr
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4855,6 +5011,8 @@ DLLEXPORT void mdsplus_uint16_getByte(const void *lvUint16Ptr, char *byteOut, Er
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4893,6 +5051,8 @@ DLLEXPORT void mdsplus_uint16_getDouble(const void *lvUint16Ptr, double *doubleO
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4931,6 +5091,8 @@ DLLEXPORT void mdsplus_uint16_getFloat(const void *lvUint16Ptr, float *floatOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -4969,6 +5131,8 @@ DLLEXPORT void mdsplus_uint16_getInt(const void *lvUint16Ptr, int *intOut, Error
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5007,6 +5171,8 @@ DLLEXPORT void mdsplus_uint16_getLong(const void *lvUint16Ptr, int64_t *longOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5045,6 +5211,8 @@ DLLEXPORT void mdsplus_uint16_getShort(const void *lvUint16Ptr, short *shortOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5107,6 +5275,8 @@ DLLEXPORT void mdsplus_uint16array_constructor(void **lvUint16ArrayPtrOut, const
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5175,6 +5345,8 @@ DLLEXPORT void mdsplus_uint16array_constructor_dims(void **lvUint16ArrayPtrOut, 
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5228,6 +5400,8 @@ DLLEXPORT void mdsplus_uint32_getByte(const void *lvUint32Ptr, char *byteOut, Er
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5266,6 +5440,8 @@ DLLEXPORT void mdsplus_uint32_getDouble(const void *lvUint32Ptr, double *doubleO
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5304,6 +5480,8 @@ DLLEXPORT void mdsplus_uint32_getFloat(const void *lvUint32Ptr, float *floatOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5342,6 +5520,8 @@ DLLEXPORT void mdsplus_uint32_getInt(const void *lvUint32Ptr, int *intOut, Error
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5380,6 +5560,8 @@ DLLEXPORT void mdsplus_uint32_getLong(const void *lvUint32Ptr, int64_t *longOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5418,6 +5600,8 @@ DLLEXPORT void mdsplus_uint32_getShort(const void *lvUint32Ptr, short *shortOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5480,6 +5664,8 @@ DLLEXPORT void mdsplus_uint32array_constructor(void **lvUint32ArrayPtrOut, const
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5548,6 +5734,8 @@ DLLEXPORT void mdsplus_uint32array_constructor_dims(void **lvUint32ArrayPtrOut, 
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5601,6 +5789,8 @@ DLLEXPORT void mdsplus_uint64_getByte(const void *lvUint64Ptr, char *byteOut, Er
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5633,7 +5823,7 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 
 		std::size_t strOutLen = std::strlen(strOut);
 
-		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen);
+		errorCode = NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&lvStrHdlOut), strOutLen+sizeof(int32));
 
 		if (!errorCode)
 
@@ -5663,6 +5853,8 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5701,6 +5893,8 @@ DLLEXPORT void mdsplus_uint64_getDouble(const void *lvUint64Ptr, double *doubleO
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5739,6 +5933,8 @@ DLLEXPORT void mdsplus_uint64_getFloat(const void *lvUint64Ptr, float *floatOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5777,6 +5973,8 @@ DLLEXPORT void mdsplus_uint64_getInt(const void *lvUint64Ptr, int *intOut, Error
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5815,6 +6013,8 @@ DLLEXPORT void mdsplus_uint64_getLong(const void *lvUint64Ptr, int64_t *longOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5853,6 +6053,8 @@ DLLEXPORT void mdsplus_uint64_getShort(const void *lvUint64Ptr, short *shortOut,
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5915,6 +6117,8 @@ DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -5983,6 +6187,8 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6036,6 +6242,8 @@ DLLEXPORT void mdsplus_uint8_getByte(const void *lvUint8Ptr, char *byteOut, Erro
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6074,6 +6282,8 @@ DLLEXPORT void mdsplus_uint8_getDouble(const void *lvUint8Ptr, double *doubleOut
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6112,6 +6322,8 @@ DLLEXPORT void mdsplus_uint8_getFloat(const void *lvUint8Ptr, float *floatOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6150,6 +6362,8 @@ DLLEXPORT void mdsplus_uint8_getInt(const void *lvUint8Ptr, int *intOut, ErrorCl
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6188,6 +6402,8 @@ DLLEXPORT void mdsplus_uint8_getLong(const void *lvUint8Ptr, int64_t *longOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6226,6 +6442,8 @@ DLLEXPORT void mdsplus_uint8_getShort(const void *lvUint8Ptr, short *shortOut, E
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6288,6 +6506,8 @@ DLLEXPORT void mdsplus_uint8array_constructor(void **lvUint8ArrayPtrOut, const L
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6356,6 +6576,8 @@ DLLEXPORT void mdsplus_uint8array_constructor_dims(void **lvUint8ArrayPtrOut, co
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6400,6 +6622,8 @@ DLLEXPORT void mdsplus_uint8array_deserialize(const void *lvUint8ArrayPtr, void 
 
 		errorMessage = const_cast<char *>(e.what());
 
+		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		return;
 	}
 
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -6410,7 +6634,257 @@ DLLEXPORT void mdsplus_uint8array_destructor(void **lvUint8ArrayPtr)
 {
 	deleteLvData(lvUint8ArrayPtr);
 }
+
+////////////////////////////////TEMPORARY TEST ROUTINES///////////////////////////
+
+
+DLLEXPORT void prova1()
+{
+  std::cout << "CIAO SONO PROVA1\n";
 }
+
+DLLEXPORT void prova2()
+{
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(MdsException &exc){std::cout << exc.what() << std::endl;}
+  std::cout << "CIAO SONO PROVA2\n";
 }
+
+DLLEXPORT void prova3(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+
+
+DLLEXPORT void prova4(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+      i = 0;
+  }
+ 
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+DLLEXPORT void prova41(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+      i = 0;
+  }
+ 
+  *outInt = inInt;
+  errorMessage = "CAZZACICCIA";	
+  errorCode = bogusError;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+DLLEXPORT void prova40(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  *outInt = inInt;
+  errorMessage = "CAZZACICCIA";	
+  errorCode = bogusError;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+DLLEXPORT void prova42(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+      errorMessage = "CAZZACICCIA";	
+      errorCode = bogusError;
+   }
+ 
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+DLLEXPORT void prova43(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+      char *currErr = (char *)exc.what();
+      errorMessage = "CAZZACICCIA";	
+      errorCode = bogusError;
+   }
+ 
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+DLLEXPORT void prova44(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+      char *currErr = (char *)exc.what();
+      errorMessage = new char[strlen(currErr)+1];
+      strcpy(errorMessage, currErr);	
+      errorCode = bogusError;
+   }
+ 
+  *outInt = inInt;
+//  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+  fillErrorCluster(errorCode, errorSource, "", error);
+}
+
+DLLEXPORT void prova45(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+      char *currErr = (char *)exc.what();
+      errorMessage = new char[strlen(currErr)+1];
+      strcpy(errorMessage, currErr);	
+      errorCode = bogusError;
+   }
+ 
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+
+DLLEXPORT void prova5(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  int i;
+  try {
+    MDSplus::Tree *tree = new Tree("CACCA", -1);
+  }catch(const MdsException &exc)
+  { 
+     fillErrorCluster(bogusError, errorSource, exc.what(), error);
+     return;
+   }
+ 
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+ 
+DLLEXPORT void prova6(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  try {
+    MDSplus::Data *d = new Int32(123);
+  }catch(const MdsException &exc)
+  {
+      errorCode = bogusError;
+      errorMessage = const_cast<char *>(exc.what());
+
+  }
+}
+
+DLLEXPORT void prova7(int inInt, int *outInt, ErrorCluster *error)
+{
+  MgErr errorCode = noErr;
+  const char *errorSource = __FUNCTION__;
+  char *errorMessage = "";
+  try {
+    MDSplus::Tree *tree = new Tree("test", -1);
+  }catch(const MdsException &exc)
+  {
+      errorCode = bogusError;
+      errorMessage = const_cast<char *>(exc.what());
+
+  }
+
+  *outInt = inInt;
+  fillErrorCluster(errorCode, errorSource, errorMessage, error);
+}
+ 
+
+DLLEXPORT void prova8()
+{
+    Int64 *timeInsertedData = new Int64(0);
+    Data *retTimeStr = executeWithArgs("date_time(0)", 0);
+   std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
+   std::cout << "FATTO EXECUTE WITH ARGS" << (void *)retTimeStr << std::endl;
+
+    std::cout << retTimeStr->getString() << std::endl;
+} 
+ 
+DLLEXPORT void prova9()
+{
+    Int64 *timeInsertedData = new Int64(0);
+    Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
+   std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
+
+    std::cout << retTimeStr->getString() << std::endl;
+} 
+DLLEXPORT void prova10()
+{
+    Int32 *timeInsertedData = new Int32(0);
+    Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
+
+    std::cout << retTimeStr->getString() << std::endl;
+} 
+
+DLLEXPORT void prova11()
+{
+    try {
+      Tree * tree = new Tree("test", 1);
+      TreeNode *n = tree->getNode("SIG");
+      n->deleteData();
+      Data *start = new Float32(0);
+      Data *end = new Float32(9);
+      Data *delta = new Float32(1);
+      Data *dim = new Range(start, end, delta);
+      float *floatArr = new float[10];
+      for(int i = 0; i < 10; i++)
+	floatArr[i] = i;
+      Data *arrD = new Float32Array(floatArr, 10);
+      n->makeSegment(start, end, dim, (Array *)arrD);
+    }catch(MdsException &exc)
+    {
+      std::cout << "ERRORE: " << exc.what() << std::endl;
+    }
+    std::cout << "FINITO CACCONA www\n";
+}
+
+ 
+}//End Extern "C"
+}//End Namespace MDSplus
 
 

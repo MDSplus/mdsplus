@@ -581,6 +581,11 @@ class Empty: public Data {
 			char * val = reinterpret_cast<char *>(uval);
 			init(val, std::string(val).size(), units, error, help, validation);
 		}
+//GAB  definition in order to avoid breaking LabVIEW
+		String(unsigned char *uval, int numDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			char * val = reinterpret_cast<char *>(uval);
+			init(val, std::string(val).size(), units, error, help, validation);
+		}
 
 		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 			init(val, len, units, error, help, validation);
@@ -642,7 +647,8 @@ class Empty: public Data {
 		}
 
 		~Array() {
-			deleteNativeArray(ptr);
+//			deleteNativeArray(ptr);
+			delete[] ptr;
 		}
 
 		virtual int getSize() 
@@ -890,20 +896,28 @@ class Empty: public Data {
 /////////////////////////COMPOUND DATA//////////////////////////////////
 class EXPORT Compound: public Data {
 public:
-	Compound()/*: str(0) */{
+	Compound() {
 		clazz = CLASS_R;
+		opcode = 0;
 	}
 
-	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)//: str(0)
+	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 	{
-		//if(length > 0)
-		//	str = ptr;
-		if(length ==1)
-		  opcode = *ptr;
-		else if(length == 2)
-		  opcode = *(short *)ptr;
-		else
-		  opcode = 0;
+		switch(length) {
+		  case 1:
+			opcode = *(char *)ptr;
+			break;
+		  case 2:
+			opcode = *(short *)ptr;
+			break;
+		  case 4:
+			opcode = *(int *)ptr;
+			break;
+		  default:
+			opcode = 0;
+		    
+		
+		}
 		if(nDescs > 0) {
 			for(int i = 0; i < nDescs; ++i) {
 				this->descs.push_back((Data *)descs[i]);
@@ -928,7 +942,6 @@ public:
 	virtual ~Compound() {}
 
 protected:
-	//std::string str;
 	short opcode;
 	std::vector<Data *> descs;
 
@@ -1098,7 +1111,7 @@ class Signal: public Compound {
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Function(char opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Function(short opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_FUNCTION;
 			this->opcode = opcode;
@@ -1108,8 +1121,7 @@ class Signal: public Compound {
 			setAccessory(units, error, help, validation);
 		}
 
-		char getOpcode() {
-			//return str.at(0);
+		short getOpcode() {
 			return opcode;
 		}
 
@@ -1443,7 +1455,7 @@ class Signal: public Compound {
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Dependency(char opcode, Data *arg1, Data *arg2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Dependency(short opcode, Data *arg1, Data *arg2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DEPENDENCY;
 			this->opcode = opcode;
@@ -1453,8 +1465,7 @@ class Signal: public Compound {
 			setAccessory(units, error, help, validation);
 		}
 
-		char getOpcode() {
-//			return str.at(0);
+		short getOpcode() {
 			return opcode;
 		}
 
@@ -1466,8 +1477,7 @@ class Signal: public Compound {
 			return getDescAt(1);
 		}
 
-		void setOpcode(char opcode) {
-//			str = opcode;
+		void setOpcode(short opcode) {
 			this->opcode = opcode;
 		}
 
@@ -1482,18 +1492,16 @@ class Signal: public Compound {
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Condition(char opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Condition(short opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONDITION;
-			//str = opcode;
 			this->opcode = opcode;
 			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
 
-		char getOpcode() {
-			//return str.at(0);
+		short getOpcode() {
 			return opcode;
 		}
 
@@ -1501,8 +1509,7 @@ class Signal: public Compound {
 			return getDescAt(0);
 		}
 
-		void setOpcode(char opcode) {
-//			str = opcode;
+		void setOpcode(short opcode) {
 			this->opcode = opcode;
 		}
 
@@ -1518,7 +1525,6 @@ class Call: public Compound {
 		Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CALL;
-			//str = retType;
 			opcode = retType;
 			descs.push_back(image);
 			descs.push_back(routine);
@@ -1528,12 +1534,10 @@ class Call: public Compound {
 		}
 
 		char getRetType() {
-			//return str.at(0);
 			return opcode;
 		}
 
 		void setRetType(char retType) {
-			//str = retType;
 			opcode = retType;
 		}
 
@@ -1814,7 +1818,7 @@ public:
 		void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
 		void putSegment(Array *data, int ofs);
 		void updateSegment(Data *start, Data *end, Data *time);
-		void updateSegment(int segIdx, Data *start, Data *end, Data *time);
+		void updateSegment(int idx, Data *start, Data *end, Data *time);
 		int getNumSegments();
 		void getSegmentLimits(int segmentIdx, Data **start, Data **end);
 		Array *getSegment(int segIdx);
