@@ -36,7 +36,7 @@ class Scope(object):
         """
         _data.Data.execute("JavaShowWindow($,$,$,$,$)",self.idx,self.x,self.y,self.width,self.height)
 
-    def plot(self,y,x=None,row=1,col=1,color="black"):
+    def plot(self,y,x=None,row=1,col=1,color="black", label=""):
         """Plot data in scope panel
         @param y: Y-axis of the data to plot
         @type y: Array
@@ -48,13 +48,15 @@ class Scope(object):
         @type col: int
         @param color: Color of the plot line
         @type color: str
+        @param label: Signal label
+        @type label: str
         @rtype: None
         """
         if x is None:
             x=_data.Data.dim_of(y)
-        _data.Data.execute("JavaReplaceSignal($,$,$,$,$,$)",self.idx,y,x,row,col,color)
+        _data.Data.execute("JavaReplaceSignal($,$,$,$,$,$,$)",self.idx,y,x,row,col,color,label)
 
-    def oplot(self,y,x=None,row=1,col=1,color="black"):
+    def oplot(self,y,x=None,row=1,col=1,color="black", label=""):
         """Overplot data in scope panel
         @param y: Y-axis of the data to plot
         @type y: Array
@@ -66,10 +68,12 @@ class Scope(object):
         @type col: int
         @param color: Color of the plot line
         @type color: str
+        @param label: Signal label
+        @type label: str
         @rtype: None
         """
         if x is None:
             x=_data.Data.dim_of(y)
-        _data.Data.execute("JavaAddSignal($,$,$,$,$,$)",self.idx,y,x,row,col,color)
+        _data.Data.execute("JavaAddSignal($,$,$,$,$,$,$)",self.idx,y,x,row,col,color,label)
     
     
