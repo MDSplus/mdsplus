@@ -74,6 +74,10 @@ static int Initialize() {
 	      ,"Please define PyLib to be the name of your python library, i.e. 'python2.4 or /usr/lib/libpython2.4.so.1'\n\n\n");
       return 0;
     }
+#ifdef _WIN32
+    lib=strcpy((char *)malloc(strlen(envsym)+4),envsym);
+    strcat(lib,".dll");
+#else
     if (envsym[0]=='/' || strncmp(envsym,"lib",3)==0) {
       lib=strcpy((char *)malloc(strlen(envsym)+1),envsym);
     } else {
@@ -81,6 +85,7 @@ static int Initialize() {
       strcat(lib,envsym);
       strcat(lib,".so");
     }
+#endif
 #ifdef RTLD_NOLOAD
     /*** See if python routines are already available ***/
     handle = dlopen(0,RTLD_NOLOAD);

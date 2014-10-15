@@ -110,6 +110,9 @@ TdiExtPython = TdiExtPython.o
 
 TdiExtPython.o : TdiExtPython.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< -I @PYTHON_INCLUDE_DIR@
+
+TdiVar.o : TdiVar.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $< -DPYTHON
 endif
 
 OBJECTS = $(SOURCES:.c=.o) $(TdiExtPython)
