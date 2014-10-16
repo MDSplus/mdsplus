@@ -49,7 +49,10 @@ install: $(libdir)
 @MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS) $(DEF)
 	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
 
-%.so %.dylib: $(OBJECTS)
+#%.so %.dylib: $(OBJECTS)
+#	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
+
+@MAKELIBDIR@%.so @MAKELIBDIR@%.dylib: $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
 
 %.a: $(OBJECTS)
