@@ -120,7 +120,7 @@ struct ArrayConstructor: public Constructor<Array> {
 	const LIntArrHdl dims;
 	void operator()() {
 //WRONG. Make LabVIEW crash!!!!	ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize), (*dims)->elt);
-		ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize, (*dims)->elt));
+		ptr = reinterpret_cast<void *>(new T((*inPtr)->elt, (*dims)->dimSize, reinterpret_cast<int *>((*dims)->elt)));
 	}
 };
 
