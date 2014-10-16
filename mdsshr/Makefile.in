@@ -47,7 +47,7 @@ install: $(libdir)
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS) $(DEF)
-	$(LINK.o) -o $@ @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
+	$(LINK.c) -o $@ @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
 
 #%.so %.dylib: $(OBJECTS)
 #	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
