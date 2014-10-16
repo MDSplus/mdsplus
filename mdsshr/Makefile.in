@@ -52,7 +52,7 @@ install: $(libdir)
 #%.so %.dylib: $(OBJECTS)
 #	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
 
-@MAKELIBDIR@%.so @MAKELIBDIR@%.dylib: $(OBJECTS)
+@MAKELIBDIR@libMdsShr.so @MAKELIBDIR@libMdsShr.dylib: $(OBJECTS)
 	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
 
 %.a: $(OBJECTS)
