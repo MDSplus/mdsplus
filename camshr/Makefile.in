@@ -87,11 +87,11 @@ cts_commands.c:	cts_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@: $(CTS_OBJECTS) $(SHLIB_BUILD)
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 $(SHLIB_BUILD) $(IMPLIB): $(OBJECTS)
-	$(LINK.o) @LINKSHARED@ -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L@MAKESHLIBDIR@ -lMdsShr $(MAKE_IMPLIB)
+	$(LINK.c) @LINKSHARED@ -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L@MAKESHLIBDIR@ -lMdsShr $(MAKE_IMPLIB)
 	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $@.$(MAJOR)
 	ln -sf $(SHLIB).$(MAJOR) $@
 

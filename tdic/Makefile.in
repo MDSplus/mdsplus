@@ -31,7 +31,7 @@ install: $(libdir) $(bindir)
 	$(INSTALL) -m 755  @MAKEBINDIR@tdic$(EXE) $(bindir)
 
 @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@@LIBPRE@TdiShrExt.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)

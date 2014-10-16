@@ -31,7 +31,7 @@ install: $(libdir)
 	fi;
 
 @MAKEBINDIR@gen_device : $(EXE_OBJECTS)
-	$(LINK.o) $(OUTPUT_OPTION) $^ $(EXE_LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) $^ $(EXE_LIBS)
 
 gen_device.tab.c : gen_device.y
 	yacc -d -p gen_device -b gen_device gen_device.y
@@ -40,7 +40,7 @@ lex.gen_device.c : gen_device.x
 	lex -Pgen_device gen_device.x
 
 @MAKESHLIBDIR@libGenDevShr@SHARETYPE@ : $(LIB_OBJECTS) @EXPORTS_FILE@
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $(LIB_OBJECTS) $(LIB_LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(LIB_OBJECTS) $(LIB_LIBS)
 
 @MAKELIBDIR@libGenDevShr.a : $(LIB_OBJECTS)
 	$(AR) -cr $@ $^

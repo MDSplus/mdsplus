@@ -87,7 +87,7 @@ install: $(libdir) @uiddir@
 	$(UIL) -o $@ XmdsXdBox.uil
 
 @MAKESHLIBDIR@libXmdsShr@SHARETYPE@: $(OBJECTS)
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBM)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBM)
 
 @MAKELIBDIR@libXmdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $^

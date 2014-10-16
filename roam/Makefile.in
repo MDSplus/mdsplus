@@ -49,7 +49,7 @@ install: $(bindir) $(libdir)
 	fi;
 
 @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ : $(OBJECTS)
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ 
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ 
 
 @MAKESHLIBDIR@libRoam@SHARETYPE@ :
 	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ @MAKESHLIBDIR@libRoam@SHARETYPE@
@@ -66,6 +66,6 @@ makefile-header:
 
 ifdef modules
 @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ : $(OBJECTS)
-	$(LINK.o) $(TARGET_ARCH) @LINKMODULE@ $^ $(LIBS) 
+	$(LINK.c) $(TARGET_ARCH) @LINKMODULE@ $^ $(LIBS) 
 endif
 

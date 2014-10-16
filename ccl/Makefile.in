@@ -31,7 +31,7 @@ ccl_commands.c:	ccl_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
-	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
 ifneq "@MINGW@" "yes"
 @MAKEBINDIR@mdsccl: ccl
