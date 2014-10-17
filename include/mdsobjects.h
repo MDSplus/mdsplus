@@ -309,7 +309,7 @@ class Empty: public Data {
 		char *ptr;
 		virtual ~Scalar()
 		{
-			delete ptr;
+			delete []ptr;
 		}
 		 
 		virtual void *convertToDsc();
