@@ -38,7 +38,7 @@ def makeAllSourceTars():
     else:
       rflavor="-%s" % flavor
     src="mdsplus%s-%d.%d-%d" % (rflavor,major,minor,release)
-    tarball='${MDSPLUS_DIST}/SOURCES/'+src+'.tgz'
+    tarball='%s/SOURCES/'%os.environ['MDSPLUS_DIST']+src+'.tgz'
     try:
       os.stat(tarball)
     except:
