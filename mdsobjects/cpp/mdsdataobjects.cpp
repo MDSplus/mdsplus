@@ -179,7 +179,7 @@ void Data::operator delete(void *p) {
 }
 
 void MDSplus::deleteData(Data *data) {
-	if (data->refCount <= 0) {
+	if (data->refCount <= 1) {
 		delete data;
 	}
 }
