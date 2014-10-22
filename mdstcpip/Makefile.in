@@ -15,7 +15,7 @@ COMPRESSION_SWITCH=
 CFLAGS += $(THREAD) $(COMPRESSION_SWITCH) -Iudt4/src -Iudt4/udtc
 LDFLAGS += $(THREAD)
 
-CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/src -Iudt4/udtc @CFLAGS@ 
+CXXFLAGS=-Wno-deprecated -fPIC -finline-functions -fno-strict-aliasing -Iudt4/src -Iudt4/udtc @CFLAGS@ @CXXFLAGS@
 LIBS=@LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @SOCKETLIB@
 
 MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@ $(IMPLIB_MdsIpShr)
