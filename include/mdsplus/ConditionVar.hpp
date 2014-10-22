@@ -73,6 +73,7 @@ private:
 	void _wait() {
 		pthread_mutex_lock(&mutex);
 		pthread_cond_wait(&condition, &mutex);
+		pthread_mutex_unlock(&mutex);
 	}
 
 	bool _waitTimeout(std::size_t msec) {
@@ -81,7 +82,9 @@ private:
 		t.tv_sec += msec / 1000L;
 		t.tv_nsec += msec % 1000L * 1000000L;
 		pthread_mutex_lock(&mutex);
-		return pthread_cond_timedwait(&condition, &mutex, &t) == 0 ? true:false;
+		bool res =  pthread_cond_timedwait(&condition, &mutex, &t) == 0 ? true:false;
+		pthread_mutex_unlock(&mutex);
+		return res;
 	}
 
 	void _notify() {
