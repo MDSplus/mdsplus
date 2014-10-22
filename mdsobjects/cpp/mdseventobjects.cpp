@@ -73,7 +73,7 @@ Event::Event(char *evName)
 	std::size_t size = std::string(evName).size();
 	eventName = new char[size + 1];
 	std::copy(&evName[0], &evName[size], eventName);
-	evName[size] = 0;
+	eventName[size] = 0;
 	eventId = -1;
 	connectToEvents();
 }
@@ -83,7 +83,7 @@ REvent::REvent(char *evName)
 	std::size_t size = std::string(evName).size();
 	eventName = new char[size + 1];
 	std::copy(&evName[0], &evName[size], eventName);
-	evName[size] = 0;
+	eventName[size] = 0;
 	eventId = -1;
 	connectToEvents();
 }
