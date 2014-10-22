@@ -139,8 +139,8 @@ Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argc
 Boolean XmdsIsDisplay(Widget w)
 {
   XtPointer user_data=0;
-  XtVaGetValues(w, XmNuserData, user_data, NULL);
-  if (user_data && (user_data == DisplayUserData))
+  XtVaGetValues(w, XmNuserData, &user_data, NULL);
+  if (user_data && ((int)user_data == DisplayUserData))
     return 1;
   else
     return 0;
