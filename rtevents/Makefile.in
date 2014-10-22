@@ -3,9 +3,9 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@RtEventsShr.dll.a
 
 CPPFLAGS += @SRBINCLUDE@
-CXXFLAGS = $(CFLAGS) $(THREAD) -Wno-deprecated
+CXXFLAGS = $(CFLAGS) $(THREAD) -Wno-deprecated @CXXFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr @SOCKETLIB@
-LDFLAGS += $(THREAD)
+LDFLAGS += $(THREAD) -nodefaultlibs
 
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
@@ -16,16 +16,14 @@ SOURCES = MdsEvents.c
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = RtEventsShr.exports
 
-EventConnector = @MAKEBINDIR@EventConnector
 RtEventsShr_shared = @MAKESHLIBDIR@@LIBPRE@RtEventsShr@SHARETYPE@ $(IMPLIB)
 RtEventsShr_static = @MAKELIBDIR@@LIBPRE@RtEventsShr.a
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(EventConnector) $(RtEventsShr_shared) $(RtEventsShr_static)
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(RtEventsShr_shared) $(RtEventsShr_static)
 
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) $(EventConnector)
 	@ $(RM) $(RtEventsShr_shared)
 	@ $(RM) $(RtEventsShr_static)
 
@@ -46,8 +44,6 @@ $(RtEventsShr_static): $(OBJECTS)
 	$(AR) -cr $@ $^
 	$(RANLIB) $@
 
-$(EventConnector): $(RtEventsShr_shared)
-	$(LINK.cc) $(OUTPUT_OPTION) EventConnector.cpp -L@MAKESHLIBDIR@ -lRtEventsShr $(LIBS) @NSLLIB@
 
 RtEventsShr.exports: RtEventsShr.def
 	$(SED) -e /LIBRARY/\;/\;/d RtEventsShr.def > $@
