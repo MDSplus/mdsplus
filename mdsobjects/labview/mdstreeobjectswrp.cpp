@@ -61,6 +61,7 @@ DLLEXPORT void mdsplus_tree_constructor(void **lvTreePtrOut, const char *nameIn,
 		errorCode = bogusError;
 		errorMessage = e.what();
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		*lvTreePtrOut = 0;
 		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
@@ -79,6 +80,7 @@ DLLEXPORT void mdsplus_tree_constructor_mode(void **lvTreePtrOut, const char *na
 		errorCode = bogusError;
 		errorMessage = e.what();
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
+		*lvTreePtrOut = 0;
 		return;
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);

@@ -91,7 +91,10 @@ DLLEXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred, 
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 
 		// 1 Sec timeout
+std::cout << "ASPETTO EVENTO....\n"; 
+
 		eventPtr->wait(1);
+std::cout << "EVENTO ARRIVATO....\n"; 
 	}
 	catch (const MdsException & e)
 	{
@@ -146,7 +149,9 @@ DLLEXPORT void mdsplus_event_waitRaw(const void *lvEventPtr, LByteArrHdl lvByteA
 	{
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 		size_t byteArrLen = 0;
+std::cout << "ASPETTO EVENTO RAW ....\n";
 		byteArrOut = eventPtr->waitRaw(&byteArrLen);
+std::cout << "EVENTO ARRIVATO....\n";
 		errorCode = NumericArrayResize(iB, 1, reinterpret_cast<UHandle *>(&lvByteArrHdlOut), static_cast<int32>(byteArrLen));
 		if (!errorCode)
 		{

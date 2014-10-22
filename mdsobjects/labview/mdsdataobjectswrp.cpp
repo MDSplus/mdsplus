@@ -14,8 +14,7 @@ void fillErrorCluster(MgErr code, const char *source, const char *message, Error
 
 		error->status = LVBooleanTrue;
 		error->code = static_cast<int32>(code);
-
-		if(NumericArrayResize(uB, 1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen + sizeof(int32)) == noErr)
+		if(NumericArrayResize((int32)uB, (int32)1, reinterpret_cast<UHandle *>(&(error->source)), errMsgLen + sizeof(int32)) == noErr)
 		{
 			MoveBlock(errMsg.c_str(), LStrBuf(*error->source), errMsgLen);
 			(*error->source)->cnt = errMsgLen;

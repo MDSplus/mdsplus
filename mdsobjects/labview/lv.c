@@ -15,6 +15,9 @@
 #include <fundtypes.h>
 #include <mdsdescrip.h>
 #include <libroutines.h>
+#include <stdio.h>
+
+#pragma pack(1)
 
 static void Initialize();
 
@@ -46,9 +49,23 @@ extern UHandle DSNewHandle(size_t siz)
   else
     return (UHandle)-1;
 }
+
  
+MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle* h, size_t siz)
+{
+printf("CIAO SONO NUMERIC ARRAY RESIZE CACCA\n");
+printf("\n\n\n\n");
+  if (!LVNumericArrayResize)
+    Initialize();
+  if (LVNumericArrayResize)
+    return LVNumericArrayResize(a, b, h, siz);
+  else
+    return -1;
+}
 MgErr NumericArrayResize(int32 a, int32 b, UHandle* h, size_t siz)
 {
+printf("CIAO SONO NUMERIC ARRAY RESIZE\n");
+printf("\n\n\n\n");
   if (!LVNumericArrayResize)
     Initialize();
   if (LVNumericArrayResize)
@@ -59,8 +76,13 @@ MgErr NumericArrayResize(int32 a, int32 b, UHandle* h, size_t siz)
 
 static void Initialize()
 {
+    int status;
+printf("CIAO SONO INITIALIZE\n");
   if (!LVDSNewHandle)
-    LibFindImageSymbol(&LVMemoryManager_10Name, &DSNewHandleName, &LVDSNewHandle);
+   {
+    status = LibFindImageSymbol(&LVMemoryManager_10Name, &DSNewHandleName, &LVDSNewHandle);
+    printf("FIND IMAGE SYMBOL status: %s %s\n", MdsGetMsg(status));
+  }
   if (!LVMoveBlock)
     LibFindImageSymbol(&LVRT_10Name, &MoveBlockName, &LVMoveBlock);
   if (!LVNumericArrayResize)

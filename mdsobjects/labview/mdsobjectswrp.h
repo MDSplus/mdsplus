@@ -19,9 +19,11 @@
   typedef float float32;
   typedef double float64;
   typedef uint32_t Bool32;
+
+#pragma pack(1)
+
 #endif
   
-#pragma pack(1)
   
 #include  <platdefines.h>
 #include <extcode.h>
