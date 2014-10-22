@@ -684,7 +684,7 @@ static void ActionCreate(XmdsXdBoxWidget w,ArgList args,Cardinal argcount)
 		     };
   Widget task;
   Widget dispatch;
-  dlog_args[0].value = (long) user_part;
+  dlog_args[0].value = (XtArgVal) user_part;
   user_part->load_dlog_proc = ActionLoad;
   user_part->unload_dlog_proc = ActionUnload;
 
@@ -819,7 +819,7 @@ static void AxisCreate(XmdsXdBoxWidget w,ArgList args,Cardinal argcount)
 		     {XmNleftAttachment, XmATTACH_FORM},
 		     {XmNrightAttachment, XmATTACH_FORM},
 		     {XmNbottomAttachment, XmATTACH_FORM}};
-  dlog_args[0].value = (long) user_part;
+  dlog_args[0].value = (XtArgVal) user_part;
   user_part->load_dlog_proc = AxisLoad;
   user_part->unload_dlog_proc = AxisUnload;
 
@@ -968,7 +968,7 @@ static void DispatchCreate(XmdsXdBoxWidget w,ArgList args,Cardinal argcount)
 		     {XmNleftAttachment, XmATTACH_FORM},
 		     {XmNrightAttachment, XmATTACH_FORM},
 		     {XmNbottomAttachment, XmATTACH_FORM}};
-  dlog_args[0].value = (long) user_part;
+  dlog_args[0].value = (XtArgVal) user_part;
   user_part->load_dlog_proc = DispatchLoad;
   user_part->unload_dlog_proc = DispatchUnload;
 
@@ -1083,7 +1083,7 @@ static void ExpressionCreate(XmdsXdBoxWidget w,ArgList args,Cardinal argcount)
 		     {XmNleftAttachment, XmATTACH_FORM},
 		     {XmNrightAttachment, XmATTACH_FORM},
 		     {XmNbottomAttachment, XmATTACH_FORM}};
-  dlog_args[0].value = (long) user_part;
+  dlog_args[0].value = (XtArgVal) user_part;
   user_part->load_dlog_proc = ExpressionLoad;
   user_part->unload_dlog_proc = ExpressionUnload;
 
@@ -1201,7 +1201,7 @@ static void TaskCreate(XmdsXdBoxWidget w, ArgList args,Cardinal argcount)
 		     {XmNleftAttachment, XmATTACH_FORM},
 		     {XmNrightAttachment, XmATTACH_FORM},
 		     {XmNbottomAttachment, XmATTACH_FORM}};
-  dlog_args[0].value = (long) user_part;
+  dlog_args[0].value = (XtArgVal) user_part;
   user_part->load_dlog_proc = TaskLoad;
   user_part->unload_dlog_proc = TaskUnload;
 
@@ -1421,7 +1421,7 @@ static void WindowCreate(XmdsXdBoxWidget w,ArgList args,Cardinal argcount)
 		     {XmNleftAttachment, XmATTACH_FORM},
 		     {XmNrightAttachment, XmATTACH_FORM},
 		     {XmNbottomAttachment, XmATTACH_FORM}};
-  dlog_args[0].value = (long) user_part;
+  dlog_args[0].value = (XtArgVal) user_part;
   user_part->load_dlog_proc = WindowLoad;
   user_part->unload_dlog_proc = WindowUnload;
 
