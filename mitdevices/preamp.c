@@ -99,7 +99,7 @@ int       preamp__dw_setup(struct descriptor *niddsc,  struct descriptor *method
 static void ask_incaa_create(Widget w)
 {
   int device_nid = XmdsGetDeviceNid();
-  XtVaSetValues(w, XmNuserData, device_nid, NULL);
+  XtVaSetValues(w, XmNuserData, &device_nid, NULL);
 }
 static void ask_incaa_proc(Widget w)
 {
@@ -119,7 +119,7 @@ static Boolean ask_incaa_button(Widget w)
   static int incaa_nid;
   static DESCRIPTOR_NID(incaa_nid_dsc,&incaa_nid);
   int status;
-  int device_nid;
+  int *device_nid;
   XmString incaa_string;
   String incaa_name;
   int c_nids[INCAA16_K_CONG_NODES];

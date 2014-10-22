@@ -1261,8 +1261,6 @@ XEvent *event;
 String *params;
 Cardinal *num_params;
 {
-  ListTreeWidget w = (ListTreeWidget) aw;
-
   DBG(DARG,"keypress\n");
 }
 
@@ -1485,9 +1483,9 @@ DrawChildren(ListTreeWidget w, ListTreeItem *item, ListTreeItem **last,
 static void
 DrawVertical(ListTreeWidget w, ListTreeItem *item)
 {
-  int xroot,yroot, pos;
+  int xroot;
+  int yroot;
 
-  pos=item->count;
   while (item->parent) {
       /* If this parent has another child, that means that a line extends off
        * the screen to the bottom. */
@@ -1597,7 +1595,8 @@ GotoPosition(ListTreeWidget w)
 static int
 CountItem(ListTreeWidget w, ListTreeItem *item, int x, int y)
 {
-  int height, xpix, xtext;
+  int height;
+  int xtext;
   Pixinfo *pix;
 
   item->count=w->list.itemCount;
@@ -1608,7 +1607,6 @@ CountItem(ListTreeWidget w, ListTreeItem *item, int x, int y)
 
 /* Compute the height of this line */
   height = FontHeight(w->list.font);
-  xpix = x - w->list.pixWidth + pix->xoff;
   xtext = x + (int) w->list.HSpacing;
   if (pix && pix->height > height) {
     height = pix->height;
@@ -2210,14 +2208,11 @@ ListTreeOrderChildren(ListTreeWidget w, ListTreeItem * item)
 ListTreeItem *
 ListTreeFindSiblingName(ListTreeWidget w, ListTreeItem * item, char *name)
 {
-  ListTreeItem *first;
-
   TreeCheck(w, "in ListTreeFindSiblingName");
 /* Get first child in list; */
   if (item) {
     while (item->prevsibling)
       item = item->prevsibling;
-    first = item;
 
     while (item) {
       if (strcmp(item->text, name) == 0)

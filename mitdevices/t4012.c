@@ -431,9 +431,11 @@ static void Load(Widget w)
   char *t4012name;
   char dignam[512];
   int i;
+  XtPointer user_data;
   int nid;
   int found = False;
-  XtVaGetValues(w, XmNuserData, &nid, NULL);
+  XtVaGetValues(w, XmNuserData, &user_data, NULL);
+  nid = (intptr_t)user_data;
   t4012name = TreeGetPath(nid);
   strcpy(dignam,t4012name);
   strcat(dignam,":T28%%_");

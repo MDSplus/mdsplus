@@ -126,7 +126,7 @@ namespace MDSplus  {
 EXPORT void deleteNativeArray(char *array);
 EXPORT void deleteNativeArray(short *array);
 EXPORT void deleteNativeArray(int *array);
-EXPORT void deleteNativeArray(long *array);
+//EXPORT void deleteNativeArray(long *array);
 EXPORT void deleteNativeArray(int64_t *array);
 EXPORT void deleteNativeArray(float *array);
 EXPORT void deleteNativeArray(double *array);

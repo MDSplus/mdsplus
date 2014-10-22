@@ -1620,8 +1620,10 @@ static void TagsReset(Widget w, int nid)
 void tag_button_proc(Widget w, int *tag)
 {
   Widget tag_widget = XtParent(w);
+  XtPointer temp;
   int nid;
-  XtVaGetValues(tag_widget, XmNuserData, &nid, NULL);
+  XtVaGetValues(tag_widget, XmNuserData, (XtArgVal)&temp, NULL);
+  nid =  (intptr_t)temp;
   switch (*tag) {
     case TAGS_OK:
                 if (TagsApply(tag_widget, nid)&1) XtUnmanageChild(tag_widget);
@@ -1674,7 +1676,7 @@ void ModifyTags(Widget w, XtPointer client_data, XmListCallbackStruct *reason)
     if (!XtIsManaged(tagsw)) {
       if (num_selected == 1) {
 	int nid = get_nid(selections[0]);
-	XtVaSetValues(tagsw, XmNuserData, nid, NULL);
+	XtVaSetValues(tagsw, XmNuserData, (XtArgVal)nid, NULL);
         TagsReset(tagsw, nid);
 	XtManageChild(tagsw); 
       }

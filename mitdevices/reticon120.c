@@ -115,11 +115,13 @@ static void Reset(Widget w)
   int status;
   int i;
   Widget *t_w;
+  XtPointer user_data;
   static int nid;
   static struct descriptor niddsc = {4,DTYPE_NID,CLASS_S,(char *)&nid};
   struct descriptor zerod = {1,DTYPE_B,CLASS_S,"0"};
   char pixels[256];
-  XtVaGetValues(p_w, XmNuserData, &nid, XtNchildren, &t_w, NULL);
+  XtVaGetValues(p_w, XmNuserData, &user_data, XtNchildren, &t_w, NULL);
+  nid = (intptr_t)user_data;
   if ((status = TdiNe(&niddsc,&zerod,&xd MDS_END_ARG)) & 1)
   {
     array *a = (array *)xd.pointer;
@@ -153,6 +155,7 @@ static int Apply(Widget w)
   int words;
   int total_frames = 0;
   int i;
+  XtPointer user_data;
   static EMPTYXD(xd);
   static int nid;
   static struct descriptor niddsc = {4,DTYPE_NID,CLASS_S,(char *)&nid};
@@ -203,7 +206,8 @@ static int Apply(Widget w)
                       total_frames,(131072/total_frames-2)/4);
     return 0;
   }
-  XtVaGetValues(p_w, XmNuserData, &nid, NULL);
+  XtVaGetValues(p_w, XmNuserData, &user_data, NULL);
+  nid = (intptr_t)user_data;
   if ((status = TdiNe(&niddsc,&zerod,&xd MDS_END_ARG)) & 1)
   {
     array *a = (array *)xd.pointer;

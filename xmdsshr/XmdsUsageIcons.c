@@ -87,8 +87,6 @@ void XmdsUsageIconsInitialize(Widget w)
   int usages;
   if (!icons)
   {
-    int *TREE_K_MAX_USAGE;
-    MrmCode type;
     MrmInitialize();
     MrmOpenHierarchy(1,hierarchy_name,0,&mrm_hierarchy);
     usages = 13;

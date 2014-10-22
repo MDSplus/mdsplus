@@ -175,6 +175,7 @@ static void ResetWave(Widget w)
   }
   if (dimension.axis->dtype == DTYPE_DSC && dimension.axis->pointer == 0)
   {
+    XtPointer user_data;
     static int ext_clock_nid;
     static DESCRIPTOR_NID(ext_clock,&ext_clock_nid);
 
@@ -183,7 +184,8 @@ static void ResetWave(Widget w)
     XtFree((char *)dimension.axis);
     NeedToFreeAxis = 0;
 
-    XtVaGetValues(XtNameToWidget(Top(w),"*ext_clock"),XmNuserData, &ext_clock_nid, NULL);
+    XtVaGetValues(XtNameToWidget(Top(w),"*ext_clock"),XmNuserData, &user_data, NULL);
+    ext_clock_nid = (intptr_t)user_data;
     dimension.axis = &ext_clock;
   }
   if ( (TdiData(&dimension,&times_xd MDS_END_ARG) & 1) &&
@@ -465,11 +467,13 @@ static void SetPoint(Widget w)
   float x;
   float y;
   int num = sscanf(text, " ( %g , %g ) ",&x,&y);
+  XtPointer temp;
   int userData;
   int channel;
   int idx;
   Widget dw;
-  XtVaGetValues(w,XmNuserData,&userData,NULL);
+  XtVaGetValues(w,XmNuserData,&temp,NULL);
+  userData= (intptr_t)temp;
   channel = userData/65536;
   idx = userData % 65536;
   if (channel >= 0 && channel < 4 && num == 2)
@@ -725,8 +729,8 @@ static void InitWave(Widget w, int *idx)
   num_knots = NumKnots(count, selected);
   memset(y,0,count * sizeof(*y));
   XtVaSetValues(wave, XmdsNcount, count - num_knots, XmdsNxValue, &x[num_knots], XmdsNyValue, &y[num_knots], 
-                XmdsNselections, &selected[num_knots], XmdsNpenDown, &pendown[num_knots], XmdsNxMin, 0, XmdsNxMax, 0, 
-                XmdsNyMin, 0, XmdsNyMax, 0, NULL);
+                XmdsNselections, &selected[num_knots], XmdsNpenDown, &pendown[num_knots], XmdsNxMin, (XtPointer)NULL, 
+		XmdsNxMax, (XtPointer)NULL, XmdsNyMin, (XtPointer)NULL, XmdsNyMax, (XtPointer)NULL, NULL);
   XmdsXdBoxSetXd(xdbw,(struct descriptor *)&xd);
 }
 

@@ -63,14 +63,16 @@ int mdsdcl__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Wi
 static int Apply(Widget w)
 {
   Widget list_w = XtNameToWidget(XtParent(w),"*interpreters");
+  XtPointer  user_data;
   int nid;
-  XmString *selections;
+  XmString *selections=NULL;
   String   list = 0;
   String   old_list;
   int      num;
   int      i;
   int      status = 1;
-  XtVaGetValues(list_w, XmNuserData, &nid, NULL);
+  XtVaGetValues(list_w, XmNuserData, &user_data, NULL);
+  nid = (intptr_t)user_data;
   old_list = XmdsGetNidText(nid);
   XtVaGetValues(list_w, XmNselectedItems, &selections, XmNselectedItemCount, &num, NULL);
   for (i=0;i<num;i++)
@@ -127,12 +129,14 @@ static void Reset(Widget w)
   static struct descriptor_d cli = {0, DTYPE_T, CLASS_D, 0};
   static DESCRIPTOR(initial, "_I=0");
   static DESCRIPTOR(clis, "(clis()[_I++]//\"\\0\")");
+  XtPointer user_data;
   int nid;
   String selections;
   String selection;
   int ctx = 0;
   int first = 1;
-  XtVaGetValues(list_w, XmNuserData, &nid, NULL);
+  XtVaGetValues(list_w, XmNuserData, &user_data, NULL);
+  nid = (intptr_t)user_data;
   XmListDeselectAllItems(list_w);
   XmListDeleteAllItems(list_w);
   TdiExecute(&initial,&cli MDS_END_ARG);
