@@ -187,9 +187,11 @@ static void Load(Widget w)
   static char nodename[13];
   static NCI_ITM itmlst[] = {{12,NciNODE_NAME,nodename,0},{0,0,0,0}};
   int i;
+  XtPointer temp;
   int nid;
   int found = False;
-  XtVaGetValues(w, XmNuserData, &nid, NULL);
+  XtVaGetValues(w, XmNuserData, &temp, NULL);
+  nid =  (intptr_t)temp;
   l8590_memname = TreeGetPath(nid);
   XmListDeleteAllItems(w);
   for (i=1;i<17;i++)

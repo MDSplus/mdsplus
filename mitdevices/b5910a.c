@@ -467,11 +467,13 @@ static void SetPoint(Widget w)
   float x;
   float y;
   int num = sscanf(text, " ( %g , %g ) ",&x,&y);
+  XtPointer temp;
   int userData;
   int channel;
   int idx;
   Widget dw;
-  XtVaGetValues(w,XmNuserData,&userData,NULL);
+  XtVaGetValues(w,XmNuserData,&temp,NULL);
+  userData= (intptr_t)temp;
   channel = userData/65536;
   idx = userData % 65536;
   if (channel >= 0 && channel < 4 && num == 2)
