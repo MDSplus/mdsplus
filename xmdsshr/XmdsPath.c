@@ -141,7 +141,7 @@ Boolean XmdsIsPath(Widget w)
 {
   XtPointer user_data = 0;
   XtVaGetValues(w,XmNuserData, &user_data,NULL);
-  if (user_data && (user_data == PathUserData))
+  if (user_data && ((int)user_data == PathUserData))
     return 1;
   else
     return 0;
