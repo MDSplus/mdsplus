@@ -7036,7 +7036,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -no-cpp-precomp -dynamic";
+       CFLAGS="$CFLAGS -arch x86_64 -arch i386 -dynamic";
        if (test "$F77" = "f77"); then
           FFLAGS="$FFLAGS -w -f -V -W"
 		  FORLD="$F77"
