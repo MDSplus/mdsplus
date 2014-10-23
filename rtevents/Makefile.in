@@ -5,11 +5,12 @@ include @top_srcdir@/Makefile.inc
 CPPFLAGS += @SRBINCLUDE@
 CXXFLAGS = $(CFLAGS) $(THREAD) -Wno-deprecated @CXXFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr @SOCKETLIB@
-LDFLAGS += $(THREAD) -nodefaultlibs
+#LDFLAGS += $(THREAD) -nodefaultlibs
+LDFLAGS += $(THREAD)
 
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
-	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp $(WIN_CXXSOURCES)
+	ExitHandler.cpp TCPNetworkManager.cpp UDPNetworkManager.cpp EventHandler.cpp Notifier.cpp Thread.cpp 
 @MINGW_TRUE@ CXXSOURCES += WindowsSharedMemory.cpp
 
 SOURCES = MdsEvents.c
