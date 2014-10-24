@@ -1,5 +1,5 @@
 ﻿<?xml version='1.0' encoding='UTF-8'?>
-<Project Type="Project" LVVersion="13008000">
+<Project Type="Project" LVVersion="10008000">
 	<Item Name="My Computer" Type="My Computer">
 		<Property Name="NI.SortType" Type="Int">3</Property>
 		<Property Name="server.app.propertiesEnabled" Type="Bool">true</Property>
@@ -13,7 +13,7 @@
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="Sample and Utility VIs" Type="Folder">
 			<Item Name="PutGetTreeNodeExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExample.vi"/>
-			<Item Name="SetEventDataExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/SetEventDataExample.vi"/>
+			<Item Name="SetEventDataExample.vi" Type="VI" URL="/&lt;vilib&gt;/builds/MDSplus/MDSplus/SetEventDataExample.vi"/>
 			<Item Name="MakeSegmentUtility.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/MakeSegmentUtility.vi"/>
 			<Item Name="MakeSegmentExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/MakeSegmentExample.vi"/>
 			<Item Name="WaitEventDataExamplevi.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/WaitEventDataExamplevi.vi"/>
@@ -78,19 +78,17 @@
 				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
 				<Item Name="Delete Signal DVR.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Delete Signal DVR.vi"/>
 			</Item>
+			<Item Name="lvanlys.dll" Type="Document" URL="../../../resource/lvanlys.dll"/>
 			<Item Name="MDSobjectsLVShr" Type="VI" URL="MDSobjectsLVShr">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
-			<Item Name="libMDSobjectsLVShr.so" Type="Document" URL="libMDSobjectsLVShr.so">
+			<Item Name="MDSobjectsLVShr.dll" Type="Document" URL="MDSobjectsLVShr.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
-			<Item Name="lvanlys.so" Type="Document" URL="/&lt;resource&gt;/lvanlys.so"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build">
 			<Item Name="MDSplus" Type="Source Distribution">
-				<Property Name="Bld_buildCacheID" Type="Str">{CEDCC35F-59F1-11E4-A7C6-80C16EF071C6}</Property>
 				<Property Name="Bld_buildSpecName" Type="Str">MDSplus</Property>
-				<Property Name="Bld_excludedDirectoryCount" Type="Int">5</Property>
 				<Property Name="Bld_excludedDirectory[0]" Type="Path">..</Property>
 				<Property Name="Bld_excludedDirectory[0].pathType" Type="Str">relativeToCommon</Property>
 				<Property Name="Bld_excludedDirectory[1]" Type="Path">instr.lib</Property>
@@ -100,16 +98,14 @@
 				<Property Name="Bld_excludedDirectory[3]" Type="Path">resource/objmgr</Property>
 				<Property Name="Bld_excludedDirectory[3].pathType" Type="Str">relativeToAppDir</Property>
 				<Property Name="Bld_excludedDirectory[4]" Type="Path">/C/Documents and Settings/AI_admin/My Documents/LabVIEW Data/InstCache</Property>
-				<Property Name="Bld_localDestDir" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplus</Property>
+				<Property Name="Bld_excludedDirectoryCount" Type="Int">5</Property>
+				<Property Name="Bld_localDestDir" Type="Path">../builds/MDSplus/MDSplus</Property>
 				<Property Name="Bld_localDestDirType" Type="Str">relativeToCommon</Property>
-				<Property Name="Bld_previewCacheID" Type="Str">{CEDCCC27-59F1-11E4-A7C6-80C16EF071C6}</Property>
-				<Property Name="Bld_version.major" Type="Int">1</Property>
-				<Property Name="DestinationCount" Type="Int">2</Property>
 				<Property Name="Destination[0].destName" Type="Str">Destination Directory</Property>
 				<Property Name="Destination[0].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplus</Property>
 				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
 				<Property Name="Destination[1].path" Type="Path">../builds/NI_AB_PROJECTNAME/MDSplus/data</Property>
-				<Property Name="SourceCount" Type="Int">3</Property>
+				<Property Name="DestinationCount" Type="Int">2</Property>
 				<Property Name="Source[0].itemID" Type="Str">{8A06D4B7-C408-41D0-B4C2-B64819146443}</Property>
 				<Property Name="Source[0].type" Type="Str">Container</Property>
 				<Property Name="Source[1].Container.applyInclusion" Type="Bool">true</Property>
@@ -122,6 +118,7 @@
 				<Property Name="Source[2].Library.allowMissingMembers" Type="Bool">true</Property>
 				<Property Name="Source[2].sourceInclusion" Type="Str">Include</Property>
 				<Property Name="Source[2].type" Type="Str">Library</Property>
+				<Property Name="SourceCount" Type="Int">3</Property>
 			</Item>
 		</Item>
 	</Item>
