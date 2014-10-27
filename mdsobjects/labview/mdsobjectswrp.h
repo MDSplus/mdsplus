@@ -535,6 +535,15 @@ DLLEXPORT void mdsplus_uint8array_constructor_dims(void **lvUint8ArrayPtrOut, co
 DLLEXPORT void mdsplus_uint8array_deserialize(const void *lvUint8ArrayPtr, void **lvDataPtrOut, ErrorCluster *error);
 DLLEXPORT void mdsplus_uint8array_destructor(void **lvUint8ArrayPtr);
 
+/********  CONNECTION ***********/
+DLLEXPORT void mdsplus_connection_constructor(void **lvConnectionPtrOut, const char *ipPortIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_connection_destructor(void **lvConnectionPtr);
+DLLEXPORT void mdsplus_connection_getData(const void *lvConnectionPtr, void **lvDataPtrOut, const char *expressionIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_connection_putData(const void *lvConnectionPtr, const void *lvDataPtrIn, const char *pathIn, ErrorCluster *error);
+DLLEXPORT void mdsplus_connection_openTree(const void *lvConnectionPtr, const char *tree, int shot,  ErrorCluster *error);
+DLLEXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,  ErrorCluster *error);
+
+
 #ifdef __cplusplus
 }
 #endif
