@@ -626,6 +626,9 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
 WINDRES
+VS_DIR
+VS_ARCH
+VS
 DC1394_SUPPORT2
 DC1394_SUPPORT
 USE_TM_GMTOFF
@@ -734,6 +737,8 @@ GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
+VS_FALSE
+VS_TRUE
 RPATHLINK
 RPATHLINK_FALSE
 RPATHLINK_TRUE
@@ -854,6 +859,7 @@ enable_perf
 enable_java
 enable_universal
 with_jdk
+with_visual_studio
 with_python_include
 with_java_target
 with_java_bootclasspath
@@ -1522,6 +1528,8 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-jdk=JDKDIR       specify location of java jdk
+  --with-visual-studio    directory tree containing visual studio compiler,
+                          includes and libs
   --with-python_include=python-include-directory
                           specify location of Python.h
   --with-java_target=version
@@ -6228,6 +6236,27 @@ fi
 
 
 
+# Check whether --with-visual_studio was given.
+if test "${with_visual_studio+set}" = set; then :
+  withval=$with_visual_studio;
+else
+  if ${VS_DIR+:} false; then :
+  with_visual_studio=$VS_DIR
+fi
+fi
+
+VS_DIR=$with_visual_studio
+
+ if ${with_visual_studio+:} false; then
+  VS_TRUE=
+  VS_FALSE='#'
+else
+  VS_TRUE='#'
+  VS_FALSE=
+fi
+
+
+
 # Check whether --with-python_include was given.
 if test "${with_python_include+set}" = set; then :
   withval=$with_python_include;
@@ -6237,6 +6266,7 @@ else
 fi
 fi
 
+PYTHON_INCLUDE_DIR=$with_python_include
 
 
 # Check whether --with-java_target was given.
@@ -6902,11 +6932,13 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        then
          SQL_ARCH=32
          BINDIR=bin_x86
+         VS_ARCH=x86
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64"
 	 WINDRES=/usr/bin/i686-w64-mingw32-windres
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
+         VS_ARCH=x86_64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
 	 WINDRES=/usr/bin/x86_64-w64-mingw32-windres
        fi
@@ -10208,6 +10240,9 @@ fi
 
 
 
+
+
+
 ac_config_headers="$ac_config_headers include/config.h"
 
 ac_config_files="$ac_config_files Makefile.inc Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile cdu/Makefile d3dshr/Makefile dwscope/Makefile gen_device/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javaclient/Makefile javadispatcher/Makefile javamds/Makefile javascope/Makefile javatraverser/Makefile javadevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/java/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdssql/Makefile mdstcpip/Makefile mdsvme/Makefile mitdevices/Makefile remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script rtevents/Makefile scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdic/Makefile tditest/Makefile traverser/Makefile treeshr/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile icons/Makefile"
@@ -10359,6 +10394,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${RPATHLINK_TRUE}" && test -z "${RPATHLINK_FALSE}"; then
   as_fn_error $? "conditional \"RPATHLINK\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${VS_TRUE}" && test -z "${VS_FALSE}"; then
+  as_fn_error $? "conditional \"VS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${GLOBUSLICENSE_TRUE}" && test -z "${GLOBUSLICENSE_FALSE}"; then
@@ -11797,7 +11836,7 @@ $as_echo "$as_me: WARNING: " >&2;}
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}
 fi
-if test "$MOTIF_APS" = ""
+if test "$MOTIF_APS" = "" -a "$MINGW" = ""
 then
   { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: " >&5
 $as_echo "$as_me: WARNING: " >&2;}

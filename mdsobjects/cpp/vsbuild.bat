@@ -1,8 +1,7 @@
 @ECHO OFF
 
-set VS=z:\mdsplus\visual-studio-2008
-CALL :build_dll x86
-CALL :build_dll x86_64
+set VS=z:\%1
+CALL :build_dll %2
 goto :eof
 
 :build_dll

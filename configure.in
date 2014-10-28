@@ -96,6 +96,17 @@ AC_ARG_WITH([jdk],
                            [AS_VAR_SET([with_jdk], [$JDK_DIR])],
                            [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
 
+AC_ARG_WITH([visual_studio],
+            [AS_HELP_STRING([--with-visual-studio],
+                            [directory tree containing visual studio compiler, includes and libs])],
+            [],
+            [AS_VAR_SET_IF([VS_DIR],
+                           [AS_VAR_SET([with_visual_studio], [$VS_DIR])],
+                           [])])
+VS_DIR=$with_visual_studio
+
+AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([with_visual_studio])])
+
 AC_ARG_WITH([python_include],
             [AS_HELP_STRING([--with-python_include=python-include-directory],
                             [specify location of Python.h])],
@@ -103,6 +114,7 @@ AC_ARG_WITH([python_include],
             [AS_VAR_SET_IF([PYTHON_INCLUDE_DIR],
                            [AS_VAR_SET([with_python_include], [$PYTHON_INCLUDE_DIR])],
                            [])])
+PYTHON_INCLUDE_DIR=$with_python_include
 
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
@@ -330,11 +342,13 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        then
          SQL_ARCH=32
          BINDIR=bin_x86
+         VS_ARCH=x86
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl64"
 	 WINDRES=/usr/bin/i686-w64-mingw32-windres
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
+         VS_ARCH=x86_64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
 	 WINDRES=/usr/bin/x86_64-w64-mingw32-windres
        fi
@@ -948,6 +962,9 @@ AC_SUBST(USE_PIPED_MESSAGING)
 AC_SUBST(USE_TM_GMTOFF)
 AC_SUBST(DC1394_SUPPORT)
 AC_SUBST(DC1394_SUPPORT2)
+AC_SUBST(VS)
+AC_SUBST(VS_ARCH)
+AC_SUBST(VS_DIR)
 AC_SUBST(WINDRES)
 AC_CONFIG_HEADER(include/config.h)
 AC_OUTPUT(Makefile.inc
@@ -1034,7 +1051,7 @@ then
   AC_MSG_WARN()
   AC_MSG_WARN()
 fi
-if test "$MOTIF_APS" = ""
+if test "$MOTIF_APS" = "" -a "$MINGW" = ""
 then
   AC_MSG_WARN()
   AC_MSG_WARN()

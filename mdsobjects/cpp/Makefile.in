@@ -15,11 +15,13 @@ SOURCES = mdsdata.c mdstree.c
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a
+@VS_TRUE@ VSDLL=@MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKELIBDIR@MdsObjectsCppShr-VS.lib @MAKELIBDIR@MdsObjectsCppShr-VS.exp
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(VSDLL)
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB)
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(VSDLL)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a
 
 depend:
@@ -27,6 +29,7 @@ depend:
 
 install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(libdir)
+	@VS_TRUE@ $(INSTALL) -m 755 $(VSDLL) $(libdir)
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(libdir); \
 	fi;
@@ -42,3 +45,7 @@ install: $(libdir)
 ObjectsCppShr.exports: MdsObjectsCppShr.def
 	$(SED) -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
 
+ifneq "$(VSDLL)" ""
+$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB)
+	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@
+endif
