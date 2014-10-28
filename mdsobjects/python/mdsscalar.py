@@ -71,6 +71,8 @@ class Scalar(_data.Data):
         self._value=numpy.__dict__[self.__class__.__name__.lower()](value)
 
     def __getattr__(self,name):
+	if name.startswith("__array"):
+          raise AttributeError
         return self._value.__getattribute__(name)
 
     def _getValue(self):

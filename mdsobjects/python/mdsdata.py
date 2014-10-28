@@ -97,7 +97,7 @@ def makeData(value):
 class Data(object):
     """Superclass used by most MDSplus objects. This provides default methods if not provided by the subclasses.
     """
-
+    __array_priority__ = 100. ##### Needed to force things like numpy-array * mdsplus-data to use our __rmul__
     
     def __init__(self,*value):
         """Cannot create instances of class Data objects. Use Data.makeData(initial-value) instead
@@ -357,7 +357,8 @@ class Data(object):
     def __mul__(self,y):
         """Multiply: x.__mul__(y) <==> x*y
         @rtype: Data"""
-        return Data.execute('$ * $',self,y)
+        ans = Data.execute('$ * $',self,y)
+        return ans
 
     def __ne__(self,y):
         """Not equal: x.__ne__(y) <==> x!=y
@@ -412,13 +413,16 @@ class Data(object):
         @rtype: Data"""
         return Data.execute('$ mod $',y,self)
 
-    __rmul__=__mul__
-    """Reverse multiply: x.__rmul__(y) <==> y*x
-    @type: Data"""
+    def __rmul__(self,y):
+        """Multiply: x.__rmul__(y) <==> y*x
+        @rtype: Data"""
+        return self.__mul__(y)
 
     __ror__=__or__
-    """Reverse or: x.__ror__(y) <==> y|x
-    @type: Data"""
+    def __ror__(self,y):
+        """Reverse or: x.__ror__(y) <==> y|x
+        @type: Data"""
+        return self.__or__(y)
 
     def __rrshift__(self,y):
         """Reverse right binary shift: x.__rrshift__(y) <==> y>>x
