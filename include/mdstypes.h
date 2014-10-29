@@ -1,13 +1,13 @@
 #ifndef MDSTYPES_H
 
+
+
 #define MDSTYPES_H
 
 #include <config.h>
 
 #ifdef _MSC_VER
-#ifdef HAVE_STDINT_H
 #undef HAVE_STDINT_H
-#endif
 #endif
 
 #ifdef HAVE_STDINT_H
@@ -18,11 +18,12 @@
 
 #ifdef HAVE_WINDOWS_H
 
+#ifndef _OFF_T_DEFINED
 typedef __int64 off_t;
-
 typedef off_t _off_t;
 
 #define _OFF_T_DEFINED
+#endif
 
 #include <msc_stdint.h>
 
