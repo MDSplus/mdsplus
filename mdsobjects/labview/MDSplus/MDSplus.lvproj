@@ -19,6 +19,7 @@
 			<Item Name="PutGetTreeNodeExpressionExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutGetTreeNodeExpressionExample.vi"/>
 			<Item Name="PutRowExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/PutRowExample.vi"/>
 			<Item Name="SetEventDataExample.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/SetEventDataExample.vi"/>
+			<Item Name="Put Get over Mdsip Connection.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Sample VIs/Put Get over Mdsip Connection.vi"/>
 		</Item>
 		<Item Name="MDSplus.lvlib" Type="Library" URL="/&lt;vilib&gt;/MDSplus/Library/MDSplus.lvlib"/>
 		<Item Name="Dependencies" Type="Dependencies">
@@ -78,13 +79,13 @@
 				<Item Name="Dynamic To Waveform Array.vi" Type="VI" URL="/&lt;vilib&gt;/express/express shared/transition.llb/Dynamic To Waveform Array.vi"/>
 				<Item Name="Delete Signal DVR.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/Compound_Class/Signal Folder/Delete Signal DVR.vi"/>
 			</Item>
+			<Item Name="lvanlys.dll" Type="Document" URL="../../../resource/lvanlys.dll"/>
 			<Item Name="MDSobjectsLVShr" Type="VI" URL="MDSobjectsLVShr">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
 			<Item Name="MDSobjectsLVShr.dll" Type="Document" URL="MDSobjectsLVShr.dll">
 				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
-			<Item Name="lvanlys.dll" Type="Document" URL="../../../../../Program Files/National Instruments/LabVIEW 2010/resource/lvanlys.dll"/>
 		</Item>
 		<Item Name="Build Specifications" Type="Build">
 			<Item Name="MDSplus" Type="Source Distribution">

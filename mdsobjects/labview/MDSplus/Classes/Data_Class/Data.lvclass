@@ -38,6 +38,7 @@ Private  method mayHaveChanged() defaults to false for most scalar classes excep
 		<Item Name="MDSplus.lvlib:TreeNode.lvclass" Type="Friended Library" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/TreeNode_Class/TreeNode.lvclass"/>
 		<Item Name="MDSplus.lvlib:Event.lvclass" Type="Friended Library" URL="/&lt;vilib&gt;/MDSplus/Classes/Event_Class/Event.lvclass"/>
 		<Item Name="MDSplus.lvlib:Tree.lvclass" Type="Friended Library" URL="/&lt;vilib&gt;/MDSplus/Classes/Tree_Class/Tree.lvclass"/>
+		<Item Name="MDSplus.lvlib:Connection.lvclass" Type="Friended Library" URL="/&lt;vilib&gt;/MDSplus/Classes/Connection_Class/Connection.lvclass"/>
 	</Item>
 	<Item Name="Data.ctl" Type="Class Private Data" URL="Data.ctl">
 		<Property Name="NI.LibItem.Scope" Type="Int">2</Property>
