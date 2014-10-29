@@ -7,7 +7,7 @@ CXXFLAGS = $(CFLAGS) $(THREAD) -Wno-deprecated @CXXFLAGS@
 
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ @SRBLIB@ -lMdsIpShr -lMdsShr @SOCKETLIB@
 
-LDFLAGS += $(THREAD)
+LDFLAGS += $(THREAD) @CXXFLAGS@
 
 CXXSOURCES = \
 	AllocationManager.cpp EventManager.cpp RelativePointer.cpp Event.cpp\
