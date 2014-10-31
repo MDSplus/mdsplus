@@ -6,7 +6,7 @@ __doc__="""Deploy installation packages
       python deploy.py flavor major minor release
 
    Where:
-      flavor is one of alpha,beta or stable
+      flavor is one of alpha or stable
       major is first number in version (i.e. in release 6.2-42, major is 6)
       minor is second number in version (i.e. in release 6.2.42, minor is 2)
       release is third number in version (i.e. in release 6.2-42, release is 42)
@@ -17,7 +17,7 @@ __doc__="""Deploy installation packages
    * Check if installation packages for this flavor and version already exits and just exit if they do.
    * Build new installation packages.
    * Test new installation packages.
-   * Deploy installation packages to ${MDSPLUS_DIST}.
+   * Deploy installation packages to /mdsplus/dist.
 
   NOTE: DIST environment variable designating the platform (i.e. el6,fc20,Ubuntu12)
         must be defined!
@@ -182,16 +182,18 @@ def checkPackageFiles(buildroot,packagingXml,mode):
             for f in allfiles:
                 print("%s in a package but not in buildroot" % f)
 
-if __name__ == "__main__":
+def logIt(inf):
+  """Write build log file"""
+  try:
+    import urllib2
+    logtext=urllib2.urlopen("http://hudson.mdsplus.org/job/%(job_name)s/%(build_number)s/logText/progressiveHtml" % info).read()
+    f=open("/mdsplus/dist/%(DIST)s/%(flavor)s/logs/mdsplus-%(flavor)s_%(major)d.%(minor)d.%(release)d.log.txt" % info,"w")
+    f.write(logtext)
+    f.close
+  except Exception,e:
+    print e
 
-  if len(sys.argv) > 1 and sys.argv[1]=='check':
-    buildroot=sys.argv[2]
-    checkPackageFiles(buildroot,'packaging.xml','check')
-    sys.exit(0)
-  elif len(sys.argv) > 1 and sys.argv[1]=='contents':
-    buildroot=sys.argv[2]
-    checkPackageFiles(buildroot,'packaging.xml','contents')
-    sys.exit(0)
+if __name__ == "__main__":
 
   if "DIST" not in os.environ:
     flushPrint("DIST not defined!")
@@ -203,7 +205,9 @@ if __name__ == "__main__":
     flushPrint(__doc__)
     sys.exit(1)
 
-  info={'flavor':sys.argv[1],'major':int(sys.argv[2]),'minor':int(sys.argv[3]),'release':int(sys.argv[4]),'dist':os.environ['DIST'],'workspace':os.environ['WORKSPACE']}
+  info={'flavor':sys.argv[1],'major':int(sys.argv[2]),'minor':int(sys.argv[3]),
+        'release':int(sys.argv[4]),'dist':os.environ['DIST'],
+        'job_name':os.environ['JOB_NAME'],'build_number':os.environ['BUILD_NUMBER']}
   if info['flavor']=='stable':
     info['rflavor']=""
   else:
@@ -219,24 +223,18 @@ if __name__ == "__main__":
     module=__import__('windows',globals())
   InstallationPackage=module.InstallationPackage(info)
   if len(sys.argv)==5:
-    if not InstallationPackage.exists():
-      if subprocess.Popen("""
-set -e
-tar zxf ${MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz
-""" % info,shell=True,cwd=info['workspace']).wait() != 0:
-        raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
       InstallationPackage.test()
       InstallationPackage.deploy()
+      logIt(info)
   else:
     if sys.argv[5]=='exists':
       print(InstallationPackage.exists())
     elif sys.argv[5]=='build':
-      if subprocess.Popen("tar zxf %{MDSPLUS_DIST}/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.tgz" % info,shell=True,cwd=info['workspace']).wait() != 0:
-        raise Exception("Error unpacking sources for this release")
       InstallationPackage.build()
     elif sys.argv[5]=='test':
       InstallationPackage.test()
     elif sys.argv[5]=='deploy':
       InstallationPackage.deploy()
+      logIt(info)
        

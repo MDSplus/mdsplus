@@ -4,8 +4,6 @@ class InstallationPackage(object):
     """Provides exists,build,test and deploy methods"""
     def __init__(self,info):
         self.info=info
-        self.info['workspace']=os.environ['WORKSPACE']
-        self.info['mdsplus_dist']=os.environ['MDSPLUS_DIST']
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
@@ -23,7 +21,7 @@ class InstallationPackage(object):
                 arches=('x86_64','i686')
             for arch in arches:
                 self.info['arch']=arch
-                rpm='%(mdsplus_dist)s/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
+                rpm='/mdsplus/dist/%(dist)s/%(flavor)s/RPMS/%(arch)s/mdsplus%(rflavor)s%(package)s-%(major)d.%(minor)d-%(release)d.%(dist)s.%(arch)s.rpm' % self.info
                 try:
                     os.stat(rpm)
                 except:
@@ -143,7 +141,7 @@ class InstallationPackage(object):
                 print("Building rpm for mdsplus%(rflavor)s%(packagename)s%(arch_t)s" % self.info)
                 sys.stdout.flush()
                 p = subprocess.Popen("""
-rpmbuild -bb --define '_topdir %(workspace)s/%(flavor)s' --buildroot=%(workspace)s/%(flavor)s/BUILDROOT --target=%(target)s %(specfilename)s 2>&1
+rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUILDROOT --target=%(target)s %(specfilename)s 2>&1
 """ % self.info,stdout=subprocess.PIPE,shell=True)
                 messages=p.stdout.readlines()
                 status=p.wait()
@@ -199,7 +197,7 @@ Buildarch: noarch
             print("Building rpm for mdsplus%(rflavor)s%(packagename)s.noarch" % self.info)
             sys.stdout.flush()
             p=subprocess.Popen("""
-rpmbuild -bb --define '_topdir %(workspace)s/%(flavor)s' --buildroot=%(workspace)s/%(flavor)s/BUILDROOT %(specfilename)s 2>&1
+rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUILDROOT %(specfilename)s 2>&1
 """ % self.info,stdout=subprocess.PIPE,shell=True)
             messages=p.stdout.readlines()
             status = p.wait()
@@ -210,7 +208,7 @@ rpmbuild -bb --define '_topdir %(workspace)s/%(flavor)s' --buildroot=%(workspace
             print("Done building rpm for mdsplus%(rflavor)s%(packagename)s.noarch" % self.info)
             sys.stdout.flush()
         try:
-            cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" %(workspace)s/%(flavor)s/RPMS/*/*.rpm'" % self.info
+            cmd="/bin/sh -c 'rpmsign --addsign --define=\"_signature gpg\" --define=\"_gpg_name MDSplus\" /tmp/%(flavor)s/RPMS/*/*.rpm'" % self.info
             child = pexpect.spawn(cmd,timeout=60)
             child.expect("Enter pass phrase: ")
             child.sendline("")
@@ -222,7 +220,7 @@ rpmbuild -bb --define '_topdir %(workspace)s/%(flavor)s' --buildroot=%(workspace
         except:
             sys.stdout.flush()
             raise Exception("Error signing rpms: %s" % sys.exc_info()[1])
-        if subprocess.Popen("createrepo -q %(workspace)s/%(flavor)s/RPMS" % self.info,shell=True).wait() != 0:
+        if subprocess.Popen("createrepo -q /tmp/%(flavor)s/RPMS" % self.info,shell=True).wait() != 0:
             sys.stdout.flush()
             raise Exception("Problem creating repository from RPMS")
  
@@ -235,13 +233,12 @@ rpmbuild -bb --define '_topdir %(workspace)s/%(flavor)s' --buildroot=%(workspace
     def test(self):
         print("Preparing test repository")
         sys.stdout.flush()
-        self.info['workspace']=os.environ['WORKSPACE']
         errors=list()
         f=open("test-mdsplus%(rflavor)s.repo" % self.info,"w")
         f.write("""
 [test-mdsplus%(rflavor)s]
 name=test-mdsplus%(rflavor)s
-baseurl=file://%(workspace)s/%(flavor)s/RPMS
+baseurl=file:///tmp/%(flavor)s/RPMS
 enabled=1
 skip_if_unavailable=1
 """ % self.info)
@@ -293,16 +290,16 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
             raise Exception('\n'.join(errors))
 
     def deploy(self):
-        """Deploy release to ${MDSPLUS_DIST}"""
+        """Deploy release to /mdsplus/dist"""
         if subprocess.Popen("""
-rsync -a %(workspace)s/%(flavor)s/RPMS %(mdsplus_dist)s/%(dist)s/%(flavor)s/
+rsync -a /tmp/%(flavor)s/RPMS /mdsplus/dist/%(dist)s/%(flavor)s/
 """ % self.info,shell=True).wait() != 0:
-            raise Exception("Error deploying %(flavor)s release to %(mdsplus_dist)s" % self.info)
+            raise Exception("Error deploying %(flavor)s release to /mdsplus/dist" % self.info)
         if subprocess.Popen("""
 if ( which python3 > /dev/null 2>&1 )
 then
-  python3 setup.py -q bdist_egg -d %(mdsplus_dist)s/EGGS
+  python3 setup.py -q bdist_egg -d /mdsplus/dist/EGGS
 fi
-python setup.py -q bdist_egg -d %(mdsplus_dist)s/EGGS
-""" % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/BUILDROOT/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
-            raise Exception("Error deploying python release egg to %(mdsplus_dist)s" % self.info)
+python setup.py -q bdist_egg -d /mdsplus/dist/EGGS
+""" % self.info,shell=True,cwd="/tmp/%(flavor)s/BUILDROOT/usr/local/mdsplus/mdsobjects/python" % self.info).wait() != 0:
+            raise Exception("Error deploying python release egg to /mdsplus/dist" % self.info)

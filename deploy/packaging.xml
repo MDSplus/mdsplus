@@ -316,7 +316,6 @@ fi
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
     <exclude dir="/usr/local/mdsplus/tdi/roam"/>
     <exclude dir="/usr/local/mdsplus/tdi/hdf5"/>
-    <include file="/usr/local/mdsplus/bin/mkdirhier"/>
     <postinst>
 
 if [ -d /etc/profile.d ]
@@ -437,7 +436,6 @@ fi
     <exclude file="/usr/local/mdsplus/bin/SetMdsplusFileProtection"/>
     <exclude file="/usr/local/mdsplus/bin/dwscopePrint"/>
     <exclude file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
-    <exclude file="/usr/local/mdsplus/bin/mkdirhier"/>
     <exclude file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
     <postinst>
 
@@ -569,21 +567,20 @@ fi
 
 #!/bin/sh
 set -e
-rm -Rf %(workspace)s/%(flavor)s
-export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
-export RPM_DIR="%(workspace)s/%(flavor)s/RPMS"
-mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,RPMS,BUILD}
+rm -Rf /tmp/%(flavor)s
+export BUILDROOT="/tmp/%(flavor)s/BUILDROOT"
+export RPM_DIR="/tmp/%(flavor)s/RPMS"
+mkdir -p /tmp/%(flavor)s/{BUILDROOT,RPMS,BUILD}
 pwd
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --enable-nodebug \
-            --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc64 \
-            --host=x86-64-linux
+            --host=x86-64-linux \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
@@ -592,23 +589,22 @@ mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin64
 make clean &gt;/dev/null
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --enable-nodebug \
-            --enable-mdsip_connections \
             --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc32 \
-            --host=i686-linux
+            --host=i686-linux \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
 mv ${BUILDROOT}/usr/local/mdsplus/lib ${BUILDROOT}/usr/local/mdsplus/lib32
 mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin32
 make clean &gt;/dev/null
-mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d
-mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
-cp deploy/RPM-GPG-KEY-MDSplus %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
-outfile=%(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d/mdsplus%(rflavor)s.repo
+mkdir -p /tmp/%(flavor)s/BUILDROOT/etc/yum.repos.d
+mkdir -p /tmp/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+cp deploy/RPM-GPG-KEY-MDSplus /tmp/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+outfile=/tmp/%(flavor)s/BUILDROOT/etc/yum.repos.d/mdsplus%(rflavor)s.repo
 echo [MDSplus%(rflavor)s] &gt; $outfile
 cat - &gt;&gt; $outfile &lt;&lt;EOF
 name=MDSplus%(rflavor)s 
@@ -647,14 +643,14 @@ AutoReqProv: yes
 set -e
 if [ ! -r ~/.gnupg ]
 then
-  tar zxfC /mdsplus/certs/rpm-signing-keys.tgz ~/
+  tar zxfC ${MDSPLUS_CERTS}/rpm-signing-keys.tgz ~/
 fi
-sudo rm -Rf %(workspace)s/%(flavor)s/apt
-rm -Rf %(workspace)s/%(flavor)s
-export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
-mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,REPO,DEBS}
-mkdir -p %(workspace)s/%(flavor)s/REPO/{conf,pool,dists,db}
-cat - &lt;&lt;EOF &gt; %(workspace)s/%(flavor)s/REPO/conf/distributions
+sudo rm -Rf /tmp/%(flavor)s/apt
+rm -Rf /tmp/%(flavor)s
+export BUILDROOT="/tmp/%(flavor)s/BUILDROOT"
+mkdir -p /tmp/%(flavor)s/{BUILDROOT,REPO,DEBS}
+mkdir -p /tmp/%(flavor)s/REPO/{conf,pool,dists,db}
+cat - &lt;&lt;EOF &gt; /tmp/%(flavor)s/REPO/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
@@ -669,7 +665,6 @@ if [ -z "$ARCH" ]
 then
   ARCH=$(uname -p)
 fi
-
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
   bits=64
@@ -685,6 +680,7 @@ cd ..
             --with-jdk=$JDK_DIR \
             --with-idl=$IDL_DIR \
             --with-gsi=/usr:gcc${bits} \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=$host
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
