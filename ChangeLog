@@ -1,4 +1,23 @@
-commit 5b2499b812111866d0647e07c4ba0f255b2658a2 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 7098fc9539bfe0b1cfcc74b692a1d8bcce12b1bf (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 7eb7ba6 23affa6
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 15:17:12 2014 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 7eb7ba6e2c50ef12acee3ed6c1621364996cf807
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 15:10:52 2014 -0400
+
+    ignore configure and make products
+
+commit 23affa6e0b9eba36dd59382a83f580f79613609d (tag: refs/tags/alpha_release-6-3-426)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 14:34:21 2014 -0400
+
+    New ChangeLog
+
+commit 5b2499b812111866d0647e07c4ba0f255b2658a2
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 14:09:20 2014 -0400
 
