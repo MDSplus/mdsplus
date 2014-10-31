@@ -16,6 +16,7 @@ etc/
 lib/
 lib32/
 lib64/
+*.class
 # Compiled Object files
 *.slo
 *.lo
