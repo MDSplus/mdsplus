@@ -62,6 +62,7 @@ def processChanges(flavor):
     info['release']=info['release']+1
     info['tag'] = "%(flavor)s_release-%(major)d-%(minor)d-%(release)d" % info
     flushPrint("Making new release %(tag)s" % info)
+    doInGitDir("git log --decorate=full > ChangeLog").wait()
     info['newrelease']=True
   else:
     info['newrelease']=False
@@ -82,11 +83,14 @@ if __name__ == "__main__":
 
 set -e
 git archive --format=tar --prefix=%(tag)s/ %(flavor)s | (cd /tmp/ && tar xf -)
+cp ChangeLog /tmp/%(tag)s/deploy
 pushd /tmp/%(tag)s/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 popd
 if [ "%(newrelease)d" == "1" ]; 
-then 
+then
+  git commit -m "New ChangeLog" ChangeLog
+  git push
   git tag %(tag)s
   git push origin %(tag)s
 fi
