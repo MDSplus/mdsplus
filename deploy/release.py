@@ -83,7 +83,7 @@ if __name__ == "__main__":
 
 set -e
 git archive --format=tar --prefix=%(tag)s/ %(flavor)s | (cd /tmp/ && tar xf -)
-cp ChangeLog /tmp/%(tag)s/deploy
+cp ChangeLog /tmp/%(tag)s/
 pushd /tmp/%(tag)s/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 popd
