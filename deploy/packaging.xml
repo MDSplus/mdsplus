@@ -567,10 +567,10 @@ fi
 
 #!/bin/sh
 set -e
-rm -Rf %(workspace)s/%(flavor)s
-export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
-export RPM_DIR="%(workspace)s/%(flavor)s/RPMS"
-mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,RPMS,BUILD}
+rm -Rf /tmp/%(flavor)s
+export BUILDROOT="/tmp/%(flavor)s/BUILDROOT"
+export RPM_DIR="/tmp/%(flavor)s/RPMS"
+mkdir -p /tmp/%(flavor)s/{BUILDROOT,RPMS,BUILD}
 pwd
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
@@ -601,10 +601,10 @@ env MDSPLUS_VERSION=%(mdsplus_version)s make install
 mv ${BUILDROOT}/usr/local/mdsplus/lib ${BUILDROOT}/usr/local/mdsplus/lib32
 mv ${BUILDROOT}/usr/local/mdsplus/bin ${BUILDROOT}/usr/local/mdsplus/bin32
 make clean &gt;/dev/null
-mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d
-mkdir -p %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
-cp deploy/RPM-GPG-KEY-MDSplus %(workspace)s/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
-outfile=%(workspace)s/%(flavor)s/BUILDROOT/etc/yum.repos.d/mdsplus%(rflavor)s.repo
+mkdir -p /tmp/%(flavor)s/BUILDROOT/etc/yum.repos.d
+mkdir -p /tmp/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+cp deploy/RPM-GPG-KEY-MDSplus /tmp/%(flavor)s/BUILDROOT/etc/pki/rpm-gpg/
+outfile=/tmp/%(flavor)s/BUILDROOT/etc/yum.repos.d/mdsplus%(rflavor)s.repo
 echo [MDSplus%(rflavor)s] &gt; $outfile
 cat - &gt;&gt; $outfile &lt;&lt;EOF
 name=MDSplus%(rflavor)s 
@@ -645,12 +645,12 @@ if [ ! -r ~/.gnupg ]
 then
   tar zxfC ${MDSPLUS_CERTS}/rpm-signing-keys.tgz ~/
 fi
-sudo rm -Rf %(workspace)s/%(flavor)s/apt
-rm -Rf %(workspace)s/%(flavor)s
-export BUILDROOT="%(workspace)s/%(flavor)s/BUILDROOT"
-mkdir -p %(workspace)s/%(flavor)s/{BUILDROOT,REPO,DEBS}
-mkdir -p %(workspace)s/%(flavor)s/REPO/{conf,pool,dists,db}
-cat - &lt;&lt;EOF &gt; %(workspace)s/%(flavor)s/REPO/conf/distributions
+sudo rm -Rf /tmp/%(flavor)s/apt
+rm -Rf /tmp/%(flavor)s
+export BUILDROOT="/tmp/%(flavor)s/BUILDROOT"
+mkdir -p /tmp/%(flavor)s/{BUILDROOT,REPO,DEBS}
+mkdir -p /tmp/%(flavor)s/REPO/{conf,pool,dists,db}
+cat - &lt;&lt;EOF &gt; /tmp/%(flavor)s/REPO/conf/distributions
 Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus

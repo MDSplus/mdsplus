@@ -5,12 +5,10 @@ class InstallationPackage(object):
     """Provides exists,build,test and deploy methods"""
     def __init__(self,info):
         self.info=info
-        self.info['workspace']=os.environ['WORKSPACE']
         if 'ARCH' in os.environ:
           self.info['arch']=os.environ['ARCH']
         else:
           self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
-        self.info['mdsplus_dist']=os.environ['MDSPLUS_DIST']
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
@@ -23,7 +21,7 @@ class InstallationPackage(object):
             else:
                 pkg = "-%s" % pkg
             self.info['package']=pkg
-            deb='%(mdsplus_dist)s/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
+            deb='/mdsplus/dist/%(dist)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(package)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb' % self.info
             try:
                 os.stat(deb)
             except:
@@ -82,16 +80,16 @@ class InstallationPackage(object):
                     excludes.append("/usr/local/mdsplus/lib/*.a")
                 if package.find("include_staticlibs") is not None:
                     includes.append("/usr/local/mdsplus/lib/*.a")
-                files=getPackageFiles("%(workspace)s/%(flavor)s/BUILDROOT" % self.info,includes,excludes)
+                files=getPackageFiles("/tmp/%(flavor)s/BUILDROOT" % self.info,includes,excludes)
                 for f in files:
-                    self.info['file']=f[len("%(workspace)s/%(flavor)s/BUILDROOT/" % self.info)-1:].replace(' ','\\ ').replace('$','\\$')\
+                    self.info['file']=f[len("/tmp/%(flavor)s/BUILDROOT/" % self.info)-1:].replace(' ','\\ ').replace('$','\\$')\
                         .replace('(','\\(').replace(')','\\)')
                     if subprocess.Popen("""
 set -e
 dn=$(dirname %(file)s)
 mkdir -p %(tmpdir)s/DEBIAN
 mkdir -p "%(tmpdir)s/${dn}"
-cp -av %(workspace)s/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
+cp -av /tmp/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
 """ % self.info,shell=True).wait() != 0:
                         raise Exception("Error building deb")
                 depends=list()
@@ -121,12 +119,12 @@ Description: %(description)s
                         f.write("%s" % (script.text.replace("__INSTALL_PREFIX__","/usr/local")))
                         f.close()
                         os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % self.info,0775)
-                self.info['debfile']="%(workspace)s/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % self.info
+                self.info['debfile']="/tmp/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % self.info
                 if subprocess.Popen("""
 set -e
-mkdir -p %(workspace)s/%(flavor)s/DEBS/%(arch)s
+mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
 dpkg-deb --build %(tmpdir)s %(debfile)s
-reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
+reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
 """ % self.info,shell=True).wait() != 0:
                     raise Exception("Problem building package or repository")
                 subprocess.Popen("rm -Rf %(tmpdir)s" % self.info,shell=True).wait()
@@ -141,20 +139,20 @@ reprepro -V -b %(workspace)s/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(
 
     def test(self):
         errors=list()
-        self.info['apt-get']="apt-get -o Dir::State=%(workspace)s/%(flavor)s/apt/var/lib/apt/ -o Dir::Etc=%(workspace)s/%(flavor)s/apt/etc/apt" % self.info
+        self.info['apt-get']="apt-get -o Dir::State=/tmp/%(flavor)s/apt/var/lib/apt/ -o Dir::Etc=/tmp/%(flavor)s/apt/etc/apt" % self.info
         print("Preparing test repository")
         sys.stdout.flush()
         if subprocess.Popen("""
 sudo %(apt-get)s autoremove -y 'mdsplus*' >/dev/null 2>&1
 set -e
-sudo rm -Rf %(workspace)s/%(flavor)s/apt
-mkdir -v -p %(workspace)s/%(flavor)s/apt/etc
-mkdir -v -p %(workspace)s/%(flavor)s/apt/var/lib/apt
-#mkdir -v -p %(workspace)s/%(flavor)s/apt/{etc,var/lib/apt}
-sudo rsync -a /etc/apt %(workspace)s/%(flavor)s/apt/etc/
+sudo rm -Rf /tmp/%(flavor)s/apt
+mkdir -v -p /tmp/%(flavor)s/apt/etc
+mkdir -v -p /tmp/%(flavor)s/apt/var/lib/apt
+#mkdir -v -p /tmp/%(flavor)s/apt/{etc,var/lib/apt}
+sudo rsync -a /etc/apt /tmp/%(flavor)s/apt/etc/
 sudo apt-key add mdsplus.gpg.key
-echo "deb file:%(workspace)s/%(flavor)s/REPO/ MDSplus %(flavor)s" > mdsplus.list
-sudo rsync -a mdsplus.list %(workspace)s/%(flavor)s/apt/etc/apt/sources.list.d/
+echo "deb file:/tmp/%(flavor)s/REPO/ MDSplus %(flavor)s" > mdsplus.list
+sudo rsync -a mdsplus.list /tmp/%(flavor)s/apt/etc/apt/sources.list.d/
 sudo %(apt-get)s update >/dev/null 2>&1
 """ % self.info,shell=True).wait() != 0:
             errors.append("Failed to create test apt configuration files")
@@ -194,27 +192,27 @@ EOF""" % self.info,shell=True).wait() != 0:
                 errors.append("Error running regression tests")
         subprocess.Popen("""
 sudo %(apt-get)s autoremove -y 'mdsplus*'
-sudo rm -Rf %(workspace)s/%(flavor)s/apt
+sudo rm -Rf /tmp/%(flavor)s/apt
 """ % self.info,shell=True).wait()
         if len(errors) > 0:
             errors.insert(0,"Testing failed")
             raise Exception('\n'.join(errors))
 
     def deploy(self):
-        """Deploy release to ${MDSPLUS_DIST}"""
+        """Deploy release to /mdsplus/dist"""
         print("Deploying new release %(major)d.%(minor)d-%(release)d" % self.info)
         sys.stdout.flush()
-        self.info['repo']="%(mdsplus_dist)s/%(DIST)s/repo" % self.info
+        self.info['repo']="/mdsplus/dist/%(DIST)s/repo" % self.info
         if subprocess.Popen("""
 set -e
-mkdir -p %(mdsplus_dist)s/%(DIST)s/%(flavor)s/logs %(repo)s/conf %(repo)s/pool %(repo)s/dists %(repo)s/db
-cp %(workspace)s/%(flavor)s/REPO/conf/distributions conf/
+mkdir -p /mdsplus/dist/%(DIST)s/%(flavor)s/logs %(repo)s/conf %(repo)s/pool %(repo)s/dists %(repo)s/db
+cp /tmp/%(flavor)s/REPO/conf/distributions conf/
 """ % self.info,shell=True,cwd="%(repo)s" % self.info).wait() !=0:
             raise Exception("Error preparing repository")
         if subprocess.Popen('find . -name "*.deb" -exec reprepro -V --waitforlock 20 -b %(repo)s -C %(flavor)s includedeb MDSplus {} \;' \
-                             % self.info,shell=True,cwd="%(workspace)s/%(flavor)s/DEBS" % self.info).wait() != 0:
+                             % self.info,shell=True,cwd="/tmp/%(flavor)s/DEBS" % self.info).wait() != 0:
             raise Exception("Error putting deb's in repository")
-        status=subprocess.Popen('rsync -av %(workspace)s/%(flavor)s/DEBS %(mdsplus_dist)s/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
+        status=subprocess.Popen('rsync -av /tmp/%(flavor)s/DEBS /mdsplus/dist/%(DIST)s/%(flavor)s/' % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error copying files to destination")
         print("Completed deployment")
