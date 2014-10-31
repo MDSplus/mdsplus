@@ -35,7 +35,7 @@ mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
 setevent/setevent
 wfevent/wfevent
 xmdsshr/.dirstamp
-cts_commands.c
+camshr/cts_commands.c
 # Compiled Object files
 *.slo
 *.lo
