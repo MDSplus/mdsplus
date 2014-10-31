@@ -9,7 +9,13 @@ rpm/envsyms
 rpm/Makefile
 rpm/post_install_script
 envsyms
-
+bin/
+bin32/
+bin64/
+etc/
+lib/
+lib32/
+lib64/
 # Compiled Object files
 *.slo
 *.lo
