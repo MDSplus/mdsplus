@@ -89,6 +89,8 @@ pushd /tmp/%(tag)s/deploy
 popd
 if [ "%(newrelease)d" == "1" ]; 
 then
+  git config --global user.email "MDSplusBuilder@psfc.mit.edu"
+  git config --global user.name "MDSplusBuilder"
   git commit -m "New ChangeLog" ChangeLog
   git push
   git tag %(tag)s
