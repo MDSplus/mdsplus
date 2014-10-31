@@ -1,3 +1,15 @@
+Makefile
+.deps
+config.log
+config.status
+Makefile.inc
+stamp-h1
+config.h
+rpm/envsyms  
+rpm/Makefile
+rpm/post_install_script
+envsyms
+
 # Compiled Object files
 *.slo
 *.lo
