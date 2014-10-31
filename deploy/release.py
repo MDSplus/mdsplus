@@ -62,6 +62,9 @@ def processChanges(flavor):
     info['release']=info['release']+1
     info['tag'] = "%(flavor)s_release-%(major)d-%(minor)d-%(release)d" % info
     flushPrint("Making new release %(tag)s" % info)
+    info['newrelease']=True
+  else:
+    info['newrelease']=False
   return info
 
 if __name__ == "__main__":
@@ -80,7 +83,13 @@ if __name__ == "__main__":
 set -e
 git archive --format=tar --prefix=%(tag)s/ %(flavor)s | (cd /tmp/ && tar xf -)
 pushd /tmp/%(tag)s/deploy
-%(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d && popd && git tag %(tag)s && git push origin %(tag)s
+%(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
+popd
+if [ "%(newrelease)d" == "1" ]; 
+then 
+  git tag %(tag)s
+  git push origin %(tag)s
+fi
 
         """ % info).wait() != 0:
       error="Deploy failed for mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d" % info
