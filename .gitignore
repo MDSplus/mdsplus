@@ -26,8 +26,15 @@ dwscope/dwpad
 dwscope/dwscope
 dwscope/dwscope_remote
 *.uid
-
-
+javadispatcher/jDispatchMonitor
+javadispatcher/jDispatcherIp
+javadispatcher/jServer
+javascope/scripts/
+javatraverser/jTraverser
+mitdevices/acq_root_filesystem/ffs/user/MitFilesDate
+setevent/setevent
+wfevent/wfevent
+xmdsshr/.dirstamp
 # Compiled Object files
 *.slo
 *.lo
