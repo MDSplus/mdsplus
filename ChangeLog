@@ -1,11 +1,17 @@
-commit 61f21f2f07ce4e5a4295e0ad1c24ebb3082cf312 (HEAD, refs/heads/alpha)
+commit 49667533e16218626d16f22b945722000ad4a39c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 20:55:44 2014 +0000
+
+    New ChangeLog
+
+commit 61f21f2f07ce4e5a4295e0ad1c24ebb3082cf312
 Merge: ca3d02e 93c62b4
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 16:36:46 2014 -0400
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
-commit 93c62b48bfab31b0788b80a4d70de1834db2f0eb (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 93c62b48bfab31b0788b80a4d70de1834db2f0eb
 Author: Joshua Stillerman <jas@psfc.mit.edu>
 Date:   Fri Oct 31 16:03:43 2014 -0400
 
