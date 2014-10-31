@@ -17,6 +17,17 @@ lib/
 lib32/
 lib64/
 *.class
+*.jar
+*.stamp
+actions/actions
+actions/actmon
+cdu/cdu
+dwscope/dwpad
+dwscope/dwscope
+dwscope/dwscope_remote
+*.uid
+
+
 # Compiled Object files
 *.slo
 *.lo
