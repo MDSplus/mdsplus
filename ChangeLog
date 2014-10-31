@@ -1,4 +1,59 @@
-commit 7098fc9539bfe0b1cfcc74b692a1d8bcce12b1bf (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 61f21f2f07ce4e5a4295e0ad1c24ebb3082cf312 (HEAD, refs/heads/alpha)
+Merge: ca3d02e 93c62b4
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 16:36:46 2014 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 93c62b48bfab31b0788b80a4d70de1834db2f0eb (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 16:03:43 2014 -0400
+
+    More make products
+
+commit dfb8fd53fc91516ace024474ee1918802a5f1521
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 16:03:02 2014 -0400
+
+    More make products
+
+commit 2f8298317e89f9b58102179d1c6307affead2e36
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 16:02:17 2014 -0400
+
+    More make products
+
+commit ca3d02e588c97958f5c33126b64d69166ca2db0a
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 16:01:36 2014 -0400
+
+    New ChangeLog
+
+commit 026e29b20aa619e3fb0d65541a6002c0a4bc2659
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 16:01:05 2014 -0400
+
+    More make products
+
+commit 76af872a848cfb17d3e44112d1d0dd5e1c9cc438
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 15:59:53 2014 -0400
+
+    More make products
+
+commit c163da0f7af6840b9b610a8b1f66699c474fa8fd
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 15:57:30 2014 -0400
+
+    more make products
+
+commit 5a8edb9359f5fefe840ce4b6387ad9eaefab6f3e
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 15:52:27 2014 -0400
+
+    add some more make products
+
+commit 7098fc9539bfe0b1cfcc74b692a1d8bcce12b1bf
 Merge: 7eb7ba6 23affa6
 Author: Joshua Stillerman <jas@psfc.mit.edu>
 Date:   Fri Oct 31 15:17:12 2014 -0400
