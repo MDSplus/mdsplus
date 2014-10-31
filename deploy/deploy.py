@@ -212,7 +212,6 @@ if __name__ == "__main__":
     info['rflavor']=""
   else:
     info['rflavor']="-"+info['flavor']
-  info['DIST']=os.environ['DIST']
   if os.environ['DIST'].startswith('el') or os.environ['DIST'].startswith('fc'):
     module=__import__('rpms',globals())
   elif os.environ['DIST'].startswith('Ubuntu'):
@@ -223,6 +222,7 @@ if __name__ == "__main__":
     module=__import__('windows',globals())
   InstallationPackage=module.InstallationPackage(info)
   if len(sys.argv)==5:
+    if not InstallationPackage.exists():
       InstallationPackage.build()
       InstallationPackage.test()
       InstallationPackage.deploy()
