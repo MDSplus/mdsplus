@@ -643,7 +643,7 @@ AutoReqProv: yes
 set -e
 if [ ! -r ~/.gnupg ]
 then
-  tar zxfC ${MDSPLUS_CERTS}/rpm-signing-keys.tgz ~/
+  tar zxfC /mdsplus/certs/rpm-signing-keys.tgz ~/
 fi
 sudo rm -Rf /tmp/%(flavor)s/apt
 rm -Rf /tmp/%(flavor)s
