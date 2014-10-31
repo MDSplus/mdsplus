@@ -13,6 +13,7 @@ To download the tarball
   wget https://github.com/MDSplus/mdsplus/tarball/alpha 
 
 And then untar it (The exact filename will depend on the release version):
+
   tar -xzf MDSplus-mdsplus-alpha_release-6-3-423-5-gca7f90d.tar.gz
 
 To build the software do the following (See special notes below):
