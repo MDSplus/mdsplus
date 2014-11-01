@@ -9,6 +9,7 @@ class InstallationPackage(object):
           self.info['arch']=os.environ['ARCH']
         else:
           self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
+        self.info['DIST']=os.environ['DIST']
 
     def exists(self):
         """Check to see if rpms for this release already exist."""
