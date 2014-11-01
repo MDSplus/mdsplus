@@ -1,11 +1,23 @@
-commit 282ccb40013df3143140c086c484888773d3cc6d (HEAD, refs/heads/stable)
+commit 539c143f5a5647704358f9d2361801ade48a25e1 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 16:49:17 2014 -0400
+
+    The gitignore after a large number of additions
+
+commit 48de1303fed100b6ab7e34a6956e320465cb4368 (tag: refs/tags/stable_release-6-1-65)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 14:30:44 2014 -0400
+
+    New ChangeLog
+
+commit 282ccb40013df3143140c086c484888773d3cc6d
 Merge: b36e23c 69ead3c
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 14:09:53 2014 -0400
 
     Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
 
-commit 69ead3cb27fcda2f7e6c65b09678be7bc50d351e (refs/remotes/origin/stable)
+commit 69ead3cb27fcda2f7e6c65b09678be7bc50d351e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Oct 31 14:07:05 2014 -0400
 
