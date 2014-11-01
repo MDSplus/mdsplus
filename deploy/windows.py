@@ -39,9 +39,10 @@ make install
 make clean
 make
 make install
+makedir=$(pwd)
 pushd /tmp/%(flavor)s
 makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rflavor)s -NOCD \
-        -DOUTDIR=/tmp/%(flavor)s /tmp/%(tag)s/deploy/mdsplus.nsi
+        -DOUTDIR=/tmp/%(flavor)s ${makedir}/deploy/mdsplus.nsi
 echo mdsplus | signcode -spc /mdsplus/certs/mdsplus.spc \
          -v /mdsplus/certs/mdsplus.pvk \
          -a sha1 \
@@ -50,6 +51,7 @@ echo mdsplus | signcode -spc /mdsplus/certs/mdsplus.spc \
          -i http://www.mdsplus.org/ \
          -t http://timestamp.verisign.com/scripts/timestamp.dll \
          -tr 10 /tmp/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe
+popd
 """ % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error building windows kit for package mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)
