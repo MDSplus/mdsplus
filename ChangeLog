@@ -1,4 +1,16 @@
-commit 49667533e16218626d16f22b945722000ad4a39c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit eb0f47f1025a7943045d1ddb8173ba153da4af9c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sat Nov 1 15:22:05 2014 -0400
+
+    define DIST in info
+
+commit bccf96ca8b189c001e523988226d921991deae6c (tag: refs/tags/alpha_release-6-3-427)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 18:23:19 2014 -0400
+
+    New ChangeLog
+
+commit 49667533e16218626d16f22b945722000ad4a39c
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 20:55:44 2014 +0000
 
