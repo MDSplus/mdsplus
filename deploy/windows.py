@@ -41,7 +41,7 @@ make
 make install
 pushd /tmp/%(flavor)s
 makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rflavor)s -NOCD \
-        -DOUTDIR=/tmp/%(flavor)s /tmp/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi
+        -DOUTDIR=/tmp/%(flavor)s /tmp/%(tag)s/deploy/mdsplus.nsi
 echo mdsplus | signcode -spc /mdsplus/certs/mdsplus.spc \
          -v /mdsplus/certs/mdsplus.pvk \
          -a sha1 \
