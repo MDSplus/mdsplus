@@ -18,7 +18,8 @@ public class XYData
     double xMin, xMax;
     XYData(double x[], float y[], double resolution, boolean increasingX)
     {
-        this(x, y, resolution, increasingX, -Double.MAX_VALUE, Double.MAX_VALUE);
+ //       this(x, y, resolution, increasingX, -Double.MAX_VALUE, Double.MAX_VALUE);
+       this(x, y, resolution, increasingX, x[0], x[x.length - 1]);
     }
     XYData(double x[], float y[], double resolution, boolean increasingX, double xMin, double xMax)
     {

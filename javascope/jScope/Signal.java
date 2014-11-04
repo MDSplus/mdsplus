@@ -42,6 +42,7 @@ public class Signal implements WaveDataListener
     public static final int INCREMENTAL = 3;
     public static final int OSCILLOSCOPE = 4;
     
+    boolean debug = false;
  
     /**
      * String vector of markers name.
@@ -337,21 +338,21 @@ public class Signal implements WaveDataListener
                 //1) Lower bound is within interval
                 if(currReg.lowerBound < upperInt && currReg.lowerBound > lowerInt)
                 {
-                    System.out.println("CASE 1: Lower bound is within interval for region "+i +"  its resolution: " + currReg.resolution + " in resolution: "+resolution);
+                    if(debug) System.out.println("CASE 1: Lower bound is within interval for region "+i +"  its resolution: " + currReg.resolution + " in resolution: "+resolution);
                     if(currReg.resolution < resolution)
                     {
                         //Adjust upper bound
                         double currUpper = currReg.upperBound;
                         if(currUpper > upperInt)
                             currUpper = upperInt;
-                        System.out.println("Added Region lower: "+currReg.lowerBound + "  upper: " + currUpper + " resoluton: " + resolution);
+                        if(debug) System.out.println("Added Region lower: "+currReg.lowerBound + "  upper: " + currUpper + " resoluton: " + resolution);
                         retRegions.addElement(new RegionDescriptor(currReg.lowerBound, currUpper, resolution));
                     }
                 }
                 //2) Upper bound is within interval
                 else if (currReg.upperBound < upperInt && currReg.upperBound > lowerInt)
                 {
-                    System.out.println("CASE 2: Upper bound is within interval for region "+i);
+                    if(debug) System.out.println("CASE 2: Upper bound is within interval for region "+i);
                     if(currReg.resolution < resolution)
                     {
                         //Adjust lower bound
@@ -364,7 +365,7 @@ public class Signal implements WaveDataListener
                 //3) The interval is fully within the current region
                 else if(currReg.lowerBound < lowerInt && currReg.upperBound > upperInt)
                 {
-                    System.out.println("CASE 3: UThe interval is fully within the current region for region "+i);
+                    if(debug) System.out.println("CASE 3: UThe interval is fully within the current region for region "+i);
                     if(currReg.resolution < resolution)
                     {
                        retRegions.addElement(new RegionDescriptor(lowerInt, upperInt, resolution));
@@ -393,7 +394,7 @@ public class Signal implements WaveDataListener
             }
             if(idx == lowResRegions.size()) //All regions with lower bounds
             {
-System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+newReg.resolution+") at bottom");                
+                if(debug) System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+newReg.resolution+") at bottom");                
                 lowResRegions.addElement(newReg);
                 return;
             }
@@ -404,38 +405,38 @@ System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+
                 if(currRegion.upperBound <= newReg.upperBound)
                 {
                     currRegion.upperBound = newReg.lowerBound;
-System.out.println("updated region ("+currRegion.lowerBound+","+currRegion.upperBound+") ");                
+                    if(debug) System.out.println("updated region ("+currRegion.lowerBound+","+currRegion.upperBound+") ");                
                     idx++;
                 }
                 else //The new region is completely contained in currRegion
                 {
                     double prevUpper = currRegion.upperBound;
                     currRegion.upperBound = newReg.lowerBound;
-System.out.println("Updated region ("+currRegion.lowerBound+","+currRegion.upperBound+") ");                
+                    if(debug) System.out.println("Updated region ("+currRegion.lowerBound+","+currRegion.upperBound+") ");                
                     idx++;
                     lowResRegions.insertElementAt(newReg, idx);
-System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+newReg.resolution+")");                
+                    if(debug) System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+newReg.resolution+")");                
                     idx++;
                     lowResRegions.insertElementAt(
                             new RegionDescriptor(newReg.upperBound, prevUpper, currRegion.resolution), idx);
-System.out.println("Added region ("+newReg.upperBound+","+prevUpper+","+currRegion.resolution+")");                
+                    if(debug) System.out.println("Added region ("+newReg.upperBound+","+prevUpper+","+currRegion.resolution+")");                
                     return; //done in this case
                 }
             }
             //Remove regions completely contained in the new one
             while(idx < lowResRegions.size() && lowResRegions.elementAt(idx).upperBound <= newReg.upperBound)
             {
-System.out.println("Removed region ("+lowResRegions.elementAt(idx).lowerBound+","+lowResRegions.elementAt(idx).upperBound+")");                
-               lowResRegions.removeElementAt(idx);
+                if(debug) System.out.println("Removed region ("+lowResRegions.elementAt(idx).lowerBound+","+lowResRegions.elementAt(idx).upperBound+")");                
+                lowResRegions.removeElementAt(idx);
             }
             //In case there is a overlapped region, adjust its lower bound
             if(idx < lowResRegions.size() && lowResRegions.elementAt(idx).lowerBound < newReg.upperBound)
             {
                 lowResRegions.elementAt(idx).lowerBound = newReg.upperBound;
-System.out.println("Updated region ("+lowResRegions.elementAt(idx).lowerBound+","+lowResRegions.elementAt(idx).upperBound+")");                
+                if(debug) System.out.println("Updated region ("+lowResRegions.elementAt(idx).lowerBound+","+lowResRegions.elementAt(idx).upperBound+")");                
             }
             lowResRegions.insertElementAt(newReg, idx);
-System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+newReg.resolution+")"); 
+            if(debug) System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+newReg.resolution+")"); 
 
 //Merge adjacent regions with same resolution (may happens due to the inteval enlargements which occur in zooms)
             idx = 1;
@@ -445,7 +446,7 @@ System.out.println("Added region ("+newReg.lowerBound+","+newReg.upperBound+","+
                 RegionDescriptor prevReg = lowResRegions.elementAt(idx-1);
                 if(prevReg.upperBound == currReg.lowerBound && prevReg.resolution == currReg.resolution)
                 {
-System.out.println("Regions at ("+prevReg.lowerBound+","+prevReg.upperBound+")  ("+currReg.lowerBound+","+currReg.upperBound+") merged");
+                    if(debug) System.out.println("Regions at ("+prevReg.lowerBound+","+prevReg.upperBound+")  ("+currReg.lowerBound+","+currReg.upperBound+") merged");
                     prevReg.upperBound = currReg.upperBound;
                     lowResRegions.removeElementAt(idx);
                 }
@@ -475,7 +476,7 @@ System.out.println("Regions at ("+prevReg.lowerBound+","+prevReg.upperBound+")  
             {
                 if(lastReg.upperBound > newReg.lowerBound)
                 {
-                    System.err.println("INTERNAL ERRRO IN APPEND: NEW.LOWERBOUND < LAST.UPPERBOUND");
+                    System.err.println("INTERNAL ERROR IN APPEND: NEW.LOWERBOUND < LAST.UPPERBOUND");
                 }
                 lowResRegions.addElement(newReg);
             }
@@ -652,10 +653,14 @@ System.out.println("Regions at ("+prevReg.lowerBound+","+prevReg.upperBound+")  
         saved_ymin = ymin = _ymin;
         saved_ymax = ymax = _ymax;
         setAxis();
+        //Here xmin and xmax have been passed, so override values computed by setAxis()
+        ymin = saved_ymin;
+        ymax = saved_xmax;
+        
         saved_xmin = curr_xmin = xmin;
         saved_xmax = curr_xmax = xmax;
-        saved_ymin = ymin;
-        saved_ymax = ymax;
+        //saved_ymin = ymin;
+        //saved_ymax = ymax;
         checkIncreasingX();
         if(saved_xmin > 0)
             stripChartWidth = saved_xmin;
@@ -2673,17 +2678,12 @@ System.out.println("Regions at ("+prevReg.lowerBound+","+prevReg.upperBound+")  
 
     private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
     {
-/*
-        if(arr1 == null) return (float[])arr2;
-        if(arr2 == null) return (float[])arr1;
-*/
         if(arr1 == null) return (float [])arr2.clone();
         if(arr2 == null) return (float [])arr1.clone();
 
         float val[];
         if(arr1.length < sizeUsed + arr2.length)
         {
-//          System.out.println("REALLOC form "+ arr1.length +" to "+ (arr1.length + arr2.length + incSize));
             val = new float[arr1.length + arr2.length + incSize];
             System.arraycopy(arr1, 0, val, 0, sizeUsed);
         }
@@ -2774,7 +2774,7 @@ System.out.println("Regions at ("+prevReg.lowerBound+","+prevReg.upperBound+")  
     
     public void dataRegionUpdated(double []regX, float []regY, double resolution)
     {
-System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
+        if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
         if(freezed)
         {
             pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true, regX[0], regX[regX.length - 1]));
@@ -2929,7 +2929,7 @@ System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size())
     
     void fireSignalUpdated(boolean changeLimits)
     {
-        System.out.println("FIRE SIGNAL UPDATE "+ signalListeners.size());
+        if(debug) System.out.println("FIRE SIGNAL UPDATE "+ signalListeners.size());
         for(int i = 0; i < signalListeners.size(); i++)
         {
             signalListeners.elementAt(i).signalUpdated(changeLimits);
