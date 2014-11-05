@@ -1,4 +1,22 @@
-commit 52547331c10099adbe975c9523a82965b966b51a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b11e6e2c4dd18560a1f2045e09861f907c66e99f (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 5 16:43:27 2014 -0500
+
+    Update treeshr.def file
+
+commit 910ec3212c4cf9d058bd3dd2f15a98b4bbcc1304
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 5 16:31:46 2014 -0500
+
+    Add def file for VS builds
+
+commit 9c00c7b2669d583a7c4bab6f05a2f171529a8ef5 (tag: refs/tags/alpha_release-6-3-430)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Nov 1 23:26:39 2014 +0000
+
+    New ChangeLog
+
+commit 52547331c10099adbe975c9523a82965b966b51a
 Merge: 1c004d1 3c3397f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sat Nov 1 19:00:14 2014 -0400
