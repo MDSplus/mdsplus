@@ -1,4 +1,28 @@
-commit b11e6e2c4dd18560a1f2045e09861f907c66e99f (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 1bf61d50ac272f49f6d56b399322a3851e2dadf0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Thu Nov 6 15:33:48 2014 +0100
+
+    added missing VIs
+
+commit c27056a208ec01049351b98baeb336ce57cfcf5a
+Author: root <root@niolin1.rfx.local>
+Date:   Thu Nov 6 15:07:41 2014 +0100
+
+    Removed old CVS directory
+
+commit 7bcff05acc3885005e9ccdc7d0e125201ac44059
+Author: root <root@niolin1.rfx.local>
+Date:   Thu Nov 6 15:05:37 2014 +0100
+
+    Added forgotten class directory Connection_class
+
+commit cb3812497321c64a0fff082c6794be293b58821b (tag: refs/tags/alpha_release-6-3-431)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Nov 5 18:23:40 2014 -0500
+
+    New ChangeLog
+
+commit b11e6e2c4dd18560a1f2045e09861f907c66e99f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 5 16:43:27 2014 -0500
 
