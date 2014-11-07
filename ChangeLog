@@ -1,4 +1,46 @@
-commit 52547331c10099adbe975c9523a82965b966b51a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 1bf61d50ac272f49f6d56b399322a3851e2dadf0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Thu Nov 6 15:33:48 2014 +0100
+
+    added missing VIs
+
+commit c27056a208ec01049351b98baeb336ce57cfcf5a
+Author: root <root@niolin1.rfx.local>
+Date:   Thu Nov 6 15:07:41 2014 +0100
+
+    Removed old CVS directory
+
+commit 7bcff05acc3885005e9ccdc7d0e125201ac44059
+Author: root <root@niolin1.rfx.local>
+Date:   Thu Nov 6 15:05:37 2014 +0100
+
+    Added forgotten class directory Connection_class
+
+commit cb3812497321c64a0fff082c6794be293b58821b (tag: refs/tags/alpha_release-6-3-431)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Nov 5 18:23:40 2014 -0500
+
+    New ChangeLog
+
+commit b11e6e2c4dd18560a1f2045e09861f907c66e99f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 5 16:43:27 2014 -0500
+
+    Update treeshr.def file
+
+commit 910ec3212c4cf9d058bd3dd2f15a98b4bbcc1304
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 5 16:31:46 2014 -0500
+
+    Add def file for VS builds
+
+commit 9c00c7b2669d583a7c4bab6f05a2f171529a8ef5 (tag: refs/tags/alpha_release-6-3-430)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Nov 1 23:26:39 2014 +0000
+
+    New ChangeLog
+
+commit 52547331c10099adbe975c9523a82965b966b51a
 Merge: 1c004d1 3c3397f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sat Nov 1 19:00:14 2014 -0400
