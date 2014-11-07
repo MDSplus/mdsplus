@@ -46,6 +46,9 @@ ObjectsCppShr.exports: MdsObjectsCppShr.def
 	$(SED) -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
 
 ifneq "$(VSDLL)" ""
+  
 $(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB)
-	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@
+	for i in $$(find $(top_srcdir) -follow -name '*.def'); do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:$$i"; done 
+	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
+
 endif

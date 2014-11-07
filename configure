@@ -6938,7 +6938,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
-         VS_ARCH=x86_64
+         VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
 	 WINDRES=/usr/bin/x86_64-w64-mingw32-windres
        fi

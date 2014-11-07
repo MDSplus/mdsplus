@@ -348,7 +348,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        else
          SQL_ARCH=64
          BINDIR=bin_x86_64
-         VS_ARCH=x86_64
+         VS_ARCH=x64
 	 IDL_LIB="-L/mnt/scratch/mdsplus/idl-mingw-libs -lidl32"
 	 WINDRES=/usr/bin/x86_64-w64-mingw32-windres
        fi
