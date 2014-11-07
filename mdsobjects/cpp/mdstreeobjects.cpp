@@ -1341,6 +1341,9 @@ EXPORT void TreeNodeArray::operator delete(void *p)
 
 EXPORT StringArray *TreeNodeArray::getPath()
 {
+/* WRONG!! AutoArray cannot wok here because AutoArray objects are instantiated several times and then go
+out of scope, this triggering multiple deallocation of the same C string and crashing the program  
+
 	std::vector<AutoArray<char> > paths;
 	for(int i = 0; i < numNodes; ++i)
 		paths.push_back(nodes[i]->getPath());
@@ -1349,10 +1352,22 @@ EXPORT StringArray *TreeNodeArray::getPath()
 	for(std::vector<AutoArray<char> >::iterator i = paths.begin(); i != paths.end(); ++i)
 		nativePaths.push_back(i->get());
 	return new StringArray(&nativePaths[0], numNodes);
+*/
+//Use std::string instead   ....not beautiful.....
+	std::vector<std::string> paths;
+	for(int i = 0; i < numNodes; ++i)
+		paths.push_back(std::string(AutoArray<char>(nodes[i]->getPath()).ptr));
+
+	std::vector<char *> nativePaths;
+	for(std::vector<std::string>::iterator i = paths.begin(); i != paths.end(); ++i)
+		nativePaths.push_back((char *)i->c_str());
+	return new StringArray(&nativePaths[0], numNodes);
+
 }
 
 EXPORT StringArray *TreeNodeArray::getFullPath()
 {
+/* Same as before  
 	std::vector<AutoArray<char> > paths;
 	for(int i = 0; i < numNodes; ++i)
 		paths.push_back(nodes[i]->getFullPath());
@@ -1360,6 +1375,16 @@ EXPORT StringArray *TreeNodeArray::getFullPath()
 	std::vector<char *> nativePaths;
 	for(std::vector<AutoArray<char> >::iterator i = paths.begin(); i != paths.end(); ++i)
 		nativePaths.push_back(i->get());
+	return new StringArray(&nativePaths[0], numNodes);
+*/
+
+	std::vector<std::string> paths;
+	for(int i = 0; i < numNodes; ++i)
+		paths.push_back(std::string(AutoArray<char>(nodes[i]->getFullPath()).ptr));
+
+	std::vector<char *> nativePaths;
+	for(std::vector<std::string>::iterator i = paths.begin(); i != paths.end(); ++i)
+		nativePaths.push_back((char *)i->c_str());
 	return new StringArray(&nativePaths[0], numNodes);
 }
 

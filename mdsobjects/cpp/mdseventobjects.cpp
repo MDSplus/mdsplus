@@ -58,15 +58,6 @@ Data *Event::getData()
     return deserialize(eventBuf.c_str());
 }
 
-void REvent::connectToEvents()
-{
-	reventId = MdsEventAddListener(eventName,  reventAst, this);
-}
-
-void REvent::disconnectFromEvents()
-{
-	MdsEventRemoveListener(reventId);
-}
 
 Event::Event(char *evName)
 {
@@ -78,15 +69,6 @@ Event::Event(char *evName)
 	connectToEvents();
 }
 
-REvent::REvent(char *evName)
-{
-	std::size_t size = std::string(evName).size();
-	eventName = new char[size + 1];
-	std::copy(&evName[0], &evName[size], eventName);
-	eventName[size] = 0;
-	eventId = -1;
-	connectToEvents();
-}
 
 Event::~Event()
 {
@@ -108,26 +90,3 @@ void Event::setEventRaw(char *evName, int bufLen, char *buf)
 	MDSEvent(evName, bufLen, buf);
 }
 
-void REvent::setEvent(char *evName, Data *evData)
-{
-	int bufLen;
-	char *buf = evData->serialize(&bufLen);
-	setEventRaw(evName, bufLen, buf);
-}
-
-void REvent::setEventAndWait(char *evName, Data *evData)
-{
-	int bufLen;
-	char *buf = evData->serialize(&bufLen);
-	setEventRawAndWait(evName, bufLen, buf);
-}
-
-void REvent::setEventRaw(char *evName, int bufLen, char *buf)
-{
-	MdsEventTrigger(evName, buf, bufLen);
-}
-
-void REvent::setEventRawAndWait(char *evName, int bufLen, char *buf)
-{
-	MdsEventTriggerAndWait(evName, buf, bufLen);
-}
