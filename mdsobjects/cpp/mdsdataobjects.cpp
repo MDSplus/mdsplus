@@ -285,7 +285,11 @@ char *Data::decompile()
 	void *dscPtr = convertToDsc();
 	char * retStr = decompileDsc(dscPtr);
 	freeDsc(dscPtr);
-	return retStr;
+	//Get rid of malloc'd stuff
+	char *retDec = new char[strlen(retStr)+1];
+	strcpy(retDec, retStr);
+	free(retStr);
+	return retDec;
 }
 
 void *Scalar::convertToDsc()
