@@ -157,6 +157,8 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
 
+////////MdsException implemenmtation /////
+MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
 Data::~Data() {
