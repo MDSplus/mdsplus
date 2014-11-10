@@ -240,7 +240,7 @@ DLLEXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByt
 
 /********************************************************************************************************
 												REVENT
- ********************************************************************************************************/
+ *******************************************************************************************************
 
 DLLEXPORT void mdsplus_revent_constructor(void **lvREventPtrOut, const char *evNameIn, ErrorCluster *error)
 {
@@ -495,3 +495,4 @@ DLLEXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrH
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
+*/
