@@ -1,4 +1,69 @@
-commit 1bf61d50ac272f49f6d56b399322a3851e2dadf0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 1c01fd83338ed6f340529cb5c740a38be385c6bd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 10 13:48:51 2014 +0100
+
+    Move MdsGetMsg from header to library
+
+commit cb1d376017a01b51f4b8e80fd7a6894e1ba1f2cb
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 10 10:57:35 2014 +0100
+
+    Avoid mixed malloc and delete[]
+
+commit 6680f0f4a6251028a6948320ee61b07f3d9636bb
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 10 10:40:19 2014 +0100
+
+    Removed obsolete revent
+
+commit 6997d3c081403317908ddab3bc214a3a26ab1cc0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 7 17:05:39 2014 -0500
+
+    Build VS compatible dll and libs
+
+commit 0b4d06ab83351163314004ac177ec235c6416be3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 7 16:36:46 2014 -0500
+
+    Add def file for windows
+
+commit da85ebaa5e12e2394637be57eae2df329d2a6664
+Merge: 0f5575a 6ff095b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 7 18:38:31 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+    
+    Conflicts:
+    	treeshr/TreeShr.def
+
+commit 0f5575adeeb92689d3f982d459f164624c3b08d5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 7 18:33:23 2014 +0100
+
+    Added def for creating MdsObjectsCppShr for VS
+
+commit 142ce05a873e040d82bd69afe8d910c1d2c82b89
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 7 18:30:52 2014 +0100
+
+    Remove old rtevents
+
+commit b54281778e153131d52e5e30d1f82f6a531833f4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 7 18:30:21 2014 +0100
+
+    Remove old rtevents
+    Fix wrong usage of AutoArray in TreeNodeArray
+
+commit 6ff095b44f463df8568fef453b40db2368fbccf1 (tag: refs/tags/alpha_release-6-3-432)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Nov 6 18:22:46 2014 -0500
+
+    New ChangeLog
+
+commit 1bf61d50ac272f49f6d56b399322a3851e2dadf0
 Author: Mdsplus <mdsplus@niolin1.rfx.local>
 Date:   Thu Nov 6 15:33:48 2014 +0100
 
@@ -33,6 +98,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 5 16:31:46 2014 -0500
 
     Add def file for VS builds
+
+commit bf710844340351087a9d10502787319b8353ed88
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Nov 4 17:55:49 2014 +0100
+
+    Fix missing limits breaking WaveformEditor
 
 commit 9c00c7b2669d583a7c4bab6f05a2f171529a8ef5 (tag: refs/tags/alpha_release-6-3-430)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
