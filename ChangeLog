@@ -1,4 +1,35 @@
-commit 1c01fd83338ed6f340529cb5c740a38be385c6bd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b86e6deabf3d3f9888a28a3b22556e7a753f91a4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 12 15:56:20 2014 -0500
+
+    Use _wIN32 instead of HAVE_WINDOWS_H
+
+commit 01415530085a98f36cdf8c066b3f50d0788ebddd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 12 15:40:46 2014 -0500
+
+    vs build changes
+
+commit df658d94b3c70f8253441645dafce6a8b5fcf92e
+Merge: 25504b3 0e689ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 12 08:04:37 2014 -0500
+
+    Merge changes from github
+
+commit 0e689ae0a38eaf8214eb72d89d19edc8fbf32dab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 12 07:56:51 2014 -0500
+
+    Ignore emacs autosave files
+
+commit 794187aef82ab73bb16a794c5d93f28ae2bbd95d (tag: refs/tags/alpha_release-6-3-433)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 10 18:22:23 2014 -0500
+
+    New ChangeLog
+
+commit 1c01fd83338ed6f340529cb5c740a38be385c6bd
 Author: Mdsplus <mdsplus@niolin1.rfx.local>
 Date:   Mon Nov 10 13:48:51 2014 +0100
 
@@ -15,6 +46,12 @@ Author: Mdsplus <mdsplus@niolin1.rfx.local>
 Date:   Mon Nov 10 10:40:19 2014 +0100
 
     Removed obsolete revent
+
+commit 25504b331e4ba09c7a41faf1f7bb3b99c240607c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 7 17:19:04 2014 -0500
+
+    Avoid double symlink when no LIBPRE defined
 
 commit 6997d3c081403317908ddab3bc214a3a26ab1cc0
 Author: Tom Fredian <twf@psfc.mit.edu>
