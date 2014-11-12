@@ -36,6 +36,8 @@ setevent/setevent
 wfevent/wfevent
 xmdsshr/.dirstamp
 camshr/cts_commands.c
+# Emacs autosave files
+\#*#
 # Compiled Object files
 *.slo
 *.lo

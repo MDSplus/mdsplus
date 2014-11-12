@@ -157,6 +157,8 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
 
+////////MdsException implemenmtation /////
+MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
 Data::~Data() {
@@ -285,7 +287,11 @@ char *Data::decompile()
 	void *dscPtr = convertToDsc();
 	char * retStr = decompileDsc(dscPtr);
 	freeDsc(dscPtr);
-	return retStr;
+	//Get rid of malloc'd stuff
+	char *retDec = new char[strlen(retStr)+1];
+	strcpy(retDec, retStr);
+	free(retStr);
+	return retDec;
 }
 
 void *Scalar::convertToDsc()
