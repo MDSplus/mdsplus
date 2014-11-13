@@ -121,6 +121,8 @@ extern "C" {
 	void * convertToShape(void *dcs);
 }
 */
+
+
 namespace MDSplus  {
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
@@ -130,7 +132,6 @@ EXPORT void deleteNativeArray(T * array) { delete[] array; }
 class Tree;
 EXPORT void setActiveTree(Tree *tree);
 EXPORT Tree *getActiveTree();
-
 /////Exceptions//////////////
 class EXPORT MdsException: public std::exception {
 public:
@@ -143,7 +144,7 @@ public:
 		return msg;
 	}
 
-	friend std::ostream & operator << (std::ostream &outStream, MdsException &exc) {
+	friend EXPORT std::ostream & operator << (std::ostream &outStream, MdsException &exc) {
 		return outStream << exc.what();
 	}
 
@@ -268,13 +269,7 @@ public:
 		virtual Data *getDimensionAt(int dimIdx);
 		virtual int getSize() {return 1;}
 
-		friend std::ostream & operator << (std::ostream &outStream, Data *data)
-		{
-			char * str = data->decompile();
-			outStream << str;
-			delete[] str;
-		    return outStream;
-		}
+		friend EXPORT std::ostream & operator << (std::ostream &outStream, MDSplus::Data *data);
 
 		virtual void plot();
 
@@ -1741,7 +1736,11 @@ public:
 	class TreeNodeArray;
 	class  EXPORT TreeNode: public Data
 	{
-	friend	std::ostream &operator<<(std::ostream &stream, TreeNode *treeNode);
+		friend	EXPORT std::ostream &operator<<(std::ostream &stream, TreeNode *treeNode)
+		{
+			stream << treeNode->getFullPathStr();
+			return stream;
+		}
 	protected:
 		Tree *tree;
 		int nid;
@@ -2187,5 +2186,6 @@ void setActiveTree(Tree *tree);
 EXPORT void deleteTreeNode(TreeNode *node);
 EXPORT void deleteTree(Tree *tree);
 EXPORT void deleteTreeNodeArray(TreeNodeArray *nodeArray);
+EXPORT std::ostream &operator<<(std::ostream &stream, MDSplus::Data *data);
 }
 #endif
