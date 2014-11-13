@@ -25,7 +25,7 @@ install: $(libdir) $(bindir)
 cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu
 
-ccl_commands.c:	ccl_commands.ocld
+ccl_commands.c_disabled:	ccl_commands.ocld
 	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < ccl_commands.ocld;\
               else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < ccl_commands.ocld; fi
 	$(MAKE) depend

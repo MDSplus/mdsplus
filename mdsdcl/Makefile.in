@@ -40,9 +40,9 @@ cdudir = $(top_builddir)/cdu
 LINK_CDU = $(cdudir)/libCdu.a
 CDU = $(cdudir)/cdu
 
-mdsdcl_tables.c: mdsdcl_tables.ocld
-	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < $<;\
-              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<; fi
+#mdsdcl_tables.c: mdsdcl_tables.ocld
+#	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < $<;\
+#              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<; fi
 
 @MAKELIBDIR@@LIBPRE@Mdsdcl.a: $(OBJECTS)
 		$(AR) -cr $@ $^
