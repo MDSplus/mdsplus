@@ -23,7 +23,7 @@ if errorlevel 1 exit %errorlevel%
 link.exe /OUT:"%outdir%\MdsObjectsCppShr-VS.dll" /INCREMENTAL:NO ^
 /DLL /MANIFEST /MANIFESTFILE:"MdsObjectsCppShr-VS.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" ^
 /PDB:"./MdsObjectsCppShr-VS.pdb" /DYNAMICBASE:NO /IMPLIB:"%outdir%\MdsObjectsCppShr-VS.lib" ^
-/MACHINE:%arch% *.obj /LIBPATH:"%outdir%" MdsShr.lib TdiShr.lib TreeShr.lib MdsIpShr.lib RtEventsShr.lib ^
+/MACHINE:%arch% *.obj /LIBPATH:"%outdir%" MdsShr.lib TdiShr.lib TreeShr.lib MdsIpShr.lib ^
 Kernel32.Lib  libcmt.lib  libcpmt.lib  oldnames.lib  Uuid.Lib 
 if errorlevel 1 exit %errorlevel%
 del *.obj 
