@@ -1,6 +1,6 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

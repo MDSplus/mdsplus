@@ -20,17 +20,13 @@ cl.exe %options% /TP mdsdataobjects.cpp mdstreeobjects.cpp mdseventobjects.cpp m
 if errorlevel 1 exit %errorlevel%
 cl.exe %options% /TC mdsdata.c mdstree.c
 if errorlevel 1 exit %errorlevel%
-lib /MACHINE:%arch% /DEF:%outdir%/MdsShr.def
-lib /MACHINE:%arch% /DEF:%outdir%/TdiShr.def
-lib /MACHINE:%arch% /DEF:%outdir%/TreeShr.def
-lib /MACHINE:%arch% /DEF:%outdir%/RtEventsShr.def
 link.exe /OUT:"%outdir%\MdsObjectsCppShr-VS.dll" /INCREMENTAL:NO ^
-/DLL /MANIFEST /MANIFESTFILE:"mdsobjects.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" ^
-/PDB:"./mdsobjects.pdb" /DYNAMICBASE:NO /IMPLIB:"%outdir%\MdsObjectsCppShr-VS.lib" ^
+/DLL /MANIFEST /MANIFESTFILE:"MdsObjectsCppShr-VS.dll.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" ^
+/PDB:"./MdsObjectsCppShr-VS.pdb" /DYNAMICBASE:NO /IMPLIB:"%outdir%\MdsObjectsCppShr-VS.lib" ^
 /MACHINE:%arch% *.obj /LIBPATH:"%outdir%" MdsShr.lib TdiShr.lib TreeShr.lib MdsIpShr.lib RtEventsShr.lib ^
 Kernel32.Lib  libcmt.lib  libcpmt.lib  oldnames.lib  Uuid.Lib 
 if errorlevel 1 exit %errorlevel%
-del *.obj *.lib
+del *.obj 
 ENDLOCAL
 goto :eof
 

@@ -48,7 +48,7 @@ ObjectsCppShr.exports: MdsObjectsCppShr.def
 ifneq "$(VSDLL)" ""
   
 $(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB)
-	for i in $$(find $(top_srcdir) -follow -name '*.def'); do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:$$i"; done 
+	for i in $$(find $(top_srcdir) -follow -name '*.def'); do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$$i"; done 
 	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
 
 endif

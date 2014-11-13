@@ -54,8 +54,10 @@ install: $(libdir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
+ifneq "@LIBPRE@" ""
 @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr :
 	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
+endif
 
 @MAKESHLIBDIR@MDSobjectsLVShr :
 	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
