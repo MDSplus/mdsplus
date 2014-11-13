@@ -4,6 +4,7 @@
 #include <mdsplus/AutoPointer.hpp>
 
 #include <cstdio>
+#include <iostream>
 #include <stdarg.h>
 #include <string.h>
 
@@ -168,6 +169,7 @@ Data::~Data() {
 void *Data::operator new(size_t sz) {
 	return ::operator new(sz);
 }
+
 
 void Data::operator delete(void *p) {
 	Data * data = reinterpret_cast<Data *>(p);
@@ -1241,12 +1243,25 @@ EXPORT Data *MDSplus::deserialize(Data *serializedData)
 	return deserialize((const char *)serializedArr->ptr);
 }
 
-ostream& operator<<(ostream& output, Data *data)
+/*ostream& operator<<(ostream& output, Data *data)
 {
-	output << data->decompile();
-	return output;
+//	output << data->decompile();
+//	return output;
+	char * str = data->decompile();
+	output << str;
+	delete[] str;
+    return output;
 }
-
+*/
+std::ostream& MDSplus::operator<<(std::ostream& output, Data *data)
+{
+//	output << data->decompile();
+//	return output;
+	char * str = data->decompile();
+	output << str;
+	delete[] str;
+    return output;
+}
 EXPORT Data *Uint8Array::deserialize()
 {
     return (Data *)deserializeData(ptr);
