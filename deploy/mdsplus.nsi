@@ -229,7 +229,6 @@ File "/oname=mdslib_client.lib" bin_x86_64/MdsLib_client.dll.a
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
-File "/oname=rteventsshr.lib" bin_x86_64/RtEventsShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
 ${EndIf}
 CreateDirectory "$INSTDIR\devtools\lib32"
@@ -243,7 +242,6 @@ File "/oname=mdslib_client.lib" bin_x86/MdsLib_client.dll.a
 File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
-File "/oname=rteventsshr.lib" bin_x86/RtEventsShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
 SectionEnd
  

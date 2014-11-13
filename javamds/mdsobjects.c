@@ -17,7 +17,6 @@
 #include <treeshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <rtevents.h>
 #include "../mdsshr/mdsshrthreadsafe.h"
 
 #if _WIN32 || _WIN64
