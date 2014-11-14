@@ -1,4 +1,90 @@
-commit b86e6deabf3d3f9888a28a3b22556e7a753f91a4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 9561905940811cc45c1ec361e62ffa52dc1d31bc (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 11:09:30 2014 -0500
+
+    install vs libs
+
+commit d844ae0eb2def07ff16b859618290b4bdab3d33a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 10:57:23 2014 -0500
+
+    install vs libs
+
+commit 4b7de9a3e109a1c256a0a3ac06257278afe0a777
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 10:25:52 2014 -0500
+
+    Remove rteventsshr
+
+commit 040752a90bfcae5667d7252ce285017bee75471f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 10:08:21 2014 -0500
+
+    Remove obsolete cacheshr
+
+commit bf83af0cf631269d27ec2248f6fd5b09b81581e5
+Merge: 5ba7d70 c367886
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 09:42:15 2014 -0500
+
+    Add visual studio dll's and lib's
+
+commit 5ba7d706933a70f29edd56be73ea4f4c184f3bab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 09:42:02 2014 -0500
+
+    Add visual studio dll's and lib's
+
+commit c36788642c123901c98e71ff6c37252c30feab2e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 09:37:08 2014 -0500
+
+    do not parse ocld's
+
+commit 079f1f05a3b8554771f5e0f6a7663a44f17cb080
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 09:34:54 2014 -0500
+
+    Add visual studio compatible dll's and libraries
+
+commit ec8a716e353bb889a13c19ebad6be34174ce0839
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 09:08:22 2014 -0500
+
+    Remove obsolete rtevents
+
+commit 84042b42dd48cd1af1a88062fc1f02b16f16e71c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Nov 13 09:06:27 2014 -0500
+
+    Remove obsolete rtevents
+
+commit 5be5a70d19514163b41c43b81cc77c6f2b7e8736
+Merge: fc14179 eb12086
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Nov 13 09:30:31 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit fc14179bdb913d6d4067bd6b9e36afe6ae1034e9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Nov 13 09:29:28 2014 +0100
+
+    Mode stuff which deallocates memory into dll
+
+commit 9bc588c21271f00ec76107ec0becaebd0337ba5f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Nov 13 09:28:33 2014 +0100
+
+    Move stuff which frees memory into dll
+
+commit eb12086a329507b305cdd81b7588af07fc78a3a2 (tag: refs/tags/alpha_release-6-3-434)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Nov 12 18:22:51 2014 -0500
+
+    New ChangeLog
+
+commit b86e6deabf3d3f9888a28a3b22556e7a753f91a4
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 12 15:56:20 2014 -0500
 

@@ -5,7 +5,7 @@ include @top_srcdir@/Makefile.inc
 CPPFLAGS += -I$(top_srcdir)/tdishr
 CFLAGS += @SRBINCLUDE@
 CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr @LIBS@ @SRBLIB@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @LIBS@ @SRBLIB@
 
 CXXSOURCES = \
 	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp
@@ -29,7 +29,7 @@ depend:
 
 install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(libdir)
-	@VS_TRUE@ $(INSTALL) -m 755 $(VSDLL) $(libdir)
+	@VS_TRUE@ $(INSTALL) -m 755 @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKESHLIBDIR@*.lib $(libdir)
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(libdir); \
 	fi;

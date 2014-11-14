@@ -66,3 +66,7 @@ camshr/cts_commands.c
 *.exe
 *.out
 *.app
+
+# automake 
+aclocal.m4
+autom4te.cache

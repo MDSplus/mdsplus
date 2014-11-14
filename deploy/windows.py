@@ -27,7 +27,8 @@ cd ..
         --prefix=/tmp/%(flavor)s --exec-prefix=/tmp/%(flavor)s \
         --libdir=/tmp/%(flavor)s/bin_x86_64 \
         --bindir=/tmp/%(flavor)s/bin_x86_64 --enable-mdsip_connections --with-labview=$LABVIEW64_DIR \
-        --with-jdk=$JDK_DIR --with-idl=$IDL64_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+        --with-jdk=$JDK_DIR --with-idl=$IDL64_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+        --with-visual_studio=/mdsplus/visual-studio-2008
 make clean
 make
 make install
@@ -35,7 +36,8 @@ make install
         --prefix=/tmp/%(flavor)s --exec-prefix=/tmp/%(flavor)s \
         --libdir=/tmp/%(flavor)s/bin_x86 \
         --bindir=/tmp/%(flavor)s/bin_x86 --enable-mdsip_connections --with-labview=$LABVIEW_DIR \
-        --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+        --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+        --with-visual_studio=/mdsplus/visual-studio-2008
 make clean
 make
 make install

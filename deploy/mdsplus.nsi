@@ -218,33 +218,49 @@ Section "DEVEL"
 SetOutPath "$INSTDIR"
 File /r include
 ${If} ${RunningX64}
-CreateDirectory "$INSTDIR\devtools\lib64"
-SetOutPath "$INSTDIR\devtools\lib64"
+CreateDirectory "$INSTDIR\devtools\lib64\mingw"
+SetOutPath "$INSTDIR\devtools\lib64\mingw"
 File "/oname=mdsshr.lib" bin_x86_64/MdsShr.dll.a
 File "/oname=treeshr.lib" bin_x86_64/TreeShr.dll.a
 File "/oname=tdishr.lib" bin_x86_64/TdiShr.dll.a
 File "/oname=mdsdcl.lib" bin_x86_64/MdsDcl.dll.a
 File "/oname=mdsipshr.lib" bin_x86_64/MdsIpShr.dll.a
-File "/oname=mdslib_client.lib" bin_x86_64/MdsLib_client.dll.a
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
-File "/oname=rteventsshr.lib" bin_x86_64/RtEventsShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
+CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
+SetOutPath "$INSTDIR\devtools\lib64\visual_studio"
+File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
+File "/oname=treeshr.lib" bin_x86_64/TreeShr.lib
+File "/oname=tdishr.lib" bin_x86_64/TdiShr.lib
+File "/oname=mdsdcl.lib" bin_x86_64/mdsdclshr.lib
+File "/oname=mdsipshr.lib" bin_x86_64/mdsipshr.lib
+File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
+File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
+File "/oname=mdsservershr.lib" bin_x86_64/servershr.lib
 ${EndIf}
-CreateDirectory "$INSTDIR\devtools\lib32"
-SetOutPath "$INSTDIR\devtools\lib32"
+CreateDirectory "$INSTDIR\devtools\lib32\mingw"
+SetOutPath "$INSTDIR\devtools\lib32\mingw"
 File "/oname=mdsshr.lib" bin_x86/MdsShr.dll.a
 File "/oname=treeshr.lib" bin_x86/TreeShr.dll.a
 File "/oname=tdishr.lib" bin_x86/TdiShr.dll.a
 File "/oname=mdsdcl.lib" bin_x86/MdsDcl.dll.a
 File "/oname=mdsipshr.lib" bin_x86/MdsIpShr.dll.a
-File "/oname=mdslib_client.lib" bin_x86/MdsLib_client.dll.a
 File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
-File "/oname=rteventsshr.lib" bin_x86/RtEventsShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
+CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
+SetOutPath "$INSTDIR\devtools\lib32\visual_studio"
+File "/oname=mdsshr.lib" bin_x86/MdsShr.lib
+File "/oname=treeshr.lib" bin_x86/TreeShr.lib
+File "/oname=tdishr.lib" bin_x86/TdiShr.lib
+File "/oname=mdsdcl.lib" bin_x86/mdsdclshr.lib
+File "/oname=mdsipshr.lib" bin_x86/mdsipshr.lib
+File "/oname=mdslib.lib" bin_x86/MdsLib.lib
+File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr-VS.lib
+File "/oname=mdsservershr.lib" bin_x86/servershr.lib
 SectionEnd
  
 # Uninstaller

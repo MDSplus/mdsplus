@@ -29,7 +29,6 @@ PARTS = \
         tditest \
 	xtreeshr \
         @MDSTCPIP@ \
-	rtevents \
         mdslibidl \
         cdu     \
         mdsdcl  \
@@ -124,19 +123,18 @@ dwscope: xmdsshr
 gen_device: tdishr
 javadevices: javatraverser
 javadispatcher: javascope javatraverser
-javamds: mdstcpip rtevents
+javamds: mdstcpip 
 javatraverser: javascope
 math: mdsshr
 mdsdcl: cdu mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr
-mdsobjects/cpp: mdstcpip rtevents
+mdsobjects/cpp: mdstcpip 
 mdsobjects/java: javascope
 mdstcpip: tdishr
 mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
 remcam: mdstcpip
-rtevents: mdstcpip mdsshr
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 setevent: mdsshr
 tdic: mdstcpip
