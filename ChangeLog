@@ -1,4 +1,78 @@
-commit 9561905940811cc45c1ec361e62ffa52dc1d31bc (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 8fce75bce33ece394744605b7362ad3f47b7353e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Fri Nov 14 16:00:01 2014 +0100
+
+    Let new cpp compile for LabVIEW
+
+commit 1e7fccb0300f7061a152ee98a4f37d3cab5dee91
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 15:34:44 2014 +0100
+
+    Added VIs from John
+
+commit a012723ba0bcdc33598b272bf8db75ed1b681b4e
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 15:33:14 2014 +0100
+
+    John's VIs
+
+commit a5f151fce01ae916459fffddc7cd3a72e7a1036c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 14:28:17 2014 +0100
+
+    Remove delete from include
+
+commit f3aede2aea17f830b2eced9368d5f3e1ae8e9302
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 14:28:01 2014 +0100
+
+    Remove delete from include
+
+commit 334d896fd34bbdf507c049b4aea89b2fe4157c0d
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 14:06:13 2014 +0100
+
+    Remove obsolete stuff
+
+commit 1b7caec21e3d80ca60ccaeed446a0199545e8a45
+Merge: 3715781 18f0056
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 13:58:56 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 37157813400c0c78892bc24ddb0f109b6ee5d7d3
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 13:58:20 2014 +0100
+
+    On the fly  resampling
+
+commit 18f005624b185424c363a7d010e4bc0bd7bc3b56
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 13:57:00 2014 +0100
+
+    Removed old files
+
+commit 3ff65747311f3c465af2f91048068c84e05f0ae9
+Merge: 1898678 18e8b30
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 13:40:20 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 1898678a7c683a2152691eda3854c83ca0fab177
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 13:39:30 2014 +0100
+
+    New jScope supporting on the fly resampling
+
+commit 18e8b30618e643447c86bbc57b9a5189225c3852 (tag: refs/tags/alpha_release-6-3-435)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Nov 13 16:24:09 2014 +0000
+
+    New ChangeLog
+
+commit 9561905940811cc45c1ec361e62ffa52dc1d31bc
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Nov 13 11:09:30 2014 -0500
 
