@@ -394,6 +394,8 @@ void MDSplus::deleteNativeArray(long * array){delete array;}
 void MDSplus::deleteNativeArray(unsigned long * array){delete array;}
 void MDSplus::deleteNativeArray(float * array){delete array;}
 void MDSplus::deleteNativeArray(double * array){delete array;}
+void MDSplus::deleteNativeArray(char ** array){delete array;}
+void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete array;}
 
 char *Data::getByteArray(int *numElements)
 {
