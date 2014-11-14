@@ -126,8 +126,17 @@ extern "C" {
 namespace MDSplus  {
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
-template<class T>
-EXPORT void deleteNativeArray(T * array) { delete[] array; }
+//MUST revert to old version. Winodws VS crashes otherwise!! The code MUST be moved from include 
+EXPORT void deleteNativeArray(char * array); 
+EXPORT void deleteNativeArray(unsigned char * array); 
+EXPORT void deleteNativeArray(short * array); 
+EXPORT void deleteNativeArray(unsigned short * array); 
+EXPORT void deleteNativeArray(int * array); 
+EXPORT void deleteNativeArray(unsigned int * array); 
+EXPORT void deleteNativeArray(long * array); 
+EXPORT void deleteNativeArray(unsigned long * array); 
+EXPORT void deleteNativeArray(float * array); 
+EXPORT void deleteNativeArray(double * array); 
 
 class Tree;
 EXPORT void setActiveTree(Tree *tree);
