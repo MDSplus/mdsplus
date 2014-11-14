@@ -12,6 +12,7 @@ public class XYData
 {
     double resolution; //Number of points/interval
     boolean increasingX;
+    int nSamples;
     double [] x = null;
     long[] xLong = null;
     float[] y;
@@ -29,6 +30,7 @@ public class XYData
         this.y = y;
         this.xMin = xMin;
         this.xMax = xMax;
+        nSamples = (x.length < y.length)?x.length:y.length;
     }
     XYData(double x[], float y[], double resolution)
     {
@@ -36,17 +38,21 @@ public class XYData
         this.x = x;
         this.y = y;
         increasingX = true;
-        xMin = xMax = x[0];
-        for(int i = 1; i < x.length; i++)
+        nSamples = (x.length < y.length)?x.length:y.length;
+        if(nSamples > 0)
         {
-            if(x[i-1] > x[i])
+            xMin = xMax = x[0];
+            for(int i = 1; i < x.length; i++)
             {
-                increasingX = false;
+                if(x[i-1] > x[i])
+                {
+                    increasingX = false;
+                }
+                if(x[i] > xMax)
+                    xMax = x[i];
+                if(x[i] < xMin)
+                    xMin = x[i];
             }
-            if(x[i] > xMax)
-                xMax = x[i];
-            if(x[i] < xMin)
-                xMin = x[i];
         }
     }
     XYData(long x[], float y[], double resolution)
@@ -58,17 +64,21 @@ public class XYData
         for(int i = 0; i < x.length; i++)
             this.x[i] = x[i];
         increasingX = true;
-        xMin = xMax = x[0];
-        for(int i = 1; i < x.length; i++)
+        nSamples = (x.length < y.length)?x.length:y.length;
+        if(nSamples > 0)
         {
-            if(x[i-1] > x[i])
+            xMin = xMax = x[0];
+            for(int i = 1; i < x.length; i++)
             {
-                increasingX = false;
+                if(x[i-1] > x[i])
+                {
+                    increasingX = false;
+                }
+                if(x[i] > xMax)
+                    xMax = x[i];
+                if(x[i] < xMin)
+                    xMin = x[i];
             }
-            if(x[i] > xMax)
-                xMax = x[i];
-            if(x[i] < xMin)
-                xMin = x[i];
         }
     }
     XYData(long[]x, float[]y, double  resolution, boolean increasingX)
@@ -80,5 +90,6 @@ public class XYData
         this.x = new double[x.length];
         for(int i = 0; i < x.length; i++)
             this.x[i] = x[i];
-    }
+        nSamples = (x.length < y.length)?x.length:y.length;
+   }
 }

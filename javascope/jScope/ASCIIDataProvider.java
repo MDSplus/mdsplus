@@ -36,7 +36,7 @@ class ASCIIDataProvider implements DataProvider
         int    dimension;
         Properties x_prop = new Properties();
         Properties y_prop = new Properties();
-
+        public void setContinuousUpdate(boolean continuopusUpdate){}
         public SimpleWaveData(String in_y)
         {
             file_y = getPathValue(in_y);
@@ -559,7 +559,7 @@ class ASCIIDataProvider implements DataProvider
         return buf;
     }
     public void getDataAsync(double lowerBound, double upperBound, double resolution){}
-
+    public void setContinuousUpdate(boolean continuousUpdate){}
     public static void main(String args[])
     {      
         ASCIIDataProvider p = new ASCIIDataProvider();

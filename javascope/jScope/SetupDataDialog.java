@@ -59,7 +59,7 @@ import javax.swing.event.*;
     JCheckBox x_max_b = new JCheckBox("X max");
 
     //GAB 2014
-    JCheckBox strip_chart_b = new JCheckBox("Strip Chart");
+    JCheckBox continuous_update_b = new JCheckBox("Continuous Update");
     
     
     JCheckBox upd_limits_b = new JCheckBox("");
@@ -1128,7 +1128,7 @@ import javax.swing.event.*;
 		p6.add(x_max_b);
 		p6.add(x_max);
                 
-                p6.add(strip_chart_b);
+                p6.add(continuous_update_b);
 
  
 
@@ -1513,7 +1513,7 @@ import javax.swing.event.*;
        y_log.setSelected(wi.y_log);
        
        //GAB 2014
-       strip_chart_b.setSelected(wi.isStripChart);
+       continuous_update_b.setSelected(wi.isContinuousUpdate);
        
        //upd_limits.setSelected(wi.cin_upd_limits);
 //	}
@@ -1546,7 +1546,7 @@ import javax.swing.event.*;
 		x_max_b.setVisible(false);
 		x_min_b.setVisible(false);
                 //GAB 2014
-                strip_chart_b.setVisible(false);
+                continuous_update_b.setVisible(false);
                 
 		pix_y_max.setVisible(true);
 		pix_y_min.setVisible(true);
@@ -1584,7 +1584,7 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(false);
 		x_max_b.setVisible(true);
 		x_min_b.setVisible(true);
-                strip_chart_b.setVisible(true);
+                continuous_update_b.setVisible(true);
 
 		pix_y_max.setVisible(false);
 		pix_y_min.setVisible(false);
@@ -1701,7 +1701,7 @@ import javax.swing.event.*;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
         //GAB 2014
-        if(strip_chart_b.isSelected() != wave_wi.isStripChart) return true;
+        if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
 
         return false;
     }
@@ -1755,7 +1755,7 @@ import javax.swing.event.*;
 	    wi.cin_ylabel    = y_label.getText();
       
       //GAB 2014
-      wi.isStripChart = strip_chart_b.isSelected();
+      wi.isContinuousUpdate = continuous_update_b.isSelected();
 
    }
 
@@ -1847,7 +1847,7 @@ import javax.swing.event.*;
       wi.mode2D       = new int[num_signal];
       wi.mode1D       = new int[num_signal];
       //GAB 2014
-      wi.isStripChart = strip_chart_b.isSelected();
+      wi.isContinuousUpdate = continuous_update_b.isSelected();
 
       if(s[0].shot != UNDEF_SHOT)
         wi.shots        = new long[num_signal];

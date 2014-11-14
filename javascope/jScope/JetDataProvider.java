@@ -72,7 +72,7 @@ class JetDataProvider implements DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
     public boolean SupportsTunneling() {return false; }
-
+    public void setContinuousUpdate(){}
 
     class SimpleWaveData implements WaveData
     {
@@ -88,6 +88,7 @@ class JetDataProvider implements DataProvider
             this.in_x = in_x;
         }
 
+        public void setContinuousUpdate(boolean continuopusUpdate){}
         public int getNumDimension()throws IOException
         {
             GetFloatArray(in_y, DATA);

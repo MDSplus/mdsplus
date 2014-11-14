@@ -70,4 +70,5 @@ interface WaveData
     public String GetZLabel()  throws IOException;
     
     void getDataAsync(double lowerBound, double upperBound, int numPoints);
+    void setContinuousUpdate(boolean continuopusUpdate);
 }

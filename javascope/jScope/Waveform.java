@@ -2483,6 +2483,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       }
       waveform_signal.Autoscale();
     }
+    waveform_signal.unfreeze();
     ReportChanges();
   }
 

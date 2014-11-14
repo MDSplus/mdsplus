@@ -91,6 +91,7 @@ class NotConnectedDataProvider implements DataProvider
     public void    RemoveConnectionListener(ConnectionListener l)
     {
     }
+    public void setContinuousUpdate(){}
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {

@@ -390,6 +390,7 @@ public class MdsDataProvider
         boolean titleEvaluated = false;
         boolean xLabelEvaluated = false;
         boolean yLabelEvaluated = false;
+        boolean continuousUpdate = false;
         String experiment;
         long shot;
         
@@ -442,7 +443,11 @@ public class MdsDataProvider
             }
         }
 
- 
+        public void setContinuousUpdate(boolean continuousUpdate)
+        {
+            this.continuousUpdate = continuousUpdate;
+        }
+
         public int getNumDimension() throws IOException
         {
             if(numDimensions != UNKNOWN)
@@ -616,9 +621,12 @@ public class MdsDataProvider
         }
         
         //GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
-        
-         public XYData getData(double xmin, double xmax, int numPoints) throws Exception
-         {
+        public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+        {
+            return getData(xmin, xmax, numPoints, false);
+        }
+        public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
+        {
              String xExpr, yExpr;
              XYData res;
              if (!CheckOpen())
@@ -658,13 +666,40 @@ public class MdsDataProvider
                     xExpr = in_x;
              }
              try   {
+                 
+                String setTimeContext;
+                if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
+                    setTimeContext = "SetTimeContext(*,*,*);";
+                else if(xmin == -Double.MAX_VALUE)
+                {
+                    if(isLong)
+                        setTimeContext = "SetTimeContext(*, QUADWORD("+(long)xmax+"), *);";
+                    else
+                         setTimeContext = "SetTimeContext(*, "+xmax+", *);";
+               }
+               else if(xmax == Double.MAX_VALUE)
+               {
+                    if(isLong)
+                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"),*, *);";
+                    else
+                         setTimeContext = "SetTimeContext("+xmin+",*, *);";
+               }
+                else
+                {
+                    if(isLong)
+                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"),QUADWORD("+(long)xmax+"), *);";
+                    else
+                         setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
+               }
+               System.out.println(setTimeContext);    
+                 
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
                 args.addElement(new Descriptor(null, xExpr));
                 args.addElement(new Descriptor(null, new float[]{(float)xmin}));
                 args.addElement(new Descriptor(null, new float[]{(float)xmax}));
                 args.addElement(new Descriptor(null, new int[]{numPoints}));
-                byte[] retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); MdsMisc->GetXYSignal:DSC", args);
+                byte[] retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -686,7 +721,7 @@ public class MdsDataProvider
                 float y[] = new float[nSamples];
                 for(int i = 0; i < nSamples; i++)
                         y[i] = dis.readFloat();
-
+                double maxX;
                 if(type == 1) //Long X (i.e. absolute times
                 {
                     long []longX = new long[nSamples];
@@ -694,13 +729,21 @@ public class MdsDataProvider
                         longX[i] = dis.readLong();
                     isXLong = true;
                     res = new XYData(longX, y, dRes);
-                }
+                    if(longX.length > 0)
+                        maxX = longX[longX.length - 1];
+                    else 
+                        maxX = 0;
+               }
                 else if(type == 2) //double X
                 {
                     double []x = new double[nSamples];
                     for(int i = 0; i < nSamples; i++)
                         x[i] = dis.readDouble();
                     res = new XYData(x, y, dRes);
+                    if(x.length > 0)
+                        maxX = x[x.length - 1];
+                    else 
+                        maxX = 0;
                 }
                 else //float X
                 {
@@ -708,7 +751,11 @@ public class MdsDataProvider
                     for(int i = 0; i < nSamples; i++)
                         x[i] = dis.readFloat();
                     res = new XYData(x, y, dRes);
-                }
+                    if(x.length > 0)
+                        maxX = x[x.length - 1];
+                    else 
+                        maxX = 0;
+               }
                 //Get title, xLabel and yLabel
                 int titleLen = dis.readInt();
                 if(titleLen > 0)
@@ -734,14 +781,21 @@ public class MdsDataProvider
                 }
                 titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
                
-                
+                //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
+                if(segmentMode == SEGMENTED_YES && continuousUpdate)
+                {
+                    long refreshPeriod = jScopeFacade.getRefreshPeriod();
+                    if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
+                    updateWorker.updateInfo((nSamples > 0)?maxX:xmin, Double.MAX_VALUE, 2000,
+                        waveDataListenersV, this, type == 1, refreshPeriod);
+                }
                 return res;
              }catch(Exception exc){}
              {
                  System.out.println("MdsMisc->GetXYSignal Failed");
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-            float y[] = GetFloatArray(yExpr);
+            float y[] = GetFloatArray("SetTimeContext(*,*,*); "+yExpr);
             RealArray xReal = GetRealArray(xExpr);
             if(xReal.isLong())
             {
@@ -811,8 +865,9 @@ public class MdsDataProvider
             Vector<WaveDataListener> waveDataListenersV;
             SimpleWaveData simpleWaveData;
             boolean isXLong;
+            long updateTime;
             UpdateDescriptor(double updateLowerBound, double updateUpperBound, int updatePoints,
-                    Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong)
+                    Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
             {
                 this.updateLowerBound = updateLowerBound;
                 this.updateUpperBound = updateUpperBound;
@@ -820,15 +875,41 @@ public class MdsDataProvider
                 this.waveDataListenersV = waveDataListenersV;
                 this.simpleWaveData = simpleWaveData;
                 this.isXLong = isXLong;
+                this.updateTime = updateTime;
             }
         }
         Vector<UpdateDescriptor>requestsV = new Vector<UpdateDescriptor>();
-        synchronized void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
+        void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
+                Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long delay)
+        {
+            intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
+                   Calendar.getInstance().getTimeInMillis()+delay);
+        }
+       void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong)
         {
-
+ //           intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
+ //                  Calendar.getInstance().getTimeInMillis());
+           intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
+                   -1);
+        }
+        synchronized void intUpdateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
+                Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
+        {
+            if(updateTime > 0)  //If a delayed request for update
+            {
+                for(int i = 0; i < requestsV.size(); i++)
+                {
+                    UpdateDescriptor currUpdateDescr = requestsV.elementAt(i);
+                    if(currUpdateDescr.updateTime > 0 && currUpdateDescr.simpleWaveData == simpleWaveData)
+                        return; //Another delayed update request for that signal is already in the pending list
+                }
+            }
             requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints, 
-                    waveDataListenersV, simpleWaveData, isXLong));
+                    waveDataListenersV, simpleWaveData, isXLong, updateTime));
+            
+      System.out.println("ACCODATO RICHIESTA CON RITARDO DI " + (updateTime - Calendar.getInstance().getTimeInMillis()));      
+            
             notify();
         }
         public void run()
@@ -842,25 +923,56 @@ public class MdsDataProvider
                     }                           
                     catch(InterruptedException exc) {}
                 }
-                while(requestsV.size() > 0)
+                long currTime = Calendar.getInstance().getTimeInMillis();
+                long nextTime = -1;
+                int i = 0;
+                while(i < requestsV.size())
                 {
-                   UpdateDescriptor currUpdate = requestsV.elementAt(0);
-                   requestsV.removeElementAt(0);
-                    try 
+                    UpdateDescriptor currUpdate = requestsV.elementAt(i);
+                    if(currUpdate.updateTime < currTime)
                     {
-                        XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints);
-                        for(int i = 0; i < currUpdate.waveDataListenersV.size(); i++)
+                         try 
                         {
-                            if(currUpdate.isXLong)
-                                currUpdate.waveDataListenersV.elementAt(i).dataRegionUpdated(currData.xLong, currData.y, currData.resolution);
-                            else
-                               currUpdate.waveDataListenersV.elementAt(i).dataRegionUpdated(currData.x, currData.y, currData.resolution);
+                            
+                            requestsV.removeElementAt(i);
+                            XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
+System.out.println("LETTO DA " + currUpdate.updateLowerBound+" A "+ currUpdate.updateUpperBound + " N SAMPLES  " + currData.nSamples);
+                            
+                            if(currData.nSamples == 0)
+                                continue;
+                            for(int j = 0; j < currUpdate.waveDataListenersV.size(); j++)
+                            {
+                                if(currUpdate.isXLong)
+                                    currUpdate.waveDataListenersV.elementAt(j).dataRegionUpdated(currData.xLong, currData.y, currData.resolution);
+                                else
+                                    currUpdate.waveDataListenersV.elementAt(j).dataRegionUpdated(currData.x, currData.y, currData.resolution);
+
+                            }
+                        }catch(Exception exc)
+                        {
+                            System.out.println("Error in asynchUpdate: "+exc);
                         }
-                    }catch(Exception exc)
-                    {
-                        System.out.println("Error in asynchUpdate: "+exc);
                     }
-                 }
+                    else
+                    {
+                        if(nextTime == -1 || nextTime > currUpdate.updateTime) //It will alway be nextTime != -1
+                            nextTime = currUpdate.updateTime;
+                        i++;
+                    }
+                }
+                if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification
+                {
+                    java.util.Timer timer = new java.util.Timer();
+                    timer.schedule(new TimerTask() {
+                        public void run()
+                        {
+                            synchronized(UpdateWorker.this)
+                            {
+                                UpdateWorker.this.notify();
+                            }
+                        }
+                    }, nextTime - currTime + 1);
+                }
             }
         }
     } //End Inner class UpdateWorker

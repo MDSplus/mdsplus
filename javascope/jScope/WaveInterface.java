@@ -31,8 +31,7 @@ public class WaveInterface
     public int in_grid_mode;
     public int height;
     
-    //GAB 2014 New boolean flag for strip chart visualization
-    public boolean isStripChart = false;
+    public boolean isContinuousUpdate = false;
 
     public String in_shot;
     public int num_shot = 1;
@@ -959,7 +958,6 @@ public class WaveInterface
                 }
                 else
                 {
-                    signals[curr_wave].setStripChart(isStripChart);
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
                     setLimits(signals[curr_wave]);
                 }
@@ -1041,8 +1039,7 @@ public class WaveInterface
                 {
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
                     setLimits(signals[curr_wave]);
-                    signals[curr_wave].setStripChart(isStripChart);
-                }
+                 }
             }
         }
         modified = false;
@@ -1380,7 +1377,7 @@ public class WaveInterface
             curr_error = dp.ErrorString();
             return null;
         }
-        
+        wd.setContinuousUpdate(isContinuousUpdate);
         out_signal = new Signal(wd, xmin, xmax);
         if(dimension > 1)
            out_signal.setMode2D( (int) mode2D[curr_wave]);

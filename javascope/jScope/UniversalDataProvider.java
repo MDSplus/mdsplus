@@ -48,6 +48,7 @@ class UniversalDataProvider implements DataProvider
         }catch(Exception exc){asd = null;}
     }
 
+    public void setContinuousUpdate(){}
 
     protected DataProvider SelectProvider(String spec)
     {

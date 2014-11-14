@@ -327,4 +327,5 @@ public interface DataProvider
         public void    SetArgument(String arg) throws IOException;
 
         public long[]   GetShots(String in) throws IOException;
-    }
+        
+     }

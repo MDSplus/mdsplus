@@ -63,6 +63,7 @@ public class jScopeFacade
     public static final int MAX_NUM_SHOT = 30;
     public static final int MAX_VARIABLE = 10;
     private static int spos_x = 100, spos_y = 100;
+    static  long refreshPeriod = -1;
 
     JWindow aboutScreen;
 
@@ -92,7 +93,6 @@ public class jScopeFacade
     private JPanel panel, panel1;
     private ButtonGroup pointer_mode = new ButtonGroup();
     private JRadioButton zoom, point, copy, pan;
-    private JCheckBoxMenuItem fast_network_i, enable_compression_i, use_cache_i;
     private JLabel shot_l, lab;
     private JTextField shot_t, signal_expr;
     private JButton apply_b;
@@ -1040,54 +1040,6 @@ public class jScopeFacade
         network_m = new JMenu("Network");
         mb.add(network_m);
 
-        fast_network_i = new JCheckBoxMenuItem("Faster, sub-sampled, access", false);
-        fast_network_i.setEnabled(false);
-        network_m.add(fast_network_i);
-        fast_network_i.addItemListener(this);
-
-        use_cache_i = new JCheckBoxMenuItem("Enable signals cache", false);
-        use_cache_i.setEnabled(false);
-        network_m.add(use_cache_i);
-        use_cache_i.addItemListener(this);
-
-        free_cache_i = new JMenuItem("Free cache");
-        free_cache_i.setEnabled(false);
-        network_m.add(free_cache_i);
-        free_cache_i.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                String cache_directory = System.getProperty(
-                    "Signal.cache_directory");
-                if (cache_directory != null &&
-                    cache_directory.trim().length() != 0)
-                {
-                    Object[] options =
-                        {
-                        "OK", "CANCEL"};
-                    int opt = JOptionPane.showOptionDialog(null,
-                        "Remove all files in jScope cache directory " +
-                        cache_directory, "Warning",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                        null, options, options[0]);
-                    if (opt == JOptionPane.OK_OPTION)
-                        wave_panel.FreeCache();
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(null,
-                                                  "Undefined cache directory",
-                                                  "alert",
-                                                  JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-        );
-
-        enable_compression_i = new JCheckBoxMenuItem("Enable compression", false);
-        enable_compression_i.setEnabled(false);
-        network_m.add(enable_compression_i);
-        enable_compression_i.addItemListener(this);
 
         servers_m = new JMenu("Servers");
         network_m.add(servers_m);
@@ -1113,24 +1065,7 @@ public class jScopeFacade
         network_m.add(server_list_i);
         server_list_i.addActionListener(this);
 
-        network_m.addMenuListener(new MenuListener()
-        {
-            public void menuSelected(MenuEvent e)
-            {
-                use_cache_i.setSelected(wave_panel.IsCacheEnabled());
-            }
-
-            public void menuCanceled(MenuEvent e)
-            {
-            }
-
-            public void menuDeselected(MenuEvent e)
-            {
-            }
-        }
-        );
-
-        point_pos = new JLabel("[0.000000000, 0.000000000]");
+         point_pos = new JLabel("[0.000000000, 0.000000000]");
         point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
         info_text = new JTextField(" Status : ", 85);
         info_text.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -1709,9 +1644,22 @@ public class jScopeFacade
                 timeMode = EPICS_TIME;
             //Add here new time formats
         }
+        String refreshPeriodStr = js_prop.getProperty("jScope.refresh_period");
+        if(refreshPeriodStr != null)
+        {
+            try {
+                refreshPeriod = Integer.parseInt(refreshPeriodStr);
+                //Not shorted than 0.5 s
+                if(refreshPeriod < 500) refreshPeriod = 500;
+            } catch(Exception exc)
+            {
+                refreshPeriod = -1;
+            }
+        }
 
     }
 
+    public static long getRefreshPeriod() {return refreshPeriod;}
     private boolean IsIpAddress(String addr)
     {
         if (addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
@@ -2198,20 +2146,6 @@ public class jScopeFacade
             wave_panel.SetDataServer(new_srv_item, this);
 
             wave_panel.SetCacheState(new_srv_item.enable_cache);
-            use_cache_i.setState(new_srv_item.enable_cache);
-            free_cache_i.setEnabled(new_srv_item.enable_cache);
-
-            fast_network_i.setEnabled(wave_panel.SupportsFastNetwork());
-            fast_network_i.setState(wave_panel.GetFastNetworkState());
-            SetFastNetworkState(wave_panel.GetFastNetworkState());
-
-            enable_compression_i.setEnabled(wave_panel.SupportsCompression());
-            if (!wave_panel.SupportsCompression())
-                new_srv_item.enable_compression = false;
-
-            enable_compression_i.setState(new_srv_item.enable_compression);
-            SetCompressionState(new_srv_item.enable_compression);
-
             setDataServerLabel();
 
             return true;
@@ -2756,85 +2690,38 @@ public class jScopeFacade
 //	    wi.colors[i] = color_dialog.GetColorAt(wi.colors_idx[i]);
     }
 
-    public void SetFastNetworkState(boolean state)
-    {
-        wave_panel.SetFastNetworkState(state);
-        if (state)
-        {
-            use_cache_i.setState(false);
-            wave_panel.SetCacheState(false);
-        }
-        use_cache_i.setEnabled(!state);
-        free_cache_i.setEnabled(!state);
-
-    }
-
-    public void SetCacheState(boolean state)
-    {
-        wave_panel.SetCacheState(state);
-        free_cache_i.setEnabled(state);
-    }
-
-    public void SetCompressionState(boolean state) throws IOException
-    {
-        wave_panel.SetCompression(state, this);
-    }
-
-    public void itemStateChanged(ItemEvent e)
+     public void itemStateChanged(ItemEvent e)
     {
 
         Object ob = e.getSource();
 
-        try
+        if (ob == brief_error_i)
         {
-            if (ob == fast_network_i)
-            {
-                SetFastNetworkState(fast_network_i.getState());
-            }
-
-            if (ob == enable_compression_i)
-            {
-                SetCompressionState(enable_compression_i.getState());
-            }
-
-            if (ob == brief_error_i)
-            {
-                WaveInterface.brief_error = brief_error_i.getState();
+            WaveInterface.brief_error = brief_error_i.getState();
 //	        wave_panel.SetBriefError(brief_error_i.getState());
-            }
-
-            if (ob == use_cache_i)
-            {
-                SetCacheState(use_cache_i.getState());
-            }
-
-            if (e.getStateChange() != ItemEvent.SELECTED)
-                return;
-
-            if (ob == copy)
-            {
-                wave_panel.SetMode(Waveform.MODE_COPY);
-            }
-
-            if (ob == zoom)
-            {
-                wave_panel.SetMode(Waveform.MODE_ZOOM);
-            }
-
-            if (ob == point)
-            {
-                wave_panel.SetMode(Waveform.MODE_POINT);
-            }
-
-            if (ob == pan)
-            {
-                wave_panel.SetMode(Waveform.MODE_PAN);
-            }
         }
-        catch (IOException ev)
+
+         if (e.getStateChange() != ItemEvent.SELECTED)
+            return;
+
+        if (ob == copy)
         {
-            JOptionPane.showMessageDialog(null, ev.getMessage(), "alert itemStateChanged",
-                                          JOptionPane.ERROR_MESSAGE);
+            wave_panel.SetMode(Waveform.MODE_COPY);
+        }
+
+        if (ob == zoom)
+        {
+            wave_panel.SetMode(Waveform.MODE_ZOOM);
+        }
+
+        if (ob == point)
+        {
+            wave_panel.SetMode(Waveform.MODE_POINT);
+        }
+
+        if (ob == pan)
+        {
+            wave_panel.SetMode(Waveform.MODE_PAN);
         }
 
     }
@@ -3227,10 +3114,6 @@ remove 28/06/2005
 
             root.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
-    }
-    public boolean isFastNetworkEnabled()
-    {
-        return fast_network_i.getState();
     }
 }
 

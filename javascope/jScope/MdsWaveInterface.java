@@ -864,7 +864,7 @@ Fix bug : shot expression must be always evaluated.
             WaveInterface.WriteLine(out, prompt + "time_max: ", cin_timemax);
         }
         //GAB 2014
-        WaveInterface.WriteLine(out, prompt + "strip_chart: ", isStripChart?"1":"0");
+        WaveInterface.WriteLine(out, prompt + "continuous_update: ", isContinuousUpdate?"1":"0");
         /////////
         
         WaveInterface.WriteLine(out, prompt + "title: ", cin_title);
@@ -1010,11 +1010,11 @@ Fix bug : shot expression must be always evaluated.
 
             cin_upd_event = pr.getProperty(prompt + ".event");
             
-            String stripChartStr = pr.getProperty(prompt + ".strip_chart");
-            if(stripChartStr != null && stripChartStr.trim().equals("1"))
-                isStripChart = true;
+            String continuousUpdateStr = pr.getProperty(prompt + ".continuous_update");
+            if(continuousUpdateStr != null && continuousUpdateStr.trim().equals("1"))
+                isContinuousUpdate = true;
             else
-                isStripChart = false;
+                isContinuousUpdate = false;
 
             prop = pr.getProperty(prompt + ".x_log");
             if (prop != null)
