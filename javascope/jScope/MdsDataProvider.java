@@ -691,7 +691,6 @@ public class MdsDataProvider
                     else
                          setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
                }
-               System.out.println(setTimeContext);    
                  
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
@@ -792,7 +791,7 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc){}
              {
-                 System.out.println("MdsMisc->GetXYSignal Failed");
+                 //System.out.println("MdsMisc->GetXYSignal Failed");
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
             float y[] = GetFloatArray("SetTimeContext(*,*,*); "+yExpr);
@@ -848,7 +847,7 @@ public class MdsDataProvider
         }
         public void getDataAsync(double lowerBound, double upperBound, int numPoints)
         {
-            System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
+ //           System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
             updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
         }
     } //END Inner Class SimpleWaveData
@@ -908,8 +907,6 @@ public class MdsDataProvider
             requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints, 
                     waveDataListenersV, simpleWaveData, isXLong, updateTime));
             
-      System.out.println("ACCODATO RICHIESTA CON RITARDO DI " + (updateTime - Calendar.getInstance().getTimeInMillis()));      
-            
             notify();
         }
         public void run()
@@ -936,7 +933,6 @@ public class MdsDataProvider
                             
                             requestsV.removeElementAt(i);
                             XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
-System.out.println("LETTO DA " + currUpdate.updateLowerBound+" A "+ currUpdate.updateUpperBound + " N SAMPLES  " + currData.nSamples);
                             
                             if(currData.nSamples == 0)
                                 continue;
