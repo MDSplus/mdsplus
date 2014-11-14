@@ -384,6 +384,17 @@ static std::vector<T> getArray(T * data, int size) {
 	return v;
 }
 
+void MDSplus::deleteNativeArray(char * array){delete array;}
+void MDSplus::deleteNativeArray(unsigned char * array){delete array;}
+void MDSplus::deleteNativeArray(short * array){delete array;}
+void MDSplus::deleteNativeArray(unsigned short * array){delete array;}
+void MDSplus::deleteNativeArray(int * array){delete array;}
+void MDSplus::deleteNativeArray(unsigned int * array){delete array;}
+void MDSplus::deleteNativeArray(long * array){delete array;}
+void MDSplus::deleteNativeArray(unsigned long * array){delete array;}
+void MDSplus::deleteNativeArray(float * array){delete array;}
+void MDSplus::deleteNativeArray(double * array){delete array;}
+
 char *Data::getByteArray(int *numElements)
 {
 	AutoPointer<Data> array(getArrayData(DTYPE_B));
