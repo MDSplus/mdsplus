@@ -269,6 +269,9 @@
 			<Item Name="TreeNode Put Row.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/TreeNode Put Row.vi"/>
 			<Item Name="TreeNode Put Segment.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/TreeNode Put Segment.vi"/>
 			<Item Name="TreeNode Get TimeInserted.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/TreeNode Get TimeInserted.vi"/>
+			<Item Name="TreeNode Get Segment Limits.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/TreeNode Get Segment Limits.vi"/>
+			<Item Name="TreeNode Get Members.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/TreeNode Get Members.vi"/>
+			<Item Name="TreeNode Get Children.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/TreeNode/TreeNode Get Children.vi"/>
 		</Item>
 		<Item Name="Data.lvclass" Type="LVClass" URL="/&lt;vilib&gt;/MDSplus/Classes/Data_Class/Data.lvclass"/>
 		<Item Name="Data Compile.vi" Type="VI" URL="/&lt;vilib&gt;/MDSplus/Library/Data/Data Compile.vi"/>
