@@ -1,4 +1,16 @@
-commit 9742df1a66403f368f77e578d7bc66c811d3f00f (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 103063cecb7145e2212d8e4d767e90f1d2a6c7df (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 14 11:15:53 2014 -0500
+
+    Fix event id for java clients
+
+commit 9ba7b0b086cb8362fab5c6599e75cbb6ac534e8c (tag: refs/tags/stable_release-6-1-67)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Nov 1 19:58:31 2014 +0000
+
+    New ChangeLog
+
+commit 9742df1a66403f368f77e578d7bc66c811d3f00f
 Merge: 143a6cf fca94f3
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sat Nov 1 15:20:18 2014 -0400
