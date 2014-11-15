@@ -1,4 +1,28 @@
-commit 8fce75bce33ece394744605b7362ad3f47b7353e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2b496853a80adad06d71dbdcb8888538a304c846 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 18:02:57 2014 +0100
+
+    Remove messages
+
+commit f9ba33f42b876824d1a649feceb00c435b321247
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 17:56:26 2014 +0100
+
+    remove debug messages
+
+commit 01ffb644835c509c04711e985f4e2b0ec085a6ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 14 11:13:15 2014 -0500
+
+    Fix event id for java clients
+
+commit 26bbe0db634d1ecd55dd285f539c4d8d23aa377d (tag: refs/tags/alpha_release-6-3-436)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Nov 14 15:46:28 2014 +0000
+
+    New ChangeLog
+
+commit 8fce75bce33ece394744605b7362ad3f47b7353e
 Author: Mdsplus <mdsplus@niolin1.rfx.local>
 Date:   Fri Nov 14 16:00:01 2014 +0100
 
