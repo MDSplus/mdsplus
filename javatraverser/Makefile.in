@@ -309,6 +309,9 @@ USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_SEMAPHORE_H = @USE_SEMAPHORE_H@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VERSION = @VERSION@
+VS = @VS@
+VS_ARCH = @VS_ARCH@
+VS_DIR = @VS_DIR@
 WINDRES = @WINDRES@
 XMKMF = @XMKMF@
 XM_LIBS = @XM_LIBS@
@@ -369,7 +372,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = servlet-2_3-fcs-classfiles.zip \
+EXTRA_DIST = EventMonitor.properties servlet-2_3-fcs-classfiles.zip \
 	$(am__append_2)
 CLEANFILES = $(java_DATA) $(am__append_1)
 JAVAROOT = $(builddir)
@@ -456,6 +459,7 @@ SOURCES = \
 	DoubleData.java\
 	Editor.java\
 	EventData.java\
+	EventMonitor.java\
 	ExprEditor.java\
 	FloatArray.java\
 	FloatData.java\
