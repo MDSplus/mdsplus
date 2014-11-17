@@ -48,7 +48,7 @@ COMMON_SRC = \
 	jScope/MdsDataProvider.java           jScope/MdsMessage.java              jScope/MdsplusParser.java         \
 	jScope/MdsWaveInterface.java          jScope/MultiWaveform.java           jScope/MultiWavePopup.java        \
 	jScope/NotConnectedDataProvider.java  jScope/ProfileDialog.java           jScope/PropertiesEditor.java      \
-	jScope/RandomAccessData.java          jScope/RowColumnContainer.java    \
+	jScope/RandomAccessData.java          jScope/RowColumnContainer.java      jScope/SignalListener.java        \
 	jScope/RowColumnLayout.java           jScope/SetupDataDialog.java         jScope/SetupDefaults.java         \
 	jScope/SetupWaveformParams.java       jScope/SignalBox.java               \
 	jScope/Signal.java                    jScope/SignalsBoxDialog.java        jScope/SshTunneling.java          \
