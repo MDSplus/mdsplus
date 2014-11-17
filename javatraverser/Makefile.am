@@ -1,4 +1,4 @@
-EXTRA_DIST = EventMonitor.properties servlet-2_3-fcs-classfiles.zip
+EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 CLEANFILES = $(java_DATA)
 if NOT_MINGW
 CLEANFILES += $(bin_SCRIPTS)
@@ -104,7 +104,6 @@ SOURCES = \
 	DoubleData.java\
 	Editor.java\
 	EventData.java\
-	EventMonitor.java\
 	ExprEditor.java\
 	FloatArray.java\
 	FloatData.java\
