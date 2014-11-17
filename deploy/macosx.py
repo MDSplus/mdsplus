@@ -46,7 +46,7 @@ class InstallationPackage(object):
         shell("""
 
 set -e
-./configure --enable-mdsip_connections --prefix=$(pwd)/build/mdsplus \
+./configure --prefix=$(pwd)/build/mdsplus \
             --exec-prefix=$(pwd)/build/mdsplus \
             --with-idl=$IDL_DIR --with-jdk=$JDK_DIR --with-labview=$LABVIEW_DIR
 
