@@ -38,6 +38,13 @@ xmdsshr/.dirstamp
 camshr/cts_commands.c
 # Emacs autosave files
 \#*#
+
+# vi autosave files
+*~
+
+# python compiled files
+*.pyc
+
 # Compiled Object files
 *.slo
 *.lo
