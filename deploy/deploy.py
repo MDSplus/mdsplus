@@ -220,6 +220,10 @@ if __name__ == "__main__":
     module=__import__('solaris',globals())
   elif os.environ['DIST'].startswith('win'):
     module=__import__('windows',globals())
+  elif os.environ['DIST'].startswith('macosx'):
+    module=__import__('macosx',globals())
+  else:
+    raise Exception("No support for DIST=%s" % (os.environ['DIST'])
   InstallationPackage=module.InstallationPackage(info)
   if len(sys.argv)==5:
     if not InstallationPackage.exists():
