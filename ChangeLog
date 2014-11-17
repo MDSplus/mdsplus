@@ -1,4 +1,35 @@
-commit 014c7994d911d654d4168877c42a7de48118bc1d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 5bc87f426fa59d05497ce8f3702b48cac975c9d0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 12:00:03 2014 -0500
+
+    Fix macosx git build
+
+commit bd67ce522e1b982da36609f6dddb6ac228de62f1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 11:47:06 2014 -0500
+
+    Fix macosx git build
+
+commit 84da0248830c0a0d57aa7f36e1a1f3f9f3679765
+Merge: 56f187c 1c9ca56
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 11:41:57 2014 -0500
+
+    Fix macosx build
+
+commit 56f187ce78c47df0c3705f88a4dea3134ded71fc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 11:41:46 2014 -0500
+
+    Fix macosx git build
+
+commit 1c9ca56bdc4bcffe2c26e979ec45af060e201727 (tag: refs/tags/alpha_release-6-3-439)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 16:13:43 2014 +0000
+
+    New ChangeLog
+
+commit 014c7994d911d654d4168877c42a7de48118bc1d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Nov 17 10:58:48 2014 -0500
 
