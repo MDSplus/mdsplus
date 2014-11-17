@@ -3,7 +3,7 @@ import subprocess,os,sys,datetime
 def shell(cmd,msg):
     print(cmd)
     sys.stdout.flush()
-    if subprocess.Popen(cmd,shell=True,cwd='..').wait() != 0:
+    if subprocess.Popen(cmd,shell=True,cwd=os.getcwd()+'/..').wait() != 0:
         raise Exception(msg)
 
 class InstallationPackage(object):
