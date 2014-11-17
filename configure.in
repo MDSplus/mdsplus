@@ -71,22 +71,22 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])])
 
-AC_ARG_ENABLE([universal],
-              [AS_HELP_STRING([--enable-universal],
-                              [Build MacOSX Universal Binary])],
-              [],
-              [AS_VAR_SET([enable_universal], [no])])
-
+dnl AC_ARG_ENABLE([universal],
+dnl              [AS_HELP_STRING([--enable-universal],
+dnl                              [Build MacOSX Universal Binary])],
+dnl              [],
+dnl              [AS_VAR_SET([enable_universal], [no])])
+dnl
 dnl this new java section hoses macos x... why not use the autoconf java macros?
 dnl I'm faking a disable so I can enable by hand later...
-AS_CASE([$host_vendor],
-        [apple], dnl the java section breaks with macos x due to different structure
-                 dnl this disables it for now..  is there a AC_PROG_JAVA?
-                 [AS_VAR_SET([enable_java], [no])]
-                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
-                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
-                                                       [F77=fort77])])
-AC_MSG_RESULT([$enable_java])
+dnl AS_CASE([$host_vendor],
+dnl        [apple], dnl the java section breaks with macos x due to different structure
+dnl                 dnl this disables it for now..  is there a AC_PROG_JAVA?
+dnl                 [AS_VAR_SET([enable_java], [no])]
+dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
+dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
+dnl                                                       [F77=fort77])])
+dnl AC_MSG_RESULT([$enable_java])
 
 AC_ARG_WITH([jdk],
             [AS_HELP_STRING([--with-jdk=JDKDIR],
