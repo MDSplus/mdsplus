@@ -70,9 +70,9 @@ make install
 
 set -e
 cd build/mdsplus/mdsobjects/python
-python setup.py bdist_egg version=%(pyflavor)s%(major)d.%(minor)d_%(release)d' % info
+python setup.py bdist_egg version=%(pyflavor)s%(major)d.%(minor)d_%(release)d
 
-        """,'python bdist_egg failed')
+        """ % self.info,'python bdist_egg failed')
         shell("""
 
 set -e
