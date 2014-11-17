@@ -223,7 +223,7 @@ if __name__ == "__main__":
   elif os.environ['DIST'].startswith('macosx'):
     module=__import__('macosx',globals())
   else:
-    raise Exception("No support for DIST=%s" % (os.environ['DIST'])
+    raise Exception("No support for DIST=%s" % (os.environ['DIST']))
   InstallationPackage=module.InstallationPackage(info)
   if len(sys.argv)==5:
     if not InstallationPackage.exists():
