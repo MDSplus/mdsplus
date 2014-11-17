@@ -1,4 +1,28 @@
-commit 05b5793fd63a12d4e8004c54d08468d05b23d826 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 014c7994d911d654d4168877c42a7de48118bc1d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 10:58:48 2014 -0500
+
+    Add git support for macosx builds
+
+commit cc745e25775e01786ccebf35c6d31c689ca5c54d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 10:39:55 2014 -0500
+
+    ignore more temporary files
+
+commit 016637caa589fe9175004436607a34e4b67efaed
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 10:38:00 2014 -0500
+
+    Add git build for macosx
+
+commit 7323d3210302398641153d884c3c7cef6053649c (tag: refs/tags/alpha_release-6-3-438)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 09:09:08 2014 -0500
+
+    New ChangeLog
+
+commit 05b5793fd63a12d4e8004c54d08468d05b23d826
 Merge: 2b23cc1 1d86b37
 Author: Mdsplus <mdsplus@niolin1.rfx.local>
 Date:   Mon Nov 17 08:37:38 2014 +0100
