@@ -12,7 +12,8 @@ EXTRA_DIST += jScope.template
 CLEANFILES += $(bin_SCRIPTS)
 
 $(bin_SCRIPTS): jScope.template
-	$(INSTALL) -D $< $@
+	$(INSTALL) -d scripts
+	$(INSTALL) $< $@
 else
 bin_SCRIPTS = jScope.bat
 endif
