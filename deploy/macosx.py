@@ -96,8 +96,8 @@ sudo chown -R $(id -un):$(id -gn) $(pwd)/build
         shell("""
 
 set -e
-rsync -a ./build/mdsplus/mdsobjects/python/dist/*.egg /repository/EGGS/
-rsync -a  MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg /repository/macosx/%(flavor)s/
+rsync -a ./build/mdsplus/mdsobjects/python/dist/*.egg /mdsplus/dist/EGGS/
+rsync -a  MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg /mdsplus/dist/macosx/%(flavor)s/
 
         """ % self.info,'Failed to copy to destination')
         print("Completed deployment")
