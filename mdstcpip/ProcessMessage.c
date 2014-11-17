@@ -376,7 +376,7 @@ static void ClientEventAst(MdsEventList *e, int data_len, char *data) {
     if (data_len > 0) memcpy(info->data, data, (data_len<12)?data_len:12);
     for(i = data_len; i < 12; i++)
       info->data[i] = 0;
-    info->eventid = e->eventid;
+    info->eventid = e->jeventid;
   } else {
     m = memset(malloc(sizeof(MsgHdr) + e->info_len),0,sizeof(MsgHdr) + e->info_len);
     m->h.ndims = 0;

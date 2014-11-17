@@ -376,10 +376,7 @@ public class XYWaveData implements WaveData
        }
        public void run()
        {
-            try {
-            Thread.currentThread().sleep(500);
-           }catch(InterruptedException exc){}
-            System.out.println("GET DATA ASYNC "+lowerBound+"  "+upperBound+"  "+resolution);
+  //          System.out.println("GET DATA ASYNC "+lowerBound+"  "+upperBound+"  "+resolution);
             XYData newData = getData(lowerBound, upperBound, 1000);
             if(isLong)
                 fireListeners(newData.xLong, newData.y, newData.resolution);
