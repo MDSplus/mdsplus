@@ -1,4 +1,23 @@
-commit 2b496853a80adad06d71dbdcb8888538a304c846 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 05b5793fd63a12d4e8004c54d08468d05b23d826 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 2b23cc1 1d86b37
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 17 08:37:38 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 2b23cc155161194fd8745a299f8b7e7375a1ada6
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 17 08:37:14 2014 +0100
+
+    Let compile on 32 bit platform
+
+commit 1d86b379a8ce301d9bd1bbc389214c12816457f1 (tag: refs/tags/alpha_release-6-3-437)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Nov 15 01:56:22 2014 +0000
+
+    New ChangeLog
+
+commit 2b496853a80adad06d71dbdcb8888538a304c846
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Nov 14 18:02:57 2014 +0100
 
