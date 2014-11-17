@@ -3,7 +3,7 @@ import subprocess,os,sys,datetime
 def shell(cmd,msg):
     print(cmd)
     sys.stdout.flush()
-    if subprocess.Popen(cmd,shell=True,cwd=os.getcwd()+'/..').wait() != 0:
+    if subprocess.Popen(cmd,shell=True,cwd='..').wait() != 0:
         raise Exception(msg)
 
 class InstallationPackage(object):
@@ -46,8 +46,8 @@ class InstallationPackage(object):
         shell("""
 
 set -e
-./configure --enable-mdsip_connections --prefix=./build/mdsplus \
-            --exec-prefix=./build/mdsplus \
+./configure --enable-mdsip_connections --prefix=$(pwd)/build/mdsplus \
+            --exec-prefix=$(pwd)/build/mdsplus \
             --with-idl=$IDL_DIR --with-jdk=$JDK_DIR --with-labview=$LABVIEW_DIR
 
         ""","configure failed")
@@ -78,9 +78,9 @@ python setup.py bdist_egg version=%(pyflavor)s%(major)d.%(minor)d_%(release)d' %
 set -e
 sudo chown -R root:admin ./build
 rm -f MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg
-/Developer/usr/bin/packagemaker --title "MDSplus%(pkgflavor)s" --version "%(major)d.%(minor)d.%(release)d" --scripts ./build/mdsplus/scripts \
---install-to "/usr/local" --target "10.5" -r ./build -v -i "MDSplus%(pkgflavor)s" -o MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg
-sudo chown -R $(id -un):$(id -gn) ./build
+/Developer/usr/bin/packagemaker --title "MDSplus%(pkgflavor)s" --version "%(major)d.%(minor)d.%(release)d" --scripts $(pwd)/build/mdsplus/scripts \
+--install-to "/usr/local" --target "10.5" -r $(pwd)/build -v -i "MDSplus%(pkgflavor)s" -o MDSplus%(pkgflavor)s-%(major)d-%(minor)d-%(release)d-osx.pkg
+sudo chown -R $(id -un):$(id -gn) $(pwd)/build
 
         """ % self.info,'Building package failed')
         print("%s, Build completed" % str(datetime.datetime.now()))
