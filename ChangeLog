@@ -1,4 +1,58 @@
-commit 5bc87f426fa59d05497ce8f3702b48cac975c9d0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 0e18bfc72d7d9f5b70922d397c60e9b107e978a2 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 14:42:29 2014 -0500
+
+    Fix deploy for macosx
+
+commit 74693b8f950a6dcfce3c97b47238a4828f475f76
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 14:25:32 2014 -0500
+
+    Fix for macosx
+
+commit d9ddb1fe378af489b1756446e5964574d994d54e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 14:03:35 2014 -0500
+
+    Fix for macosx
+
+commit e62df861495d91c3ae3d4443619aa02f41637587
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 13:58:10 2014 -0500
+
+    Remove obsolte --enable-mdsip_connections in configure
+
+commit adfffc008df7271e05fb3a935c5afe4386cae21a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 13:51:28 2014 -0500
+
+    Fix for macosx
+
+commit c2035cd19b909b05668b40767d70037d5117ecdb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 13:35:13 2014 -0500
+
+    Fix for macosx build
+
+commit 9f39a02af3c64d823cf77c16517460300d63e928
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 12:50:03 2014 -0500
+
+    macosx doesn't support -D option on install
+
+commit 496e4ebde95daf60a5dbeacbc43cb4a353f24fa0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 12:16:49 2014 -0500
+
+    Fix macosx build
+
+commit 7b947dea3959b06631410fc73a57adcf658fe0d3 (tag: refs/tags/alpha_release-6-3-440)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 17:04:30 2014 +0000
+
+    New ChangeLog
+
+commit 5bc87f426fa59d05497ce8f3702b48cac975c9d0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Nov 17 12:00:03 2014 -0500
 
