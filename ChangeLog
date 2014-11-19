@@ -1,4 +1,156 @@
-commit 8fce75bce33ece394744605b7362ad3f47b7353e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 0e18bfc72d7d9f5b70922d397c60e9b107e978a2 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 14:42:29 2014 -0500
+
+    Fix deploy for macosx
+
+commit 74693b8f950a6dcfce3c97b47238a4828f475f76
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 14:25:32 2014 -0500
+
+    Fix for macosx
+
+commit d9ddb1fe378af489b1756446e5964574d994d54e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 14:03:35 2014 -0500
+
+    Fix for macosx
+
+commit e62df861495d91c3ae3d4443619aa02f41637587
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 13:58:10 2014 -0500
+
+    Remove obsolte --enable-mdsip_connections in configure
+
+commit adfffc008df7271e05fb3a935c5afe4386cae21a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 13:51:28 2014 -0500
+
+    Fix for macosx
+
+commit c2035cd19b909b05668b40767d70037d5117ecdb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 13:35:13 2014 -0500
+
+    Fix for macosx build
+
+commit 9f39a02af3c64d823cf77c16517460300d63e928
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 12:50:03 2014 -0500
+
+    macosx doesn't support -D option on install
+
+commit 496e4ebde95daf60a5dbeacbc43cb4a353f24fa0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 12:16:49 2014 -0500
+
+    Fix macosx build
+
+commit 7b947dea3959b06631410fc73a57adcf658fe0d3 (tag: refs/tags/alpha_release-6-3-440)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 17:04:30 2014 +0000
+
+    New ChangeLog
+
+commit 5bc87f426fa59d05497ce8f3702b48cac975c9d0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 12:00:03 2014 -0500
+
+    Fix macosx git build
+
+commit bd67ce522e1b982da36609f6dddb6ac228de62f1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 11:47:06 2014 -0500
+
+    Fix macosx git build
+
+commit 84da0248830c0a0d57aa7f36e1a1f3f9f3679765
+Merge: 56f187c 1c9ca56
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 11:41:57 2014 -0500
+
+    Fix macosx build
+
+commit 56f187ce78c47df0c3705f88a4dea3134ded71fc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 11:41:46 2014 -0500
+
+    Fix macosx git build
+
+commit 1c9ca56bdc4bcffe2c26e979ec45af060e201727 (tag: refs/tags/alpha_release-6-3-439)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 16:13:43 2014 +0000
+
+    New ChangeLog
+
+commit 014c7994d911d654d4168877c42a7de48118bc1d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 10:58:48 2014 -0500
+
+    Add git support for macosx builds
+
+commit cc745e25775e01786ccebf35c6d31c689ca5c54d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 10:39:55 2014 -0500
+
+    ignore more temporary files
+
+commit 016637caa589fe9175004436607a34e4b67efaed
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Nov 17 10:38:00 2014 -0500
+
+    Add git build for macosx
+
+commit 7323d3210302398641153d884c3c7cef6053649c (tag: refs/tags/alpha_release-6-3-438)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 09:09:08 2014 -0500
+
+    New ChangeLog
+
+commit 05b5793fd63a12d4e8004c54d08468d05b23d826
+Merge: 2b23cc1 1d86b37
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 17 08:37:38 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 2b23cc155161194fd8745a299f8b7e7375a1ada6
+Author: Mdsplus <mdsplus@niolin1.rfx.local>
+Date:   Mon Nov 17 08:37:14 2014 +0100
+
+    Let compile on 32 bit platform
+
+commit 1d86b379a8ce301d9bd1bbc389214c12816457f1 (tag: refs/tags/alpha_release-6-3-437)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Nov 15 01:56:22 2014 +0000
+
+    New ChangeLog
+
+commit 2b496853a80adad06d71dbdcb8888538a304c846
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 18:02:57 2014 +0100
+
+    Remove messages
+
+commit f9ba33f42b876824d1a649feceb00c435b321247
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 14 17:56:26 2014 +0100
+
+    remove debug messages
+
+commit 01ffb644835c509c04711e985f4e2b0ec085a6ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 14 11:13:15 2014 -0500
+
+    Fix event id for java clients
+
+commit 26bbe0db634d1ecd55dd285f539c4d8d23aa377d (tag: refs/tags/alpha_release-6-3-436)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Nov 14 15:46:28 2014 +0000
+
+    New ChangeLog
+
+commit 8fce75bce33ece394744605b7362ad3f47b7353e
 Author: Mdsplus <mdsplus@niolin1.rfx.local>
 Date:   Fri Nov 14 16:00:01 2014 +0100
 

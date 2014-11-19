@@ -390,8 +390,8 @@ void MDSplus::deleteNativeArray(short * array){delete array;}
 void MDSplus::deleteNativeArray(unsigned short * array){delete array;}
 void MDSplus::deleteNativeArray(int * array){delete array;}
 void MDSplus::deleteNativeArray(unsigned int * array){delete array;}
-void MDSplus::deleteNativeArray(long * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned long * array){delete array;}
+void MDSplus::deleteNativeArray(int64_t * array){delete array;}
+void MDSplus::deleteNativeArray(uint64_t * array){delete array;}
 void MDSplus::deleteNativeArray(float * array){delete array;}
 void MDSplus::deleteNativeArray(double * array){delete array;}
 void MDSplus::deleteNativeArray(char ** array){delete array;}

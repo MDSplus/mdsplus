@@ -857,7 +857,6 @@ enable_dependency_tracking
 enable_shared
 enable_perf
 enable_java
-enable_universal
 with_jdk
 with_visual_studio
 with_python_include
@@ -1520,7 +1519,6 @@ Optional Features:
   --disable-shared        Prevent building shared libraries
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
-  --enable-universal      Build MacOSX Universal Binary
   --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
 
@@ -6200,27 +6198,6 @@ else
 fi
 
 
-# Check whether --enable-universal was given.
-if test "${enable_universal+set}" = set; then :
-  enableval=$enable_universal;
-else
-  enable_universal=no
-fi
-
-
-case $host_vendor in #(
-  apple) :
-                                      enable_java=no
-                 if test "x$enable_universal" = xyes; then :
-  CFLAGS="-O2 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-                                                       LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"
-                                                       F77=fort77
-fi ;; #(
-  *) :
-     ;;
-esac
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $enable_java" >&5
-$as_echo "$enable_java" >&6; }
 
 
 # Check whether --with-jdk was given.

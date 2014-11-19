@@ -237,8 +237,7 @@ LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
 LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
-LV_INC = @LV_INC@
-LV_LIB = @LV_LIB@
+LV_CINTOOLS = @LV_CINTOOLS@
 MACOSX = @MACOSX@
 MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
@@ -269,6 +268,7 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 RANLIB = @RANLIB@
 REMCAM = @REMCAM@
 REMCAMLIB = @REMCAMLIB@
@@ -295,6 +295,9 @@ USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
 USE_SEMAPHORE_H = @USE_SEMAPHORE_H@
 USE_TM_GMTOFF = @USE_TM_GMTOFF@
 VERSION = @VERSION@
+VS = @VS@
+VS_ARCH = @VS_ARCH@
+VS_DIR = @VS_DIR@
 WINDRES = @WINDRES@
 XMKMF = @XMKMF@
 XM_LIBS = @XM_LIBS@
@@ -426,7 +429,7 @@ COMMON_SRC = \
 	jScope/MdsDataProvider.java           jScope/MdsMessage.java              jScope/MdsplusParser.java         \
 	jScope/MdsWaveInterface.java          jScope/MultiWaveform.java           jScope/MultiWavePopup.java        \
 	jScope/NotConnectedDataProvider.java  jScope/ProfileDialog.java           jScope/PropertiesEditor.java      \
-	jScope/RandomAccessData.java          jScope/RowColumnContainer.java      jScope/SignalListener.java	    \
+	jScope/RandomAccessData.java          jScope/RowColumnContainer.java      jScope/SignalListener.java        \
 	jScope/RowColumnLayout.java           jScope/SetupDataDialog.java         jScope/SetupDefaults.java         \
 	jScope/SetupWaveformParams.java       jScope/SignalBox.java               \
 	jScope/Signal.java                    jScope/SignalsBoxDialog.java        jScope/SshTunneling.java          \
@@ -438,8 +441,8 @@ COMMON_SRC = \
 	jScope/WaveData.java                  jScope/WaveDisplay.java             jScope/WaveformContainer.java     \
 	jScope/WaveformEditor.java            jScope/WaveformEditorListener.java  jScope/WaveformEvent.java         \
 	jScope/Waveform.java                  jScope/WaveformListener.java        jScope/WaveformManager.java       \
-	jScope/WaveformMetrics.java           jScope/WaveInterface.java           jScope/WavePopup.java		    \
-	jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java	  
+	jScope/WaveformMetrics.java           jScope/WaveInterface.java           jScope/WavePopup.java             \
+        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java
 
 WAVEDISPLAY_SRC = 
 JSCOPE_SRC = \
@@ -782,7 +785,8 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_docsDATA \
 
 
 @NOT_MINGW_TRUE@$(bin_SCRIPTS): jScope.template
-@NOT_MINGW_TRUE@	$(INSTALL) -D $< $@
+@NOT_MINGW_TRUE@	$(INSTALL) -d scripts
+@NOT_MINGW_TRUE@	$(INSTALL) $< $@
 $(java_DATA): classjava.stamp
 jScope.jar: colors1.tbl
 	mkdir docs
