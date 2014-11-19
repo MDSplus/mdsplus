@@ -16,7 +16,16 @@ def _load_library(name):
       return _C.CDLL('lib'+name+'.so')
     libnam=_find_library(name)
     if libnam is None:
-        raise Exception("Error finding library: "+name)
+	try:
+            lib=_C.CDLL('lib'+name+'.so')
+        except:
+            try:
+                lib=_C.CDLL('lib'+name+'.dylib')
+            except:
+                try:
+                    lib=_C.CDLL(name+'.dll')
+                except:
+                    raise Exception("Error finding library: "+name)
     else:
         try:
             lib=_C.CDLL(libnam)
