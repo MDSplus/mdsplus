@@ -2813,8 +2813,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   
   public void signalUpdated(boolean changeLimits)
   {
-      System.out.println("SIGNAL UPDATED "+ changeLimits);
-      
       change_limits = changeLimits;
       not_drawn = true;
       repaint();
