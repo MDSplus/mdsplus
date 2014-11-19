@@ -1,4 +1,35 @@
-commit 0e18bfc72d7d9f5b70922d397c60e9b107e978a2 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c8b9c3efd755e1fbaea0cae67364d35293ab10ed (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 19 08:57:01 2014 -0500
+
+    remove obsolete jsscope directory. Files used are in mdsobjects/python/js which are part of the wsgi support of jsscope
+
+commit dd12d114adb8d5ea10e0ce8be0652acbc38dd34c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Nov 19 08:54:39 2014 -0500
+
+    Try using loader in the case that findLibrary does not find it
+
+commit 14962bb12488b725beb60975d8dfcab6be1425aa
+Merge: 5acbce9 cf2cf5a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 19 11:10:32 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 5acbce9d0a737b605c21d48b4d6015aa7c773b70
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Nov 19 11:10:04 2014 +0100
+
+    Remove debug message
+
+commit cf2cf5aa7cad67a1906b39b7f002b56539b8b4ae (tag: refs/tags/alpha_release-6-3-441)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Nov 17 14:55:30 2014 -0500
+
+    New ChangeLog
+
+commit 0e18bfc72d7d9f5b70922d397c60e9b107e978a2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Nov 17 14:42:29 2014 -0500
 
