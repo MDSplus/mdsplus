@@ -9,6 +9,7 @@ import java.util.*;
 import java.beans.*;
 import java.rmi.*;
 import java.rmi.RemoteException.*;
+import java.awt.datatransfer.*;
 
 public class Tree extends JScrollPane implements TreeSelectionListener,
     MouseListener, ActionListener, KeyListener, DataChangeListener
@@ -50,6 +51,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	String lastName;
 	public static boolean isRemote(){return is_remote;}
 
+    String topExperiment;
+        
 // Temporary, to vercome Java's bugs on inner classes
     JMenuItem open_b, close_b, quit_b;
     JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b,
@@ -297,6 +300,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private void open_ok()
     {
 	    String exp = open_exp.getText(), shot_t = open_shot.getText();
+            topExperiment = exp;
 	    if(exp == null || exp.length() == 0)
 	    {
 	        JOptionPane.showMessageDialog(open_dialog, "Missing experiment name", "Error opening tree",
@@ -447,6 +451,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	        nodeHash.put(currNode, sons[i]);
 	    }
 	    curr_tree = new JTree(top);
+//GAB 2014 Add DragAndDrop capability
+            curr_tree.setTransferHandler(new FromTransferHandler());
+            curr_tree.setDragEnabled(true);
+/////////////////////////////            
+            
         ToolTipManager.sharedInstance().registerComponent(curr_tree);
 
 
@@ -1299,4 +1308,25 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         return curr_origin;
     }
     public boolean isEditable() {return is_editable; }
+    
+    //Inner class FromTranferHandler managed drag operation
+    class FromTransferHandler extends TransferHandler
+    {
+        public int getSourceActions(JComponent comp)
+        {
+            return COPY_OR_MOVE;
+        }
+        public Transferable createTransferable(JComponent comp)
+        {
+            if(curr_tree == null) return null;
+            try {
+                NodeInfo info = curr_node.getInfo();
+                return new StringSelection(topExperiment + ":" + info.fullpath);
+            }catch(Exception exc) {return null;}
+            
+        }    
+            
+    }
+    
+    
 }
