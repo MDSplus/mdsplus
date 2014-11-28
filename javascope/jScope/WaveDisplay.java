@@ -165,7 +165,7 @@ public class WaveDisplay
 
           WaveInterface wi = w.getWaveInterface();
           wi.SetDataProvider(da.getDataProvider());
-          wi.experiment = da.getExperiment();
+          wi.setExperiment(da.getExperiment());
 
           System.out.println("Signal Name : " + da.getSignalName() );
 
@@ -259,7 +259,7 @@ public class WaveDisplay
             wi.Erase();
           
           wi.SetDataProvider(da.getDataProvider());
-          wi.experiment = da.getExperiment();
+          wi.setExperiment(da.getExperiment());
 
           System.out.println("Signal Name : " + da.getSignalName() );
           System.out.println("Shots : "+da.getShot());

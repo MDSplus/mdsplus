@@ -114,6 +114,10 @@ public class WaveInterface
         CreateWaveInterface(wave, dp);
     }
 
+    public void setExperiment(String experiment)
+    {
+        this.experiment = experiment;
+    }
     public void Erase()
     {
         num_waves = 0;

@@ -15,6 +15,8 @@ import java.util.Vector;
 import java.awt.print.*;
 import java.awt.geom.*;
 import javax.swing.RepaintManager;
+import java.awt.datatransfer.*;
+import javax.swing.*;
 
 /**
  * A MultiWaveform container
@@ -43,6 +45,10 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    protected boolean      print_bw = false;
 
 
+   
+      
+   
+   
     /**
      * Constructs a new WaveformContainer with a number of column and component in column.
      *
@@ -114,8 +120,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
                  }
 	          }
 	     });
-
-    }
+     }
 
 
    /**
@@ -1009,6 +1014,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         RepaintManager currentManager = RepaintManager.currentManager(c);
         currentManager.setDoubleBufferingEnabled(true);
     }
+    
 
 
 }

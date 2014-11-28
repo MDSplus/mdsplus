@@ -3,9 +3,11 @@ package jScope;
 /* $Id$ */
 import jScope.Frames;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.util.*;
 import java.io.*;
 import java.lang.String;
+import javax.swing.TransferHandler;
 
 /**
  Class MultiWaveform extends the capability of class Waveform to deal with multiple
@@ -54,6 +56,9 @@ public class MultiWaveform
         SymContainer aSymContainer = new SymContainer();
         this.addContainerListener(aSymContainer);
         //}}
+        //GAB 2014 add Drag And Drop capability
+ 
+
     }
 
     public void Erase()
@@ -1537,5 +1542,7 @@ public class MultiWaveform
     {
         super.SetMode(mod);
     }
+    
+
 
 }

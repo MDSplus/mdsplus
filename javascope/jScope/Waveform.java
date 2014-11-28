@@ -13,6 +13,7 @@ import java.util.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.Insets;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.image.*;
 import java.awt.geom.*;
 
@@ -205,6 +206,7 @@ public class Waveform
     setMouse();
     setKeys();
     SetDefaultColors();
+
     }
 
   static String ConvertToString(double f, boolean is_log) {
@@ -2817,4 +2819,10 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       not_drawn = true;
       repaint();
   }
+  
+  
+ 
+  
+  
+  
 }

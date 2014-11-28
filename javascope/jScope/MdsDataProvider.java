@@ -698,7 +698,12 @@ public class MdsDataProvider
                 args.addElement(new Descriptor(null, new float[]{(float)xmin}));
                 args.addElement(new Descriptor(null, new float[]{(float)xmax}));
                 args.addElement(new Descriptor(null, new int[]{numPoints}));
-                byte[] retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                byte[] retData;
+                if(experiment == null)
+                    retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                else
+                   retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                     
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -794,7 +799,7 @@ public class MdsDataProvider
                  //System.out.println("MdsMisc->GetXYSignal Failed");
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-            float y[] = GetFloatArray("SetTimeContext(*,*,*); "+yExpr);
+            float y[] = GetFloatArray("SetTimeContext(*,*,*); FLOAT("+yExpr+")");
             RealArray xReal = GetRealArray(xExpr);
             if(xReal.isLong())
             {

@@ -1359,5 +1359,13 @@ Fix bug : shot expression must be always evaluated.
         catch (Exception e)
         {}
     }
+    
+    public void setExperiment(String experiment)
+    {
+        super.setExperiment(experiment);
+        cexperiment = experiment;
+        //Remove default
+        defaults &= ~(1 << MdsWaveInterface.B_exp);
+    }
 
 }
