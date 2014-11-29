@@ -1,4 +1,29 @@
-commit c8b9c3efd755e1fbaea0cae67364d35293ab10ed (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 206a5ad1e4fdb0ed33b6b50017cac4296cb0a919 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 618a8a3 007449f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 28 11:33:30 2014 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 618a8a3a7b82e6cd2a6541aa017bc507d75d1bec
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 28 11:33:05 2014 +0100
+
+    Added Drag and Drop capability
+
+commit a17aea0a0eebc19b02fccae75f295ecc229f67db
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Nov 28 11:32:40 2014 +0100
+
+    Added Drag And Drop Capability
+
+commit 007449f95595fb593bd4d2a91a155a65c4233f63 (tag: refs/tags/alpha_release-6-3-442)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Nov 19 18:17:27 2014 -0500
+
+    New ChangeLog
+
+commit c8b9c3efd755e1fbaea0cae67364d35293ab10ed
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Nov 19 08:57:01 2014 -0500
 
