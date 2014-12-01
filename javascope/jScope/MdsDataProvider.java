@@ -665,7 +665,10 @@ public class MdsDataProvider
                 else
                     xExpr = in_x;
              }
+             
              try   {
+                 if(!supportsLargeSignals())
+                     throw new Exception("Large signals unsupported");
                  
                 String setTimeContext;
                 if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
@@ -799,7 +802,12 @@ public class MdsDataProvider
                  //System.out.println("MdsMisc->GetXYSignal Failed");
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-            float y[] = GetFloatArray("SetTimeContext(*,*,*); FLOAT("+yExpr+")");
+            float y[];
+            if(supportsLargeSignals())
+                y = GetFloatArray("SetTimeContext(*,*,*);" +yExpr);
+            else
+               y = GetFloatArray(yExpr);
+               
             RealArray xReal = GetRealArray(xExpr);
             if(xReal.isLong())
             {
@@ -2036,6 +2044,9 @@ public class MdsDataProvider
          return retDims;
     }
 
+    boolean supportsLargeSignals() {return true;} //Subclass LocalDataProvider will return false
+    
+    
     static class RealArray
     {
         double doubleArray[] = null;
