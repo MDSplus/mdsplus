@@ -1,4 +1,16 @@
-commit 08e294a4c36d29ae52f162e243cb45d03dd47358 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 348b8235f32c2aaecf8e72ad65f9ed9a53cacbd0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 2 12:20:33 2014 -0500
+
+    Use more recent rt.jar from matlab
+
+commit 67fce86a2c02feecabd7478cd80e51d2d66626ea (tag: refs/tags/alpha_release-6-3-444)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Dec 1 23:15:08 2014 -0500
+
+    New ChangeLog
+
+commit 08e294a4c36d29ae52f162e243cb45d03dd47358
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Dec 1 15:40:24 2014 +0100
 
