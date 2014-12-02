@@ -44,7 +44,7 @@ make install
 makedir=$(pwd)
 pushd /tmp/%(flavor)s
 makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rflavor)s -NOCD \
-        -DOUTDIR=/tmp/%(flavor)s ${makedir}/deploy/mdsplus.nsi
+        -DOUTDIR=/tmp/%(flavor)s -DVisualStudio ${makedir}/deploy/mdsplus.nsi
 echo mdsplus | signcode -spc /mdsplus/certs/mdsplus.spc \
          -v /mdsplus/certs/mdsplus.pvk \
          -a sha1 \

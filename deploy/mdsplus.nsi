@@ -229,6 +229,7 @@ File "/oname=mdslib.lib" bin_x86_64/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86_64/MdsServerShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86_64/XTreeShr.dll.a
+!ifdef VisualStudio
 CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
 SetOutPath "$INSTDIR\devtools\lib64\visual_studio"
 File "/oname=mdsshr.lib" bin_x86_64/MdsShr.lib
@@ -239,6 +240,7 @@ File "/oname=mdsipshr.lib" bin_x86_64/mdsipshr.lib
 File "/oname=mdslib.lib" bin_x86_64/MdsLib.lib
 File "/oname=mdsobjectscppshr.lib" bin_x86_64/MdsObjectsCppShr-VS.lib
 File "/oname=mdsservershr.lib" bin_x86_64/servershr.lib
+!endif
 ${EndIf}
 CreateDirectory "$INSTDIR\devtools\lib32\mingw"
 SetOutPath "$INSTDIR\devtools\lib32\mingw"
@@ -251,6 +253,7 @@ File "/oname=mdslib.lib" bin_x86/MdsLib.dll.a
 File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr.dll.a
 File "/oname=mdsservershr.lib" bin_x86/MdsServerShr.dll.a
 File "/oname=xtreeshr.lib" bin_x86/XTreeShr.dll.a
+!ifdef VisualStudio
 CreateDirectory "$INSTDIR\devtools\lib64\visual_studio"
 SetOutPath "$INSTDIR\devtools\lib32\visual_studio"
 File "/oname=mdsshr.lib" bin_x86/MdsShr.lib
@@ -261,6 +264,7 @@ File "/oname=mdsipshr.lib" bin_x86/mdsipshr.lib
 File "/oname=mdslib.lib" bin_x86/MdsLib.lib
 File "/oname=mdsobjectscppshr.lib" bin_x86/MdsObjectsCppShr-VS.lib
 File "/oname=mdsservershr.lib" bin_x86/servershr.lib
+!endif
 SectionEnd
  
 # Uninstaller
