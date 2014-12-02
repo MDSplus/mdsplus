@@ -1,4 +1,16 @@
-commit 206a5ad1e4fdb0ed33b6b50017cac4296cb0a919 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 08e294a4c36d29ae52f162e243cb45d03dd47358 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Dec 1 15:40:24 2014 +0100
+
+    Fix LocalDataProvider
+
+commit 0ccd1ed43e6c175af7c7fd053a03847d2649a537 (tag: refs/tags/alpha_release-6-3-443)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Nov 28 23:15:22 2014 -0500
+
+    New ChangeLog
+
+commit 206a5ad1e4fdb0ed33b6b50017cac4296cb0a919
 Merge: 618a8a3 007449f
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Nov 28 11:33:30 2014 +0100
