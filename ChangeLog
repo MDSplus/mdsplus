@@ -1,4 +1,23 @@
-commit 348b8235f32c2aaecf8e72ad65f9ed9a53cacbd0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 71582b59c96ecd95f7162a7172cf7604580bebbc (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 24c7d52 b118a95
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 2 13:25:58 2014 -0500
+
+    Make visual studio libraries optional in nsi installation kits.
+
+commit 24c7d52f61f140215c64fee3a84df56b5cc5da96
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 2 13:25:33 2014 -0500
+
+    Make visual studio lib's optional
+
+commit b118a957659812a2177bdbc85fff19370e145fc1 (tag: refs/tags/alpha_release-6-3-445)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 2 13:01:44 2014 -0500
+
+    New ChangeLog
+
+commit 348b8235f32c2aaecf8e72ad65f9ed9a53cacbd0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 2 12:20:33 2014 -0500
 
