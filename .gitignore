@@ -12,12 +12,16 @@ envsyms
 bin/
 bin32/
 bin64/
+bin_x86/
+bin_x86_64/
 etc/
 lib/
 lib32/
 lib64/
 *.class
 *.jar
+*.manifest
+*.egg-info
 *.stamp
 actions/actions
 actions/actmon
