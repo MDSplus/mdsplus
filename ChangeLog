@@ -1,4 +1,16 @@
-commit 71582b59c96ecd95f7162a7172cf7604580bebbc (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 62b481a9ce35e42799dbe9e99680d660a18bc8c5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 3 08:28:05 2014 -0500
+
+    more files to ignore
+
+commit 79ff8a11dfbe9c3b476b5968774d14f95fc3ead8 (tag: refs/tags/alpha_release-6-3-446)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 2 13:52:08 2014 -0500
+
+    New ChangeLog
+
+commit 71582b59c96ecd95f7162a7172cf7604580bebbc
 Merge: 24c7d52 b118a95
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 2 13:25:58 2014 -0500
