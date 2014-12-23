@@ -567,8 +567,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField19.setOffsetNid(1435);
         jPanel10.add(deviceField19);
 
-        deviceChoice7.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice7.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice7.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice7.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice7.setConvert(true);
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Relative Phase: ");
@@ -640,8 +640,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField29.setOffsetNid(1501);
         jPanel15.add(deviceField29);
 
-        deviceChoice8.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice8.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice8.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice8.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice8.setConvert(true);
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Relative Phase: ");
@@ -713,8 +713,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField39.setOffsetNid(1567);
         jPanel16.add(deviceField39);
 
-        deviceChoice9.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice9.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice9.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice9.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice9.setConvert(true);
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Relative Phase: ");
@@ -786,8 +786,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField59.setOffsetNid(1633);
         jPanel18.add(deviceField59);
 
-        deviceChoice11.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice11.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice11.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice11.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice11.setConvert(true);
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Relative Phase: ");
@@ -859,8 +859,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField69.setOffsetNid(1699);
         jPanel19.add(deviceField69);
 
-        deviceChoice12.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice12.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice12.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice12.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice12.setConvert(true);
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Relative Phase: ");
@@ -932,8 +932,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField79.setOffsetNid(1765);
         jPanel20.add(deviceField79);
 
-        deviceChoice13.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice13.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice13.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice13.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice13.setConvert(true);
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Relative Phase: ");
@@ -1005,8 +1005,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField89.setOffsetNid(1831);
         jPanel21.add(deviceField89);
 
-        deviceChoice14.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice14.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice14.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice14.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice14.setConvert(true);
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Relative Phase: ");
@@ -1078,8 +1078,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField99.setOffsetNid(1897);
         jPanel22.add(deviceField99);
 
-        deviceChoice15.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice15.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice15.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice15.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice15.setConvert(true);
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Relative Phase: ");
@@ -1157,8 +1157,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField109.setOffsetNid(1963);
         jPanel23.add(deviceField109);
 
-        deviceChoice16.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice16.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice16.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice16.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice16.setConvert(true);
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Relative Phase: ");
@@ -1230,8 +1230,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField119.setOffsetNid(2029);
         jPanel24.add(deviceField119);
 
-        deviceChoice17.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice17.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice17.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice17.setConvert(true);
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Relative Phase: ");
@@ -1303,8 +1303,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField129.setOffsetNid(2095);
         jPanel25.add(deviceField129);
 
-        deviceChoice18.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice18.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice18.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice18.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice18.setConvert(true);
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("Relative Phase: ");
@@ -1376,8 +1376,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField139.setOffsetNid(2161);
         jPanel26.add(deviceField139);
 
-        deviceChoice19.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice19.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice19.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice19.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice19.setConvert(true);
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Relative Phase: ");
@@ -1449,8 +1449,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField149.setOffsetNid(2227);
         jPanel27.add(deviceField149);
 
-        deviceChoice20.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice20.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice20.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice20.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice20.setConvert(true);
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Relative Phase: ");
@@ -1522,8 +1522,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField159.setOffsetNid(2293);
         jPanel28.add(deviceField159);
 
-        deviceChoice21.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice21.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice21.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice21.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice21.setConvert(true);
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Relative Phase: ");
@@ -1595,8 +1595,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField169.setOffsetNid(2359);
         jPanel29.add(deviceField169);
 
-        deviceChoice22.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice22.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice22.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice22.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice22.setConvert(true);
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Relative Phase: ");
@@ -1668,8 +1668,8 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
         deviceField182.setOffsetNid(2425);
         jPanel32.add(deviceField182);
 
-        deviceChoice24.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice24.setChoiceItems(new String[] {"NO", "YES"});
+        deviceChoice24.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice24.setChoiceItems(new String[] {"NO", "YES", "0,1"});
         deviceChoice24.setConvert(true);
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Relative Phase: ");
