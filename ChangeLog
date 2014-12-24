@@ -1,4 +1,29 @@
-commit 103063cecb7145e2212d8e4d767e90f1d2a6c7df (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit acfce7c14801948e2ddc0ee7b6b2aceb2ad0bde4 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 24 08:49:50 2014 -0500
+
+    Fixes needed for changes in eventBuf handling in mdsobjects/cpp
+
+commit 6a7ad9f5cc19d488436efb8188b53f765451c9f9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 24 08:25:03 2014 -0500
+
+    Store Event::eventBuf internally as a std::string.  This removes the memory leak where eventBuf is newed but not deleted, and removes the C memcpy in favor of a simply string assignment that can take in a char *.  It also simplifies the bookeeping, since std::string records the length itself.  Doing this requires changing the return type of getRaw and waitRaw to be char const * instead of char *, which is good.  Without const, users can mess with the internal structure of the Event object.
+    (Keith)
+
+commit 0d89ac654ab1fd2eb680897c4d8d68c2d7ec0a27
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 24 08:22:08 2014 -0500
+
+    disable running lex and yacc
+
+commit bf7fd3590b90e6bf8f611757615bf5c4b3fff040 (tag: refs/tags/stable_release-6-1-68)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Nov 14 11:54:24 2014 -0500
+
+    New ChangeLog
+
+commit 103063cecb7145e2212d8e4d767e90f1d2a6c7df
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Nov 14 11:15:53 2014 -0500
 
