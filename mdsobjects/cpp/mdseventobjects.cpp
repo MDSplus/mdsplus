@@ -29,9 +29,7 @@ extern "C" {
 extern "C" void eventAst(void *arg, int len, char *buf)
 {
 	Event *ev = (Event *)arg;
-	ev->eventBufSize = len;
-	ev->eventBuf = new char[len];
-	memcpy(ev->eventBuf, buf, len);
+	ev->eventBuf.assign(buf,len);
 	ev->eventTime = convertAsciiToTime("now");
 	ev->run();
 }
@@ -53,9 +51,9 @@ void Event::disconnectFromEvents()
 
 Data *Event::getData()
 {
-	if(eventBufSize == 0)
+	if(eventBuf.length() == 0)
 		return NULL;
-    return deserialize(eventBuf);
+    return deserialize(eventBuf.c_str());
 
 }
 
@@ -72,8 +70,6 @@ void REvent::disconnectFromEvents()
 Event::Event(char *evName)
 {
 	sem.initialize(0);
-	eventBufSize = 0;
-	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
 	strcpy(eventName, evName);
 	eventId = -1;
@@ -81,8 +77,6 @@ Event::Event(char *evName)
 }
 REvent::REvent(char *evName)
 {
-	eventBufSize = 0;
-	eventBuf = 0;
 	eventName = new char[strlen(evName) + 1];
 	strcpy(eventName, evName);
 	eventId = -1;

@@ -2134,18 +2134,17 @@ protected:
 		virtual void disconnectFromEvents();
 	public:
 		char *eventName;
-		char *eventBuf;
-		int eventBufSize;
+		std::string eventBuf;
 		int eventId;
 		bool waitingEvent;
 		int64_t eventTime;
 		Event(){sem.initialize(0);}
 		Event(char *evName);
 		virtual ~Event();
-		char *getRaw(int *size)
+		char const *getRaw(std::size_t *size)
 		{
-			*size = eventBufSize;
-			return eventBuf;
+			*size = eventBuf.length();
+			return eventBuf.c_str();
 		}
 		Uint64 *getTime()
 		{
@@ -2191,7 +2190,7 @@ protected:
 			if(waitingEvent)
 				sem.post();
 		}
-		char *waitRaw(int *size)
+		char const *waitRaw(std::size_t *size)
 		{
 			sem.wait();
 			return getRaw(size);
@@ -2322,7 +2321,7 @@ protected:
 	};
 //////////////Support functions////////
 EXPORT void deleteData(Data *);
-EXPORT Data *deserialize(char *serialized);
+EXPORT Data *deserialize(char const *serialized);
 EXPORT Data *compile(const char *expr);
 EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
 EXPORT Data *compile(const char *expr, Tree *tree);
