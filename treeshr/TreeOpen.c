@@ -946,7 +946,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO *info, int edit_flag, in
   {
   case -1: status = TreeFILE_NOT_FOUND; break;
   case -2: status = TreeOPEN_EDIT & 0xfffffffa; break;
-  case -3: status = TreeFILE_NOT_FOUND; break;
+  case -3: status = TreeINVSHOT; break;
   default:
     info->alq = (int)(MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512);
     if (info->alq < 1)
