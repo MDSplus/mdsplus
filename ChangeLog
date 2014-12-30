@@ -1,4 +1,40 @@
-commit 71582b59c96ecd95f7162a7172cf7604580bebbc (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e0005a5dad4e2d66c2f69acc8f2684f1eb8dc2c1 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 23 15:09:19 2014 +0100
+
+    Adde device MARTE_XRAY
+
+commit b33549aab3b7e19ee7b28a4d2da3d0042675e25a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 23 15:04:02 2014 +0100
+
+    Added MARTE_XRAY device
+
+commit 19370a3cec8ab6d76ad098adb87903101004f08b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 23 12:30:48 2014 +0100
+
+    Change relative phase option
+
+commit 76880629fc2afd269cd51615a45745e1453809dd (tag: refs/tags/alpha_release-6-3-447)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Dec 3 23:14:22 2014 -0500
+
+    New ChangeLog
+
+commit 62b481a9ce35e42799dbe9e99680d660a18bc8c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 3 08:28:05 2014 -0500
+
+    more files to ignore
+
+commit 79ff8a11dfbe9c3b476b5968774d14f95fc3ead8 (tag: refs/tags/alpha_release-6-3-446)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 2 13:52:08 2014 -0500
+
+    New ChangeLog
+
+commit 71582b59c96ecd95f7162a7172cf7604580bebbc
 Merge: 24c7d52 b118a95
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 2 13:25:58 2014 -0500
