@@ -1,4 +1,23 @@
-commit e0005a5dad4e2d66c2f69acc8f2684f1eb8dc2c1 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 1b1c6df42fd1f121fabbf0f6d5d7dc7659206379 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 983335a b9f749b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 30 14:32:32 2014 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 983335aeb0532069f69a2ced843cc63cd7fd1768
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 30 14:31:40 2014 -0500
+
+    Return TreeINVSHOT when bad shot number provided
+
+commit b9f749b107da23d867efc5004ab2bfb71231b6d8 (tag: refs/tags/alpha_release-6-3-448)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 23 18:21:20 2014 -0500
+
+    New ChangeLog
+
+commit e0005a5dad4e2d66c2f69acc8f2684f1eb8dc2c1
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Dec 23 15:09:19 2014 +0100
 
