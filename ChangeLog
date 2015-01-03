@@ -1,4 +1,34 @@
-commit 1b1c6df42fd1f121fabbf0f6d5d7dc7659206379 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f79eb3ed5187ffd5e4ceb0b98d2dd749ddcde70b (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 2 14:32:11 2015 -0500
+
+    Add dependency on python-setuptools
+
+commit 6e207d0f4b8b42045e2407c8b9d8d12900f27f96
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 23:49:38 2015 -0500
+
+    do not run lex and yacc
+
+commit 421ca286aa3b4894e0ffa5898892e67593598cae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 23:45:10 2015 -0500
+
+    do not use yacc or lex
+
+commit 25f140a40e3136a3266c98c8266049436cd181c1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 16:20:14 2015 -0500
+
+    Prevent using lex and yacc
+
+commit c0f35c76f15cda451e1109da856aa08c87af05a8 (tag: refs/tags/alpha_release-6-3-449)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 30 18:23:58 2014 -0500
+
+    New ChangeLog
+
+commit 1b1c6df42fd1f121fabbf0f6d5d7dc7659206379
 Merge: 983335a b9f749b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 30 14:32:32 2014 -0500
