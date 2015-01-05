@@ -1,4 +1,10 @@
-commit ccb84e41812d5645e491c3910eee6c23a9fa8a22 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit baf70446305e10a2a2ec5d1180fec37d278714b9 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Jan 3 23:02:38 2015 -0500
+
+    New ChangeLog
+
+commit ccb84e41812d5645e491c3910eee6c23a9fa8a22
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jan 2 23:14:03 2015 -0500
 
