@@ -1,4 +1,16 @@
-commit 76d2dc3013648ee7be9de6237ca46a45c01050bf (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit fa311708272cea42bdc444428d81d2354c95b997 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 08:24:33 2015 -0500
+
+    special require for nonmds dependencies
+
+commit a5c8ff07787f92c7055deb75347093435feff37c (tag: refs/tags/alpha_release-6-3-450)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jan 5 23:03:02 2015 -0500
+
+    New ChangeLog
+
+commit 76d2dc3013648ee7be9de6237ca46a45c01050bf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jan 5 15:27:08 2015 -0500
 
