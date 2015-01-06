@@ -1,4 +1,16 @@
-commit 15cf07171d9c3ef72c944edbd8321cda5b46913b (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit ab2e9edc142c1b9157a7b9e479cdc7238fed0f45 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 12:14:09 2015 -0500
+
+    Handle nonmds dependencies
+
+commit b1b34a7b61a4f1c74355320ffb690726d710885d (tag: refs/tags/stable_release-6-1-70)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 09:07:18 2015 -0500
+
+    New ChangeLog
+
+commit 15cf07171d9c3ef72c944edbd8321cda5b46913b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 6 08:26:43 2015 -0500
 
