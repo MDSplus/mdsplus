@@ -1,4 +1,22 @@
-commit baf70446305e10a2a2ec5d1180fec37d278714b9 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 76d2dc3013648ee7be9de6237ca46a45c01050bf (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 15:27:08 2015 -0500
+
+    fix non MDSplus requires rules
+
+commit 0ce490792bde28e8062eac807db6953a61990a47
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 14:12:11 2015 -0500
+
+    Prevent trigraph warning with double question markse
+
+commit 820b95fb545e8a75c183016efbf1dfe4757a2f1d
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Jan 4 23:02:38 2015 -0500
+
+    New ChangeLog
+
+commit baf70446305e10a2a2ec5d1180fec37d278714b9
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Sat Jan 3 23:02:38 2015 -0500
 
