@@ -1,4 +1,52 @@
-commit acfce7c14801948e2ddc0ee7b6b2aceb2ad0bde4 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 15cf07171d9c3ef72c944edbd8321cda5b46913b (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 08:26:43 2015 -0500
+
+    Special require for nonmds dependency
+
+commit d362b2b8dfc1551854d32311cea67f0cf166748b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 08:18:23 2015 -0500
+
+    Ignore intermediate files
+
+commit b157e95f485ea92ce7061b3a843277b169e09f6b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 15:22:52 2015 -0500
+
+    fix non MDSplus requires rules
+
+commit af27c67d41af03e4439a4b4dbb0122204d2e5eb6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 14:25:27 2015 -0500
+
+    Do not use yacc and lex
+
+commit 861aac27f249775c99da19c4cc60a3405cb326bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 2 14:30:51 2015 -0500
+
+    Add dependency on python-setuptools
+
+commit 7a61c66147a756984af4c687ea828a0c25cd3c0a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 16:14:18 2015 -0500
+
+    Avoid using lex and yacc
+
+commit d317a380ef939fb30e94de77027b7eece87a6e0c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 31 16:29:49 2014 -0500
+
+    Fix find library to deal with the case where LD_LIBRARY_PATH is specified
+
+commit 832dc5ad9a98dee8569639e6e81d2ca4031ffedc (tag: refs/tags/stable_release-6-1-69)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Dec 24 09:13:51 2014 -0500
+
+    New ChangeLog
+
+commit acfce7c14801948e2ddc0ee7b6b2aceb2ad0bde4
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Dec 24 08:49:50 2014 -0500
 
