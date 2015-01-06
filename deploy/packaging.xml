@@ -526,6 +526,7 @@ fi
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
     <requires nonmds="true" package="python-setuptools"/>
+    <requires nonmds="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
 
