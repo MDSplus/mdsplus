@@ -165,7 +165,10 @@ rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUIL
             os.write(out,rpmspec % self.info)
             for require in package.getiterator("requires"):
                 self.info['reqpkg']=require.attrib['package']
-                os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+                if 'nonmds' in require.attrib:
+                    os.write(out,"Requires: %(reqpkg)s\n" % self.info)
+                else:
+                    os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
             os.write(out,"""
 Buildarch: noarch
 %%description
