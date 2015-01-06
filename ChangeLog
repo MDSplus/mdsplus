@@ -1,4 +1,16 @@
-commit b19170f758e94e2a77862c655dcd6a15870ee05a (HEAD, tag: refs/tags/stable_release-6-1-71, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit ebe48046ab59d597860d37ed0e5baa9ed14e73bd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 16:23:33 2015 -0500
+
+    Add numpy dependency on python package
+
+commit 9cf2782d0e1c96136f3cd78cdd7c13cae9b1336b (tag: refs/tags/alpha_release-6-3-452)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 18:37:16 2015 +0000
+
+    New ChangeLog
+
+commit b19170f758e94e2a77862c655dcd6a15870ee05a
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jan 6 18:24:26 2015 +0000
 
