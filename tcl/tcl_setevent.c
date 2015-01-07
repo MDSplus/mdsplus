@@ -15,9 +15,9 @@
 	 * Close tree file(s).
 	 ***************************************************************/
 int TclSetEvent()
-   {
-    static DYNAMIC_DESCRIPTOR(event);
+{
+  static DYNAMIC_DESCRIPTOR(event);
 
-    cli_get_value("EVENT",&event);
-    return MDSEvent(event.dscA_pointer,0,0);
-   }
+  cli_get_value("EVENT", &event);
+  return MDSEvent(event.dscA_pointer, 0, 0);
+}

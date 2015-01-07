@@ -84,8 +84,8 @@
 #define PREAMP_N_INPUT_16_OUTPUT 82
 #define PREAMP_N_INIT_ACTION 83
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InInitStruct;

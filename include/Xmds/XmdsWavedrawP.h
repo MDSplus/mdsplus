@@ -33,64 +33,59 @@
 #include <Xmds/XmdsWavedraw.h>
 #include <Xmds/XmdsWaveformP.h>
 
-typedef struct _XmdsWavedrawClassPart
-{
-   XtTranslations draw1_trans;
-   XtTranslations draw2_trans;
-   XtTranslations setpen_trans;
-   Boolean       (*add_point_proc)(XmdsWavedrawWidget w,int idx,float *newx,float *newy,Boolean callcallbacks, 
-        enum XmdsWaveformMotionRestriction motion); 
-   void (*delete_point_proc)(XmdsWavedrawWidget w,int idx,Boolean callcallbacks);
-   Boolean       (*move_point_proc)(XmdsWavedrawWidget w, int idx, float *desired_x, float *desired_y, float *new_x, float *new_y,
-                         Boolean callcallbacks, XEvent *event);
-   caddr_t        extension;
+typedef struct _XmdsWavedrawClassPart {
+  XtTranslations draw1_trans;
+  XtTranslations draw2_trans;
+  XtTranslations setpen_trans;
+   Boolean(*add_point_proc) (XmdsWavedrawWidget w, int idx, float *newx, float *newy,
+			     Boolean callcallbacks, enum XmdsWaveformMotionRestriction motion);
+  void (*delete_point_proc) (XmdsWavedrawWidget w, int idx, Boolean callcallbacks);
+   Boolean(*move_point_proc) (XmdsWavedrawWidget w, int idx, float *desired_x, float *desired_y,
+			      float *new_x, float *new_y, Boolean callcallbacks, XEvent * event);
+  caddr_t extension;
 } XmdsWavedrawClassPart;
 
-typedef struct _XmdsWavedrawClassRec
-{
-   CoreClassPart   core_class;
-   XmPrimitiveClassPart  primitive_class;
-   XmdsWaveformClassPart   waveform_class;
-   XmdsWavedrawClassPart   wavedraw_class;
+typedef struct _XmdsWavedrawClassRec {
+  CoreClassPart core_class;
+  XmPrimitiveClassPart primitive_class;
+  XmdsWaveformClassPart waveform_class;
+  XmdsWavedrawClassPart wavedraw_class;
 } XmdsWavedrawClassRec;
 
 externalref XmdsWavedrawClassRec xmdsWavedrawClassRec;
 
-typedef struct _XmdsWavedrawAxis
-{
-   float          *low;
-   float          *high;
-   float	  *min_distance;
-   Boolean        increasing;
-   int            num_choices;
-   float          *choices;
-   float          *grid_snap;
+typedef struct _XmdsWavedrawAxis {
+  float *low;
+  float *high;
+  float *min_distance;
+  Boolean increasing;
+  int num_choices;
+  float *choices;
+  float *grid_snap;
 } XmdsWavedrawAxis;
 
-typedef struct _XmdsWavedrawPart
-{
-   XtCallbackList move_callback;
-   XtCallbackList select_callback;
-   XtCallbackList deselect_callback;
-   XtCallbackList add_point_callback;
-   XtCallbackList delete_point_callback;
-   XtCallbackList fit_callback;
-   int           num_selections;
-   int            selection_idx;
-   Boolean        delete_only_selected;
-   XmdsWavedrawAxis   x;
-   XmdsWavedrawAxis   y;
-   float              *min_distance;
-} XmdsWavedrawPart;                             
+typedef struct _XmdsWavedrawPart {
+  XtCallbackList move_callback;
+  XtCallbackList select_callback;
+  XtCallbackList deselect_callback;
+  XtCallbackList add_point_callback;
+  XtCallbackList delete_point_callback;
+  XtCallbackList fit_callback;
+  int num_selections;
+  int selection_idx;
+  Boolean delete_only_selected;
+  XmdsWavedrawAxis x;
+  XmdsWavedrawAxis y;
+  float *min_distance;
+} XmdsWavedrawPart;
 
 /* Full instance record declaration */
-typedef struct _XmdsWavedrawRec
-{
-   CorePart       core;
-   XmPrimitivePart  common;
-   XmdsWaveformPart   waveform;
-   XmdsWavedrawPart   wavedraw;
+typedef struct _XmdsWavedrawRec {
+  CorePart core;
+  XmPrimitivePart common;
+  XmdsWaveformPart waveform;
+  XmdsWavedrawPart wavedraw;
 } XmdsWavedrawRec;
 
-#endif /* _XmdsWaveformP_h */
+#endif				/* _XmdsWaveformP_h */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

@@ -26,7 +26,7 @@
 EXPORT extern int StrAppend();
 EXPORT extern int StrCaseBlindCompare();
 EXPORT extern int StrCompare();
-EXPORT extern int StrConcat( struct descriptor *out, struct descriptor *first, ...);
+EXPORT extern int StrConcat(struct descriptor *out, struct descriptor *first, ...);
 EXPORT extern int StrCopyDx();
 EXPORT extern int StrCopyR();
 EXPORT extern int StrElement();
@@ -44,4 +44,3 @@ EXPORT extern int StrTrim();
 EXPORT extern int StrUpcase();
 
 #endif
-

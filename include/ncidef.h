@@ -70,11 +70,10 @@
 #define NciUSAGE_STR             39
 #define NciCLASS_STR             40
 #define NciVERSION               41
-typedef struct nci_itm
-{
-	short int buffer_length;
-	short int code;
-	void *pointer;
-	int *return_length_address;
+typedef struct nci_itm {
+  short int buffer_length;
+  short int code;
+  void *pointer;
+  int *return_length_address;
 } NCI_ITM;
 #endif

@@ -26,7 +26,6 @@
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 #ifndef XmdsSupport_h
 #include <mdsdescrip.h>
@@ -39,4 +38,4 @@ extern void ResetErrors();
 extern void TdiComplain(Widget w);
 extern struct descriptor *TdiGet(int nid);
 extern Boolean PutIfChanged(int nid, struct descriptor_xd *xd);
-#endif /* XmdsSupport_h */
+#endif				/* XmdsSupport_h */

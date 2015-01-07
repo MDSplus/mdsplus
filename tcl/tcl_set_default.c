@@ -11,43 +11,37 @@
 *
 ************************************************************************/
 
-
-
 	/****************************************************************
 	 * TclSetDefault:
 	 ****************************************************************/
-int   TclSetDefault()
-   {
-    int   nid;
-    int   sts;
-    static DYNAMIC_DESCRIPTOR(dsc_nodename);
+int TclSetDefault()
+{
+  int nid;
+  int sts;
+  static DYNAMIC_DESCRIPTOR(dsc_nodename);
 
-    cli_get_value("NODE",&dsc_nodename);
-    l2u(dsc_nodename.dscA_pointer,0);		/* to upper case	*/
+  cli_get_value("NODE", &dsc_nodename);
+  l2u(dsc_nodename.dscA_pointer, 0);	/* to upper case        */
 
-    sts = TreeSetDefault(dsc_nodename.dscA_pointer,&nid);
-    if (sts & 1)
-        TclNodeTouched(nid,set_def);
-    else
-        MdsMsg(sts,"Error trying to set default to %s",
-            dsc_nodename.dscA_pointer);
-    return sts;
-   }
-
-
+  sts = TreeSetDefault(dsc_nodename.dscA_pointer, &nid);
+  if (sts & 1)
+    TclNodeTouched(nid, set_def);
+  else
+    MdsMsg(sts, "Error trying to set default to %s", dsc_nodename.dscA_pointer);
+  return sts;
+}
 
 	/***************************************************************
 	 * TclShowDefault:
 	 ***************************************************************/
-int   TclShowDefault()		/* Returns: status			*/
-   {
-    char  *p;
-    int nid;
-    TreeGetDefaultNid(&nid);
-    if ((p = TreeGetPath(nid)))
-       {
-        TclTextOut(p);
-        TreeFree(p);
-       }
-    return(p ? 1 : 0);
-   }
+int TclShowDefault()
+{				/* Returns: status                        */
+  char *p;
+  int nid;
+  TreeGetDefaultNid(&nid);
+  if ((p = TreeGetPath(nid))) {
+    TclTextOut(p);
+    TreeFree(p);
+  }
+  return (p ? 1 : 0);
+}

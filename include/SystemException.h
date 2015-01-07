@@ -6,21 +6,17 @@
 #ifdef HAVE_WINDOWS_H
 #include "WindowsSystemException.h"
 #else
-class EXPORT SystemException
-{
-	char msg[512];
+class EXPORT SystemException {
+  char msg[512];
 
-public:
-	SystemException(const char *msg, int errNo)
-	{
-		perror("ERRORE DI SISTEMA");
-		sprintf(this->msg, "%s %d", msg, errNo);
-		this->msg[255] = 0;
-	}
-	char *what()
-	{
-		return msg;
-	}
+ public:
+   SystemException(const char *msg, int errNo) {
+    perror("ERRORE DI SISTEMA");
+    sprintf(this->msg, "%s %d", msg, errNo);
+    this->msg[255] = 0;
+  } char *what() {
+    return msg;
+  }
 };
 #endif
-#endif /*SYSTEMEXCEPTION_H_*/
+#endif				/*SYSTEMEXCEPTION_H_ */

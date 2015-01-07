@@ -29,25 +29,25 @@
 #define RETICON120_N_INIT_ACTION 27
 #define RETICON120_N_STORE_ACTION 28
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *memory_name;
-	int num_states;
-	struct descriptor *pixel_select;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *memory_name;
+  int num_states;
+  struct descriptor *pixel_select;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *memory_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *memory_name;
 } InStoreStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *memory_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *memory_name;
 } InTriggerStruct;

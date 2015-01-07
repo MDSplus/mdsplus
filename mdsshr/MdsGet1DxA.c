@@ -43,7 +43,6 @@
 
 	Description:
 
-
 +-----------------------------------------------------------------------------*/
 
 #define _DESCRIPTOR_PREFIXES
@@ -56,62 +55,57 @@
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-  int       MdsGet1DxA(struct descriptor_a * in_ptr, unsigned short *length_ptr, unsigned char *dtype_ptr,
-			            struct descriptor_xd *out_xd)
+int MdsGet1DxA(struct descriptor_a *in_ptr, unsigned short *length_ptr, unsigned char *dtype_ptr,
+	       struct descriptor_xd *out_xd)
 {
   array_coeff *in_dsc = (array_coeff *) in_ptr;
-  unsigned int       new_arsize;
-  unsigned int       dsc_size;
+  unsigned int new_arsize;
+  unsigned int dsc_size;
   unsigned int new_size;
-  int       status;
-  int       i;
+  int status;
+  int i;
   unsigned int align_size;
   array_coeff *out_dsc;
   unsigned char dsc_dtype = DTYPE_DSC;
   if ((in_dsc->dscW_length == 0) || (*length_ptr == 0))
-    new_arsize=0;
+    new_arsize = 0;
   else
     new_arsize = (in_dsc->dscL_arsize / in_dsc->dscW_length) * (*length_ptr);
-  dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.dscV_coeff ? sizeof(char *) + 
-                                                          sizeof(int) * in_dsc->dscB_dimct : 0) +
-						 (in_dsc->aflags.dscV_bounds ? sizeof(int) * (in_dsc->dscB_dimct * 2) 
-                                                                                                     : 0);
+  dsc_size = sizeof(struct descriptor_a) + (in_dsc->aflags.dscV_coeff ? sizeof(char *) +
+					    sizeof(int) * in_dsc->dscB_dimct : 0) +
+      (in_dsc->aflags.dscV_bounds ? sizeof(int) * (in_dsc->dscB_dimct * 2)
+       : 0);
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
-  dsc_size = align(dsc_size,align_size);
+  dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
   status = MdsGet1Dx(&new_size, &dsc_dtype, out_xd, NULL);
-  if (status & 1)
-  {
+  if (status & 1) {
     out_dsc = (array_coeff *) out_xd->dscA_pointer;
-    *(struct descriptor_a *) out_dsc = *(struct descriptor_a *) in_dsc;
+    *(struct descriptor_a *)out_dsc = *(struct descriptor_a *)in_dsc;
     out_dsc->dscW_length = *length_ptr;
     out_dsc->dscB_dtype = *dtype_ptr;
-    out_dsc->dscA_pointer = (char *) out_dsc + align(dsc_size,align_size);
+    out_dsc->dscA_pointer = (char *)out_dsc + align(dsc_size, align_size);
     out_dsc->dscL_arsize = new_arsize;
-    if (out_dsc->aflags.dscV_coeff)
-    {
-      if (out_dsc->dscB_class == CLASS_CA)
-      {
-        int64_t offset = ((int64_t) out_dsc->dscW_length) * ((in_dsc->dscA_a0 - (char *)0) / ((int64_t) in_dsc->dscW_length));
+    if (out_dsc->aflags.dscV_coeff) {
+      if (out_dsc->dscB_class == CLASS_CA) {
+	int64_t offset =
+	    ((int64_t) out_dsc->dscW_length) * ((in_dsc->dscA_a0 - (char *)0) /
+						((int64_t) in_dsc->dscW_length));
 	out_dsc->dscA_a0 = out_dsc->dscA_pointer + offset;
-      }
-      else
-      {
-        int64_t offset = ((int64_t) out_dsc->dscW_length) *
-		       ((in_dsc->dscA_a0 - in_dsc->dscA_pointer) / ((int64_t) in_dsc->dscW_length));
+      } else {
+	int64_t offset = ((int64_t) out_dsc->dscW_length) *
+	    ((in_dsc->dscA_a0 - in_dsc->dscA_pointer) / ((int64_t) in_dsc->dscW_length));
 	out_dsc->dscA_a0 = out_dsc->dscA_pointer + offset;
       }
       for (i = 0; i < out_dsc->dscB_dimct; i++)
 	out_dsc->dscL_m[i] = in_dsc->dscL_m[i];
-      if (in_dsc->aflags.dscV_bounds)
-      {
-	struct bound
-	{
-	  int       l;
-	  int       u;
+      if (in_dsc->aflags.dscV_bounds) {
+	struct bound {
+	  int l;
+	  int u;
 	};
-	struct bound *new_bound_ptr = (struct bound *) & out_dsc->dscL_m[out_dsc->dscB_dimct];
-	struct bound *a_bound_ptr = (struct bound *) & in_dsc->dscL_m[in_dsc->dscB_dimct];
+	struct bound *new_bound_ptr = (struct bound *)&out_dsc->dscL_m[out_dsc->dscB_dimct];
+	struct bound *a_bound_ptr = (struct bound *)&in_dsc->dscL_m[in_dsc->dscB_dimct];
 	for (i = 0; i < out_dsc->dscB_dimct; i++)
 	  new_bound_ptr[i] = a_bound_ptr[i];
       }

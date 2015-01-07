@@ -30,7 +30,6 @@
   Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount);
   Boolean XmdsIsPath(Widget w);
 
-
 ------------------------------------------------------------------------------
    Copyright (c) 1992
    Property of Massachusetts Institute of Technology, Cambridge MA 02139.
@@ -40,7 +39,6 @@
 ---------------------------------------------------------------------------
 
 	Description:
-
 
 ------------------------------------------------------------------------------*/
 
@@ -55,7 +53,6 @@
 #include <Xmds/XmdsPath.h>
 #include <xmdsshr.h>
 #define PathUserData 0xAAAAAAA
-
 
 /*------------------------------------------------------------------------------
 
@@ -79,60 +76,57 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-typedef struct _PathPart
-{
+typedef struct _PathPart {
   int nid;
   int nid_offset;
   int path_type;
 } XmdsPathPart;
 
-static XtResource resources[] = 
-{
+static XtResource resources[] = {
   {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, nid), XmRImmediate, 0},
-  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, nid_offset), XmRImmediate, 0},
-  {XmdsNpathType, "PathType", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, path_type), XmRImmediate, 0}
+  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, nid_offset),
+   XmRImmediate, 0},
+  {XmdsNpathType, "PathType", XmRInt, sizeof(int), XtOffsetOf(XmdsPathPart, path_type),
+   XmRImmediate, 0}
 };
-
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-Widget XmdsCreatePath(Widget parent,String name,ArgList args,Cardinal argcount)
+Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount)
 {
-  XmdsPathPart info = {-1,0,0};
+  XmdsPathPart info = { -1, 0, 0 };
   Widget w;
-  Arg lab_args[] = {{XmNlabelString, 0}, {XmNuserData, PathUserData}};
+  Arg lab_args[] = { {XmNlabelString, 0}, {XmNuserData, PathUserData} };
   Arg *merged_args;
   int nid;
 
-  XmdsSetSubvalues(&info,resources,XtNumber(resources),args,argcount);
+  XmdsSetSubvalues(&info, resources, XtNumber(resources), args, argcount);
   if (info.nid == -1)
     info.nid = XmdsGetDeviceNid();
   if (info.nid != -1)
     nid = info.nid + info.nid_offset;
   else
     nid = -1;
-  if (nid != -1)
-  {
-    NCI_ITM nci[] = {{0, 0, 0, 0}, 
-		     {0, NciEND_OF_LIST, 0, 0}};
+  if (nid != -1) {
+    NCI_ITM nci[] = { {0, 0, 0, 0}
+    ,
+    {0, NciEND_OF_LIST, 0, 0}
+    };
     int status;
     nci[0].code = (info.path_type == NciABSOLUTE_PATH) ? NciFULLPATH : NciMINPATH;
-    status = TreeGetNci(nid,nci);
-    if (status & 1)
-    {
-      lab_args[0].value = (long) XmStringCreateSimple(nci[0].pointer);
+    status = TreeGetNci(nid, nci);
+    if (status & 1) {
+      lab_args[0].value = (long)XmStringCreateSimple(nci[0].pointer);
       TreeFree(nci[0].pointer);
-    }
-    else
-      lab_args[0].value = (long) XmStringCreateSimple("Error getting path");
-  }
-  else
-    lab_args[0].value = (long) XmStringCreateSimple("No node");
-  merged_args = XtMergeArgLists(args,argcount,lab_args,XtNumber(lab_args));
-  w = XmCreateLabel(parent,name,merged_args,XtNumber(lab_args) + argcount);
-  XmStringFree((XmString)lab_args[0].value);
+    } else
+      lab_args[0].value = (long)XmStringCreateSimple("Error getting path");
+  } else
+    lab_args[0].value = (long)XmStringCreateSimple("No node");
+  merged_args = XtMergeArgLists(args, argcount, lab_args, XtNumber(lab_args));
+  w = XmCreateLabel(parent, name, merged_args, XtNumber(lab_args) + argcount);
+  XmStringFree((XmString) lab_args[0].value);
   XtFree((char *)merged_args);
   return w;
 }
@@ -140,7 +134,7 @@ Widget XmdsCreatePath(Widget parent,String name,ArgList args,Cardinal argcount)
 Boolean XmdsIsPath(Widget w)
 {
   XtPointer user_data = 0;
-  XtVaGetValues(w,XmNuserData, &user_data,NULL);
+  XtVaGetValues(w, XmNuserData, &user_data, NULL);
   if (user_data && ((int)user_data == PathUserData))
     return 1;
   else

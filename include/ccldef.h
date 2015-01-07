@@ -21,10 +21,10 @@
 
 #define CCL_STS_SUCCESS     CCL_STS(1)
 
-#endif		/* __CCLDEF_H	*/
+#endif				/* __CCLDEF_H   */
 
 #ifdef CREATE_STS_TEXT
-static struct stsText  ccl_stsText[] = {
-        STS_TEXT(CCL_STS_SUCCESS,"Success")
-       };
+static struct stsText ccl_stsText[] = {
+  STS_TEXT(CCL_STS_SUCCESS, "Success")
+};
 #endif

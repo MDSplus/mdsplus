@@ -32,20 +32,20 @@
 #define L8590_N_INIT_ACTION 30
 #define L8590_N_STORE_ACTION 31
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *mem_cts_name;
-	int num_active;
-	int num_active_convert;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *mem_cts_name;
+  int num_active;
+  int num_active_convert;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *mem_cts_name;
-	int num_active;
-	int num_active_convert;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *mem_cts_name;
+  int num_active;
+  int num_active_convert;
 } InStoreStruct;

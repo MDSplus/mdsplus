@@ -31,7 +31,6 @@ void      XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent *event)
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 /*------------------------------------------------------------------------------
@@ -62,11 +61,11 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
  Executable:                                                                  */
 
-void XmdsPopupMenuPosition(XmRowColumnWidget w,XButtonEvent *event)
+void XmdsPopupMenuPosition(XmRowColumnWidget w, XButtonEvent * event)
 {
   Widget option = w->row_column.memory_subwidget;
   XtX(w) = event->x_root - (option ? XtX(option) + XtWidth(option) / 2 : 0);
   XtY(w) = event->y_root - (option ? XtY(option) + XtHeight(option) / 2 : 0);
-  RC_SetWidgetMoved(w,1);
-  RC_CascadeBtn(w) = XtWindowToWidget(XtDisplay(w),event->window);
+  RC_SetWidgetMoved(w, 1);
+  RC_CascadeBtn(w) = XtWindowToWidget(XtDisplay(w), event->window);
 }

@@ -32,9 +32,9 @@
 
 /* Resources */
 
-#define XmdsNnid               "nid"	        /* Nid */
+#define XmdsNnid               "nid"	/* Nid */
 #define XmdsNnidOffset         "nidOffset"	/* Nid offset */
-#define XmdsNputOnApply        "putOnApply"        /* Put when a XmdsApplyAllXds is called */
+#define XmdsNputOnApply        "putOnApply"	/* Put when a XmdsApplyAllXds is called */
 
 /* External creation routines:
 */
@@ -42,17 +42,18 @@
 
 extern Widget XmdsCreateXdBoxOnOffButton();
 extern Boolean XmdsIsXdBoxOnOffButton();
-extern int    XmdsXdBoxOnOffButtonApply();
-extern int    XmdsXdBoxOnOffButtonPut();
-extern void   XmdsXdBoxOnOffButtonReset();
+extern int XmdsXdBoxOnOffButtonApply();
+extern int XmdsXdBoxOnOffButtonPut();
+extern void XmdsXdBoxOnOffButtonReset();
 
 #else				/* _NO_PROTO */
 
-extern Widget	XmdsCreateXdBoxOnOffButton(Widget parent,String name,ArgList args,Cardinal argcount);
-extern Boolean	XmdsIsXdBoxOnOffButton(Widget w);
-extern int	XmdsXdBoxOnOffButtonApply(Widget w);
-extern int	XmdsXdBoxOnOffButtonPut(Widget w);
-extern void	XmdsXdBoxOnOffButtonReset(Widget w);
+extern Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name, ArgList args,
+					 Cardinal argcount);
+extern Boolean XmdsIsXdBoxOnOffButton(Widget w);
+extern int XmdsXdBoxOnOffButtonApply(Widget w);
+extern int XmdsXdBoxOnOffButtonPut(Widget w);
+extern void XmdsXdBoxOnOffButtonReset(Widget w);
 
 #endif				/* _NO_PROTO */
 

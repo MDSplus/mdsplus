@@ -64,7 +64,7 @@
 #define XmdsNattachCrosshairs    "attachCrosshairs"	/* Attach crosshairs to curve - boolean */
 #define XmdsNdisabled		 "disabled"	/* True = disable drawing until disabled cleared */
 #define XmdsNclosed		 "closed"	/* True = connect last point to first point - boolean */
-#define XmdsNgridStyle           "gridStyle"    /* Select type of grid */
+#define XmdsNgridStyle           "gridStyle"	/* Select type of grid */
 
 /* X-axis Resources */
 
@@ -99,25 +99,22 @@
 
 /* Value Struct resource mechanism */
 
-typedef struct _XmdsWaveformValStruct
-{
+typedef struct _XmdsWaveformValStruct {
   unsigned int size;
   caddr_t addr;
   void (*destroy) ();		/* Destroy called with widget and destroy arg */
   caddr_t destroy_arg;
-} XmdsWaveformValStruct,*XmdsWaveformValStructPtr;
+} XmdsWaveformValStruct, *XmdsWaveformValStructPtr;
 /* Callback structures */
 
-typedef struct
-{
+typedef struct {
   int reason;
   XEvent *event;
   float x;
   float y;
 } XmdsWaveformCrosshairsCBStruct;
 
-typedef struct
-{
+typedef struct {
   int reason;
   XEvent *event;
   float *xminval;
@@ -148,14 +145,12 @@ typedef struct
 #define XmdsSHOW_MODE_POINTS 1
 #define XmdsSHOW_MODE_BOTH 2
 
-enum XmdsWaveformMotionRestriction
-{
-  XmdsMOTION_UNSELECTED,XmdsMOTION_BOTH,XmdsMOTION_XONLY,XmdsMOTION_YONLY,XmdsMOTION_NONE
+enum XmdsWaveformMotionRestriction {
+  XmdsMOTION_UNSELECTED, XmdsMOTION_BOTH, XmdsMOTION_XONLY, XmdsMOTION_YONLY, XmdsMOTION_NONE
 };
 
-enum XmdsWaveformGridStyle
-{
-  XmdsGRID_STYLE_LINES,XmdsGRID_STYLE_TICKS
+enum XmdsWaveformGridStyle {
+  XmdsGRID_STYLE_LINES, XmdsGRID_STYLE_TICKS
 };
 /* Class record constants */
 
@@ -183,15 +178,17 @@ extern void XmdsWaveformSetWave();
 
 #else				/* _NO_PROTO_ */
 
-extern Widget XmdsCreateWaveform(Widget parent,char *name,ArgList al,Cardinal ac);
-extern void XmdsWaveformPrint(Widget w,FILE *fid,int width,int height,int rotate,char *title, char *window_title, int resolution);
-extern void XmdsWaveformReverse(Widget w,int reverse);
-extern void XmdsWaveformSetCrosshairs(Widget w,float *x,float *y,Boolean attach);
-extern void XmdsWaveformSetPointerMode(Widget w,int mode);
-extern void XmdsWaveformUpdate(Widget w,XmdsWaveformValStruct *x,XmdsWaveformValStruct *y,char *title,
-			       float *xmin,float *xmax,float *ymin,float *ymax,Boolean defer_update);
-extern void XmdsWaveformSetWave(Widget w,int count,float *x,float *y,Boolean *select,Boolean *pendown,
-				Boolean autoscale,Boolean defer_update);
+extern Widget XmdsCreateWaveform(Widget parent, char *name, ArgList al, Cardinal ac);
+extern void XmdsWaveformPrint(Widget w, FILE * fid, int width, int height, int rotate, char *title,
+			      char *window_title, int resolution);
+extern void XmdsWaveformReverse(Widget w, int reverse);
+extern void XmdsWaveformSetCrosshairs(Widget w, float *x, float *y, Boolean attach);
+extern void XmdsWaveformSetPointerMode(Widget w, int mode);
+extern void XmdsWaveformUpdate(Widget w, XmdsWaveformValStruct * x, XmdsWaveformValStruct * y,
+			       char *title, float *xmin, float *xmax, float *ymin, float *ymax,
+			       Boolean defer_update);
+extern void XmdsWaveformSetWave(Widget w, int count, float *x, float *y, Boolean * select,
+				Boolean * pendown, Boolean autoscale, Boolean defer_update);
 
 #endif				/* _NO_PROTO_ */
 

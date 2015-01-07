@@ -29,16 +29,16 @@
 #define XmdsCallbacks_H
 
 typedef struct _XmdsButtonCallbackStruct {
-    int			    	reason;
-    XEvent			*event;
-    struct descriptor_xd	*xd;
-    Boolean			on_off;
+  int reason;
+  XEvent *event;
+  struct descriptor_xd *xd;
+  Boolean on_off;
 } XmdsButtonCallbackStruct;
 
 typedef struct _XmdsMenuCallbackStruct {
-    int		reason;
-    XEvent	*event;
-    int 	button;
+  int reason;
+  XEvent *event;
+  int button;
 } XmdsMenuCallbackStruct;
 
 /* reasons */
@@ -58,14 +58,14 @@ extern void XmdsOkCallback();
 
 #else
 
-extern int	XmdsApplyCallback(Widget w);
-extern void	XmdsCancelCallback(Widget w);
-extern void	XmdsResetCallback(Widget w);
-extern void	XmdsDestroyWidgetCallback(Widget w1,Widget *w2);
-extern void	XmdsManageChildCallback(Widget w1,Widget *w2);
-extern void	XmdsRegisterWidgetCallback(Widget w1,Widget *w2);
-extern void	XmdsUnmanageChildCallback(Widget w1,Widget *w2);
-extern void	XmdsOkCallback(Widget w);
+extern int XmdsApplyCallback(Widget w);
+extern void XmdsCancelCallback(Widget w);
+extern void XmdsResetCallback(Widget w);
+extern void XmdsDestroyWidgetCallback(Widget w1, Widget * w2);
+extern void XmdsManageChildCallback(Widget w1, Widget * w2);
+extern void XmdsRegisterWidgetCallback(Widget w1, Widget * w2);
+extern void XmdsUnmanageChildCallback(Widget w1, Widget * w2);
+extern void XmdsOkCallback(Widget w);
 #endif
 
 #endif

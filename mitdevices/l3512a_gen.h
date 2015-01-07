@@ -13,25 +13,25 @@
 #define L3512A_N_INIT_ACTION 11
 #define L3512A_N_STORE_ACTION 12
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *memory_name;
-	char *router_name;
-	int num_spectra;
-	int num_channels;
-	int offset;
-	struct descriptor *duration;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *memory_name;
+  char *router_name;
+  int num_spectra;
+  int num_channels;
+  int offset;
+  struct descriptor *duration;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *memory_name;
-	int num_spectra;
-	int num_channels;
-	struct descriptor *duration;
-	struct descriptor *trigger;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *memory_name;
+  int num_spectra;
+  int num_channels;
+  struct descriptor *duration;
+  struct descriptor *trigger;
 } InStoreStruct;

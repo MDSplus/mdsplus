@@ -118,7 +118,7 @@ extern int CamQ();
 extern int TdiCompile();
 
 static int GetPodSettings(int nid, int *settings);
-static int one=1;
+static int one = 1;
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 #define pio(f,a,d) \
   return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16,0), &one, 0),status)
@@ -151,7 +151,7 @@ static int one=1;
 #define HV1440_K_MAX_PODS       16
 #define HV1440_K_CHANS_PER_POD  16
 
-int hv1440___init(struct descriptor *niddsc, InInitStruct *setup)
+int hv1440___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int pods[HV1440_K_MAX_PODS];
   int status = 1;
@@ -160,39 +160,41 @@ int hv1440___init(struct descriptor *niddsc, InInitStruct *setup)
   int i;
   int j;
   int vmax;
-  int vfmax=0;
-  int nfmax=0;
+  int vfmax = 0;
+  int nfmax = 0;
 
   static int settings[HV1440_K_MAX_CHANNELS];
 
+  vmax = ((setup->range == 1.0) ||
+	  (setup->range == .625)) ? 2500 : (setup->range == .5) ? 2046 : (setup->range ==
+									  .375) ? 1534 : 0;
+  if (!vmax)
+    return HV1440$_BAD_RANGE;
 
-  vmax = ((setup->range == 1.0) || 
-          (setup->range == .625)) ? 2500 : (setup->range == .5) ? 2046 : (setup->range == .375) ? 1534 : 0;
-  if (! vmax) return HV1440$_BAD_RANGE;
+  for (pod = 0, ind = 0; pod < HV1440_K_MAX_PODS; pod++, ind += HV1440_K_CHANS_PER_POD)
+    pods[pod] = GetPodSettings(setup->head_nid + HV1440_N_POD_01 + pod, &settings[ind]);
 
-  for (pod=0,ind=0; pod<HV1440_K_MAX_PODS; pod++, ind+= HV1440_K_CHANS_PER_POD)  
-    pods[pod] = GetPodSettings(setup->head_nid + HV1440_N_POD_01+pod, &settings[ind]);
-
-  for (i=0; i<HV1440_K_MAX_CHANNELS; i++) {
+  for (i = 0; i < HV1440_K_MAX_CHANNELS; i++) {
     int abset = abs(settings[i]);
-    if (abset > vmax) return HV1440$_OUTRNG;
+    if (abset > vmax)
+      return HV1440$_OUTRNG;
     if (abset > vfmax) {
-      vfmax  = abset;
+      vfmax = abset;
       nfmax = i;
     }
   }
-  pio(9,0,0);		       		/* clear the interface */
-/*  pio(10,0,0); */                		/* enable lam1 */
-/*   pio(26,1,0); */               		/* enable lam2 */
-  send_hv (0, nfmax, setup->frame*2, 0);   /* select the frame */
-  for (i=0; i<HV1440_K_MAX_PODS; i++) {
+  pio(9, 0, 0);			/* clear the interface */
+  /*  pio(10,0,0); *//* enable lam1 */
+  /*   pio(26,1,0); *//* enable lam2 */
+  send_hv(0, nfmax, setup->frame * 2, 0);	/* select the frame */
+  for (i = 0; i < HV1440_K_MAX_PODS; i++) {
     if (pods[i]) {
-      int i0 = i*16;
+      int i0 = i * 16;
       send_hv(0, i0, 2, 1)
-      for (j = 0; j<HV1440_K_CHANS_PER_POD; j++) {
-        int iv = abs(settings[i*HV1440_K_CHANS_PER_POD+j])/setup->range + .5;
-        int sign = (iv>0);
-        send_hv(sign, 0, iv, 2);
+	  for (j = 0; j < HV1440_K_CHANS_PER_POD; j++) {
+	int iv = abs(settings[i * HV1440_K_CHANS_PER_POD + j]) / setup->range + .5;
+	int sign = (iv > 0);
+	send_hv(sign, 0, iv, 2);
       }
 /*       wait_hv;  */
     }
@@ -204,20 +206,22 @@ static int GetPodSettings(int nid, int *settings)
 {
   static int dev_nid;
   int status = DevNid(&nid, &dev_nid);
-  if (status&1) {
+  if (status & 1) {
     static DESCRIPTOR(get_settings, "GET_SETTINGS");
-    static DESCRIPTOR_NID(nid_dsc,&dev_nid);
-    status = TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV1440_K_CHANS_PER_POD, settings MDS_END_ARG);
+    static DESCRIPTOR_NID(nid_dsc, &dev_nid);
+    status =
+	TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV1440_K_CHANS_PER_POD,
+		     settings MDS_END_ARG);
   }
-  if ((status&1)==0) {
+  if ((status & 1) == 0) {
     int i;
-    for (i=0; i<HV1440_K_CHANS_PER_POD; i++)
+    for (i = 0; i < HV1440_K_CHANS_PER_POD; i++)
       settings[i] = 0;
   }
-  return status&1;
+  return status & 1;
 }
 
-int hv1440___on(struct descriptor *niddsc, InOnStruct *setup)
+int hv1440___on(struct descriptor *niddsc, InOnStruct * setup)
 {
   int status = 1;
   send_hv(0, 0, 4, 6);
@@ -225,7 +229,7 @@ int hv1440___on(struct descriptor *niddsc, InOnStruct *setup)
   return 1;
 }
 
-int hv1440___off(struct descriptor *niddsc, InOffStruct *setup)
+int hv1440___off(struct descriptor *niddsc, InOffStruct * setup)
 {
   int status = 1;
   send_hv(0, 0, 0, 6);
@@ -233,10 +237,10 @@ int hv1440___off(struct descriptor *niddsc, InOffStruct *setup)
   return 1;
 }
 
-int hv1440___store(struct descriptor *niddsc, InStoreStruct *setup)
+int hv1440___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int count;
-  int need_pod=0;
+  int need_pod = 0;
   int status = 1;
   int pod;
   int ind;
@@ -244,8 +248,8 @@ int hv1440___store(struct descriptor *niddsc, InStoreStruct *setup)
   int j;
   float volt;
   int vmax;
-  int vfmax=0;
-  int nfmax=0;
+  int vfmax = 0;
+  int nfmax = 0;
   int pods[HV1440_K_MAX_PODS];
   int f2;
 
@@ -253,59 +257,64 @@ int hv1440___store(struct descriptor *niddsc, InStoreStruct *setup)
   static float f_settings[HV1440_K_MAX_CHANNELS];
   static DESCRIPTOR(out_dsc, "BUILD_WITH_UNITS($, 'Volts')");
   static DESCRIPTOR_A(settings_dsc, sizeof(float), DTYPE_F, f_settings, sizeof(f_settings));
-  static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+  static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 
-  vmax = ((setup->range == 1.0) || 
-       (setup->range == .625)) ? 2500 : (setup->range == .5) ? 2046 : (setup->range == .375) ? 1534 : 0;
-  if (! vmax) return HV1440$_BAD_RANGE;
+  vmax = ((setup->range == 1.0) ||
+	  (setup->range == .625)) ? 2500 : (setup->range == .5) ? 2046 : (setup->range ==
+									  .375) ? 1534 : 0;
+  if (!vmax)
+    return HV1440$_BAD_RANGE;
 
-  for (pod=0,ind=0; pod<HV1440_K_MAX_PODS; pod++, ind+= HV1440_K_CHANS_PER_POD)  
+  for (pod = 0, ind = 0; pod < HV1440_K_MAX_PODS; pod++, ind += HV1440_K_CHANS_PER_POD)
     pods[pod] = GetPodSettings(setup->head_nid + HV1440_N_POD_01 + pod, &settings[ind]);
 
-  for (i=0; i<HV1440_K_MAX_CHANNELS; i++) {
+  for (i = 0; i < HV1440_K_MAX_CHANNELS; i++) {
     int abset = abs(settings[i]);
-    if (abset > vmax) return HV1440$_OUTRNG;
+    if (abset > vmax)
+      return HV1440$_OUTRNG;
     if (abset > vfmax) {
-      vfmax  = abset;
+      vfmax = abset;
       nfmax = i;
     }
   }
-  pio(9,0,0);
-  pio(10,0,0);
-  pio(26,1,0);
-  f2 = setup->frame*2;
+  pio(9, 0, 0);
+  pio(10, 0, 0);
+  pio(26, 1, 0);
+  f2 = setup->frame * 2;
   send_hv(0, nfmax, f2, 0);
-  for (i=0; i<HV1440_K_MAX_PODS; i++) {
+  for (i = 0; i < HV1440_K_MAX_PODS; i++) {
     if (pods[i]) {
-      need_pod = i+1;
-      for(j=0; j<HV1440_K_CHANS_PER_POD; j++) {
-        struct v_read {
-	  unsigned tag : 3;
-          unsigned voltage : 12;
-          unsigned sign_bit : 1;
-        } voltage; 
-        int i0 = i*HV1440_K_CHANS_PER_POD+j;
-        send_hv(0, i0, 8, 3);
-        for (voltage.tag=0, count = 0; ((count < 25) && (voltage.tag != 2)); count++) {
-          static float time = .1;
-          LibWait(&time);
-          pio(2, 0, (short *)&voltage);
-        }
-        if (count > 1) printf("Readback took %d tries\n", count);
-        if (count == 25) return HV1440$_STUCK;
-        f_settings[i*HV1440_K_CHANS_PER_POD+j] = voltage.voltage*setup->range* (voltage.sign_bit ? 1. : -1.);
+      need_pod = i + 1;
+      for (j = 0; j < HV1440_K_CHANS_PER_POD; j++) {
+	struct v_read {
+	  unsigned tag:3;
+	  unsigned voltage:12;
+	  unsigned sign_bit:1;
+	} voltage;
+	int i0 = i * HV1440_K_CHANS_PER_POD + j;
+	send_hv(0, i0, 8, 3);
+	for (voltage.tag = 0, count = 0; ((count < 25) && (voltage.tag != 2)); count++) {
+	  static float time = .1;
+	  LibWait(&time);
+	  pio(2, 0, (short *)&voltage);
+	}
+	if (count > 1)
+	  printf("Readback took %d tries\n", count);
+	if (count == 25)
+	  return HV1440$_STUCK;
+	f_settings[i * HV1440_K_CHANS_PER_POD + j] =
+	    voltage.voltage * setup->range * (voltage.sign_bit ? 1. : -1.);
       }
-    }
-    else 
-      for(j=0; j < HV1440_K_CHANS_PER_POD; j++)
-        f_settings[i*HV1440_K_CHANS_PER_POD+j] = 0;
+    } else
+      for (j = 0; j < HV1440_K_CHANS_PER_POD; j++)
+	f_settings[i * HV1440_K_CHANS_PER_POD + j] = 0;
   }
-  settings_dsc.arsize = sizeof(float)*need_pod*HV1440_K_CHANS_PER_POD;
+  settings_dsc.arsize = sizeof(float) * need_pod * HV1440_K_CHANS_PER_POD;
   if (need_pod) {
     int readout_nid = setup->head_nid + HV1440_N_READOUT;
     return_on_error(TdiCompile(&out_dsc, &settings_dsc, &out_xd MDS_END_ARG), status);
     return_on_error(TreePutRecord(readout_nid, (struct descriptor *)&out_xd, 0), status);
-    MdsFree1Dx(&out_xd,0);
+    MdsFree1Dx(&out_xd, 0);
   }
   return 1;
 }

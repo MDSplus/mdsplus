@@ -36,14 +36,14 @@
 #define PARAGON_HIST_N_DELETE_FILE 34
 #define PARAGON_HIST_N_STORE_ACTION 35
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *report_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *report_name;
 } InStoreStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *report_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *report_name;
 } InInsertStruct;

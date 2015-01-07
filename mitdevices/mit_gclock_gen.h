@@ -5,8 +5,8 @@
 #define MIT_GCLOCK_N_GATE 3
 #define MIT_GCLOCK_N_OUTPUT 4
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	struct descriptor *frequency;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  struct descriptor *frequency;
 } InGet_setupStruct;

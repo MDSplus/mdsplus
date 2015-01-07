@@ -3,7 +3,6 @@
 
 //#undef __NISCOPE_HEADER
 
-
 //#include <ansi_c.h>
 //#include <visatype.h>
 //#include <stdio.h>
@@ -22,84 +21,91 @@
 // id = ih    같은 뜻이다. 여기서는 ih를 사용 했다.
 
 /* Print the error message */
-int NiScope_errorHandler (ViSession ih, ViInt32 code)
+int NiScope_errorHandler(ViSession ih, ViInt32 code)
 {
-    ViStatus status;
-    ViChar source[MAX_FUNCTION_NAME_SIZE];
-    ViChar desc[MAX_ERROR_DESCRIPTION];
-	status = niScope_errorHandler (ih, code, source, desc);
-	printf("%s\n",desc);
-	return status;
+  ViStatus status;
+  ViChar source[MAX_FUNCTION_NAME_SIZE];
+  ViChar desc[MAX_ERROR_DESCRIPTION];
+  status = niScope_errorHandler(ih, code, source, desc);
+  printf("%s\n", desc);
+  return status;
 }
 
 // NiScope_init  ->  NiScope_close
-int NiScope_init (char* dev, ViSession* ih)
+int NiScope_init(char *dev, ViSession * ih)
 {
-//	printf("%s\n", dev);
-//	ViSession ih;
-	ViStatus status;
-    status=niScope_init (dev, 1, 1, ih);
-	if (status != VI_SUCCESS) NiScope_errorHandler(VI_NULL, status);
-    return status;
+//      printf("%s\n", dev);
+//      ViSession ih;
+  ViStatus status;
+  status = niScope_init(dev, 1, 1, ih);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(VI_NULL, status);
+  return status;
 }
 
-int NiScope_initiateacquisition (ViSession ih)
+int NiScope_initiateacquisition(ViSession ih)
 {
-	ViStatus status;
-    status=niScope_InitiateAcquisition(ih);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-	return status;
+  ViStatus status;
+  status = niScope_InitiateAcquisition(ih);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
 
 int NiScope_acquisitionstatus(ViSession ih)
-{ 
-    ViStatus status;
-    ViInt32 as;
+{
+  ViStatus status;
+  ViInt32 as;
 
-    status=niScope_AcquisitionStatus (ih, &as);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-    switch (as) {
-     	case NISCOPE_VAL_ACQ_IN_PROGRESS:
-     		printf("The acquisition is in progress.\n");
-     		break;
-     	case NISCOPE_VAL_ACQ_COMPLETE:
-     		printf("The acquisition is complete.\n");
-     		break;
-     	case NISCOPE_VAL_ACQ_STATUS_UNKNOWN:
-     		printf("The acquisition is in an unknown state.\n");
-     		break;
-	}
-    return status;
+  status = niScope_AcquisitionStatus(ih, &as);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  switch (as) {
+  case NISCOPE_VAL_ACQ_IN_PROGRESS:
+    printf("The acquisition is in progress.\n");
+    break;
+  case NISCOPE_VAL_ACQ_COMPLETE:
+    printf("The acquisition is complete.\n");
+    break;
+  case NISCOPE_VAL_ACQ_STATUS_UNKNOWN:
+    printf("The acquisition is in an unknown state.\n");
+    break;
+  }
+  return status;
 }
-
 
 /* Device Setup */
 int NiScope_configuretriggerimmediate(ViSession ih)
 {
-     ViStatus status;
-     status=niScope_ConfigureTriggerImmediate (ih);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-     return status;
+  ViStatus status;
+  status = niScope_ConfigureTriggerImmediate(ih);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
 
-int NiScope_ConfigureChanCharacteristics(ViSession ih, char* dev, ViReal64 *impe)
+int NiScope_ConfigureChanCharacteristics(ViSession ih, char *dev, ViReal64 * impe)
 {
-     ViStatus status;
-     status=niScope_ConfigureChanCharacteristics (ih, dev, *impe, 0.00);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-//	 printf("ID %d\n", impe);
-	 return status;
+  ViStatus status;
+  status = niScope_ConfigureChanCharacteristics(ih, dev, *impe, 0.00);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+//       printf("ID %d\n", impe);
+  return status;
 }
 
-int NiScope_ConfigureVertical (ViSession ih, char* dev, ViReal64 *range, ViReal64 *offset, ViInt32 coupl, ViReal64 *pa)
+int NiScope_ConfigureVertical(ViSession ih, char *dev, ViReal64 * range, ViReal64 * offset,
+			      ViInt32 coupl, ViReal64 * pa)
 {
-	 //ViBoolean Enable(channel enable true,false)==value -> IVI_ATTR_BASE(1000000),IVI_CLASS_PUBLIC_ATTR_BASE  (IVI_ATTR_BASE + 250000)
-	// IVISCOPE_ATTR_CHANNEL_ENABLED  (IVI_CLASS_PUBLIC_ATTR_BASE  + 5L)   ==>total value =1000000+250000+5L = 1250005
-     ViStatus status;
-	 status=niScope_ConfigureVertical(ih,dev,*range,*offset,coupl,*pa,NISCOPE_VAL_TRUE);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-	 return status;
+  //ViBoolean Enable(channel enable true,false)==value -> IVI_ATTR_BASE(1000000),IVI_CLASS_PUBLIC_ATTR_BASE  (IVI_ATTR_BASE + 250000)
+  // IVISCOPE_ATTR_CHANNEL_ENABLED  (IVI_CLASS_PUBLIC_ATTR_BASE  + 5L)   ==>total value =1000000+250000+5L = 1250005
+  ViStatus status;
+  status = niScope_ConfigureVertical(ih, dev, *range, *offset, coupl, *pa, NISCOPE_VAL_TRUE);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
+
 /*  
 #define IVISCOPE_VAL_AC                                         (0L)
 #define IVISCOPE_VAL_DC                                         (1L)
@@ -107,102 +113,113 @@ int NiScope_ConfigureVertical (ViSession ih, char* dev, ViReal64 *range, ViReal6
 */
 //여기서  number record 는 데이터 저장을 한번하고 받을 것인지 여러번 데이터를 받고 한번에 저장을 할것인지 정한다. 그럴때가 가끔 필요하다. 
 //우리는 보통 1회에 한번 데이터를 받는다.
-int NiScope_ConfigureHorizontalTiming(ViSession ih, ViReal64 *msr, ViInt32 mup)
+int NiScope_ConfigureHorizontalTiming(ViSession ih, ViReal64 * msr, ViInt32 mup)
 {
-     ViStatus status;
-     status=niScope_ConfigureHorizontalTiming(ih, *msr, mup, 50.0, 1, NISCOPE_VAL_TRUE);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-	 return status;
+  ViStatus status;
+  status = niScope_ConfigureHorizontalTiming(ih, *msr, mup, 50.0, 1, NISCOPE_VAL_TRUE);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
+
 /* Trigger */
-int NiScope_ConfigureTriggerEdge (ViSession ih,char* ts, ViReal64 *level, ViInt32 slope, ViInt32 tc, ViReal64 *delay)
+int NiScope_ConfigureTriggerEdge(ViSession ih, char *ts, ViReal64 * level, ViInt32 slope,
+				 ViInt32 tc, ViReal64 * delay)
 {
-     ViStatus status;
-	 status=niScope_ConfigureTriggerEdge(ih, ts, *level, slope, tc, 0.0, *delay);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-	 return status;
+  ViStatus status;
+  status = niScope_ConfigureTriggerEdge(ih, ts, *level, slope, tc, 0.0, *delay);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
 
 /* commits to hardware all the parameter settings associated with the task.*/
 int NiScope_Commit(ViSession ih)
 {
-     ViStatus status;
-	 status=niScope_Commit (ih);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-	 return status;
+  ViStatus status;
+  status = niScope_Commit(ih);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
-
 
 /* stored */
 //Returns the effective sample rate of the acquired waveform using the current configuration in samples per second.
-int NiScope_SampleRate (ViSession ih, ViReal64 *samplerate)
+int NiScope_SampleRate(ViSession ih, ViReal64 * samplerate)
 {
-   ViStatus status;
-   status=niScope_SampleRate (ih, samplerate);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-   return status;
+  ViStatus status;
+  status = niScope_SampleRate(ih, samplerate);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
+
 //Returns the actual number of points the digitizer acquires for each channel.
 // After configuring the digitizer for an acquisition, call this function to determine the size of the waveforms that the digitizer acquires. 
 //Allocate a ViReal64 array of this size or greater to pass as the waveformArray parameter of niScope_ReadWaveform and niScope_FetchWaveform
-int NiScope_ActualRecordLength (ViSession ih, ViPInt32 recordlength)
+int NiScope_ActualRecordLength(ViSession ih, ViPInt32 recordlength)
 {
-   ViStatus status;
-   status=niScope_ActualRecordLength (ih, recordlength);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-   return status;
-}
-//the array length can be determined by calling niScope_ActualNumWfms.
-//Allows you to declare appropriately-sized waveforms. NI-SCOPE handles the channel list parsing for you. 
-int NiScope_ActualNumWfms (ViSession ih, char* dev, ViPInt32 numwfms)
-{
-   ViStatus status;
-   status=niScope_ActualNumWfms (ih, dev, numwfms);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-   return status;
-}
-//Returns the total available size of an array measurement acquisition.
-int NiScope_ActualMeasWfmSize (ViSession ih, ViPInt32 measwaveformsize)
-{
-   ViStatus status;
-   status=niScope_ActualMeasWfmSize (ih, NISCOPE_VAL_MULTIPLY_CHANNELS, measwaveformsize);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-   return status;
+  ViStatus status;
+  status = niScope_ActualRecordLength(ih, recordlength);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
 
+//the array length can be determined by calling niScope_ActualNumWfms.
+//Allows you to declare appropriately-sized waveforms. NI-SCOPE handles the channel list parsing for you. 
+int NiScope_ActualNumWfms(ViSession ih, char *dev, ViPInt32 numwfms)
+{
+  ViStatus status;
+  status = niScope_ActualNumWfms(ih, dev, numwfms);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
+}
+
+//Returns the total available size of an array measurement acquisition.
+int NiScope_ActualMeasWfmSize(ViSession ih, ViPInt32 measwaveformsize)
+{
+  ViStatus status;
+  status = niScope_ActualMeasWfmSize(ih, NISCOPE_VAL_MULTIPLY_CHANNELS, measwaveformsize);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
+}
 
 /* ch0 & ch1 의 Gain 과 Offset 값을 각각 가져 와야 하는데*/
 
- int NiScope_Store (ViSession ih, char* dev, ViInt16 *bindata, ViReal64 *gainch, ViReal64 *offsetch) 
+int NiScope_Store(ViSession ih, char *dev, ViInt16 * bindata, ViReal64 * gainch,
+		  ViReal64 * offsetch)
 // int NiScope_Store (ViSession ih, char* dev, ViReal64 *gainch, ViReal64 *offsetch)
 {
-	ViInt32 samlen;
-	ViStatus status;
-ViReal64 t1, t2;
+  ViInt32 samlen;
+  ViStatus status;
+  ViReal64 t1, t2;
 
-	struct niScope_wfmInfo info[2];
+  struct niScope_wfmInfo info[2];
 
-    status=niScope_ActualRecordLength (ih, &samlen);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
+  status = niScope_ActualRecordLength(ih, &samlen);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
 
 //    bindata =(ViInt32 *) malloc (samlen * sizeof (ViInt32));
-t1=Timer();
-    status=niScope_FetchBinary16 (ih, dev, 5.0, samlen, bindata, info);
-t2=Timer();
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-printf("Elapsed time: %f",t2-t1);
-		gainch[0] = info[0].gain;
-		gainch[1] = info[1].gain;
-		offsetch[0] = info[0].offset;
-		offsetch[1] = info[1].offset;
-	return status;
+  t1 = Timer();
+  status = niScope_FetchBinary16(ih, dev, 5.0, samlen, bindata, info);
+  t2 = Timer();
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  printf("Elapsed time: %f", t2 - t1);
+  gainch[0] = info[0].gain;
+  gainch[1] = info[1].gain;
+  offsetch[0] = info[0].offset;
+  offsetch[1] = info[1].offset;
+  return status;
 }
-
 
 /*   C++ 에서 곧바로 Tree에 넣는 부분인데 아직 완성 못한 부분. 이상한 일이~~~
 //        error C2664: 'descr' : cannot convert parameter 1 from 'long *' to 'int *'
 //        Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-
 
 int NiScope_Store (int ih, char *nodeName, char* dev)
 {
@@ -280,13 +297,11 @@ int NiScope_Store (int ih, char *nodeName, char* dev)
 }
 */
 
-
-
 int NiScope_close(ViSession ih)
 {
-     ViStatus status;
-     status=niScope_close(ih);
-	if (status != VI_SUCCESS) NiScope_errorHandler(ih, status);
-     return status;
+  ViStatus status;
+  status = niScope_close(ih);
+  if (status != VI_SUCCESS)
+    NiScope_errorHandler(ih, status);
+  return status;
 }
-

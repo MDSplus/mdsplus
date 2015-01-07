@@ -2,49 +2,49 @@
 // common.h -- common values for general use
 // Fri Dec 29 11:55:33 EST 2000
 // Fri Mar  9 13:11:58 EST 2001
-// Tue Jul 31 11:54:35 EDT 2001	-- added crate on/off line command
+// Tue Jul 31 11:54:35 EDT 2001 -- added crate on/off line command
 // Mon Aug 20 14:48:14 EDT 2001 -- added symbolic bit flags
-// Thu Oct 11 10:58:19 EDT 2001	-- added colors
-// Tue Feb  5 15:08:13 EST 2002	-- included 'math.h'
+// Thu Oct 11 10:58:19 EDT 2001 -- added colors
+// Tue Feb  5 15:08:13 EST 2002 -- included 'math.h'
 //---------------------------------------------------------
 #ifndef __COMMON_H
 #define __COMMON_H
 
 #include <math.h>
-#include "mytypes.h"				// define new types
-#include "macros.h"					// macros
+#include "mytypes.h"		// define new types
+#include "macros.h"		// macros
 
 //---------------------------------------------------------
 // parameters that may be changed to alter system performance
 //---------------------------------------------------------
-#include "tunables.h"			
+#include "tunables.h"
 
 //---------------------------------------------------------
 // constants that should *NOT* need to be changed
 //---------------------------------------------------------
-#define	COMMENT_INDEX	44			// index position of string "(null)" in a comment field
+#define	COMMENT_INDEX	44	// index position of string "(null)" in a comment field
 #define	EQUAL			 0
 #define SUCCESS			 1
 #define	FAILURE          0
 
 // MSGLVL() values
-enum	{ ALWAYS 		= 1,		// ... well, almost always -- for debug printout
-		  IMPORTANT,				// not fatal
-		  FUNCTION_NAME = 5,
-		  DETAILS       = 9
-		};
+enum { ALWAYS = 1,		// ... well, almost always -- for debug printout
+  IMPORTANT,			// not fatal
+  FUNCTION_NAME = 5,
+  DETAILS = 9
+};
 #if 0
-#define	ALWAYS			 1			// ... well, almost always -- for debug printout
-#define	IMPORTANT		 2			// not fatal
+#define	ALWAYS			 1	// ... well, almost always -- for debug printout
+#define	IMPORTANT		 2	// not fatal
 #define	FUNCTION_NAME	 5
 #define	DETAILS		 	 9
 #endif
 
-enum	{ FALSE = 0, TRUE };
-enum	{ TO_CAMAC, FROM_CAMAC };	// ie WRITE and READ
-enum	{ STATUS_BAD, STATUS_GOOD };
-enum	{ CTS_DB, CRATE_DB };
-enum	{ OFF, ON };				// crate offline/online command
+enum { FALSE = 0, TRUE };
+enum { TO_CAMAC, FROM_CAMAC };	// ie WRITE and READ
+enum { STATUS_BAD, STATUS_GOOD };
+enum { CTS_DB, CRATE_DB };
+enum { OFF, ON };		// crate offline/online command
 
 // semaphore values
 #define P_SEMA4			-1
@@ -55,22 +55,22 @@ enum	{ OFF, ON };				// crate offline/online command
 // error conditions (NB! all values are negative)
 //---------------------------------------------------------
 #if 0
-#define	ERROR			-1			// general status error
-#define	FILE_ERROR		-2			// file doesn't exist
-#define	DUPLICATE		-3			// duplicate module name
-#define	LOCK_ERROR		-4			// unable to lock file
-#define MAP_ERROR		-5			// db file failed to map to memory
-#define	COMMIT_ERROR	-6			// data did not get added to db
-#define	UNLOCK_ERROR	-7			// unable to unlock file
-#define	EXPAND_ERROR	-8			// failure to expand db file
-#define	COPY_ERROR		-9			// file copy error
-#define	ASSIGN_ERROR	-10			// assign failure
-#define	DEASSIGN_ERROR	-11			// deassign failure
-#define	DELCRATE_ERROR	-12			// delete crate failure
-#define	NO_MEMORY		-13			// malloc() failure
-#define	NO_DEVICE		-14			// no scsi device found
-#define	QUERY_ERROR		-15			// unable to determine highway type
-#define	NO_PERMISSION	-16			// need read/write permission
+#define	ERROR			-1	// general status error
+#define	FILE_ERROR		-2	// file doesn't exist
+#define	DUPLICATE		-3	// duplicate module name
+#define	LOCK_ERROR		-4	// unable to lock file
+#define MAP_ERROR		-5	// db file failed to map to memory
+#define	COMMIT_ERROR	-6	// data did not get added to db
+#define	UNLOCK_ERROR	-7	// unable to unlock file
+#define	EXPAND_ERROR	-8	// failure to expand db file
+#define	COPY_ERROR		-9	// file copy error
+#define	ASSIGN_ERROR	-10	// assign failure
+#define	DEASSIGN_ERROR	-11	// deassign failure
+#define	DELCRATE_ERROR	-12	// delete crate failure
+#define	NO_MEMORY		-13	// malloc() failure
+#define	NO_DEVICE		-14	// no scsi device found
+#define	QUERY_ERROR		-15	// unable to determine highway type
+#define	NO_PERMISSION	-16	// need read/write permission
 #endif
 
 // NB! make sure all are EVEN negative values
@@ -122,8 +122,8 @@ enum	{ OFF, ON };				// crate offline/online command
 #define	LO					0
 
 // CAMAC error/status bits
-// sense keys				-- see "ScsiCamac.h"
-// additional sense codes	-- see "ScsiCamac.h"
+// sense keys                           -- see "ScsiCamac.h"
+// additional sense codes       -- see "ScsiCamac.h"
 
 // jorway
 // main status register bits
@@ -146,7 +146,6 @@ enum	{ OFF, ON };				// crate offline/online command
 #define	ERR						(1 <<  7)
 #define	NO_SYNC					(1 <<  8)
 #define	TMO						(1 <<  9)
-
 
 // colors for output
 #include "colors.h"

@@ -2,17 +2,19 @@
 #include "mdsip_connections.h"
 #include <stdlib.h>
 
-int  GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr) {
+int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
+		  void * *dptr)
+{
   static void *m = 0;
-  if (m)
-  {    
+  if (m) {
     free(m);
     m = 0;
   }
-  return GetAnswerInfoTS(id,dtype,length,ndims,dims,numbytes,dptr,&m);
+  return GetAnswerInfoTS(id, dtype, length, ndims, dims, numbytes, dptr, &m);
 }
 
-int  GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes, void * *dptr, void **mout)
+int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
+		    void * *dptr, void **mout)
 {
   int status;
   int i;
@@ -20,50 +22,43 @@ int  GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims,
   *mout = 0;
   *numbytes = 0;
   m = GetMdsMsg(id, &status);
-  if (status != 1)
-  {
+  if (status != 1) {
     *dtype = 0;
     *length = 0;
     *ndims = 0;
     *numbytes = 0;
     *dptr = 0;
-    if (m) 
-    {
+    if (m) {
       free(m);
-      *mout=0;
+      *mout = 0;
     }
     return 0;
   }
-  if (m->h.ndims)
-  {
+  if (m->h.ndims) {
     *numbytes = m->h.length;
-    for (i=0;i<m->h.ndims;i++)
-    {
+    for (i = 0; i < m->h.ndims; i++) {
 #ifdef __CRAY
-      dims[i] = i % 2 ? m->h.dims[i/2] & 0xffffffff : (*m)->h.dims[i/2] >> 32;
+      dims[i] = i % 2 ? m->h.dims[i / 2] & 0xffffffff : (*m)->h.dims[i / 2] >> 32;
 #else
       dims[i] = m->h.dims[i];
 #endif
       *numbytes *= dims[i];
 #ifdef DEBUG
-      printf("dim[%d] = %d\n",i,dims[i]);
+      printf("dim[%d] = %d\n", i, dims[i]);
 #endif
     }
-    for (i=m->h.ndims;i < MAX_DIMS; i++)
+    for (i = m->h.ndims; i < MAX_DIMS; i++)
       dims[i] = 0;
-  }
-  else
-  {
+  } else {
     *numbytes = m->h.length;
-    for (i=0;i<MAX_DIMS;i++)
+    for (i = 0; i < MAX_DIMS; i++)
       dims[i] = 0;
   }
-  if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen)
-  {
+  if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen) {
     *numbytes = 0;
     if (m) {
-      	free(m);
-        *mout=0;
+      free(m);
+      *mout = 0;
     }
     return 0;
   }
@@ -74,4 +69,3 @@ int  GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims,
   *mout = m;
   return m->h.status;
 }
-

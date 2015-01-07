@@ -3,10 +3,20 @@
 #include <Xm/Xm.h>
 #include <Xmds/XmdsWaveform.h>
 void XmdsInitialize()
-{  
-  xmdsWaveformWidgetClass = (WidgetClass)&xmdsWaveformClassRec;  
-  MrmRegisterClass(MrmwcUnknown,"XmdsWaveformWidgetClass","XmdsCreateWaveform",XmdsCreateWaveform,xmdsWaveformWidgetClass);
+{
+  xmdsWaveformWidgetClass = (WidgetClass) & xmdsWaveformClassRec;
+  MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass", "XmdsCreateWaveform",
+		   XmdsCreateWaveform, xmdsWaveformWidgetClass);
 }
-void XmdsResetAllXds(){}
-void XmdsXdsAreValid(){}
-void XmdsApplyAllXds(){}
+
+void XmdsResetAllXds()
+{
+}
+
+void XmdsXdsAreValid()
+{
+}
+
+void XmdsApplyAllXds()
+{
+}

@@ -43,44 +43,44 @@
 
 #ifndef XmdsIsXdBox
 #define XmdsIsXdBox(w) XtIsSubclass(w, xmdsXdBoxWidgetClass)
-#endif /* XmdsIsXdBox */
+#endif				/* XmdsIsXdBox */
 
 /* Xd Widget Class */
 externalref WidgetClass xmdsXdBoxWidgetClass;
 externalref struct _XmdsXdBoxClassRec xmdsXdBoxClassRec;
 
 typedef struct _XmdsXdBoxClassRec *XmdsXdBoxWidgetClass;
-typedef struct _XmdsXdBoxWidgetRec      *XmdsXdBoxWidget;
+typedef struct _XmdsXdBoxWidgetRec *XmdsXdBoxWidget;
 
 #ifdef _NO_PROTO_
 
-extern Widget	XmdsCreateXdBox();
-extern Boolean  XmdsXdBoxApply();
-extern Boolean	XmdsXdBoxGetState();
-extern struct	descriptor *XmdsXdBoxGetXd();
-extern void	XmdsXdBoxLoad();
-extern Boolean	XmdsXdBoxPut();
-extern void	XmdsXdBoxReset();
-extern void	XmdsXdBoxSetDefaultNid();
-extern void	XmdsXdBoxSetNid();
-extern void	XmdsXdBoxSetState();
-extern void	XmdsXdBoxSetXd();
+extern Widget XmdsCreateXdBox();
+extern Boolean XmdsXdBoxApply();
+extern Boolean XmdsXdBoxGetState();
+extern struct descriptor *XmdsXdBoxGetXd();
+extern void XmdsXdBoxLoad();
+extern Boolean XmdsXdBoxPut();
+extern void XmdsXdBoxReset();
+extern void XmdsXdBoxSetDefaultNid();
+extern void XmdsXdBoxSetNid();
+extern void XmdsXdBoxSetState();
+extern void XmdsXdBoxSetXd();
 
-#else /* _NO_PROTO_ */
+#else				/* _NO_PROTO_ */
 
-extern Widget	XmdsCreateXdBox(Widget parent,char *name,ArgList args,Cardinal argcount);
-extern Boolean  XmdsXdBoxApply(Widget w);
-extern Boolean	XmdsXdBoxGetState(Widget w);
-extern struct	descriptor *XmdsXdBoxGetXd(Widget w);
-extern void	XmdsXdBoxLoad(Widget w);
-extern Boolean	XmdsXdBoxPut(Widget w);
-extern void	XmdsXdBoxReset(Widget w);
-extern void	XmdsXdBoxSetDefaultNid(Widget w,int def_nid);
-extern void	XmdsXdBoxSetNid(Widget w,int nid);
-extern void	XmdsXdBoxSetState(Widget w,Boolean state);
-extern void	XmdsXdBoxSetXd(Widget w,struct descriptor *dsc);
+extern Widget XmdsCreateXdBox(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Boolean XmdsXdBoxApply(Widget w);
+extern Boolean XmdsXdBoxGetState(Widget w);
+extern struct descriptor *XmdsXdBoxGetXd(Widget w);
+extern void XmdsXdBoxLoad(Widget w);
+extern Boolean XmdsXdBoxPut(Widget w);
+extern void XmdsXdBoxReset(Widget w);
+extern void XmdsXdBoxSetDefaultNid(Widget w, int def_nid);
+extern void XmdsXdBoxSetNid(Widget w, int nid);
+extern void XmdsXdBoxSetState(Widget w, Boolean state);
+extern void XmdsXdBoxSetXd(Widget w, struct descriptor *dsc);
 
-#endif /* _NO_PROTO_ */
+#endif				/* _NO_PROTO_ */
 
 /* Resources */
 
@@ -103,5 +103,5 @@ extern void	XmdsXdBoxSetXd(Widget w,struct descriptor *dsc);
 #define XmdsNxd			"xd"
 
 #include <usagedef.h>
-#endif /* _XmdsXdBox_h */
+#endif				/* _XmdsXdBox_h */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

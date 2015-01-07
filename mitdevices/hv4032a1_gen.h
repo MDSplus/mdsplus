@@ -5,8 +5,8 @@
 #define HV4032A1_N_VOLTAGE_3 3
 #define HV4032A1_N_VOLTAGE_4 4
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	struct descriptor *voltage_1;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  struct descriptor *voltage_1;
 } InGet_settingsStruct;

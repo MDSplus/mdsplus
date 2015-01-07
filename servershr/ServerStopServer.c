@@ -26,7 +26,6 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
@@ -34,6 +33,6 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 #include "servershrp.h"
 
 int ServerStopServer(char *server)
-{ 
+{
   return ServerSendMessage(0, server, SrvStop, 0, 0, 0, 0, 0, 0);
 }

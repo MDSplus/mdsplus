@@ -16,18 +16,18 @@
 #define L8501_N_INIT_ACTION 14
 #define L8501_N_STORE_ACTION 15
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int mode;
-	int mode_convert;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int mode;
+  int mode_convert;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int mode;
-	int mode_convert;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int mode;
+  int mode_convert;
 } InStoreStruct;

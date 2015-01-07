@@ -21,21 +21,21 @@
 #define U_OF_M_SPECT_N_INIT_ACTION 19
 #define U_OF_M_SPECT_N_STORE_ACTION 20
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *go_file;
-	char *data_file;
-	int setup_wave_length;
-	int setup_slit_width;
-	int setup_num_spectra;
-	int setup_grating_type;
-	int setup_exposure;
-	int setup_filter;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *go_file;
+  char *data_file;
+  int setup_wave_length;
+  int setup_slit_width;
+  int setup_num_spectra;
+  int setup_grating_type;
+  int setup_exposure;
+  int setup_filter;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *data_file;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *data_file;
 } InStoreStruct;

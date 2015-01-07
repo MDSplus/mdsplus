@@ -8,9 +8,9 @@
 #define MIT__CLOCK_N_EDGES_R 6
 #define MIT__CLOCK_N_EDGES_F 7
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	float frequency;
-	float duty_cycle;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  float frequency;
+  float duty_cycle;
 } InGet_setupStruct;

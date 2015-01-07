@@ -13,8 +13,7 @@
 
 extern int TdiVector();
 extern int PARAGON_FTP_COPY(char *report_in, struct descriptor *report_out, int *isftp);
-extern int PARAGON_FTP_DELETE(char *report,int delete);
-
+extern int PARAGON_FTP_DELETE(char *report, int delete);
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 

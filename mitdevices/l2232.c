@@ -27,7 +27,6 @@ int L2232__STORE(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
@@ -61,44 +60,45 @@ extern int TdiCompile();
 
  Local variables:                                                             */
 
-static int one=1;
+static int one = 1;
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct *setup)
+int l2232___init(struct descriptor_s *niddsc_ptr, InInitStruct * setup)
 {
 
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) {return retstatus; }
 
-int status;
+  int status;
 
-  return_on_error(DevCamChk(CamPiow(setup->cts_name,0,9,0,16,0),&one,0),status);
-  return_on_error(DevCamChk(CamPiow(setup->cts_name,0,26,0,16,0),&one,0),status);
+  return_on_error(DevCamChk(CamPiow(setup->cts_name, 0, 9, 0, 16, 0), &one, 0), status);
+  return_on_error(DevCamChk(CamPiow(setup->cts_name, 0, 26, 0, 16, 0), &one, 0), status);
   return status;
 }
 
-int l2232___store(struct descriptor_s *niddsc_ptr, InStoreStruct *setup)
+int l2232___store(struct descriptor_s *niddsc_ptr, InStoreStruct * setup)
 {
-         unsigned short dummy;
-         int nid;
-         int status;
+  unsigned short dummy;
+  int nid;
+  int status;
   static short buffer[32];
   static DESCRIPTOR_A(a_dsc, sizeof(buffer[0]), DTYPE_W, buffer, sizeof(buffer));
   static DESCRIPTOR(expr, "BUILD_SIGNAL($VALUE*.0024, $, 1 : 32 : 1)");
-  static struct descriptor_xd sig = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+  static struct descriptor_xd sig = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 
-  return_on_error(DevCamChk(CamPiow(setup->cts_name,0,8,0,16,0),&one,0),status);
-  if ((CamXandQ(0)&1) == 0) return DEV$_NOT_TRIGGERED;
+  return_on_error(DevCamChk(CamPiow(setup->cts_name, 0, 8, 0, 16, 0), &one, 0), status);
+  if ((CamXandQ(0) & 1) == 0)
+    return DEV$_NOT_TRIGGERED;
 
-  return_on_error(DevCamChk(CamPiow(setup->cts_name,0,2,&dummy,16,0),&one,0),status);
-  return_on_error(DevCamChk(CamStopw(setup->cts_name,0,2,32, buffer ,16,0),&one,0),status);
-  return_on_error(DevCamChk(CamPiow(setup->cts_name,0,2,&dummy,16,0),&one,0),status);
+  return_on_error(DevCamChk(CamPiow(setup->cts_name, 0, 2, &dummy, 16, 0), &one, 0), status);
+  return_on_error(DevCamChk(CamStopw(setup->cts_name, 0, 2, 32, buffer, 16, 0), &one, 0), status);
+  return_on_error(DevCamChk(CamPiow(setup->cts_name, 0, 2, &dummy, 16, 0), &one, 0), status);
 
   return_on_error(TdiCompile(&expr, &a_dsc, (struct descriptor *)&sig MDS_END_ARG), status);
   nid = setup->head_nid + L2232_N_INPUTS;
-  return_on_error(TreePutRecord(nid, (struct descriptor *)&sig,0), status);
-  MdsFree1Dx(&sig,0);
+  return_on_error(TreePutRecord(nid, (struct descriptor *)&sig, 0), status);
+  MdsFree1Dx(&sig, 0);
   return 1;
 }

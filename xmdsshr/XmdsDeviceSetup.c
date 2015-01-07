@@ -38,7 +38,6 @@ int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, S
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <ncidef.h>
@@ -50,29 +49,31 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 void XmdsSetDeviceNid(int nid);
 
-int XmdsDeviceSetup(Widget parent,int *nid,String uids[],Cardinal num_uids,String ident,MrmRegisterArglist reglist,
-		    MrmCount regnum,Widget *widget_return)
+int XmdsDeviceSetup(Widget parent, int *nid, String uids[], Cardinal num_uids, String ident,
+		    MrmRegisterArglist reglist, MrmCount regnum, Widget * widget_return)
 {
   static int device_nid;
-  static NCI_ITM nci[] = {{sizeof(int), NciCONGLOMERATE_NIDS, (unsigned char *) &device_nid, 0}, {0, NciEND_OF_LIST, 0, 0}};
+  static NCI_ITM nci[] =
+      { {sizeof(int), NciCONGLOMERATE_NIDS, (unsigned char *)&device_nid, 0}, {0, NciEND_OF_LIST, 0,
+									       0} };
   MrmType class;
   MrmHierarchy drm_hierarchy;
   Widget w;
   int status;
-  TreeGetNci(*nid,nci);
+  TreeGetNci(*nid, nci);
   XmdsSetDeviceNid(device_nid);
-  status = MrmOpenHierarchy(num_uids,uids,0,&drm_hierarchy);
-  if (status == MrmSUCCESS)
-  {
+  status = MrmOpenHierarchy(num_uids, uids, 0, &drm_hierarchy);
+  if (status == MrmSUCCESS) {
     if (regnum)
-      MrmRegisterNamesInHierarchy(drm_hierarchy,reglist,regnum);
-    status = MrmFetchWidget(drm_hierarchy,ident,parent,&w,&class);
+      MrmRegisterNamesInHierarchy(drm_hierarchy, reglist, regnum);
+    status = MrmFetchWidget(drm_hierarchy, ident, parent, &w, &class);
     MrmCloseHierarchy(drm_hierarchy);
     if (status == MrmSUCCESS)
       XtManageChild(w);
   }
   XmdsSetDeviceNid(0);
-  if (widget_return) *widget_return = w;
+  if (widget_return)
+    *widget_return = w;
   return status;
 }
 

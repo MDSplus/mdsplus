@@ -27,7 +27,6 @@ int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$de
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
@@ -35,10 +34,12 @@ int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$de
 #include "servershrp.h"
 
 int ServerDispatchAction(int *id, char *server, char *tree, int shot, int nid,
-                        void (*ast)(), void *astprm, int *retstatus, int *socket, void (*before_ast)())
-{ 
-  struct descrip p1,p2,p3;
+			 void (*ast) (), void *astprm, int *retstatus, int *socket,
+			 void (*before_ast) ())
+{
+  struct descrip p1, p2, p3;
   return ServerSendMessage(id, server, SrvAction, retstatus, socket, ast, astprm, before_ast, 3,
-            MakeDescrip(&p1,DTYPE_CSTRING,0,0,tree), MakeDescrip(&p2,DTYPE_LONG,0,0,&shot),
-            MakeDescrip(&p3,DTYPE_LONG,0,0,&nid));
+			   MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, tree), MakeDescrip(&p2, DTYPE_LONG,
+										    0, 0, &shot),
+			   MakeDescrip(&p3, DTYPE_LONG, 0, 0, &nid));
 }

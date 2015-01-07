@@ -61,26 +61,26 @@
 #define L8212_16_N_INPUT_16_STARTIDX 59
 #define L8212_16_N_INPUT_16_ENDIDX 60
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int noc;
-	int pts;
-	int offset;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int noc;
+  int pts;
+  int offset;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int memories;
-	char *header;
-	int offset;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int memories;
+  char *header;
+  int offset;
 } InStoreStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InTriggerStruct;

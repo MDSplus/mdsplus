@@ -17,7 +17,7 @@
 #include "mdsdcl.h"
 
 typedef struct _thread_static {
-  struct _mdsdcl_ctrl  ctrl;
+  struct _mdsdcl_ctrl ctrl;
 } MdsdclThreadStatic;
 
 extern MdsdclThreadStatic *MdsdclGetThreadStatic();

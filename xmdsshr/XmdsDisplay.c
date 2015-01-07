@@ -29,7 +29,6 @@
   Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount);
   Boolean XmdsIsDisplay(Widget w);
 
-
 ------------------------------------------------------------------------------
    Copyright (c) 1992
    Property of Massachusetts Institute of Technology, Cambridge MA 02139.
@@ -40,7 +39,6 @@
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <mds_stdarg.h>
@@ -50,15 +48,14 @@
 #include <Xm/Label.h>
 #define DisplayUserData 0xABCDEFA
 
-
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */
 
 #include <xmdsshr.h>
 #include <strroutines.h>
-  extern int TdiEvaluate();
-  extern int TdiDecompile();
+extern int TdiEvaluate();
+extern int TdiDecompile();
 /*------------------------------------------------------------------------------
 
  Subroutines referenced:                                                      */
@@ -77,18 +74,16 @@
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-typedef struct _DisplayPart
-{
-  int       nid;
-  int       nid_offset;
-}         XmdsDisplayPart;
+typedef struct _DisplayPart {
+  int nid;
+  int nid_offset;
+} XmdsDisplayPart;
 
-static XtResource resources[] = 
-{
+static XtResource resources[] = {
   {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(XmdsDisplayPart, nid), XmRImmediate, 0},
-  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsDisplayPart, nid_offset), XmRImmediate, 0}
+  {XmdsNnidOffset, "NidOffset", XmRInt, sizeof(int), XtOffsetOf(XmdsDisplayPart, nid_offset),
+   XmRImmediate, 0}
 };
-
 
 /*------------------------------------------------------------------------------
 
@@ -96,9 +91,9 @@ static XtResource resources[] =
 
 Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount)
 {
-  XmdsDisplayPart info = {-1,0};
+  XmdsDisplayPart info = { -1, 0 };
   Widget w;
-  Arg lab_args[] = {{XmNlabelString, 0}, {XmNuserData, DisplayUserData}};
+  Arg lab_args[] = { {XmNlabelString, 0}, {XmNuserData, DisplayUserData} };
   Arg *merged_args;
   int nid;
 
@@ -110,23 +105,22 @@ Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argc
   else
     nid = -1;
   if (nid != -1) {
-    static struct descriptor_d display_dsc = {0, DTYPE_T, CLASS_D, 0};
-    static struct descriptor_xd xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
-    struct descriptor nid_dsc = {sizeof(int), DTYPE_NID, CLASS_S, (char *)0};
+    static struct descriptor_d display_dsc = { 0, DTYPE_T, CLASS_D, 0 };
+    static struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+    struct descriptor nid_dsc = { sizeof(int), DTYPE_NID, CLASS_S, (char *)0 };
     int status;
     nid_dsc.pointer = (char *)&nid;
     status = TdiEvaluate(&nid_dsc, &xd MDS_END_ARG);
-    if (status&1) {
+    if (status & 1) {
       status = TdiDecompile(&xd, &display_dsc MDS_END_ARG);
-      if (status&1) {
-        static DESCRIPTOR(zero_dsc, "\0");
-        StrConcat((struct descriptor *)&display_dsc, (struct descriptor *)&display_dsc, &zero_dsc MDS_END_ARG);
-        lab_args[0].value = (long)XmStringCreateSimple(display_dsc.pointer);
-      }
-      else
-        lab_args[0].value = (long)XmStringCreateSimple("Error - Decomp");
-    }
-    else
+      if (status & 1) {
+	static DESCRIPTOR(zero_dsc, "\0");
+	StrConcat((struct descriptor *)&display_dsc, (struct descriptor *)&display_dsc,
+		  &zero_dsc MDS_END_ARG);
+	lab_args[0].value = (long)XmStringCreateSimple(display_dsc.pointer);
+      } else
+	lab_args[0].value = (long)XmStringCreateSimple("Error - Decomp");
+    } else
       lab_args[0].value = (long)XmStringCreateSimple("Error - Eval");
   }
   merged_args = XtMergeArgLists(args, argcount, lab_args, XtNumber(lab_args));
@@ -138,7 +132,7 @@ Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argc
 
 Boolean XmdsIsDisplay(Widget w)
 {
-  XtPointer user_data=0;
+  XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);
   if (user_data && ((int)user_data == DisplayUserData))
     return 1;

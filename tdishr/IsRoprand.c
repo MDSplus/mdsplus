@@ -6,8 +6,7 @@
 #include <mdsdescrip.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define f_float_exp(val) ((*(int *)val >> 7) & 0xff)
 #define f_float_sign(val) ((*(int *)val >> 15) &0x1)
@@ -23,26 +22,26 @@ STATIC_CONSTANT char *cvsrev =
 
 int IsRoprand(int dtype, void *value)
 {
-    int ans = 0;
-    switch (dtype) {
-    case DTYPE_F:
-        ans = IsRoprandF(value);
-        break;
-    case DTYPE_D:
-        ans = IsRoprandD(value);
-        break;
-    case DTYPE_G:
-        ans = IsRoprandG(value);
-        break;
-    case DTYPE_FS:
-        ans = IsRoprandS(value);
-        break;
-    case DTYPE_FT:
-        ans = IsRoprandT(value);
-        break;
-    case DTYPE_T:
-        ans = IsRoprandT(value);
-        break;
-    }
-    return ans;
+  int ans = 0;
+  switch (dtype) {
+  case DTYPE_F:
+    ans = IsRoprandF(value);
+    break;
+  case DTYPE_D:
+    ans = IsRoprandD(value);
+    break;
+  case DTYPE_G:
+    ans = IsRoprandG(value);
+    break;
+  case DTYPE_FS:
+    ans = IsRoprandS(value);
+    break;
+  case DTYPE_FT:
+    ans = IsRoprandT(value);
+    break;
+  case DTYPE_T:
+    ans = IsRoprandT(value);
+    break;
+  }
+  return ans;
 }

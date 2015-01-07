@@ -26,7 +26,6 @@ int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <mdsdescrip.h>
@@ -36,26 +35,23 @@ int SERVER$FREE_DISPATCH_TABLE( void *vtable)
 #include "servershrp.h"
 #include <treeshr.h>
 
-int ServerFreeDispatchTable( void *vtable)
-{ 
-  if (vtable)
-  {
+int ServerFreeDispatchTable(void *vtable)
+{
+  if (vtable) {
     DispatchTable *table = vtable;
     ActionInfo *actions = table->actions;
     int num_actions = table->num;
     int i;
-    for (i=0;i<num_actions;i++)
-    {
+    for (i = 0; i < num_actions; i++) {
       if (actions[i].referenced_by)
-        free(actions[i].referenced_by);
+	free(actions[i].referenced_by);
       if (actions[i].path)
 	TreeFree(actions[i].path);
       if (actions[i].event)
 	free(actions[i].event);
-      if (actions[i].condition)
-      {
-        MdsFree1Dx((struct descriptor_xd *)actions[i].condition,0);
-        free(actions[i].condition);
+      if (actions[i].condition) {
+	MdsFree1Dx((struct descriptor_xd *)actions[i].condition, 0);
+	free(actions[i].condition);
       }
     }
     free(vtable);

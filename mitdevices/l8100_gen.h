@@ -21,24 +21,24 @@
 #define L8100_N_INIT_ACTION 19
 #define L8100_N_STORE_ACTION 20
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	float input_1_gain;
-	int input_1_gain_convert;
-	float input_1_mult;
-	int input_1_mult_convert;
-	float input_1_offset;
-	float input_2_gain;
-	int input_2_gain_convert;
-	float input_2_mult;
-	int input_2_mult_convert;
-	float input_2_offset;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  float input_1_gain;
+  int input_1_gain_convert;
+  float input_1_mult;
+  int input_1_mult_convert;
+  float input_1_offset;
+  float input_2_gain;
+  int input_2_gain_convert;
+  float input_2_mult;
+  int input_2_mult_convert;
+  float input_2_offset;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStoreStruct;

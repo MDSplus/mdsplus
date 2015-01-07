@@ -33,29 +33,30 @@
 
 /* Resources */
 
-#define XmdsNnid               "nid"	        /* Nid */
+#define XmdsNnid               "nid"	/* Nid */
 #define XmdsNnidOffset         "nidOffset"	/* Nid offset */
-#define XmdsNputOnApply        "putOnApply"        /* Put when a XmdsApplyAllXds is called */
+#define XmdsNputOnApply        "putOnApply"	/* Put when a XmdsApplyAllXds is called */
 
 /* External creation routines:
 */
 #ifdef _NO_PROTO
 
-extern Widget	XmdsCreateXdBoxDialogButton();
-extern Boolean	XmdsIsXdBoxDialogButton();
-extern int	XmdsXdBoxDialogButtonApply();
-extern Widget	XmdsXdBoxDialogButtonGetXdBox();
-extern int	XmdsXdBoxDialogButtonPut();
-extern void	XmdsXdBoxDialogButtonReset();
+extern Widget XmdsCreateXdBoxDialogButton();
+extern Boolean XmdsIsXdBoxDialogButton();
+extern int XmdsXdBoxDialogButtonApply();
+extern Widget XmdsXdBoxDialogButtonGetXdBox();
+extern int XmdsXdBoxDialogButtonPut();
+extern void XmdsXdBoxDialogButtonReset();
 
 #else				/* _NO_PROTO */
 
-extern Widget	XmdsCreateXdBoxDialogButton(Widget parent,String name,ArgList args,Cardinal argcount);
-extern Boolean	XmdsIsXdBoxDialogButton(Widget w);
-extern int	XmdsXdBoxDialogButtonApply(Widget w);
-extern Widget	XmdsXdBoxDialogButtonGetXdBox(Widget w);
-extern int	XmdsXdBoxDialogButtonPut(Widget w);
-extern void	XmdsXdBoxDialogButtonReset(Widget w);
+extern Widget XmdsCreateXdBoxDialogButton(Widget parent, String name, ArgList args,
+					  Cardinal argcount);
+extern Boolean XmdsIsXdBoxDialogButton(Widget w);
+extern int XmdsXdBoxDialogButtonApply(Widget w);
+extern Widget XmdsXdBoxDialogButtonGetXdBox(Widget w);
+extern int XmdsXdBoxDialogButtonPut(Widget w);
+extern void XmdsXdBoxDialogButtonReset(Widget w);
 
 #endif				/* _NO_PROTO */
 

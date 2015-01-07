@@ -21,14 +21,13 @@
 
 extern int GenDeviceCallData();
 
-int GenDeviceSignal(int head_nid, unsigned int status_id_1, unsigned int status_id_2) 
-{ 
-  char *pathname=0;
+int GenDeviceSignal(int head_nid, unsigned int status_id_1, unsigned int status_id_2)
+{
+  char *pathname = 0;
   pathname = TreeGetPath(head_nid);
-  if (pathname != 0)
-  {
-    printf("Error processing device %s\n",pathname);
+  if (pathname != 0) {
+    printf("Error processing device %s\n", pathname);
     TreeFree(pathname);
   }
-  return(status_id_2);
+  return (status_id_2);
 }

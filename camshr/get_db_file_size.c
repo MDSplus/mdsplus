@@ -1,14 +1,14 @@
 // get_db_file_size.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -37,26 +37,25 @@
 //-------------------------------------------------------------------------
 // Get the actual size of the db file -- includes records not yet in use
 //
-// input:	name of file
-// output:	return the size of the db file, or error
+// input:       name of file
+// output:      return the size of the db file, or error
 //-------------------------------------------------------------------------
-int get_db_file_size( char *FileName )
+int get_db_file_size(char *FileName)
 {
-	int				retval;
-	struct	stat	sbuf;
+  int retval;
+  struct stat sbuf;
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "get_db_file_size('%s')\n", FileName );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("get_db_file_size('%s')\n", FileName);
 
-	if( Stat(FileName, &sbuf) == ERROR ) {
-		perror("stat()");
-		retval = FAILURE;		// error code is negative and odd
-	}
-	else
-		retval = sbuf.st_size;
+  if (Stat(FileName, &sbuf) == ERROR) {
+    perror("stat()");
+    retval = FAILURE;		// error code is negative and odd
+  } else
+    retval = sbuf.st_size;
 
-	if( MSGLVL(DETAILS) )
-		printf( "gdbfs('%s')  size %d\n", FileName, retval );
+  if (MSGLVL(DETAILS))
+    printf("gdbfs('%s')  size %d\n", FileName, retval);
 
-	return retval;
+  return retval;
 }

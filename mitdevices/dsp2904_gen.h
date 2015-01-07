@@ -24,14 +24,14 @@
 #define DSP2904_N_INIT_ACTION 22
 #define DSP2904_N_STORE_ACTION 23
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *traq_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *traq_name;
 } InStoreStruct;

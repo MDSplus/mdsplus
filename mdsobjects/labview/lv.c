@@ -21,16 +21,16 @@
 
 static void Initialize();
 
-static DESCRIPTOR(LVMemoryManager_10Name,"LVMemoryManager_10");
-static DESCRIPTOR(LVRT_10Name,"LVRT_10");
+static DESCRIPTOR(LVMemoryManager_10Name, "LVMemoryManager_10");
+static DESCRIPTOR(LVRT_10Name, "LVRT_10");
 
-static DESCRIPTOR(DSNewHandleName,"DSNewHandle");
-static DESCRIPTOR(MoveBlockName,"MoveBlock");
-static DESCRIPTOR(NumericArrayResizeName,"NumericArrayResize");
+static DESCRIPTOR(DSNewHandleName, "DSNewHandle");
+static DESCRIPTOR(MoveBlockName, "MoveBlock");
+static DESCRIPTOR(NumericArrayResizeName, "NumericArrayResize");
 
-void (*LVMoveBlock)() = 0;
-UHandle (*LVDSNewHandle)() = 0;
-MgErr (*LVNumericArrayResize)() = 0;
+void (*LVMoveBlock) () = 0;
+UHandle(*LVDSNewHandle) () = 0;
+MgErr(*LVNumericArrayResize) () = 0;
 
 extern void MoveBlock(const void *src, void *dest, size_t siz)
 {
@@ -47,14 +47,13 @@ extern UHandle DSNewHandle(size_t siz)
   if (LVDSNewHandle)
     return LVDSNewHandle(siz);
   else
-    return (UHandle)-1;
+    return (UHandle) - 1;
 }
 
- 
-MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle* h, size_t siz)
+MgErr NumericArrayResizeCACCA(int32 a, int32 b, UHandle * h, size_t siz)
 {
-printf("CIAO SONO NUMERIC ARRAY RESIZE CACCA\n");
-printf("\n\n\n\n");
+  printf("CIAO SONO NUMERIC ARRAY RESIZE CACCA\n");
+  printf("\n\n\n\n");
   if (!LVNumericArrayResize)
     Initialize();
   if (LVNumericArrayResize)
@@ -62,10 +61,11 @@ printf("\n\n\n\n");
   else
     return -1;
 }
-MgErr NumericArrayResize(int32 a, int32 b, UHandle* h, size_t siz)
+
+MgErr NumericArrayResize(int32 a, int32 b, UHandle * h, size_t siz)
 {
-printf("CIAO SONO NUMERIC ARRAY RESIZE\n");
-printf("\n\n\n\n");
+  printf("CIAO SONO NUMERIC ARRAY RESIZE\n");
+  printf("\n\n\n\n");
   if (!LVNumericArrayResize)
     Initialize();
   if (LVNumericArrayResize)
@@ -76,10 +76,9 @@ printf("\n\n\n\n");
 
 static void Initialize()
 {
-    int status;
-printf("CIAO SONO INITIALIZE\n");
-  if (!LVDSNewHandle)
-   {
+  int status;
+  printf("CIAO SONO INITIALIZE\n");
+  if (!LVDSNewHandle) {
     status = LibFindImageSymbol(&LVMemoryManager_10Name, &DSNewHandleName, &LVDSNewHandle);
     printf("FIND IMAGE SYMBOL status: %s %s\n", MdsGetMsg(status));
   }

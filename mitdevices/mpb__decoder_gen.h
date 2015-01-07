@@ -72,8 +72,8 @@
 #define MPB__DECODER_N_START_EVENT 70
 #define MPB__DECODER_N_INIT_ACTION 71
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InInitStruct;

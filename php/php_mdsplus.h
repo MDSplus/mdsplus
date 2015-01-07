@@ -74,8 +74,7 @@ ZEND_END_MODULE_GLOBALS(mdsplus)
 #define MDSPLUS_G(v) (mdsplus_globals.v)
 #endif
 
-#endif	/* PHP_MDSPLUS_H */
-
+#endif				/* PHP_MDSPLUS_H */
 
 /*
  * Local variables:

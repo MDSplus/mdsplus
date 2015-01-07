@@ -38,18 +38,18 @@
 
 #ifndef XmdsIsExpr
 #define XmdsIsExpr(w) XtIsSubclass(w, xmdsExprWidgetClass)
-#endif /* XmdsIsExpr */
+#endif				/* XmdsIsExpr */
 
 /* XmdsExpr Widget Class */
 externalref WidgetClass xmdsExprWidgetClass;
 
-typedef struct _XmdsExprClassRec  *XmdsExprWidgetClass;
+typedef struct _XmdsExprClassRec *XmdsExprWidgetClass;
 typedef struct _XmdsExprWidgetRec *XmdsExprWidget;
 
 #ifdef _NO_PROTO
 
 extern Widget XmdsCreateExpr();
-extern struct descriptor *XmdsExprGetXd ();
+extern struct descriptor *XmdsExprGetXd();
 extern Boolean XmdsExprPut();
 extern Boolean XmdsExprApply();
 extern void XmdsExprRegister();
@@ -58,10 +58,10 @@ void XmdsExprSetDefaultNid();
 extern void XmdsExprSetNid();
 extern void XmdsExprSetXd();
 
-#else /* _NO_PROTO */
+#else				/* _NO_PROTO */
 
-extern Widget XmdsCreateExpr( Widget parent, char *name, ArgList args, Cardinal argcount );
-extern struct descriptor *XmdsExprGetXd (Widget w);
+extern Widget XmdsCreateExpr(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern struct descriptor *XmdsExprGetXd(Widget w);
 extern Boolean XmdsExprPut(Widget w);
 extern Boolean XmdsExprApply(Widget w);
 extern void XmdsExprRegister();
@@ -70,7 +70,7 @@ void XmdsExprSetDefaultNid(Widget w, int nid);
 extern void XmdsExprSetNid(Widget w, int nid, int offset);
 extern void XmdsExprSetXd(Widget w, struct descriptor *dsc);
 
-#endif /* _NO_PROTO */
+#endif				/* _NO_PROTO */
 
 /* Resources */
 
@@ -87,7 +87,7 @@ extern void XmdsExprSetXd(Widget w, struct descriptor *dsc);
 /* Class record pointer */
 
 externalref WidgetClass xmdsExprWidgetClass;
-externalref struct _XmdsExprClassRec  xmdsExprClassRec;
+externalref struct _XmdsExprClassRec xmdsExprClassRec;
 
-#endif /* _XmdsExpr_H */
+#endif				/* _XmdsExpr_H */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

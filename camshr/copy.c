@@ -1,14 +1,14 @@
 // copy.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -40,84 +40,85 @@
 //-------------------------------------------------------------------------
 // Copy in_file's contents to out_file
 //
-// input:	db type, 
-// 			pointers to inFile, outFile, 
-//			number of items to copy
-// output:	status
+// input:       db type, 
+//                      pointers to inFile, outFile, 
+//                      number of items to copy
+// output:      status
 //-------------------------------------------------------------------------
-int copy( int dbType, char *inFile, char *outFile, int count )
+int copy(int dbType, char *inFile, char *outFile, int count)
 {
-	int 	Read_fd, Write_fd;
-	int 	entrySize, i; 
-	int		status = SUCCESS;		// optimistic
+  int Read_fd, Write_fd;
+  int entrySize, i;
+  int status = SUCCESS;		// optimistic
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "copy()\n" );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("copy()\n");
 
-	// get a read file descriptor
-	if( (Read_fd = Open(inFile, O_RDONLY)) == -1 ) {
-		if( MSGLVL(ALWAYS) )
-			perror("open(rd)");
+  // get a read file descriptor
+  if ((Read_fd = Open(inFile, O_RDONLY)) == -1) {
+    if (MSGLVL(ALWAYS))
+      perror("open(rd)");
 
-		status = FILE_ERROR;
-		goto Copy_Exit_1;
-	}
+    status = FILE_ERROR;
+    goto Copy_Exit_1;
+  }
+  // get a write file descriptor
+  if ((Write_fd = open(outFile, O_WRONLY)) == -1) {
+    printf("Error opening %s\n", outFile);
+    perror("open(wr)");
 
-	// get a write file descriptor
-	if( (Write_fd = open(outFile, O_WRONLY)) == -1 ) {
-	  printf("Error opening %s\n",outFile);
-		perror("open(wr)");
+    status = FILE_ERROR;
+    goto Copy_Exit_2;
+  }
+  // figure out size
+  switch (dbType) {
+  case CTS_DB:
+    entrySize = MODULE_ENTRY;
+    break;
 
-		status = FILE_ERROR;
-		goto Copy_Exit_2;
-	}
+  case CRATE_DB:
+    entrySize = CRATE_ENTRY;
+    break;
+  }
 
-	// figure out size
-	switch( dbType ) {
-		case CTS_DB:
-			entrySize = MODULE_ENTRY;
-			break;
+  // local block
+  {
+    char line[entrySize];
 
-		case CRATE_DB:
-			entrySize = CRATE_ENTRY;
-			break;
-	}
+    // read 'n write ...
+    for (i = 0; i < count; ++i) {
+      // read ...
+      if (read(Read_fd, line, entrySize) != entrySize) {
+	if (MSGLVL(ALWAYS))
+	  perror("read()");
 
-	// local block
-	{
-		char	line[entrySize];
+	status = COPY_ERROR;
+	goto Copy_Exit_3;
+      }
+      // ... then write
+      if (write(Write_fd, line, entrySize) != entrySize) {
+	if (MSGLVL(ALWAYS))
+	  perror("write()");
 
-		// read 'n write ...
-		for( i = 0; i < count; ++i ) {
-			// read ...
-			if( read(Read_fd,   line, entrySize) != entrySize ) {
-				if( MSGLVL(ALWAYS) )
-					perror("read()");
+	status = COPY_ERROR;
+	goto Copy_Exit_3;
+      }
+    }
+  }
 
-				status = COPY_ERROR;
-				goto Copy_Exit_3;
-			}
-			// ... then write
-			if( write(Write_fd, line, entrySize) != entrySize ) {
-				if( MSGLVL(ALWAYS) )
-					perror("write()");
+ Copy_Exit_3:
+  if (Write_fd != -1)
+    close(Write_fd);
 
-				status = COPY_ERROR;
-				goto Copy_Exit_3;
-			}
-		}
-	}
+ Copy_Exit_2:
+  if (Read_fd != -1)
+    close(Read_fd);
 
-Copy_Exit_3:
-	if( Write_fd != -1 ) close(Write_fd);
+ Copy_Exit_1:
+  if (MSGLVL(DETAILS)) {
+    printf("copy(): ");
+    ShowStatus(status);
+  }
 
-Copy_Exit_2:
-	if( Read_fd  != -1 ) close(Read_fd);
-
-Copy_Exit_1:
-	if( MSGLVL(DETAILS) ) {
-		printf( "copy(): " ); ShowStatus( status );
-	}
-
-	return status;
+  return status;
 }

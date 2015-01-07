@@ -29,7 +29,7 @@
 #include <config.h>
 
 EXPORT extern int LibAddx();
-EXPORT extern void  *LibCallg();
+EXPORT extern void *LibCallg();
 EXPORT extern int LibConvertDateString();
 EXPORT extern int LibCreateVmZone();
 EXPORT extern int LibDeleteVmZone();

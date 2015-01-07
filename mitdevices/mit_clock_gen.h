@@ -4,8 +4,8 @@
 #define MIT_CLOCK_N_FREQUENCY 2
 #define MIT_CLOCK_N_OUTPUT 3
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	struct descriptor *frequency;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  struct descriptor *frequency;
 } InGet_setupStruct;

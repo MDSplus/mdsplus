@@ -13,21 +13,21 @@
 #define L4202_N_INIT_ACTION 11
 #define L4202_N_STORE_ACTION 12
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	char *memory_name;
-	int router_inc;
-	int num_spectra;
-	int offset;
-	float resolution;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  char *memory_name;
+  int router_inc;
+  int num_spectra;
+  int offset;
+  float resolution;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *memory_name;
-	int router_inc;
-	int num_spectra;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *memory_name;
+  int router_inc;
+  int num_spectra;
 } InStoreStruct;

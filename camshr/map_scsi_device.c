@@ -1,14 +1,14 @@
 // map_scsi_device.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -25,8 +25,8 @@
 // local struct
 //-------------------------------------------------------------------------
 struct scsi_info {
-	char	adapter;
-	int		scsi_id;
+  char adapter;
+  int scsi_id;
 };
 
 //-------------------------------------------------------------------------
@@ -42,103 +42,99 @@ struct scsi_info {
 // puts value into crate.db; leaves unchanged if not found
 // NB! called by 'autoconfig()' in cts::verbs
 //-------------------------------------------------------------------------
-int map_scsi_device( char *highway_name )
+int map_scsi_device(char *highway_name)
 {
-	char				line[80], *pline, tmp[7];
-	char				dsf[4], hwytype;
-	int					adapter, i, numOfEntries, scsi_id, sg_number;
-	int					status = SUCCESS;		// optimistic
-	int					found = FALSE;
-	FILE				*fp, *fopen();
-	extern struct CRATE	*CRATEdb;				// pointer to in-memory copy of data file
+  char line[80], *pline, tmp[7];
+  char dsf[4], hwytype;
+  int adapter, i, numOfEntries, scsi_id, sg_number;
+  int status = SUCCESS;		// optimistic
+  int found = FALSE;
+  FILE *fp, *fopen();
+  extern struct CRATE *CRATEdb;	// pointer to in-memory copy of data file
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "map_scsi_device('%s')\n", highway_name );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("map_scsi_device('%s')\n", highway_name);
 
-	// open '/proc' filesystem scsi info
-	if( (fp = fopen(PROC_FILE, "r")) == NULL ) {
-		if( MSGLVL(ALWAYS) )
-			fprintf( stderr, "failure to open '%s'\n", PROC_FILE );
+  // open '/proc' filesystem scsi info
+  if ((fp = fopen(PROC_FILE, "r")) == NULL) {
+    if (MSGLVL(ALWAYS))
+      fprintf(stderr, "failure to open '%s'\n", PROC_FILE);
 
-		status = FILE_ERROR; 	// serious error !!! no scsi devices to check
-		goto MapScsiDevice_Exit;
-	}
+    status = FILE_ERROR;	// serious error !!! no scsi devices to check
+    goto MapScsiDevice_Exit;
+  }
+  // get current db file count
+  if ((numOfEntries = get_file_count(CRATE_DB)) <= 0) {
+    status = FILE_ERROR;
+    goto MapScsiDevice_Exit;	// we're done  :<
+  }
+  if (MSGLVL(DETAILS))
+    printf("crate.db count= %d\n", numOfEntries);
 
-	// get current db file count
-	if( (numOfEntries = get_file_count( CRATE_DB )) <= 0 ) {
-		status = FILE_ERROR;
-		goto MapScsiDevice_Exit;				// we're done  :<
-	}
-	if( MSGLVL(DETAILS) )
-		printf( "crate.db count= %d\n", numOfEntries );
+  // lookup highway name
+  if (MSGLVL(DETAILS))
+    printf("msd() looking up '%s'\n", highway_name);
+  if ((i = lookup_entry(CRATE_DB, highway_name)) < 0) {
+    status = NO_DEVICE;		// no such device in db file
+    goto MapScsiDevice_Exit;
+  }
+  if (MSGLVL(DETAILS))
+    printf("msd(): lookup index [%d]:%s\n", i, highway_name);
 
-	// lookup highway name
-	if( MSGLVL(DETAILS) )
-		printf("msd() looking up '%s'\n", highway_name);
-	if( (i = lookup_entry( CRATE_DB, highway_name )) < 0 ) {
-		status = NO_DEVICE; 					// no such device in db file
-		goto MapScsiDevice_Exit;
-	}
-	if( MSGLVL(DETAILS) )
-		printf( "msd(): lookup index [%d]:%s\n", i, highway_name );
+  // point to actual memory
+  pline = &line[0];
 
-	// point to actual memory
-	pline = &line[0];
+  // scan all scsi devices
+  sg_number = 0;		// start at the beginning
+  while (!found && (pline = fgets(line, sizeof(line), fp)) != NULL) {
+    if (strncmp(pline, "Host:", 5) == EQUAL) {
+      sscanf(line, "Host: scsi%d Channel: %*2c Id: %d %*s", &adapter, &scsi_id);
 
-	// scan all scsi devices
-	sg_number = 0;		// start at the beginning
-	while( !found && (pline = fgets(line, sizeof(line), fp)) != NULL ) {
-		if( strncmp(pline, "Host:", 5) == EQUAL ) {
-			sscanf(line, "Host: scsi%d Channel: %*2c Id: %d %*s", &adapter, &scsi_id);
+      sprintf(tmp, "GK%c%d", 'A' + adapter, scsi_id);
+      if (strncmp(tmp, highway_name, 4) == EQUAL) {	// found it
+	if (QueryHighwayType(tmp) == SUCCESS)	// determine highway type
+	  hwytype = tmp[5];
 
-			sprintf(tmp, "GK%c%d", 'A' + adapter, scsi_id);
-			if( strncmp(tmp, highway_name, 4) == EQUAL ) {		// found it
-				if( QueryHighwayType( tmp ) == SUCCESS )		// determine highway type
-					hwytype = tmp[5];
+	// we're done, so exit
+	found = TRUE;
+      } else
+	sg_number++;
+    }				// end of if() ....
+  }				// end of while() ...
 
-				// we're done, so exit
-				found = TRUE;
-			}
-			else
-				sg_number++;
-		} // end of if() ....
-	} // end of while() ...
+  // 'lock' file with semaphore
+  if (lock_file() != SUCCESS) {
+    status = FAILURE;		// LOCK_ERROR;          [2001.07.12]
+    goto MapScsiDevice_Exit;
+  }
+  // update memory mapped version
+  if (found) {
+    sprintf(dsf, "%03d", sg_number);	// format conversion
+    strncpy((CRATEdb + i)->DSFname, dsf, 3);	// real device number
+    (CRATEdb + i)->HwyType = hwytype;	// highway type
+  } else {
+    strncpy((CRATEdb + i)->DSFname, "...", 3);	// place-holder device number
+    (CRATEdb + i)->HwyType = '.';
+  }
 
-	// 'lock' file with semaphore
-	if( lock_file() != SUCCESS ) {
-		status = FAILURE;		// LOCK_ERROR;		[2001.07.12]
-		goto MapScsiDevice_Exit;
-	}
+  // commit changes to file
+  if (commit_entry(CRATE_DB) != SUCCESS) {
+    status = FAILURE;		// COMMIT_ERROR;        [2001.07.12]
+    goto MapScsiDevice_Exit;
+  }
+  if (MSGLVL(DETAILS))
+    printf("'%.4s+%.3s+%c'\n", highway_name, (CRATEdb + i)->DSFname, (CRATEdb + i)->HwyType);
 
-	// update memory mapped version
-	if( found ) {
-		sprintf(dsf, "%03d", sg_number);			// format conversion
-		strncpy((CRATEdb+i)->DSFname, dsf, 3);		// real device number
-		(CRATEdb+i)->HwyType = hwytype;				// highway type
-	}
-	else {
-		strncpy((CRATEdb+i)->DSFname, "...", 3);	// place-holder device number
-		(CRATEdb+i)->HwyType = '.';
-	}
+  // unlock file
+  if (unlock_file() != SUCCESS) {
+    status = FAILURE;		// UNLOCK_ERROR;        [2001.07.12]
+    goto MapScsiDevice_Exit;
+  }
 
-	// commit changes to file
-	if( commit_entry( CRATE_DB ) != SUCCESS ) {
-		status = FAILURE;		// COMMIT_ERROR;	[2001.07.12]
-		goto MapScsiDevice_Exit;
-	}
-	if( MSGLVL(DETAILS) )
-		printf( "'%.4s+%.3s+%c'\n", highway_name, (CRATEdb+i)->DSFname, (CRATEdb+i)->HwyType );
+ MapScsiDevice_Exit:
+  // cleanup
+  if (fp)
+    fclose(fp);
 
-	// unlock file
-	if( unlock_file() != SUCCESS ) {
-		status = FAILURE;		// UNLOCK_ERROR;	[2001.07.12]
-		goto MapScsiDevice_Exit;
-	}
-
-MapScsiDevice_Exit:
-	// cleanup
-	if( fp )
-		fclose(fp);
-
-	return status;
+  return status;
 }

@@ -11,18 +11,18 @@
 #define L2415_N_INIT_ACTION 9
 #define L2415_N_STORE_ACTION 10
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	float polarity;
-	float range;
-	float current;
-	float voltage;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  float polarity;
+  float range;
+  float current;
+  float voltage;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStoreStruct;

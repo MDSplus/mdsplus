@@ -43,52 +43,50 @@
 
 /* New fields for the  Xd Widget record */
 
-typedef struct _XmdsXdUserPart
-{
-   void				(*load_dlog_proc)();
-   struct descriptor_xd     *(*unload_dlog_proc)();
+typedef struct _XmdsXdUserPart {
+  void (*load_dlog_proc) ();
+  struct descriptor_xd *(*unload_dlog_proc) ();
 } XmdsXdUserPart;
 
-typedef struct _XmdsXdBoxPart
-{
-    int				nid;
-    int                         nid_offset;
-    int 			default_nid;
-    unsigned char		usage;
-    struct descriptor_xd	*xd;
+typedef struct _XmdsXdBoxPart {
+  int nid;
+  int nid_offset;
+  int default_nid;
+  unsigned char usage;
+  struct descriptor_xd *xd;
 
-    Boolean			show_buttons;
-    Boolean			display_only;
+  Boolean show_buttons;
+  Boolean display_only;
 
-    Boolean			auto_destroy;
-    Boolean			auto_put;
-    Boolean			auto_unmanage;
-    Boolean			put_on_apply;
+  Boolean auto_destroy;
+  Boolean auto_put;
+  Boolean auto_unmanage;
+  Boolean put_on_apply;
 
-    XtCallbackList		apply_callback;
-    XtCallbackList		cancel_callback;
-    XtCallbackList		ok_callback;
-    XtCallbackList		reset_callback;
+  XtCallbackList apply_callback;
+  XtCallbackList cancel_callback;
+  XtCallbackList ok_callback;
+  XtCallbackList reset_callback;
 
-    Widget		        xdb_dlog;
-    Widget		        specific_dlog;
+  Widget xdb_dlog;
+  Widget specific_dlog;
 
-    Boolean 			on_off;
-    Boolean 			parent_on_off;
-    char			*tag_list;
-    char			*path;
-    Boolean			loaded;
+  Boolean on_off;
+  Boolean parent_on_off;
+  char *tag_list;
+  char *path;
+  Boolean loaded;
 } XmdsXdBoxPart;
 
 /*
  * now define the actual widget data struct
  */
 typedef struct _XmdsXdBoxWidgetRec {
-    CorePart		    core;		/*  basic widget */
-    CompositePart	    composite;		/*  composite specific data */
-    ConstraintPart          constraint;
-    XmManagerPart	    manager;
-    XmdsXdBoxPart	    xdbox;		/*  Xd specific */
+  CorePart core;		/*  basic widget */
+  CompositePart composite;	/*  composite specific data */
+  ConstraintPart constraint;
+  XmManagerPart manager;
+  XmdsXdBoxPart xdbox;		/*  Xd specific */
 } XmdsXdBoxWidgetRec;
 
 /*
@@ -96,26 +94,24 @@ typedef struct _XmdsXdBoxWidgetRec {
  * dialog box.
  */
 
-typedef struct _XmdsXdBoxClassPart{
-    MrmHierarchy	drm;
-    caddr_t		extension;	/* Pointer to extension record */
-}   XmdsXdBoxClassPart;
-
+typedef struct _XmdsXdBoxClassPart {
+  MrmHierarchy drm;
+  caddr_t extension;		/* Pointer to extension record */
+} XmdsXdBoxClassPart;
 
 /*
  * The XdBox Class record is a composite class plus
  * the XdBoxClassPart
 */
-typedef struct _XmdsXdBoxClassRec 
-{
-    CoreClassPart	    core_class;
-    CompositeClassPart	    composite_class;
-    ConstraintClassPart constraint_class;
-    XmManagerClassPart  manager_class;
-    XmdsXdBoxClassPart	    xdbox_class;
+typedef struct _XmdsXdBoxClassRec {
+  CoreClassPart core_class;
+  CompositeClassPart composite_class;
+  ConstraintClassPart constraint_class;
+  XmManagerClassPart manager_class;
+  XmdsXdBoxClassPart xdbox_class;
 } XmdsXdBoxClassRec;
 
-externalref XmdsXdBoxClassRec     xmdsXdBoxClassRec;
+externalref XmdsXdBoxClassRec xmdsXdBoxClassRec;
 
-#endif /* XmdsXdBoxP_H */
+#endif				/* XmdsXdBoxP_H */
 /* DON'T ADD STUFF AFTER THIS #endif */

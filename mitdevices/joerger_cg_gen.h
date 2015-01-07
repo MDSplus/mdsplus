@@ -12,18 +12,18 @@
 #define JOERGER_CG_N_CHANNEL_4_INVERTED 10
 #define JOERGER_CG_N_INIT_ACTION 11
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	struct descriptor *channel_1;
-	struct descriptor *channel_2;
-	struct descriptor *channel_3;
-	struct descriptor *channel_4;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  struct descriptor *channel_1;
+  struct descriptor *channel_2;
+  struct descriptor *channel_3;
+  struct descriptor *channel_4;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStopStruct;

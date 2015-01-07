@@ -6,17 +6,17 @@
 #ifndef __CVTDEF_LOADED
 #define __CVTDEF_LOADED 1
 
-#ifndef _MSC_VER  
+#ifndef _MSC_VER
 #pragma nostandard
 #endif
- 
+
 #ifdef __cplusplus
-    extern "C" {
+extern "C" {
 #define __unknown_params ...
 #else
 #define __unknown_params
 #endif
- 
+
 #if !defined(__VAXC) && !defined(VAXC)
 #define __struct struct
 #define __union union
@@ -24,28 +24,27 @@
 #define __struct variant_struct
 #define __union variant_union
 #endif
- 
-#define CvtVAX_F 10                  /* VAX F     Floating point data    */
-#define CvtVAX_D 11                  /* VAX D     Floating point data    */
-#define CvtVAX_G 27                  /* VAX G     Floating point data    */
-#define CvtVAX_H 28                  /* VAX H     Floating point data    */
-#define CvtIEEE_S 52                 /* IEEE S    Floating point data    */
-#define CvtIEEE_T 53                 /* IEEE T    Floating point data    */
-#define CvtIBM_LONG 6                /* IBM Long  Floating point data    */
-#define CvtIBM_SHORT 7               /* IBM Short Floating point data    */
-#define CvtCRAY 8                    /* Cray      Floating point data    */
-#define CvtIEEE_X 9                  /* IEEE X    Floating point data    */
 
-extern unsigned long CvtConvertFloat(void *input_v,  unsigned long input_t, 
-									 void *output_v, unsigned long output_t,...);
+#define CvtVAX_F 10		/* VAX F     Floating point data    */
+#define CvtVAX_D 11		/* VAX D     Floating point data    */
+#define CvtVAX_G 27		/* VAX G     Floating point data    */
+#define CvtVAX_H 28		/* VAX H     Floating point data    */
+#define CvtIEEE_S 52		/* IEEE S    Floating point data    */
+#define CvtIEEE_T 53		/* IEEE T    Floating point data    */
+#define CvtIBM_LONG 6		/* IBM Long  Floating point data    */
+#define CvtIBM_SHORT 7		/* IBM Short Floating point data    */
+#define CvtCRAY 8		/* Cray      Floating point data    */
+#define CvtIEEE_X 9		/* IEEE X    Floating point data    */
+
+extern unsigned long CvtConvertFloat(void *input_v, unsigned long input_t,
+				     void *output_v, unsigned long output_t, ...);
 
 #ifdef __cplusplus
-    }
+}
 #endif
 
-#ifndef _MSC_VER  
+#ifndef _MSC_VER
 #pragma standard
 #endif
- 
-#endif /* __CVTDEF_LOADED */
- 
+
+#endif				/* __CVTDEF_LOADED */
