@@ -1,4 +1,16 @@
-commit ebe48046ab59d597860d37ed0e5baa9ed14e73bd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2568757604457fd55ea09a8410c9d0edfd1486bd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 7 08:24:38 2015 -0500
+
+    Do not depend on numpy. Package with that name not available on Ubuntu
+
+commit b4f9793d42f43fceb00a7c61a111234ee52b1108 (tag: refs/tags/alpha_release-6-3-453)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 23:40:46 2015 +0000
+
+    New ChangeLog
+
+commit ebe48046ab59d597860d37ed0e5baa9ed14e73bd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 6 16:23:33 2015 -0500
 
