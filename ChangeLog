@@ -1,4 +1,16 @@
-commit 27bed6472a3dd8e3e5c01c91a136d49eee04ad9f (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 0312e11bd0a7c3900a02ac2bd054ff9d6a16f5e5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 7 13:03:15 2015 -0500
+
+    Use standard indentation of all the C code. Based on: indent -linux -i2 -l100
+
+commit 263cc8bce631b291f17ae2c3e09164c55a067b93 (tag: refs/tags/alpha_release-6-3-454)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 14:05:08 2015 +0000
+
+    New ChangeLog
+
+commit 27bed6472a3dd8e3e5c01c91a136d49eee04ad9f
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jan 7 13:37:50 2015 +0000
 
