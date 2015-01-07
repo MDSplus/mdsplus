@@ -1,4 +1,16 @@
-commit f1f5e8dc4728d0119ef44ea05682c14619d75ed0 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit abae4df64963cbb7707f674e922add8d67560fb5 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 7 08:24:00 2015 -0500
+
+    Do not depend on numpy. Package with that name not available on Ubuntu
+
+commit caf5e4ed0ec0c0172885259ee7baf54524e6d88a (tag: refs/tags/stable_release-6-1-71)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 23:59:20 2015 +0000
+
+    New ChangeLog
+
+commit f1f5e8dc4728d0119ef44ea05682c14619d75ed0
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jan 6 21:47:27 2015 +0000
 
