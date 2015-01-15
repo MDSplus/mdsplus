@@ -1,4 +1,22 @@
-commit 0312e11bd0a7c3900a02ac2bd054ff9d6a16f5e5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 7b7bd313712cc903ccd9927f31f817ba4146338d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 15 15:21:10 2015 -0500
+
+    Cannot use environment variable in icon filespecs
+
+commit d2581ea9db06a5a0b63e764aa753e6ea892e100f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 15 09:16:24 2015 +0100
+
+    Handle empty pointers in APD
+
+commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455, refs/remotes/origin/feature-replace-mdsdcl)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 18:21:16 2015 -0500
+
+    New ChangeLog
+
+commit 0312e11bd0a7c3900a02ac2bd054ff9d6a16f5e5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 7 13:03:15 2015 -0500
 
