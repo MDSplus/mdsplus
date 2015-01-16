@@ -17,17 +17,20 @@
 	/***************************************************************
 	 * TclWrite:
 	 ***************************************************************/
-int TclWrite()
+int TclWrite(void *ctx)
 {
-  int shotid;
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_exp);
-  static DYNAMIC_DESCRIPTOR(dsc_shotid);
-
-  if (cli_get_value("FILE", &dsc_exp) & 1) {
-    cli_get_value("SHOTID", &dsc_shotid);
-    sscanf(dsc_shotid.dscA_pointer, "%d", &shotid);
-    sts = TreeWriteTree(dsc_exp.dscA_pointer, shotid);
+  char *exp = 0;
+  if (cli_get_value(ctx, "FILE", &exp) & 1) {
+    char *shotidStr = 0;
+    int shotid;
+    cli_get_value(ctx, "SHOTID", &shotidStr);
+    shotid = atoi(shotidStr);
+    sts = TreeWriteTree(exp, shotid);
+    if (exp)
+      free(exp);
+    if (shotidStr)
+      free(shotidStr);
   } else {
     sts = TreeWriteTree(0, 0);
   }

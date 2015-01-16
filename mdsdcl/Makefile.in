@@ -5,22 +5,14 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ DEF=mdsdclshr.def
 
 SOURCES = 		\
-mdsdcl_dcl_parse.c		\
-mdsdcl_do_command.c	\
-mdsdcl_dummy.c		\
-mdsdcl_general.c		\
-mdsdcl_get_input.c		\
-mdsdcl_initialize.c	\
-mdsdcl_insert_symbols.c	\
-mdsdcl_tables.c		\
-MdsdclThreadSafe.c	\
-mdsdcl_macros.c		\
-mdsdcl_set_command.c	\
-mdsdcl_show_vm.c        \
-mdsdcl_spawn.c		\
-mdsdcl_wait.c
+cmdExecute.c         	\
+cmdParseLex.c           \
+cmdParse.tab.c          \
+mdsdcl_commands.c
+
 
 OBJECTS = $(SOURCES:.c=.o)
+
 EXPORTS = mdsdclshr.export
 
 all: @MAKELIBDIR@ @MAKEBINDIR@ @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) @MAKEBINDIR@mdsdcl$(EXE)
@@ -30,27 +22,38 @@ clean:
 	$(RM) @MAKELIBDIR@@LIBPRE@Mdsdcl.a @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ @MAKEBINDIR@mdsdcl$(EXE) $(IMPLIB)
 
 depend: 
-	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c
+	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c ocldToXml.c
 
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl$(EXE) $(bindir)
 	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) $(libdir)
-
-cdudir = $(top_builddir)/cdu
-LINK_CDU = $(cdudir)/libCdu.a
-CDU = $(cdudir)/cdu
-
-#mdsdcl_tables.c: mdsdcl_tables.ocld
-#	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < $<;\
-#              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<; fi
+	$(INSTALL) -m 755 mdsdcl_commands.xml $(libdir)
 
 @MAKELIBDIR@@LIBPRE@Mdsdcl.a: $(OBJECTS)
 		$(AR) -cr $@ $^
 		@RANLIB@ $@
 
-@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF) $(LINK_CDU)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD)
+cmdExecute.o: cmdExecute.c
+	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
 
-@MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c $(LINK_CDU) @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)
-	$(LINK.c) $(OUTPUT_OPTION) $< $(LINK_CDU) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD) -lxml2 -lreadline
+
+@MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)
+	$(LINK.c) $(OUTPUT_OPTION) $<  -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lreadline
+
+#cmdParse.tab.c: cmdParse.y
+#        bison cmdParse.y
+
+#cmdParseLex.c: cmdParse.x
+#	lex cmdParsex
+
+#ocldToXml: ocldToXml.c
+#	$(LINK.c) $(OUTPUT_OPTION) $<
+
+#ocldToXml.c: ocldToXml.x
+#       lex ocldToXml.x
+
+#mdsdcl_commands.xml: mdsdcl_tables.ocld
+#	./ocldToXml mdsdcl_tables.ocld mdsdcl_commands

@@ -1,19 +1,20 @@
 #include        <mds_stdarg.h>
 #include        "tclsysdef.h"
 #include <dbidef.h>
+#include <string.h>
 
 /***************************************************************
  * TclSetVersions:
  **************************************************************/
 
-int TclSetVersions()
+int TclSetVersions(void *ctx)
 {
   int status = 1;
 
   /*--------------------------------------------------------
    * Executable ...
    *-------------------------------------------------------*/
-  switch (cli_present("MODEL")) {
+  switch (cli_present(ctx, "MODEL")) {
   case CLI_STS_PRESENT:
     status = TreeSetDbiItm(DbiVERSIONS_IN_MODEL, 1);
     break;
@@ -23,7 +24,7 @@ int TclSetVersions()
   }
   if (!(status & 1))
     goto error;
-  switch (cli_present("SHOT")) {
+  switch (cli_present(ctx, "SHOT")) {
   case CLI_STS_PRESENT:
     status = TreeSetDbiItm(DbiVERSIONS_IN_PULSE, 1);
     break;
@@ -38,7 +39,7 @@ int TclSetVersions()
   return status;
 }
 
-int TclShowVersions()
+int TclShowVersions(void *ctx)
 {
   int in_model, in_pulse, status;
   DBI_ITM itmlst[] =

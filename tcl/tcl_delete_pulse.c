@@ -10,15 +10,16 @@
 *
 ************************************************************************/
 
-int TclDeletePulse()
+int TclDeletePulse(void *ctx)
 {
-  static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+  char *asciiShot=0;
   int shot;
   int sts;
-  int delete_all = cli_present("ALL") & 1;
+  int delete_all = cli_present(ctx, "ALL") & 1;
 
-  cli_get_value("SHOT", &dsc_asciiShot);
-  sscanf(dsc_asciiShot.dscA_pointer, "%d", &shot);
+  cli_get_value(ctx, "SHOT", &asciiShot);
+  sscanf(asciiShot, "%d", &shot);
+  free(asciiShot);
   sts = TreeDeletePulseFile(shot, delete_all);
   if (~sts & 1)
     sts = MdsMsg(sts, "Couldn't delete pulse file %d", shot);

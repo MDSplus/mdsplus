@@ -2,6 +2,7 @@
 #include        <ctype.h>
 #include        <ncidef.h>
 #include        <usagedef.h>
+#include        <string.h>
 
 /**********************************************************************
 * TCL_DELETE_NODE.C --
@@ -12,12 +13,6 @@
 *  15-Apr-1998  TRG  Create.  Ported from original mds code.
 *
 ************************************************************************/
-
-#ifdef vms
-#define TreeDeleteNodeExecute  TREE$DELETE_NODE_EXECUTE
-
-int TREE$DELETE_NODE_EXECUTE();
-#endif
 
 typedef struct _nidlist {
   int nid;
@@ -57,29 +52,26 @@ static void TouchNodes()
 	 * TclDeleteNode:
 	 * Delete a node
 	 ****************************************************************/
-int TclDeleteNode()
+int TclDeleteNode(void *ctx)
 {
   int count = 0;
   int nids = 0;
   int reset = 1;
   int nid;
   int usageMask = -1;
-  char *nodename;
+  char *nodename=0;
   char *pathnam;
-  void *ctx;
-  static DYNAMIC_DESCRIPTOR(dsc_nodnam);
-  static DYNAMIC_DESCRIPTOR(dsc_out);
+  void *ctx_fn;
   int status = 1;
-  while (cli_get_value("NODENAME", &dsc_nodnam) & 1) {
-    ctx = 0;
-    nodename = dsc_nodnam.dscA_pointer;
-    l2u(nodename, 0);
-    while (TreeFindNodeWild(nodename, &nid, &ctx, usageMask) & 1 && (status & 1)) {
+  while (cli_get_value(ctx, "NODENAME", &nodename) & 1) {
+    ctx_fn = 0;
+    while (TreeFindNodeWild(nodename, &nid, &ctx_fn, usageMask) & 1 && (status & 1)) {
       nids++;
       status = TreeDeleteNodeInitialize(nid, &count, reset);
       reset = 0;
     }
-    TreeFindNodeEnd(&ctx);
+    TreeFindNodeEnd(&ctx_fn);
+    free(nodename);
   }
   if (status == TreeNOEDIT) {
     TclTextOut("Tree must be open for edit to delete nodes.");
@@ -89,21 +81,22 @@ int TclDeleteNode()
     TclTextOut("No nodes found.");
     return 1;
   }
-  if ((nids != count) && (cli_present("CONFIRM") & 1)) {
+  if ((nids != count) && (cli_present(ctx, "CONFIRM") & 1)) {
     char ans;
     static char message[] = "Additional descendent and/or device\
  nodes will be deleted";
-    static DYNAMIC_DESCRIPTOR(dsc_answer);
+    struct descriptor dsc_answer={0, DTYPE_T, CLASS_D, 0};
     static char prompt[] = "Respond D-delete,L-list,Q-quit [Q]: ";
 
     TclTextOut(message);
     ans = 0;
-    while (dsc_answer.dscW_length ? (ans != 'D' && ans != 'Q') : 1) {
+    while (dsc_answer.length ? (ans != 'D' && ans != 'Q') : 1) {
       str_free1_dx(&dsc_answer);
-      mdsdcl_get_input(prompt, &dsc_answer);
-      if (dsc_answer.dscW_length == 0)
+      printf("Deal with mdsdcl_get_input\n");
+      //      mdsdcl_get_input(prompt, &dsc_answer);
+      if (dsc_answer.length == 0)
 	str_append(&dsc_answer, "Q");
-      ans = toupper(*dsc_answer.dscA_pointer);
+      ans = toupper(*dsc_answer.pointer);
       if (ans == 'L') {
 	nid = 0;
 	while (TreeDeleteNodeGetNid(&nid) & 1) {
@@ -116,14 +109,16 @@ int TclDeleteNode()
     if (ans == 'Q')
       return 1;
   }
-  if (cli_present("LOG") & 1) {
+  if (cli_present(ctx, "LOG") & 1) {
     nid = 0;
     while (TreeDeleteNodeGetNid(&nid) & 1) {
+      char *p;
       pathnam = TreeGetPath(nid);
-      str_concat(&dsc_out, "TCL-I-DELETE, deleted node ", pathnam);
-      TclTextOut(dsc_out.dscA_pointer);
+      p=strcpy(malloc(strlen(pathnam)+40), "TCL-I-DELETE, deleted node ");
+      strcat(p,pathnam);
+      TclTextOut(p);
+      free(p);
       TreeFree(pathnam);
-      str_free1_dx(&dsc_out);
     }
   }
   InitTouchNodes();

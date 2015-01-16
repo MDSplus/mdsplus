@@ -14,27 +14,28 @@
 	 * TclEdit:
 	 * Open tree for edit
 	 ***************************************************************/
-int TclEdit()
+int TclEdit(void *ctx)
 {
   int shot;
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_filnam);
-  static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+  char *filnam=0;
+  char *asciiShot=0;
 
-  cli_get_value("FILE", &dsc_filnam);
-  cli_get_value("SHOTID", &dsc_asciiShot);
-  sscanf(dsc_asciiShot.dscA_pointer, "%d", &shot);
-  if (cli_present("NEW") & 1)
-    sts = TreeOpenNew(dsc_filnam.dscA_pointer, shot);
+  cli_get_value(ctx, "FILE", &filnam);
+  cli_get_value(ctx, "SHOTID", &asciiShot);
+  sscanf(asciiShot, "%d", &shot);
+  if (cli_present(ctx, "NEW") & 1)
+    sts = TreeOpenNew(filnam, shot);
   else
-    sts = TreeOpenEdit(dsc_filnam.dscA_pointer, shot);
+    sts = TreeOpenEdit(filnam, shot);
   if (sts & 1)
     TclNodeTouched(0, tree);
   else {
-    sts = MdsMsg(sts, "Error opening tree-file %s for EDIT", dsc_filnam.dscA_pointer);
-#ifdef vms
-    lib$signal(sts, 0);
-#endif
+    sts = MdsMsg(sts, "Error opening tree-file %s for EDIT", filnam);
   }
+  if (filnam)
+    free(filnam);
+  if (asciiShot)
+    free(asciiShot);
   return sts;
 }

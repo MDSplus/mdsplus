@@ -18,32 +18,28 @@
 	 * TclDirectoryTag:
 	 * Perform directory of all of the tags
 	 ****************************************************************/
-int TclDirectoryTag()
+int TclDirectoryTag(void *ctx)
 {
   int sub_total;
   int grand_total;
   char *nodename;
-  char *tagnam;
   char text[40];
-  void *ctx;
-  static DYNAMIC_DESCRIPTOR(dsc_tagnam);
-  static DYNAMIC_DESCRIPTOR(dsc_outLine);
+  void *ctx1;
+  char *tagnam=0;
 
   sub_total = grand_total = 0;
-  while (cli_get_value("TAG", &dsc_tagnam) & 1) {
-    tagnam = dsc_tagnam.dscA_pointer;
-    l2u(tagnam, 0);
+  while (cli_get_value(ctx, "TAG", &tagnam) & 1) {
     ctx = 0;
     sub_total = 0;
     TclTextOut(" ");
     sprintf(text, "Tag listing for %s", tagnam);
     TclTextOut(text);
     TclTextOut(" ");
-    while ((nodename = TreeFindTagWild(tagnam, 0, &ctx))) {
+    while ((nodename = TreeFindTagWild(tagnam, 0, &ctx1))) {
       TclTextOut(nodename);
       sub_total++;
     }
-    TreeFindTagEnd(&ctx);
+    TreeFindTagEnd(&ctx1);
     grand_total += sub_total;
     sprintf(text, "Total of %d tags\n", sub_total);
     TclTextOut(text);

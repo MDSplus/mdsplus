@@ -14,10 +14,13 @@
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
-int TclWfevent()
+int TclWfevent( void *ctx)
 {
-  static DYNAMIC_DESCRIPTOR(event);
-  cli_get_value("EVENT", &event);
-  MDSWfevent(event.dscA_pointer, 0, 0, 0);
+  char *event = 0;
+  cli_get_value(ctx, "EVENT", &event);
+  if (event) {
+    MDSWfevent(event, 0, 0, 0);
+    free(event);
+  }
   return 1;
 }

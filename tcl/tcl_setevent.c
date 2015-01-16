@@ -14,10 +14,13 @@
 	 * TclSetevent:
 	 * Close tree file(s).
 	 ***************************************************************/
-int TclSetEvent()
+int TclSetEvent(void *ctx)
 {
-  static DYNAMIC_DESCRIPTOR(event);
-
-  cli_get_value("EVENT", &event);
-  return MDSEvent(event.dscA_pointer, 0, 0);
+  char *event=0;
+  int status;
+  cli_get_value(ctx, "EVENT", &event);
+  status = MDSEvent(event, 0, 0);
+  if (event)
+    free(event);
+  return status;
 }

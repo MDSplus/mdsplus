@@ -14,27 +14,27 @@
 	/****************************************************************
 	 * TclSetDefault:
 	 ****************************************************************/
-int TclSetDefault()
+int TclSetDefault(void *ctx)
 {
   int nid;
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_nodename);
+  char *nodename;
 
-  cli_get_value("NODE", &dsc_nodename);
-  l2u(dsc_nodename.dscA_pointer, 0);	/* to upper case        */
-
-  sts = TreeSetDefault(dsc_nodename.dscA_pointer, &nid);
+  cli_get_value(ctx, "NODE", &nodename);
+  sts = TreeSetDefault(nodename, &nid);
   if (sts & 1)
     TclNodeTouched(nid, set_def);
   else
-    MdsMsg(sts, "Error trying to set default to %s", dsc_nodename.dscA_pointer);
+    MdsMsg(sts, "Error trying to set default to %s", nodename);
+  if (nodename)
+    free(nodename);
   return sts;
 }
 
 	/***************************************************************
 	 * TclShowDefault:
 	 ***************************************************************/
-int TclShowDefault()
+int TclShowDefault(void *ctx)
 {				/* Returns: status                        */
   char *p;
   int nid;

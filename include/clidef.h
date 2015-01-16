@@ -6,8 +6,7 @@
 
 #ifndef __CLIDEF_H
 #define __CLIDEF_H   1
-
-#include        "cdudef.h"
+#include <facility_list.h>
 
 /**********************************************************************
 * CLIDEF_H.H --
@@ -80,11 +79,13 @@ int cli_dispatch(		/* Return: sts of dispatched routine    */
 		  void *userarg	/* <r> optional user arg, passed to routine     */
     );
 int cli_present(		/* Return: status                       */
-		 void *entity	/* <r> entity name: dsc or c-string     */
+		void *ctx
+                , char *entity	/* <r> entity name: dsc or c-string     */
     );
 int cli_get_value(		/* Return: status                       */
-		   void *entity	/* <r> entity name: dsc or c-string     */
-		   , struct descriptor *dsc_ret	/* <w> return value descriptor  */
+		   void *ctx
+                   , char *entity	/* <r> entity name: dsc or c-string     */
+		   , char **value	/* <w> return value descriptor  */
     );
 
 #endif				/* __CLIDEF_H     */

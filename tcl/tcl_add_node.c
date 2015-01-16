@@ -18,46 +18,41 @@
 	 * TclAddNode:
 	 * Add a node
 	 *****************************************************************/
-int TclAddNode()
+int TclAddNode(void *ctx)
 {				/* Return: status                 */
   int k;
   int nid;
   int sts;
   int stsQual;
-  char usage;
-  DYNAMIC_DESCRIPTOR(dsc_nodnam);
-  DYNAMIC_DESCRIPTOR(dsc_modelType);
-  DYNAMIC_DESCRIPTOR(dsc_qualifiers);
-  DYNAMIC_DESCRIPTOR(dsc_usageStr);
+  char usage=0;
+  char *nodnam=0;
+  char *modelType=0;
+  char *qualifiers=0;
+  char *usageStr=0;
+  sts = cli_get_value(ctx, "NODENAME", &nodnam);
 
-  sts = cli_get_value("NODENAME", &dsc_nodnam);
-  l2u(dsc_nodnam.dscA_pointer, 0);
-
-  if (cli_get_value("MODEL", &dsc_modelType) & 1) {
-    stsQual = cli_get_value("QUALIFIERS", &dsc_qualifiers);
+  if (cli_get_value(ctx, "MODEL", &modelType) & 1) {
+    stsQual = cli_get_value(ctx, "QUALIFIERS", &qualifiers);
     if (stsQual & 1)
       fprintf(stderr, "--> QUALIFIERS option is obsolete (ignored)\n");
-    sts = TreeAddConglom(dsc_nodnam.dscA_pointer, dsc_modelType.dscA_pointer, &nid);
+    sts = TreeAddConglom(nodnam, modelType, &nid);
   } else {
-    cli_get_value("USAGE", &dsc_usageStr);
-    str_prefix(&dsc_usageStr, "USAGE.");
-    cli_get_value(&dsc_usageStr, &dsc_usageStr);
-    sscanf(dsc_usageStr.dscA_pointer, "%d", &k);
-    usage = (char)k;
-    sts = TreeAddNode(dsc_nodnam.dscA_pointer, &nid, usage);
+    cli_get_value(ctx, "USAGE", &usageStr);
+    printf("Need to handle usage\n");
+    sts = TreeAddNode(nodnam, &nid, usage);
   }
-
   if (sts & 1)
     TclNodeTouched(nid, new);
   else {
-    MdsMsg(sts, "Error adding node %s", dsc_nodnam.dscA_pointer);
-#ifdef vms
-    lib$signal(sts, 0);
-#endif
+    MdsMsg(sts, "Error adding node %s", nodnam);
   }
-  MdsFree1Dx((struct descriptor_xd *)&dsc_nodnam, NULL);
-  MdsFree1Dx((struct descriptor_xd *)&dsc_modelType, NULL);
-  MdsFree1Dx((struct descriptor_xd *)&dsc_qualifiers, NULL);
-  MdsFree1Dx((struct descriptor_xd *)&dsc_usageStr, NULL);
+  if (nodnam)
+    free(nodnam);
+  if (modelType)
+    free(modelType);
+  if (qualifiers)
+    free(qualifiers);
+  if (usageStr)
+    free(usageStr);
   return sts;
 }

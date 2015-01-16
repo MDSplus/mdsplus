@@ -3,9 +3,8 @@
 #include        <dbidef.h>
 #include        <ncidef.h>
 #include        <usagedef.h>
-#ifdef vms
-#include        <starlet.h>
-#endif
+#include        <string.h>
+#include        <alloca.h>
 
 /**********************************************************************
 * TCL_CREATE_PULSE.C --
@@ -17,14 +16,14 @@
 *
 ************************************************************************/
 
-int ServerCreatePulse(int efn, struct descriptor *dsc_server, char *treenam, int ishot,
+extern int ServerCreatePulse(int efn, char *server, char *treenam, int ishot,
 		      void (*astRtn) ()
 		      , void *astprm, int *retStatus, int *netId, void (*linkdown_handler) ()
 		      , void (*before_ast) ()
     );
 
 typedef struct _server {
-  struct descriptor server;
+  char *server;
   int *nid;
   int current_nid;
   int num;
@@ -35,15 +34,7 @@ typedef struct _server {
 
 static int DispatchCreatePulse(Server * s);
 
-#ifdef vms
-#pragma extern_model __save
-#pragma extern_model globalvalue
-extern SS$_CONNECFAIL;
-#pragma extern_model __restore
-#define TdiExecute  TDI$EXECUTE
-#else
 static char unixMsg[] = "\n==> unix not yet handling %s <==\n\n";
-#endif
 
 extern int TdiExecute();
 
@@ -95,7 +86,8 @@ static void FreeServerList()
   Server *next;
   for (s = ServerList; s; s = next) {
     next = s->next;
-    str_free1_dx(&s->server);
+    if (s->server)
+      free(s->server);
     free(s->nid);
     free(s);
   }
@@ -127,7 +119,7 @@ static void PutOnRemainingList(Server * s)
  another server";
   char msg[128];
 
-  sprintf(msg, fmt, NidToTree(s->current_nid), s->server.dscA_pointer);
+  sprintf(msg, fmt, NidToTree(s->current_nid), s->server);
   TclTextOut(msg);
   ServerList->nid[ServerList->num++] = s->current_nid;
   for (i = 0; i < s->num; i++)
@@ -165,30 +157,9 @@ static void CreatePulse(Server * s)
       CreatePulse(ServerList);
     }
   } else
-#ifdef vms
-  {
-    Server *busy_s = ServerList->next;
-    for (; busy_s && !busy_s->netid; busy_s = busy_s->next) ;
-    if (ServerList->num && !busy_s) {
-      static char fmt[] = "Error creating pulse files, %s pulse not\
- created, no servers available";
-      char msg[128];
-      for (i = 0; i < ServerList->num; i++) {
-	sprintf(msg, fmt, NidToTree(ServerList->nid[i]));
-	TclTextOut(msg);
-      }
-      Status = SS$_CONNECFAIL;
-      sys$setef(Efn2);
-    } else if (!ServerList->num && !busy_s) {
-      Status = 1;
-      sys$setef(Efn2);
-    }
-  }
-#else
   {
     fprintf(stderr, unixMsg, "ServerList");
   }
-#endif
   return;
 }
 
@@ -217,7 +188,7 @@ static int DispatchCreatePulse(Server * s)
 {
   int status;
 
-  status = ServerCreatePulse(Efn1, &s->server, NidToTree(s->current_nid),
+  status = ServerCreatePulse(Efn1, s->server, NidToTree(s->current_nid),
 			     Shot, CreatePulse, s, &s->status, &s->netid, LinkDown, 0);
   if (~status & 1) {
     PutOnRemainingList(s);
@@ -229,17 +200,16 @@ static int DispatchCreatePulse(Server * s)
 	/*****************************************************************
 	 * TclCreatePulse_server:
 	 *****************************************************************/
-int TclCreatePulse_server()
+int TclCreatePulse_server(void *ctx)
 {
   Server *s;
   Server **nextptr;
-  static DYNAMIC_DESCRIPTOR(dsc_tree);
-  static DYNAMIC_DESCRIPTOR(dsc_emptyString);
+  char *tree=0;
   if (ServerList && ServerList->netid)
     FreeServerList();
   if (!ServerList) {
     ServerList = malloc(sizeof(Server));
-    ServerList->server = dsc_emptyString;
+    ServerList->server = 0;
     ServerList->nid = malloc(256 * sizeof(int));
     ServerList->num = 0;
     ServerList->netid = 0;
@@ -251,20 +221,22 @@ int TclCreatePulse_server()
     for (; s; nextptr = &s->next, s = s->next) ;
   }
   s = *nextptr = malloc(sizeof(Server));
-  s->server = dsc_emptyString;
+  s->server = 0;
   s->nid = malloc(256 * sizeof(int));
   s->num = 0;
   s->next = 0;
   s->current_nid = -1;
   s->status = 1;
   s->netid = -1;
-  cli_get_value("P2", &s->server);
-  while (cli_get_value("TREE", &dsc_tree) & 1) {
-    static DYNAMIC_DESCRIPTOR(dsc_tag);
+  cli_get_value(ctx, "P2", &s->server);
+  while (cli_get_value(ctx, "TREE", &tree) & 1) {
+    char *tag=strcpy(alloca(strlen(tree)+10),"\\");
+    strcat(tag,tree);
+    strcat(tag,"::TOP");
     int nid;
-    str_concat(&dsc_tag, "\\", &dsc_tree, "::TOP", 0);
-    if (TreeFindNode(dsc_tag.dscA_pointer, &nid) & 1)
+    if (TreeFindNode(tag, &nid) & 1)
       s->nid[s->num++] = nid;
+    free(tree);
   }
   return 1;
 }
@@ -275,102 +247,44 @@ int TclCreatePulse_server()
 static int DistributedCreate(int shot, int *nids, int num)
 {
 
-#ifdef vms
-  if (shot)
-    Shot = shot;
-  else {
-    Shot = TreeGetCurrentShotId(NidToTree(0));
-    if (!(status & 1))
-      return status;
-  }
-
-  if (!ServerList || ServerList->netid == -1) {
-    static char msg[] = "Use DEFINE SERVER commands prior\
- to attempting to use the /DISPATCH qualifier";
-    TclTextOut(msg);
-    return 1;
-  }
-  if (!Efn1) {
-    lib$get_ef(&Efn1);
-    lib$get_ef(&Efn2);
-  }
-  ServerList->netid = -1;
-  for (s = ServerList->next; s; s = s->next) {
-    int j;
-    for (i = 0; i < s->num; i++) {
-      for (j = 0; j < num && s->nid[i] != nids[j]; j++) ;
-      if (j < num)
-	nids[j] = -1;
-      else
-	s->nid[i] = -1;
-    }
-    for (i = 0; i < s->num;) {
-      if (s->nid[i] == -1) {
-	s->num--;
-	for (j = i; j < s->num; j++)
-	  s->nid[j] = s->nid[j + 1];
-      } else
-	i++;
-    }
-  }
-  for (i = 0; i < num; i++) {
-    if (nids[i] != -1)
-      ServerList->nid[ServerList->num++] = nids[i];
-  }
-  sys$clref(Efn2);
-  sys$setast(0);
-  for (s = ServerList->next; s; s = s->next)
-    CreatePulse(s);
-  sys$setast(1);
-  sys$waitfr(Efn2);
-  lib$free_ef(&Efn1);
-  lib$free_ef(&Efn2);
-  Efn1 = Efn2 = 0;
-  FreeServerList();
-  return 1;
-#else
   fprintf(stderr, unixMsg, "DistributedCreate");
   return (0);
-#endif
 }
 
 	/**************************************************************
 	 * TclCreatePulse:
 	 **************************************************************/
-int TclCreatePulse()
+int TclCreatePulse(void *ctx)
 {
   static int shot;
   static DESCRIPTOR_LONG(dsc_shot, &shot);
-  static DYNAMIC_DESCRIPTOR(dsc_nodename);
-  static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+  char *asciiShot=0;
   int status = 1;
   int old_default;
-  int conditional = cli_present("CONDITIONAL") & 1;
-  int dispatch = cli_present("DISPATCH") & 1;
+  int conditional = cli_present(ctx, "CONDITIONAL") & 1;
+  int dispatch = cli_present(ctx, "DISPATCH") & 1;
   int i;
   int sts;
 
-  cli_get_value("SHOT", &dsc_asciiShot);
-#ifdef vms
-  dsc_asciiShot.dscB_class = CLASS_S;	/* vms: malloc vs str$  */
-  sts = TdiExecute(&dsc_asciiShot, &dsc_shot MDS_END_ARG);
-  dsc_asciiShot.dscB_class = CLASS_D;
-#else
-  sts = TdiExecute(&dsc_asciiShot, &dsc_shot MDS_END_ARG);
-#endif
+  cli_get_value(ctx, "SHOT", &asciiShot);
+  shot=atoi(asciiShot);
+  if (asciiShot)
+    free(asciiShot);
   if (sts & 1) {
-    if ((cli_present("INCLUDE") | cli_present("EXCLUDE") | cli_present("NOMAIN") | conditional |
+    if ((cli_present(ctx, "INCLUDE") | cli_present(ctx, "EXCLUDE") | cli_present(ctx, "NOMAIN") | conditional |
 	 dispatch) & 1) {
       int nids[256] = { 0 };
       int nid;
-      int num = !(cli_present("NOMAIN") & 1);
+      int num = !(cli_present(ctx, "NOMAIN") & 1);
       TreeGetDefaultNid(&old_default);
       TreeSetDefaultNid(0);
-      if (cli_present("INCLUDE") & 1) {
-	while (cli_get_value("INCLUDE", &dsc_nodename) & 1) {
+      if (cli_present(ctx, "INCLUDE") & 1) {
+	char *nodename=0;
+	while (cli_get_value(ctx, "INCLUDE", &nodename) & 1) {
 	  void *ctx = 0;
-	  str_prefix(&dsc_nodename, "***.");
-	  while (TreeFindNodeWild(dsc_nodename.dscA_pointer, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) &
+	  char *wnode=strcpy(alloca(strlen(nodename)+5),"***.");
+	  strcat(wnode,nodename);
+	  while (TreeFindNodeWild(nodename, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) &
 		 1) {
 	    if (conditional) {
 	      if (CheckCondition(nid))
@@ -378,6 +292,8 @@ int TclCreatePulse()
 	    } else
 	      nids[num++] = nid;
 	  }
+	  free(wnode);
+	  free(nodename);
 	  TreeFindNodeEnd(&ctx);
 	}
       } else {
@@ -390,11 +306,13 @@ int TclCreatePulse()
 	    nids[num++] = nid;
 	TreeFindNodeEnd(&ctx);
       }
-      if (cli_present("EXCLUDE") & 1) {
-	while (cli_get_value("EXCLUDE", &dsc_nodename) & 1) {
+      if (cli_present(ctx, "EXCLUDE") & 1) {
+	char *nodename=0;
+	while (cli_get_value(ctx, "EXCLUDE", &nodename) & 1) {
 	  void *ctx = 0;
-	  str_prefix(&dsc_nodename, "***.");
-	  while (TreeFindNodeWild(dsc_nodename.dscA_pointer, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) &
+	  char *wnode=strcpy(alloca(strlen(nodename)+5),"***.");
+	  strcat(wnode,nodename);
+	  while (TreeFindNodeWild(nodename, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) &
 		 1) {
 	    for (i = 0; i < num; i++) {
 	      if (nids[i] == nid) {
@@ -406,6 +324,8 @@ int TclCreatePulse()
 	    }
 	  }
 	  TreeFindNodeEnd(&ctx);
+	  free(wnode);
+	  free(nodename);
 	}
       }
       TreeSetDefaultNid(old_default);
@@ -419,9 +339,5 @@ int TclCreatePulse()
       status = TreeCreatePulseFile(shot, 0, 0);
   } else
     status = sts;
-#ifdef vms
-  if (~status & 1)
-    lib$signal(status, 0, 0);
-#endif
   return status;
 }

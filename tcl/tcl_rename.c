@@ -13,23 +13,27 @@
 	 * TclRename:
 	 * Rename a node or subtree.
 	 ***************************************************************/
-int TclRename()
+int TclRename(void *ctx)
 {
   int nid;
   int sts;
-  static DYNAMIC_DESCRIPTOR(srcnam);
-  static DYNAMIC_DESCRIPTOR(destnam);
+  char *srcnam=0;
+  char *destnam=0;
 
-  cli_get_value("SOURCE", &srcnam);
-  cli_get_value("DEST", &destnam);
-  sts = TreeFindNode(srcnam.dscA_pointer, &nid);
+  cli_get_value(ctx, "SOURCE", &srcnam);
+  cli_get_value(ctx, "DEST", &destnam);
+  sts = TreeFindNode(srcnam, &nid);
   if (sts & 1)
-    sts = TreeRenameNode(nid, destnam.dscA_pointer);
+    sts = TreeRenameNode(nid, destnam);
 
   if (sts & 1)
     TclNodeTouched(nid, rename_node);
   else
     MdsMsg(sts, 0);
+  if (srcnam)
+    free(srcnam);
+  if (destnam)
+    free(destnam);
 
   return sts;
 }

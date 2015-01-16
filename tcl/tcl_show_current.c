@@ -14,18 +14,20 @@
 	/***************************************************************
 	 * TclShowCurrent:
 	 ***************************************************************/
-int TclShowCurrent()
+int TclShowCurrent(void *ctx)
 {
   int shot;
   char text[80];
-  static DYNAMIC_DESCRIPTOR(dsc_experiment);
+  char *experiment = 0;
 
-  cli_get_value("EXPERIMENT", &dsc_experiment);
-  shot = TreeGetCurrentShotId(dsc_experiment.dscA_pointer);
+  cli_get_value(ctx, "EXPERIMENT", &experiment);
+  shot = TreeGetCurrentShotId(experiment);
   if (shot) {
     sprintf(text, "Current shot is %d", shot);
     TclTextOut(text);
   } else
     MdsMsg(0, "Failed to get shotid!");
+  if (experiment)
+    free(experiment);
   return 1;
 }

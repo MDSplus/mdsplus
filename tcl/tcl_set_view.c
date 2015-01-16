@@ -19,20 +19,19 @@
 	/****************************************************************
 	 * TclSetView:
 	 ****************************************************************/
-int TclSetView()
+int TclSetView(void *ctx)
 {
   int status;
-  void *ctx = 0;
   int64_t viewDate = -1;
-  static DYNAMIC_DESCRIPTOR(dsc_viewdate_string);
-  cli_get_value("DATE", &dsc_viewdate_string);
-  StrUpcase(&dsc_viewdate_string, &dsc_viewdate_string);
-  if (strcmp(dsc_viewdate_string.dscA_pointer, "NOW") == 0) {
-    status = TreeSetViewDate(&viewDate);
-  } else if ((status = LibConvertDateString(dsc_viewdate_string.dscA_pointer, &viewDate)) & 1) {
+  char *viewDateStr = 0;
+  cli_get_value(ctx, "DATE", &viewDateStr);
+  if ((strcasecmp(viewDateStr,"NOW")==0) ||
+      ((status = LibConvertDateString(viewDateStr, &viewDate)) & 1)) {
     status = TreeSetViewDate(&viewDate);
   }
   if (!(status & 1))
     TclTextOut("Bad time, use dd-mon-yyyy hh:mm:ss format. All fields required!");
+  if (viewDateStr)
+    free(viewDateStr);
   return status;
 }

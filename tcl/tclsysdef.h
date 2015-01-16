@@ -1,7 +1,4 @@
 #include       "tcldef.h"
-#ifdef vms
-#include        <lib$routines.h>
-#endif
 #include        <mdsdescrip.h>
 #include        "nodetouch.h"
 #include        "mdsshr.h"

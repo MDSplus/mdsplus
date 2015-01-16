@@ -14,15 +14,16 @@
 	 * TclRemoveTag:
 	 *  Remove a tag name
 	 ***************************************************************/
-int TclRemoveTag()
+int TclRemoveTag(void *ctx)
 {
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_tagnam);
+  char *tagnam=0;
 
-  cli_get_value("TAGNAME", &dsc_tagnam);
-  l2u(dsc_tagnam.dscA_pointer, 0);
-  sts = TreeRemoveTag(dsc_tagnam.dscA_pointer);
+  cli_get_value(ctx, "TAGNAME", &tagnam);
+  sts = TreeRemoveTag(tagnam);
   if (~sts & 1)
-    sts = MdsMsg(sts, "Failed to remove tag '%s'", dsc_tagnam.dscA_pointer);
+    sts = MdsMsg(sts, "Failed to remove tag '%s'", tagnam);
+  if (tagnam)
+    free(tagnam);
   return sts;
 }

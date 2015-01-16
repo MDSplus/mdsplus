@@ -13,28 +13,31 @@
 	/****************************************************************
 	 * TclCompressDatafile:
 	 ****************************************************************/
-int TclCompressDatafile()
+int TclCompressDatafile(void *ctx)
 {
   int shot;
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_filnam);
-  static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+  char *filnam=0;
+  char *asciiShot=0;
   static char nocompress[] = "Compress of pulse file may destroy\
  previous archive versions:  REFUSED";
 
-  cli_get_value("FILE", &dsc_filnam);
-  cli_get_value("SHOTID", &dsc_asciiShot);
-  sscanf(dsc_asciiShot.dscA_pointer, "%d", &shot);
-  if ((shot != -1) && (!(cli_present("OVERRIDE") & 1))) {
+  cli_get_value(ctx, "FILE", &filnam);
+  cli_get_value(ctx, "SHOTID", &asciiShot);
+  sscanf(asciiShot, "%d", &shot);
+  if ((shot != -1) && (!(cli_present(ctx, "OVERRIDE") & 1))) {
     TclTextOut(nocompress);
-    return 1;
+    sts = 1;
+    goto done;
   }
-  sts = TreeCompressDatafile(dsc_filnam.dscA_pointer, shot);
+  sts = TreeCompressDatafile(filnam, shot);
   if (~sts & 1) {
-    MdsMsg(sts, "Problem compressing %s", dsc_filnam.dscA_pointer);
-#ifdef vms
-    lib$signal(sts, 0);
-#endif
+    MdsMsg(sts, "Problem compressing %s", filnam);
   }
+ done:
+  if (filnam)
+    free(filnam);
+  if (asciiShot)
+    free(asciiShot);
   return sts;
 }
