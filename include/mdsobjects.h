@@ -1578,7 +1578,7 @@ public:
 	}
 
 	virtual ~Apd() {
-	    for(int i = 0; i < descs.size(); i++)
+	    for(size_t i = 0; i < descs.size(); i++)
 	    {
 		if(descs[i])
 		    descs[i]->decRefCount();
@@ -1624,7 +1624,7 @@ public:
 	void setDescAt(std::size_t i, Data * data) {
 		if(descs.size() <= i)
 		{
-		    for(int j = descs.size(); j < i; j++)
+		    for(size_t j = descs.size(); j < i; j++)
 			descs.push_back(NULL);
 		    descs.push_back(data);
 		}
