@@ -1,4 +1,16 @@
-commit 7b7bd313712cc903ccd9927f31f817ba4146338d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 3a7932ff55e3a9ef066e74e3b3408825c704aede (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 20 18:14:37 2015 +0100
+
+    Remove compiler warnings
+
+commit 88b7bdb24165f12f6d734adb8c03f0eb1cdbbf3d (tag: refs/tags/alpha_release-6-3-456)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jan 15 18:21:23 2015 -0500
+
+    New ChangeLog
+
+commit 7b7bd313712cc903ccd9927f31f817ba4146338d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 15 15:21:10 2015 -0500
 
@@ -10,7 +22,7 @@ Date:   Thu Jan 15 09:16:24 2015 +0100
 
     Handle empty pointers in APD
 
-commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455, refs/remotes/origin/feature-replace-mdsdcl)
+commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jan 7 18:21:16 2015 -0500
 
