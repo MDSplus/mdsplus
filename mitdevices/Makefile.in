@@ -11,7 +11,7 @@ MOTIF_LIBS = @MOTIF_LD_LDARC@ @XM_LIBS@ @MOTIF_LD_LDSHARE@ @LIBXP@ @LIBXEXT@
 UIL=@UIL@ -I$(top_srcdir)/include
 MATH_LIBS=-L@MAKESHLIBDIR@ -lMdsMath
 LIBDC1394_LIBS=-ldc1394 -lraw1394
-LIBDC1394_INCS=-I/usr/local/include/dc1394 -I/usr/local/include/libraw1394
+LIBDC1394_INCS=-I/usr/include/dc1394 -I/usr/include/libraw1394
 export @LIBPATH@=@MAKESHLIBDIR@
 DTACQ_FILESYSTEM := $(shell  find acq_root_filesystem -print)
 DC := $(shell date)
@@ -227,6 +227,8 @@ clean:
 	@ $(RM) @MAKEBINDIR@dtaq_update_board.sh
 	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz
 	@ $(RM) @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs
+	@ $(RM) @DC1394_SUPPORT@ @DC1394_SUPPORT2@
+
 
 install: $(bindir) $(libdir)
 	$(INSTALL) -m 644 $(UIDS) @uiddir@
@@ -243,6 +245,10 @@ install: $(bindir) $(libdir)
 	$(INSTALL) -m 755  @MAKEBINDIR@dtaq_update_board.sh @bindir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz @libdir@
 	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libIdl.so @libdir@
+ifneq "@DC1394_SUPPORT@" ""
+	$(INSTALL) -m 755 @DC1394_SUPPORT@ @DC1394_SUPPORT2@ @libdir@
+endif
 
 l8590_mem.c: l8590_sclr_gen.c
 %_gen.c: %.gen
