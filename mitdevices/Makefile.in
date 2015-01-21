@@ -201,12 +201,13 @@ EXPORTS = MitDevices.exports
 all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKESHLIBDIR@libMitDevices@SHARETYPE@ \
        @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ \
+       @MAKESHLIBDIR@libIdl@SHARETYPE@ \
        @MAKELIBDIR@libMitDevices.a \
        @MITDEVICESIO_TARGETS@ $(UIDS) \
        @MAKEBINDIR@reboot_dtaq_satelite \
        @DC1394_SUPPORT@ @DC1394_SUPPORT2@ \
        @MAKESHLIBDIR@acq_root_filesystem.tgz \
-	@MAKESHLIBDIR@acq_root_filesystem.tgz_ffs \
+       @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs \
        @MAKEBINDIR@dtaq_update_board.sh
 
 
@@ -286,7 +287,7 @@ MitDevices.exports: MitDevices.def
 	$(UIL) -o $@ $<
 
 # This build must be done on a glibc 2.2.2 system (RedHat 7.x) or idl will have undefined references
-@MAKESHLIBDIR@libIdl.so : callidl.c
+@MAKESHLIBDIR@libIdl@SHARETYPE@ : callidl.c
 	cc -o $@ $< -shared \
                -I/usr/local/itt/idl/external \
                -L/usr/local/itt/idl/bin/bin.linux.x86/ -lidl \
