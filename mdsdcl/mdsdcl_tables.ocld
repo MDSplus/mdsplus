@@ -110,7 +110,7 @@ Define verb QUIT
 !Define verb FINISH
 !	Routine MDSDCL_FINISH
 Define verb HELP
-	Routine MDSDCL_HELP
+	Routine mdsdcl_help
 	Parameter P1,value(type=$rest_of_line)
 define verb INIT
 	Parameter p1,PROMPT="What",VALUE(REQUIRED,TYPE=INIT_KEYWORDS)

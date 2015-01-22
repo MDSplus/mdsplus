@@ -9,111 +9,6 @@
 #include <libxml/xpathInternals.h>
 #include "dcl.h"
 
-static dclDocListPtr dclDocs = 0;
-
-dclDocListPtr mdsdcl_getdocs() {
-  return dclDocs;
-}
-
-/*! Free the memory associated with a parameter definition structure.
- \param p [in,out] the address of a pointer to  a dclParameter struct.
-*/
-
-void freeParameter(dclParameterPtr * p_in)
-{
-  dclParameterPtr p = *p_in;
-  if (p) {
-    int i;
-    if (p->name != NULL)
-      free(p->name);
-    if (p->label != NULL)
-      free(p->label);
-    if (p->prompt != NULL)
-      free(p->prompt);
-    if (p->type != NULL)
-      free(p->type);
-    if (p->restOfLine != NULL)
-      free(p->restOfLine);
-    for (i = 0; i < p->value_count; i++)
-      free(p->values[i]);
-    if (p->values)
-      free(p->values);
-    free(p);
-    *p_in = 0;
-  }
-}
-
-/*! Free memory associated with a dclQualifier struct.
- \param q [in,out] The address of a pointer to a dclQualifier struct
-*/
-
-static void freeQualifier(dclQualifierPtr * q_in)
-{
-  if (q_in) {
-    dclQualifierPtr q = *q_in;
-    if (q) {
-      int i;
-      if (q->name)
-	free(q->name);
-      if (q->defaultValue)
-	free(q->defaultValue);
-      if (q->type)
-	free(q->type);
-      if (q->syntax)
-	free(q->syntax);
-      for (i = 0; i < q->value_count; i++)
-	free(q->values[i]);
-      free(q);
-      *q_in = 0;
-    }
-  }
-}
-
-/*! Free all parameters and qualifiers from command structure.
- \param cmdDef [in] A pointer to a dclCommand structure.
-*/
-
-void freeCommandParamsAndQuals(dclCommandPtr cmdDef)
-{
-  if (cmdDef) {
-    int i;
-    if (cmdDef->parameter_count > 0) {
-      for (i = 0; i < cmdDef->parameter_count; i++)
-	freeParameter(&cmdDef->parameters[i]);
-      cmdDef->parameter_count = 0;
-      free(cmdDef->parameters);
-      cmdDef->parameters=0;
-    }
-    if (cmdDef->qualifier_count > 0) {
-      for (i = 0; i < cmdDef->qualifier_count; i++)
-	freeQualifier(&cmdDef->qualifiers[i]);
-      cmdDef->qualifier_count = 0;
-      free(cmdDef->qualifiers);
-      cmdDef->qualifiers=0;
-    }
-  }
-}
-
-/*! Free memory associated with a command structure.
- \param cmd [in,out] The address of a pointer to a dclCommand structure
-*/
-
-static void freeCommand(dclCommandPtr * cmd_in)
-{
-  if (cmd_in) {
-    dclCommandPtr cmd = *cmd_in;
-    if (cmd) {
-      if (cmd->verb)
-	free(cmd->verb);
-      if (cmd->routine)
-	free(cmd->routine);
-      freeCommandParamsAndQuals(cmd);
-      free(cmd);
-      *cmd_in = 0;
-    }
-  }
-}
-
 /*! Find the information associated with a command verb.
   - Locate all parameters and qualifiers defined for the command
   and load the associated information included for those params
@@ -387,10 +282,10 @@ static void findEntity(xmlNodePtr node, char *category, char *name, dclNodeListP
 	   node->properties &&
 	   node->properties->children &&
 	   node->properties->children->content &&
-	   (strncasecmp(name, node->properties->children->content, strlen(name)) == 0)) {
+	   (name == NULL || (strncasecmp(name, node->properties->children->content, strlen(name)) == 0))) {
 
     /* Check if it is an exact match */
-    if (strlen(name) == strlen(node->properties->children->content)) {	// if exact command match use it!
+    if ((name != NULL) && (strlen(name) == strlen(node->properties->children->content))) {	// if exact command match use it!
 
       /* if already found other nodes but not exact match then free the "array" of nodes. */
 
@@ -448,7 +343,7 @@ static void findEntity(xmlNodePtr node, char *category, char *name, dclNodeListP
                       This pointer must be freed by the callers if not NULL.
 */
 
-static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDef, char **prompt,
+static int dispatchToHelp(char *image, dclCommandPtr cmd, dclCommandPtr cmdDef, char **prompt,
 			     char **error, char **output)
 {
   int i;
@@ -496,19 +391,10 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 
 	/* Use the rest of line for the value of the parameter freeing any other values stored during parsing. */
 	for (j = 0; j < cmd->parameters[i]->value_count; j++)
-	  free(cmd->parameters[i]->values[j]);
+	  free(cmd->parameters[i]->values[i]);
 	cmd->parameters[i]->values[0] = rol;
 	cmd->parameters[i]->value_count = 1;
-      }
-      for (j = cmd->qualifier_count; j > 0; j--) {
-	if (cmd->qualifiers[j-1]->position > i) {
-	  freeQualifier(&cmd->qualifiers[j-1]);
-	  cmd->qualifier_count--;
-	  if (cmd->qualifier_count == 0) {
-	    free(cmd->qualifiers);
-	    cmd->qualifiers=0;
-	  }
-	}
+
       }
       break;
     }
@@ -752,7 +638,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
   \param output [out] The output string if any. Must be freed if not NULL.
 */
 
-int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr cmd,
+static int processHelp(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr cmd,
 		   dclCommandPtr cmdDef, char **prompt, char **error, char **output)
 {
   xmlDocPtr doc = docList->doc;
@@ -761,6 +647,8 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
   int redo = 1;
   int isSyntax = 0;
   xmlNodePtr verbNode = verbNode_in;
+  dclNodeList helplist={0,0};
+  int exactFound;
 
   /* loop in case syntax changes occur based on parameter or qualifiers */
 
@@ -822,7 +710,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 			redo = 1;
 			isSyntax = 1;
 			verbNode = list.nodes[0];
-			findVerbInfo(((xmlNodePtr)(list.nodes[0]))->children, cmdDef);
+			findVerbInfo(((xmlNodePtr)list.nodes[0])->children, cmdDef);
 		      }
 		      if (list.nodes)
 			free(list.nodes);
@@ -844,7 +732,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
     /* process syntax switching on qualifiers */
 
     for (i = 0; (redo == 0) && (i < cmdDef->qualifier_count); i++) {
-      if (cmdDef->qualifiers[i]->syntax != NULL) {
+      if ((!isSyntax) && (cmdDef->qualifiers[i]->syntax != NULL)) {
 	int q;
 	for (q = 0; q < cmd->qualifier_count; q++) {
 	  char *realname = cmdDef->qualifiers[i]->name;
@@ -858,15 +746,6 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 	    int exactFound = 0;
 	    findEntity(doc->children, "syntax", cmdDef->qualifiers[i]->syntax, &list, &exactFound);
 	    if (list.count == 1) {
-	      int k;
-	      freeQualifier(&cmd->qualifiers[q]);
-	      cmd->qualifier_count--;
-	      for (k=q; k<cmd->qualifier_count;k++)
-		cmd->qualifiers[k]=cmd->qualifiers[k+1];
-	      if (cmd->qualifier_count==0) {
-		free(cmd->qualifiers);
-		cmd->qualifiers=0;
-	      }
 	      isSyntax = 1;
 	      redo = 1;
 	      verbNode = list.nodes[0];
@@ -886,200 +765,71 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
       freeCommandParamsAndQuals(cmdDef);
     }
   }
-  if (status == 0) {
-    status = dispatchToHandler(docList->name, cmd, cmdDef, prompt, error, output);
+  findEntity(doc->children,"help",cmdDef->routine,&helplist, &exactFound);
+  if (helplist.count == 1) {
+    verbNode = helplist.nodes[0];
+    *output = strcpy(malloc(strlen(verbNode->children->content)+1),verbNode->children->content);
+    status = 1;
   }
  DONE:
   return status;
 }
 
-/*! Add a command table by parsing an xml command definition file.
-    The file is located in a directory specified by an environment
-    variable "MDSXML" or the current directory if that environment
-    variable is not defined.
-
-  \param name [in] The name of the command table (i.e tcl or tcl_commands)
-  \param error [out] An error message if trouble finding and/or parsing
-                     the xml command definition file.
-*/
-
-int mdsdclAddCommands(char *name_in, char **error)
-{
-  int i;
-  char *name = 0;
-  char *commands;
-  char *commands_part;
-  xmlDocPtr doc;
-  dclDocListPtr doc_l, doc_p;
-  char *mdsplus_dir;
-  char *filename = 0;
-  int status = 0;
-  name = strdup(name_in);
-
-  /* convert the name to lowercase. The table xml files should always be named
-     as tablename_commands.xml all lowercase. */
-
-  for (i = 0; i < strlen(name); i++)
-    name[i] = tolower(name[i]);
-
-  /* see if the caller included the "_commands" suffix in the name and if not
-     add it */
-
-  commands_part = strstr(name, "_commands");
-  if (commands_part && ((name + strlen(name_in) - strlen("_commands")) == commands_part))
-    commands_part[0] = '\0';
-  commands = strcpy(malloc(strlen(name) + strlen("_commands") + 1), name);
-  strcat(commands, "_commands");
-  free(name);
-
-  /* See if that command table has already been loaded. If it has, pop that table
-     to the top of the stack and return */
-
-  for (doc_l = dclDocs, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next) {
-    if (strcmp(doc_l->name, commands) == 0) {
-      if (doc_p) {
-	doc_p->next = doc_l->next;
-	doc_l->next = dclDocs;
-	dclDocs = doc_l;
-      }
-      free(commands);
-      return 0;
-    }
-  }
-
-  /* Initialize the xml parser */
-
-  xmlInitParser();
-
-  /* Look for command definitions in $MDSPLUS_DIR/xml/ */
-
-  mdsplus_dir = getenv("MDSPLUS_DIR");
-  if (mdsplus_dir == 0)
-    mdsplus_dir=".";
-  filename = strcpy(malloc(strlen(commands) + strlen(mdsplus_dir) + 10), mdsplus_dir);
-  strcat(filename, "/");
-  strcat(filename, commands);
-  strcat(filename, ".xml");
-
-  /* Try parsing the xml file if it exists */
-
-  doc = xmlParseFile(filename);
-
-  /* If cannot find the file or parse it, set the error string */
-
-  if (doc == 0) {
-    char *errstr = malloc(strlen(filename) + 50);
-    sprintf(errstr, " Error: unable to parse %s\n", filename);
-    *error = errstr;
-    status = -1;
-  } else {
-
-    /* else stick the parsed xml document at the top of the command stack */
-
-    doc_l = malloc(sizeof(dclDocList));
-    doc_l->name = commands;
-    doc_l->doc = doc;
-    doc_l->next = dclDocs;
-    dclDocs = doc_l;
-    status = 0;
-  }
-  free(filename);
-  return status;
-}
-
-int cmdExecute(dclCommandPtr cmd)
+int mdsdcl_do_help(char *command)
 {
   int status = CLI_STS_IVVERB;
   char *prompt = 0;
   char *error = 0;
-  char *output = 0;
+  char *output = strcpy(malloc(1),"");
   dclDocListPtr doc_l;
+  dclDocListPtr dclDocs = mdsdcl_getdocs();
   if (dclDocs == NULL)
     mdsdclAddCommands("mdsdcl_commands", &error);
   for (doc_l = dclDocs; (status == CLI_STS_IVVERB) && (doc_l != NULL); doc_l = doc_l->next) {
-    dclCommandPtr cmdDef = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
-    cmdDef->verb = strdup(cmd->verb);
     int exactFound = 0;
-    dclNodeList matchingVerbs = { 0, 0 };
-    findEntity(((xmlDocPtr)(doc_l->doc))->children, "verb", cmdDef->verb, &matchingVerbs, &exactFound);
-    if (matchingVerbs.count == 0 || matchingVerbs.count > 1) {
-      if (matchingVerbs.nodes != NULL)
-	free(matchingVerbs.nodes);
-      status = CLI_STS_IVVERB;
-    } else {
-      status = processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt, &error, &output);
-      free(matchingVerbs.nodes);
-      if (status == 0) {
-	freeCommand(&cmdDef);
+    dclNodeList matchingHelp = { 0, 0 };
+    if (command != 0) {
+      findEntity(((xmlDocPtr)doc_l->doc)->children, "help", command, &matchingHelp, &exactFound);
+      if (matchingHelp.count == 0 || matchingHelp.count > 1) {
+	if (matchingHelp.nodes != NULL)
+	  free(matchingHelp.nodes);
+	status = CLI_STS_IVVERB;
+      } else {
+	char *help = ((xmlNodePtr)matchingHelp.nodes[0])->children->content;
+	if (help != NULL) {
+	  output=strcat(realloc(output,strlen(output)+strlen(help)+1),help);
+	}
+	free(matchingHelp.nodes);
 	break;
       }
-    }
-    freeCommand(&cmdDef);
-  }
-  freeCommand(&cmd);
-  if (status == PROMPT_FOR_MORE_INPUT) {
-    fprintf(stderr, "Prompt using %s\n", prompt);
-    if (prompt)
-      free(prompt);
-  }
-  if (error) {
-    fprintf(stderr, "Error: %s\n", error);
-    free(error);
-  }
-  return status;
-}
-
-int cli_present(void *ctx, char *name)
-{
-  dclCommandPtr cmd = (dclCommandPtr) ctx;
-  int i;
-  int ans = CLI_STS_ABSENT;
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->parameter_count); i++) {
-    char *pname = cmd->parameters[i]->label ? cmd->parameters[i]->label : cmd->parameters[i]->name;
-    if (strcasecmp(name, pname) == 0) {
-      ans = CLI_STS_PRESENT;
-    }
-  }
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->qualifier_count); i++) {
-    if (strcasecmp(name, cmd->qualifiers[i]->name) == 0) {
-      ans = cmd->qualifiers[i]->negated ? CLI_STS_NEGATED : CLI_STS_PRESENT;
-    }
-  }
-  return ans;
-}
-
-int cli_get_value(void *ctx, char *name, char **value)
-{
-  dclCommandPtr cmd = (dclCommandPtr) ctx;
-  int i;
-  int ans = CLI_STS_ABSENT;
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->parameter_count); i++) {
-    if ((strcasecmp(name, cmd->parameters[i]->name) == 0) ||
-	((cmd->parameters[i]->label) &&
-	 (strcasecmp(name, cmd->parameters[i]->label) == 0))) {
-      if (cmd->parameters[i]->value_idx >= cmd->parameters[i]->value_count) {
-	ans=CLI_STS_ABSENT;
-	cmd->parameters[i]->value_idx=0;
-      } else {
-	*value=strdup(cmd->parameters[i]->values[cmd->parameters[i]->value_idx++]);
-	ans = CLI_STS_PRESENT;
+    } else {
+      int i;
+      int ll=0;
+      findEntity(((xmlDocPtr)doc_l->doc)->children, "help", 0, &matchingHelp, &exactFound);
+      output=strcat(realloc(output,strlen(output)+1000),"The following list of commands are available from ");
+      output=strcat(output,doc_l->name);
+      output=strcat(output,".\n\n");
+      if ( matchingHelp.count > 0 ) {
+	for (i=0; i<matchingHelp.count; i++) {
+	  char *verb=((xmlNodePtr)matchingHelp.nodes[i])->properties->children->content;
+	  output=realloc(output,strlen(output)+strlen(verb)+10);
+	  ll += (strlen(verb)+1);
+	  if (ll > 80) {
+	    strcat(output,"\n");
+	    ll = strlen(verb);
+	  }
+	  strcat(output, verb);
+	  strcat(output, " ");
+	}
+	strcat(output,"\n\n");
       }
+      free(matchingHelp.nodes);
     }
   }
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->qualifier_count); i++) {
-    if (strcasecmp(name, cmd->qualifiers[i]->name) == 0) {
-      if (cmd->qualifiers[i]->value_idx >= cmd->qualifiers[i]->value_count) {
-	ans=CLI_STS_ABSENT;
-	cmd->qualifiers[i]->value_idx=0;
-      } else {
-	*value=strdup(cmd->qualifiers[i]->values[cmd->qualifiers[i]->value_idx++]);
-	ans = CLI_STS_PRESENT;
-      }
-    }
-  }
-  return ans;
-}
-
-int mdsdcl_get_input_nosymbols(char *prompt, char **input) {
+  if (command == NULL)
+    output=strcat(realloc(output,strlen(output)+80),"Type 'help command-name' for more info\n\n");
+  printf(output);
+  printf("\n");
+  free(output);
   return 1;
 }

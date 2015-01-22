@@ -24,6 +24,7 @@ typedef struct dclParameter {
   char *restOfLine;		/*!< rest of command line */
   int useRestOfLine;		/*!< parameter uses rest of line */
   int listOk;			/*!< 1 if more than one value is allowed */
+  char *help;                   /*!< help string for the parameter */
 } dclParameter, *dclParameterPtr;
 
 typedef struct dclQualifier {
@@ -31,6 +32,7 @@ typedef struct dclQualifier {
   int value_count;		/*!< Number of value strings present */
   int value_idx;                /*|< index of next value to return */
   char **values;		/*!< array of value string */
+  int position;                 /*!< position of qualifier 0=after verb,1=after 1st param, 2=after 2nd param... */
   int valueRequired;		/*!< 1 if value is required for this parameter */
   int isDefault;		/*!< 1 if the qualifier should be included by default */
   int nonnegatable;		/*!< 1 if the qualifier is not negatable. i.e. invalid if preceded by no */
@@ -39,11 +41,13 @@ typedef struct dclQualifier {
   char *defaultValue;		/*!< default value if none provided */
   char *type;			/*!< refers to a type of value (i.e. number, usage_type, logging_type) */
   char *syntax;			/*!< triggers syntax switching */
+  char *help;                   /*!< help string for qualifier */
 } dclQualifier, *dclQualifierPtr;
 
 typedef struct dclCommand {
   char *command_line;		/*!< full command line */
   char *verb;			/*!< verb name of command */
+  char *help;                   /*!< help string for verb */
   int parameter_count;		/*!< number of parameters */
   dclParameterPtr *parameters;	/*!< array of parameters */
   int qualifier_count;		/*!< number of qualifiers */
@@ -60,6 +64,18 @@ typedef union YYSTYPE {		/*!< Used for types used during bison/flex parsing of c
   dclValuePtr pvalue;
 } YYSTYPE;
 
+typedef struct dclNodeList {
+  int count;			/*!< number of nodes in nodes array */
+  void **nodes;		/*!< array of xmlNodePtr's */
+} dclNodeList, *dclNodeListPtr;
+
+typedef struct dclDocList {
+  char *name;			/*!< Name of xml command definition (i.e. tcl_commands) */
+  void  *doc;		/*!< xml document specifying the command syntax */
+  struct dclDocList *next;	/*!< Next loaded document */
+} dclDocList, *dclDocListPtr;
+
+extern dclDocListPtr mdsdcl_getdocs();
 /*** eventually turn these into mdsplus statuses ***/
 
 #define CLI_STS_NORMAL 0

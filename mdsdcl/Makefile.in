@@ -6,6 +6,7 @@ include @top_srcdir@/Makefile.inc
 
 SOURCES = 		\
 cmdExecute.c         	\
+cmdHelp.c               \
 cmdParseLex.c           \
 cmdParse.tab.c          \
 mdsdcl_commands.c
@@ -34,6 +35,9 @@ install: $(libdir) $(bindir)
 		@RANLIB@ $@
 
 cmdExecute.o: cmdExecute.c
+	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
+
+cmdHelp.o: cmdHelp.c
 	$(COMPILE.c) $(CFLAGS) -c -I/usr/include/libxml2 $^
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)

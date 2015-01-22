@@ -88,19 +88,18 @@ qualval {unquoted_value_3}|\"{unquoted_value_2}\"
  }
 
 <verb>[^[:blank:]] {BEGIN rest_of_line;
-   if (restOfLine) {
-     free(restOfLine);
-   }
-   restOfLine=strdup(yytext);
+   unput(yytext[0]);
  }
 	
 <rest_of_line>.* {int i;
-		   restOfLine=realloc(restOfLine,strlen(restOfLine)+strlen(yytext)+1);
-		   strcat(restOfLine,yytext);
-		   for(i=strlen(restOfLine)-1;i>=0;i--)
-		     unput(restOfLine[i]);
-		   BEGIN parameter;
-		   }
+		 restOfLine = strcpy(malloc(strlen(yytext)+1),yytext);
+		 for(i=strlen(restOfLine)-1;i>=0;i--)
+		   unput(restOfLine[i]);
+		 BEGIN parameter;
+		 }
+		 
+<rest_of_line>EOL BEGIN parameter;
+
 <parameter>{value} {
  dclValuePtr value=malloc(sizeof(dclValue));
  value->value=strdup(yytext);

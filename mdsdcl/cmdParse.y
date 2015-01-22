@@ -43,6 +43,7 @@ VERB {
   $$->verb=$VERB;
 }
 |command qualifier {
+  $qualifier->position=$$->parameter_count;
   if ($$->qualifier_count == 0)
     $$->qualifiers=malloc(sizeof(dclQualifierPtr));
   else
@@ -55,6 +56,7 @@ VERB {
   param->value_count=$pvalue_list->count;
   param->values=$pvalue_list->values;
   param->restOfLine=$pvalue_list->restOfLine;
+  free($pvalue_list);
   if ($$->parameter_count == 0)
     $$->parameters=malloc(sizeof(dclParameterPtr));
   else
@@ -75,6 +77,7 @@ QUALIFIER {
 | qualifier EQUALS value_list {
   $$->value_count=$value_list->count;
   $$->values=$value_list->values;
+  free($value_list);
 }
 
 value_list:
@@ -153,21 +156,6 @@ int mdsdcl_do_command(char const* command) {
   cmd_state = dcl__scan_string (command, yyscanner);
   result=yyparse (yyloc_param, yyscanner, &dclcmd);
   if (result==0) {
-    /*    int i,j;
-    printf("Got command with verb=\"%s\" and %d parameters and %d qualifiers\n",
-	   dclcmd->verb,
-	   dclcmd->parameter_count,
-	   dclcmd->qualifier_count);
-    for (i=0; i<dclcmd->parameter_count;i++) {
-      printf("  Parameter %d\n",i+1);
-      for (j=0; j < dclcmd->parameters[i]->value_count; j++)
-	printf("     Value[%d]=\"%s\"\n",j+1,dclcmd->parameters[i]->values[j]);
-    }
-    for (i=0; i<dclcmd->qualifier_count;i++) {
-      for (j=0; j < dclcmd->qualifiers[i]->value_count; j++)
-	printf("     Value[%d]=\"%s\"\n",j+1,dclcmd->qualifiers[i]->values[j]);
-    }
-    */
     status=cmdExecute(dclcmd);
   }
   dcl__delete_buffer (cmd_state, yyscanner);

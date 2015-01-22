@@ -165,7 +165,6 @@ int mdsdcl_set_verify( void *ctx )
 	 ****************************************************************/
 int mdsdcl_define_symbol( void *ctx)
 {
-  int k;
   int sts;
   char *p;
   char *name = 0;
@@ -173,21 +172,26 @@ int mdsdcl_define_symbol( void *ctx)
 
   sts = cli_get_value(ctx, "SYMBOL", &name);
   if (~sts & 1)
-    return (sts);
+    goto done;
 
   sts = cli_get_value(ctx, "VALUE", &value);
   if (~sts & 1)
     fprintf(stderr,"*ERR* getting value for symbol");
 
-  k = strlen(name) + strlen(value);
-  p = malloc(k + 2);
+  p = malloc(strlen(name)+strlen(value) + 2);
   sprintf(p, "%s=%s", name, value);
   sts = putenv(p);
+  free(p);
   if (sts) {
-    perror("error from setenv");
+    perror("error from putenv");
     sts = MDSDCL_STS_ERROR;
   } else
     sts=1;
+ done:
+  if (name)
+    free(name);
+  if (value)
+    free(value);
 
   return (sts);
 }
@@ -304,5 +308,11 @@ int mdsdcl_wait(void *ctx)
 }
 
 int mdsdcl_help(void *ctx) {
+  char *p1=0;
+  int sts;
+  cli_get_value(ctx, "P1", &p1);
+  sts=mdsdcl_do_help(p1);
+  if (p1)
+    free(p1);
   return 1;
 }

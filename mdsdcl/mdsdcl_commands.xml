@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <module name="mdsdcl_tables">
-
+  <help name="DEFINE">
+      Command: DEFINE
+      Purpose: Define a macro which can be invoked using the DO command
+      Format: DEFINE macro-name
+      Description:
+      
+      The DEFINE command will define a macro with the specified macro name.
+      The following lines entered will be records as a list of commands until
+      an empty line is entered to complete the macro definition.
+  </help>
+  <help name="DEFINE/SYMBOL">
+      Command: DEFINE/SYMBOL
+      Purpose: Define an environment variable
+      Format: DEFINE/SYMBOL [/REST_OF_LINE] name value
+      Description:
+      
+      The DEFINE/SYMBOL command will define an environment variable.
+      If the /REST_OF_LINE is specified, all characters starting with the
+      value parameter until the end of the line will be included in the
+      environment variable value. If the /REST_OF_LINE is not included
+      then enclose the value in double quotes if there are any spaces or slashes
+      in the value.
+  </help>
   <verb name="DEFINE">
 
     <routine name="mdsdcl_define"/>
-
     <parameter name="p1" prompt="Macro" required="True"/>
     <qualifier name="SYMBOL" syntax="DEFINE_SYMBOL"/>
-    <qualifier name="EDIT"/>
-
-"  </verb>
+  </verb>
   <syntax name="DEFINE_SYMBOL">
 
     <routine name="mdsdcl_define_symbol"/>
@@ -61,7 +80,7 @@
 "  </verb>
   <verb name="HELP">
 
-    <routine name="MDSDCL_HELP"/>
+    <routine name="mdsdcl_help"/>
 
     <parameter name="P1" type="rest_of_line"/>
 "  </verb>
