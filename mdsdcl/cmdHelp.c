@@ -290,7 +290,7 @@ static void findEntity(xmlNodePtr node, char *category, char *name, dclNodeListP
 
       /* if already found other nodes but not exact match then free the "array" of nodes. */
 
-      if (list->count > 1)
+      if (list->count > 0 && list->nodes)
 	free(list->nodes);
 
       /* allocate memory for one node ptr and load this node and return */
@@ -323,6 +323,37 @@ static void findEntity(xmlNodePtr node, char *category, char *name, dclNodeListP
     findEntity(node->children, category, name, list, exactFound);
 }
 
+static char *formatHelp(char *content) {
+  int indentation=-1;
+  int offset;
+  char *ans=strdup("");
+  char *help=strdup(content);
+  char *hlp=help;
+  char *line;
+  for (line=strsep(&hlp,"\n");line;line=strsep(&hlp,"\n")) {
+    if (strlen(line)>0) {
+      char *nline;
+      if (indentation==-1) {
+	for (indentation=0;line[indentation]==' ';indentation++);
+	offset = indentation-2;
+      }
+      if (offset < 0) {
+	nline=strcpy(malloc(strlen(line)-offset+1),"  ");
+	strcat(nline,line);
+      } else {
+	nline=strcpy(malloc(strlen(line)-offset+1),line+offset);
+      }
+      ans=strcat(realloc(ans,strlen(ans)+strlen(nline)+2),nline);
+      free(nline);
+      strcat(ans,"\n");
+    } else {
+      ans=strcat(realloc(ans,strlen(ans)+2),"\n");
+    }
+  }
+  free(help);
+  return ans;
+}
+
 int mdsdcl_do_help(char *command)
 {
   int status = CLI_STS_IVVERB;
@@ -343,9 +374,11 @@ int mdsdcl_do_help(char *command)
 	  free(matchingHelp.nodes);
 	status = CLI_STS_IVVERB;
       } else {
-	char *help = ((xmlNodePtr)matchingHelp.nodes[0])->children->content;
-	if (help != NULL) {
+	char *content = ((xmlNodePtr)matchingHelp.nodes[0])->children->content;
+	if (content != NULL) {
+	  char *help=formatHelp(content);
 	  output=strcat(realloc(output,strlen(output)+strlen(help)+1),help);
+	  free(help);
 	}
 	free(matchingHelp.nodes);
 	break;
@@ -357,8 +390,10 @@ int mdsdcl_do_help(char *command)
 	  matchingHelp.nodes[0] &&
 	  ((xmlNodePtr)matchingHelp.nodes[0])->children &&
 	  ((xmlNodePtr)matchingHelp.nodes[0])->children->content) {
-	char *help=((xmlNodePtr)matchingHelp.nodes[0])->children->content;
+	char *content=((xmlNodePtr)matchingHelp.nodes[0])->children->content;
+	char *help=formatHelp(content);
 	output=strcat(realloc(output,strlen(output)+strlen(help)+1),help);
+	free(help);
       };
       if ((matchingHelp.count > 0) &&
 	  (matchingHelp.nodes))

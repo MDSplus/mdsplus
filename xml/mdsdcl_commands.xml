@@ -3,34 +3,11 @@
   <helpall>
     Basic mdsdcl commands include:
 
-    DEFINE         - Define a macro.
+    _DEFINE         - Define a macro.
     DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
     ENV            - Define and environment variable.
   </helpall>
   
-  <help name="DEFINE">
-      Command: DEFINE
-      Purpose: Define a macro which can be invoked using the DO command
-      Format: DEFINE macro-name
-      Description:
-      
-      The DEFINE command will define a macro with the specified macro name.
-      The following lines entered will be records as a list of commands until
-      an empty line is entered to complete the macro definition.
-  </help>
-  <help name="DEFINE/SYMBOL">
-      Command: DEFINE/SYMBOL
-      Purpose: Define an environment variable
-      Format: DEFINE/SYMBOL [/REST_OF_LINE] name value
-      Description:
-      
-      The DEFINE/SYMBOL command will define an environment variable.
-      If the /REST_OF_LINE is specified, all characters starting with the
-      value parameter until the end of the line will be included in the
-      environment variable value. If the /REST_OF_LINE is not included
-      then enclose the value in double quotes if there are any spaces or slashes
-      in the value.
-  </help>
   <help name="ENV">
     Command: ENV
     Purpose: Define an environment variable
@@ -42,7 +19,16 @@
   </help>
   
   <verb name="DEFINE">
-
+    <help name="DEFINE">
+      Command: DEFINE
+      Purpose: Define a macro which can be invoked using the DO command
+      Format: DEFINE macro-name
+      Description:
+      
+      The DEFINE command will define a macro with the specified macro name.
+      The following lines entered will be records as a list of commands until
+      an empty line is entered to complete the macro definition.
+    </help>
     <routine name="mdsdcl_define"/>
     <parameter name="p1" prompt="Macro" required="True"/>
     <qualifier name="SYMBOL" syntax="DEFINE_SYMBOL"/>
@@ -54,13 +40,24 @@
   </verb>
 
   <syntax name="DEFINE_SYMBOL">
-
+    <help name="DEFINE/SYMBOL">
+      Command: DEFINE/SYMBOL
+      Purpose: Define an environment variable
+      Format: DEFINE/SYMBOL [/REST_OF_LINE] name value
+      Description:
+      
+      The DEFINE/SYMBOL command will define an environment variable.
+      If the /REST_OF_LINE is specified, all characters starting with the
+      value parameter until the end of the line will be included in the
+      environment variable value. If the /REST_OF_LINE is not included
+      then enclose the value in double quotes if there are any spaces or slashes
+      in the value.
+    </help>
     <routine name="mdsdcl_define_symbol"/>
-
     <parameter name="P1" label="SYMBOL" prompt="Symbol name" required="True"/>
     <parameter name="P2" label="VALUE" prompt="Value" required="True" type="QUOTED_STRING"/>
     <qualifier name="REST_OF_LINE" syntax="DEFINE_SYMBOL_REST"/>
-"  </syntax>
+  </syntax>
   <syntax name="DEFINE_SYMBOL_REST">
 
     <routine name="mdsdcl_define_symbol"/>

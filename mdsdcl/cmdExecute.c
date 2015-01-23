@@ -107,6 +107,8 @@ static void freeCommand(dclCommandPtr * cmd_in)
 	free(cmd->verb);
       if (cmd->routine)
 	free(cmd->routine);
+      if (cmd->command_line)
+	free(cmd->command_line);
       freeCommandParamsAndQuals(cmd);
       free(cmd);
       *cmd_in = 0;
