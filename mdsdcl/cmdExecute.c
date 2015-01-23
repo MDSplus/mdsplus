@@ -1008,12 +1008,17 @@ int mdsdclAddCommands(char *name_in, char **error)
 
   mdsplus_dir = getenv("MDSPLUS_DIR");
   if (mdsplus_dir == 0)
-    mdsplus_dir=".";
+    mdsplus_dir=strdup(".");
+  else {
+    mdsplus_dir=strcpy(malloc(strlen(mdsplus_dir)+10),mdsplus_dir);
+    strcat(mdsplus_dir,"/xml");
+  }
+    
   filename = strcpy(malloc(strlen(commands) + strlen(mdsplus_dir) + 10), mdsplus_dir);
   strcat(filename, "/");
   strcat(filename, commands);
   strcat(filename, ".xml");
-
+  free(mdsplus_dir);
   /* Try parsing the xml file if it exists */
 
   doc = xmlParseFile(filename);
