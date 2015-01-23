@@ -1,4 +1,40 @@
-commit 3a7932ff55e3a9ef066e74e3b3408825c704aede (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b25379c897b2720b18b3b5c87ce952db540b46fd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:34:16 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 986727098ab5aaf41e992a83c0c140170365247d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:08:12 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 5323560da09b9e421abffd659833fdd129b88f18
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 12:13:22 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 83f4ce222b3776ff50e6f644b2d625fbbabde8a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 11:31:44 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 2f8677fe1ce9f2eda168986e6f7d3d0c54bd771c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 09:29:50 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 3b04594d21119af6767ebaa03ef4bc5147e56be3 (tag: refs/tags/alpha_release-6-3-457)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 20 18:23:37 2015 -0500
+
+    New ChangeLog
+
+commit 3a7932ff55e3a9ef066e74e3b3408825c704aede
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jan 20 18:14:37 2015 +0100
 
