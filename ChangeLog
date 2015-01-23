@@ -1,4 +1,16 @@
-commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 3d3619e525a4c12da911966fdac1350976d57175 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 23 12:25:39 2015 -0500
+
+    Make scalar strings return native matlab strings instead of java.lang.String
+
+commit 6fde9fa7740968826b51b91fd566e2737230d463 (tag: refs/tags/alpha_release-6-3-459)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 10:20:11 2015 -0500
+
+    New ChangeLog
+
+commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d
 Merge: 77928e1 f1799c7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 23 09:32:33 2015 -0500
