@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <module name="mdsdcl_tables">
+  <helpall>
+    Basic mdsdcl commands include:
+
+    DEFINE         - Define a macro.
+    DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
+    ENV            - Define and environment variable.
+  </helpall>
+  
   <help name="DEFINE">
       Command: DEFINE
       Purpose: Define a macro which can be invoked using the DO command
@@ -23,12 +31,28 @@
       then enclose the value in double quotes if there are any spaces or slashes
       in the value.
   </help>
+  <help name="ENV">
+    Command: ENV
+    Purpose: Define an environment variable
+    Format: ENV name=value
+    Description:
+
+    The ENV command will define an environment variable setting its value
+    to the string specified after the equal sign.
+  </help>
+  
   <verb name="DEFINE">
 
     <routine name="mdsdcl_define"/>
     <parameter name="p1" prompt="Macro" required="True"/>
     <qualifier name="SYMBOL" syntax="DEFINE_SYMBOL"/>
   </verb>
+
+  <verb name="ENV">
+    <routine name="mdsdcl_env"/>
+    <parameter name="P1" prompt="Definition" required="True" type="REST_OF_LINE"/>
+  </verb>
+
   <syntax name="DEFINE_SYMBOL">
 
     <routine name="mdsdcl_define_symbol"/>

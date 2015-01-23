@@ -19,8 +19,8 @@ int TclClose(void *ctx)
   int sts;
   static const char promptWritefirst[] =
       "This tree has been modified, write it before closing? [Y]: ";
-  char *exp;
-  char *shotidstr;
+  char *exp=0;
+  char *shotidstr=0;
   int shotid=-2;
 
   if (cli_get_value(ctx, "FILE", &exp) & 1) {

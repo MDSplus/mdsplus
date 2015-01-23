@@ -169,6 +169,7 @@ int mdsdcl_define_symbol( void *ctx)
   char *p;
   char *name = 0;
   char *value = 0;
+  char *env;
 
   sts = cli_get_value(ctx, "SYMBOL", &name);
   if (~sts & 1)
@@ -181,7 +182,7 @@ int mdsdcl_define_symbol( void *ctx)
   p = malloc(strlen(name)+strlen(value) + 2);
   sprintf(p, "%s=%s", name, value);
   sts = putenv(p);
-  free(p);
+  env = getenv(name);
   if (sts) {
     perror("error from putenv");
     sts = MDSDCL_STS_ERROR;
@@ -193,6 +194,20 @@ int mdsdcl_define_symbol( void *ctx)
   if (value)
     free(value);
 
+  return (sts);
+}
+
+int mdsdcl_env(void *ctx) {
+  int sts;
+  char *value;
+  sts = cli_get_value(ctx,"P1",&value);
+  sts = putenv(value);
+  if (sts) {
+    perror("error from putenv");
+    fprintf(stderr,"Attempting putenv(\"%s\")\n",value);
+    sts = MDSDCL_STS_ERROR;
+  } else
+    sts = 1;
   return (sts);
 }
 

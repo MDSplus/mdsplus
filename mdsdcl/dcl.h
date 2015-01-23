@@ -46,8 +46,9 @@ typedef struct dclQualifier {
 
 typedef struct dclCommand {
   char *command_line;		/*!< full command line */
+  int rest_of_line;             /*!< command handler deals with parsing the command.
+				  Parameters and qualifiers not checked generically. */
   char *verb;			/*!< verb name of command */
-  char *help;                   /*!< help string for verb */
   int parameter_count;		/*!< number of parameters */
   dclParameterPtr *parameters;	/*!< array of parameters */
   int qualifier_count;		/*!< number of qualifiers */

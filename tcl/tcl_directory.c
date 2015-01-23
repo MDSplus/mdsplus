@@ -354,3 +354,11 @@ static int doFull(int nid, unsigned char nodeUsage, int version)
   free(outline);
   return status;
 }
+
+int TclLs(void *ctx) {
+  char *cmd = 0;
+  cli_get_value(ctx, "command_line", &cmd);
+  printf("TclLs called with command line: '%s'\n",cmd);
+  free(cmd);
+  return 1;
+}

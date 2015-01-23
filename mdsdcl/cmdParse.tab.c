@@ -1606,6 +1606,7 @@ int mdsdcl_do_command(char const* command) {
   cmd_state = dcl__scan_string (command, yyscanner);
   result=yyparse (yyloc_param, yyscanner, &dclcmd);
   if (result==0) {
+    dclcmd->command_line=strdup(command);
     status=cmdExecute(dclcmd);
   }
   dcl__delete_buffer (cmd_state, yyscanner);

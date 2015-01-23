@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <module name="tcl_commands">
 
+  <helpall>
+    TCL (Tree Command Language) commands include:
+
+    ABORT SERVER   - Abort the current action being executed in an action server.
+    ADD NODE       - Add a node to a tree open for editing.
+    ADD TAG        - Add a tag name to a node in a tree open for editing.
+    CLEAN          - Clean a tree datafile discarding bytes in file occupied
+                     by records superceded by new data.
+    COMPRESS       - Clean and compress all data in a tree datafile except for
+		     nodes explicitly set to not be compressed.
+  </helpall>
+  
+  <help name="ABORT SERVER">
+      Command: ABORT SERVER
+      Purpose: Abort the action currently being executed by an MDSplus action server.
+      Format: ABORT SERVER server-name
+      Description:
+      
+      The ABORT SERVER command will abort the action currently being executed in an
+      MDSplus action server. Actions are executed in servers when dispatched using
+      the DISPATCH command.
+  </help>
   <verb name="abort">
 
     <parameter name="p1" prompt="What" required="True" type="abort_type"/>
@@ -569,5 +591,9 @@
 
     <parameter name="p1" label="FILE"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
-"  </verb>
+  "  </verb>
+  <verb name="ls" type="rest_of_line">
+    <routine name="TclLs"/>
+  </verb>
+  
 </module>
