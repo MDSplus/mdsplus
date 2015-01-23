@@ -1,4 +1,28 @@
-commit abae4df64963cbb7707f674e922add8d67560fb5 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit ec09cc0a8cf92c483a1c57aadcbd61bd0aa40367 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:51:42 2015 -0500
+
+    Remove all objects during clean
+
+commit 291b413cc7a9cc22b5b30d8394651960c447a11d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:19:52 2015 -0500
+
+    remove obsolete *.f.in files
+
+commit bd678a5e357d0c49e0cf8ba023b12db8c06178e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:14:39 2015 -0500
+
+    Fix undefined reference because of const declaration on deserialize
+
+commit 35f8c2906f7f3297d44519e220adffe68d5a3465 (tag: refs/tags/stable_release-6-1-72)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 13:49:03 2015 +0000
+
+    New ChangeLog
+
+commit abae4df64963cbb7707f674e922add8d67560fb5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 7 08:24:00 2015 -0500
 
