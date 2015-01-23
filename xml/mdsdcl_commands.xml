@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<module name="mdsdcl_tables">
+  <helpall>
+    Basic mdsdcl commands include:
+
+    DEFINE         - Define a macro.
+    DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
+    ENV            - Define and environment variable.
+  </helpall>
+  
+  <help name="DEFINE">
+      Command: DEFINE
+      Purpose: Define a macro which can be invoked using the DO command
+      Format: DEFINE macro-name
+      Description:
+      
+      The DEFINE command will define a macro with the specified macro name.
+      The following lines entered will be records as a list of commands until
+      an empty line is entered to complete the macro definition.
+  </help>
+  <help name="DEFINE/SYMBOL">
+      Command: DEFINE/SYMBOL
+      Purpose: Define an environment variable
+      Format: DEFINE/SYMBOL [/REST_OF_LINE] name value
+      Description:
+      
+      The DEFINE/SYMBOL command will define an environment variable.
+      If the /REST_OF_LINE is specified, all characters starting with the
+      value parameter until the end of the line will be included in the
+      environment variable value. If the /REST_OF_LINE is not included
+      then enclose the value in double quotes if there are any spaces or slashes
+      in the value.
+  </help>
+  <help name="ENV">
+    Command: ENV
+    Purpose: Define an environment variable
+    Format: ENV name=value
+    Description:
+
+    The ENV command will define an environment variable setting its value
+    to the string specified after the equal sign.
+  </help>
+  
+  <verb name="DEFINE">
+
+    <routine name="mdsdcl_define"/>
+    <parameter name="p1" prompt="Macro" required="True"/>
+    <qualifier name="SYMBOL" syntax="DEFINE_SYMBOL"/>
+  </verb>
+
+  <verb name="ENV">
+    <routine name="mdsdcl_env"/>
+    <parameter name="P1" prompt="Definition" required="True" type="REST_OF_LINE"/>
+  </verb>
+
+  <syntax name="DEFINE_SYMBOL">
+
+    <routine name="mdsdcl_define_symbol"/>
+
+    <parameter name="P1" label="SYMBOL" prompt="Symbol name" required="True"/>
+    <parameter name="P2" label="VALUE" prompt="Value" required="True" type="QUOTED_STRING"/>
+    <qualifier name="REST_OF_LINE" syntax="DEFINE_SYMBOL_REST"/>
+"  </syntax>
+  <syntax name="DEFINE_SYMBOL_REST">
+
+    <routine name="mdsdcl_define_symbol"/>
+
+    <parameter name="P1" label="SYMBOL" prompt="Symbol name" required="True"/>
+    <parameter name="P2" label="VALUE" prompt="Value" required="True" type="REST_OF_LINE"/>
+"  </syntax>
+  <verb name="DO">
+
+    <routine name="mdsdcl_do_macro"/>
+
+    <parameter name="P1" label="NAME" prompt="Macro" required="True"/>
+    <parameter name="P2" label="p"/>
+    <parameter name="P3" label="p"/>
+    <parameter name="P4" label="p"/>
+    <parameter name="P5" label="p"/>
+    <parameter name="P6" label="p"/>
+    <parameter name="P7" label="p"/>
+    <parameter name="P8" label="p"/>
+    <qualifier name="MACRO" defaulted="True"/>
+    <qualifier name="INDIRECT" syntax="DO_INDIRECT"/>
+    <qualifier name="REPEAT" type="NUMBER"/>
+
+
+"  </verb>
+  <syntax name="DO_INDIRECT">
+
+    <routine name="mdsdcl_do_macro"/>
+
+    <parameter name="P1" label="NAME" prompt="Filename" required="True" type="REST_OF_LINE"/>
+"  </syntax>
+  <verb name="EXIT">
+
+    <routine name="mdsdcl_exit"/>
+
+"  </verb>
+  <verb name="QUIT">
+
+    <routine name="mdsdcl_exit"/>
+
+"  </verb>
+  <verb name="HELP">
+
+    <routine name="mdsdcl_help"/>
+
+    <parameter name="P1" type="rest_of_line"/>
+"  </verb>
+  <verb name="INIT">
+
+    <parameter name="p1" prompt="What" required="True" type="INIT_KEYWORDS"/>
+"  </verb>
+  <type name="INIT_KEYWORDS">
+
+"    <keyword name="TIMER" syntax="INIT_TIMER"/>"
+"  </type>
+  <syntax name="INIT_TIMER">
+
+    <routine name="mdsdcl_init_timer"/>
+
+    <parameter name="p1" prompt="What" required="True" type="INIT_KEYWORDS"/>
+"  </syntax>
+  <verb name="SET">
+
+    <parameter name="P1" prompt="What" required="True" type="SET_KEYWORDS"/>
+"  </verb>
+  <type name="SET_KEYWORDS">
+
+"    <keyword name="COMMAND" syntax="SET_COMMAND"/>"
+"    <keyword name="INTERRUPT" syntax="SET_INTERRUPT"/>"
+"    <keyword name="LIBRARY" syntax="SET_LIBRARY"/>"
+"    <keyword name="PROMPT" syntax="SET_PROMPT"/>"
+"    <keyword name="VERIFY" syntax="SET_VERIFY"/>"
+"    <keyword name="HYPHEN" syntax="SET_HYPHEN"/>"
+"  </type>
+  <syntax name="SET_COMMAND">
+
+    <routine name="mdsdcl_set_command"/>
+
+    <parameter name="P1" required="True"/>
+    <parameter name="P2" label="TABLE"/>
+    <qualifier name="PROMPT" required="True"/>
+    <qualifier name="DEF_FILE" required="True"/>
+"  </syntax>
+  <syntax name="SET_HYPHEN">
+
+    <routine name="mdsdcl_set_hyphen"/>
+
+    <parameter name="P1" required="True" type="SET_KEYWORDS"/>
+"  </syntax>
+  <syntax name="SET_PROMPT">
+
+    <routine name="mdsdcl_set_prompt"/>
+
+    <parameter name="P1" required="True"/>
+    <parameter name="P2" label="PROMPT" prompt="Prompt" required="True"/>
+"  </syntax>
+  <syntax name="SET_VERIFY">
+
+    <routine name="mdsdcl_set_verify"/>
+
+    <parameter name="P1" required="True" type="SET_KEYWORDS"/>
+"  </syntax>
+  <verb name="SHOW">
+
+    <parameter name="P1" prompt="What" required="True" type="SHOW_KEYWORDS"/>
+"  </verb>
+  <type name="SHOW_KEYWORDS">
+
+"    <keyword name="MACRO" syntax="SHOW_MACRO"/>"
+"    <keyword name="TIMER" syntax="SHOW_TIMER"/>"
+"  </type>
+  <syntax name="SHOW_MACRO">
+
+    <routine name="mdsdcl_show_macro"/>
+
+    <parameter name="P1" required="True"/>
+    <parameter name="P2" label="MACRO"/>
+    <qualifier name="full"/>
+"  </syntax>
+  <syntax name="SHOW_TIMER">
+
+    <routine name="mdsdcl_show_timer"/>
+
+    <parameter name="P1" required="True"/>
+"  </syntax>
+  <verb name="SPAWN">
+
+    <routine name="mdsdcl_spawn"/>
+
+    <parameter name="p1" label="COMMAND" type="REST_OF_LINE"/>
+    <qualifier name="CARRIAGE_CONTROL" defaulted="True"/>
+    <qualifier name="CLI"/>
+    <qualifier name="INPUT" required="True"/>
+    <qualifier name="KEYPAD" defaulted="True"/>
+    <qualifier name="LOGICAL_NAMES" defaulted="True"/>
+    <qualifier name="NOTIFY"/>
+    <qualifier name="OUTPUT" required="True"/>
+    <qualifier name="PROCESS" required="True"/>
+    <qualifier name="PROMPT" required="True"/>
+    <qualifier name="SYMBOLS" defaulted="True"/>
+    <qualifier name="WAIT" defaulted="True"/>
+
+"  </verb>
+  <verb name="TYPE">
+
+    <routine name="mdsdcl_type"/>
+
+    <parameter name="p1" type="REST_OF_LINE"/>
+"  </verb>
+  <verb name="WAIT">
+
+    <routine name="mdsdcl_wait"/>
+
+    <parameter name="p1" label="DELTA_TIME" prompt="Deltatime" required="True" type="REST_OF_LINE"/>
+"  </verb>
+</module>
