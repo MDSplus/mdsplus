@@ -221,8 +221,7 @@ depend:
 
 clean:
 	@ $(RM) $(UIDS)
-	@ $(RM) $(OBJECTS) mitdevices_msg.o
-	@ $(RM) $(IO_OBJECTS)
+	@ $(RM) *.o
 	@ $(RM) *_gen.c
 	@ $(RM) so_locations
 	@ $(RM) @MAKELIBDIR@libMitDevices.a
