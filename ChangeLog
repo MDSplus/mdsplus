@@ -1,4 +1,25 @@
-commit b25379c897b2720b18b3b5c87ce952db540b46fd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 77928e1 f1799c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:32:33 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+    
+    essary,
+
+commit 77928e1f90acf35f3b72e8dfc5b1aef88b586f1f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:23:56 2015 -0500
+
+    Remove obsolete *.f.in files
+
+commit f1799c7f1f200d397b3c4c18e2996d6550bf7ea5 (tag: refs/tags/alpha_release-6-3-458)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 21 13:56:18 2015 -0500
+
+    New ChangeLog
+
+commit b25379c897b2720b18b3b5c87ce952db540b46fd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 21 13:34:16 2015 -0500
 
