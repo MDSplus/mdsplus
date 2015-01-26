@@ -1,4 +1,41 @@
-commit 3d3619e525a4c12da911966fdac1350976d57175 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b4b4ad1ccb6e69ce34ad6b1733e3bd7b35b91134 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:54:47 2015 +0100
+
+    Align to latest version
+
+commit 22337c1bd57e780fd1836633051762a9d595eeb6
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:51:44 2015 +0100
+
+    Align to latest version
+
+commit e06e09e07f0abc6d0e0b95eec20bf085aaccd5c4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:06:52 2015 +0100
+
+    Avoid unlocking mutexes ibn destructor
+
+commit b8e1c51046cb2b2b9ebbc578b1f8a61b1876e596
+Merge: d2d950e 8f982e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:24 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d2d950eba344e638b2491672acc8abba42337595
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:04 2015 +0100
+
+    Fix String arrays
+
+commit 8f982e4b27e2dfd58a41aa75108bb1f8234e425f (tag: refs/tags/alpha_release-6-3-460)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 18:24:36 2015 -0500
+
+    New ChangeLog
+
+commit 3d3619e525a4c12da911966fdac1350976d57175
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri Jan 23 12:25:39 2015 -0500
 
