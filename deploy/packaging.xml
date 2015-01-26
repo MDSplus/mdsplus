@@ -84,6 +84,7 @@ fi
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
     <include file="/usr/local/mdsplus/lib/libMit*"/>
     <include file="/usr/local/mdsplus/lib/libMIT*"/>
+    <include file="/usr/local/mdsplus/lib/libdc1394_support*.so"/>
     <include file="/usr/local/mdsplus/uid/A*"/>
     <include file="/usr/local/mdsplus/uid/B*"/>
     <include file="/usr/local/mdsplus/uid/C*"/>

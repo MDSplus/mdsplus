@@ -69,7 +69,7 @@ else
             case 'MDSplus.Float32'
                 result = double(mdsthing.getFloatArray());
             case 'MDSplus.String'
-                result = mdsthing.getString;
+                result = char(mdsthing.getString());
             otherwise
                 throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
         end

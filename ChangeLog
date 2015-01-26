@@ -1,4 +1,85 @@
-commit 7b7bd313712cc903ccd9927f31f817ba4146338d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 3d3619e525a4c12da911966fdac1350976d57175 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 23 12:25:39 2015 -0500
+
+    Make scalar strings return native matlab strings instead of java.lang.String
+
+commit 6fde9fa7740968826b51b91fd566e2737230d463 (tag: refs/tags/alpha_release-6-3-459)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 10:20:11 2015 -0500
+
+    New ChangeLog
+
+commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d
+Merge: 77928e1 f1799c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:32:33 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+    
+    essary,
+
+commit 77928e1f90acf35f3b72e8dfc5b1aef88b586f1f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:23:56 2015 -0500
+
+    Remove obsolete *.f.in files
+
+commit f1799c7f1f200d397b3c4c18e2996d6550bf7ea5 (tag: refs/tags/alpha_release-6-3-458)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 21 13:56:18 2015 -0500
+
+    New ChangeLog
+
+commit b25379c897b2720b18b3b5c87ce952db540b46fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:34:16 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 986727098ab5aaf41e992a83c0c140170365247d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:08:12 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 5323560da09b9e421abffd659833fdd129b88f18
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 12:13:22 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 83f4ce222b3776ff50e6f644b2d625fbbabde8a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 11:31:44 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 2f8677fe1ce9f2eda168986e6f7d3d0c54bd771c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 09:29:50 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 3b04594d21119af6767ebaa03ef4bc5147e56be3 (tag: refs/tags/alpha_release-6-3-457)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 20 18:23:37 2015 -0500
+
+    New ChangeLog
+
+commit 3a7932ff55e3a9ef066e74e3b3408825c704aede
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 20 18:14:37 2015 +0100
+
+    Remove compiler warnings
+
+commit 88b7bdb24165f12f6d734adb8c03f0eb1cdbbf3d (tag: refs/tags/alpha_release-6-3-456)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jan 15 18:21:23 2015 -0500
+
+    New ChangeLog
+
+commit 7b7bd313712cc903ccd9927f31f817ba4146338d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 15 15:21:10 2015 -0500
 
@@ -10,7 +91,7 @@ Date:   Thu Jan 15 09:16:24 2015 +0100
 
     Handle empty pointers in APD
 
-commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455, refs/remotes/origin/feature-replace-mdsdcl)
+commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jan 7 18:21:16 2015 -0500
 
