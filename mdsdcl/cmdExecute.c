@@ -576,7 +576,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	    "Too many parameters specified in the command. Maximum supported is %d. Provided was %d.",
 	    cmdDef->parameter_count, cmd->parameter_count);
     *error = errstr;
-    return TOO_MANY_PARAMETERS;
+    return CLI_STS_TOO_MANY_PRMS;
   }
 
   /* For all the parameters */
@@ -591,7 +591,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	sprintf(errstr, "Parameter number %d does not accept a list of values. "
 		"Perhaps that parameter needs to enclosed in double quotes?", i + 1);
 	*error = errstr;
-	return TOO_MANY_VALUES_FOR_PARAMETER;
+	return CLI_STS_TOO_MANY_VALS;
       }
     }
 
@@ -623,7 +623,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
     if (cmdDef->parameters[i]->required) {
       if (cmd->parameter_count < (i + 1)) {
 	*prompt = strdup(cmdDef->parameters[i]->prompt ? cmdDef->parameters[i]->prompt : "What");
-	return PROMPT_FOR_MORE_INPUT;
+	return CLI_STS_PROMPT_MORE;
       }
     }
   }
@@ -645,7 +645,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	    sprintf(errstr, "Qualifier \"%s\" requires a value and none was provided\n",
 		    cmdDef->qualifiers[i]->name);
 	    *error = errstr;
-	    return MISSING_QUALIFIER_VALUE;
+	    return CLI_STS_MISSING_VALUE;
 	  }
 	  break;
 	}
@@ -722,7 +722,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	  sprintf(errstr, "Qualifier \"%s\" does not permit a list of values\n",
 		  cmdDef->qualifiers[i]->name);
 	  *error = errstr;
-	  return TOO_MANY_VALUES_FOR_QUALIFIER;
+	  return CLI_STS_TOO_MANY_VALS;
 	}
 
 	/* Check to see if the command was negated and if that is allowed */
@@ -1077,7 +1077,7 @@ int cmdExecute(dclCommandPtr cmd)
     freeCommand(&cmdDef);
   }
   freeCommand(&cmd);
-  if (status == PROMPT_FOR_MORE_INPUT) {
+  if (status == CLI_STS_PROMPT_MORE) {
     fprintf(stderr, "Prompt using %s\n", prompt);
     if (prompt)
       free(prompt);

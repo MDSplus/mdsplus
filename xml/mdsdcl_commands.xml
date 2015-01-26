@@ -3,20 +3,24 @@
   <helpall>
     Basic mdsdcl commands include:
 
-    _DEFINE         - Define a macro.
+    @              - Execute a command script
+    DEFINE         - Define a macro.
     DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
     ENV            - Define and environment variable.
+    DO/MACRO       - Execute a macro.
+    EXIT           - Exit the command interpreter utility. (same as QUIT)
+    HELP           - Help on available commands.
+    INIT TIMER     - Initialize a timer.
+    QUIT           - Exit the command interpreter utility. (same as EXIT)
+    SET COMMAND    - Load additional commands to interpreter.
+    SET PROMPT     - Change the command prompt.
+    SET VERIFY     - Turn command echoing on or off.
+    SHOW MACRO     - Show the contents of a macro
+    SHOW TIMER     - Show the timer information.
+    SPAWN          - Execute a operating system shell command.
+    TYPE           - Print a message.
+    WAIT           - Wait for a specified period of time.
   </helpall>
-  
-  <help name="ENV">
-    Command: ENV
-    Purpose: Define an environment variable
-    Format: ENV name=value
-    Description:
-
-    The ENV command will define an environment variable setting its value
-    to the string specified after the equal sign.
-  </help>
   
   <verb name="DEFINE">
     <help name="DEFINE">
@@ -32,11 +36,6 @@
     <routine name="mdsdcl_define"/>
     <parameter name="p1" prompt="Macro" required="True"/>
     <qualifier name="SYMBOL" syntax="DEFINE_SYMBOL"/>
-  </verb>
-
-  <verb name="ENV">
-    <routine name="mdsdcl_env"/>
-    <parameter name="P1" prompt="Definition" required="True" type="REST_OF_LINE"/>
   </verb>
 
   <syntax name="DEFINE_SYMBOL">
@@ -59,158 +58,304 @@
     <qualifier name="REST_OF_LINE" syntax="DEFINE_SYMBOL_REST"/>
   </syntax>
   <syntax name="DEFINE_SYMBOL_REST">
-
     <routine name="mdsdcl_define_symbol"/>
-
     <parameter name="P1" label="SYMBOL" prompt="Symbol name" required="True"/>
     <parameter name="P2" label="VALUE" prompt="Value" required="True" type="REST_OF_LINE"/>
-"  </syntax>
+  </syntax>
+
+  <verb name="ENV">
+    <help name="ENV">
+      Command: ENV
+      Purpose: Define an environment variable
+      Format: ENV name=value
+      Description:
+
+      The ENV command will define an environment variable setting its value
+      to the string specified after the equal sign.
+    </help>
+    <routine name="mdsdcl_env"/>
+    <parameter name="P1" prompt="Definition" required="True" type="REST_OF_LINE"/>
+  </verb>
+
+  <verb name="DELETE">
+    <help name="DELETE/MACRO">
+      Command: DELETE/MACRO
+      Purpose: Delete a previously defined macro.
+      Format: DELETE/MACRO macro-name
+      Description:
+
+      Delete a previously defined macro.
+    </help>
+    <routine name="mdsdcl_delete_macro"/>
+    <parameter name="NAME" label="NAME" prompt="Macro" required="True"/>
+    <qualifier name="MACRO" defaulted="True"/>
+  </verb>
+
   <verb name="DO">
+    <help name="DO/MACRO">
+      Command: DO/MACRO
+      Purpose: Execute a named macro created by the DEFINE command.
+      Format: DO/MACRO name-of-macro [p1] [p2] [p3] ... [p7]
+      Description:
+      
+      Execute the named macro providing optional arguments to be substituted
+      for placeholders in the macro command lines. Use 'p1' 'p2' etc for
+      placeholders for parameters. Single quotes are required.
 
+        For example:
+          Command> DEFINE MYMACRO
+	  DEFMAC> TYPE first is 'P1' second is 'p2' and third is 'p3'.
+	  DEFMAC>
+	  Command> DO/MACRO MYMACRO one two three
+	  first is one second is two and third is three.
+    </help>
     <routine name="mdsdcl_do_macro"/>
-
-    <parameter name="P1" label="NAME" prompt="Macro" required="True"/>
+    <parameter name="NAME" label="NAME" prompt="Macro" required="True"/>
+    <parameter name="P1" label="p"/>
     <parameter name="P2" label="p"/>
     <parameter name="P3" label="p"/>
     <parameter name="P4" label="p"/>
     <parameter name="P5" label="p"/>
     <parameter name="P6" label="p"/>
     <parameter name="P7" label="p"/>
-    <parameter name="P8" label="p"/>
     <qualifier name="MACRO" defaulted="True"/>
     <qualifier name="INDIRECT" syntax="DO_INDIRECT"/>
     <qualifier name="REPEAT" type="NUMBER"/>
+  </verb>
 
-
-"  </verb>
   <syntax name="DO_INDIRECT">
-
+    <help name="@">
+      Command: @
+      Purpose: Execute commands read from a file.
+      Format: @file-name [p1] [p2] [p3] ... [p7]
+      Description:
+      
+      Execute the commands read from a file providing optional arguments to be substituted
+      for placeholders in the command lines.
+    </help>
     <routine name="mdsdcl_do_macro"/>
-
     <parameter name="P1" label="NAME" prompt="Filename" required="True" type="REST_OF_LINE"/>
-"  </syntax>
+  </syntax>
+
   <verb name="EXIT">
-
+    <help name="EXIT">
+      Command: EXIT
+      Purpose: Exit the interpreter. Same as quit.
+      Format: EXIT
+    </help>      
     <routine name="mdsdcl_exit"/>
+  </verb>
 
-"  </verb>
-  <verb name="QUIT">
-
-    <routine name="mdsdcl_exit"/>
-
-"  </verb>
   <verb name="HELP">
-
-    <routine name="mdsdcl_help"/>
-
+     <help name="HELP">
+      Command: HELP
+      Purpose: Provide help on available commands.
+      Format: HELP [command]
+    </help>      
+   <routine name="mdsdcl_help"/>
     <parameter name="P1" type="rest_of_line"/>
-"  </verb>
+  </verb>
+
   <verb name="INIT">
-
     <parameter name="p1" prompt="What" required="True" type="INIT_KEYWORDS"/>
-"  </verb>
+  </verb>
   <type name="INIT_KEYWORDS">
-
-"    <keyword name="TIMER" syntax="INIT_TIMER"/>"
-"  </type>
+    <keyword name="TIMER" syntax="INIT_TIMER"/>"
+  </type>
   <syntax name="INIT_TIMER">
-
+    <help name="INIT TIMER">
+      Command: INIT TIMER
+      Purpose: Initialize a timer for timing command execution.
+      Format:  INIT TIMER
+      Description:
+      
+      Initialize a timer to determine the performances of one or more
+      commands. Use the SHOW TIMER command to print timing information
+      since the last time the INIT TIMER was issued.
+    </help>
     <routine name="mdsdcl_init_timer"/>
-
     <parameter name="p1" prompt="What" required="True" type="INIT_KEYWORDS"/>
-"  </syntax>
+  </syntax>
+
+  <verb name="QUIT">
+    <help name="QUIT">
+      Command: QUIT
+      Purpose: Exit the interpreter. Same as exit.
+      Format: QUIT
+    </help>      
+    <routine name="mdsdcl_exit"/>
+  </verb>
+
   <verb name="SET">
-
     <parameter name="P1" prompt="What" required="True" type="SET_KEYWORDS"/>
-"  </verb>
+  </verb>
   <type name="SET_KEYWORDS">
-
-"    <keyword name="COMMAND" syntax="SET_COMMAND"/>"
-"    <keyword name="INTERRUPT" syntax="SET_INTERRUPT"/>"
-"    <keyword name="LIBRARY" syntax="SET_LIBRARY"/>"
-"    <keyword name="PROMPT" syntax="SET_PROMPT"/>"
-"    <keyword name="VERIFY" syntax="SET_VERIFY"/>"
-"    <keyword name="HYPHEN" syntax="SET_HYPHEN"/>"
-"  </type>
+    <keyword name="COMMAND" syntax="SET_COMMAND"/>"
+    <keyword-obsolete name="INTERRUPT" syntax="SET_INTERRUPT"/>"
+    <keyword-obsolete name="LIBRARY" syntax="SET_LIBRARY"/>"
+    <keyword name="PROMPT" syntax="SET_PROMPT"/>"
+    <keyword name="VERIFY" syntax="SET_VERIFY"/>"
+    <keyword-obsolete name="HYPHEN" syntax="SET_HYPHEN"/>"
+  </type>
   <syntax name="SET_COMMAND">
-
+    <help name="SET COMMAND">
+      Command: SET COMMAND
+      Purpose: Load additional commands to interpreter.
+      Format:  SET COMMAND table-name
+      Description:
+      
+      Load a new table of commands to the interpreter making
+      those commands available in addition to the existing
+      commands. (i.e. SET COMMAND TCL).
+    </help>
     <routine name="mdsdcl_set_command"/>
-
     <parameter name="P1" required="True"/>
     <parameter name="P2" label="TABLE"/>
     <qualifier name="PROMPT" required="True"/>
     <qualifier name="DEF_FILE" required="True"/>
-"  </syntax>
+  </syntax>
+  
   <syntax name="SET_HYPHEN">
-
     <routine name="mdsdcl_set_hyphen"/>
-
     <parameter name="P1" required="True" type="SET_KEYWORDS"/>
-"  </syntax>
+  </syntax>
+
   <syntax name="SET_PROMPT">
+    <help name="SET PROMPT">
+      Command: SET PROMPT
+      Purpose: Change the command prompt string.
+      Format: SET PROMPT new-prompt
+      Description:
 
+      Change the command prompt presented which prompts for the
+      next command.
+    </help>
     <routine name="mdsdcl_set_prompt"/>
-
     <parameter name="P1" required="True"/>
     <parameter name="P2" label="PROMPT" prompt="Prompt" required="True"/>
-"  </syntax>
+  </syntax>
+
   <syntax name="SET_VERIFY">
-
+    <help name="SET VERIFY">
+      Command: SET VERIFY
+      Purpose: Turn echoing of command on or off.
+      Description:
+      
+      This command is useful when executing commands
+      in scripts. Use "SET VERIFY" to cause commands to
+      be echoed just prior to execution. Use "SET NOVERIFY"
+      to turn of command echo.
+    </help>
     <routine name="mdsdcl_set_verify"/>
-
     <parameter name="P1" required="True" type="SET_KEYWORDS"/>
-"  </syntax>
+  </syntax>
+
   <verb name="SHOW">
-
     <parameter name="P1" prompt="What" required="True" type="SHOW_KEYWORDS"/>
-"  </verb>
+  </verb>
+
   <type name="SHOW_KEYWORDS">
+    <keyword name="MACRO" syntax="SHOW_MACRO"/>"
+    <keyword name="TIMER" syntax="SHOW_TIMER"/>"
+  </type>
 
-"    <keyword name="MACRO" syntax="SHOW_MACRO"/>"
-"    <keyword name="TIMER" syntax="SHOW_TIMER"/>"
-"  </type>
   <syntax name="SHOW_MACRO">
-
+    <help name="SHOW MACRO">
+      Command: SHOW MACRO
+      Purpose: Dump the contents of a macro defined using the DEFINE command.
+      Format:  SHOW MACRO[/FULL] [macro-name]
+      Description:
+      
+      Command macros can be defined by the DEFINE command and executed by
+      the DO command. Use the SHOW MACRO command to list or print the contents of
+      a previously defined macro. If macro-name is not provided all defined macros
+      will be shown. If the /FULL qualifier is used then the contents of the macro
+      or all macros will be printed.
+    </help>
     <routine name="mdsdcl_show_macro"/>
-
     <parameter name="P1" required="True"/>
     <parameter name="P2" label="MACRO"/>
     <qualifier name="full"/>
-"  </syntax>
+  </syntax>
+
   <syntax name="SHOW_TIMER">
-
+    <help name="SHOW TIMER">
+      Command: SHOW TIMER
+      Purpose: Show the timer information since the last INIT TIMER was issued.
+      Format:  SHOW TIMER
+      Description:
+      
+      Command line performance can be measured by issuing an INIT TIMER to start
+      a timer before one or more commands and then use the SHOW TIMER command
+      after the commands to measure their performance. The SHOW TIMER does not
+      reset the timer so consecutive SHOW TIMER commands will show the time
+      elapsed since the last INIT TIMER command was issued.
+    </help>
     <routine name="mdsdcl_show_timer"/>
-
     <parameter name="P1" required="True"/>
-"  </syntax>
+  </syntax>
+
   <verb name="SPAWN">
-
+    <help name="SPAWN">
+      Command: SPAWN
+      Purpose: Spawn a subprocess to execute a shell command.
+      Format:  SPAWN [/[NO]WAIT] [/NOTIFY] [shell-command]
+      Description:
+      
+      Create a suproccess to execute the specified shell command.
+      If no shell command is specified, the SPAWN command will create a
+      subprocess which will run a operating system command shell to receive
+      commands. Once the OS shell is exited you will return to the
+      mdsdcl command interpreter. If the /NOWAIT qualifier is present
+      then the mdsdcl command interpreter will not wait for the spawned
+      process to complete. If the /NOTIFY is used with the /NOWAIT
+      qualifier then a message will be printed when the subprocess completes.
+    </help>
     <routine name="mdsdcl_spawn"/>
-
     <parameter name="p1" label="COMMAND" type="REST_OF_LINE"/>
-    <qualifier name="CARRIAGE_CONTROL" defaulted="True"/>
-    <qualifier name="CLI"/>
-    <qualifier name="INPUT" required="True"/>
-    <qualifier name="KEYPAD" defaulted="True"/>
-    <qualifier name="LOGICAL_NAMES" defaulted="True"/>
+    <qualifier-obsolete name="CARRIAGE_CONTROL" defaulted="True"/>
+    <qualifier-obsolete name="CLI"/>
+    <qualifier-obsolete name="INPUT" required="True"/>
+    <qualifier-obsolete name="KEYPAD" defaulted="True"/>
+    <qualifier-obsolete name="LOGICAL_NAMES" defaulted="True"/>
     <qualifier name="NOTIFY"/>
-    <qualifier name="OUTPUT" required="True"/>
-    <qualifier name="PROCESS" required="True"/>
-    <qualifier name="PROMPT" required="True"/>
-    <qualifier name="SYMBOLS" defaulted="True"/>
+    <qualifier-obsolete name="OUTPUT" required="True"/>
+    <qualifier-obsolete name="PROCESS" required="True"/>
+    <qualifier-obsolete name="PROMPT" required="True"/>
+    <qualifier-obsolete name="SYMBOLS" defaulted="True"/>
     <qualifier name="WAIT" defaulted="True"/>
+  </verb>
 
-"  </verb>
   <verb name="TYPE">
-
+    <help name="TYPE">
+      Command: TYPE
+      Purpose: Print a message.
+      Format:  TYPE message-string
+      Description:
+      
+      Print the message-string.
+    </help>
     <routine name="mdsdcl_type"/>
-
     <parameter name="p1" type="REST_OF_LINE"/>
-"  </verb>
+  </verb>
+
   <verb name="WAIT">
-
+    <help name="INIT TIMER">
+      Command: WAIT
+      Purpose: Wait a specified period of time.
+      Format:  WAIT wait-time
+        'wait-time' format: [dd] [hh]:[mm]:[ss]
+      Description:
+      
+      Cause the command interpreter to pause for the specified
+      time period. The time period format, "dd hh:mm:ss", is interpreted
+      as dd=number of days, hh=number of hours, mm=number of minutes, and
+      ss=number of seconds. The dd,hh,mm and ss values can be omitted and
+      default to 0 but the colons are required.
+      For example: "WAIT ::15" would pause for 15 seconds.
+    </help>
     <routine name="mdsdcl_wait"/>
-
     <parameter name="p1" label="DELTA_TIME" prompt="Deltatime" required="True" type="REST_OF_LINE"/>
-"  </verb>
+  </verb>
+
 </module>
