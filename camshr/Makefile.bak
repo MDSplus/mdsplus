@@ -1,0 +1,97 @@
+include ../Makefile.inc
+
+# IMPLIB=$(top_srcdir)/lib64/CamShr.dll.a
+
+LIBS=-L$(top_srcdir)/lib64/ -lMdsShr -lrt 
+
+MAJOR = 1
+MINOR = 8
+LIBRARYNAME=CamShr
+SHLIB = lib$(LIBRARYNAME).so
+SHLIB_BUILD = $(top_srcdir)/lib64/$(SHLIB)
+
+SOURCES	= \
+		add_entry.c              \
+		bisearch.c               \
+		cam_functions.c           \
+		check_for_file.c         \
+		check_sema4.c            \
+		commit_entry.c           \
+		compare_str.c            \
+		copy.c                   \
+		create_sema4.c           \
+		create_tmp_file.c        \
+		debug.c                  \
+		expand_db.c              \
+		get_crate_status.c       \
+		get_db_file_size.c       \
+		get_file_count.c         \
+		get_file_name.c          \
+		get_scsi_device_number.c \
+		global.c                 \
+		issort.c                 \
+		lock_file.c              \
+		lookup_entry.c           \
+		map_data_file.c          \
+		map_scsi_device.c        \
+		msg.c 				 	 \
+		parse_crate_db.c         \
+		parse_cts_db.c           \
+		QueryHighwayType.c 		 \
+		remove_entry.c           \
+		scsi_io.c                 \
+		ScsiSystemStatus.c		 \
+		turn_crate_on_off_line.c \
+		unlock_file.c            \
+		xlate_logicalname.c
+
+OBJECTS =	$(SOURCES:.c=.o)
+
+CTS_SOURCES = cts_commands.c verbs.c
+
+CTS_OBJECTS = $(CTS_SOURCES:.c=.o)
+
+all : $(top_srcdir)/bin64/ $(top_srcdir)/lib64/ \
+	$(top_srcdir)/bin64/mdscts \
+	$(SHLIB_BUILD) \
+	$(top_srcdir)/lib64/libcts_commands.so 
+
+.PHONY: clean
+clean:
+	@ $(RM) $(OBJECTS) $(CTS_OBJECTS)
+	@ $(RM) $(SHLIB_BUILD) $(IMPLIB)
+	@ $(RM) $(SHLIB_BUILD).$(MAJOR)
+	@ $(RM) $(SHLIB_BUILD).$(MAJOR).$(MINOR)
+	@ $(RM) $(top_srcdir)/bin64/mdscts
+	@ $(RM) $(top_srcdir)/lib64/libcts_commands.so
+
+depend:
+	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
+
+install: $(libdir) $(bindir)
+	$(INSTALL) -m 755 $(top_srcdir)/bin64/mdscts $(bindir)
+	$(INSTALL) -m 755 $(top_srcdir)/lib64/libcts_commands.so $(libdir)
+	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(libdir)
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
+
+$(top_srcdir)/bin64/mdscts: cts
+	cp $< $@
+	chmod +x $@
+
+cdudir = $(top_builddir)/cdu
+CDU = $(cdudir)/cdu
+
+cts_commands.c:	cts_commands.ocld
+	env LD_LIBRARY_PATH=$(top_srcdir)/lib64/ $(CDU) < $<
+	$(MAKE) depend
+
+$(top_srcdir)/lib64/libcts_commands.so: $(CTS_OBJECTS) $(SHLIB_BUILD)
+	$(LINK.c) $(OUTPUT_OPTION) -shared  $(CTS_OBJECTS) -L$(top_srcdir)/lib64/ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)
+
+# MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+$(SHLIB_BUILD) $(IMPLIB): $(OBJECTS)
+	$(LINK.c) -shared  -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L$(top_srcdir)/lib64/ -lMdsShr $(MAKE_IMPLIB)
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $@.$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $@
+
