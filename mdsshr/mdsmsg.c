@@ -1,5 +1,6 @@
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <config.h>
+#include <string.h>
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
 #elif !defined(HAVE_WINDOWS_H)
@@ -9,7 +10,6 @@
 #include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
 #define CREATE_STS_TEXT
-#include        "mdsdcldef.h"
 #include        <stdio.h>
 #include        <stdarg.h>
 #include        <stdlib.h>
@@ -27,7 +27,7 @@
 #include        <unistd.h>
 #endif
 
-#include        "clidef.h"
+#include        "dcl.h"
 #include        "tcldef.h"
 #include        "ccldef.h"
 #include        "librtl_messages.h"
@@ -148,10 +148,19 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
   max = getFacility(sts, &facnam, &stsText);
   if (max > 0) {
     for (i = 0; i < max; i++) {
-      if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8)) {
+      if (sts == stsText[i].stsL_num ) {
 	sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
 		severity[sts & 0x7], stsText[i].stsA_name, stsText[i].stsA_text);
 	break;
+      }
+    }
+    if (i == max) {
+      for (i = 0; i < max; i++) {
+	if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8)) {
+	  sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
+		  severity[sts & 0x7], stsText[i].stsA_name, stsText[i].stsA_text);
+	  break;
+	}
       }
     }
     if (i == max)
@@ -196,16 +205,15 @@ int MdsMsg(			/* Return: sts provided by user         */
   int k;
   int write2stdout;
   va_list ap;			/* arg ptr                              */
+  char *text = (MdsShrGetThreadStatic())->MdsMsg_text;
 
   write2stdout = isatty(fileno(stdout)) ^ isatty(fileno(stderr));
   if ((sts & ALREADY_DISPLAYED) && (sts != -1))
     return (sts);
 
-  sprintf((MdsShrGetThreadStatic())->MdsMsg_text, "\r%s: ", pgmname());
-  k = strlen((MdsShrGetThreadStatic())->MdsMsg_text);
   if (fmt) {
     va_start(ap, fmt);		/* initialize "ap"                      */
-    vsprintf((MdsShrGetThreadStatic())->MdsMsg_text + k, fmt, ap);
+    vsprintf((MdsShrGetThreadStatic())->MdsMsg_text, fmt, ap);
     if (sts) {
       MDSfprintf(stderr, "%s\n\r    sts=%s\n\n\r", (MdsShrGetThreadStatic())->MdsMsg_text,
 		 MdsGetMsg(sts));

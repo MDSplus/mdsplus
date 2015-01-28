@@ -7,7 +7,8 @@
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
-#include "dcl.h"
+#include <dcl.h>
+#include "dcl_p.h"
 
 /*! Find the information associated with a command verb.
   - Locate all parameters and qualifiers defined for the command
@@ -98,29 +99,30 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd)
 		 (strcasecmp(propNode->name, "list") == 0) &&
 		 propNode->children &&
 		 propNode->children->content &&
-		 (strcasecmp(propNode->children->content,"true") == 0)) {
+		 (strcasecmp(propNode->children->content, "true") == 0)) {
 	parameter->listOk = 1;
       } else if (propNode->name &&
 		 (strcasecmp(propNode->name, "default") == 0) &&
-		 propNode->children &&
-		 propNode->children->content) {
-	char *value=strdup(propNode->children->content);
+		 propNode->children && propNode->children->content) {
+	char *value = strdup(propNode->children->content);
 	char *c;
-	for (c = strchr(value,',');c;c=strchr(value,',')) {
-	    *c=0;
-	    if (parameter->values) {
-	      parameter->values = realloc(parameter->values,(parameter->value_count+1) * sizeof(char *));
-	    } else {
-	      parameter->values = malloc(sizeof(char *));
-	    }
-	    parameter->values[parameter->value_count++]=strdup(value);
+	for (c = strchr(value, ','); c; c = strchr(value, ',')) {
+	  *c = 0;
+	  if (parameter->values) {
+	    parameter->values =
+		realloc(parameter->values, (parameter->value_count + 1) * sizeof(char *));
+	  } else {
+	    parameter->values = malloc(sizeof(char *));
+	  }
+	  parameter->values[parameter->value_count++] = strdup(value);
 	}
 	if (parameter->values) {
-	  parameter->values = realloc(parameter->values, (parameter->value_count + 1) * sizeof(char *));
+	  parameter->values =
+	      realloc(parameter->values, (parameter->value_count + 1) * sizeof(char *));
 	} else {
 	  parameter->values = malloc(sizeof(char *));
 	}
-	parameter->values[parameter->value_count++]=strdup(value);
+	parameter->values[parameter->value_count++] = strdup(value);
 	free(value);
       }
     }
@@ -323,31 +325,32 @@ static void findEntity(xmlNodePtr node, char *category, char *name, dclNodeListP
     findEntity(node->children, category, name, list, exactFound);
 }
 
-static char *formatHelp(char *content) {
-  int indentation=-1;
+static char *formatHelp(char *content)
+{
+  int indentation = -1;
   int offset;
-  char *ans=strdup("");
-  char *help=strdup(content);
-  char *hlp=help;
+  char *ans = strdup("");
+  char *help = strdup(content);
+  char *hlp = help;
   char *line;
-  for (line=strsep(&hlp,"\n");line;line=strsep(&hlp,"\n")) {
-    if (strlen(line)>0) {
+  for (line = strsep(&hlp, "\n"); line; line = strsep(&hlp, "\n")) {
+    if (strlen(line) > 0) {
       char *nline;
-      if (indentation==-1) {
-	for (indentation=0;line[indentation]==' ';indentation++);
-	offset = indentation-2;
+      if (indentation == -1) {
+	for (indentation = 0; line[indentation] == ' '; indentation++) ;
+	offset = indentation - 2;
       }
       if (offset < 0) {
-	nline=strcpy(malloc(strlen(line)-offset+1),"  ");
-	strcat(nline,line);
+	nline = strcpy(malloc(strlen(line) - offset + 1), "  ");
+	strcat(nline, line);
       } else {
-	nline=strcpy(malloc(strlen(line)-offset+1),line+offset);
+	nline = strcpy(malloc(strlen(line) - offset + 1), line + offset);
       }
-      ans=strcat(realloc(ans,strlen(ans)+strlen(nline)+2),nline);
+      ans = strcat(realloc(ans, strlen(ans) + strlen(nline) + 2), nline);
       free(nline);
-      strcat(ans,"\n");
+      strcat(ans, "\n");
     } else {
-      ans=strcat(realloc(ans,strlen(ans)+2),"\n");
+      ans = strcat(realloc(ans, strlen(ans) + 2), "\n");
     }
   }
   free(help);
@@ -359,7 +362,7 @@ int mdsdcl_do_help(char *command)
   int status = CLI_STS_IVVERB;
   char *prompt = 0;
   char *error = 0;
-  char *output = strcpy(malloc(1),"");
+  char *output = strcpy(malloc(1), "");
   dclDocListPtr doc_l;
   dclDocListPtr dclDocs = mdsdcl_getdocs();
   if (dclDocs == NULL)
@@ -368,41 +371,41 @@ int mdsdcl_do_help(char *command)
     int exactFound = 0;
     dclNodeList matchingHelp = { 0, 0 };
     if (command != 0) {
-      findEntity(((xmlDocPtr)doc_l->doc)->children, "help", command, &matchingHelp, &exactFound);
+      findEntity(((xmlDocPtr) doc_l->doc)->children, "help", command, &matchingHelp, &exactFound);
       if ((matchingHelp.count == 0) || (matchingHelp.count > 1)) {
 	if (matchingHelp.nodes != NULL)
 	  free(matchingHelp.nodes);
 	status = CLI_STS_IVVERB;
       } else {
-	char *content = ((xmlNodePtr)matchingHelp.nodes[0])->children->content;
+	char *content = ((xmlNodePtr) matchingHelp.nodes[0])->children->content;
 	if (content != NULL) {
-	  char *help=formatHelp(content);
-	  output=strcat(realloc(output,strlen(output)+strlen(help)+1),help);
+	  char *help = formatHelp(content);
+	  output = strcat(realloc(output, strlen(output) + strlen(help) + 1), help);
 	  free(help);
 	}
 	free(matchingHelp.nodes);
 	break;
       }
     } else {
-      findEntity(((xmlDocPtr)doc_l->doc)->children, "helpall", 0, &matchingHelp, &exactFound);
+      findEntity(((xmlDocPtr) doc_l->doc)->children, "helpall", 0, &matchingHelp, &exactFound);
       if ((matchingHelp.count == 1) &&
 	  matchingHelp.nodes &&
 	  matchingHelp.nodes[0] &&
-	  ((xmlNodePtr)matchingHelp.nodes[0])->children &&
-	  ((xmlNodePtr)matchingHelp.nodes[0])->children->content) {
-	char *content=((xmlNodePtr)matchingHelp.nodes[0])->children->content;
-	char *help=formatHelp(content);
-	output=strcat(realloc(output,strlen(output)+strlen(help)+1),help);
+	  ((xmlNodePtr) matchingHelp.nodes[0])->children &&
+	  ((xmlNodePtr) matchingHelp.nodes[0])->children->content) {
+	char *content = ((xmlNodePtr) matchingHelp.nodes[0])->children->content;
+	char *help = formatHelp(content);
+	output = strcat(realloc(output, strlen(output) + strlen(help) + 1), help);
 	free(help);
       };
-      if ((matchingHelp.count > 0) &&
-	  (matchingHelp.nodes))
+      if ((matchingHelp.count > 0) && (matchingHelp.nodes))
 	free(matchingHelp.nodes);
     }
-    output=strcat(realloc(output,strlen(output)+3),"\n\n");
+    output = strcat(realloc(output, strlen(output) + 3), "\n\n");
   }
   if (command == NULL)
-    output=strcat(realloc(output,strlen(output)+80),"Type 'help command-name' for more info\n\n");
+    output =
+	strcat(realloc(output, strlen(output) + 80), "Type 'help command-name' for more info\n\n");
   printf(output);
   printf("\n");
   free(output);

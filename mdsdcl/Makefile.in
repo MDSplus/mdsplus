@@ -9,6 +9,7 @@ cmdExecute.c         	\
 cmdHelp.c               \
 cmdParseLex.c           \
 cmdParse.tab.c          \
+mdsdclDeltatimeToSeconds.c \
 mdsdcl_commands.c
 
 
@@ -61,3 +62,6 @@ cmdHelp.o: cmdHelp.c
 
 #mdsdcl_commands.xml: mdsdcl_tables.ocld
 #	./ocldToXml mdsdcl_tables.ocld mdsdcl_commands
+
+#mdsdclDeltatimeToSeconds.c: mdsdclDeltatimeToSeconds.x
+#	lex mdsdclDeltatimeToSeconds.x

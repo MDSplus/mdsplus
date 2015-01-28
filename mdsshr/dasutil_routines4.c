@@ -71,6 +71,7 @@ STATIC_CONSTANT char name[32] = "xxx";
 
 char *pgmname()
 {
+  printf("program name = %s\n",name);
   return (name);
 }
 

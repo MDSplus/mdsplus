@@ -4,7 +4,8 @@
   int yydebug=0;
   #define YYLTYPE void *
   #define yylex dcl_lex
-  #include "dcl.h"
+  #include "dcl_p.h"
+  #include <dcl.h>
   #include "dcllex.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char *s);
 %}
@@ -18,6 +19,7 @@
 %parse-param {yyscan_t yyscanner}
 %parse-param {dclCommandPtr *dclcmd};
 
+%token CMDFILE
 %token VERB
 %token QUALIFIER
 %token EQUALS
@@ -30,7 +32,7 @@
 %type <value_list> value_list
 %type <value_list> pvalue_list
 %type <qualifier> qualifier
-%type <str> QUALIFIER VERB VALUE
+%type <str> QUALIFIER VERB VALUE CMDFILE
 %type <pvalue> PVALUE
 
 %start command
@@ -38,7 +40,22 @@
 %%
 
 command:
-VERB {
+CMDFILE {
+  $$=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
+  $$->verb=strdup("DO");
+  $$->qualifier_count=1;
+  $$->qualifiers=malloc(sizeof(dclQualifierPtr));
+  $$->qualifiers[0]=memset(malloc(sizeof(dclQualifier)),0,sizeof(dclQualifier));
+  $$->qualifiers[0]->name=strdup("INDIRECT");
+  $$->parameter_count=1;
+  $$->parameters=malloc(sizeof(dclParameterPtr));
+  $$->parameters[0]=memset(malloc(sizeof(dclParameter)),0,sizeof(dclParameter));
+  $$->parameters[0]->value_count=1;
+  $$->parameters[0]->values=malloc(sizeof(char *));
+  $$->parameters[0]->values[0]=strdup($CMDFILE+1);
+  free($CMDFILE);
+}
+|VERB {
   $$=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
   $$->verb=$VERB;
 }
@@ -146,7 +163,7 @@ static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dcl
    fprintf (stderr, "%s\n", s);
 }
 
-int mdsdcl_do_command(char const* command) {
+int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error) {
   dclCommandPtr dclcmd=0;
   YYLTYPE *yyloc_param=0;
   yyscan_t yyscanner;
@@ -157,7 +174,7 @@ int mdsdcl_do_command(char const* command) {
   result=yyparse (yyloc_param, yyscanner, &dclcmd);
   if (result==0) {
     dclcmd->command_line=strdup(command);
-    status=cmdExecute(dclcmd);
+    status=cmdExecute(dclcmd,prompt,output,error);
   }
   dcl__delete_buffer (cmd_state, yyscanner);
   dcl_lex_destroy(yyscanner);

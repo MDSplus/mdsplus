@@ -7,6 +7,7 @@
     DEFINE         - Define a macro.
     DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
     ENV            - Define and environment variable.
+    DELETE/MACRO   - Delete a defined command macro.
     DO/MACRO       - Execute a macro.
     EXIT           - Exit the command interpreter utility. (same as QUIT)
     HELP           - Help on available commands.
@@ -81,14 +82,15 @@
     <help name="DELETE/MACRO">
       Command: DELETE/MACRO
       Purpose: Delete a previously defined macro.
-      Format: DELETE/MACRO macro-name
+      Format: DELETE/MACRO [/ALL | macro-name]
       Description:
 
-      Delete a previously defined macro.
+      Delete a previously defined macro or all macros if /ALL is specified.
     </help>
     <routine name="mdsdcl_delete_macro"/>
-    <parameter name="NAME" label="NAME" prompt="Macro" required="True"/>
+    <parameter name="NAME" label="NAME"/>
     <qualifier name="MACRO" defaulted="True"/>
+    <qualifier name="ALL"/>
   </verb>
 
   <verb name="DO">
@@ -134,7 +136,16 @@
       for placeholders in the command lines.
     </help>
     <routine name="mdsdcl_do_macro"/>
-    <parameter name="P1" label="NAME" prompt="Filename" required="True" type="REST_OF_LINE"/>
+    <parameter name="P1" label="NAME" prompt="Filename" required="True"/>
+    <parameter name="P1" label="p"/>
+    <parameter name="P2" label="p"/>
+    <parameter name="P3" label="p"/>
+    <parameter name="P4" label="p"/>
+    <parameter name="P5" label="p"/>
+    <parameter name="P6" label="p"/>
+    <parameter name="P7" label="p"/>
+    <qualifier name="INDIRECT" defaulted="True"/>
+    <qualifier name="REPEAT" type="NUMBER"/>
   </syntax>
 
   <verb name="EXIT">
@@ -195,6 +206,7 @@
     <keyword-obsolete name="LIBRARY" syntax="SET_LIBRARY"/>"
     <keyword name="PROMPT" syntax="SET_PROMPT"/>"
     <keyword name="VERIFY" syntax="SET_VERIFY"/>"
+    <keyword name="NOVERIFY" syntax="SET_VERIFY"/>"
     <keyword-obsolete name="HYPHEN" syntax="SET_HYPHEN"/>"
   </type>
   <syntax name="SET_COMMAND">
@@ -340,11 +352,11 @@
   </verb>
 
   <verb name="WAIT">
-    <help name="INIT TIMER">
+    <help name="WAIT">
       Command: WAIT
       Purpose: Wait a specified period of time.
       Format:  WAIT wait-time
-        'wait-time' format: [dd] [hh]:[mm]:[ss]
+        'wait-time' format: [dd] [[[hh]:][mm]:][ss]
       Description:
       
       Cause the command interpreter to pause for the specified
@@ -352,7 +364,12 @@
       as dd=number of days, hh=number of hours, mm=number of minutes, and
       ss=number of seconds. The dd,hh,mm and ss values can be omitted and
       default to 0 but the colons are required.
-      For example: "WAIT ::15" would pause for 15 seconds.
+      Some exmples:
+      WAIT ::5     -- waits 5 seconds
+      WAIT 5       -- waits 5 seconds
+      WAIT 1:5     -- waits 1 minute + 5 seconds
+      WAIT 1::5    -- waits 1 hour + 5 seconds
+      WAIT 1 2:3:4 -- wait 1 day + 2 hours + 3 minutes + 4 seconds
     </help>
     <routine name="mdsdcl_wait"/>
     <parameter name="p1" label="DELTA_TIME" prompt="Deltatime" required="True" type="REST_OF_LINE"/>

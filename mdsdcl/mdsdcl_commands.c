@@ -7,15 +7,15 @@
 #include        <mdsdescrip.h>
 #include        <malloc.h>
 #include        <unistd.h>
+#include        <mdsshr.h>
 #include <readline/readline.h>
 
 typedef struct dclMacroList {
-  char *name;               /*!<  macro name */
-  int lines;                /*!<  number of lines in macro */
-  char **cmds;              /*!<  cmds in macro */
+  char *name;			/*!<  macro name */
+  int lines;			/*!<  number of lines in macro */
+  char **cmds;			/*!<  cmds in macro */
   struct dclMacroList *next;
 } dclMacroList, *dclMacroListPtr;
-
 
 /**********************************************************************
 * mdsdcl_commands.c --
@@ -44,44 +44,48 @@ typedef struct dclMacroList {
 static char *PROMPT = 0;
 static char *DEF_FILE = 0;
 
-void mdsdclSetPrompt(char *prompt) {
+void mdsdclSetPrompt(char *prompt)
+{
   if (PROMPT)
     free(PROMPT);
   PROMPT = strdup(prompt);
 }
 
-char *mdsdclGetPrompt() {
+char *mdsdclGetPrompt()
+{
   if (PROMPT == NULL)
-    PROMPT=strdup("Command> ");
+    PROMPT = strdup("Command> ");
   return strdup(PROMPT);
 }
 
-void mdsdclSetDefFile(char *deffile) {
+void mdsdclSetDefFile(char *deffile)
+{
   if (DEF_FILE)
     free(DEF_FILE);
-  DEF_FILE = strdup(deffile);
+  if (deffile[0] == '*')
+    DEF_FILE = strdup(deffile + 1);
+  else
+    DEF_FILE = strdup(deffile);
 }
 
-char *mdsdclGetDefFile() {
+char *mdsdclGetDefFile()
+{
   if (DEF_FILE == NULL)
     DEF_FILE == strdup(".dcl");
   return strdup(DEF_FILE);
 }
 
-
 	/****************************************************************
 	 * mdsdcl_exit:
 	 ****************************************************************/
-int mdsdcl_exit(void *ctx)
+int mdsdcl_exit(void *ctx, char *error, char *output)
 {
-  exit(0);
-  return 1;
+  return MDSDCL_STS_EXIT;
 }
 
 	/****************************************************************
 	 * mdsdcl_init_timer:
 	 * mdsdcl_show_timer:
-
 
 	 ****************************************************************/
 
@@ -90,16 +94,16 @@ static struct rusage TIMER_NOW_USAGE;
 static struct timeval TIMER_START_TIME;
 static struct timeval TIMER_NOW_TIME;
 
-int mdsdcl_init_timer(void *ctx)
+int mdsdcl_init_timer(void *ctx, char *error, char *output)
 {
   gettimeofday(&TIMER_START_TIME, 0);
   getrusage(RUSAGE_SELF, &TIMER_START_USAGE);
   return (1);
 }
 
-int mdsdcl_show_timer(void *ctx)
+int mdsdcl_show_timer(void *ctx, char **error, char **output)
 {
-  int emsec, umsec, smsec;      /* milliseconds                 */
+  int emsec, umsec, smsec;	/* milliseconds                 */
 
   gettimeofday(&TIMER_NOW_TIME, 0);
   getrusage(RUSAGE_SELF, &TIMER_NOW_USAGE);
@@ -112,47 +116,58 @@ int mdsdcl_show_timer(void *ctx)
   emsec = (TIMER_NOW_TIME.tv_usec - TIMER_START_TIME.tv_usec) / 10000;
   umsec = (TIMER_NOW_USAGE.ru_utime.tv_usec - TIMER_START_USAGE.ru_utime.tv_usec) / 10000;
   smsec = (TIMER_NOW_USAGE.ru_stime.tv_usec - TIMER_START_USAGE.ru_stime.tv_usec) / 10000;
-  fprintf(stderr, "elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
-          TIMER_NOW_TIME.tv_sec - TIMER_START_TIME.tv_sec, emsec,
-          TIMER_NOW_USAGE.ru_utime.tv_sec - TIMER_START_USAGE.ru_utime.tv_sec, umsec,
-          TIMER_NOW_USAGE.ru_stime.tv_sec - TIMER_START_USAGE.ru_stime.tv_sec, smsec,
-          TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt, TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt);
+  *error = malloc(100);
+  sprintf(*error, "elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
+	  TIMER_NOW_TIME.tv_sec - TIMER_START_TIME.tv_sec, emsec,
+	  TIMER_NOW_USAGE.ru_utime.tv_sec - TIMER_START_USAGE.ru_utime.tv_sec, umsec,
+	  TIMER_NOW_USAGE.ru_stime.tv_sec - TIMER_START_USAGE.ru_stime.tv_sec, smsec,
+	  TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt,
+	  TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt);
   return (1);
 }
 
 	/**************************************************************
 	 * mdsdcl_set_prompt:
 	 **************************************************************/
-int mdsdcl_set_prompt( void *ctx )
+int mdsdcl_set_prompt(void *ctx, char **error, char **output)
 {
-  char *prompt=0;
-  int sts = cli_get_value(ctx, "PROMPT", &prompt);
-  mdsdclSetPrompt(prompt);
-  free(prompt);
+  char *prompt = 0;
+  int sts;
+  cli_get_value(ctx, "PROMPT", &prompt);
+  if (prompt) {
+    mdsdclSetPrompt(prompt);
+    sts = 1;
+    free(prompt);
+  } else {
+    sts = 0;
+    *error = strdup("No prompt specified\n");
+  }
   return sts;
 }
 
 	/****************************************************************
 	 * mdsdcl_type:
 	 ****************************************************************/
-int mdsdcl_type( void *ctx)
+int mdsdcl_type(void *ctx, char **error, char **output)
 {
   char *text = 0;
-  int sts = cli_get_value(ctx, "P1", &text);
-  printf("%s\n", (sts & 1) ? text : " ");
-  fflush(stdout);
-  free(text);
-  return (sts);
+  cli_get_value(ctx, "P1", &text);
+  if (text) {
+    text = strcat(realloc(text, strlen(text) + 2), "\n");
+    *output = text;
+  } else {
+    *output = strdup("\n");
+  }
+  return 1;
 }
 
 	/****************************************************************
          * mdsdcl_set_hyphen:
          ****************************************************************/
 
-static int MDSDCL_HYPHEN=0;
-int mdsdcl_set_hyphen( void *ctx )
+int mdsdcl_set_hyphen(void *ctx, char **error, char **output)
 {
-  MDSDCL_HYPHEN = cli_present(ctx, "HYPHEN") & 1;
+  *output = strdup("SET HYPHEN obsolete, no longer supported\n");
   return 1;
 }
 
@@ -160,59 +175,73 @@ int mdsdcl_set_hyphen( void *ctx )
 	 * mdsdcl_set_verify:
 	 ****************************************************************/
 
-static int MDSDCL_VERIFY=0;
+static int MDSDCL_VERIFY = 0;
 
-int mdsdcl_set_verify( void *ctx )
+int mdsdclVerify()
 {
-  MDSDCL_VERIFY = cli_present(ctx,"VERIFY") & 1;
+  return MDSDCL_VERIFY;
+}
+
+int mdsdcl_set_verify(void *ctx, char **error, char **output)
+{
+  char *verify = 0;
+  cli_get_value(ctx, "P1", &verify);
+  MDSDCL_VERIFY = verify && (toupper(verify[0]) == 'V');
+  if (verify)
+    free(verify);
   return (1);
 }
 
 	/****************************************************************
 	 * mdsdcl_define_symbol:
 	 ****************************************************************/
-int mdsdcl_define_symbol( void *ctx)
+int mdsdcl_define_symbol(void *ctx, char **error, char **output)
 {
   int sts;
   char *p;
   char *name = 0;
   char *value = 0;
-  char *env;
 
   sts = cli_get_value(ctx, "SYMBOL", &name);
-  if (~sts & 1)
+  if (~sts & 1) {
+    *error = malloc(100);
+    sprintf(*error, "Error: problem getting symbol name");
     goto done;
-
+  }
   sts = cli_get_value(ctx, "VALUE", &value);
-  if (~sts & 1)
-    fprintf(stderr,"*ERR* getting value for symbol");
-
-  p = malloc(strlen(name)+strlen(value) + 2);
+  if (~sts & 1) {
+    *error = malloc(100);
+    sprintf(*error, "Error:  problem getting value for symbol");
+    goto done;
+  }
+  p = malloc(strlen(name) + strlen(value) + 2);
   sprintf(p, "%s=%s", name, value);
   sts = putenv(p);
-  env = getenv(name);
   if (sts) {
+    *error = malloc(100);
+    sprintf(*error, "putenv returned %d. Environment variable not set.", sts);
     perror("error from putenv");
     sts = MDSDCL_STS_ERROR;
   } else
-    sts=1;
+    sts = 1;
  done:
   if (name)
     free(name);
   if (value)
     free(value);
-
   return (sts);
 }
 
-int mdsdcl_env(void *ctx) {
+int mdsdcl_env(void *ctx, char **error, char **output)
+{
   int sts;
   char *value;
-  sts = cli_get_value(ctx,"P1",&value);
+  sts = cli_get_value(ctx, "P1", &value);
   sts = putenv(value);
   if (sts) {
+    *error = malloc(100);
     perror("error from putenv");
-    fprintf(stderr,"Attempting putenv(\"%s\")\n",value);
+    sprintf(*error, "Attempting putenv(\"%s\")\n", value);
     sts = MDSDCL_STS_ERROR;
   } else
     sts = 1;
@@ -221,29 +250,33 @@ int mdsdcl_env(void *ctx) {
 
 extern int LibSpawn();
 
-
 	/**************************************************************
 	 * mdsdcl_spawn:
 	 **************************************************************/
-int mdsdcl_spawn( void *ctx )
+int mdsdcl_spawn(void *ctx, char **error, char **output)
 {
   int notifyFlag;
   int waitFlag;
-  int sts;
+  int status;
   char *cmd = 0;
-  struct descriptor cmd_dsc = {0, DTYPE_T, CLASS_S, 0};
+  struct descriptor cmd_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   cli_get_value(ctx, "COMMAND", &cmd);
   notifyFlag = cli_present(ctx, "NOTIFY") & 1;
   waitFlag = cli_present(ctx, "WAIT") & 1;
   if (cmd) {
-    cmd_dsc.length=strlen(cmd);
-    cmd_dsc.pointer=cmd;
+    cmd_dsc.length = strlen(cmd);
+    cmd_dsc.pointer = cmd;
   }
-  sts = LibSpawn(&cmd_dsc, waitFlag, notifyFlag);
+  status = LibSpawn(&cmd_dsc, waitFlag, notifyFlag);
   if (cmd)
     free(cmd);
-  return (sts == 0);
+  if (status != 0) {
+    *error = malloc(100);
+    sprintf(*error, "Spawn returned: %d\n", status);
+  }
+  return status == 0;
 }
+
 /***********************************************************************
 * MDSDCL_SET_COMMAND.C --
 *
@@ -256,202 +289,208 @@ int mdsdcl_spawn( void *ctx )
 *
 ************************************************************************/
 
-
 	/****************************************************************
 	 * mdsdcl_set_command:
 	 ****************************************************************/
 
-
-
-int mdsdcl_set_command(	void *ctx )
+int mdsdcl_set_command(void *ctx, char **error, char **output)
 {
-  int sts;
+  int status = 1;
   char *table = 0;
-
-		/*------------------------------------------------------
-		 * Get tablename and find its address in shared library ...
-		 *-----------------------------------------------------*/
-  sts = cli_get_value(ctx, "TABLE", &table);
-  if (sts & 1) {
-    char *error=0;
-    int status = mdsdclAddCommands(table, &error);
+  char *prompt = 0;
+  char *def_file = 0;
+  cli_get_value(ctx, "TABLE", &table);
+  if (table) {
+    status = mdsdclAddCommands(table, error);
     free(table);
-    if (error) {
-      status = 0;
-      MdsMsg(status, error);
-      return status;
-    }
+  } else {
+    *error = strdup("Error: command table not specified\n");
+    return 0;
   }
-
-		/*------------------------------------------------------
-		 * Check for other qualifiers ...
-		 *-----------------------------------------------------*/
-  if (cli_present(ctx, "PROMPT") & 1) {
-    char *prompt = 0;
-    cli_get_value(ctx, "PROMPT", &prompt);
+  /*------------------------------------------------------
+   * Check for other qualifiers ...
+   *-----------------------------------------------------*/
+  cli_get_value(ctx, "PROMPT", &prompt);
+  if (prompt) {
     mdsdclSetPrompt(prompt);
     free(prompt);
   }
-
-  if (cli_present(ctx, "DEF_FILE") & 1) {
-    char *def_file = 0;
-    cli_get_value(ctx, "DEF_FILE", &def_file);
+  cli_get_value(ctx, "DEF_FILE", &def_file);
+  if (def_file) {
     mdsdclSetDefFile(def_file);
     free(def_file);
   }
-
-  return (3);
+  return (1);
 }
+
 	/**************************************************************
 	 * mdsdcl_wait:
 	 **************************************************************/
-int mdsdcl_wait(void *ctx)
+int mdsdcl_wait(void *ctx, char **error, char **output)
 {				/* Return:  status                        */
-  int k;
-  int sts;
-  int day, hr, min, sec;
-  unsigned int nsec;
-  float fsec;
   char *deltatime = 0;
-
-  sts = cli_get_value(ctx, "DELTA_TIME", &deltatime);
-  if (~sts & 1)
-    return (sts);
-
-  k = sscanf(deltatime, "%d %d:%d:%f", &day, &hr, &min, &fsec);
-  free(deltatime);
-  if (k != 4) {
-    MdsMsg(0, "--> invalid time string");
-    return (CLI_STS_BADLINE);
+  int status = 1;
+  int seconds;
+  cli_get_value(ctx, "DELTA_TIME", &deltatime);
+  if (deltatime == NULL) {
+    *error = strdup("No wait time specified\n");
+    return 0;
   }
-  if (hr < 0)
-    hr = -hr;
-  sec = (int)fsec;
-  nsec = sec + 60 * (min + 60 * (hr + 24 * day));
-  sleep(nsec);
-  return (sts);
+  seconds = mdsdclDeltatimeToSeconds(deltatime);
+  if (seconds == -1) {
+    *error = malloc(strlen(deltatime) + 100);
+    sprintf(*error, "Error: Invalid wait time specified - %s\n"
+	    "Specify: [ndays] [nhours:][nminutes:]nseconds\n", deltatime);
+    status = 0;
+  } else
+    sleep(seconds);
+  free(deltatime);
+  return status;
 }
 
-int mdsdcl_help(void *ctx) {
-  char *p1=0;
+int mdsdcl_help(void *ctx)
+{
+  char *p1 = 0;
   int sts;
   cli_get_value(ctx, "P1", &p1);
-  sts=mdsdcl_do_help(p1);
+  sts = mdsdcl_do_help(p1);
   if (p1)
     free(p1);
   return 1;
 }
 
-static dclMacroListPtr MLIST=0;
+static dclMacroListPtr MLIST = 0;
 
-static dclMacroListPtr mdsdclNewMacro(char *name) {
-  dclMacroListPtr l,prev=0;
+static dclMacroListPtr mdsdclNewMacro(char *name)
+{
+  dclMacroListPtr l, prev = 0;
   int i;
-  for (i=0;i<strlen(name);i++)
-    name[i]=toupper(name[i]);
-  for (l=MLIST; l; prev=l,l=l->next) {
-    if (strcasecmp(name,l->name)==0)
+  for (i = 0; i < strlen(name); i++)
+    name[i] = toupper(name[i]);
+  for (l = MLIST; l; prev = l, l = l->next) {
+    if (strcasecmp(name, l->name) == 0)
       break;
   }
   if (l) {
     int i;
-    for (i=0;i<l->lines;i++)
+    for (i = 0; i < l->lines; i++)
       free(l->cmds[i]);
-    l->lines=0;
+    l->lines = 0;
   } else {
-    l=malloc(sizeof(dclMacroList));
-    l->name=name;
-    l->lines=0;
-    l->cmds=malloc(sizeof(char *));
-    l->next=0;
+    l = malloc(sizeof(dclMacroList));
+    l->name = name;
+    l->lines = 0;
+    l->cmds = malloc(sizeof(char *));
+    l->next = 0;
     if (prev)
-      prev->next=l;
+      prev->next = l;
     else
-      MLIST=l;
+      MLIST = l;
   }
   return l;
 }
-	   
-int mdsdcl_define(void *ctx) {
-  char *name=0;
+
+int mdsdcl_define(void *ctx, char **error, char **output)
+{
+  char *name = 0;
   char *line;
   dclMacroListPtr macro;
   cli_get_value(ctx, "p1", &name); /*** do not free name as it is used in macro definition ***/
-  if (name == NULL)
-      return CLI_STS_IVVERB;
-  macro = mdsdclNewMacro(name);
-  while ((line=readline("DEFMAC> ")) && (strlen(line)) > 0) {
-    macro->cmds=realloc(macro->cmds,sizeof(char *)*(macro->lines+1));
-    macro->cmds[macro->lines++]=strdup(line);
+  if (name == NULL) {
+    *error = strdup("No macro name specified\n");
+    return CLI_STS_IVVERB;
   }
+  macro = mdsdclNewMacro(name);
+  while ((line = readline("DEFMAC> ")) && (strlen(line)) > 0) {
+    macro->cmds = realloc(macro->cmds, sizeof(char *) * (macro->lines + 1));
+    macro->cmds[macro->lines++] = line;
+    line = 0;
+  }
+  if (line)
+    free(line);
   return 1;
 }
 
-
-static void mdsdcl_print_macro(dclMacroListPtr l,int full) {
-  printf("\n%s\n",l->name);
+static void mdsdcl_print_macro(dclMacroListPtr l, int full, char **output)
+{
+  if (*output == 0)
+    *output = strdup("");
+  *output = strcat(realloc(*output, strlen(*output) + strlen(l->name) + 5), "\n");
+  strcat(*output, l->name);
+  strcat(*output, "\n");
   if (full == CLI_STS_PRESENT) {
     int i;
-    for (i=0; i<l->lines;i++) {
-      printf("  %s\n",l->cmds[i]);
+    for (i = 0; i < l->lines; i++) {
+      *output = strcat(realloc(*output, strlen(*output) + strlen(l->cmds[i]) + 5), " ");
+      strcat(*output, l->cmds[i]);
+      strcat(*output, "\n");
     }
   }
 }
 
-int mdsdcl_show_macro(void *ctx) {
-  char *name=0;
+int mdsdcl_show_macro(void *ctx, char **error, char **output)
+{
+  char *name = 0;
   int full = cli_present(ctx, "FULL");
   dclMacroListPtr l;
   cli_get_value(ctx, "P2", &name);
   if (name && (strlen(name) > 0)) {
-    for (l=MLIST;l;l=l->next) {
-      if (strcasecmp(name,l->name)==0)
+    for (l = MLIST; l; l = l->next) {
+      if (strcasecmp(name, l->name) == 0)
 	break;
     }
     if (l)
-      mdsdcl_print_macro(l,full);
+      mdsdcl_print_macro(l, full, output);
+    else {
+      *error = malloc(100 + strlen(name));
+      sprintf(*error, "Error finding macro called %s\n", name);
+    }
   } else {
-    for (l=MLIST;l;l=l->next)
-      mdsdcl_print_macro(l,full);
+    for (l = MLIST; l; l = l->next)
+      mdsdcl_print_macro(l, full, output);
   }
   if (name)
     free(name);
   return 1;
 }
 
-static void mdsdclSubstitute(char **cmd, char *p1, char *p2, char *p3, char *p4, char *p5, char *p6, char *p7) {
+static void mdsdclSubstitute(char **cmd, char *p1, char *p2, char *p3, char *p4, char *p5, char *p6,
+			     char *p7)
+{
   int i;
-  char *ps[7]={p1,p2,p3,p4,p5,p6,p7};
+  char *ps[7] = { p1, p2, p3, p4, p5, p6, p7 };
   int p;
-  for (p=0;p<7;p++) {
+  for (p = 0; p < 7; p++) {
     char param[10];
     int i;
-    sprintf(param,"'p%d'",p+1);
-    for (i=0;i<(strlen(*cmd)-3);i++) {
-      if (strncasecmp((*cmd)+i,param,strlen(param))==0) {
-	if (ps[p] && (strlen(ps[p])>0)) {
-	  char *newcmd=malloc(strlen(*cmd)+strlen(ps[p]));
-	  (*cmd)[i]=0;
-	  strcpy(newcmd,*cmd);
-	  strcat(newcmd,ps[p]);
-	  strcat(newcmd,(*cmd)+i+4);
+    sprintf(param, "'p%d'", p + 1);
+    for (i = 0; i < (strlen(*cmd) - 3); i++) {
+      if (strncasecmp((*cmd) + i, param, strlen(param)) == 0) {
+	if (ps[p] && (strlen(ps[p]) > 0)) {
+	  char *newcmd = malloc(strlen(*cmd) + strlen(ps[p]));
+	  (*cmd)[i] = 0;
+	  strcpy(newcmd, *cmd);
+	  strcat(newcmd, ps[p]);
+	  strcat(newcmd, (*cmd) + i + 4);
 	  free(*cmd);
-	  *cmd=newcmd;
+	  *cmd = newcmd;
 	} else {
-	  memcpy(*cmd+i,(*cmd)+i+4,strlen(*cmd)-(i+4));
-	  (*cmd)[strlen(*cmd)-4]=0;
+	  memmove(*cmd + i, (*cmd) + i + 4, strlen(*cmd) - (i + 4));
+	  (*cmd)[strlen(*cmd) - 4] = 0;
 	}
       }
     }
   }
-}	
+}
 
-int mdsdcl_do_macro(void *ctx) {
-  char *name=0;
-  char *times_s=0;
-  char *p1=0,*p2=0,*p3=0,*p4=0,*p5=0,*p6=0,*p7=0;
-  int sts=1;
-  dclMacroListPtr l;
+int mdsdcl_do_macro(void *ctx, char **error, char **output)
+{
+  char *name = 0;
+  char *times_s = 0;
+  char *p1 = 0, *p2 = 0, *p3 = 0, *p4 = 0, *p5 = 0, *p6 = 0, *p7 = 0;
+  int sts = 1;
+  int indirect = cli_present(ctx, "INDIRECT") == CLI_STS_PRESENT;
+  dclMacroListPtr l = 0;
   cli_get_value(ctx, "name", &name);
   cli_get_value(ctx, "repeat", &times_s);
   cli_get_value(ctx, "p1", &p1);
@@ -461,31 +500,87 @@ int mdsdcl_do_macro(void *ctx) {
   cli_get_value(ctx, "p5", &p5);
   cli_get_value(ctx, "p6", &p6);
   cli_get_value(ctx, "p7", &p7);
-  for (l=MLIST; l; l=l->next) {
-    if (strcasecmp(name,l->name)==0)
-      break;
-  }
-  if (l) {
-    int times=1;
-    int time;
-    int failed=0;
-    if (times_s) {
-      times=atoi(times_s);
-      free(times_s);
-    }
-    for (time=0;(failed==0) && (time<times);time++) {
-      int i;
-      for (i=0;i<l->lines;i++) {
-	char *cmd=strdup(l->cmds[i]);
-	mdsdclSubstitute(&cmd,p1,p2,p3,p4,p5,p6,p7);
-	sts=mdsdcl_do_command(cmd);
-	free(cmd);
-	if (!(sts&1))
-	  failed=1;
+  if (indirect) {
+    int i;
+    FILE *f;
+    char line[4096];
+    f = fopen(name, "r");
+    if (f == NULL) {
+      *error = malloc(strlen(name) + 100);
+      sprintf(*error, "Error: Unable to open command file %s\n", name);
+      if (DEF_FILE) {
+	name = strcat(realloc(name, strlen(name) + strlen(DEF_FILE) + 1), DEF_FILE);
+	f = fopen(name, "r");
+      }
+      if (f != NULL) {
+	free(*error);
+	*error = 0;
       }
     }
+    if (f != NULL) {
+      l = memset(malloc(sizeof(dclMacroList)), 0, sizeof(dclMacroList));
+      while (fgets(line, sizeof(line), f)) {
+	l->lines++;
+	l->cmds = realloc(l->cmds, l->lines * sizeof(char *));
+	if (line[strlen(line) - 1] == '\n')
+	  line[strlen(line) - 1] = 0;
+	l->cmds[l->lines - 1] = strdup(line);
+      }
+      fclose(f);
+    }
   } else {
-    sts = CLI_STS_IVVERB;
+    for (l = MLIST; l; l = l->next) {
+      if (strcasecmp(name, l->name) == 0)
+	break;
+    }
+    if (l == NULL) {
+      *error = malloc(strlen(name) + 100);
+      sprintf(*error, "Error: Macro %s is not defined\n", name);
+      sts = 0;
+    }
+  }
+  if (l != NULL) {
+    int times = 1;
+    int time;
+    int failed = 0;
+    if (times_s) {
+      times = atoi(times_s);
+      free(times_s);
+    }
+    for (time = 0; (failed == 0) && (time < times); time++) {
+      int i;
+      for (i = 0; (failed == 0) && (i < l->lines); i++) {
+	char *m_output = 0;
+	char *m_error = 0;
+	char *cmd = strdup(l->cmds[i]);
+	mdsdclSubstitute(&cmd, p1, p2, p3, p4, p5, p6, p7);
+	sts = mdsdcl_do_command_extra_args(cmd, &m_error, &m_output);
+	free(cmd);
+	if (m_error) {
+	  if ((*error) == NULL)
+	    *error = strdup("");
+	  *error = strcat(realloc(*error, (*error ? strlen(*error) : 0) +
+				  strlen(m_error) + 1), m_error);
+	  free(m_error);
+	}
+	if (m_output) {
+	  if ((*output) == NULL)
+	    *output = strdup("");
+	  *output = strcat(realloc(*output, (*output ? strlen(*output) : 0) +
+				   strlen(m_output) + 1), m_output);
+	  free(m_output);
+	}
+	if (!(sts & 1))
+	  failed = 1;
+      }
+    }
+    if (indirect) {
+      int i;
+      for (i = 0; i < l->lines; i++)
+	free(l->cmds[i]);
+      free(l->cmds);
+      free(l);
+    }
   }
   if (name)
     free(name);
@@ -503,28 +598,54 @@ int mdsdcl_do_macro(void *ctx) {
     free(p6);
   if (p7)
     free(p7);
+  return sts;
 }
 
-int mdsdcl_delete_macro(void *ctx) {
-  char *name=0;
+int mdsdcl_delete_macro(void *ctx, char **error, char **output)
+{
+  int status = 1;
+  char *name = 0;
+  int all = cli_present(ctx, "ALL");
   cli_get_value(ctx, "name", &name);
-  if (name) {
-    dclMacroListPtr l,prev=0;
-    for (l=MLIST;l;prev=l,l=l->next) {
-      if (strcasecmp(name,l->name)==0)
+  if (all & 1) {
+    dclMacroListPtr l;
+    for (l = MLIST, MLIST = 0; l;) {
+      int i;
+      dclMacroListPtr next = l->next;
+      free(l->name);
+      for (i = 0; i < l->lines; i++)
+	free(l->cmds[i]);
+      free(l->cmds);
+      free(l);
+      l = next;
+    }
+  } else if (name) {
+    dclMacroListPtr l, prev = 0;
+    for (l = MLIST; l; prev = l, l = l->next) {
+      if (strcasecmp(name, l->name) == 0)
 	break;
     }
     if (l) {
       int i;
-      for (i=0;i<l->lines;i++)
+      free(l->name);
+      for (i = 0; i < l->lines; i++)
 	free(l->cmds[i]);
       free(l->cmds);
       if (prev)
-	prev->next=l->next;
+	prev->next = l->next;
       else
-	MLIST=l->next;
+	MLIST = l->next;
       free(l);
+    } else {
+      *error = malloc(strlen(name) + 100);
+      sprintf(*error, "Error: Macro not found - %s\n", name);
+      status = 0;
     }
+  } else {
+    *error = strdup("Error: Either specify macro name or use the /ALL qualifier.\n");
+    status = 0;
   }
+  if (name)
+    free(name);
   return 1;
 }

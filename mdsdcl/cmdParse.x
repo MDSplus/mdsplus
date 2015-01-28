@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 #define YYLTYPE void
-#include "dcl.h"
+#include "dcl_p.h"
+#include <dcl.h>
 #include "cmdParse.tab.h"
 int debug=0;
 char *restOfLine=0;
@@ -31,6 +32,13 @@ qualval {unquoted_value_3}|\"{unquoted_value_2}\"
  BEGIN command;
  }
 
+^[[:blank:]]*@[^[:blank:]]+ {
+ if (debug) printf("got DO/INDIRECT %s\n",yytext);
+ yylval->str=strdup(yytext);
+ BEGIN verb;
+ return(CMDFILE);
+ }
+ 
  /* <command>{name}/[[:blank:]/] {*/
 <command>{name} {
  if (debug) printf("got verb %s\n",yytext);
@@ -92,7 +100,7 @@ qualval {unquoted_value_3}|\"{unquoted_value_2}\"
  }
 	
 <rest_of_line>.* {int i;
-		 restOfLine = strcpy(malloc(strlen(yytext)+1),yytext);
+		 restOfLine = strdup(yytext);
 		 for(i=strlen(restOfLine)-1;i>=0;i--)
 		   unput(restOfLine[i]);
 		 BEGIN parameter;

@@ -45,13 +45,14 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    VERB = 258,
-    QUALIFIER = 259,
-    EQUALS = 260,
-    VALUE = 261,
-    PVALUE = 262,
-    COMMA = 263,
-    END = 264
+    CMDFILE = 258,
+    VERB = 259,
+    QUALIFIER = 260,
+    EQUALS = 261,
+    VALUE = 262,
+    PVALUE = 263,
+    COMMA = 264,
+    END = 265
   };
 #endif
 
