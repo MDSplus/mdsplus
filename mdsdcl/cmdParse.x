@@ -18,7 +18,6 @@ char *restOfLine=0;
 name [[:alpha:][:alnum:]_]+
 quoted_exc \"!\"
 quoted_quote \"\"
-comment ![.]*
 unquoted_value_1 ({quoted_exc}|{quoted_quote}|[^[:blank:]\",=\/])+
 unquoted_value_2 ({quoted_exc}|{quoted_quote}|[^[\"])*
 unquoted_value_3 ({quoted_exc}|{quoted_quote}|[^[:blank:]\",=\/\(\)])+
@@ -26,6 +25,10 @@ value {unquoted_value_1}|\"{unquoted_value_2}\"
 qualval {unquoted_value_3}|\"{unquoted_value_2}\"
 
 %%
+
+^[[:blank:]]*! {
+  return(COMMENT);
+  }
 
 ^[[:blank:]]*/{name} {
  if (debug) printf("Begin command\n");
@@ -95,10 +98,14 @@ qualval {unquoted_value_3}|\"{unquoted_value_2}\"
  return(VALUE);
  }
 
+<verb>! {
+  yyterminate();
+  }
+
 <verb>[^[:blank:]] {BEGIN rest_of_line;
    unput(yytext[0]);
  }
-	
+
 <rest_of_line>.* {int i;
 		 restOfLine = strdup(yytext);
 		 for(i=strlen(restOfLine)-1;i>=0;i--)

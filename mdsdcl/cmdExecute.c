@@ -1062,7 +1062,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **e
   if (dclDocs == NULL)
     mdsdclAddCommands("mdsdcl_commands", &error);
   for (doc_l = dclDocs;
-       ((status & 0xffff0000)==cli_status) && (doc_l != NULL) && status != CLI_STS_PROMPT_MORE;
+       ((status & 0xffff0000) == cli_status) && (doc_l != NULL) && status != CLI_STS_PROMPT_MORE;
        doc_l = doc_l->next) {
     dclCommandPtr cmdDef = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
     cmdDef->verb = strdup(cmd->verb);
@@ -1075,14 +1075,15 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **e
 	free(matchingVerbs.nodes);
       status = CLI_STS_IVVERB;
     } else {
-      status = processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt, &error_tmp, &output);
+      status =
+	  processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt, &error_tmp, &output);
       if (status & 1) {
 	if (error)
 	  free(error);
-	error=error_tmp;
+	error = error_tmp;
       } else {
 	if (error_tmp) {
-	  if (error==NULL)
+	  if (error == NULL)
 	    error = error_tmp;
 	  else
 	    free(error_tmp);
@@ -1118,8 +1119,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **e
       error = strcpy(malloc(100), "mdsdcl: No such command\n");
     } else {
       char *msg = MdsGetMsg(status);
-      error = malloc(strlen(msg)+10);
-      sprintf(error,"Error: %s\n",msg);
+      error = malloc(strlen(msg) + 10);
+      sprintf(error, "Error: %s\n", msg);
     }
   }
   if (error != NULL) {

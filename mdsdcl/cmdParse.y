@@ -7,7 +7,7 @@
   #include "dcl_p.h"
   #include <dcl.h>
   #include "dcllex.h"
-  static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char *s);
+  static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 %}
 %define api.pure full
 %define api.value.type {union YYSTYPE}
@@ -17,7 +17,8 @@
 
 %parse-param {YYLTYPE * yylloc_param}
 %parse-param {yyscan_t yyscanner}
-%parse-param {dclCommandPtr *dclcmd};
+%parse-param {dclCommandPtr *dclcmd}
+%parse-param {char **error}
 
 %token CMDFILE
 %token VERB
@@ -27,6 +28,7 @@
 %token PVALUE
 %token COMMA
 %token END
+%token COMMENT
 
 %type <cmd> command
 %type <value_list> value_list
@@ -59,6 +61,7 @@ CMDFILE {
   $$=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
   $$->verb=$VERB;
 }
+|COMMENT {YYACCEPT;}
 |command qualifier {
   $qualifier->position=$$->parameter_count;
   if ($$->qualifier_count == 0)
@@ -159,8 +162,8 @@ PVALUE {
 }
 
 %%
-static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char *s) {
-   fprintf (stderr, "%s\n", s);
+static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s) {
+  *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 
 int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error) {
@@ -171,10 +174,12 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **outp
   int result,status=CLI_STS_IVVERB;
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string (command, yyscanner);
-  result=yyparse (yyloc_param, yyscanner, &dclcmd);
+  result=yyparse (yyloc_param, yyscanner, &dclcmd, error);
   if (result==0) {
-    dclcmd->command_line=strdup(command);
-    status=cmdExecute(dclcmd,prompt,output,error);
+    if (dclcmd) {
+      dclcmd->command_line=strdup(command);
+      status=cmdExecute(dclcmd,prompt,output,error);
+    }
   }
   dcl__delete_buffer (cmd_state, yyscanner);
   dcl_lex_destroy(yyscanner);

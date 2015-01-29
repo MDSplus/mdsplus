@@ -9,6 +9,7 @@
 #include        <unistd.h>
 #include        <mdsshr.h>
 #include <readline/readline.h>
+#include <readline/history.h>
 
 typedef struct dclMacroList {
   char *name;			/*!<  macro name */
@@ -277,6 +278,13 @@ int mdsdcl_spawn(void *ctx, char **error, char **output)
   return status == 0;
 }
 
+static char *history_file = 0;
+
+char *mdsdclGetHistoryFile()
+{
+  return history_file;
+}
+
 /***********************************************************************
 * MDSDCL_SET_COMMAND.C --
 *
@@ -299,6 +307,7 @@ int mdsdcl_set_command(void *ctx, char **error, char **output)
   char *table = 0;
   char *prompt = 0;
   char *def_file = 0;
+  char *history = 0;
   cli_get_value(ctx, "TABLE", &table);
   if (table) {
     status = mdsdclAddCommands(table, error);
@@ -320,6 +329,25 @@ int mdsdcl_set_command(void *ctx, char **error, char **output)
     mdsdclSetDefFile(def_file);
     free(def_file);
   }
+  cli_get_value(ctx, "HISTORY", &history);
+  if (history) {
+#ifdef _WIN32
+    char *home = getenv("USERPROFILE");
+    char *sep = "\\";
+#else
+    char *home = getenv("HOME");
+    char *sep = "/";
+#endif
+    if (history_file)
+      free(history_file);
+    if (home) {
+      history_file = malloc(strlen(history) + strlen(home) + 100);
+      sprintf(history_file, "%s%s%s", home, sep, history);
+      free(history);
+      read_history(history_file);
+    }
+  }
+
   return (1);
 }
 
@@ -404,6 +432,7 @@ int mdsdcl_define(void *ctx, char **error, char **output)
   while ((line = readline("DEFMAC> ")) && (strlen(line)) > 0) {
     macro->cmds = realloc(macro->cmds, sizeof(char *) * (macro->lines + 1));
     macro->cmds[macro->lines++] = line;
+    add_history(line);
     line = 0;
   }
   if (line)

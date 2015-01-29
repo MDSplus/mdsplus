@@ -1299,283 +1299,234 @@ YY_DECL {
       YY_RULE_SETUP
 #line 27 "ocldToXml.x"
 	  ;
-    YY_BREAK case 2:
-      YY_RULE_SETUP
+      YY_BREAK case 2:YY_RULE_SETUP
 #line 28 "ocldToXml.x"
-	  BEGIN module;
-    YY_BREAK case 3:
-      YY_RULE_SETUP
+       BEGIN module;
+      YY_BREAK case 3:YY_RULE_SETUP
 #line 29 "ocldToXml.x"
-	  printf("<module name=\"%s\">\n", yytext);
+       printf("<module name=\"%s\">\n", yytext);
       BEGIN INITIAL;
-    YY_BREAK case 4:
-      YY_RULE_SETUP
+      YY_BREAK case 4:YY_RULE_SETUP
 #line 30 "ocldToXml.x"
-	  endSection();
+       endSection();
       BEGIN verb;
-    YY_BREAK case 5:
-      YY_RULE_SETUP
+      YY_BREAK case 5:YY_RULE_SETUP
 #line 31 "ocldToXml.x"
-	  printf("  <verb name=\"%s\">\n", yytext);
+       printf("  <verb name=\"%s\">\n", yytext);
       inverb = 1;
       BEGIN INITIAL;
-    YY_BREAK case 6:
-      YY_RULE_SETUP
+      YY_BREAK case 6:YY_RULE_SETUP
 #line 32 "ocldToXml.x"
-	  BEGIN routine;
-    YY_BREAK case 7:
+       BEGIN routine;
+      YY_BREAK case 7:
 /* rule 7 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 33 "ocldToXml.x"
-    YY_BREAK case 8:
-      YY_RULE_SETUP
+       YY_BREAK case 8:YY_RULE_SETUP
 #line 34 "ocldToXml.x"
-	  printf("    <routine name=\"%s\"/>\n", yytext);
+       printf("    <routine name=\"%s\"/>\n", yytext);
       BEGIN INITIAL;
-    YY_BREAK case 9:
-      YY_RULE_SETUP
+      YY_BREAK case 9:YY_RULE_SETUP
 #line 35 "ocldToXml.x"
-	  BEGIN parameter;
-    YY_BREAK case 10:
-      YY_RULE_SETUP
+       BEGIN parameter;
+      YY_BREAK case 10:YY_RULE_SETUP
 #line 36 "ocldToXml.x"
-	  printf("    <parameter name=\"%s\"", yytext);
-    YY_BREAK case 11:
-      YY_RULE_SETUP
+       printf("    <parameter name=\"%s\"", yytext);
+      YY_BREAK case 11:YY_RULE_SETUP
 #line 37 "ocldToXml.x"
-	  BEGIN parameter_prompt;
-    YY_BREAK case 12:
+       BEGIN parameter_prompt;
+      YY_BREAK case 12:
 /* rule 12 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 38 "ocldToXml.x"
-	  printf(" prompt=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
+       printf(" prompt=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
       BEGIN parameter;
-    YY_BREAK case 13:
-      YY_RULE_SETUP
+      YY_BREAK case 13:YY_RULE_SETUP
 #line 39 "ocldToXml.x"
-	  BEGIN parameter_label;
-    YY_BREAK case 14:
-      YY_RULE_SETUP
+       BEGIN parameter_label;
+      YY_BREAK case 14:YY_RULE_SETUP
 #line 40 "ocldToXml.x"
-	  printf(" label=\"%s\"", yytext);
+       printf(" label=\"%s\"", yytext);
       BEGIN parameter;
-    YY_BREAK case 15:
-      YY_RULE_SETUP
+      YY_BREAK case 15:YY_RULE_SETUP
 #line 41 "ocldToXml.x"
-	  BEGIN parameter_value;
-    YY_BREAK case 16:
-      YY_RULE_SETUP
+       BEGIN parameter_value;
+      YY_BREAK case 16:YY_RULE_SETUP
 #line 42 "ocldToXml.x"
-    YY_BREAK case 17:
-      YY_RULE_SETUP
+       YY_BREAK case 17:YY_RULE_SETUP
 #line 43 "ocldToXml.x"
-	  printf(" required=\"True\"");
-    YY_BREAK case 18:
-      YY_RULE_SETUP
+       printf(" required=\"True\"");
+      YY_BREAK case 18:YY_RULE_SETUP
 #line 44 "ocldToXml.x"
-	  printf(" list=\"True\"");
-    YY_BREAK case 19:
-      YY_RULE_SETUP
+       printf(" list=\"True\"");
+      YY_BREAK case 19:YY_RULE_SETUP
 #line 45 "ocldToXml.x"
-	  BEGIN parameter_value_type;
-    YY_BREAK case 20:
-      YY_RULE_SETUP
+       BEGIN parameter_value_type;
+      YY_BREAK case 20:YY_RULE_SETUP
 #line 46 "ocldToXml.x"
-	  BEGIN parameter_value_default;
-    YY_BREAK case 21:
-      YY_RULE_SETUP
+       BEGIN parameter_value_default;
+      YY_BREAK case 21:YY_RULE_SETUP
 #line 47 "ocldToXml.x"
-	  printf(" type=\"%s\"", yytext);
+       printf(" type=\"%s\"", yytext);
       BEGIN parameter_value;
-    YY_BREAK case 22:
+      YY_BREAK case 22:
 /* rule 22 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 48 "ocldToXml.x"
-	  printf(" default=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
+       printf(" default=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
       BEGIN parameter_value;
-    YY_BREAK case 23:
+      YY_BREAK case 23:
 /* rule 23 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 49 "ocldToXml.x"
-	  printf(" default=\"%s\"", yytext);
+       printf(" default=\"%s\"", yytext);
       BEGIN parameter_value;
-    YY_BREAK case 24:
-      YY_RULE_SETUP
+      YY_BREAK case 24:YY_RULE_SETUP
 #line 50 "ocldToXml.x"
-	  BEGIN parameter;
-    YY_BREAK case 25:
+       BEGIN parameter;
+      YY_BREAK case 25:
 /* rule 25 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 51 "ocldToXml.x"
-	  printf("/>\n");
+       printf("/>\n");
       BEGIN INITIAL;
-    YY_BREAK case 26:
-      YY_RULE_SETUP
+      YY_BREAK case 26:YY_RULE_SETUP
 #line 52 "ocldToXml.x"
-	  endSection();
+       endSection();
       BEGIN type;
-    YY_BREAK case 27:
-      YY_RULE_SETUP
+      YY_BREAK case 27:YY_RULE_SETUP
 #line 53 "ocldToXml.x"
-	  printf("  <type name=\"%s\">\n", yytext);
+       printf("  <type name=\"%s\">\n", yytext);
       intype = 1;
       BEGIN INITIAL;
-    YY_BREAK case 28:
-      YY_RULE_SETUP
+      YY_BREAK case 28:YY_RULE_SETUP
 #line 54 "ocldToXml.x"
-	  BEGIN keyword;
-    YY_BREAK case 29:
-      YY_RULE_SETUP
+       BEGIN keyword;
+      YY_BREAK case 29:YY_RULE_SETUP
 #line 55 "ocldToXml.x"
-	  printf("\"    <keyword name=\"%s\"", yytext);
+       printf("\"    <keyword name=\"%s\"", yytext);
       BEGIN keyword_params;
-    YY_BREAK case 30:
-      YY_RULE_SETUP
+      YY_BREAK case 30:YY_RULE_SETUP
 #line 56 "ocldToXml.x"
-	  printf(" defaulted=\"True\"");
-    YY_BREAK case 31:
-      YY_RULE_SETUP
+       printf(" defaulted=\"True\"");
+      YY_BREAK case 31:YY_RULE_SETUP
 #line 57 "ocldToXml.x"
-	  BEGIN keyword_value;
-    YY_BREAK case 32:
-      YY_RULE_SETUP
+       BEGIN keyword_value;
+      YY_BREAK case 32:YY_RULE_SETUP
 #line 58 "ocldToXml.x"
-	  BEGIN keyword_value_type;
-    YY_BREAK case 33:
-      YY_RULE_SETUP
+       BEGIN keyword_value_type;
+      YY_BREAK case 33:YY_RULE_SETUP
 #line 59 "ocldToXml.x"
-	  BEGIN parameter_value_default;
-    YY_BREAK case 34:
-      YY_RULE_SETUP
+       BEGIN parameter_value_default;
+      YY_BREAK case 34:YY_RULE_SETUP
 #line 60 "ocldToXml.x"
-	  printf(" type=\"%s\"", yytext);
+       printf(" type=\"%s\"", yytext);
       BEGIN keyword_value;
-    YY_BREAK case 35:
+      YY_BREAK case 35:
 /* rule 35 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 61 "ocldToXml.x"
-	  printf(" default=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
+       printf(" default=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
       BEGIN keyword_value;
-    YY_BREAK case 36:
+      YY_BREAK case 36:
 /* rule 36 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 62 "ocldToXml.x"
-	  printf(" default=\"%s\"", yytext);
+       printf(" default=\"%s\"", yytext);
       BEGIN keyword_value;
-    YY_BREAK case 37:
-      YY_RULE_SETUP
+      YY_BREAK case 37:YY_RULE_SETUP
 #line 63 "ocldToXml.x"
-	  BEGIN keyword_syntax;
-    YY_BREAK case 38:
-      YY_RULE_SETUP
+       BEGIN keyword_syntax;
+      YY_BREAK case 38:YY_RULE_SETUP
 #line 64 "ocldToXml.x"
-	  printf(" syntax=\"%s\"", yytext);
+       printf(" syntax=\"%s\"", yytext);
       BEGIN keyword_params;
-    YY_BREAK case 39:
-      YY_RULE_SETUP
+      YY_BREAK case 39:YY_RULE_SETUP
 #line 65 "ocldToXml.x"
-	  BEGIN keyword_params;
-    YY_BREAK case 40:
+       BEGIN keyword_params;
+      YY_BREAK case 40:
 /* rule 40 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 66 "ocldToXml.x"
-	  printf("/>\"\n");
+       printf("/>\"\n");
       BEGIN INITIAL;
-    YY_BREAK case 41:
-      YY_RULE_SETUP
+      YY_BREAK case 41:YY_RULE_SETUP
 #line 67 "ocldToXml.x"
-	  endSection();
+       endSection();
       BEGIN syntax;
-    YY_BREAK case 42:
-      YY_RULE_SETUP
+      YY_BREAK case 42:YY_RULE_SETUP
 #line 68 "ocldToXml.x"
-	  printf("  <syntax name=\"%s\">\n", yytext);
+       printf("  <syntax name=\"%s\">\n", yytext);
       insyntax = 1;
       BEGIN INITIAL;
-    YY_BREAK case 43:
-      YY_RULE_SETUP
+      YY_BREAK case 43:YY_RULE_SETUP
 #line 69 "ocldToXml.x"
-	  BEGIN qualifier;
-    YY_BREAK case 44:
-      YY_RULE_SETUP
+       BEGIN qualifier;
+      YY_BREAK case 44:YY_RULE_SETUP
 #line 70 "ocldToXml.x"
-	  printf("    <qualifier name=\"%s\"", yytext);
-    YY_BREAK case 45:
-      YY_RULE_SETUP
+       printf("    <qualifier name=\"%s\"", yytext);
+      YY_BREAK case 45:YY_RULE_SETUP
 #line 71 "ocldToXml.x"
-	  printf(" defaulted=\"True\"");
-    YY_BREAK case 46:
-      YY_RULE_SETUP
+       printf(" defaulted=\"True\"");
+      YY_BREAK case 46:YY_RULE_SETUP
 #line 72 "ocldToXml.x"
-	  printf(" nonnegatable=\"True\"");
-    YY_BREAK case 47:
-      YY_RULE_SETUP
+       printf(" nonnegatable=\"True\"");
+      YY_BREAK case 47:YY_RULE_SETUP
 #line 73 "ocldToXml.x"
-	  BEGIN qualifier_value;
-    YY_BREAK case 48:
-      YY_RULE_SETUP
+       BEGIN qualifier_value;
+      YY_BREAK case 48:YY_RULE_SETUP
 #line 74 "ocldToXml.x"
-	  ;
-    YY_BREAK case 49:
-      YY_RULE_SETUP
+      ;
+      YY_BREAK case 49:YY_RULE_SETUP
 #line 75 "ocldToXml.x"
-	  BEGIN qualifier_syntax;
-    YY_BREAK case 50:
-      YY_RULE_SETUP
+       BEGIN qualifier_syntax;
+      YY_BREAK case 50:YY_RULE_SETUP
 #line 76 "ocldToXml.x"
-	  printf(" syntax=\"%s\"", yytext);
+       printf(" syntax=\"%s\"", yytext);
       BEGIN qualifier;
-    YY_BREAK case 51:
-      YY_RULE_SETUP
+      YY_BREAK case 51:YY_RULE_SETUP
 #line 77 "ocldToXml.x"
-	  printf(" required=\"True\"");
-    YY_BREAK case 52:
-      YY_RULE_SETUP
+       printf(" required=\"True\"");
+      YY_BREAK case 52:YY_RULE_SETUP
 #line 78 "ocldToXml.x"
-	  printf(" list=\"True\"");
-    YY_BREAK case 53:
-      YY_RULE_SETUP
+       printf(" list=\"True\"");
+      YY_BREAK case 53:YY_RULE_SETUP
 #line 79 "ocldToXml.x"
-	  BEGIN qualifier_value_type;
-    YY_BREAK case 54:
-      YY_RULE_SETUP
+       BEGIN qualifier_value_type;
+      YY_BREAK case 54:YY_RULE_SETUP
 #line 80 "ocldToXml.x"
-	  BEGIN qualifier_value_default;
-    YY_BREAK case 55:
-      YY_RULE_SETUP
+       BEGIN qualifier_value_default;
+      YY_BREAK case 55:YY_RULE_SETUP
 #line 81 "ocldToXml.x"
-	  printf(" type=\"%s\"", yytext);
+       printf(" type=\"%s\"", yytext);
       BEGIN qualifier_value;
-    YY_BREAK case 56:
+      YY_BREAK case 56:
 /* rule 56 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 82 "ocldToXml.x"
-	  printf(" default=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
+       printf(" default=\"%.*s\"", strlen(yytext) - 2, yytext + 1);
       BEGIN qualifier_value;
-    YY_BREAK case 57:
+      YY_BREAK case 57:
 /* rule 57 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 83 "ocldToXml.x"
-	  printf(" default=\"%s\"", yytext);
+       printf(" default=\"%s\"", yytext);
       BEGIN qualifier_value;
-    YY_BREAK case 58:
-      YY_RULE_SETUP
+      YY_BREAK case 58:YY_RULE_SETUP
 #line 84 "ocldToXml.x"
-	  BEGIN qualifier;
-    YY_BREAK case 59:
+       BEGIN qualifier;
+      YY_BREAK case 59:
 /* rule 59 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 85 "ocldToXml.x"
-	  printf("/>\n");
+       printf("/>\n");
       BEGIN INITIAL;
-    YY_BREAK case 60:
-      YY_RULE_SETUP
+      YY_BREAK case 60:YY_RULE_SETUP
 #line 86 "ocldToXml.x"
-	  ;
-    YY_BREAK case 61:
-      YY_RULE_SETUP
+      ;
+      YY_BREAK case 61:YY_RULE_SETUP
 #line 87 "ocldToXml.x"
-	  ECHO;
+       ECHO;
       YY_BREAK
 #line 1637 "ocldToXml.c"
     case YY_STATE_EOF(INITIAL):

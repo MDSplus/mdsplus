@@ -69,7 +69,8 @@ int yydebug = 0;
 #include "dcl_p.h"
 #include <dcl.h>
 #include "dcllex.h"
-static void yyerror(YYLTYPE * yyloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char *s);
+static void yyerror(YYLTYPE * yyloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error,
+		    char *s);
 
 #line 78 "cmdParse.tab.c"	/* yacc.c:339  */
 
@@ -112,7 +113,8 @@ enum yytokentype {
   VALUE = 262,
   PVALUE = 263,
   COMMA = 264,
-  END = 265
+  END = 265,
+  COMMENT = 266
 };
 #endif
 
@@ -123,13 +125,13 @@ typedef union YYSTYPE YYSTYPE;
 #define YYSTYPE_IS_DECLARED 1
 #endif
 
-int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd);
+int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error);
 
 #endif				/* !YY_YY_CMDPARSE_TAB_H_INCLUDED  */
 
 /* Copy the second part of user declarations.  */
 
-#line 139 "cmdParse.tab.c"	/* yacc.c:358  */
+#line 140 "cmdParse.tab.c"	/* yacc.c:358  */
 
 #ifdef short
 #undef short
@@ -366,23 +368,23 @@ union yyalloc {
 #endif				/* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  4
+#define YYFINAL  5
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   12
+#define YYLAST   13
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  11
+#define YYNTOKENS  12
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  5
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  12
+#define YYNRULES  13
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  17
+#define YYNSTATES  18
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   265
+#define YYMAXUTOK   266
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -416,14 +418,14 @@ static const yytype_uint8 yytranslate[] = {
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
   2, 2, 2, 2, 2, 2, 1, 2, 3, 4,
-  5, 6, 7, 8, 9, 10
+  5, 6, 7, 8, 9, 10, 11
 };
 
 #if YYDEBUG
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] = {
-  0, 43, 43, 58, 62, 71, 84, 90, 94, 101,
-  122, 129, 152
+  0, 45, 45, 60, 64, 65, 74, 87, 93, 97,
+  104, 125, 132, 155
 };
 #endif
 
@@ -432,8 +434,8 @@ static const yytype_uint8 yyrline[] = {
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] = {
   "$end", "error", "$undefined", "CMDFILE", "VERB", "QUALIFIER", "EQUALS",
-  "VALUE", "PVALUE", "COMMA", "END", "$accept", "command", "qualifier",
-  "value_list", "pvalue_list", YY_NULLPTR
+  "VALUE", "PVALUE", "COMMA", "END", "COMMENT", "$accept", "command",
+  "qualifier", "value_list", "pvalue_list", YY_NULLPTR
 };
 #endif
 
@@ -442,7 +444,7 @@ static const char *const yytname[] = {
    (internal) symbol number NUM (which must be that of a token).  */
 static const yytype_uint16 yytoknum[] = {
   0, 256, 257, 258, 259, 260, 261, 262, 263, 264,
-  265
+  265, 266
 };
 #endif
 
@@ -459,16 +461,16 @@ static const yytype_uint16 yytoknum[] = {
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
 static const yytype_int8 yypact[] = {
-  -2, -6, -6, 0, -6, -6, -6, -6, -3, -5,
-  -1, 1, -6, 2, -6, 5, -6
+  -2, -6, -6, -6, 0, -6, -6, -6, -6, -3,
+  -5, -1, 3, -6, 4, -6, 5, -6
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
      Performed when YYTABLE does not specify something else to do.  Zero
      means the default is an error.  */
 static const yytype_uint8 yydefact[] = {
-  0, 2, 3, 0, 1, 7, 11, 6, 4, 5,
-  0, 0, 9, 8, 12, 0, 10
+  0, 2, 3, 4, 0, 1, 8, 12, 7, 5,
+  6, 0, 0, 10, 9, 13, 0, 11
 };
 
   /* YYPGOTO[NTERM-NUM].  */
@@ -478,39 +480,39 @@ static const yytype_int8 yypgoto[] = {
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] = {
-  -1, 3, 8, 13, 9
+  -1, 4, 9, 14, 10
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
      positive, shift that token.  If negative, reduce the rule whose
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] = {
-  4, 1, 2, 10, 11, 5, 12, 0, 6, 14,
-  7, 15, 16
+  5, 1, 2, 11, 12, 6, 13, 0, 7, 3,
+  8, 15, 17, 16
 };
 
 static const yytype_int8 yycheck[] = {
-  0, 3, 4, 6, 9, 5, 7, -1, 8, 8,
-  10, 9, 7
+  0, 3, 4, 6, 9, 5, 7, -1, 8, 11,
+  10, 8, 7, 9
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] = {
-  0, 3, 4, 12, 0, 5, 8, 10, 13, 15,
-  6, 9, 7, 14, 8, 9, 7
+  0, 3, 4, 11, 13, 0, 5, 8, 10, 14,
+  16, 6, 9, 7, 15, 8, 9, 7
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] = {
-  0, 11, 12, 12, 12, 12, 12, 13, 13, 14,
-  14, 15, 15
+  0, 12, 13, 13, 13, 13, 13, 13, 14, 14,
+  15, 15, 16, 16
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] = {
-  0, 2, 1, 1, 2, 2, 2, 1, 3, 1,
-  3, 1, 3
+  0, 2, 1, 1, 1, 2, 2, 2, 1, 3,
+  1, 3, 1, 3
 };
 
 #define yyerrok         (yyerrstatus = 0)
@@ -536,7 +538,7 @@ do                                                              \
     }                                                           \
   else                                                          \
     {                                                           \
-      yyerror (yylloc_param, yyscanner, dclcmd, YY_("syntax error: cannot back up")); \
+      yyerror (yylloc_param, yyscanner, dclcmd, error, YY_("syntax error: cannot back up")); \
       YYERROR;                                                  \
     }                                                           \
 while (0)
@@ -570,7 +572,7 @@ do {                                                                      \
     {                                                                     \
       YYFPRINTF (stderr, "%s ", Title);                                   \
       yy_symbol_print (stderr,                                            \
-                  Type, Value, yylloc_param, yyscanner, dclcmd); \
+                  Type, Value, yylloc_param, yyscanner, dclcmd, error); \
       YYFPRINTF (stderr, "\n");                                           \
     }                                                                     \
 } while (0)
@@ -581,13 +583,15 @@ do {                                                                      \
 
 static void
 yy_symbol_value_print(FILE * yyoutput, int yytype, YYSTYPE const *const yyvaluep,
-		      YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
+		      YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd,
+		      char **error)
 {
   FILE *yyo = yyoutput;
   YYUSE(yyo);
   YYUSE(yylloc_param);
   YYUSE(yyscanner);
   YYUSE(dclcmd);
+  YYUSE(error);
   if (!yyvaluep)
     return;
 #ifdef YYPRINT
@@ -603,11 +607,11 @@ yy_symbol_value_print(FILE * yyoutput, int yytype, YYSTYPE const *const yyvaluep
 
 static void
 yy_symbol_print(FILE * yyoutput, int yytype, YYSTYPE const *const yyvaluep, YYLTYPE * yylloc_param,
-		yyscan_t yyscanner, dclCommandPtr * dclcmd)
+		yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error)
 {
   YYFPRINTF(yyoutput, "%s %s (", yytype < YYNTOKENS ? "token" : "nterm", yytname[yytype]);
 
-  yy_symbol_value_print(yyoutput, yytype, yyvaluep, yylloc_param, yyscanner, dclcmd);
+  yy_symbol_value_print(yyoutput, yytype, yyvaluep, yylloc_param, yyscanner, dclcmd, error);
   YYFPRINTF(yyoutput, ")");
 }
 
@@ -638,7 +642,7 @@ do {                                                            \
 
 static void
 yy_reduce_print(yytype_int16 * yyssp, YYSTYPE * yyvsp, int yyrule, YYLTYPE * yylloc_param,
-		yyscan_t yyscanner, dclCommandPtr * dclcmd)
+		yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error)
 {
   unsigned long int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
@@ -648,7 +652,7 @@ yy_reduce_print(yytype_int16 * yyssp, YYSTYPE * yyvsp, int yyrule, YYLTYPE * yyl
   for (yyi = 0; yyi < yynrhs; yyi++) {
     YYFPRINTF(stderr, "   $%d = ", yyi + 1);
     yy_symbol_print(stderr, yystos[yyssp[yyi + 1 - yynrhs]], &(yyvsp[(yyi + 1) - (yynrhs)])
-		    , yylloc_param, yyscanner, dclcmd);
+		    , yylloc_param, yyscanner, dclcmd, error);
     YYFPRINTF(stderr, "\n");
   }
 }
@@ -656,7 +660,7 @@ yy_reduce_print(yytype_int16 * yyssp, YYSTYPE * yyvsp, int yyrule, YYLTYPE * yyl
 #define YY_REDUCE_PRINT(Rule)          \
 do {                                    \
   if (yydebug)                          \
-    yy_reduce_print (yyssp, yyvsp, Rule, yylloc_param, yyscanner, dclcmd); \
+    yy_reduce_print (yyssp, yyvsp, Rule, yylloc_param, yyscanner, dclcmd, error); \
 } while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -895,12 +899,13 @@ static int yysyntax_error(YYSIZE_T * yymsg_alloc, char **yymsg, yytype_int16 * y
 
 static void
 yydestruct(const char *yymsg, int yytype, YYSTYPE * yyvaluep, YYLTYPE * yylloc_param,
-	   yyscan_t yyscanner, dclCommandPtr * dclcmd)
+	   yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error)
 {
   YYUSE(yyvaluep);
   YYUSE(yylloc_param);
   YYUSE(yyscanner);
   YYUSE(dclcmd);
+  YYUSE(error);
   if (!yymsg)
     yymsg = "Deleting";
   YY_SYMBOL_PRINT(yymsg, yytype, yyvaluep, yylocationp);
@@ -912,7 +917,7 @@ YY_IGNORE_MAYBE_UNINITIALIZED_END}
 | yyparse.  |
 `----------*/
 
-int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
+int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error)
 {
 /* The lookahead symbol.  */
   int yychar;
@@ -1143,7 +1148,7 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
   YY_REDUCE_PRINT(yyn);
   switch (yyn) {
   case 2:
-#line 43 "cmdParse.y"		/* yacc.c:1646  */
+#line 45 "cmdParse.y"		/* yacc.c:1646  */
     {
       (yyval.cmd) = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
       (yyval.cmd)->verb = strdup("DO");
@@ -1159,20 +1164,28 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       (yyval.cmd)->parameters[0]->values[0] = strdup((yyvsp[0].str) + 1);
       free((yyvsp[0].str));
     }
-#line 1239 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1242 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
   case 3:
-#line 58 "cmdParse.y"		/* yacc.c:1646  */
+#line 60 "cmdParse.y"		/* yacc.c:1646  */
     {
       (yyval.cmd) = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
       (yyval.cmd)->verb = (yyvsp[0].str);
     }
-#line 1248 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1251 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
   case 4:
-#line 62 "cmdParse.y"		/* yacc.c:1646  */
+#line 64 "cmdParse.y"		/* yacc.c:1646  */
+    {
+      YYACCEPT;
+    }
+#line 1257 "cmdParse.tab.c"	/* yacc.c:1646  */
+    break;
+
+  case 5:
+#line 65 "cmdParse.y"		/* yacc.c:1646  */
     {
       (yyvsp[0].qualifier)->position = (yyval.cmd)->parameter_count;
       if ((yyval.cmd)->qualifier_count == 0)
@@ -1184,11 +1197,11 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       (yyval.cmd)->qualifiers[(yyval.cmd)->qualifier_count] = (yyvsp[0].qualifier);
       (yyval.cmd)->qualifier_count++;
     }
-#line 1262 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1271 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
-  case 5:
-#line 71 "cmdParse.y"		/* yacc.c:1646  */
+  case 6:
+#line 74 "cmdParse.y"		/* yacc.c:1646  */
     {
       dclParameterPtr param = memset(malloc(sizeof(dclParameter)), 0, sizeof(dclParameter));
       param->value_count = (yyvsp[0].value_list)->count;
@@ -1204,39 +1217,39 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       (yyval.cmd)->parameters[(yyval.cmd)->parameter_count] = param;
       (yyval.cmd)->parameter_count++;
     }
-#line 1280 "cmdParse.tab.c"	/* yacc.c:1646  */
-    break;
-
-  case 6:
-#line 84 "cmdParse.y"		/* yacc.c:1646  */
-    {
-      *dclcmd = (yyval.cmd);
-      YYACCEPT;
-    }
 #line 1289 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
   case 7:
-#line 90 "cmdParse.y"		/* yacc.c:1646  */
+#line 87 "cmdParse.y"		/* yacc.c:1646  */
     {
-      (yyval.qualifier) = memset(malloc(sizeof(dclQualifier)), 0, sizeof(dclQualifier));
-      (yyval.qualifier)->name = (yyvsp[0].str);
+      *dclcmd = (yyval.cmd);
+      YYACCEPT;
     }
 #line 1298 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
   case 8:
-#line 94 "cmdParse.y"		/* yacc.c:1646  */
+#line 93 "cmdParse.y"		/* yacc.c:1646  */
+    {
+      (yyval.qualifier) = memset(malloc(sizeof(dclQualifier)), 0, sizeof(dclQualifier));
+      (yyval.qualifier)->name = (yyvsp[0].str);
+    }
+#line 1307 "cmdParse.tab.c"	/* yacc.c:1646  */
+    break;
+
+  case 9:
+#line 97 "cmdParse.y"		/* yacc.c:1646  */
     {
       (yyval.qualifier)->value_count = (yyvsp[0].value_list)->count;
       (yyval.qualifier)->values = (yyvsp[0].value_list)->values;
       free((yyvsp[0].value_list));
     }
-#line 1308 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1317 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
-  case 9:
-#line 101 "cmdParse.y"		/* yacc.c:1646  */
+  case 10:
+#line 104 "cmdParse.y"		/* yacc.c:1646  */
     {
       char *value = (yyvsp[0].str);
       (yyval.value_list) = malloc(sizeof(dclValueList));
@@ -1258,22 +1271,22 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       }
       (yyval.value_list)->values[0] = value;
     }
-#line 1334 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1343 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
-  case 10:
-#line 122 "cmdParse.y"		/* yacc.c:1646  */
+  case 11:
+#line 125 "cmdParse.y"		/* yacc.c:1646  */
     {
       (yyval.value_list)->values =
 	  realloc((yyval.value_list)->values, sizeof(char *) * ((yyval.value_list)->count + 1));
       (yyval.value_list)->values[(yyval.value_list)->count] = (yyvsp[0].str);
       (yyval.value_list)->count++;
     }
-#line 1344 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1353 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
-  case 11:
-#line 129 "cmdParse.y"		/* yacc.c:1646  */
+  case 12:
+#line 132 "cmdParse.y"		/* yacc.c:1646  */
     {
       dclValuePtr dclvalue = (yyvsp[0].pvalue);
       char *value = dclvalue->value;
@@ -1297,11 +1310,11 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       free(dclvalue);
       (yyval.value_list)->values[0] = value;
     }
-#line 1372 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1381 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
-  case 12:
-#line 152 "cmdParse.y"		/* yacc.c:1646  */
+  case 13:
+#line 155 "cmdParse.y"		/* yacc.c:1646  */
     {
       dclValuePtr dclvalue = (yyvsp[0].pvalue);
       free(dclvalue->restOfLine);
@@ -1311,10 +1324,10 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       (yyval.value_list)->count++;
       free(dclvalue);
     }
-#line 1385 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1394 "cmdParse.tab.c"	/* yacc.c:1646  */
     break;
 
-#line 1389 "cmdParse.tab.c"	/* yacc.c:1646  */
+#line 1398 "cmdParse.tab.c"	/* yacc.c:1646  */
   default:
     break;
   }
@@ -1363,7 +1376,7 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
   if (!yyerrstatus) {
     ++yynerrs;
 #if ! YYERROR_VERBOSE
-    yyerror(yylloc_param, yyscanner, dclcmd, YY_("syntax error"));
+    yyerror(yylloc_param, yyscanner, dclcmd, error, YY_("syntax error"));
 #else
 #define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -1386,7 +1399,7 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
 	  yymsgp = yymsg;
 	}
       }
-      yyerror(yylloc_param, yyscanner, dclcmd, yymsgp);
+      yyerror(yylloc_param, yyscanner, dclcmd, error, yymsgp);
       if (yysyntax_error_status == 2)
 	goto yyexhaustedlab;
     }
@@ -1403,7 +1416,7 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
       if (yychar == YYEOF)
 	YYABORT;
     } else {
-      yydestruct("Error: discarding", yytoken, &yylval, yylloc_param, yyscanner, dclcmd);
+      yydestruct("Error: discarding", yytoken, &yylval, yylloc_param, yyscanner, dclcmd, error);
       yychar = YYEMPTY;
     }
   }
@@ -1452,7 +1465,7 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
     if (yyssp == yyss)
       YYABORT;
 
-    yydestruct("Error: popping", yystos[yystate], yyvsp, yylloc_param, yyscanner, dclcmd);
+    yydestruct("Error: popping", yystos[yystate], yyvsp, yylloc_param, yyscanner, dclcmd, error);
     YYPOPSTACK(1);
     yystate = *yyssp;
     YY_STACK_PRINT(yyss, yyssp);
@@ -1485,7 +1498,7 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
  yyexhaustedlab:
-  yyerror(yylloc_param, yyscanner, dclcmd, YY_("memory exhausted"));
+  yyerror(yylloc_param, yyscanner, dclcmd, error, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -1495,14 +1508,15 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
     /* Make sure we have latest lookahead translation.  See comments at
        user semantic actions for why this is necessary.  */
     yytoken = YYTRANSLATE(yychar);
-    yydestruct("Cleanup: discarding lookahead", yytoken, &yylval, yylloc_param, yyscanner, dclcmd);
+    yydestruct("Cleanup: discarding lookahead",
+	       yytoken, &yylval, yylloc_param, yyscanner, dclcmd, error);
   }
   /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK(yylen);
   YY_STACK_PRINT(yyss, yyssp);
   while (yyssp != yyss) {
-    yydestruct("Cleanup: popping", yystos[*yyssp], yyvsp, yylloc_param, yyscanner, dclcmd);
+    yydestruct("Cleanup: popping", yystos[*yyssp], yyvsp, yylloc_param, yyscanner, dclcmd, error);
     YYPOPSTACK(1);
   }
 #ifndef yyoverflow
@@ -1516,11 +1530,12 @@ int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd)
   return yyresult;
 }
 
-#line 161 "cmdParse.y"		/* yacc.c:1906  */
+#line 164 "cmdParse.y"		/* yacc.c:1906  */
 
-static void yyerror(YYLTYPE * yyloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char *s)
+static void yyerror(YYLTYPE * yyloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error,
+		    char *s)
 {
-  fprintf(stderr, "%s\n", s);
+  *error = strdup("Invalid syntax for an mdsdcl command\n");
 }
 
 int mdsdcl_do_command_extra_args(char const *command, char **prompt, char **output, char **error)
@@ -1532,10 +1547,12 @@ int mdsdcl_do_command_extra_args(char const *command, char **prompt, char **outp
   int result, status = CLI_STS_IVVERB;
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string(command, yyscanner);
-  result = yyparse(yyloc_param, yyscanner, &dclcmd);
+  result = yyparse(yyloc_param, yyscanner, &dclcmd, error);
   if (result == 0) {
-    dclcmd->command_line = strdup(command);
-    status = cmdExecute(dclcmd, prompt, output, error);
+    if (dclcmd) {
+      dclcmd->command_line = strdup(command);
+      status = cmdExecute(dclcmd, prompt, output, error);
+    }
   }
   dcl__delete_buffer(cmd_state, yyscanner);
   dcl_lex_destroy(yyscanner);
