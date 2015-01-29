@@ -20,24 +20,24 @@
 #define JOERGER_DAC16_N_OUTPUT_16 18
 #define JOERGER_DAC16_N_INIT_ACTION 19
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	float output_01;
-	float output_02;
-	float output_03;
-	float output_04;
-	float output_05;
-	float output_06;
-	float output_07;
-	float output_08;
-	float output_09;
-	float output_10;
-	float output_11;
-	float output_12;
-	float output_13;
-	float output_14;
-	float output_15;
-	float output_16;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  float output_01;
+  float output_02;
+  float output_03;
+  float output_04;
+  float output_05;
+  float output_06;
+  float output_07;
+  float output_08;
+  float output_09;
+  float output_10;
+  float output_11;
+  float output_12;
+  float output_13;
+  float output_14;
+  float output_15;
+  float output_16;
 } InInitStruct;

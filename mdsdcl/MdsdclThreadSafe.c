@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <strroutines.h>
-STATIC_THREADSAFE  pthread_mutex_t mutex;
+STATIC_THREADSAFE pthread_mutex_t mutex;
 /* Key for the thread-specific buffer */
 STATIC_THREADSAFE pthread_key_t buffer_key;
 
@@ -20,21 +20,19 @@ MdsdclThreadStatic *MdsdclGetThreadStatic()
   MdsdclThreadStatic *p;
   pthread_once(&buffer_key_once, buffer_key_alloc);
   p = (MdsdclThreadStatic *) pthread_getspecific(buffer_key);
-  if (p == NULL)
-  {
-    p = (MdsdclThreadStatic *)memset(malloc(sizeof(MdsdclThreadStatic)),0,sizeof(MdsdclThreadStatic));
-    pthread_setspecific(buffer_key,(void *)p);
+  if (p == NULL) {
+    p = (MdsdclThreadStatic *) memset(malloc(sizeof(MdsdclThreadStatic)), 0,
+				      sizeof(MdsdclThreadStatic));
+    pthread_setspecific(buffer_key, (void *)p);
   }
   return p;
 }
 
-
 /* Free the thread-specific buffer */
-STATIC_ROUTINE void buffer_destroy(void * buf)
+STATIC_ROUTINE void buffer_destroy(void *buf)
 {
-  if (buf != NULL)
-  {
-    MdsdclThreadStatic *ts = (MdsdclThreadStatic *)buf;
+  if (buf != NULL) {
+    MdsdclThreadStatic *ts = (MdsdclThreadStatic *) buf;
     free(buf);
   }
 }
@@ -42,6 +40,5 @@ STATIC_ROUTINE void buffer_destroy(void * buf)
 /* Allocate the key */
 STATIC_ROUTINE void buffer_key_alloc()
 {
-   pthread_key_create(&buffer_key, buffer_destroy);
+  pthread_key_create(&buffer_key, buffer_destroy);
 }
-

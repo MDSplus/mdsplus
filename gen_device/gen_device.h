@@ -59,7 +59,6 @@
 #define INT_ARRAY 7
 #define FLO_ARRAY 8
 
-
 #define NONE 0
 #define RANGE 1
 #define SET 2
@@ -71,59 +70,35 @@
 #define OPT_NO_WRITE_SHOT 8
 #define OPT_INCLUDE_IN_PULSE 16
 
+typedef struct nodeDescr {
+  struct nodeDescr
+  *nxt, *prv;
+  char *name;
+  char nci_flags, state, type, pad;
+  char *tags, *usage, *value, *method, *phase, *sequence, *completion, *timout, *server;
+} NodeDescr;
 
-typedef struct nodeDescr  {
-    struct nodeDescr	    
-	 *nxt,
-	 *prv;
-    char *name;
-    char  nci_flags,
-	  state,
-	  type,
-	  pad;
-    char *tags,
-	 *usage,
-	 *value,
-	 *method,
-	 *phase,
-	 *sequence,
-	 *completion,
-	 *timout,
-	 *server; } NodeDescr;
-	 
-    
 typedef struct {
-	char	
-	    state,
-	    nci_flags,
-	    *usage,
-	    *tags;
-	    } FlagsDescr;
-	   
-    
+  char
+   state, nci_flags, *usage, *tags;
+} FlagsDescr;
+
 typedef struct {
-	char
-	 *method,
-	 *phase,
-	 *sequence,
-	 *completion,
-	 *timout,
-	 *server; } ActionDescr;
-	
-typedef struct inDescr{
-	struct inDescr 
-	    *nxt,
-	    *prv;
-	int type,
-	    mode;
-	char *path_name;
-	char *set[MAX_DIM_SET];
-	char *codes[MAX_DIM_SET];
-	char *error_code;
-	} InDescr;	
- 
-	
+  char
+  *method, *phase, *sequence, *completion, *timout, *server;
+} ActionDescr;
+
+typedef struct inDescr {
+  struct inDescr
+  *nxt, *prv;
+  int type, mode;
+  char *path_name;
+  char *set[MAX_DIM_SET];
+  char *codes[MAX_DIM_SET];
+  char *error_code;
+} InDescr;
+
 typedef struct {
-	struct descriptor_xd *xds;
-	int num_xds;
-	} CommonInStruct;
+  struct descriptor_xd *xds;
+  int num_xds;
+} CommonInStruct;

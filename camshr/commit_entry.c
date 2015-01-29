@@ -1,14 +1,14 @@
 // commit_entry.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -38,37 +38,38 @@
 //-------------------------------------------------------------------------
 // Update memory mapped file with new data
 //
-// input:	db file type
-// output:	status
+// input:       db file type
+// output:      status
 //-------------------------------------------------------------------------
-int commit_entry( int dbType )
+int commit_entry(int dbType)
 {
-	void					*dbptr;				// generic pointer to dbs
-	int 					status = SUCCESS;	// assume the best
-	extern struct MODULE	*CTSdb;				// pointer to in-memory copy of data file
-	extern struct CRATE		*CRATEdb;			//   "     "     "       "   "   "    "
+  void *dbptr;			// generic pointer to dbs
+  int status = SUCCESS;		// assume the best
+  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb;	//   "     "     "       "   "   "    "
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "commit_entry()\n" );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("commit_entry()\n");
 
-	switch( dbType ) {
-		case CTS_DB:
-			dbptr = (void *)CTSdb;
-			break;
+  switch (dbType) {
+  case CTS_DB:
+    dbptr = (void *)CTSdb;
+    break;
 
-		case CRATE_DB:
-			dbptr = (void *)CRATEdb;
-			break;
-	}
+  case CRATE_DB:
+    dbptr = (void *)CRATEdb;
+    break;
+  }
 
-	// commit changes to file
-	// 	NB! a len of 0 flushes all memory pages mapped
-	if( msync(dbptr, 0, MS_SYNC|MS_INVALIDATE) == ERROR )
-		status = COMMIT_ERROR;
+  // commit changes to file
+  //      NB! a len of 0 flushes all memory pages mapped
+  if (msync(dbptr, 0, MS_SYNC | MS_INVALIDATE) == ERROR)
+    status = COMMIT_ERROR;
 
-	if( MSGLVL(DETAILS) ) {
-		printf("commit_entry(): "); ShowStatus(status);
-	}
+  if (MSGLVL(DETAILS)) {
+    printf("commit_entry(): ");
+    ShowStatus(status);
+  }
 
-	return status;
+  return status;
 }

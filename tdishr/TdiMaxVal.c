@@ -54,22 +54,21 @@ extern int Tdi3Divide();
 #include <string.h>
 #include <tdimessages.h>
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 
 STATIC_CONSTANT int roprand = 0x8000;
 
 typedef struct {
-    int q0;
-    int q1;
+  int q0;
+  int q1;
 } quadword;
 typedef struct {
-    int o0;
-    int o1;
-    int o2;
-    int o3;
+  int o0;
+  int o1;
+  int o2;
+  int o3;
 } octaword;
 STATIC_CONSTANT quadword qzero = { 0, 0 };
 STATIC_CONSTANT octaword ozero = { 0, 0, 0, 0 };
@@ -235,125 +234,95 @@ int TdiGtQ();
 }
 
 int Tdi3MaxLoc(struct descriptor *in, struct descriptor *mask,
-               struct descriptor *out, int count0, int count1, int count2,
-               int step0, int step1, int step2)
+	       struct descriptor *out, int count0, int count1, int count2,
+	       int step0, int step1, int step2)
 {
-    int count = -1;
-    SetupArgs switch (in->dtype) {
-    case DTYPE_T:
-        OperateT(Tdi3Gt)
-    case DTYPE_B:
-        OperateL(char, (char)-127, *pi0 > result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_BU:
-        OperateL(unsigned char, (unsigned char)0, *pi0 > result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_W:
-        OperateL(short, (short)-32768, *pi0 > result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_WU:
-        OperateL(unsigned short, (unsigned short)0, *pi0 > result, result =
-                 *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_L:
-        OperateL(int, -2147483647, *pi0 > result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_LU:
-        OperateL(unsigned int, (unsigned int)0, *pi0 > result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_Q:
-        OperateL(quadword, minquad, TdiGtQ(pi0, &result, 1), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_QU:
-        OperateL(quadword, uminquad, TdiGtQ(pi0, &result, 0), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_O:
-        OperateL(octaword, minocta, TdiGtO(pi0, &result, 1), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_OU:
-        OperateL(octaword, uminocta, TdiGtO(pi0, &result, 0), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_F:
-        OperateFloc(float, DTYPE_F, -HUGE, >)
-        case DTYPE_FS:OperateFloc(float, DTYPE_FS, -HUGE, >)
-        case DTYPE_G:OperateFloc(double, DTYPE_G, -HUGE, >)
-        case DTYPE_D:OperateFloc(double, DTYPE_D, -HUGE, >)
-        case DTYPE_FT:OperateFloc(double, DTYPE_FT, -HUGE, >)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  int count = -1;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_T:
+    OperateT(Tdi3Gt)
+  case DTYPE_B:
+    OperateL(char, (char)-127, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
+  case DTYPE_BU:
+    OperateL(unsigned char, (unsigned char)0, *pi0 > result, result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_W:
+    OperateL(short, (short)-32768, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
+  case DTYPE_WU:
+    OperateL(unsigned short, (unsigned short)0, *pi0 > result, result =
+	     *pi0; count = j0;, *outp++ = count)
+  case DTYPE_L:
+    OperateL(int, -2147483647, *pi0 > result, result = *pi0; count = j0;, *outp++ = count)
+  case DTYPE_LU:
+    OperateL(unsigned int, (unsigned int)0, *pi0 > result, result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_Q:
+    OperateL(quadword, minquad, TdiGtQ(pi0, &result, 1), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_QU:
+    OperateL(quadword, uminquad, TdiGtQ(pi0, &result, 0), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_O:
+    OperateL(octaword, minocta, TdiGtO(pi0, &result, 1), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_OU:
+    OperateL(octaword, uminocta, TdiGtO(pi0, &result, 0), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_F:
+    OperateFloc(float, DTYPE_F, -HUGE, >)
+    case DTYPE_FS:OperateFloc(float, DTYPE_FS, -HUGE, >)
+    case DTYPE_G:OperateFloc(double, DTYPE_G, -HUGE, >)
+    case DTYPE_D:OperateFloc(double, DTYPE_D, -HUGE, >)
+    case DTYPE_FT:OperateFloc(double, DTYPE_FT, -HUGE, >)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
-               struct descriptor *out, int count0, int count1, int count2,
-               int step0, int step1, int step2)
+	       struct descriptor *out, int count0, int count1, int count2,
+	       int step0, int step1, int step2)
 {
-    int count;
-    SetupArgs switch (in->dtype) {
-    case DTYPE_T:
-        OperateT(Tdi3Lt)
-    case DTYPE_B:
-        OperateL(char, (char)127, *pi0 < result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_BU:
-        OperateL(unsigned char, (unsigned char)255, *pi0 < result, result =
-                 *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_W:
-        OperateL(short, (short)32767, *pi0 < result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_WU:
-        OperateL(unsigned short, (unsigned short)0xffff, *pi0 < result, result =
-                 *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_L:
-        OperateL(int, (int)2147483647, *pi0 < result, result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_LU:
-        OperateL(unsigned int, (unsigned int)0xffffffff, *pi0 < result, result =
-                 *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_QU:
-        OperateL(quadword, maxquad, TdiLtQ(pi0, &result, 0), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_Q:
-        OperateL(quadword, umaxquad, TdiLtQ(pi0, &result, 1), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_OU:
-        OperateL(octaword, maxocta, TdiLtO(pi0, &result, 0), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_O:
-        OperateL(octaword, umaxocta, TdiLtO(pi0, &result, 1), result = *pi0;
-                 count = j0;
-                 , *outp++ = count)
-    case DTYPE_F:
-        OperateFloc(float, DTYPE_F, HUGE, <)
-        case DTYPE_FS:OperateFloc(float, DTYPE_FS, HUGE, <)
-        case DTYPE_G:OperateFloc(double, DTYPE_G, HUGE, <)
-        case DTYPE_D:OperateFloc(double, DTYPE_D, HUGE, <)
-        case DTYPE_FT:OperateFloc(double, DTYPE_FT, HUGE, <)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  int count;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_T:
+    OperateT(Tdi3Lt)
+  case DTYPE_B:
+    OperateL(char, (char)127, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
+  case DTYPE_BU:
+    OperateL(unsigned char, (unsigned char)255, *pi0 < result, result =
+	     *pi0; count = j0;, *outp++ = count)
+  case DTYPE_W:
+    OperateL(short, (short)32767, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
+  case DTYPE_WU:
+    OperateL(unsigned short, (unsigned short)0xffff, *pi0 < result, result =
+	     *pi0; count = j0;, *outp++ = count)
+  case DTYPE_L:
+    OperateL(int, (int)2147483647, *pi0 < result, result = *pi0; count = j0;, *outp++ = count)
+  case DTYPE_LU:
+    OperateL(unsigned int, (unsigned int)0xffffffff, *pi0 < result, result =
+	     *pi0; count = j0;, *outp++ = count)
+  case DTYPE_QU:
+    OperateL(quadword, maxquad, TdiLtQ(pi0, &result, 0), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_Q:
+    OperateL(quadword, umaxquad, TdiLtQ(pi0, &result, 1), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_OU:
+    OperateL(octaword, maxocta, TdiLtO(pi0, &result, 0), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_O:
+    OperateL(octaword, umaxocta, TdiLtO(pi0, &result, 1), result = *pi0;
+	     count = j0;, *outp++ = count)
+  case DTYPE_F:
+    OperateFloc(float, DTYPE_F, HUGE, <)
+    case DTYPE_FS:OperateFloc(float, DTYPE_FS, HUGE, <)
+    case DTYPE_G:OperateFloc(double, DTYPE_G, HUGE, <)
+    case DTYPE_D:OperateFloc(double, DTYPE_D, HUGE, <)
+    case DTYPE_FT:OperateFloc(double, DTYPE_FT, HUGE, <)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 #define OperateFval(type,dtype,start,operator) \
@@ -410,107 +379,85 @@ int Tdi3MinLoc(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3MaxVal(struct descriptor *in, struct descriptor *mask,
-               struct descriptor *out, int count0, int count1, int count2,
-               int step0, int step1, int step2)
+	       struct descriptor *out, int count0, int count1, int count2,
+	       int step0, int step1, int step2)
 {
-    int count;
-    SetupArgs switch (in->dtype) {
-    case DTYPE_T:
-        OperateTval(Tdi3Gt)
-    case DTYPE_B:
-        Operate(char, (char)-128, *pi0 > result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_BU:
-        Operate(unsigned char, (unsigned char)0, *pi0 > result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_W:
-        Operate(short, (short)-32768, *pi0 > result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_WU:
-        Operate(unsigned short, (unsigned short)0, *pi0 > result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_L:
-        Operate(int, -2147483647, *pi0 > result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_LU:
-        Operate(unsigned int, (unsigned int)0, *pi0 > result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_QU:
-        Operate(quadword, uminquad, TdiGtQ(pi0, &result, 0),
-                memcpy(&result, pi0, sizeof(result));
-                , memcpy(outp++, &result, sizeof(result)))
-    case DTYPE_Q:
-        Operate(quadword, minquad, TdiGtQ(pi0, &result, 1),
-                memcpy(&result, pi0, sizeof(result));
-                , memcpy(outp++, &result, sizeof(result)))
-    case DTYPE_OU:
-        Operate(octaword, uminocta, TdiGtO(pi0, &result, 0),
-                memcpy(&result, pi0, sizeof(result));
-                , memcpy(outp++, &result, sizeof(result)))
-    case DTYPE_O:
-        Operate(octaword, minocta, TdiGtO(pi0, &result, 1),
-                memcpy(&result, pi0, sizeof(result));
-                , memcpy(outp++, &result, sizeof(result)))
-    case DTYPE_F:
-        OperateFval(float, DTYPE_F, -HUGE, >)
-        case DTYPE_FS:OperateFval(float, DTYPE_FS, -HUGE, >)
-        case DTYPE_G:OperateFval(double, DTYPE_G, -HUGE, >)
-        case DTYPE_D:OperateFval(double, DTYPE_D, -HUGE, >)
-        case DTYPE_FT:OperateFval(double, DTYPE_FT, -HUGE, >)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  int count;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_T:
+    OperateTval(Tdi3Gt)
+  case DTYPE_B:
+    Operate(char, (char)-128, *pi0 > result, result = *pi0;, *outp++ = result)
+  case DTYPE_BU:
+    Operate(unsigned char, (unsigned char)0, *pi0 > result, result = *pi0;, *outp++ = result)
+  case DTYPE_W:
+    Operate(short, (short)-32768, *pi0 > result, result = *pi0;, *outp++ = result)
+  case DTYPE_WU:
+    Operate(unsigned short, (unsigned short)0, *pi0 > result, result = *pi0;, *outp++ = result)
+  case DTYPE_L:
+    Operate(int, -2147483647, *pi0 > result, result = *pi0;, *outp++ = result)
+  case DTYPE_LU:
+    Operate(unsigned int, (unsigned int)0, *pi0 > result, result = *pi0;, *outp++ = result)
+  case DTYPE_QU:
+    Operate(quadword, uminquad, TdiGtQ(pi0, &result, 0),
+	    memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
+  case DTYPE_Q:
+    Operate(quadword, minquad, TdiGtQ(pi0, &result, 1),
+	    memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
+  case DTYPE_OU:
+    Operate(octaword, uminocta, TdiGtO(pi0, &result, 0),
+	    memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
+  case DTYPE_O:
+    Operate(octaword, minocta, TdiGtO(pi0, &result, 1),
+	    memcpy(&result, pi0, sizeof(result));, memcpy(outp++, &result, sizeof(result)))
+  case DTYPE_F:
+    OperateFval(float, DTYPE_F, -HUGE, >)
+    case DTYPE_FS:OperateFval(float, DTYPE_FS, -HUGE, >)
+    case DTYPE_G:OperateFval(double, DTYPE_G, -HUGE, >)
+    case DTYPE_D:OperateFval(double, DTYPE_D, -HUGE, >)
+    case DTYPE_FT:OperateFval(double, DTYPE_FT, -HUGE, >)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
-               struct descriptor *out, int count0, int count1, int count2,
-               int step0, int step1, int step2)
+	       struct descriptor *out, int count0, int count1, int count2,
+	       int step0, int step1, int step2)
 {
-    int count;
-    SetupArgs switch (in->dtype) {
-    case DTYPE_T:
-        OperateTval(Tdi3Lt)
-    case DTYPE_B:
-        Operate(char, (char)127, *pi0 < result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_BU:
-        Operate(unsigned char, (unsigned char)255, *pi0 < result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_W:
-        Operate(short, (short)32767, *pi0 < result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_WU:
-        Operate(unsigned short, (unsigned short)0xffff, *pi0 < result, result =
-                *pi0;
-                , *outp++ = result)
-    case DTYPE_L:
-        Operate(int, (int)2147483647, *pi0 < result, result = *pi0;
-                , *outp++ = result)
-    case DTYPE_LU:
-        Operate(unsigned int, (unsigned int)0xffffffff, *pi0 < result, result =
-                *pi0;
-                , *outp++ = result)
-    case DTYPE_QU:
-        Operate(quadword, umaxquad, TdiLtQ(pi0, &result, 0), result = *pi0;
-                , *outp++ = result)
-    case DTYPE_Q:
-        Operate(quadword, maxquad, TdiLtQ(pi0, &result, 1), result = *pi0;
-                , *outp++ = result)
-    case DTYPE_OU:
-        Operate(octaword, umaxocta, TdiLtO(pi0, &result, 0), result = *pi0;
-                , *outp++ = result)
-    case DTYPE_O:
-        Operate(octaword, maxocta, TdiLtO(pi0, &result, 1), result = *pi0;
-                , *outp++ = result)
-    case DTYPE_F:
-        OperateFval(float, DTYPE_F, HUGE, <)
-        case DTYPE_FS:OperateFval(float, DTYPE_FS, HUGE, <)
-        case DTYPE_G:OperateFval(double, DTYPE_G, HUGE, <)
-        case DTYPE_D:OperateFval(double, DTYPE_D, HUGE, <)
-        case DTYPE_FT:OperateFval(double, DTYPE_FT, HUGE, <)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  int count;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_T:
+    OperateTval(Tdi3Lt)
+  case DTYPE_B:
+    Operate(char, (char)127, *pi0 < result, result = *pi0;, *outp++ = result)
+  case DTYPE_BU:
+    Operate(unsigned char, (unsigned char)255, *pi0 < result, result = *pi0;, *outp++ = result)
+  case DTYPE_W:
+    Operate(short, (short)32767, *pi0 < result, result = *pi0;, *outp++ = result)
+  case DTYPE_WU:
+    Operate(unsigned short, (unsigned short)0xffff, *pi0 < result, result = *pi0;, *outp++ = result)
+  case DTYPE_L:
+    Operate(int, (int)2147483647, *pi0 < result, result = *pi0;, *outp++ = result)
+  case DTYPE_LU:
+    Operate(unsigned int, (unsigned int)0xffffffff, *pi0 < result, result = *pi0;, *outp++ = result)
+  case DTYPE_QU:
+    Operate(quadword, umaxquad, TdiLtQ(pi0, &result, 0), result = *pi0;, *outp++ = result)
+  case DTYPE_Q:
+    Operate(quadword, maxquad, TdiLtQ(pi0, &result, 1), result = *pi0;, *outp++ = result)
+  case DTYPE_OU:
+    Operate(octaword, umaxocta, TdiLtO(pi0, &result, 0), result = *pi0;, *outp++ = result)
+  case DTYPE_O:
+    Operate(octaword, maxocta, TdiLtO(pi0, &result, 1), result = *pi0;, *outp++ = result)
+  case DTYPE_F:
+    OperateFval(float, DTYPE_F, HUGE, <)
+    case DTYPE_FS:OperateFval(float, DTYPE_FS, HUGE, <)
+    case DTYPE_G:OperateFval(double, DTYPE_G, HUGE, <)
+    case DTYPE_D:OperateFval(double, DTYPE_D, HUGE, <)
+    case DTYPE_FT:OperateFval(double, DTYPE_FT, HUGE, <)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 #define OperateFmean(type,dtype) \
@@ -597,83 +544,59 @@ int Tdi3MinVal(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
-             struct descriptor *out, int count0, int count1, int count2,
-             int step0, int step1, int step2)
+	     struct descriptor *out, int count0, int count1, int count2,
+	     int step0, int step1, int step2)
 {
-    int count;
-    SetupArgs switch (in->dtype) {
-    case DTYPE_B:
-        Operate(char, (char)0;
-                count = 0, 1, result = (char)(result + *pi0);
-                count++;
-                , *outp++ = (char)(result / count))
-    case DTYPE_BU:
-        Operate(unsigned char, (unsigned char)0;
-                count = 0, 1, result = (unsigned char)(result + *pi0);
-                count++;
-                , *outp++ = (unsigned char)(result / count))
-    case DTYPE_W:
-        Operate(short, (short)0;
-                count = 0, 1, result = (short)(result + *pi0);
-                count++;
-                , *outp++ = (short)(result / count))
-    case DTYPE_WU:
-        Operate(unsigned short, (unsigned short)0;
-                count = 0, 1, result = (unsigned short)(result + *pi0);
-                count++;
-                , *outp++ = (unsigned short)(result / count))
-    case DTYPE_L:
-        Operate(int, (int)0;
-                count = 0, 1, result += *pi0;
-                count++;
-                , *outp++ = result / count)
-    case DTYPE_LU:
-        Operate(unsigned int, (unsigned int)0;
-                count = 0, 1, result += *pi0;
-                count++;
-                , *outp++ = result / count)
-    case DTYPE_QU:
-    case DTYPE_Q:
-        Operate(quadword, qzero;
-                count = 0, 1, TdiAddQuadword(pi0, &result, &result);
-                count++;
-                , {
-                quadword temp = qzero;
-                memcpy(&temp, &count, sizeof(int));
-                TdiDivQ(&result, &temp, outp++, DTYPE_Q);
-                })
-    case DTYPE_OU:
-        Operate(octaword, ozero;
-                count = 0, 1, TdiAddOctaword(pi0, &result, &result);
-                count++;
-                , {
-                octaword temp = ozero;
-                memcpy(&temp, &count, sizeof(int));
-                TdiDivO(&result, &temp, outp++, DTYPE_OU);
-                })
-    case DTYPE_O:
-        Operate(octaword, ozero;
-                count = 0, 1, TdiAddOctaword(pi0, &result, &result);
-                count++;
-                , {
-                octaword temp = ozero;
-                memcpy(&temp, &count, sizeof(int));
-                TdiDivO(&result, &temp, outp++, DTYPE_O);
-                })
-    case DTYPE_F:
-        OperateFmean(float, DTYPE_F)
-        case DTYPE_FS:OperateFmean(float, DTYPE_FS)
-        case DTYPE_G:OperateFmean(double, DTYPE_G)
-        case DTYPE_D:OperateFmean(double, DTYPE_D)
-        case DTYPE_FT:OperateFmean(double, DTYPE_FT)
-        case DTYPE_FC:OperateFmeanc(float, DTYPE_F)
-        case DTYPE_FSC:OperateFmeanc(float, DTYPE_FS)
-        case DTYPE_GC:OperateFmeanc(double, DTYPE_G)
-        case DTYPE_DC:OperateFmeanc(double, DTYPE_D)
-        case DTYPE_FTC:OperateFmeanc(double, DTYPE_FT)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  int count;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_B:
+    Operate(char, (char)0;
+	    count = 0, 1, result = (char)(result + *pi0);
+	    count++;, *outp++ = (char)(result / count))
+  case DTYPE_BU:
+    Operate(unsigned char, (unsigned char)0;
+	    count = 0, 1, result = (unsigned char)(result + *pi0);
+	    count++;, *outp++ = (unsigned char)(result / count))
+  case DTYPE_W:
+    Operate(short, (short)0;
+	    count = 0, 1, result = (short)(result + *pi0);
+	    count++;, *outp++ = (short)(result / count))
+  case DTYPE_WU:
+    Operate(unsigned short, (unsigned short)0;
+	    count = 0, 1, result = (unsigned short)(result + *pi0);
+	    count++;, *outp++ = (unsigned short)(result / count))
+  case DTYPE_L:
+    Operate(int, (int)0; count = 0, 1, result += *pi0; count++;, *outp++ = result / count)
+  case DTYPE_LU:
+    Operate(unsigned int, (unsigned int)0;
+	    count = 0, 1, result += *pi0; count++;, *outp++ = result / count)
+  case DTYPE_QU:
+  case DTYPE_Q:
+    Operate(quadword, qzero; count = 0, 1, TdiAddQuadword(pi0, &result, &result); count++;, {
+	    quadword temp = qzero;
+	    memcpy(&temp, &count, sizeof(int)); TdiDivQ(&result, &temp, outp++, DTYPE_Q);})
+  case DTYPE_OU:
+    Operate(octaword, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
+	    octaword temp = ozero;
+	    memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_OU);})
+  case DTYPE_O:
+    Operate(octaword, ozero; count = 0, 1, TdiAddOctaword(pi0, &result, &result); count++;, {
+	    octaword temp = ozero;
+	    memcpy(&temp, &count, sizeof(int)); TdiDivO(&result, &temp, outp++, DTYPE_O);})
+  case DTYPE_F:
+    OperateFmean(float, DTYPE_F)
+    case DTYPE_FS:OperateFmean(float, DTYPE_FS)
+    case DTYPE_G:OperateFmean(double, DTYPE_G)
+    case DTYPE_D:OperateFmean(double, DTYPE_D)
+    case DTYPE_FT:OperateFmean(double, DTYPE_FT)
+    case DTYPE_FC:OperateFmeanc(float, DTYPE_F)
+    case DTYPE_FSC:OperateFmeanc(float, DTYPE_FS)
+    case DTYPE_GC:OperateFmeanc(double, DTYPE_G)
+    case DTYPE_DC:OperateFmeanc(double, DTYPE_D)
+    case DTYPE_FTC:OperateFmeanc(double, DTYPE_FT)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 #define OperateFprod(type,dtype) \
@@ -739,54 +662,44 @@ int Tdi3Mean(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Product(struct descriptor *in, struct descriptor *mask,
-                struct descriptor *out, int count0, int count1, int count2,
-                int step0, int step1, int step2)
+		struct descriptor *out, int count0, int count1, int count2,
+		int step0, int step1, int step2)
 {
-    SetupArgs switch (in->dtype) {
-    case DTYPE_B:
-        Operate(char, 1, 1, result = (char)(result * *pi0);
-                , *outp++ = result)
-    case DTYPE_BU:
-        Operate(unsigned char, 1, 1, result = (unsigned char)(result * *pi0);
-                , *outp++ = result)
-    case DTYPE_W:
-        Operate(short, 1, 1, result = (short)(result * *pi0);
-                , *outp++ = result)
-    case DTYPE_WU:
-        Operate(unsigned short, 1, 1, result = (unsigned short)(result * *pi0);
-                , *outp++ = result)
-    case DTYPE_L:
-        Operate(int, 1, 1, result *= *pi0;
-                , *outp++ = result)
-    case DTYPE_LU:
-        Operate(unsigned int, 1, 1, result *= *pi0;
-                , *outp++ = result)
-    case DTYPE_QU:
-    case DTYPE_Q:
-        Operate(quadword, qzero;
-                result.q0 = 1;
-                , 1, TdiMultiplyQuadword(pi0, &result, &result);
-                , *outp++ = result)
-    case DTYPE_OU:
-    case DTYPE_O:
-        Operate(octaword, ozero;
-                result.o0 = 1;
-                , 1, TdiMultiplyOctaword(pi0, &result, &result);
-                , *outp++ = result)
-    case DTYPE_F:
-        OperateFprod(float, DTYPE_F)
-        case DTYPE_FS:OperateFprod(float, DTYPE_FS)
-        case DTYPE_G:OperateFprod(double, DTYPE_G)
-        case DTYPE_D:OperateFprod(double, DTYPE_D)
-        case DTYPE_FT:OperateFprod(double, DTYPE_FT)
-        case DTYPE_FC:OperateFprodc(float, DTYPE_F)
-        case DTYPE_FSC:OperateFprodc(float, DTYPE_FS)
-        case DTYPE_GC:OperateFprodc(double, DTYPE_G)
-        case DTYPE_DC:OperateFprodc(double, DTYPE_D)
-        case DTYPE_FTC:OperateFprodc(double, DTYPE_FT)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_B:
+    Operate(char, 1, 1, result = (char)(result * *pi0);, *outp++ = result)
+  case DTYPE_BU:
+    Operate(unsigned char, 1, 1, result = (unsigned char)(result * *pi0);, *outp++ = result)
+  case DTYPE_W:
+    Operate(short, 1, 1, result = (short)(result * *pi0);, *outp++ = result)
+  case DTYPE_WU:
+    Operate(unsigned short, 1, 1, result = (unsigned short)(result * *pi0);, *outp++ = result)
+  case DTYPE_L:
+    Operate(int, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_LU:
+    Operate(unsigned int, 1, 1, result *= *pi0;, *outp++ = result)
+  case DTYPE_QU:
+  case DTYPE_Q:
+    Operate(quadword, qzero;
+	    result.q0 = 1;, 1, TdiMultiplyQuadword(pi0, &result, &result);, *outp++ = result)
+  case DTYPE_OU:
+  case DTYPE_O:
+    Operate(octaword, ozero;
+	    result.o0 = 1;, 1, TdiMultiplyOctaword(pi0, &result, &result);, *outp++ = result)
+  case DTYPE_F:
+    OperateFprod(float, DTYPE_F)
+    case DTYPE_FS:OperateFprod(float, DTYPE_FS)
+    case DTYPE_G:OperateFprod(double, DTYPE_G)
+    case DTYPE_D:OperateFprod(double, DTYPE_D)
+    case DTYPE_FT:OperateFprod(double, DTYPE_FT)
+    case DTYPE_FC:OperateFprodc(float, DTYPE_F)
+    case DTYPE_FSC:OperateFprodc(float, DTYPE_FS)
+    case DTYPE_GC:OperateFprodc(double, DTYPE_G)
+    case DTYPE_DC:OperateFprodc(double, DTYPE_D)
+    case DTYPE_FTC:OperateFprodc(double, DTYPE_FT)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 #define OperateFsum(type,dtype) \
@@ -849,50 +762,42 @@ int Tdi3Product(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
-            struct descriptor *out, int count0, int count1, int count2,
-            int step0, int step1, int step2)
+	    struct descriptor *out, int count0, int count1, int count2,
+	    int step0, int step1, int step2)
 {
-    SetupArgs switch (in->dtype) {
-    case DTYPE_B:
-        Operate(char, 0, 1, result = (char)(result + *pi0);
-                , *outp++ = result)
-    case DTYPE_BU:
-        Operate(unsigned char, 0, 1, result = (unsigned char)(result + *pi0);
-                , *outp++ = result)
-    case DTYPE_W:
-        Operate(short, 0, 1, result = (short)(result + *pi0);
-                , *outp++ = result)
-    case DTYPE_WU:
-        Operate(unsigned short, 0, 1, result = (unsigned short)(result + *pi0);
-                , *outp++ = result)
-    case DTYPE_L:
-        Operate(int, 0, 1, result += *pi0;
-                , *outp++ = result)
-    case DTYPE_LU:
-        Operate(unsigned int, 0, 1, result += *pi0;
-                , *outp++ = result)
-    case DTYPE_QU:
-    case DTYPE_Q:
-        Operate(quadword, qzero, 1, TdiAddQuadword(pi0, &result, &result);
-                , *outp++ = result)
-    case DTYPE_OU:
-    case DTYPE_O:
-        Operate(octaword, ozero, 1, TdiAddOctaword(pi0, &result, &result);
-                , *outp++ = result)
-    case DTYPE_F:
-        OperateFsum(float, DTYPE_F)
-        case DTYPE_FS:OperateFsum(float, DTYPE_FS)
-        case DTYPE_G:OperateFsum(double, DTYPE_G)
-        case DTYPE_D:OperateFsum(double, DTYPE_D)
-        case DTYPE_FT:OperateFsum(double, DTYPE_FT)
-        case DTYPE_FC:OperateFsumc(float, DTYPE_F)
-        case DTYPE_FSC:OperateFsumc(float, DTYPE_FS)
-        case DTYPE_GC:OperateFsumc(double, DTYPE_G)
-        case DTYPE_DC:OperateFsumc(double, DTYPE_D)
-        case DTYPE_FTC:OperateFsumc(double, DTYPE_FT)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_B:
+    Operate(char, 0, 1, result = (char)(result + *pi0);, *outp++ = result)
+  case DTYPE_BU:
+    Operate(unsigned char, 0, 1, result = (unsigned char)(result + *pi0);, *outp++ = result)
+  case DTYPE_W:
+    Operate(short, 0, 1, result = (short)(result + *pi0);, *outp++ = result)
+  case DTYPE_WU:
+    Operate(unsigned short, 0, 1, result = (unsigned short)(result + *pi0);, *outp++ = result)
+  case DTYPE_L:
+    Operate(int, 0, 1, result += *pi0;, *outp++ = result)
+  case DTYPE_LU:
+    Operate(unsigned int, 0, 1, result += *pi0;, *outp++ = result)
+  case DTYPE_QU:
+  case DTYPE_Q:
+    Operate(quadword, qzero, 1, TdiAddQuadword(pi0, &result, &result);, *outp++ = result)
+  case DTYPE_OU:
+  case DTYPE_O:
+    Operate(octaword, ozero, 1, TdiAddOctaword(pi0, &result, &result);, *outp++ = result)
+  case DTYPE_F:
+    OperateFsum(float, DTYPE_F)
+    case DTYPE_FS:OperateFsum(float, DTYPE_FS)
+    case DTYPE_G:OperateFsum(double, DTYPE_G)
+    case DTYPE_D:OperateFsum(double, DTYPE_D)
+    case DTYPE_FT:OperateFsum(double, DTYPE_FT)
+    case DTYPE_FC:OperateFsumc(float, DTYPE_F)
+    case DTYPE_FSC:OperateFsumc(float, DTYPE_FS)
+    case DTYPE_GC:OperateFsumc(double, DTYPE_G)
+    case DTYPE_DC:OperateFsumc(double, DTYPE_D)
+    case DTYPE_FTC:OperateFsumc(double, DTYPE_FT)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 #define OperateFaccum(type,dtype) \
@@ -948,133 +853,119 @@ int Tdi3Sum(struct descriptor *in, struct descriptor *mask,
 }
 
 int Tdi3Accumulate(struct descriptor *in, struct descriptor *mask,
-                   struct descriptor *out, int count0, int count1, int count2,
-                   int step0, int step1, int step2)
+		   struct descriptor *out, int count0, int count1, int count2,
+		   int step0, int step1, int step2)
 {
-    SetupArgs switch (in->dtype) {
-    case DTYPE_B:
-        Operate(char, 0, 1, result = (char)(result + *pi0);
-                *outp++ = result;
-                , continue)
-    case DTYPE_BU:
-        Operate(unsigned char, 0, 1, result = (unsigned char)(result + *pi0);
-                *outp++ = result;
-                , continue)
-    case DTYPE_W:
-        Operate(short, 0, 1, result = (short)(result + *pi0);
-                *outp++ = result;
-                , continue)
-    case DTYPE_WU:
-        Operate(unsigned short, 0, 1, result = (unsigned short)(result + *pi0);
-                *outp++ = result;
-                , continue)
-    case DTYPE_L:
-        Operate(int, 0, 1, result += *pi0;
-                *outp++ = result;
-                , continue)
-    case DTYPE_LU:
-        Operate(unsigned int, 0, 1, result += *pi0;
-                *outp++ = result;
-                , continue)
-    case DTYPE_QU:
-    case DTYPE_Q:
-        Operate(quadword, qzero, 1, TdiAddQuadword(pi0, &result, &result);
-                *outp++ = result;
-                , continue)
-    case DTYPE_OU:
-    case DTYPE_O:
-        Operate(octaword, ozero, 1, TdiAddOctaword(pi0, &result, &result);
-                *outp++ = result;
-                , continue)
-    case DTYPE_F:
-        OperateFaccum(float, DTYPE_F)
-        case DTYPE_FS:OperateFaccum(float, DTYPE_FS)
-        case DTYPE_G:OperateFaccum(double, DTYPE_G)
-        case DTYPE_D:OperateFaccum(double, DTYPE_D)
-        case DTYPE_FT:OperateFaccum(double, DTYPE_FT)
-        case DTYPE_FC:OperateFaccumc(float, DTYPE_F)
-        case DTYPE_FSC:OperateFaccumc(float, DTYPE_FS)
-        case DTYPE_GC:OperateFaccumc(double, DTYPE_G)
-        case DTYPE_DC:OperateFaccumc(double, DTYPE_D)
-        case DTYPE_FTC:OperateFaccumc(double, DTYPE_FT)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  SetupArgs switch (in->dtype) {
+  case DTYPE_B:
+    Operate(char, 0, 1, result = (char)(result + *pi0); *outp++ = result;, continue)
+  case DTYPE_BU:
+    Operate(unsigned char, 0, 1, result = (unsigned char)(result + *pi0);
+	    *outp++ = result;, continue)
+  case DTYPE_W:
+    Operate(short, 0, 1, result = (short)(result + *pi0); *outp++ = result;, continue)
+  case DTYPE_WU:
+    Operate(unsigned short, 0, 1, result = (unsigned short)(result + *pi0);
+	    *outp++ = result;, continue)
+  case DTYPE_L:
+    Operate(int, 0, 1, result += *pi0; *outp++ = result;, continue)
+  case DTYPE_LU:
+    Operate(unsigned int, 0, 1, result += *pi0; *outp++ = result;, continue)
+  case DTYPE_QU:
+  case DTYPE_Q:
+    Operate(quadword, qzero, 1, TdiAddQuadword(pi0, &result, &result); *outp++ = result;, continue)
+  case DTYPE_OU:
+  case DTYPE_O:
+    Operate(octaword, ozero, 1, TdiAddOctaword(pi0, &result, &result); *outp++ = result;, continue)
+  case DTYPE_F:
+    OperateFaccum(float, DTYPE_F)
+    case DTYPE_FS:OperateFaccum(float, DTYPE_FS)
+    case DTYPE_G:OperateFaccum(double, DTYPE_G)
+    case DTYPE_D:OperateFaccum(double, DTYPE_D)
+    case DTYPE_FT:OperateFaccum(double, DTYPE_FT)
+    case DTYPE_FC:OperateFaccumc(float, DTYPE_F)
+    case DTYPE_FSC:OperateFaccumc(float, DTYPE_FS)
+    case DTYPE_GC:OperateFaccumc(double, DTYPE_G)
+    case DTYPE_DC:OperateFaccumc(double, DTYPE_D)
+    case DTYPE_FTC:OperateFaccumc(double, DTYPE_FT)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 int TdiLtO(unsigned int *in1, unsigned int *in2, int is_signed)
 {
-    int j, longwords = 4, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--)
-        if (!j || in1[j] != in2[j]) {
-            if (!is_signed || j != longwords - 1) {
-                k = (in1[j] < in2[j]);
-                break;
-            } else {
-                i1 = (int *)(in1 + j);
-                i2 = (int *)(in2 + j);
-                k = (*i1 < *i2);
-                break;
-            }
-        }
-    return k;
+  int j, longwords = 4, k = 0, *i1, *i2;
+  for (j = longwords - 1; j >= 0; j--)
+    if (!j || in1[j] != in2[j]) {
+      if (!is_signed || j != longwords - 1) {
+	k = (in1[j] < in2[j]);
+	break;
+      } else {
+	i1 = (int *)(in1 + j);
+	i2 = (int *)(in2 + j);
+	k = (*i1 < *i2);
+	break;
+      }
+    }
+  return k;
 }
 
 int TdiGtO(unsigned int *in1, unsigned int *in2, int is_signed)
 {
-    int j, longwords = 4, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--) {
-        if (!j || in1[j] != in2[j]) {
-            if (!is_signed || j != longwords - 1) {
-                k = (in1[j] > in2[j]);
-                break;
-            } else {
-                i1 = (int *)(in1 + j);
-                i2 = (int *)(in2 + j);
-                k = (*i1 > *i2);
-                break;
-            }
-        }
+  int j, longwords = 4, k = 0, *i1, *i2;
+  for (j = longwords - 1; j >= 0; j--) {
+    if (!j || in1[j] != in2[j]) {
+      if (!is_signed || j != longwords - 1) {
+	k = (in1[j] > in2[j]);
+	break;
+      } else {
+	i1 = (int *)(in1 + j);
+	i2 = (int *)(in2 + j);
+	k = (*i1 > *i2);
+	break;
+      }
     }
-    return k;
+  }
+  return k;
 }
 
 int TdiLtQ(unsigned int *in1, unsigned int *in2, int is_signed)
 {
-    int j, longwords = 2, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--) {
-        if (!j || in1[j] != in2[j]) {
-            if (!is_signed || j != longwords - 1) {
-                k = (in1[j] < in2[j]);
-                break;
-            } else {
-                i1 = (int *)(in1 + j);
-                i2 = (int *)(in2 + j);
-                k = (*i1 < *i2);
-                break;
-            }
-        }
+  int j, longwords = 2, k = 0, *i1, *i2;
+  for (j = longwords - 1; j >= 0; j--) {
+    if (!j || in1[j] != in2[j]) {
+      if (!is_signed || j != longwords - 1) {
+	k = (in1[j] < in2[j]);
+	break;
+      } else {
+	i1 = (int *)(in1 + j);
+	i2 = (int *)(in2 + j);
+	k = (*i1 < *i2);
+	break;
+      }
     }
-    return k;
+  }
+  return k;
 }
 
 int TdiGtQ(unsigned int *in1, unsigned int *in2, int is_signed)
 {
-    int j, longwords = 2, k = 0, *i1, *i2;
-    for (j = longwords - 1; j >= 0; j--) {
-        if (!j || in1[j] != in2[j]) {
-            if (!is_signed || j != longwords - 1) {
-                k = (in1[j] > in2[j]);
-                break;
-            } else {
-                i1 = (int *)(in1 + j);
-                i2 = (int *)(in2 + j);
-                k = (*i1 > *i2);
-                break;
-            }
-        }
+  int j, longwords = 2, k = 0, *i1, *i2;
+  for (j = longwords - 1; j >= 0; j--) {
+    if (!j || in1[j] != in2[j]) {
+      if (!is_signed || j != longwords - 1) {
+	k = (in1[j] > in2[j]);
+	break;
+      } else {
+	i1 = (int *)(in1 + j);
+	i2 = (int *)(in2 + j);
+	k = (*i1 > *i2);
+	break;
+      }
     }
-    return k;
+  }
+  return k;
 }
 
 /*  CMS REPLACEMENT HISTORY, Element Tdi3MaxVal.C */

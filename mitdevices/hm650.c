@@ -31,13 +31,13 @@ Note also that the front panel VETO and CLR inputs may inhibit action.
 #include "devroutines.h"
 
 extern int TdiCompile();
-static int one=1;
+static int one = 1;
 #define min(a,b) ((a)<(b) ? (a) : (b))
 #define max(a,b) ((a)>(b) ? (a) : (b))
 #define pio(f,a,d,mem)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, mem, 0), &one, &one),status)
 #define return_on_error(f,retstatus) if (!((status = f) & 1)) return retstatus;
 
-int hm650___init(struct descriptor *niddsc, InInitStruct *setup)
+int hm650___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = 1;
   int dly_status = 1;
@@ -45,13 +45,13 @@ int hm650___init(struct descriptor *niddsc, InInitStruct *setup)
   unsigned short int_threshold;
   int i;
   float delays[8];
-  int zero=0;
+  int zero = 0;
 
-  pio(21,0,&zero,16);
-  
-  int_threshold = (setup->threshold+2.5)/5. * 4095;
+  pio(21, 0, &zero, 16);
+
+  int_threshold = (setup->threshold + 2.5) / 5. * 4095;
   int_threshold = (min(max(int_threshold, 0), 4095));
-  pio(17,0,&int_threshold,16);
+  pio(17, 0, &int_threshold, 16);
 
   delays[0] = setup->delay_0;
   delays[1] = setup->delay_1;
@@ -61,59 +61,68 @@ int hm650___init(struct descriptor *niddsc, InInitStruct *setup)
   delays[5] = setup->delay_5;
   delays[6] = setup->delay_6;
   delays[7] = setup->delay_7;
-  for (i=0; i<8; i++) {
+  for (i = 0; i < 8; i++) {
     unsigned short ndelay;
     static float delay;
     static DESCRIPTOR(expr, "BUILD_WITH_UNITS($ + $/1E-9, S)");
-    static DESCRIPTOR_FLOAT(delay_dsc,&delay);
-    static DESCRIPTOR_NID(trig_dsc,0);
+    static DESCRIPTOR_FLOAT(delay_dsc, &delay);
+    static DESCRIPTOR_NID(trig_dsc, 0);
     delay = delays[i];
     if (delay < 20.) {
       delay = 20;
       dly_status = HM650$_DLYCHNG;
     }
     if (delay <= 102.375)
-      ndelay = (int)(delay/102.4*4096);
+      ndelay = (int)(delay / 102.4 * 4096);
     else if (delay <= 1023.74)
-      ndelay = ((int)(delay/1024.*4096)) | (1<<12);
+      ndelay = ((int)(delay / 1024. * 4096)) | (1 << 12);
     else if (delay <= 10237.5)
-      ndelay = ((int)(delay/10240.*4096)) | (2<<12);
+      ndelay = ((int)(delay / 10240. * 4096)) | (2 << 12);
     else if (delay <= 102375.)
-      ndelay = ((int)(delay/102400.*4096)) | (3<<12);
+      ndelay = ((int)(delay / 102400. * 4096)) | (3 << 12);
     else {
-      dly_status = HM650$_DLYCHNG;     
+      dly_status = HM650$_DLYCHNG;
       ndelay = 0xFFFF;
     }
-    pio(16,i,&ndelay,16);
-    if (status&1)
-    {
-      static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+    pio(16, i, &ndelay, 16);
+    if (status & 1) {
+      static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
       int trig_in = setup->head_nid + HM650_N_TRIG_IN_0 + i;
       int trig_out = setup->head_nid + HM650_N_TRIG_OUT_0 + i;
-      delay = (ndelay | 0xFFF)/4096.*102.4;
+      delay = (ndelay | 0xFFF) / 4096. * 102.4;
       switch (ndelay >> 12) {
-        case 1: delay *= 10; break;
-        case 2: delay *= 100.; break;
-        case 3: delay *= 1000.; break;
+      case 1:
+	delay *= 10;
+	break;
+      case 2:
+	delay *= 100.;
+	break;
+      case 3:
+	delay *= 1000.;
+	break;
       }
       trig_dsc.pointer = (char *)&trig_in;
       put_status = TdiCompile(&expr, &trig_dsc, &delay_dsc MDS_END_ARG);
-      if (put_status&2)
-        put_status = TreePutRecord(trig_out, (struct descriptor *)&out_xd,0);
+      if (put_status & 2)
+	put_status = TreePutRecord(trig_out, (struct descriptor *)&out_xd, 0);
     }
   }
 
   pio(21, 0, &zero, 16);
 
-  if ((status&1) == 0) return status;
-  else if ((dly_status&1) == 0) return dly_status;
-  else if ((put_status&1) == 0) return put_status;
-  else return 1;
+  if ((status & 1) == 0)
+    return status;
+  else if ((dly_status & 1) == 0)
+    return dly_status;
+  else if ((put_status & 1) == 0)
+    return put_status;
+  else
+    return 1;
 }
 
-int hm650___trigger(struct descriptor *niddsc, InTriggerStruct *setup)
+int hm650___trigger(struct descriptor *niddsc, InTriggerStruct * setup)
 {
   int status;
-  pio(25,0,0,16);
+  pio(25, 0, 0, 16);
   return status;
 }

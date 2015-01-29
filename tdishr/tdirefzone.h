@@ -4,26 +4,26 @@
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
 struct TdiZoneStruct {
-		char	*a_begin;		/*beginning of text	*/
-		char	*a_cur;			/*current character	*/
-		char	*a_end;			/*end of buffer	+ 1	*/
-		int	l_ok;			/*parsed correctly	*/
-		int	l_status;		/*error code		*/
-		void 	*l_zone;		/*virtual memory zone	*/
-		struct descriptor_d *a_result; /*the answer		*/
-		int	l_narg;			/*number of arguments	*/
-		int	l_iarg;			/*current arguments	*/
-		struct descriptor **a_list;	/*first argument	*/
-		int     l_rel_path;		/*keep relative paths	*/
+  char *a_begin;		/*beginning of text     */
+  char *a_cur;			/*current character     */
+  char *a_end;			/*end of buffer + 1     */
+  int l_ok;			/*parsed correctly      */
+  int l_status;			/*error code            */
+  void *l_zone;			/*virtual memory zone   */
+  struct descriptor_d *a_result;	/*the answer             */
+  int l_narg;			/*number of arguments   */
+  int l_iarg;			/*current arguments     */
+  struct descriptor **a_list;	/*first argument        */
+  int l_rel_path;		/*keep relative paths   */
 };
 extern struct TdiZoneStruct TdiRefZone;
 
 #include <libroutines.h>
 
 struct marker {
-		struct descriptor_r	*rptr;
-		short			builtin;
-		unsigned short		w_ok;
+  struct descriptor_r *rptr;
+  short builtin;
+  unsigned short w_ok;
 };
 	/*--------------------------------------------------
 	Definitions needed by Lex and friends.
@@ -72,4 +72,3 @@ struct marker {
 	Give an extra semicolon. Must be able to unput.
 	Caution: side effect--unput changes c pointer.
 	**********************************************/
-

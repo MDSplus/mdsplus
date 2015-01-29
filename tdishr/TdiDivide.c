@@ -33,18 +33,17 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 #include <mdstypes.h>
 #include <tdimessages.h>
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
+STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();
 extern void DoubleToWideInt();
 STATIC_CONSTANT int roprand = 0x8000;
 typedef struct {
-    int longword[2];
+  int longword[2];
 } quadword;
 typedef struct {
-    int longword[4];
+  int longword[4];
 } octaword;
 
 #define SetupArgs \
@@ -179,38 +178,37 @@ typedef struct {
   break;\
 }
 
-int Tdi3Divide(struct descriptor *in1, struct descriptor *in2,
-               struct descriptor *out)
+int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
-    SetupArgs switch (in1->dtype) {
-    case DTYPE_B:
-        Operate(char)
-        case DTYPE_BU:Operate(unsigned char)
-        case DTYPE_W:Operate(short)
-        case DTYPE_WU:Operate(unsigned short)
-        case DTYPE_L:Operate(int)
-        case DTYPE_LU:Operate(unsigned int)
-        case DTYPE_Q:Operate(int64_t);
-    case DTYPE_QU:
-        Operate(uint64_t);
-    case DTYPE_O:
-        OperateWide(octaword, 4, 1);
-    case DTYPE_OU:
-        OperateWide(octaword, 4, 0);
-    case DTYPE_F:
-        OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
-        case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
-        case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
-        case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
-        case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
-        case DTYPE_FC:OperateC(float, DTYPE_F)
-        case DTYPE_FSC:OperateC(float, DTYPE_FS)
-        case DTYPE_GC:OperateC(double, DTYPE_G)
-        case DTYPE_DC:OperateC(double, DTYPE_D)
-        case DTYPE_FTC:OperateC(double, DTYPE_FT)
-        default:return TdiINVDTYDSC;
-    }
-    return 1;
+  SetupArgs switch (in1->dtype) {
+  case DTYPE_B:
+    Operate(char)
+    case DTYPE_BU:Operate(unsigned char)
+    case DTYPE_W:Operate(short)
+    case DTYPE_WU:Operate(unsigned short)
+    case DTYPE_L:Operate(int)
+    case DTYPE_LU:Operate(unsigned int)
+    case DTYPE_Q:Operate(int64_t);
+  case DTYPE_QU:
+    Operate(uint64_t);
+  case DTYPE_O:
+    OperateWide(octaword, 4, 1);
+  case DTYPE_OU:
+    OperateWide(octaword, 4, 0);
+  case DTYPE_F:
+    OperateF(float, DTYPE_F, DTYPE_NATIVE_FLOAT)
+    case DTYPE_FS:OperateF(float, DTYPE_FS, DTYPE_NATIVE_FLOAT)
+    case DTYPE_G:OperateF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_D:OperateF(double, DTYPE_D, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FT:OperateF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
+    case DTYPE_FC:OperateC(float, DTYPE_F)
+    case DTYPE_FSC:OperateC(float, DTYPE_FS)
+    case DTYPE_GC:OperateC(double, DTYPE_G)
+    case DTYPE_DC:OperateC(double, DTYPE_D)
+    case DTYPE_FTC:OperateC(double, DTYPE_FT)
+    default:return TdiINVDTYDSC;
+  }
+  return 1;
 }
 
 /*  CMS REPLACEMENT HISTORY, Element Tdi3Divide.C */

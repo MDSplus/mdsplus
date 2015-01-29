@@ -1578,9 +1578,17 @@ public:
 	}
 
 	virtual ~Apd() {
+	    for(size_t i = 0; i < descs.size(); i++)
+	    {
+		if(descs[i])
+		    descs[i]->decRefCount();
+	    }
+	}
+/*  CANNOT WORK: Some pointers may be empty!!
+	virtual ~Apd() {
 		std::for_each(descs.begin(), descs.end(), (void (&)(Data *))decRefCount);
 	}
-
+*/
 	virtual bool hasChanged() {
 		if (changed || !isImmutable())
 			return true;
@@ -1614,15 +1622,22 @@ public:
 	}
 
 	void setDescAt(std::size_t i, Data * data) {
-		descs.insert(descs.begin() + i, data);
+		if(descs.size() <= i)
+		{
+		    for(size_t j = descs.size(); j < i; j++)
+			descs.push_back(NULL);
+		    descs.push_back(data);
+		}
+		else
+//INSERT AND BEGIN() WORK ONLY IF VECTOR NON EMPTY!!		      
+		    descs.insert(descs.begin() + i, data);
 		data->incRefCount();
 		changed = true;
-	}
-
+	} 
 	void appendDesc(Data * data)
 	{
 		descs.push_back(data);
-		data->incRefCount();
+		if(data) data->incRefCount();
 	}
 	void *convertToDsc();
 

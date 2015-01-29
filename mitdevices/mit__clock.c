@@ -12,30 +12,30 @@
 
 typedef struct descriptor *Dptr;
 
-extern int mit__clock___get_setup(Dptr,InGet_setupStruct *);
+extern int mit__clock___get_setup(Dptr, InGet_setupStruct *);
 extern int GenDeviceFree();
 
-int mit__clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup *setup, EventMask *event_mask, Dptr *output)
+int mit__clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup * setup,
+			  EventMask * event_mask, Dptr * output)
 {
   int status;
   InGet_setupStruct s;
-  status = mit__clock___get_setup(niddsc_ptr,&s);
-  if (status & 1)
-  {
+  status = mit__clock___get_setup(niddsc_ptr, &s);
+  if (status & 1) {
     static int output_nid;
-    static DESCRIPTOR_NID(output_dsc,(char *)&output_nid);
+    static DESCRIPTOR_NID(output_dsc, (char *)&output_nid);
     int invert = 0;
     int start_low_nid = s.head_nid + MIT__CLOCK_N_START_LOW;
     float max_period;
     float period;
     int pulses;
     int clock_source;
-    memset(event_mask,0,sizeof(EventMask));
+    memset(event_mask, 0, sizeof(EventMask));
     invert = TreeIsOn(start_low_nid);
     invert = (invert == TreeOFF) || (invert == TreeBOTH_OFF);
-    max_period = 1/s.frequency;
+    max_period = 1 / s.frequency;
     for (clock_source = EXT_1MHZ, period = 1E-6;
-       period * 65534 < max_period && clock_source <= EXT_100HZ; clock_source++, period *= 10);
+	 period * 65534 < max_period && clock_source <= EXT_100HZ; clock_source++, period *= 10) ;
     setup->output_control = TOGGLE;
     setup->start_high = invert;
     setup->count_up = 0;
@@ -46,21 +46,18 @@ int mit__clock__get_setup(Dptr niddsc_ptr, Dptr method, DecoderSetup *setup, Eve
     setup->clock_source = clock_source;
     setup->falling_edge = 0;
     setup->gating = GATE_NONE;
-    pulses = max_period/period + .4999;
+    pulses = max_period / period + .4999;
     setup->load = pulses * s.duty_cycle + .4999;
     setup->hold = pulses - setup->load;
-    if (setup->load == 0)
-    {
+    if (setup->load == 0) {
       setup->load++;
       setup->hold--;
     }
-    if (setup->hold == 0)
-    {
+    if (setup->hold == 0) {
       setup->load--;
       setup->hold++;
     }
-    if (invert)
-    {
+    if (invert) {
       int tmp = setup->load;
       setup->load = setup->hold;
       setup->hold = tmp;

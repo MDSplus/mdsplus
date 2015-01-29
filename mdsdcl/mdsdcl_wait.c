@@ -1,4 +1,4 @@
-#define _GNU_SOURCE /* glibc2 needs this */
+#define _GNU_SOURCE		/* glibc2 needs this */
 #include <config.h>
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
@@ -25,125 +25,122 @@
 *
 ************************************************************************/
 
-
 #if defined(vms)
-int   sys$bintim();
-int   sys$setimr();
-int   sys$waitfr();
+int sys$bintim();
+int sys$setimr();
+int sys$waitfr();
 #else
-static void  no_op()  {return;}
+static void no_op()
+{
+  return;
+}
 #endif
-
 
 	/**************************************************************
 	 * mdsdcl_wait:
 	 **************************************************************/
-int   mdsdcl_wait()		/* Return:  status			*/
-   {
-    int   k;
-    int   sts;
+int mdsdcl_wait()
+{				/* Return:  status                        */
+  int k;
+  int sts;
 #if defined(vms)
-    int   efn;
-    unsigned int   bintim[2];
+  int efn;
+  unsigned int bintim[2];
 #else
-    int   day,hr,min,sec,millisec;
-    int   nsec;
-    float fsec;
+  int day, hr, min, sec, millisec;
+  int nsec;
+  float fsec;
 #if !defined(_WIN32)
 #ifdef _NO_THREADS
-    struct itimerval  value;		/* Two "timeval" structs	*/
+  struct itimerval value;	/* Two "timeval" structs        */
 #else
-    struct timespec timer;
+  struct timespec timer;
 #endif
 #endif
 #endif
-    static DYNAMIC_DESCRIPTOR(dsc_deltatime);
+  static DYNAMIC_DESCRIPTOR(dsc_deltatime);
 
-    sts = cli_get_value("DELTA_TIME",&dsc_deltatime);
-    if (~sts & 1)
-        return(sts);
+  sts = cli_get_value("DELTA_TIME", &dsc_deltatime);
+  if (~sts & 1)
+    return (sts);
 
 #if defined(vms)
-    sts = sys$bintim(&dsc_deltatime,bintim);
-    if (sts & 1)
-       {
-        lib$get_ef(&efn);
-        sys$setimr(efn,bintim,0,0);
-        sys$waitfr(efn);
-        lib$free_ef(&efn);
-       }
+  sts = sys$bintim(&dsc_deltatime, bintim);
+  if (sts & 1) {
+    lib$get_ef(&efn);
+    sys$setimr(efn, bintim, 0, 0);
+    sys$waitfr(efn);
+    lib$free_ef(&efn);
+  }
 #else
-    k = sscanf(dsc_deltatime.dscA_pointer,"%d %d:%d:%f",
-                &day,&hr,&min,&fsec);
-    if (k != 4)
-       {
-        MdsMsg(0,"--> invalid time string");
-        return(CLI_STS_BADLINE);
-       }
-    if (hr < 0) hr=-hr;
-    sec = (int)fsec;
-    millisec = (int)((fsec - (float)sec) * 1000.);
-    nsec = sec + 60*(min + 60*(hr + 24*day));
+  k = sscanf(dsc_deltatime.dscA_pointer, "%d %d:%d:%f", &day, &hr, &min, &fsec);
+  if (k != 4) {
+    MdsMsg(0, "--> invalid time string");
+    return (CLI_STS_BADLINE);
+  }
+  if (hr < 0)
+    hr = -hr;
+  sec = (int)fsec;
+  millisec = (int)((fsec - (float)sec) * 1000.);
+  nsec = sec + 60 * (min + 60 * (hr + 24 * day));
 #if defined(_WIN32)
-	millisec += nsec * 1000;
-	Sleep(millisec);
+  millisec += nsec * 1000;
+  Sleep(millisec);
 #elif defined(_NO_THREADS)
 
-    getitimer(ITIMER_REAL,&value);
+  getitimer(ITIMER_REAL, &value);
 
-    value.it_value.tv_sec = nsec;
-    value.it_value.tv_usec = millisec;
-    setitimer(ITIMER_REAL,&value,0);
+  value.it_value.tv_sec = nsec;
+  value.it_value.tv_usec = millisec;
+  setitimer(ITIMER_REAL, &value, 0);
 
-    getitimer(ITIMER_REAL,&value);
-    signal(SIGALRM,no_op);		/* declare handler routine	*/
-    sigpause(SIGALRM);
+  getitimer(ITIMER_REAL, &value);
+  signal(SIGALRM, no_op);	/* declare handler routine      */
+  sigpause(SIGALRM);
 #else
-    {
+  {
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_condattr_default NULL
 #define pthread_mutexattr_default NULL
 #endif
-      static pthread_cond_t wait_cond;
-      static pthread_mutex_t wait_mutex;
-      static int initialized = 0;
-      struct timespec abstime;
-      struct timeb now;
-      if (!initialized)
-      {
-        pthread_cond_init(&wait_cond,pthread_condattr_default);
-        pthread_mutex_init(&wait_mutex,pthread_mutexattr_default);
-        initialized = 1;
-      }
+    static pthread_cond_t wait_cond;
+    static pthread_mutex_t wait_mutex;
+    static int initialized = 0;
+    struct timespec abstime;
+    struct timeb now;
+    if (!initialized) {
+      pthread_cond_init(&wait_cond, pthread_condattr_default);
+      pthread_mutex_init(&wait_mutex, pthread_mutexattr_default);
+      initialized = 1;
+    }
 #ifdef HAVE_GETTIMEOFDAY
-      {  /* ftime is deprecated unix... Thus doesn't exist on MacOS X */
-        struct timeval tv;
-        gettimeofday(&tv,NULL);
-        abstime.tv_sec = tv.tv_sec + nsec;
-        abstime.tv_nsec = (tv.tv_usec + millisec * 1000) * 1000;
-      }
+    {				/* ftime is deprecated unix... Thus doesn't exist on MacOS X */
+      struct timeval tv;
+      gettimeofday(&tv, NULL);
+      abstime.tv_sec = tv.tv_sec + nsec;
+      abstime.tv_nsec = (tv.tv_usec + millisec * 1000) * 1000;
+    }
 #else
-      ftime(&now);
-      abstime.tv_sec = now.time + nsec;
-      abstime.tv_nsec = (now.millitm + millisec) * 1000000;
+    ftime(&now);
+    abstime.tv_sec = now.time + nsec;
+    abstime.tv_nsec = (now.millitm + millisec) * 1000000;
 #endif
-      if (abstime.tv_nsec > 1000000000)
-      {
-        abstime.tv_nsec -= 1000000000;
-        abstime.tv_sec++;
-      }
-      /*
-      pthread_get_expiration_np(&delta_time,&abstime);
-      */
-      pthread_cond_timedwait(&wait_cond,&wait_mutex,&abstime);
+    if (abstime.tv_nsec > 1000000000) {
+      abstime.tv_nsec -= 1000000000;
+      abstime.tv_sec++;
     }
     /*
-    timer.tv_sec = nsec;
-    timer.tv_nsec = millisec * 1000000;
-    pthread_delay_np(&timer);
-    */
+       pthread_get_expiration_np(&delta_time,&abstime);
+     */
+    pthread_cond_timedwait(&wait_cond, &wait_mutex, &abstime);
+  }
+  /*
+     timer.tv_sec = nsec;
+     timer.tv_nsec = millisec * 1000000;
+     pthread_delay_np(&timer);
+   */
 #endif
-    sts = 1;
+  sts = 1;
 #endif
-    return(sts);
-   }
+  return (sts);
+}

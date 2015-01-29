@@ -46,7 +46,6 @@ Widget XmdsXdBoxDialogButtonGetXdBox(Widget w);
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 #include <Xm/PushB.h>
 #include <Xmds/XmdsXdBoxDialogButton.h>
@@ -55,11 +54,9 @@ Widget XmdsXdBoxDialogButtonGetXdBox(Widget w);
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 
-
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-typedef struct _Resources
-{
+typedef struct _Resources {
   int nid;
   int nid_offset;
   Boolean put_on_apply;
@@ -67,46 +64,49 @@ typedef struct _Resources
 } Resources;
 
 static Resources *GetResources(Widget w);
-static void Destroy(Widget w,Resources *info,XtPointer cb);
-static void Popup(Widget w,Resources *info,XtPointer cb);
+static void Destroy(Widget w, Resources * info, XtPointer cb);
+static void Popup(Widget w, Resources * info, XtPointer cb);
 
-static XtResource resources[] = 
-{
+static XtResource resources[] = {
   {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid), XmRImmediate, 0},
   {XmdsNnidOffset, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
-  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),XmRImmediate, (void *) 1}
+  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),
+   XmRImmediate, (void *)1}
 };
 
-Widget XmdsCreateXdBoxDialogButton(Widget parent,String name,ArgList args,Cardinal argcount)
+Widget XmdsCreateXdBoxDialogButton(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
   Resources *info = (Resources *) XtMalloc(sizeof(Resources));
-  Resources default_info = {0,0,1,0};
+  Resources default_info = { 0, 0, 1, 0 };
   *info = default_info;
-  XmdsSetSubvalues(info,resources,XtNumber(resources),args,argcount);
+  XmdsSetSubvalues(info, resources, XtNumber(resources), args, argcount);
   if (info->nid == -1)
     info->nid = XmdsGetDeviceNid();
-  w = XmCreatePushButton(parent,name,args,argcount);
+  w = XmCreatePushButton(parent, name, args, argcount);
   {
-    Arg arglist[] = {{XmdsNnid, 0},
-		       {XmdsNnidOffset, 0},
-		       {XmdsNputOnApply, 0}};
+    Arg arglist[] = { {XmdsNnid, 0}
+    ,
+    {XmdsNnidOffset, 0}
+    ,
+    {XmdsNputOnApply, 0}
+    };
     arglist[0].value = info->nid;
     arglist[1].value = info->nid_offset;
     arglist[2].value = info->put_on_apply;
-    info->popup_w = XmdsCreateXdBoxDialog(parent,name,arglist,XtNumber(arglist));
+    info->popup_w = XmdsCreateXdBoxDialog(parent, name, arglist, XtNumber(arglist));
   }
-  XtAddCallback(w,XmNdestroyCallback,(XtCallbackProc)Destroy,info);
-  XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)Popup,info);
+  XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, info);
+  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) Popup, info);
   return w;
 }
 
-static void Destroy(Widget w,Resources *info,XtPointer cb)
+static void Destroy(Widget w, Resources * info, XtPointer cb)
 {
   XtFree((char *)info);
 }
 
-static void Popup(Widget w,Resources *info,XtPointer cb)
+static void Popup(Widget w, Resources * info, XtPointer cb)
 {
   if (info->popup_w)
     XmdsManageWindow(info->popup_w);
@@ -120,12 +120,14 @@ Boolean XmdsIsXdBoxDialogButton(Widget w)
 static Resources *GetResources(Widget w)
 {
   Resources *answer = 0;
-  if (XmIsPushButton(w) && (XtHasCallbacks(w,XmNdestroyCallback) == XtCallbackHasSome))
-  {
+  if (XmIsPushButton(w) && (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
     XtCallbackList callbacks;
-    XtVaGetValues(w,XmNdestroyCallback,&callbacks,NULL);
-    for (; callbacks->callback && !(answer = (Resources *)((callbacks->callback == (XtCallbackProc)Destroy) ? 
-                callbacks->closure : 0)); callbacks = callbacks + 1);
+    XtVaGetValues(w, XmNdestroyCallback, &callbacks, NULL);
+    for (;
+	 callbacks->callback
+	 && !(answer =
+	      (Resources *) ((callbacks->callback == (XtCallbackProc) Destroy) ? callbacks->
+			     closure : 0)); callbacks = callbacks + 1) ;
   }
   return answer;
 }

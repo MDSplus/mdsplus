@@ -33,10 +33,10 @@
 
 /* Resources */
 
-#define XmdsNnid               "nid"	        /* Nid */
+#define XmdsNnid               "nid"	/* Nid */
 #define XmdsNnidOffset         "nidOffset"	/* Nid offset */
-#define XmdsNshowPath          "showPath"	        /* Nid */
-#define XmdsNputOnApply        "putOnApply"        /* Put when a XmdsApplyAllXds is called */
+#define XmdsNshowPath          "showPath"	/* Nid */
+#define XmdsNputOnApply        "putOnApply"	/* Put when a XmdsApplyAllXds is called */
 
 /* External creation routines:
 */
@@ -44,17 +44,18 @@
 
 extern Widget XmdsCreateOnOffToggleButton();
 extern Boolean XmdsIsOnOffToggleButton();
-extern int    XmdsOnOffToggleButtonApply();
-extern int    XmdsOnOffToggleButtonPut();
-extern void   XmdsOnOffToggleButtonReset();
+extern int XmdsOnOffToggleButtonApply();
+extern int XmdsOnOffToggleButtonPut();
+extern void XmdsOnOffToggleButtonReset();
 
 #else				/* _NO_PROTO */
 
-extern Widget	XmdsCreateOnOffToggleButton(Widget parent,String name,ArgList args,Cardinal argcount);
-extern Boolean	XmdsIsOnOffToggleButton(Widget w);
-extern int	XmdsOnOffToggleButtonApply(Widget w);
-extern int	XmdsOnOffToggleButtonPut(Widget w);
-extern void	XmdsOnOffToggleButtonReset(Widget w);
+extern Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
+					  Cardinal argcount);
+extern Boolean XmdsIsOnOffToggleButton(Widget w);
+extern int XmdsOnOffToggleButtonApply(Widget w);
+extern int XmdsOnOffToggleButtonPut(Widget w);
+extern void XmdsOnOffToggleButtonReset(Widget w);
 
 #endif				/* _NO_PROTO */
 

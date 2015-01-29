@@ -9,10 +9,10 @@
 #define J412_N_NUM_CYCLES 7
 #define J412_N_INIT_ACTION 8
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int num_cycles;
-	struct descriptor *set_points;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int num_cycles;
+  struct descriptor *set_points;
 } InInitStruct;

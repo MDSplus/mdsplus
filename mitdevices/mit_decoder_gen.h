@@ -15,8 +15,8 @@
 #define MIT_DECODER_N_CHANNEL_4_PSEUDO_DEV 13
 #define MIT_DECODER_N_INIT_ACTION 14
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InInitStruct;

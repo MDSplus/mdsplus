@@ -20,23 +20,22 @@ int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <librtl_messages.h>
 #include <treeshr.h>
 
-struct  _table {
-    short   code;
-    float   value;
-    };
+struct _table {
+  short code;
+  float value;
+};
 
 int GenDeviceCvtFloatCode(code_ptr, value, table, dimension)
 short *code_ptr;
 float value;
 struct _table table[];
 int dimension;
-{ 
+{
 
 /*------------------------------------------------------------------------------
 
@@ -54,20 +53,20 @@ int dimension;
 
  Global variables:                                                            */
 
-
 /*------------------------------------------------------------------------------
 
  Local variables:                                                             */
 
-    register int	current;
+  register int current;
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-    for(current = 0; (value != (float)table[current].value) && (current < dimension); current++)
-	;
-    if(current == dimension) return LibKEYNOTFOU;
-    else *code_ptr = table[current].code;
-    return TreeNORMAL;
+  for (current = 0; (value != (float)table[current].value) && (current < dimension); current++) ;
+  if (current == dimension)
+    return LibKEYNOTFOU;
+  else
+    *code_ptr = table[current].code;
+  return TreeNORMAL;
 }

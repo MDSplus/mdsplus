@@ -1,14 +1,14 @@
 // check_for_file.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -37,29 +37,29 @@
 //-------------------------------------------------------------------------
 // See if database file exists
 //
-// input:	file to check
-// output:	status (ie SUCCESS or ERROR)
+// input:       file to check
+// output:      status (ie SUCCESS or ERROR)
 //-------------------------------------------------------------------------
-int check_for_file( char *FileName )
+int check_for_file(char *FileName)
 {
-	int		fd, status;
+  int fd, status;
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "check_for_file('%s')\n", FileName );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("check_for_file('%s')\n", FileName);
 
-	if( (fd = Open(FileName, O_RDONLY)) < 0 ) { 	// file does not exist, yet
-		status = FILE_ERROR;							// :<
-		goto Filecheck_Exit;
-	}
+  if ((fd = Open(FileName, O_RDONLY)) < 0) {	// file does not exist, yet
+    status = FILE_ERROR;	// :<
+    goto Filecheck_Exit;
+  }
+  // things are good !
+  close(fd);
+  status = SUCCESS;		// :>
 
-	// things are good !
-	close(fd);
-	status = SUCCESS;									// :>
+ Filecheck_Exit:
+  if (MSGLVL(DETAILS)) {
+    printf("check_for_file('%s'): ", FileName);
+    ShowStatus(status);
+  }
 
-Filecheck_Exit:
-	if( MSGLVL(DETAILS) ) {
-		printf( "check_for_file('%s'): ", FileName ); ShowStatus( status );
-	}
-
-	return status;
+  return status;
 }

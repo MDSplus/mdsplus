@@ -67,14 +67,14 @@
 #define J221_N_OUTPUT_12_MODE 65
 #define J221_N_INIT_ACTION 66
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InTriggerStruct;

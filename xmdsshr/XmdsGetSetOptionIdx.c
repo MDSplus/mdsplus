@@ -32,11 +32,10 @@ int XmdsGetOptionIdx(Widget w);
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
-void XmdsSetOptionIdx(Widget w,int idx);
+void XmdsSetOptionIdx(Widget w, int idx);
 int XmdsGetOptionIdx(Widget w);
 /*------------------------------------------------------------------------------
 
@@ -64,17 +63,16 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
  Executable:                                                                  */
 
-void XmdsSetOptionIdx(Widget w,int idx)
+void XmdsSetOptionIdx(Widget w, int idx)
 {
   static Widget pulldown;
-  XtVaGetValues(w,XmNsubMenuId,&pulldown,NULL);
-  if (pulldown)
-  {
+  XtVaGetValues(w, XmNsubMenuId, &pulldown, NULL);
+  if (pulldown) {
     static Widget *options;
     static Cardinal num_options;
-    XtVaGetValues(pulldown,XmNchildren,&options,XmNnumChildren,&num_options,NULL);
+    XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
     if (idx < num_options)
-      XtVaSetValues(w,XmNmenuHistory,options[idx],NULL);
+      XtVaSetValues(w, XmNmenuHistory, options[idx], NULL);
   }
 }
 
@@ -83,16 +81,14 @@ int XmdsGetOptionIdx(Widget w)
   int idx = -1;
   static Widget pulldown;
   static Widget option;
-  XtVaGetValues(w,XmNsubMenuId,&pulldown,XmNmenuHistory,&option,NULL);
-  if (pulldown && option)
-  {
+  XtVaGetValues(w, XmNsubMenuId, &pulldown, XmNmenuHistory, &option, NULL);
+  if (pulldown && option) {
     static Widget *options;
     static Cardinal num_options;
     int i;
-    XtVaGetValues(pulldown,XmNchildren,&options,XmNnumChildren,&num_options,NULL);
+    XtVaGetValues(pulldown, XmNchildren, &options, XmNnumChildren, &num_options, NULL);
     for (i = 0; i < num_options; i++)
-      if (options[i] == option)
-      {
+      if (options[i] == option) {
 	idx = i;
 	break;
       }

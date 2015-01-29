@@ -23,7 +23,6 @@ extern int MDSprintf(char *fmt, ...);
 *
 ************************************************************************/
 
-
 	/****************************************************************
 	 * mdsdcl_show_vm:
 	 ****************************************************************/
@@ -32,15 +31,15 @@ extern int MDSprintf(char *fmt, ...);
 #define _tolower(c) (((c) >= 'A' && (c) <= 'Z') ? (c) | 0x20 : (c))
 #endif
 
-int   MDSDCL_SHOW_VM(		/* Return: status		*/
-    struct _mdsdcl_ctrl  *ctrl		/* <m> the control structure	*/
-   )
-   {
+int MDSDCL_SHOW_VM(		/* Return: status               */
+		    struct _mdsdcl_ctrl *ctrl	/* <m> the control structure    */
+    )
+{
 #ifdef malloc
-     int full = cli_present("FULL") & 1;
-     MdsShowVM(full);
+  int full = cli_present("FULL") & 1;
+  MdsShowVM(full);
 #else
-     MDSprintf("System not built with memcheck enabled. SHOW VM command is unavailable.\n");
+  MDSprintf("System not built with memcheck enabled. SHOW VM command is unavailable.\n");
 #endif
-    return(1);
-   }
+  return (1);
+}

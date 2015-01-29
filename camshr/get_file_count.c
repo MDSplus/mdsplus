@@ -1,14 +1,14 @@
 // get_file_count.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -36,77 +36,75 @@
 // get_file_count()
 // Thu Jan  4 12:06:05 EST 2001
 // Wed Apr 18 11:22:47 EDT 2001 -- use macro support, ie 'Open()'
-// Thu Sep  6 13:43:00 EDT 2001	-- fixed debug printout
-// Wed Sep 19 12:19:00 EDT 2001	-- switched to memory mapped file use; faster
-// Tue Jan  8 17:16:18 EST 2002	-- fixed end of dbfile problem
+// Thu Sep  6 13:43:00 EDT 2001 -- fixed debug printout
+// Wed Sep 19 12:19:00 EDT 2001 -- switched to memory mapped file use; faster
+// Tue Jan  8 17:16:18 EST 2002 -- fixed end of dbfile problem
 //-------------------------------------------------------------------------
 // Get number of entries in database file. Unused records have a leading
-// 	space character. Uses memory mapped 'version' of db file.
+//      space character. Uses memory mapped 'version' of db file.
 //
-// input:	db type
-// output:	number of entries [0..n]; FILE_ERROR [-2 * 2] if error
+// input:       db type
+// output:      number of entries [0..n]; FILE_ERROR [-2 * 2] if error
 //-------------------------------------------------------------------------
-int get_file_count( int dbType )
+int get_file_count(int dbType)
 {
-	void 				 *dbptr;	// generic pointer to struct's
-	char 				 dbFileName[16];
-	int					 dbFileSize, entrySize, i, numOfEntries;
-	int 				 *FileIsMapped;
-	extern struct MODULE *CTSdb;
-	extern struct CRATE  *CRATEdb;
-	extern int 			 CTSdbFileIsMapped;
-	extern int 			 CRATEdbFileIsMapped;
+  void *dbptr;			// generic pointer to struct's
+  char dbFileName[16];
+  int dbFileSize, entrySize, i, numOfEntries;
+  int *FileIsMapped;
+  extern struct MODULE *CTSdb;
+  extern struct CRATE *CRATEdb;
+  extern int CTSdbFileIsMapped;
+  extern int CRATEdbFileIsMapped;
 
-	switch( dbType ) {
-		case CTS_DB:
-			dbptr = (void *)CTSdb;
-			entrySize              = MODULE_ENTRY;
-			FileIsMapped           = &CTSdbFileIsMapped;
-			sprintf(dbFileName, "%s", CTS_DB_FILE);
-			break;
+  switch (dbType) {
+  case CTS_DB:
+    dbptr = (void *)CTSdb;
+    entrySize = MODULE_ENTRY;
+    FileIsMapped = &CTSdbFileIsMapped;
+    sprintf(dbFileName, "%s", CTS_DB_FILE);
+    break;
 
-		case CRATE_DB:
-			dbptr  = (void *)CRATEdb;
-			entrySize              = CRATE_ENTRY;
-			FileIsMapped           = &CRATEdbFileIsMapped;
-			sprintf(dbFileName, "%s", CRATE_DB_FILE);
-			break;
-	}
+  case CRATE_DB:
+    dbptr = (void *)CRATEdb;
+    entrySize = CRATE_ENTRY;
+    FileIsMapped = &CRATEdbFileIsMapped;
+    sprintf(dbFileName, "%s", CRATE_DB_FILE);
+    break;
+  }
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "get_file_count()\n" );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("get_file_count()\n");
 
-	// check for memory mapped file
-	if( *FileIsMapped == FALSE ) {
-		if( map_data_file(dbType) != SUCCESS ) {
-			numOfEntries = MAP_ERROR;
-			goto GetFileCount_Exit;
-		}
-	}
+  // check for memory mapped file
+  if (*FileIsMapped == FALSE) {
+    if (map_data_file(dbType) != SUCCESS) {
+      numOfEntries = MAP_ERROR;
+      goto GetFileCount_Exit;
+    }
+  }
+  // get total db file size in bytes
+  if ((dbFileSize = get_db_file_size(dbFileName)) < 0) {
+    numOfEntries = FAILURE;
+    goto GetFileCount_Exit;
+  }
+  // get the appropriate count
+  numOfEntries = 0;
+  for (i = 0;; i += entrySize) {
+    if ((i + entrySize) > dbFileSize)	// make sure we don't fall off the end ...
+      break;
 
-	// get total db file size in bytes
-	if(( dbFileSize = get_db_file_size(dbFileName)) < 0 ) {
-		numOfEntries = FAILURE;
-		goto GetFileCount_Exit;
-	}
+    //              sprintf(&ch, "%.1s", (char *)(dbptr+i));
 
-	// get the appropriate count
-	numOfEntries = 0;
-	for( i = 0; ; i += entrySize ) {
-		if( (i + entrySize) > dbFileSize )	// make sure we don't fall off the end ...
-			break;
+    if (*(char *)(dbptr + i) == ' ')	// we're done, so out'a here
+      break;
 
-		//		sprintf(&ch, "%.1s", (char *)(dbptr+i));
+    ++numOfEntries;
+  }
 
-		if( *(char *)(dbptr+i) == ' ' )						// we're done, so out'a here
-			break;
+ GetFileCount_Exit:
+  if (MSGLVL(DETAILS))
+    printf("get_file_count(%d):\n", numOfEntries);
 
-		++numOfEntries;
-	}
-
-GetFileCount_Exit:
-	if( MSGLVL(DETAILS) )
-		printf( "get_file_count(%d):\n", numOfEntries );
-
-	return numOfEntries;
+  return numOfEntries;
 }

@@ -14,17 +14,16 @@
 #define COMPLEX_H
 #define PI 3.1415926535898
 
-
 typedef struct {
-        double re;
-        double im;
-        } Complex;
+  double re;
+  double im;
+} Complex;
 
 Complex MulC(Complex, Complex);
 Complex AddC(Complex, Complex);
 Complex DivC(Complex, Complex);
 Complex SubC(Complex, Complex);
 Complex ExpC(Complex);
-double	Mod2(Complex); 
+double Mod2(Complex);
 
 #endif

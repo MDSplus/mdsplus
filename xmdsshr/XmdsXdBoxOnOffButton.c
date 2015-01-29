@@ -47,7 +47,6 @@ int XmdsXdBoxOnOffButtonApply(Widget w);
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 #include <Xm/ToggleB.h>
 #include <Xm/RowColumn.h>
@@ -60,76 +59,80 @@ int XmdsXdBoxOnOffButtonApply(Widget w);
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-typedef struct _Resources
-{
+typedef struct _Resources {
   int nid;
   int nid_offset;
   Boolean put_on_apply;
   XmString label;
 } Resources;
 
-static XtResource resources[] = 
-{
+static XtResource resources[] = {
   {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid), XmRImmediate, 0},
   {XmdsNnidOffset, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
-  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),XmRImmediate, (void *) 1},
-  {XmNlabelString, "LabelString", XmRCompoundText, sizeof(XmString), XtOffsetOf(Resources, label), XmRImmediate, 0}
+  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),
+   XmRImmediate, (void *)1},
+  {XmNlabelString, "LabelString", XmRCompoundText, sizeof(XmString), XtOffsetOf(Resources, label),
+   XmRImmediate, 0}
 };
 
-static void SetXdState(Widget w,Widget xd_w,XmToggleButtonCallbackStruct *cb);
-static void SetTbState(Widget w,Widget oo_w,XmdsButtonCallbackStruct *cb);
+static void SetXdState(Widget w, Widget xd_w, XmToggleButtonCallbackStruct * cb);
+static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct * cb);
 
-Widget XmdsCreateXdBoxOnOffButton(Widget parent,String name,ArgList args,Cardinal argcount)
+Widget XmdsCreateXdBoxOnOffButton(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
-  Resources info = {0,0,1,0};
-  XmdsSetSubvalues(&info,resources,XtNumber(resources),args,argcount);
-  w = XmCreateRowColumn(parent,name,args,argcount);
-  XtVaSetValues(w,XmNpacking,XmPACK_TIGHT,XmNorientation,XmHORIZONTAL,XmNspacing,0,XmNadjustMargin,0,NULL);
+  Resources info = { 0, 0, 1, 0 };
+  XmdsSetSubvalues(&info, resources, XtNumber(resources), args, argcount);
+  w = XmCreateRowColumn(parent, name, args, argcount);
+  XtVaSetValues(w, XmNpacking, XmPACK_TIGHT, XmNorientation, XmHORIZONTAL, XmNspacing, 0,
+		XmNadjustMargin, 0, NULL);
   {
     Widget oo_w;
     Widget xd_w;
     XmString blank = XmStringCreateSimple("");
-    Arg arglist[] = {{XmdsNnid, 0},
-		     {XmdsNnidOffset, 0},
-		     {XmdsNputOnApply, 0},
-		     {XmNlabelString, 0}};
+    Arg arglist[] = { {XmdsNnid, 0},
+    {XmdsNnidOffset, 0},
+    {XmdsNputOnApply, 0},
+    {XmNlabelString, 0}
+    };
     arglist[0].value = info.nid;
     arglist[1].value = info.nid_offset;
     arglist[2].value = info.put_on_apply;
-    arglist[3].value = (long) blank;
-    XtManageChild(oo_w = XmdsCreateOnOffToggleButton(w,"xmds_xdbox_on_off",arglist,XtNumber(arglist)));
-    arglist[3].value = (long) info.label;
-    XtManageChild(xd_w = XmdsCreateXdBoxDialogButton(w,"xmds_xdbox_dialog_button",arglist,XtNumber(arglist)));
+    arglist[3].value = (long)blank;
+    XtManageChild(oo_w =
+		  XmdsCreateOnOffToggleButton(w, "xmds_xdbox_on_off", arglist, XtNumber(arglist)));
+    arglist[3].value = (long)info.label;
+    XtManageChild(xd_w =
+		  XmdsCreateXdBoxDialogButton(w, "xmds_xdbox_dialog_button", arglist,
+					      XtNumber(arglist)));
     xd_w = XmdsXdBoxDialogButtonGetXdBox(xd_w);
-    XtAddCallback(oo_w,XmNvalueChangedCallback,(XtCallbackProc)SetXdState,xd_w);
-    XtAddCallback(xd_w,XmdsNapplyCallback,(XtCallbackProc)SetTbState,oo_w);
-    XtAddCallback(xd_w,XmdsNokCallback,(XtCallbackProc)SetTbState,oo_w);
+    XtAddCallback(oo_w, XmNvalueChangedCallback, (XtCallbackProc) SetXdState, xd_w);
+    XtAddCallback(xd_w, XmdsNapplyCallback, (XtCallbackProc) SetTbState, oo_w);
+    XtAddCallback(xd_w, XmdsNokCallback, (XtCallbackProc) SetTbState, oo_w);
   }
   return w;
 }
 
-static void SetXdState(Widget w,Widget xd_w,XmToggleButtonCallbackStruct *cb)
+static void SetXdState(Widget w, Widget xd_w, XmToggleButtonCallbackStruct * cb)
 {
-  XmdsXdBoxSetState(xd_w,cb->set);
+  XmdsXdBoxSetState(xd_w, cb->set);
 }
 
-static void SetTbState(Widget w,Widget oo_w,XmdsButtonCallbackStruct *cb)
+static void SetTbState(Widget w, Widget oo_w, XmdsButtonCallbackStruct * cb)
 {
-  XmToggleButtonSetState(oo_w,cb->on_off,0);
+  XmToggleButtonSetState(oo_w, cb->on_off, 0);
 }
 
 Boolean XmdsIsXdBoxOnOffButton(Widget w)
 {
-  return XtNameToWidget(w,"xmds_xdbox_on_off") && XtNameToWidget(w,"xmds_xdbox_dialog_button");
+  return XtNameToWidget(w, "xmds_xdbox_on_off") && XtNameToWidget(w, "xmds_xdbox_dialog_button");
 }
 
 void XmdsXdBoxOnOffButtonReset(Widget w)
 {
-  if (XmdsIsXdBoxOnOffButton(w))
-  {
-    XmdsOnOffToggleButtonReset(XtNameToWidget(w,"xmds_xdbox_on_off"));
-    XmdsXdBoxDialogButtonReset(XtNameToWidget(w,"xmds_xdbox_dialog_button"));
+  if (XmdsIsXdBoxOnOffButton(w)) {
+    XmdsOnOffToggleButtonReset(XtNameToWidget(w, "xmds_xdbox_on_off"));
+    XmdsXdBoxDialogButtonReset(XtNameToWidget(w, "xmds_xdbox_dialog_button"));
   }
 }
 
@@ -137,8 +140,8 @@ int XmdsXdBoxOnOffButtonPut(Widget w)
 {
   int status = 0;
   if (XmdsIsXdBoxOnOffButton(w))
-    if ((status = XmdsOnOffToggleButtonPut(XtNameToWidget(w,"xmds_xdbox_on_off"))) & 1)
-      status = XmdsXdBoxDialogButtonPut(XtNameToWidget(w,"xmds_xdbox_dialog_button"));
+    if ((status = XmdsOnOffToggleButtonPut(XtNameToWidget(w, "xmds_xdbox_on_off"))) & 1)
+      status = XmdsXdBoxDialogButtonPut(XtNameToWidget(w, "xmds_xdbox_dialog_button"));
   return status;
 }
 
@@ -146,7 +149,7 @@ int XmdsXdBoxOnOffButtonApply(Widget w)
 {
   int status = 0;
   if (XmdsIsXdBoxOnOffButton(w))
-    if ((status = XmdsOnOffToggleButtonApply(XtNameToWidget(w,"xmds_xdbox_on_off"))) & 1)
-      status = XmdsXdBoxDialogButtonApply(XtNameToWidget(w,"xmds_xdbox_dialog_button"));
+    if ((status = XmdsOnOffToggleButtonApply(XtNameToWidget(w, "xmds_xdbox_on_off"))) & 1)
+      status = XmdsXdBoxDialogButtonApply(XtNameToWidget(w, "xmds_xdbox_dialog_button"));
   return status;
 }

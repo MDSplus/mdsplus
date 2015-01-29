@@ -6,8 +6,8 @@
 #define JOERGER_ADC_N_VSTRAP 4
 #define JOERGER_ADC_N_STORE_ACTION 5
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStoreStruct;

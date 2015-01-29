@@ -27,9 +27,14 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
-static char *(*DetailProc)() = 0;
-void ServerSetDetailProc(char *(*detail_proc)()) { DetailProc = detail_proc;}
-char * (*ServerGetDetailProc())() { return DetailProc;}
+static char *(*DetailProc) () = 0;
+void ServerSetDetailProc(char *(*detail_proc) ())
+{
+  DetailProc = detail_proc;
+}
+
+char *(*ServerGetDetailProc()) () {
+  return DetailProc;
+}

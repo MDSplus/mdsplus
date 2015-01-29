@@ -19,17 +19,17 @@
 #define B5910A_N_CLOCK_OUT 17
 #define B5910A_N_INIT_ACTION 18
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int noc;
-	struct descriptor *int_clock;
-	int iterations;
-	int samples;
-	struct descriptor *channel_1;
-	struct descriptor *channel_2;
-	struct descriptor *channel_3;
-	struct descriptor *channel_4;
-	struct descriptor *start_trig;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int noc;
+  struct descriptor *int_clock;
+  int iterations;
+  int samples;
+  struct descriptor *channel_1;
+  struct descriptor *channel_2;
+  struct descriptor *channel_3;
+  struct descriptor *channel_4;
+  struct descriptor *start_trig;
 } InInitStruct;

@@ -58,57 +58,57 @@
 extern "C" {
 #endif
 
-extern WidgetClass listtreeWidgetClass;
+  extern WidgetClass listtreeWidgetClass;
 
-typedef struct _ListTreeClassRec *ListTreeWidgetClass;
-typedef struct _ListTreeRec      *ListTreeWidget;
+  typedef struct _ListTreeClassRec *ListTreeWidgetClass;
+  typedef struct _ListTreeRec *ListTreeWidget;
 
-typedef enum _ListTreeItemType {
+  typedef enum _ListTreeItemType {
     ItemDetermineType = 0,
     ItemBranchType = XtBRANCH,
     ItemLeafType = XtLEAF
-} ListTreeItemType;
+  } ListTreeItemType;
 
-typedef struct _ListTreeItem {
-  Boolean	open;
-  Boolean	highlighted;
-  char		*text;
-  int		length;
-  int		x,y,ytext;
-  int		count;
-  Dimension	height;
-  ListTreeItemType type;
-  struct _ListTreeItem 	*parent,*firstchild,*prevsibling,*nextsibling;
-  Pixmap	openPixmap,closedPixmap;
-  XtPointer	user_data;
-} ListTreeItem;
+  typedef struct _ListTreeItem {
+    Boolean open;
+    Boolean highlighted;
+    char *text;
+    int length;
+    int x, y, ytext;
+    int count;
+    Dimension height;
+    ListTreeItemType type;
+    struct _ListTreeItem *parent, *firstchild, *prevsibling, *nextsibling;
+    Pixmap openPixmap, closedPixmap;
+    XtPointer user_data;
+  } ListTreeItem;
 
-typedef struct _ListTreeReturnStruct {
-  int		reason;
-  ListTreeItem	*item;
-  ListTreeItem	**path;
-  int		count;
-  Boolean	open;
-} ListTreeReturnStruct;
+  typedef struct _ListTreeReturnStruct {
+    int reason;
+    ListTreeItem *item;
+    ListTreeItem **path;
+    int count;
+    Boolean open;
+  } ListTreeReturnStruct;
 
-typedef struct _ListTreeMultiReturnStruct {
-  ListTreeItem	**items;
-  int		count;
-} ListTreeMultiReturnStruct;
+  typedef struct _ListTreeMultiReturnStruct {
+    ListTreeItem **items;
+    int count;
+  } ListTreeMultiReturnStruct;
 
-typedef struct _ListTreeActivateStruct {
-  int		reason;
-  ListTreeItem	*item;
-  Boolean	open;
-  ListTreeItem	**path;
-  int		count;
-} ListTreeActivateStruct;
+  typedef struct _ListTreeActivateStruct {
+    int reason;
+    ListTreeItem *item;
+    Boolean open;
+    ListTreeItem **path;
+    int count;
+  } ListTreeActivateStruct;
 
-typedef struct _ListTreeItemReturnStruct {
-  int		reason;
-  ListTreeItem	*item;
-  XEvent	*event;
-} ListTreeItemReturnStruct;
+  typedef struct _ListTreeItemReturnStruct {
+    int reason;
+    ListTreeItem *item;
+    XEvent *event;
+  } ListTreeItemReturnStruct;
 
 #ifdef __cplusplus
 };
@@ -128,29 +128,31 @@ typedef struct _ListTreeItemReturnStruct {
 void ListTreeRefresh P_((Widget w));
 void ListTreeRefreshOff P_((Widget w));
 void ListTreeRefreshOn P_((Widget w));
-ListTreeItem *ListTreeAdd P_((Widget w, ListTreeItem *parent, char *string));
-ListTreeItem *ListTreeAddType P_((Widget w, ListTreeItem *parent, char *string, ListTreeItemType type));
-ListTreeItem *ListTreeAddBranch P_((Widget w, ListTreeItem *parent, char *string));
-ListTreeItem *ListTreeAddLeaf P_((Widget w, ListTreeItem *parent, char *string));
-void ListTreeSetItemPixmaps P_((Widget w, ListTreeItem *item, Pixmap openPixmap, Pixmap closedPixmap));
-void ListTreeRenameItem P_((Widget w, ListTreeItem *item, char *string));
-int ListTreeDelete P_((Widget w, ListTreeItem *item));
-int ListTreeDeleteChildren P_((Widget w, ListTreeItem *item));
-int ListTreeReparent P_((Widget w, ListTreeItem *item, ListTreeItem *newparent));
-int ListTreeReparentChildren P_((Widget w, ListTreeItem *item, ListTreeItem *newparent));
-int ListTreeOrderSiblings P_((Widget w, ListTreeItem *item));
-int ListTreeOrderChildren P_((Widget w, ListTreeItem *item));
-ListTreeItem *ListTreeFindSiblingName P_((Widget w, ListTreeItem *item, char *name));
-ListTreeItem *ListTreeFindChildName P_((Widget w, ListTreeItem *item, char *name));
-void ListTreeHighlightItem P_((Widget w, ListTreeItem *item));
+ListTreeItem *ListTreeAdd P_((Widget w, ListTreeItem * parent, char *string));
+ListTreeItem *ListTreeAddType
+P_((Widget w, ListTreeItem * parent, char *string, ListTreeItemType type));
+ListTreeItem *ListTreeAddBranch P_((Widget w, ListTreeItem * parent, char *string));
+ListTreeItem *ListTreeAddLeaf P_((Widget w, ListTreeItem * parent, char *string));
+void ListTreeSetItemPixmaps
+P_((Widget w, ListTreeItem * item, Pixmap openPixmap, Pixmap closedPixmap));
+void ListTreeRenameItem P_((Widget w, ListTreeItem * item, char *string));
+int ListTreeDelete P_((Widget w, ListTreeItem * item));
+int ListTreeDeleteChildren P_((Widget w, ListTreeItem * item));
+int ListTreeReparent P_((Widget w, ListTreeItem * item, ListTreeItem * newparent));
+int ListTreeReparentChildren P_((Widget w, ListTreeItem * item, ListTreeItem * newparent));
+int ListTreeOrderSiblings P_((Widget w, ListTreeItem * item));
+int ListTreeOrderChildren P_((Widget w, ListTreeItem * item));
+ListTreeItem *ListTreeFindSiblingName P_((Widget w, ListTreeItem * item, char *name));
+ListTreeItem *ListTreeFindChildName P_((Widget w, ListTreeItem * item, char *name));
+void ListTreeHighlightItem P_((Widget w, ListTreeItem * item));
 ListTreeItem *ListTreeFirstItem P_((Widget w));
 #ifdef USE_RDD
-void ListTreeHighlightDrop P_((Widget w, XEvent *event, String *params, Cardinal *num_params));
+void ListTreeHighlightDrop P_((Widget w, XEvent * event, String * params, Cardinal * num_params));
 ListTreeReturnStruct *ListTreeGetDrop P_((Widget w));
 #endif
-Widget XmCreateScrolledListTree P_((Widget parent, char *name, Arg *args, Cardinal count));
+Widget XmCreateScrolledListTree P_((Widget parent, char *name, Arg * args, Cardinal count));
 
 #undef P_
 #endif
 
-#endif /* _ListTree_H */
+#endif				/* _ListTree_H */

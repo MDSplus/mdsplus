@@ -1,4 +1,340 @@
-commit 62b481a9ce35e42799dbe9e99680d660a18bc8c5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 870831c 6e9b820
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:36:07 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 870831c1d4543abd17f31336a031ec3a016e52c2
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:34:31 2015 +0100
+
+    Fix border conditions
+
+commit 6e9b820489be9f55d029d18f2387b67f2c37bbed (tag: refs/tags/alpha_release-6-3-461)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jan 26 18:23:20 2015 -0500
+
+    New ChangeLog
+
+commit b4b4ad1ccb6e69ce34ad6b1733e3bd7b35b91134
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:54:47 2015 +0100
+
+    Align to latest version
+
+commit 22337c1bd57e780fd1836633051762a9d595eeb6
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:51:44 2015 +0100
+
+    Align to latest version
+
+commit e06e09e07f0abc6d0e0b95eec20bf085aaccd5c4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:06:52 2015 +0100
+
+    Avoid unlocking mutexes ibn destructor
+
+commit b8e1c51046cb2b2b9ebbc578b1f8a61b1876e596
+Merge: d2d950e 8f982e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:24 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d2d950eba344e638b2491672acc8abba42337595
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:04 2015 +0100
+
+    Fix String arrays
+
+commit 8f982e4b27e2dfd58a41aa75108bb1f8234e425f (tag: refs/tags/alpha_release-6-3-460)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 18:24:36 2015 -0500
+
+    New ChangeLog
+
+commit 3d3619e525a4c12da911966fdac1350976d57175
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 23 12:25:39 2015 -0500
+
+    Make scalar strings return native matlab strings instead of java.lang.String
+
+commit 6fde9fa7740968826b51b91fd566e2737230d463 (tag: refs/tags/alpha_release-6-3-459)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 10:20:11 2015 -0500
+
+    New ChangeLog
+
+commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d
+Merge: 77928e1 f1799c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:32:33 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+    
+    essary,
+
+commit 77928e1f90acf35f3b72e8dfc5b1aef88b586f1f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:23:56 2015 -0500
+
+    Remove obsolete *.f.in files
+
+commit f1799c7f1f200d397b3c4c18e2996d6550bf7ea5 (tag: refs/tags/alpha_release-6-3-458)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 21 13:56:18 2015 -0500
+
+    New ChangeLog
+
+commit b25379c897b2720b18b3b5c87ce952db540b46fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:34:16 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 986727098ab5aaf41e992a83c0c140170365247d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:08:12 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 5323560da09b9e421abffd659833fdd129b88f18
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 12:13:22 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 83f4ce222b3776ff50e6f644b2d625fbbabde8a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 11:31:44 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 2f8677fe1ce9f2eda168986e6f7d3d0c54bd771c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 09:29:50 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 3b04594d21119af6767ebaa03ef4bc5147e56be3 (tag: refs/tags/alpha_release-6-3-457)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 20 18:23:37 2015 -0500
+
+    New ChangeLog
+
+commit 3a7932ff55e3a9ef066e74e3b3408825c704aede
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jan 20 18:14:37 2015 +0100
+
+    Remove compiler warnings
+
+commit 88b7bdb24165f12f6d734adb8c03f0eb1cdbbf3d (tag: refs/tags/alpha_release-6-3-456)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jan 15 18:21:23 2015 -0500
+
+    New ChangeLog
+
+commit 7b7bd313712cc903ccd9927f31f817ba4146338d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 15 15:21:10 2015 -0500
+
+    Cannot use environment variable in icon filespecs
+
+commit d2581ea9db06a5a0b63e764aa753e6ea892e100f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 15 09:16:24 2015 +0100
+
+    Handle empty pointers in APD
+
+commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 18:21:16 2015 -0500
+
+    New ChangeLog
+
+commit 0312e11bd0a7c3900a02ac2bd054ff9d6a16f5e5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 7 13:03:15 2015 -0500
+
+    Use standard indentation of all the C code. Based on: indent -linux -i2 -l100
+
+commit 263cc8bce631b291f17ae2c3e09164c55a067b93 (tag: refs/tags/alpha_release-6-3-454)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 14:05:08 2015 +0000
+
+    New ChangeLog
+
+commit 27bed6472a3dd8e3e5c01c91a136d49eee04ad9f
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 13:37:50 2015 +0000
+
+    New ChangeLog
+
+commit 2568757604457fd55ea09a8410c9d0edfd1486bd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 7 08:24:38 2015 -0500
+
+    Do not depend on numpy. Package with that name not available on Ubuntu
+
+commit b4f9793d42f43fceb00a7c61a111234ee52b1108 (tag: refs/tags/alpha_release-6-3-453)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 23:40:46 2015 +0000
+
+    New ChangeLog
+
+commit ebe48046ab59d597860d37ed0e5baa9ed14e73bd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 16:23:33 2015 -0500
+
+    Add numpy dependency on python package
+
+commit 9cf2782d0e1c96136f3cd78cdd7c13cae9b1336b (tag: refs/tags/alpha_release-6-3-452)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 18:37:16 2015 +0000
+
+    New ChangeLog
+
+commit b19170f758e94e2a77862c655dcd6a15870ee05a
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 18:24:26 2015 +0000
+
+    New ChangeLog
+
+commit 79c78a3ab158f3d953a0ac5b25ae0b60d082405e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 12:13:06 2015 -0500
+
+    Handle nonmds dependencies
+
+commit 1b2402c675234f9f9d6c9ed8d8c97c22db68d3d8 (tag: refs/tags/alpha_release-6-3-451)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 09:59:38 2015 -0500
+
+    New ChangeLog
+
+commit 3fca653dfdc0c444b6a8a340f919fd4c017072b1
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 08:47:35 2015 -0500
+
+    New ChangeLog
+
+commit fa311708272cea42bdc444428d81d2354c95b997
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 08:24:33 2015 -0500
+
+    special require for nonmds dependencies
+
+commit a5c8ff07787f92c7055deb75347093435feff37c (tag: refs/tags/alpha_release-6-3-450)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jan 5 23:03:02 2015 -0500
+
+    New ChangeLog
+
+commit 76d2dc3013648ee7be9de6237ca46a45c01050bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 15:27:08 2015 -0500
+
+    fix non MDSplus requires rules
+
+commit 0ce490792bde28e8062eac807db6953a61990a47
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 14:12:11 2015 -0500
+
+    Prevent trigraph warning with double question markse
+
+commit 820b95fb545e8a75c183016efbf1dfe4757a2f1d
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Jan 4 23:02:38 2015 -0500
+
+    New ChangeLog
+
+commit baf70446305e10a2a2ec5d1180fec37d278714b9
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Jan 3 23:02:38 2015 -0500
+
+    New ChangeLog
+
+commit ccb84e41812d5645e491c3910eee6c23a9fa8a22
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 2 23:14:03 2015 -0500
+
+    New ChangeLog
+
+commit f79eb3ed5187ffd5e4ceb0b98d2dd749ddcde70b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 2 14:32:11 2015 -0500
+
+    Add dependency on python-setuptools
+
+commit 6e207d0f4b8b42045e2407c8b9d8d12900f27f96
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 23:49:38 2015 -0500
+
+    do not run lex and yacc
+
+commit 421ca286aa3b4894e0ffa5898892e67593598cae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 23:45:10 2015 -0500
+
+    do not use yacc or lex
+
+commit 25f140a40e3136a3266c98c8266049436cd181c1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 16:20:14 2015 -0500
+
+    Prevent using lex and yacc
+
+commit c0f35c76f15cda451e1109da856aa08c87af05a8 (tag: refs/tags/alpha_release-6-3-449)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 30 18:23:58 2014 -0500
+
+    New ChangeLog
+
+commit 1b1c6df42fd1f121fabbf0f6d5d7dc7659206379
+Merge: 983335a b9f749b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 30 14:32:32 2014 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 983335aeb0532069f69a2ced843cc63cd7fd1768
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Dec 30 14:31:40 2014 -0500
+
+    Return TreeINVSHOT when bad shot number provided
+
+commit b9f749b107da23d867efc5004ab2bfb71231b6d8 (tag: refs/tags/alpha_release-6-3-448)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Dec 23 18:21:20 2014 -0500
+
+    New ChangeLog
+
+commit e0005a5dad4e2d66c2f69acc8f2684f1eb8dc2c1
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 23 15:09:19 2014 +0100
+
+    Adde device MARTE_XRAY
+
+commit b33549aab3b7e19ee7b28a4d2da3d0042675e25a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 23 15:04:02 2014 +0100
+
+    Added MARTE_XRAY device
+
+commit 19370a3cec8ab6d76ad098adb87903101004f08b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Dec 23 12:30:48 2014 +0100
+
+    Change relative phase option
+
+commit 76880629fc2afd269cd51615a45745e1453809dd (tag: refs/tags/alpha_release-6-3-447)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Dec 3 23:14:22 2014 -0500
+
+    New ChangeLog
+
+commit 62b481a9ce35e42799dbe9e99680d660a18bc8c5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Dec 3 08:28:05 2014 -0500
 

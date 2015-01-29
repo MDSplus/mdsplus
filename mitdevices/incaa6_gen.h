@@ -32,37 +32,37 @@
 #define INCAA6_N_INIT_ACTION 30
 #define INCAA6_N_STORE_ACTION 31
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	struct descriptor *int_clk_frq;
-	int active_chans;
-	int master;
-	int ext_1mhz;
-	int ptsc;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  struct descriptor *int_clk_frq;
+  int active_chans;
+  int master;
+  int ext_1mhz;
+  int ptsc;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	struct descriptor *int_clk_frq;
-	int active_chans;
-	int master;
-	int ext_1mhz;
-	int ptsc;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  struct descriptor *int_clk_frq;
+  int active_chans;
+  int master;
+  int ext_1mhz;
+  int ptsc;
 } InArmStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InTriggerStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int ptsc;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int ptsc;
 } InStoreStruct;

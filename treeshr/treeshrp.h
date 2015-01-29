@@ -40,46 +40,41 @@
 #define   NciM_EXTENDED_NCI        0x10
 #define   NciV_EXTENDED_NCI           4
 
-typedef struct nci
-{
-  unsigned int  flags;
+typedef struct nci {
+  unsigned int flags;
   unsigned char flags2;
   unsigned char spare;
-  int64_t        time_inserted;
-  unsigned int  owner_identifier;
+  int64_t time_inserted;
+  unsigned int owner_identifier;
   unsigned char class;
   unsigned char dtype;
-  unsigned int  length;
+  unsigned int length;
   unsigned char spare2;
-  unsigned int  status;
-  union
-  {
-    struct
-    {
+  unsigned int status;
+  union {
+    struct {
       unsigned char file_level;
       unsigned char file_version;
       unsigned char rfa[6];
       unsigned int record_length;
-    }         DATA_LOCATION;
-    struct
-    {
+    } DATA_LOCATION;
+    struct {
       unsigned char element_length;
       unsigned char data[11];
-    }         DATA_IN_RECORD;
-    struct
-    {
+    } DATA_IN_RECORD;
+    struct {
       unsigned int error_status;
       unsigned int stv;
-    }         ERROR_INFO;
-  }         DATA_INFO;
+    } ERROR_INFO;
+  } DATA_INFO;
   unsigned char nci_fill;
-}         NCI;
+} NCI;
 
 #define FACILITIES_PER_EA 8
 typedef struct extended_attributes {
-  int64_t    next_ea_offset;
-  int64_t    facility_offset[FACILITIES_PER_EA];
-  int       facility_length[FACILITIES_PER_EA];
+  int64_t next_ea_offset;
+  int64_t facility_offset[FACILITIES_PER_EA];
+  int facility_length[FACILITIES_PER_EA];
 } EXTENDED_ATTRIBUTES;
 
 #define STANDARD_RECORD_FACILITY  0
@@ -87,28 +82,28 @@ typedef struct extended_attributes {
 #define NAMED_ATTRIBUTES_FACILITY 2
 
 typedef struct segment_header {
-  unsigned char     dtype;
-  char     dimct;
-  int      dims[8];
-  short    length;
-  int      idx;
-  int      next_row;
-  int64_t   index_offset;
-  int64_t   data_offset;
-  int64_t   dim_offset;
+  unsigned char dtype;
+  char dimct;
+  int dims[8];
+  short length;
+  int idx;
+  int next_row;
+  int64_t index_offset;
+  int64_t data_offset;
+  int64_t dim_offset;
 } SEGMENT_HEADER;
 
 typedef struct segment_info {
   int64_t start;
   int64_t end;
   int64_t start_offset;
-  int    start_length;
+  int start_length;
   int64_t end_offset;
-  int    end_length;
+  int end_length;
   int64_t dimension_offset;
-  int    dimension_length;
+  int dimension_length;
   int64_t data_offset;
-  int    rows;
+  int rows;
 } SEGMENT_INFO;
 
 #define SEGMENTS_PER_INDEX 128
@@ -131,10 +126,9 @@ typedef struct named_attributes_index {
   NAMED_ATTRIBUTE attribute[NAMED_ATTRIBUTES_PER_INDEX];
 } NAMED_ATTRIBUTES_INDEX;
 
-  
 #if defined(__GNUC__) || defined(__APPLE__)
 #define PACK_ATTR __attribute__ ((__packed__))
-#define PACK_START 
+#define PACK_START
 #define PACK_STOP
 #else
 #define PACK_ATTR
@@ -170,7 +164,6 @@ typedef struct named_attributes_index {
                        (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) ))
 #define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
 
-
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
 #define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
 
@@ -184,20 +177,18 @@ can be passed between processes.
 ******************************************/
 
 #ifdef WORDS_BIGENDIAN
-typedef struct nid
-{
+typedef struct nid {
   unsigned tree:8;
   unsigned node:24;
 } NID;
 #else
-typedef struct nid
-{
-  unsigned node:24;	/* Node offset of root node of tree this node belongs to */
-  unsigned tree:8;	/* Level of tree in chained tree_info blocks 0=main tree */
-}         NID;
+typedef struct nid {
+  unsigned node:24;		/* Node offset of root node of tree this node belongs to */
+  unsigned tree:8;		/* Level of tree in chained tree_info blocks 0=main tree */
+} NID;
 #endif
 
-#define MAX_SUBTREES 256 /* since there are only 8 bits of tree number in a nid */
+#define MAX_SUBTREES 256	/* since there are only 8 bits of tree number in a nid */
 
 /******************************************
 Two macros are provided for converting from
@@ -276,28 +267,27 @@ PACK_START
  -sizeof(NODE). To connect to the following
  node it should be set to sizeof(NODE) etc.
 *********************************************/
-typedef struct node
-{
+    typedef struct node {
   NODE_NAME name;
-  int       parent;
+  int parent;
   union {
     struct {
-      int       member;
-      int       brother;
-      int       child;
+      int member;
+      int brother;
+      int child;
     } TREE_INFO;
     struct {
       struct big_node_linkage *big_linkage PACK_ATTR;
     } LINK_INFO;
-  }INFO ;
+  } INFO;
   unsigned char usage;
   unsigned short conglomerate_elt PACK_ATTR;
-  char      fill;
+  char fill;
   unsigned int tag_link;	/* Index of tag info block pointing to this node (index of first tag is 1) */
-}         NODE;
+} NODE;
 
 #ifdef EMPTY_NODE
-static NODE empty_node = {{'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '}}; 
+static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} };
 #endif
 
 /********************************************
@@ -393,12 +383,11 @@ node->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; 
 
 typedef char TAG_NAME[24];
 
-typedef struct tag_info
-{
-  TAG_NAME  name;
-  int       node_idx;	/* Node to which this tag is assigned   */
-  int       tag_link;	/* Index of next tag also assigned to this node (index of first tag is 1) */
-}         TAG_INFO;
+typedef struct tag_info {
+  TAG_NAME name;
+  int node_idx;			/* Node to which this tag is assigned   */
+  int tag_link;			/* Index of next tag also assigned to this node (index of first tag is 1) */
+} TAG_INFO;
 
 /*********************************************
    TREE_HEADER
@@ -408,39 +397,37 @@ typedef struct tag_info
    bytes of a tree file
 *********************************************/
 
-typedef struct tree_header
-{
-  char      version;	/* Version of tree file format */
+typedef struct tree_header {
+  char version;			/* Version of tree file format */
 #ifdef _AIX
   unsigned sort_children:1;
   unsigned sort_members:1;
   unsigned versions_in_model:1;
   unsigned versions_in_pulse:1;
-  unsigned :4;
+  unsigned:4;
 #else
-  unsigned  char sort_children:1;	/* Sort children flag */
-  unsigned  char sort_members:1;	/* Sort members  flag */
-  unsigned  char versions_in_model:1;
-  unsigned  char versions_in_pulse:1;
-  unsigned  char : 4;
+  unsigned char sort_children:1;	/* Sort children flag */
+  unsigned char sort_members:1;	/* Sort members  flag */
+  unsigned char versions_in_model:1;
+  unsigned char versions_in_pulse:1;
+  unsigned char:4;
 #endif
-  char      fill1[6];
-  int       free;	/* First node in free node list (connected by PARENT/CHILD indexes */
-  int       tags;	/* Number of tags defined                                          */
-  int       externals;	/* Number of externals/subtrees referenced                         */
-  int       nodes;	/* Number of nodes allocated (both defined and free node)          */
-  char      fill2[488];
-}         TREE_HEADER;
+  char fill1[6];
+  int free;			/* First node in free node list (connected by PARENT/CHILD indexes */
+  int tags;			/* Number of tags defined                                          */
+  int externals;		/* Number of externals/subtrees referenced                         */
+  int nodes;			/* Number of nodes allocated (both defined and free node)          */
+  char fill2[488];
+} TREE_HEADER;
 
 /***********************************
 Defines RFA type as 6 characters.
 Used for moving RFA's around
 efficiently.
 ************************************/
-typedef struct
-{
+typedef struct {
   unsigned char rfa[6];
-}         RFA; 
+} RFA;
 
 #ifdef RFA_MACROS
 #define RfaToSeek(rfa) (((*(unsigned int *)rfa - 1) * 512) + (*(unsigned short *)&((char *)rfa)[4] & 0x1ff))
@@ -452,29 +439,22 @@ typedef struct
 RECORD_HEADER
 VFC portion of file.
 ***************************************/
-typedef struct record_header
-{
-  unsigned  short rlength PACK_ATTR;
-  int       node_number PACK_ATTR;
-  RFA       rfa;
-}         RECORD_HEADER;
+typedef struct record_header {
+  unsigned short rlength PACK_ATTR;
+  int node_number PACK_ATTR;
+  RFA rfa;
+} RECORD_HEADER;
 
 #ifdef HAVE_WINDOWS_H
 #pragma pack(pop)
 #else
 PACK_STOP
 #endif
-
-
-
 /*****************************************************
   Search structures
 *****************************************************/
-
 #define MAX_SEARCH_LEVELS 32
-
-typedef enum search_type
-{
+    typedef enum search_type {
   NONE,
   MEMBER_START,
   BROTHER_START,
@@ -492,26 +472,24 @@ typedef enum search_type
   SON_MEMBER_TYPE,
   SON_MEMBER_TYPE_NOWILD,
   EOL
-}         SEARCH_TYPE;
+} SEARCH_TYPE;
 
-typedef struct node_list
-{
+typedef struct node_list {
   NODE *node;
   struct node_list *next;
-}         NODELIST;
+} NODELIST;
 
-typedef struct search_context
-{
-  int         level;
+typedef struct search_context {
+  int level;
   SEARCH_TYPE type;
-  char        *string;
-  short       len;
-  char        *tag_tree_name;
-  short       tag_tree_name_len;
-  NODE        *node;
-  NODE        *stop;
-  NODELIST    *stack;
-}         SEARCH_CONTEXT;
+  char *string;
+  short len;
+  char *tag_tree_name;
+  short tag_tree_name_len;
+  NODE *node;
+  NODE *stop;
+  NODELIST *stack;
+} SEARCH_CONTEXT;
 
 /********************************************
    TREE_EDIT
@@ -521,21 +499,20 @@ editting. It keeps track of dynamic memory
 allocations for tree expansions
 *********************************************/
 
-typedef struct tree_edit
-{
-  int       header_pages;
-  int       node_vm_size;
-  int       tags_pages;
-  int       tag_info_pages;
-  int       external_pages;
-  int       nci_section[2];
-  int       nci_channel;
-  NCI       *nci;
-  int       first_in_mem;
-  short     conglomerate_size;
-  short     conglomerate_index;
-  unsigned  conglomerate_setup:1;
-}         TREE_EDIT;
+typedef struct tree_edit {
+  int header_pages;
+  int node_vm_size;
+  int tags_pages;
+  int tag_info_pages;
+  int external_pages;
+  int nci_section[2];
+  int nci_channel;
+  NCI *nci;
+  int first_in_mem;
+  short conglomerate_size;
+  short conglomerate_index;
+  unsigned conglomerate_setup:1;
+} TREE_EDIT;
 #ifdef EMPTY_EDIT
 static const TREE_EDIT empty_edit;
 #endif
@@ -552,20 +529,17 @@ in doing I/O to the tree files.
 #define TREE_NCIFILE_TYPE  ".characteristics"
 #define TREE_TREEFILE_TYPE ".tree"
 
-
-
 /********************************************
 The NCI_FILE structure contains the stuff
 needed to do I/O on the node characteristics
 file.
 *********************************************/
 
-typedef struct nci_file
-{
+typedef struct nci_file {
   int get;
   int put;
-  NCI  nci;
-}  NCI_FILE;
+  NCI nci;
+} NCI_FILE;
 
 /**************************************
 ASY_NCI
@@ -573,26 +547,24 @@ Structure used for passing information
 to asynchronous I/O completion routines
 ***************************************/
 
-typedef struct asy_nci
-{
+typedef struct asy_nci {
   struct tree_info *info;
-  NCI       *nci;
-}         ASY_NCI;
+  NCI *nci;
+} ASY_NCI;
 
 /*******************************************
 DATA_FILE structure used for I/O to datafile
 ********************************************/
 
-typedef struct data_file
-{
-  unsigned  open_for_write:1;
-  unsigned: 7;
+typedef struct data_file {
+  unsigned open_for_write:1;
+  unsigned:7;
   int get;
   int put;
   RECORD_HEADER *record_header;
   ASY_NCI *asy_nci;
   struct descriptor_xd *data;
-}         DATA_FILE;
+} DATA_FILE;
 
 /********************************************
     TREE_INFO
@@ -602,36 +574,34 @@ of trees which have been activated. There will
 be one tree info block per tree activated.
 *********************************************/
 
-typedef struct tree_info
-{
-  int       blockid;/* Identifier indicating a valid tree info block    */
-  char      *treenam;	/* Tree name                                        */
-  int       shot;       /* Shot number */
-  int       vm_pages;	/* Number of pages and address of virtual memory    */
-  void      *vm_addr;/*  allocated for mapping the tree file             */
-  char      *section_addr[2];	/* Beginning and ending addresses of mapped section */
-  TREE_HEADER *header;	/* Pointer to file header                           */
-  NODE     *node;	/* Pointer to nodes                                 */
-  int      *tags;	/* Pointer to tag indexes                           */
-  TAG_INFO *tag_info;	/* Pointer to tag information blocks                */
-  int      *external;	/* Pointer to external reference node indexes       */
-  int       channel;/* I/O channel to tree file                         */
-  int       alq;	/* Blocks allocated to tree file                    */
-  char     *filespec;	/* Pointer to full file spec of tree file		  */
-  char      dvi[16];	/* Tree file disk info */
+typedef struct tree_info {
+  int blockid;			/* Identifier indicating a valid tree info block    */
+  char *treenam;		/* Tree name                                        */
+  int shot;			/* Shot number */
+  int vm_pages;			/* Number of pages and address of virtual memory    */
+  void *vm_addr;		/*  allocated for mapping the tree file             */
+  char *section_addr[2];	/* Beginning and ending addresses of mapped section */
+  TREE_HEADER *header;		/* Pointer to file header                           */
+  NODE *node;			/* Pointer to nodes                                 */
+  int *tags;			/* Pointer to tag indexes                           */
+  TAG_INFO *tag_info;		/* Pointer to tag information blocks                */
+  int *external;		/* Pointer to external reference node indexes       */
+  int channel;			/* I/O channel to tree file                         */
+  int alq;			/* Blocks allocated to tree file                    */
+  char *filespec;		/* Pointer to full file spec of tree file                 */
+  char dvi[16];			/* Tree file disk info */
   unsigned short tree_info_w_fid[3];	/* Tree file file id                                */
-  unsigned  flush:1;/* Flush I/O's buffers                              */
-  unsigned  rundown:1; /* Doing rundown */
-  unsigned  mapped:1;  /* Tree is mapped into memory */
-  unsigned  :12;/* Spare bits */
-  int       rundown_id;  /* Rundown event id */
-  NODE *root;	/* Pointer to top node                              */
-  TREE_EDIT *edit;	/* Pointer to edit block (if editting the tree      */
-  NCI_FILE *nci_file;	/* Pointer to nci file block (if open)              */
-  DATA_FILE *data_file;	/* Pointer to a datafile access block               */
+  unsigned flush:1;		/* Flush I/O's buffers                              */
+  unsigned rundown:1;		/* Doing rundown */
+  unsigned mapped:1;		/* Tree is mapped into memory */
+  unsigned:12;			/* Spare bits */
+  int rundown_id;		/* Rundown event id */
+  NODE *root;			/* Pointer to top node                              */
+  TREE_EDIT *edit;		/* Pointer to edit block (if editting the tree      */
+  NCI_FILE *nci_file;		/* Pointer to nci file block (if open)              */
+  DATA_FILE *data_file;		/* Pointer to a datafile access block               */
   struct tree_info *next_info;	/* Pointer to next tree info block                  */
-}         TREE_INFO;
-
+} TREE_INFO;
 
 /********************************************
    PINO_DATABASE
@@ -642,35 +612,33 @@ always passed as an argument to tree traversal
 routines.
 *********************************************/
 
-typedef struct pino_database
-{
-  TREE_INFO *tree_info;	/* Pointer to main tree info block */
-  NODE *default_node;	/* Pointer to current default node */
-  char        *experiment;	/* Pointer to experiment descriptor */
-  char        *main_treenam;	/* Pointer to name used for main tree */
-  int       shotid;	/* Shot identification */
-  unsigned  open:1;	/* Flag indication block has open tree */
-  unsigned  open_for_edit:1;	/* Flag indicating tree is open for edit */
-  unsigned  open_readonly:1;	/* Flag indicating tree open readonly */
-  unsigned  modified:1;	/* Flag indicating tree structure modified */
-  unsigned  setup_info:1;/* Flag indicating setup info is being added */
-  unsigned  remote:1; /* Flag indicating tree is on remote system */
+typedef struct pino_database {
+  TREE_INFO *tree_info;		/* Pointer to main tree info block */
+  NODE *default_node;		/* Pointer to current default node */
+  char *experiment;		/* Pointer to experiment descriptor */
+  char *main_treenam;		/* Pointer to name used for main tree */
+  int shotid;			/* Shot identification */
+  unsigned open:1;		/* Flag indication block has open tree */
+  unsigned open_for_edit:1;	/* Flag indicating tree is open for edit */
+  unsigned open_readonly:1;	/* Flag indicating tree open readonly */
+  unsigned modified:1;		/* Flag indicating tree structure modified */
+  unsigned setup_info:1;	/* Flag indicating setup info is being added */
+  unsigned remote:1;		/* Flag indicating tree is on remote system */
 
-  void      *remote_ctx; /* Pointer to remote system context */
+  void *remote_ctx;		/* Pointer to remote system context */
   struct pino_database *next;	/* Link to next database in open list */
 
-
-  int	    stack_size;
-  BIG_NODE_LINKAGE big_node_linkage[2*MAX_SUBTREES];  /* We need at most 2 of these
-							 per subtree.  The subtree is 
-							 either a first child in which
-							 case we need to fix up its parent
-							 and the node itself's brother offsets,
-							 or it is a middle (or end) child and 
-							 we need to fix up its previous sibling 
-							 and the node itself's parent, and brother
-							 pointers. */
-}         PINO_DATABASE;
+  int stack_size;
+  BIG_NODE_LINKAGE big_node_linkage[2 * MAX_SUBTREES];	/* We need at most 2 of these
+							   per subtree.  The subtree is 
+							   either a first child in which
+							   case we need to fix up its parent
+							   and the node itself's brother offsets,
+							   or it is a middle (or end) child and 
+							   we need to fix up its previous sibling 
+							   and the node itself's parent, and brother
+							   pointers. */
+} PINO_DATABASE;
 
 /****************************
 Macro's for checking access
@@ -680,83 +648,89 @@ to databases
 #define IS_OPEN(db)          ((db) ? (db)->open : 0)
 #define IS_OPEN_FOR_EDIT(db) (IS_OPEN(db) ? (db)->open_for_edit : 0)
 
-
 #define TREE_PATH_SUFFIX "_path"
 #define TREE_PATH_DELIM  "/"
 
 /************* Prototypes for internal functions *************/
-extern int ConnectTreeRemote(PINO_DATABASE *dblist, char *tree, char *subtree_list, char *, int status);
-extern int SetStackSizeRemote(PINO_DATABASE *dblist, int stack_size);
+extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *,
+			     int status);
+extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
 
-extern int CloseTreeRemote(PINO_DATABASE *dblist, int call_hook);
+extern int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook);
 
-extern int CreatePulseFileRemote(PINO_DATABASE *dblist, int shotid, int *nids, int num);
+extern int CreatePulseFileRemote(PINO_DATABASE * dblist, int shotid, int *nids, int num);
 
-extern int GetNciRemote(PINO_DATABASE *dblist, int nid_in, struct nci_itm *nci_itm);
+extern int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm);
 
-extern int GetRecordRemote(PINO_DATABASE *dblist, int nid_in, struct descriptor_xd *dsc);
+extern int GetRecordRemote(PINO_DATABASE * dblist, int nid_in, struct descriptor_xd *dsc);
 
 extern char *GetRegistryPath(char *pathname);
 
-extern int FindNodeRemote(PINO_DATABASE *dblist, char const *path, int *outnid);
+extern int FindNodeRemote(PINO_DATABASE * dblist, char const *path, int *outnid);
 
-extern int FindNodeWildRemote(PINO_DATABASE *dblist, char const *path, int *nid_out, void **ctx_inout, int usage_mask);
+extern int FindNodeWildRemote(PINO_DATABASE * dblist, char const *path, int *nid_out,
+			      void **ctx_inout, int usage_mask);
 
-extern int FindNodeEndRemote(PINO_DATABASE *dblist, void **ctx_in);
+extern int FindNodeEndRemote(PINO_DATABASE * dblist, void **ctx_in);
 
-extern char *FindNodeTagsRemote(PINO_DATABASE *dblist, int nid_in, void **ctx_ptr);
+extern char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr);
 
-extern char *AbsPathRemote(PINO_DATABASE *dblist, char const *inpath);
+extern char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath);
 
-extern int SetDefaultNidRemote(PINO_DATABASE *dblist, int nid);
+extern int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid);
 
-extern int GetDefaultNidRemote(PINO_DATABASE *dblist, int *nid);
+extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #endif
 extern int64_t RfaToSeek(unsigned char *rfa);
 void SeekToRfa(int64_t seek, unsigned char *rfa);
-extern int SetParentState(PINO_DATABASE *db, NODE *node, unsigned int state);
+extern int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state);
 
-extern int TreeCloseFiles(TREE_INFO *info, int nci, int data);
-extern int TreeCopyExtended(PINO_DATABASE *dbid1, PINO_DATABASE *dbid2, int nid, NCI *nci);
-extern int TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_nodes);
-extern int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr);
-extern int TreeGetNciW(TREE_INFO *info, int node_number, NCI *nci,unsigned int version);
-extern int TreeGetNciLw(TREE_INFO *info, int node_number, NCI *nci);
-extern int TreeInsertChild(NODE *parent_ptr,NODE *child_ptr,int  sort);
-extern int TreeInsertMember(NODE *parent_ptr,NODE *member_ptr,int  sort);
-extern int TreePutNci(TREE_INFO *info, int node_number, NCI *nci, int flush);
-extern int TreeIsChild(NODE *node);
-extern struct descriptor *TreeSectionName(TREE_INFO *info);
+extern int TreeCloseFiles(TREE_INFO * info, int nci, int data);
+extern int TreeCopyExtended(PINO_DATABASE * dbid1, PINO_DATABASE * dbid2, int nid, NCI * nci);
+extern int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes);
+extern int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr,
+			  char **namedsc_ptr, SEARCH_TYPE * type_ptr);
+extern int TreeGetNciW(TREE_INFO * info, int node_number, NCI * nci, unsigned int version);
+extern int TreeGetNciLw(TREE_INFO * info, int node_number, NCI * nci);
+extern int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort);
+extern int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort);
+extern int TreePutNci(TREE_INFO * info, int node_number, NCI * nci, int flush);
+extern int TreeIsChild(NODE * node);
+extern struct descriptor *TreeSectionName(TREE_INFO * info);
 /* extern int TreeFindTag(PINO_DATABASE *db, NODE *node, const char *treename, char **search_string, NODE **node_in_out); */
 extern int TreeFindTag(const char *tagnam, const char *treename, int *tagidx);
-int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const char *tree, short taglen, const char *tagnam, NODE **nodeptr, int *
-tagidx);
-extern int TreeCallHook(TreeshrHookType operation, TREE_INFO *info,int nid);
-extern int TreeGetDatafile(TREE_INFO *info_ptr, unsigned char *rfa, int *buffer_size, char *record, int *retsize,int *nodenum, unsigned char flags);
-extern int TreeEstablishRundownEvent(TREE_INFO *info);
-extern int TreeGetDsc(TREE_INFO *info,int64_t offset, int length, struct descriptor_xd *dsc);
-extern int TreeGetExtendedAttributes(TREE_INFO *info_ptr, int64_t offset, EXTENDED_ATTRIBUTES *att);
+int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
+		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx);
+extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
+extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
+			   int *retsize, int *nodenum, unsigned char flags);
+extern int TreeEstablishRundownEvent(TREE_INFO * info);
+extern int TreeGetDsc(TREE_INFO * info, int64_t offset, int length, struct descriptor_xd *dsc);
+extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset,
+				     EXTENDED_ATTRIBUTES * att);
 extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
-extern int TreeGetVersionNci(TREE_INFO *info, NCI *nci, NCI *v_nci);
+extern int TreeGetVersionNci(TREE_INFO * info, NCI * nci, NCI * v_nci);
 extern DATA_FILE *TreeGetVmDatafile();
 extern int TreeReopenDatafile(struct tree_info *info);
 extern int TreeReopenNci(struct tree_info *info);
-extern int TreeOpenDatafileR(TREE_INFO *info);
-extern int TreeOpenNciR(TREE_INFO *info);
-extern int TreeOpenNciW(TREE_INFO *info, int tmpfile);
-extern int TreeOpenDatafileW(TREE_INFO *info, int *stv_ptr, int tmpfile);
-extern int TreePutDsc(TREE_INFO *info_ptr, int nid, struct descriptor *dsc, int64_t *offset, int *length);
-extern int TreePutExtendedAttributes(TREE_INFO *info_ptr, EXTENDED_ATTRIBUTES *att, int64_t *offset);
+extern int TreeOpenDatafileR(TREE_INFO * info);
+extern int TreeOpenNciR(TREE_INFO * info);
+extern int TreeOpenNciW(TREE_INFO * info, int tmpfile);
+extern int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile);
+extern int TreePutDsc(TREE_INFO * info_ptr, int nid, struct descriptor *dsc, int64_t * offset,
+		      int *length);
+extern int TreePutExtendedAttributes(TREE_INFO * info_ptr, EXTENDED_ATTRIBUTES * att,
+				     int64_t * offset);
 extern void TreeSerializeNciIn(char *in, struct nci *out);
 extern void TreeSerializeNciOut(struct nci *in, char *out);
 extern int64_t TreeTimeInserted();
-extern int TreeSetTemplateNci(NCI *nci);
-extern int TreeLockNci(TREE_INFO *info, int readonly, int nodenum, int *deleted);
-extern int TreeUnLockNci(TREE_INFO *info, int readonly, int nodenum);
-extern int TreeLockDatafile(TREE_INFO *info, int readonly, int64_t where);
-extern int TreeUnLockDatafile(TREE_INFO *info, int readonly, int64_t where);
+extern int TreeSetTemplateNci(NCI * nci);
+extern int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted);
+extern int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum);
+extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
+extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef HAVE_WINDOWS_H
@@ -775,6 +749,5 @@ extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
 extern ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted);
-
 
 #endif

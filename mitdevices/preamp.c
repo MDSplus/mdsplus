@@ -54,8 +54,7 @@ int preamp___add(int *head_nid)
 {
   int status;
   int i;
-  for (i=0;i<16;i++)
-  {
+  for (i = 0; i < 16; i++) {
     static EMPTYXD(xd);
     static int g1_nid;
     static int g2_nid;
@@ -66,33 +65,36 @@ int preamp___add(int *head_nid)
     static DESCRIPTOR_NID(offset_dsc, &offset_nid);
     static DESCRIPTOR_NID(output_dsc, &output_nid);
     static DESCRIPTOR(expression, "(-2*$1/$2)+(2/($2*$3))*$4");
-    int input_nid = INPUT_NID((*head_nid),INPUT_01,i);
-    g1_nid = INPUT_NID((*head_nid),INPUT_01_GAIN1,i);
-    g2_nid = INPUT_NID((*head_nid),INPUT_01_GAIN2,i);
-    offset_nid = INPUT_NID((*head_nid),INPUT_01_OFFSET,i);
-    output_nid = INPUT_NID((*head_nid),INPUT_01_OUTPUT,i);
+    int input_nid = INPUT_NID((*head_nid), INPUT_01, i);
+    g1_nid = INPUT_NID((*head_nid), INPUT_01_GAIN1, i);
+    g2_nid = INPUT_NID((*head_nid), INPUT_01_GAIN2, i);
+    offset_nid = INPUT_NID((*head_nid), INPUT_01_OFFSET, i);
+    output_nid = INPUT_NID((*head_nid), INPUT_01_OUTPUT, i);
     TdiCompile(&expression, &offset_dsc, &g1_dsc, &g2_dsc, &output_dsc, &xd MDS_END_ARG);
-    status = TreePutRecord(input_nid, (struct descriptor *)&xd,0);
+    status = TreePutRecord(input_nid, (struct descriptor *)&xd, 0);
   }
   return status;
 }
-     
+
 static void ask_incaa_proc(Widget w);
 static Boolean ask_incaa_button(Widget w);
 static void ask_incaa_create(Widget w);
-int       preamp__dw_setup(struct descriptor *niddsc,  struct descriptor *methoddsc, Widget    parent)
+int preamp__dw_setup(struct descriptor *niddsc, struct descriptor *methoddsc, Widget parent)
 {
   Widget dbox;
-  static String uids[] = {"PREAMP.uid"};
-  static int       nid;
-  static NCI_ITM   nci[] = {{4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0}};
-  static  MrmRegisterArg uilnames[] = {{"ask_incaa_proc", (char *)ask_incaa_proc},
-                                       {"ask_incaa_create", (char *)ask_incaa_create},
-                                       {"ask_incaa_button", (char *)ask_incaa_button}};
+  static String uids[] = { "PREAMP.uid" };
+  static int nid;
+  static NCI_ITM nci[] =
+      { {4, NciCONGLOMERATE_NIDS, (unsigned char *)&nid, 0}, {0, NciEND_OF_LIST, 0, 0} };
+  static MrmRegisterArg uilnames[] = { {"ask_incaa_proc", (char *)ask_incaa_proc},
+  {"ask_incaa_create", (char *)ask_incaa_create},
+  {"ask_incaa_button", (char *)ask_incaa_button}
+  };
   int status;
   TreeGetNci(*(int *)niddsc->pointer, nci);
-  status =  XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "PREAMP", uilnames, XtNumber(uilnames), 
-           &dbox);
+  status =
+      XmdsDeviceSetup(parent, (int *)niddsc->pointer, uids, XtNumber(uids), "PREAMP", uilnames,
+		      XtNumber(uilnames), &dbox);
   return status;
 }
 
@@ -101,6 +103,7 @@ static void ask_incaa_create(Widget w)
   int device_nid = XmdsGetDeviceNid();
   XtVaSetValues(w, XmNuserData, &device_nid, NULL);
 }
+
 static void ask_incaa_proc(Widget w)
 {
   Widget par = XtParent(w);
@@ -117,7 +120,7 @@ static Boolean ask_incaa_button(Widget w)
   Widget parent = XtParent(XtParent(w));
   int i;
   static int incaa_nid;
-  static DESCRIPTOR_NID(incaa_nid_dsc,&incaa_nid);
+  static DESCRIPTOR_NID(incaa_nid_dsc, &incaa_nid);
   int status;
   int *device_nid;
   XmString incaa_string;
@@ -126,36 +129,35 @@ static Boolean ask_incaa_button(Widget w)
   XtVaGetValues(w, XmNuserData, &device_nid, XmNtextString, &incaa_string, NULL);
   incaa_name = XmStringUnparse(incaa_string, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
   status = TreeFindNode(incaa_name, &incaa_nid);
-  if (status&1) {
-    status = DevNids(&incaa_nid_dsc,sizeof(c_nids),c_nids);
-    if (status&1) {
-      for (i=1; i<=16; i++)
-      {
-        DESCRIPTOR_NID(nid_dsc,0);
-        char name[] = {'*','.','o','u','t','p','u','t','_','0','0',0};
-        nid_dsc.pointer = (char *)&c_nids[INCAA16_N_INPUT_01+(i-1)*(INCAA16_N_INPUT_02 - INCAA16_N_INPUT_01)];
-        name[9] += i/10;
-        name[10] += i%10;
-        XmdsExprSetXd(XtNameToWidget(parent, name), &nid_dsc);
+  if (status & 1) {
+    status = DevNids(&incaa_nid_dsc, sizeof(c_nids), c_nids);
+    if (status & 1) {
+      for (i = 1; i <= 16; i++) {
+	DESCRIPTOR_NID(nid_dsc, 0);
+	char name[] = { '*', '.', 'o', 'u', 't', 'p', 'u', 't', '_', '0', '0', 0 };
+	nid_dsc.pointer =
+	    (char *)&c_nids[INCAA16_N_INPUT_01 +
+			    (i - 1) * (INCAA16_N_INPUT_02 - INCAA16_N_INPUT_01)];
+	name[9] += i / 10;
+	name[10] += i % 10;
+	XmdsExprSetXd(XtNameToWidget(parent, name), &nid_dsc);
       }
-    }
-    else
+    } else
       XmdsComplain(parent, "Could not find specified INCAA");
-  }
-  else
+  } else
     XmdsComplain(parent, "Could not find specified INCAA");
-  return status&1;
+  return status & 1;
 }
 
-static int one=1;
+static int one = 1;
 
-int preamp___init(struct descriptor *niddsc, InInitStruct *setup)
+int preamp___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int chan;
   int status;
-  static float gains[] = {1.,2.,4.,8.,16.};
-  for (chan=0; chan < 16; chan++) {
-    int input_nid = INPUT_NID(setup->head_nid,INPUT_01,chan);
+  static float gains[] = { 1., 2., 4., 8., 16. };
+  for (chan = 0; chan < 16; chan++) {
+    int input_nid = INPUT_NID(setup->head_nid, INPUT_01, chan);
     if (TreeIsOn(input_nid) & 1) {
       float gain1;
       float gain2;
@@ -163,18 +165,20 @@ int preamp___init(struct descriptor *niddsc, InInitStruct *setup)
       unsigned short g1;
       unsigned short g2;
       unsigned long ctl;
-      int g1_nid = INPUT_NID(setup->head_nid,INPUT_01_GAIN1,chan);
-      int g2_nid = INPUT_NID(setup->head_nid,INPUT_01_GAIN2,chan);
-      int offset_nid = INPUT_NID(setup->head_nid,INPUT_01_OFFSET,chan);
-      return_on_error(DevFloat(&g1_nid, &gain1),DEV$_BAD_GAIN);
-      return_on_error(DevFloat(&g2_nid, &gain2),DEV$_BAD_GAIN);
-      return_on_error(DevFloat(&offset_nid, &offset),DEV$_BAD_OFFSET);
-      for (g1=0; g1 < 5 && fabs(gains[g1]-gain1) > .1; g1++);
-      if (g1 == 5) return DEV$_BAD_GAIN;
-      for (g2=0; g2 < 5 && fabs(gains[g2]-gain2) > .1; g2++);
-      if (g2 == 5) return DEV$_BAD_GAIN;
-      ctl = (unsigned int)(4095.*(5.-offset)/10. + .5) | g1 << 12 | g2 << 15;
-      return_on_error(DevCamChk(CamPiow(setup->name, chan, 16, &ctl, 24, 0), &one, &one),status); 
+      int g1_nid = INPUT_NID(setup->head_nid, INPUT_01_GAIN1, chan);
+      int g2_nid = INPUT_NID(setup->head_nid, INPUT_01_GAIN2, chan);
+      int offset_nid = INPUT_NID(setup->head_nid, INPUT_01_OFFSET, chan);
+      return_on_error(DevFloat(&g1_nid, &gain1), DEV$_BAD_GAIN);
+      return_on_error(DevFloat(&g2_nid, &gain2), DEV$_BAD_GAIN);
+      return_on_error(DevFloat(&offset_nid, &offset), DEV$_BAD_OFFSET);
+      for (g1 = 0; g1 < 5 && fabs(gains[g1] - gain1) > .1; g1++) ;
+      if (g1 == 5)
+	return DEV$_BAD_GAIN;
+      for (g2 = 0; g2 < 5 && fabs(gains[g2] - gain2) > .1; g2++) ;
+      if (g2 == 5)
+	return DEV$_BAD_GAIN;
+      ctl = (unsigned int)(4095. * (5. - offset) / 10. + .5) | g1 << 12 | g2 << 15;
+      return_on_error(DevCamChk(CamPiow(setup->name, chan, 16, &ctl, 24, 0), &one, &one), status);
     }
   }
   return status;

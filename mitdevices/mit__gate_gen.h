@@ -11,11 +11,11 @@
 #define MIT__GATE_N_EDGES_R 9
 #define MIT__GATE_N_EDGES_F 10
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	float trigger;
-	float pulse_time;
-	float duration;
-	int trigger_mode;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  float trigger;
+  float pulse_time;
+  float duration;
+  int trigger_mode;
 } InGet_setupStruct;

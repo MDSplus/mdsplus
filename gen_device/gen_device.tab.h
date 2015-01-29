@@ -53,10 +53,10 @@
 #define NO_WRITE_MODEL 305
 #define NO_WRITE_SHOT 306
 #define INCLUDE_IN_PULSE 307
-typedef union  {
+typedef union {
   char *ptr;
-  int  status;
-  int  option;
+  int status;
+  int option;
   InDescr *dptr;
   NodeDescr *nptr;
 } YYSTYPE;

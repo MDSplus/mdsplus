@@ -9,8 +9,6 @@
 *
 ***********************************************************************/
 
-
-
 	/***************************************************************
 	 * TclWfevent
 	 * Wait for MDSplus event
@@ -18,8 +16,8 @@
 
 int TclWfevent()
 {
-    static DYNAMIC_DESCRIPTOR(event);
-    cli_get_value("EVENT",&event);
-    MDSWfevent(event.dscA_pointer,0,0,0);
-    return 1;
+  static DYNAMIC_DESCRIPTOR(event);
+  cli_get_value("EVENT", &event);
+  MDSWfevent(event.dscA_pointer, 0, 0, 0);
+  return 1;
 }

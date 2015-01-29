@@ -5,9 +5,9 @@
 #define MDSDCL_N_COMMANDS 3
 #define MDSDCL_N_EXEC_ACTION 4
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *commands;
-	char *verbs;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *commands;
+  char *verbs;
 } InExecuteStruct;

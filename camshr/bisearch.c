@@ -1,14 +1,14 @@
 // bisearch.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -33,107 +33,105 @@
 #include "prototypes.h"
 
 //-------------------------------------------------------------------------
-// bisearch -- 	binary search
+// bisearch --  binary search
 // Wed Jan 10 16:08:48 EST 2001
-// Tue May 14 17:03:57 EDT 2002	-- fixed comparision string length
-// Wed May 15 11:23:04 EDT 2002	-- fixed 'addcrate' search
+// Tue May 14 17:03:57 EDT 2002 -- fixed comparision string length
+// Wed May 15 11:23:04 EDT 2002 -- fixed 'addcrate' search
 //-------------------------------------------------------------------------
-// input:	see parameter list
-// output:	-1 indicates entry not found; 0 or greater is index of found
-// 			entry
+// input:       see parameter list
+// output:      -1 indicates entry not found; 0 or greater is index of found
+//                      entry
 //-------------------------------------------------------------------------
-int bisearch( int dbType,
-	  		  const void *target, 
-	  		  int size, 
-	  		  int (*compare)(const void *key1, const void *key2)
-	  		  ) 
+int bisearch(int dbType,
+	     const void *target, int size, int (*compare) (const void *key1, const void *key2)
+    )
 {
-	void 					*dbptr;					// generic pointer
-	char 					*candidate, fmt[9];
-	int						left, middle, right;
-	int 					entrySize;
-	extern struct MODULE	*CTSdb;
-	extern struct CRATE		*CRATEdb;
+  void *dbptr;			// generic pointer
+  char *candidate, fmt[9];
+  int left, middle, right;
+  int entrySize;
+  extern struct MODULE *CTSdb;
+  extern struct CRATE *CRATEdb;
 
-	char tmp[33];	// allows a full entry
-	int length;
+  char tmp[33];			// allows a full entry
+  int length;
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "bisearch('%s') tablesize=%d\n", (char *)target,size );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("bisearch('%s') tablesize=%d\n", (char *)target, size);
 
 	/*****************************************************************************
 	*  Continue searching until the left and right indices cross.                *
 	*****************************************************************************/
-	left  = 0;
-	right = size - 1;
+  left = 0;
+  right = size - 1;
 
-	switch( dbType ) {
-		case CTS_DB:
-			dbptr = (void *)CTSdb;
-			entrySize              = MODULE_ENTRY;
-			break;
+  switch (dbType) {
+  case CTS_DB:
+    dbptr = (void *)CTSdb;
+    entrySize = MODULE_ENTRY;
+    break;
 
-		case CRATE_DB:
-			dbptr = (void *)CRATEdb;
-			entrySize             = CRATE_ENTRY;
-			break;
-	}
+  case CRATE_DB:
+    dbptr = (void *)CRATEdb;
+    entrySize = CRATE_ENTRY;
+    break;
+  }
 
-	candidate = (char *)malloc(entrySize);	// allocate memory for item to compare with
-	
-	while( left <= right ) {
-		middle = (left + right) / 2;
-	if(MSGLVL(8)) 
-		printf("middle=%d\n", middle);
+  candidate = (char *)malloc(entrySize);	// allocate memory for item to compare with
 
-		switch( dbType ) {		// [2002.05.15]
-			case CTS_DB:
-				sprintf(tmp, "%.32s", (char *)(dbptr + (middle * entrySize)));		// extract db entry [2002.05.14]
-				length = strcspn(tmp, " ");											// get logical name [2002.05.14]
-				break;
+  while (left <= right) {
+    middle = (left + right) / 2;
+    if (MSGLVL(8))
+      printf("middle=%d\n", middle);
 
-			case CRATE_DB:
-//				length = 6;		// eg. 'GKabnn'
-				length = (strlen(target) == 4) ? 4 : 6;		// eg. 'GKab' or 'GKabnn'
-				break;
-		}
+    switch (dbType) {		// [2002.05.15]
+    case CTS_DB:
+      sprintf(tmp, "%.32s", (char *)(dbptr + (middle * entrySize)));	// extract db entry [2002.05.14]
+      length = strcspn(tmp, " ");	// get logical name [2002.05.14]
+      break;
 
-		sprintf(fmt, "%%.%ds", length);										// build format string -- fixed [2002.05.14]
-		sprintf(candidate, fmt, (char *)(dbptr + (middle * entrySize)));	// get an item to check
-		if(MSGLVL(8)) 
-			printf("calling  compare('%s', '%s')\n", candidate, (char *)target);
+    case CRATE_DB:
+//                              length = 6;             // eg. 'GKabnn'
+      length = (strlen(target) == 4) ? 4 : 6;	// eg. 'GKab' or 'GKabnn'
+      break;
+    }
 
-		switch( compare( candidate, target )) {
-			case -1:
+    sprintf(fmt, "%%.%ds", length);	// build format string -- fixed [2002.05.14]
+    sprintf(candidate, fmt, (char *)(dbptr + (middle * entrySize)));	// get an item to check
+    if (MSGLVL(8))
+      printf("calling  compare('%s', '%s')\n", candidate, (char *)target);
+
+    switch (compare(candidate, target)) {
+    case -1:
 				/*****************************************************************
 				*  Prepare to search to the right of the middle index.           *
 				*****************************************************************/
-				left = middle + 1;
-				break;
+      left = middle + 1;
+      break;
 
-			case 1:
+    case 1:
 				/*****************************************************************
 				*  Prepare to search to the left of the middle index.            *
 				*****************************************************************/
-				right = middle - 1;
-				break;
+      right = middle - 1;
+      break;
 
-			case 0:
+    case 0:
 				/*****************************************************************
 				*  Return the exact index where the data has been found.         *
 				*****************************************************************/
-				goto Bisearch_Exit;		// return curent middle value
-		}
-	}
+      goto Bisearch_Exit;	// return curent middle value
+    }
+  }
 
 	/*****************************************************************************
 	*  Return that the data was not found.                                       *
 	*****************************************************************************/
-	middle = -1;
+  middle = -1;
 
-Bisearch_Exit:
-	if( candidate )						// prevent memory leaks;
-		free(candidate);
+ Bisearch_Exit:
+  if (candidate)		// prevent memory leaks;
+    free(candidate);
 
-	return middle;
+  return middle;
 }

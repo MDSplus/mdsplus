@@ -9,12 +9,12 @@
 #define MIT_PULSE_N_PULSE_TIME 7
 #define MIT_PULSE_N_OUTPUT 8
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	float trigger;
-	float pulse_time;
-	float duration;
-	int trigger_mode;
-	int output_mode;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  float trigger;
+  float pulse_time;
+  float duration;
+  int trigger_mode;
+  int output_mode;
 } InGet_setupStruct;

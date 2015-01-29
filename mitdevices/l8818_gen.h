@@ -14,25 +14,25 @@
 #define L8818_N_INIT_ACTION 12
 #define L8818_N_STORE_ACTION 13
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int input_offset;
-	int pre_trig;
-	int active_mem;
-	float clock;
-	int clock_convert;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int input_offset;
+  int pre_trig;
+  int active_mem;
+  float clock;
+  int clock_convert;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InTriggerStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStoreStruct;

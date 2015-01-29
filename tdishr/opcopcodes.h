@@ -9,4 +9,5 @@
 
 enum OpcOpcodes {
 #include "opcbuiltins.h"
-OpcTOO_BIG};
+  OpcTOO_BIG
+};

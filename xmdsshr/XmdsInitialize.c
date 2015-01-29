@@ -58,7 +58,6 @@ int XmdsInitialize( )
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <stdio.h>
@@ -97,52 +96,60 @@ void XmdsInitialize()
 {
 #ifndef _NO_XDS
   static MrmRegisterArg callbacks[] = {
-			    {"XmdsApplyCallback", (char *) XmdsApplyCallback},
-			    {"XmdsCancelCallback", (char *) XmdsCancelCallback},
-			    {"XmdsDestroyWidgetCallback", (char *) XmdsDestroyWidgetCallback},
-			    {"XmdsManageChildCallback", (char *) XmdsManageChildCallback},
-			    {"XmdsOkCallback", (char *) XmdsOkCallback},
-			    {"XmdsRegisterWidgetCallback", (char *) XmdsRegisterWidgetCallback},
-			    {"XmdsResetCallback", (char *) XmdsResetCallback},
-			    {"XmdsUnmanageChildCallback", (char *) XmdsUnmanageChildCallback} };
+    {"XmdsApplyCallback", (char *)XmdsApplyCallback},
+    {"XmdsCancelCallback", (char *)XmdsCancelCallback},
+    {"XmdsDestroyWidgetCallback", (char *)XmdsDestroyWidgetCallback},
+    {"XmdsManageChildCallback", (char *)XmdsManageChildCallback},
+    {"XmdsOkCallback", (char *)XmdsOkCallback},
+    {"XmdsRegisterWidgetCallback", (char *)XmdsRegisterWidgetCallback},
+    {"XmdsResetCallback", (char *)XmdsResetCallback},
+    {"XmdsUnmanageChildCallback", (char *)XmdsUnmanageChildCallback}
+  };
 
 #ifndef __VAX
-  xmdsExprWidgetClass = (WidgetClass)&xmdsExprClassRec;  
-  xmdsExprFieldWidgetClass = (WidgetClass)&xmdsExprClassRec;
-  xmdsWavedrawWidgetClass = (WidgetClass)&xmdsWavedrawClassRec;  
-  xmdsWaveformWidgetClass = (WidgetClass)&xmdsWaveformClassRec;
-  xmdsXdBoxWidgetClass = (WidgetClass)&xmdsXdBoxClassRec;
+  xmdsExprWidgetClass = (WidgetClass) & xmdsExprClassRec;
+  xmdsExprFieldWidgetClass = (WidgetClass) & xmdsExprClassRec;
+  xmdsWavedrawWidgetClass = (WidgetClass) & xmdsWavedrawClassRec;
+  xmdsWaveformWidgetClass = (WidgetClass) & xmdsWaveformClassRec;
+  xmdsXdBoxWidgetClass = (WidgetClass) & xmdsXdBoxClassRec;
 #endif
 
-  MrmRegisterClass(MrmwcUnknown,"XmdsApplyButtonClass","XmdsCreateApplyButton",XmdsCreateApplyButton,
+  MrmRegisterClass(MrmwcUnknown, "XmdsApplyButtonClass", "XmdsCreateApplyButton",
+		   XmdsCreateApplyButton, xmPushButtonWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsCancelButtonClass", "XmdsCreateCancelButton",
+		   XmdsCreateCancelButton, xmPushButtonWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsDigChansWidgetClass", "XmdsCreateDigChans",
+		   XmdsCreateDigChans, xmFormWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsExprWidgetClass", "XmdsCreateExpr", XmdsCreateExpr,
+		   xmdsExprWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsExprFieldWidgetClass", "XmdsCreateExprField",
+		   XmdsCreateExprField, xmdsExprFieldWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsInputWidgetClass", "XmdsCreateInput", XmdsCreateInput,
+		   xmBulletinBoardWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsOkButtonClass", "XmdsCreateOkButton", XmdsCreateOkButton,
 		   xmPushButtonWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsCancelButtonClass","XmdsCreateCancelButton",XmdsCreateCancelButton,
-		   xmPushButtonWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsDigChansWidgetClass","XmdsCreateDigChans",XmdsCreateDigChans,xmFormWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsExprWidgetClass","XmdsCreateExpr",XmdsCreateExpr,xmdsExprWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsExprFieldWidgetClass","XmdsCreateExprField",XmdsCreateExprField,xmdsExprFieldWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsInputWidgetClass","XmdsCreateInput",XmdsCreateInput,xmBulletinBoardWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsOkButtonClass","XmdsCreateOkButton",XmdsCreateOkButton,
-		   xmPushButtonWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsOnOffToggleButtonWidgetClass","XmdsCreateOnOffToggleButton",XmdsCreateOnOffToggleButton,
-		   xmToggleButtonWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsNidOptionMenuWidgetClass","XmdsCreateNidOptionMenu",XmdsCreateNidOptionMenu,
-		   xmRowColumnWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsResetButtonClass","XmdsCreateResetButton",XmdsCreateResetButton,
-		   xmPushButtonWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsWavedrawWidgetClass","XmdsCreateWavedraw",XmdsCreateWavedraw,xmdsWavedrawWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsXdBoxDialogButtonWidgetClass","XmdsCreateXdBoxDialogButton",XmdsCreateXdBoxDialogButton,
-		   xmPushButtonWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsXdBoxOnOffButtonWidgetClass","XmdsCreateXdBoxOnOffButton",XmdsCreateXdBoxOnOffButton,
-		   xmRowColumnWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsXdBoxDialogWidgetClass","XmdsCreateXdBoxDialog",XmdsCreateXdBoxDialog,
+  MrmRegisterClass(MrmwcUnknown, "XmdsOnOffToggleButtonWidgetClass", "XmdsCreateOnOffToggleButton",
+		   XmdsCreateOnOffToggleButton, xmToggleButtonWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsNidOptionMenuWidgetClass", "XmdsCreateNidOptionMenu",
+		   XmdsCreateNidOptionMenu, xmRowColumnWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsResetButtonClass", "XmdsCreateResetButton",
+		   XmdsCreateResetButton, xmPushButtonWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsWavedrawWidgetClass", "XmdsCreateWavedraw",
+		   XmdsCreateWavedraw, xmdsWavedrawWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsXdBoxDialogButtonWidgetClass", "XmdsCreateXdBoxDialogButton",
+		   XmdsCreateXdBoxDialogButton, xmPushButtonWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsXdBoxOnOffButtonWidgetClass", "XmdsCreateXdBoxOnOffButton",
+		   XmdsCreateXdBoxOnOffButton, xmRowColumnWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsXdBoxDialogWidgetClass", "XmdsCreateXdBoxDialog",
+		   XmdsCreateXdBoxDialog, xmdsXdBoxWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsXdBoxWidgetClass", "XmdsCreateXdBox", XmdsCreateXdBox,
 		   xmdsXdBoxWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsXdBoxWidgetClass","XmdsCreateXdBox",XmdsCreateXdBox,xmdsXdBoxWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsPathClass","XmdsCreatePath",XmdsCreatePath,
+  MrmRegisterClass(MrmwcUnknown, "XmdsPathClass", "XmdsCreatePath", XmdsCreatePath,
 		   xmLabelWidgetClass);
-  MrmRegisterClass(MrmwcUnknown,"XmdsDisplayClass","XmdsCreateDisplay",XmdsCreateDisplay,
+  MrmRegisterClass(MrmwcUnknown, "XmdsDisplayClass", "XmdsCreateDisplay", XmdsCreateDisplay,
 		   xmLabelWidgetClass);
-  MrmRegisterNames(callbacks,XtNumber(callbacks));
+  MrmRegisterNames(callbacks, XtNumber(callbacks));
 #endif
-  MrmRegisterClass(MrmwcUnknown,"XmdsWaveformWidgetClass","XmdsCreateWaveform",XmdsCreateWaveform,xmdsWaveformWidgetClass);
+  MrmRegisterClass(MrmwcUnknown, "XmdsWaveformWidgetClass", "XmdsCreateWaveform",
+		   XmdsCreateWaveform, xmdsWaveformWidgetClass);
 }

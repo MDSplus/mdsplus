@@ -9,15 +9,16 @@
 #include "infcodes.h"
 #include "infutil.h"
 
-struct inflate_codes_state {int dummy;}; /* for buggy compilers */
+struct inflate_codes_state {
+  int dummy;
+};				/* for buggy compilers */
 
 /* And'ing with mask[n] masks the lower n bits */
 uInt inflate_mask[17] = {
-    0x0000,
-    0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
-    0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff
+  0x0000,
+  0x0001, 0x0003, 0x0007, 0x000f, 0x001f, 0x003f, 0x007f, 0x00ff,
+  0x01ff, 0x03ff, 0x07ff, 0x0fff, 0x1fff, 0x3fff, 0x7fff, 0xffff
 };
-
 
 /* copy as much as possible from the sliding window to the output area */
 int inflate_flush(s, z, r)
@@ -34,9 +35,11 @@ int r;
   q = s->read;
 
   /* compute number of bytes to copy as far as end of window */
-  n = (uInt)((q <= s->write ? s->write : s->end) - q);
-  if (n > z->avail_out) n = z->avail_out;
-  if (n && r == Z_BUF_ERROR) r = Z_OK;
+  n = (uInt) ((q <= s->write ? s->write : s->end) - q);
+  if (n > z->avail_out)
+    n = z->avail_out;
+  if (n && r == Z_BUF_ERROR)
+    r = Z_OK;
 
   /* update counters */
   z->avail_out -= n;
@@ -44,7 +47,7 @@ int r;
 
   /* update check information */
   if (s->checkfn != Z_NULL)
-    z->adler = s->check = (*s->checkfn)(s->check, q, n);
+    z->adler = s->check = (*s->checkfn) (s->check, q, n);
 
   /* copy as far as end of window */
   zmemcpy(p, q, n);
@@ -52,17 +55,18 @@ int r;
   q += n;
 
   /* see if more to copy at beginning of window */
-  if (q == s->end)
-  {
+  if (q == s->end) {
     /* wrap pointers */
     q = s->window;
     if (s->write == s->end)
       s->write = s->window;
 
     /* compute bytes to copy */
-    n = (uInt)(s->write - q);
-    if (n > z->avail_out) n = z->avail_out;
-    if (n && r == Z_BUF_ERROR) r = Z_OK;
+    n = (uInt) (s->write - q);
+    if (n > z->avail_out)
+      n = z->avail_out;
+    if (n && r == Z_BUF_ERROR)
+      r = Z_OK;
 
     /* update counters */
     z->avail_out -= n;
@@ -70,7 +74,7 @@ int r;
 
     /* update check information */
     if (s->checkfn != Z_NULL)
-      z->adler = s->check = (*s->checkfn)(s->check, q, n);
+      z->adler = s->check = (*s->checkfn) (s->check, q, n);
 
     /* copy */
     zmemcpy(p, q, n);

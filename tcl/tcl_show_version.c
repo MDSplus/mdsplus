@@ -17,7 +17,7 @@ extern char *MdsRelease();
  * TclShowVersion:
  ***************************************************************/
 int TclShowVersion()
-   {
-     TclTextOut(MdsRelease());
-     return 1;
-   }
+{
+  TclTextOut(MdsRelease());
+  return 1;
+}

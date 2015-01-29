@@ -33,37 +33,37 @@
 #define A14_N_INIT_ACTION 31
 #define A14_N_STORE_ACTION 32
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int clock_divide;
-	int clock_divide_convert;
-	struct descriptor *ext_clock_in;
-	int pts;
-	int mode;
-	int clk_polarity;
-	int str_polarity;
-	int stp_polarity;
-	int gated;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int clock_divide;
+  int clock_divide_convert;
+  struct descriptor *ext_clock_in;
+  int pts;
+  int mode;
+  int clk_polarity;
+  int str_polarity;
+  int stp_polarity;
+  int gated;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStartStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStopStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	struct descriptor *ext_clock_in;
-	struct descriptor *dimension;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  struct descriptor *ext_clock_in;
+  struct descriptor *dimension;
 } InStoreStruct;

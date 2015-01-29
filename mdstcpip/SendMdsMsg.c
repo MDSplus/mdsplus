@@ -4,7 +4,8 @@
 #include <errno.h>
 #include <stdio.h>
 #include "zlib.h"
-static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options) {
+static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options)
+{
   char *bptr = (char *)buffer;
   IoRoutines *io = GetConnectionIo(id);
   if (io) {
@@ -16,8 +17,7 @@ static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options) {
 	if (errno != EINTR)
 	  return 0;
 	tries++;
-      }
-      else {
+      } else {
 	bytes_to_send -= bytes_sent;
 	bptr += bytes_sent;
 	tries = 0;
@@ -25,7 +25,7 @@ static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options) {
     }
     if (tries >= 10) {
       char msg[256];
-      sprintf(msg,"\rsend failed, shutting down connection %d",id);
+      sprintf(msg, "\rsend failed, shutting down connection %d", id);
       perror(msg);
       DisconnectConnection(id);
       return 0;
@@ -35,46 +35,46 @@ static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options) {
   return 0;
 }
 
-int SendMdsMsg(int id, Message *m, int oob) {
+int SendMdsMsg(int id, Message * m, int oob)
+{
   unsigned long len = m->h.msglen - sizeof(m->h);
-  unsigned long clength = 0; 
+  unsigned long clength = 0;
   Message *cm = 0;
   int status;
-  int do_swap = 0; /*Added to handle byte swapping with compression*/
- 
+  int do_swap = 0;		/*Added to handle byte swapping with compression */
+
   if (len > 0 && GetCompressionLevel() > 0 && m->h.client_type != SENDCAPABILITIES) {
     clength = len;
-    cm = (Message *)malloc(m->h.msglen + 4);
+    cm = (Message *) malloc(m->h.msglen + 4);
   }
-  if (!oob) FlushConnection(id);
+  if (!oob)
+    FlushConnection(id);
   if (m->h.client_type == SENDCAPABILITIES)
     m->h.status = GetCompressionLevel();
-  if ((m->h.client_type & SwapEndianOnServer) != 0)
-  {
-    if (Endian(m->h.client_type) != Endian(ClientType()))
-    {
+  if ((m->h.client_type & SwapEndianOnServer) != 0) {
+    if (Endian(m->h.client_type) != Endian(ClientType())) {
       FlipData(m);
       FlipHeader(&m->h);
-      do_swap = 1; /* Recall that the header field msglen needs to be swapped */
+      do_swap = 1;		/* Recall that the header field msglen needs to be swapped */
     }
-  }
-  else
+  } else
     m->h.client_type = ClientType();
-  if (clength && compress2((unsigned char *)cm->bytes+4,&clength,(unsigned char *)m->bytes,len,GetCompressionLevel()) == 0 && clength < len)
-  {
+  if (clength
+      && compress2((unsigned char *)cm->bytes + 4, &clength, (unsigned char *)m->bytes, len,
+		   GetCompressionLevel()) == 0 && clength < len) {
     cm->h = m->h;
     cm->h.client_type |= COMPRESSED;
-    memcpy(cm->bytes,&cm->h.msglen,4);
+    memcpy(cm->bytes, &cm->h.msglen, 4);
     cm->h.msglen = clength + 4 + sizeof(MsgHdr);
 /*If byte swapping required, swap msglen */
-    if(do_swap)
- 	FlipBytes(4,(char *)&cm->h.msglen);	
- /* status = SendBytes(id, (char *)cm, cm->h.msglen, oob);*/
+    if (do_swap)
+      FlipBytes(4, (char *)&cm->h.msglen);
+    /* status = SendBytes(id, (char *)cm, cm->h.msglen, oob); */
 /* now msglen is swapped, and cannot be used as byte counter */
     status = SendBytes(id, (char *)cm, clength + 4 + sizeof(MsgHdr), oob);
-  }
-  else
+  } else
     status = SendBytes(id, (char *)m, len + sizeof(MsgHdr), oob);
-  if (clength) free(cm);
+  if (clength)
+    free(cm);
   return status;
 }

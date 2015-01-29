@@ -12,50 +12,47 @@
 *
 ************************************************************************/
 
-
 #define READONLY    1
 #ifdef vms
 #define TdiExecute    TDI$EXECUTE
 #endif
 
-
-extern int   TdiExecute();
-
+extern int TdiExecute();
 
 	/***************************************************************
 	 * TclSetTree:
 	 **************************************************************/
 int TclSetTree()
-   {
-    int   sts;
-    static int   shot;
-    static DESCRIPTOR_LONG(dsc_shot,&shot);
-    char  *filnam;
-    static DYNAMIC_DESCRIPTOR(dsc_filnam);
-    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+{
+  int sts;
+  static int shot;
+  static DESCRIPTOR_LONG(dsc_shot, &shot);
+  char *filnam;
+  static DYNAMIC_DESCRIPTOR(dsc_filnam);
+  static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
 
 		/*--------------------------------------------------------
 		 * Executable ...
 		 *-------------------------------------------------------*/
-    cli_get_value("FILE",&dsc_filnam);
-    cli_get_value("SHOTID",&dsc_asciiShot);
-    dsc_asciiShot.dscB_class = CLASS_S;		/* vms: malloc vs str$	*/
-    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
-    dsc_asciiShot.dscB_class = CLASS_D;
-    if (sts & 1)
-       {
-        filnam = dsc_filnam.dscA_pointer;
-        if (cli_present("READONLY") & 1)
-            sts = TreeOpen(filnam,shot,READONLY);
-        else
-            sts = TreeOpen(filnam,shot,0);
-       }
-    if (sts & 1)
-        TclNodeTouched(0,tree);
+  cli_get_value("FILE", &dsc_filnam);
+  cli_get_value("SHOTID", &dsc_asciiShot);
+  dsc_asciiShot.dscB_class = CLASS_S;	/* vms: malloc vs str$  */
+  sts = TdiExecute(&dsc_asciiShot, &dsc_shot MDS_END_ARG);
+  dsc_asciiShot.dscB_class = CLASS_D;
+  if (sts & 1) {
+    filnam = dsc_filnam.dscA_pointer;
+    if (cli_present("READONLY") & 1)
+      sts = TreeOpen(filnam, shot, READONLY);
     else
-        MdsMsg(sts,"Failed to open tree '%s', shot %s",(char *)dsc_filnam.dscA_pointer,(char *)dsc_asciiShot.dscA_pointer);
+      sts = TreeOpen(filnam, shot, 0);
+  }
+  if (sts & 1)
+    TclNodeTouched(0, tree);
+  else
+    MdsMsg(sts, "Failed to open tree '%s', shot %s", (char *)dsc_filnam.dscA_pointer,
+	   (char *)dsc_asciiShot.dscA_pointer);
 
-    str_free1_dx(&dsc_filnam);
-    str_free1_dx(&dsc_asciiShot);
-    return sts;
-   }
+  str_free1_dx(&dsc_filnam);
+  str_free1_dx(&dsc_asciiShot);
+  return sts;
+}

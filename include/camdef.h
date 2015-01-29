@@ -16,13 +16,13 @@
 #ifdef CREATE_STS_TEXT
 #include        "facility_list.h"
 
-static struct stsText  camshr_stsText[] = {
-    STS_TEXT(CamDONE_Q,"I/O completed with X=1, Q=1")
-   ,STS_TEXT(CamDONE_NOQ,"I/O completed with X=1, Q=0")
-   ,STS_TEXT(CamDONE_NOX,"I/O completed with X=0 - probable failure")
-   ,STS_TEXT(CamSERTRAERR,"serial transmission error on highway")
-   ,STS_TEXT(CamSCCFAIL,"serial crate controller failure")
-   ,STS_TEXT(CamOFFLINE,"crate is offline")
+static struct stsText camshr_stsText[] = {
+  STS_TEXT(CamDONE_Q, "I/O completed with X=1, Q=1")
+      , STS_TEXT(CamDONE_NOQ, "I/O completed with X=1, Q=0")
+      , STS_TEXT(CamDONE_NOX, "I/O completed with X=0 - probable failure")
+      , STS_TEXT(CamSERTRAERR, "serial transmission error on highway")
+      , STS_TEXT(CamSCCFAIL, "serial crate controller failure")
+      , STS_TEXT(CamOFFLINE, "crate is offline")
 };
 #endif
 

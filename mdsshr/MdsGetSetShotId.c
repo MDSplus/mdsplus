@@ -28,13 +28,13 @@ int MdsGetCurrentShotId(experiment,shot)
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-int       MdsGetCurrentShotId(char *experiment)
+int MdsGetCurrentShotId(char *experiment)
 {
   printf("MdsGetCurrentShotId is obsolete, use TreeGetCurrentShotId in TreeShr\n");
   return 0;
 }
 
-int       MdsSetCurrentShotId(char *experiment, int shot)
+int MdsSetCurrentShotId(char *experiment, int shot)
 {
   printf("MdsSetCurrentShotId is obsolete, use TreeSetCurrentShotId in TreeShr\n");
   return 0;

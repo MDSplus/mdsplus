@@ -45,7 +45,6 @@ int XmdsOnOffToggleButtonApply(Widget w);
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #include <strroutines.h>
@@ -56,15 +55,13 @@ int XmdsOnOffToggleButtonApply(Widget w);
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-Widget XmdsCreateOnOffToggleButton(Widget parent,String name,ArgList args,Cardinal argcount);
+Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount);
 Boolean XmdsIsOnOffToggleButton(Widget w);
 void XmdsOnOffToggleButtonReset(Widget w);
 int XmdsOnOffToggleButtonPut(Widget w);
 int XmdsOnOffToggleButtonApply(Widget w);
 
-
-typedef struct _Resources
-{
+typedef struct _Resources {
   int nid;
   int nid_offset;
   Boolean show_path;
@@ -73,47 +70,49 @@ typedef struct _Resources
 } Resources;
 
 static Resources *GetResources(Widget w);
-static void Destroy(Widget w,Resources *info,XtPointer cb);
+static void Destroy(Widget w, Resources * info, XtPointer cb);
 
-static XtResource resources[] = 
-{
+static XtResource resources[] = {
   {XmdsNnid, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid), XmRImmediate, 0},
   {XmdsNnidOffset, "Nid", XmRInt, sizeof(int), XtOffsetOf(Resources, nid_offset), XmRImmediate, 0},
-  {XmdsNshowPath, "ShowPath", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, show_path), XmRImmediate, 0},
-  {XmNlabelString, "LabelString", XmRString, sizeof(XmString), XtOffsetOf(Resources, label), XmRImmediate, 0},
-  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),XmRImmediate, (void *) 1}
+  {XmdsNshowPath, "ShowPath", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, show_path),
+   XmRImmediate, 0}
+  ,
+  {XmNlabelString, "LabelString", XmRString, sizeof(XmString), XtOffsetOf(Resources, label),
+   XmRImmediate, 0}
+  ,
+  {XmdsNputOnApply, "PutOnApply", XmRBoolean, sizeof(Boolean), XtOffsetOf(Resources, put_on_apply),
+   XmRImmediate, (void *)1}
 };
 
-Widget XmdsCreateOnOffToggleButton(Widget parent,String name,ArgList args,Cardinal argcount)
+Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount)
 {
   Widget w;
   Resources *info = (Resources *) XtMalloc(sizeof(Resources));
-  Resources default_info = {0,0,0,0,1};
+  Resources default_info = { 0, 0, 0, 0, 1 };
   *info = default_info;
-  XmdsSetSubvalues(info,resources,XtNumber(resources),args,argcount);
+  XmdsSetSubvalues(info, resources, XtNumber(resources), args, argcount);
   if (info->nid == -1)
     info->nid = XmdsGetDeviceNid();
-  w = XmCreateToggleButton(parent,name,args,argcount);
-  if (info->show_path && info->nid + info->nid_offset)
-  {
+  w = XmCreateToggleButton(parent, name, args, argcount);
+  if (info->show_path && info->nid + info->nid_offset) {
     char *path_c;
     XmString path;
     int nid = info->nid + info->nid_offset;
-    path_c = TreeGetMinimumPath(0,info->nid+info->nid_offset);
+    path_c = TreeGetMinimumPath(0, info->nid + info->nid_offset);
     path = XmStringCreateSimple(path_c);
     TreeFree(path_c);
-    XtVaSetValues(w,XmNlabelString,path,NULL);
+    XtVaSetValues(w, XmNlabelString, path, NULL);
     XmStringFree(path);
-  }
-  else if (info->label)
-    XtVaSetValues(w,XmNlabelString,info->label,NULL);
+  } else if (info->label)
+    XtVaSetValues(w, XmNlabelString, info->label, NULL);
 
-  XtAddCallback(w,XmNdestroyCallback,(XtCallbackProc)Destroy,info);
+  XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, info);
   XmdsOnOffToggleButtonReset(w);
   return w;
 }
 
-static void Destroy(Widget w,Resources *info,XtPointer cb)
+static void Destroy(Widget w, Resources * info, XtPointer cb)
 {
   XtFree((char *)info);
 }
@@ -126,13 +125,14 @@ Boolean XmdsIsOnOffToggleButton(Widget w)
 static Resources *GetResources(Widget w)
 {
   Resources *answer = 0;
-  if (XmIsToggleButton(w) && (XtHasCallbacks(w,XmNdestroyCallback) == XtCallbackHasSome))
-  {
+  if (XmIsToggleButton(w) && (XtHasCallbacks(w, XmNdestroyCallback) == XtCallbackHasSome)) {
     XtCallbackList callbacks;
-    XtVaGetValues(w,XmNdestroyCallback,&callbacks,NULL);
-    for (; callbacks->callback && !(answer = (Resources *)((callbacks->callback == (XtCallbackProc)Destroy) ? 
-                    callbacks->closure : 0)); 
-          callbacks = callbacks + 1);
+    XtVaGetValues(w, XmNdestroyCallback, &callbacks, NULL);
+    for (;
+	 callbacks->callback
+	 && !(answer =
+	      (Resources *) ((callbacks->callback == (XtCallbackProc) Destroy) ? callbacks->
+			     closure : 0)); callbacks = callbacks + 1) ;
   }
   return answer;
 }
@@ -141,13 +141,13 @@ void XmdsOnOffToggleButtonReset(Widget w)
 {
   Resources *info = GetResources(w);
   if (info)
-    XmToggleButtonSetState(w,XmdsIsOn(info->nid + info->nid_offset),0);
+    XmToggleButtonSetState(w, XmdsIsOn(info->nid + info->nid_offset), 0);
 }
 
 int XmdsOnOffToggleButtonPut(Widget w)
 {
   Resources *info = GetResources(w);
-  return info ? XmdsSetState(info->nid + info->nid_offset,w) : 0;
+  return info ? XmdsSetState(info->nid + info->nid_offset, w) : 0;
 }
 
 int XmdsOnOffToggleButtonApply(Widget w)

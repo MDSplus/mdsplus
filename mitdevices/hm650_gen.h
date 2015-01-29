@@ -29,23 +29,23 @@
 #define HM650_N_TRIG_OUT_7 27
 #define HM650_N_INIT_ACTION 28
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	float threshold;
-	float delay_0;
-	float delay_1;
-	float delay_2;
-	float delay_3;
-	float delay_4;
-	float delay_5;
-	float delay_6;
-	float delay_7;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  float threshold;
+  float delay_0;
+  float delay_1;
+  float delay_2;
+  float delay_3;
+  float delay_4;
+  float delay_5;
+  float delay_6;
+  float delay_7;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InTriggerStruct;

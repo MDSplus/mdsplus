@@ -18,17 +18,16 @@
 #endif
 #endif
 
-
 typedef struct _thread_static {
   int TdiGetData_recursion_count;
   int TdiIntrinsic_mess_stat;
   int TdiIntrinsic_recursion_count;
   struct descriptor_d TdiIntrinsic_message;
-  struct { 
+  struct {
     void *head;
     void *head_zone;
     void *data_zone;
-    int   public;
+    int public;
   } TdiVar_private;
   int TdiVar_new_narg;
   struct descriptor TdiVar_new_narg_d;

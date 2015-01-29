@@ -35,13 +35,13 @@
 
 /* Resources */
 
-#define XmdsNnid                    "nid"	        /* Nid */
+#define XmdsNnid                    "nid"	/* Nid */
 #define XmdsNnidOffset              "nidOffset"	/* Nid offset */
-#define XmdsNputOnApply             "putOnApply"        /* Put when a XmdsApplyAllXds is called */
-#define XmdsNlabelStrings           "labelStrings"   /* String table of button labels */
-#define XmdsNvalueStrings	    "valueStrings"   /* String table of value expressions */
-#define XmdsNresetCallback	    "resetCallback"   /* User routine to call for resets (no nid) */
-#define XmdsNvalueChangedCallback   "valueChangedCallback"   /* User routine to call when the value changes */
+#define XmdsNputOnApply             "putOnApply"	/* Put when a XmdsApplyAllXds is called */
+#define XmdsNlabelStrings           "labelStrings"	/* String table of button labels */
+#define XmdsNvalueStrings	    "valueStrings"	/* String table of value expressions */
+#define XmdsNresetCallback	    "resetCallback"	/* User routine to call for resets (no nid) */
+#define XmdsNvalueChangedCallback   "valueChangedCallback"	/* User routine to call when the value changes */
 
 /* External creation routines:
 */
@@ -50,11 +50,11 @@
 extern Widget XmdsCreateNidOptionMenu();
 extern Boolean XmdsIsNidOptionMenu();
 extern int *XmdsNidOptionMenuGetButtons();
-extern struct descriptor_xd	*XmdsNidOptionMenuGetXd();
-extern void   XmdsNidOptionMenuReset();
-extern int    XmdsNidOptionMenuPut();
-extern int    XmdsNidOptionMenuApply();
-extern void	XmdsNidOptionMenuSetButton();
+extern struct descriptor_xd *XmdsNidOptionMenuGetXd();
+extern void XmdsNidOptionMenuReset();
+extern int XmdsNidOptionMenuPut();
+extern int XmdsNidOptionMenuApply();
+extern void XmdsNidOptionMenuSetButton();
 struct descriptor_xd *XmdsNidOptionMenuIdxGetXd();
 
 #else				/* _NO_PROTO */
@@ -62,12 +62,12 @@ struct descriptor_xd *XmdsNidOptionMenuIdxGetXd();
 extern Widget XmdsCreateNidOptionMenu(Widget parent, char *name, ArgList al, Cardinal ac);
 extern Boolean XmdsIsNidOptionMenu(Widget w);
 extern int *XmdsNidOptionMenuGetButtons(Widget w, int *num);
-extern struct descriptor_xd	*XmdsNidOptionMenuGetXd(Widget w);
-extern void   XmdsNidOptionMenuReset(Widget w);
-extern int    XmdsNidOptionMenuPut(Widget w);
-extern int    XmdsNidOptionMenuApply(Widget w);
-extern void	XmdsNidOptionMenuSetButton(Widget w,int idx,String text);
-struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w,int selected);
+extern struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w);
+extern void XmdsNidOptionMenuReset(Widget w);
+extern int XmdsNidOptionMenuPut(Widget w);
+extern int XmdsNidOptionMenuApply(Widget w);
+extern void XmdsNidOptionMenuSetButton(Widget w, int idx, String text);
+struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected);
 
 #endif				/* _NO_PROTO */
 

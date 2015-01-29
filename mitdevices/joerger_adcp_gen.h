@@ -7,15 +7,15 @@
 #define JOERGER_ADCP_N_INIT_ACTION 5
 #define JOERGER_ADCP_N_STORE_ACTION 6
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int no_trig;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int no_trig;
 } InStoreStruct;

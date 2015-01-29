@@ -1,30 +1,34 @@
-typedef struct {unsigned output_control : 3;
-                unsigned count_up : 1;
-                unsigned bcd_count : 1;
-                unsigned repeat_count : 1;
-                unsigned double_load : 1;
-                unsigned special_gate : 1;
-                unsigned clock_source : 4;
-                unsigned falling_edge : 1;
-                unsigned gating : 3;
-                unsigned short load;
-                unsigned short hold;
-                unsigned start_high : 1;
-                unsigned : 7;
-              } DecoderSetup;
+typedef struct {
+  unsigned output_control:3;
+  unsigned count_up:1;
+  unsigned bcd_count:1;
+  unsigned repeat_count:1;
+  unsigned double_load:1;
+  unsigned special_gate:1;
+  unsigned clock_source:4;
+  unsigned falling_edge:1;
+  unsigned gating:3;
+  unsigned short load;
+  unsigned short hold;
+  unsigned start_high:1;
+  unsigned:7;
+} DecoderSetup;
 
-typedef struct {  unsigned                 : 2;
-		  unsigned compare_1       : 1;
-		  unsigned compare_2       : 1;
-                  unsigned f_out_src       : 4;
-		  unsigned f_out_div       : 4;
-		  unsigned f_out_disabled  : 1;
-		  unsigned data_bus_width  : 1;
-		  unsigned data_ptr_ctrl   : 1;
-		  unsigned int_scaler_ctrl : 1;
-               } MasterRegister;
+typedef struct {
+  unsigned:2;
+  unsigned compare_1:1;
+  unsigned compare_2:1;
+  unsigned f_out_src:4;
+  unsigned f_out_div:4;
+  unsigned f_out_disabled:1;
+  unsigned data_bus_width:1;
+  unsigned data_ptr_ctrl:1;
+  unsigned int_scaler_ctrl:1;
+} MasterRegister;
 
-typedef struct { unsigned int bits[4]; } EventMask;
+typedef struct {
+  unsigned int bits[4];
+} EventMask;
 
 /** output control settings **/
 #define ALWAYS_HIGH         0

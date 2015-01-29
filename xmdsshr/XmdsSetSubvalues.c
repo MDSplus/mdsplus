@@ -33,20 +33,18 @@ int XmdsSetSubvalues(XtPointer record, XtResourceList resources, Cardinal num_re
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
 
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-int XmdsSetSubvalues(XtPointer record,XtResourceList resources,Cardinal num_resources,ArgList args,Cardinal argcount)
+int XmdsSetSubvalues(XtPointer record, XtResourceList resources, Cardinal num_resources,
+		     ArgList args, Cardinal argcount)
 {
   int i;
-  for (i = 0; i < num_resources; i++)
-  {
-    if (*((int *) &resources[i].resource_offset) >= 0)
-    {
+  for (i = 0; i < num_resources; i++) {
+    if (*((int *)&resources[i].resource_offset) >= 0) {
       resources[i].resource_name = XrmStringToQuark(resources[i].resource_name) + (char *)0;
       resources[i].resource_class = XrmStringToQuark(resources[i].resource_class) + (char *)0;
       resources[i].resource_type = XrmStringToQuark(resources[i].resource_type) + (char *)0;
@@ -54,6 +52,6 @@ int XmdsSetSubvalues(XtPointer record,XtResourceList resources,Cardinal num_reso
       resources[i].resource_offset = -(resources[i].resource_offset + 1);
     }
   }
-  XtSetSubvalues(record,resources,num_resources,args,argcount);
+  XtSetSubvalues(record, resources, num_resources, args, argcount);
   return 1;
 }

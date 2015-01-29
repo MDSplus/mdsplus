@@ -54,7 +54,6 @@ int XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal nu
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <Mrm/MrmPublic.h>
@@ -65,111 +64,113 @@ int XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal nu
 #include <xmdsshr.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
-static Widget CreateButton(Widget parent,String name,ArgList args,Cardinal numargs,String ident,Boolean set_default);
-static int Apply(Widget w,XtCallbackList callbacks);
+static Widget CreateButton(Widget parent, String name, ArgList args, Cardinal numargs, String ident,
+			   Boolean set_default);
+static int Apply(Widget w, XtCallbackList callbacks);
 static Widget FindShellChild(Widget w);
-static void Ok(Widget w,XtCallbackList callbacks);
-static void Destroy(Widget w,XtCallbackList callbacks);
+static void Ok(Widget w, XtCallbackList callbacks);
+static void Destroy(Widget w, XtCallbackList callbacks);
 static int CountCallbacks(XtCallbackList callbacks);
 
-Widget XmdsCreateOkButton(Widget parent,String name,ArgList args,Cardinal numargs)
+Widget XmdsCreateOkButton(Widget parent, String name, ArgList args, Cardinal numargs)
 {
   Widget w = CreateButton(parent, name, args, numargs, "Ok", 1);
-  if (XtHasCallbacks(w,XmNactivateCallback) == XtCallbackHasSome)
-  {
+  if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome) {
     int num_callbacks;
     XtCallbackList callbacks;
-    XtVaGetValues(w,XmNactivateCallback,&callbacks,NULL);
+    XtVaGetValues(w, XmNactivateCallback, &callbacks, NULL);
     num_callbacks = CountCallbacks(callbacks);
-    callbacks = (XtCallbackList)memcpy(XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)),callbacks,sizeof(*callbacks) * (num_callbacks + 1));
-    XtRemoveAllCallbacks(w,XmNactivateCallback);
-    XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)Ok,callbacks);
-    XtAddCallback(w,XmNdestroyCallback,(XtCallbackProc)Destroy,callbacks);
-  }
-  else
-    XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)XmdsOkCallback,0);
+    callbacks =
+	(XtCallbackList) memcpy(XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)), callbacks,
+				sizeof(*callbacks) * (num_callbacks + 1));
+    XtRemoveAllCallbacks(w, XmNactivateCallback);
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) Ok, callbacks);
+    XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, callbacks);
+  } else
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsOkCallback, 0);
   return w;
 }
 
 static int CountCallbacks(XtCallbackList callbacks)
 {
   int i;
-  for (i = 0; callbacks->callback; callbacks = callbacks + 1,i++);
+  for (i = 0; callbacks->callback; callbacks = callbacks + 1, i++) ;
   return i;
 }
 
-static void Ok(Widget w,XtCallbackList callbacks)
+static void Ok(Widget w, XtCallbackList callbacks)
 {
-  if (Apply(w,callbacks))
+  if (Apply(w, callbacks))
     XtDestroyWidget(FindShellChild(w));
 }
 
 static Widget FindShellChild(Widget w)
 {
   Widget sc;
-  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc));
+  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc)) ;
   return sc;
 }
 
-static int Apply(Widget w,XtCallbackList callbacks)
+static int Apply(Widget w, XtCallbackList callbacks)
 {
   int status = XmdsXdsAreValid(FindShellChild(w));
   for (; callbacks->callback && status; callbacks++)
-    status = (*(int(*) ()) callbacks->callback) (w,callbacks->closure);
+    status = (*(int (*)())callbacks->callback) (w, callbacks->closure);
   if (status)
     status = XmdsApplyAllXds(FindShellChild(w));
   return status;
 }
 
-static void Destroy(Widget w,XtCallbackList callbacks)
+static void Destroy(Widget w, XtCallbackList callbacks)
 {
   XtFree((char *)callbacks);
 }
 
-Widget XmdsCreateApplyButton(Widget parent,String name,ArgList args,Cardinal numargs)
+Widget XmdsCreateApplyButton(Widget parent, String name, ArgList args, Cardinal numargs)
 {
   Widget w = CreateButton(parent, name, args, numargs, "Apply", 0);
-  if (XtHasCallbacks(w,XmNactivateCallback) == XtCallbackHasSome)
-  {
+  if (XtHasCallbacks(w, XmNactivateCallback) == XtCallbackHasSome) {
     int num_callbacks;
     XtCallbackList callbacks;
-    XtVaGetValues(w,XmNactivateCallback,&callbacks,NULL);
+    XtVaGetValues(w, XmNactivateCallback, &callbacks, NULL);
     num_callbacks = CountCallbacks(callbacks);
-    callbacks = (XtCallbackList)memcpy(XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)),callbacks,sizeof(*callbacks) * (num_callbacks + 1));
-    XtRemoveAllCallbacks(w,XmNactivateCallback);
-    XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)Apply,callbacks);
-    XtAddCallback(w,XmNdestroyCallback,(XtCallbackProc)Destroy,callbacks);
-  }
-  else
-    XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)XmdsApplyCallback,0);
+    callbacks =
+	(XtCallbackList) memcpy(XtMalloc(sizeof(*callbacks) * (num_callbacks + 1)), callbacks,
+				sizeof(*callbacks) * (num_callbacks + 1));
+    XtRemoveAllCallbacks(w, XmNactivateCallback);
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) Apply, callbacks);
+    XtAddCallback(w, XmNdestroyCallback, (XtCallbackProc) Destroy, callbacks);
+  } else
+    XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsApplyCallback, 0);
   return w;
 }
 
-Widget XmdsCreateResetButton(Widget parent,String name,ArgList args,Cardinal numargs)
+Widget XmdsCreateResetButton(Widget parent, String name, ArgList args, Cardinal numargs)
 {
   Widget w = CreateButton(parent, name, args, numargs, "Reset", 0);
-  XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)XmdsResetCallback,0);
+  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsResetCallback, 0);
   return w;
 }
 
-Widget XmdsCreateCancelButton(Widget parent,String name,ArgList args,Cardinal numargs)
+Widget XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal numargs)
 {
   Widget w = CreateButton(parent, name, args, numargs, "Cancel", 0);
-  XtAddCallback(w,XmNactivateCallback,(XtCallbackProc)XmdsCancelCallback,0);
+  XtAddCallback(w, XmNactivateCallback, (XtCallbackProc) XmdsCancelCallback, 0);
   return w;
 }
 
-static Widget CreateButton(Widget parent,String name,ArgList args,Cardinal numargs,String ident,Boolean set_default)
+static Widget CreateButton(Widget parent, String name, ArgList args, Cardinal numargs, String ident,
+			   Boolean set_default)
 {
-  Arg arglist[] = {{XmNlabelString,0}};
+  Arg arglist[] = { {XmNlabelString, 0} };
 
   Widget w;
-  arglist[0].value = (long) XmStringCreateSimple(ident);
-  w = XmCreatePushButton(parent,name,arglist,XtNumber(arglist));
+  arglist[0].value = (long)XmStringCreateSimple(ident);
+  w = XmCreatePushButton(parent, name, arglist, XtNumber(arglist));
   if (numargs)
-    XtSetValues(w,args,numargs);
+    XtSetValues(w, args, numargs);
   if (set_default)
-    XtVaSetValues(FindShellChild(w),XmNdefaultButton,w,NULL);
+    XtVaSetValues(FindShellChild(w), XmNdefaultButton, w, NULL);
   XmStringFree((XmString) arglist[0].value);
   return w;
 }

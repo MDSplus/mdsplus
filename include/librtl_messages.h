@@ -54,22 +54,24 @@ extern SsINTOVF;
 #ifdef CREATE_STS_TEXT
 #include        "facility_list.h"
 
-static struct stsText  librtl_stsText[] = {
-    STS_TEXT(LibINSVIRMEM,"Insufficient virtual memory")
-   ,STS_TEXT(LibINVARG,"Invalid argument")
-   ,STS_TEXT(LibINVSTRDES,"Invalid string descriptor")
-   ,STS_TEXT(LibKEYNOTFOU,"Key not found")
-   ,STS_TEXT(LibNOTFOU,"Entity not found")
-   ,STS_TEXT(LibQUEWASEMP,"Queue was empty")
-   ,STS_TEXT(LibSTRTRU,"String truncated")
-   };
-static struct stsText  strMds_stsText[] = {
-    STS_TEXT(StrMATCH,"Strings match")
-   ,STS_TEXT(StrNOMATCH,"Strings do not match")
-   ,STS_TEXT(StrNOELEM,"Not enough delimited characters")
-   ,STS_TEXT(StrINVDELIM,"Invalid delimiter: must be 1 char long")
-   };
-static struct stsText  ss_stsText[] = {
-    STS_TEXT(SsINTOVF,"Integer overflow")
-   };
+static struct stsText librtl_stsText[] = {
+  STS_TEXT(LibINSVIRMEM, "Insufficient virtual memory")
+      , STS_TEXT(LibINVARG, "Invalid argument")
+      , STS_TEXT(LibINVSTRDES, "Invalid string descriptor")
+      , STS_TEXT(LibKEYNOTFOU, "Key not found")
+      , STS_TEXT(LibNOTFOU, "Entity not found")
+      , STS_TEXT(LibQUEWASEMP, "Queue was empty")
+      , STS_TEXT(LibSTRTRU, "String truncated")
+};
+
+static struct stsText strMds_stsText[] = {
+  STS_TEXT(StrMATCH, "Strings match")
+      , STS_TEXT(StrNOMATCH, "Strings do not match")
+      , STS_TEXT(StrNOELEM, "Not enough delimited characters")
+      , STS_TEXT(StrINVDELIM, "Invalid delimiter: must be 1 char long")
+};
+
+static struct stsText ss_stsText[] = {
+  STS_TEXT(SsINTOVF, "Integer overflow")
+};
 #endif

@@ -12,14 +12,13 @@ int MdsSetCompression(int id, int level)
   else if (level > 9)
     level = 9;
   old_level = SetCompressionLevel(level);
-  if (id != -1) 
-  {
+  if (id != -1) {
     char expression[128];
     struct descrip ans;
-    sprintf(expression,"MdsSetCompression(%d)",level);
-    status = MdsValue(id,expression,&ans,0);
-    if (ans.ptr != 0) free(ans.ptr);
+    sprintf(expression, "MdsSetCompression(%d)", level);
+    status = MdsValue(id, expression, &ans, 0);
+    if (ans.ptr != 0)
+      free(ans.ptr);
   }
   return old_level;
 }
-

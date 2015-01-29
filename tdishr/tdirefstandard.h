@@ -7,10 +7,10 @@
 */
 #include <stdio.h>
 #include <mdsdescrip.h>
-static struct descriptor_xd const EMPTY_XD = {0,DTYPE_DSC,CLASS_XD,0,0};
+static struct descriptor_xd const EMPTY_XD = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+
 #include <mds_stdarg.h>
 /*#include <mdsdescrip.h>*/
-
 
 #define TdiRefStandard(name) int name(\
 int				opcode,\

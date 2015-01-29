@@ -9,14 +9,14 @@
 #define FERA_N_INIT_ACTION 7
 #define FERA_N_STORE_ACTION 8
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *cntrl_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *cntrl_name;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *cntrl_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *cntrl_name;
 } InStoreStruct;

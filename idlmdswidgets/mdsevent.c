@@ -34,14 +34,15 @@ Invoked from MDSEVENT.PRO
 extern int MDSEventAst();
 extern int MDSEventCan();
 
-typedef struct _event_struct { int stub_id;
-                               int base_id;
-                               int event_id;
-                               char name[28];
-                               char value[12];
-                               int loc_event_id;
-                               struct _event_struct *next;
-                             } EventStruct;
+typedef struct _event_struct {
+  int stub_id;
+  int base_id;
+  int event_id;
+  char name[28];
+  char value[12];
+  int loc_event_id;
+  struct _event_struct *next;
+} EventStruct;
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -50,13 +51,13 @@ typedef struct _event_struct { int stub_id;
 #else
 #include <X11/Intrinsic.h>
 extern void MdsDispatchEvent(void *, int *, unsigned long *);
-static XtInputId XTINPUTID=0;
+static XtInputId XTINPUTID = 0;
 #endif
 
-static EventStruct *EventList = (EventStruct *)0;
+static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
 
-static void EventAst(EventStruct *e, int eventid, char *data);
+static void EventAst(EventStruct * e, int eventid, char *data);
 #include <export.h>
 #if defined(__VMS) || defined(WIN32)
 #define BlockSig(arg)
@@ -66,7 +67,7 @@ static int BlockSig(int sig_number)
 {
   sigset_t newsigset;
   sigemptyset(&newsigset);
-  sigaddset(&newsigset,sig_number);
+  sigaddset(&newsigset, sig_number);
   return sigprocmask(SIG_BLOCK, &newsigset, NULL);
 }
 
@@ -74,64 +75,64 @@ static int UnBlockSig(int sig_number)
 {
   sigset_t newsigset;
   sigemptyset(&newsigset);
-  sigaddset(&newsigset,sig_number);
+  sigaddset(&newsigset, sig_number);
   return sigprocmask(SIG_UNBLOCK, &newsigset, NULL);
 }
 #endif
 
 int IDLMdsEventCan(int argc, void * *argv)
 {
-    EventStruct *e,*p;
-	SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
-	int eventid = (unsigned int)((char *)argv[1] - (char *)0);
-    int status;
-    BlockSig(SIGALRM);
-	status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
-    UnBlockSig(SIGALRM);
-    for (e=EventList,p=0;e && e->loc_event_id != eventid; p=e,e=e->next);
-    if (e)
-	{
-		if (p)
-			p->next = e->next;
-		else
-			EventList = e->next;
-		free(e);
-	}
-	return status;
+  EventStruct *e, *p;
+  SOCKET sock = (SOCKET) ((char *)argv[0] - (char *)0);
+  int eventid = (unsigned int)((char *)argv[1] - (char *)0);
+  int status;
+  BlockSig(SIGALRM);
+  status = (sock >= 0) ? MdsEventCan(sock, eventid) : MDSEventCan(eventid);
+  UnBlockSig(SIGALRM);
+  for (e = EventList, p = 0; e && e->loc_event_id != eventid; p = e, e = e->next) ;
+  if (e) {
+    if (p)
+      p->next = e->next;
+    else
+      EventList = e->next;
+    free(e);
+  }
+  return status;
 }
 
 int IDLMdsGetevi(int argc, void **argv)
 {
   int eventid = (unsigned int)((char *)argv[0] - (char *)0);
   EventStruct *e;
-  for (e=EventList;e && e->loc_event_id != eventid;e=e->next);
-  if (e) memcpy(argv[1],e,52);
-  return (e!=0);
+  for (e = EventList; e && e->loc_event_id != eventid; e = e->next) ;
+  if (e)
+    memcpy(argv[1], e, 52);
+  return (e != 0);
 }
 
 int IDLMdsEvent(int argc, void * *argv)
 {
-  SOCKET sock = (SOCKET)((char *)argv[0] - (char *)0);
+  SOCKET sock = (SOCKET) ((char *)argv[0] - (char *)0);
   int *base_id = (int *)argv[1];
   int *stub_id = (int *)argv[2];
   char *name = (char *)argv[3];
-  EventStruct *e = (EventStruct *)malloc(sizeof(EventStruct));
+  EventStruct *e = (EventStruct *) malloc(sizeof(EventStruct));
   BlockSig(SIGALRM);
-  if (((sock >=0) ? MdsEventAst(sock, name,(void (*)(int))EventAst,e,&e->event_id) :
-                    MDSEventAst(name,(void (*)(int))EventAst,e,&e->event_id)) & 1)
-  {
+  if (((sock >= 0) ? MdsEventAst(sock, name, (void (*)(int))EventAst, e, &e->event_id) :
+       MDSEventAst(name, (void (*)(int))EventAst, e, &e->event_id)) & 1) {
     char *parent_rec;
     char *stub_rec;
     IDL_WidgetStubLock(TRUE);
     if ((parent_rec = IDL_WidgetStubLookup(*base_id))
-        && (stub_rec = IDL_WidgetStubLookup(*stub_id)))
-    {
+	&& (stub_rec = IDL_WidgetStubLookup(*stub_id))) {
       /* IDL_WidgetSetStubIds(stub_rec, parent_rec, parent_rec);   */
 #ifndef WIN32
       if (!XTINPUTID && (sock >= 0)) {
-        Widget w1, w2;
-        IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
-        XTINPUTID = XtAppAddInput(XtWidgetToApplicationContext(w1), sock,  (XtPointer)XtInputExceptMask, MdsDispatchEvent, (void *)sock);
+	Widget w1, w2;
+	IDL_WidgetGetStubIds(parent_rec, (unsigned long *)&w1, (unsigned long *)&w2);
+	XTINPUTID =
+	    XtAppAddInput(XtWidgetToApplicationContext(w1), sock, (XtPointer) XtInputExceptMask,
+			  MdsDispatchEvent, (void *)sock);
       }
 #endif
       e->stub_id = *stub_id;
@@ -149,35 +150,35 @@ int IDLMdsEvent(int argc, void * *argv)
   return -1;
 }
 
-static void EventAst(EventStruct *e,int len, char *data)
+static void EventAst(EventStruct * e, int len, char *data)
 {
   char *stub_rec;
   char *base_rec;
   IDL_WidgetStubLock(TRUE);
-  if (len > 0) memcpy(e->value,data,len > 12 ? 12 : len);
-  if ((stub_rec = IDL_WidgetStubLookup(e->stub_id)) && (base_rec = IDL_WidgetStubLookup(e->base_id)))
-  {
+  if (len > 0)
+    memcpy(e->value, data, len > 12 ? 12 : len);
+  if ((stub_rec = IDL_WidgetStubLookup(e->stub_id))
+      && (base_rec = IDL_WidgetStubLookup(e->base_id))) {
 #ifdef WIN32
     HWND wid1, wid2;
-    IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *)&wid1, (IDL_LONG *)&wid2);
+    IDL_WidgetGetStubIds(stub_rec, (IDL_LONG *) & wid1, (IDL_LONG *) & wid2);
 #endif
-    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG)e);
+    IDL_WidgetIssueStubEvent(stub_rec, (IDL_LONG) e);
 #ifdef WIN32
-    PostMessage(wid1, WM_MOUSEMOVE, (WPARAM)NULL, (LPARAM)NULL);
+    PostMessage(wid1, WM_MOUSEMOVE, (WPARAM) NULL, (LPARAM) NULL);
 #else
     {
       Widget top;
       Widget w;
       IDL_WidgetGetStubIds(base_rec, (unsigned long *)&top, (unsigned long *)&w);
-      if (w)
-      {
-        XClientMessageEvent event;
-        event.type = ClientMessage;
-        event.display = XtDisplay(top);
-        event.window = XtWindow(top);
-        event.format = 8;
-        XSendEvent(XtDisplay(top),XtWindow(top),TRUE,0,(XEvent *)&event);
-        XFlush(XtDisplay(top));
+      if (w) {
+	XClientMessageEvent event;
+	event.type = ClientMessage;
+	event.display = XtDisplay(top);
+	event.window = XtWindow(top);
+	event.format = 8;
+	XSendEvent(XtDisplay(top), XtWindow(top), TRUE, 0, (XEvent *) & event);
+	XFlush(XtDisplay(top));
       }
     }
 #endif

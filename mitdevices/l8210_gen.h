@@ -26,17 +26,17 @@
 #define L8210_N_INIT_ACTION 24
 #define L8210_N_STORE_ACTION 25
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	struct descriptor *ext_clock_in;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  struct descriptor *ext_clock_in;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int memories;
-	char *header;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int memories;
+  char *header;
 } InStoreStruct;

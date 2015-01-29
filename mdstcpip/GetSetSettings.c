@@ -11,121 +11,145 @@ static int ContextSwitching = 0;
 static int MaxCompressionLevel = 9;
 static int CompressionLevel = 0;
 static char *Portname = 0;
-static char *protocol="tcp";
+static char *protocol = "tcp";
 static char *hostfile = 0;
 static int flags = 0;
 static int socketHandle = 0;
 
-int GetSocketHandle() {
+int GetSocketHandle()
+{
   return socketHandle;
 }
 
-int SetSocketHandle(int handle) {
-  int old=socketHandle;
-  socketHandle=handle;
+int SetSocketHandle(int handle)
+{
+  int old = socketHandle;
+  socketHandle = handle;
   return old;
 }
 
-int GetFlags() {
+int GetFlags()
+{
   return flags;
 }
 
-int SetFlags(f) {
-  int old=flags;
-  flags=f;
+int SetFlags(f)
+{
+  int old = flags;
+  flags = f;
   return old;
 }
 
-char *GetProtocol() {
+char *GetProtocol()
+{
   return protocol;
 }
 
-char *SetProtocol(char *p) {
-  char *old=protocol;
-  protocol=p;
+char *SetProtocol(char *p)
+{
+  char *old = protocol;
+  protocol = p;
   return old;
 }
 
-char *GetPortname() {
+char *GetPortname()
+{
   return Portname;
 }
 
-char *MdsGetServerPortname() {
+char *MdsGetServerPortname()
+{
   return Portname;
 }
 
-char *SetPortname(char *p) {
-  char *old=Portname;
-  Portname=p;
+char *SetPortname(char *p)
+{
+  char *old = Portname;
+  Portname = p;
   return old;
 }
 
-
-char *GetHostfile() {
+char *GetHostfile()
+{
   return hostfile ? hostfile : DEFAULT_HOSTFILE;
 }
 
-char *SetHostfile(char *newhostfile) {
-  char *old=hostfile;
-  hostfile=newhostfile;
+char *SetHostfile(char *newhostfile)
+{
+  char *old = hostfile;
+  hostfile = newhostfile;
   return old;
 }
 
-unsigned char GetMulti() {
+unsigned char GetMulti()
+{
   return multi;
 }
 
-unsigned char SetMulti(unsigned char s) {
-  unsigned char old_multi=multi;
-  multi=s;
+unsigned char SetMulti(unsigned char s)
+{
+  unsigned char old_multi = multi;
+  multi = s;
   return old_multi;
 }
 
-int GetContextSwitching() {
+int GetContextSwitching()
+{
   return ContextSwitching;
 }
 
-int SetContextSwitching(int s) {
-  int old_ctx_switching=ContextSwitching;
-  ContextSwitching=s;
+int SetContextSwitching(int s)
+{
+  int old_ctx_switching = ContextSwitching;
+  ContextSwitching = s;
   return old_ctx_switching;
 }
 
-int GetMaxCompressionLevel() {
+int GetMaxCompressionLevel()
+{
   return MaxCompressionLevel;
 }
 
-int SetMaxCompressionLevel(int s) {
-  int old_max_compression=MaxCompressionLevel;
-  MaxCompressionLevel=s;
+int SetMaxCompressionLevel(int s)
+{
+  int old_max_compression = MaxCompressionLevel;
+  MaxCompressionLevel = s;
   return old_max_compression;
 }
 
-int SetCompressionLevel(int level) {
+int SetCompressionLevel(int level)
+{
   int old_level = CompressionLevel;
   CompressionLevel = level;
   return old_level;
 }
 
-int GetCompressionLevel() {
+int GetCompressionLevel()
+{
   return CompressionLevel;
 }
 
 static int connect_timeout = 0;
 
-int SetMdsConnectTimeout(int sec) {
+int SetMdsConnectTimeout(int sec)
+{
   int old = connect_timeout;
   connect_timeout = sec;
   return old;
 }
-int GetMdsConnectTimeout() {
+
+int GetMdsConnectTimeout()
+{
   return connect_timeout;
 }
 
-static int ClientAddr=0;
-int MdsGetClientAddr() {
+static int ClientAddr = 0;
+int MdsGetClientAddr()
+{
   return ClientAddr;
 }
-void MdsSetClientAddr(int addr) {
-  ClientAddr=addr;
+
+void MdsSetClientAddr(int addr)
+{
+  ClientAddr = addr;
 }

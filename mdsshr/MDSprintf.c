@@ -48,113 +48,104 @@
 		/*=====================================================
 		 * Static variables ...
 		 *====================================================*/
-STATIC_THREADSAFE int  (*MDSvprintf)() = vprintf;   /* not really threadsafe but ok */
-STATIC_THREADSAFE int  (*MDSvfprintf)() = vfprintf; /* not really threadsafe but ok */
-
-
+STATIC_THREADSAFE int (*MDSvprintf) () = vprintf;	/* not really threadsafe but ok */
+STATIC_THREADSAFE int (*MDSvfprintf) () = vfprintf;	/* not really threadsafe but ok */
 
 	/******************************************************************
 	 * MDSprintf:
 	 ******************************************************************/
-int   MDSprintf( char *fmt , ... )
-   {
-    va_list  ap;
+int MDSprintf(char *fmt, ...)
+{
+  va_list ap;
 
-    if (!MDSvprintf)
-        return(0);
-    va_start(ap,fmt);		/* initialize "ap"		*/
-    return((*MDSvprintf)(fmt,ap));
-   }
-
-
+  if (!MDSvprintf)
+    return (0);
+  va_start(ap, fmt);		/* initialize "ap"              */
+  return ((*MDSvprintf) (fmt, ap));
+}
 
 	/******************************************************************
 	 * MDSfprintf:
 	 ******************************************************************/
-int   MDSfprintf( FILE *fp , char *fmt , ... )
-   {
-    va_list  ap;
+int MDSfprintf(FILE * fp, char *fmt, ...)
+{
+  va_list ap;
 
-    va_start(ap,fmt);		/* initialize "ap"		*/
-    if (fp!=stderr && fp!=stdout)
-        return(vfprintf(fp,fmt,ap));
-    if (!MDSvfprintf)
-        return(0);
-    return((*MDSvfprintf)(fp,fmt,ap));
-   }
-
-
+  va_start(ap, fmt);		/* initialize "ap"              */
+  if (fp != stderr && fp != stdout)
+    return (vfprintf(fp, fmt, ap));
+  if (!MDSvfprintf)
+    return (0);
+  return ((*MDSvfprintf) (fp, fmt, ap));
+}
 
 	/***************************************************************
 	 * MdsSetOutputFunctions:
 	 * MdsGetOutputFunctions:
 	 ***************************************************************/
-void  MdsSetOutputFunctions(
-    int (*NEWvprintf)(const char *, void *)
-   ,int (*NEWvfprintf)(FILE *,const char *,void *)
-   )
-   {
-    MDSvprintf =  ((void *)NEWvprintf ==(void *)-1) ? (int (*)())vprintf : (int (*)())NEWvprintf;
-    MDSvfprintf = ((void *)NEWvfprintf==(void *)-1) ? (int (*)())vfprintf : (int (*)())NEWvfprintf;
-    return;
-   }
+void MdsSetOutputFunctions(int (*NEWvprintf) (const char *, void *)
+			   , int (*NEWvfprintf) (FILE *, const char *, void *)
+    )
+{
+  MDSvprintf = ((void *)NEWvprintf == (void *)-1) ? (int (*)())vprintf : (int (*)())NEWvprintf;
+  MDSvfprintf = ((void *)NEWvfprintf == (void *)-1) ? (int (*)())vfprintf : (int (*)())NEWvfprintf;
+  return;
+}
 
-void  MdsGetOutputFunctions( void **CURvprintf , void **CURvfprintf )
-   {
-    if (CURvprintf)  *CURvprintf = (void *)MDSvprintf;
-    if (CURvfprintf)  *CURvfprintf = (void *)MDSvfprintf;
-    return;
-   }
-
-
+void MdsGetOutputFunctions(void **CURvprintf, void **CURvfprintf)
+{
+  if (CURvprintf)
+    *CURvprintf = (void *)MDSvprintf;
+  if (CURvfprintf)
+    *CURvfprintf = (void *)MDSvfprintf;
+  return;
+}
 
 #ifdef Main
 	/****************************************************************
 	 * main:
 	 ****************************************************************/
 
+STATIC_ROUTINE int woof(char *fmt, va_list ap)
+{
+  char xxfmt[80];
 
-STATIC_ROUTINE int   woof( char *fmt , va_list ap )
-   {
-    char  xxfmt[80];
+  sprintf(xxfmt, "\nWOOF: %s", fmt);
+  return (vprintf(xxfmt, ap));
+}
 
-    sprintf(xxfmt,"\nWOOF: %s",fmt);
-    return(vprintf(xxfmt,ap));
-   }
+STATIC_ROUTINE int tweet(FILE * fp, char *fmt, va_list ap)
+{
+  char xxfmt[80];
 
+  sprintf(xxfmt, "\nTWEET: %s\n", fmt);
+  return (vfprintf(fp, xxfmt, ap));
+}
 
-STATIC_ROUTINE int   tweet( FILE *fp , char *fmt , va_list ap )
-   {
-    char  xxfmt[80];
+int main(int argc, void *argv[])
+{
+  void *save_vprintf;
+  void *save_vfprintf;
+  MDSprintf("woof %d %d %d\n", 1, 2, 3);
+  MDSfprintf(stderr, "tweet %d %d %d\n", 1, 2, 3);
 
-    sprintf(xxfmt,"\nTWEET: %s\n",fmt);
-    return(vfprintf(fp,xxfmt,ap));
-   }
+  MdsGetOutputFunctions(&save_vprintf, &save_vfprintf);
+  MdsSetOutputFunctions(woof, tweet);
+  MDSprintf("woof %d %d %d\n", 1, 2, 3);
+  MDSfprintf(stderr, "tweet %d %d %d\n", 1, 2, 3);
 
-int   main( int argc , void *argv[] )
-   {
-    void  *save_vprintf;
-    void  *save_vfprintf;
-    MDSprintf("woof %d %d %d\n",1,2,3);
-    MDSfprintf(stderr,"tweet %d %d %d\n",1,2,3);
+  MdsSetOutputFunctions(save_vprintf, save_vfprintf);
+  MDSprintf("woof %d %d %d\n", 1, 2, 3);
+  MDSfprintf(stderr, "tweet %d %d %d\n", 1, 2, 3);
 
-    MdsGetOutputFunctions(&save_vprintf,&save_vfprintf);
-    MdsSetOutputFunctions(woof,tweet);
-    MDSprintf("woof %d %d %d\n",1,2,3);
-    MDSfprintf(stderr,"tweet %d %d %d\n",1,2,3);
+  MdsGetOutputFunctions(&save_vprintf, &save_vfprintf);
+  MdsSetOutputFunctions(woof, tweet);
+  MDSprintf("woof %d %d %d\n", 1, 2, 3);
+  MDSfprintf(stderr, "tweet %d %d %d\n", 1, 2, 3);
 
-    MdsSetOutputFunctions(save_vprintf,save_vfprintf);
-    MDSprintf("woof %d %d %d\n",1,2,3);
-    MDSfprintf(stderr,"tweet %d %d %d\n",1,2,3);
-
-    MdsGetOutputFunctions(&save_vprintf,&save_vfprintf);
-    MdsSetOutputFunctions(woof,tweet);
-    MDSprintf("woof %d %d %d\n",1,2,3);
-    MDSfprintf(stderr,"tweet %d %d %d\n",1,2,3);
-
-    MdsSetOutputFunctions((void *)-1,(void *)-1);
-    MDSprintf("woof %d %d %d\n",1,2,3);
-    MDSfprintf(stderr,"tweet %d %d %d\n",1,2,3);
-   }
+  MdsSetOutputFunctions((void *)-1, (void *)-1);
+  MDSprintf("woof %d %d %d\n", 1, 2, 3);
+  MDSfprintf(stderr, "tweet %d %d %d\n", 1, 2, 3);
+}
 
 #endif

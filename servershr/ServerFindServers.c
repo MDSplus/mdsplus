@@ -26,12 +26,11 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #ifndef HAVE_WINDOWS_H
 /* DTG: Unix Spec v.2 has <dirent.h> depends on <sys/types.h> */
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <dirent.h>
 #endif
 #include <string.h>
@@ -42,44 +41,38 @@ char *ServerFindServers(void **ctx, char *wild_match)
 {
 #ifndef HAVE_WINDOWS_H
   char *ans = 0;
-  DIR *dir = (DIR *)*ctx;
-  if (dir == 0)
-  {
+  DIR *dir = (DIR *) * ctx;
+  if (dir == 0) {
     char *serverdir = getenv("MDSIP_SERVER_LOGDIR");
     if (serverdir)
       *ctx = dir = opendir(serverdir);
   }
-  if (dir)
-  {
+  if (dir) {
     int done = 0;
-    while (!done)
-    {
+    while (!done) {
       struct dirent *entry = readdir(dir);
       done = 1;
-      if (entry)
-      {
-        static char *ans_c = 0;
-        if (ans_c)
-          free(ans_c);
-        ans_c = strcpy(malloc(strlen(entry->d_name)+1),entry->d_name);
-        if ((strcmp(ans_c,".") == 0) || (strcmp(ans_c,"..") == 0))
-          done = 0;
-        else
-	{
-          struct descriptor ans_d = {0,DTYPE_T,CLASS_S,0};
-          struct descriptor wild_d = {0,DTYPE_T,CLASS_S,0};
-          ans_d.pointer = ans_c;
-          ans_d.length = strlen(ans_c);
-          wild_d.pointer = wild_match;
-          wild_d.length = strlen(wild_match);
-          if (!(StrMatchWild(&ans_d,&wild_d) & 1))
-            done = 0;
-          else
-            ans = ans_c;
-        }
-      }
-      else
-        closedir(dir);
+      if (entry) {
+	static char *ans_c = 0;
+	if (ans_c)
+	  free(ans_c);
+	ans_c = strcpy(malloc(strlen(entry->d_name) + 1), entry->d_name);
+	if ((strcmp(ans_c, ".") == 0) || (strcmp(ans_c, "..") == 0))
+	  done = 0;
+	else {
+	  struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
+	  struct descriptor wild_d = { 0, DTYPE_T, CLASS_S, 0 };
+	  ans_d.pointer = ans_c;
+	  ans_d.length = strlen(ans_c);
+	  wild_d.pointer = wild_match;
+	  wild_d.length = strlen(wild_match);
+	  if (!(StrMatchWild(&ans_d, &wild_d) & 1))
+	    done = 0;
+	  else
+	    ans = ans_c;
+	}
+      } else
+	closedir(dir);
     }
   }
   return ans;

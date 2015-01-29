@@ -17,8 +17,8 @@
 #define HV1443_N_VOLTAGE_15 15
 #define HV1443_N_VOLTAGE_16 16
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	struct descriptor *voltage_01;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  struct descriptor *voltage_01;
 } InGet_settingsStruct;

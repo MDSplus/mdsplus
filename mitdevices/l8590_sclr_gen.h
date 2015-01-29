@@ -27,10 +27,10 @@
 #define L8590_SCLR_N_INPUT_8_STARTIDX 25
 #define L8590_SCLR_N_INPUT_8_ENDIDX 26
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int num_active;
-	int num_active_convert;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int num_active;
+  int num_active_convert;
 } InGet_setupStruct;

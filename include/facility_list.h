@@ -16,7 +16,6 @@
 #ifndef __FACILITY_LIST_H
 #define __FACILITY_LIST_H    1
 
-
 #define MDSDCL_FACILITY        0x4001
 #define CLI_FACILITY           0x4002
 #define CCL_FACILITY           0x4003
@@ -32,10 +31,10 @@
 #define STATUS(F,C)  ((F<<16) + C)
 #define STS_TEXT(N,T)   {N,#N,T}
 
-struct stsText  {
-        int   stsL_num;
-        char  *stsA_name;
-        char  *stsA_text;
-       };
+struct stsText {
+  int stsL_num;
+  char *stsA_name;
+  char *stsA_text;
+};
 
 #endif

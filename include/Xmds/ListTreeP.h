@@ -55,7 +55,6 @@
     (((XmPrimitiveWidget)(w))->primitive.bottom_shadow_GC)
 #endif
 
-
 #define ListTreeRET_ALLOC 10
 
 #define TIMER_CLEAR 0
@@ -100,7 +99,7 @@ typedef struct {
   Boolean HighlightPath;
   Boolean ClickPixmapToOpen;
   Boolean DoIncrementalHighlightCallback;
-  
+
   XtCallbackList HighlightCallback;
   XtCallbackList ActivateCallback;
   XtCallbackList MenuCallback;
@@ -111,12 +110,12 @@ typedef struct {
   GC eraseGC;
   GC eorGC;
   GC highlightGC;
-  Pixinfo ItemPix;              /* temporary storage for GetItemPix */
+  Pixinfo ItemPix;		/* temporary storage for GetItemPix */
   int exposeTop, exposeBot;
   int pixWidth;
   int preferredWidth, preferredHeight;
   ListTreeItem *first,		/* always points to a top level entry */
-   *highlighted, *drop_highlighted;
+  *highlighted, *drop_highlighted;
 
   XtIntervalId timer_id;	/* timer for double click test */
   ListTreeItem *timer_item;	/* item to make sure both clicks */
@@ -132,7 +131,7 @@ typedef struct {
   Boolean Refresh;
   Boolean HasFocus;
 
-    /* New stuff for maintaining its own scrolling state */
+  /* New stuff for maintaining its own scrolling state */
   Widget mom;			/* scrolled window */
   Widget hsb;			/* horizontal scrollbar */
   Widget vsb;			/* vertical scrollbar */
@@ -143,18 +142,18 @@ typedef struct {
   int XOffset;
   int hsbPos;
   int hsbMax;
-  
+
   int lastXOffset;
-  int topItemPos;               /* position of topItem in itemCount */
-  int bottomItemPos;            /* last position drawn in window */
-  int lastItemPos;              /* last value of topItempos */
-  ListTreeItem *topItem;        /* first visible item on screen */
-  int itemCount;                /* total number of open ListTreeItems */
+  int topItemPos;		/* position of topItem in itemCount */
+  int bottomItemPos;		/* last position drawn in window */
+  int lastItemPos;		/* last value of topItempos */
+  ListTreeItem *topItem;	/* first visible item on screen */
+  int itemCount;		/* total number of open ListTreeItems */
   Dimension itemHeight;
   Dimension maxPixHeight;
-  int visibleCount;             /* number currently visible on screen */
+  int visibleCount;		/* number currently visible on screen */
   Boolean recount;
-  
+
 } ListTreePart;
 
 typedef struct _ListTreeRec {
@@ -163,5 +162,4 @@ typedef struct _ListTreeRec {
   ListTreePart list;
 } ListTreeRec;
 
-
-#endif /* _ListTreeP_H */
+#endif				/* _ListTreeP_H */

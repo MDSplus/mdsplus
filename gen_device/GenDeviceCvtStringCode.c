@@ -22,7 +22,6 @@ int GEN_DEVICE$CVT_STRING_CODE( )
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #include <string.h>
@@ -30,12 +29,12 @@ int GEN_DEVICE$CVT_STRING_CODE( )
 #include <treeshr.h>
 #include <mds_gendevice.h>
 
-struct  _table {
-    short   code;
-    char    *string;
-    };
+struct _table {
+  short code;
+  char *string;
+};
 int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr, struct _table *table)
-{ 
+{
 
 /*------------------------------------------------------------------------------
 
@@ -57,19 +56,18 @@ int GenDeviceCvtStringCode(short *code_ptr, char *string_ptr, struct _table *tab
 
  Local variables:                                                             */
 
-    register int	current;
+  register int current;
 
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
-
-    if(!string_ptr) return(DEV$_BADPARAM);
-    for(current = 0;table[current].string && strcmp(table[current].string, string_ptr); current++);
-    if(table[current].string)
-    {
-	*code_ptr = table[current].code;
-	return TreeNORMAL;
-    }
-    return LibKEYNOTFOU;
+  if (!string_ptr)
+    return (DEV$_BADPARAM);
+  for (current = 0; table[current].string && strcmp(table[current].string, string_ptr); current++) ;
+  if (table[current].string) {
+    *code_ptr = table[current].code;
+    return TreeNORMAL;
+  }
+  return LibKEYNOTFOU;
 }

@@ -1,8 +1,8 @@
 // macros.h
 // Thu May 24 11:10:48 EDT 2001
 // Thu May 24 13:07:23 EDT 2001 -- added KineticSystems macros
-// Mon Jan 28 12:43:12 EST 2002	-- added numeric digit count
-// Tue Feb  5 15:07:26 EST 2002	-- cast 'NumOfDigits()' to int
+// Mon Jan 28 12:43:12 EST 2002 -- added numeric digit count
+// Tue Feb  5 15:07:26 EST 2002 -- cast 'NumOfDigits()' to int
 #ifndef __MACROS_H
 #define __MACROS_H
 
@@ -16,7 +16,6 @@
 #define	Remove(a)		remove(get_file_name((a)))
 #define	Stat(a,b)		stat(get_file_name((a)),(b))
 #define Shorten(a)		((unsigned short)((a) & 0x0ffff))
-
 
 // KineticSystems specific macros
 // NB! order of members in struct NAF is f,a,n !!

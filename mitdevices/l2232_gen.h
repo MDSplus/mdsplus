@@ -7,14 +7,14 @@
 #define L2232_N_INIT_ACTION 5
 #define L2232_N_STORE_ACTION 6
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *cts_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *cts_name;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *cts_name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *cts_name;
 } InStoreStruct;

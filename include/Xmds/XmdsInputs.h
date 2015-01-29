@@ -49,14 +49,14 @@ extern void XmdsPutInputSetup();
 extern int XmdsWidgetToNumber();
 #else
 
-extern void XmdsInputCreateCallback(Widget w,XmdsInputCtx ctx);
-extern void XmdsResetInput(Widget chans_dlog,XmdsInputCtx ctx,int chan);
-extern void XmdsPutInputSetup(Widget inputs_dlog,XmdsInputCtx ctx,int chan);
-extern int XmdsWidgetToNumber(Widget w,String prefix);
+extern void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx);
+extern void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan);
+extern void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan);
+extern int XmdsWidgetToNumber(Widget w, String prefix);
 
 void XmdsInputCreateCallback(Widget w, XmdsInputCtx ctx);
 void XmdsResetInput(Widget chans_dlog, XmdsInputCtx ctx, int chan);
 void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan);
 int XmdsWidgetToNumber(Widget w, String prefix);
 #endif
-#endif /* _XmdsInputs_h */
+#endif				/* _XmdsInputs_h */

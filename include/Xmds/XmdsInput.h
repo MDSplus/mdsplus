@@ -34,17 +34,17 @@
 
 #ifdef _NO_PROTO
 
-extern Widget	XmdsCreateInput();
-extern void	XmdsInputSetNid();
-extern void	XmdsInputReset();
-extern void	XmdsInputPut();
+extern Widget XmdsCreateInput();
+extern void XmdsInputSetNid();
+extern void XmdsInputReset();
+extern void XmdsInputPut();
 
 #else
 
-extern Widget	XmdsCreateInput(Widget parent,char *name,ArgList args,int argcount);
-extern void	XmdsInputSetNid(Widget w,int nid);
-extern void	XmdsInputReset(Widget w);
-extern void	XmdsInputPut(Widget w);
+extern Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount);
+extern void XmdsInputSetNid(Widget w, int nid);
+extern void XmdsInputReset(Widget w);
+extern void XmdsInputPut(Widget w);
 
 #endif
 #endif

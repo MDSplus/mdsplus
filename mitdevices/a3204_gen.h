@@ -29,26 +29,26 @@
 #define A3204_N_INIT_ACTION 27
 #define A3204_N_STORE_ACTION 28
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	float input_1_gain;
-	int input_1_gain_convert;
-	float input_1_offset;
-	float input_2_gain;
-	int input_2_gain_convert;
-	float input_2_offset;
-	float input_3_gain;
-	int input_3_gain_convert;
-	float input_3_offset;
-	float input_4_gain;
-	int input_4_gain_convert;
-	float input_4_offset;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  float input_1_gain;
+  int input_1_gain_convert;
+  float input_1_offset;
+  float input_2_gain;
+  int input_2_gain_convert;
+  float input_2_offset;
+  float input_3_gain;
+  int input_3_gain_convert;
+  float input_3_offset;
+  float input_4_gain;
+  int input_4_gain_convert;
+  float input_4_offset;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStoreStruct;

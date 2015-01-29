@@ -6,10 +6,10 @@
 #define B3224_N_OUTPUT_2 4
 #define B3224_N_INIT_ACTION 5
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int output_1;
-	int output_2;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int output_1;
+  int output_2;
 } InInitStruct;

@@ -16,25 +16,25 @@
 #define T4012_N_INIT_ACTION 14
 #define T4012_N_STORE_ACTION 15
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
-	int channels;
-	int post_samples;
-	int smp_per_chan;
-	int switch_mode;
-	int display_chan;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
+  int channels;
+  int post_samples;
+  int smp_per_chan;
+  int switch_mode;
+  int display_chan;
 } InInitStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InTriggerStruct;
 typedef struct {
-	struct descriptor_xd *__xds;
-	int __num_xds;
-	int head_nid;
-	char *name;
+  struct descriptor_xd *__xds;
+  int __num_xds;
+  int head_nid;
+  char *name;
 } InStoreStruct;

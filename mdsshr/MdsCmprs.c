@@ -73,10 +73,10 @@
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
-#define MAXX 1024		/*length of longest run allowed*/
-#define MAXY 32			/*maximum bits that we can pack*/
-#define BITSX 10		/*number of bits for run length*/
-#define BITSY 6			/*number of bits in y 0-32*/
+#define MAXX 1024		/*length of longest run allowed */
+#define MAXY 32			/*maximum bits that we can pack */
+#define BITSX 10		/*number of bits for run length */
+#define BITSY 6			/*number of bits in y 0-32 */
 #define MASK(bits)  ((unsigned int)0xffffffff >> (32 - bits))
 #define YFIELD(y) ((unsigned int)(y) & MASK(BITSY))
 #define XFIELD(x) (((unsigned int)(x) & MASK(BITSX)) << BITSY)
@@ -85,10 +85,10 @@ STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define Y_OF_INT(val) ((unsigned int)(val) & MASK(BITSY))
 #define SWAP_SHORTS(in,out)         ((short *)out)[0] = ((short *)in)[1],((short *)out)[1] = ((short *)in)[0]
 
-
-typedef struct {int l;} *PF;
-struct HEADER
-{
+typedef struct {
+  int l;
+} *PF;
+struct HEADER {
   int n;
   int e;
 };
@@ -96,47 +96,35 @@ struct HEADER
 STATIC_CONSTANT char FIELDSY = BITSY + BITSX;
 STATIC_CONSTANT int FIELDSX = 2;
 
-int       MdsCmprs(
-		              int *nitems_ptr,
-		              struct descriptor_a *items_dsc_ptr,
-		              struct descriptor_a *pack_dsc_ptr,
-		              int *bit_ptr)
+int MdsCmprs(int *nitems_ptr,
+	     struct descriptor_a *items_dsc_ptr, struct descriptor_a *pack_dsc_ptr, int *bit_ptr)
 {
-  int       nitems = *nitems_ptr;
-  int       step = items_dsc_ptr->length;
-  int       dtype = items_dsc_ptr->dtype;
+  int nitems = *nitems_ptr;
+  int step = items_dsc_ptr->length;
+  int dtype = items_dsc_ptr->dtype;
   register PF px = (PF) items_dsc_ptr->pointer;
   unsigned char *pxuc = (unsigned char *)px;
-  char      *pxc = (char *)px;
+  char *pxc = (char *)px;
   unsigned short *pxus = (unsigned short *)px;
-  short     *pxs = (short *)px;
-  char     *ppack = pack_dsc_ptr->pointer;
-  uint64_t       limit = (pack_dsc_ptr->arsize > 4) ? ((uint64_t)pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX) : 0;
-  register int j,
-              yy;
-  register int i,
-             *p32,
-             *pn,
-             *pe;
+  short *pxs = (short *)px;
+  char *ppack = pack_dsc_ptr->pointer;
+  uint64_t limit =
+      (pack_dsc_ptr->arsize > 4) ? ((uint64_t) pack_dsc_ptr->arsize) * 8 - 2 * (BITSY + BITSX) : 0;
+  register int j, yy;
+  register int i, *p32, *pn, *pe;
   struct HEADER header;
-  int       maxim,
-              mark,
-              old,
-              best,
-              test;
-  int       ye,
-              xe,
-              yn,
-              xn,
-              xsum,
-             *ptally;
-  int       tally[MAXY + 1];
-  char      yn_c;
-  char      ye_c;
-  int       diff[MAXX],
-              exce[MAXX];
-  STATIC_CONSTANT int signif[65] = {0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-	  6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7};
+  int maxim, mark, old, best, test;
+  int ye, xe, yn, xn, xsum, *ptally;
+  int tally[MAXY + 1];
+  char yn_c;
+  char ye_c;
+  int diff[MAXX], exce[MAXX];
+  STATIC_CONSTANT int signif[65] =
+      { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+5,
+    6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+	7
+  };
 /***************************
 Text is by the character.
 Otherwise try int or short.
@@ -150,14 +138,13 @@ ASSUMES power-of-two size.
     step = sizeof(short);
   else
     step = sizeof(char);
-  nitems *= (int) items_dsc_ptr->length / step;
+  nitems *= (int)items_dsc_ptr->length / step;
 
 /***************
 Do this in runs.
 ***************/
-  while (nitems > 0)
-  {
-    memset((void *)tally,0,sizeof(tally));
+  while (nitems > 0) {
+    memset((void *)tally, 0, sizeof(tally));
     xn = j = MIN(nitems, MAXX);
     nitems -= j;
     p32 = pe = exce;
@@ -167,51 +154,50 @@ Do this in runs.
   Temporary is exce.
   Repoint for ints.
   *********************/
-    switch (dtype)
-    {
-     default:
+    switch (dtype) {
+    default:
       if (step == sizeof(int))
 	goto case_LU;
       if (step == sizeof(short))
 	goto case_WU;
       goto case_BU;
-     case DTYPE_T:
-     case DTYPE_BU:
-  case_BU:for (; --j >= 0;)
+    case DTYPE_T:
+    case DTYPE_BU:
+ case_BU:for (; --j >= 0;)
 	*pe++ = *pxuc++;
       break;
-     case DTYPE_B:
+    case DTYPE_B:
       for (; --j >= 0;)
 	*pe++ = *pxc++;
       break;
-     case DTYPE_WU:
-  case_WU:for (; --j >= 0;)
+    case DTYPE_WU:
+ case_WU:for (; --j >= 0;)
 	*pe++ = *pxus++;
       break;
-     case DTYPE_W:
+    case DTYPE_W:
       for (; --j >= 0;)
 	*pe++ = *pxs++;
       break;
-     case DTYPE_L:
-     case DTYPE_LU:
-  case_LU:p32 = (int *) px;
-      px = (PF) ((int *) px + j);
+    case DTYPE_L:
+    case DTYPE_LU:
+ case_LU:p32 = (int *)px;
+      px = (PF) ((int *)px + j);
       break;
     /********************************************
     * Swapping words on Vax makes floats ordered.
     * NEED to consider sign swap to make ordered.
     * ASSUMES Vax-format reals. Little-endian.
     ********************************************/
-     case DTYPE_F:
-     case DTYPE_FC:
-     case DTYPE_D:
-     case DTYPE_DC:
-     case DTYPE_G:
-     case DTYPE_GC:
-     case DTYPE_H:
-     case DTYPE_HC:
+    case DTYPE_F:
+    case DTYPE_FC:
+    case DTYPE_D:
+    case DTYPE_DC:
+    case DTYPE_G:
+    case DTYPE_GC:
+    case DTYPE_H:
+    case DTYPE_HC:
       for (; --j >= 0;)
-	SWAP_SHORTS(px,pe),++pe,++px;
+	SWAP_SHORTS(px, pe), ++pe, ++px;
       break;
     }
 
@@ -223,28 +209,23 @@ Do this in runs.
   for the range -7 to +7.
   ******************************/
     old = 0;
-    for (pn = diff, j = xn; --j >= 0; old = *p32++)
-    {
-      if ((int) (*pn++ = i = *p32 - old) < 0)
+    for (pn = diff, j = xn; --j >= 0; old = *p32++) {
+      if ((int)(*pn++ = i = *p32 - old) < 0)
 	i = -i;
-      if ((unsigned int) i <= 64)
+      if ((unsigned int)i <= 64)
 	yy = signif[i];
-      else
-      {
+      else {
 	yy = 0;
-	if ((unsigned int) i > 0x1000000)
-	{
-	  i = (unsigned int) i >> 24;
+	if ((unsigned int)i > 0x1000000) {
+	  i = (unsigned int)i >> 24;
 	  yy += 24;
 	}
-	if ((unsigned int) i > 0x1000)
-	{
-	  i = (int) i >> 12;
+	if ((unsigned int)i > 0x1000) {
+	  i = (int)i >> 12;
 	  yy += 12;
 	}
-	if ((unsigned int) i > 0x40)
-	{
-	  i = (int) i >> 6;
+	if ((unsigned int)i > 0x40) {
+	  i = (int)i >> 6;
 	  yy += 6;
 	}
 	yy += signif[i];
@@ -254,14 +235,11 @@ Do this in runs.
   /***************************
   Special case for all zeroes.
   ***************************/
-    if (tally[0] == xn)
-    {
+    if (tally[0] == xn) {
       yn = 0;
       xe = 0;
       ye = 0;
-    }
-    else
-    {
+    } else {
     /**************************************************
     Determine exception width and do xn-sum(1:y).
     tally[0] is y=1 count, i.e., the number of zeros.
@@ -270,7 +248,7 @@ Do this in runs.
     because numbers wrap at that point. 32-bit assumed.
     **************************************************/
       tally[MAXY - 1] += tally[MAXY];
-      for (ptally = tally, xsum = xn; (*ptally = xsum -= *ptally) > 0; ++ptally);
+      for (ptally = tally, xsum = xn; (*ptally = xsum -= *ptally) > 0; ++ptally) ;
       yn = ye = yy = (ptally - tally) + 1;
     /*******************************************
     We have ptally pointed at last nonempty bin.
@@ -279,10 +257,8 @@ Do this in runs.
     For y=ye there are no exceptions.
     *******************************************/
       best = xn * yy;
-      while (--yy > 0)
-      {
-	if ((test = xn * yy + *--ptally * ye) < best)
-	{
+      while (--yy > 0) {
+	if ((test = xn * yy + *--ptally * ye) < best) {
 	  best = test;
 	  yn = yy;
 	}
@@ -295,8 +271,7 @@ Do this in runs.
   *********************/
     mark = -1 << (yn - 1);
     maxim = ~mark;
-    for (pn = diff, pe = exce, j = xe; --j >= 0;)
-    {
+    for (pn = diff, pe = exce, j = xe; --j >= 0;) {
       while (*pn <= maxim && *pn > mark)
 	++pn;
       *pe++ = *pn;
@@ -306,49 +281,40 @@ Do this in runs.
   /******************************
   Must have enough room to store.
   ******************************/
-    if ((uint64_t)(*bit_ptr + xe * ye + xn * yn) > limit)
+    if ((uint64_t) (*bit_ptr + xe * ye + xn * yn) > limit)
       return LibSTRTRU;
-    header.n = X_AND_Y(xn - 1,yn);
-    header.e = X_AND_Y(xe,ye - 1);
-    MdsPk((char *) &FIELDSY, &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
+    header.n = X_AND_Y(xn - 1, yn);
+    header.e = X_AND_Y(xe, ye - 1);
+    MdsPk((char *)&FIELDSY, &FIELDSX, (int *)ppack, (int *)&header, (int *)bit_ptr);
     yn_c = (char)yn;
     ye_c = (char)ye;
-    MdsPk(&yn_c, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
-    MdsPk(&ye_c, (int *) &xe, (int *) ppack, (int *) exce, (int *) bit_ptr);
+    MdsPk(&yn_c, (int *)&xn, (int *)ppack, (int *)diff, (int *)bit_ptr);
+    MdsPk(&ye_c, (int *)&xe, (int *)ppack, (int *)exce, (int *)bit_ptr);
   }
   return 1;
 }
+
 /*----------------------------------------------------------
 	MdsXpand.C
 	Expand compressed data.
 */
-int       MdsXpand(
-		              int *nitems_ptr,
-		              struct descriptor_a *pack_dsc_ptr,
-		              struct descriptor_a *items_dsc_ptr,
-		              int *bit_ptr)
+int MdsXpand(int *nitems_ptr,
+	     struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr, int *bit_ptr)
 {
-  int       nitems = *nitems_ptr;
-  char     *ppack = memcpy(malloc(pack_dsc_ptr->arsize+4),pack_dsc_ptr->pointer,pack_dsc_ptr->arsize);
-  int       limit = pack_dsc_ptr->arsize * 8;
-  int       step = items_dsc_ptr->length;
-  int       dtype = items_dsc_ptr->dtype;
+  int nitems = *nitems_ptr;
+  char *ppack =
+      memcpy(malloc(pack_dsc_ptr->arsize + 4), pack_dsc_ptr->pointer, pack_dsc_ptr->arsize);
+  int limit = pack_dsc_ptr->arsize * 8;
+  int step = items_dsc_ptr->length;
+  int dtype = items_dsc_ptr->dtype;
   register PF px = (PF) items_dsc_ptr->pointer;
   struct HEADER header;
-  int       f;
+  int f;
   register PF pf;
   register int j;
-  register int *pn,
-             *pe,
-              mark,
-              old;
-  int       ye,
-              xe,
-              yn,
-              xn,
-              xhead;
-  int       diff[MAXX],
-              exce[MAXX];
+  register int *pn, *pe, mark, old;
+  int ye, xe, yn, xn, xhead;
+  int diff[MAXX], exce[MAXX];
   if (dtype == DTYPE_T)
     step = sizeof(unsigned char);
   else if ((step & (sizeof(int) - 1)) == 0)
@@ -357,17 +323,16 @@ int       MdsXpand(
     step = sizeof(short);
   else
     step = sizeof(char);
-  nitems *= (int) items_dsc_ptr->length / step;
+  nitems *= (int)items_dsc_ptr->length / step;
 /********************************
 Note the sign-extended unpacking.
 ********************************/
-  memset(ppack+pack_dsc_ptr->arsize,-1,4);
-  while (nitems > 0)
-  {
+  memset(ppack + pack_dsc_ptr->arsize, -1, 4);
+  while (nitems > 0) {
     char nbits = (char)FIELDSY;
     if ((*bit_ptr + 2 * (BITSY + BITSX)) > limit)
       break;
-    MdsUnpk(&nbits, (int *) &FIELDSX, (int *) ppack, (int *) &header, (int *) bit_ptr);
+    MdsUnpk(&nbits, (int *)&FIELDSX, (int *)ppack, (int *)&header, (int *)bit_ptr);
     xhead = j = X_OF_INT(header.n) + 1;
     if (j > nitems)
       j = nitems;
@@ -379,13 +344,12 @@ Note the sign-extended unpacking.
       break;
     nitems -= j;
     nbits = (char)yn;
-    MdsUnpk(&nbits, (int *) &xn, (int *) ppack, (int *) diff, (int *) bit_ptr);
-    if (xe)
-    {
+    MdsUnpk(&nbits, (int *)&xn, (int *)ppack, (int *)diff, (int *)bit_ptr);
+    if (xe) {
       *bit_ptr -= yn * (xhead - j);
       pe = exce;
       nbits = (char)ye;
-      MdsUnpk(&nbits, &xe, (int *) ppack, (int *) pe, (int *) bit_ptr);
+      MdsUnpk(&nbits, &xe, (int *)ppack, (int *)pe, (int *)bit_ptr);
       mark = -1 << (-yn - 1);
     }
 
@@ -396,17 +360,16 @@ Note the sign-extended unpacking.
   ***********************************/
     pn = diff;
     old = 0;
-    switch (dtype)
-    {
-     default:
+    switch (dtype) {
+    default:
       if (step == sizeof(int))
 	goto case_LU;
       if (step == sizeof(short))
 	goto case_WU;
       goto case_BU;
-     case DTYPE_T:
-     case DTYPE_B:
-     case DTYPE_BU:
+    case DTYPE_T:
+    case DTYPE_B:
+    case DTYPE_BU:
 #define load(type) { type *newone;\
                      for (newone = (type *)px; --j >= 0;pn++,newone++)\
                      {\
@@ -415,40 +378,40 @@ Note the sign-extended unpacking.
                      }\
                      px = (PF)newone;\
                    }
-  case_BU:load(char);
+ case_BU:load(char);
       break;
-     case DTYPE_W:
-     case DTYPE_WU:
-  case_WU:load(short);
+    case DTYPE_W:
+    case DTYPE_WU:
+ case_WU:load(short);
       break;
-     case DTYPE_L:
-     case DTYPE_LU:
-  case_LU:load(int);
+    case DTYPE_L:
+    case DTYPE_LU:
+ case_LU:load(int);
       break;
     /********************************************
     * Swapping words on Vax makes floats ordered.
     * NEED to consider sign swap to make ordered.
     * ASSUMES Vax-format reals. Little-endian.
     ********************************************/
-     case DTYPE_F:
-     case DTYPE_FC:
-     case DTYPE_D:
-     case DTYPE_DC:
-     case DTYPE_G:
-     case DTYPE_GC:
-     case DTYPE_H:
-     case DTYPE_HC:
+    case DTYPE_F:
+    case DTYPE_FC:
+    case DTYPE_D:
+    case DTYPE_DC:
+    case DTYPE_G:
+    case DTYPE_GC:
+    case DTYPE_H:
+    case DTYPE_HC:
       pf = (PF) & f;
       pf->l = 0;
       if (xe)
 	for (; --j >= 0;)
 	  if (*pn != mark)
-	    pf->l += *pn++, SWAP_SHORTS(pf,px), ++px;
+	    pf->l += *pn++, SWAP_SHORTS(pf, px), ++px;
 	  else
-	    ++pn, pf->l += *pe++, SWAP_SHORTS(pf,px),++px;
+	    ++pn, pf->l += *pe++, SWAP_SHORTS(pf, px), ++px;
       else
 	for (; --j >= 0;)
-	  pf->l += *pn++, SWAP_SHORTS(pf,px), ++px;
+	  pf->l += *pn++, SWAP_SHORTS(pf, px), ++px;
       break;
     }
   }
