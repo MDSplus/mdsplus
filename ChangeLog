@@ -1,4 +1,23 @@
-commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 7d3d4eac08cb2f658abf830678619d6436eb5662 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 2cacbcf 562e8ef
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:35:03 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 2cacbcf20218b69dbdbff598345aaa55acecc6ca
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:34:34 2015 +0100
+
+    Remove useless updates
+
+commit 562e8ef6f02d329fd5d7a271efd5bc338a8d68bd (tag: refs/tags/alpha_release-6-3-462)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 28 18:22:55 2015 -0500
+
+    New ChangeLog
+
+commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d
 Merge: 870831c 6e9b820
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Jan 28 14:36:07 2015 +0100
