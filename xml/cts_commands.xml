@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<module name="cts_commands" prompt="CTS> " def_file=".cts">
+
+  <verb name="assign">
+
+    <routine name="Assign"/>
+
+    <parameter name="p1" label="PHY_NAME" required="True" prompt="Physical name:"/>
+    <parameter name="p2" label="LOG_NAME" required="True" prompt="Logical name:"/>
+    <qualifier name="comment"/>
+
+"  </verb>
+  <verb name="autoconfig">
+
+    <routine name="Autoconfig"/>
+
+
+"  </verb>
+  <verb name="cts">
+
+    <routine name="Noop"/>
+
+    <parameter name="p1" type="rest_of_line"/>
+    <qualifier name="tables" defaulted="True" default="cts_commands" list="True"/>
+    <qualifier name="helplib" defaulted="True" default="ctsHELP"/>
+    <qualifier name="auxhelplib"/>
+    <qualifier name="prompt" defaulted="True" default="CTS>"/>
+    <qualifier name="def_file" defaulted="True" default="*.cts"/>
+    <qualifier name="key_defs" defaulted="True" default="ctskeys"/>
+    <qualifier name="def_libraries" defaulted="True" default="cts$library"/>
+    <qualifier name="command" defaulted="True" default="ctsinit"/>
+    <qualifier name="ini_def_File" defaulted="True" default="sys$login:*.cts"/>
+    <qualifier name="library" required="True"/>
+    <qualifier name="debug"/>
+
+"  </verb>
+  <verb name="deassign">
+
+    <routine name="Deassign"/>
+
+    <parameter name="p1" label="MODULE" required="True" prompt="Module:"/>
+    <qualifier name="physical"/>
+
+"  </verb>
+  <verb-off name="help">
+
+    <routine name="Help"/>
+
+
+"  </verb-off>
+  <verb name="reset">
+
+    <routine name="ResetHighway"/>
+
+    <parameter name="p1" label="MODULE" required="True" prompt="Highway:"/>
+
+"  </verb>
+  <verb name="set">
+
+    <routine name="SetCrate"/>
+
+    <parameter name="p1" label="CRATE" default="*"/>
+    <qualifier name="online"/>
+    <qualifier name="offline"/>
+    <qualifier name="quiet"/>
+
+"  </verb>
+  <verb name="show">
+
+    <routine name="ShowModule"/>
+
+    <parameter name="p1" label="MODULE" default="*"/>
+    <qualifier name="crate" syntax="show_crate"/>
+    <qualifier name="highway" syntax="show_highway"/>
+    <qualifier name="physical"/>
+    <qualifier name="format"/>
+
+"  </verb>
+  <syntax name="show_crate">
+
+    <routine name="ShowCrate"/>
+
+    <parameter name="p1" label="MODULE" default="*"/>
+
+"  </syntax>
+  <syntax name="show_highway">
+
+    <routine name="ShowModule"/>
+
+    <parameter name="p1" label="MODULE" default="*"/>
+
+"  </syntax>
+  <verb name="addcrate">
+
+    <routine name="AddCrate"/>
+
+    <parameter name="p1" label="PHY_NAME" required="True" prompt="Physical name:"/>
+
+"  </verb>
+  <verb name="delcrate">
+
+    <routine name="DelCrate"/>
+
+    <parameter name="p1" label="PHY_NAME" required="True" prompt="Physical name:"/>
+"  </verb>
+</module>

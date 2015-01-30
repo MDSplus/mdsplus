@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include  <string.h>
 
 /***********************************************************************
 * TCL_EDIT.C --
@@ -14,7 +15,7 @@
 	 * TclEdit:
 	 * Open tree for edit
 	 ***************************************************************/
-int TclEdit(void *ctx)
+int TclEdit(void *ctx, char **error, char **output)
 {
   int shot;
   int sts;
@@ -31,7 +32,9 @@ int TclEdit(void *ctx)
   if (sts & 1)
     TclNodeTouched(0, tree);
   else {
-    sts = MdsMsg(sts, "Error opening tree-file %s for EDIT", filnam);
+    char *msg=MdsGetMsg(sts);
+    *error=malloc(strlen(msg)+100);
+    sprintf(*error,"Error: Unable to edit shot number %d of the '%s' tree\nError msg was: %s\n",shot,filnam,msg);
   }
   if (filnam)
     free(filnam);

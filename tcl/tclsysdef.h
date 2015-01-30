@@ -28,3 +28,5 @@ void TclNodeTouched(		/* Returns: void                        */
 		     int nid	/* <r> node id                          */
 		     , NodeTouchType type	/* <r> type of "touch"                  */
     );
+
+void tclUsageToString(char *usage, char **error);

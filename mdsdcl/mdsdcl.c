@@ -32,6 +32,13 @@ main(int argc, char const *argv[])
 
   /* See if a -prep option is provided as the first command option. */
 
+  mdsdclAddCommands("mdsdcl_commands", &error);
+  if (error) {
+    fprintf(stderr,"%s",error);
+    free(error);
+    exit(1);
+  }
+
   if ((argc > 2) && (strcmp("-prep", argv[1]) == 0)) {
     char *prep_cmd = strdup(argv[2]);
     int inquote = 0;

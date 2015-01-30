@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include        <ncidef.h>
+#include <string.h>
 
 /**********************************************************************
 * TCL_ADD_TAG.C --
@@ -15,7 +16,7 @@
 	 * TclAddTag:
 	 * Add a tag name to a node
 	 *****************************************************************/
-int TclAddTag(void *ctx)
+int TclAddTag(void *ctx, char **error, char **output)
 {				/* Return: status                 */
   int nid;
   int sts;
@@ -28,7 +29,9 @@ int TclAddTag(void *ctx)
   if (sts & 1)
     sts = TreeAddTag(nid, tagnam);
   if (!(sts & 1)) {
-    MdsMsg(sts, "Error adding tag %s", tagnam);
+    char *msg = MdsGetMsg(sts);
+    *error=malloc(strlen(tagnam)+strlen(msg)+100);
+    sprintf(*error,"Error adding tag %s\nError message was: %s\n",tagnam, msg);
   }
   if (nodnam)
     free(nodnam);

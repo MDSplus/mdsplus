@@ -64,8 +64,11 @@ static void freeQualifier(dclQualifierPtr * q_in)
 	free(q->type);
       if (q->syntax)
 	free(q->syntax);
-      for (i = 0; i < q->value_count; i++)
-	free(q->values[i]);
+      if (q->values) {
+	for (i = 0; i < q->value_count; i++)
+	  free(q->values[i]);
+	free(q->values);
+      }
       free(q);
       *q_in = 0;
     }
@@ -235,24 +238,22 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd)
 		 (strcasecmp(propNode->name, "default") == 0) &&
 		 propNode->children && propNode->children->content) {
 	char *value = strdup(propNode->children->content);
-	char *c;
-	for (c = strchr(value, ','); c; c = strchr(value, ',')) {
-	  *c = 0;
+	char *c,*v;
+	for (v = value,c = strchr(v, ','); strlen(v); c = strchr(v, ',')) {
+	  if (c)
+	    *c = 0;
 	  if (parameter->values) {
 	    parameter->values =
 		realloc(parameter->values, (parameter->value_count + 1) * sizeof(char *));
 	  } else {
 	    parameter->values = malloc(sizeof(char *));
 	  }
-	  parameter->values[parameter->value_count++] = strdup(value);
+	  parameter->values[parameter->value_count++] = strdup(v);
+	  if (c)
+	    v = c+1;
+	  else
+	    break;
 	}
-	if (parameter->values) {
-	  parameter->values =
-	      realloc(parameter->values, (parameter->value_count + 1) * sizeof(char *));
-	} else {
-	  parameter->values = malloc(sizeof(char *));
-	}
-	parameter->values[parameter->value_count++] = strdup(value);
 	free(value);
       }
     }
@@ -946,6 +947,33 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
   return status;
 }
 
+/*! Set the prompt and def_file if defined in the command table xml. These
+  should be properties of the top module tag, for example:
+
+     <module name="tcl_commands" prompt="TCL> " def_file=".tcl">
+
+
+  \param doc [in] The xml document pointer.
+*/
+
+static void mdsdclSetupCommands(xmlDocPtr doc) {
+  /* Set prompt and def_file if defined in top level module key */
+    
+  struct _xmlAttr *p;
+  if (doc->children && doc->children) {
+    for (p=doc->children->properties; p; p=p->next) {
+      if ((strcasecmp(p->name,"prompt") == 0) &&
+	  p->children &&
+	  p->children->content)
+	mdsdclSetPrompt(p->children->content);
+      else if ((strcasecmp(p->name,"def_file") == 0) &&
+	       p->children &&
+	       p->children->content)
+	mdsdclSetDefFile(p->children->content);
+    }
+  }
+}
+
 /*! Add a command table by parsing an xml command definition file.
     The file is located in a directory specified by an environment
     variable "MDSXML" or the current directory if that environment
@@ -967,6 +995,7 @@ int mdsdclAddCommands(char *name_in, char **error)
   char *mdsplus_dir;
   char *filename = 0;
   int status = 0;
+  int loaded = 0;
   name = strdup(name_in);
 
   /* convert the name to lowercase. The table xml files should always be named
@@ -996,6 +1025,7 @@ int mdsdclAddCommands(char *name_in, char **error)
 	dclDocs = doc_l;
       }
       free(commands);
+      mdsdclSetupCommands(dclDocs->doc);
       return 0;
     }
   }
@@ -1032,6 +1062,7 @@ int mdsdclAddCommands(char *name_in, char **error)
     status = -1;
   } else {
 
+
     /* else stick the parsed xml document at the top of the command stack */
 
     doc_l = malloc(sizeof(dclDocList));
@@ -1040,6 +1071,7 @@ int mdsdclAddCommands(char *name_in, char **error)
     doc_l->next = dclDocs;
     dclDocs = doc_l;
     status = 0;
+    mdsdclSetupCommands(dclDocs->doc);
   }
   free(filename);
   return status;

@@ -1,7 +1,8 @@
-#include        "tclsysdef.h"
-#include        <ncidef.h>
-#include        <usagedef.h>
-
+#include "tclsysdef.h"
+#include <ncidef.h>
+#include <usagedef.h>
+#include <string.h>
+#include <dcl.h>
 /**********************************************************************
 * TCL_ADD_NODE.C --
 *
@@ -18,12 +19,40 @@
 	 * TclAddNode:
 	 * Add a node
 	 *****************************************************************/
-int TclAddNode(void *ctx)
+
+char tclUsageToNumber(char *usage, char **error) {
+  struct usageMap {char *name;
+    char value;
+  } map[] = {{"ANY",TreeUSAGE_ANY},
+	     {"STRUCTURE",TreeUSAGE_STRUCTURE},
+	     {"ACTION",TreeUSAGE_ACTION},
+	     {"DEVICE",TreeUSAGE_DEVICE},
+	     {"DISPATCH",TreeUSAGE_DISPATCH},
+	     {"NUMERIC",TreeUSAGE_NUMERIC},
+	     {"SIGNAL",TreeUSAGE_SIGNAL},
+	     {"TASK",TreeUSAGE_TASK},
+	     {"TEXT",TreeUSAGE_TEXT},
+	     {"WINDOW",TreeUSAGE_WINDOW},
+	     {"AXIS",TreeUSAGE_AXIS},
+	     {"SUBTREE",TreeUSAGE_SUBTREE},
+	     {"COMPOUND_DATA",TreeUSAGE_COMPOUND_DATA}};
+  int i, mapsize=sizeof(map)/sizeof(struct usageMap);
+  for (i=0;i<mapsize;i++)
+    if (strncasecmp(usage,map[i].name,strlen(usage))==0)
+      return map[i].value;
+  *error=malloc(strlen(usage)+500);
+  sprintf(*error,"Error: Invalid usage specified '%s', use one of\n"
+	  "ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH,"
+	  "NUMERIC, SIGNAL,\nSTRUCTURE, SUBTREE, TASK, TEXT"
+	  " or WINDOW\n",usage);
+  return -1;
+}
+
+int TclAddNode(void *ctx, char **error, char **output)
 {				/* Return: status                 */
   int k;
   int nid;
   int sts;
-  int stsQual;
   char usage=0;
   char *nodnam=0;
   char *modelType=0;
@@ -32,20 +61,29 @@ int TclAddNode(void *ctx)
   sts = cli_get_value(ctx, "NODENAME", &nodnam);
 
   if (cli_get_value(ctx, "MODEL", &modelType) & 1) {
-    stsQual = cli_get_value(ctx, "QUALIFIERS", &qualifiers);
-    if (stsQual & 1)
-      fprintf(stderr, "--> QUALIFIERS option is obsolete (ignored)\n");
+    if (cli_get_value(ctx, "QUALIFIERS", &qualifiers) & 1)
+      *error=strdup("--> QUALIFIERS option is obsolete (ignored)\n");
     sts = TreeAddConglom(nodnam, modelType, &nid);
   } else {
     cli_get_value(ctx, "USAGE", &usageStr);
-    printf("Need to handle usage\n");
+    if (usageStr) {
+      usage=tclUsageToNumber(usageStr, error);
+      if (usage == -1) {
+	sts = CLI_STS_IVVERB;
+	goto done;
+      }
+    }
     sts = TreeAddNode(nodnam, &nid, usage);
   }
   if (sts & 1)
     TclNodeTouched(nid, new);
   else {
-    MdsMsg(sts, "Error adding node %s", nodnam);
+    if (*error)
+      free(*error);
+    *error=malloc(strlen(nodnam)+100);
+    sprintf(*error,"Error adding node %s\nError was: %s\n",nodnam,MdsGetMsg(sts));
   }
+ done:
   if (nodnam)
     free(nodnam);
   if (modelType)

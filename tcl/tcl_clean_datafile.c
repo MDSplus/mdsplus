@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include <string.h>
+#include <dcl.h>
 
 /**********************************************************************
 * TCL_CLEAN_DATAFILE.C --
@@ -16,32 +17,35 @@ extern int TdiExecute();
 	/****************************************************************
 	 * TclCleanDatafile:
 	 ****************************************************************/
-int TclCleanDatafile(void *ctx)
+int TclCleanDatafile(void *ctx, char **error, char **output)
 {
   int sts;
-  static int shot;
+  int shot;
   char *filnam=0;
   char *asciiShot=0;
-  static DESCRIPTOR_LONG(dsc_shot, &shot);
-  struct descriptor dsc_asciiShot = {0, DTYPE_T, CLASS_S, 0};
-  static char noclean[] = "Clean of pulse file may destroy\
- previous archive versions:  REFUSED";
-
   cli_get_value(ctx, "FILE", &filnam);
   cli_get_value(ctx, "SHOTID", &asciiShot);
-  dsc_asciiShot.length=strlen(asciiShot);
-  dsc_asciiShot.pointer=asciiShot;
-  sts = TdiExecute(&dsc_asciiShot, &dsc_shot MDS_END_ARG);
-  if ((shot != -1) && (!(cli_present(ctx, "OVERRIDE") & 1))) {
-    TclTextOut(noclean);
-    sts=1;
-    goto done;
+  if (asciiShot && strlen(asciiShot) > 0) {
+    char *endptr;
+    shot = strtol(asciiShot, &endptr, 0);
+    if (*endptr != 0) {
+      *error=malloc(strlen(asciiShot)+100);
+      sprintf(*error,"Error: Invalid shot specified '%s'. Please use an integer value.\n");
+      sts = CLI_STS_IVVERB;
+    }
+    else {
+      sts = TreeCleanDatafile(filnam, shot);
+      if (!(sts & 1)) {
+	char *msg=MdsGetMsg(sts);
+	*error=malloc(strlen(msg)+strlen(filnam)+100);
+	sprintf(*error,"Error: Problem cleaning tree '%s' shot '%d'\nError message was: %s\n",
+		filnam,shot,msg);
+      }
+    }
+  } else {
+    *error=strdup("Error getting shot number from command.\n");
+    sts = CLI_STS_IVVERB;
   }
-  sts = TreeCleanDatafile(filnam, shot);
-  if (~sts & 1) {
-    MdsMsg(sts, "Problem cleaning %s", filnam);
-  }
- done:
   if (filnam)
     free(filnam);
   if (asciiShot)

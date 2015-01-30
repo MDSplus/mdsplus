@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<module name="ccl_commands" prompt="CCL> " def_file=".ccl">
+
+  <verb name="CCL">
+
+    <routine name="ccl_finish"/>
+
+    <parameter name="p1" type="rest_of_line"/>
+    <qualifier name="tables" defaulted="True" list="True" default="CCL_COMMANDS"/>
+    <qualifier name="helplib" defaulted="True" default="CCLHELP"/>
+    <qualifier name="auxhelplib" defaulted="True" default="MDSDCL"/>
+    <qualifier name="prompt" defaulted="True" default="CCL>"/>
+    <qualifier name="def_file" defaulted="True" default="*.CCL"/>
+    <qualifier name="key_defs" defaulted="True" default="cclkeys"/>
+    <qualifier name="def_libraries" defaulted="True" default="ccl$library"/>
+    <qualifier name="command" defaulted="True" default="cclinit"/>
+    <qualifier name="ini_def_File" defaulted="True" default="sys$login:*.ccl"/>
+    <qualifier name="library"/>
+    <qualifier name="debug"/>
+    <qualifier name="close"/>
+"  </verb>
+  <verb name="finish">
+
+    <routine name="ccl_finish"/>
+
+"  </verb>
+  <verb name="pio">
+
+    <routine name="ccl_pio"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="count" defaulted="True" nonnegatable="True" default="1"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+"  </verb>
+  <verb name="qrep">
+
+    <routine name="ccl_qrep"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+"  </verb>
+  <verb name="fqrep">
+
+    <routine name="ccl_fqrep"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+"  </verb>
+  <verb name="qscan">
+
+    <routine name="ccl_qscan"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+"  </verb>
+  <verb name="qstop">
+
+    <routine name="ccl_qstop"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+"  </verb>
+  <verb name="fqstop">
+
+    <routine name="ccl_fqstop"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+"  </verb>
+  <verb name="stop">
+
+    <routine name="ccl_stop"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+    <qualifier name="enhanced"/>
+"  </verb>
+  <verb name="fstop">
+
+    <routine name="ccl_fstop"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" nonnegatable="True" required="True"/>
+    <qualifier name="enhanced" defaulted="True"/>
+"  </verb>
+  <verb name="dclst">
+
+    <routine name="ccl_dclst"/>
+
+"  </verb>
+  <verb name="lpio">
+
+    <routine name="ccl_lpio"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="step" nonnegatable="True" required="True"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="count" defaulted="True" nonnegatable="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" defaulted="True" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" defaulted="True" nonnegatable="True" default="24"/>
+"  </verb>
+  <verb name="lqscan">
+
+    <routine name="ccl_lqscan"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="step" nonnegatable="True" required="True"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" defaulted="True" nonnegatable="True" default="24"/>
+"  </verb>
+  <verb name="lstop">
+
+    <routine name="ccl_lstop"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="step" nonnegatable="True" required="True"/>
+    <qualifier name="address" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="function" defaulted="True" nonnegatable="True" default="0"/>
+    <qualifier name="count" nonnegatable="True" required="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="memory" defaulted="True" nonnegatable="True" default="24"/>
+"  </verb>
+  <verb name="execute">
+
+    <routine name="ccl_execute"/>
+
+"  </verb>
+  <verb name="rdata">
+
+    <routine name="ccl_rdata"/>
+
+    <qualifier name="step" nonnegatable="True" defaulted="True" default="1"/>
+    <qualifier name="count" defaulted="True" nonnegatable="True" default="16383"/>
+    <qualifier name="memory" nonnegatable="True"/>
+    <qualifier name="data"/>
+"  </verb>
+  <verb name="wdata">
+
+    <routine name="ccl_wdata"/>
+
+    <qualifier name="step" nonnegatable="True" required="True"/>
+    <qualifier name="count" defaulted="True" nonnegatable="True" default="16383"/>
+    <qualifier name="memory" nonnegatable="True"/>
+    <qualifier name="data" nonnegatable="True" required="True" list="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+"  </verb>
+  <verb name="lamwait">
+
+    <routine name="ccl_lamwait"/>
+
+    <parameter name="p1" label="module"/>
+    <qualifier name="timeout" defaulted="True" nonnegatable="True" default="32767"/>
+"  </verb>
+  <syntax name="set_memory_16">
+
+    <qualifier name="memory" defaulted="True" nonnegatable="True" default="16"/>
+"  </syntax>
+  <syntax name="set_memory_24">
+
+    <qualifier name="memory" defaulted="True" nonnegatable="True" default="24"/>
+"  </syntax>
+  <type name="memory_keywords">
+
+"    <keyword name="syntax"/>"
+"    <keyword name="syntax"/>"
+"  </type>
+  <syntax name="set_verbose">
+
+    <routine name="ccl_set_verbose"/>
+
+"  </syntax>
+  <syntax name="set_noverbose">
+
+    <routine name="ccl_set_noverbose"/>
+
+"  </syntax>
+  <syntax name="set_memory">
+
+    <routine name="ccl_set_memory"/>
+
+    <parameter name="p1" prompt="What" required="True" type="set_keywords"/>
+    <parameter name="p2" type="memory_keywords"/>
+"  </syntax>
+  <syntax name="set_module">
+
+    <routine name="ccl_set_module"/>
+
+    <parameter name="p1" required="True" type="set_keywords"/>
+    <parameter name="p2" label="name" prompt="Module" required="True"/>
+"  </syntax>
+  <type name="XANDQ_KEYWORDS">
+
+"    <keyword name="any"/>"
+"    <keyword name="no"/>"
+"    <keyword name="yes"/>"
+"  </type>
+  <syntax name="set_xandq">
+
+    <routine name="ccl_set_xandq"/>
+
+ defaulted="True" default="ANY" type="XANDQ_KEYWORDS"/>
+ defaulted="True" default="ANY" type="XANDQ_KEYWORDS"/>
+    <parameter name="p1" required="True" type="set_keywords"/>
+"  </syntax>
+  <type name="set_keywords">
+
+"    <keyword name="xandq" syntax="set_xandq"/>"
+"    <keyword name="memory" syntax="set_memory"/>"
+"    <keyword name="module" syntax="set_module"/>"
+"    <keyword name="noverbose" syntax="set_noverbose"/>"
+"    <keyword name="verbose" syntax="set_verbose"/>"
+"  </type>
+  <verb name="set">
+
+    <parameter name="p1" prompt="What" required="True" type="set_keywords"/>
+"  </verb>
+  <syntax name="show_module">
+
+    <routine name="ccl_show_module"/>
+
+    <parameter name="p1" required="True" type="show_keywords"/>
+"  </syntax>
+  <syntax name="show_data">
+
+    <routine name="ccl_show_data"/>
+
+    <qualifier name="START" nonnegatable="True" defaulted="True" default="1"/>
+    <qualifier name="END" nonnegatable="True" defaulted="True" default="5"/>
+    <qualifier name="binary" nonnegatable="True"/>
+    <qualifier name="decimal" nonnegatable="True" defaulted="True"/>
+    <qualifier name="octal" nonnegatable="True"/>
+    <qualifier name="hex" nonnegatable="True"/>
+    <qualifier name="memory" nonnegatable="True"/>
+    <parameter name="p1" required="True" type="show_keywords"/>
+"  </syntax>
+  <syntax name="show_status">
+
+    <routine name="ccl_show_status"/>
+
+    <parameter name="p1" required="True" type="show_keywords"/>
+"  </syntax>
+  <type name="show_keywords">
+
+"    <keyword name="data" syntax="show_data"/>"
+"    <keyword name="module" syntax="show_module"/>"
+"    <keyword name="status" syntax="show_status"/>"
+"  </type>
+  <verb name="show">
+
+    <parameter name="p1" prompt="What" required="True" type="show_keywords"/>
+"  </verb>
+  <verb name="plot">
+
+    <routine name="ccl_plot_data"/>
+
+    <qualifier name="START" nonnegatable="True" defaulted="True" default="1"/>
+    <qualifier name="END" nonnegatable="True" defaulted="True" default="32767"/>
+    <qualifier name="DEVICE" nonnegatable="True" defaulted="True" default="TT:"/>
+    <qualifier name="DEVTYPE" nonnegatable="True" defaulted="True" default="RETRO"/>
+"  </verb>
+</module>

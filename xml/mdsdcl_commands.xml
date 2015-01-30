@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<module name="mdsdcl_tables">
+<module name="mdsdcl_tables" prompt="MDSDCL> " def_file=".mdsdcl">
   <helpall>
     Basic mdsdcl commands include:
 
@@ -22,49 +22,51 @@
     TYPE           - Print a message.
     WAIT           - Wait for a specified period of time.
 
-    For command syntax type HELP SYNTAX
-    
+    syntax         - Basic syntax of mdsdcl commands.
   </helpall>
 
   <help name="SYNTAX">
     MDSDCL command syntax was originally based on the OPENVMS DCL syntax
     and consists of a command verb followed by qualifiers and/or parameters.
 
-    Format: verb [qualifier | parameter ]... [comment] [continuation]
+    Format: 'verb' ['qualifier' | 'parameter' ]... ['comment'] | ['continuation']
 
     Where:
 
-    Verb - a name.
+    verb        - A 'name'.
 
-    Qualifier - a forward slash followed by a name optionally
-    followed by a qualifier value.
+    qualifier   - A forward slash followed by a 'name' optionally followed
+    by a 'qualval'.
 
-    Qualifier value - an equals sign followed by a value or qualval list.
+    qualval     - An equals sign followed by a 'value' or 'qualvalist'.
 
-    Value - a series of nonblank characters or a string of any characters
-    enclosed in double quotes, ".
+    value       - A series of nonblank characters or a string of
+    any characters enclosed in double quotes,".
 
-    Qualval list - a left parenthesis, (, followed by one or more values
-    delimited by commas, followed by a right parenthesis, ).
+    qualvallist  - a left parenthesis, (, followed by one or more
+    'value's delimited by commas, followed by a right parenthesis, ).
 
-    Parameter - One or more values delimited by commas.
+    parameter    - One or more 'value's delimited by commas.
 
-    Comment - An exclamation point, !, followed by any characters. Note:
-    If the first nonblank character in a command line is an exclamation point
-    then the entire line is considered a comment.
+    comment      - An exclamation point, !, followed by any characters.
+    Note: If the first nonblank character in a command line is an
+    exclamation point then the entire line is considered a comment.
     
-    Name - A series of characters beginning with an alphabetic character, A-Z,
-    followed by one or more alphanumeric characters or underscores.
+    name         - A series of characters beginning with an alphabetic
+    character, A-Z, followed by zero or more alphanumeric characters or
+    underscores.
 
-    Continuation - If the command line ends in a hyphen, -, then the command
-    will be continued on the following line.
+    continuation  - If the command line ends in a hyphen, -, then the
+    command will be continued on the following line.
 
     Note: Some commands define a parameter as using the rest of the line.
     When such as parameter is detected the value of that parameter will
     consist of all the characters following the start of that parameter.
 
-    Note: Verb and Qualifier names are case insensitive.
+    Note: Verb and Qualifier names are case insensitive and may be abbreviated
+    as long as the shortened names are unique.
   </help>
+  
   <verb name="DEFINE">
     <help name="DEFINE">
       Command: DEFINE
