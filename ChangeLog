@@ -1,4 +1,23 @@
-commit 7d3d4eac08cb2f658abf830678619d6436eb5662 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 5147902bdf407a49b418b122c93980d887cb09e6 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 60ce24e 5fff662
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Feb 1 14:09:48 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 60ce24eecb74a39794cf1bafb7d11e5b678ec58e
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Feb 1 14:08:49 2015 -0500
+
+    Action Node offsets wrong, inputs start and nodes_per channel wrong
+
+commit 5fff662c2533f896816df2cc9f122292bcd1a890 (tag: refs/tags/alpha_release-6-3-463)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jan 29 18:23:48 2015 -0500
+
+    New ChangeLog
+
+commit 7d3d4eac08cb2f658abf830678619d6436eb5662
 Merge: 2cacbcf 562e8ef
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Jan 29 18:35:03 2015 +0100
