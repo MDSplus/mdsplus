@@ -648,27 +648,31 @@ public class MdsDataProvider
                 }
             }
              
-             if(segmentMode == SEGMENTED_NO) //Store in TDI variable only non segmented data
-             {
+            if(segmentMode == SEGMENTED_NO) //Store in TDI variable only non segmented data
+            {
                 yExpr =  in_y;
                 _jscope_set = true;
                 if(in_x == null)
                     xExpr = "DIM_OF("+in_y+")";
                 else
                     xExpr = in_x;
-             }
-             else
-             {                
-                yExpr =  in_y;
+            }
+            else
+            {
+                 
                 if(in_x == null)
-                    xExpr = "DIM_OF(+" +in_y+")";
+                {
+                    yExpr = "(_jscope_tmp = "+in_y+";_jscope_tmp;)";
+                    xExpr = "DIM_OF(_jscope_tmp)";
+                     //xExpr = "DIM_OF(+" +in_y+")";
+                }
                 else
+                {
+                    yExpr =  in_y;
                     xExpr = in_x;
-             }
-             
+                }
+            }
              try   {
-                 if(!supportsLargeSignals())
-                     throw new Exception("Large signals unsupported");
                  
                 String setTimeContext;
                 if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
@@ -701,12 +705,7 @@ public class MdsDataProvider
                 args.addElement(new Descriptor(null, new float[]{(float)xmin}));
                 args.addElement(new Descriptor(null, new float[]{(float)xmax}));
                 args.addElement(new Descriptor(null, new int[]{numPoints}));
-                byte[] retData;
-                if(experiment == null)
-                    retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
-                else
-                   retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
-                     
+                byte[] retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -727,7 +726,9 @@ public class MdsDataProvider
                 byte type = dis.readByte();
                 float y[] = new float[nSamples];
                 for(int i = 0; i < nSamples; i++)
-                        y[i] = dis.readFloat();
+                {
+                    y[i] = dis.readFloat();
+                }
                 double maxX;
                 if(type == 1) //Long X (i.e. absolute times
                 {
@@ -802,12 +803,7 @@ public class MdsDataProvider
                  //System.out.println("MdsMisc->GetXYSignal Failed");
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-            float y[];
-            if(supportsLargeSignals())
-                y = GetFloatArray("SetTimeContext(*,*,*);" +yExpr);
-            else
-               y = GetFloatArray(yExpr);
-               
+            float y[] = GetFloatArray("SetTimeContext(*,*,*); "+yExpr);
             RealArray xReal = GetRealArray(xExpr);
             if(xReal.isLong())
             {
@@ -2044,9 +2040,6 @@ public class MdsDataProvider
          return retDims;
     }
 
-    boolean supportsLargeSignals() {return true;} //Subclass LocalDataProvider will return false
-    
-    
     static class RealArray
     {
         double doubleArray[] = null;

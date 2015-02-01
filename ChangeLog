@@ -1,4 +1,79 @@
-commit 3d3619e525a4c12da911966fdac1350976d57175 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 7d3d4eac08cb2f658abf830678619d6436eb5662 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 2cacbcf 562e8ef
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:35:03 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 2cacbcf20218b69dbdbff598345aaa55acecc6ca
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:34:34 2015 +0100
+
+    Remove useless updates
+
+commit 562e8ef6f02d329fd5d7a271efd5bc338a8d68bd (tag: refs/tags/alpha_release-6-3-462)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 28 18:22:55 2015 -0500
+
+    New ChangeLog
+
+commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d
+Merge: 870831c 6e9b820
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:36:07 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 870831c1d4543abd17f31336a031ec3a016e52c2
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:34:31 2015 +0100
+
+    Fix border conditions
+
+commit 6e9b820489be9f55d029d18f2387b67f2c37bbed (tag: refs/tags/alpha_release-6-3-461)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jan 26 18:23:20 2015 -0500
+
+    New ChangeLog
+
+commit b4b4ad1ccb6e69ce34ad6b1733e3bd7b35b91134
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:54:47 2015 +0100
+
+    Align to latest version
+
+commit 22337c1bd57e780fd1836633051762a9d595eeb6
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:51:44 2015 +0100
+
+    Align to latest version
+
+commit e06e09e07f0abc6d0e0b95eec20bf085aaccd5c4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:06:52 2015 +0100
+
+    Avoid unlocking mutexes ibn destructor
+
+commit b8e1c51046cb2b2b9ebbc578b1f8a61b1876e596
+Merge: d2d950e 8f982e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:24 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d2d950eba344e638b2491672acc8abba42337595
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:04 2015 +0100
+
+    Fix String arrays
+
+commit 8f982e4b27e2dfd58a41aa75108bb1f8234e425f (tag: refs/tags/alpha_release-6-3-460)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 18:24:36 2015 -0500
+
+    New ChangeLog
+
+commit 3d3619e525a4c12da911966fdac1350976d57175
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri Jan 23 12:25:39 2015 -0500
 
