@@ -1,4 +1,47 @@
-commit 5147902bdf407a49b418b122c93980d887cb09e6 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 5e871f549e7018d5f54cdb9768e03b767c4f2f29 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 14:05:06 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit 4bf43f5ad0f676577bb4b19d412ce3d194c985c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 13:27:12 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit 379080905a5776f807d5d3ad1437e4f8e3eb277d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 13:12:44 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit 7626634c933d04eebe8d8596b00e9c1bbb4d7b89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 12:46:31 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit b9b2323da106c072621e81b3062516a0e2ba16f8
+Merge: 379af64 eeda35b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 12:14:43 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 379af64e888e2183d41dc0eb143645460441f013
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 12:14:25 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit eeda35bc7d592db3ee1479d54a5b764a581594de (tag: refs/tags/alpha_release-6-3-464)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Feb 1 18:23:31 2015 -0500
+
+    New ChangeLog
+
+commit 5147902bdf407a49b418b122c93980d887cb09e6
 Merge: 60ce24e 5fff662
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Sun Feb 1 14:09:48 2015 -0500
