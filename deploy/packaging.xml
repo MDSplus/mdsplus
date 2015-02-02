@@ -84,6 +84,7 @@ fi
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
     <include file="/usr/local/mdsplus/lib/libMit*"/>
     <include file="/usr/local/mdsplus/lib/libMIT*"/>
+    <include file="/usr/local/mdsplus/lib/libdc1394_support*"/>
     <include file="/usr/local/mdsplus/lib/libdc1394_support*.so"/>
     <include file="/usr/local/mdsplus/uid/A*"/>
     <include file="/usr/local/mdsplus/uid/B*"/>
@@ -413,6 +414,7 @@ fi
     <exclude file="/usr/local/mdsplus/lib/lib*Sql*"/>
     <exclude file="/usr/local/mdsplus/lib/libMit*"/>
     <exclude file="/usr/local/mdsplus/lib/libMIT*"/>
+    <exclude file="/usr/local/mdsplus/lib/libdc1394_support*"/>
     <exclude file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
     <exclude file="/usr/local/mdsplus/lib/libRoam*"/>
     <exclude file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>

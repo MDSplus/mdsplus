@@ -142,7 +142,9 @@ class InstallationPackage(object):
                 os.close(out)
                 self.info['specfilename']=specfilename
                 print("Building rpm for mdsplus%(rflavor)s%(packagename)s%(arch_t)s" % self.info)
+                
                 sys.stdout.flush()
+                subprocess.Popen("cat %(specfilename)s").wait();
                 p = subprocess.Popen("""
 rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUILDROOT --target=%(target)s %(specfilename)s 2>&1
 """ % self.info,stdout=subprocess.PIPE,shell=True)
