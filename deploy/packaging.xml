@@ -195,7 +195,7 @@ fi
     <include file="/usr/local/mdsplus/bin/actions"/>
     <include file="/usr/local/mdsplus/bin/traverser"/>
     <include file="/usr/local/mdsplus/lib/libXmds*"/>
-    <include dir="/usr/local/mdsplus/uid*"/>
+    <include dir="/usr/local/mdsplus/uid"/>
     <exclude file="/usr/local/mdsplus/uid/A*"/>
     <exclude file="/usr/local/mdsplus/uid/B*"/>
     <exclude file="/usr/local/mdsplus/uid/C*"/>
