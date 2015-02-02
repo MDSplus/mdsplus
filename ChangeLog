@@ -1,4 +1,167 @@
-commit 3a7932ff55e3a9ef066e74e3b3408825c704aede (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 5147902bdf407a49b418b122c93980d887cb09e6 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 60ce24e 5fff662
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Feb 1 14:09:48 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 60ce24eecb74a39794cf1bafb7d11e5b678ec58e
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Feb 1 14:08:49 2015 -0500
+
+    Action Node offsets wrong, inputs start and nodes_per channel wrong
+
+commit 5fff662c2533f896816df2cc9f122292bcd1a890 (tag: refs/tags/alpha_release-6-3-463)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jan 29 18:23:48 2015 -0500
+
+    New ChangeLog
+
+commit 7d3d4eac08cb2f658abf830678619d6436eb5662
+Merge: 2cacbcf 562e8ef
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:35:03 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 2cacbcf20218b69dbdbff598345aaa55acecc6ca
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:34:34 2015 +0100
+
+    Remove useless updates
+
+commit 562e8ef6f02d329fd5d7a271efd5bc338a8d68bd (tag: refs/tags/alpha_release-6-3-462)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 28 18:22:55 2015 -0500
+
+    New ChangeLog
+
+commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d
+Merge: 870831c 6e9b820
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:36:07 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 870831c1d4543abd17f31336a031ec3a016e52c2
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:34:31 2015 +0100
+
+    Fix border conditions
+
+commit 6e9b820489be9f55d029d18f2387b67f2c37bbed (tag: refs/tags/alpha_release-6-3-461)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jan 26 18:23:20 2015 -0500
+
+    New ChangeLog
+
+commit b4b4ad1ccb6e69ce34ad6b1733e3bd7b35b91134
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:54:47 2015 +0100
+
+    Align to latest version
+
+commit 22337c1bd57e780fd1836633051762a9d595eeb6
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:51:44 2015 +0100
+
+    Align to latest version
+
+commit e06e09e07f0abc6d0e0b95eec20bf085aaccd5c4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:06:52 2015 +0100
+
+    Avoid unlocking mutexes ibn destructor
+
+commit b8e1c51046cb2b2b9ebbc578b1f8a61b1876e596
+Merge: d2d950e 8f982e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:24 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d2d950eba344e638b2491672acc8abba42337595
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:04 2015 +0100
+
+    Fix String arrays
+
+commit 8f982e4b27e2dfd58a41aa75108bb1f8234e425f (tag: refs/tags/alpha_release-6-3-460)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 18:24:36 2015 -0500
+
+    New ChangeLog
+
+commit 3d3619e525a4c12da911966fdac1350976d57175
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 23 12:25:39 2015 -0500
+
+    Make scalar strings return native matlab strings instead of java.lang.String
+
+commit 6fde9fa7740968826b51b91fd566e2737230d463 (tag: refs/tags/alpha_release-6-3-459)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 10:20:11 2015 -0500
+
+    New ChangeLog
+
+commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d
+Merge: 77928e1 f1799c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:32:33 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+    
+    essary,
+
+commit 77928e1f90acf35f3b72e8dfc5b1aef88b586f1f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:23:56 2015 -0500
+
+    Remove obsolete *.f.in files
+
+commit f1799c7f1f200d397b3c4c18e2996d6550bf7ea5 (tag: refs/tags/alpha_release-6-3-458)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 21 13:56:18 2015 -0500
+
+    New ChangeLog
+
+commit b25379c897b2720b18b3b5c87ce952db540b46fd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:34:16 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 986727098ab5aaf41e992a83c0c140170365247d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 13:08:12 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 5323560da09b9e421abffd659833fdd129b88f18
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 12:13:22 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 83f4ce222b3776ff50e6f644b2d625fbbabde8a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 11:31:44 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 2f8677fe1ce9f2eda168986e6f7d3d0c54bd771c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 21 09:29:50 2015 -0500
+
+    Add more libraries needed for the mitdevices package
+
+commit 3b04594d21119af6767ebaa03ef4bc5147e56be3 (tag: refs/tags/alpha_release-6-3-457)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 20 18:23:37 2015 -0500
+
+    New ChangeLog
+
+commit 3a7932ff55e3a9ef066e74e3b3408825c704aede
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jan 20 18:14:37 2015 +0100
 

@@ -3087,6 +3087,8 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
     return NULL;
   }
+//   printf("RECEIVED dtype: %d length: %d ndims: %d dim1: %d dim2: %d numBytes: %d\n", 
+//	dtype, length, nDims, dims[0], dims[1], numBytes);
   if (nDims == 0) {
     scalarDsc.length = numBytes;
     scalarDsc.pointer = ptr;
@@ -3121,7 +3123,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
     case DTYPE_DOUBLE:
       scalarDsc.dtype = DTYPE_FT;
       break;
-    case DTYPE_CSTRING:
+     case DTYPE_CSTRING:
       scalarDsc.dtype = DTYPE_T;
       break;
     default:
@@ -3167,6 +3169,9 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
       break;
     case DTYPE_DOUBLE:
       arrayDsc.dtype = DTYPE_FT;
+      break;
+    case DTYPE_CSTRING:
+      arrayDsc.dtype = DTYPE_T;
       break;
     default:
       exc = (*env)->FindClass(env, "MDSplus/MdsException");

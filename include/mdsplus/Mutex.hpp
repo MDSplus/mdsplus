@@ -24,7 +24,7 @@ public:
 	}
 
 	~Mutex() {
-		unlock();
+//		unlock();  Unlocking a POSIX mutex which is already unlocked leads to undefinite behavior!!
 		_destroy();
 	}
 

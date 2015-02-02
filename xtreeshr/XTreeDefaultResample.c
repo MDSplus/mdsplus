@@ -554,6 +554,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   int outSamples, itemSize;
   int isFloat = 0;
   int status, i, currIdx;
+  int numYSamples;
   char *outData;
   struct descriptor_a *dataD;
   EMPTYXD(shapeXd);
@@ -623,6 +624,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
     else
       return status;
   }
+  numYSamples = dataD->arsize/dataD->length;
   status = TdiCompile(&shapeExprD, dataD, &shapeXd MDS_END_ARG);
   if (!(status & 1)) {
     MdsFree1Dx(&dataXd, 0);
@@ -642,8 +644,8 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
   //Make sure enough room is allocated
   if (!deltaD) {
     //Count number of copied samples
-    for (currIdx = 0; currIdx < numTimebaseSamples && timebase64[currIdx] < start64; currIdx++) ;
-    for (outSamples = 0; currIdx < numTimebaseSamples && timebase64[currIdx] <= end64;
+    for (currIdx = 0; currIdx < numTimebaseSamples && currIdx < numYSamples && timebase64[currIdx] < start64; currIdx++) ;
+    for (outSamples = 0; currIdx < numTimebaseSamples && currIdx < numYSamples && timebase64[currIdx] <= end64;
 	 currIdx++, outSamples++) ;
   } else
     outSamples = (end64 - start64) / delta64 + 1;
