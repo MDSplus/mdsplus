@@ -1,4 +1,16 @@
-commit 5e871f549e7018d5f54cdb9768e03b767c4f2f29 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 43e028791210c3e2e19c18cfd4cc9a25ffdfafb8 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 15:28:07 2015 -0500
+
+    fix packaging. Only include uid files required for the arch of the rpm
+
+commit 0ff27739a22f5ea4d36aab887e04f09e7ce4feb0 (tag: refs/tags/alpha_release-6-3-465)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Feb 2 14:31:40 2015 -0500
+
+    New ChangeLog
+
+commit 5e871f549e7018d5f54cdb9768e03b767c4f2f29
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 2 14:05:06 2015 -0500
 
