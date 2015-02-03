@@ -204,6 +204,7 @@ Buildarch: noarch
             self.info['specfilename']=specfilename
             print("Building rpm for mdsplus%(rflavor)s%(packagename)s.noarch" % self.info)
             sys.stdout.flush()
+            subprocess.Popen("/bin/cat %(specfilename)s" % self.info,shell=True).wait();
             p=subprocess.Popen("""
 rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUILDROOT %(specfilename)s 2>&1
 """ % self.info,stdout=subprocess.PIPE,shell=True)
