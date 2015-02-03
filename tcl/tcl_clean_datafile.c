@@ -30,7 +30,7 @@ int TclCleanDatafile(void *ctx, char **error, char **output)
     shot = strtol(asciiShot, &endptr, 0);
     if (*endptr != 0) {
       *error=malloc(strlen(asciiShot)+100);
-      sprintf(*error,"Error: Invalid shot specified '%s'. Please use an integer value.\n");
+      sprintf(*error,"Error: Invalid shot specified '%s'. Please use an integer value.\n",asciiShot);
       sts = CLI_STS_IVVERB;
     }
     else {

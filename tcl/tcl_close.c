@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <string.h>
 
 /**********************************************************************
 * TCL_CLOSE.C --
@@ -14,7 +15,7 @@
 	 * TclClose:
 	 * Close tree file(s).
 	 ***************************************************************/
-int TclClose(void *ctx)
+int TclClose(void *ctx, char **error, char **output)
 {
   int sts;
   static const char promptWritefirst[] =
@@ -34,26 +35,15 @@ int TclClose(void *ctx)
       sts = TreeNORMAL;
   }
   if (sts == TreeWRITEFIRST) {
-    if (cli_present(ctx, "CONFIRM") == CLI_STS_NEGATED)
+    if (cli_present(ctx, "CONFIRM") & 1)
       sts = TreeQuitTree(0, 0);
-    else {
-      printf("Deal with asking to write first\n");
-      /*
-      printf(promptWritefirst);
-      if (yesno(1)) {
-	sts = TreeWriteTree(0, 0);
-	if (sts & 1) {
-	  TreeClose(0, 0);
-	}
-      } else
-	sts = TreeQuitTree(0, 0);
-      */
-    }
+    else
+      *error=strdup("This tree has been modified. Either use the WRITE\n"
+		    "command before closing to save modifications or\n"
+		    "use CLOSE/CONFIRM to discard changes.\n\n");
   }
   if (sts & 1)
     TclNodeTouched(0, tree);
-  else
-    MdsMsg(sts, "TclClose: *WARN* unexpected status");
   if (exp)
     free(exp);
   if (shotidstr)

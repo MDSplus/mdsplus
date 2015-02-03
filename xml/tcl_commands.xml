@@ -202,14 +202,60 @@
 
   <verb name="close">
     <routine name="TclClose"/>
+    <help>
+      Command: CLOSE
+      Purpose: Close the current tree or all open trees.
+      Format: CLOSE [treename [/SHOT=shot-number]]|[/ALL][/CONFIRM]
+      Description:
+
+      Using the CLOSE command without any parameters or qualifiers will close the last
+      tree opened with either a SET TREE command or an EDIT command. Since TCL will keep
+      a stack of previously opened trees you can selectively close a particular tree by
+      specifying the treename anr shot number information or to close all the tree, use
+      CLOSE/ALL. To determine which trees you currently have open you can use the SHOW DB
+      command.
+
+      Note: You must use the WRITE command on a tree opened using the EDIT command if you
+      want to save and edits you might have done to that tree before using the CLOSE
+      command to close it. If you attempt to close a tree with edit modifications you
+      will get an error unless you force the close using the /CONFIRM qualifier. If you
+      close and modified tree with the /CONFIRM qualifier the tree will be closed and any
+      edit modification will be discarded.
+    </help>
     <parameter name="p1" label="FILE"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
-    <qualifier name="confirm" defaulted="True"/>
+    <qualifier name="confirm"/>
     <qualifier name="all"/>
   </verb>
 
   <verb name="compress">
     <routine name="TclCompressDatafile"/>
+    <help name="COMPRESS">
+      Command: COMPRESS
+      Purpose: Compress the tree's datafile.
+      Format: COMPRESS treename [/SHOT=shot-number]
+      Description:
+
+      As data is written to a tree if the record is greater than 16 bytes
+      in length it is appended to the end of the tree's datafile. When the
+      data in a node is modified, unless the size of the data is exactly the
+      same length as was previously stored, the new data is appended at the
+      end of the datafile. The previous data continues to occupy it's original
+      space in the datafile and will not be reused. The COMPRESS command can be
+      used to recover this wasted space. When the command is issued, the
+      datafile is recreated by reading in the current data for each node and
+      writing it to the new datafile thus discarding the orphaned data in
+      the file.
+
+      The COMPRESS command is similar to the CLEAN command except the COMPRESS
+      command will also employ data compression on the data records often
+      drastically reducing the file size if the nodes were not set to be
+      compressed on put.
+
+      Since both the CLEAN and COMPRESS command create new datafiles, it is
+      recommended that they only be used when there is unlikely to be any other
+      write activity on the tree.
+    </help>
     <parameter name="p1" label="FILE" prompt="File" required="True"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
     <qualifier name="override"/>

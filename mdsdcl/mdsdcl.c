@@ -19,6 +19,12 @@ be added using the "SET COMMAND table-name" command.
  \param argv [in] An array of command line option strings.
 */
 
+static void flushOut(char *output) {
+  fprintf(stdout,"%s",output);
+  fflush(stdout);
+  output[0]=0;
+}
+
 main(int argc, char const *argv[])
 {
   char *history_file = 0;
@@ -31,6 +37,8 @@ main(int argc, char const *argv[])
   char *prompt = 0;
 
   /* See if a -prep option is provided as the first command option. */
+
+  mdsdclSetOutputRtn(flushOut);
 
   mdsdclAddCommands("mdsdcl_commands", &error);
   if (error) {
@@ -103,7 +111,7 @@ main(int argc, char const *argv[])
     /* Read in a command */
     cmd = readline(prompt);
 
-    /* If not an empty line */
+    /* If not EOF */
 
     if (cmd) {
 
@@ -111,9 +119,18 @@ main(int argc, char const *argv[])
          append line to previous command portion */
 
       if (command) {
-	command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
-	strcat(command, cmd);
-	free(cmd);
+	if (strlen(cmd) > 0) {
+	  command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
+	  strcat(command, cmd);
+	  free(cmd);
+	} else {
+	  free(cmd);
+	  free(command);
+	  command=0;
+	  free(prompt);
+	  prompt=0;
+	  continue;
+	}
       } else
 	command = cmd;
 
@@ -150,11 +167,6 @@ main(int argc, char const *argv[])
 	  free(error);
 	  error = 0;
 	}
-	if (output != NULL) {
-	  fprintf(stdout, "%s", output);
-	  free(output);
-	  output = 0;
-	}
 	if (mdsdclVerify() && strlen(command) > 0)
 	  fprintf(stderr, "%s%s\n", prompt, command);
 	if (prompt)
@@ -173,6 +185,12 @@ main(int argc, char const *argv[])
     }
   }
  done:
+  if (output)
+    free(output);
+  if (prompt)
+    free(prompt);
+  if (error)
+    free(error);
   history_file = mdsdclGetHistoryFile();
   if (history_file)
     write_history(history_file);

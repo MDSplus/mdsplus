@@ -1,4 +1,6 @@
 #include        "tclsysdef.h"
+#include <string.h>
+#include <dcl.h>
 
 /**********************************************************************
 * TCL_COMPRESS_DATAFILE.C --
@@ -13,28 +15,36 @@
 	/****************************************************************
 	 * TclCompressDatafile:
 	 ****************************************************************/
-int TclCompressDatafile(void *ctx)
+int TclCompressDatafile(void *ctx, char **error, char **output)
 {
   int shot;
   int sts;
   char *filnam=0;
   char *asciiShot=0;
-  static char nocompress[] = "Compress of pulse file may destroy\
- previous archive versions:  REFUSED";
 
   cli_get_value(ctx, "FILE", &filnam);
   cli_get_value(ctx, "SHOTID", &asciiShot);
-  sscanf(asciiShot, "%d", &shot);
-  if ((shot != -1) && (!(cli_present(ctx, "OVERRIDE") & 1))) {
-    TclTextOut(nocompress);
-    sts = 1;
-    goto done;
+  if (asciiShot && strlen(asciiShot) > 0) {
+    char *endptr;
+    shot = strtol(asciiShot, &endptr, 0);
+    if (*endptr != 0) {
+      *error=malloc(strlen(asciiShot)+100);
+      sprintf(*error,"Error: Invalid shot specified '%s'. Please use an integer value.\n",asciiShot);
+      sts = CLI_STS_IVVERB;
+    }
+    else {
+      sts = TreeCompressDatafile(filnam, shot);
+      if (!(sts & 1)) {
+	char *msg=MdsGetMsg(sts);
+	*error=malloc(strlen(msg)+strlen(filnam)+100);
+	sprintf(*error,"Error: Problem compressing tree '%s' shot '%d'\nError message was: %s\n",
+		filnam,shot,msg);
+      }
+    }
+  } else {
+    *error=strdup("Error getting shot number from command.\n");
+    sts = CLI_STS_IVVERB;
   }
-  sts = TreeCompressDatafile(filnam, shot);
-  if (~sts & 1) {
-    MdsMsg(sts, "Problem compressing %s", filnam);
-  }
- done:
   if (filnam)
     free(filnam);
   if (asciiShot)

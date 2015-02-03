@@ -53,10 +53,10 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
 }
 
 static void appendOutput(char **output, char *str) {
-  if (output)
+  if (*output)
     *output = strcat(realloc(*output,strlen(*output)+strlen(str)+1),str);
   else
-    *output = strcpy(malloc(strlen(str)),str);
+    *output = strdup(str);
 }
 
 	/****************************************************************
@@ -97,7 +97,8 @@ int TclDirectory(void *ctx, char **error, char **output)
   int usageMask = -1;
 
   parent_nid = 0;
-  *output=strdup("");
+  if (*output == 0)
+    *output=strdup("");
   full = cli_present(ctx, "FULL") & 1;
   if (cli_present(ctx, "USAGE") & 1) {
     char *usageStr=0;
@@ -168,6 +169,7 @@ int TclDirectory(void *ctx, char **error, char **output)
 	    listlen = 0;
 	  }
 	}
+	mdsdclFlushOutput(*output);
     }
     TreeFindNodeEnd(&ctx1);
     if (nodnam)

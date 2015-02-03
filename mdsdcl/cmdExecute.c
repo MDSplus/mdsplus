@@ -1166,8 +1166,15 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **e
     if (output_out == NULL) {
       fprintf(stdout, output);
       free(output);
-    } else
-      *output_out = output;
+    } else {
+      if (*output_out) {
+	*output_out = strcat(realloc(*output_out,strlen(*output_out)+strlen(output)+1),output);
+	free(output);
+      }
+      else
+	*output_out = output;
+      mdsdclFlushOutput(*output_out);
+    }
   }
   return status;
 }
@@ -1231,4 +1238,16 @@ int cli_get_value(void *ctx, char *name, char **value)
 int mdsdcl_get_input_nosymbols(char *prompt, char **input)
 {
   return 1;
+}
+
+static void (*MDSDCL_OUTPUT_RTN)(char *output) = 0;
+
+void mdsdclSetOutputRtn(void (*rtn)()) {
+  MDSDCL_OUTPUT_RTN=rtn;
+}
+
+void mdsdclFlushOutput(char *output) {
+  if (MDSDCL_OUTPUT_RTN) {
+    MDSDCL_OUTPUT_RTN(output);
+  }
 }

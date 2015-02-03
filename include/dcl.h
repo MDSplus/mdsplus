@@ -87,19 +87,8 @@ static struct stsText cli_stsText[] = {
   , STS_TEXT(CLI_STS_MISSING_VALUE, "Qualifier value needed")
 };
 #endif
-//#define CLI_STS_NORMAL 0
-//#define CLI_STS_IVVERB -1
-//#define AMBIGUOUS_COMMAND -2
-//#define TRY_NEXT_COMMAND -3
-//#define PROMPT_FOR_MORE_INPUT -4
-//#define MISSING_QUALIFIER_VALUE -5
-//#define CLI_STS_IVQUAL -6
-//#define TOO_MANY_PARAMETERS -7
-//#define TOO_MANY_VALUES_FOR_QUALIFIER -8
-//#define TOO_MANY_VALUES_FOR_PARAMETER -9
-//#define CLI_STS_NOTNEGATABLE -10
-//#define CLI_STS_ABSENT 2
-//#define CLI_STS_PRESENT 1
-//#define CLI_STS_NEGATED 20
+
+void mdsdclSetOutputRtn(void (*rtn)());
+void mdsdclFlushOutput(char *output);
 
 #endif
