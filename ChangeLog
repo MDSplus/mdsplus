@@ -1,4 +1,16 @@
-commit 43e028791210c3e2e19c18cfd4cc9a25ffdfafb8 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e023e50323d1a631ee7bb01c2ac0fed42f138315 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 3 08:55:05 2015 -0500
+
+    fix packaging. Put all files that end up in /lib or /bin directories in bin packages even those which are not truly arch specific. This prevents noarch packages creating both lib32 and lib64 directories.
+
+commit c61071512610bb4a27cb54df1b6a7a73d26b0202 (tag: refs/tags/alpha_release-6-3-466)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Feb 2 15:55:17 2015 -0500
+
+    New ChangeLog
+
+commit 43e028791210c3e2e19c18cfd4cc9a25ffdfafb8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Feb 2 15:28:07 2015 -0500
 
