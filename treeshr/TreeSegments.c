@@ -2528,6 +2528,7 @@ static int CopyStandardRecord(TREE_INFO * info1, TREE_INFO * info2, int nid, int
   if (status & 1) {
     status = TreePutDsc(info2, nid, (struct descriptor *)&xd, offset, length);
   }
+  MdsFree1Dx(&xd,0);
   if (!(status & 1)) {
     *offset = -1;
     *length = 0;
@@ -2556,6 +2557,7 @@ static int CopyNamedAttributes(TREE_INFO * info1, TREE_INFO * info2, int nid, in
 	    memset(index.attribute[i].name, 0, sizeof(index.attribute[i].name));
 	    index.attribute[i].offset = -1;
 	  }
+	  MdsFree1Dx(&xd,0);
 	}
       }
     }
