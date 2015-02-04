@@ -1,6 +1,6 @@
-#include        "tclsysdef.h"
-#include        <ncidef.h>
+#include <mdsshr.h>
 #include <string.h>
+#include <malloc.h>
 
 /**********************************************************************
 * TCL_ADD_TAG.C --

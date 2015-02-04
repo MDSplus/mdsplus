@@ -65,6 +65,10 @@
 
     Note: Verb and Qualifier names are case insensitive and may be abbreviated
     as long as the shortened names are unique.
+
+    Note: If you need to include double quotes in parameters or qualifiers
+    you must use two adjacent double quotes. For example "current_shot(""CMOD"")"
+    would be interpreted by MDSDCL as current_shot("cmod").
   </help>
   
   <verb name="DEFINE">
@@ -257,12 +261,19 @@
     <help name="SET COMMAND">
       Command: SET COMMAND
       Purpose: Load additional commands to interpreter.
-      Format:  SET COMMAND table-name
+      Format:  SET COMMAND table-name [/PROMPT=prompt] [/DEF_FILE=file-type]
+               [/history=filespec]
       Description:
       
       Load a new table of commands to the interpreter making
       those commands available in addition to the existing
       commands. (i.e. SET COMMAND TCL).
+
+      The /PROMPT qualifier can be used to change the command prompt string.
+      The /DEF_FILE qualifier can be used to change to file type to use for
+      accessing script files. For example, /DEF_FILE=".tcl" would cause the
+      command @myscript to first look for myscript.tcl in the current directory
+      and if not found look for the file myscript in the current directory.
     </help>
     <routine name="mdsdcl_set_command"/>
     <parameter name="P1" required="True"/>
@@ -301,7 +312,7 @@
       This command is useful when executing commands
       in scripts. Use "SET VERIFY" to cause commands to
       be echoed just prior to execution. Use "SET NOVERIFY"
-      to turn of command echo.
+      to turn off command echo.
     </help>
     <routine name="mdsdcl_set_verify"/>
     <parameter name="P1" required="True" type="SET_KEYWORDS"/>

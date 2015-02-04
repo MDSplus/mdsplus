@@ -90,6 +90,8 @@ main(int argc, char const *argv[])
 
     status = mdsdcl_do_command(cmd);
     add_history(cmd);
+    if (cmd)
+      free(cmd);
     goto done;
 
   }
@@ -150,7 +152,7 @@ main(int argc, char const *argv[])
       if (strlen(command) > 0) {
 	char *prompt_more = 0;
 	add_history(command);
-	status = mdsdcl_do_command_extra_args(command, &prompt_more, &output, &error);
+	status = mdsdcl_do_command_extra_args(command, &prompt_more, &output, &error, 0, 0);
 	if (prompt_more != NULL) {
 	  free_history_entry(remove_history(where_history()));
 	  command = strcat(realloc(command, strlen(command) + 2), " ");

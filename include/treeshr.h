@@ -12,139 +12,10 @@ extern "C" {
 #define EXPORT
 #endif
 #include <mdstypes.h>
-  extern int treeshr_errno;
-  extern int TREE_BLOCKID;
 
-#ifdef __VMS
-#pragma extern_model save
-#pragma extern_model globalvalue
-#define TreeALREADY_OFF TREE$_ALREADY_OFF
-  extern TreeALREADY_OFF;
-#define TreeALREADY_ON TREE$_ALREADY_ON
-  extern TreeALREADY_ON;
-#define TreeALREADY_OPEN TREE$_ALREADY_OPEN
-  extern TreeALREADY_OPEN;
-#define TreeALREADY_THERE TREE$_ALREADY_THERE
-  extern TreeALREADY_THERE;
-#define TreeBADRECORD TREE$_BADRECORD
-  extern TreeBADRECORD;
-#define TreeBLOCKID TREE$_BLOCKID
-  extern TreeBLOCKID;
-#define TreeBOTH_OFF TREE$_BOTH_OFF
-  extern TreeBOTH_OFF;
-#define TreeBUFFEROVF TREE$_BUFFEROVF
-  extern TreeBUFFEROVF;
-#define TreeCONGLOMFULL TREE$_CONGLOMFULL
-  extern TreeCONGLOMFULL;
-#define TreeCONGLOM_NOT_FULL TREE$_CONGLOM_NOT_FULL
-  extern TreeCONGLOM_NOT_FULL;
-#define TreeCONTINUING TREE$_CONTINUING
-  extern TreeCONTINUING;
-#define TreeDUPTAG TREE$_DUPTAG
-  extern TreeDUPTAG;
-#define TreeEDITTING TREE$_EDITTING
-  extern TreeEDITTING;
-#define TreeILLEGAL_ITEM TREE$_ILLEGAL_ITEM
-  extern TreeILLEGAL_ITEM;
-#define TreeILLPAGCNT TREE$_ILLPAGCNT
-  extern TreeILLPAGCNT;
-#define TreeINVDFFCLASS TREE$_INVDFFCLASS
-  extern TreeINVDFFCLASS;
-#define TreeINVDTPUSG TREE$_INVDTPUSG
-  extern TreeINVDTPUSG;
-#define TreeINVPATH TREE$_INVPATH
-  extern TreeINVPATH;
-#define TreeINVRECTYP TREE$_INVRECTYP
-  extern TreeINVRECTYP;
-#define TreeINVTREE TREE$_INVTREE
-  extern TreeINVTREE;
-#define TreeMAXOPENEDIT TREE$_MAXOPENEDIT
-  extern TreeMAXOPENEDIT;
-#define TreeNEW TREE$_NEW
-  extern TreeNEW;
-#define TreeNMN TREE$_NMN
-  extern TreeNMN;
-#define TreeNMT TREE$_NMT
-  extern TreeNMT;
-#define TreeNNF TREE$_NNF
-  extern TreeNNF;
-#define TreeNODATA TREE$_NODATA
-  extern TreeNODATA;
-#define TreeNODNAMLEN TREE$_NODNAMLEN
-  extern TreeNODNAMLEN;
-#define TreeNOEDIT TREE$_NOEDIT
-  extern TreeNOEDIT;
-#define TreeNOLOG TREE$_NOLOG
-  extern TreeNOLOG;
-#define TreeNOMETHOD TREE$_NOMETHOD
-  extern TreeNOMETHOD;
-#define TreeNOOVERWRITE TREE$_NOOVERWRITE
-  extern TreeNOOVERWRITE;
-#define TreeNORMAL TREE$_NORMAL
-  extern TreeNORMAL;
-#define TreeNOTALLSUBS TREE$_NOTALLSUBS
-  extern TreeNOTALLSUBS;
-#define TreeNOTCHILDLESS TREE$_NOTCHILDLESS
-  extern TreeNOTCHILDLESS;
-#define TreeNOT_IN_LIST TREE$_NOT_IN_LIST
-  extern TreeNOT_IN_LIST;
-#define TreeNOTMEMBERLESS TREE$_NOTMEMBERLESS
-  extern TreeNOTMEMBERLESS;
-#define TreeNOTOPEN TREE$_NOTOPEN
-  extern TreeNOTOPEN;
-#define TreeNOTSON TREE$_NOTSON
-  extern TreeNOTSON;
-#define TreeNOT_CONGLOM TREE$_NOT_CONGLOM
-  extern TreeNOT_CONGLOM;
-#define TreeNOT_OPEN TREE$_NOT_OPEN
-  extern TreeNOT_OPEN;
-#define TreeNOWRITEMODEL TREE$_NOWRITEMODEL
-  extern TreeNOWRITEMODEL;
-#define TreeNOWRITESHOT TREE$_NOWRITESHOT
-  extern TreeNOWRITESHOT;
-#define TreeNO_CONTEXT TREE$_NO_CONTEXT
-  extern TreeNO_CONTEXT;
-#define TreeOFF TREE$_OFF
-  extern TreeOFF;
-#define TreeON TREE$_ON
-  extern TreeON;
-#define TreeOPEN TREE$_OPEN
-  extern TreeOPEN;
-#define TreeOPEN_EDIT TREE$_OPEN_EDIT
-  extern TreeOPEN_EDIT;
-#define TreePARENT_OFF TREE$_PARENT_OFF
-  extern TreePARENT_OFF;
-#define TreeREADERR TREE$_READERR
-  extern TreeREADERR;
-#define TreeREADONLY TREE$_READONLY
-  extern TreeREADONLY;
-#define TreeRESOLVED TREE$_RESOLVED
-  extern TreeRESOLVED;
-#define TreeTAGNAMLEN TREE$_TAGNAMLEN
-  extern TreeTAGNAMLEN;
-#define TreeTNF TREE$_TNF
-  extern TreeTNF;
-#define TreeTREENF TREE$_TREENF
-  extern TreeTREENF;
-#define TreeUNRESOLVED TREE$_UNRESOLVED
-  extern TreeUNRESOLVED;
-#define TreeUNSPRTCLASS TREE$_UNSPRTCLASS
-  extern TreeUNSPRTCLASS;
-#define TreeUNSUPARRDTYPE TREE$_UNSUPARRDTYPE
-  extern TreeUNSUPARRDTYPE;
-#define TreeWRITEFIRST TREE$_WRITEFIRST
-  extern TreeWRITEFIRST;
-#define TreeSUCCESS TREE$_SUCCESS
-  extern TreeSUCCESS;
-#define TreeFAILURE TREE$_FAILURE
-  extern TreeFAILURE;
-#define TreeFILE_NOT_FOUND TREE$_FILE_NOT_FOUND
-  extern TreeFILE_NOT_FOUND;
-#define TreeCANCEL TREE$_CANCEL
-  extern TreeCANCEL;
-#pragma extern_model restore
+extern int treeshr_errno;
+extern int TREE_BLOCKID;
 
-#else
 
 #define TreeALREADY_OFF 0xfd1802b
 #define TreeALREADY_ON 0xfd18033
@@ -213,7 +84,8 @@ extern "C" {
 #define TreeINVDTYPE 0xfd18fc2
 #define TreeINVSHAPE 0xfd18fca
 #define TreeINVSHOT 0xfd18fda
-#endif
+#define TreeINVTAG  0xfd18fea
+
 
 #ifndef MDSDESCRIP_H_DEFINED
   struct descriptor;
@@ -305,6 +177,8 @@ extern "C" {
 	, STS_TEXT(TreeINVSHAPE, "Invalid shape for this data segment")
 	, STS_TEXT(TreeINVSHOT,
 		   "Invalid shot number - must be -1 (model), 0 (current), or Positive")
+    , STS_TEXT(TreeINVTAG,
+	       "Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores")
   };
 #endif
 

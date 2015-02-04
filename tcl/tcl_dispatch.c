@@ -4,6 +4,7 @@
 #include        <dbidef.h>
 #include        <ncidef.h>
 #include        <string.h>
+#include        <dcl.h>
 
 #include <strroutines.h>
 extern int TdiData();
@@ -151,17 +152,21 @@ int TclDispatch(void *ctx)
 	 * TclDispatch_stop_server:
 	 * TclDispatch_start_server:
 	 **************************************************************/
-int TclDispatch_abort_server(void *ctx)
+int TclDispatch_abort_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   char *ident=0;
 
-  while ((sts & 1) && (cli_get_value(ctx, "SERVER_NAME", &ident) & 1)) {
+  while (cli_get_value(ctx, "SERVER_NAME", &ident) & 1) {
     sts = ServerAbortServer(ident, 0);
+    if (~sts & 1) {
+      char *msg = MdsGetMsg(sts);
+      *error=malloc(strlen(msg)+strlen(ident)+100);
+      sprintf(*error,"Error: Problem aborting server '%s'\n"
+	      "Error message was: %s\n",ident,msg);
+    }
     free(ident);
   }
-  if (~sts & 1)
-    MdsMsg(sts, "Error from ServerAbortServer");
   return sts;
 }
 

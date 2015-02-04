@@ -10,7 +10,6 @@ SOURCES = 			\
 	tcl_add_tag.c		\
 	tcl_clean_datafile.c		\
 	tcl_close.c		\
-	tcl_commands.c	\
 	tcl_compress_datafile.c		\
 	tcl_create_pulse.c	\
 	tcl_decompile.c	\

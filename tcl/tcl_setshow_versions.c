@@ -2,12 +2,13 @@
 #include        "tclsysdef.h"
 #include <dbidef.h>
 #include <string.h>
+#include <dcl.h>
 
 /***************************************************************
  * TclSetVersions:
  **************************************************************/
 
-int TclSetVersions(void *ctx)
+int TclSetVersions(void *ctx, char **error, char **output)
 {
   int status = 1;
 

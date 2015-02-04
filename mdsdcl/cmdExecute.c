@@ -477,10 +477,10 @@ static void findEntity(xmlNodePtr node, char *category, char *name, dclNodeListP
 */
 
 static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDef, char **prompt,
-			     char **error, char **output)
+			     char **error, char **output, char *(*getline)(), void *getlineinfo)
 {
   int i;
-  int (*handler) (dclCommandPtr, char **, char **);
+  int (*handler) (dclCommandPtr, char **, char **, char *(*getline)(), void *getlineinfo);
   int status;
 
   /* Make sure the command processing discovered the name of the handler routine.
@@ -759,7 +759,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
     image = "Mdsdcl";
   status = LibFindImageSymbol_C(image, cmdDef->routine, &handler);
   if (status & 1) {
-    status = handler(cmd, error, output);
+    status = handler(cmd, error, output, getline, getlineinfo);
   }
   return status;
 }
@@ -807,7 +807,8 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 */
 
 int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr cmd,
-		   dclCommandPtr cmdDef, char **prompt, char **error, char **output)
+		   dclCommandPtr cmdDef, char **prompt, char **error, char **output,
+		   char *(*getline)(), void *getlineinfo)
 {
   xmlDocPtr doc = docList->doc;
   int i;
@@ -941,7 +942,8 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
     }
   }
   if (status == 0) {
-    status = dispatchToHandler(docList->name, cmd, cmdDef, prompt, error, output);
+    status = dispatchToHandler(docList->name, cmd, cmdDef, prompt, error, output,
+			       getline, getlineinfo);
   }
  DONE:
   return status;
@@ -1079,10 +1081,11 @@ int mdsdclAddCommands(char *name_in, char **error)
 
 int mdsdcl_do_command(char const *command)
 {
-  return mdsdcl_do_command_extra_args(command, 0, 0, 0);
+  return mdsdcl_do_command_extra_args(command, 0, 0, 0, 0, 0);
 }
 
-int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **error_out)
+int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out,
+	       char **error_out, char *(*getline)(), void *getlineinfo)
 {
   int status = CLI_STS_IVVERB;
   char *prompt = 0;
@@ -1108,7 +1111,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **e
       status = CLI_STS_IVVERB;
     } else {
       status =
-	  processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt, &error_tmp, &output);
+	processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
+		       &error_tmp, &output, getline, getlineinfo);
       if (status & 1) {
 	if (error)
 	  free(error);
@@ -1116,9 +1120,11 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out, char **e
       } else {
 	if (error_tmp) {
 	  if (error == NULL)
-	    error = error_tmp;
-	  else
+	    error = error_tmp;	  
+	  else {
 	    free(error_tmp);
+	  }
+	  error_tmp=0;
 	}
       }
       free(matchingVerbs.nodes);

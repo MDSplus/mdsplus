@@ -18,6 +18,8 @@
     TCL can also be used for dispatching commands or actions to action servers or to
     directly execute the methods provided by devices described in the tree. For help
     on dispatching related commands type: HELP DISPATCH COMMANDS
+
+    TCL can issue and wait for MDSplus events. See: HELP WFEVENT and HELP SETEVENT
   </helpall>
 
   <help name="EDIT COMMANDS">
@@ -36,7 +38,7 @@
     SET VERSIONS  - Enable data version support in a tree.
     SHOW DB       - Show the tree currently opened.
     SHOW DEFAULT  - Show the current location in a tree.
-    SHOW VERSIONS - Shot whether or not versioning is enabled in the tree.
+    SHOW VERSIONS - Show whether or not versioning is enabled in the tree.
     WRITE         - Write out a modified tree committing edit changes.
 
     Type HELP command-name for more information on the command.
@@ -48,6 +50,7 @@
     CLOSE         - Close one or more trees currently open by this process.
     CREATE PULSE  - Create a new pulse file.
     DECOMPILE     - Decompile the data stored in a node.
+    DEFINE SERVER - Define a server for remote pulse file creation.
     DELETE PULSE  - Delete a pulse file.
     DIRECTORY     - List the nodes in a tree.
     DIRECTORY/TAG - List the tagnames in a tree.
@@ -68,13 +71,14 @@
     ABORT SERVER     - Abort the action currently executing in an action server.
     DISPATCH         - Dispatch an action node to an action server.
     DISPATCH/BUILD   - Build a dispatch table in preparation for dispatch action phases.
-    DISPATCH/CHECK   - Determine if all essential actions dispatched completed successfully.
-    DISPATCH/CLOSE   - Send a close tree command to all action servers used in dispatched phases.
+    DISPATCH/CHECK   - Determine if all essential actions completed successfully.
+    DISPATCH/CLOSE   - Tell all action servers used to close all tree.
     DISPATCH/COMMAND - Dispatch a commands to an action server.
     DISPATCH/PHASE   - Dispatch the actions associated with an experiment phase.
     DO               - Execute an action in a tree.
     DO/METHOD        - Execute a method provided by a device in a tree.
     SHOW SERVER      - Show the current status of an action server.
+    START SERVER     - Connect to an action server to ensure it is running. (Deprecated)
     STOP SERVER      - Stop an action server.
     
     Type HELP command-name for more information on the command.
@@ -91,7 +95,7 @@
     <help name="ABORT SERVER">
       Command: ABORT SERVER
       Purpose: Abort the action currently being executed by an MDSplus action server.
-      Format: ABORT SERVER server-name
+      Format: ABORT SERVER server-name[,server2[,server3...]]
       Description:
       
       The ABORT SERVER command will abort the action currently being executed in an
@@ -119,19 +123,20 @@
       Description:
 
       The ADD NODE command is used to add a new node to an MDSplus tree which has been
-      opened using the EDIT command. The node-path parameter specified the name of the new
-      node to be added. It can be an absolute node path or a relative node path. If the path
-      name includes parent nodes, those parent nodes must already exist or the command will fail.
-      Node names must begin with an alphabetic character followed by zero or more alphanumeric
-      or underscore characters. The node name must be 12 characters or less in length.
+      opened using the EDIT command. The node-path parameter specified the name of the
+      new node to be added. It can be an absolute node path or a relative node path. If
+      the path name includes parent nodes, those parent nodes must already exist or the
+      command will fail. Node names must begin with an alphabetic character followed by
+      zero or more alphanumeric or underscore characters. The node name must be 12
+      characters or less in length.
 
       The /USAGE qualifier specifies a usage type of the node. This must be one of:
       ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
       STRUCTURE, SUBTREE, TEXT or WINDOW. If not specified, a member node (:name) will
       default to usage ANY and a child node (.name) will default to usage STRUCTURE.
 
-      If adding a device (i.e. data acquisition device) use the /MODEL qualifier to specify
-      the type of supported devide you are adding.
+      If adding a device (i.e. data acquisition device) use the /MODEL qualifier to
+      specify the type of supported devide you are adding.
 
       NOTE: The ADD NODE command can only be used when a tree is opened for edit.
     </help>
@@ -194,6 +199,9 @@
       Since both the CLEAN and COMPRESS command create new datafiles, it is
       recommended that they only be used when there is unlikely to be any other
       write activity on the tree.
+
+      Note: The shot number may be expressed as a TDI expression. For example,
+      CLEAN cmod/shot="CURRENT_SHOT(""CMOD"")-1"
     </help>
     <parameter name="p1" label="FILE" prompt="File" required="True"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
@@ -221,6 +229,9 @@
       will get an error unless you force the close using the /CONFIRM qualifier. If you
       close and modified tree with the /CONFIRM qualifier the tree will be closed and any
       edit modification will be discarded.
+
+      Note: The shot number may be expressed as a TDI expression. For example,
+      CLOSE cmod/shot="CURRENT_SHOT(""CMOD"")-1"
     </help>
     <parameter name="p1" label="FILE"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
@@ -255,6 +266,9 @@
       Since both the CLEAN and COMPRESS command create new datafiles, it is
       recommended that they only be used when there is unlikely to be any other
       write activity on the tree.
+
+      Note: The shot number may be expressed as a TDI expression. For example,
+      COMPRESS cmod/shot="CURRENT_SHOT(""CMOD"")-1"
     </help>
     <parameter name="p1" label="FILE" prompt="File" required="True"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
@@ -271,6 +285,53 @@
 
   <syntax name="create_pulse">
     <routine name="TclCreatePulse"/>
+    <help name="CREATE PULSE">
+      Command: CREATE PULSE
+      Purpose: Copy the currently open tree (usually the model, shot -1) into a pulse
+               file.
+      Format: CREATE PULSE shot-number [/INCLUDE=(subtree1,subtree2,...)]
+              [/EXCLUDE=(subtree1,subtree2,...)] [/CONDITIONAL] [/NOMAIN] [/DISPATCH]
+
+      Description:
+
+      The CREATE PULSE command will copy the currently opened tree and all it's subtrees
+      (unless the optional qualifiers are specified) to pulses with the specified shot
+      number.
+
+      The /INCLUDE, /EXCLUDE, /CONDITIONAL and /NOMAIN qualifiers can be used to
+      customize which trees will be included in the new pulse files. Specifying the
+      /CONDITIONAL qualifier will cause the command to examine the "include in pulse"
+      characteristic (set by SET NODE command and view by the DIR/FULL command) of the
+      subtree nodes to decide if that subtree should be included. The /INCLUDE and
+      /EXCLUDE qualifiers can take a list of node paths to specify which subtree nodes
+      to include or exclude. If the /INCLUDE qualifier is specified only the subtrees
+      specifiedwill be included. If the /EXCLUDE qualifier is specified, all but the
+      subtrees specified will be include. If the /NOMAIN qualifier is included the top
+      most tree will not be included in the new pulse files.
+
+      The /DISPATCH qualifier is used in conjunction with the DEFINE SERVER command to
+      send the create pulse operation for a given tree or subtree to another server
+      process. This can be used to speed up the creation of pulse files if the model
+      trees and pulse files for various trees live on different hosts.
+
+      For example, if mymain tree lived on this host but mysubtree1 tree lived on host2
+      and mysubtree2 lived on host3 you could do:
+
+      SET TREE mymain
+      DEFINE SERVER host2 mysubtree1
+      DEFINE SERVER host3 mysubtree2
+      CREATE PULSE 42/DISPATCH
+
+      This would create the mymain pulse file for shot 42 on the localhost but in
+      parallel tell host2 to create the mysubtree1 pulse file from its model and host3
+      to create the mysubtree2 pulse file. This would be much more efficient than
+      without the /DISPATCH qualifier since in that case the local host would have to
+      read in the source trees from the remote hosts and write the new trees over the
+      network to the remote hosts.
+
+      NOTE: The shot number may be specified as a TDI expression such as
+      "CURRENT_SHOT(""CMOD"")+1".
+    </help>
     <parameter name="p1" prompt="What" required="True" type="CREATE_TYPE"/>
     <parameter name="p2" label="shot" prompt="Shot number" required="True"/>
     <qualifier name="include" required="True" list="True"/>
@@ -326,6 +387,24 @@
 
   <verb name="directory">
     <routine name="TclDirectory"/>
+    <help name="DIRECTORY">
+      Command: DIRECTORY
+      Purpose: List nodes in the tree.
+      Format: DIRECTORY [nodepath-wild1[,nodepath-wild2,...]] [/FULL]
+                        [/USAGE=(usage1[,usage2,...]) | /USAGE=usage]
+      
+      Description:
+
+      The DIRECTORY command is used to list one or more nodes in the currently opened tree.
+      You can specify one or more node paths which may include wildcard characters. If no
+      node paths are specified it defaults to listing the member and child nodes in the current
+      location of the tree (See: SET DEFAULT command).
+
+      If the /FULL qualifier is included then detailed information about each node is included.
+      Use the /USAGE qualifier if you want to list only nodes of a certain usage. Usage names
+      include ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
+      STRUCTURE, SUBTREE, TEXT or WINDOW.
+    </help>
     <parameter name="p1" label="NODE" default="*,.*" list="True"/>
     <qualifier name="full"/>
     <qualifier name="path"/>
@@ -335,7 +414,23 @@
 
   <syntax name="dir_tag_syntax">
     <routine name="TclDirectoryTag"/>
+    <help name="DIRECTORY/TAG">
+      Command: DIRECTORY/TAG
+      Purpose: List tagname definitions in the tree.
+      Format: DIRECTORY/TAG [tagname-wild] [/PATH]
+      
+      Description:
+
+      The DIRECTORY/TAG command is used to list tagnames in the current tree. A wildcard string
+      parameter can be included to list only the tags matching the wildcard string.
+
+      If the /PATH qualifier is included the full paths of the nodes pointed to by the tagname
+      will be displayed.
+
+      Example: DIRECTORY/TAG MYT*G
+    </help>
     <parameter name="p1" label="TAG" default="*::*" list="True"/>
+    <qualifier name="path"/>
   </syntax>
 
   <verb name="dispatch">

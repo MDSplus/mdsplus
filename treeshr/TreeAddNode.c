@@ -143,9 +143,9 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  free(node_name);
 	  new_ptr->INFO.TREE_INFO.child = 0;
 	  LoadShort(idx, &new_ptr->conglomerate_elt);
-	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE) {
+	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE || usage == TreeUSAGE_SUBTREE) {
 	    status = TreeInsertChild(parent, new_ptr, dblist->tree_info->header->sort_children);
-	    new_ptr->usage = TreeUSAGE_STRUCTURE;
+	    new_ptr->usage = usage == TreeUSAGE_SUBTREE ? TreeUSAGE_SUBTREE : TreeUSAGE_STRUCTURE;
 	  } else {
 	    status = TreeInsertMember(parent, new_ptr, dblist->tree_info->header->sort_members);
 	    new_ptr->usage = ((usage <= TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY;

@@ -3,6 +3,9 @@
 #include        <ncidef.h>
 #include        <usagedef.h>
 #include        <alloca.h>
+#include <dcl.h>
+#include <string.h>
+#include <strroutines.h>
 
 /**********************************************************************
 * TCL_SET_NODE.C --
@@ -17,7 +20,7 @@
 	/****************************************************************
 	 * TclSetNode:
 	 ****************************************************************/
-int TclSetNode(void *ctx)
+int TclSetNode(void *ctx, char **error, char **output)
 {
   int nid;
   int status=1;
@@ -41,9 +44,23 @@ int TclSetNode(void *ctx)
     switch (cli_present(ctx, "SUBTREE")) {
     case CLI_STS_PRESENT:
       status = TreeSetSubtree(nid);
+      if (!(status & 1)) {
+	char *msg = MdsGetMsg(status);
+	*error=malloc(strlen(nodename)+strlen(msg)+100);
+	sprintf(*error,"Error: Problem setting node %s to subtree\n"
+		"Error mesage was: %s\n",nodename,msg);
+	goto error;
+      }
       break;
     case CLI_STS_NEGATED:
       status = TreeSetNoSubtree(nid);
+      if (!(status & 1)) {
+	char *msg = MdsGetMsg(status);
+	*error=malloc(strlen(nodename)+strlen(msg)+100);
+	sprintf(*error,"Error: Problem setting node %s to nosubtree\n"
+		"Error mesage was: %s\n",nodename,msg);
+	goto error;
+      }
       break;
     }
     if (!(status & 1))
@@ -52,17 +69,25 @@ int TclSetNode(void *ctx)
       status = TreeTurnOn(nid);
       if (status & 1)
 	TclNodeTouched(nid, on_off);
-      else
-	TclErrorOut(status);
+      else {
+	char *msg = MdsGetMsg(status);
+	*error=malloc(strlen(nodename)+strlen(msg)+100);
+	sprintf(*error,"Error: Problem turning node %s on\n"
+		"Error mesage was: %s\n",nodename,msg);
+	goto error;
+      }
     } else if (cli_present(ctx, "OFF") & 1) {
       status = TreeTurnOff(nid);
       if (status & 1)
 	TclNodeTouched(nid, on_off);
-      else
-	TclErrorOut(status);
+      else {
+	char *msg = MdsGetMsg(status);
+	*error=malloc(strlen(nodename)+strlen(msg)+100);
+	sprintf(*error,"Error: Problem turning node %s off\n"
+		"Error mesage was: %s\n",nodename,msg);
+	goto error;
+      }
     }
-    if (!(status & 1))
-      goto error;
     {
       int set_flags;
       int clear_flags;
@@ -152,21 +177,35 @@ int TclSetNode(void *ctx)
 	status = TreeSetNci(nid, clear_itmlst);
       if (status & 1) {
 	if (log) {
-	  char *message=alloca(dsc_path.length+32);
-	  TreeGetNci(nid, get_itmlst);
-	  sprintf(message,"Node: %.#s modified", dsc_path.length, dsc_path.pointer); 
-	  TclTextOut(message);
-	  StrFree1Dx(&dsc_path);
+	  char *nout;
+	  if (*output) {
+	    *output=realloc(*output,strlen(*output)+dsc_path.length+100);
+	    nout = *output + strlen(*output);
+	  }
+	  else {
+	    *output=malloc(strlen(*output)+dsc_path.length+100);
+	    nout = *output;
+	  }
+	  sprintf(*output, "Node: %.#s modified\n", dsc_path.length,
+		  dsc_path.pointer);
 	}
-      } else
+	StrFree1Dx(&dsc_path);
+      } else {
+	char *msg = MdsGetMsg(status);
+	*error=malloc(strlen(msg)+dsc_path.length+100);
+	sprintf(*output, "Error problem modifying node %.#s\n"
+		"Error message was: %s\n", dsc_path.length,
+		dsc_path.pointer, msg);
+	StrFree1Dx(&dsc_path);
 	goto error;
+      }
     }
   }
+ error:
   TreeFindNodeEnd(&ctx1);
+  if (status == TreeNMN)
+    status = 1;
   if (nodename)
     free(nodename);
-  error:
-  if ((status & 1) == 0)
-    MdsMsg(status, 0);
   return status;
 }

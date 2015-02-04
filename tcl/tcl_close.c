@@ -22,12 +22,13 @@ int TclClose(void *ctx, char **error, char **output)
       "This tree has been modified, write it before closing? [Y]: ";
   char *exp=0;
   char *shotidstr=0;
-  int shotid=-2;
+  int shotid;
 
   if (cli_get_value(ctx, "FILE", &exp) & 1) {
     cli_get_value(ctx, "SHOTID", &shotidstr);
-    sscanf(shotidstr, "%d", &shotid);
-    sts = TreeClose(exp, shotid);
+    sts = tclStringToShot(shotidstr, &shotid, error);
+    if (sts & 1)
+      sts = TreeClose(exp, shotid);
   } else {
     int doall = cli_present(ctx, "ALL") & 1;
     while ((sts = TreeClose(0, 0)) & 1 && doall) ;

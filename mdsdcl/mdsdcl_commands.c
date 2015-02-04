@@ -418,7 +418,7 @@ static dclMacroListPtr mdsdclNewMacro(char *name)
   return l;
 }
 
-int mdsdcl_define(void *ctx, char **error, char **output)
+int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
 {
   char *name = 0;
   char *line;
@@ -429,7 +429,7 @@ int mdsdcl_define(void *ctx, char **error, char **output)
     return CLI_STS_IVVERB;
   }
   macro = mdsdclNewMacro(name);
-  while ((line = readline("DEFMAC> ")) && (strlen(line)) > 0) {
+  while ((line = (getline ? getline(getlineinfo) : readline("DEFMAC> "))) && (strlen(line)) > 0) {
     macro->cmds = realloc(macro->cmds, sizeof(char *) * (macro->lines + 1));
     macro->cmds[macro->lines++] = line;
     add_history(line);
@@ -512,9 +512,23 @@ static void mdsdclSubstitute(char **cmd, char *p1, char *p2, char *p3, char *p4,
   }
 }
 
+typedef struct getNextLineInfo {
+  int *idx;
+  dclMacroListPtr m;
+} getNextLineInfo, *getNextLineInfoPtr;
+
+static char *getNextLine( getNextLineInfoPtr info ) {
+  *info->idx = *info->idx + 1;
+  if (*info->idx < info->m->lines)
+    return strdup(info->m->cmds[*info->idx]);
+  else
+    return strdup("");
+}
+  
 int mdsdcl_do_macro(void *ctx, char **error, char **output)
 {
   char *name = 0;
+  char *defname = 0;
   char *times_s = 0;
   char *p1 = 0, *p2 = 0, *p3 = 0, *p4 = 0, *p5 = 0, *p6 = 0, *p7 = 0;
   int sts = 1;
@@ -533,18 +547,25 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
     int i;
     FILE *f;
     char line[4096];
-    f = fopen(name, "r");
+    defname=strdup(name);
+    if (DEF_FILE && (strlen(DEF_FILE) > 0)) {
+      defname = strcat(realloc(defname, strlen(defname) + strlen(DEF_FILE) + 1), DEF_FILE);
+      f = fopen(defname, "r");
+    }
+    if (f == NULL)
+      f = fopen(name, "r");
     if (f == NULL) {
-      *error = malloc(strlen(name) + 100);
-      sprintf(*error, "Error: Unable to open command file %s\n", name);
-      if (DEF_FILE) {
-	name = strcat(realloc(name, strlen(name) + strlen(DEF_FILE) + 1), DEF_FILE);
-	f = fopen(name, "r");
+      char *def =  0;
+      if (defname) {
+	def = strcpy(malloc(strlen(DEF_FILE)+100),"[");
+	strcat(def,DEF_FILE);
+	strcat(def,"]");
       }
-      if (f != NULL) {
-	free(*error);
-	*error = 0;
-      }
+      *error = malloc(strlen(name) + 100 + (DEF_FILE ? strlen(DEF_FILE) : 0));
+      sprintf(*error, "Error: Unable to open command file %s%s\n",
+	      name,def ? def : "");
+      if (def)
+	free(def);
     }
     if (f != NULL) {
       l = memset(malloc(sizeof(dclMacroList)), 0, sizeof(dclMacroList));
@@ -581,9 +602,10 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
       for (i = 0; (failed == 0) && (i < l->lines); i++) {
 	char *m_output = 0;
 	char *m_error = 0;
+	getNextLineInfo info = {&i, l};
 	char *cmd = strdup(l->cmds[i]);
 	mdsdclSubstitute(&cmd, p1, p2, p3, p4, p5, p6, p7);
-	sts = mdsdcl_do_command_extra_args(cmd, &m_error, &m_output);
+	sts = mdsdcl_do_command_extra_args(cmd, 0, &m_error, &m_output, getNextLine, &info);
 	free(cmd);
 	if (m_error) {
 	  if ((*error) == NULL)
@@ -613,6 +635,8 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
   }
   if (name)
     free(name);
+  if (defname)
+    free(defname);
   if (p1)
     free(p1);
   if (p2)

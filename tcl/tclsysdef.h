@@ -29,4 +29,6 @@ void TclNodeTouched(		/* Returns: void                        */
 		     , NodeTouchType type	/* <r> type of "touch"                  */
     );
 
-void tclUsageToString(char *usage, char **error);
+extern void tclUsageToString(char *usage, char **error);
+extern int tclStringToShot(char *str, int *shot, char **error);
+extern void tclAppendOutput(char **output, char *string);

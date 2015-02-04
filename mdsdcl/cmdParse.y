@@ -109,14 +109,18 @@ VALUE {
   $$->values=malloc(sizeof(char *));
   if (value[0]=='"' && value[strlen(value)-1]=='"') {
     char *nval;
-    char *dq;
+    int i;
     value[strlen(value)-1]='\0';
-    dq=nval=strdup(value+1);
+    nval=strdup(value+1);
     free(value);
-    while((dq=strstr(dq,"\"\""))) {
-      dq[1]='\0';
-      dq=dq+1;
-      strcat(nval,dq+1);      
+    for (i=0;i<strlen(nval);i++) {
+      if (nval[i]=='"' && nval[i+1]=='"') {
+	int j;
+	for (j=i+1;j<strlen(nval);j++) {
+	  nval[j]=nval[j+1];
+	}
+	i++;
+      }
     }
     value=nval;
   }
@@ -166,7 +170,7 @@ static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dcl
   *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 
-int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error) {
+int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error, char *(*getline)(), void *getlineInfo) {
   dclCommandPtr dclcmd=0;
   YYLTYPE *yyloc_param=0;
   yyscan_t yyscanner;
@@ -178,7 +182,7 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **outp
   if (result==0) {
     if (dclcmd) {
       dclcmd->command_line=strdup(command);
-      status=cmdExecute(dclcmd,prompt,output,error);
+      status=cmdExecute(dclcmd,prompt,output,error,getline, getlineInfo);
     }
   }
   dcl__delete_buffer (cmd_state, yyscanner);

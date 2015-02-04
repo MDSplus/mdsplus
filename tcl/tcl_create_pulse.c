@@ -254,10 +254,9 @@ static int DistributedCreate(int shot, int *nids, int num)
 	/**************************************************************
 	 * TclCreatePulse:
 	 **************************************************************/
-int TclCreatePulse(void *ctx)
+int TclCreatePulse(void *ctx, char **error, char **output)
 {
-  static int shot;
-  static DESCRIPTOR_LONG(dsc_shot, &shot);
+  int shot;
   char *asciiShot=0;
   int status = 1;
   int old_default;
@@ -265,9 +264,8 @@ int TclCreatePulse(void *ctx)
   int dispatch = cli_present(ctx, "DISPATCH") & 1;
   int i;
   int sts;
-
   cli_get_value(ctx, "SHOT", &asciiShot);
-  shot=atoi(asciiShot);
+  sts = tclStringToShot(asciiShot, &shot, error);
   if (asciiShot)
     free(asciiShot);
   if (sts & 1) {
