@@ -1,4 +1,198 @@
-commit b25379c897b2720b18b3b5c87ce952db540b46fd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e023e50323d1a631ee7bb01c2ac0fed42f138315 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 3 08:55:05 2015 -0500
+
+    fix packaging. Put all files that end up in /lib or /bin directories in bin packages even those which are not truly arch specific. This prevents noarch packages creating both lib32 and lib64 directories.
+
+commit c61071512610bb4a27cb54df1b6a7a73d26b0202 (tag: refs/tags/alpha_release-6-3-466)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Feb 2 15:55:17 2015 -0500
+
+    New ChangeLog
+
+commit 43e028791210c3e2e19c18cfd4cc9a25ffdfafb8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 15:28:07 2015 -0500
+
+    fix packaging. Only include uid files required for the arch of the rpm
+
+commit 0ff27739a22f5ea4d36aab887e04f09e7ce4feb0 (tag: refs/tags/alpha_release-6-3-465)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Feb 2 14:31:40 2015 -0500
+
+    New ChangeLog
+
+commit 5e871f549e7018d5f54cdb9768e03b767c4f2f29
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 14:05:06 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit 4bf43f5ad0f676577bb4b19d412ce3d194c985c5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 13:27:12 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit 379080905a5776f807d5d3ad1437e4f8e3eb277d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 13:12:44 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit 7626634c933d04eebe8d8596b00e9c1bbb4d7b89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 12:46:31 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit b9b2323da106c072621e81b3062516a0e2ba16f8
+Merge: 379af64 eeda35b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 12:14:43 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 379af64e888e2183d41dc0eb143645460441f013
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 2 12:14:25 2015 -0500
+
+    fix packaging and print out specfiles before building rpms
+
+commit eeda35bc7d592db3ee1479d54a5b764a581594de (tag: refs/tags/alpha_release-6-3-464)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Feb 1 18:23:31 2015 -0500
+
+    New ChangeLog
+
+commit 5147902bdf407a49b418b122c93980d887cb09e6
+Merge: 60ce24e 5fff662
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Feb 1 14:09:48 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 60ce24eecb74a39794cf1bafb7d11e5b678ec58e
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Feb 1 14:08:49 2015 -0500
+
+    Action Node offsets wrong, inputs start and nodes_per channel wrong
+
+commit 5fff662c2533f896816df2cc9f122292bcd1a890 (tag: refs/tags/alpha_release-6-3-463)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jan 29 18:23:48 2015 -0500
+
+    New ChangeLog
+
+commit 7d3d4eac08cb2f658abf830678619d6436eb5662
+Merge: 2cacbcf 562e8ef
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:35:03 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 2cacbcf20218b69dbdbff598345aaa55acecc6ca
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jan 29 18:34:34 2015 +0100
+
+    Remove useless updates
+
+commit 562e8ef6f02d329fd5d7a271efd5bc338a8d68bd (tag: refs/tags/alpha_release-6-3-462)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 28 18:22:55 2015 -0500
+
+    New ChangeLog
+
+commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d
+Merge: 870831c 6e9b820
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:36:07 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 870831c1d4543abd17f31336a031ec3a016e52c2
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jan 28 14:34:31 2015 +0100
+
+    Fix border conditions
+
+commit 6e9b820489be9f55d029d18f2387b67f2c37bbed (tag: refs/tags/alpha_release-6-3-461)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jan 26 18:23:20 2015 -0500
+
+    New ChangeLog
+
+commit b4b4ad1ccb6e69ce34ad6b1733e3bd7b35b91134
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:54:47 2015 +0100
+
+    Align to latest version
+
+commit 22337c1bd57e780fd1836633051762a9d595eeb6
+Author: Mdsplus <mdsplus@spild4.rfx.local>
+Date:   Mon Jan 26 14:51:44 2015 +0100
+
+    Align to latest version
+
+commit e06e09e07f0abc6d0e0b95eec20bf085aaccd5c4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:06:52 2015 +0100
+
+    Avoid unlocking mutexes ibn destructor
+
+commit b8e1c51046cb2b2b9ebbc578b1f8a61b1876e596
+Merge: d2d950e 8f982e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:24 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d2d950eba344e638b2491672acc8abba42337595
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jan 26 14:00:04 2015 +0100
+
+    Fix String arrays
+
+commit 8f982e4b27e2dfd58a41aa75108bb1f8234e425f (tag: refs/tags/alpha_release-6-3-460)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 18:24:36 2015 -0500
+
+    New ChangeLog
+
+commit 3d3619e525a4c12da911966fdac1350976d57175
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jan 23 12:25:39 2015 -0500
+
+    Make scalar strings return native matlab strings instead of java.lang.String
+
+commit 6fde9fa7740968826b51b91fd566e2737230d463 (tag: refs/tags/alpha_release-6-3-459)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 10:20:11 2015 -0500
+
+    New ChangeLog
+
+commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d
+Merge: 77928e1 f1799c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:32:33 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+    
+    essary,
+
+commit 77928e1f90acf35f3b72e8dfc5b1aef88b586f1f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:23:56 2015 -0500
+
+    Remove obsolete *.f.in files
+
+commit f1799c7f1f200d397b3c4c18e2996d6550bf7ea5 (tag: refs/tags/alpha_release-6-3-458)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 21 13:56:18 2015 -0500
+
+    New ChangeLog
+
+commit b25379c897b2720b18b3b5c87ce952db540b46fd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 21 13:34:16 2015 -0500
 

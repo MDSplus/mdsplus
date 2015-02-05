@@ -2172,6 +2172,7 @@ public class Signal implements WaveDataListener
     public final static int SIMPLE      = 0;
     public final static int AT_CREATION = 1;
     public final static int FIXED_LIMIT = 2;
+    public final static int DO_NOT_UPDATE = 4;
     boolean fix_xmin = false;
     boolean fix_xmax = false;
     boolean fix_ymin = false;
@@ -2243,7 +2244,7 @@ public class Signal implements WaveDataListener
                 }
             }
 //            if ((mode & AT_CREATION) == 0)
-            if (currLower != saved_xmin  || currUpper != saved_xmax || (mode & AT_CREATION) == 0)
+            if (((mode & DO_NOT_UPDATE) == 0)&&(currLower != saved_xmin  || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
                 data.getDataAsync(currLower, currUpper, NUM_POINTS);
         }
         //fireSignalUpdated();
@@ -2755,15 +2756,17 @@ public class Signal implements WaveDataListener
     {
         if(regX == null || regX.length == 0) return;
         if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
-        if(freezed && regX[0] > xmax) //If zooming in some inner part of the sugnal
+ //GABGAB       if(freezed && regX[0] > xmax) //If zooming in some inner part of the signal
+        if(freezed && regX[regX.length - 1] <= xmax) //If zooming in some inner part of the signal
         {
              pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true, regX[0], regX[regX.length - 1]));
             return;
         }
-        if(freezed && regX[0] < xmax) //If zooming the end of the signal do the update keeing the width of the zoomed region
+//        if(freezed && regX[0] < xmax) //If zooming the end of the signal do the update keeing the width of the zoomed region
+        if(freezed && regX[regX.length - 1] > xmax) //If zooming the end of the signal do the update keeing the width of the zoomed region
         {
             double delta = regX[regX.length - 1] - regX[0];
-            setXLimits(xmin + delta, xmax + delta, 0);  
+            setXLimits(xmin + delta, xmax + delta, Signal.DO_NOT_UPDATE);  
         }
         int samplesBefore, samplesAfter;
         if(regX.length == 0) return;

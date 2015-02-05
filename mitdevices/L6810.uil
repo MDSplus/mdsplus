@@ -49,17 +49,17 @@ value
     DEVICE$N_STORE_ACTION :  0;
     L6810$N_NAME :  1;
     L6810$N_COMMENT :  2;
-    L6810$N_INIT_ACTION :  29;
-    L6810$N_STORE_ACTION :  30;
+    L6810$N_INIT_ACTION :  34;
+    L6810$N_STORE_ACTION :  35;
     L6810$N_ACTIVE_CHANS :  8;
     L6810$N_FREQ :  3;
     L6810$N_EXT_CLOCK_IN :  4;
     L6810$N_STOP_TRIG :  5;
     L6810$N_INP_HEAD :  0;
     L6810$N_INP_ENDIDX :  2;
-    L6810$K_NODES_PER_INP :  5;
+    L6810$K_NODES_PER_INP :  6;
     L6810$N_INP_STARTIDX :  1;
-    L6810$N_INPUTS :  9;
+    L6810$N_INPUTS :  10;
     L6810$N_INP_FULL_SCALE :  3;
     gains :  string_table(
 	compound_string(".4096"),
