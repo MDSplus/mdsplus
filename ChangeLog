@@ -1,4 +1,35 @@
-commit e023e50323d1a631ee7bb01c2ac0fed42f138315 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 0de773ca600a649ca8d8aa58f7188499ae53865e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: e4338e6 c910e93
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 5 16:00:20 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit e4338e6a6b9ae815bce42090a21329b757fec26e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 5 13:21:54 2015 -0500
+
+    Add support for loadpaths(host,tree) to fetch full tree path definitions from a remote server.
+
+commit 88a1e2e056bf5fb2b0c997ea269f354557734dde
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 5 13:18:22 2015 -0500
+
+    Use idl.py to dynamically load idl libraries
+
+commit c791ada3be074a1ec3fcc0a74364b310b5a2d698
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 5 13:17:57 2015 -0500
+
+    Use idl.py to dynamically load idl libraries
+
+commit c910e939aa14ad8d08b5d8f77380056f236e822e (tag: refs/tags/alpha_release-6-3-467)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Feb 3 09:22:54 2015 -0500
+
+    New ChangeLog
+
+commit e023e50323d1a631ee7bb01c2ac0fed42f138315
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Feb 3 08:55:05 2015 -0500
 
