@@ -19,8 +19,8 @@ int TclCompressDatafile(void *ctx, char **error, char **output)
 {
   int shot;
   int sts;
-  char *filnam=0;
-  char *asciiShot=0;
+  char *filnam = 0;
+  char *asciiShot = 0;
 
   cli_get_value(ctx, "FILE", &filnam);
   cli_get_value(ctx, "SHOTID", &asciiShot);
@@ -28,10 +28,10 @@ int TclCompressDatafile(void *ctx, char **error, char **output)
   if (sts & 1) {
     sts = TreeCompressDatafile(filnam, shot);
     if (!(sts & 1)) {
-      char *msg=MdsGetMsg(sts);
-      *error=malloc(strlen(msg)+strlen(filnam)+100);
-      sprintf(*error,"Error: Problem compressing tree '%s' shot '%d'\nError message was: %s\n",
-	      filnam,shot,msg);
+      char *msg = MdsGetMsg(sts);
+      *error = malloc(strlen(msg) + strlen(filnam) + 100);
+      sprintf(*error, "Error: Problem compressing tree '%s' shot '%d'\nError message was: %s\n",
+	      filnam, shot, msg);
     }
   }
   if (filnam)

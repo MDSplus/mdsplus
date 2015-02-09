@@ -39,8 +39,6 @@ static int *SyncEfn = &SyncId;
 
 static void *dispatch_table = 0;
 
-extern void TclTextOut();
-
 extern int ServerFailedEssential();
 
 extern int TdiIdentOf();
@@ -48,9 +46,9 @@ extern int TdiIdentOf();
 	/****************************************************************
 	 * TclDispatch_close:
 	 ****************************************************************/
-int TclDispatch_close(void *ctx)
+int TclDispatch_close(void *ctx, char **error, char **output)
 {
-  char *ident=0;
+  char *ident = 0;
 
   if (!(cli_present(ctx, "SERVER") & 1) && dispatch_table)
     ServerDispatchClose(dispatch_table);
@@ -66,10 +64,10 @@ int TclDispatch_close(void *ctx)
 	/**************************************************************
 	 * TclDispatch_build:
 	 **************************************************************/
-int TclDispatch_build(void *ctx)
+int TclDispatch_build(void *ctx, char **error, char **output)
 {
   int sts;
-  char *monitor=0;
+  char *monitor = 0;
   void *free_dispatch_table = dispatch_table;
 
   sts = (cli_get_value(ctx, "MONITOR", &monitor) & 1);
@@ -77,8 +75,11 @@ int TclDispatch_build(void *ctx)
   if (free_dispatch_table)
     ServerFreeDispatchTable(free_dispatch_table);
   sts = ServerBuildDispatchTable(0, monitor, &dispatch_table);
-  if (~sts & 1)
-    MdsMsg(sts, "Error building table");
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error: problem building dispatch table\n" "Error message was: %s\n", msg);
+  }
   if (monitor)
     free(monitor);
   return sts;
@@ -98,10 +99,10 @@ static void WaitfrEf(int *id)
   ServerWait(*id);
 }
 
-int TclDispatch(void *ctx)
+int TclDispatch(void *ctx, char **error, char **output)
 {
-  char *ident=0;
-  char *treenode=0;
+  char *ident = 0;
+  char *treenode = 0;
   int sts;
   int iostatus;
   int nid;
@@ -113,12 +114,12 @@ int TclDispatch(void *ctx)
   if (sts & 1) {
     struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)0 };
     EMPTYXD(xd);
-    struct descriptor ident = {0, DTYPE_T, CLASS_D, 0};
+    struct descriptor ident = { 0, DTYPE_T, CLASS_D, 0 };
     niddsc.pointer = (char *)&nid;
     sts = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
     if (sts & 1)
       sts = TdiData(&xd, &ident MDS_END_ARG);
-    MdsFree1Dx(&xd,0);
+    MdsFree1Dx(&xd, 0);
     if (sts & 1) {
       static char treename[13];
       static DESCRIPTOR(nullstr, "\0");
@@ -138,10 +139,14 @@ int TclDispatch(void *ctx)
 	  sts = iostatus;
 	}
       }
+      StrFree1Dx(&ident);
     }
   }
-  if (!(sts & 1))
-    MdsMsg(sts, "Error dispatching %s", treenode);
+  if (!(sts & 1)) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(treenode) + 100);
+    sprintf(*error, "Error dispatching node %s\n" "Error message was: %s\n", treenode, msg);
+  }
   if (treenode)
     free(treenode);
   return sts;
@@ -155,72 +160,102 @@ int TclDispatch(void *ctx)
 int TclDispatch_abort_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
-  char *ident=0;
+  char *ident = 0;
 
   while (cli_get_value(ctx, "SERVER_NAME", &ident) & 1) {
     sts = ServerAbortServer(ident, 0);
     if (~sts & 1) {
       char *msg = MdsGetMsg(sts);
-      *error=malloc(strlen(msg)+strlen(ident)+100);
-      sprintf(*error,"Error: Problem aborting server '%s'\n"
-	      "Error message was: %s\n",ident,msg);
+      *error = malloc(strlen(msg) + strlen(ident) + 100);
+      sprintf(*error, "Error: Problem aborting server '%s'\n"
+	      "Error message was: %s\n", ident, msg);
     }
     free(ident);
   }
   return sts;
 }
 
-int TclDispatch_stop_server(void *ctx)
+int TclDispatch_stop_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
-  char *ident=0;
+  char *ident = 0;
   while (sts & 1 && cli_get_value(ctx, "SERVNAM", &ident) & 1) {
     sts = ServerStopServer(ident);
-    free(ident);
+    if (sts & 1) {
+      free(ident);
+      ident = 0;
+    }
   }
-  if (~sts & 1 && sts != 0)
-    MdsMsg(sts, "Error from ServerStopServer");
-  else
-    sts = 1;
+  if (~sts & 1 && sts != 0) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(ident) + 100);
+    sprintf(*error, "Error: problem stopping server %s\n" "Error message was: %s\n", ident, msg);
+    if (ident) {
+      free(ident);
+      ident = 0;
+    }
+  }
   return sts;
 }
 
-int TclDispatch_start_server(void *ctx)
+int TclDispatch_start_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
-  char *ident=0;
+  char *ident = 0;
   while (sts & 1 && cli_get_value(ctx, "SERVER", &ident) & 1) {
     sts = ServerStartServer(ident);
-    free(ident);
+    if (sts & 1) {
+      free(ident);
+      ident = 0;
+    }
   }
-  if (~sts & 1)
-    MdsMsg(sts, "Error from ServerStartServer");
+  if (~sts & 1 && sts != 0) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(ident) + 100);
+    sprintf(*error, "Error: problem starting server %s\n" "Error message was: %s\n", ident, msg);
+    if (ident) {
+      free(ident);
+      ident = 0;
+    }
+  }
   return sts;
 }
 
 	/***************************************************************
 	 * TclDispatch_set_server:
 	 ***************************************************************/
-int TclDispatch_set_server(void *ctx)
+int TclDispatch_set_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   int logqual;
   int statqual;
-  int logging = 0;
-  char *ident=0;
+  char logging = 0;
+  char *ident = 0;
 
   logqual = cli_present(ctx, "LOG");
   statqual = cli_present(ctx, "STATISTICS");
   if (logqual == CLI_STS_PRESENT) {
-    char *log_type=0;
+    char *log_type = 0;
     cli_get_value(ctx, "LOG", &log_type);
-    printf("deal with log types\n");
+    if (strncasecmp(log_type, "statistics", strlen(log_type)) == 0) {
+      logging = 2;
+    } else if (strncasecmp(log_type, "actions", strlen(log_type)) == 0) {
+      logging = 1;
+    } else
+      logging = 0;
+    free(log_type);
   }
-
   while (sts & 1 && cli_get_value(ctx, "SERVER", &ident) & 1) {
-    sts = ServerSetLogging(ident, (char)logging);
-    if (~sts & 1)
-      MdsMsg(sts, "Error from ServerSetLogging for server %s", ident);
+    sts = ServerSetLogging(ident, logging);
+    if (~sts & 1) {
+      char *msg = MdsGetMsg(sts);
+      if (*error)
+	*error = realloc(*error, strlen(*error) + strlen(msg) + strlen(ident) + 100);
+      else
+	*error = malloc(strlen(msg) + strlen(ident) + 100);
+      sprintf(*error, "Error: Problem setting logging on serv %s\n"
+	      "Error message was: %s\n", ident, msg);
+    }
     free(ident);
   }
   return sts;
@@ -229,46 +264,58 @@ int TclDispatch_set_server(void *ctx)
 	/**************************************************************
 	 * TclDispatch_show_server:
 	 **************************************************************/
-int TclDispatch_show_server(void *ctx)
+int TclDispatch_show_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
-  char *ident=0;
-  int output = cli_present(ctx, "OUTPUT") & 1;
+  char *ident = 0;
+  int dooutput = cli_present(ctx, "OUTPUT") & 1;
   int full = cli_present(ctx, "FULL") & 1;
-
+  if (dooutput)
+    *output = strdup("");
   while (sts & 1 && cli_get_value(ctx, "SERVER_NAME", &ident) & 1) {
     if (IS_WILD(ident)) {	/* contains wildcard?     */
       void *ctx1 = 0;
-      char *server;
+      char *server = 0;
       while ((server = ServerFindServers(&ctx1, ident))) {
-	if (output) {
-	  char *info;
-	  char *header = strcpy(malloc(100 + strlen(server)), "Checking server: ");
-	  strcat(header, server);
-	  TclTextOut(header);
-	  free(header);
-	  TclTextOut(info = ServerGetInfo(full, server));
-	  free(info);
+	if (dooutput) {
+	  char *info = 0;
+	  tclAppend(output, "Checking server: ");
+	  tclAppend(output, server);
+	  tclAppend(output, "\n");
+	  tclAppend(output, info = ServerGetInfo(full, server));
+	  tclAppend(output, "\n");
+	  if (server)
+	    free(server);
+	  if (info)
+	    free(info);
 	}
       }
     } else {
-      if (output) {
+      if (dooutput) {
 	char *info;
-	TclTextOut(info = ServerGetInfo(full, ident));
-	free(info);
+	tclAppend(output, "Checking server: ");
+	tclAppend(output, ident);
+	tclAppend(output, "\n");
+	tclAppend(output, info = ServerGetInfo(full, ident));
+	tclAppend(output, "\n");
+	if (info)
+	  free(info);
       }
     }
     free(ident);
   }
-  if (~sts & 1)
-    MdsMsg(sts, "Error getting server info");
   return sts;
+}
+
+static void printIt(char *output)
+{
+  fprintf(stdout, "%s\n", output);
 }
 
 	/*****************************************************************
 	 * TclDispatch_phase:
 	 *****************************************************************/
-int TclDispatch_phase(void *ctx)
+int TclDispatch_phase(void *ctx, char **error, char **output)
 {
   char *phase = 0;
   char *synch_str = 0;
@@ -276,7 +323,7 @@ int TclDispatch_phase(void *ctx)
   int synch;
   int sts = 1;
   int noaction = cli_present(ctx, "NOACTION") & 1;
-  void (*output_rtn) () = cli_present(ctx, "LOG") & 1 ? TclTextOut : 0;
+  void (*output_rtn) () = cli_present(ctx, "LOG") & 1 ? printIt : 0;
 
   cli_get_value(ctx, "MONITOR", &monitor);
   if (!SyncEfnInit)
@@ -288,8 +335,13 @@ int TclDispatch_phase(void *ctx)
   if (dispatch_table)
     sts = ServerDispatchPhase(SyncEfn, dispatch_table,
 			      phase, (char)noaction, synch, output_rtn, monitor);
-  if (~sts & 1)
-    MdsMsg(sts, "Error from ServerDispatchPhase");
+  else
+    *error = strdup("Error: No dispatch table found. Forgot to do DISPATCH/BUILD?\n");
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error: problem dispatching phase\n" "Error message was: %s\n", msg);
+  }
   if (phase)
     free(phase);
   if (synch_str)
@@ -310,14 +362,16 @@ typedef struct {
 static void CommandDone(DispatchedCommand * command)
 {
   if (!(command->sts & 1)) {
-    MdsMsg(command->sts, "Command failed: '%s'", command->command);
+    char *msg = MdsGetMsg(command->sts);
+    fprintf(stderr, "Error: Command failed - '%s'\n"
+	    "Error message was: %s\n", command->command, msg);
   }
   free(command->command);
   free(command);
   return;
 }
 
-int TclDispatch_command(void *ctx)
+int TclDispatch_command(void *ctx, char **error, char **output)
 {
   char *cli = 0;
   char *ident = 0;
@@ -331,26 +385,28 @@ int TclDispatch_command(void *ctx)
   cli_get_value(ctx, "P1", &command->command);
   if (cli_present(ctx, "WAIT") & 1) {
     if (sts & 1) {
-      sts = ServerDispatchCommand(SyncEfn, ident,
-				  cli, command->command,
-				  0, 0, &command->sts, 0);
+      sts = ServerDispatchCommand(SyncEfn, ident, cli, command->command, 0, 0, &command->sts, 0);
       if (sts & 1) {
 	WaitfrEf(SyncEfn);
 	sts = command->sts;
       }
+      free(command->command);
+      free(command);
     }
-    free(&command->command);
-    free(command);
-    if (~sts & 1)
-      MdsMsg(sts, "Error from ServerDispatchCommand");
+    if (~sts & 1) {
+      char *msg = MdsGetMsg(sts);
+      *error = malloc(strlen(msg) + 100);
+      sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
+    }
   } else {
     sts = ServerDispatchCommand(0, ident, cli,
-				command->command, CommandDone, command,
-				&command->sts, 0);
+				command->command, CommandDone, command, &command->sts, 0);
     if (~sts & 1) {
+      char *msg = MdsGetMsg(sts);
+      *error = malloc(strlen(msg) + 100);
+      sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
       free(&command->command);
       free(command);
-      MdsMsg(sts, "Error from ServerDispatchCommand (no-wait)");
     }
   }
   if (cli)
@@ -363,10 +419,11 @@ int TclDispatch_command(void *ctx)
 	/***************************************************************
 	 * TclDispatch_check:
 	 ***************************************************************/
-int TclDispatch_check(void *ctx)
+int TclDispatch_check(void *ctx, char **error, char **output)
 {
-  if (ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET") & 1))
-    return (MdsMsg(TCL_STS_FAILED_ESSENTIAL, 0));
-  else
+  if (ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET") & 1)) {
+    *error = strdup("Error: A essential action failed!\n");
+    return TCL_STS_FAILED_ESSENTIAL;
+  } else
     return TCL_STS_NORMAL;
 }

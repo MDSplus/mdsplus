@@ -20,8 +20,8 @@ int TclClose(void *ctx, char **error, char **output)
   int sts;
   static const char promptWritefirst[] =
       "This tree has been modified, write it before closing? [Y]: ";
-  char *exp=0;
-  char *shotidstr=0;
+  char *exp = 0;
+  char *shotidstr = 0;
   int shotid;
 
   if (cli_get_value(ctx, "FILE", &exp) & 1) {
@@ -39,9 +39,9 @@ int TclClose(void *ctx, char **error, char **output)
     if (cli_present(ctx, "CONFIRM") & 1)
       sts = TreeQuitTree(0, 0);
     else
-      *error=strdup("This tree has been modified. Either use the WRITE\n"
-		    "command before closing to save modifications or\n"
-		    "use CLOSE/CONFIRM to discard changes.\n\n");
+      *error = strdup("This tree has been modified. Either use the WRITE\n"
+		      "command before closing to save modifications or\n"
+		      "use CLOSE/CONFIRM to discard changes.\n\n");
   }
   if (sts & 1)
     TclNodeTouched(0, tree);

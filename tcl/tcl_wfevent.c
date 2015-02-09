@@ -14,7 +14,7 @@
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
-int TclWfevent( void *ctx)
+int TclWfevent(void *ctx)
 {
   char *event = 0;
   cli_get_value(ctx, "EVENT", &event);

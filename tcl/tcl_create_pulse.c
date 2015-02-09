@@ -15,13 +15,13 @@
 *  02-Feb-1998  TRG  Create.  Ported from original mds code.
 *
 ************************************************************************/
-
+/*
 extern int ServerCreatePulse(int efn, char *server, char *treenam, int ishot,
 		      void (*astRtn) ()
 		      , void *astprm, int *retStatus, int *netId, void (*linkdown_handler) ()
 		      , void (*before_ast) ()
     );
-
+*/
 typedef struct _server {
   char *server;
   int *nid;
@@ -74,6 +74,7 @@ static int CheckCondition(int nid)
 	/***************************************************************
          * FreeServerList:
          ***************************************************************/
+/*
 static Server *ServerList = 0;
 static int Efn1 = 0;
 static int Efn2 = 0;
@@ -93,10 +94,11 @@ static void FreeServerList()
   }
   ServerList = 0;
 }
-
+*/
 	/****************************************************************
          * NidToTree:
          ****************************************************************/
+/*
 static char *NidToTree(int nid)
 {
   static unsigned char tree[12 + 1];
@@ -108,10 +110,11 @@ static char *NidToTree(int nid)
     TreeGetDbi(dbi_itmlst);
   return ((char *)tree);
 }
-
+*/
 	/**************************************************************
          * PutOnRemainingList:
          **************************************************************/
+/*
 static void PutOnRemainingList(Server * s)
 {
   int i;
@@ -120,15 +123,17 @@ static void PutOnRemainingList(Server * s)
   char msg[128];
 
   sprintf(msg, fmt, NidToTree(s->current_nid), s->server);
-  TclTextOut(msg);
+  Tcl_TextOut(msg);
   ServerList->nid[ServerList->num++] = s->current_nid;
   for (i = 0; i < s->num; i++)
     ServerList->nid[ServerList->num++] = s->nid[i];
 }
+*/
 
 	/****************************************************************
          * CreatePulse:
          ****************************************************************/
+/*
 static void CreatePulse(Server * s)
 {
   int status = 1;
@@ -138,7 +143,7 @@ static void CreatePulse(Server * s)
  not created, status = 0x%08X";
       char msg[128];
       sprintf(msg, fmt, NidToTree(s->current_nid), s->status);
-      TclTextOut(msg);
+      Tcl_TextOut(msg);
     }
 
     if (s->num) {
@@ -162,10 +167,11 @@ static void CreatePulse(Server * s)
   }
   return;
 }
-
+*/
 	/****************************************************************
          * LinkDown:
          ****************************************************************/
+/*
 static void LinkDown(int *netid)
 {
   if (ServerList) {
@@ -180,10 +186,11 @@ static void LinkDown(int *netid)
     CreatePulse(ServerList);
   }
 }
-
+*/
 	/****************************************************************
          * DispatchCreatePulse:	
          ****************************************************************/
+/*
 static int DispatchCreatePulse(Server * s)
 {
   int status;
@@ -196,11 +203,12 @@ static int DispatchCreatePulse(Server * s)
   }
   return status;
 }
-
+*/
 	/*****************************************************************
 	 * TclCreatePulse_server:
 	 *****************************************************************/
-int TclCreatePulse_server(void *ctx)
+/*
+int TclCreatePulse_server(void *ctx, char **error, char **output)
 {
   Server *s;
   Server **nextptr;
@@ -240,24 +248,26 @@ int TclCreatePulse_server(void *ctx)
   }
   return 1;
 }
-
+*/
 	/****************************************************************
          * DistributedCreate:
          ****************************************************************/
-static int DistributedCreate(int shot, int *nids, int num)
+
+/*
+static int DistributedCreate(int shot, int *nids, int num, char **error, char **output)
 {
 
   fprintf(stderr, unixMsg, "DistributedCreate");
   return (0);
 }
-
+*/
 	/**************************************************************
 	 * TclCreatePulse:
 	 **************************************************************/
 int TclCreatePulse(void *ctx, char **error, char **output)
 {
   int shot;
-  char *asciiShot=0;
+  char *asciiShot = 0;
   int status = 1;
   int old_default;
   int conditional = cli_present(ctx, "CONDITIONAL") & 1;
@@ -269,21 +279,20 @@ int TclCreatePulse(void *ctx, char **error, char **output)
   if (asciiShot)
     free(asciiShot);
   if (sts & 1) {
-    if ((cli_present(ctx, "INCLUDE") | cli_present(ctx, "EXCLUDE") | cli_present(ctx, "NOMAIN") | conditional |
-	 dispatch) & 1) {
+    if ((cli_present(ctx, "INCLUDE") | cli_present(ctx, "EXCLUDE") | cli_present(ctx, "NOMAIN") |
+	 conditional | dispatch) & 1) {
       int nids[256] = { 0 };
       int nid;
       int num = !(cli_present(ctx, "NOMAIN") & 1);
       TreeGetDefaultNid(&old_default);
       TreeSetDefaultNid(0);
       if (cli_present(ctx, "INCLUDE") & 1) {
-	char *nodename=0;
+	char *nodename = 0;
 	while (cli_get_value(ctx, "INCLUDE", &nodename) & 1) {
 	  void *ctx = 0;
-	  char *wnode=strcpy(alloca(strlen(nodename)+5),"***.");
-	  strcat(wnode,nodename);
-	  while (TreeFindNodeWild(nodename, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) &
-		 1) {
+	  char *wnode = strcpy(alloca(strlen(nodename) + 5), "***.");
+	  strcat(wnode, nodename);
+	  while (TreeFindNodeWild(nodename, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) & 1) {
 	    if (conditional) {
 	      if (CheckCondition(nid))
 		nids[num++] = nid;
@@ -305,13 +314,12 @@ int TclCreatePulse(void *ctx, char **error, char **output)
 	TreeFindNodeEnd(&ctx);
       }
       if (cli_present(ctx, "EXCLUDE") & 1) {
-	char *nodename=0;
+	char *nodename = 0;
 	while (cli_get_value(ctx, "EXCLUDE", &nodename) & 1) {
 	  void *ctx = 0;
-	  char *wnode=strcpy(alloca(strlen(nodename)+5),"***.");
-	  strcat(wnode,nodename);
-	  while (TreeFindNodeWild(nodename, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) &
-		 1) {
+	  char *wnode = strcpy(alloca(strlen(nodename) + 5), "***.");
+	  strcat(wnode, nodename);
+	  while (TreeFindNodeWild(nodename, &nid, &ctx, (1 << TreeUSAGE_SUBTREE)) & 1) {
 	    for (i = 0; i < num; i++) {
 	      if (nids[i] == nid) {
 		num--;
@@ -328,10 +336,11 @@ int TclCreatePulse(void *ctx, char **error, char **output)
       }
       TreeSetDefaultNid(old_default);
       if (num) {
-	if (dispatch)
-	  status = DistributedCreate(shot, nids, num);
-	else
-	  status = TreeCreatePulseFile(shot, num, nids);
+	/*      if (dispatch)
+	   status = DistributedCreate(shot, nids, num, error, output);
+	   else
+	 */
+	status = TreeCreatePulseFile(shot, num, nids);
       }
     } else
       status = TreeCreatePulseFile(shot, 0, 0);

@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include		<mds_stdarg.h>
+#include <string.h>
 
 /**********************************************************************
 * TCL_DO_NODE.C --
@@ -16,10 +17,10 @@ extern int TdiDoTask();
 	/***************************************************************
 	 * TclDoNode:
 	 ***************************************************************/
-int TclDoNode(void *ctx)
+int TclDoNode(void *ctx, char **error, char **output)
 {
   int sts;
-  char *nodnam=0;
+  char *nodnam = 0;
   static int retstatus;
   static int nid;
   static DESCRIPTOR_NID(niddsc, &nid);
@@ -31,8 +32,11 @@ int TclDoNode(void *ctx)
     if (sts & 1)
       sts = retstatus;
   }
-  if (~sts & 1)
-    sts = MdsMsg(sts, "TclDoNode: error doing %s", nodnam);
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(nodnam) + 100);
+    sprintf(*error, "Error: problem doing node %s\n" "Error message was: %s\n", nodnam, msg);
+  }
   free(nodnam);
   return sts;
 }

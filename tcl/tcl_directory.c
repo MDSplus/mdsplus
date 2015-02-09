@@ -52,9 +52,10 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
   return (datime);
 }
 
-void tclAppendOutput(char **output, char *str) {
+void tclAppend(char **output, char *str)
+{
   if (*output)
-    *output = strcat(realloc(*output,strlen(*output)+strlen(str)+1),str);
+    *output = strcat(realloc(*output, strlen(*output) + strlen(str) + 1), str);
   else
     *output = strdup(str);
 }
@@ -67,11 +68,11 @@ int TclDirectory(void *ctx, char **error, char **output)
 {
   char *tagnam;
   char msg[128];
-  char *nodnam=0;
+  char *nodnam = 0;
   char *pathnam;
 
   int nid;
-  int status=1;
+  int status = 1;
   void *ctx1 = 0;
   void *ctx2 = 0;
   int found = 0;
@@ -98,10 +99,10 @@ int TclDirectory(void *ctx, char **error, char **output)
 
   parent_nid = 0;
   if (*output == 0)
-    *output=strdup("");
+    *output = strdup("");
   full = cli_present(ctx, "FULL") & 1;
   if (cli_present(ctx, "USAGE") & 1) {
-    char *usageStr=0;
+    char *usageStr = 0;
     usageMask = 0;
     while (cli_get_value(ctx, "USAGE", &usageStr) & 1) {
       if (usageStr) {
@@ -118,73 +119,73 @@ int TclDirectory(void *ctx, char **error, char **output)
   }
   pathnam = TreeGetPath(parent_nid);
   if (pathnam) {
-    sprintf(msg,"\n%s\n\n",pathnam);
+    sprintf(msg, "\n%s\n\n", pathnam);
     free(pathnam);
-    tclAppendOutput(output, msg);
+    tclAppend(output, msg);
   }
   while (cli_get_value(ctx, "NODE", &nodnam) & 1) {
     int listlen = 0;
     while ((status = TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask)) & 1) {
-	grand_found++;
-	status = TreeGetNci(nid, general_info_list);
-	nodnamC[nodnamLen] = '\0';
-	if (parent_nid != last_parent_nid) {
-	  if (found) {
-	    sprintf(msg,"\nTotal of %d node%s.\n",found,(found > 1) ? "s" : "");
-	    listlen = 0;
-	    tclAppendOutput(output, msg);
-	  }
-	  found = 0;
-	  last_parent_nid = parent_nid;
+      grand_found++;
+      status = TreeGetNci(nid, general_info_list);
+      nodnamC[nodnamLen] = '\0';
+      if (parent_nid != last_parent_nid) {
+	if (found) {
+	  sprintf(msg, "\nTotal of %d node%s.\n", found, (found > 1) ? "s" : "");
+	  listlen = 0;
+	  tclAppend(output, msg);
+	}
+	found = 0;
+	last_parent_nid = parent_nid;
+	previous_relationship = relationship;
+      }
+      found++;
+      if (full) {
+	if (previous_relationship != relationship) {
+	  tclAppend(output, "\n");
 	  previous_relationship = relationship;
 	}
-	found++;
-	if (full) {
-	  if (previous_relationship != relationship) {
-	    tclAppendOutput(output, "\n");
-	    previous_relationship = relationship;
-	  }
-	  sprintf(msg," %s%s",(relationship == NciK_IS_CHILD) ? " " : ":",nodnamC);
-	  tclAppendOutput(output, msg);
-	  ctx2 = 0;
-	  first_tag = 1;
-	  while ((tagnam = TreeFindNodeTags(nid, &ctx2))) {
-	    sprintf(msg,"%s\\%s",first_tag ? " tags: " : ",",tagnam);
-	    tclAppendOutput(output, msg);
-	    free(tagnam);
-	    first_tag = 0;
-	  }
-	  tclAppendOutput(output, "\n");
-	  version = 0;
-	  while (doFull(output, nid, nodeUsage, version++) & 1) ;
-	} else {
-	  if (previous_relationship != relationship) {
-	    tclAppendOutput(output, "\n\n");
-	    listlen=0;
-	    previous_relationship = relationship;
-	  }
-	  sprintf(msg," %s%s",(relationship == NciK_IS_CHILD) ? " " : ":",nodnamC);
-	  tclAppendOutput(output, msg);
-	  listlen = listlen + strlen(msg);
-	  if (listlen > 60) {
-	    tclAppendOutput(output, "\n");
-	    listlen = 0;
-	  }
+	sprintf(msg, " %s%s", (relationship == NciK_IS_CHILD) ? " " : ":", nodnamC);
+	tclAppend(output, msg);
+	ctx2 = 0;
+	first_tag = 1;
+	while ((tagnam = TreeFindNodeTags(nid, &ctx2))) {
+	  sprintf(msg, "%s\\%s", first_tag ? " tags: " : ",", tagnam);
+	  tclAppend(output, msg);
+	  free(tagnam);
+	  first_tag = 0;
 	}
-	mdsdclFlushOutput(*output);
+	tclAppend(output, "\n");
+	version = 0;
+	while (doFull(output, nid, nodeUsage, version++) & 1) ;
+      } else {
+	if (previous_relationship != relationship) {
+	  tclAppend(output, "\n\n");
+	  listlen = 0;
+	  previous_relationship = relationship;
+	}
+	sprintf(msg, " %s%s", (relationship == NciK_IS_CHILD) ? " " : ":", nodnamC);
+	tclAppend(output, msg);
+	listlen = listlen + strlen(msg);
+	if (listlen > 60) {
+	  tclAppend(output, "\n");
+	  listlen = 0;
+	}
+      }
+      mdsdclFlushOutput(*output);
     }
     TreeFindNodeEnd(&ctx1);
     if (nodnam)
       free(nodnam);
   }
-  sprintf(msg, "%s\nTotal of %d node%s.\n", full ? "" : "\n",found,
+  sprintf(msg, "%s\nTotal of %d node%s.\n", full ? "" : "\n", found,
 	  ((found > 1) || (found == 0)) ? "s" : "");
-  tclAppendOutput(output, msg);
+  tclAppend(output, msg);
   if (grand_found) {
     if (found != grand_found) {
-      sprintf(msg,"\n\nGrand total of %d node%s.\n", grand_found,
+      sprintf(msg, "\n\nGrand total of %d node%s.\n", grand_found,
 	      ((grand_found > 1) || (grand_found == 0)) ? "s" : "");
-      tclAppendOutput(output, msg);
+      tclAppend(output, msg);
     }
   }
   return ((status == TreeNMN) || (status == TreeNNF)) ? 1 : status;
@@ -256,18 +257,18 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
 	      (dataLen ? ",readonly" : ",write-once") : "",
 	      (nciFlags & NciM_ESSENTIAL) ? ",essential" : "",
 	      (nciFlags & NciM_CACHED) ? ",cached" : "");
-      tclAppendOutput(output, msg);
+      tclAppend(output, msg);
       if (nciFlags & NciM_NO_WRITE_MODEL)
-	tclAppendOutput(output, "      not writeable in model\n");
+	tclAppend(output, "      not writeable in model\n");
       if (nciFlags & NciM_NO_WRITE_SHOT)
-	tclAppendOutput(output, "      not writeable in pulse file\n");
+	tclAppend(output, "      not writeable in pulse file\n");
       if (nodeUsage == TreeUSAGE_SUBTREE) {
 	sprintf(msg,
 		"      subtree %sincluded in pulse file.\n",
 		(nciFlags & NciM_INCLUDE_IN_PULSE) ? "" : "NOT ");
-	tclAppendOutput(output, msg);
+	tclAppend(output, msg);
       }
-      msg[0]=0;
+      msg[0] = 0;
       if (nciFlags & NciM_COMPRESSIBLE) {
 	strcat(msg, "compressible");
 	strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS)) ? "," : "\n");
@@ -278,9 +279,9 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       }
       if (nciFlags & NciM_DO_NOT_COMPRESS)
 	strcat(msg, "do not compress\n");
-      if (strlen(msg)>0) {
-	tclAppendOutput(output, "      ");
-	tclAppendOutput(output, msg);
+      if (strlen(msg) > 0) {
+	tclAppend(output, "      ");
+	tclAppend(output, msg);
       }
 
       switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE)) {
@@ -298,27 +299,27 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
 	break;
       }
       if (reference) {
-	tclAppendOutput(output, reference);
+	tclAppend(output, reference);
       }
     }
     sprintf(msg, "      Data inserted: %s    Owner: %s\n", MdsDatime(time), MdsOwner(owner));
-    tclAppendOutput(output, msg);
+    tclAppend(output, msg);
     if (dataLen) {
       sprintf(msg, "      Dtype: %-20s  Class: %-18s  Length: %d bytes\n",
 	      MdsDtypeString((int)dtype), MdsClassString((int)class), dataLen);
-      tclAppendOutput(output, msg);
+      tclAppend(output, msg);
     } else
-      tclAppendOutput(output, "      There is no data stored for this node\n");
+      tclAppend(output, "      There is no data stored for this node\n");
     if (conglomerate_elt != 0) {
       sprintf(msg, "      Model element: %d\n", conglomerate_elt);
-      tclAppendOutput(output, msg);
+      tclAppend(output, msg);
       partlen = 0;
       TreeGetNci(nid, cong_list);
       if (partlen) {
 	pathnam = TreeGetPath(head_nid);
 	partC[partlen] = 0;
 	sprintf(msg, "      Original element name: %s%s", pathnam, partC);
-	tclAppendOutput(output, msg);
+	tclAppend(output, msg);
 	free(pathnam);
       }
     }
@@ -326,10 +327,11 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
   return status;
 }
 
-int TclLs(void *ctx) {
+int TclLs(void *ctx)
+{
   char *cmd = 0;
   cli_get_value(ctx, "command_line", &cmd);
-  printf("TclLs called with command line: '%s'\n",cmd);
+  printf("TclLs called with command line: '%s'\n", cmd);
   free(cmd);
   return 1;
 }

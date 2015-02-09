@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
+#include <string.h>
 
 /***********************************************************************
 * TCL_SET_CURRENT.C --
@@ -11,24 +12,21 @@
 *
 ************************************************************************/
 
-#ifdef vms
-#define TdiExecute  TDI$EXECUTE
-#endif
 
 extern int TdiExecute();
 
 	/*****************************************************************
 	 * TclSetCurrent:
 	 *****************************************************************/
-int TclSetCurrent(void *ctx)
+int TclSetCurrent(void *ctx, char **error, char **output)
 {
   int sts;
-  char *experiment=0;
-  char *shotasc=0;
+  char *experiment = 0;
+  char *shotasc = 0;
   int shot;
-  
+
   DESCRIPTOR_LONG(dsc_shot, &shot);
-  
+
   cli_get_value(ctx, "EXPERIMENT", &experiment);
   if (cli_present(ctx, "INCREMENT") & 1) {
     shot = TreeGetCurrentShotId(experiment);
@@ -36,14 +34,18 @@ int TclSetCurrent(void *ctx)
     sts = TreeSetCurrentShotId(experiment, shot);
   } else {
     cli_get_value(ctx, "SHOT", &shotasc);
-    shot=atoi(shotasc);
+    sts = tclStringToShot(shotasc,&shot, error);
     if (shotasc)
       free(shotasc);
     sts = TreeSetCurrentShotId(experiment, shot);
   }
 
-  if ((sts & 1) != 1)
-    MdsMsg(sts, 0);
+  if (((sts & 1) != 1) && (*error == NULL)) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error, "Error: Unable to change current shot\n"
+	    "Error message was: %s\n",msg);
+  }
   if (experiment)
     free(experiment);
   return sts;

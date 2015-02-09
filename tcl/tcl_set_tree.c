@@ -20,7 +20,8 @@
 #include <treeshr.h>
 
 extern int TdiExecute();
-int tclStringToShot(char *str, int *shot_out, char **error) {
+int tclStringToShot(char *str, int *shot_out, char **error)
+{
   int shot = -2;
   int status = TreeINVSHOT;
   char *endptr;
@@ -30,31 +31,31 @@ int tclStringToShot(char *str, int *shot_out, char **error) {
     shot = strtol(str, &endptr, 0);
     if (*endptr != 0) {
       /* Next see if the string "model" was used. */
-      if (strcasecmp(str,"model")==0)
+      if (strcasecmp(str, "model") == 0)
 	shot = -1;
       else {
 	/* Next see if TDI can make sense of the string */
 	DESCRIPTOR_LONG(dsc_shot, &shot);
-	struct descriptor str_d={strlen(str),DTYPE_T,CLASS_S,str};
-	status  = TdiExecute(&str_d, &dsc_shot MDS_END_ARG);
+	struct descriptor str_d = { strlen(str), DTYPE_T, CLASS_S, str };
+	status = TdiExecute(&str_d, &dsc_shot MDS_END_ARG);
 	if (!(status & 1)) {
-	  *error=malloc(strlen(str)+100);
-	  sprintf(*error,"Error: Could not convert shot specified '%s' to a valid shot number.\n",str);
+	  *error = malloc(strlen(str) + 100);
+	  sprintf(*error, "Error: Could not convert shot specified '%s' to a valid shot number.\n",
+		  str);
 	}
       }
     }
     if ((status & 1) && (shot < -1)) {
       *error = malloc(100);
-      sprintf(*error,"Error: Invalid shot number specified - %d\n",shot);
+      sprintf(*error, "Error: Invalid shot number specified - %d\n", shot);
       status = TreeINVSHOT;
     }
   } else
-    *error=strdup("Error: Zero length shot string specified\n");
+    *error = strdup("Error: Zero length shot string specified\n");
   if (status & 1)
     *shot_out = shot;
   return status;
 }
-  
 
 	/***************************************************************
 	 * TclSetTree:
@@ -63,8 +64,8 @@ int TclSetTree(void *ctx, char **error, char **output)
 {
   int sts = CLI_STS_IVVERB;
   int shot;
-  char *filnam=0;
-  char *asciiShot=0;
+  char *filnam = 0;
+  char *asciiShot = 0;
 
 		/*--------------------------------------------------------
 		 * Executable ...
@@ -80,10 +81,10 @@ int TclSetTree(void *ctx, char **error, char **output)
     if (sts & 1)
       TclNodeTouched(0, tree);
     else {
-      char *msg=MdsGetMsg(sts);
-      *error=malloc(strlen(filnam)+strlen(msg)+100);
-      sprintf(*error,"Error: Failed to open tree '%s' shot %d\n"
-	      "Error message was: %s\n",filnam,shot,msg);
+      char *msg = MdsGetMsg(sts);
+      *error = malloc(strlen(filnam) + strlen(msg) + 100);
+      sprintf(*error, "Error: Failed to open tree '%s' shot %d\n"
+	      "Error message was: %s\n", filnam, shot, msg);
     }
   }
   if (filnam)

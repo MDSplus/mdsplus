@@ -1,6 +1,8 @@
 #include        "tclsysdef.h"
 #include <strroutines.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 /***********************************************************************
 * TCL_PUT_EXPRESSION.C --
@@ -18,7 +20,7 @@ extern int TdiCompile();
 	 * TclPutExpression:
 	 * Put an INTEGER (?) expression into a node.
 	 ***************************************************************/
-int TclPutExpression(void *ctx)
+int TclPutExpression(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *ascValue = 0;
@@ -36,23 +38,26 @@ int TclPutExpression(void *ctx)
       char *eof=0;
       int use_lf = cli_present(ctx, "LF") & 1;
       int symbols = cli_present(ctx, "SYMBOLS") & 1;
+      char *line = 0;
+      ascValue=strdup("");
       cli_get_value(ctx, "EOF", &eof);
-      printf("deal with extended input\n");
-      /*
-      while ((mdsdcl_get_input_nosymbols("PUT> ", &val_part) & 1)) {
-	if (eof && val_part) {
-	  if (!strcmp(eof, val_part))
-	    break;
-	} else if (val_part==NULL)
+      while ((line = (getline ? getline(getlineinfo) : readline("PUT> ")))
+	     && (strlen(line)) > 0) {
+	if (getline == NULL)
+	  add_history(line);
+	if ((eof && (strcasecmp(line,eof)==0)) || (strlen(line)==0)) {
+	  free(line);
+	  line=0;
 	  break;
-	if (use_lf) {
-	  static DESCRIPTOR(lf, "\n");
-	  StrConcat(&dsc_ascValue, &dsc_ascValue, &val_part, &lf, 0);
-	} else
-	  StrAppend(&dsc_ascValue, &val_part);
+	}
+	tclAppend(&ascValue, line);
+	free(line);
+	line=0;
+	if (use_lf)
+	  tclAppend(&ascValue, "\n");
       }
-      str_free1_dx(&val_part);
-      */
+      if (line)
+	free(line);
     } else
       cli_get_value(ctx, "VALUE", &ascValue);
     dsc_ascValue.length=strlen(ascValue);
@@ -66,8 +71,14 @@ int TclPutExpression(void *ctx)
   }
   if (ascValue)
     free(ascValue);
+  if (nodnam)
+    free(nodnam);
   MdsFree1Dx(&value_xd, NULL);
-  if (~sts & 1)
-    MdsMsg(sts, "TclPutExpression: error processing command");
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error,"Error: Problem putting expression in node\n"
+	    "Error message was: %s\n",msg);
+  }
   return sts;
 }

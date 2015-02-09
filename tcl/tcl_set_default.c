@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include  <string.h>
 
 /**********************************************************************
 * TCL_SET_DEFAULT.C --
@@ -14,7 +15,7 @@
 	/****************************************************************
 	 * TclSetDefault:
 	 ****************************************************************/
-int TclSetDefault(void *ctx)
+int TclSetDefault(void *ctx, char **error, char **output)
 {
   int nid;
   int sts;
@@ -24,8 +25,12 @@ int TclSetDefault(void *ctx)
   sts = TreeSetDefault(nodename, &nid);
   if (sts & 1)
     TclNodeTouched(nid, set_def);
-  else
-    MdsMsg(sts, "Error trying to set default to %s", nodename);
+  else {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(nodename) + 100);
+    sprintf("Error: Problem setting default to node '%s'\n"
+	    "Error message was: %s\n", nodename, msg);
+  }
   if (nodename)
     free(nodename);
   return sts;
@@ -34,13 +39,14 @@ int TclSetDefault(void *ctx)
 	/***************************************************************
 	 * TclShowDefault:
 	 ***************************************************************/
-int TclShowDefault(void *ctx)
+int TclShowDefault(void *ctx, char **error, char **output)
 {				/* Returns: status                        */
   char *p;
   int nid;
   TreeGetDefaultNid(&nid);
   if ((p = TreeGetPath(nid))) {
-    TclTextOut(p);
+    *output = malloc(strlen(p) + 10);
+    sprintf(*output, "%s\n", p);
     TreeFree(p);
   }
   return (p ? 1 : 0);

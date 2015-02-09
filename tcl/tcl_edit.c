@@ -19,8 +19,8 @@ int TclEdit(void *ctx, char **error, char **output)
 {
   int shot;
   int sts;
-  char *filnam=0;
-  char *asciiShot=0;
+  char *filnam = 0;
+  char *asciiShot = 0;
 
   cli_get_value(ctx, "FILE", &filnam);
   cli_get_value(ctx, "SHOTID", &asciiShot);
@@ -32,9 +32,10 @@ int TclEdit(void *ctx, char **error, char **output)
   if (sts & 1)
     TclNodeTouched(0, tree);
   else {
-    char *msg=MdsGetMsg(sts);
-    *error=malloc(strlen(msg)+100);
-    sprintf(*error,"Error: Unable to edit shot number %d of the '%s' tree\nError msg was: %s\n",shot,filnam,msg);
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error: Unable to edit shot number %d of the '%s' tree\nError msg was: %s\n",
+	    shot, filnam, msg);
   }
   if (filnam)
     free(filnam);

@@ -35,29 +35,30 @@ int TclSetVersions(void *ctx, char **error, char **output)
   }
  error:
   if (!(status & 1)) {
-    MdsMsg(status, 0);
+    char *msg = MdsGetMsg(status);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error,"Error: problem setting versions\n"
+	    "Error message was: %s\n",msg);
   }
   return status;
 }
 
-int TclShowVersions(void *ctx)
+int TclShowVersions(void *ctx, char **error, char **output)
 {
   int in_model, in_pulse, status;
   DBI_ITM itmlst[] =
       { {4, DbiVERSIONS_IN_MODEL, &in_model, 0}, {4, DbiVERSIONS_IN_PULSE, &in_pulse, 0}, {0, 0, 0,
-											   0} };
+											   0}
+  };
   status = TreeGetDbi(itmlst);
   if (status & 1) {
-    char msg[356];
-    TclTextOut("");
-    strcpy(msg, "   Versions are ");
-    strcat(msg, in_model ? "enabled" : "disabled");
-    strcat(msg, " in the model file and ");
-    strcat(msg, in_pulse ? "enabled" : "disabled");
-    strcat(msg, " in the shot file.");
-    TclTextOut(msg);
-    TclTextOut("");
-  } else
-    MdsMsg(status, 0);
+    *output = malloc(500);
+    sprintf(*output, "  Versions are %s in the model file and %s in the shot file.\n",
+	    in_model ? "enabled" : "disabled", in_pulse ? "enabled" : "disabled");
+  } else {
+    char *msg = MdsGetMsg(status);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error: problem obtaining versions.\n" "Error message was: %s\n", msg);
+  }
   return status;
 }

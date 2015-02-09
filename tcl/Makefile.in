@@ -5,7 +5,6 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ DEF=tcl_commands.def
 
 SOURCES = 			\
-	tcl_dummy.c		\
 	tcl_add_node.c	\
 	tcl_add_tag.c		\
 	tcl_clean_datafile.c		\

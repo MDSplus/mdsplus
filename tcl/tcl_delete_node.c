@@ -52,16 +52,19 @@ static void TouchNodes()
 	 * TclDeleteNode:
 	 * Delete a node
 	 ****************************************************************/
-int TclDeleteNode(void *ctx)
+int TclDeleteNode(void *ctx, char **error, char **output)
 {
   int count = 0;
   int nids = 0;
   int reset = 1;
   int nid;
   int usageMask = -1;
-  char *nodename=0;
+  char *nodename = 0;
   char *pathnam;
   void *ctx_fn;
+  int dryrun = cli_present(ctx, "DRYRUN") & 1;
+  int log = cli_present(ctx, "LOG") & 1;
+  int confirm = cli_present(ctx, "CONFIRM") & 1;
   int status = 1;
   while (cli_get_value(ctx, "NODENAME", &nodename) & 1) {
     ctx_fn = 0;
@@ -74,55 +77,37 @@ int TclDeleteNode(void *ctx)
     free(nodename);
   }
   if (status == TreeNOEDIT) {
-    TclTextOut("Tree must be open for edit to delete nodes.");
+    *error = strdup("Error: The tree must be open for edit before you can deleted nodes.\n");
     return 1;
   }
   if (!count) {
-    TclTextOut("No nodes found.");
+    *error = strdup("Error: No nodes found.\n");
     return 1;
   }
-  if ((nids != count) && (cli_present(ctx, "CONFIRM") & 1)) {
-    char ans;
-    static char message[] = "Additional descendent and/or device\
- nodes will be deleted";
-    struct descriptor dsc_answer={0, DTYPE_T, CLASS_D, 0};
-    static char prompt[] = "Respond D-delete,L-list,Q-quit [Q]: ";
-
-    TclTextOut(message);
-    ans = 0;
-    while (dsc_answer.length ? (ans != 'D' && ans != 'Q') : 1) {
-      str_free1_dx(&dsc_answer);
-      printf("Deal with mdsdcl_get_input\n");
-      //      mdsdcl_get_input(prompt, &dsc_answer);
-      if (dsc_answer.length == 0)
-	str_append(&dsc_answer, "Q");
-      ans = toupper(*dsc_answer.pointer);
-      if (ans == 'L') {
-	nid = 0;
-	while (TreeDeleteNodeGetNid(&nid) & 1) {
-	  pathnam = TreeGetPath(nid);
-	  TclTextOut(pathnam);
-	  TreeFree(pathnam);
-	}
-      }
-    }
-    if (ans == 'Q')
-      return 1;
+  if ((nids != count) && !(dryrun || confirm)) {
+    *error = strdup("Warning: This operation will result in deleting additional descendant\n"
+		    "nodes and/or nodes associcated with a device/conglomerate. If you really\n"
+		    "intend to delete these nodes, reissue the same command using the /CONFIRM\n"
+		    "qualifier.\n");
+    return 1;
   }
-  if (cli_present(ctx, "LOG") & 1) {
+  *output = strdup("");
+  if (log || dryrun) {
     nid = 0;
     while (TreeDeleteNodeGetNid(&nid) & 1) {
-      char *p;
+      char *msg;
       pathnam = TreeGetPath(nid);
-      p=strcpy(malloc(strlen(pathnam)+40), "TCL-I-DELETE, deleted node ");
-      strcat(p,pathnam);
-      TclTextOut(p);
-      free(p);
+      msg = malloc(strlen(pathnam) + 100);
+      sprintf(msg, "%sDeleted node: %s\n", dryrun ? "(Dryrun)" : "", pathnam);
+      tclAppend(output, msg);
+      free(msg);
       TreeFree(pathnam);
     }
   }
-  InitTouchNodes();
-  TreeDeleteNodeExecute();
-  TouchNodes();
+  if (~cli_present(ctx, "DRYRUN") & 1) {
+    InitTouchNodes();
+    TreeDeleteNodeExecute();
+    TouchNodes();
+  }
   return 1;
 }

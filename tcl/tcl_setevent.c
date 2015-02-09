@@ -16,7 +16,7 @@
 	 ***************************************************************/
 int TclSetEvent(void *ctx)
 {
-  char *event=0;
+  char *event = 0;
   int status;
   cli_get_value(ctx, "EVENT", &event);
   status = MDSEvent(event, 0, 0);

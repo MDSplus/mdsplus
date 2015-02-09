@@ -432,7 +432,8 @@ int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline)(), vo
   while ((line = (getline ? getline(getlineinfo) : readline("DEFMAC> "))) && (strlen(line)) > 0) {
     macro->cmds = realloc(macro->cmds, sizeof(char *) * (macro->lines + 1));
     macro->cmds[macro->lines++] = line;
-    add_history(line);
+    if (getline == NULL)
+      add_history(line);
     line = 0;
   }
   if (line)

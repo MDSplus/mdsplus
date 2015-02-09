@@ -21,7 +21,7 @@ extern int TdiCompile();
 	/****************************************************************
 	 * TclDoMethod:
 	 ****************************************************************/
-int TclDoMethod(void *ctx)
+int TclDoMethod(void *ctx, char **error, char **output)
 {
   int i;
   int argc;
@@ -33,11 +33,11 @@ int TclDoMethod(void *ctx)
   struct descriptor_s bool_dsc = { sizeof(boolVal), DTYPE_W, CLASS_S, (char *)&boolVal };
   struct descriptor nid_dsc = { 4, DTYPE_NID, CLASS_S, (char *)&nid };
   struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-  char *arg=0;
-  char *if_clause=0;
-  char *method=0;
-  char *object=0;
-  struct descriptor method_dsc = {0, DTYPE_T, CLASS_S, 0};
+  char *arg = 0;
+  char *if_clause = 0;
+  char *method = 0;
+  char *object = 0;
+  struct descriptor method_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   void *arglist[256] = { (void *)2, &nid_dsc, &method_dsc };
 
   cli_get_value(ctx, "OBJECT", &object);
@@ -46,7 +46,7 @@ int TclDoMethod(void *ctx)
   if (sts & 1) {
     do_it = (TreeIsOn(nid) | cli_present(ctx, "OVERRIDE")) & 1;
     if (cli_present(ctx, "IF") & 1) {
-      struct descriptor if_clause_dsc = {0, DTYPE_T, CLASS_S, 0};
+      struct descriptor if_clause_dsc = { 0, DTYPE_T, CLASS_S, 0 };
       cli_get_value(ctx, "IF", &if_clause);
       if_clause_dsc.length = strlen(if_clause);
       if_clause_dsc.pointer = if_clause;
@@ -66,7 +66,7 @@ int TclDoMethod(void *ctx)
       argc = 0;
       if (cli_present(ctx, "ARGUMENT") & 1) {
 	while (cli_get_value(ctx, "ARGUMENT", &arg) & 1) {
-	  struct descriptor arg_dsc = {strlen(arg), DTYPE_T, CLASS_S, arg};
+	  struct descriptor arg_dsc = { strlen(arg), DTYPE_T, CLASS_S, arg };
 	  xdarg[argc] = empty_xd;
 	  sts = TdiCompile(&arg, &xdarg[argc] MDS_END_ARG);
 	  free(arg);
@@ -95,9 +95,9 @@ int TclDoMethod(void *ctx)
   if (object)
     free(object);
   if (!(sts & 1)) {
-    char msg[512];
-    sprintf(msg, "Error executing method - %s", MdsGetMsg(sts));
-    TclTextOut(msg);
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error executing device method\n" "Error message was: %s\n", msg);
   }
   return sts;
 }

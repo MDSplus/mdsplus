@@ -50,8 +50,8 @@ extern int pthread_cond_timedwait();
 
 -------------------------------------------------------------------------*/
 
-STATIC_ROUTINE void (*ErrorOut) ();
-STATIC_ROUTINE void (*TextOut) ();
+static void (*ErrorOut) ();
+static void (*TextOut) ();
 STATIC_ROUTINE void (*NodeTouched) ();
 STATIC_THREADSAFE char *saved_output = 0;
 #ifndef HAVE_WINDOWS_H
@@ -80,10 +80,10 @@ void TclSetCallbacks(		/* Returns: void                        */
 }
 
 	/*****************************************************************
-	 * TclErrorOut:
+	 * Tcl_ErrorOut:
 	 *****************************************************************/
-void TclErrorOut(		/* Returns: void                        */
-		  int status	/* <r> status value to display          */
+static void Tcl_ErrorOut(	/* Returns: void                        */
+			  int status	/* <r> status value to display          */
     )
 {
   if (ErrorOut)
@@ -91,10 +91,10 @@ void TclErrorOut(		/* Returns: void                        */
 }
 
 	/****************************************************************
-	 * TclTextOut:
+	 * Tcl_TextOut:
 	 ****************************************************************/
-void TclTextOut(		/* Returns: void                        */
-		 char *text	/* <r> text for display                 */
+static void Tcl_TextOut(	/* Returns: void                        */
+			 char *text	/* <r> text for display                 */
     )
 {
 

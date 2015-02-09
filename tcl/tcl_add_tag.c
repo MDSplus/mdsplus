@@ -20,8 +20,8 @@ int TclAddTag(void *ctx, char **error, char **output)
 {				/* Return: status                 */
   int nid;
   int sts;
-  char *nodnam=0;
-  char *tagnam=0;
+  char *nodnam = 0;
+  char *tagnam = 0;
 
   cli_get_value(ctx, "NODE", &nodnam);
   cli_get_value(ctx, "TAGNAME", &tagnam);
@@ -30,8 +30,8 @@ int TclAddTag(void *ctx, char **error, char **output)
     sts = TreeAddTag(nid, tagnam);
   if (!(sts & 1)) {
     char *msg = MdsGetMsg(sts);
-    *error=malloc(strlen(tagnam)+strlen(msg)+100);
-    sprintf(*error,"Error adding tag %s\nError message was: %s\n",tagnam, msg);
+    *error = malloc(strlen(tagnam) + strlen(msg) + 100);
+    sprintf(*error, "Error adding tag %s\nError message was: %s\n", tagnam, msg);
   }
   if (nodnam)
     free(nodnam);

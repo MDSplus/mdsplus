@@ -4,22 +4,29 @@
   <helpall>
     TCL (Tree Command Language) commands:
 
-    TCL is used for MDSplus tree examination and manipulation. With TCL
-    using edit commands you can create a new tree structure or modify an existing
-    one by adding, deleting or renaming nodes and adding tagnames to give direct
-    addressing of nodes in the tree. For edit commands type type:
+    TCL is used for MDSplus tree examination and manipulation. 
+    TCL can be used to examine the tree structure, store data to or get data
+    from nodes, examine or change node properties, or clean or compress the
+    datafile associated with a tree. These commands are listed
+    when you type:
+
+    HELP TREE COMMANDS
+
+    TCL can also be used for dispatching commands or actions to action servers
+    or to directly execute actions or methods provided by devices described in
+    the tree. For help on dispatching related commands type:
+
+    HELP DISPATCH COMMANDS
+
+    With TCL using edit commands you can create a new tree structure or modify
+    an existing one by adding, deleting or renaming nodes and adding tagnames
+    to give direct addressing of nodes in the tree. For edit commands type:
+
     HELP EDIT COMMANDS
 
-    TCL can also be used to examine the tree structure, store or get data to or
-    from nodes, examine or change node properties, of clean or compress the datafile
-    associated with a tree. These commands are listed
-    when you type: HELP TREE COMMANDS
+    TCL can issue and wait for MDSplus events. See:
 
-    TCL can also be used for dispatching commands or actions to action servers or to
-    directly execute the methods provided by devices described in the tree. For help
-    on dispatching related commands type: HELP DISPATCH COMMANDS
-
-    TCL can issue and wait for MDSplus events. See: HELP WFEVENT and HELP SETEVENT
+    HELP WFEVENT and HELP SETEVENT
   </helpall>
 
   <help name="EDIT COMMANDS">
@@ -27,41 +34,42 @@
 
     ADD NODE      - Add a node to an MDSplus tree.
     ADD TAG       - Assign a tagname to a node in the tree.
-    CLOSE         - Close one or more trees currently open by this process.
     DELETE NODE   - Delete a node in an MDSplus tree.
-    DIRECTORY     - List the nodes in a tree.
-    DIRECTORY/TAG - List tagnames in a tree.
     EDIT          - Open a tree or create a new tree for subsequent editing.
     REMOVE TAG    - Remove a tagname.
     RENAME        - Rename a node in a tree.
-    SET DEFAULT   - Change current location in a tree.
     SET VERSIONS  - Enable data version support in a tree.
-    SHOW DB       - Show the tree currently opened.
-    SHOW DEFAULT  - Show the current location in a tree.
-    SHOW VERSIONS - Show whether or not versioning is enabled in the tree.
     WRITE         - Write out a modified tree committing edit changes.
 
-    Type HELP command-name for more information on the command.
+    Type HELP command-name for more information on the command or
+    HELP TREE COMMANDS or HELP DISPATCH COMMANDS for info on additional
+    commands.
   </help>
   <help name="TREE COMMANDS">
     The following commands are available for viewing or manipulating data and
     attributes of nodes in a tree:
 
-    CLOSE         - Close one or more trees currently open by this process.
-    CREATE PULSE  - Create a new pulse file.
-    DECOMPILE     - Decompile the data stored in a node.
-    DEFINE SERVER - Define a server for remote pulse file creation.
-    DELETE PULSE  - Delete a pulse file.
-    DIRECTORY     - List the nodes in a tree.
-    DIRECTORY/TAG - List the tagnames in a tree.
-    SET DEFAULT   - Change the current location in a tree.
-    SET TREE      - Open an MDSplus tree.
-    SHOW DATA     - Show the data structure stored in a node.
-    SHOW DB       - Show the tree currently opened.
-    SHOW DEFAULT  - Show the current location in a tree.
-    SHOW VERSIONS - Show whether versions are enabled in the tree.
+    CLEAN          - Clean the datafile of a tree reclaiming unused space.
+    CLOSE          - Close one or more trees currently open by this process.
+    COMPRESS       - Compress a datafile by compressing data records.
+    CREATE PULSE   - Create a new pulse file.
+    DECOMPILE      - Decompile the data stored in a node.
+    DELETE PULSE   - Delete a pulse file.
+    DIRECTORY      - List the nodes in a tree.
+    DIRECTORY/TAG  - List the tagnames in a tree.
+    PUT            - Store data in a node.
+    SET ATTRIBUTE  - Set and extended attribute for a node.
+    SET DEFAULT    - Change the current location in a tree.
+    SET TREE       - Open an MDSplus tree.
+    SHOW ATTRIBUTE - Show an extended attribute for a node.
+    SHOW DATA      - Show the data structure stored in a node.
+    SHOW DB        - Show the tree currently opened.
+    SHOW DEFAULT   - Show the current location in a tree.
+    SHOW VERSIONS - Show whether or not versioning is enabled in the tree.
 
-    Type HELP command-name for more information on the command.
+    Type HELP command-name for more information on the command or
+    HELP EDIT COMMANDS or HELP DISPATCH COMMANDS for info on additional
+    commands.
   </help>
 
   <help name="DISPATCH COMMANDS">
@@ -81,7 +89,9 @@
     START SERVER     - Connect to an action server to ensure it is running. (Deprecated)
     STOP SERVER      - Stop an action server.
     
-    Type HELP command-name for more information on the command.
+    Type HELP command-name for more information on the command or
+    HELP EDIT COMMANDS or HELP TREE COMMANDS for info on additional
+    commands.
   </help>
   
   <verb name="abort">
@@ -210,7 +220,7 @@
 
   <verb name="close">
     <routine name="TclClose"/>
-    <help>
+    <help name="CLOSE">
       Command: CLOSE
       Purpose: Close the current tree or all open trees.
       Format: CLOSE [treename [/SHOT=shot-number]]|[/ALL][/CONFIRM]
@@ -290,7 +300,7 @@
       Purpose: Copy the currently open tree (usually the model, shot -1) into a pulse
                file.
       Format: CREATE PULSE shot-number [/INCLUDE=(subtree1,subtree2,...)]
-              [/EXCLUDE=(subtree1,subtree2,...)] [/CONDITIONAL] [/NOMAIN] [/DISPATCH]
+              [/EXCLUDE=(subtree1,subtree2,...)] [/CONDITIONAL] [/NOMAIN]
 
       Description:
 
@@ -305,29 +315,9 @@
       subtree nodes to decide if that subtree should be included. The /INCLUDE and
       /EXCLUDE qualifiers can take a list of node paths to specify which subtree nodes
       to include or exclude. If the /INCLUDE qualifier is specified only the subtrees
-      specifiedwill be included. If the /EXCLUDE qualifier is specified, all but the
+      specified will be included. If the /EXCLUDE qualifier is specified, all but the
       subtrees specified will be include. If the /NOMAIN qualifier is included the top
       most tree will not be included in the new pulse files.
-
-      The /DISPATCH qualifier is used in conjunction with the DEFINE SERVER command to
-      send the create pulse operation for a given tree or subtree to another server
-      process. This can be used to speed up the creation of pulse files if the model
-      trees and pulse files for various trees live on different hosts.
-
-      For example, if mymain tree lived on this host but mysubtree1 tree lived on host2
-      and mysubtree2 lived on host3 you could do:
-
-      SET TREE mymain
-      DEFINE SERVER host2 mysubtree1
-      DEFINE SERVER host3 mysubtree2
-      CREATE PULSE 42/DISPATCH
-
-      This would create the mymain pulse file for shot 42 on the localhost but in
-      parallel tell host2 to create the mysubtree1 pulse file from its model and host3
-      to create the mysubtree2 pulse file. This would be much more efficient than
-      without the /DISPATCH qualifier since in that case the local host would have to
-      read in the source trees from the remote hosts and write the new trees over the
-      network to the remote hosts.
 
       NOTE: The shot number may be specified as a TDI expression such as
       "CURRENT_SHOT(""CMOD"")+1".
@@ -343,23 +333,47 @@
 
   <verb name="DECOMPILE">
     <routine name="TclDecompile"/>
+    <help name="DECOMPILE">
+      Command: DECOMPILE
+      Purpose: Display the contents of a node in the tree.
+      Format: DECOMPILE node-path
+
+      Description:
+
+      The DECOMPILE command will display the contents of a node in the tree. If the data
+      converted to a string exceeds approximately 30,000 characters the string representation
+      of large arrays will be truncated.
+    </help>
     <parameter name="p1" label="PATH" required="True"/>
   </verb>
 
-  <type name="DEFINE_TYPE">
+  <type-old name="DEFINE_TYPE">
     <keyword name="SERVER" syntax="define_server"/>"
-  </type>
+  </type-old>
   
-  <verb name="DEFINE">
+  <verb-old name="DEFINE">
     <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
-  </verb>
+  </verb-old>
 
-  <syntax name="define_server">
+  <syntax-old name="define_server">
     <routine name="TclCreatePulse_server"/>
+    <help-old name="DEFINE SERVER">
+      Command: DEFINE SERVER ---- never implemented for linux/windows
+      Purpose: The DEFINE SERVER command specifies an MDSplus server to be responsible
+               for creating pulse files for particular tree(s).
+      Format: DEFINE SERVER/TREE=(treename1[,treename2...]) server-name
+
+      Description:
+
+      The DEFINE SERVER command specifies actions server which should be used for creating
+      MDSplus pulse files for particular trees. The server definitions are used by the
+      CREATE PULSE command to distribute the pulse creation to distributed servers. For
+      more information on this see HELP CREATE PULSE.
+    </help-old>
     <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
     <parameter name="p2" required="True"/>
     <qualifier name="tree" required="True" list="True"/>
-  </syntax>
+  </syntax-old>
 
   <verb name="delete">
     <parameter name="p1" prompt="What" required="True" type="DELETE_TYPE"/>
@@ -372,10 +386,27 @@
 
   <syntax name="delete_node">
     <routine name="TclDeleteNode"/>
+    <help name="DELETE NODE">
+      Command: DELETE NODE
+      Purpose: Delete one or more nodes in a tree opened for edit.
+      Format: DELETE NODE node-path[,node-path...] /LOG /CONFIRM /DRYRUN
+
+      Description:
+
+      The DELETE NODE command is used to delete node(s) from an MDSplus tree. The tree
+      must be opened for edit using the EDIT command. If you attempt to delete a node
+      which has descendants or is part of a device (conglomerate) representation in the
+      tree then the deletion of the node will result in multiple nodes being deleted.
+      If this is your intention then you must include the /CONFIRM qualifier on the
+      command. The /LOG qualifier can be used to display the nodes being deleted.
+      The /DRYRUN command can be used to just display the nodes that would be deleted
+      without actually deleting any nodes.
+    </help>
     <parameter name="p1" prompt="What" required="True" type="DELETE_TYPE"/>
     <parameter name="p2" prompt="Node" label="NODENAME" required="True" list="True"/>
     <qualifier name="log"/>
-    <qualifier name="confirm" defaulted="True"/>
+    <qualifier name="confirm"/>
+    <qualifier name="DRYRUN"/>
   </syntax>
 
   <syntax name="delete_pulse">
@@ -434,6 +465,17 @@
   </syntax>
 
   <verb name="dispatch">
+    <help name="DISPATCH">
+      Command: DISPATCH
+      Purpose: DISPATCH and action to an action server.
+      Format: DISPATCH action-node-path [/WAIT]
+      
+      Description:
+
+      The DISPATCH command is used to dispatch an action node to a
+      action server. If the /WAIT qualifier is included the command
+      will wait for the action execution to complete.
+    </help>
     <routine name="TclDispatch"/>
     <parameter name="p1" label="NODE"/>
     <qualifier name="wait" defaulted="True"/>
@@ -445,16 +487,97 @@
   </verb>
 
   <syntax name="dispatch_build">
+    <help name="DISPATCH/BUILD">
+      Command: DISPATCH/BUILD
+      Purpose: Build a dispatch table used by the DISPATCH/PHASE command.
+      Format: DISPATCH/BUILD [/MONITOR=action-server]
+      Description:
+      
+      The DISPATCH/BUILD command finds all the actions in a tree which are
+      currently turned on and builds a sorted table of actions. The actions
+      are grouped by phase and ordered by sequence numbers. Actions which are
+      configured to be dispatched based on dependency expressions are also
+      identified. The DISPATCH/PHASE command utilizes this table when deciding
+      which actions and in which order they should be dispatched to action
+      servers.
+
+      The /MONITOR qualifier is used to send messages to an action monitor
+      server which are in turn transmitted to actmon processes which display
+      the current status of data acquisition actions being performed.
+    </help>
     <routine name="TclDispatch_build"/>
     <qualifier name="monitor" required="True"/>
   </syntax>
 
   <syntax name="dispatch_check">
+    <help name="DISPATCH/CHECK">
+      Command: DISPATCH/CHECK [/RESET]
+      Purpose: Returns a failure status if the failed essential flag is set.
+               successfully.
+      Format: DISPATCH/CHECK
+      Description:
+      
+      When data acquisition phases are dispatched, a failure flag is set if
+      any action marked as essential (See the SET NODE command) fails during
+      execution. The DISPATCH/CHECK command checks on the current state of
+      that failure flag. If the flag is set the DISPATCH/CHECK command will
+      return a failure status otherwise it will return a success status.
+      
+      If the /RESET qualifier is used, the failure flag will be reset after
+      the check is made so subsequent DISPATCH/CHECK commands will return a
+      success status unless another essential action subsequently fails before
+      the next DISPATCH/CHECK command is issued.
+    </help>
     <routine name="TclDispatch_check"/>
     <qualifier name="reset"/>
   </syntax>
 
   <syntax name="dispatch_phase">
+    <help name="DISPATCH/PHASE">
+      Command: DISPATCH/PHASE
+      Purpose: Dispatch all the actions associated with a named phase.
+      Format: DISPATCH/PHASE phase-name [/NOACTION] [/SYNCH=n] [/LOG]
+              [/MONITOR=monitor-server]
+      Description:
+      
+      The DISPATCH/PHASE command is used to dispatch all actions assigned
+      to a particular phase to action servers for execution. This command
+      uses the action table created by a DISPATCH/BUILD there for a
+      DISPATCH/BUILD command must be given before using the DISPATCH/PHASE
+      command for any pulse file. Actions are dispatched in order of the
+      actions sequence number or if the sequence is an expression containing
+      other nodes, the action will be dispatched if all the actions in the
+      expression have completed and the expression evaluates to a true value.
+
+      The /SYNCH qualifier can be used to synchronize all action servers based
+      on the sequence numbers of the actions. Without the /SYNCH qualifier,
+      all actions matching the phase specified are dispatched immediately to
+      all the action servers in order of the sequence numbers. Each action
+      server maintains a queue of actions and will execute those actions one
+      after the other until all the actions in its queue have been executed.
+      If the /SYNCH command, the actions will be dispatched in groups of the
+      synch value thus synchronizing the actions across multiple servers.
+      For example, a /SYNCH=10 specification would cause the DISPATCH/PHASE
+      command to dispatch all the actions with sequence numbers 1 through 10
+      to be dispatched to their designated action servers in sequence order.
+      No other actions will be dispatched to action servers until this first
+      "batch" have all completed. Then sequence numbers 11-20 would then be
+      dispatched. This ensures that an action with sequence number 15 would
+      on one server would not be executed before one with sequence number 10
+      on another server. This is often critical during the initialization
+      phase where certain types of modules such as triggering devices must
+      be initialized before data acquisition devices that they trigger are
+      armed.
+
+      The /LOG qualifier will output log messages of actions being dispatched,
+      started and completed. The /NOACTION can be used with the /LOG qualifier
+      to log what would be dispatched but no actions would actually be
+      dispatched.
+
+      The /MONITOR qualifier is used to specify an action monitor action
+      server which is used to relay action activity to actmon processes
+      which display the status of action execution.
+    </help>
     <routine name="TclDispatch_phase"/>
     <parameter name="p1" label="PHASE_NAME" prompt="Phase" required="True"/>
     <qualifier name="phase"/>
@@ -466,12 +589,40 @@
 
   <syntax name="dispatch_close">
     <routine name="TclDispatch_close"/>
+    <help name="DISPATCH/CLOSE">
+      Command: DISPATCH/CLOSE
+      Purpose: Instruct MDSplus actions server(s) to close all open trees.
+      Format: DISPATCH/CLOSE[/SERVER=(server1,server2...)]
+      
+      Description:
+
+      The DISPATCH/CLOSE can be used to instruct an MDSplus action server to close all MDSplus
+      trees the server currently has open. If the /SERVER qualifier is not included to specify
+      any action servers then the current dispatch table (See: DISPATCH/BUILD and
+      DISPATCH/PHASE commands) is inspected to construct a list of servers that had actions
+      dispatched to them to send close instructions to. The DISPATCH/CLOSE command is typically
+      used at the end of a data acquisition cycle to instruct the action server to close
+      any open trees.
+    </help>
     <qualifier name="close"/>
     <qualifier name="server" required="True" list="True"/>
   </syntax>
   
   <syntax name="dispatch_command">
     <routine name="TclDispatch_command"/>
+    <help name="DISPATCH/COMMAND">
+      Command: DISPATCH/COMMAND
+      Purpose: Dispatch an mdsdcl command to a server for execution by the server process.
+      Format: DISPATCH/COMMAND/SERVER=servername[/WAIT][/TABLE=command-table] command-to-execute
+      
+      Description:
+
+      The DISPATCH/COMMAND command is used to send an mdsdcl command to an MDSplus action server
+      for execution by that server. The command will be executed asynchronously unless the /WAIT
+      qualifier is included in the command. The /TABLE qualifier can be used to specify a
+      command table to use. If the /TABLE qualifier is omitted then the command will be assumed
+      to be a TCL or MDSDCL command.
+    </help>
     <qualifier name="command"/>
     <qualifier name="server" required="True"/>
     <qualifier name="wait"/>
@@ -480,12 +631,48 @@
   </syntax>
 
   <verb name="do">
+    <help name="DO">
+      Command: DO
+      Purpose: Execute an action node in the tree.
+      Format: DO action-node-path
+      Description:
+      
+      The DO command is used to execute an action node in a tree in the
+      context of the current process. This can be useful for debugging
+      actions but care must be taken that you are attempting to execute
+      the action on a host which can actually execute the action. The
+      action may need to access data acquisition hardware which might only
+      be accessible by the host specified in the action so attempting to
+      execute the action on another node would likely generate errors.
+    </help>
     <routine name="TclDoNode"/>
     <parameter name="p1" label="NODE" prompt="Node" required="True"/>
     <qualifier name="method" syntax="do_method"/>
   </verb>
 
   <syntax name="do_method">
+    <help name="DO/METHOD">
+      Command: DO/METHOD
+      Purpose: Execute a method of a device represented in the tree.
+      Format: DO/METHOD device-node-path method [/IF=expression] [/OVERRIDE]
+      Description:
+      
+      The DO/METHOD command is used to perform a method supported for the
+      device type of the device collection of nodes in a tree. When using
+      the DO/METHOD command you can specify any node in that device to
+      identify the device. Like to DO command, you must be careful that
+      the device you are trying to operate is accessible on the host where
+      you are executing the command as the method is executed in your
+      current process context.
+
+      The /OVERRIDE qualifier is use to override the current on/off status
+      of the device in the tree. If the device nodes are turned off and the
+      /OVERRIDE qualifier is not present, then no action will be performed.
+
+      The /IF qualifier can be used to provide an expression. The method will
+      then only be executed if the evaluation of the expression generates
+      an integer value with the lowest significant bit set.
+    </help>
     <routine name="TclDoMethod"/>
     <parameter name="p1" label="object" prompt="Object" required="True"/>
     <parameter name="p2" label="method" prompt="Method" required="True"/>
@@ -520,17 +707,51 @@
     <qualifier name="new"/>
   </verb>
 
-  <verb name="link">
+  <verb-obsolete name="link">
     <routine name="TclLink"/>
     <parameter name="p1" label="SOURCE" prompt="Source experiment" required="True"/>
     <parameter name="p2" label="DESTINATION" prompt="Destination experiment" required="True"/>
-  </verb>
+  </verb-obsolete>
 
-  <verb name="mark">
+  <verb-obsolete name="mark">
     <routine name="TreeMarkIncludes"/>
-  </verb>
+  </verb-obsolete>
 
   <verb name="put">
+    <help name="PUT">
+      Command: PUT
+      Purpose: Store data into a node in the tree.
+      Format: PUT node-path (expression  | [/EXTENDED] [/LF] [/EOF=xxx])
+      Description:
+      
+      The PUT command is used to store data into a node in an MDSplus tree.
+      The expression parameter is compiled into a tdi expression and stored
+      into the node. If the /EXTENDED qualifier is specified, the expression
+      string will be read from subsequent input lines until either an EOF
+      string is read or a zero length line is read. If the /LF qualifier
+      is used with the /EXTENDED qualifier, the line feeds at the end of
+      each line will be included in the expression. The /LF qualifier is
+      generally only useful if the expression is a quoted string containing
+      line feeds. The /EOF qualifier can be used to specify an EOF string
+      which would terminate the expression input. If the expression has
+      zero length the node will be emptied of its data.
+
+      Examples:
+
+      TCL> PUT mynode 42    ! Store a integer 42 in a node
+      TCL> PUT mynode ""    ! Empty a node
+      TCL> PUT mynode ""this is a string"" ! Store a text string
+      TCL> PUT/EXTEND mynode ! Store an integer
+      PUT> 42
+      PUT>
+      TCL> PUT/EXTEND mynode  ! Store an integer with units
+      PUT> build_with_units(42,"volts")
+      PUT>
+      TCL> PUT/EXTEND/LF mynode
+      PUT> "This is a test
+      PUT> with line feeds in the text"
+      
+    </help>
     <routine name="TclPutExpression"/>
     <parameter name="p1" label="NODE" prompt="Node" required="True"/>
     <parameter name="p2" label="VALUE" prompt="Value" required="True"/>
@@ -538,6 +759,7 @@
   </verb>
 
   <syntax name="put_extended">
+    <help-off name="this is documented in the PUT help"/>
     <routine name="TclPutExpression"/>
     <parameter name="p1" label="NODE" prompt="Node" required="True"/>
     <qualifier name="EXTENDED" defaulted="True"/>
@@ -545,22 +767,6 @@
     <qualifier name="LF" defaulted="True"/>
     <qualifier name="EOF" required="True"/>
   </syntax>
-
-  <verb name="tcl">
-    <routine name="TclCommand"/>
-    <parameter name="p1" type="rest_of_line"/>
-    <qualifier name="tables" defaulted="True" default="TclCommands" list="True"/>
-    <qualifier name="helplib" defaulted="True" default="TCLHELP"/>
-    <qualifier name="auxhelplib" defaulted="True" default="MDSDCL,DATABASE_COMMANDS"/>
-    <qualifier name="prompt" defaulted="True" default="TCL>"/>
-    <qualifier name="def_file" defaulted="True" default="*.TCL"/>
-    <qualifier name="key_defs" defaulted="True" default="TCLkeys"/>
-    <qualifier name="def_libraries" defaulted="True" default="TCL$library"/>
-    <qualifier name="command" defaulted="True" default="TCLinit"/>
-    <qualifier name="ini_def_File" defaulted="True" default="sys$login:*.TCL"/>
-    <qualifier name="library" required="True"/>
-    <qualifier name="DEBUG"/>
-  </verb>
 
   <verb name="remove">
     <parameter name="p1" prompt="What" required="True" type="REMOVE_TYPE"/>
@@ -570,34 +776,63 @@
   </type>
 
   <syntax name="remove_tag">
+    <help name="REMOVE TAG">
+      Command: REMOVE TAG
+      Purpose: Remove a tagname from a node.
+      Format: REMOVE TAG tagname
+      
+      Description:
+
+      The REMOVE TAG command is used to remove a tagname from a node.
+      The tree must be opened by the EDIT command to be able to remove
+      a tagname from a node. The changes must be preserved by issuing a
+      WRITE command before closing the tree with the CLOSE command.
+    </help>
     <routine name="TclRemoveTag"/>
     <parameter name="p1" prompt="What" required="True" type="REMOVE_TYPE"/>
     <parameter name="p2" label="TAGNAME" prompt="Tag" required="True"/>
   </syntax>
 
   <verb name="RENAME">
-    <routine name="TclRename"/>
+    <help name="RENAME">
+       Command: RENAME
+      Purpose: Rename a node in a tree.
+      Format: RENAME old-node-path new-node-path [/LOG]
+      
+      Description:
+
+      The RENAME command can be used to rename a node in an MDSplus tree.
+      Before the RENAME command can be used the tree must be opened with
+      the EDIT command. If the new-node-path specified contains parent
+      nodes those parent nodes must already exist or the rename will fail.
+      The changes must be preserved by issuing a WRITE command before
+      closing the tree with the CLOSE command.
+
+      The /LOG qualifier can be used to display log messages indicating
+      the rename operation.
+    </help>
+   <routine name="TclRename"/>
     <parameter name="p1" label="SOURCE" required="True"/>
     <parameter name="p2" label="DEST" required="True"/>
     <qualifier name="LOG"/>
   </verb>
 
-  <verb name="rundown">
+  <verb-old name="rundown">
     <parameter name="p1" prompt="What" required="True" type="RUNDOWN_TYPE"/>
-  </verb>
+  </verb-old>
 
-  <type name="RUNDOWN_TYPE">
+  <type-old name="RUNDOWN_TYPE">
     <keyword name="TREE" syntax="rundown_tree"/>"
-  </type>
+  </type-old>
 
-  <syntax name="rundown_tree">
+  <syntax-old name="rundown_tree">
     <routine name="TclRundownTree"/>
     <parameter name="p1" prompt="What" required="True" type="RUNDOWN_TYPE"/>
     <parameter name="p2" label="FILE" prompt="File" required="True"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1"/>
     <qualifier name="force_exit"/>
     <qualifier name="subtrees"/>
-  </syntax>
+  </syntax-old>
 
   <verb name="set">
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -806,6 +1041,23 @@
   </verb>
 
   <verb name="write">
+    <help name="WRITE">
+      Command: WRITE
+      Purpose: Write out a tree structure preserving changes made via
+               editing commands.
+      Format: WRITE [treename] [/SHOT=shot-number]
+      
+      Description:
+
+      The WRITE command is used to write out a new tree to preserve any
+      changes using editing commands such as those listed in:
+      HELP EDIT COMMANDS.
+
+      If the treename parameter or /SHOT qualifier is omitted the tree
+      and shot specified with the EDIT command is assumed. If a tree
+      is modified by edit commands and a WRITE command is not issued,
+      those changes will be discarded.
+    </help>
     <routine name="TclWrite"/>
     <parameter name="p1" label="FILE"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>

@@ -364,6 +364,7 @@ int mdsdcl_do_help(char *command)
   char *error = 0;
   char *output = strcpy(malloc(1), "");
   dclDocListPtr doc_l;
+  int helpFound = 0;
   dclDocListPtr dclDocs = mdsdcl_getdocs();
   if (dclDocs == NULL)
     mdsdclAddCommands("mdsdcl_commands", &error);
@@ -380,6 +381,7 @@ int mdsdcl_do_help(char *command)
 	char *content = ((xmlNodePtr) matchingHelp.nodes[0])->children->content;
 	if (content != NULL) {
 	  char *help = formatHelp(content);
+	  helpFound = 1;
 	  output = strcat(realloc(output, strlen(output) + strlen(help) + 1), help);
 	  free(help);
 	}
@@ -395,6 +397,7 @@ int mdsdcl_do_help(char *command)
 	  ((xmlNodePtr) matchingHelp.nodes[0])->children->content) {
 	char *content = ((xmlNodePtr) matchingHelp.nodes[0])->children->content;
 	char *help = formatHelp(content);
+	helpFound = 1;
 	output = strcat(realloc(output, strlen(output) + strlen(help) + 1), help);
 	free(help);
       };
@@ -402,6 +405,11 @@ int mdsdcl_do_help(char *command)
 	free(matchingHelp.nodes);
     }
     output = strcat(realloc(output, strlen(output) + 3), "\n\n");
+  }
+  if (helpFound == 0) {
+    if (output)
+      free(output);
+    output=strdup("No help available for that command.");
   }
   if (command == NULL)
     output =

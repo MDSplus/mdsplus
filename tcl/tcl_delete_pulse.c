@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <string.h>
 
 /**********************************************************************
 * TCL_DELETE_PULSE.C --
@@ -10,9 +11,9 @@
 *
 ************************************************************************/
 
-int TclDeletePulse(void *ctx)
+int TclDeletePulse(void *ctx, char **error, char **output)
 {
-  char *asciiShot=0;
+  char *asciiShot = 0;
   int shot;
   int sts;
   int delete_all = cli_present(ctx, "ALL") & 1;
@@ -21,7 +22,10 @@ int TclDeletePulse(void *ctx)
   sscanf(asciiShot, "%d", &shot);
   free(asciiShot);
   sts = TreeDeletePulseFile(shot, delete_all);
-  if (~sts & 1)
-    sts = MdsMsg(sts, "Couldn't delete pulse file %d", shot);
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error: Could not delete pulse file %d\n" "Error message was: %s\n", shot, msg);
+  }
   return sts;
 }

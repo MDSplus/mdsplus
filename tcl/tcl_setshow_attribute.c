@@ -3,6 +3,8 @@
 #include <strroutines.h>
 #include <alloca.h>
 #include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 extern int TdiDecompile();
 extern int TdiSortVal();
 
@@ -17,14 +19,14 @@ extern int TdiSortVal();
 	/***************************************************************
 	 * TclShowAttribute:
 	 ***************************************************************/
-int TclShowAttribute(void *ctx)
+int TclShowAttribute(void *ctx, char **error, char **output)
 {
   int status;
   int nid;
   EMPTYXD(xd);
-  char *node=0;
-  char *attr=0;
-  struct descriptor dsc_string = {0, DTYPE_T, CLASS_D, 0};
+  char *node = 0;
+  char *attr = 0;
+  struct descriptor dsc_string = { 0, DTYPE_T, CLASS_D, 0 };
   cli_get_value(ctx, "NODE", &node);
   status = TreeFindNode(node, &nid);
   if (status & 1) {
@@ -34,11 +36,9 @@ int TclShowAttribute(void *ctx)
       if (status & 1) {
 	status = TdiDecompile(&xd, &dsc_string MDS_END_ARG);
 	if (status & 1) {
-	  char *p = strncpy(alloca(dsc_string.length + 1),
-			    dsc_string.pointer,
-			    dsc_string.length);
-	  p[dsc_string.length] = '\0';
-	  TclTextOut(p);
+	  *output = strncpy(malloc(dsc_string.length + 100), dsc_string.pointer, dsc_string.length);
+	  (*output)[dsc_string.length] = '\n';
+	  (*output)[dsc_string.length + 1] = '\0';
 	}
 	StrFree1Dx(&dsc_string);
 	MdsFree1Dx(&xd, 0);
@@ -50,41 +50,43 @@ int TclShowAttribute(void *ctx)
 	  typedef ARRAY(char) ARRAY_DSC;
 	  ARRAY_DSC *array = (ARRAY_DSC *) xd.pointer;
 	  char *name = array->pointer;
-	  TclTextOut("Defined attributes for this node:");
-	  for (name = array->pointer; name < array->pointer + array->arsize;
-	       name += array->length) {
-	    char *out = alloca(array->length + 6);
-	    sprintf(out, "    %.*s", array->length, name);
-	    TclTextOut(out);
+	  *output = strdup("Defined attributes for this node:\n");
+	  for (name = array->pointer; name < array->pointer + array->arsize; name += array->length) {
+	    char *out = alloca(array->length + 100);
+	    sprintf(out, "    %.*s\n", array->length, name);
+	    tclAppend(output, out);
 	  }
 	} else {
-	  TclTextOut("No attributes defined for this node");
+	  *output = strdup("No attributes defined for this node\n");
 	}
 	MdsFree1Dx(&xd, 0);
       } else {
-	TclTextOut("No attributes defined for this node");
+	*output = strdup("No attributes defined for this node\n");
       }
       status = 1;
     }
+  }
+  if (!(status & 1)) {
+    char *msg = MdsGetMsg(status);
+    *error = malloc(strlen(msg)+strlen(node)+100);
+    sprintf(*error,"Error: Unable to get attributes for node '%s'\n"
+	    "Error message was: %s\n",node, msg);
   }
   if (node)
     free(node);
   if (attr)
     free(attr);
-  if (!(status & 1)) {
-    MdsMsg(status, 0);
-  }
   return status;
 }
 
 extern int TdiCompile();
 
-int TclSetAttribute(void *ctx)
+int TclSetAttribute(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *attname = 0;
   char *ascValue = 0;
-  struct descriptor dsc_ascValue = {0, DTYPE_T, CLASS_S, 0};
+  struct descriptor dsc_ascValue = { 0, DTYPE_T, CLASS_S, 0 };
   static int val;
   static struct descriptor_xd value_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int sts;
@@ -95,29 +97,25 @@ int TclSetAttribute(void *ctx)
   sts = TreeFindNode(nodnam, &nid);
   if (sts & 1) {
     if (cli_present(ctx, "EXTENDED") & 1) {
-      printf("deal with extended stuff\n");
-      /*
-      static DYNAMIC_DESCRIPTOR(val_part);
-      static DYNAMIC_DESCRIPTOR(dsc_eof);
       int use_lf = cli_present("LF") & 1;
-      int symbols = cli_present("SYMBOLS") & 1;
-
-      str_free1_dx(&dsc_ascValue);
-      str_free1_dx(&dsc_eof);
-      cli_get_value("EOF", &dsc_eof);
-      while ((mdsdcl_get_input_nosymbols("ATT> ", &val_part) & 1)) {
-	if (dsc_eof.dscA_pointer && val_part.dscA_pointer) {
-	  if (!strcmp(dsc_eof.dscA_pointer, val_part.dscA_pointer))
-	    break;
-	} else if (!val_part.dscW_length)
+      char *line=0;
+      while ((line = (getline ? getline(getlineinfo) : readline("ATT> ")))
+	     && (strlen(line)) > 0) {
+	if (getline == NULL)
+	  add_history(line);
+	if (strlen(line)==0) {
+	  free(line);
+	  line=0;
 	  break;
+	}
+	tclAppend(&ascValue, line);
+	free(line);
+	line=0;
 	if (use_lf)
-	  str_concat(&dsc_ascValue, &dsc_ascValue, &val_part, "\n", 0);
-	else
-	  str_append(&dsc_ascValue, &val_part);
+	  tclAppend(&ascValue, "\n");
       }
-      str_free1_dx(&val_part);
-      */
+      if (line)
+	free(line);
     } else
       cli_get_value(ctx, "VALUE", &ascValue);
     dsc_ascValue.length = strlen(ascValue);
@@ -129,14 +127,18 @@ int TclSetAttribute(void *ctx)
       sts = TreeSetXNci(nid, attname, (struct descriptor *)&value_xd);
     }
   }
+  MdsFree1Dx(&value_xd, NULL);
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+strlen(nodnam)+100);
+    sprintf(*error,"Error: Unable to set attribute on node '%s'\n"
+	    "Error message was: %s\n", nodnam, msg);
+  }
   if (nodnam)
     free(nodnam);
   if (attname)
     free(attname);
   if (ascValue)
     free(ascValue);
-  MdsFree1Dx(&value_xd, NULL);
-  if (~sts & 1)
-    MdsMsg(sts, "TclSetAttribute: error processing command");
   return sts;
 }
