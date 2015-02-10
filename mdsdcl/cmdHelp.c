@@ -333,9 +333,11 @@ static char *formatHelp(char *content)
   char *help = strdup(content);
   char *hlp = help;
   char *line;
+  int leading = 1;
   for (line = strsep(&hlp, "\n"); line; line = strsep(&hlp, "\n")) {
-    if (strlen(line) > 0) {
+    if ((strlen(line) > 0) && (strspn(line," \t") != strlen(line))) {
       char *nline;
+      leading = 0;
       if (indentation == -1) {
 	for (indentation = 0; line[indentation] == ' '; indentation++) ;
 	offset = indentation - 2;
@@ -350,29 +352,35 @@ static char *formatHelp(char *content)
       free(nline);
       strcat(ans, "\n");
     } else {
-      ans = strcat(realloc(ans, strlen(ans) + 2), "\n");
+      if (leading == 0)
+	ans = strcat(realloc(ans, strlen(ans) + 2), "\n");
     }
   }
   free(help);
   return ans;
 }
 
-int mdsdcl_do_help(char *command)
+int mdsdcl_do_help(char *command, char **error, char **output)
 {
   int status = CLI_STS_IVVERB;
   char *prompt = 0;
-  char *error = 0;
-  char *output = strcpy(malloc(1), "");
   dclDocListPtr doc_l;
   int helpFound = 0;
   dclDocListPtr dclDocs = mdsdcl_getdocs();
-  if (dclDocs == NULL)
-    mdsdclAddCommands("mdsdcl_commands", &error);
-  for (doc_l = dclDocs; (status == CLI_STS_IVVERB) && (doc_l != NULL); doc_l = doc_l->next) {
+  int docIdx;
+  xmlDocPtr *docs;
+  int numDocs=0;
+  for (doc_l = dclDocs; doc_l != NULL; doc_l = doc_l->next, numDocs++);
+  docs = malloc(sizeof(void *)*numDocs);
+  for (doc_l = dclDocs, docIdx=numDocs-1; doc_l != NULL; doc_l = doc_l->next,docIdx--)
+    docs[docIdx]=doc_l->doc;
+  *output = strdup("\n");
+  for (docIdx=0; (status == CLI_STS_IVVERB) && (docIdx<numDocs); docIdx++) {
+    xmlDocPtr doc = docs[docIdx];
     int exactFound = 0;
     dclNodeList matchingHelp = { 0, 0 };
     if (command != 0) {
-      findEntity(((xmlDocPtr) doc_l->doc)->children, "help", command, &matchingHelp, &exactFound);
+      findEntity(doc->children, "help", command, &matchingHelp, &exactFound);
       if ((matchingHelp.count == 0) || (matchingHelp.count > 1)) {
 	if (matchingHelp.nodes != NULL)
 	  free(matchingHelp.nodes);
@@ -382,14 +390,14 @@ int mdsdcl_do_help(char *command)
 	if (content != NULL) {
 	  char *help = formatHelp(content);
 	  helpFound = 1;
-	  output = strcat(realloc(output, strlen(output) + strlen(help) + 1), help);
+	  *output = strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
 	  free(help);
 	}
 	free(matchingHelp.nodes);
 	break;
       }
     } else {
-      findEntity(((xmlDocPtr) doc_l->doc)->children, "helpall", 0, &matchingHelp, &exactFound);
+      findEntity(doc->children, "helpall", 0, &matchingHelp, &exactFound);
       if ((matchingHelp.count == 1) &&
 	  matchingHelp.nodes &&
 	  matchingHelp.nodes[0] &&
@@ -398,24 +406,22 @@ int mdsdcl_do_help(char *command)
 	char *content = ((xmlNodePtr) matchingHelp.nodes[0])->children->content;
 	char *help = formatHelp(content);
 	helpFound = 1;
-	output = strcat(realloc(output, strlen(output) + strlen(help) + 1), help);
+	*output = strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
 	free(help);
       };
       if ((matchingHelp.count > 0) && (matchingHelp.nodes))
 	free(matchingHelp.nodes);
     }
-    output = strcat(realloc(output, strlen(output) + 3), "\n\n");
   }
   if (helpFound == 0) {
-    if (output)
-      free(output);
-    output=strdup("No help available for that command.");
+    if (*output)
+      free(*output);
+    *output=strdup("No help available for that command.\n");
   }
   if (command == NULL)
-    output =
-	strcat(realloc(output, strlen(output) + 80), "Type 'help command-name' for more info\n\n");
-  printf(output);
-  printf("\n");
-  free(output);
+    *output =
+	strcat(realloc(*output, strlen(*output) + 80), "Type 'help command-name' for more info\n\n");
+  if (docs)
+    free(docs);
   return 1;
 }

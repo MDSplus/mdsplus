@@ -376,12 +376,12 @@ int mdsdcl_wait(void *ctx, char **error, char **output)
   return status;
 }
 
-int mdsdcl_help(void *ctx)
+int mdsdcl_help(void *ctx, char **error, char **output)
 {
   char *p1 = 0;
   int sts;
   cli_get_value(ctx, "P1", &p1);
-  sts = mdsdcl_do_help(p1);
+  sts = mdsdcl_do_help(p1, error, output);
   if (p1)
     free(p1);
   return 1;

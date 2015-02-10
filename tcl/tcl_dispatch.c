@@ -273,34 +273,38 @@ int TclDispatch_show_server(void *ctx, char **error, char **output)
   if (dooutput)
     *output = strdup("");
   while (sts & 1 && cli_get_value(ctx, "SERVER_NAME", &ident) & 1) {
+    char *info = 0;
     if (IS_WILD(ident)) {	/* contains wildcard?     */
       void *ctx1 = 0;
       char *server = 0;
       while ((server = ServerFindServers(&ctx1, ident))) {
+	tclAppend(output, "Checking server: ");
+	tclAppend(output, server);
+	tclAppend(output, "\n");
+	mdsdclFlushOutput(*output);
 	if (dooutput) {
-	  char *info = 0;
-	  tclAppend(output, "Checking server: ");
-	  tclAppend(output, server);
-	  tclAppend(output, "\n");
 	  tclAppend(output, info = ServerGetInfo(full, server));
 	  tclAppend(output, "\n");
-	  if (server)
-	    free(server);
-	  if (info)
-	    free(info);
-	}
-      }
-    } else {
-      if (dooutput) {
-	char *info;
-	tclAppend(output, "Checking server: ");
-	tclAppend(output, ident);
-	tclAppend(output, "\n");
-	tclAppend(output, info = ServerGetInfo(full, ident));
-	tclAppend(output, "\n");
+	} else
+	  info = ServerGetInfo(full, server);
+	if (server)
+	  free(server);
 	if (info)
 	  free(info);
       }
+    } else {
+      tclAppend(output, "Checking server: ");
+      tclAppend(output, ident);
+      tclAppend(output, "\n");
+      mdsdclFlushOutput(*output);
+      if (dooutput) {
+	tclAppend(output, info = ServerGetInfo(full, ident));
+	tclAppend(output, "\n");
+      } else 
+	info = ServerGetInfo(full, ident);
+      if (info)
+	free(info);
+
     }
     free(ident);
   }

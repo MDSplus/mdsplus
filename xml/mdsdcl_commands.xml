@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <module name="mdsdcl_tables" prompt="MDSDCL> " def_file=".mdsdcl">
   <helpall>
-    Basic mdsdcl commands include:
+    MDSDCL commands:
 
     @              - Execute a command script
     DEFINE         - Define a macro.
     DEFINE/SYMBOL  - Define an environment variable. (deprecated, use env)
-    ENV            - Define and environment variable.
     DELETE/MACRO   - Delete a defined command macro.
     DO/MACRO       - Execute a macro.
+    ENV            - Define and environment variable.
     EXIT           - Exit the command interpreter utility. (same as QUIT)
     HELP           - Help on available commands.
     INIT TIMER     - Initialize a timer.
@@ -19,10 +19,10 @@
     SHOW MACRO     - Show the contents of a macro
     SHOW TIMER     - Show the timer information.
     SPAWN          - Execute a operating system shell command.
+    syntax         - Basic syntax of mdsdcl commands.
     TYPE           - Print a message.
     WAIT           - Wait for a specified period of time.
 
-    syntax         - Basic syntax of mdsdcl commands.
   </helpall>
 
   <help name="SYNTAX">
