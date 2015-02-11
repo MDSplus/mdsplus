@@ -1,4 +1,23 @@
-commit 0de773ca600a649ca8d8aa58f7188499ae53865e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 97abd22aaee4911197e4fb4d911947c1831fc4d3 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: bdf52ee fde39e3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 11 10:13:59 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit bdf52ee01a7df0aa1abf1417ecab7a42f901bc40
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 11 10:13:53 2015 -0500
+
+    Fix for trees with subtrees on 64-bit platforms
+
+commit fde39e3f6ec42c12d41bc6341781928ca2742290 (tag: refs/tags/alpha_release-6-3-468)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 5 18:22:27 2015 -0500
+
+    New ChangeLog
+
+commit 0de773ca600a649ca8d8aa58f7188499ae53865e
 Merge: e4338e6 c910e93
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 5 16:00:20 2015 -0500
