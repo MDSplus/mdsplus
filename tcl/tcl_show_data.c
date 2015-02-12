@@ -242,7 +242,7 @@ static int CvtFunctionT(struct descriptor *in_dsc_ptr, int depth, char **error, 
   sts = TdiOpcodeString(&opcode_dsc, &ostr MDS_END_ARG);
   if (sts & 1) {
     char *out_str = alloca(strlen(dstr) + depth + ostr.pointer->length + 10);
-    sprintf(out_str, "%*s%.#s\n", strlen(dstr) + depth, dstr, ostr.pointer->length,
+    sprintf(out_str, "%*s%.*s\n", strlen(dstr) + depth, dstr, ostr.pointer->length,
 	    ostr.pointer->pointer);
     tclAppend(output, out_str);
     sts = CvtGenericRT((struct descriptor_r *)in_dsc_ptr, depth, error, output);
@@ -382,6 +382,7 @@ int TclShowData(void *ctx, char **error, char **output)
       sts = TreeGetRecord(nid, &data);
       if (sts & 1) {
 	sts = CvtDxT((struct descriptor *)(&data), 1, error, output);
+	MdsFree1Dx(&data, 0);
 	if ((sts & 1) == 0)
 	  tclAppend(output, "   Error displaying data\n");
       } else

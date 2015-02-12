@@ -381,20 +381,20 @@ int mdsdcl_do_help(char *command, char **error, char **output)
     dclNodeList matchingHelp = { 0, 0 };
     if (command != 0) {
       findEntity(doc->children, "help", command, &matchingHelp, &exactFound);
-      if ((matchingHelp.count == 0) || (matchingHelp.count > 1)) {
-	if (matchingHelp.nodes != NULL)
-	  free(matchingHelp.nodes);
+      if (matchingHelp.count == 0) {
 	status = CLI_STS_IVVERB;
       } else {
-	char *content = ((xmlNodePtr) matchingHelp.nodes[0])->children->content;
-	if (content != NULL) {
-	  char *help = formatHelp(content);
-	  helpFound = 1;
-	  *output = strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
-	  free(help);
+	int i;
+	for (i=0;i<matchingHelp.count;i++) {
+	  char *content = ((xmlNodePtr) matchingHelp.nodes[i])->children->content;
+	  if (content != NULL) {
+	    char *help = formatHelp(content);
+	    helpFound = 1;
+	    *output = strcat(realloc(*output, strlen(*output) + strlen(help) + 1), help);
+	    free(help);
+	  }
 	}
 	free(matchingHelp.nodes);
-	break;
       }
     } else {
       findEntity(doc->children, "helpall", 0, &matchingHelp, &exactFound);

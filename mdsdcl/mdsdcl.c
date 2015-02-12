@@ -43,6 +43,7 @@ main(int argc, char const *argv[])
   mdsdclAddCommands("mdsdcl_commands", &error);
   if (error) {
     fprintf(stderr,"%s",error);
+    fflush(stderr),
     free(error);
     exit(1);
   }
@@ -152,7 +153,11 @@ main(int argc, char const *argv[])
       if (strlen(command) > 0) {
 	char *prompt_more = 0;
 	add_history(command);
-	status = mdsdcl_do_command_extra_args(command, &prompt_more, &output, &error, 0, 0);
+	if (output) {
+	  free(output);
+	  output = 0;
+	}
+	status = mdsdcl_do_command_extra_args(command, &prompt_more, &error, &output, 0, 0);
 	if (prompt_more != NULL) {
 	  free_history_entry(remove_history(where_history()));
 	  command = strcat(realloc(command, strlen(command) + 2), " ");
@@ -166,11 +171,14 @@ main(int argc, char const *argv[])
 	}
 	if (error != NULL) {
 	  fprintf(stderr, "%s", error);
+	  fflush(stderr);
 	  free(error);
 	  error = 0;
 	}
-	if (mdsdclVerify() && strlen(command) > 0)
+	if (mdsdclVerify() && strlen(command) > 0) {
 	  fprintf(stderr, "%s%s\n", prompt, command);
+	  fflush(stderr);
+	}
 	if (prompt)
 	  free(prompt);
 	prompt = 0;

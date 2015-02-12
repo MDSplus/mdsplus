@@ -760,6 +760,18 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
   status = LibFindImageSymbol_C(image, cmdDef->routine, &handler);
   if (status & 1) {
     status = handler(cmd, error, output, getline, getlineinfo);
+    if (!(status & 1)) {
+      if ((*error == 0) && (status != 0)) {
+	char *msg = MdsGetMsg(status);
+	*error = malloc(strlen(msg)+100);
+	sprintf(*error,"Error message was: %s\n",msg);
+      } else if (*error == 0)
+	*error = strdup("");
+      *error = realloc(*error, strlen(*error)+strlen(cmd->command_line)+100);
+      strcat(*error,"mdsdcl: --> failed on line '");
+      strcat(*error,cmd->command_line);
+      strcat(*error,"'\n");
+    }
   }
   return status;
 }
@@ -1084,12 +1096,11 @@ int mdsdcl_do_command(char const *command)
   return mdsdcl_do_command_extra_args(command, 0, 0, 0, 0, 0);
 }
 
-int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out,
-	       char **error_out, char *(*getline)(), void *getlineinfo)
+int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
+	       char **output_out, char *(*getline)(), void *getlineinfo)
 {
   int status = CLI_STS_IVVERB;
   char *prompt = 0;
-  char *error_tmp = 0;
   char *error = 0;
   char *output = 0;
   int cli_status = CLI_STS(0);
@@ -1110,9 +1121,11 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out,
 	free(matchingVerbs.nodes);
       status = CLI_STS_IVVERB;
     } else {
+      char *output_tmp = 0;
+      char *error_tmp = 0;
       status =
 	processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
-		       &error_tmp, &output, getline, getlineinfo);
+		       &error_tmp, &output_tmp, getline, getlineinfo);
       if (status & 1) {
 	if (error)
 	  free(error);
@@ -1122,10 +1135,21 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out,
 	  if (error == NULL)
 	    error = error_tmp;	  
 	  else {
-	    free(error_tmp);
+	    if ((status & 0xffff0000) == cli_status) 
+	      free(error_tmp);
+	    else {
+	      free(error);
+	      error = error_tmp;
+	    }
 	  }
 	  error_tmp=0;
 	}
+      }
+      if (output_tmp) {
+	if (output == NULL)
+	  output = output_tmp;
+	else
+	  output = strcat(realloc(output,strlen(output)+strlen(output_tmp)+1),output_tmp);
       }
       free(matchingVerbs.nodes);
       if (status == 0) {
@@ -1164,6 +1188,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out,
   if (error != NULL) {
     if (error_out == NULL) {
       fprintf(stderr, "%s", error);
+      fflush(stderr);
       free(error);
     } else
       *error_out = error;
@@ -1171,6 +1196,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **output_out,
   if (output != NULL) {
     if (output_out == NULL) {
       fprintf(stdout, output);
+      fflush(stdout);
       free(output);
     } else {
       if (*output_out) {
@@ -1248,8 +1274,10 @@ int mdsdcl_get_input_nosymbols(char *prompt, char **input)
 
 static void (*MDSDCL_OUTPUT_RTN)(char *output) = 0;
 
-void mdsdclSetOutputRtn(void (*rtn)()) {
+void *mdsdclSetOutputRtn(void (*rtn)()) {
+  void *old_rtn=MDSDCL_OUTPUT_RTN;
   MDSDCL_OUTPUT_RTN=rtn;
+  return old_rtn;
 }
 
 void mdsdclFlushOutput(char *output) {

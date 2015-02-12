@@ -166,7 +166,7 @@ int TclDispatch_abort_server(void *ctx, char **error, char **output)
     sts = ServerAbortServer(ident, 0);
     if (~sts & 1) {
       char *msg = MdsGetMsg(sts);
-      *error = malloc(strlen(msg) + strlen(ident) + 100);
+      *error = malloc(strlen(msg) + strlen(ident) + 1000);
       sprintf(*error, "Error: Problem aborting server '%s'\n"
 	      "Error message was: %s\n", ident, msg);
     }

@@ -492,9 +492,9 @@ static void mdsdclSubstitute(char **cmd, char *p1, char *p2, char *p3, char *p4,
   int p;
   for (p = 0; p < 7; p++) {
     char param[10];
-    int i;
+    size_t i;
     sprintf(param, "'p%d'", p + 1);
-    for (i = 0; i < (strlen(*cmd) - 3); i++) {
+    for (i = 0; (i + 3) < strlen(*cmd); i++) {
       if (strncasecmp((*cmd) + i, param, strlen(param)) == 0) {
 	if (ps[p] && (strlen(ps[p]) > 0)) {
 	  char *newcmd = malloc(strlen(*cmd) + strlen(ps[p]));
@@ -544,29 +544,31 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
   cli_get_value(ctx, "p5", &p5);
   cli_get_value(ctx, "p6", &p6);
   cli_get_value(ctx, "p7", &p7);
+  void *oldOutputRtn = mdsdclSetOutputRtn(0);
   if (indirect) {
     int i;
-    FILE *f;
+    FILE *f = NULL;
     char line[4096];
-    defname=strdup(name);
-    if (DEF_FILE && (strlen(DEF_FILE) > 0)) {
+    if (DEF_FILE &&
+	(strlen(DEF_FILE) > 0) && !(
+				    (strlen(name) > strlen(DEF_FILE)) &&
+				    (strcmp(name+strlen(name)-strlen(DEF_FILE),DEF_FILE) == 0))) {
+      defname = strdup(name);
       defname = strcat(realloc(defname, strlen(defname) + strlen(DEF_FILE) + 1), DEF_FILE);
       f = fopen(defname, "r");
     }
     if (f == NULL)
       f = fopen(name, "r");
     if (f == NULL) {
-      char *def =  0;
       if (defname) {
-	def = strcpy(malloc(strlen(DEF_FILE)+100),"[");
-	strcat(def,DEF_FILE);
-	strcat(def,"]");
+	*error = malloc(strlen(name) + strlen(defname) + 100);
+	sprintf(*error, "Error: Unable to open either %s or %s\n",
+		defname, name);
       }
-      *error = malloc(strlen(name) + 100 + (DEF_FILE ? strlen(DEF_FILE) : 0));
-      sprintf(*error, "Error: Unable to open command file %s%s\n",
-	      name,def ? def : "");
-      if (def)
-	free(def);
+      else {
+	*error = malloc(strlen(name) + 100);
+	sprintf(*error, "Error: Unable to open %s\n",name);
+      }
     }
     if (f != NULL) {
       l = memset(malloc(sizeof(dclMacroList)), 0, sizeof(dclMacroList));
@@ -604,23 +606,36 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
 	char *m_output = 0;
 	char *m_error = 0;
 	getNextLineInfo info = {&i, l};
-	char *cmd = strdup(l->cmds[i]);
+	char *cmd;
+	if (strlen(l->cmds[i]) == 0)
+	  continue;
+	cmd = strdup(l->cmds[i]);
 	mdsdclSubstitute(&cmd, p1, p2, p3, p4, p5, p6, p7);
+	if (mdsdclVerify() && strlen(cmd) > 0) {
+	  char *prompt = mdsdclGetPrompt();
+	  char *line_cpy;
+	  size_t len = *output ? strlen(*output) : 0;
+	  if (*output==NULL)
+	    *output = strdup("");
+	  *output = realloc(*output,strlen(*output)+strlen(prompt)+strlen(cmd)+100);
+	  sprintf(*output+len,"%s%s\n",prompt,cmd);
+	  free(prompt);
+	}
 	sts = mdsdcl_do_command_extra_args(cmd, 0, &m_error, &m_output, getNextLine, &info);
 	free(cmd);
 	if (m_error) {
 	  if ((*error) == NULL)
 	    *error = strdup("");
-	  *error = strcat(realloc(*error, (*error ? strlen(*error) : 0) +
-				  strlen(m_error) + 1), m_error);
+	  *error = strcat(realloc(*error, strlen(*error) + strlen(m_error) + 1), m_error);
 	  free(m_error);
+	  m_error = 0;
 	}
 	if (m_output) {
 	  if ((*output) == NULL)
 	    *output = strdup("");
-	  *output = strcat(realloc(*output, (*output ? strlen(*output) : 0) +
-				   strlen(m_output) + 1), m_output);
+	  *output = strcat(realloc(*output, strlen(*output) + strlen(m_output) + 1), m_output);
 	  free(m_output);
+	  m_output = 0;
 	}
 	if (!(sts & 1))
 	  failed = 1;
@@ -652,6 +667,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
     free(p6);
   if (p7)
     free(p7);
+  mdsdclSetOutputRtn(oldOutputRtn);
   return sts;
 }
 

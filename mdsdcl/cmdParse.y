@@ -170,7 +170,7 @@ static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dcl
   *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 
-int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error, char *(*getline)(), void *getlineInfo) {
+int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **error, char **output, char *(*getline)(), void *getlineInfo) {
   dclCommandPtr dclcmd=0;
   YYLTYPE *yyloc_param=0;
   yyscan_t yyscanner;
@@ -178,12 +178,21 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **outp
   int result,status=CLI_STS_IVVERB;
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string (command, yyscanner);
+  if (error && *error) {
+    free(*error);
+    *error = 0;
+  }
+  if (output && *output) {
+    free(*output);
+    *error = 0;
+  }
   result=yyparse (yyloc_param, yyscanner, &dclcmd, error);
   if (result==0) {
     if (dclcmd) {
       dclcmd->command_line=strdup(command);
-      status=cmdExecute(dclcmd,prompt,output,error,getline, getlineInfo);
-    }
+      status=cmdExecute(dclcmd,prompt,error,output,getline, getlineInfo);
+    } else
+      status = 1;
   }
   dcl__delete_buffer (cmd_state, yyscanner);
   dcl_lex_destroy(yyscanner);

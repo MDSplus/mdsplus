@@ -91,7 +91,6 @@
     DO               - Execute an action in a tree.
     DO/METHOD        - Execute a method provided by a device in a tree.
     SHOW SERVER      - Show the current status of an action server.
-    START SERVER     - Connect to an action server to ensure it is running. (Deprecated)
     STOP SERVER      - Stop an action server.
     
     Type HELP command-name for more information on the command or
@@ -159,7 +158,9 @@
     <parameter name="p2" label="NODENAME" prompt="Node" required="True"/>
     <qualifier name="model" required="True"/>
     <qualifier name="usage" defaulted="True" default="ANY"/>
-    <qualifier name="qualifiers" obsolete="yes"/>
+    <!--
+	<qualifier name="qualifiers"/>
+    -->
   </syntax>
 
   <syntax name="add_tag">
@@ -335,7 +336,7 @@
     <qualifier name="nomain" nonnegatable="True"/>
     <qualifier name="dispatch"/>
   </syntax>
-
+ 
   <verb name="DECOMPILE">
     <routine name="TclDecompile"/>
     <help name="DECOMPILE">
@@ -350,20 +351,24 @@
       of large arrays will be truncated.
     </help>
     <parameter name="p1" label="PATH" required="True"/>
+    </verb>
+ 
+  <!--
+  <type name="DEFINE_TYPE">
+    <keyword name="SERVER" syntax="define_server"/>"
+  </type>
+  -->
+
+  <!--
+  <verb name="DEFINE">
+    <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
   </verb>
 
-  <type-old name="DEFINE_TYPE">
-    <keyword name="SERVER" syntax="define_server"/>"
-  </type-old>
-  
-  <verb-old name="DEFINE">
-    <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
-  </verb-old>
 
-  <syntax-old name="define_server">
+  <syntax name="define_server">
     <routine name="TclCreatePulse_server"/>
-    <old-help name="DEFINE SERVER">
-      Command: DEFINE SERVER ---- never implemented for linux/windows
+    <help name="DEFINE SERVER">
+      Command: DEFINE SERVER never implemented for linux/windows
       Purpose: The DEFINE SERVER command specifies an MDSplus server to be responsible
                for creating pulse files for particular tree(s).
       Format: DEFINE SERVER/TREE=(treename1[,treename2...]) server-name
@@ -374,12 +379,13 @@
       MDSplus pulse files for particular trees. The server definitions are used by the
       CREATE PULSE command to distribute the pulse creation to distributed servers. For
       more information on this see HELP CREATE PULSE.
-    </old-help>
+    </help>
     <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
     <parameter name="p2" required="True"/>
     <qualifier name="tree" required="True" list="True"/>
-  </syntax-old>
-
+  </syntax>
+  -->
+  
   <verb name="delete">
     <parameter name="p1" prompt="What" required="True" type="DELETE_TYPE"/>
   </verb>
@@ -735,16 +741,18 @@
     <qualifier name="new"/>
   </verb>
 
-  <verb-obsolete name="link">
+  <!--
+  <verb name="link">
     <routine name="TclLink"/>
     <parameter name="p1" label="SOURCE" prompt="Source experiment" required="True"/>
     <parameter name="p2" label="DESTINATION" prompt="Destination experiment" required="True"/>
-  </verb-obsolete>
+  </verb>
 
-  <verb-obsolete name="mark">
+  <verb name="mark">
     <routine name="TreeMarkIncludes"/>
-  </verb-obsolete>
-
+  </verb>
+  -->
+  
   <verb name="put">
     <help name="PUT">
       Command: PUT
@@ -785,9 +793,7 @@
     <parameter name="p2" label="VALUE" prompt="Value" required="True"/>
     <qualifier name="EXTENDED" syntax="put_extended"/>
   </verb>
-
   <syntax name="put_extended">
-    <off-help name="this is documented in the PUT help"/>
     <routine name="TclPutExpression"/>
     <parameter name="p1" label="NODE" prompt="Node" required="True"/>
     <qualifier name="EXTENDED" defaulted="True"/>
@@ -845,22 +851,24 @@
     <qualifier name="LOG"/>
   </verb>
 
-  <verb-old name="rundown">
+  <!--
+  <verb name="rundown">
     <parameter name="p1" prompt="What" required="True" type="RUNDOWN_TYPE"/>
-  </verb-old>
+  </verb>
 
-  <type-old name="RUNDOWN_TYPE">
+  <type name="RUNDOWN_TYPE">
     <keyword name="TREE" syntax="rundown_tree"/>"
-  </type-old>
+  </type>
 
-  <syntax-old name="rundown_tree">
+  <syntax name="rundown_tree">
     <routine name="TclRundownTree"/>
     <parameter name="p1" prompt="What" required="True" type="RUNDOWN_TYPE"/>
     <parameter name="p2" label="FILE" prompt="File" required="True"/>
     <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1"/>
     <qualifier name="force_exit"/>
     <qualifier name="subtrees"/>
-  </syntax-old>
+    </syntax>
+    -->
 
   <verb name="set">
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -1330,12 +1338,12 @@
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
 
+  <!--
   <verb name="start">
     <parameter name="p1" prompt="What" required="True" type="start_TYPE"/>
   </verb>
 
   <syntax name="start_server">
-    <helpmissing />
     <routine name="TclDispatch_start_server"/>
     <parameter name="p1" prompt="What" required="True" type="start_type"/>
     <parameter name="p2" label="server" prompt="Server" required="True" list="True"/>
@@ -1343,7 +1351,8 @@
 
   <type name="start_TYPE">
     <keyword name="SERVER" syntax="start_server"/>"
-  </type>
+    </type>
+    -->
 
   <verb name="stop">
     <parameter name="p1" prompt="What" required="True" type="stop_type"/>
@@ -1354,19 +1363,78 @@
   </type>
 
   <syntax name="stop_server">
-    <helpmissing />
+    <help name="STOP SERVER">
+
+      Command: STOP SERVER
+      Purpose: Stop/restart one or more MDSplus action servers.
+      Format: STOP SERVER server-spec[,server-spec]
+      Description:
+
+      The STOP SERVER command can be used to stop one or more action servers.
+      Normally MDSplus action servers are configured to restart automatically so
+      this command effectively will restart an action server. It is not uncommon
+      to restart action servers at some interval such as once per day to recover
+      fragmented virtual memory within the action server process. Other reasons
+      for stopping an action server might be to reset I/O channels to data acquisition
+      devices which might become non-responsive or device support code may introduce
+      memory leaks which may require the process to be restarted to release virtual
+      memory.
+      
+      Unlike the SHOW SERVER command, Wildcard characters cannot be used in the
+      server-spec string.
+ 
+    </help>
     <routine name="TclDispatch_stop_server"/>
     <parameter name="p1" prompt="What" required="True" type="stop_type"/>
     <parameter name="p2" label="servnam" prompt="Server" required="True" list="True"/>
   </syntax>
 
   <verb name="verify">
-    <helpmissing />
+    <help name="VERIFY">
+
+      Command: VERIFY
+      Purpose: Examine a tree structure to ensure it is valid and intact.
+      Format: VERIFY
+      Description:
+
+      The VERIFY command can be used to check the integrety of the currently opened
+      tree to ensure that the tree structure representation is valid and complete.
+      The VERIFY command is a useful diagnostic tool if file system or disk corruption
+      problems have been detected on the storage device where the tree files are
+      stored. If damage to the tree (file name such as mytree_nnn.tree) is discovered,
+      it is usually safe to copy the tree file from an adjacent shot since the tree
+      file contains only the tree structure and not the data or characteristics of
+      the nodes in the tree.
+
+      The VERIFY command will display a count of the nodes in the tree. If there are
+      subtree nodes included in the tree those nodes will be listed as "other" in the
+      node counts.
+
+      Example:
+
+      TCL> SET TREE mytree
+      TCL> VERIFY
+      Node summary:
+        Allocated = 7/14
+        Free      = 7/14
+        Other     = 0/14
+      
+    </help>
     <routine name="TclVerifyTree"/>
   </verb>
 
   <verb name="WFEVENT">
-    <helpmissing />
+    <help name="WFEVENT">
+
+      Command: WFEVENT
+      Purpose: Wait for an MDSplus event to be issued.
+      Format: WFEVENT event-name
+      Description:
+
+      The WFEVENT command can be used to wait for an MDSplus event to be issued. MDSplus events
+      are named occurrences that can be issued by other processes on the same or different host
+      computers. The WFEVENT command will not complete until the MDSplus event is generated.
+    </help>
     <routine name="TclWfevent"/>
     <parameter name="p1" label="event" prompt="Event" required="True"/>
   </verb>

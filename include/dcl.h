@@ -88,7 +88,7 @@ static struct stsText cli_stsText[] = {
 };
 #endif
 
-extern void mdsdclSetOutputRtn(void (*rtn)());
+extern void *mdsdclSetOutputRtn(void (*rtn)());
 extern void mdsdclFlushOutput(char *output);
 extern int mdsdcl_do_command(char const *command);
 

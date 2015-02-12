@@ -92,7 +92,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  unsigned int old_record_length;
+  unsigned int old_record_length = 0;
   static int saved_uic = 0;
   int length = 0;
   int shot_open;
