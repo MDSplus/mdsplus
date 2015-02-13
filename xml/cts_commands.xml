@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <module name="cts_commands" prompt="CTS> " def_file=".cts">
 
-  <help-all>
+  <helpall>
 
     CTS (CAMAC Topological System) Commands.
 
@@ -17,7 +17,7 @@
     SHOW          - Show logical name definitions.
     SHOW/CRATE    - Show status of CAMAC crate controllers.
 
-  </help-all>
+  </helpall>
 
   <verb name="assign">
     <help name="assign">
