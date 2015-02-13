@@ -119,8 +119,8 @@ static void Doing(LinkedEvent * event);
 static void Done(LinkedEvent * event);
 static void CheckIn(String monitor);
 static void DoOpenTree(LinkedEvent * event);
-static void ActivateImage(struct descriptor *image);
-static void ActivateImages(String images);
+//static void ActivateImage(struct descriptor *image);
+//static void ActivateImages(String images);
 static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct * cb);
 static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb);
 static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb);
@@ -730,7 +730,7 @@ static void CheckIn(String monitor_in)
     }
   }
 }
-
+/*
 static void ActivateImages(String images)
 {
   struct descriptor list = { 0, DTYPE_T, CLASS_S, 0 };
@@ -746,7 +746,8 @@ static void ActivateImages(String images)
 
 static void ActivateImage(struct descriptor *image)
 {
-/*   void (*sym)(); */
-/*   lib$establish(lib$sig_to_ret); */
-/*   lib$find_image_symbol(image,image,&sym); */
+   void (*sym)();
+   lib$establish(lib$sig_to_ret);
+   lib$find_image_symbol(image,image,&sym);
 }
+*/
