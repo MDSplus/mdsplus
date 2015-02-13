@@ -56,6 +56,7 @@ typedef struct dclCommand {
   char *routine;		/*!< routine providing implementation of the command */
 } dclCommand, *dclCommandPtr;
 
+#define YYSTYPE_IS_DECLARED
 typedef union YYSTYPE {		/*!< Used for types used during bison/flex parsing of commands */
   char *str;
   dclCommandPtr cmd;
