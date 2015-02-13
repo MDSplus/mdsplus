@@ -81,12 +81,15 @@ extern struct CRATE *CRATEdb;
 
 int find_crate(char *wild, char **crate, void **ctx)
 {
+  struct descriptor wild_d = { strlen(wild), DTYPE_T, CLASS_S, wild };
   struct context {
     int numEntries;
     int next;
   } *context;
   int i;
   int status = 0;
+  if (wild[wild_d.length-1]==':')
+    wild_d.length--;
   if (*ctx == 0) {
     *ctx = malloc(sizeof(struct context));
     ((struct context *)*ctx)->next = 0;
@@ -94,7 +97,6 @@ int find_crate(char *wild, char **crate, void **ctx)
   }
   context = (struct context *)*ctx;
   while (context->next < context->numEntries) {
-    struct descriptor wild_d = { strlen(wild), DTYPE_T, CLASS_S, wild };
     struct descriptor crate_d =
 	{ sizeof(struct CRATE_NAME), DTYPE_T, CLASS_S, (char *)&CRATEdb[context->next++] };
     if (StrMatchWild(&crate_d, &wild_d) & 1) {
