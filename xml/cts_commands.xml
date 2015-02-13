@@ -154,8 +154,17 @@
       Examples:
 
       CTS> SHOW             ! list all the defined CAMAC modules
-      CTS> SHOW *my*        ! list all the modules whose logical names include 'my'
+      ...
       CTS> SHOW GKA4*/PHYS  ! list all the modules whose physical names start with 'GKA4'
+      ...
+      CTS> SHOW ENG*        ! list all the modules whose logical names start with ENG
+          #  Logical Name                     Physical   Comment
+	==== ================================ ========== ========================================679
+	135: ENG_B2408                        GKA601:N11                                         &lt;
+	136: ENG_DECODER                      GKA601:N9                                          &lt;
+	137: ENG_ENCODER                      GKA601:N22                                         &lt;
+	138: ENG_IGOR                         GKA601:N1  Engineering IGOR (state)                &lt;
+	==== ================================ ========== ========================================
       
     </help>
     <routine name="ShowModule"/>
@@ -182,6 +191,20 @@
       as FSTOP, FQREP and FQSTOP operations. The LAM and PRV columns on the
       list are no longer supported. If a wild-card-name is provides, only
       the crates which match the name are listed.
+
+      Example:
+
+      CTS> show/crate gka51*
+      CRATE   ONL LAM PRV ENH
+      =======  === === === ===
+      GKA510:   X   .   .   -
+      GKA512:   *   .   .   *
+      GKA514:   *   .   .   -
+      GKA515:   *   .   .   -
+      GKA516:   *   .   .   -
+      GKA517:   X   .   .   -
+      GKA518:   *   .   .   -
+      =======  === === === ===
       
     </help>
     <routine name="ShowCrate"/>
