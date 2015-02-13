@@ -159,12 +159,12 @@
       ...
       CTS> SHOW ENG*        ! list all the modules whose logical names start with ENG
           #  Logical Name                     Physical   Comment
-	==== ================================ ========== ========================================679
-	135: ENG_B2408                        GKA601:N11                                         &lt;
-	136: ENG_DECODER                      GKA601:N9                                          &lt;
-	137: ENG_ENCODER                      GKA601:N22                                         &lt;
-	138: ENG_IGOR                         GKA601:N1  Engineering IGOR (state)                &lt;
-	==== ================================ ========== ========================================
+      ==== ================================ ========== ========================================679
+      135: ENG_B2408                        GKA601:N11                                         &lt;
+      136: ENG_DECODER                      GKA601:N9                                          &lt;
+      137: ENG_ENCODER                      GKA601:N22                                         &lt;
+      138: ENG_IGOR                         GKA601:N1  Engineering IGOR (state)                &lt;
+      ==== ================================ ========== ========================================
       
     </help>
     <routine name="ShowModule"/>
