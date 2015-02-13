@@ -28,7 +28,7 @@ int TclSetDefault(void *ctx, char **error, char **output)
   else {
     char *msg = MdsGetMsg(sts);
     *error = malloc(strlen(msg) + strlen(nodename) + 100);
-    sprintf("Error: Problem setting default to node '%s'\n"
+    sprintf(*error,"Error: Problem setting default to node '%s'\n"
 	    "Error message was: %s\n", nodename, msg);
   }
   if (nodename)
