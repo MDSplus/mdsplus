@@ -475,7 +475,7 @@ int ShowCrate(void *ctx, char **error, char **output)
 	parse_crate_db(CRATEdb + i, pCr8);
 	crate_d.length = strlen(pCr8->name);
 	crate_d.pointer = pCr8->name;
-	if (StrMatchWild(&wild, &crate_d)&1) {
+	if (StrMatchWild(&crate_d,&wild_d)&1) {
 	  moduleFound = TRUE;
 	  if (moduleFound) {
 	    crateStatus = 0;
