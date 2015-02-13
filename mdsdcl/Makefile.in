@@ -43,10 +43,10 @@ cmdHelp.o: cmdHelp.c
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD) -lxml2 -lreadline -lncurses
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBS) $(MAKE_IMPLIB) $(THREAD) -lxml2 @LIBREADLINE@
 
 @MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB)
-	$(LINK.c) $(OUTPUT_OPTION) $<  -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lreadline -lncurses
+	$(LINK.c) $(OUTPUT_OPTION) $<  -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr
 
 #cmdParse.tab.c: cmdParse.y
 #        bison cmdParse.y
