@@ -1,106 +1,233 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <module name="cts_commands" prompt="CTS> " def_file=".cts">
 
+  <help-all>
+
+    CTS (CAMAC Topological System) Commands.
+
+    CTS is used to configure the CAMAC system and assign logical names
+    to CAMAC modules assessible via CAMAC serial highway controllers.
+
+    ADDCRATE      - Add a CAMAC crate controller to configuration.
+    AUTOCONFIG    - Map scsi devices to CAMAC physical module addresses.
+    ASSIGN        - Assign a logical name to a CAMAC module.
+    DEASSIGN      - Deassign a logical name.
+    DELCRATE      - Delete a CAMAC crate controller from configuration.
+    SET           - Turn CAMAC crates on or off.
+    SHOW          - Show logical name definitions.
+    SHOW/CRATE    - Show status of CAMAC crate controllers.
+
+  </help-all>
+
   <verb name="assign">
+    <help name="assign">
+      Command: ASSIGN
+      Purpose: Assign a name to a CAMAC module.
+      Format: ASSIGN physical-name logical-name [/COMMENT="comment"]
 
+      Description:
+
+      The ASSIGN command can be used to assign a name to a physical CAMAC module address
+      so the module can be referenced using a user friendly name.
+
+      CAMAC module physical names look like: GKA123:N10 where the A is the host scsi adapter,
+      1 is the scsi id of the serial crate controller, 23 is the crate number of the crate
+      and 10 is the slot number of the CAMAC module in the crate. Host scsi adapters are
+      named A,B,C etc... and map to the scsi adapters in the /proc/scsi/scsi.
+
+      Logical-names can be up to 32 characters in length and must consist of alphanumeric
+      characters and underscores. Logical name lookup is case insensitive.
+      The logical-name must be unique but more than one logical-name
+      can be assigned to the same physical-name.
+
+      The /COMMENT qualifier can be used to add some information about the module which
+      will be displayed using the SHOW command.
+
+      Example:
+
+      ASSIGN GKA410:N01 MY_CAMAC_MODULE /COMMENT="This is my special module"
+
+    </help>
     <routine name="Assign"/>
-
     <parameter name="p1" label="PHY_NAME" required="True" prompt="Physical name:"/>
     <parameter name="p2" label="LOG_NAME" required="True" prompt="Logical name:"/>
     <qualifier name="comment"/>
+  </verb>
 
-"  </verb>
   <verb name="autoconfig">
+    <help name="autoconfig">
 
+      Command: AUTOCONFIG
+      Purpose: Create a map between the physical module names and the host scsi adapters.
+      Format: AUTOCONFIG
+
+      Description:
+
+      The physical names of CAMAC modules begin with GKx where x denotes the scsi adapter
+      where the camac serial highway is attached. The AUTOCONFIG command looks up the
+      list of scsi adapters in /proc/scsi/scsi and makes a map between A,B,C and the
+      scsi host adapaters. Normally the AUTOCONFIG command is done once during system
+      startup to refresh this mapping information.
+    </help>
     <routine name="Autoconfig"/>
+  </verb>
 
-
-"  </verb>
-  <verb name="cts">
-
-    <routine name="Noop"/>
-
-    <parameter name="p1" type="rest_of_line"/>
-    <qualifier name="tables" defaulted="True" default="cts_commands" list="True"/>
-    <qualifier name="helplib" defaulted="True" default="ctsHELP"/>
-    <qualifier name="auxhelplib"/>
-    <qualifier name="prompt" defaulted="True" default="CTS>"/>
-    <qualifier name="def_file" defaulted="True" default="*.cts"/>
-    <qualifier name="key_defs" defaulted="True" default="ctskeys"/>
-    <qualifier name="def_libraries" defaulted="True" default="cts$library"/>
-    <qualifier name="command" defaulted="True" default="ctsinit"/>
-    <qualifier name="ini_def_File" defaulted="True" default="sys$login:*.cts"/>
-    <qualifier name="library" required="True"/>
-    <qualifier name="debug"/>
-
-"  </verb>
   <verb name="deassign">
+    <help name="deassign">
 
+      Command: DEASSIGN
+      Purpose: Remove a logical name assigment to a CAMAC module.
+      Format: DEASSIGN name [/PHYSICAL]
+
+      Description:
+
+      Logical names are assigned to physical address names of CAMAC modules to make it
+      easier to reference the CAMAC modules when using the CAMAC I/O library routines
+      or utilities. These logical names can be defined using the ASSIGN command. The
+      DEASSIGN command is used to remove a logical name when it is no longer being
+      used. Without specifying the /PHYSICAL qualifier, the name specified should be
+      the logical name you want to remove. If you want to remove all logical names
+      to a particular CAMAC module you can use the /PHYSICAL qualifier and then use
+      the physical name of the module.
+
+      Examples:
+
+      CTS> DEASSIGN MY_MODULE
+      CTS> DEASSIGN/PHYSICAL GKA401:N10
+      
+    </help>
     <routine name="Deassign"/>
-
     <parameter name="p1" label="MODULE" required="True" prompt="Module:"/>
     <qualifier name="physical"/>
+  </verb>
 
-"  </verb>
-  <verb-off name="help">
-
-    <routine name="Help"/>
-
-
-"  </verb-off>
+  <!--
   <verb name="reset">
-
     <routine name="ResetHighway"/>
-
     <parameter name="p1" label="MODULE" required="True" prompt="Highway:"/>
-
-"  </verb>
+  </verb>
+  -->
+  
   <verb name="set">
+    <help name="SET">
 
+      Command: SET
+      Purpose: Set a crate controller online or offline
+      Format:  SET wild-card-crate-name (/ON | /OFF) [/QUIET]
+
+      Description:
+
+      The SET command can be used to put CAMAC crate controllers online or
+      offline. A CAMAC crate controller must be online before CAMAC I/O can
+      take place with any modules in that crate except for the crate controller
+      itself. You can use wildcards in the crate controller name.
+
+      Examples:
+
+      CTS> SET GKA102/ON
+      CTS> SET */ON/QUIET   ! Turn on all the crates without logging errors.
+      
+    </help>
     <routine name="SetCrate"/>
-
     <parameter name="p1" label="CRATE" default="*"/>
     <qualifier name="online"/>
     <qualifier name="offline"/>
     <qualifier name="quiet"/>
-
-"  </verb>
+  </verb>
+  
   <verb name="show">
+    <help name="SHOW">
 
+      Command: SHOW
+      Purpose: List logical name table to CAMAC modules
+      Format: SHOW [[wild-card-name] [/PHYSICAL]]
+
+      Description:
+
+      The SHOW command will list the logical name to physical name
+      mapping for CAMAC modules. With no name specified it will list all the
+      defined CAMAC module logical names. Specifying a name will cause the SHOW
+      command to only list those modules matching the name specified. If the
+      /PHYSICAL qualifier is present, the wild-card-name will be used to match
+      the physical-address names of the modules.
+
+      Examples:
+
+      CTS> SHOW             ! list all the defined CAMAC modules
+      CTS> SHOW *my*        ! list all the modules whose logical names include 'my'
+      CTS> SHOW GKA4*/PHYS  ! list all the modules whose physical names start with 'GKA4'
+      
+    </help>
     <routine name="ShowModule"/>
-
     <parameter name="p1" label="MODULE" default="*"/>
     <qualifier name="crate" syntax="show_crate"/>
     <qualifier name="highway" syntax="show_highway"/>
     <qualifier name="physical"/>
     <qualifier name="format"/>
 
-"  </verb>
+  </verb>
+
   <syntax name="show_crate">
+    <help name="SHOW CRATE">
 
+      Command: SHOW/CRATE
+      Purpose: Display the status of CAMAC crate controllers
+      Format:  SHOW/CRATE [wild-card-name]
+
+      Description:
+
+      The SHOW/CRATE displays the current status of CAMAC crate controllers.
+      The list includes the crate's online status (*==online, x==offline),
+      and whether the crate controller supports enhanced I/O commands such
+      as FSTOP, FQREP and FQSTOP operations. The LAM and PRV columns on the
+      list are no longer supported. If a wild-card-name is provides, only
+      the crates which match the name are listed.
+      
+    </help>
     <routine name="ShowCrate"/>
-
     <parameter name="p1" label="MODULE" default="*"/>
+  </syntax>
 
-"  </syntax>
+  <!--
   <syntax name="show_highway">
-
     <routine name="ShowModule"/>
-
     <parameter name="p1" label="MODULE" default="*"/>
+  </syntax>
+-->
 
-"  </syntax>
   <verb name="addcrate">
+    <help name="ADDCRATE">
 
+      Command: ADDCRATE
+      Purpose: Add a CAMAC crate to the configuration
+      Format:  ADDCRATE crate-name (i.e. GKA410)
+
+      Description:
+
+      The ADDCRATE command is used to add CAMAC crates to the CTS system configuration.
+      Once a crate is added then you can set the crate online or offline using the SET
+      command as well as add logical name mappings to modules in the crate using the
+      ASSIGN command.
+      
+    </help>
     <routine name="AddCrate"/>
-
     <parameter name="p1" label="PHY_NAME" required="True" prompt="Physical name:"/>
+  </verb>
 
-"  </verb>
   <verb name="delcrate">
+    <help name="DELCRATE">
 
+      Command: DELCRATE
+      Purpose: Delete a CAMAC crate from the CTS configuration.
+      Format:  DELCRATE crate-name
+
+      Description:
+
+      The DELCRATE command is used to remove a CAMAC crate from the CTS configuration.
+      The crate-name to delete is specified in the command (i.e. DELCRATE GKA410)
+    </help>
     <routine name="DelCrate"/>
-
     <parameter name="p1" label="PHY_NAME" required="True" prompt="Physical name:"/>
-"  </verb>
+  </verb>
+
 </module>
