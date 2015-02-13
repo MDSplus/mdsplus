@@ -168,7 +168,7 @@
   </verb>
 
   <syntax name="show_crate">
-    <help name="SHOW CRATE">
+    <help name="SHOW/CRATE">
 
       Command: SHOW/CRATE
       Purpose: Display the status of CAMAC crate controllers
