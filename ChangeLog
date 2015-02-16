@@ -1,4 +1,23 @@
-commit 97abd22aaee4911197e4fb4d911947c1831fc4d3 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c475739eb4cfb977d222b54bf28a344577d34330 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: ba21d75 9c6c600
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 13 16:01:19 2015 +0100
+
+    Merge branch 'alpha' of https://github.com/MDSplus/MDSplus into alpha
+
+commit ba21d7511be5938f3828db15f90457476fda389b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 13 16:00:49 2015 +0100
+
+    Added C++ support for python devices
+
+commit 9c6c60086d37894c0b2d3ba941002901b3e5bd9d (tag: refs/tags/alpha_release-6-3-469)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 11 18:23:01 2015 -0500
+
+    New ChangeLog
+
+commit 97abd22aaee4911197e4fb4d911947c1831fc4d3
 Merge: bdf52ee fde39e3
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 11 10:13:59 2015 -0500
