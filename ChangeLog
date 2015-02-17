@@ -1,4 +1,29 @@
-commit 5a4767a87e804629224c3d19fdfa6e4f87fd3576 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 978766f76b8ce2e2cf362f39bac6f339950f0231 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: c265934 92e68e3
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Feb 17 12:11:30 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit c265934844a6516b5f8c54a9505cd8551a0a686c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Feb 17 12:10:49 2015 +0100
+
+    Support for Cygnet4K Camera
+
+commit d3b768e4b1c17e993b9fcbab3f11bfaf5d168c5a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Feb 17 12:08:00 2015 +0100
+
+    Support for Cygnet4K Camera
+
+commit 92e68e3060a6d6267657675685f20e47b31e3143 (tag: refs/tags/alpha_release-6-3-471)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Feb 16 18:22:29 2015 -0500
+
+    New ChangeLog
+
+commit 5a4767a87e804629224c3d19fdfa6e4f87fd3576
 Merge: 3de1566 43230da
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Feb 16 15:27:07 2015 +0100
