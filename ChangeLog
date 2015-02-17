@@ -1,4 +1,23 @@
-commit c475739eb4cfb977d222b54bf28a344577d34330 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 5a4767a87e804629224c3d19fdfa6e4f87fd3576 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 3de1566 43230da
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Feb 16 15:27:07 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 3de1566d157ceea54e2c4c4d5486feb5350193d3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Feb 16 15:26:59 2015 +0100
+
+    Initial development of CYGNET4K Camera
+
+commit 43230da4213d8fece046f35d0664873bc13cb2ec (tag: refs/tags/alpha_release-6-3-470)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Feb 13 18:23:24 2015 -0500
+
+    New ChangeLog
+
+commit c475739eb4cfb977d222b54bf28a344577d34330
 Merge: ba21d75 9c6c600
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Feb 13 16:01:19 2015 +0100
