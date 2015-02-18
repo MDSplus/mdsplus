@@ -1,4 +1,16 @@
-commit 978766f76b8ce2e2cf362f39bac6f339950f0231 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e179cafe9e93e29111676a6153723136f5408e4e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 16:03:06 2015 -0500
+
+    Allow builds of arbitrary branchs (must not include underscore in branch name)
+
+commit d16ea89dded6c831409beb50c66935cad9de95fb (tag: refs/tags/alpha_release-6-3-472)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Feb 17 18:23:03 2015 -0500
+
+    New ChangeLog
+
+commit 978766f76b8ce2e2cf362f39bac6f339950f0231
 Merge: c265934 92e68e3
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Feb 17 12:11:30 2015 +0100
@@ -1330,7 +1342,7 @@ Date:   Fri Oct 31 07:49:32 2014 -0400
 
     Create README.md
 
-commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master)
+commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master, refs/heads/master)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 29 20:29:04 2014 +0000
 
