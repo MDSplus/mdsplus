@@ -180,7 +180,7 @@ static int CvtDdscT(struct descriptor *in_dsc_ptr, int depth, char **error, char
 
   case DTYPE_T:
     out_str = alloca(strlen(dstr) + in_dsc_ptr->length + depth + 10);
-    sprintf(out_str, "%*s%.#s\n", strlen(dstr) + depth, dstr, in_dsc_ptr->length,
+    sprintf(out_str, "%*s%.*s\n", strlen(dstr) + depth, dstr, in_dsc_ptr->length,
 	    in_dsc_ptr->pointer);
     tclAppend(output, out_str);
     sts = 1;

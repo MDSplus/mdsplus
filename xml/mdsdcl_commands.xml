@@ -15,6 +15,7 @@
     QUIT           - Exit the command interpreter utility. (same as EXIT)
     SET COMMAND    - Load additional commands to interpreter.
     SET PROMPT     - Change the command prompt.
+    SET STOPONFAIL - Specify whether command scripts or macros should stop on an error.
     SET VERIFY     - Turn command echoing on or off.
     SHOW MACRO     - Show the contents of a macro
     SHOW TIMER     - Show the timer information.
@@ -253,10 +254,29 @@
     <keyword-obsolete name="INTERRUPT" syntax="SET_INTERRUPT"/>"
     <keyword-obsolete name="LIBRARY" syntax="SET_LIBRARY"/>"
     <keyword name="PROMPT" syntax="SET_PROMPT"/>"
+    <keyword name="STOPONFAIL" syntax="STOPONFAIL"/>
     <keyword name="VERIFY" syntax="SET_VERIFY"/>"
     <keyword name="NOVERIFY" syntax="SET_VERIFY"/>"
     <keyword-obsolete name="HYPHEN" syntax="SET_HYPHEN"/>"
   </type>
+
+  <syntax name="STOPONFAIL">
+    <help name="SET STOPONFAIL">
+      Command: SET STOPONFAIL
+      Purpose: Specify whether a script file or macro should stop when an error occurs.
+      Format:  SET STOPONFAIL [ /ON | /OFF ]
+      Description:
+
+      By default, mdsdcl command scripts or macros will stop if an error occurs
+      executing one of the commands in the script. You can use SET STOPONFAIL /OFF to
+      disable this behavior.
+    </help>
+    <routine name="mdsdcl_set_stoponfail"/>
+    <parameter name="P1"/>
+    <qualifier name="ON"/>
+    <qualifier name="OFF"/>
+  </syntax>
+  
   <syntax name="SET_COMMAND">
     <help name="SET COMMAND">
       Command: SET COMMAND

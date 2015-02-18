@@ -1093,7 +1093,34 @@ int mdsdclAddCommands(char *name_in, char **error)
 
 int mdsdcl_do_command(char const *command)
 {
-  return mdsdcl_do_command_extra_args(command, 0, 0, 0, 0, 0);
+  char *error = 0;
+  char *output = 0;
+  int status = mdsdcl_do_command_extra_args(command, 0, &error, &output, 0, 0);
+  if (error) {
+    fprintf(stderr, error);
+    free(error);
+  }
+  if (output) {
+    fprintf(stdout, output);
+    free(output);
+  }
+}
+
+int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc) {
+  char *error=0;
+  char *output=0;
+  int status = mdsdcl_do_command_extra_args(command,0,error_dsc ? &error : 0,output_dsc ? &output : 0, 0, 0);
+  if (error) {
+    struct descriptor d = {strlen(error), DTYPE_T, CLASS_S, error};
+    MdsCopyDxXd(&d, error_dsc);
+    free(error);
+  }
+  if (output) {
+    struct descriptor d = {strlen(output), DTYPE_T, CLASS_S, output};
+    MdsCopyDxXd(&d, output_dsc);
+    free(output);
+  }
+  return status;
 }
 
 int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
@@ -1107,6 +1134,19 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   dclDocListPtr doc_l;
   if (dclDocs == NULL)
     mdsdclAddCommands("mdsdcl_commands", &error);
+  if (mdsdclVerify() && strlen(cmd->command_line) > 0) {
+    char *prompt = mdsdclGetPrompt();
+    if (error_out == NULL)
+      fprintf(stderr,"%s%s\n",prompt,cmd->command_line);
+    else {
+      if (*error_out == NULL)
+	*error_out=strdup("");
+      *error_out = realloc(*error_out,strlen(*error_out)+strlen(prompt)+strlen(cmd->command_line)+10);
+      sprintf(*error_out+strlen(*error_out),"%s%s\n",prompt,cmd->command_line);
+      mdsdclFlushError(*error_out);
+    }
+    free(prompt);
+  }
   for (doc_l = dclDocs;
        ((status & 0xffff0000) == cli_status) && (doc_l != NULL) && status != CLI_STS_PROMPT_MORE;
        doc_l = doc_l->next) {
@@ -1190,8 +1230,14 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
       fprintf(stderr, "%s", error);
       fflush(stderr);
       free(error);
-    } else
-      *error_out = error;
+    } else {
+      if (*error_out) {
+	*error_out = strcat(realloc(*error_out,strlen(*error_out)+strlen(error)+1),error);
+	free(error);
+      } else
+	*error_out = error;
+      mdsdclFlushError(*error_out);
+    }
   }
   if (output != NULL) {
     if (output_out == NULL) {
@@ -1273,6 +1319,7 @@ int mdsdcl_get_input_nosymbols(char *prompt, char **input)
 }
 
 static void (*MDSDCL_OUTPUT_RTN)(char *output) = 0;
+static void (*MDSDCL_ERROR_RTN)(char *error) = 0;
 
 void *mdsdclSetOutputRtn(void (*rtn)()) {
   void *old_rtn=MDSDCL_OUTPUT_RTN;
@@ -1283,5 +1330,17 @@ void *mdsdclSetOutputRtn(void (*rtn)()) {
 void mdsdclFlushOutput(char *output) {
   if (MDSDCL_OUTPUT_RTN) {
     MDSDCL_OUTPUT_RTN(output);
+  }
+}
+
+void *mdsdclSetErrorRtn(void (*rtn)()) {
+  void *old_rtn=MDSDCL_ERROR_RTN;
+  MDSDCL_ERROR_RTN=rtn;
+  return old_rtn;
+}
+
+void mdsdclFlushError(char *error) {
+  if (MDSDCL_ERROR_RTN) {
+    MDSDCL_ERROR_RTN(error);
   }
 }

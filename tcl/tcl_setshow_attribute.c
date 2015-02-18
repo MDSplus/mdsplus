@@ -97,7 +97,7 @@ int TclSetAttribute(void *ctx, char **error, char **output, char *(*getline)(), 
   sts = TreeFindNode(nodnam, &nid);
   if (sts & 1) {
     if (cli_present(ctx, "EXTENDED") & 1) {
-      int use_lf = cli_present("LF") & 1;
+      int use_lf = cli_present(ctx, "LF") & 1;
       char *line=0;
       while ((line = (getline ? getline(getlineinfo) : readline("ATT> ")))
 	     && (strlen(line)) > 0) {

@@ -7,6 +7,7 @@ type this is the second line
 
 help define/symbol
 !define/symbol tmpsym gub
+set prompt "DCL> "
 spawn echo $tmpsym
 help env
 !env tmpsym=bar

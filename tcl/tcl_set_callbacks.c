@@ -1,25 +1,9 @@
 #include        "tclsysdef.h"
 #include <STATICdef.h>
-#include <config.h>
 #include <string.h>
-#ifdef HAVE_WINDOWS_H
-extern int pthread_cond_signal();
-extern int pthread_mutex_lock();
-extern int pthread_mutex_unlock();
-extern int pthread_mutex_init();
-extern int pthread_cond_init();
-extern int pthread_cond_timedwait();
-#define ETIMEDOUT 42
-#else
 #include <sys/time.h>
 #include <pthread.h>
-#endif
 
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_condattr_default NULL
-#define pthread_mutexattr_default NULL
-#endif
 
 /*--------------------------------------------------------------------------
 
@@ -54,9 +38,7 @@ static void (*ErrorOut) ();
 static void (*TextOut) ();
 STATIC_ROUTINE void (*NodeTouched) ();
 STATIC_THREADSAFE char *saved_output = 0;
-#ifndef HAVE_WINDOWS_H
 STATIC_THREADSAFE pthread_mutex_t saved_output_mutex;
-#endif
 STATIC_THREADSAFE int initialized = 0;
 
 	/***************************************************************
@@ -69,9 +51,7 @@ void TclSetCallbacks(		/* Returns: void                        */
     )
 {
   if (!initialized) {
-#ifndef HAVE_WINDOWS_H
-    pthread_mutex_init(&saved_output_mutex, pthread_mutexattr_default);
-#endif
+    pthread_mutex_init(&saved_output_mutex, 0);
     initialized = 1;
   }
   ErrorOut = error_out;
@@ -123,9 +103,7 @@ STATIC_ROUTINE void AppendOut(char *text)
   char *msg = text ? text : "";
   size_t len = strlen(msg);
   char *old_saved_output;
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_lock(&saved_output_mutex);
-#endif
   old_saved_output = saved_output;
   if (saved_output) {
     saved_output = strcpy((char *)malloc(strlen(old_saved_output) + len + 2), old_saved_output);
@@ -136,9 +114,7 @@ STATIC_ROUTINE void AppendOut(char *text)
   }
   strcat(saved_output, msg);
   strcat(saved_output, "\n");
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_unlock(&saved_output_mutex);
-#endif
 }
 
 STATIC_ROUTINE void StatusOut(int status)
@@ -149,43 +125,31 @@ STATIC_ROUTINE void StatusOut(int status)
 void TclSaveOut()
 {
   if (!initialized) {
-#ifndef HAVE_WINDOWS_H
-    pthread_mutex_init(&saved_output_mutex, pthread_mutexattr_default);
-#endif
+    pthread_mutex_init(&saved_output_mutex, 0);
     initialized = 1;
   }
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_lock(&saved_output_mutex);
-#endif
   if (saved_output) {
     free(saved_output);
     saved_output = 0;
   }
   TclSetCallbacks(StatusOut, AppendOut, NodeTouched);
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_unlock(&saved_output_mutex);
-#endif
 }
 
 int TclOutLen()
 {
   int ans;
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_lock(&saved_output_mutex);
-#endif
   ans = saved_output ? strlen(saved_output) : 0;
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_unlock(&saved_output_mutex);
-#endif
   return ans;
 }
 
 int TclGetOut(int free_out, int len_out, char *out)
 {
   int len = 0;
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_lock(&saved_output_mutex);
-#endif
   if (saved_output) {
     len = strlen(saved_output);
     strncpy(out, saved_output, len_out);
@@ -194,8 +158,6 @@ int TclGetOut(int free_out, int len_out, char *out)
       saved_output = 0;
     }
   }
-#ifndef HAVE_WINDOWS_H
   pthread_mutex_unlock(&saved_output_mutex);
-#endif
   return len;
 }

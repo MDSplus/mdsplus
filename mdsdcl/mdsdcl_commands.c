@@ -18,6 +18,8 @@ typedef struct dclMacroList {
   struct dclMacroList *next;
 } dclMacroList, *dclMacroListPtr;
 
+static int STOP_ON_FAIL=1;
+
 /**********************************************************************
 * mdsdcl_commands.c --
 *
@@ -67,13 +69,6 @@ void mdsdclSetDefFile(char *deffile)
     DEF_FILE = strdup(deffile + 1);
   else
     DEF_FILE = strdup(deffile);
-}
-
-char *mdsdclGetDefFile()
-{
-  if (DEF_FILE == NULL)
-    DEF_FILE == strdup(".dcl");
-  return strdup(DEF_FILE);
 }
 
 	/****************************************************************
@@ -326,8 +321,14 @@ int mdsdcl_set_command(void *ctx, char **error, char **output)
   }
   cli_get_value(ctx, "DEF_FILE", &def_file);
   if (def_file) {
-    mdsdclSetDefFile(def_file);
-    free(def_file);
+    if (def_file[0]=='*') {
+      char *tmp = strdup(def_file+1);
+      free(def_file);
+      def_file = tmp;
+    }
+    if (DEF_FILE)
+      free(DEF_FILE);
+    DEF_FILE=def_file;
   }
   cli_get_value(ctx, "HISTORY", &history);
   if (history) {
@@ -544,7 +545,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
   cli_get_value(ctx, "p5", &p5);
   cli_get_value(ctx, "p6", &p6);
   cli_get_value(ctx, "p7", &p7);
-  void *oldOutputRtn = mdsdclSetOutputRtn(0);
+  //void *oldOutputRtn = mdsdclSetOutputRtn(0);
   if (indirect) {
     int i;
     FILE *f = NULL;
@@ -611,16 +612,6 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
 	  continue;
 	cmd = strdup(l->cmds[i]);
 	mdsdclSubstitute(&cmd, p1, p2, p3, p4, p5, p6, p7);
-	if (mdsdclVerify() && strlen(cmd) > 0) {
-	  char *prompt = mdsdclGetPrompt();
-	  char *line_cpy;
-	  size_t len = *output ? strlen(*output) : 0;
-	  if (*output==NULL)
-	    *output = strdup("");
-	  *output = realloc(*output,strlen(*output)+strlen(prompt)+strlen(cmd)+100);
-	  sprintf(*output+len,"%s%s\n",prompt,cmd);
-	  free(prompt);
-	}
 	sts = mdsdcl_do_command_extra_args(cmd, 0, &m_error, &m_output, getNextLine, &info);
 	free(cmd);
 	if (m_error) {
@@ -637,7 +628,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
 	  free(m_output);
 	  m_output = 0;
 	}
-	if (!(sts & 1))
+	if (!(sts & 1) && STOP_ON_FAIL)
 	  failed = 1;
       }
     }
@@ -667,7 +658,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
     free(p6);
   if (p7)
     free(p7);
-  mdsdclSetOutputRtn(oldOutputRtn);
+  //mdsdclSetOutputRtn(oldOutputRtn);
   return sts;
 }
 
@@ -717,5 +708,13 @@ int mdsdcl_delete_macro(void *ctx, char **error, char **output)
   }
   if (name)
     free(name);
+  return 1;
+}
+
+int mdsdcl_set_stoponfail(void *ctx, char **error, char **output) {
+  if (cli_present(ctx,"ON") & 1)
+    STOP_ON_FAIL=1;
+  else if (cli_present(ctx,"OFF") & 1)
+    STOP_ON_FAIL=0;
   return 1;
 }

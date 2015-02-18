@@ -6,6 +6,8 @@
 #include <malloc.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
+#include <setjmp.h>
 
 extern int mdsdcl_do_command(char const *command);
 
@@ -19,10 +21,26 @@ be added using the "SET COMMAND table-name" command.
  \param argv [in] An array of command line option strings.
 */
 
+static sigjmp_buf ctrlc_buf;
+static int dolf=0;
+
 static void flushOut(char *output) {
   fprintf(stdout,"%s",output);
   fflush(stdout);
   output[0]=0;
+}
+
+static void flushError(char *error) {
+  fprintf(stderr,"%s",error);
+  fflush(stderr);
+  error[0]=0;
+}
+
+void handle_signals(int signo) {
+  if (signo == SIGINT) {
+    dolf=1;
+    siglongjmp(ctrlc_buf, 1);
+  }
 }
 
 main(int argc, char const *argv[])
@@ -39,6 +57,7 @@ main(int argc, char const *argv[])
   /* See if a -prep option is provided as the first command option. */
 
   mdsdclSetOutputRtn(flushOut);
+  mdsdclSetErrorRtn(flushError);
 
   mdsdclAddCommands("mdsdcl_commands", &error);
   if (error) {
@@ -101,6 +120,11 @@ main(int argc, char const *argv[])
 
   prompt = mdsdclGetPrompt();
 
+  /* Set up signal handler for control-c */
+
+  signal(SIGINT, handle_signals);
+  while ( sigsetjmp( ctrlc_buf, 1 ) != 0 );
+
   /* While more commands to be entered */
 
   while (notDone) {
@@ -110,9 +134,21 @@ main(int argc, char const *argv[])
 
     if (prompt == NULL)
       prompt = mdsdclGetPrompt();
+    
+    rl_catch_signals = 1;
+    rl_set_signals();
+
+    if (dolf) {
+      printf("\n");
+      fflush(stdout);
+      dolf=0;
+    }
 
     /* Read in a command */
     cmd = readline(prompt);
+
+    rl_catch_signals = 1;
+    rl_set_signals();
 
     /* If not EOF */
 
@@ -174,10 +210,6 @@ main(int argc, char const *argv[])
 	  fflush(stderr);
 	  free(error);
 	  error = 0;
-	}
-	if (mdsdclVerify() && strlen(command) > 0) {
-	  fprintf(stderr, "%s%s\n", prompt, command);
-	  fflush(stderr);
 	}
 	if (prompt)
 	  free(prompt);

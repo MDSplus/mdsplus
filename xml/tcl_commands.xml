@@ -58,7 +58,7 @@
     DIRECTORY      - List the nodes in a tree.
     DIRECTORY/TAG  - List the tagnames in a tree.
     PUT            - Store data in a node.
-    SET ATTRIBUTE  - Set and extended attribute for a node.
+    SET ATTRIBUTE  - Set an extended attribute for a node.
     SET CURRENT    - Set the current shot number fo a tree.
     SET DEFAULT    - Change the current location in a tree.
     SET TREE       - Open an MDSplus tree.
@@ -904,7 +904,6 @@
       Examples:
 
       TCL> SET ATTRIBUTE mynode/NAME=special 42
-      TCL> SHOW ATTRIBUTE mynode
       TCL> SET ATTRIBUTE mynode/NAME=myattr/EXTENDED
       build_with_units(42,"volts")
 
@@ -913,6 +912,10 @@
       TCL> SHOW ATTRIBUTE mynode/name=myattr
       BUILD_WITH_UNITS(42,"volts")
 
+      TCL> SHOW ATTRIBUTE mynode
+      Defined attributes for this node:
+      myattr
+      special
     </help>
     <routine name="TclSetAttribute"/>
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -955,7 +958,7 @@
         TCL> SET CURRENT CMOD 1000
         TCL> SET CURRENT CMOD "current_shot('cmod')+2"
         TCL> SHOW CURRENT CMOD
-	Current shot is 1002
+        Current shot is 1002
 
       Note: The shot number is a signed 32-bit integer so the largest
       value for a shot number is 2147483647. Also except for the model,
@@ -1188,8 +1191,21 @@
       Description:
 
       The SHOW ATTRIBUTE command is used to display the contents of a node's
-      named attribute (See HELP SET ATTRIBUTE for more information on named
-      attribtues).
+      named attribute.
+
+      TCL> SET ATTRIBUTE mynode/NAME=special 42
+      TCL> SET ATTRIBUTE mynode/NAME=myattr/EXTENDED
+      build_with_units(42,"volts")
+
+      TCL> SHOW ATTRIBUTE mynode/NAME=special
+      42
+      TCL> SHOW ATTRIBUTE mynode/name=myattr
+      BUILD_WITH_UNITS(42,"volts")
+
+      TCL> SHOW ATTRIBUTE mynode
+      Defined attributes for this node:
+      myattr
+      special
 
     </help>
     <routine name="TclShowAttribute"/>
@@ -1428,15 +1444,18 @@
 
       Command: WFEVENT
       Purpose: Wait for an MDSplus event to be issued.
-      Format: WFEVENT event-name
+      Format: WFEVENT event-name /TIMEOUT=seconds
       Description:
 
       The WFEVENT command can be used to wait for an MDSplus event to be issued. MDSplus events
       are named occurrences that can be issued by other processes on the same or different host
       computers. The WFEVENT command will not complete until the MDSplus event is generated.
+      The /TIMEOUT qualifier can be specified to cause the wait to time out if no event is generated
+      within the specified number of seconds.
     </help>
     <routine name="TclWfevent"/>
     <parameter name="p1" label="event" prompt="Event" required="True"/>
+    <qualifier name="TIMEOUT" required="True"/>
   </verb>
 
   <verb name="write">

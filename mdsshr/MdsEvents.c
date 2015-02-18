@@ -2549,7 +2549,7 @@ int MDSEventAst(char const *eventNameIn, void (*astadr) (void *, int, char *), v
 
 int MDSEvent(char const *eventNameIn, int bufLen, char *buf)
 {
-  char *eventName = malloc(strlen(eventNameIn) + 1);
+  char *eventName = alloca(strlen(eventNameIn) + 1);
   unsigned int i, j;
   int status;
   for (i = 0, j = 0; i < strlen(eventNameIn); i++) {
