@@ -29,7 +29,6 @@ depend:
 install: $(libdir) $(bindir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl$(EXE) $(bindir)
 	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) $(libdir)
-	$(INSTALL) -m 755 mdsdcl_commands.xml $(libdir)
 
 @MAKELIBDIR@@LIBPRE@Mdsdcl.a: $(OBJECTS)
 		$(AR) -cr $@ $^
