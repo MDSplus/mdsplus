@@ -1,4 +1,10 @@
-commit 10363e74e563f662041b66894d16c94ce21debf8 (HEAD, refs/remotes/origin/mdsdcl, refs/heads/mdsdcl)
+commit a51400101d7987ba9b4e33f1d566d903765d0a60 (HEAD, refs/remotes/origin/mdsdcl, refs/heads/mdsdcl)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 18 16:46:10 2015 -0500
+
+    New ChangeLog
+
+commit 10363e74e563f662041b66894d16c94ce21debf8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 18 16:03:58 2015 -0500
 
