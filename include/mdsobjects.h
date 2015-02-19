@@ -159,8 +159,6 @@ class EXPORT Data
 public:
 	Data():
 		refCount(1),
-		changed(true),
-		dataCache(nullptr),
 		units(nullptr),
 		error(nullptr),
 		help(nullptr),
@@ -202,7 +200,6 @@ private:
 	
 public:
 		int clazz, dtype;
-		virtual bool hasChanged() {return !isImmutable() || changed;}
 		void *completeConversionToDsc(void *dsc);
 		int refCount;
 		virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
@@ -280,9 +277,6 @@ protected:
 		this->help = help;
 		this->validation = validation;
 	}
-
-	bool changed;
-	Data *dataCache;
 
 private:
 	Data * getData(int classType, int dataType);
@@ -921,7 +915,7 @@ public:
 			for(int i = 0; i < nDescs; ++i) {
 				this->descs.push_back((Data *)descs[i]);
 				if (this->descs[i])
-					this->descs[i]->refCount++;
+					this->descs[i]->incRefCount();
 			}
 		}
 
@@ -932,13 +926,19 @@ public:
 
 	virtual void propagateDeletion() {
 		for(std::size_t i = 0; i < descs.size(); ++i)
-			if (descs[i])
-				deleteData(descs[i]);
+		    if (descs[i])
+		    {
+			descs[i]->decRefCount();
+			deleteData(descs[i]);
+		    }
 	}
 
 	void * convertToDsc();
 
-	virtual ~Compound() {}
+	virtual ~Compound() 
+	{
+	    propagateDeletion();
+	}
 
 protected:
 	short opcode;
@@ -955,7 +955,6 @@ protected:
 			deleteData(descs[idx]);
 
 		descs.at(idx) = data;
-		changed = true;
 		if (data)
 			data->refCount++;
 	}
@@ -966,16 +965,6 @@ protected:
 		return descs[idx];
 	}
 
-	bool hasChanged() {
-		if (changed || !isImmutable())
-			return true;
-
-		for(std::size_t i = 0; i < descs.size(); ++i)
-			if(descs[i] && descs[i]->hasChanged())
-				return true;
-
-		return false;
-	}
 };
 
 class Signal: public Compound {
@@ -1571,7 +1560,7 @@ public:
 		clazz = CLASS_APD;
 		dtype = DTYPE_DSC;
 		for(std::size_t i = 0; i < nData; ++i) {
-			descs[i]->incRefCount();
+			if(descs[i]) descs[i]->incRefCount();
 			this->descs.push_back(descs[i]);
 		}
 		setAccessory(units, error, help, validation);
@@ -1589,15 +1578,6 @@ public:
 		std::for_each(descs.begin(), descs.end(), (void (&)(Data *))decRefCount);
 	}
 */
-	virtual bool hasChanged() {
-		if (changed || !isImmutable())
-			return true;
-
-		if (std::find_if(descs.begin(), descs.end(), Apd::lambdaChanged) != descs.end())
-			return true;
-
-		return false;
-	}
 
 	virtual std::size_t len() {
 		return descs.size();
@@ -1632,7 +1612,6 @@ public:
 //INSERT AND BEGIN() WORK ONLY IF VECTOR NON EMPTY!!		      
 		    descs.insert(descs.begin() + i, data);
 		data->incRefCount();
-		changed = true;
 	} 
 	void appendDesc(Data * data)
 	{
@@ -1644,10 +1623,6 @@ public:
 protected:
 	std::vector<Data*> descs;
 
-private:
-	static bool lambdaChanged(Data * d) {
-		return d->hasChanged();
-	}
 };
 
 ///////////////////LIST///////////////
