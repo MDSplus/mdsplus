@@ -1,4 +1,98 @@
-commit 0de773ca600a649ca8d8aa58f7188499ae53865e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e179cafe9e93e29111676a6153723136f5408e4e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 16:03:06 2015 -0500
+
+    Allow builds of arbitrary branchs (must not include underscore in branch name)
+
+commit d16ea89dded6c831409beb50c66935cad9de95fb (tag: refs/tags/alpha_release-6-3-472)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Feb 17 18:23:03 2015 -0500
+
+    New ChangeLog
+
+commit 978766f76b8ce2e2cf362f39bac6f339950f0231
+Merge: c265934 92e68e3
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Feb 17 12:11:30 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit c265934844a6516b5f8c54a9505cd8551a0a686c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Feb 17 12:10:49 2015 +0100
+
+    Support for Cygnet4K Camera
+
+commit d3b768e4b1c17e993b9fcbab3f11bfaf5d168c5a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Feb 17 12:08:00 2015 +0100
+
+    Support for Cygnet4K Camera
+
+commit 92e68e3060a6d6267657675685f20e47b31e3143 (tag: refs/tags/alpha_release-6-3-471)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Feb 16 18:22:29 2015 -0500
+
+    New ChangeLog
+
+commit 5a4767a87e804629224c3d19fdfa6e4f87fd3576
+Merge: 3de1566 43230da
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Feb 16 15:27:07 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 3de1566d157ceea54e2c4c4d5486feb5350193d3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Feb 16 15:26:59 2015 +0100
+
+    Initial development of CYGNET4K Camera
+
+commit 43230da4213d8fece046f35d0664873bc13cb2ec (tag: refs/tags/alpha_release-6-3-470)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Feb 13 18:23:24 2015 -0500
+
+    New ChangeLog
+
+commit c475739eb4cfb977d222b54bf28a344577d34330
+Merge: ba21d75 9c6c600
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 13 16:01:19 2015 +0100
+
+    Merge branch 'alpha' of https://github.com/MDSplus/MDSplus into alpha
+
+commit ba21d7511be5938f3828db15f90457476fda389b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 13 16:00:49 2015 +0100
+
+    Added C++ support for python devices
+
+commit 9c6c60086d37894c0b2d3ba941002901b3e5bd9d (tag: refs/tags/alpha_release-6-3-469)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 11 18:23:01 2015 -0500
+
+    New ChangeLog
+
+commit 97abd22aaee4911197e4fb4d911947c1831fc4d3
+Merge: bdf52ee fde39e3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 11 10:13:59 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit bdf52ee01a7df0aa1abf1417ecab7a42f901bc40
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 11 10:13:53 2015 -0500
+
+    Fix for trees with subtrees on 64-bit platforms
+
+commit fde39e3f6ec42c12d41bc6341781928ca2742290 (tag: refs/tags/alpha_release-6-3-468)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 5 18:22:27 2015 -0500
+
+    New ChangeLog
+
+commit 0de773ca600a649ca8d8aa58f7188499ae53865e
 Merge: e4338e6 c910e93
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 5 16:00:20 2015 -0500
@@ -1248,7 +1342,7 @@ Date:   Fri Oct 31 07:49:32 2014 -0400
 
     Create README.md
 
-commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master)
+commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master, refs/heads/master)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 29 20:29:04 2014 +0000
 
