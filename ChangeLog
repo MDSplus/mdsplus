@@ -1,4 +1,238 @@
-commit 0312e11bd0a7c3900a02ac2bd054ff9d6a16f5e5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit a51400101d7987ba9b4e33f1d566d903765d0a60 (HEAD, refs/remotes/origin/mdsdcl, refs/heads/mdsdcl)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 18 16:46:10 2015 -0500
+
+    New ChangeLog
+
+commit 10363e74e563f662041b66894d16c94ce21debf8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 16:03:58 2015 -0500
+
+    Allow builds of arbitrary branchs (must not include underscore in branch name)
+
+commit a724ac5d437111f0048816275592fd414d5337be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 15:12:14 2015 -0500
+
+    merge in changes from alpha
+
+commit e318f8d9e3101681b894e2b97268c4f199b6466f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 15:00:15 2015 -0500
+
+    Add xml directory to kernel package
+
+commit 0ceb536df570f10363cb135e077e6efe5b04edc2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 14:57:30 2015 -0500
+
+    No install for xml here
+
+commit 7c24a29f004ed0cb511d9362e0d60a3a48c3d339 (tag: refs/tags/mdsdcl_release-7-0-0, tag: refs/tags/feature-replace-mdsdcl_release-7-0-0, refs/remotes/origin/feature-replace-mdsdcl, refs/heads/feature-replace-mdsdcl)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 13:39:18 2015 -0500
+
+    tcl updates
+
+commit de8a23bc5d45fe3517edad6783b2c2b3289ba398
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 15:39:13 2015 -0500
+
+    Fix sprintf for error
+
+commit a400e2a50d3941e426dd1bbd77e28552669e5731
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 15:02:46 2015 -0500
+
+    Add help to cts commands
+
+commit eadcc13f4fccc56a8319c231ad1febe5d44cc2f6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 15:00:47 2015 -0500
+
+    Add help to cts commands
+
+commit 5ef5d9eaa24ae6d3039f54cb0086e780aaf90013
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 14:52:34 2015 -0500
+
+    Add help to cts commands
+
+commit ed9daf84f796d7fa737631636f565d4462ff86dd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 14:51:33 2015 -0500
+
+    Add help to cts commands
+
+commit 6cbcdfb625c6818ef256e2a56596ebf8e3056b9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 14:50:06 2015 -0500
+
+    Add help to cts commands
+
+commit 0e53a07570af405ae672bcefa459b332ffa2928c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 13:06:27 2015 -0500
+
+    Add readline libs to bother libMdsdcl and mdsdcl
+
+commit 03ec295606d44ac3f5f6c911814f4189f66356a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 13:05:28 2015 -0500
+
+    Fix call to StrMatchWild
+
+commit fc32ac7b894bcdeaacb14b5d6602a87b18520ce4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 13:04:11 2015 -0500
+
+    Add history file
+
+commit 1cc2983bb40bdebd5f1629e51abeb959bbe93f70
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 12:53:48 2015 -0500
+
+    Don't include trailing colon in match string for crates.
+
+commit 8c949d0b10dd09c264f721e0da0e7b67ed4f1898
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 11:11:13 2015 -0500
+
+    remove obsolete routines
+
+commit 2a4d588b07a079f9e83327ba93e6fbe665d2a80e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 11:06:48 2015 -0500
+
+    Include ncurses in links
+
+commit b590f005e16830891cc0b66fca53245a48ed0ee2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 10:59:54 2015 -0500
+
+    Include ncurses in links
+
+commit 897417506e9b2d91e7ccfc5d58607adca4265c5e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 09:13:05 2015 -0500
+
+    Fix rhel5 compile problem
+
+commit 108c470755950fc40f7063ac316fd96bbb70330e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 08:40:44 2015 -0500
+
+    Remove cdu
+
+commit 82ac4c2bee86c425dc7af1f9d32c1efd4aaa7f5a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 12 16:53:13 2015 -0500
+
+    Remove last traces of the daqutil routines and finished up tcl, ccl and cts
+
+commit e9611f86495ca2f2bafa09d9ad81de69e9d233d4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 10 16:20:24 2015 -0500
+
+    More tcl work
+
+commit ed807b7993719a115634ffab42bb26ed87eea22c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 9 16:53:16 2015 -0500
+
+    Ignore python dist directory
+
+commit 8eb99c5ac426bcb1f0390a170b38b709ef72119b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 9 16:52:04 2015 -0500
+
+    More tcl updates
+
+commit e4d98e6e1a207ab830025853d0226d35c99ede89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 4 16:27:45 2015 -0500
+
+    more tcl commands work
+
+commit b6dcd3bae35f8c346af835245873b0e200452501
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 3 10:07:49 2015 -0500
+
+    port more tcl commands to new mdsdcl
+
+commit d2ab77e77299de77657d59caf55a3cac7d5fe113
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 3 10:07:03 2015 -0500
+
+    Fix memory leaks
+
+commit 5db5e4155a347ec36ff1933efde3c0db263c17a1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 30 16:51:50 2015 -0500
+
+    Update tcl commands
+
+commit 22c076ab6bdd13058c471c031033046ee20e02e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 29 12:18:46 2015 -0500
+
+    Handle command comments and add command syntax help
+
+commit 164f4647557374137726e400d599c291140adad1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 28 16:34:00 2015 -0500
+
+    More updates to mdsdcl rewrite
+
+commit bcde07cd805d85cdb099a363c5535233f49bc619
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 26 17:00:06 2015 -0500
+
+    add delete/macro command and implement macros
+
+commit 2da1ac793545ef5d42aca2c7c66de0101768892d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 17:08:36 2015 -0500
+
+    format the help text some
+
+commit e92f21ae5f8f706b32a1a927cd78f65fceef54e5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 15:49:03 2015 -0500
+
+    Put xml's in their own directory
+
+commit a520b45f14422af48af2130418c6ba6251a7adec
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 15:47:16 2015 -0500
+
+    Put xml's in their own directory
+
+commit ca03f514afebecadf17487b2cc3f438bbc26339d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 15:29:45 2015 -0500
+
+    Add more help features and linux-like command capabilities
+
+commit 3957906d63af9aff2709a1c76fea096752712463
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 22 14:05:50 2015 -0500
+
+    Add help support for mdsdcl commands
+
+commit f4c4da2dafa48d46a6a76e1e2fa1d5f015c42873
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 16 09:42:11 2015 -0500
+
+    Adding mdsdcl rewrite using xml, readline, bison and lex
+
+commit db7c51560251842df581142378a025d0451bcd68 (tag: refs/tags/alpha_release-6-3-455)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 18:21:16 2015 -0500
+
+    New ChangeLog
+
+commit 0312e11bd0a7c3900a02ac2bd054ff9d6a16f5e5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jan 7 13:03:15 2015 -0500
 
@@ -957,7 +1191,7 @@ Date:   Fri Oct 31 07:49:32 2014 -0400
 
     Create README.md
 
-commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master)
+commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master, refs/heads/master)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 29 20:29:04 2014 +0000
 
