@@ -1,4 +1,30 @@
-commit e179cafe9e93e29111676a6153723136f5408e4e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 289c1e11f55ccae5a87fd2e0be896cf4c4a49485 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gcm@g01.itm.rzg.mpg.de>
+Date:   Fri Feb 20 13:01:04 2015 +0100
+
+    Fix memory leaks in Apd
+
+commit 4b6da14ea753e182548d7d380478e91c9d022212
+Merge: 5bdefb6 36cf998
+Author: Gabriele Manduchi <gcm@g01.itm.rzg.mpg.de>
+Date:   Thu Feb 19 18:41:48 2015 +0100
+
+    Fix memory leaks
+    Merge branch 'alpha' of https://github.com/MDSplus/MDSplus into alpha
+
+commit 5bdefb65c3045ca8a8c34fb0cdfab8fa333a74bb
+Author: Gabriele Manduchi <gcm@g01.itm.rzg.mpg.de>
+Date:   Thu Feb 19 18:41:22 2015 +0100
+
+    Fix memory leaks
+
+commit 36cf998bab7d23260791ae91acf0ed409aec298f (tag: refs/tags/alpha_release-6-3-473)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 18 18:23:03 2015 -0500
+
+    New ChangeLog
+
+commit e179cafe9e93e29111676a6153723136f5408e4e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 18 16:03:06 2015 -0500
 
