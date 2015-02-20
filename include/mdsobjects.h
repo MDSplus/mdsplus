@@ -1547,6 +1547,10 @@ class Call: public Compound {
 	};
 
 /////////////////////APD///////////////////////
+
+//NOTE: refCount is not altered by getDescAt(), appendDesc() and setDescAt(). 
+// this simplifies the usage of Apd (not intended in any case for the normal user)
+///////////////////////////////////////////////
 class EXPORT Apd: public Data
 {
 public:
@@ -1565,14 +1569,31 @@ public:
 		}
 		setAccessory(units, error, help, validation);
 	}
+	
+	
+	virtual void propagateDeletion() 
+	{
+	    for(std::size_t i = 0; i < descs.size(); ++i)
+	    {
+		if (descs[i])
+		{
+		    descs[i]->decRefCount();
+		    deleteData(descs[i]);
+		}
+	    }
+	}
+
 
 	virtual ~Apd() {
-	    for(size_t i = 0; i < descs.size(); i++)
+	    propagateDeletion();
+	}
+/*	    for(size_t i = 0; i < descs.size(); i++)
 	    {
 		if(descs[i])
 		    descs[i]->decRefCount();
 	    }
 	}
+	*/
 /*  CANNOT WORK: Some pointers may be empty!!
 	virtual ~Apd() {
 		std::for_each(descs.begin(), descs.end(), (void (&)(Data *))decRefCount);
@@ -1597,10 +1618,13 @@ public:
 	}
 
 	Data * getDescAt(std::size_t i) {
-		descs.at(i)->incRefCount();
+		//descs.at(i)->incRefCount();
 		return descs.at(i);
 	}
 
+	bool hasDescAt(std::size_t i) {
+		return descs.size() > i && descs[i] != NULL;
+	}
 	void setDescAt(std::size_t i, Data * data) {
 		if(descs.size() <= i)
 		{
@@ -1611,12 +1635,12 @@ public:
 		else
 //INSERT AND BEGIN() WORK ONLY IF VECTOR NON EMPTY!!		      
 		    descs.insert(descs.begin() + i, data);
-		data->incRefCount();
+		//data->incRefCount();
 	} 
 	void appendDesc(Data * data)
 	{
 		descs.push_back(data);
-		if(data) data->incRefCount();
+		//if(data) data->incRefCount();
 	}
 	void *convertToDsc();
 

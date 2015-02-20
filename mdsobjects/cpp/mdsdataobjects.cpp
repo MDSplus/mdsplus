@@ -374,18 +374,18 @@ static std::vector<T> getArray(T * data, int size) {
 	return v;
 }
 
-void MDSplus::deleteNativeArray(char * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned char * array){delete array;}
-void MDSplus::deleteNativeArray(short * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned short * array){delete array;}
-void MDSplus::deleteNativeArray(int * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned int * array){delete array;}
-void MDSplus::deleteNativeArray(int64_t * array){delete array;}
-void MDSplus::deleteNativeArray(uint64_t * array){delete array;}
-void MDSplus::deleteNativeArray(float * array){delete array;}
-void MDSplus::deleteNativeArray(double * array){delete array;}
-void MDSplus::deleteNativeArray(char ** array){delete array;}
-void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete array;}
+void MDSplus::deleteNativeArray(char * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned char * array){delete []array;}
+void MDSplus::deleteNativeArray(short * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned short * array){delete []array;}
+void MDSplus::deleteNativeArray(int * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned int * array){delete []array;}
+void MDSplus::deleteNativeArray(int64_t * array){delete []array;}
+void MDSplus::deleteNativeArray(uint64_t * array){delete []array;}
+void MDSplus::deleteNativeArray(float * array){delete []array;}
+void MDSplus::deleteNativeArray(double * array){delete []array;}
+void MDSplus::deleteNativeArray(char ** array){delete []array;}
+void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete []array;}
 
 char *Data::getByteArray(int *numElements)
 {
