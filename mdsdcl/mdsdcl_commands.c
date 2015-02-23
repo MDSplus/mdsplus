@@ -1,9 +1,14 @@
+#include <config.h>
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
 #include        "dcl.h"
 #include        <sys/time.h>
+#ifdef HAVE_SYS_RESOURCE_H
 #include        <sys/resource.h>
+#else
+#include <time.h>
+#endif
 #include        <mdsdescrip.h>
 #include        <malloc.h>
 #include        <unistd.h>
@@ -85,40 +90,60 @@ int mdsdcl_exit(void *ctx, char *error, char *output)
 
 	 ****************************************************************/
 
+#ifdef HAVE_SYS_RESOURCE_H
 static struct rusage TIMER_START_USAGE;
-static struct rusage TIMER_NOW_USAGE;
+#else
+static clock_t cpu_start;
+#endif
 static struct timeval TIMER_START_TIME;
-static struct timeval TIMER_NOW_TIME;
 
 int mdsdcl_init_timer(void *ctx, char *error, char *output)
 {
   gettimeofday(&TIMER_START_TIME, 0);
+#ifdef HAVE_GETRUSAGE
   getrusage(RUSAGE_SELF, &TIMER_START_USAGE);
+#else
+  cpu_start = clock();  
+#endif
   return (1);
 }
 
 int mdsdcl_show_timer(void *ctx, char **error, char **output)
 {
-  int emsec, umsec, smsec;	/* milliseconds                 */
+  struct timeval TIMER_NOW_TIME;
+  int esec=0, emsec=0;
+#ifdef HAVE_SYS_RESOURCE_H
+  int usec=0, umsec=0, ssec=0, smsec=0, sf=0, hf=0;
+  struct rusage TIMER_NOW_USAGE;
+#else
+  clock_t cpu_now;
+  clock_t usec;
+#endif
 
   gettimeofday(&TIMER_NOW_TIME, 0);
-  getrusage(RUSAGE_SELF, &TIMER_NOW_USAGE);
   if (TIMER_NOW_TIME.tv_usec < TIMER_START_TIME.tv_usec)
     --TIMER_NOW_TIME.tv_sec, TIMER_NOW_TIME.tv_usec += 1000000;
+  esec = TIMER_NOW_TIME.tv_sec - TIMER_START_TIME.tv_sec;
+  emsec = (TIMER_NOW_TIME.tv_usec - TIMER_START_TIME.tv_usec) / 10000;
+  *error = malloc(100);
+#ifdef HAVE_GETRUSAGE
+  getrusage(RUSAGE_SELF, &TIMER_NOW_USAGE);
   if (TIMER_NOW_USAGE.ru_utime.tv_usec < TIMER_START_USAGE.ru_utime.tv_usec)
     --TIMER_NOW_USAGE.ru_utime.tv_sec, TIMER_NOW_USAGE.ru_utime.tv_usec += 1000000;
+  usec = TIMER_NOW_USAGE.ru_utime.tv_sec - TIMER_START_USAGE.ru_utime.tv_sec;
+  umsec = (TIMER_NOW_USAGE.ru_utime.tv_usec - TIMER_START_USAGE.ru_utime.tv_usec) / 10000;
   if (TIMER_NOW_USAGE.ru_stime.tv_usec < TIMER_START_USAGE.ru_stime.tv_usec)
     --TIMER_NOW_USAGE.ru_stime.tv_sec, TIMER_NOW_USAGE.ru_stime.tv_usec += 1000000;
-  emsec = (TIMER_NOW_TIME.tv_usec - TIMER_START_TIME.tv_usec) / 10000;
-  umsec = (TIMER_NOW_USAGE.ru_utime.tv_usec - TIMER_START_USAGE.ru_utime.tv_usec) / 10000;
+  ssec = TIMER_NOW_USAGE.ru_stime.tv_sec - TIMER_START_USAGE.ru_stime.tv_sec;
   smsec = (TIMER_NOW_USAGE.ru_stime.tv_usec - TIMER_START_USAGE.ru_stime.tv_usec) / 10000;
-  *error = malloc(100);
+  sf = TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt;
+  hf = TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt;
   sprintf(*error, "elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
-	  TIMER_NOW_TIME.tv_sec - TIMER_START_TIME.tv_sec, emsec,
-	  TIMER_NOW_USAGE.ru_utime.tv_sec - TIMER_START_USAGE.ru_utime.tv_sec, umsec,
-	  TIMER_NOW_USAGE.ru_stime.tv_sec - TIMER_START_USAGE.ru_stime.tv_sec, smsec,
-	  TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt,
-	  TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt);
+	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
+#else
+  usec = clock() - cpu_start) / CLOCKS_PER_SEC;
+  sprintf(*error, "elapsed=%ld.%02d cpu=%g\n", esec, emsec, usec);
+#endif
   return (1);
 }
 
