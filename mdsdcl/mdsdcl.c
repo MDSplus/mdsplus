@@ -7,7 +7,6 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
-#include <setjmp.h>
 
 extern int mdsdcl_do_command(char const *command);
 
@@ -20,9 +19,6 @@ be added using the "SET COMMAND table-name" command.
  \param argc [in] The number of options provided on the command line.
  \param argv [in] An array of command line option strings.
 */
-
-static sigjmp_buf ctrlc_buf;
-static int dolf=0;
 
 static void flushOut(char *output) {
   fprintf(stdout,"%s",output);
@@ -37,10 +33,6 @@ static void flushError(char *error) {
 }
 
 void handle_signals(int signo) {
-  if (signo == SIGINT) {
-    dolf=1;
-    siglongjmp(ctrlc_buf, 1);
-  }
 }
 
 main(int argc, char const *argv[])
@@ -120,10 +112,7 @@ main(int argc, char const *argv[])
 
   prompt = mdsdclGetPrompt();
 
-  /* Set up signal handler for control-c */
-
   signal(SIGINT, handle_signals);
-  while ( sigsetjmp( ctrlc_buf, 1 ) != 0 );
 
   /* While more commands to be entered */
 
@@ -138,17 +127,8 @@ main(int argc, char const *argv[])
     rl_catch_signals = 1;
     rl_set_signals();
 
-    if (dolf) {
-      printf("\n");
-      fflush(stdout);
-      dolf=0;
-    }
-
     /* Read in a command */
     cmd = readline(prompt);
-
-    rl_catch_signals = 1;
-    rl_set_signals();
 
     /* If not EOF */
 
