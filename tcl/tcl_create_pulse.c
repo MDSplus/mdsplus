@@ -4,7 +4,10 @@
 #include        <ncidef.h>
 #include        <usagedef.h>
 #include        <string.h>
+#include <malloc.h>
+#ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
+#endf
 
 /**********************************************************************
 * TCL_CREATE_PULSE.C --

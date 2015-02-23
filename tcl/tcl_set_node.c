@@ -2,7 +2,10 @@
 #include        "tclsysdef.h"
 #include        <ncidef.h>
 #include        <usagedef.h>
+#include <malloc.h>
+#ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
+#endif
 #include <dcl.h>
 #include <string.h>
 #include <strroutines.h>

@@ -1,7 +1,11 @@
+#include <config.h>
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
+#include <malloc.h>
 #include <strroutines.h>
+#ifdef HAVE_ALLOCA_H
 #include <alloca.h>
+#endif
 #include <string.h>
 #include <readline/readline.h>
 #include <readline/history.h>
