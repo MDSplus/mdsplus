@@ -141,7 +141,7 @@ int mdsdcl_show_timer(void *ctx, char **error, char **output)
   sprintf(*error, "elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
 	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
 #else
-  usec = clock() - cpu_start) / CLOCKS_PER_SEC;
+  usec = (clock() - cpu_start) / CLOCKS_PER_SEC;
   sprintf(*error, "elapsed=%ld.%02d cpu=%g\n", esec, emsec, usec);
 #endif
   return (1);
