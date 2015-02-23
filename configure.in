@@ -642,6 +642,8 @@ else
 fi
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
 AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO))
+AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP))
+AC_CHECK_LIB(c,getrusage,AC_DEFINE(HAVE_GETRUSAGE))
 AC_ARG_ENABLE(d3d,
 	[  --enable-d3d            build d3d ptdata access library ],
 	if test "$enableval" = yes; then
