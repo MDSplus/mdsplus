@@ -1,3 +1,4 @@
+#include <config.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -9,7 +10,7 @@
 #include <libxml/xpathInternals.h>
 #include <dcl.h>
 #include "dcl_p.h"
-
+  
 /*! Find the information associated with a command verb.
   - Locate all parameters and qualifiers defined for the command
   and load the associated information included for those params
@@ -334,7 +335,12 @@ static char *formatHelp(char *content)
   char *hlp = help;
   char *line;
   int leading = 1;
+#ifdef HAVE_STRSEP
   for (line = strsep(&hlp, "\n"); line; line = strsep(&hlp, "\n")) {
+#else
+  char *saveptr=0;
+  for (line = strtok_r(hlp, "\n", &saveptr); line; line=strtok_r(0, "\n", &saveptr)) {
+#endif
     if ((strlen(line) > 0) && (strspn(line," \t") != strlen(line))) {
       char *nline;
       leading = 0;
