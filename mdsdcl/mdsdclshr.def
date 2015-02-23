@@ -6,3 +6,9 @@ mdsdcl_do_command_dsc
 mdsdcl_set_command
 cli_get_value
 cli_present
+mdsdclSetOutputRtn
+mdsdclSetErrorRtn
+mdsdclAddCommands
+mdsdclGetHistoryFile
+mdsdclGetPrompt
+mdsdcl_do_command_extra_args
