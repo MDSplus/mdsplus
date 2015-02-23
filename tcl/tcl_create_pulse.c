@@ -7,7 +7,7 @@
 #include <malloc.h>
 #ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
-#endf
+#endif
 
 /**********************************************************************
 * TCL_CREATE_PULSE.C --
