@@ -12,3 +12,4 @@ mdsdclAddCommands
 mdsdclGetHistoryFile
 mdsdclGetPrompt
 mdsdcl_do_command_extra_args
+mdsdclFlushOutput
