@@ -1,0 +1,8 @@
+LIBRARY	Mdsdcl
+EXPORTS
+;
+mdsdcl_do_command
+mdsdcl_do_command_dsc
+mdsdcl_set_command
+cli_get_value
+cli_present
