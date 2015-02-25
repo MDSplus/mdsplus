@@ -186,20 +186,20 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   switch (type) {
   case FLOAT:
     expanded_in = malloc(strlen(in) + 40);
-    sprintf(expanded_in, "_xxx = (%s);fs_float(_xxx)", in);
+    sprintf(expanded_in, "_xxx = %s;fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
     expanded_in = malloc(strlen(in) + 40);
-    sprintf(expanded_in, "_xxx = (%s);ft_float(_xxx)", in);
+    sprintf(expanded_in, "_xxx = %s;ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
     expanded_in = malloc(strlen(in) + 40);
-    sprintf(expanded_in, "_xxx = (%s);long(_xxx)", in);
+    sprintf(expanded_in, "_xxx = %s;long(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
@@ -211,13 +211,11 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
     break;
   }
 
-printf("MDS GET ARRAY %s\n", expanded_in);
   status = TdiCompile(&in_d, &xd MDS_END_ARG);
   free(expanded_in);
   if (status & 1)
     status = TdiData(&xd, &xd MDS_END_ARG);
   if (!(status & 1)) {
-printf("MDS GET ARRAY FAILURE %s\n",  MdsGetMsg(status));
     strncpy(error_message, MdsGetMsg(status), 512);
     return 0;
   }
