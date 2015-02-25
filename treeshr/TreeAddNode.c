@@ -443,8 +443,13 @@ int       TreeExpandNodes(PINO_DATABASE *db_ptr, int num_fixup, NODE ***fixup_no
       return status;
   }
   memcpy(info_ptr->node + header_ptr->nodes, empty_node_array, empty_node_size);
-  if (ncis)
-    memcpy(edit_ptr->nci + header_ptr->nodes - edit_ptr->first_in_mem, empty_nci_array, empty_nci_size);
+  if (ncis) {
+    int nci_offset = header_ptr->nodes - edit_ptr->first_in_mem;
+    if (nci_offset<0)
+      nci_offset=0;
+    memcpy(edit_ptr->nci + nci_offset, empty_nci_array,
+	   empty_nci_size);
+  }
 /******************************************
   If the free list was empty then make
   the free list pointer point to the new
