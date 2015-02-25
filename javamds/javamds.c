@@ -185,21 +185,21 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   *out_dim = 0;
   switch (type) {
   case FLOAT:
-    expanded_in = malloc(strlen(in) + 16);
-    sprintf(expanded_in, "fs_float((%s))", in);
+    expanded_in = malloc(strlen(in) + 40);
+    sprintf(expanded_in, "_xxx = (%s);fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
-    expanded_in = malloc(strlen(in) + 16);
-    sprintf(expanded_in, "ft_float((%s))", in);
+    expanded_in = malloc(strlen(in) + 40);
+    sprintf(expanded_in, "_xxx = (%s);ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
-    expanded_in = malloc(strlen(in) + 16);
-    sprintf(expanded_in, "long((%s))", in);
+    expanded_in = malloc(strlen(in) + 40);
+    sprintf(expanded_in, "_xxx = (%s);long(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
@@ -210,11 +210,14 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
     in_d.pointer = expanded_in;
     break;
   }
+
+printf("MDS GET ARRAY %s\n", expanded_in);
   status = TdiCompile(&in_d, &xd MDS_END_ARG);
   free(expanded_in);
   if (status & 1)
     status = TdiData(&xd, &xd MDS_END_ARG);
   if (!(status & 1)) {
+printf("MDS GET ARRAY FAILURE %s\n",  MdsGetMsg(status));
     strncpy(error_message, MdsGetMsg(status), 512);
     return 0;
   }
@@ -496,6 +499,8 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNativ
   const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
   int dim;
   double *out_ptr;
+
+
 
   out_ptr = MdsGetArray((char *)in_char, &dim, DOUBLE);
   (*env)->ReleaseStringUTFChars(env, in, in_char);
