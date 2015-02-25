@@ -177,8 +177,7 @@ void Data::operator delete(void *p) {
 	delete data->error;
 	delete data->help;
 	delete data->validation;
-	data->propagateDeletion();
-
+	//data->propagateDeletion();
 	::operator delete(p);
 }
 
@@ -251,25 +250,16 @@ void Data::setValidation(Data * inValidation) {
 
 Data *Data::data()
 {
-	if(!hasChanged() && !dataCache)
-		throw MdsException("FATAL: has changed and no data cached");
-
-	if(!hasChanged())
-		return dataCache->clone();
-
 	void *dscPtr = convertToDsc();
 	int retStatus;
 	void *evalPtr = evaluateData(dscPtr, 0, &retStatus);
 	if(!(retStatus & 1))
 		throw MdsException(retStatus);
 
-	if(dataCache)
-		deleteData(dataCache);
-	dataCache = (Data *)convertFromDsc(evalPtr);
+	Data *retData = (Data *)convertFromDsc(evalPtr);
 	freeDsc(dscPtr);
 	freeDsc(evalPtr);
-	changed = false;
-	return dataCache->clone();
+	return retData;
 }
 Data *Data::evaluate()
 {
@@ -384,18 +374,18 @@ static std::vector<T> getArray(T * data, int size) {
 	return v;
 }
 
-void MDSplus::deleteNativeArray(char * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned char * array){delete array;}
-void MDSplus::deleteNativeArray(short * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned short * array){delete array;}
-void MDSplus::deleteNativeArray(int * array){delete array;}
-void MDSplus::deleteNativeArray(unsigned int * array){delete array;}
-void MDSplus::deleteNativeArray(int64_t * array){delete array;}
-void MDSplus::deleteNativeArray(uint64_t * array){delete array;}
-void MDSplus::deleteNativeArray(float * array){delete array;}
-void MDSplus::deleteNativeArray(double * array){delete array;}
-void MDSplus::deleteNativeArray(char ** array){delete array;}
-void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete array;}
+void MDSplus::deleteNativeArray(char * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned char * array){delete []array;}
+void MDSplus::deleteNativeArray(short * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned short * array){delete []array;}
+void MDSplus::deleteNativeArray(int * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned int * array){delete []array;}
+void MDSplus::deleteNativeArray(int64_t * array){delete []array;}
+void MDSplus::deleteNativeArray(uint64_t * array){delete []array;}
+void MDSplus::deleteNativeArray(float * array){delete []array;}
+void MDSplus::deleteNativeArray(double * array){delete []array;}
+void MDSplus::deleteNativeArray(char ** array){delete []array;}
+void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete []array;}
 
 char *Data::getByteArray(int *numElements)
 {
@@ -929,7 +919,6 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 			memcpy(ptr + ((startIdx + i) * length), scalarData->ptr, length); 
 	}
 	delete [] rowDims;
-	changed = true;
 
 }
 char *Array::getByteArray(int *numElements)

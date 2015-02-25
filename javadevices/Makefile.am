@@ -103,6 +103,7 @@ WE800Setup.java \
 WE900Setup.java \
 CAENV1731Setup.java \
 CAENV1740Setup.java \
+CYGNET4KSetup.java \
 PLRMSetup.java \
 DPO7054Setup.java \
 L9109Setup.java \
