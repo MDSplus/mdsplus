@@ -152,7 +152,9 @@ Mutex Connection::globalMutex;
 
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
+    lockGlobal();
 	sockId = ConnectToMds(mdsipAddr);
+    unlockGlobal();
 	if(sockId <= 0) {
 		std::string msg("Cannot connect to ");
 		msg += mdsipAddr;
@@ -161,7 +163,9 @@ Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port
 }
 
 Connection::~Connection() {
+    lockGlobal();
 	DisconnectFromMds(sockId);
+    unlockGlobal();
 }
 
 void Connection::lockLocal() {
