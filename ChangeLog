@@ -1,4 +1,16 @@
-commit ec09cc0a8cf92c483a1c57aadcbd61bd0aa40367 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit e6a1759a26044d1c1099349d0829f7230491f5b1 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 25 12:29:34 2015 -0500
+
+    Fix memory issue with TreeExpandnodes
+
+commit 805216b85fb26fff481e2e40457dfd6045718210 (tag: refs/tags/stable_release-6-1-73)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 11:38:39 2015 -0500
+
+    New ChangeLog
+
+commit ec09cc0a8cf92c483a1c57aadcbd61bd0aa40367
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 23 09:51:42 2015 -0500
 
