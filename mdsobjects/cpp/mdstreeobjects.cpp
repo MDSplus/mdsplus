@@ -1000,7 +1000,7 @@ TreeNode *TreeNode::getMember()
 	int nidLen = 4;
 	int memberNid;
 	struct nci_itm nciList[] = 
-		{{4, NciCHILD, &memberNid, &nidLen},
+		{{4, NciMEMBER, &memberNid, &nidLen},
 		{NciEND_OF_LIST, 0, 0, 0}};
 
 	resolveNid();
