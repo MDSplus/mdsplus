@@ -1,4 +1,71 @@
-commit 289c1e11f55ccae5a87fd2e0be896cf4c4a49485 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 3630d3285866fe4fe09b09d748b2c89e6517e87d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 00:55:59 2015 +0000
+
+    New ChangeLog
+
+commit 8e6b96fbefe95d822cae5edf7d15240ec6d9f0a9
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 00:13:34 2015 +0000
+
+    New ChangeLog
+
+commit c3ceb4745cec6cd8dd3ce7787ff657f91e0f08f2
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 25 18:27:51 2015 -0500
+
+    New ChangeLog
+
+commit b737ac0dea0750f2e4fb16997d6c560d6e78c0cd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 25 12:26:14 2015 -0500
+
+    Fix memory issue with TreeExpandnodes
+
+commit 990a552826c71b832e5eefa70c1da3325de55b50
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:34:35 2015 +0100
+
+    add parenthesis
+
+commit a93d1b65b9cc97be845d25f47ca4d52b6f74af7c
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:31:54 2015 +0100
+
+    remove printouts'
+
+commit a9d942c6a514dd84554fd66ca008cb997c0fac85
+Merge: c0a7d22 f57543a
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:25:24 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit c0a7d2236222ffc8256f6761efcc36e53cd03808
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:25:15 2015 +0100
+
+    Fix wrong TDI compilation in jScope
+
+commit f57543ac10ebb1717b50d8e4e8a090510fac29ad
+Author: Andrea Rigoni Garola <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 25 11:52:09 2015 +0100
+
+    global Lock on Connection ConnectToMds and DisconnectToMds
+
+commit 9f00395a8ee9b04f9c203433f0d027ff1b5afe9a
+Author: Andrea Rigoni Garola <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 25 09:02:02 2015 +0100
+
+    removed unnecessary lock
+
+commit 8658342f9617cdb9a9b488a9178668e2de147891 (tag: refs/tags/alpha_release-6-3-474)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Feb 20 18:26:40 2015 -0500
+
+    New ChangeLog
+
+commit 289c1e11f55ccae5a87fd2e0be896cf4c4a49485
 Author: Gabriele Manduchi <gcm@g01.itm.rzg.mpg.de>
 Date:   Fri Feb 20 13:01:04 2015 +0100
 
