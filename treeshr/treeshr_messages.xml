@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<messages>
+  <facility name="Tree" value="4049">
+    <status name="ALREADY_OFF" value="4101" severity="Informational" text="Node is already OFF"/>
+    <status name="ALREADY_ON"  value="4102" severity="Informational" text="Node is already ON"/>
+    <status name="ALREADY_OPEN" value="4103" severity="Informational" text="Tree is already OPEN"/>
+    <status name="ALREADY_THERE" value="4113" severity="Warning" text="Node is already in the tree"/>
+    <status name="BADRECORD" value="4119" severity="Error" text="Data corrupted: cannot read record"/>
+    <status name="BOTH_OFF" value="4115" severity="Warning" text="Both this node and its parent are off"/>
+    <status name="BUFFEROVF" value="4130" severity="Error" text="Output buffer overflow"/>
+    <status name="CONGLOMFULL" value="4132" severity="Error" text="Current conglomerate is full"/>
+    <status name="CONGLOM_NOT_FULL" value="4133" severity="Error" text="Current conglomerate is not yet full"/>
+    <status name="CONTINUING" value="4396" severity="Informational" text="Operation continuing: note following error"/>
+    <status name="DUPTAG" value="4121" severity="Error" text="Tag name already in use"/>
+    <status name="EDITTING" value="4146" severity="Error" text="Tree file open for edit: operation not permitted"/>
+    <status name="ILLEGAL_ITEM" value="4129" severity="Error" text="Invalid item code or part number specified"/>
+    <status name="ILLPAGCNT" value="4122" severity="Error" text="Illegal page count, error mapping tree file"/>
+    <status name="INVDFFCLASS" value="4135" severity="Error" text="Invalid data fmt: only CLASS_S can have data in NCI"/>
+    <status name="INVDTPUSG" value="4145" severity="Error" text="Attempt to store datatype which conflicts with the designated usage of this node"/>
+    <status name="INVPATH" value="4128" severity="Error" text="Invalid tree pathname specified"/>
+    <status name="INVRECTYP" value="4136" severity="Error" text="Record type invalid for requested operation"/>
+    <status name="INVTREE" value="4120" severity="Error" text="Invalid tree identification structure"/>
+    <status name="MAXOPENEDIT" value="4123" severity="Error" text="Too many files open for edit"/>
+    <status name="NEW" value="4099" severity="Informational" text="New tree created"/>
+    <status name="NMN" value="4108" severity="Warning" text="No More Nodes"/>
+    <status name="NMT" value="4109" severity="Warning" text="No More Tags"/>
+    <status name="NNF" value="4110" severity="Warning" text="Node Not Found"/>
+    <status name="NODATA" value="4124" severity="Error" text="No data available for this node"/>
+    <status name="NODNAMLEN" value="4137" severity="Error" text="Node name too long (12 chars max)"/>
+    <status name="NOEDIT" value="4126" severity="Error" text="Tree file is not open for edit"/>
+    <status name="NOLOG" value="4149" severity="Error" text="Experiment pathname (xxx_path) not defined"/>
+    <status name="NOMETHOD" value="4118" severity="Warning" text="Method not available for this object"/>
+    <status name="NOOVERWRITE" value="4144" severity="Error" text="Write-once node: overwrite not permitted"/>
+    <status name="NORMAL" value="4097" severity="Success" text="Normal successful completion"/>
+    <status name="NOTALLSUBS" value="4100" severity="Informational" text="Main tree opened but not all subtrees found/or connected"/>
+    <status name="NOTCHILDLESS" value="4127" severity="Error" text="Node must be childless to become subtree reference"/>
+    <status name="NOT_IN_LIST" value="4152" severity="Error" text="Tree being opened was not in the list"/>
+    <status name="NOTMEMBERLESS" value="4142" severity="Error" text="Subtree reference can not have members"/>
+    <status name="NOTOPEN" value="4125" severity="Error" text="No tree file currently open"/>
+    <status name="NOTSON" value="4143" severity="Error" text="Subtree reference cannot be a member"/>
+    <status name="NOT_CONGLOM" value="4140" severity="Error" text="Head node of conglomerate does not contain a DTYPE_CONGLOM record"/>
+    <status name="NOT_OPEN" value="4117" severity="Warning" text="Tree not currently open"/>
+    <status name="NOWRITEMODEL" value="4147" severity="Error" text="Data for this node can not be written into the MODEL file"/>
+    <status name="NOWRITESHOT" value="4148" severity="Error" text="Data for this node can not be written into the SHOT file"/>
+    <status name="NO_CONTEXT" value="4104" severity="Informational" text="There is no active search to end"/>
+    <status name="OFF" value="4116" severity="Warning" text="Node is OFF"/>
+    <status name="ON" value="4105" severity="Informational" text="Node is ON"/>
+    <status name="OPEN" value="4106" severity="Informational" text="Tree is OPEN (no edit)"/>
+    <status name="OPEN_EDIT" value="4107" severity="Informational" text="Tree is OPEN for edit"/>
+    <status name="PARENT_OFF" value="4114" severity="Warning" text="Parent of this node is OFF"/>
+    <status name="READERR" value="4151" severity="Error" text="Error reading record for node"/>
+    <status name="READONLY" value="4150" severity="Error" text="Tree was opened with readonly access"/>
+    <status name="RESOLVED" value="4098" severity="Success" text="Indirect reference successfully resolved"/>
+    <status name="SUCCESS" value="4296" severity="Success" text="Operation successful"/>
+    <status name="TAGNAMLEN" value="4138" severity="Error" text="Tagname too long (max 24 chars)"/>
+    <status name="TNF" value="4111" severity="Warning" text="Tag Not Found"/>
+    <status name="TREENF" value="4112" severity="Warning" text="Tree Not Found"/>
+    <status name="UNRESOLVED" value="4134" severity="Error" text="Not an indirect node reference: No action taken"/>
+    <status name="UNSPRTCLASS" value="4131" severity="Error" text="Unsupported descriptor class"/>
+    <status name="UNSUPARRDTYPE" value="4141" severity="Error" text="Complex data types not supported as members of arrays"/>
+    <status name="WRITEFIRST" value="4139" severity="Error" text="Tree has been modified:  write or quit first"/>
+    <status name="FAILURE" value="4596" severity="Error" text="Operation NOT successful"/>
+    <status name="LOCK_FAILURE" value="4598" severity="Error" text="Error locking file, perhaps NFSLOCKING not enabled on this system"/>
+    <status name="FILE_NOT_FOUND" value="4597" severity="Error" text="File or Directory Not Found"/>
+    <status name="CANCEL" value="4496" severity="Warning" text="User canceled operation"/>
+    <status name="NOSEGMENTS" value="4599" severity="Error" text="No segments exist in this node"/>
+    <status name="INVDTYPE" value="4600" severity="Error" text="Invalid datatype for data segment"/>
+    <status name="INVSHAPE" value="4601" severity="Error" text="Invalid shape for this data segment"/>
+    <status name="INVSHOT" value="4603" severity="Error" text="Invalid shot number - must be -1 (model), 0 (current), or Positive"/>
+    <status name="INVTAG" value="4605" severity="Error" text="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"/>
+  </facility>
+</messages>

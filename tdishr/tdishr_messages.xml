@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<messages>
+  <facility name="Tdi" value="4051">
+    <status name="BREAK" value="4097" severity="Warning" text="BREAK was not in DO FOR SWITCH or WHILE"/>
+    <status name="CASE" value="4098" severity="Warning" text="CASE was not in SWITCH statement"/>
+    <status name="CONTINUE" value="4099" severity="Warning" text="CONTINUE was not in DO FOR or WHILE"/>
+    <status name="EXTRANEOUS" value="4100" severity="Warning" text="Some characters were unused, bad number maybe"/>
+    <status name="RETURN" value="4101" severity="Warning" text="Extraneous RETURN statement, not from a FUN"/>
+    <status name="ABORT" value="4102" severity="Error" text="Program requested abort"/>
+    <status name="BAD_INDEX" value="4103" severity="Error" text="Index or subscript is too small or too big"/>
+    <status name="BOMB" value="4104" severity="Error" text="Bad punctuation, could not compile the text"/>
+    <status name="EXTRA_ARG" value="4105" severity="Error" text="Too many arguments for function, watch commas"/>
+    <status name="GOTO" value="4106" severity="Error" text="GOTO target label not found"/>
+    <status name="INVCLADSC" value="4107" severity="Error" text="Storage class not valid, must be scalar or array"/>
+    <status name="INVCLADTY" value="4108" severity="Error" text="Invalid mixture of storage class and data type"/>
+    <status name="INVDTYDSC" value="4109" severity="Error" text="Storage data type is not valid"/>
+    <status name="INV_OPC" value="4110" severity="Error" text="Invalid operator code in a function"/>
+    <status name="INV_SIZE" value="4111" severity="Error" text="Number of elements does not match declaration"/>
+    <status name="MISMATCH" value="4112" severity="Error" text="Shape of arguments does not match"/>
+    <status name="MISS_ARG" value="4113" severity="Error" text="Missing argument is required for function"/>
+    <status name="NDIM_OVER" value="4114" severity="Error" text="Number of dimensions is over the allowed 8"/>
+    <status name="NO_CMPLX" value="4115" severity="Error" text="There are no complex forms of this function"/>
+    <status name="NO_OPC" value="4116" severity="Error" text="No support for this function, today"/>
+    <status name="NO_OUTPTR" value="4117" severity="Error" text="An output pointer is required"/>
+    <status name="NO_SELF_PTR" value="4118" severity="Error" text="No $VALUE is defined for signal or validation"/>
+    <status name="NOT_NUMBER" value="4119" severity="Error" text="Value is not a scalar number and must be"/>
+    <status name="NULL_PTR" value="4120" severity="Error" text="Null pointer where value needed"/>
+    <status name="RECURSIVE" value="4121" severity="Error" text="Overly recursive function, calls itself maybe"/>
+    <status name="SIG_DIM" value="4122" severity="Error" text="Signal dimension does not match data shape"/>
+    <status name="SYNTAX" value="4123" severity="Error" text="Bad punctuation or misspelled word or number"/>
+    <status name="TOO_BIG" value="4124" severity="Error" text="Conversion of number lost significant digits"/>
+    <status name="UNBALANCE" value="4125" severity="Error" text="Unbalanced () [] {} '' &quot; &quot; or /**/"/>
+    <status name="UNKNOWN_VAR" value="4126" severity="Error" text="Unknown/undefined variable name"/>
+    <status name="STRTOOLON" value="4127" severity="Fatal" text="string is too long (greater than 65535)"/>
+    <status name="TIMEOUT" value="4128" severity="Fatal" text="task did not complete in alotted time"/>
+  </facility>
+</messages>
