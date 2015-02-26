@@ -1,4 +1,22 @@
-commit 25495f9bc5125ecbdc815b75c1b2dcd06af548d7 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 38f58d36602d009767b33d99f5f7aaed81d4637b (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 11:35:51 2015 -0500
+
+    Use correct nciList1
+
+commit 667bc3cd9fb2b8527d9281050a73561d32e3114d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 09:25:48 2015 -0500
+
+    Fix getMember to use NciMEMBER instead of NciChild
+
+commit 9f596af29666519cc65d0dd879065e0bf0076305 (tag: refs/tags/stable_release-6-1-74)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 01:46:25 2015 +0000
+
+    New ChangeLog
+
+commit 25495f9bc5125ecbdc815b75c1b2dcd06af548d7
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Feb 26 01:13:05 2015 +0000
 
