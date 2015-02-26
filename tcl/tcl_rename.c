@@ -18,7 +18,7 @@
 int TclRename(void *ctx, char **error, char **output)
 {
   int nid;
-  int sts = CLI_STS_IVVERB;
+  int sts = MdsdclIVVERB;
   char *srcnam = 0;
   char *destnam = 0;
 

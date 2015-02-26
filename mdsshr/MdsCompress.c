@@ -52,7 +52,7 @@ The expansion routine "xentry":
 #include <mdsshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <STATICdef.h>
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)

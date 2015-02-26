@@ -33,12 +33,12 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <mdsshr.h>
 #include <mdsdescrip.h>
 #include <treeshr.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
 #include <string.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <ctype.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

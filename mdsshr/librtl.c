@@ -5,7 +5,7 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <mdsshr.h>
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"

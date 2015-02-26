@@ -20,7 +20,7 @@
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
 #include <strroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>

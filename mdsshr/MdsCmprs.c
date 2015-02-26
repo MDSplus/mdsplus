@@ -66,7 +66,7 @@
 #include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <STATICdef.h>
 #include <mdstypes.h>
 #include <stdlib.h>

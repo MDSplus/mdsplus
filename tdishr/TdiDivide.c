@@ -31,7 +31,7 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 #include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

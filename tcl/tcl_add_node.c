@@ -3,6 +3,7 @@
 #include <usagedef.h>
 #include <string.h>
 #include <dcl.h>
+#include <malloc.h>
 /**********************************************************************
 * TCL_ADD_NODE.C --
 *
@@ -71,7 +72,7 @@ int TclAddNode(void *ctx, char **error, char **output)
     if (usageStr) {
       usage = tclUsageToNumber(usageStr, error);
       if (usage == -1) {
-	sts = CLI_STS_IVVERB;
+	sts = MdsdclIVVERB;
 	goto done;
       }
     }

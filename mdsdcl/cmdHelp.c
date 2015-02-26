@@ -9,6 +9,7 @@
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include <dcl.h>
+#include <mdsdcl_messages.h>
 #include "dcl_p.h"
   
 /*! Find the information associated with a command verb.
@@ -368,7 +369,7 @@ static char *formatHelp(char *content)
 
 int mdsdcl_do_help(char *command, char **error, char **output)
 {
-  int status = CLI_STS_IVVERB;
+  int status = MdsdclIVVERB;
   char *prompt = 0;
   dclDocListPtr doc_l;
   int helpFound = 0;
@@ -381,14 +382,14 @@ int mdsdcl_do_help(char *command, char **error, char **output)
   for (doc_l = dclDocs, docIdx=numDocs-1; doc_l != NULL; doc_l = doc_l->next,docIdx--)
     docs[docIdx]=doc_l->doc;
   *output = strdup("\n");
-  for (docIdx=0; (status == CLI_STS_IVVERB) && (docIdx<numDocs); docIdx++) {
+  for (docIdx=0; (status == MdsdclIVVERB) && (docIdx<numDocs); docIdx++) {
     xmlDocPtr doc = docs[docIdx];
     int exactFound = 0;
     dclNodeList matchingHelp = { 0, 0 };
     if (command != 0) {
       findEntity(doc->children, "help", command, &matchingHelp, &exactFound);
       if (matchingHelp.count == 0) {
-	status = CLI_STS_IVVERB;
+	status = MdsdclIVVERB;
       } else {
 	int i;
 	for (i=0;i<matchingHelp.count;i++) {

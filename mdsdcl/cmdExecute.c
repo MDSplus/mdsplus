@@ -9,6 +9,7 @@
 #include <libxml/xpathInternals.h>
 #include <mdsshr.h>
 #include <dcl.h>
+#include <mdsdcl_messages.h>
 #include "dcl_p.h"
 
 static dclDocListPtr dclDocs = 0;
@@ -553,7 +554,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
       char *errstr = malloc(100);
       sprintf(errstr, "Qualifier \"%s\" is not valid for this command\n", cmd->qualifiers[i]->name);
       *error = errstr;
-      return CLI_STS_IVQUAL;
+      return MdsdclIVQUAL;
     }
   }
   /* Check to make sure there are not too many parameters */
@@ -564,7 +565,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	    "Too many parameters specified in the command. Maximum supported is %d. Provided was %d.\n",
 	    cmdDef->parameter_count, cmd->parameter_count);
     *error = errstr;
-    return CLI_STS_TOO_MANY_PRMS;
+    return MdsdclTOO_MANY_PRMS;
   }
 
   /* For all the parameters */
@@ -579,7 +580,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	sprintf(errstr, "Parameter number %d does not accept a list of values. "
 		"Perhaps that parameter needs to enclosed in double quotes?\n", i + 1);
 	*error = errstr;
-	return CLI_STS_TOO_MANY_VALS;
+	return MdsdclTOO_MANY_VALS;
       }
     }
 
@@ -610,7 +611,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
     if (cmdDef->parameters[i]->required) {
       if (cmd->parameter_count < (i + 1)) {
 	*prompt = strdup(cmdDef->parameters[i]->prompt ? cmdDef->parameters[i]->prompt : "What");
-	return CLI_STS_PROMPT_MORE;
+	return MdsdclPROMPT_MORE;
       }
     }
   }
@@ -632,7 +633,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	    sprintf(errstr, "Qualifier \"%s\" requires a value and none was provided\n",
 		    cmdDef->qualifiers[i]->name);
 	    *error = errstr;
-	    return CLI_STS_MISSING_VALUE;
+	    return MdsdclMISSING_VALUE;
 	  }
 	  break;
 	}
@@ -709,7 +710,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	  sprintf(errstr, "Qualifier \"%s\" does not permit a list of values\n",
 		  cmdDef->qualifiers[i]->name);
 	  *error = errstr;
-	  return CLI_STS_TOO_MANY_VALS;
+	  return MdsdclTOO_MANY_VALS;
 	}
 
 	/* Check to see if the command was negated and if that is allowed */
@@ -720,7 +721,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	    char *errstr = malloc(100);
 	    sprintf(errstr, "Qualifier \"%s\" cannot be negated\n", realname);
 	    *error = errstr;
-	    return CLI_STS_NOTNEGATABLE;
+	    return MdsdclNOTNEGATABLE;
 	  } else
 	    cmd->qualifiers[i]->negated = 1;
 	}
@@ -739,7 +740,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
       char *errstr = malloc(100);
       sprintf(errstr, "Qualifier \"%s\" is not valid for this command\n", cmd->qualifiers[i]->name);
       *error = errstr;
-      return CLI_STS_IVQUAL;
+      return MdsdclIVQUAL;
     }
   }
  rest_of_line:
@@ -748,7 +749,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 	strdup
 	("No execution routine specified in command definition. Internal error, please report to MDSplus developers\n");
     fprintf(stderr, "Command not supported\n");
-    return CLI_STS_IVVERB;
+    return MdsdclIVVERB;
   } else {
     if (cmd->routine)
       free(cmd->routine);
@@ -901,7 +902,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 	    }
 
 	    /* If no keywords match the parameter value then get out. It's an invalid command */
-	    status = CLI_STS_IVVERB;
+	    status = MdsdclIVVERB;
 	    goto DONE;
 	  }
 	}
@@ -1104,6 +1105,7 @@ int mdsdcl_do_command(char const *command)
     fprintf(stdout, output);
     free(output);
   }
+  return status;
 }
 
 int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc) {
@@ -1123,14 +1125,18 @@ int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc, 
   return status;
 }
 
+#define facility(status) (status >> 16)
+#define msgnum(status) ((status & 0xffff)>>3)
+#define MDSDCL_FACILITY 2050
+#define invalid_command(status) ((facility(status)==MDSDCL_FACILITY) && (msgnum(status) > 100))
+
 int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
 	       char **output_out, char *(*getline)(), void *getlineinfo)
 {
-  int status = CLI_STS_IVVERB;
+  int status = MdsdclIVVERB;
   char *prompt = 0;
   char *error = 0;
   char *output = 0;
-  int cli_status = CLI_STS(0);
   dclDocListPtr doc_l;
   if (dclDocs == NULL)
     mdsdclAddCommands("mdsdcl_commands", &error);
@@ -1147,8 +1153,9 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     }
     free(prompt);
   }
-  for (doc_l = dclDocs;
-       ((status & 0xffff0000) == cli_status) && (doc_l != NULL) && status != CLI_STS_PROMPT_MORE;
+  for (doc_l = dclDocs; doc_l != NULL &&
+	 invalid_command(status) &&
+	 (status != MdsdclPROMPT_MORE);
        doc_l = doc_l->next) {
     dclCommandPtr cmdDef = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
     cmdDef->verb = strdup(cmd->verb);
@@ -1159,7 +1166,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     if (matchingVerbs.count == 0 || matchingVerbs.count > 1) {
       if (matchingVerbs.nodes != NULL)
 	free(matchingVerbs.nodes);
-      status = CLI_STS_IVVERB;
+      status = MdsdclIVVERB;
     } else {
       char *output_tmp = 0;
       char *error_tmp = 0;
@@ -1175,7 +1182,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
 	  if (error == NULL)
 	    error = error_tmp;	  
 	  else {
-	    if ((status & 0xffff0000) == cli_status) 
+	    if (invalid_command(status)) 
 	      free(error_tmp);
 	    else {
 	      free(error);
@@ -1200,7 +1207,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     freeCommand(&cmdDef);
   }
   freeCommand(&cmd);
-  if (status == CLI_STS_PROMPT_MORE) {
+  if (status == MdsdclPROMPT_MORE) {
     if (!prompt) {
       prompt = strdup("What: ");
     }
@@ -1217,7 +1224,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     }
   }
   if ((prompt == NULL) && (error == 0) && (!(status & 1))) {
-    if (status == CLI_STS_IVVERB && error == NULL) {
+    if (status == MdsdclIVVERB && error == NULL) {
       error = strcpy(malloc(100), "mdsdcl: No such command\n");
     } else {
       char *msg = MdsGetMsg(status);
@@ -1261,16 +1268,16 @@ int cli_present(void *ctx, char *name)
 {
   dclCommandPtr cmd = (dclCommandPtr) ctx;
   int i;
-  int ans = CLI_STS_ABSENT;
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->parameter_count); i++) {
+  int ans = MdsdclABSENT;
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->parameter_count); i++) {
     char *pname = cmd->parameters[i]->label ? cmd->parameters[i]->label : cmd->parameters[i]->name;
     if (strcasecmp(name, pname) == 0) {
-      ans = CLI_STS_PRESENT;
+      ans = MdsdclPRESENT;
     }
   }
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->qualifier_count); i++) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->qualifier_count); i++) {
     if (strcasecmp(name, cmd->qualifiers[i]->name) == 0) {
-      ans = cmd->qualifiers[i]->negated ? CLI_STS_NEGATED : CLI_STS_PRESENT;
+      ans = cmd->qualifiers[i]->negated ? MdsdclNEGATED : MdsdclPRESENT;
     }
   }
   return ans;
@@ -1280,33 +1287,33 @@ int cli_get_value(void *ctx, char *name, char **value)
 {
   dclCommandPtr cmd = (dclCommandPtr) ctx;
   int i;
-  int ans = CLI_STS_ABSENT;
+  int ans = MdsdclABSENT;
 
   if (strcasecmp(name, "command_line") == 0) {
     *value = strdup(cmd->command_line);
     return 1;
   }
 
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->parameter_count); i++) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->parameter_count); i++) {
     if ((strcasecmp(name, cmd->parameters[i]->name) == 0) ||
 	((cmd->parameters[i]->label) && (strcasecmp(name, cmd->parameters[i]->label) == 0))) {
       if (cmd->parameters[i]->value_idx >= cmd->parameters[i]->value_count) {
-	ans = CLI_STS_ABSENT;
+	ans = MdsdclABSENT;
 	cmd->parameters[i]->value_idx = 0;
       } else {
 	*value = strdup(cmd->parameters[i]->values[cmd->parameters[i]->value_idx++]);
-	ans = CLI_STS_PRESENT;
+	ans = MdsdclPRESENT;
       }
     }
   }
-  for (i = 0; (ans == CLI_STS_ABSENT) && (i < cmd->qualifier_count); i++) {
+  for (i = 0; (ans == MdsdclABSENT) && (i < cmd->qualifier_count); i++) {
     if (strcasecmp(name, cmd->qualifiers[i]->name) == 0) {
       if (cmd->qualifiers[i]->value_idx >= cmd->qualifiers[i]->value_count) {
-	ans = CLI_STS_ABSENT;
+	ans = MdsdclABSENT;
 	cmd->qualifiers[i]->value_idx = 0;
       } else {
 	*value = strdup(cmd->qualifiers[i]->values[cmd->qualifiers[i]->value_idx++]);
-	ans = CLI_STS_PRESENT;
+	ans = MdsdclPRESENT;
       }
     }
   }

@@ -1,6 +1,8 @@
 #ifndef __TREESHR
 #define __TREESHR
 
+#include <treeshr_messages.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,78 +15,12 @@ extern "C" {
 #endif
 #include <mdstypes.h>
 
+#define TreeBLOCKID 0x3ade68b1
+
 extern int treeshr_errno;
 extern int TREE_BLOCKID;
 
 
-#define TreeALREADY_OFF 0xfd1802b
-#define TreeALREADY_ON 0xfd18033
-#define TreeALREADY_OPEN 0xfd1803b
-#define TreeALREADY_THERE 0xfd18088
-#define TreeBADRECORD 0xfd180ba
-#define TreeBLOCKID 0x3ade68b1
-#define TreeBOTH_OFF 0xfd18098
-#define TreeBUFFEROVF 0xfd18112
-#define TreeCONGLOMFULL 0xfd18122
-#define TreeCONGLOM_NOT_FULL 0xfd1812a
-#define TreeCONTINUING 0xfd18963
-#define TreeDUPTAG 0xfd180ca
-#define TreeEDITTING 0xfd18192
-#define TreeILLEGAL_ITEM 0xfd1810a
-#define TreeILLPAGCNT 0xfd180d2
-#define TreeINVDFFCLASS 0xfd1813a
-#define TreeINVDTPUSG 0xfd1818a
-#define TreeINVPATH 0xfd18102
-#define TreeINVRECTYP 0xfd18142
-#define TreeINVTREE 0xfd180c2
-#define TreeMAXOPENEDIT 0xfd180da
-#define TreeNEW 0xfd1801b
-#define TreeNMN 0xfd18060
-#define TreeNMT 0xfd18068
-#define TreeNNF 0xfd18070
-#define TreeNODATA 0xfd180e2
-#define TreeNODNAMLEN 0xfd1814a
-#define TreeNOEDIT 0xfd180f2
-#define TreeNOLOG 0xfd181aa
-#define TreeNOMETHOD 0xfd180b0
-#define TreeNOOVERWRITE 0xfd18182
-#define TreeNORMAL 0xfd18009
-#define TreeNOTALLSUBS 0xfd18023
-#define TreeNOTCHILDLESS 0xfd180fa
-#define TreeNOT_IN_LIST 0xfd181c2
-#define TreeNOTMEMBERLESS 0xfd18172
-#define TreeNOTOPEN 0xfd180ea
-#define TreeNOTSON 0xfd1817a
-#define TreeNOT_CONGLOM 0xfd18162
-#define TreeNOT_OPEN 0xfd180a8
-#define TreeNOWRITEMODEL 0xfd1819a
-#define TreeNOWRITESHOT 0xfd181a2
-#define TreeNO_CONTEXT 0xfd18043
-#define TreeOFF 0xfd180a0
-#define TreeON 0xfd1804b
-#define TreeOPEN 0xfd18053
-#define TreeOPEN_EDIT 0xfd1805b
-#define TreePARENT_OFF 0xfd18090
-#define TreeREADERR 0xfd181ba
-#define TreeREADONLY 0xfd181b2
-#define TreeRESOLVED 0xfd18011
-#define TreeSUCCESS 0xfd18641
-#define TreeTAGNAMLEN 0xfd18152
-#define TreeTNF 0xfd18078
-#define TreeTREENF 0xfd18080
-#define TreeUNRESOLVED 0xfd18132
-#define TreeUNSPRTCLASS 0xfd1811a
-#define TreeUNSUPARRDTYPE 0xfd1816a
-#define TreeWRITEFIRST 0xfd1815a
-#define TreeFAILURE 0xfd18fa2
-#define TreeLOCK_FAILURE 0xfd18fb2
-#define TreeFILE_NOT_FOUND 0xfd18faa
-#define TreeCANCEL 0xfd18c80
-#define TreeNOSEGMENTS  0xfd18fba
-#define TreeINVDTYPE 0xfd18fc2
-#define TreeINVSHAPE 0xfd18fca
-#define TreeINVSHOT 0xfd18fda
-#define TreeINVTAG  0xfd18fea
 
 
 #ifndef MDSDESCRIP_H_DEFINED
@@ -102,85 +38,6 @@ extern int TREE_BLOCKID;
   struct nci_itm;
 #endif
 
-#ifdef CREATE_STS_TEXT
-#include        "facility_list.h"
-
-  static struct stsText treeshr_stsText[] = {
-    STS_TEXT(TreeALREADY_OFF, "Node is already OFF")
-	, STS_TEXT(TreeALREADY_ON, "Node is already ON")
-	, STS_TEXT(TreeALREADY_OPEN, "Tree is already OPEN")
-	, STS_TEXT(TreeALREADY_THERE, "Node is already in the tree")
-	, STS_TEXT(TreeBADRECORD, "Data corrupted: cannot read record")
-	, STS_TEXT(TreeBLOCKID, "xxx")
-	, STS_TEXT(TreeBOTH_OFF, "Both this node and its parent are off")
-	, STS_TEXT(TreeBUFFEROVF, "Output buffer overflow")
-	, STS_TEXT(TreeCONGLOMFULL, "Current conglomerate is full")
-	, STS_TEXT(TreeCONGLOM_NOT_FULL, "Current conglomerate is not yet full")
-	, STS_TEXT(TreeCONTINUING, "Operation continuing: note following error")
-	, STS_TEXT(TreeDUPTAG, "Tag name already in use")
-	, STS_TEXT(TreeEDITTING, "Tree file open for edit: operation not permitted")
-	, STS_TEXT(TreeILLEGAL_ITEM, "Invalid item code or part number specified")
-	, STS_TEXT(TreeILLPAGCNT, "Illegal page count, error mapping tree file")
-	, STS_TEXT(TreeINVDFFCLASS, "Invalid data fmt: only CLASS_S can have data in NCI")
-	, STS_TEXT(TreeINVDTPUSG, "Attempt to store datatype which conflicts\n\
-			with the designated usage of this node")
-	, STS_TEXT(TreeINVPATH, "Invalid tree pathname specified")
-	, STS_TEXT(TreeINVRECTYP, "Record type invalid for requested operation")
-	, STS_TEXT(TreeINVTREE, "Invalid tree identification structure")
-	, STS_TEXT(TreeMAXOPENEDIT, "Too many files open for edit")
-	, STS_TEXT(TreeNEW, "New tree created")
-	, STS_TEXT(TreeNMN, "No More Nodes")
-	, STS_TEXT(TreeNMT, "No More Tags")
-	, STS_TEXT(TreeNNF, "Node Not Found")
-	, STS_TEXT(TreeNODATA, "No data available for this node")
-	, STS_TEXT(TreeNODNAMLEN, "Node name too long (12 chars max)")
-	, STS_TEXT(TreeNOEDIT, "Tree file is not open for edit")
-	, STS_TEXT(TreeNOLOG, "Experiment pathname (xxx_path) not defined")
-	, STS_TEXT(TreeNOMETHOD, "Method not available for this object")
-	, STS_TEXT(TreeNOOVERWRITE, "Write-once node: overwrite not permitted")
-	, STS_TEXT(TreeNORMAL, "Normal successful completion")
-	, STS_TEXT(TreeNOTALLSUBS, "Main tree opened but not all subtrees found/or connected")
-	, STS_TEXT(TreeNOTCHILDLESS, "Node must be childless to become subtree reference")
-	, STS_TEXT(TreeNOT_IN_LIST, "Tree being opened was not in the list")
-	, STS_TEXT(TreeNOTMEMBERLESS, "Subtree reference can not have members")
-	, STS_TEXT(TreeNOTOPEN, "No tree file currently open")
-	, STS_TEXT(TreeNOTSON, "Subtree reference cannot be a member")
-	, STS_TEXT(TreeNOT_CONGLOM,
-		   "Head node of conglomerate does not contain a DTYPE_CONGLOM record")
-	, STS_TEXT(TreeNOT_OPEN, "Tree not currently open")
-	, STS_TEXT(TreeNOWRITEMODEL, "Data for this node can not be written into the MODEL file")
-	, STS_TEXT(TreeNOWRITESHOT, "Data for this node can not be written into the SHOT file")
-	, STS_TEXT(TreeNO_CONTEXT, "There is no active search to end")
-	, STS_TEXT(TreeOFF, "Node is OFF")
-	, STS_TEXT(TreeON, "Node is ON")
-	, STS_TEXT(TreeOPEN, "Tree is OPEN (no edit)")
-	, STS_TEXT(TreeOPEN_EDIT, "Tree is OPEN for edit")
-	, STS_TEXT(TreePARENT_OFF, "Parent of this node is OFF")
-	, STS_TEXT(TreeREADERR, "Error reading record for node")
-	, STS_TEXT(TreeREADONLY, "Tree was opened with readonly access")
-	, STS_TEXT(TreeRESOLVED, "Indirect reference successfully resolved")
-	, STS_TEXT(TreeSUCCESS, "Operation successful")
-	, STS_TEXT(TreeTAGNAMLEN, "Tagname too long (max 24 chars)")
-	, STS_TEXT(TreeTNF, "Tag Not Found")
-	, STS_TEXT(TreeTREENF, "Tree Not Found")
-	, STS_TEXT(TreeUNRESOLVED, "Not an indirect node reference: No action taken")
-	, STS_TEXT(TreeUNSPRTCLASS, "Unsupported descriptor class")
-	, STS_TEXT(TreeUNSUPARRDTYPE, "Complex data types not supported as members of arrays")
-	, STS_TEXT(TreeWRITEFIRST, "Tree has been modified:  write or quit first")
-	, STS_TEXT(TreeFAILURE, "Operation NOT successful")
-	, STS_TEXT(TreeLOCK_FAILURE,
-		   "Error locking file, perhaps NFSLOCKING not enabled on this system")
-	, STS_TEXT(TreeFILE_NOT_FOUND, "File or Directory Not Found")
-	, STS_TEXT(TreeCANCEL, "User canceled operation")
-	, STS_TEXT(TreeNOSEGMENTS, "No segments exist in this node")
-	, STS_TEXT(TreeINVDTYPE, "Invalid datatype for data segment")
-	, STS_TEXT(TreeINVSHAPE, "Invalid shape for this data segment")
-	, STS_TEXT(TreeINVSHOT,
-		   "Invalid shot number - must be -1 (model), 0 (current), or Positive")
-    , STS_TEXT(TreeINVTAG,
-	       "Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores")
-  };
-#endif
 
 /******************* Prototypes for TREESHR routines *********************/
 

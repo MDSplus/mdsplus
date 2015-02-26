@@ -62,7 +62,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
 	 **************************************************************/
 int TclSetTree(void *ctx, char **error, char **output)
 {
-  int sts = CLI_STS_IVVERB;
+  int sts = MdsdclIVVERB;
   int shot;
   char *filnam = 0;
   char *asciiShot = 0;

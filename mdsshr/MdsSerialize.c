@@ -2,7 +2,7 @@
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <mdsshr.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <STATICdef.h>
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))

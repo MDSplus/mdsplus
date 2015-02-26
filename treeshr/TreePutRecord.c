@@ -40,7 +40,7 @@
 #include <ncidef.h>
 #include <string.h>
 #include <time.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <strroutines.h>
 #include <libroutines.h>
 #include <fcntl.h>

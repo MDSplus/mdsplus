@@ -14,7 +14,7 @@
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 

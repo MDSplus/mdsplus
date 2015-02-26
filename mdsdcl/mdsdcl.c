@@ -1,4 +1,5 @@
 #include <dcl.h>
+#include <mdsdcl_messages.h>
 #include "dcl_p.h"
 #include <string.h>
 #include <stdio.h>
@@ -194,7 +195,7 @@ main(int argc, char const *argv[])
 	if (prompt)
 	  free(prompt);
 	prompt = 0;
-	if (status == MDSDCL_STS_EXIT) {
+	if (status == MdsdclEXIT) {
 	  free(command);
 	  goto done;
 	}

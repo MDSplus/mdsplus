@@ -1,9 +1,17 @@
-#include       "tcldef.h"
+#include        <config.h>
 #include        <mdsdescrip.h>
 #include        "nodetouch.h"
 #include        "mdsshr.h"
 #include        "mds_stdarg.h"
 #include        "treeshr.h"
+#include        <malloc.h>
+#ifdef HAVE_ALLOCA_H
+#include        <alloca.h>
+#endif
+#include        <tcl_messages.h>
+
+#define TCL_STS_NORMAL TclNORMAL
+#define TCL_STS_FAILED_ESSENTIAL TclFAILED_ESSENTIAL
 
 	/*****************************************************************
 	 * Structures:

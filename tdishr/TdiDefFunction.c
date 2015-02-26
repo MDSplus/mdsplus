@@ -8,7 +8,7 @@
 #include <STATICdef.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsdescrip.h>
 #define COM
 

@@ -6,6 +6,7 @@
   #define yylex dcl_lex
   #include "dcl_p.h"
   #include <dcl.h>
+  #include <mdsdcl_messages.h>
   #include "dcllex.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 %}
@@ -175,7 +176,7 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **erro
   YYLTYPE *yyloc_param=0;
   yyscan_t yyscanner;
   YY_BUFFER_STATE cmd_state;
-  int result,status=CLI_STS_IVVERB;
+  int result,status=MdsdclIVVERB;
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string (command, yyscanner);
   if (error && *error) {

@@ -25,7 +25,7 @@ int GEN_DEVICE$CVT_STRING_CODE( )
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #include <string.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <treeshr.h>
 #include <mds_gendevice.h>
 

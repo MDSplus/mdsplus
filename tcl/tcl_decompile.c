@@ -33,7 +33,7 @@ extern int StrFree1Dx();
 int TclDecompile(void *ctx, char **error, char **output)
 {
   int nid;
-  int sts = CLI_STS_IVVERB;
+  int sts = MdsdclIVVERB;
   char *path = 0;
   struct descriptor dsc_string = { 0, DTYPE_T, CLASS_D, 0 };
   static struct descriptor_xd xd = { 0, 0, CLASS_XD, 0, 0 };

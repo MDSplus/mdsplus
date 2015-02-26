@@ -16,20 +16,20 @@ int TclSetVersions(void *ctx, char **error, char **output)
    * Executable ...
    *-------------------------------------------------------*/
   switch (cli_present(ctx, "MODEL")) {
-  case CLI_STS_PRESENT:
+  case MdsdclPRESENT:
     status = TreeSetDbiItm(DbiVERSIONS_IN_MODEL, 1);
     break;
-  case CLI_STS_NEGATED:
+  case MdsdclNEGATED:
     status = TreeSetDbiItm(DbiVERSIONS_IN_MODEL, 0);
     break;
   }
   if (!(status & 1))
     goto error;
   switch (cli_present(ctx, "SHOT")) {
-  case CLI_STS_PRESENT:
+  case MdsdclPRESENT:
     status = TreeSetDbiItm(DbiVERSIONS_IN_PULSE, 1);
     break;
-  case CLI_STS_NEGATED:
+  case MdsdclNEGATED:
     status = TreeSetDbiItm(DbiVERSIONS_IN_PULSE, 0);
     break;
   }

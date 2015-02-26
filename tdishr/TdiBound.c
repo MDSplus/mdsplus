@@ -18,7 +18,7 @@
 */
 #include <stdlib.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"

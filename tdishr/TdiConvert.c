@@ -1,7 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <math.h>
 #include <STATICdef.h>
 

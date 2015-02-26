@@ -2,7 +2,8 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 #include        <string.h>
-#include        "dcl.h"
+#include        <mdsdcl_messages.h>
+#include        <mdsdcl_messages.h>
 #include        <sys/time.h>
 #ifdef HAVE_SYS_RESOURCE_H
 #include        <sys/resource.h>
@@ -81,7 +82,7 @@ void mdsdclSetDefFile(char *deffile)
 	 ****************************************************************/
 int mdsdcl_exit(void *ctx, char *error, char *output)
 {
-  return MDSDCL_STS_EXIT;
+  return MdsdclEXIT;
 }
 
 	/****************************************************************
@@ -242,7 +243,7 @@ int mdsdcl_define_symbol(void *ctx, char **error, char **output)
     *error = malloc(100);
     sprintf(*error, "putenv returned %d. Environment variable not set.", sts);
     perror("error from putenv");
-    sts = MDSDCL_STS_ERROR;
+    sts = MdsdclERROR;
   } else
     sts = 1;
  done:
@@ -263,7 +264,7 @@ int mdsdcl_env(void *ctx, char **error, char **output)
     *error = malloc(100);
     perror("error from putenv");
     sprintf(*error, "Attempting putenv(\"%s\")\n", value);
-    sts = MDSDCL_STS_ERROR;
+    sts = MdsdclERROR;
   } else
     sts = 1;
   return (sts);
@@ -452,7 +453,7 @@ int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline)(), vo
   cli_get_value(ctx, "p1", &name); /*** do not free name as it is used in macro definition ***/
   if (name == NULL) {
     *error = strdup("No macro name specified\n");
-    return CLI_STS_IVVERB;
+    return MdsdclIVVERB;
   }
   macro = mdsdclNewMacro(name);
   while ((line = (getline ? getline(getlineinfo) : readline("DEFMAC> "))) && (strlen(line)) > 0) {
@@ -474,7 +475,7 @@ static void mdsdcl_print_macro(dclMacroListPtr l, int full, char **output)
   *output = strcat(realloc(*output, strlen(*output) + strlen(l->name) + 5), "\n");
   strcat(*output, l->name);
   strcat(*output, "\n");
-  if (full == CLI_STS_PRESENT) {
+  if (full == MdsdclPRESENT) {
     int i;
     for (i = 0; i < l->lines; i++) {
       *output = strcat(realloc(*output, strlen(*output) + strlen(l->cmds[i]) + 5), " ");
@@ -559,7 +560,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
   char *times_s = 0;
   char *p1 = 0, *p2 = 0, *p3 = 0, *p4 = 0, *p5 = 0, *p6 = 0, *p7 = 0;
   int sts = 1;
-  int indirect = cli_present(ctx, "INDIRECT") == CLI_STS_PRESENT;
+  int indirect = cli_present(ctx, "INDIRECT") == MdsdclPRESENT;
   dclMacroListPtr l = 0;
   cli_get_value(ctx, "name", &name);
   cli_get_value(ctx, "repeat", &times_s);

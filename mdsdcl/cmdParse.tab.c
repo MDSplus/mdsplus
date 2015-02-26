@@ -71,10 +71,11 @@
   #define yylex dcl_lex
   #include "dcl_p.h"
   #include <dcl.h>
+  #include <mdsdcl_messages.h>
   #include "dcllex.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 
-#line 78 "cmdParse.tab.c" /* yacc.c:339  */
+#line 79 "cmdParse.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -136,7 +137,7 @@ int yyparse (YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, 
 
 /* Copy the second part of user declarations.  */
 
-#line 140 "cmdParse.tab.c" /* yacc.c:358  */
+#line 141 "cmdParse.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -434,8 +435,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    45,    45,    60,    64,    65,    74,    87,    93,    97,
-     104,   129,   136,   159
+       0,    46,    46,    61,    65,    66,    75,    88,    94,    98,
+     105,   130,   137,   160
 };
 #endif
 
@@ -1222,7 +1223,7 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 45 "cmdParse.y" /* yacc.c:1646  */
+#line 46 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.cmd)=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
   (yyval.cmd)->verb=strdup("DO");
@@ -1238,26 +1239,26 @@ yyreduce:
   (yyval.cmd)->parameters[0]->values[0]=strdup((yyvsp[0].str)+1);
   free((yyvsp[0].str));
 }
-#line 1242 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1243 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 60 "cmdParse.y" /* yacc.c:1646  */
+#line 61 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.cmd)=memset(malloc(sizeof(dclCommand)),0,sizeof(dclCommand));
   (yyval.cmd)->verb=(yyvsp[0].str);
 }
-#line 1251 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1252 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 64 "cmdParse.y" /* yacc.c:1646  */
+#line 65 "cmdParse.y" /* yacc.c:1646  */
     {YYACCEPT;}
-#line 1257 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1258 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 65 "cmdParse.y" /* yacc.c:1646  */
+#line 66 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyvsp[0].qualifier)->position=(yyval.cmd)->parameter_count;
   if ((yyval.cmd)->qualifier_count == 0)
@@ -1267,11 +1268,11 @@ yyreduce:
   (yyval.cmd)->qualifiers[(yyval.cmd)->qualifier_count]=(yyvsp[0].qualifier);
   (yyval.cmd)->qualifier_count++;
 }
-#line 1271 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1272 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 74 "cmdParse.y" /* yacc.c:1646  */
+#line 75 "cmdParse.y" /* yacc.c:1646  */
     {
   dclParameterPtr param=memset(malloc(sizeof(dclParameter)),0,sizeof(dclParameter));
   param->value_count=(yyvsp[0].value_list)->count;
@@ -1285,39 +1286,39 @@ yyreduce:
   (yyval.cmd)->parameters[(yyval.cmd)->parameter_count]=param;
   (yyval.cmd)->parameter_count++;
 }
-#line 1289 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1290 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 87 "cmdParse.y" /* yacc.c:1646  */
+#line 88 "cmdParse.y" /* yacc.c:1646  */
     {
   *dclcmd=(yyval.cmd);
   YYACCEPT;
 }
-#line 1298 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1299 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 93 "cmdParse.y" /* yacc.c:1646  */
+#line 94 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.qualifier)=memset(malloc(sizeof(dclQualifier)),0,sizeof(dclQualifier));
   (yyval.qualifier)->name=(yyvsp[0].str);
 }
-#line 1307 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1308 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 97 "cmdParse.y" /* yacc.c:1646  */
+#line 98 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.qualifier)->value_count=(yyvsp[0].value_list)->count;
   (yyval.qualifier)->values=(yyvsp[0].value_list)->values;
   free((yyvsp[0].value_list));
 }
-#line 1317 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1318 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 104 "cmdParse.y" /* yacc.c:1646  */
+#line 105 "cmdParse.y" /* yacc.c:1646  */
     {
   char *value=(yyvsp[0].str);
   (yyval.value_list)=malloc(sizeof(dclValueList));
@@ -1343,21 +1344,21 @@ yyreduce:
   }
   (yyval.value_list)->values[0]=value;
 }
-#line 1347 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1348 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 129 "cmdParse.y" /* yacc.c:1646  */
+#line 130 "cmdParse.y" /* yacc.c:1646  */
     {
   (yyval.value_list)->values=realloc((yyval.value_list)->values,sizeof(char *)*((yyval.value_list)->count+1));
   (yyval.value_list)->values[(yyval.value_list)->count]=(yyvsp[0].str);
   (yyval.value_list)->count++;
 }
-#line 1357 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1358 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 136 "cmdParse.y" /* yacc.c:1646  */
+#line 137 "cmdParse.y" /* yacc.c:1646  */
     {
   dclValuePtr dclvalue=(yyvsp[0].pvalue);
   char *value=dclvalue->value;
@@ -1381,11 +1382,11 @@ yyreduce:
   free(dclvalue);
   (yyval.value_list)->values[0]=value;
 }
-#line 1385 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1386 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 159 "cmdParse.y" /* yacc.c:1646  */
+#line 160 "cmdParse.y" /* yacc.c:1646  */
     {
   dclValuePtr dclvalue=(yyvsp[0].pvalue);
   free(dclvalue->restOfLine);
@@ -1394,11 +1395,11 @@ yyreduce:
   (yyval.value_list)->count++;
   free(dclvalue);
 }
-#line 1398 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1399 "cmdParse.tab.c" /* yacc.c:1646  */
     break;
 
 
-#line 1402 "cmdParse.tab.c" /* yacc.c:1646  */
+#line 1403 "cmdParse.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1626,7 +1627,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 168 "cmdParse.y" /* yacc.c:1906  */
+#line 169 "cmdParse.y" /* yacc.c:1906  */
 
 static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s) {
   *error=strdup("Invalid syntax for an mdsdcl command\n");
@@ -1637,7 +1638,7 @@ int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **erro
   YYLTYPE *yyloc_param=0;
   yyscan_t yyscanner;
   YY_BUFFER_STATE cmd_state;
-  int result,status=CLI_STS_IVVERB;
+  int result,status=MdsdclIVVERB;
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string (command, yyscanner);
   if (error && *error) {

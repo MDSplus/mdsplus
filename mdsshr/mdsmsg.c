@@ -1,47 +1,19 @@
-#define _GNU_SOURCE		/* glibc2 needs this */
 #include <config.h>
 #include <string.h>
-#if defined(__sparc__)
-#include "/usr/include/sys/types.h"
-#elif !defined(HAVE_WINDOWS_H)
-#include <sys/types.h>
-#endif
 #include <STATICdef.h>
 #include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
-#define CREATE_STS_TEXT
 #include        <stdio.h>
 #include        <stdarg.h>
 #include        <stdlib.h>
-#if defined(vms)
-#include        <lib$routines.h>
-#include        <time.h>
-#include        <unistd.h>
-#elif defined(_WIN32)
-#include        <io.h>
-#include        <libroutines.h>
-#define isatty(a) _isatty(a)
-#define fileno _fileno
-#else
 #include        <sys/time.h>
 #include        <unistd.h>
-#endif
-
-#include        "dcl.h"
-#include        "tcldef.h"
-#include        "ccldef.h"
-#include        "librtl_messages.h"
-#include        "tdimessages.h"
-#include        "treeshr.h"
-#include        "camdef.h"
-#include        "libroutines.h"
 
 		/*========================================================
 		 * "Define"s and structure definitions ...
 		 *=======================================================*/
 #define ALREADY_DISPLAYED  0x80000000
 
-#include        "servershr.h"
 /**********************************************************************
 * MDSMSG.C --
 *
@@ -60,67 +32,6 @@ extern void StrCopyDx();
 extern int MDSprintf(char *fmt, ...);
 extern int MDSfprintf(FILE * fp, char *fmt, ...);
 
-	/*****************************************************************
-	 * getFacility:
-	 *****************************************************************/
-STATIC_ROUTINE int getFacility(	/* Return: num entries in stsText[]     */
-				int sts	/* <r> sts value                        */
-				, char **facilityText	/* <w> name of facility: c-string       */
-				, struct stsText **stsText	/* <w> addr of facility's "stsText[]"   */
-    )
-{
-  int facility;
-  int max;
-
-  facility = (sts & ~ALREADY_DISPLAYED) >> 16;
-  if (facility == MDSDCL_FACILITY) {
-    *stsText = mdsdcl_stsText;	/* point to array               */
-    *facilityText = "MDSDCL";
-    max = sizeof(mdsdcl_stsText) / sizeof(mdsdcl_stsText[0]);
-  } else if (facility == CLI_FACILITY) {
-    *stsText = cli_stsText;	/* point to array               */
-    *facilityText = "CLI";
-    max = sizeof(cli_stsText) / sizeof(cli_stsText[0]);
-  } else if (facility == CCL_FACILITY) {
-    *stsText = ccl_stsText;	/* point to array               */
-    *facilityText = "CCL";
-    max = sizeof(ccl_stsText) / sizeof(ccl_stsText[0]);
-  } else if (facility == SERVERSHR_FACILITY) {
-    *stsText = servershr_stsText;	/* point to array               */
-    *facilityText = "SERVER";
-    max = sizeof(servershr_stsText) / sizeof(servershr_stsText[0]);
-  } else if (facility == TDI_FACILITY) {
-    *stsText = tdi_stsText;	/* point to array               */
-    *facilityText = "TDI";
-    max = sizeof(tdi_stsText) / sizeof(tdi_stsText[0]);
-  } else if (facility == TCL_FACILITY) {
-    *stsText = tcl_stsText;	/* point to array               */
-    *facilityText = "TCL";
-    max = sizeof(tcl_stsText) / sizeof(tcl_stsText[0]);
-  } else if (facility == TREESHR_FACILITY) {
-    *stsText = treeshr_stsText;	/* point to array               */
-    *facilityText = "TREE";
-    max = sizeof(treeshr_stsText) / sizeof(treeshr_stsText[0]);
-  } else if (facility == LIB_FACILITY) {
-    *stsText = librtl_stsText;	/* point to array               */
-    *facilityText = "LIB";
-    max = sizeof(librtl_stsText) / sizeof(librtl_stsText[0]);
-  } else if (facility == STRMDS_FACILITY) {
-    *stsText = strMds_stsText;	/* point to array               */
-    *facilityText = "STRMDS";
-    max = sizeof(strMds_stsText) / sizeof(strMds_stsText[0]);
-  } else if (facility == CAM_FACILITY) {
-    *stsText = camshr_stsText;	/* point to array               */
-    *facilityText = "CAM";
-    max = sizeof(camshr_stsText) / sizeof(camshr_stsText[0]);
-  } else if (facility == SS_FACILITY) {
-    *stsText = ss_stsText;	/* point to array               */
-    *facilityText = "SS";
-    max = sizeof(ss_stsText) / sizeof(ss_stsText[0]);
-  } else
-    max = 0;
-  return max;
-}
 
 	/*****************************************************************
 	 * MdsGetMsg:
@@ -145,28 +56,11 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
     strcpy((MdsShrGetThreadStatic())->MdsGetMsg_text, "%SS-S-SUCCESS, Success");
     return (MdsShrGetThreadStatic())->MdsGetMsg_text;
   }
-  max = getFacility(sts, &facnam, &stsText);
-  if (max > 0) {
-    for (i = 0; i < max; i++) {
-      if (sts == stsText[i].stsL_num ) {
-	sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
-		severity[sts & 0x7], stsText[i].stsA_name, stsText[i].stsA_text);
-	break;
-      }
-    }
-    if (i == max) {
-      for (i = 0; i < max; i++) {
-	if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8)) {
-	  sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
-		  severity[sts & 0x7], stsText[i].stsA_name, stsText[i].stsA_text);
-	  break;
-	}
-      }
-    }
-    if (i == max)
-      sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-NOMSG, Message number 0x%08x",
-	      facnam, severity[sts & 0x7], sts);
-    status = 1;
+  status = MdsGetStdMsg(sts, &facnam, &msgnam, &msgtext);
+  if (status & 1) {
+    sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
+		  severity[sts & 0x7], msgnam, msgtext);
+    return (MdsShrGetThreadStatic())->MdsGetMsg_text;
   }
   while (!(status & 1) && (LibFindFile(&msg_files, &filnam, &ctx) & 1)) {
     status = LibFindImageSymbol(&filnam, &getmsg_nam, &getmsg);

@@ -37,7 +37,7 @@ static int SpawnWorker(SOCKET sock)
   sc_atts.lpSecurityDescriptor = NULL;
   sprintf(cmd,
 	  "%s\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",
-	  getenv("MDSPLUSDIR"), dirname, GetPortname(), GetHostfile(), GetMaxCompressionLevel(),
+	  getenv("MDSPLUS_DIR"), dirname, GetPortname(), GetHostfile(), GetMaxCompressionLevel(),
 	  _getpid(), sock);
   memset(&startupinfo, 0, sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
@@ -141,7 +141,7 @@ static void InstallService()
     }
     sd.lpDescription = description;
     cmd = (char *)malloc(strlen(GetPortname()) + strlen(GetHostfile()) + 500);
-    sprintf(cmd, "%%MDSPLUSDIR%%\\%s\\mdsip_service.exe --port=%s --hostfile=\"%s\" %s", dirname,
+    sprintf(cmd, "%%MDSPLUS_DIR%%\\%s\\mdsip_service.exe --port=%s --hostfile=\"%s\" %s", dirname,
 	    GetPortname(), GetHostfile(), opts);
     hService =
 	CreateService(hSCManager, ServiceName(1), ServiceName(0), SERVICE_ALL_ACCESS,

@@ -27,6 +27,7 @@ RequestExecutionLevel admin
 !define GCC_S_SEH_LIB libgcc_s_seh-1.dll
 !define GFORTRAN_LIB libgfortran-3.dll
 !define QUADMATH_LIB libquadmath-0.dll
+!define LIBXML2_LIB libxml2-2.dll
 LicenseData "MDSplus-License.rtf"
 Page license
 Page directory
@@ -79,7 +80,7 @@ File mdsplus.ico
 File MDSplus-License.rtf
 writeUninstaller "$INSTDIR\uninstall.exe"
 WriteRegStr HKLM "${ENVREG}" MDS_PATH "$INSTDIR\tdi"
-WriteRegStr HKLM "${ENVREG}" MDSPLUSDIR "$INSTDIR"
+WriteRegStr HKLM "${ENVREG}" MDSPLUS_DIR "$INSTDIR"
 CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\Tdi.lnk" "$SYSDIR\tditest.exe" "" "$SYSDIR\icons.exe" 0
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$SYSDIR\cmd.exe"' '/c "mdstcl"' "$SYSDIR\icons.exe" 1
@@ -105,6 +106,7 @@ File ${MINGWLIB64}/${GCC_STDCPP_LIB}
 File ${MINGWLIB64}/${GCC_S_SEH_LIB}
 File ${MINGWLIB64}/${GFORTRAN_LIB}
 File ${MINGWLIB64}/${QUADMATH_LIB}
+File ${MINGWLIB64}/${LIBXML2_LIB}
 ${DisableX64FSRedirection}
 FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
 loop_64:
@@ -130,6 +132,7 @@ File ${MINGWLIB32}/${TERMCAPLIB}
 File ${MINGWLIB32}/${GCC_STDCPP_LIB}
 File ${MINGWLIB32}/${GFORTRAN_LIB}
 File ${MINGWLIB32}/${QUADMATH_LIB}
+File ${MINGWLIB32}/${LIBXML2_LIB}
 FindFirst $1 $2 "$INSTDIR\bin_x86\*"
 loop_32:
   StrCmp $2 "" done_32
@@ -325,7 +328,7 @@ SetOutPath "$SYSDIR"
 RMDir "$INSTDIR"
 # Registry information for add/remove programs
 DeleteRegValue HKLM "${ENVREG}" MDS_PATH
-DeleteRegValue HKLM "${ENVREG}" MDSPLUSDIR
+DeleteRegValue HKLM "${ENVREG}" MDSPLUS_DIR
 DeleteRegValue HKLM "${ENVREG}" main_path
 DeleteRegValue HKLM "${ENVREG}" subtree_path
 DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"

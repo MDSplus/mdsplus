@@ -9,7 +9,7 @@
 #include <ncidef.h>
 #include "treethreadsafe.h"
 #include <treeshr.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <errno.h>
 #include <fcntl.h>
 #ifndef O_BINARY

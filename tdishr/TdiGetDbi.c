@@ -13,7 +13,7 @@
 #include <strroutines.h>
 #include <string.h>
 #include <stdlib.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 

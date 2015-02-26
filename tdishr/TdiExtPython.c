@@ -4,7 +4,7 @@
 #include <mds_stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <dlfcn.h>
 
 static PyObject *(*DynPyTuple_New) () = 0;

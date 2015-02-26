@@ -52,7 +52,7 @@ extern int Tdi3Divide();
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <string.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

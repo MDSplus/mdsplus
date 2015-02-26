@@ -106,7 +106,7 @@ int TclDispatch(void *ctx, char **error, char **output)
   int sts;
   int iostatus;
   int nid;
-  int waiting = cli_present(ctx, "WAIT") != CLI_STS_NEGATED;
+  int waiting = cli_present(ctx, "WAIT") != MdsdclNEGATED;
   cli_get_value(ctx, "NODE", &treenode);
   if (!SyncEfnInit)
     InitSyncEfn();
@@ -234,7 +234,7 @@ int TclDispatch_set_server(void *ctx, char **error, char **output)
 
   logqual = cli_present(ctx, "LOG");
   statqual = cli_present(ctx, "STATISTICS");
-  if (logqual == CLI_STS_PRESENT) {
+  if (logqual == MdsdclPRESENT) {
     char *log_type = 0;
     cli_get_value(ctx, "LOG", &log_type);
     if (strncasecmp(log_type, "statistics", strlen(log_type)) == 0) {

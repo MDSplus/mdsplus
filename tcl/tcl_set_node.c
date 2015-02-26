@@ -45,7 +45,7 @@ int TclSetNode(void *ctx, char **error, char **output)
       TreeSetNci(nid, setnci);
     }
     switch (cli_present(ctx, "SUBTREE")) {
-    case CLI_STS_PRESENT:
+    case MdsdclPRESENT:
       status = TreeSetSubtree(nid);
       if (!(status & 1)) {
 	char *msg = MdsGetMsg(status);
@@ -55,7 +55,7 @@ int TclSetNode(void *ctx, char **error, char **output)
 	goto error;
       }
       break;
-    case CLI_STS_NEGATED:
+    case MdsdclNEGATED:
       status = TreeSetNoSubtree(nid);
       if (!(status & 1)) {
 	char *msg = MdsGetMsg(status);
@@ -103,74 +103,74 @@ int TclSetNode(void *ctx, char **error, char **output)
       set_flags = 0;
       clear_flags = 0;
       switch (cli_present(ctx, "WRITE_ONCE")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_WRITE_ONCE;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_WRITE_ONCE;
 	break;
       }
       switch (cli_present(ctx, "CACHED")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_CACHED;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_CACHED;
 	break;
       }
       switch (cli_present(ctx, "COMPRESS_ON_PUT")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_COMPRESS_ON_PUT;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_COMPRESS_ON_PUT;
 	break;
       }
       switch (cli_present(ctx, "COMPRESS_SEGMENTS")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_COMPRESS_SEGMENTS;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_COMPRESS_SEGMENTS;
 	break;
       }
       switch (cli_present(ctx, "DO_NOT_COMPRESS")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_DO_NOT_COMPRESS;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_DO_NOT_COMPRESS;
 	break;
       }
       switch (cli_present(ctx, "SHOT_WRITE")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	clear_flags |= NciM_NO_WRITE_SHOT;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	set_flags |= NciM_NO_WRITE_SHOT;
 	break;
       }
       switch (cli_present(ctx, "MODEL_WRITE")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	clear_flags |= NciM_NO_WRITE_MODEL;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	set_flags |= NciM_NO_WRITE_MODEL;
 	break;
       }
       switch (cli_present(ctx, "INCLUDED")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_INCLUDE_IN_PULSE;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_INCLUDE_IN_PULSE;
 	break;
       }
       switch (cli_present(ctx, "ESSENTIAL")) {
-      case CLI_STS_PRESENT:
+      case MdsdclPRESENT:
 	set_flags |= NciM_ESSENTIAL;
 	break;
-      case CLI_STS_NEGATED:
+      case MdsdclNEGATED:
 	clear_flags |= NciM_ESSENTIAL;
 	break;
       }
