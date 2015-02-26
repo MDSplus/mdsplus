@@ -92,7 +92,7 @@ then
   git config --global user.email "MDSplusBuilder@psfc.mit.edu"
   git config --global user.name "MDSplusBuilder"
   git commit -m "New ChangeLog" ChangeLog
-  git push
+  git push origin HEAD
   git tag %(tag)s
   git push origin %(tag)s
 fi
