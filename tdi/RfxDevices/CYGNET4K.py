@@ -10,7 +10,7 @@ class CYGNET4K(Device):
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """Cygnet 4K sCMOS Camera"""
     parts=[
-      {'path':':NAME', 'type':'text'},
+      {'path':':CONF_FILE', 'type':'text'},
       {'path':':COMMENT', 'type':'text'},
       {'path':':ID', 'type':'numeric'},
       {'path':':EXP_TIME', 'type':'numeric', 'value':20E-3},
@@ -19,7 +19,6 @@ class CYGNET4K(Device):
       {'path':':ROI_Y', 'type':'numeric', 'value':0},
       {'path':':ROI_WIDTH', 'type':'numeric', 'value':2048},
       {'path':':ROI_HEIGHT', 'type':'numeric', 'value':2048},
-      {'path':':ROTATION', 'type':'text', 'value':'NONE'},
       {'path':':FRAME_SYNC', 'type':'text', 'value':'EXTERNAL'},
       {'path':':FRAME_PERIOD', 'type':'numeric', 'value':100E-3},
       {'path':':FRAME_CLOCK', 'type':'numeric'},

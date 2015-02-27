@@ -103,8 +103,6 @@ class SaveFrame {
         if(hasMetadata)
 	        metaData = new Int8Array((char *)frameMetadata, 2, metaDims);
 
-
-
 	//check pixel size format
 	    if(pixelSize<=8)
 	    {  
@@ -117,7 +115,7 @@ class SaveFrame {
 	    {  
 		    data = new Int16Array((short *)frame, 3, dataDims); 
 	#ifdef debug
-		    printf("Pixel Format: 16bit.\n");
+		    printf("Pixel Format: 16bit. %d %d %d\n", dataDims[0], dataDims[1], dataDims[2]);
 	#endif 
 	    }
 	    else if(pixelSize<=32)
@@ -139,7 +137,7 @@ class SaveFrame {
 		    {
 			    timebaseNode = new TreeNode(timebaseNid, (Tree *)treePtr);
     #ifdef debug
-			    printf("SAVE Frame IDX %d\n", frameIdx);
+			    printf("SAVE Frame IDX %d %s\n", frameIdx, dataNode->decompile());
     #endif
 			    idxData = new Int32(frameIdx);
 			    time = compileWithArgs("fs_float($1[$2])", (Tree *)treePtr, 2, timebaseNode, idxData);
@@ -300,7 +298,7 @@ class SaveFrameList
 	
 			int nItems = 0;
 			for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
-			if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
+			/*if( nItems > 0 && (nItems % 20 ) == 0 ) */printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
 	
 			pthread_mutex_unlock(&mutex);
 			currItem->save();
@@ -325,21 +323,21 @@ class SaveFrameList
  };
 
 
-void *handleSave(void *listPtr)
+static void *handleSave(void *listPtr)
 {
     SaveFrameList *list = (SaveFrameList *)listPtr;
     list->executeItems();
     return NULL;
 }
 
-void startSave(void **retList)
+void camStartSave(void **retList)
 {
     SaveFrameList *saveFrameList = new SaveFrameList;
     saveFrameList->start();
     *retList = (void *)saveFrameList;
 }
 
-void stopSave(void *listPtr)
+void camStopSave(void *listPtr)
 {
     if(listPtr) 
     {
@@ -426,13 +424,12 @@ void camSaveFrame(void *frame, int width, int height, float frameTime, int pixel
     saveList->addFrame(bufFrame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx,  bufMdata,  metaSize,  metaNid);
 }
 
-void camSaveFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
+void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
         int frameIdx, void *saveListPtr)
 {
 
     void *bufFrame;
     int frameSize = width * height;
-
     if(pixelSize<=8)
     {
 	     bufFrame = new char[frameSize];  

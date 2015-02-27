@@ -199,7 +199,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   case BYTE:
   case LONG:
     expanded_in = malloc(strlen(in) + 40);
-    sprintf(expanded_in, "_xxx = %s;long(_xxx)", in);
+    sprintf(expanded_in, "long(%s)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
@@ -212,13 +212,14 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   }
 
   status = TdiCompile(&in_d, &xd MDS_END_ARG);
-  free(expanded_in);
   if (status & 1)
     status = TdiData(&xd, &xd MDS_END_ARG);
   if (!(status & 1)) {
     strncpy(error_message, MdsGetMsg(status), 512);
+  free(expanded_in);
     return 0;
   }
+  free(expanded_in);
   if (!xd.pointer) {
     strcpy(error_message, "Missing data");
     return 0;
@@ -943,7 +944,7 @@ static int isSingleFramePerSegment(int nid)
 	 arrPtr->dimct);
     return 0;
   }
-  printf("Segment dimensions: %d %d %d\n", arrPtr->m[0], arrPtr->m[1], arrPtr->m[2]);
+  //printf("Segment dimensions: %d %d %d\n", arrPtr->m[0], arrPtr->m[1], arrPtr->m[2]);
   isSingle = (arrPtr->m[2] == 1);
   MdsFree1Dx(&xd, 0);
   MdsFree1Dx(&dimXd, 0);
