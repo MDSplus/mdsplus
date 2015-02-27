@@ -79,7 +79,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         deviceChoice1.setChoiceItems(new String[] {"EXTERNAL", "FFR", "ITR"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Trige mode:");
-        deviceChoice1.setOffsetNid(11);
+        deviceChoice1.setOffsetNid(10);
         deviceChoice1.setUpdateIdentifier("");
         jPanel7.add(deviceChoice1);
 
@@ -92,7 +92,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Fixed Frame Period(ms):");
         deviceField5.setNumCols(6);
-        deviceField5.setOffsetNid(12);
+        deviceField5.setOffsetNid(11);
         jPanel7.add(deviceField5);
 
         jPanel5.add(jPanel7);
@@ -100,7 +100,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Ext. Clock: ");
         deviceField6.setNumCols(35);
-        deviceField6.setOffsetNid(13);
+        deviceField6.setOffsetNid(12);
         jPanel8.add(deviceField6);
 
         jPanel5.add(jPanel8);

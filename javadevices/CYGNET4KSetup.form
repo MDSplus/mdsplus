@@ -118,7 +118,7 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Trige mode:"/>
-                    <Property name="offsetNid" type="int" value="11"/>
+                    <Property name="offsetNid" type="int" value="10"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
                   </Properties>
                 </Component>
@@ -135,7 +135,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Fixed Frame Period(ms):"/>
                     <Property name="numCols" type="int" value="6"/>
-                    <Property name="offsetNid" type="int" value="12"/>
+                    <Property name="offsetNid" type="int" value="11"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -149,7 +149,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Ext. Clock: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="13"/>
+                    <Property name="offsetNid" type="int" value="12"/>
                   </Properties>
                 </Component>
               </SubComponents>
