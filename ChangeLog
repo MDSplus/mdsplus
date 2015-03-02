@@ -1,4 +1,28 @@
-commit ad0d648d4a698afaea19fa9c57bf960215398ee8 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit ffb1b6537ab00f05094a5938271b7ca0c3402857 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 27 17:43:30 2015 +0100
+
+    minor fix
+
+commit c156d0328a345279c27c114554004c916650af48
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 27 17:35:00 2015 +0100
+
+    New CYGNET Camera interface
+
+commit 96bb586580465ce5ad105d666906408f6429137a
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 27 17:26:29 2015 +0100
+
+    CYGNET Camera development
+
+commit 98d82d3c68239d2bab1a52a69fe35a757402cac6 (tag: refs/tags/alpha_release-6-3-476)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 18:27:50 2015 -0500
+
+    New ChangeLog
+
+commit ad0d648d4a698afaea19fa9c57bf960215398ee8
 Merge: 2e61a21 a02983c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 26 08:23:48 2015 -0500
