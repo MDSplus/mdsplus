@@ -110,10 +110,11 @@
                 <Component class="DeviceChoice" name="deviceChoice1">
                   <Properties>
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                      <StringArray count="3">
-                        <StringItem index="0" value="EXTERNAL"/>
-                        <StringItem index="1" value="FFR"/>
-                        <StringItem index="2" value="ITR"/>
+                      <StringArray count="4">
+                        <StringItem index="0" value="EXTERNAL RISING"/>
+                        <StringItem index="1" value="EXTERNAL FALLING"/>
+                        <StringItem index="2" value="FIXED FRAME RATE"/>
+                        <StringItem index="3" value="INTEGRATE THEN READ"/>
                       </StringArray>
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>

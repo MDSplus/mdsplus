@@ -77,7 +77,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Timing"));
         jPanel5.setLayout(new java.awt.GridLayout(2, 1));
 
-        deviceChoice1.setChoiceItems(new String[] {"EXTERNAL", "FFR", "ITR"});
+        deviceChoice1.setChoiceItems(new String[] {"EXTERNAL RISING", "EXTERNAL FALLING", "FIXED FRAME RATE", "INTEGRATE THEN READ"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Trige mode:");
         deviceChoice1.setOffsetNid(10);
