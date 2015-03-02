@@ -458,6 +458,25 @@ write(*, "------> Event time ", _event_time);
 		if(_status == 0)
 		abort();
 	}
+        if(_remote != 0)
+        {
+                _cmd = 'MdsConnect("'//_ip_addr//'")';
+                execute(_cmd);
+                _status = MdsValue('DIO2HDisableProt($1)', _board_id);
+                MdsDisconnect();
+                if(_status == 0)
+                {
+                        DevLogErr(_nid, "Error starting channels in DIO2 device: see CPCI console for details");
+                        abort();
+                }
+		}
+        else
+        {
+                _status = DIO2HWDisableProt(_board_id);
+                if(_status == 0)
+                abort();
+        }
+
 write(*, 'FINITO');
 	return(1);
 }

@@ -10,6 +10,7 @@ echo LD_LIBRARY_PATH=/mdsplus/lib:/mdsplus/glib	>>/etc/profile
 export LD_LIBRARY_PATH=/mdsplus/lib:/mdsplus/glib
 
 echo "*@192.168.0.254 | root" > /etc/mdsip.hosts
+echo "*@192.168.0.253 | root" >> /etc/mdsip.hosts
 echo "*@192.168.0.1   | root" >> /etc/mdsip.hosts
 
 # start mdsip - use trampoline mdsip.inet to set MDS_PATH
