@@ -133,7 +133,7 @@
                 <Component class="DeviceField" name="deviceField5">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Fixed Frame Period(ms):"/>
+                    <Property name="labelString" type="java.lang.String" value="Frame Frequency(Hz):"/>
                     <Property name="numCols" type="int" value="6"/>
                     <Property name="offsetNid" type="int" value="11"/>
                   </Properties>
@@ -147,9 +147,17 @@
                 <Component class="DeviceField" name="deviceField6">
                   <Properties>
                     <Property name="identifier" type="java.lang.String" value=""/>
-                    <Property name="labelString" type="java.lang.String" value="Ext. Clock: "/>
-                    <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="12"/>
+                    <Property name="labelString" type="java.lang.String" value="Trig. Time: "/>
+                    <Property name="numCols" type="int" value="6"/>
+                    <Property name="offsetNid" type="int" value="13"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField2">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Duration"/>
+                    <Property name="numCols" type="int" value="6"/>
+                    <Property name="offsetNid" type="int" value="14"/>
                   </Properties>
                 </Component>
               </SubComponents>

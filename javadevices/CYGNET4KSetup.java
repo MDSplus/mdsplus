@@ -40,6 +40,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         deviceField5 = new DeviceField();
         jPanel8 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
+        deviceField2 = new DeviceField();
         deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
@@ -90,7 +91,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         jPanel7.add(deviceField4);
 
         deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Fixed Frame Period(ms):");
+        deviceField5.setLabelString("Frame Frequency(Hz):");
         deviceField5.setNumCols(6);
         deviceField5.setOffsetNid(11);
         jPanel7.add(deviceField5);
@@ -98,10 +99,16 @@ public class CYGNET4KSetup extends DeviceSetup {
         jPanel5.add(jPanel7);
 
         deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Ext. Clock: ");
-        deviceField6.setNumCols(35);
-        deviceField6.setOffsetNid(12);
+        deviceField6.setLabelString("Trig. Time: ");
+        deviceField6.setNumCols(6);
+        deviceField6.setOffsetNid(13);
         jPanel8.add(deviceField6);
+
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Duration");
+        deviceField2.setNumCols(6);
+        deviceField2.setOffsetNid(14);
+        jPanel8.add(deviceField2);
 
         jPanel5.add(jPanel8);
 
@@ -119,6 +126,7 @@ public class CYGNET4KSetup extends DeviceSetup {
     private DeviceChoice deviceChoice1;
     private DeviceDispatch deviceDispatch1;
     private DeviceField deviceField1;
+    private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
