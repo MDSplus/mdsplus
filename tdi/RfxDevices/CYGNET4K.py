@@ -20,8 +20,10 @@ class CYGNET4K(Device):
       {'path':':ROI_WIDTH', 'type':'numeric', 'value':2048},
       {'path':':ROI_HEIGHT', 'type':'numeric', 'value':2048},
       {'path':':FRAME_SYNC', 'type':'text', 'value':'EXTERNAL'},
-      {'path':':FRAME_PERIOD', 'type':'numeric', 'value':100E-3},
+      {'path':':FRAME_FREQ', 'type':'numeric', 'value':100E-3},
       {'path':':FRAME_CLOCK', 'type':'numeric'},
+      {'path':':TRIG_TIME', 'type':'numeric', 'value':0.},
+      {'path':':DURATION', 'type':'numeric', 'value':1.},
       {'path':':SENSOR_TEMP', 'type':'numeric'},
       {'path':':PCB_TEMP', 'type':'numeric'},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
