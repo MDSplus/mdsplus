@@ -7,7 +7,10 @@ public class TestMdsObjects
    {
        try {
 
-
+           Connection conn = new Connection("localhost");
+           Data ris = conn.get("['oggi', 'piove']");
+           System.out.println(ris);
+           if(true) System.exit(0);
 
             Tree tree = new Tree("test",1);
             TreeNode sig=tree.getNode("time");

@@ -12,9 +12,9 @@ int camFrameTo8bit(unsigned short *frame, int width, int height, unsigned char *
 
 void camStreamingFrame(int tcpStreamHandle, void *frame, void *frameMetadata, int width, int height, int pixelSize, int irFrameFormat, bool adjLimit, unsigned int minLim, unsigned int maxLim, void *streamingListPtr);
 
-void *handleStreaming(void *listPtr);
-void startStreaming(void **retList);
-void stopStreaming(void *listPtr);
+static void *handleStreaming(void *listPtr);
+void camStartStreaming(void **retList);
+void camStopStreaming(void *listPtr);
 
 #ifdef __cplusplus
 }
