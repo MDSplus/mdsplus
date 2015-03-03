@@ -28,6 +28,7 @@ public class CYGNET4KSetup extends DeviceSetup {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
+        deviceField7 = new DeviceField();
         deviceField1 = new DeviceField();
         deviceDispatch1 = new DeviceDispatch();
         jPanel4 = new javax.swing.JPanel();
@@ -51,6 +52,12 @@ public class CYGNET4KSetup extends DeviceSetup {
 
         jPanel1.setLayout(new java.awt.GridLayout(2, 2));
 
+        deviceField7.setIdentifier("");
+        deviceField7.setLabelString("Device Id: ");
+        deviceField7.setNumCols(4);
+        deviceField7.setOffsetNid(3);
+        jPanel3.add(deviceField7);
+
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Config. File:");
         deviceField1.setNumCols(20);
@@ -63,7 +70,7 @@ public class CYGNET4KSetup extends DeviceSetup {
 
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Comment:");
-        deviceField3.setNumCols(30);
+        deviceField3.setNumCols(40);
         deviceField3.setOffsetNid(2);
         deviceField3.setTextOnly(true);
         jPanel4.add(deviceField3);
@@ -105,7 +112,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         jPanel8.add(deviceField6);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Duration");
+        deviceField2.setLabelString("Duration (s): ");
         deviceField2.setNumCols(6);
         deviceField2.setOffsetNid(14);
         jPanel8.add(deviceField2);
@@ -131,6 +138,7 @@ public class CYGNET4KSetup extends DeviceSetup {
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
+    private DeviceField deviceField7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
