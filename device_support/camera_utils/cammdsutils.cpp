@@ -6,8 +6,8 @@ using namespace MDSplus;
 using namespace std;
 
 
-//debug mode if defined
-//#define debug
+//DEBUG mode if defined
+//#define DEBUG
 
 
 
@@ -107,21 +107,21 @@ class SaveFrame {
 	    if(pixelSize<=8)
 	    {  
 		    data = new Int8Array((char *)frame, 3, dataDims);  
-	#ifdef debug
+	#ifdef DEBUG
 		    printf("Pixel Format: 8bit.\n");
 	#endif 
 	    }
 	    else if(pixelSize<=16)
 	    {  
 		    data = new Int16Array((short *)frame, 3, dataDims); 
-	#ifdef debug
+	#ifdef DEBUG
 		    printf("Pixel Format: 16bit. %d %d %d\n", dataDims[0], dataDims[1], dataDims[2]);
 	#endif 
 	    }
 	    else if(pixelSize<=32)
 	    {  
 		    data = new Int32Array((int *)frame, 3, dataDims); 
-	#ifdef debug
+	#ifdef DEBUG
 		    printf("Pixel Format: 32bit.\n");
 	#endif 
 	    }
@@ -136,7 +136,7 @@ class SaveFrame {
 		    try 
 		    {
 			    timebaseNode = new TreeNode(timebaseNid, (Tree *)treePtr);
-    #ifdef debug
+    #ifdef DEBUG
 			    printf("SAVE Frame IDX %d %s\n", frameIdx, dataNode->decompile());
     #endif
 			    idxData = new Int32(frameIdx);
@@ -298,8 +298,9 @@ class SaveFrameList
 	
 			int nItems = 0;
 			for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
-			/*if( nItems > 0 && (nItems % 20 ) == 0 ) */printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
-	
+#ifdef DEBUG
+			if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
+#endif	
 			pthread_mutex_unlock(&mutex);
 			currItem->save();
 			delete currItem;
@@ -317,7 +318,9 @@ class SaveFrameList
 		if(threadCreated)
 		{	
 			pthread_join(thread, NULL);
+#ifdef DEBUG
 			printf("SAVE THREAD TERMINATED\n");
+#endif
 		}
     }
  };
