@@ -1,4 +1,23 @@
-commit 75d28062c76c0e1cb9e52dd7b0751b688ad25953 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2a1a35e7cdd638ff7a86b98cf9d1820de9adaf5d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: f2a7738 14bcebf
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 4 11:24:30 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit f2a7738db6714da450d5cd6a99ec3dd8633a72c3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 4 11:24:10 2015 +0100
+
+    First release of camera device
+
+commit 14bcebf2641e51c5923a41d5bfcf977d7bf4201b (tag: refs/tags/alpha_release-6-3-479)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 3 18:25:50 2015 -0500
+
+    New ChangeLog
+
+commit 75d28062c76c0e1cb9e52dd7b0751b688ad25953
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Mar 3 11:42:13 2015 +0100
 
