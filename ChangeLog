@@ -1,4 +1,29 @@
-commit e882cf6cca1d1803846048b98364bdbb90c32898 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 75d28062c76c0e1cb9e52dd7b0751b688ad25953 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:42:13 2015 +0100
+
+    First release device support for camera CYGNET4K
+
+commit d6cab3661a62d1c42f309592256ff40c1e7a5ec2
+Merge: f16925e d2b8c7a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:32:43 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit f16925e6abbd62334245962a9508781539744d01
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:32:13 2015 +0100
+
+    Added one field
+
+commit d2b8c7aca5a824d3cf300aff829d15258bdd5874 (tag: refs/tags/alpha_release-6-3-478)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 2 18:27:54 2015 -0500
+
+    New ChangeLog
+
+commit e882cf6cca1d1803846048b98364bdbb90c32898
 Merge: 5dbab54 d0da8a2
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Mon Mar 2 13:52:39 2015 -0500
