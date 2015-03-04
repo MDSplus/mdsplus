@@ -37,6 +37,7 @@
 #include <fcntl.h>
 #include <poll.h>
 #include <time.h>
+#include <sys/time.h>
 
 #include <xcliball.h>		// driver function prototypes
 #include <cammdsutils.h>    //Camera MDSplus support
@@ -608,6 +609,15 @@ void epixGetConfiguration(int id, float *PCBTemperature, float *CMOSTemperature,
     *PCBTemperature = getPCBTemp(id);
     *CMOSTemperature = getCMOSTemp(id);
     *binning = getBinning(id);
+}
+
+void epixGetTemp(int id, int tempIdx, float *pcbTemp, float *cmosTemp, long *time)
+{
+    *pcbTemp = getPCBTemp(id);
+    *cmosTemp = getCMOSTemp(id);
+    struct timeval currTime;
+    gettimeofday(&currTime, NULL);
+    *time = currTime.tv_sec * 1000 + currTime.tv_usec/1000;
 }
 
 

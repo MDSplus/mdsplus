@@ -24,21 +24,53 @@ class CYGNET4K(Device):
       {'path':':FRAME_CLOCK', 'type':'numeric'},
       {'path':':TRIG_TIME', 'type':'numeric', 'value':0.},
       {'path':':DURATION', 'type':'numeric', 'value':1.},
-      {'path':':SENSOR_TEMP', 'type':'numeric'},
+      {'path':':CMOS_TEMP', 'type':'numeric'},
       {'path':':PCB_TEMP', 'type':'numeric'},
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')}]
     parts.append({'path':':INIT_ACT','type':'action',
 	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
 	  'options':('no_write_shot',)})
     parts.append({'path':':START_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'start_store',head))",
+	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_store',head))",
 	  'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACT','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+	  'options':('no_write_shot')})
+    parts.append({'path':':START_MON_T','type':'action',
+	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'start_temp_monitor',head))",
+	  'options':('no_write_shot',)})
+    parts.append({'path':':STOP_MON_T','type':'action',
+	  'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stop_temp_monitor',head))",
 	  'options':('no_write_shot')})
     print 'Cygnet4K added'
  
 
+####Asynchronous temp readout internal class
+    class AsynchTemp(Thread):
+      
+      def configure(self, device, id, mdsLib, raptorLib):
+        self.device = device
+        self.id = id
+        self.mdsLib = mdsLib
+        self.raptorLib = raptorLib
+        self.stopReq = False
+ 
+      def run(self):
+        pcbTemp = c_float(0)
+        cmosTemp = c_float(0)
+        currTime = c_long(0)
+        tempIdx = 0;
+        while (not self.stopReq):
+          self.raptorLib.epixGetTemp(c_int(1), c_int(tempIdx), byref(pcbTemp), byref(cmosTemp), byref(currTime))
+          self.device.pcb_temp.putRow(1024, Float32(pcbTemp), Uint64(currTime))
+          self.device.cmos_temp.putRow(1024, Float32(cmosTemp), Uint64(currTime))
+          time.sleep(0.5)
+
+        return 0
+
+      def stop(self):
+        self.stopReq = True
+############################################################
 
 
 ####Asynchronous readout internal class       
@@ -121,6 +153,10 @@ class CYGNET4K(Device):
         raptorWorkers = []
       try:
         idx = raptorWorkerNids.index(self.getNid())
+        try:
+          raptorWorkers[idx].stopReq = True
+        except:
+          pass
         raptorWorkers[idx] = self.worker
       except:
         raptorWorkerNids.append(self.getNid())
@@ -136,6 +172,39 @@ class CYGNET4K(Device):
       try:
         idx = raptorWorkerNids.index(self.getNid())
         self.worker = raptorWorkers[idx]
+      except:
+        print 'Cannot restore worker!!'
+
+###save temperature worker###  
+    def saveTempWorker(self):
+      global raptorTempWorkers
+      global raptorTempWorkerNids
+      try:
+        raptorTempWorkers
+      except:
+        raptorTempWorkerNids = []
+        raptorTempWorkers = []
+      try:
+        idx = raptorTempWorkerNids.index(self.getNid())
+        try:
+          raptorTempWorkers[idx].stopReq = True
+        except:
+          pass
+        raptorTempWorkers[idx] = self.worker
+      except:
+        raptorTempWorkerNids.append(self.getNid())
+        raptorTempWorkers.append(self.tempWorker)
+        return
+      return
+
+
+###restore temperature worker###   
+    def restoreTempWorker(self):
+      global raptorTempWorkers    
+      global raptorempWorkerNids
+      try:
+        idx = raptorTempWorkerNids.index(self.getNid())
+        self.tempWorker = raptorTempWorkers[idx]
       except:
         print 'Cannot restore worker!!'
 
@@ -191,8 +260,6 @@ class CYGNET4K(Device):
       raptorLib.epixGetConfiguration(c_int(idx), byref(PCBTemperature), byref(CMOSTemperature), byref(binning), byref(roiXSize), byref(roiXOffset), byref(roiYSize), byref(roiYOffset))
 
 
-      self.sensor_temp.putData(Float32(CMOSTemperature))
-      self.pcb_temp.putData(Float32(PCBTemperature))
       if(binning == 0x00):
         self.binning.putData('1x1')
       if(binning == 0x11):
@@ -224,6 +291,26 @@ class CYGNET4K(Device):
     def stop_store(self,arg):
       self.restoreWorker()
       self.worker.stop()
+      return 1
+
+##########start store############################################################################   
+    def start_temp_monitor(self, arg):
+      global raptorLib
+      global mdsLib
+      self.checkLibraries()
+      self.tempWorker = self.AsynchTemp()        
+      self.tempWorker.daemon = True 
+      self.tempWorker.stopReq = False
+      self.tempWorker.configure(self, self.id.data(), mdsLib, raptorLib)
+      self.saveTempWorker()
+      self.tempWorker.start()
+
+      return 1
+
+##########stop store############################################################################   
+    def stop_temp_monitor(self,arg):
+      self.restoreTempWorker()
+      self.tempWorker.stop()
       return 1
 
 
