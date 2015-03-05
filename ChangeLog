@@ -1,4 +1,92 @@
-commit ffb1b6537ab00f05094a5938271b7ca0c3402857 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2a1a35e7cdd638ff7a86b98cf9d1820de9adaf5d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: f2a7738 14bcebf
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 4 11:24:30 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit f2a7738db6714da450d5cd6a99ec3dd8633a72c3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 4 11:24:10 2015 +0100
+
+    First release of camera device
+
+commit 14bcebf2641e51c5923a41d5bfcf977d7bf4201b (tag: refs/tags/alpha_release-6-3-479)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 3 18:25:50 2015 -0500
+
+    New ChangeLog
+
+commit 75d28062c76c0e1cb9e52dd7b0751b688ad25953
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:42:13 2015 +0100
+
+    First release device support for camera CYGNET4K
+
+commit d6cab3661a62d1c42f309592256ff40c1e7a5ec2
+Merge: f16925e d2b8c7a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:32:43 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit f16925e6abbd62334245962a9508781539744d01
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:32:13 2015 +0100
+
+    Added one field
+
+commit d2b8c7aca5a824d3cf300aff829d15258bdd5874 (tag: refs/tags/alpha_release-6-3-478)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 2 18:27:54 2015 -0500
+
+    New ChangeLog
+
+commit e882cf6cca1d1803846048b98364bdbb90c32898
+Merge: 5dbab54 d0da8a2
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 2 13:52:39 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 5dbab545c7f4f1576cd54199b67939b547977c75
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 2 13:52:03 2015 -0500
+
+    add call to disable output protection to the DIO2 outputs
+
+commit d0da8a2778d98be9df9c33f74c8f6c5d93f18f83
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 14:52:46 2015 +0100
+
+    Change options
+
+commit f90d86868522e27997ef0953664984c6364fa15a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 10:59:38 2015 +0100
+
+    Fields changed
+
+commit 93a4abc6d111ccd9ccb0f07d62e4bb96c6ee9adc
+Merge: 4ffdffd ce1106d
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 10:52:40 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 4ffdffd7cfda958893f1fb13e1de01f9a8b7bd05
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 10:52:16 2015 +0100
+
+    Added fields
+
+commit ce1106df9f22f7b4df72c8ed8defd6040cece87a (tag: refs/tags/alpha_release-6-3-477)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Feb 27 18:27:54 2015 -0500
+
+    New ChangeLog
+
+commit ffb1b6537ab00f05094a5938271b7ca0c3402857
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Feb 27 17:43:30 2015 +0100
 

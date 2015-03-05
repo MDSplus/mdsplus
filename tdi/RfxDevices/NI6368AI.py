@@ -37,13 +37,13 @@ class NI6368AI(Device):
     del i
 
     parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':START_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','READY',50,None),Method(None,'start_store',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_store',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_store',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
         'options':('no_write_shot',)})
 
     
@@ -315,6 +315,8 @@ class NI6368AI(Device):
             #print "--+++ sample to skip ", sampleToSkip
                         
             self.niInterfaceLib.startSave(byref(saveList))
+
+            print "---------- SAVE list", saveList 
 
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
