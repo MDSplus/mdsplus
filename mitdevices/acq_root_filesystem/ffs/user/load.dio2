@@ -1,7 +1,7 @@
 #!/bin/sh
 
 ( cd /; tar xvzf /bigffs/dio2-xscale-2.6.21.tgz )
-( cd /; tar xvzf /bigffs/mdsdio.tgz ) 
+#( cd /; tar xvzf /bigffs/mdsdio.tgz ) 
 
 /sbin/insmod /lib/modules/DIO2_Driver.ko
 
