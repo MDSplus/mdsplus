@@ -1,4 +1,23 @@
-commit 2a1a35e7cdd638ff7a86b98cf9d1820de9adaf5d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e220250d0c62da54b3ce21174ac500c8b27b1db7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 10e8d1a d349371
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 5 13:02:20 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 10e8d1aec3c34a3f8db10bed9ef2dc2fb14cb31f
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 5 13:02:11 2015 -0500
+
+    have to load mdsplus before expanding the root file system
+
+commit d349371bc171785599e19bfc746c97c2ceab4ed3 (tag: refs/tags/alpha_release-6-3-480)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 4 18:29:28 2015 -0500
+
+    New ChangeLog
+
+commit 2a1a35e7cdd638ff7a86b98cf9d1820de9adaf5d
 Merge: f2a7738 14bcebf
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Mar 4 11:24:30 2015 +0100
