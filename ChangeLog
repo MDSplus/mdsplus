@@ -1,4 +1,28 @@
-commit 38f58d36602d009767b33d99f5f7aaed81d4637b (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit b0fbda8be0ffcae8cec36ec4fb6a71894b4e34ab (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:49:38 2015 -0400
+
+    Remove unnecessary file unlock
+
+commit 31c64465526a5f03f4bf79dcac529ca7571bff84
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:48:54 2015 -0400
+
+    Initialize malloc'd memory to zero
+
+commit 616b1d7484efdb19c37d907bd344b9514ffac0bc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:48:10 2015 -0400
+
+    Fix nci of new node corruption when large number of nodes are added in a single edit session
+
+commit 1082e35b2e0424dbc81c5708a9b7969b47a5fd71 (tag: refs/tags/stable_release-6-1-75)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 12:14:53 2015 -0500
+
+    New ChangeLog
+
+commit 38f58d36602d009767b33d99f5f7aaed81d4637b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 26 11:35:51 2015 -0500
 
