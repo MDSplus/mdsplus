@@ -161,6 +161,8 @@ rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUIL
                 self.info["packagename"]="-%s" % package.attrib["name"]
             else:
                 self.info["packagename"]=""
+            self.info['summary']=package.attrib['summary']
+            self.info['description']=package.attrib['description']
             out,specfilename=tempfile.mkstemp()
             os.write(out,rpmspec % self.info)
             for require in package.getiterator("requires"):
