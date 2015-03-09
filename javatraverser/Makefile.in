@@ -4,7 +4,7 @@ RM=$(top_srcdir)/devscripts/rm_if
 prefix=@prefix@
 exec_prefix=@exec_prefix@
 JAVADIR = @MAKEJAVADIR@classes
-JAVAC = @JAVAC@  -classpath ../java/classes/jScope.jar:.
+JAVAC = @JAVAC@  -encoding UTF-8 -source 6 -target 6 -bootclasspath @top_srcdir@/rt.jar -classpath ../java/classes/jScope.jar:.
 JAR = @JAR@
 
 RMIC = @RMIC@
