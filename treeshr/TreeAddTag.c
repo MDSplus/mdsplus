@@ -143,7 +143,7 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    new_tags_ptr = malloc(pages_needed * 512);
+    new_tags_ptr = memset(malloc(pages_needed * 512),0,pages_needed*512);
     if (!(new_tags_ptr))
     {
       return TreeFAILURE;
@@ -204,7 +204,7 @@ the tag name specified does not already exist.
   *******************************************************/
 
     pages_needed = pages_needed + 31;
-    new_tag_info_ptr = malloc(pages_needed * 512);
+    new_tag_info_ptr = memcpy(malloc(pages_needed * 512),0,pages_needed * 512);
     if (!new_tag_info_ptr)
       return TreeFAILURE;
 
