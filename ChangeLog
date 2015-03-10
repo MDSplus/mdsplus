@@ -1,4 +1,54 @@
-commit 0d595bdc3fc4a389c62ecc156fc28c145c692aaa (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 1bc3bdb48da9e7bb5e1530deec605bb83db7c288 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: be3c745 51886ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 10:48:34 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit be3c74540b307a9f48ab25f2df89052a0d16c86f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 10:48:23 2015 -0400
+
+    Fix test check for abort message to match fixed message text
+
+commit 51886ce265a9da70a8368b3dbdb97efb2a915a04
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 10 09:59:48 2015 -0400
+
+    forgot one file
+
+commit 14cee74d30956e748b61553c77477f036c7dd7c2
+Merge: 22c49f5 ae97c29
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 10 09:57:18 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 22c49f57f3d40ab4b9329ecd5cb2957f1fb54de8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 10 09:57:07 2015 -0400
+
+    disable input protection on the cards (noop if firmware not updated)
+
+commit ae97c29e59029bd8cdbec325c270bbd0a4589bc9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 09:42:27 2015 -0400
+
+    Do not include facility name twice in message text
+
+commit a14cbb0ebbfe9d4cc05949fa421de87ebeba6cad
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 09:41:32 2015 -0400
+
+    Use ldconfig -n
+
+commit 1ad1bdfb877514cd7a8c61d0873685131f40b398 (tag: refs/tags/alpha_release-6-3-483)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 15:55:22 2015 -0400
+
+    New ChangeLog
+
+commit 0d595bdc3fc4a389c62ecc156fc28c145c692aaa
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 9 15:09:00 2015 -0400
 
