@@ -38,13 +38,13 @@ fi
     <include file="/usr/local/mdsplus/bin/jServer"/>
     <include file="/usr/local/mdsplus/bin/jTraverser"/>
     <include file="/usr/local/mdsplus/lib/libJava*"/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;/dev/null</postinst>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
     <postrm>
  
 if [ "$1" == "0" ]
 then
   rm -f /usr/share/applications/mdsplus/java 2&gt;/dev/null
-  ldconfig &gt;/dev/null 2&gt;&amp;1
+  ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 fi
 
     </postrm>
@@ -102,8 +102,8 @@ fi
     <include file="/usr/local/mdsplus/uid/T*"/>
     <include file="/usr/local/mdsplus/uid/U*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="idl" arch="noarch" summary="ITT IDL extensions" description="IDL (ITT Interactive Data Language) extensions for MDSplus">
@@ -117,8 +117,8 @@ fi
     <include file="/usr/local/mdsplus/lib/lib*Idl*"/>
     <exclude file="/usr/local/mdsplus/lib/*Sql*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="gsi" arch="noarch" summary="Globus Security Ifrastructure Support" description="Support for secure MDSplus and Fusiongrid">
@@ -133,8 +133,8 @@ fi
     <include file="/usr/local/mdsplus/lib/libRoam*"/>
     <include file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt; /dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
     <triggerin trigger="xinetd">
 
 if [ ! -r /etc/xinetd.d/mdsips ]
@@ -159,8 +159,8 @@ fi
   <package name="labview_bin" arch="bin" summary="Libraries required for LabView interface" description="Libraries required for LabView interface">
     <include file="/usr/local/mdsplus/lib/*LV*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="motif" arch="noarch" summary="X-Windows Motif based applications" description="X-Windows Motif based applications such as dwscope, dwpad, traverser,actions, and actmon">
@@ -223,7 +223,7 @@ then
     ln -sf uid32 __INSTALL_PREFIX__/mdsplus/uid
   fi
 fi
-ldconfig &gt;/dev/null 2&gt;&amp;1
+ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 
     </postinst>
     <prerm>
@@ -234,7 +234,7 @@ then
 fi
 
     </prerm>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="hdf5" arch="noarch" summary="MDSplus/HDF5 integration" description="MDSplus/HDF5 integration">
@@ -248,8 +248,8 @@ fi
     <include file="/usr/local/mdsplus/bin/hdf5ToMds"/>
     <include file="/usr/local/mdsplus/bin/MDSplus2HDF5"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="devel" arch="noarch" summary="Header files for code development" description="Header files for code development">
@@ -276,8 +276,8 @@ fi
     <include file="/usr/local/mdsplus/lib/libccl_commands*"/>
     <include file="/usr/local/mdsplus/lib/libRemCam*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="kernel" arch="noarch" summary="MDSplus core system" description="MDSplus core system">
@@ -432,7 +432,7 @@ then
       echo "__INSTALL_PREFIX__/mdsplus/$l" &gt;&gt; /etc/ld.so.conf.d/mdsplus.conf
     fi
   done
-  ldconfig &gt; /dev/null 2&gt;&amp;1
+  ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 fi
 if [ -d __INSTALL_PREFIX__/mdsplus/bin64 ]
 then
@@ -469,8 +469,8 @@ fi
 
 if [ "$1" == "0" ]
 then
+  ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
   rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null 
-  ldconfig &gt;/dev/null 2&gt;&amp;1
 fi
 
     </postrm>
@@ -480,8 +480,8 @@ fi
     <requires package="kernel"/>
     <include file="/usr/local/mdsplus/lib/lib*Sql*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig &gt;/dev/null 2&gt;&amp;1</postinst>
-    <postrm>ldconfig &gt;/dev/null 2&gt;&amp;1</postrm>
+    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="epics" arch="noarch" summary="MDSplus/EPICS integration" description="MDSplus/EPICS integration">
