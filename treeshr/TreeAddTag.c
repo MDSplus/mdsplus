@@ -204,7 +204,7 @@ the tag name specified does not already exist.
   *******************************************************/
 
     pages_needed = pages_needed + 31;
-    new_tag_info_ptr = memcpy(malloc(pages_needed * 512),0,pages_needed * 512);
+    new_tag_info_ptr = memset(malloc(pages_needed * 512),0,pages_needed * 512);
     if (!new_tag_info_ptr)
       return TreeFAILURE;
 
