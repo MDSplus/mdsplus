@@ -150,7 +150,7 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
     for (i = 0; i < max; i++) {
       if ((sts & 0xfffffff8) == (stsText[i].stsL_num & 0xfffffff8)) {
 	sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
-		severity[sts & 0x7], stsText[i].stsA_name, stsText[i].stsA_text);
+		severity[sts & 0x7], stsText[i].stsA_name+strlen(facnam), stsText[i].stsA_text);
 	break;
       }
     }
