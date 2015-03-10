@@ -1,4 +1,23 @@
-commit 1bc3bdb48da9e7bb5e1530deec605bb83db7c288 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6b1cf2fd4ed0ce0a19db35561f8a21edcf5eb6d3 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 698eec9 8e961dc
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 10 18:51:59 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 698eec98144578b34e702e7b6023614c3e622cd4
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 10 18:51:48 2015 +0100
+
+    New WebScope
+
+commit 8e961dc4332131abce7ecd2e21663460de06f3c8 (tag: refs/tags/alpha_release-6-3-484)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 10 15:19:58 2015 +0000
+
+    New ChangeLog
+
+commit 1bc3bdb48da9e7bb5e1530deec605bb83db7c288
 Merge: be3c745 51886ce
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 10 10:48:34 2015 -0400
