@@ -1,4 +1,29 @@
-commit b0fbda8be0ffcae8cec36ec4fb6a71894b4e34ab (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 295585af86a2f51433222d31e92b0f9a874cf646 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 15:06:50 2015 -0400
+
+    Fix summary and description of noarch packages
+
+commit 7014f99a59645ea81afc9394e07b5c7a48243bc6
+Merge: 2a626f9 7a9d23d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 15:06:04 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 7a9d23de7487fcd64728fd7bf122f78bd7717de8 (tag: refs/tags/stable_release-6-1-76)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 14:54:13 2015 -0400
+
+    New ChangeLog
+
+commit 2a626f9dff60a544bd5b61ff33c3ec4bdb1df095
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 14:51:06 2015 -0400
+
+    provide java 6 compatibility
+
+commit b0fbda8be0ffcae8cec36ec4fb6a71894b4e34ab
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 9 13:49:38 2015 -0400
 
