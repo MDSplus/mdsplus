@@ -1,4 +1,23 @@
-commit 295585af86a2f51433222d31e92b0f9a874cf646 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 3156f5e85ea627601c2323969f347a9ecd6012a7 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Merge: 1b93686 03681bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 08:50:00 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 1b93686de0716c8491da7c57f088fbd1fba93163
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 08:49:55 2015 -0400
+
+    Fix typo in memset call in yesterdays patch
+
+commit 03681bf8666154ad234c32cca6296cae53787fed (tag: refs/tags/stable_release-6-1-77)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 16:26:56 2015 -0400
+
+    New ChangeLog
+
+commit 295585af86a2f51433222d31e92b0f9a874cf646
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 9 15:06:50 2015 -0400
 
