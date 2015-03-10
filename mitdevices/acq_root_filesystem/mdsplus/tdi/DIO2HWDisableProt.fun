@@ -1,4 +1,4 @@
-public fun DIO2HWDisableProt(in _board_id)
+public fun DIO2HWDisableProt( in _board_id)
 {
 
 	private _DIO2_CLOCK_SOURCE_INTERNAL	=	0x0;
@@ -44,14 +44,19 @@ public fun DIO2HWDisableProt(in _board_id)
 	return("Error");
     }
 
-    for (_chan=1; _chan <= 8; _chan++)
+    for (_chan=0; _chan < 8; _chan++)
     {
         _dwValue=0L;
         _c = _chan*2+1;
         _dwRegister = ((_c - 1)*4)  + _DIO2_REG_IO_CONNECTION;
         DIO2->DIO2_Tst_ReadRegister(val(_handle), val(_dwRegister), ref(_dwValue));
+        write(*, _chan, _c, _dwValue);
         _dwValue = _dwValue | (1 << 10); /* set IOERRDIS bit */
         DIO2->DIO2_Tst_WriteRegister(val(_handle), val(_dwRegister), val(_dwValue));
     }
+
+/* Close device */
+	DIO2->DIO2_Close(val(_handle));
+	
     return(1);
 }
