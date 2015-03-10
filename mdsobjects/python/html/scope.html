@@ -1,51 +1,105 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
 <title>Webscope</title>
 <link rel="icon" href="http://www.mdsplus.org/favicon.ico" />
 <style>
-table th, table tr
-{
-  padding:0;
+html {
+  font-family: "Arial", sans-serif;
+}
+table th, table tr {
+  padding: 0;
 }
 table { 
-  border-spacing:0;
-  border-collapse:collapse;
+  border-spacing: 0;
+  border-collapse: collapse;
 }
-
-button {
-  padding:0;
+.WavePanel, .FramePanel {
+  font-size: 0;
+  position: relative;
+}
+.FramePanel {
+  background-color: #ddd;
+}
+#WavePanelPopup, #FramePanelPopup {
+  display: none;
+  background-color: gold;
+  opacity: .8;
+  position: absolute;
+  z-index: 3;
+}
+#WavePanelPopup button, #FramePanelPopup button {
+  padding: 0;
+  width: 100%;
+}
+canvas, .FramePanelSvg {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.FramePanelSvg {
+  z-index: 2;
+  /* Workaround for IE10 not firing mouse events on an "invisible" element: sets a transparent image as background */
+  background-image: url(data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7);
 }
 </style>
-
-
 
 <script type="text/javascript" src="JavaScripts/mdsScope.js"></script>
 </head>
 <body>
 
-<div id = "ScopePopup" style="display:none; background-color:gold; opacity:.6; position: absolute;">
-<table border="0"><tr><th><button type="button" onclick="autoscale()" style="width:100%">Autoscale</button></th>
-<th><button type="button" onclick="autoscaleY()" style="width:100%">Autoscale Y</button></th></tr>
-<tr><th><button type="button" onclick="autoscaleAll()" style="width:100%">Autoscale All</button></th>
-<th><button type="button" onclick="allSameScale()" style="width:100%">All same scale</button></th></tr>
-<tr><th><button type="button" onclick="allSameXScale()" style="width:100%">All same X scale</button></th>
-<th><button type="button" onclick="allSameXScaleAutoY()" style="width:100%">All same X scale auto Y</button></th></tr>
-<tr><th><button type="button" onclick="allSameYScale()" style="width:100%">All same Y scale</button></th>
-<th><button type="button" onclick="resetScales()" style="width:100%">Reset scales</button></th></tr>
-<tr><th><button type="button" onclick="resetAllScales()" style="width:100%">Reset all scales</button></th>
-<th><button type="button" onclick="document.getElementById('ScopePopup').style.display='none'" style="width:100%">Dismiss</button></th></tr>
+<div id="WavePanelPopup">
+<table border="0">
+	<tr>
+		<th><button type="button" onclick="autoscale()">Autoscale</button></th>
+		<th><button type="button" onclick="autoscaleY()">Autoscale Y</button></th>
+	</tr>
+	<tr>
+		<th><button type="button" onclick="autoscaleAll()">Autoscale All</button></th>
+		<th><button type="button" onclick="allSameScale()">All same scale</button></th>
+	</tr>
+	<tr>
+		<th><button type="button" onclick="allSameXScale()">All same X scale</button></th>
+		<th><button type="button" onclick="allSameXScaleAutoY()">All same X scale auto Y</button></th>
+	</tr>
+	<tr>
+		<th><button type="button" onclick="allSameYScale()">All same Y scale</button></th>
+		<th><button type="button" onclick="resetScales()">Reset scales</button></th>
+	</tr>
+	<tr>
+		<th><button type="button" onclick="resetAllScales()">Reset all scales</button></th>
+		<th><button type="button" onclick="undoZoom()" id="UndoZoomButton" disabled>Undo zoom</button></th>
+	</tr>
+	<tr>
+		<th><button type="button" onclick="document.getElementById('WavePanelPopup').style.display='none'">Dismiss</button></th>
+	</tr>
 </table>
 </div>
-<div id = "ScopeArea"></div>
+
+<div id="FramePanelPopup">
+<table border="0">
+	<tr>
+		<th><button type="button" onclick="startPlay()" id="FramePlayButton">Start play</button></th>
+		<th><button type="button" onclick="autoscale()">Autoscale</button></th>
+	</tr>
+	<tr>
+		<th><button type="button" onclick="autoscaleAllImages()">Autoscale All Images</button></th>
+		<th><button type="button" onclick="document.getElementById('FramePanelPopup').style.display='none'">Dismiss</button></th>
+	</tr>
+</table>
+</div>
+
+<div id="ScopeArea"></div>
+
 <script type="text/javascript">
 window.onresize = function(){resizeScope()};
-var configName = location.search.substr(1, location.search.indexOf('=') - 1);
-//alert(configName);
-if(configName == 'config')
-    startMdsScope(location.search.substr(location.search.indexOf('=')+1));
+window.onload = function() {
+	var configName = location.search.substr(1, location.search.indexOf('=') - 1);
+	if(configName == 'config')
+	    startMdsScope(location.search.substr(location.search.indexOf('=')+1));
+};
 </script>
+
 </body>
 </html>
-

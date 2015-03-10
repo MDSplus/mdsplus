@@ -1,4 +1,5 @@
 import os
+import sys
 from doEvent import noCache
 from MDSplus import Data
 
@@ -158,7 +159,7 @@ def doScope(self):
         if(tree != None):
           outStr = outStr+' tree = "'+tree+'" ';
           if(globalDefs & (1 << GLOBAL_SHOT_IDX)):
-            shotNum = '-2'
+            shotNum = globalShot
           else:
             shotNum = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.shot')
           if(shotNum != None):
@@ -216,6 +217,30 @@ def doScope(self):
           event = globalEvent
         if (event != None):
           outStr = outStr+' event = "'+event+'"'
+        continuous_update = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.continuous_update')
+        if (continuous_update != None):
+          outStr = outStr+' continuous_update = "'+continuous_update+'"'
+        is_image = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.is_image')
+        if (is_image != None and is_image == 'true'):
+          outStr = outStr+' is_image = "true"'
+        keep_ratio = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.keep_ratio')
+        if (keep_ratio != None):
+          outStr = outStr+' keep_ratio = "'+keep_ratio+'"'
+        horizontal_flip = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.horizontal_flip')
+        if (horizontal_flip != None):
+          outStr = outStr+' horizontal_flip = "'+horizontal_flip+'"'
+        vertical_flip = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.vertical_flip')
+        if (vertical_flip != None):
+          outStr = outStr+' vertical_flip = "'+vertical_flip+'"'
+        palette = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.palette')
+        if (palette != None):
+          outStr = outStr+' palette = "'+palette+'"'
+        bitShift = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.bitShift')
+        if (bitShift != None):
+          outStr = outStr+' bitShift = "'+bitShift+'"'
+        bitClip = getValue(lines,'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.bitClip')
+        if (bitClip != None):
+          outStr = outStr+' bitClip = "'+bitClip+'"'
 
         outStr = outStr + '>'
         numExprStr = getValue(lines, 'Scope.plot_'+str(rowIdx)+'_'+str(colIdx)+'.num_expr')
@@ -266,6 +291,16 @@ def doScope(self):
     except Exception:
       output = str(sys.exc_info())+' expression was '+self.args['title'][0]
     return ('200 OK',response_headers, output)
+  elif 'colortables' in self.args:
+    response_headers.append(('Content-type','application/octet-stream'))
+    try:
+      f=open(os.path.dirname(__file__)+'/colors1.tbl',"r")
+      output=f.read()
+      f.close()
+    except:
+      response_headers.append(('ERROR', str(sys.exc_info())))
+      output=''
+    return ('200 OK',response_headers, output)
   else:
     ans=('400 NOT FOUND',[('Content-type','text/text'),],'')
     try:
@@ -276,10 +311,11 @@ def doScope(self):
     except:
       pass
     return ans
-from MDSplus import makeData,Data,Tree
+from MDSplus import makeData,Data,Tree,Float64Array
+from numpy import finfo,integer
 """Reponds to scope queries of the format:
 
-scopePanel?title=title&xlabel=xlabel&ylabel=ylabel&xmin=xmin&xmax=xmax&ymin=ymin&ymax=ymax&default_node=default_node&tree=tree&shot=shotlist&y1=expr&x1=expr&y2=expr&x2=expr...
+scopePanel?title=title&xlabel=xlabel&ylabel=ylabel&xmin=xmin&xmax=xmax&ymin=ymin&ymax=ymax&default_node=default_node&tree=tree&shot=shotlist&continuous_update=continuous_update&displayed_width=displayed_width&y1=expr&x1=expr&curr_max_x1=curr_max_x1&y2=expr&x2=expr&curr_max_x2=curr_max_x2...
 
 where all the fields are optional except y1
 
@@ -298,7 +334,27 @@ def doScopepanel(self):
             try:
                 response_headers.append((name,str(Data.execute(self.args[name][-1]).data())))
             except Exception:
-                response_headers.append((name,str(sys.exc_info())))
+                response_headers.append((name + '_error:',str(sys.exc_info())))
+
+    def manageContinuousUpdate(self,x,y):
+          if x.getShape().size == 1:
+              new_max_x=x.data()[-1]
+          else:
+              new_max_x=x.data()[0][-1]
+          curr_max_x=float(self.args['curr_max_x'+x_idx_s][-1])
+          displayed_width=float(self.args['displayed_width'][-1])
+          default_num_samples=float(self.args['default_num_samples'][-1])
+          num_samples=int((new_max_x-curr_max_x)*default_num_samples/displayed_width)
+          if new_max_x > curr_max_x and num_samples > 1:
+              if issubclass(x.dtype.type, integer):
+                  epsilon=0.5
+              else:
+                  epsilon=finfo(new_max_x).eps
+              infinity=sys.float_info.max
+              sig=Data.execute('MdsMisc->GetXYWave:DSC(\''+ expr.replace('\\','\\\\').replace('\'', '\\\'') + '\','+ str(curr_max_x+epsilon) + ',' + str(infinity) + ','+str(num_samples)+')')
+              return makeData(sig.dim_of().data()),makeData(sig.data())
+          else:
+              return Float64Array([]),Float64Array([])
 
     response_headers=list()
     response_headers.append(('Cache-Control','no-store, no-cache, must-revalidate'))
@@ -312,6 +368,8 @@ def doScopepanel(self):
 
     for name in ('title','xlabel','ylabel','xmin','xmax','ymin','ymax'):
         getStringExp(self,name,response_headers)
+
+    continuous_update = 'continuous_update' in self.args
 
     sig_idx=0
     output=''
@@ -342,7 +400,10 @@ def doScopepanel(self):
                         continue
                 try:
                     sig=Data.execute(expr)
-                    y=makeData(sig.data())
+                    if not continuous_update:
+                        y=makeData(sig.data())
+                    else:
+                        y=None
                 except Exception:
                     response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
@@ -351,15 +412,22 @@ def doScopepanel(self):
                     try:
                         x=Data.execute(expr)
                         x=makeData(x.data())
+                        if continuous_update:
+                            x,y=manageContinuousUpdate(self,x,y)
                     except Exception:
                         response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                         continue
                 else:
                     try:
                         x=makeData(sig.dim_of().data())
+                        if continuous_update:
+                            x,y=manageContinuousUpdate(self,x,y)
                     except Exception:
-                        response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,sys.exc_info())))
+                        response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s:, error: %s' % (expr,sys.exc_info())))
                         continue
+                if x.__class__.__name__ == 'Uint64Array' or x.__class__.__name__ == 'Int64Array':
+                    x=Float64Array(x)     # Javascript doesn't support 64 bit integers
+                    response_headers.append(('X_IS_DATETIME','true'))
                 response_headers.append(('X'+sig_idx_s+'_DATATYPE',x.__class__.__name__))
                 response_headers.append(('Y'+sig_idx_s+'_DATATYPE',y.__class__.__name__))
                 response_headers.append(('X'+sig_idx_s+'_LENGTH',str(len(x))))
@@ -377,7 +445,10 @@ def doScopepanel(self):
             sig_idx_s='%d' % (sig_idx,)
             try:
                 sig=Data.execute(expr)
-                y=makeData(sig.data())
+                if not continuous_update:
+                    y=makeData(sig.data())
+                else:
+                    y=None
             except Exception:
                 response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                 continue
@@ -386,15 +457,22 @@ def doScopepanel(self):
                 try:
                     x=Data.execute(expr)
                     x=makeData(x.data())
+                    if continuous_update:
+                        x,y=manageContinuousUpdate(self,x,y)
                 except Exception:
                     response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
             else:
                 try:
                     x=makeData(sig.dim_of().data())
+                    if continuous_update:
+                        x,y=manageContinuousUpdate(self,x,y)
                 except Exception:
                     response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
+            if x.__class__.__name__ == 'Uint64Array' or x.__class__.__name__ == 'Int64Array':
+                x=Float64Array(x)     # Javascript doesn't support 64 bit integers
+                response_headers.append(('X_IS_DATETIME','true'))
             response_headers.append(('X'+sig_idx_s+'_DATATYPE',x.__class__.__name__))
             response_headers.append(('Y'+sig_idx_s+'_DATATYPE',y.__class__.__name__))
             response_headers.append(('X'+sig_idx_s+'_LENGTH',str(len(x))))
