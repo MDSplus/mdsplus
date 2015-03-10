@@ -56,14 +56,14 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   char *newnode_name = 0;
   SEARCH_TYPE newnode_type;
   int status;
-  char *upcase_name = malloc(strlen(newname) + 1);
+  char *upcase_name;
   int i;
 /*****************************************************
   Make sure that the tree is open and OK and editable
 *****************************************************/
   if (!(IS_OPEN_FOR_EDIT(dblist)))
     return TreeNOEDIT;
-
+  upcase_name = strdup(newname);
 /**************************
    Convert to upper case.
 ***************************/
@@ -75,9 +75,10 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   make sure that the new node is not already there
 ***************************************************/
   status = TreeFindNode(upcase_name, &i);
-  if (status & 1)
-    return TreeALREADY_THERE;
-
+  if (status & 1) {
+    status = TreeALREADY_THERE;
+    goto cleanup;
+  }
 /******************************************************
   Make sure the new node's parent is in the tree
 ******************************************************/

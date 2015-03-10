@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <string.h>
 /**********************************************************************
 * TCL_WFEVENT.C --
 *
@@ -14,10 +15,25 @@
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
-int TclWfevent()
+int TclWfevent(void *ctx, char **error, char **output)
 {
-  static DYNAMIC_DESCRIPTOR(event);
-  cli_get_value("EVENT", &event);
-  MDSWfevent(event.dscA_pointer, 0, 0, 0);
+  char *event = 0;
+  char *timeout = 0;
+  int seconds = 0;
+  int status;
+  cli_get_value(ctx, "EVENT", &event);
+  cli_get_value(ctx, "TIMEOUT", &timeout);
+  seconds = atoi(timeout);
+  free(timeout);
+  if (event) {
+    if (seconds > 0) {
+      status = MDSWfeventTimed(event, 0, 0, 0,seconds);
+      if (!(status & 1))
+	*error = strdup("Timeout\n");
+    } else {
+      status = MDSWfevent(event, 0, 0, 0);
+    }
+    free(event);
+  }
   return 1;
 }

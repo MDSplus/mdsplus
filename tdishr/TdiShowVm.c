@@ -8,7 +8,7 @@
 #include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <libroutines.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

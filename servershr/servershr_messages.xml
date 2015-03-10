@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<messages>
+  <facility name="Server" value="4065">
+    <status name="NOT_DISPATCHED" value="4097" severity="Warning" text="action not dispatched, depended on failed action"/>
+    <status name="INVALID_DEPENDENCY" value="4098" severity="Error" text="action dependency cannot be evaluated"/>
+    <status name="CANT_HAPPEN" value="4099" severity="Error" text="action contains circular dependency or depends on action which was not dispatched"/>
+    <status name="INVSHOT" value="4100" severity="Error" text="invalid shot number, cannot dispatch actions in model"/>
+    <status name="ABORT" value="4102" severity="Error" text="Server action was aborted"/>
+    <status name="PATH_DOWN" value="4104" severity="Error" text="Path to server lost"/>
+  </facility>
+</messages>

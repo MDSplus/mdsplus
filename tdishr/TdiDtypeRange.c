@@ -19,7 +19,7 @@ extern unsigned short OpcValue;
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdithreadsafe.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 

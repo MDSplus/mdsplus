@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include		<mds_stdarg.h>
+#include <string.h>
 
 /**********************************************************************
 * TCL_DO_NODE.C --
@@ -11,31 +12,31 @@
 *
 ************************************************************************/
 
-#ifdef vms
-#define TdiDoTask  TDI$DO_TASK
-#endif
 extern int TdiDoTask();
 
 	/***************************************************************
 	 * TclDoNode:
 	 ***************************************************************/
-int TclDoNode()
+int TclDoNode(void *ctx, char **error, char **output)
 {
   int sts;
-  static DYNAMIC_DESCRIPTOR(nodnam_dsc);
+  char *nodnam = 0;
   static int retstatus;
   static int nid;
   static DESCRIPTOR_NID(niddsc, &nid);
   static DESCRIPTOR_LONG(retstatus_d, &retstatus);
 
-  cli_get_value("NODE", &nodnam_dsc);
-  l2u(nodnam_dsc.dscA_pointer, 0);
-  if ((sts = TreeFindNode(nodnam_dsc.dscA_pointer, &nid)) & 1) {
+  cli_get_value(ctx, "NODE", &nodnam);
+  if ((sts = TreeFindNode(nodnam, &nid)) & 1) {
     sts = TdiDoTask(&niddsc, &retstatus_d MDS_END_ARG);
     if (sts & 1)
       sts = retstatus;
   }
-  if (~sts & 1)
-    sts = MdsMsg(sts, "TclDoNode: error doing %s", nodnam_dsc.dscA_pointer);
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(nodnam) + 100);
+    sprintf(*error, "Error: problem doing node %s\n" "Error message was: %s\n", nodnam, msg);
+  }
+  free(nodnam);
   return sts;
 }

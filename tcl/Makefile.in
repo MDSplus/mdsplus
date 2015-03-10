@@ -1,16 +1,17 @@
 include @top_srcdir@/Makefile.inc
 
+CFLAGS += $(THREAD) 
+LDFLAGS += $(THREAD)
+
 @MINGW_TRUE@ MDSTCL=mdstcl.bat
 @MINGW_FALSE@ MDSTCL=mdstcl
 @MINGW_TRUE@ DEF=tcl_commands.def
 
 SOURCES = 			\
-	tcl_dummy.c		\
 	tcl_add_node.c	\
 	tcl_add_tag.c		\
 	tcl_clean_datafile.c		\
 	tcl_close.c		\
-	tcl_commands.c	\
 	tcl_compress_datafile.c		\
 	tcl_create_pulse.c	\
 	tcl_decompile.c	\
@@ -71,4 +72,4 @@ tcl_commands.c-disabled:	tcl_commands.ocld
 	$(MAKE) depend
 
 @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@: $(OBJECTS) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS) @LIBREADLINE@

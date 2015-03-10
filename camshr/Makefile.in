@@ -47,7 +47,7 @@ SOURCES	= \
 
 OBJECTS =	$(SOURCES:.c=.o)
 
-CTS_SOURCES = cts_commands.c verbs.c
+CTS_SOURCES = verbs.c
 
 CTS_OBJECTS = $(CTS_SOURCES:.c=.o)
 
@@ -78,13 +78,6 @@ install: $(libdir) $(bindir)
 @MAKEBINDIR@mdscts: cts
 	cp $< $@
 	chmod +x $@
-
-cdudir = $(top_builddir)/cdu
-CDU = $(cdudir)/cdu
-
-cts_commands.c:	cts_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < $<
-	$(MAKE) depend
 
 @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@: $(CTS_OBJECTS) $(SHLIB_BUILD)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)

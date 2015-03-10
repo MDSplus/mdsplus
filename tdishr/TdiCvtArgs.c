@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <STATICdef.h>
 

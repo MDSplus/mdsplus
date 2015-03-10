@@ -14,8 +14,6 @@
 #endif
 #endif
 
-#include        "mdsdcldef.h"
-#include        "clisysdef.h"
 
 #define CCL_STS(N)    (CCL_FACILITY<<16)+N
 

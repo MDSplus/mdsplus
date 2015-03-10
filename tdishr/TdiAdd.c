@@ -31,7 +31,7 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <mdstypes.h>
 #include <string.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include "roprand.h"
 #include <STATICdef.h>
 

@@ -23,7 +23,7 @@ int GEN_DEVICE$CVT_INT_CODE( )
 
 ------------------------------------------------------------------------------*/
 
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <treeshr.h>
 
 struct _table {

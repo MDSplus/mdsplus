@@ -1,8 +1,6 @@
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#endif
 #include        "tclsysdef.h"
+#include <string.h>
 
 /**********************************************************************
 * TCL_WRITE.C --
@@ -17,30 +15,28 @@
 	/***************************************************************
 	 * TclWrite:
 	 ***************************************************************/
-int TclWrite()
+int TclWrite(void *ctx, char **error, char **output)
 {
-  int shotid;
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_exp);
-  static DYNAMIC_DESCRIPTOR(dsc_shotid);
-
-  if (cli_get_value("FILE", &dsc_exp) & 1) {
-    cli_get_value("SHOTID", &dsc_shotid);
-    sscanf(dsc_shotid.dscA_pointer, "%d", &shotid);
-    sts = TreeWriteTree(dsc_exp.dscA_pointer, shotid);
+  char *exp = 0;
+  if (cli_get_value(ctx, "FILE", &exp) & 1) {
+    char *shotidStr = 0;
+    int shotid;
+    cli_get_value(ctx, "SHOTID", &shotidStr);
+    shotid = atoi(shotidStr);
+    sts = TreeWriteTree(exp, shotid);
+    if (exp)
+      free(exp);
+    if (shotidStr)
+      free(shotidStr);
   } else {
     sts = TreeWriteTree(0, 0);
   }
 
   if (~sts & 1) {
-#ifdef HAVE_WINDOWS_H
-    char errormsg[1024];
-    DWORD error = GetLastError();
-    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, error, LANG_USER_DEFAULT, errormsg, 1024,
-		  (va_list *) NULL);
-    TclTextOut(errormsg);
-#endif
-    MdsMsg(sts, "TclWrite: *ERR* from TreeWriteTree");
+    char *msg = MdsGetMsg(sts);
+    *output = malloc(strlen(msg) + 100);
+    sprintf(*output, "Error: Unable to write tree\n" "Error message was: %s\n", msg);
   }
   return sts;
 }

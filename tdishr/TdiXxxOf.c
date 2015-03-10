@@ -4,7 +4,7 @@
         Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
 #include "STATICdef.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include "tdirefstandard.h"
 #include <stdlib.h>
 #include <mdsshr.h>

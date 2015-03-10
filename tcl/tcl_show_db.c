@@ -1,8 +1,6 @@
 #include        "tclsysdef.h"
 #include        <dbidef.h>
-#ifdef vms
-#include        <starlet.h>
-#endif
+#include <string.h>
 
 /**********************************************************************
 * TCL_SHOW_DB.C --
@@ -17,7 +15,7 @@
 	/***************************************************************
 	 * TclShowDb:
 	 ***************************************************************/
-int TclShowDB()
+int TclShowDB(void *ctx, char **error, char **output)
 {
   int sts;
   char outstr[132];
@@ -46,19 +44,19 @@ int TclShowDB()
 
   sts = TreeGetDbi(itm1);
   if (sts & 1) {
-    TclTextOut(" ");
+    *output = strdup("");
     for (idx = 0; idx < open; idx++) {
       sts = TreeGetDbi(itm2);
       if (sts & 1) {
 	nameStr[nameLen] = '\0';
 	pathStr[pathLen] = '\0';
-	sprintf(outstr, "%03d  %-32s  shot: %d [%s] %s%s",
+	sprintf(outstr, "%03d  %-32s  shot: %d [%s] %s%s\n",
 		idx, nameStr, shotid, pathStr,
 		edit ? "open for edit" : " ", modified ? ",modified" : " ");
-	TclTextOut(outstr);
+	tclAppend(output, outstr);
       }
     }
-    TclTextOut(" ");
+    tclAppend(output, "\n");
   }
   return sts;
 }

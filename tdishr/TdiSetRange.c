@@ -22,7 +22,7 @@
 #include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>

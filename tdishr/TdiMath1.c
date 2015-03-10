@@ -38,7 +38,7 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <errno.h>
 #include <math.h>
 

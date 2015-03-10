@@ -134,6 +134,9 @@
 /* Define if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
+/* Define if you have the <alloca.h> header file. */
+#undef HAVE_ALLOCA_H
+
 /* Define if you have pthread_lock_global_np routine. */
 #undef HAVE_PTHREAD_LOCK_GLOBAL_NP
 
@@ -148,6 +151,12 @@
 
 /* Define if you have the getaddrinfo routine */
 #undef HAVE_GETADDRINFO
+
+/* Define if you have the strsep routine */
+#undef HAVE_STRSEP
+
+/* Define if you have the getrusage routine */
+#undef HAVE_GETRUSAGE
 
 /* Is malloc.h available?  */
 #undef HAVE_MALLOC_H

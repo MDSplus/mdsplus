@@ -30,7 +30,7 @@
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxDialog.h>
 #include <Xmds/XmdsCallbacks.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 extern int mdsdcl_do_command();
 /*
@@ -672,6 +672,8 @@ static void TOutput(char *text)
   Widget message_text;
   message_box = XtNameToWidget(toplevel, "*message_box");
   message_text = XtNameToWidget(message_box, "*message_text");
+  if (!XtIsManaged(message_box))
+    XtManageChild(message_box);
   strcpy(txt, text);
   strcat(txt, "\n");
   XmTextInsert(message_text, XmTextGetLastPosition(message_text), txt);
@@ -691,8 +693,7 @@ static void InitializeCommandInterface(Widget w)
 {
   static DESCRIPTOR(const image_name, "tcl_commands");
   static DESCRIPTOR(const routine_name, "TclSetCallbacks");
-  static DESCRIPTOR(const set_command, "set command tcl_commands /def_file=*.tcl");
-  int status = mdsdcl_do_command(&set_command);
+  int status = mdsdcl_do_command("set command tcl");
   if (status & 1) {
     int (*set_callbacks) ();
     status = LibFindImageSymbol(&image_name, &routine_name, &set_callbacks);
@@ -1497,9 +1498,21 @@ void CommandEntered(Widget w, XtPointer client_data, XtPointer call_data)
 {
   XmCommandCallbackStruct *cb = (XmCommandCallbackStruct *) call_data;
   char *cmd;
+  char *output=0;
+  char *error=0;
   int status;
   cmd = XmStringUnparse(cb->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
-  status = mdsdcl_do_command(cmd);
+  status = mdsdcl_do_command_extra_args(cmd, 0, &error, &output, 0, 0);
+  if (output != NULL) {
+    if (strlen(output) > 1)
+      TOutput(output);
+    free(output);
+  }
+  if (error != NULL) {
+    if (strlen(error) > 1)
+      TOutput(error);
+    free(error);
+  }
 }
 
 void CreateAddDevice(Widget w, XtPointer client_data, XtPointer call_data)

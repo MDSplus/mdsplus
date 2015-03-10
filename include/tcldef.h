@@ -10,8 +10,6 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 
-#include        "mdsdcldef.h"
-#include        "clidef.h"
 
 /***********************************************************************
 * TCLDEF.H --

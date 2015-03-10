@@ -90,7 +90,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in)
 	 num < 256
 	 && (_TreeFindNodeWild(dbid, "***", &nids[num], &ctx, (1 << TreeUSAGE_SUBTREE)) & 1);
 	 num++) ;
-    TreeFindTagEnd(&ctx);
+    TreeFindNodeEnd(&ctx);
   } else {
     num = 0;
     for (i = 0; i < numnids_in; i++) {
