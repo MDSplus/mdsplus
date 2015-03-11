@@ -81,5 +81,6 @@ extern dclDocListPtr mdsdcl_getdocs();
 extern char *mdsdclGetPrompt();
 extern char *mdsdclGetHistoryFile();
 extern int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error, char *(*getline)(), void *getlineinfo);
+extern int mdsdclAddCommands(char *name_in, char **error);
 
 #endif
