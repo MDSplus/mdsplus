@@ -1,4 +1,23 @@
-commit 6c67bd30e4d792a6ded2d844d47818a49fe8b5b5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 9fbbbb8aa963a2af755d34e79e9748c9884b28d4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: cbf9c30 dd7cab5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 14:51:17 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit cbf9c305f9841064518345a39ed4f89d7b51bb39
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 14:51:05 2015 -0400
+
+    missing return status
+
+commit dd7cab588d2e1536cecfee3f8a103aae3d6260e4 (tag: refs/tags/alpha_release-7-0-4)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 16:50:29 2015 +0000
+
+    New ChangeLog
+
+commit 6c67bd30e4d792a6ded2d844d47818a49fe8b5b5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 11 12:36:38 2015 -0400
 
