@@ -3,6 +3,7 @@
 #include        <mds_stdarg.h>
 #include        <mdsshr.h>
 #include        <usagedef.h>
+#include        <string.h>
 
 /**********************************************************************
 * TCL_DO_METHOD.C --
@@ -14,44 +15,43 @@
 *
 ************************************************************************/
 
-#ifdef vms
-#define TdiExecute  TDI$EXECUTE
-#define TdiCompile  TDI$COMPILE
-#define TreeDoMethod  TREE$DO_METHOD
-extern int TREE$DO_METHOD();
-#endif
-
 extern int TdiExecute();
 extern int TdiCompile();
 
 	/****************************************************************
 	 * TclDoMethod:
 	 ****************************************************************/
-int TclDoMethod()
+int TclDoMethod(void *ctx, char **error, char **output)
 {
   int i;
   int argc;
   int sts;
   unsigned char do_it;
   struct descriptor_xd xdarg[255];
-  static int nid;
-  static unsigned short boolVal;
-  static struct descriptor_s bool_dsc = { sizeof(boolVal), DTYPE_W, CLASS_S, (char *)&boolVal };
-  static struct descriptor nid_dsc = { 4, DTYPE_NID, CLASS_S, (char *)&nid };
-  static struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
-  static DYNAMIC_DESCRIPTOR(arg);
-  static DYNAMIC_DESCRIPTOR(if_clause);
-  static DYNAMIC_DESCRIPTOR(method);
-  static DYNAMIC_DESCRIPTOR(object);
-  static void *arglist[256] = { (void *)2, &nid_dsc, &method };
+  int nid;
+  unsigned short boolVal;
+  struct descriptor_s bool_dsc = { sizeof(boolVal), DTYPE_W, CLASS_S, (char *)&boolVal };
+  struct descriptor nid_dsc = { 4, DTYPE_NID, CLASS_S, (char *)&nid };
+  struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  char *arg = 0;
+  char *if_clause = 0;
+  char *method = 0;
+  char *object = 0;
+  struct descriptor method_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+  void *arglist[256] = { (void *)2, &nid_dsc, &method_dsc };
 
-  cli_get_value("OBJECT", &object);
-  sts = TreeFindNode(object.dscA_pointer, &nid);
+  cli_get_value(ctx, "OBJECT", &object);
+  sts = TreeFindNode(object, &nid);
+  free(object);
   if (sts & 1) {
-    do_it = (TreeIsOn(nid) | cli_present("OVERRIDE")) & 1;
-    if (cli_present("IF") & 1) {
-      cli_get_value("IF", &if_clause);
-      sts = TdiExecute(&if_clause, &bool_dsc MDS_END_ARG);
+    do_it = (TreeIsOn(nid) | cli_present(ctx, "OVERRIDE")) & 1;
+    if (cli_present(ctx, "IF") & 1) {
+      struct descriptor if_clause_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+      cli_get_value(ctx, "IF", &if_clause);
+      if_clause_dsc.length = strlen(if_clause);
+      if_clause_dsc.pointer = if_clause;
+      sts = TdiExecute(&if_clause_dsc, &bool_dsc MDS_END_ARG);
+      free(if_clause);
       if (sts & 1)
 	do_it = do_it && boolVal;
       else
@@ -60,49 +60,44 @@ int TclDoMethod()
     if (do_it) {
       int dometh_stat;
       DESCRIPTOR_LONG(dometh_stat_d, 0);
-      cli_get_value("METHOD", &method);
+      cli_get_value(ctx, "METHOD", &method);
+      method_dsc.length = strlen(method);
+      method_dsc.pointer = method;
       argc = 0;
-      if (cli_present("ARGUMENT") & 1) {
-	while (cli_get_value("ARGUMENT", &arg) & 1) {
+      if (cli_present(ctx, "ARGUMENT") & 1) {
+	while (cli_get_value(ctx, "ARGUMENT", &arg) & 1) {
+	  struct descriptor arg_dsc = { strlen(arg), DTYPE_T, CLASS_S, arg };
 	  xdarg[argc] = empty_xd;
 	  sts = TdiCompile(&arg, &xdarg[argc] MDS_END_ARG);
+	  free(arg);
 	  if (sts & 1) {
-	    arglist[argc + 3] = xdarg[argc].dscA_pointer;
+	    arglist[argc + 3] = xdarg[argc].pointer;
 	    argc++;
 	  } else
 	    break;
 	}
       }
       if (sts & 1) {
-#ifdef vms
-	arglist[0] = (void *)(argc + 2);
-#else
-	dometh_stat_d.dscA_pointer = (char *)&dometh_stat;
+	dometh_stat_d.pointer = (char *)&dometh_stat;
 	arglist[argc + 3] = &dometh_stat_d;
 	arglist[argc + 4] = MdsEND_ARG;
 	arglist[0] = (argc + 4) + (char *)0;
-#endif
-
 	sts = (char *)LibCallg(arglist, TreeDoMethod) - (char *)0;
 	if (sts & 1)
 	  sts = dometh_stat;
       }
-      str_free1_dx(&arg);
-      str_free1_dx(&method);
+      if (method)
+	free(method);
       for (i = 0; i < argc; i++)
 	MdsFree1Dx(&xdarg[i], NULL);
     }
   }
-  str_free1_dx(&object);
-#ifdef vms
-  if (!(sts & 1))
-    lib$signal(sts, 0);
-#else
+  if (object)
+    free(object);
   if (!(sts & 1)) {
-    char msg[512];
-    sprintf(msg, "Error executing method - %s", MdsGetMsg(sts));
-    TclTextOut(msg);
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error executing device method\n" "Error message was: %s\n", msg);
   }
-#endif
   return sts;
 }

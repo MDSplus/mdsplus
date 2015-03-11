@@ -11,7 +11,7 @@
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include <mdsdescrip.h>
 #include "tdinelements.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 

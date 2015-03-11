@@ -12,7 +12,7 @@ extern unsigned short OpcCompile;
 #include "tdirefzone.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <STATICdef.h>

@@ -17,7 +17,7 @@
 #include <mdsdescrip.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <mdsshr.h>
 #include <STATICdef.h>
 

@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <string.h>
 
 /**********************************************************************
 * TCL_CLOSE.C --
@@ -14,42 +15,39 @@
 	 * TclClose:
 	 * Close tree file(s).
 	 ***************************************************************/
-int TclClose()
+int TclClose(void *ctx, char **error, char **output)
 {
   int sts;
   static const char promptWritefirst[] =
       "This tree has been modified, write it before closing? [Y]: ";
-  static DYNAMIC_DESCRIPTOR(exp);
-  static DYNAMIC_DESCRIPTOR(dsc_shotid);
+  char *exp = 0;
+  char *shotidstr = 0;
   int shotid;
 
-  if (cli_get_value("FILE", &exp) & 1) {
-    cli_get_value("SHOTID", &dsc_shotid);
-    sscanf(dsc_shotid.dscA_pointer, "%d", &shotid);
-    sts = TreeClose(exp.dscA_pointer, shotid);
+  if (cli_get_value(ctx, "FILE", &exp) & 1) {
+    cli_get_value(ctx, "SHOTID", &shotidstr);
+    sts = tclStringToShot(shotidstr, &shotid, error);
+    if (sts & 1)
+      sts = TreeClose(exp, shotid);
   } else {
-    int doall = cli_present("ALL") & 1;
+    int doall = cli_present(ctx, "ALL") & 1;
     while ((sts = TreeClose(0, 0)) & 1 && doall) ;
     if (doall && sts == TreeNOT_OPEN)
       sts = TreeNORMAL;
   }
   if (sts == TreeWRITEFIRST) {
-    if (cli_present("CONFIRM") == CLI_STS_NEGATED)
+    if (cli_present(ctx, "CONFIRM") & 1)
       sts = TreeQuitTree(0, 0);
-    else {
-      printf(promptWritefirst);
-      if (yesno(1)) {
-	sts = TreeWriteTree(0, 0);
-	if (sts & 1) {
-	  TreeClose(0, 0);
-	}
-      } else
-	sts = TreeQuitTree(0, 0);
-    }
+    else
+      *error = strdup("This tree has been modified. Either use the WRITE\n"
+		      "command before closing to save modifications or\n"
+		      "use CLOSE/CONFIRM to discard changes.\n\n");
   }
   if (sts & 1)
     TclNodeTouched(0, tree);
-  else
-    MdsMsg(sts, "TclClose: *WARN* unexpected status");
+  if (exp)
+    free(exp);
+  if (shotidstr)
+    free(shotidstr);
   return sts;
 }

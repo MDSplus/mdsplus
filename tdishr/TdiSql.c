@@ -30,7 +30,7 @@
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 #include <config.h>

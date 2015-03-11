@@ -1,4 +1,6 @@
 #include        "tclsysdef.h"
+#include <string.h>
+#include <dcl.h>
 
 /***********************************************************************
 * TCL_RENAME.C --
@@ -13,23 +15,42 @@
 	 * TclRename:
 	 * Rename a node or subtree.
 	 ***************************************************************/
-int TclRename()
+int TclRename(void *ctx, char **error, char **output)
 {
   int nid;
-  int sts;
-  static DYNAMIC_DESCRIPTOR(srcnam);
-  static DYNAMIC_DESCRIPTOR(destnam);
+  int sts = MdsdclIVVERB;
+  char *srcnam = 0;
+  char *destnam = 0;
 
-  cli_get_value("SOURCE", &srcnam);
-  cli_get_value("DEST", &destnam);
-  sts = TreeFindNode(srcnam.dscA_pointer, &nid);
-  if (sts & 1)
-    sts = TreeRenameNode(nid, destnam.dscA_pointer);
-
-  if (sts & 1)
-    TclNodeTouched(nid, rename_node);
-  else
-    MdsMsg(sts, 0);
+  cli_get_value(ctx, "SOURCE", &srcnam);
+  if (srcnam && (strlen(srcnam) > 0)) {
+    cli_get_value(ctx, "DEST", &destnam);
+    if (destnam && (strlen(destnam) > 0)) {
+      sts = TreeFindNode(srcnam, &nid);
+      if (sts & 1) {
+	sts = TreeRenameNode(nid, destnam);
+	if (sts & 1)
+	  TclNodeTouched(nid, rename_node);
+	else {
+	  char *msg = MdsGetMsg(sts);
+	  *error = malloc(strlen(srcnam) + strlen(destnam) + strlen(msg) + 100);
+	  sprintf(*error, "Error: Problem renaming node %s to %s\n"
+		  "Error message was: %s\n", srcnam, destnam, msg);
+	}
+      } else {
+	*error = malloc(strlen(srcnam) + 100);
+	sprintf(*error, "Error: Cannot find node %s\n", srcnam);
+      }
+    } else {
+      *error = strdup("Error: destination node parameter missing\n");
+    }
+  } else {
+    *error = strdup("Error: source node parameter missing\n");
+  }
+  if (srcnam)
+    free(srcnam);
+  if (destnam)
+    free(destnam);
 
   return sts;
 }

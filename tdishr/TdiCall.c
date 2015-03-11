@@ -25,7 +25,7 @@
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <STATICdef.h>
 

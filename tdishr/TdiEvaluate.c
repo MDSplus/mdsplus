@@ -17,7 +17,7 @@ RULES OF THE GAME:
 #include <STATICdef.h>
 #include "tdirefstandard.h"
 #include "tdishrp.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <stdlib.h>

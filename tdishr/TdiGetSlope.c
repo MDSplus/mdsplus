@@ -13,7 +13,7 @@
 
 #include <STATICdef.h>
 #include <stdlib.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include "tdirefstandard.h"
 
 #include <mdsshr.h>

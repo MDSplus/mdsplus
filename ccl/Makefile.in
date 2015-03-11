@@ -1,6 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
-SOURCES = ccl_commands.c ccl_verbs.c
+SOURCES = ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 

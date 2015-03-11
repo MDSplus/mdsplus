@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
+#include <string.h>
 
 /***********************************************************************
 * TCL_SET_CURRENT.C --
@@ -11,44 +12,41 @@
 *
 ************************************************************************/
 
-#ifdef vms
-#define TdiExecute  TDI$EXECUTE
-#endif
 
 extern int TdiExecute();
 
 	/*****************************************************************
 	 * TclSetCurrent:
 	 *****************************************************************/
-int TclSetCurrent()
+int TclSetCurrent(void *ctx, char **error, char **output)
 {
   int sts;
-  char *experiment;
-  static int shot;
-  static DESCRIPTOR_LONG(dsc_shot, &shot);
-  static DYNAMIC_DESCRIPTOR(dsc_experiment);
-  static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+  char *experiment = 0;
+  char *shotasc = 0;
+  int shot;
 
-  cli_get_value("EXPERIMENT", &dsc_experiment);
-  experiment = dsc_experiment.dscA_pointer;
-  if (cli_present("INCREMENT") & 1) {
+  DESCRIPTOR_LONG(dsc_shot, &shot);
+
+  cli_get_value(ctx, "EXPERIMENT", &experiment);
+  if (cli_present(ctx, "INCREMENT") & 1) {
     shot = TreeGetCurrentShotId(experiment);
     shot++;
     sts = TreeSetCurrentShotId(experiment, shot);
   } else {
-    cli_get_value("SHOT", &dsc_asciiShot);
-#ifdef vms
-    dsc_asciiShot.dscB_class = CLASS_S;	/* vms: malloc vs str$  */
-    sts = TdiExecute(&dsc_asciiShot, &dsc_shot MDS_END_ARG);
-    dsc_asciiShot.dscB_class = CLASS_D;
-#else
-    sts = TdiExecute(&dsc_asciiShot, &dsc_shot MDS_END_ARG);
-#endif
-    if (sts & 1)
-      sts = TreeSetCurrentShotId(experiment, shot);
+    cli_get_value(ctx, "SHOT", &shotasc);
+    sts = tclStringToShot(shotasc,&shot, error);
+    if (shotasc)
+      free(shotasc);
+    sts = TreeSetCurrentShotId(experiment, shot);
   }
 
-  if ((sts & 1) != 1)
-    MdsMsg(sts, 0);
+  if (((sts & 1) != 1) && (*error == NULL)) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error, "Error: Unable to change current shot\n"
+	    "Error message was: %s\n",msg);
+  }
+  if (experiment)
+    free(experiment);
   return sts;
 }

@@ -1310,6 +1310,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
 			     &attributes.facility_offset[STANDARD_RECORD_FACILITY],
 			     &attributes.facility_length[STANDARD_RECORD_FACILITY]);
 	    }
+	    MdsFree1Dx(&xd,0);
 	  }
 	  if (length <= 0 || !(status & 1)) {
 	    attributes.facility_offset[STANDARD_RECORD_FACILITY] = 0;
@@ -1520,14 +1521,16 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	  char *names = malloc(longestattname * numnames);
 	  DESCRIPTOR_A(name_array, (short)longestattname, DTYPE_T, names,
 		       (unsigned int)(longestattname * numnames));
-	  struct _namelist *p;
+	  struct _namelist *p,*pnext;
 	  char *np;
-	  for (p = namelist, np = names; p; p = p->next, np += longestattname) {
+	  for (p = namelist, np = names; p; p = pnext, np += longestattname) {
 	    size_t i;
+	    pnext = p->next;
 	    memcpy(np, p->name, longestattname);
 	    for (i = 1; i < longestattname; i++)
 	      if (np[i] == '\0')
 		np[i] = ' ';
+	    free(p);
 	  }
 	  MdsCopyDxXd((struct descriptor *)&name_array, value);
 	  free(names);
@@ -2528,6 +2531,7 @@ static int CopyStandardRecord(TREE_INFO * info1, TREE_INFO * info2, int nid, int
   if (status & 1) {
     status = TreePutDsc(info2, nid, (struct descriptor *)&xd, offset, length);
   }
+  MdsFree1Dx(&xd,0);
   if (!(status & 1)) {
     *offset = -1;
     *length = 0;
@@ -2556,6 +2560,7 @@ static int CopyNamedAttributes(TREE_INFO * info1, TREE_INFO * info2, int nid, in
 	    memset(index.attribute[i].name, 0, sizeof(index.attribute[i].name));
 	    index.attribute[i].offset = -1;
 	  }
+	  MdsFree1Dx(&xd,0);
 	}
       }
     }

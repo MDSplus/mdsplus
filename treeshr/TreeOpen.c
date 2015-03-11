@@ -1211,7 +1211,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 {
   TREE_INFO *info;
-  char *tree = malloc(strlen(tree_in) + 1);
+  char *tree = strdup(tree_in);
   int shot;
   int status = TreeFAILURE;
 
@@ -1226,7 +1226,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	int fd;
 	memset(info, 0, sizeof(*info));
 	info->flush = ((*dblist)->shotid == -1);
-	info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
+	info->treenam =strdup(tree);
 	info->shot = (*dblist)->shotid;
 	fd = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0);
 	if (fd > -1) {
@@ -1294,6 +1294,8 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	  free(info);
 	  status = TreeFAILURE;
 	}
+	if (tree)
+	  free(tree);
       }
     }
   }

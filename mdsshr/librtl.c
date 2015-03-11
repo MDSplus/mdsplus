@@ -5,7 +5,7 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <mdsshr.h>
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
@@ -813,10 +813,9 @@ STATIC_ROUTINE void dlopen_unlock()
   pthread_mutex_unlock(&dlopen_mutex);
 }
 
-int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
 {
-  char *c_filename = MdsDescrToCstring(filename);
-  char *full_filename = malloc(strlen(c_filename) + 10);
+  char *full_filename = malloc(strlen(filename) + 10);
   void *handle;
   char *tmp_error1 = 0;
   char *tmp_error2 = 0;
@@ -827,18 +826,17 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   *symbol_value = NULL;
 
 #ifdef HAVE_WINDOWS_H
-  strcpy(full_filename, c_filename);
+  strcpy(full_filename, filename);
   lib_offset = 0;
 #else
-  if (strncmp(c_filename, "lib", 3)) {
+  if (strncmp(filename, "lib", 3)) {
     strcpy(full_filename, "lib");
-    strcat(full_filename, c_filename);
+    strcat(full_filename, filename);
   } else
-    strcpy(full_filename, c_filename);
+    strcpy(full_filename, filename);
 #endif
   if (strncmp
-      (c_filename + strlen(c_filename) - strlen(SHARELIB_TYPE), SHARELIB_TYPE,
-       strlen(SHARELIB_TYPE)))
+      (filename + strlen(filename) - strlen(SHARELIB_TYPE), SHARELIB_TYPE, strlen(SHARELIB_TYPE)))
     strcat(full_filename, SHARELIB_TYPE);
   dlopen_lock();
   old_fis_error = FIS_Error;
@@ -851,7 +849,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     if (tmp_error1 == NULL)
       tmp_error1 = "";
     tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1) + 1), tmp_error1);
-    handle = dlopen(c_filename, dlopen_mode);
+    handle = dlopen(filename, dlopen_mode);
     if (handle == NULL) {
       tmp_error2 = dlerror();
       if (tmp_error2 == NULL)
@@ -861,17 +859,15 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     }
   }
   if (handle != NULL) {
-    char *c_symbol = MdsDescrToCstring(symbol);
-    *symbol_value = dlsym(handle, c_symbol);
+    *symbol_value = dlsym(handle, symbol);
     if (!(*symbol_value)) {
       char *tmp = dlerror();
       if (tmp == NULL)
 	tmp = "";
       sprintf((FIS_Error =
-	       (char *)malloc(strlen(tmp) + strlen("error finding symbol , ") + strlen(c_symbol) +
-			      1)), "error finding symbol %s, %s", c_symbol, tmp);
+	       (char *)malloc(strlen(tmp) + strlen("error finding symbol , ") + strlen(symbol) +
+			      1)), "error finding symbol %s, %s", symbol, tmp);
     }
-    free(c_symbol);
   } else {
     char *tmp = dlerror();
     if (tmp == 0)
@@ -880,7 +876,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
 	     (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n") +
 			    strlen(full_filename) * 3 + strlen(tmp) + strlen(tmp_error1) +
 			    strlen(tmp_error2) + 10)),
-	    "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n", c_filename, tmp_error1,
+	    "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n", filename, tmp_error1,
 	    full_filename, tmp_error2, &full_filename[3], tmp);
   }
   if (old_fis_error != 0 && old_fis_error != FIS_Error)
@@ -890,12 +886,21 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     free(tmp_error1);
   if (tmp_error2)
     free(tmp_error2);
-  free(c_filename);
   free(full_filename);
   if (*symbol_value == NULL)
     return LibKEYNOTFOU;
   else
     return 1;
+}
+
+int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+{
+  char *c_filename = MdsDescrToCstring(filename);
+  char *c_symbol = MdsDescrToCstring(symbol);
+  int status = LibFindImageSymbol_C(c_filename, c_symbol, symbol_value);
+  free(c_filename);
+  free(c_symbol);
+  return status;
 }
 
 int StrConcat(struct descriptor *out, struct descriptor *first, ...)

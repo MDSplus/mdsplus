@@ -7,7 +7,7 @@
         Ken Klare, LANL P-4     (c)1989,1990,1991,1993,1994
 */
 
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <STATICdef.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
@@ -21,12 +21,12 @@ extern unsigned int TdiIndent;
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <string.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <mds_stdarg.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #ifdef max
 #undef max
 #endif

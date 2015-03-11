@@ -1,0 +1,1488 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<module name="tcl_commands" prompt="TCL> " def_file=".tcl">
+
+  <helpall>
+    TCL (Tree Command Language) commands:
+
+    TCL is used for MDSplus tree examination and manipulation. 
+    TCL can be used to examine the tree structure, store data to or get data
+    from nodes, examine or change node properties, or clean or compress the
+    datafile associated with a tree. These commands are listed
+    when you type:
+
+    HELP TREE COMMANDS
+
+    TCL can also be used for dispatching commands or actions to action servers
+    or to directly execute actions or methods provided by devices described in
+    the tree. For help on dispatching related commands type:
+
+    HELP DISPATCH COMMANDS
+
+    With TCL using edit commands you can create a new tree structure or modify
+    an existing one by adding, deleting or renaming nodes and adding tagnames
+    to give direct addressing of nodes in the tree. For edit commands type:
+
+    HELP EDIT COMMANDS
+
+    TCL can also issue and wait for MDSplus events. See:
+
+    HELP WFEVENT and HELP SETEVENT
+  </helpall>
+
+  <help name="EDIT COMMANDS">
+    The following commands are available for editing the structure of an MDSplus tree:
+
+    ADD NODE      - Add a node to an MDSplus tree.
+    ADD TAG       - Assign a tagname to a node in the tree.
+    DELETE NODE   - Delete a node in an MDSplus tree.
+    EDIT          - Open a tree or create a new tree for subsequent editing.
+    REMOVE TAG    - Remove a tagname.
+    RENAME        - Rename a node in a tree.
+    SET VERSIONS  - Enable data version support in a tree.
+    WRITE         - Write out a modified tree committing edit changes.
+
+    Type HELP command-name for more information on the command or
+    HELP TREE COMMANDS or HELP DISPATCH COMMANDS for info on additional
+    commands.
+  </help>
+  <help name="TREE COMMANDS">
+    The following commands are available for viewing or manipulating data and
+    attributes of nodes in a tree:
+
+    CLEAN          - Clean the datafile of a tree reclaiming unused space.
+    CLOSE          - Close one or more trees currently open by this process.
+    COMPRESS       - Compress a datafile by compressing data records.
+    CREATE PULSE   - Create a new pulse file.
+    DECOMPILE      - Decompile the data stored in a node.
+    DELETE PULSE   - Delete a pulse file.
+    DIRECTORY      - List the nodes in a tree.
+    DIRECTORY/TAG  - List the tagnames in a tree.
+    PUT            - Store data in a node.
+    SET ATTRIBUTE  - Set an extended attribute for a node.
+    SET CURRENT    - Set the current shot number fo a tree.
+    SET DEFAULT    - Change the current location in a tree.
+    SET TREE       - Open an MDSplus tree.
+    SET VIEW       - Specify a point in time for examining the tree.
+                     This command only applies to trees with versioning enabled.
+    SHOW ATTRIBUTE - Show an extended attribute for a node.
+    SHOW CURRENT   - Show the current shot for a tree.
+    SHOW DATA      - Show the data structure stored in a node.
+    SHOW DB        - Show the tree currently opened.
+    SHOW DEFAULT   - Show the current location in a tree.
+    SHOW VERSIONS  - Show whether or not versioning is enabled in the tree.
+    VERIFY         - Verify the tree structure of an MDSplus tree.
+
+    Type HELP command-name for more information on the command or
+    HELP EDIT COMMANDS or HELP DISPATCH COMMANDS for info on additional
+    commands.
+  </help>
+
+  <help name="DISPATCH COMMANDS">
+    The following commands are available for dispatching
+    or executing actions in an MDSplus tree.
+
+    ABORT SERVER     - Abort the action currently executing in an action server.
+    DISPATCH         - Dispatch an action node to an action server.
+    DISPATCH/BUILD   - Build a dispatch table in preparation for dispatch action phases.
+    DISPATCH/CHECK   - Determine if all essential actions completed successfully.
+    DISPATCH/CLOSE   - Tell all action servers used to close all tree.
+    DISPATCH/COMMAND - Dispatch a commands to an action server.
+    DISPATCH/PHASE   - Dispatch the actions associated with an experiment phase.
+    DO               - Execute an action in a tree.
+    DO/METHOD        - Execute a method provided by a device in a tree.
+    SHOW SERVER      - Show the current status of an action server.
+    STOP SERVER      - Stop an action server.
+    
+    Type HELP command-name for more information on the command or
+    HELP EDIT COMMANDS or HELP TREE COMMANDS for info on additional
+    commands.
+  </help>
+  
+  <verb name="abort">
+    <parameter name="p1" prompt="What" required="True" type="abort_type"/>
+  </verb>
+  <type name="abort_type">
+    <keyword name="SERVER" syntax="abort_server"/>"
+  </type>
+  <syntax name="abort_server">
+    <routine name="TclDispatch_abort_server"/>
+    <help name="ABORT SERVER">
+      Command: ABORT SERVER
+      Purpose: Abort the action currently being executed by an MDSplus action server.
+      Format: ABORT SERVER server-name[,server2[,server3...]]
+      Description:
+      
+      The ABORT SERVER command will abort the action currently being executed in an
+      MDSplus action server. Actions are executed in servers when dispatched using
+      the DISPATCH command.
+    </help>
+    <parameter name="p1" prompt="What" required="True" type="stop_type"/>
+    <parameter name="p2" label="server_name" prompt="Server" required="True" list="True"/>
+  </syntax>
+  
+  <verb name="add">
+    <parameter name="p1" prompt="What" required="True" type="ADD_TYPE"/>
+  </verb>
+  <type name="ADD_TYPE">
+    <keyword name="NODE" syntax="add_node"/>"
+    <keyword name="TAG" syntax="add_tag"/>"
+  </type>
+
+  <syntax name="add_node">
+    <routine name="TclAddNode"/>
+    <help name="ADD NODE">
+      Command: ADD NODE
+      Purpose: Add a new node to a tree opened for edit.
+      Format: ADD NODE node-path [/USAGE=usage]|[/MODEL=device-type]
+      Description:
+
+      The ADD NODE command is used to add a new node to an MDSplus tree which has been
+      opened using the EDIT command. The node-path parameter specified the name of the
+      new node to be added. It can be an absolute node path or a relative node path. If
+      the path name includes parent nodes, those parent nodes must already exist or the
+      command will fail. Node names must begin with an alphabetic character followed by
+      zero or more alphanumeric or underscore characters. The node name must be 12
+      characters or less in length.
+
+      The /USAGE qualifier specifies a usage type of the node. This must be one of:
+      ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
+      STRUCTURE, SUBTREE, TEXT or WINDOW. If not specified, a member node (:name) will
+      default to usage ANY and a child node (.name) will default to usage STRUCTURE.
+
+      If adding a device (i.e. data acquisition device) use the /MODEL qualifier to
+      specify the type of supported devide you are adding.
+
+      NOTE: The ADD NODE command can only be used when a tree is opened for edit.
+    </help>
+    <parameter name="p1" prompt="What" required="True" type="ADD_TYPE"/>
+    <parameter name="p2" label="NODENAME" prompt="Node" required="True"/>
+    <qualifier name="model" required="True"/>
+    <qualifier name="usage" defaulted="True" default="ANY"/>
+    <!--
+	<qualifier name="qualifiers"/>
+    -->
+  </syntax>
+
+  <syntax name="add_tag">
+    <routine name="TclAddTag"/>
+    <help name="ADD TAG">
+      Command: ADD TAG
+      Purpose: Add a tag to a node.
+      Format: ADD TAG node-path tagname
+      Description:
+
+      The ADD TAG command is used to add a tagname to a node. A tagname is
+      kind of a shortcut for referencing a node in the tree. You don't need
+      to known the full path location of the node if you reference it by its
+      tagname. For example if a node has a tagname of "ip" you could reference
+      that node by using \ip or \treename:ip. The tagname has to be unique
+      for a given tree. Tagnames can be up to 23 characters in length and must
+      consist of an alphabetic character followed by up to 22 alphanumeric or
+      underscore characters.
+
+      NOTE: The ADD TAG command can only be used when you have opened the tree
+      using the EDIT command.
+    </help>
+    <parameter name="p1" prompt="What" required="True" type="ADD_TYPE"/>
+    <parameter name="p2" label="NODE" prompt="Node" required="True"/>
+    <parameter name="p3" label="TAGNAME" prompt="Tag" required="True"/>
+  </syntax>
+
+  <verb name="clean">
+    <routine name="TclCleanDatafile"/>
+    <help name="CLEAN">
+      Command: CLEAN
+      Purpose: Clean unused space in the trees datafile.
+      Format: CLEAN treename [/SHOT=shot-number]
+      Description:
+
+      As data is written to a tree if the record is greater than 16 bytes
+      in length it is appended to the end of the tree's datafile. When the
+      data in a node is modified, unless the size of the data is exactly the
+      same length as was previously stored, the new data is appended at the
+      end of the datafile. The previous data continues to occupy it's original
+      space in the datafile and will not be reused. The CLEAN command can be
+      used to recover this wasted space. When the command is issued, the
+      datafile is recreated by reading in the current data for each node and
+      writing it to the new datafile thus discarding the orphaned data in
+      the file.
+
+      The CLEAN command is similar to the COMPRESS command except the COMPRESS
+      command will also employ data compression on the data records often
+      drastically reducing the file size if the nodes were not set to be
+      compressed on put.
+
+      Since both the CLEAN and COMPRESS command create new datafiles, it is
+      recommended that they only be used when there is unlikely to be any other
+      write activity on the tree.
+
+      Note: The shot number may be expressed as a TDI expression. For example,
+      CLEAN cmod/shot="CURRENT_SHOT(""CMOD"")-1"
+    </help>
+    <parameter name="p1" label="FILE" prompt="File" required="True"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
+    <qualifier name="override"/>
+  </verb>
+
+  <verb name="close">
+    <routine name="TclClose"/>
+    <help name="CLOSE">
+      Command: CLOSE
+      Purpose: Close the current tree or all open trees.
+      Format: CLOSE [treename [/SHOT=shot-number]]|[/ALL][/CONFIRM]
+      Description:
+
+      Using the CLOSE command without any parameters or qualifiers will close the last
+      tree opened with either a SET TREE command or an EDIT command. Since TCL will keep
+      a stack of previously opened trees you can selectively close a particular tree by
+      specifying the treename anr shot number information or to close all the tree, use
+      CLOSE/ALL. To determine which trees you currently have open you can use the SHOW DB
+      command.
+
+      Note: You must use the WRITE command on a tree opened using the EDIT command if you
+      want to save and edits you might have done to that tree before using the CLOSE
+      command to close it. If you attempt to close a tree with edit modifications you
+      will get an error unless you force the close using the /CONFIRM qualifier. If you
+      close and modified tree with the /CONFIRM qualifier the tree will be closed and any
+      edit modification will be discarded.
+
+      Note: The shot number may be expressed as a TDI expression. For example,
+      CLOSE cmod/shot="CURRENT_SHOT(""CMOD"")-1"
+    </help>
+    <parameter name="p1" label="FILE"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
+    <qualifier name="confirm"/>
+    <qualifier name="all"/>
+  </verb>
+
+  <verb name="compress">
+    <routine name="TclCompressDatafile"/>
+    <help name="COMPRESS">
+      Command: COMPRESS
+      Purpose: Compress the tree's datafile.
+      Format: COMPRESS treename [/SHOT=shot-number]
+      Description:
+
+      As data is written to a tree if the record is greater than 16 bytes
+      in length it is appended to the end of the tree's datafile. When the
+      data in a node is modified, unless the size of the data is exactly the
+      same length as was previously stored, the new data is appended at the
+      end of the datafile. The previous data continues to occupy it's original
+      space in the datafile and will not be reused. The COMPRESS command can be
+      used to recover this wasted space. When the command is issued, the
+      datafile is recreated by reading in the current data for each node and
+      writing it to the new datafile thus discarding the orphaned data in
+      the file.
+
+      The COMPRESS command is similar to the CLEAN command except the COMPRESS
+      command will also employ data compression on the data records often
+      drastically reducing the file size if the nodes were not set to be
+      compressed on put.
+
+      Since both the CLEAN and COMPRESS command create new datafiles, it is
+      recommended that they only be used when there is unlikely to be any other
+      write activity on the tree.
+
+      Note: The shot number may be expressed as a TDI expression. For example,
+      COMPRESS cmod/shot="CURRENT_SHOT(""CMOD"")-1"
+    </help>
+    <parameter name="p1" label="FILE" prompt="File" required="True"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
+    <qualifier name="override"/>
+  </verb>
+
+  <verb name="create">
+    <parameter name="p1" prompt="What" required="True" type="CREATE_TYPE"/>
+  </verb>
+
+  <type name="CREATE_TYPE">
+    <keyword name="PULSE" syntax="create_pulse"/>"
+  </type>
+
+  <syntax name="create_pulse">
+    <routine name="TclCreatePulse"/>
+    <help name="CREATE PULSE">
+      Command: CREATE PULSE
+      Purpose: Copy the currently open tree (usually the model, shot -1) into a pulse
+               file.
+      Format: CREATE PULSE shot-number [/INCLUDE=(subtree1,subtree2,...)]
+              [/EXCLUDE=(subtree1,subtree2,...)] [/CONDITIONAL] [/NOMAIN]
+
+      Description:
+
+      The CREATE PULSE command will copy the currently opened tree and all it's subtrees
+      (unless the optional qualifiers are specified) to pulses with the specified shot
+      number.
+
+      The /INCLUDE, /EXCLUDE, /CONDITIONAL and /NOMAIN qualifiers can be used to
+      customize which trees will be included in the new pulse files. Specifying the
+      /CONDITIONAL qualifier will cause the command to examine the "include in pulse"
+      characteristic (set by SET NODE command and view by the DIR/FULL command) of the
+      subtree nodes to decide if that subtree should be included. The /INCLUDE and
+      /EXCLUDE qualifiers can take a list of node paths to specify which subtree nodes
+      to include or exclude. If the /INCLUDE qualifier is specified only the subtrees
+      specified will be included. If the /EXCLUDE qualifier is specified, all but the
+      subtrees specified will be include. If the /NOMAIN qualifier is included the top
+      most tree will not be included in the new pulse files.
+
+      NOTE: The shot number may be specified as a TDI expression such as
+      "CURRENT_SHOT(""CMOD"")+1".
+    </help>
+    <parameter name="p1" prompt="What" required="True" type="CREATE_TYPE"/>
+    <parameter name="p2" label="shot" prompt="Shot number" required="True"/>
+    <qualifier name="include" required="True" list="True"/>
+    <qualifier name="exclude" required="True" list="True"/>
+    <qualifier name="conditional"/>
+    <qualifier name="nomain" nonnegatable="True"/>
+    <qualifier name="dispatch"/>
+  </syntax>
+ 
+  <verb name="DECOMPILE">
+    <routine name="TclDecompile"/>
+    <help name="DECOMPILE">
+      Command: DECOMPILE
+      Purpose: Display the contents of a node in the tree.
+      Format: DECOMPILE node-path
+
+      Description:
+
+      The DECOMPILE command will display the contents of a node in the tree. If the data
+      converted to a string exceeds approximately 30,000 characters the string representation
+      of large arrays will be truncated.
+    </help>
+    <parameter name="p1" label="PATH" required="True"/>
+    </verb>
+ 
+  <!--
+  <type name="DEFINE_TYPE">
+    <keyword name="SERVER" syntax="define_server"/>"
+  </type>
+  -->
+
+  <!--
+  <verb name="DEFINE">
+    <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
+  </verb>
+
+
+  <syntax name="define_server">
+    <routine name="TclCreatePulse_server"/>
+    <help name="DEFINE SERVER">
+      Command: DEFINE SERVER never implemented for linux/windows
+      Purpose: The DEFINE SERVER command specifies an MDSplus server to be responsible
+               for creating pulse files for particular tree(s).
+      Format: DEFINE SERVER/TREE=(treename1[,treename2...]) server-name
+
+      Description:
+
+      The DEFINE SERVER command specifies actions server which should be used for creating
+      MDSplus pulse files for particular trees. The server definitions are used by the
+      CREATE PULSE command to distribute the pulse creation to distributed servers. For
+      more information on this see HELP CREATE PULSE.
+    </help>
+    <parameter name="p1" prompt="WHAT" required="True" type="DEFINE_TYPE"/>
+    <parameter name="p2" required="True"/>
+    <qualifier name="tree" required="True" list="True"/>
+  </syntax>
+  -->
+  
+  <verb name="delete">
+    <parameter name="p1" prompt="What" required="True" type="DELETE_TYPE"/>
+  </verb>
+
+  <type name="DELETE_TYPE">
+    <keyword name="NODE" syntax="delete_node"/>"
+    <keyword name="PULSE" syntax="delete_pulse"/>"
+  </type>
+
+  <syntax name="delete_node">
+    <routine name="TclDeleteNode"/>
+    <help name="DELETE NODE">
+      Command: DELETE NODE
+      Purpose: Delete one or more nodes in a tree opened for edit.
+      Format: DELETE NODE node-path[,node-path...] /LOG /CONFIRM /DRYRUN
+
+      Description:
+
+      The DELETE NODE command is used to delete node(s) from an MDSplus tree. The tree
+      must be opened for edit using the EDIT command. If you attempt to delete a node
+      which has descendants or is part of a device (conglomerate) representation in the
+      tree then the deletion of the node will result in multiple nodes being deleted.
+      If this is your intention then you must include the /CONFIRM qualifier on the
+      command. The /LOG qualifier can be used to display the nodes being deleted.
+      The /DRYRUN command can be used to just display the nodes that would be deleted
+      without actually deleting any nodes.
+    </help>
+    <parameter name="p1" prompt="What" required="True" type="DELETE_TYPE"/>
+    <parameter name="p2" prompt="Node" label="NODENAME" required="True" list="True"/>
+    <qualifier name="log"/>
+    <qualifier name="confirm"/>
+    <qualifier name="DRYRUN"/>
+  </syntax>
+
+  <syntax name="delete_pulse">
+    <help name="DELETE PULSE">
+
+      Command: DELETE PULSE
+      Purpose: Delete an MDSplus pulse file instance of the currently opened tree.
+      Format: DELETE PULSE shot-number
+
+      Description:
+
+      The DELETE PULSE command will delete the three files making up an MDSplus tree for
+      the specified shot number.
+      
+      NOTE: If the currently opened tree includes subtrees, those subtrees will be deleted
+      for that shot number as well.
+      
+      For example:
+      
+        TCL> SET TREE cmod
+        TCL> DELETE PULSE 42
+      
+      This would delete the cmod pulse files for shot number 42 as well as any subtrees of
+      the cmod tree with shot number 42.
+      
+    </help>
+    <routine name="TclDeletePulse"/>
+    <parameter name="p1" prompt="What" required="True" type="DELETE_TYPE"/>
+    <parameter name="p2" prompt="Shot number" label="shot" required="True" type="NUMBER"/>
+    <qualifier name="all"/>
+  </syntax>
+
+  <verb name="directory">
+    <routine name="TclDirectory"/>
+    <help name="DIRECTORY">
+      Command: DIRECTORY
+      Purpose: List nodes in the tree.
+      Format: DIRECTORY [nodepath-wild1[,nodepath-wild2,...]] [/FULL]
+                        [/USAGE=(usage1[,usage2,...]) | /USAGE=usage]
+      
+      Description:
+
+      The DIRECTORY command is used to list one or more nodes in the currently opened tree.
+      You can specify one or more node paths which may include wildcard characters. If no
+      node paths are specified it defaults to listing the member and child nodes in the current
+      location of the tree (See: SET DEFAULT command).
+
+      If the /FULL qualifier is included then detailed information about each node is included.
+      Use the /USAGE qualifier if you want to list only nodes of a certain usage. Usage names
+      include ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
+      STRUCTURE, SUBTREE, TEXT or WINDOW.
+    </help>
+    <parameter name="p1" label="NODE" default="*,.*" list="True"/>
+    <qualifier name="full"/>
+    <qualifier name="path"/>
+    <qualifier name="usage" list="True" type="USAGE_TYPE"/>
+    <qualifier name="tag" syntax="dir_tag_syntax"/>
+  </verb>
+
+  <syntax name="dir_tag_syntax">
+    <routine name="TclDirectoryTag"/>
+    <help name="DIRECTORY/TAG">
+      Command: DIRECTORY/TAG
+      Purpose: List tagname definitions in the tree.
+      Format: DIRECTORY/TAG [tagname-wild] [/PATH]
+      
+      Description:
+
+      The DIRECTORY/TAG command is used to list tagnames in the current tree. A wildcard string
+      parameter can be included to list only the tags matching the wildcard string.
+
+      If the /PATH qualifier is included the full paths of the nodes pointed to by the tagname
+      will be displayed.
+
+      Example: DIRECTORY/TAG MYT*G
+    </help>
+    <parameter name="p1" label="TAG" default="*::*" list="True"/>
+    <qualifier name="path"/>
+  </syntax>
+
+  <verb name="dispatch">
+    <help name="DISPATCH">
+      Command: DISPATCH
+      Purpose: DISPATCH and action to an action server.
+      Format: DISPATCH action-node-path [/WAIT]
+      
+      Description:
+
+      The DISPATCH command is used to dispatch an action node to a
+      action server. If the /WAIT qualifier is included the command
+      will wait for the action execution to complete.
+    </help>
+    <routine name="TclDispatch"/>
+    <parameter name="p1" label="NODE"/>
+    <qualifier name="wait" defaulted="True"/>
+    <qualifier name="build" syntax="dispatch_build"/>
+    <qualifier name="check" syntax="dispatch_check"/>
+    <qualifier name="phase" syntax="dispatch_phase"/>
+    <qualifier name="close" syntax="dispatch_close"/>
+    <qualifier name="command" syntax="dispatch_command"/>
+  </verb>
+
+  <syntax name="dispatch_build">
+    <help name="DISPATCH/BUILD">
+      Command: DISPATCH/BUILD
+      Purpose: Build a dispatch table used by the DISPATCH/PHASE command.
+      Format: DISPATCH/BUILD [/MONITOR=action-server]
+      Description:
+      
+      The DISPATCH/BUILD command finds all the actions in a tree which are
+      currently turned on and builds a sorted table of actions. The actions
+      are grouped by phase and ordered by sequence numbers. Actions which are
+      configured to be dispatched based on dependency expressions are also
+      identified. The DISPATCH/PHASE command utilizes this table when deciding
+      which actions and in which order they should be dispatched to action
+      servers.
+
+      The /MONITOR qualifier is used to send messages to an action monitor
+      server which are in turn transmitted to actmon processes which display
+      the current status of data acquisition actions being performed.
+    </help>
+    <routine name="TclDispatch_build"/>
+    <qualifier name="monitor" required="True"/>
+  </syntax>
+
+  <syntax name="dispatch_check">
+    <help name="DISPATCH/CHECK">
+      Command: DISPATCH/CHECK [/RESET]
+      Purpose: Returns a failure status if the failed essential flag is set.
+               successfully.
+      Format: DISPATCH/CHECK
+      Description:
+      
+      When data acquisition phases are dispatched, a failure flag is set if
+      any action marked as essential (See the SET NODE command) fails during
+      execution. The DISPATCH/CHECK command checks on the current state of
+      that failure flag. If the flag is set the DISPATCH/CHECK command will
+      return a failure status otherwise it will return a success status.
+      
+      If the /RESET qualifier is used, the failure flag will be reset after
+      the check is made so subsequent DISPATCH/CHECK commands will return a
+      success status unless another essential action subsequently fails before
+      the next DISPATCH/CHECK command is issued.
+    </help>
+    <routine name="TclDispatch_check"/>
+    <qualifier name="reset"/>
+  </syntax>
+
+  <syntax name="dispatch_phase">
+    <help name="DISPATCH/PHASE">
+      Command: DISPATCH/PHASE
+      Purpose: Dispatch all the actions associated with a named phase.
+      Format: DISPATCH/PHASE phase-name [/NOACTION] [/SYNCH=n] [/LOG]
+              [/MONITOR=monitor-server]
+      Description:
+      
+      The DISPATCH/PHASE command is used to dispatch all actions assigned
+      to a particular phase to action servers for execution. This command
+      uses the action table created by a DISPATCH/BUILD there for a
+      DISPATCH/BUILD command must be given before using the DISPATCH/PHASE
+      command for any pulse file. Actions are dispatched in order of the
+      actions sequence number or if the sequence is an expression containing
+      other nodes, the action will be dispatched if all the actions in the
+      expression have completed and the expression evaluates to a true value.
+
+      The /SYNCH qualifier can be used to synchronize all action servers based
+      on the sequence numbers of the actions. Without the /SYNCH qualifier,
+      all actions matching the phase specified are dispatched immediately to
+      all the action servers in order of the sequence numbers. Each action
+      server maintains a queue of actions and will execute those actions one
+      after the other until all the actions in its queue have been executed.
+      If the /SYNCH command, the actions will be dispatched in groups of the
+      synch value thus synchronizing the actions across multiple servers.
+      For example, a /SYNCH=10 specification would cause the DISPATCH/PHASE
+      command to dispatch all the actions with sequence numbers 1 through 10
+      to be dispatched to their designated action servers in sequence order.
+      No other actions will be dispatched to action servers until this first
+      "batch" have all completed. Then sequence numbers 11-20 would then be
+      dispatched. This ensures that an action with sequence number 15 would
+      on one server would not be executed before one with sequence number 10
+      on another server. This is often critical during the initialization
+      phase where certain types of modules such as triggering devices must
+      be initialized before data acquisition devices that they trigger are
+      armed.
+
+      The /LOG qualifier will output log messages of actions being dispatched,
+      started and completed. The /NOACTION can be used with the /LOG qualifier
+      to log what would be dispatched but no actions would actually be
+      dispatched.
+
+      The /MONITOR qualifier is used to specify an action monitor action
+      server which is used to relay action activity to actmon processes
+      which display the status of action execution.
+    </help>
+    <routine name="TclDispatch_phase"/>
+    <parameter name="p1" label="PHASE_NAME" prompt="Phase" required="True"/>
+    <qualifier name="phase"/>
+    <qualifier name="noaction"/>
+    <qualifier name="synch" defaulted="True" nonnegatable="True" default="1" type="NUMBER"/>
+    <qualifier name="log" defaulted="True"/>
+    <qualifier name="monitor" required="True"/>
+  </syntax>
+
+  <syntax name="dispatch_close">
+    <routine name="TclDispatch_close"/>
+    <help name="DISPATCH/CLOSE">
+      Command: DISPATCH/CLOSE
+      Purpose: Instruct MDSplus actions server(s) to close all open trees.
+      Format: DISPATCH/CLOSE[/SERVER=(server1,server2...)]
+      
+      Description:
+
+      The DISPATCH/CLOSE can be used to instruct an MDSplus action server to close all MDSplus
+      trees the server currently has open. If the /SERVER qualifier is not included to specify
+      any action servers then the current dispatch table (See: DISPATCH/BUILD and
+      DISPATCH/PHASE commands) is inspected to construct a list of servers that had actions
+      dispatched to them to send close instructions to. The DISPATCH/CLOSE command is typically
+      used at the end of a data acquisition cycle to instruct the action server to close
+      any open trees.
+    </help>
+    <qualifier name="close"/>
+    <qualifier name="server" required="True" list="True"/>
+  </syntax>
+  
+  <syntax name="dispatch_command">
+    <routine name="TclDispatch_command"/>
+    <help name="DISPATCH/COMMAND">
+      Command: DISPATCH/COMMAND
+      Purpose: Dispatch an mdsdcl command to a server for execution by the server process.
+      Format: DISPATCH/COMMAND/SERVER=servername[/WAIT][/TABLE=command-table] command-to-execute
+      
+      Description:
+
+      The DISPATCH/COMMAND command is used to send an mdsdcl command to an MDSplus action server
+      for execution by that server. The command will be executed asynchronously unless the /WAIT
+      qualifier is included in the command. The /TABLE qualifier can be used to specify a
+      command table to use. If the /TABLE qualifier is omitted then the command will be assumed
+      to be a TCL or MDSDCL command.
+    </help>
+    <qualifier name="command"/>
+    <qualifier name="server" required="True"/>
+    <qualifier name="wait"/>
+    <qualifier name="table" defaulted="True" nonnegatable="True" default="TCL"/>
+    <parameter name="p1" type="rest_of_line"/>
+  </syntax>
+
+  <verb name="do">
+    <help name="DO">
+      Command: DO
+      Purpose: Execute an action node in the tree.
+      Format: DO action-node-path
+      Description:
+      
+      The DO command is used to execute an action node in a tree in the
+      context of the current process. This can be useful for debugging
+      actions but care must be taken that you are attempting to execute
+      the action on a host which can actually execute the action. The
+      action may need to access data acquisition hardware which might only
+      be accessible by the host specified in the action so attempting to
+      execute the action on another node would likely generate errors.
+    </help>
+    <routine name="TclDoNode"/>
+    <parameter name="p1" label="NODE" prompt="Node" required="True"/>
+    <qualifier name="method" syntax="do_method"/>
+  </verb>
+
+  <syntax name="do_method">
+    <help name="DO/METHOD">
+      Command: DO/METHOD
+      Purpose: Execute a method of a device represented in the tree.
+      Format: DO/METHOD device-node-path method [/IF=expression] [/OVERRIDE]
+      Description:
+      
+      The DO/METHOD command is used to perform a method supported for the
+      device type of the device collection of nodes in a tree. When using
+      the DO/METHOD command you can specify any node in that device to
+      identify the device. Like to DO command, you must be careful that
+      the device you are trying to operate is accessible on the host where
+      you are executing the command as the method is executed in your
+      current process context.
+
+      The /OVERRIDE qualifier is use to override the current on/off status
+      of the device in the tree. If the device nodes are turned off and the
+      /OVERRIDE qualifier is not present, then no action will be performed.
+
+      The /IF qualifier can be used to provide an expression. The method will
+      then only be executed if the evaluation of the expression generates
+      an integer value with the lowest significant bit set.
+    </help>
+    <routine name="TclDoMethod"/>
+    <parameter name="p1" label="object" prompt="Object" required="True"/>
+    <parameter name="p2" label="method" prompt="Method" required="True"/>
+    <qualifier name="argument" required="True" list="True"/>
+    <qualifier name="if" required="True"/>
+    <qualifier name="override"/>
+  </syntax>
+  
+  <verb name="edit">
+    <routine name="TclEdit"/>
+    <help name="EDIT">
+      Command: EDIT
+      Purpose: Create a new MDSplus tree or open an existing tree to add nodes or tags.
+      Format: EDIT treename [/SHOT=shot-number] [/NEW]
+      Description:
+
+      The EDIT command is used to edit or create an MDSplus tree file. Before you can edit or
+      create a tree file you must have treename_path environment variable set to define the
+      location of the tree files (i.e. mytree_path=/home/me/mytreedir).
+
+      The /SHOT qualifier is used to specify a shot number to edit or create. If the /SHOT qualifier
+      is not specified, the EDIT command will default to shot number -1, the "model" tree.
+
+      If the /NEW qualifier is specified then a new empty tree will be created overriding any
+      existing tree if one exists.
+
+      Note: Once you are done editing a tree you must use the WRITE command to save any
+      structural changes you might have made to the tree.
+    </help>
+    <parameter name="p1" label="FILE" prompt="File" required="True"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
+    <qualifier name="new"/>
+  </verb>
+
+  <!--
+  <verb name="link">
+    <routine name="TclLink"/>
+    <parameter name="p1" label="SOURCE" prompt="Source experiment" required="True"/>
+    <parameter name="p2" label="DESTINATION" prompt="Destination experiment" required="True"/>
+  </verb>
+
+  <verb name="mark">
+    <routine name="TreeMarkIncludes"/>
+  </verb>
+  -->
+  
+  <verb name="put">
+    <help name="PUT">
+      Command: PUT
+      Purpose: Store data into a node in the tree.
+      Format: PUT node-path (expression  | [/EXTENDED] [/LF] [/EOF=xxx])
+      Description:
+      
+      The PUT command is used to store data into a node in an MDSplus tree.
+      The expression parameter is compiled into a tdi expression and stored
+      into the node. If the /EXTENDED qualifier is specified, the expression
+      string will be read from subsequent input lines until either an EOF
+      string is read or a zero length line is read. If the /LF qualifier
+      is used with the /EXTENDED qualifier, the line feeds at the end of
+      each line will be included in the expression. The /LF qualifier is
+      generally only useful if the expression is a quoted string containing
+      line feeds. The /EOF qualifier can be used to specify an EOF string
+      which would terminate the expression input. If the expression has
+      zero length the node will be emptied of its data.
+
+      Examples:
+
+      TCL> PUT mynode 42    ! Store a integer 42 in a node
+      TCL> PUT mynode ""    ! Empty a node
+      TCL> PUT mynode ""this is a string"" ! Store a text string
+      TCL> PUT/EXTEND mynode ! Store an integer
+      PUT> 42
+      PUT>
+      TCL> PUT/EXTEND mynode  ! Store an integer with units
+      PUT> build_with_units(42,"volts")
+      PUT>
+      TCL> PUT/EXTEND/LF mynode
+      PUT> "This is a test
+      PUT> with line feeds in the text"
+      
+    </help>
+    <routine name="TclPutExpression"/>
+    <parameter name="p1" label="NODE" prompt="Node" required="True"/>
+    <parameter name="p2" label="VALUE" prompt="Value" required="True"/>
+    <qualifier name="EXTENDED" syntax="put_extended"/>
+  </verb>
+  <syntax name="put_extended">
+    <routine name="TclPutExpression"/>
+    <parameter name="p1" label="NODE" prompt="Node" required="True"/>
+    <qualifier name="EXTENDED" defaulted="True"/>
+    <qualifier name="SYMBOLS"/>
+    <qualifier name="LF" defaulted="True"/>
+    <qualifier name="EOF" required="True"/>
+  </syntax>
+
+  <verb name="remove">
+    <parameter name="p1" prompt="What" required="True" type="REMOVE_TYPE"/>
+  </verb>
+  <type name="REMOVE_TYPE">
+    <keyword name="TAG" syntax="remove_tag"/>"
+  </type>
+
+  <syntax name="remove_tag">
+    <help name="REMOVE TAG">
+      Command: REMOVE TAG
+      Purpose: Remove a tagname from a node.
+      Format: REMOVE TAG tagname
+      
+      Description:
+
+      The REMOVE TAG command is used to remove a tagname from a node.
+      The tree must be opened by the EDIT command to be able to remove
+      a tagname from a node. The changes must be preserved by issuing a
+      WRITE command before closing the tree with the CLOSE command.
+    </help>
+    <routine name="TclRemoveTag"/>
+    <parameter name="p1" prompt="What" required="True" type="REMOVE_TYPE"/>
+    <parameter name="p2" label="TAGNAME" prompt="Tag" required="True"/>
+  </syntax>
+
+  <verb name="RENAME">
+    <help name="RENAME">
+       Command: RENAME
+      Purpose: Rename a node in a tree.
+      Format: RENAME old-node-path new-node-path [/LOG]
+      
+      Description:
+
+      The RENAME command can be used to rename a node in an MDSplus tree.
+      Before the RENAME command can be used the tree must be opened with
+      the EDIT command. If the new-node-path specified contains parent
+      nodes those parent nodes must already exist or the rename will fail.
+      The changes must be preserved by issuing a WRITE command before
+      closing the tree with the CLOSE command.
+
+      The /LOG qualifier can be used to display log messages indicating
+      the rename operation.
+    </help>
+   <routine name="TclRename"/>
+    <parameter name="p1" label="SOURCE" required="True"/>
+    <parameter name="p2" label="DEST" required="True"/>
+    <qualifier name="LOG"/>
+  </verb>
+
+  <!--
+  <verb name="rundown">
+    <parameter name="p1" prompt="What" required="True" type="RUNDOWN_TYPE"/>
+  </verb>
+
+  <type name="RUNDOWN_TYPE">
+    <keyword name="TREE" syntax="rundown_tree"/>"
+  </type>
+
+  <syntax name="rundown_tree">
+    <routine name="TclRundownTree"/>
+    <parameter name="p1" prompt="What" required="True" type="RUNDOWN_TYPE"/>
+    <parameter name="p2" label="FILE" prompt="File" required="True"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1"/>
+    <qualifier name="force_exit"/>
+    <qualifier name="subtrees"/>
+    </syntax>
+    -->
+
+  <verb name="set">
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+  </verb>
+
+  <type name="SET_TYPE">
+    <keyword name="ATTRIBUTE" syntax="set_attribute"/>"
+    <keyword name="CURRENT" syntax="set_current"/>"
+    <keyword name="DEFAULT" syntax="set_default"/>"
+    <keyword name="NODE" syntax="set_node"/>"
+    <keyword name="SERVER" syntax="set_server"/>"
+    <keyword name="TREE" syntax="set_tree"/>"
+    <keyword name="VIEW" syntax="set_view"/>"
+    <keyword name="VERSIONS" syntax="set_versions"/>"
+  </type>
+
+  <syntax name="set_attribute">
+    <help name="SET ATTRIBUTE">
+      Command: SET ATTRIBUTE
+      Purpose: Add a named attribute to a node.
+      Format: SET ATTRIBUTE node-path/NAME=attribute-name (value | /EXTENDED)
+      
+      Description:
+
+      The SET ATTRIBUTE command will add an attribute to a node as named with
+      the /NAME qualifier. The value argument is used to specify the value of
+      the named attribute and is compiled as a TDI expression. The /EXTENDED
+      qualifier can be specified to enable you to supply the expression content
+      in following lines ended by a blank line. This provides an easy way to
+      add quoted strings that would otherwise require special handling in the
+      main command line.
+
+      Examples:
+
+      TCL> SET ATTRIBUTE mynode/NAME=special 42
+      TCL> SET ATTRIBUTE mynode/NAME=myattr/EXTENDED
+      build_with_units(42,"volts")
+
+      TCL> SHOW ATTRIBUTE mynode/NAME=special
+      42
+      TCL> SHOW ATTRIBUTE mynode/name=myattr
+      BUILD_WITH_UNITS(42,"volts")
+
+      TCL> SHOW ATTRIBUTE mynode
+      Defined attributes for this node:
+      myattr
+      special
+    </help>
+    <routine name="TclSetAttribute"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="NODE" prompt="Node" required="True"/>
+    <parameter name="p3" label="VALUE" prompt="Value" required="True"/>
+    <qualifier name="NAME" nonnegatable="True" required="True"/>
+    <qualifier name="EXTENDED" syntax="set_attribute_extended"/>
+  </syntax>
+
+  <syntax name="set_attribute_extended">
+    <routine name="TclSetAttribute"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="NODE" prompt="Node" required="True"/>
+    <qualifier name="EXTENDED" defaulted="True"/>
+    <qualifier name="SYMBOLS"/>
+    <qualifier name="LF" defaulted="True"/>
+    <qualifier name="EOF" required="True"/>
+    <qualifier name="NAME" nonnegatable="True" required="True"/>
+  </syntax>
+
+  <syntax name="set_current">
+    <help name="SET CURRENT">
+      Command: SET CURRENT
+      Purpose: Set the current shot for a tree.
+      Format: SET CURRENT treename (shot-number-expression | /INCREMENT)
+      
+      Description:
+
+      The SET CURRENT command is used to designate a "current" shot for a given
+      tree. When opening a tree the user can specify the reserved shot number 0 to
+      designate opening the "current" shot for that tree. Typically during experiment
+      shot cycles the "current" shot for the main tree is incremented so that
+      applications can reference shot 0 and always be looking at the latest/"current"
+      shot. The shot number can either be expression by a shot number expression, the
+      simplest being just an integer value, or you can use the /INCREMENT qualifier
+      to make the current shot the previous current shot number plus one.
+
+      Examples:
+
+        TCL> SET CURRENT CMOD 1000
+        TCL> SET CURRENT CMOD "current_shot('cmod')+2"
+        TCL> SHOW CURRENT CMOD
+        Current shot is 1002
+
+      Note: The shot number is a signed 32-bit integer so the largest
+      value for a shot number is 2147483647. Also except for the model,
+      shot number -1 and the "current" shot, shot number 0, all shot
+      numbers must be between 1 and 2147483647.
+
+    </help>
+    <routine name="TclSetCurrent"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="experiment" prompt="Experiment" required="True"/>
+    <parameter name="p3" label="shot"/>
+    <qualifier name="increment"/>
+  </syntax>
+
+  <syntax name="set_view">
+    <help name="SET VIEW">
+      Command: SET VIEW
+      Purpose: Set a instance at time for browsing data in a tree.
+      Format: SET VIEW date-time-specifier
+      
+      Description:
+
+      The SET VIEW command is used to set the time context for examining
+      the contents of a MDSplus tree. If data versioning is enabled on
+      a tree then a history of data entries for each node is kept each
+      being timestamped. When you specify a "view" date and time the commands
+      such as DIRECTORY, DECOMPILE and SHOW DATA will present a description
+      of the data the same as if you issued those commands at that particular
+      time.
+
+      The date-time-specifier must be in the format:
+         dd-mon-yyyy hh:mm:ss where:
+	    dd    - the day of the month, integer such as 29.
+	    mon   - the first three characters of the month (english) such as JAN.
+	    yyyy  - the year, integer such as 2015.
+	    hh    - the hour of the day, integer 0-23.
+	    mm    - the minute, integer 0-59.
+	    ss    - the seconds, integer 0-59
+	 or special keyword "NOW" meaning the current time.
+    </help>
+    <routine name="TclSetView"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="DATE" prompt="Date" required="True"/>
+  </syntax>
+
+  <syntax name="set_default">
+    <help name="SET DEFAULT">
+      Command: SET DEFAULT
+      Purpose: Set your current location in an open tree.
+      Format: SET DEFAULT node-path
+      
+      Description:
+
+      The SET DEFAULT is similar to a cd command in a file system.
+      The default location in the tree hierarchy affects things like
+      the DIRECTORY command as well as all commands that take a node-path
+      as an argument. Node paths specified as relative path strings are
+      resolved by finding the node relative to the current default location
+      in the tree.
+    </help>
+    <routine name="TclSetDefault"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="NODE" prompt="Node" required="True"/>
+  </syntax>
+
+  <syntax name="set_node">
+    <help name="SET NODE">
+      Command: SET NODE
+      Purpose: Modify node characteristics in an MDSplus tree.
+      Format: SET NODE node-path-wild /option[/option...]
+      Description:
+
+      The SET NODE command is used to change the characteristics of one
+      or more nodes in an MDSplus tree. The 'option' in the Format above
+      is one of the following:
+
+      ON                    - turn node "on"
+      OFF                   - turn node "off"
+      [NO]SUBTREE           - make node a subtree reference (or not)
+                              available only during EDIT
+      [NO]WRITE_ONCE        - make node write once (or not)
+      [NO]COMPRESS_ON_PUT   - turn on or off automatic compression
+      [NO]COMPRESS_SEGMENTS - turn on or off automatice segment compression
+      [NO]DO_NOT_COMPRESS   - turn off any data compression on the node
+      [NO]SHOT_WRITE        - enable writing to this node in a pulse file
+      [NO]MODEL_WRITE       - enable writing to this node in shot -1
+      [NO]INCLUDED          - include this subtree in 'conditional' create pulse
+      [NO]ESSENTIAL         - make this node 'essential' for DISPATCH/CHECK
+      LOG                   - log node changes
+      STATUS=n              - Write a status value to a node (usually action nodes).
+
+      All nodes in an MDSplus tree have a set of attributes, some are set automatically
+      when data is stored, some are set when the nodes are first added to a tree and
+      some are modifiable by this command. The options indicated with a '[NO]' prefix
+      indicates that the option can be negated. For example, using the command
+      SET NODE gub/WRITE_ONCE will set a flag in the nodes characteristics that
+      indicates that data can only be written once after which the data cannot be
+      overwritten. Using the command SET NODE gub/NOWRITE_ONCE clears that "write once"
+      flag thus enabling the node to be overwritten with new data.
+
+    </help>
+    <routine name="TclSetNode"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="NODENAME" prompt="Node" required="True"/>
+    <qualifier name="SUBTREE"/>
+    <qualifier name="ON"/>
+    <qualifier name="OFF"/>
+    <qualifier name="WRITE_ONCE"/>
+    <qualifier name="CACHED"/>
+    <qualifier name="COMPRESS_ON_PUT"/>
+    <qualifier name="COMPRESS_SEGMENTS"/>
+    <qualifier name="DO_NOT_COMPRESS"/>
+    <qualifier name="SHOT_WRITE"/>
+    <qualifier name="MODEL_WRITE"/>
+    <qualifier name="INCLUDED"/>
+    <qualifier name="LOG"/>
+    <qualifier name="ESSENTIAL"/>
+    <qualifier name="STATUS" required="True"/>
+  </syntax>
+
+  <syntax name="set_server">
+    <help name="SET SERVER">
+      Command: SET SERVER
+      Purpose: Change the logging mode for an action server.
+      Format: SET SERVER/LOG=(LOG | STATISTICS | NONE)
+      Description:
+
+      Action servers by default will write log messages to stdout when
+      they are dispatched and action, when they begin an action and
+      when the complete an action. This is the type of logging produced
+      by using /LOG=LOG. The /LOG=STATISTICS produces more detailed
+      logs indicating the CPU and memory resources used during the
+      execution of an action. The /LOG=NONE disables standard logging
+      of action execution.
+    </help>
+    <routine name="TclDispatch_set_server"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="server" prompt="Server" required="True"/>
+    <qualifier name="log" nonnegatable="True" default="ACTIONS" type="logging_type"/>
+  </syntax>
+
+  <type name="logging_type">
+    <keyword name="NONE" default="0" type="NUMBER"/>
+    <keyword name="ACTIONS" defaulted="True" default="1" type="NUMBER"/>
+    <keyword name="STATISTICS" default="2" type="NUMBER"/>
+  </type>
+
+  <syntax name="set_tree">
+    <help name="SET TREE">
+      Command: SET TREE
+      Purpose: Open an MDSplus tree.
+      Format: SET TREE tree-name[,subtree1[,subtree2,]] [/SHOT=shot-number] [/READONLY]
+      Description:
+
+      The SET TREE command is used to open an MDSplus tree. If subtree names are
+      included in the tree-name parameter then only those trees will be opened if they
+      are available. The /SHOT qualifier can be used to specify a particular shot
+      number to open. The shot number can be a TDI expression. If omitted, the
+      "model" tree or shot -1 is opened. If the /READONLY qualifier is included then
+      the tree is opened in a readonly mode and no changes can be made to the nodes
+      or their data.
+    </help>
+    <routine name="TclSetTree"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="FILE" prompt="File" required="True"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1"/>
+    <qualifier name="readonly"/>
+  </syntax>
+
+  <syntax name="set_versions">
+    <help name="SET VERSIONS">
+      Command: SET VERSIONS
+      Purpose: Enable or disable data versioning in a tree.
+      Format: SET VERSIONS [/[NO]MODEL] [/[NO]SHOT]
+      Description:
+
+      The SET VERSIONS command is used to enable or disable data versioning in an
+      MDSplus tree. When versioning is enabled, new data records stored to a node
+      do not overwrite the existing data but instead are added to a list of data
+      records for that node. Each new data record is timestamped and you can use
+      the SET VIEW command to designate a particular reference time so that your
+      view would be equivalent to having examined the tree at that particular
+      date and time. You can enable versioning for either the model or pulse files
+      or both.
+
+      NOTE: Data versioning is not supported for segmented data records.
+    </help>
+    <routine name="TclSetVersions"/>
+    <qualifier name="MODEL"/>
+    <qualifier name="SHOT"/>
+  </syntax>
+
+  <verb name="SETEVENT">
+    <help name="SETEVENT">
+      Command: SETEVENT
+      Purpose: Issue an MDSplus event.
+      Format: SETEVENT eventname
+      Description:
+
+      The SETEVENT command can be used to issue an MDSplus event. MDSplus events
+      are named happenings that other processes can wait for by name. See the
+      WFEVENT command. The TCL command does not currently support sending a data
+      message with the event.
+
+    </help>
+    <routine name="TclSetEvent"/>
+    <parameter name="p1" label="EVENT" prompt="Event" required="True"/>
+  </verb>
+
+  <verb name="show">
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+  </verb>
+
+  <type name="show_TYPE">
+    <keyword name="ATTRIBUTE" syntax="show_attribute"/>"
+    <keyword name="CURRENT" syntax="show_current"/>"
+    <keyword name="DATA" syntax="show_data"/>"
+    <keyword name="DB" syntax="show_db"/>"
+    <keyword name="DEFAULT" syntax="show_default"/>"
+    <keyword name="SERVER" syntax="show_server"/>"
+    <keyword name="VERSION" syntax="show_version"/>"
+    <keyword name="VERSIONS" syntax="show_versions"/>"
+  </type>
+
+  <syntax name="show_attribute">
+    <help name="SHOW ATTRIBUTE">
+      Command: SHOW ATTRIBUTE
+      Purpose: Show the contents of a nodes "named" attribute.
+      Format: SHOW ATTRIBUTE/NAME=attribute-name
+      Description:
+
+      The SHOW ATTRIBUTE command is used to display the contents of a node's
+      named attribute.
+
+      TCL> SET ATTRIBUTE mynode/NAME=special 42
+      TCL> SET ATTRIBUTE mynode/NAME=myattr/EXTENDED
+      build_with_units(42,"volts")
+
+      TCL> SHOW ATTRIBUTE mynode/NAME=special
+      42
+      TCL> SHOW ATTRIBUTE mynode/name=myattr
+      BUILD_WITH_UNITS(42,"volts")
+
+      TCL> SHOW ATTRIBUTE mynode
+      Defined attributes for this node:
+      myattr
+      special
+
+    </help>
+    <routine name="TclShowAttribute"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="node" prompt="Node" required="True"/>
+    <qualifier name="name" nonnegatable="True" required="True"/>
+  </syntax>
+
+  <syntax name="show_current">
+    <help name="SHOW CURRENT">
+      Command: SHOW CURRENT
+      Purpose: Show the current shot for a given tree.
+      Format: SHOW CURRENT treename
+      Description:
+
+      The SHOW CURRENT command is useful to display the current shot for
+      a particular tree. See HELP SET CURRENT for more information on the
+      meaning of "current" shot.
+    </help>
+    <routine name="TclShowCurrent"/>
+    <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
+    <parameter name="p2" label="experiment" prompt="Experiment" required="True"/>
+  </syntax>
+
+  <syntax name="show_data">
+    <help name="SHOW DATA">
+      Command: SHOW DATA
+      Purpose: Display the data contents of a node in an mdsplus tree.
+      Format: SHOW DATA node-path[,node-path,...]
+      Description:
+
+      The SHOW DATA command will display the data stored in a node in a tree.
+      Unlike the DECOMPILE command, the SHOW DATA shows the data structure
+      stored in the node as well as following node references recursively
+      if an expression store in a node references other nodes in the tree.
+
+    </help>
+    <routine name="TclShowData"/>
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+    <parameter name="p2" label="NODE" prompt="Node" required="True" list="True"/>
+  </syntax>
+
+  <syntax name="show_db">
+     <help name="SHOW DB">
+      Command: SHOW DB
+      Purpose: Display the current tree and default node opened in the current
+               process.
+      Format: SHOW DB
+      Description:
+
+      The SHOW DB can be used to display what the current tree context is. It
+      displays the tree and shot, open mode and the current default node in the
+      tree.
+
+      Example:
+
+      TCL> SHOW DB
+      000  MAIN                              shot: -1 [\MAIN::TOP]
+
+     </help>
+   <routine name="TclShowDB"/>
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+  </syntax>
+
+  <syntax name="show_default">
+     <help name="SHOW DEFAULT">
+      Command: SHOW DEFAULT
+      Purpose: Display the current default node.
+      Format: SHOW DEFAULT
+      Description:
+
+      The SHOW DEFAULT can be used to display what the current default node
+      location in the opened tree.
+
+      Example:
+
+      TCL> SHOW DEFAULT
+      \MAIN::TOP
+
+     </help>
+    <routine name="TclShowDefault"/>
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+  </syntax>
+
+  <syntax name="show_server">
+    <help name="SHOW SERVER">
+      Command: SHOW SERVER
+      Purpose: Display the current status of one or more action servers.
+      Format: SHOW SERVER server-spec[,server-spec] [/NOOUTPUT]
+      Description:
+
+      The SHOW SERVER command can be used to query action servers to see what,
+      if anything, they are currently working on. The /NOOUTPUT command can
+      be useful to just detect if there is a problem accessing an action server.
+      
+      Wildcard characters can be used in the server name but only if the following
+      conditions are met:
+      1) all the servers are logging their output to a single log directory.
+      2) the server logs are named the same as the string you would use to
+         communicate with that server (i.e. myhost-name:8100).
+      3) there is an environment variable called "MDSIP_SERVER_LOGDIR" defined
+         pointing to that directory.
+      4) Your process has access to that directory.
+
+      When wildcards are used in the server name the log directory is searched for
+      logfiles matching the wildcard specification and then the log file name is used
+      for the server specication when connecting to that server.
+      Example:
+
+      TCL> show server localhost:9000
+      Checking server: localhost:9000
+      Tue Feb 10 15:51:27 2015, fc21-vm:9000, logging disabled, Inactive
+
+    </help>
+   <routine name="TclDispatch_show_server"/>
+    <parameter name="p1" prompt="What" required="True" type="stop_type"/>
+    <parameter name="p2" label="server_name" prompt="Server" required="True" list="True"/>
+    <qualifier name="output" defaulted="True"/>
+    <qualifier name="full"/>
+  </syntax>
+
+  <syntax name="show_version">
+    <helpmissing />
+    <routine name="TclShowVersion"/>
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+  </syntax>
+
+  <syntax name="show_versions">
+    <help name="SHOW VERSIONS">
+      Command: SHOW VERSIONS
+      Purpose: Show whether or not data versioning is enabled for the current tree.
+      Format: SHOW VERSIONS
+
+      Description:
+
+      The SHOW VERSIONS command is used to display the current data versioning
+      settings for the current tree.
+
+      Example:
+
+      TCL> SET TREE main
+      TCL> SHOW VERSIONS
+        Versions are disabled in the model file and disabled in the shot file.
+    </help>
+    <routine name="TclShowVersions"/>
+    <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
+  </syntax>
+
+  <!--
+  <verb name="start">
+    <parameter name="p1" prompt="What" required="True" type="start_TYPE"/>
+  </verb>
+
+  <syntax name="start_server">
+    <routine name="TclDispatch_start_server"/>
+    <parameter name="p1" prompt="What" required="True" type="start_type"/>
+    <parameter name="p2" label="server" prompt="Server" required="True" list="True"/>
+  </syntax>
+
+  <type name="start_TYPE">
+    <keyword name="SERVER" syntax="start_server"/>"
+    </type>
+    -->
+
+  <verb name="stop">
+    <parameter name="p1" prompt="What" required="True" type="stop_type"/>
+  </verb>
+
+  <type name="stop_type">
+    <keyword name="SERVER" syntax="stop_server"/>"
+  </type>
+
+  <syntax name="stop_server">
+    <help name="STOP SERVER">
+
+      Command: STOP SERVER
+      Purpose: Stop/restart one or more MDSplus action servers.
+      Format: STOP SERVER server-spec[,server-spec]
+      Description:
+
+      The STOP SERVER command can be used to stop one or more action servers.
+      Normally MDSplus action servers are configured to restart automatically so
+      this command effectively will restart an action server. It is not uncommon
+      to restart action servers at some interval such as once per day to recover
+      fragmented virtual memory within the action server process. Other reasons
+      for stopping an action server might be to reset I/O channels to data acquisition
+      devices which might become non-responsive or device support code may introduce
+      memory leaks which may require the process to be restarted to release virtual
+      memory.
+      
+      Unlike the SHOW SERVER command, Wildcard characters cannot be used in the
+      server-spec string.
+ 
+    </help>
+    <routine name="TclDispatch_stop_server"/>
+    <parameter name="p1" prompt="What" required="True" type="stop_type"/>
+    <parameter name="p2" label="servnam" prompt="Server" required="True" list="True"/>
+  </syntax>
+
+  <verb name="verify">
+    <help name="VERIFY">
+
+      Command: VERIFY
+      Purpose: Examine a tree structure to ensure it is valid and intact.
+      Format: VERIFY
+      Description:
+
+      The VERIFY command can be used to check the integrety of the currently opened
+      tree to ensure that the tree structure representation is valid and complete.
+      The VERIFY command is a useful diagnostic tool if file system or disk corruption
+      problems have been detected on the storage device where the tree files are
+      stored. If damage to the tree (file name such as mytree_nnn.tree) is discovered,
+      it is usually safe to copy the tree file from an adjacent shot since the tree
+      file contains only the tree structure and not the data or characteristics of
+      the nodes in the tree.
+
+      The VERIFY command will display a count of the nodes in the tree. If there are
+      subtree nodes included in the tree those nodes will be listed as "other" in the
+      node counts.
+
+      Example:
+
+      TCL> SET TREE mytree
+      TCL> VERIFY
+      Node summary:
+        Allocated = 7/14
+        Free      = 7/14
+        Other     = 0/14
+      
+    </help>
+    <routine name="TclVerifyTree"/>
+  </verb>
+
+  <verb name="WFEVENT">
+    <help name="WFEVENT">
+
+      Command: WFEVENT
+      Purpose: Wait for an MDSplus event to be issued.
+      Format: WFEVENT event-name /TIMEOUT=seconds
+      Description:
+
+      The WFEVENT command can be used to wait for an MDSplus event to be issued. MDSplus events
+      are named occurrences that can be issued by other processes on the same or different host
+      computers. The WFEVENT command will not complete until the MDSplus event is generated.
+      The /TIMEOUT qualifier can be specified to cause the wait to time out if no event is generated
+      within the specified number of seconds.
+    </help>
+    <routine name="TclWfevent"/>
+    <parameter name="p1" label="event" prompt="Event" required="True"/>
+    <qualifier name="TIMEOUT" required="True"/>
+  </verb>
+
+  <verb name="write">
+    <help name="WRITE">
+      Command: WRITE
+      Purpose: Write out a tree structure preserving changes made via
+               editing commands.
+      Format: WRITE [treename] [/SHOT=shot-number]
+      
+      Description:
+
+      The WRITE command is used to write out a new tree to preserve any
+      changes using editing commands such as those listed in:
+      HELP EDIT COMMANDS.
+
+      If the treename parameter or /SHOT qualifier is omitted the tree
+      and shot specified with the EDIT command is assumed. If a tree
+      is modified by edit commands and a WRITE command is not issued,
+      those changes will be discarded.
+    </help>
+    <routine name="TclWrite"/>
+    <parameter name="p1" label="FILE"/>
+    <qualifier name="shotid" defaulted="True" nonnegatable="True" default="-1" type="number"/>
+  </verb>
+
+  <verb name="ls" type="rest_of_line">
+    <routine name="TclLs"/>
+  </verb>
+  
+</module>

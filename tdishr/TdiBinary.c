@@ -42,7 +42,7 @@
        Management.
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <STATICdef.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";

@@ -40,7 +40,7 @@
 #include <ncidef.h>
 #include <string.h>
 #include <time.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <strroutines.h>
 #include <libroutines.h>
 #include <fcntl.h>
@@ -92,7 +92,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  unsigned int old_record_length;
+  unsigned int old_record_length = 0;
   static int saved_uic = 0;
   int length = 0;
   int shot_open;

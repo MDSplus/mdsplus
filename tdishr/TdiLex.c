@@ -102,7 +102,7 @@ extern "C" {
 #include "tdilexdef.h"
 #include "tdireffunction.h"
 #include <strroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <treeshr.h>
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifdef WIN32

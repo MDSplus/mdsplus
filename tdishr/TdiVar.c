@@ -47,11 +47,11 @@
 
 #define LibVM_EXTEND_AREA 32
 #define LibVM_TAIL_LARGE 128
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 
 STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
