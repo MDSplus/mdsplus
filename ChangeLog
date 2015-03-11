@@ -1,4 +1,22 @@
-commit 9fbbbb8aa963a2af755d34e79e9748c9884b28d4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 9ff36953f24edf1d34e89ee5d02b284db294d2b7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 16:40:39 2015 -0400
+
+    Use bash
+
+commit 05312fa8a51dfe9348fa1372488a32fb18f667c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 16:28:40 2015 -0400
+
+    Add Debian support
+
+commit 3f3e7ec53e4737d0f5d87fce23a9659ea0fa46df (tag: refs/tags/alpha_release-7-0-5)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 15:03:28 2015 -0400
+
+    New ChangeLog
+
+commit 9fbbbb8aa963a2af755d34e79e9748c9884b28d4
 Merge: cbf9c30 dd7cab5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 11 14:51:17 2015 -0400
