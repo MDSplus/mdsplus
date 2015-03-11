@@ -1,4 +1,16 @@
-commit 6381d6961f0e9dfd3bde26b63b9f4cf49c1cd45e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit d76f1ea537f14d6bdeb12c6b56df27673f36c161 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 10:21:38 2015 -0400
+
+    Add more dll's and the xml files to the windows install kit
+
+commit e8c4c5a183881487c5af2a38f2f1c498bb35b538 (tag: refs/tags/alpha_release-7-0-1)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 12:39:26 2015 +0000
+
+    New ChangeLog
+
+commit 6381d6961f0e9dfd3bde26b63b9f4cf49c1cd45e
 Merge: eca35e5 0ff8f3a
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Mar 11 11:30:41 2015 +0100
