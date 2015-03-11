@@ -1,4 +1,22 @@
-commit 6ed20635cfcf498968d3548ce4a26ac6c1d3bb0e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6c67bd30e4d792a6ded2d844d47818a49fe8b5b5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 12:36:38 2015 -0400
+
+    More Windows fixes for new mdsdcl
+
+commit 2eff32139f5157a65924dbe17dfc2e327a0b51c1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 12:24:14 2015 -0400
+
+    Add command handler entry points to def files for windows
+
+commit 6fb0a7b614fb2e42234156aab19f6e38cc277b1d (tag: refs/tags/alpha_release-7-0-3)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 15:34:32 2015 +0000
+
+    New ChangeLog
+
+commit 6ed20635cfcf498968d3548ce4a26ac6c1d3bb0e
 Merge: 796c404 a4fefb7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 11 11:20:19 2015 -0400
