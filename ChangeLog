@@ -1,4 +1,23 @@
-commit d76f1ea537f14d6bdeb12c6b56df27673f36c161 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6ed20635cfcf498968d3548ce4a26ac6c1d3bb0e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 796c404 a4fefb7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 11:20:19 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 796c40416e96cf87a20fcfc64f07458068406045
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 11:20:03 2015 -0400
+
+    Fix typo in Windows kit configuration
+
+commit a4fefb76e81d7fe214674c8ad39b88136f6beb8a (tag: refs/tags/alpha_release-7-0-2)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 15:18:54 2015 +0000
+
+    New ChangeLog
+
+commit d76f1ea537f14d6bdeb12c6b56df27673f36c161
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 11 10:21:38 2015 -0400
 
