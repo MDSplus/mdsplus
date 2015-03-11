@@ -1316,7 +1316,7 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
     this.STARTING_ZOOM = 1;
     this.ZOOMING = 2;
     this.NOT_ZOOMING = 3;
-    this.DEFAULT_NUM_SAMPLES = Math.round(2000/(numCols*numRows));
+    this.DEFAULT_NUM_SAMPLES = Math.round(1500/numCols);
     this.CONTIUNUOUS_UPDATE_WHOLE_WAVE = 1;
     this.CONTIUNUOUS_UPDATE_END_OF_WAVE = 2;
     this.zoomState = this.NOT_ZOOMING;
@@ -1586,7 +1586,7 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
     this.plot = plot;
 
     function setPanel(signals, labels, limits, continuousUpdateCase, isFirstUpdate)
-    {    
+    {
         if(this.g != undefined)
             this.svg.removeChild(this.g);
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
@@ -1740,7 +1740,7 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
         svg.appendChild(this.borderRect);
         this.svg.parentNode.setAttribute("width", width);
         this.svg.parentNode.setAttribute("height", height);
-        this.clippath.setAttribute("d","M 0 0 0 " + height + " " + width + " " + height + " " + width + " 0");
+        this.clippath.getElementsByTagName("path")[0].setAttribute("d","M 0 0 0 " + height + " " + width + " " + height + " " + width + " 0");
         this.svg.removeChild(this.g);
         this.zoomRect = undefined;
         if(this.crosshairVertLine != undefined)
@@ -1761,7 +1761,6 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
         this.wave = new Wave(this.signals, this.colors, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels, this.xIsDateTime);
         this.plot();
-        this.update();
     }
     this.resize = resize;
     
