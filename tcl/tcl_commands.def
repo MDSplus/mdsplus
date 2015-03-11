@@ -12,7 +12,7 @@ TclClose
 TclCompressDatafile
 TclCreatePulse
 TclDecompile
-TclCreatePulse_server
+;TclCreatePulse_server
 TclDeleteNode
 TclDeletePulse
 TclDirectory
