@@ -1,4 +1,23 @@
-commit 873ff75b028f1679c4682f89dbd89c23ad918c7e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f2384a2a23b2ea5e4746ff0bab925b37fbe37013 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 4d72605 6de2e85
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 14:59:49 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 4d72605dfcc51231434711ce4940eafef7b6e81d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 14:59:36 2015 -0400
+
+    remove double equals in setup.py since dash on ubuntu won't parse it
+
+commit 6de2e856c3b2322b56f2365c3c7c907429cb13ff (tag: refs/tags/alpha_release-7-0-7)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 12 13:54:07 2015 +0000
+
+    New ChangeLog
+
+commit 873ff75b028f1679c4682f89dbd89c23ad918c7e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 12 09:37:47 2015 -0400
 
