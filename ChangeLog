@@ -1,4 +1,29 @@
-commit 9ff36953f24edf1d34e89ee5d02b284db294d2b7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 873ff75b028f1679c4682f89dbd89c23ad918c7e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 09:37:47 2015 -0400
+
+    Clean up packaging information
+
+commit aa8408e08def64bd273c9ed3e7a2022aaa9ed4ff
+Merge: 02d70c4 3cb1e33
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 12 09:54:35 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 02d70c45f675d43998b2ba1910741c929230fa12
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 12 09:54:26 2015 +0100
+
+    Added WebScope support for absolute times
+
+commit 3cb1e3358f299044c61324efa3422ee9c778de5e (tag: refs/tags/alpha_release-7-0-6)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 21:44:08 2015 +0000
+
+    New ChangeLog
+
+commit 9ff36953f24edf1d34e89ee5d02b284db294d2b7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 11 16:40:39 2015 -0400
 
