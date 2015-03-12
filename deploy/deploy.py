@@ -216,10 +216,14 @@ if __name__ == "__main__":
     module=__import__('rpms',globals())
   elif os.environ['DIST'].startswith('Ubuntu'):
     module=__import__('ubuntu',globals())
+  elif os.environ['DIST'].startswith('Debian'):
+    module=__import__('ubuntu',globals())    
   elif os.environ['DIST'].startswith('solaris'):
     module=__import__('solaris',globals())
   elif os.environ['DIST'].startswith('win'):
     module=__import__('windows',globals())
+  else:
+    raise Exception("No support for DIST=%s" % (os.environ['DIST']))
   InstallationPackage=module.InstallationPackage(info)
   if len(sys.argv)==5:
     if not InstallationPackage.exists():

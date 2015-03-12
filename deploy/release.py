@@ -14,7 +14,8 @@ def flushPrint(text):
   sys.stdout.flush()
 
 def doInGitDir(cmd,stdout=None):
-  return subprocess.Popen(cmd,stdout=stdout,shell=True,cwd="/mdsplus/git/mdsplus")
+  return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
+                          cwd="/mdsplus/git/mdsplus")
 
 def getLatestRelease(flavor):
   """Get latest releases for specified branch"""
@@ -92,7 +93,7 @@ then
   git config --global user.email "MDSplusBuilder@psfc.mit.edu"
   git config --global user.name "MDSplusBuilder"
   git commit -m "New ChangeLog" ChangeLog
-  git push
+  git push origin HEAD
   git tag %(tag)s
   git push origin %(tag)s
 fi
