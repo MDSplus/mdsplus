@@ -28,6 +28,8 @@ RequestExecutionLevel admin
 !define GFORTRAN_LIB libgfortran-3.dll
 !define QUADMATH_LIB libquadmath-0.dll
 !define LIBXML2_LIB libxml2-2.dll
+!define ICONV_LIB iconv.dll
+!define ZLIB1_LIB zlib1.dll
 LicenseData "MDSplus-License.rtf"
 Page license
 Page directory
@@ -91,7 +93,7 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data serve
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
 
-File /r /x local  tdi
+File /r /x local  tdi xml
 FileOpen $0 "$INSTDIR\installer.dat" w
 StrCpy $5 "$SYSDIR"
 ${If} ${RunningX64}
@@ -107,6 +109,8 @@ File ${MINGWLIB64}/${GCC_S_SEH_LIB}
 File ${MINGWLIB64}/${GFORTRAN_LIB}
 File ${MINGWLIB64}/${QUADMATH_LIB}
 File ${MINGWLIB64}/${LIBXML2_LIB}
+File ${MINGWLIB64}/${ICONV_LIB}
+File ${MINGWLIB64}/${ZLIB1_LIB}
 ${DisableX64FSRedirection}
 FindFirst $1 $2 "$INSTDIR\bin_x86_64\*"
 loop_64:
@@ -133,6 +137,8 @@ File ${MINGWLIB32}/${GCC_STDCPP_LIB}
 File ${MINGWLIB32}/${GFORTRAN_LIB}
 File ${MINGWLIB32}/${QUADMATH_LIB}
 File ${MINGWLIB32}/${LIBXML2_LIB}
+File ${MINGWLIB32}/${ICONV_LIB}
+File ${MINGWLIB32}/${ZLIB1_LIB}
 FindFirst $1 $2 "$INSTDIR\bin_x86\*"
 loop_32:
   StrCmp $2 "" done_32
@@ -301,6 +307,7 @@ delete MDSplus-License.rtf
 delete mdsplus.ico
 delete uninstall.exe
 RMDir /r "$INSTDIR\tdi"
+RMDIR /r "$INSTDIR\xml"
 RMDir /r "$INSTDIR\include"
 RMDir /r "$INSTDIR\devtools"
 RMDir /r "$INSTDIR\trees"

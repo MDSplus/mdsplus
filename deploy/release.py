@@ -14,7 +14,8 @@ def flushPrint(text):
   sys.stdout.flush()
 
 def doInGitDir(cmd,stdout=None):
-  return subprocess.Popen(cmd,stdout=stdout,shell=True,cwd="/mdsplus/git/mdsplus")
+  return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
+                          cwd="/mdsplus/git/mdsplus")
 
 def getLatestRelease(flavor):
   """Get latest releases for specified branch"""

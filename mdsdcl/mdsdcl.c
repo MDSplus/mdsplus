@@ -36,7 +36,7 @@ static void flushError(char *error) {
 void handle_signals(int signo) {
 }
 
-main(int argc, char const *argv[])
+int main(int argc, char const *argv[])
 {
   char *history_file = 0;
   char *command = 0;

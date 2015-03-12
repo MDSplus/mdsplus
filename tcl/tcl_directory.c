@@ -109,7 +109,7 @@ int TclDirectory(void *ctx, char **error, char **output)
 	char usage = tclUsageToNumber(usageStr, error);
 	if (usage == -1) {
 	  free(usageStr);
-	  return;
+	  return 0;
 	} else {
 	  usageMask = usageMask | (1 << usage);
 	  free(usageStr);
