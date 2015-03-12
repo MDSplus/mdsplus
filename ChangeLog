@@ -1,4 +1,16 @@
-commit 3156f5e85ea627601c2323969f347a9ecd6012a7 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 91882d6601bb6ab89e0cabbd9ae4f6c92196aea6 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 09:37:02 2015 -0400
+
+    Add debian support and clean up packaging information
+
+commit e534c419aa00c8321cccef23a98e0bb9af516799 (tag: refs/tags/stable_release-6-1-78)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 10 09:19:13 2015 -0400
+
+    New ChangeLog
+
+commit 3156f5e85ea627601c2323969f347a9ecd6012a7
 Merge: 1b93686 03681bf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 10 08:50:00 2015 -0400
