@@ -6,6 +6,7 @@
 #include <string.h>
 #include <tdishr_messages.h>
 #include <dlfcn.h>
+#include <signal.h>
 
 static PyObject *(*DynPyTuple_New) () = 0;
 #define PyTuple_New (*DynPyTuple_New)
@@ -291,6 +292,10 @@ int TdiExtPython(struct descriptor *modname_d,
      as the module in that module passing the arguments and get the answer back from python. */
   int status = TdiUNKNOWN_VAR;
   char *filename;
+  int stat;
+  struct sigaction offact = {SIG_DFL, NULL, 0, 0, NULL};
+  struct sigaction oldact;
+  stat=sigaction(SIGCHLD, &offact, &oldact);
   char *dirspec = findModule(modname_d, &filename);
   if (dirspec) {
     if (Initialize()) {
@@ -321,5 +326,6 @@ int TdiExtPython(struct descriptor *modname_d,
       Py_EndInterpreter(tstate);
     }
   }
+  stat=sigaction(SIGCHLD, &oldact, NULL);
   return status;
 }
