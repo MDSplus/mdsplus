@@ -78,14 +78,14 @@ fi
   </package>
 
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
+    <include file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
+    <include file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
+    <include file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
     <include file="/usr/local/mdsplus/lib/libMit*"/>
     <include file="/usr/local/mdsplus/lib/libMIT*"/>
     <include file="/usr/local/mdsplus/lib/libdc1394_support*"/>
     <include file="/usr/local/mdsplus/lib/libdc1394_support*.so"/>
-    <include file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
-    <include file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
     <include file="/usr/local/mdsplus/lib/acq_root_filesystem*"/>
-    <include file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
     <include file="/usr/local/mdsplus/uid/A*"/>
     <include file="/usr/local/mdsplus/uid/B*"/>
     <include file="/usr/local/mdsplus/uid/C*"/>
@@ -187,14 +187,13 @@ fi
   </package>
 
   <package name="motif_bin" arch="bin" summary="Libraries, UIDS and binary applications required for Motif APS" description="Libraries, UIDS and binary applications required for Motif APS">
-    <include file="/usr/local/mdsplus/bin/dwscopePrint"/>
-    <include file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
     <include file="/usr/local/mdsplus/bin/dw*"/>
     <include file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <include file="/usr/local/mdsplus/bin/actmon"/>
     <include file="/usr/local/mdsplus/bin/actions"/>
     <include file="/usr/local/mdsplus/bin/traverser"/>
     <include file="/usr/local/mdsplus/lib/libXmds*"/>
+    <include file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
     <include dir="/usr/local/mdsplus/uid"/>
     <exclude file="/usr/local/mdsplus/uid/A*"/>
     <exclude file="/usr/local/mdsplus/uid/B*"/>
@@ -299,6 +298,8 @@ fi
     <include file="/usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg"/>
     <include file="/usr/local/mdsplus/pixmaps/Tcl.png"/>
     <include file="/usr/local/mdsplus/pixmaps/Tdi.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
+    <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
@@ -306,8 +307,6 @@ fi
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
     <exclude dir="/usr/local/mdsplus/tdi/roam"/>
     <exclude dir="/usr/local/mdsplus/tdi/hdf5"/>
-    <include file="/usr/local/mdsplus/pixmaps/dwscope.png"/>
-    <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
     <postinst>
 
 if [ -d /etc/profile.d ]
@@ -382,44 +381,43 @@ fi
 
   <package name="kernel_bin" arch="bin" summary="MDSplus core binaries" description="MDSplus core binaries">
     <include dir="/usr/local/mdsplus/bin"/>
-    <include dir="/usr/local/mdsplus/lib"/>
+    <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
     <exclude file="/usr/local/mdsplus/bin/dw*"/>
     <exclude file="/usr/local/mdsplus/bin/act*"/>
     <exclude file="/usr/local/mdsplus/bin/traverser*"/>
-    <exclude file="/usr/local/mdsplus/lib/libXmds*"/>
     <exclude file="/usr/local/mdsplus/bin/jScope"/>
     <exclude file="/usr/local/mdsplus/bin/jServer"/>
     <exclude file="/usr/local/mdsplus/bin/jTraverser"/>
-    <exclude file="/usr/local/mdsplus/lib/libJava*"/>
-    <exclude file="/usr/local/mdsplus/lib/*LV*"/>
     <exclude file="/usr/local/mdsplus/bin/mdsccl"/>
     <exclude file="/usr/local/mdsplus/bin/mdscts"/>
+    <exclude file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
+    <exclude file="/usr/local/mdsplus/bin/hdf5*"/>
+    <exclude file="/usr/local/mdsplus/bin/*HDF5"/>
+    <exclude file="/usr/local/mdsplus/bin/jDispatch*"/>
+    <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
+    <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
+    <exclude file="/usr/local/mdsplus/bin/roam_check_access"/>
+    <exclude file="/usr/local/mdsplus/bin/mdsipsd"/>
+    <exclude file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
+    <include dir="/usr/local/mdsplus/lib"/>
+    <exclude file="/usr/local/mdsplus/lib/libXmds*"/>
+    <exclude file="/usr/local/mdsplus/lib/libJava*"/>
+    <exclude file="/usr/local/mdsplus/lib/*LV*"/>
     <exclude file="/usr/local/mdsplus/lib/libCam*"/>
     <exclude file="/usr/local/mdsplus/lib/libcts*"/>
     <exclude file="/usr/local/mdsplus/lib/libccl*"/>
     <exclude file="/usr/local/mdsplus/lib/libRemCam*"/>
-    <exclude_staticlibs/>
     <exclude file="/usr/local/mdsplus/lib/lib*Idl*"/>
     <exclude file="/usr/local/mdsplus/lib/lib*Sql*"/>
     <exclude file="/usr/local/mdsplus/lib/libMit*"/>
     <exclude file="/usr/local/mdsplus/lib/libMIT*"/>
     <exclude file="/usr/local/mdsplus/lib/libdc1394_support*"/>
-    <exclude file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>
     <exclude file="/usr/local/mdsplus/lib/libRoam*"/>
     <exclude file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
-    <exclude file="/usr/local/mdsplus/bin/roam_check_access"/>
-    <exclude file="/usr/local/mdsplus/bin/mdsipsd"/>
     <exclude file="/usr/local/mdsplus/lib/libhdf5*"/>
-    <exclude file="/usr/local/mdsplus/bin/hdf5*"/>
-    <exclude file="/usr/local/mdsplus/bin/*HDF5"/>
-    <exclude file="/usr/local/mdsplus/bin/ScopePrinters"/>
-    <exclude file="/usr/local/mdsplus/bin/jDispatch*"/>
-    <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
-    <exclude file="/usr/local/mdsplus/bin/dtaq_update_board.sh"/>
     <exclude file="/usr/local/mdsplus/lib/acq_root_filesystem*"/>
-    <exclude file="/usr/local/mdsplus/bin/dwscopePrint"/>
-    <exclude file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
     <exclude file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
+    <exclude_staticlibs/>
     <postinst>
 
 if [ -d /etc/ld.so.conf.d ]
