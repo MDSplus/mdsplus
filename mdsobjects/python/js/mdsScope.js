@@ -776,14 +776,14 @@ function Signal(x, y, color, mode, expr, shot)
     {
         if(otherSignal.size == 0)
             return;
-        this.newX = eval('new ' + this.x.constructor.name + '(' + (this.size + otherSignal.size) + ')');
-        this.newX.set(this.x);
-        this.newX.set(otherSignal.x, this.size);
-        this.x = this.newX;
-        this.newY = eval('new ' + this.y.constructor.name + '(' + (this.size + otherSignal.size) + ')');
-        this.newY.set(this.y);
-        this.newY.set(otherSignal.y, this.size);
-        this.y = this.newY;
+        var newX = eval('new ' + this.x.constructor.name + '(' + (this.size + otherSignal.size) + ')');
+        newX.set(this.x);
+        newX.set(otherSignal.x, this.size);
+        this.x = newX;
+        var newY = eval('new ' + this.y.constructor.name + '(' + (this.size + otherSignal.size) + ')');
+        newY.set(this.y);
+        newY.set(otherSignal.y, this.size);
+        this.y = newY;
         this.size = this.x.length;
     }
     this.append = append;
@@ -1385,20 +1385,31 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
             else
                 maxRequestedX = Number.MAX_VALUE;
         }
+        if(this.xIsDateTime)
+        {
+            minRequestedX = Math.floor(minRequestedX) + 'QU';
+            maxRequestedX = Math.ceil(maxRequestedX) + 'QU';
+        }
+        else
+        {
+            // minRequestedX and maxRequestedX must contain a decimal point, otherwise the request fails
+            if(minRequestedX.toString().indexOf('.') == -1 && minRequestedX.toString().indexOf('e') == -1)
+                minRequestedX = minRequestedX + '.';
+            if(maxRequestedX.toString().indexOf('.') == -1 && maxRequestedX.toString().indexOf('e') == -1)
+                maxRequestedX = maxRequestedX + '.';
+        }
         if(numSamples == undefined)
             numSamples = this.DEFAULT_NUM_SAMPLES;
-    // minRequestedX and maxRequestedX must contain a decimal point, otherwise the request fails
-        if(minRequestedX.toString().indexOf('.') == -1 && minRequestedX.toString().indexOf('e') == -1)
-            minRequestedX = minRequestedX + '.';      
-        if(maxRequestedX.toString().indexOf('.') == -1 && maxRequestedX.toString().indexOf('e') == -1)
-            maxRequestedX = maxRequestedX + '.';
         var req = new XMLHttpRequest();
         var getStr = 'scope?panel=yes';
         if(continuousUpdateCase == undefined)
         {
+            var updateFunction = 'MdsMisc->GetXYWave:DSC';
+            if(this.xIsDateTime)
+                updateFunction = 'MdsMisc->GetXYWaveLongTimes:DSC';
             for(var i = 0; i < this.signalExprs.length; i++)
             {
-                getStr = getStr + '&y' + (i+1) + '=' + 'MdsMisc->GetXYWave:DSC('
+                getStr = getStr + '&y' + (i+1) + '=' + updateFunction + '('
                                 + '\'' + replaceAll(replaceAll(this.signalExprs[i], '\\', '\\\\'), '\'', '\\\'') + '\','
                                 + encodeURIComponent(minRequestedX) + ',' + encodeURIComponent(maxRequestedX) + ',' + numSamples + ')';
             }
@@ -1681,11 +1692,12 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
         {
             var wavePanel = this;
             setInterval(function(){
+                var endOfWaveThreshold = wavePanel.xMax - (wavePanel.metrics.xmax - wavePanel.metrics.xmin)/20;
                 if(!wavePanel.updating && !wavePanel.isZooming() && !wavePanel.panning)
                 {
                     if((wavePanel.metrics.xmax - wavePanel.metrics.xmin) == (wavePanel.xMax - wavePanel.xMin))  // Not zoomed in
                         wavePanel.update(undefined, undefined, wavePanel.DEFAULT_NUM_SAMPLES, wavePanel.CONTIUNUOUS_UPDATE_WHOLE_WAVE);
-                    else if(wavePanel.metrics.xmax >= wavePanel.xMax)  // Zoomed in at the end of the wave
+                    else if(wavePanel.metrics.xmax >= endOfWaveThreshold)  // Zoomed in at the end of the wave
                         wavePanel.update(undefined, undefined, wavePanel.DEFAULT_NUM_SAMPLES, wavePanel.CONTIUNUOUS_UPDATE_END_OF_WAVE);
                 }
             }, 1000);
@@ -2229,6 +2241,8 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
     {
         this.svg.removeChild(this.g);
         this.zoomRect = undefined;
+        if(this.zoomCache.length > 0)
+            this.zoomCache = new Array();
         if(this.crosshairVertLine != undefined)
         {
             this.svg.removeChild(this.crosshairVertLine);
@@ -2904,8 +2918,14 @@ function resizeScope()
 
 function eventUpdate(event,response,panel)
 {
+    panel.originalSignals = undefined;
+    panel.metrics = undefined;
+    panel.xMin = undefined;
+    panel.xMax = undefined;
+    panel.yMin = undefined;
+    panel.yMax = undefined;
+    panel.xIsDateTime = false;
     panel.update();
-    panel.plot();
 }
 
 function updateTitle(expression)
@@ -3050,6 +3070,13 @@ function updateGlobalShots()
     for(var panelIdx = 0; panelIdx < wavePanels.length; panelIdx++)
     {
         wavePanels[panelIdx].shots = shots;
+        wavePanels[panelIdx].originalSignals = undefined;
+        wavePanels[panelIdx].metrics = undefined;
+        wavePanels[panelIdx].xMin = undefined;
+        wavePanels[panelIdx].xMax = undefined;
+        wavePanels[panelIdx].yMin = undefined;
+        wavePanels[panelIdx].yMax = undefined;
+        wavePanels[panelIdx].xIsDateTime = false;
         wavePanels[panelIdx].update();
     }
 }

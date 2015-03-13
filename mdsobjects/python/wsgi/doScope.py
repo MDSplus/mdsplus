@@ -313,6 +313,7 @@ def doScope(self):
     return ans
 from MDSplus import makeData,Data,Tree,Float64Array
 from numpy import finfo,integer
+from math import floor
 """Reponds to scope queries of the format:
 
 scopePanel?title=title&xlabel=xlabel&ylabel=ylabel&xmin=xmin&xmax=xmax&ymin=ymin&ymax=ymax&default_node=default_node&tree=tree&shot=shotlist&continuous_update=continuous_update&displayed_width=displayed_width&y1=expr&x1=expr&curr_max_x1=curr_max_x1&y2=expr&x2=expr&curr_max_x2=curr_max_x2...
@@ -336,7 +337,7 @@ def doScopepanel(self):
             except Exception:
                 response_headers.append((name + '_error:',str(sys.exc_info())))
 
-    def manageContinuousUpdate(self,x,y):
+    def manageContinuousUpdate(self,x):
           if x.getShape().size == 1:
               new_max_x=x.data()[-1]
           else:
@@ -347,11 +348,16 @@ def doScopepanel(self):
           num_samples=int((new_max_x-curr_max_x)*default_num_samples/displayed_width)
           if new_max_x > curr_max_x and num_samples > 1:
               if issubclass(x.dtype.type, integer):
-                  epsilon=0.5
+                  min_req_x=floor(curr_max_x+1)
               else:
-                  epsilon=finfo(new_max_x).eps
+                  min_req_x=curr_max_x+finfo(new_max_x).eps
+              update_function='MdsMisc->GetXYWave:DSC'
               infinity=sys.float_info.max
-              sig=Data.execute('MdsMisc->GetXYWave:DSC(\''+ expr.replace('\\','\\\\').replace('\'', '\\\'') + '\','+ str(curr_max_x+epsilon) + ',' + str(infinity) + ','+str(num_samples)+')')
+              if x.__class__.__name__ == 'Uint64Array' or x.__class__.__name__ == 'Int64Array':
+                  update_function='MdsMisc->GetXYWaveLongTimes:DSC'
+                  min_req_x=str(int(min_req_x))+'QU'
+                  infinity=str((1<<63)-1)+'QU'
+              sig=Data.execute(update_function+'(\''+expr.replace('\\','\\\\').replace('\'', '\\\'')+'\','+str(min_req_x)+','+str(infinity)+','+str(num_samples)+')')
               return makeData(sig.dim_of().data()),makeData(sig.data())
           else:
               return Float64Array([]),Float64Array([])
@@ -402,8 +408,6 @@ def doScopepanel(self):
                     sig=Data.execute(expr)
                     if not continuous_update:
                         y=makeData(sig.data())
-                    else:
-                        y=None
                 except Exception:
                     response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
@@ -413,7 +417,7 @@ def doScopepanel(self):
                         x=Data.execute(expr)
                         x=makeData(x.data())
                         if continuous_update:
-                            x,y=manageContinuousUpdate(self,x,y)
+                            x,y=manageContinuousUpdate(self,x)
                     except Exception:
                         response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                         continue
@@ -421,7 +425,7 @@ def doScopepanel(self):
                     try:
                         x=makeData(sig.dim_of().data())
                         if continuous_update:
-                            x,y=manageContinuousUpdate(self,x,y)
+                            x,y=manageContinuousUpdate(self,x)
                     except Exception:
                         response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s:, error: %s' % (expr,sys.exc_info())))
                         continue
@@ -447,8 +451,6 @@ def doScopepanel(self):
                 sig=Data.execute(expr)
                 if not continuous_update:
                     y=makeData(sig.data())
-                else:
-                    y=None
             except Exception:
                 response_headers.append(('ERROR' + sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                 continue
@@ -458,7 +460,7 @@ def doScopepanel(self):
                     x=Data.execute(expr)
                     x=makeData(x.data())
                     if continuous_update:
-                        x,y=manageContinuousUpdate(self,x,y)
+                        x,y=manageContinuousUpdate(self,x)
                 except Exception:
                     response_headers.append(('ERROR'+sig_idx_s,'Error evaluating expression: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
@@ -466,7 +468,7 @@ def doScopepanel(self):
                 try:
                     x=makeData(sig.dim_of().data())
                     if continuous_update:
-                        x,y=manageContinuousUpdate(self,x,y)
+                        x,y=manageContinuousUpdate(self,x)
                 except Exception:
                     response_headers.append(('ERROR'+sig_idx_s,'Error getting x axis of %s: "%s", error: %s' % (expr,sys.exc_info())))
                     continue
