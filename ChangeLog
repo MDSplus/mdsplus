@@ -1,4 +1,16 @@
-commit 0b084e5dccea776b7e282c8aa8cd34a1bcf49c53 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit aa6fd882c54e20afe7b432f007b85778e7d0c2ba (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 13 13:04:13 2015 -0700
+
+    Disable SIGCHLD handler when executing python code
+
+commit 3665bc86d02314c526339fa190527ce0f55d267d (tag: refs/tags/alpha_release-7-0-9)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 13 08:54:13 2015 -0400
+
+    New ChangeLog
+
+commit 0b084e5dccea776b7e282c8aa8cd34a1bcf49c53
 Merge: 54409af e861e82
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Mar 13 08:24:18 2015 +0100
