@@ -51,7 +51,7 @@ try:
                   name+'.tests',
                   name+'.widgets',
                   name+'.wsgi'],
-      package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html']},
+      package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
       include_package_data = True,
       platforms = ('Any',),
       classifiers = [ 'Development Status :: 4 - Beta',
