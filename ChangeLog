@@ -1,4 +1,22 @@
-commit aa6fd882c54e20afe7b432f007b85778e7d0c2ba (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 413e34e95c97aa24b8feb94cbcc4cd8aebf1223d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Mar 15 13:22:51 2015 -0400
+
+    Only handled the SIGCHLD on linux
+
+commit 2a1ec5e05254dcc95876ebcf2ab03d6e7078698a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Mar 15 13:16:56 2015 -0400
+
+    Include colortable for wsgi
+
+commit 32f7c111eef078ee7a1791670c4d34c02e1c624a (tag: refs/tags/alpha_release-7-0-10)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 13 20:26:24 2015 +0000
+
+    New ChangeLog
+
+commit aa6fd882c54e20afe7b432f007b85778e7d0c2ba
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 13 13:04:13 2015 -0700
 
