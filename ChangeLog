@@ -1,4 +1,16 @@
-commit 413e34e95c97aa24b8feb94cbcc4cd8aebf1223d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2122e4720b16ed7feb95bd5897814b74614a19a8 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 16 16:18:37 2015 +0100
+
+    Handle signals without timebase
+
+commit 7ef0b144436d6709a758fc4d06718bae89548cf6 (tag: refs/tags/alpha_release-7-0-11)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Mar 15 22:16:26 2015 +0000
+
+    New ChangeLog
+
+commit 413e34e95c97aa24b8feb94cbcc4cd8aebf1223d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Mar 15 13:22:51 2015 -0400
 
