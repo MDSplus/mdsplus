@@ -73,7 +73,6 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
     if(nSamples < 10 * reqPoints)
     {
 //Does not perform any compression 
-printf("NO COMPRESSION nSamples: %d, reqPoints: %d\n", nSamples, reqPoints);
 	*retResolution = 1E12;
 	*retPoints = nSamples;
 	return;
@@ -98,7 +97,7 @@ printf("NO COMPRESSION nSamples: %d, reqPoints: %d\n", nSamples, reqPoints);
     {
     	*retResolution = reqPoints/(toDouble(&x[endIdx * xSize], xType) - toDouble(&x[startIdx * xSize], xType));
 	
-	printf("Resolution: %f, points: %d, interval: %f\n", *retResolution, reqPoints, (toDouble(&x[endIdx * xSize], xType) - toDouble(&x[startIdx * xSize], xType)));
+//	printf("Resolution: %f, points: %d, interval: %f\n", *retResolution, reqPoints, (toDouble(&x[endIdx * xSize], xType) - toDouble(&x[startIdx * xSize], xType)));
     }
     currSamples = startIdx;
     while(currSamples < endIdx)
@@ -127,7 +126,6 @@ printf("NO COMPRESSION nSamples: %d, reqPoints: %d\n", nSamples, reqPoints);
 	}
     }
     *retPoints = outIdx;
-printf("COMPRESSION nSamples: %d, reqPoints: %d deltaSamples: %d retPoints: %d retResolution: %f\n", nSamples, reqPoints, deltaSamples, outIdx, *retResolution);
 }
 
 
@@ -223,7 +221,6 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
     struct descriptor_signal *sDsc;
     struct descriptor_param *pDsc;
     if(!dsc) return NULL;
-printf("CLASS %d\n", dsc->class);
     switch (dsc->class) {
 	case CLASS_S:
 	    if(dsc->dtype == DTYPE_NID)
@@ -268,7 +265,6 @@ printf("CLASS %d\n", dsc->class);
 	    if(!((struct descriptor_xd *)dsc)->pointer) return NULL;
 	    return recGetUnits(((struct descriptor_xd *)dsc)->pointer, isX);
 	case CLASS_R:
-printf("CLASS R DTYPE %d\n", dsc->dtype);
 	    if(dsc->dtype == DTYPE_WITH_UNITS)
 	    {
 		units = NULL;
@@ -290,7 +286,12 @@ printf("CLASS R DTYPE %d\n", dsc->dtype);
 	    {
 		sDsc = (struct descriptor_signal *)dsc;
 		if(isX)
-		    return recGetUnits(sDsc->dimensions[0], isX);
+		{
+		    if(sDsc->ndesc > 2)
+		    	return recGetUnits(sDsc->dimensions[0], isX);
+		    else
+			return NULL;
+		}
 		else
 		{
 		    if(sDsc->data)
@@ -483,7 +484,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
-printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
 
 
 //Set limits if any
@@ -501,11 +502,8 @@ printf("GetXYSignal(%s, %s, %f, %f, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSam
     if(status & 1)
     {
 //Get title and yLabel, if any
-printf("PRENDO TITOLO\n");
     	title = recGetHelp(xd.pointer);
-printf("PRENDO UNITS\n");
 	yLabel = recGetUnits(xd.pointer, 0);
-printf("PRESO UNITS\n");
 //get Data
 	status = TdiData(&xd, &yXd MDS_END_ARG);
     }
@@ -518,21 +516,15 @@ printf("PRESO UNITS\n");
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
     } 
-
-printf("Y Compilato\n");	
 //Get X
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
-printf("1\n");
-printf("%d\n", xd.pointer);
     if(status & 1)
     {
 //Get xLabel, if any
 	xLabel = recGetUnits(xd.pointer, 1);
-printf("1.1\n");
 //get Data
 	status = TdiData(&xd, &xXd MDS_END_ARG);
     }
-printf("2\n");
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
@@ -542,7 +534,6 @@ printf("2\n");
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
     }
-printf("X Compilato\n");	
 //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
 // Y converted to float, X to long or float or double
     err = 0;
@@ -621,7 +612,6 @@ printf("X Compilato\n");
     retSize += 3 * sizeof(int);
     if(title)
     {
-	printf("TITOLO: %s\n", title);
 	retSize += strlen(title);
     }
     if(xLabel)
@@ -719,7 +709,6 @@ printf("X Compilato\n");
     }
     if(xLabel)
     {
-printf("XLABEL: %s\n", xLabel);
 	*(int *)&retArr[idx] = strlen(xLabel);
 	if(swap) swap4(&retArr[idx]);
 	idx += sizeof(int);
@@ -733,7 +722,6 @@ printf("XLABEL: %s\n", xLabel);
     }
     if(yLabel)
     {
-printf("YLABEL: %s\n", yLabel);
 	*(int *)&retArr[idx] = strlen(yLabel);
 	if(swap) swap4(&retArr[idx]);
 	idx += sizeof(int);
@@ -759,8 +747,6 @@ printf("YLABEL: %s\n", yLabel);
     MdsFree1Dx(&xXd, 0);
     MdsFree1Dx(&yXd, 0);
     free(retArr);
-
-printf("FINITO\n");
     return &retXd;
 }
 
@@ -797,7 +783,7 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
-printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 
 
 //Set limits if any
@@ -828,15 +814,11 @@ printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples);
 	return &retXd;
     } 
 
-printf("Y Compilato\n");	
 //Get X
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
-printf("1\n");
-printf("%d\n", xd.pointer);
     free(xExpr.pointer);
     if(status & 1)
 	status = TdiData(&xd, &xXd MDS_END_ARG);
-printf("2\n");
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
@@ -846,7 +828,6 @@ printf("2\n");
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
     }
-printf("X Compilato\n");	
 //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
 // Y converted to float, X to long or float or double
     err = 0;
@@ -912,7 +893,6 @@ printf("X Compilato\n");
     MdsCopyDxXd((struct descriptor *)&retSignalD, &retXd);
     MdsFree1Dx(&xXd, 0);
     MdsFree1Dx(&yXd, 0);
-printf("FINITO\n");
     return &retXd;
 }
 
@@ -929,7 +909,6 @@ static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, lo
     if(nSamples < 10 * reqPoints)
     {
 //Does not perform any compression 
-printf("NO COMPRESSION nSamples: %d, reqPoints: %d\n", nSamples, reqPoints);
 	*retResolution = 1E12;
 	*retPoints = nSamples;
 	return;
@@ -981,7 +960,6 @@ printf("NO COMPRESSION nSamples: %d, reqPoints: %d\n", nSamples, reqPoints);
 	}
     }
     *retPoints = outIdx;
-printf("COMPRESSION nSamples: %d, reqPoints: %d deltaSamples: %d retPoints: %d retResolution: %f\n", nSamples, reqPoints, deltaSamples, outIdx, *retResolution);
 }
 
 
@@ -1018,7 +996,7 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXM
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
-printf("GetXYWave(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
+//printf("GetXYWave(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 
 
 //Set limits 
@@ -1042,15 +1020,11 @@ printf("GetXYWave(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples);
 	return &retXd;
     } 
 
-printf("Y Compilato\n");	
 //Get X
     status = TdiCompile(&xExpr, &xd MDS_END_ARG);
-printf("1\n");
-printf("%d\n", xd.pointer);
     free(xExpr.pointer);
     if(status & 1)
 	status = TdiData(&xd, &xXd MDS_END_ARG);
-printf("2\n");
     MdsFree1Dx(&xd, 0);
     if(!(status & 1))
     {
@@ -1060,7 +1034,6 @@ printf("2\n");
 	MdsCopyDxXd(&errD, &retXd);
 	return &retXd;
     }
-printf("X Compilato\n");	
 //Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
 // Y converted to float, X to long or float or double
     err = 0;
@@ -1126,6 +1099,5 @@ printf("X Compilato\n");
     MdsCopyDxXd((struct descriptor *)&retSignalD, &retXd);
     MdsFree1Dx(&xXd, 0);
     MdsFree1Dx(&yXd, 0);
-printf("FINITO\n");
     return &retXd;
 }
