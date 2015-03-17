@@ -124,10 +124,11 @@ int main(int argc, char const *argv[])
 
     if (prompt == NULL)
       prompt = mdsdclGetPrompt();
-    
+
+#ifdef HAVE_RL_SET_SIGNALS    
     rl_catch_signals = 1;
     rl_set_signals();
-
+#endif
     /* Read in a command */
     cmd = readline(prompt);
 
@@ -176,7 +177,14 @@ int main(int argc, char const *argv[])
 	}
 	status = mdsdcl_do_command_extra_args(command, &prompt_more, &error, &output, 0, 0);
 	if (prompt_more != NULL) {
-	  free_history_entry(remove_history(where_history()));
+          HIST_ENTRY *hist;
+	  hist = remove_history(where_history());
+          if (hist) {
+            if (hist->line) 
+              free(hist->line);
+            free(hist);
+          }
+          
 	  command = strcat(realloc(command, strlen(command) + 2), " ");
 	  if (prompt)
 	    free(prompt);
