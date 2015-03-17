@@ -315,7 +315,7 @@ static char *recGetUnits(struct descriptor *dsc, int isX)
 	    	for(i = 1; i < rDsc->ndesc; i++)
 		{
 		    currUnits = recGetUnits(rDsc->dscptrs[i], isX);
-		    if(strcmp(units, currUnits)) //Different units
+		    if(!currUnits || strcmp(units, currUnits)) //Different units
 		    {
 			free(units);
 			free(currUnits);
