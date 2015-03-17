@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <../tdishr/opcopcodes.h>
 #define MAX_LIMIT 1E10
+static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, long xMin, long xMax, int *retPoints, float *retResolution);
 
 static void swap4(char *buf)
 {
@@ -589,6 +590,302 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
     }
     compressData(y, xArrD->pointer, xArrD->length, xArrD->dtype, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
+
+/*Assemble result. Format:
+-retResolution(float)
+-number of samples (minumum between X and Y)
+-type of X xamples (byte: long(1), double(2) or float(3))
+-y samples (float - big endian)
+-x Samples 
+*/
+	
+    swap = *((int *)testEndian) != 1;
+    if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU || xArrD->dtype == DTYPE_DOUBLE)
+	xSampleSize = sizeof(long);
+    else
+	xSampleSize = sizeof(int);
+
+    
+    
+
+    retSize = sizeof(float) + sizeof(int) + 1 + retSamples * (sizeof(float) + xSampleSize);
+//Add rool for title and labels
+    retSize += 3 * sizeof(int);
+    if(title)
+    {
+	retSize += strlen(title);
+    }
+    if(xLabel)
+	retSize += strlen(xLabel);
+    if(yLabel)
+	retSize += strlen(yLabel);
+    retArr = malloc(retSize);
+    *((int *)&retArr[4]) = retSamples;
+    if(swap)swap4(&retArr[4]);
+    if(xArrD->dtype == DTYPE_Q || xArrD->dtype == DTYPE_QU)
+    {
+	retArr[8] = 1; 
+    }
+    else if(xArrD->dtype == DTYPE_DOUBLE)
+	retArr[8] = 2;
+    else
+	retArr[8] = 3;
+
+    idx = 9;
+    for(i = 0; i < retSamples; i++)
+    {
+    	*((float *)&retArr[idx]) = y[i];
+	if(swap)swap4(&retArr[idx]);
+	idx += sizeof(float);
+    }
+    for(i = 0; i < retSamples; i++)
+    {
+	currFloat = 0;
+	switch(xArrD->dtype) {
+	    case DTYPE_B:
+	    case DTYPE_BU:
+		*((float *)&retArr[idx]) = *((char *)(&xArrD->pointer[i*xArrD->length]));
+		if(swap)swap4(&retArr[idx]);
+		idx += sizeof(float);
+		currX = *((char *)(&xArrD->pointer[i*xArrD->length]));
+		break;
+	    case DTYPE_W:
+	    case DTYPE_WU:
+		*((float *)&retArr[idx]) = *((short *)(&xArrD->pointer[i*xArrD->length]));
+		if(swap)swap4(&retArr[idx]);
+		idx += sizeof(float);
+		currX = *((short *)(&xArrD->pointer[i*xArrD->length]));
+		break;
+	    case DTYPE_L:
+	    case DTYPE_LU:
+		*((float *)&retArr[idx]) = *((int *)(&xArrD->pointer[i*xArrD->length]));
+		if(swap)swap4(&retArr[idx]);
+		idx += sizeof(float);
+		currX = *((int *)(&xArrD->pointer[i*xArrD->length]));
+		break;
+	    case DTYPE_Q:
+	    case DTYPE_QU:
+		*((long *)&retArr[idx]) = *((long *)(&xArrD->pointer[i*xArrD->length]));
+		if(swap)swap8(&retArr[idx]);
+		idx += sizeof(long);
+		currX = *((long *)(&xArrD->pointer[i*xArrD->length]));
+		break;
+	    case DTYPE_FLOAT:
+		*((float *)&retArr[idx]) = *((float *)(&xArrD->pointer[i*xArrD->length]));
+		if(swap)swap4(&retArr[idx]);
+		idx += sizeof(float);
+		currX = *((float *)(&xArrD->pointer[i*xArrD->length]));
+		break;
+	    case DTYPE_DOUBLE:
+		*((double *)&retArr[idx]) = *((double *)(&xArrD->pointer[i*xArrD->length]));
+		if(swap)swap8(&retArr[idx]);
+		idx += sizeof(double);
+		currX = *((double *)(&xArrD->pointer[i*xArrD->length]));
+		break;
+	}
+	if(i == 0)
+	    minX = maxX = currX;
+	else
+	{
+	    if(currX < minX)
+		minX = currX;
+	    if(currX > maxX)
+		maxX = currX;
+	}
+    }
+//idx is the current index in retArr
+//Write title, xLabel, yLabel as length followed by chars
+    if(title)
+    {
+	*(int *)&retArr[idx] = strlen(title);
+	if(swap) swap4(&retArr[idx]);
+	idx += sizeof(int);
+	memcpy(&retArr[idx], title, strlen(title));
+	idx += strlen(title);
+    }
+    else
+    {
+	*(int *)&retArr[idx] = 0; //no swap required
+	idx += 4;
+    }
+    if(xLabel)
+    {
+	*(int *)&retArr[idx] = strlen(xLabel);
+	if(swap) swap4(&retArr[idx]);
+	idx += sizeof(int);
+	memcpy(&retArr[idx], xLabel, strlen(xLabel));
+	idx += strlen(xLabel);
+    }
+    else
+    {
+	*(int *)&retArr[idx] = 0; //no swap required
+	idx += 4;
+    }
+    if(yLabel)
+    {
+	*(int *)&retArr[idx] = strlen(yLabel);
+	if(swap) swap4(&retArr[idx]);
+	idx += sizeof(int);
+	memcpy(&retArr[idx], yLabel, strlen(yLabel));
+	idx += strlen(yLabel);
+    }
+    else
+    {
+	*(int *)&retArr[idx] = 0; //no swap required
+	idx += 4;
+    }
+
+    *((float *)retArr) = retResolution; //resolution
+    if(swap)swap4(retArr);
+
+
+
+    retArrD.arsize = retSize;
+    retArrD.pointer = retArr;
+    if(yArrD->dtype != DTYPE_FLOAT)
+	free((char *)y);
+    MdsCopyDxXd((struct descriptor *)&retArrD, &retXd);
+    MdsFree1Dx(&xXd, 0);
+    MdsFree1Dx(&yXd, 0);
+    free(retArr);
+    return &retXd;
+}
+
+
+struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, long *inXMax, int *reqNSamples)
+{
+    static EMPTYXD(retXd);
+    EMPTYXD(xd);
+    EMPTYXD(yXd);
+    EMPTYXD(xXd);
+    struct descriptor xMinD = {sizeof(float), DTYPE_QU, CLASS_S, (char *)inXMin};
+    struct descriptor xMaxD = {sizeof(float), DTYPE_QU, CLASS_S, (char *)inXMax};
+    struct descriptor yExpr = {strlen(inY), DTYPE_T, CLASS_S, inY};
+    struct descriptor xExpr = {strlen(inX), DTYPE_T, CLASS_S, inX};
+    struct descriptor errD = {0, DTYPE_T, CLASS_S, 0};
+    char *err;
+    char swap;
+    char testEndian[4] = {0, 0, 0, 1};
+    int nSamples, retSamples;
+    int xSampleSize;
+    int retSize;
+    int idx, i, status;
+    char *retArr;
+    float currFloat;
+    float retResolution;
+    DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
+    long xMin = *inXMin;
+    long xMax = *inXMax; 
+    struct descriptor_a *xArrD, *yArrD;
+    float *y;
+    float retInterval;
+    double maxX, minX, currX;
+    char *title, *xLabel, *yLabel;
+
+//printf("GetXYSignalLongTimes(%s, %s, %d, %d, %d)\n", inY, inX, *inXMin, *inXMax, *reqNSamples); 
+
+
+//Set limits if any
+   if(xMin == 0 && xMax  == 0)
+	status = TreeSetTimeContext(NULL, NULL, NULL);
+    else if(xMin == 0)
+	status = TreeSetTimeContext(NULL, &xMaxD, NULL);
+    else if(xMax == 0)
+	status = TreeSetTimeContext(&xMinD, NULL, NULL);
+    else
+    	status = TreeSetTimeContext(&xMinD, &xMaxD, NULL);
+
+//Get Y
+    status = TdiCompile(&yExpr, &xd MDS_END_ARG);
+    if(status & 1)
+    {
+//Get title and yLabel, if any
+    	title = recGetHelp(xd.pointer);
+	yLabel = recGetUnits(xd.pointer, 0);
+//get Data
+	status = TdiData(&xd, &yXd MDS_END_ARG);
+    }
+    MdsFree1Dx(&xd, 0);
+    if(!(status & 1))
+    {
+	err = MdsGetMsg(status);
+	errD.length = strlen(err);
+	errD.pointer = err;
+	MdsCopyDxXd(&errD, &retXd);
+	return &retXd;
+    } 
+//Get X
+    status = TdiCompile(&xExpr, &xd MDS_END_ARG);
+    if(status & 1)
+    {
+//Get xLabel, if any
+	xLabel = recGetUnits(xd.pointer, 1);
+//get Data
+	status = TdiData(&xd, &xXd MDS_END_ARG);
+    }
+    MdsFree1Dx(&xd, 0);
+    if(!(status & 1))
+    {
+	err = MdsGetMsg(status);
+	errD.length = strlen(err);
+	errD.pointer = err;
+	MdsCopyDxXd(&errD, &retXd);
+	return &retXd;
+    }
+//Check results: must be an array of either type DTYPE_B, DTYPE_BU, DTYPE_W, DTYPE_WU, DTYPE_L, DTYPE_LU, DTYPE_FLOAT, DTYPE_DOUBLE
+// Y converted to float, X to long or float or double
+    err = 0;
+    if(yXd.pointer->class != CLASS_A)
+	err = "Y is not an array";
+    else if(xXd.pointer->class != CLASS_A)
+	err = "Y is not an array";
+    if(err)
+    {
+	MdsFree1Dx(&xXd, 0);
+	MdsFree1Dx(&yXd, 0);
+	errD.length = strlen(err);
+	errD.pointer = err;
+	MdsCopyDxXd(&errD, &retXd);
+	return &retXd;
+    }
+//Number of asmples set to minimum between X and Y
+    xArrD = (struct descriptor_a *)xXd.pointer;
+    yArrD = (struct descriptor_a *)yXd.pointer;
+    nSamples = yArrD->arsize/yArrD->length;
+    if(nSamples > xArrD->arsize/xArrD->length)
+	nSamples = xArrD->arsize/xArrD->length;
+ 
+    if(yArrD->dtype == DTYPE_FLOAT)
+	y = (float *)yArrD->pointer;
+    else
+    {
+	y = (float *)malloc(nSamples * sizeof(float));
+	for(i = 0; i < nSamples; i++)
+	{
+	    switch(yArrD->dtype) {
+	    	case DTYPE_B:
+	    	case DTYPE_BU:
+		    y[i] = *((char *)(&yArrD->pointer[i*yArrD->length]));
+		break;
+	    	case DTYPE_W:
+	    	case DTYPE_WU:
+		    y[i] = *((short *)(&yArrD->pointer[i*yArrD->length]));
+		    break;
+	    	case DTYPE_L:
+	    	case DTYPE_LU:
+		    y[i] = *((int *)(&yArrD->pointer[i*yArrD->length]));
+		    break;
+	    	case DTYPE_Q:
+	    	case DTYPE_QU:
+		    y[i] = *((long *)(&yArrD->pointer[i*yArrD->length]));
+		    break;
+	    	case DTYPE_DOUBLE:
+		    y[i] = *((double *)(&yArrD->pointer[i*yArrD->length]));
+		    break;
+	    }
+	}
+    }
+    compressDataLongX(y, xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
 /*Assemble result. Format:
 -retResolution(float)
