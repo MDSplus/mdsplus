@@ -640,6 +640,7 @@ else
   LIBREADLINE="$ac_cv_search_readline"
   TDIC="tdic"
 fi
+AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS))
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
 AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO))
 AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP))

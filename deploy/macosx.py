@@ -64,6 +64,7 @@ make
 set -e
 export MDSPLUS_VERSION="%(pyflavor)s%(major)d.%(minor)d_%(release)d"
 make install
+chmod -R o-w,g-w $(pwd)/build/mdsplus
 
         """ % self.info,'make install failed')
         shell("""

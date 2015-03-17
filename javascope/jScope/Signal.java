@@ -469,8 +469,9 @@ public class Signal implements WaveDataListener
             {
                 if(lastReg.upperBound > newReg.lowerBound)
                 {
-                    System.err.println("Wrning: INTERNAL ERROR IN APPEND: NEW.LOWERBOUND < LAST.UPPERBOUND");
+                    System.out.println("Warning: INTERNAL ERROR IN APPEND: NEW.LOWERBOUND < LAST.UPPERBOUND");
                     newReg.lowerBound = lastReg.upperBound;
+//                    lastReg.upperBound = newReg.lowerBound;
                 }
                 lowResRegions.addElement(newReg);
             }
@@ -2853,7 +2854,8 @@ public class Signal implements WaveDataListener
             newX[newX.length - i - 1] = x[x.length - i - 1];
             newY[newX.length - i - 1] = y[x.length - i - 1];
         }
-        if(regX[0] >= xLong[xLong.length - 1]) //Data are being appended
+//        if(regX[0] >= xLong[xLong.length - 1]) //Data are being appended GABGAB
+        if(regX[regX.length - 1] >= xLong[xLong.length - 1]) //Data are being appended
         {
             resolutionManager.appendRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
             double delta =  newX[newX.length - 1] - x[x.length-1];

@@ -89,6 +89,9 @@
 /* Define if you have the <resolv.h> header file.  */
 #undef HAVE_RESOLV_H
 
+/* Define if rl_set_signals available in readline. */
+#undef HAVE_RL_SET_SIGNALS
+
 /* Define if you have the <stdarg.h> header file.  */
 #undef HAVE_STDARG_H
 
