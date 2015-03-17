@@ -1,4 +1,28 @@
-commit 2122e4720b16ed7feb95bd5897814b74614a19a8 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit d672cd44211247eb49dc7e6df7bd32539eb7e145 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 17 09:46:04 2015 -0400
+
+    Remove w and g write privileges on installed files
+
+commit 29ba2a1cabab25b2dac0de09f320d0d647ea6620
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 17 09:12:11 2015 -0400
+
+    support for older readline versions
+
+commit 625959e6e1ca39db2cd3e8e495b2be24456fb0d4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 09:40:23 2015 +0100
+
+    Fix units
+
+commit f400e35cd4615f86cdd1ebd01fc509eec2ab3e15 (tag: refs/tags/alpha_release-7-0-12)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 16 22:17:25 2015 +0000
+
+    New ChangeLog
+
+commit 2122e4720b16ed7feb95bd5897814b74614a19a8
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Mar 16 16:18:37 2015 +0100
 
