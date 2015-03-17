@@ -628,10 +628,9 @@ public class MdsDataProvider
         public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
         {
              String xExpr, yExpr;
-             XYData res;
+             XYData res = null;
              if (!CheckOpen())
                 return null;
-
              if(segmentMode == SEGMENTED_UNKNOWN)
              {
                 Vector args = new Vector();
@@ -680,21 +679,21 @@ public class MdsDataProvider
                 else if(xmin == -Double.MAX_VALUE)
                 {
                     if(isLong)
-                        setTimeContext = "SetTimeContext(*, QUADWORD("+(long)xmax+"), *);";
+                        setTimeContext = "SetTimeContext(*, QUADWORD("+(long)xmax+"Q), *);";
                     else
                          setTimeContext = "SetTimeContext(*, "+xmax+", *);";
                }
                else if(xmax == Double.MAX_VALUE)
                {
                     if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"),*, *);";
+                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),*, *);";
                     else
                          setTimeContext = "SetTimeContext("+xmin+",*, *);";
                }
                 else
                 {
                     if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"),QUADWORD("+(long)xmax+"), *);";
+                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),QUADWORD("+(long)xmax+"Q), *);";
                     else
                          setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
                }
@@ -702,10 +701,24 @@ public class MdsDataProvider
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
                 args.addElement(new Descriptor(null, xExpr));
-                args.addElement(new Descriptor(null, new float[]{(float)xmin}));
-                args.addElement(new Descriptor(null, new float[]{(float)xmax}));
+                if(isLong)
+                {
+                    args.addElement(new Descriptor(null, new long[]{(xmin == -Double.MAX_VALUE)?0:(long)xmin}));
+                    args.addElement(new Descriptor(null, new long[]{(xmax == Double.MAX_VALUE)?0:(long)xmax}));
+                }
+                else
+                {
+                    args.addElement(new Descriptor(null, new float[]{(float)xmin}));
+                    args.addElement(new Descriptor(null, new float[]{(float)xmax}));
+                }
                 args.addElement(new Descriptor(null, new int[]{numPoints}));
-                byte[] retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                byte[] retData;
+                int nSamples;
+                try {
+                    if(isLong)
+                        retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+                    else
+                        retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -713,94 +726,101 @@ public class MdsDataProvider
                        -y samples 
                        -x Samples 
                */
-                ByteArrayInputStream bis = new ByteArrayInputStream(retData);
-                DataInputStream dis = new DataInputStream(bis);
-                float fRes;
-                double dRes;
-                fRes = dis.readFloat();
-                if(fRes >= 1E10)
-                    dRes = Double.MAX_VALUE;
-                else
-                    dRes = fRes;
-                int nSamples = dis.readInt();
-                byte type = dis.readByte();
-                float y[] = new float[nSamples];
-                for(int i = 0; i < nSamples; i++)
-                {
-                    y[i] = dis.readFloat();
-                }
-                double maxX;
-                if(type == 1) //Long X (i.e. absolute times
-                {
-                    long []longX = new long[nSamples];
+                    ByteArrayInputStream bis = new ByteArrayInputStream(retData);
+                    DataInputStream dis = new DataInputStream(bis);
+                    float fRes;
+                    double dRes;
+                    fRes = dis.readFloat();
+                    if(fRes >= 1E10)
+                        dRes = Double.MAX_VALUE;
+                    else
+                        dRes = fRes;
+                    nSamples = dis.readInt();
+                    byte type = dis.readByte();
+                    float y[] = new float[nSamples];
                     for(int i = 0; i < nSamples; i++)
-                        longX[i] = dis.readLong();
-                    isXLong = true;
-                    res = new XYData(longX, y, dRes);
-                    if(longX.length > 0)
-                        maxX = longX[longX.length - 1];
-                    else 
-                        maxX = 0;
-               }
-                else if(type == 2) //double X
-                {
-                    double []x = new double[nSamples];
-                    for(int i = 0; i < nSamples; i++)
-                        x[i] = dis.readDouble();
-                    res = new XYData(x, y, dRes);
-                    if(x.length > 0)
-                        maxX = x[x.length - 1];
-                    else 
-                        maxX = 0;
+                    {
+                        y[i] = dis.readFloat();
+                    }
+                    double maxX;
+                    if(type == 1) //Long X (i.e. absolute times
+                    {
+                        long []longX = new long[nSamples];
+                        for(int i = 0; i < nSamples; i++)
+                            longX[i] = dis.readLong();
+                        isXLong = true;
+                        res = new XYData(longX, y, dRes);
+                        if(longX.length > 0)
+                            maxX = longX[longX.length - 1];
+                        else 
+                            maxX = 0;
+                   }
+                    else if(type == 2) //double X
+                    {
+                        double []x = new double[nSamples];
+                        for(int i = 0; i < nSamples; i++)
+                            x[i] = dis.readDouble();
+                        res = new XYData(x, y, dRes);
+                        if(x.length > 0)
+                            maxX = x[x.length - 1];
+                        else 
+                            maxX = 0;
+                    }
+                    else //float X
+                    {
+                        double []x = new double[nSamples];
+                        for(int i = 0; i < nSamples; i++)
+                            x[i] = dis.readFloat();
+                        res = new XYData(x, y, dRes);
+                        if(x.length > 0)
+                            maxX = x[x.length - 1];
+                        else 
+                            maxX = 0;
+                   }
+                    //Get title, xLabel and yLabel
+                    int titleLen = dis.readInt();
+                    if(titleLen > 0)
+                    {
+                        byte []titleBuf = new byte[titleLen];
+                        dis.readFully(titleBuf);
+                        title = new String(titleBuf);
+                    }
+                    int xLabelLen = dis.readInt();
+                    if(xLabelLen > 0)
+                    {
+                        byte []xLabelBuf = new byte[xLabelLen];
+                        dis.readFully(xLabelBuf);
+                        xLabel = new String(xLabelBuf);
+                    }
+
+                    int yLabelLen = dis.readInt();
+                    if(yLabelLen > 0)
+                    {
+                        byte []yLabelBuf = new byte[yLabelLen];
+                        dis.readFully(yLabelBuf);
+                        yLabel = new String(yLabelBuf);
+                    }
+                    titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
+                    if(type == 1)
+                        isLong = true;
                 }
-                else //float X
+                catch(Exception exc)
                 {
-                    double []x = new double[nSamples];
-                    for(int i = 0; i < nSamples; i++)
-                        x[i] = dis.readFloat();
-                    res = new XYData(x, y, dRes);
-                    if(x.length > 0)
-                        maxX = x[x.length - 1];
-                    else 
-                        maxX = 0;
-               }
-                //Get title, xLabel and yLabel
-                int titleLen = dis.readInt();
-                if(titleLen > 0)
-                {
-                    byte []titleBuf = new byte[titleLen];
-                    dis.readFully(titleBuf);
-                    title = new String(titleBuf);
+                    System.out.println("Error Reading data: "+exc);
+                    nSamples = 0;
                 }
-                int xLabelLen = dis.readInt();
-                if(xLabelLen > 0)
-                {
-                    byte []xLabelBuf = new byte[xLabelLen];
-                    dis.readFully(xLabelBuf);
-                    xLabel = new String(xLabelBuf);
-                }
-                
-                int yLabelLen = dis.readInt();
-                if(yLabelLen > 0)
-                {
-                    byte []yLabelBuf = new byte[yLabelLen];
-                    dis.readFully(yLabelBuf);
-                    yLabel = new String(yLabelBuf);
-                }
-                titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
-               
                 //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
                 if(segmentMode == SEGMENTED_YES && continuousUpdate)
                 {
                     long refreshPeriod = jScopeFacade.getRefreshPeriod();
                     if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
-                    updateWorker.updateInfo((nSamples > 0)?maxX:xmin, Double.MAX_VALUE, 2000,
-                        waveDataListenersV, this, type == 1, refreshPeriod);
+                    updateWorker.updateInfo(xmin, Double.MAX_VALUE, 2000,
+                        waveDataListenersV, this, isLong, refreshPeriod);
                 }
                 return res;
-             }catch(Exception exc){}
+             }catch(Exception exc)
              {
-                 //System.out.println("MdsMisc->GetXYSignal Failed");
+                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
             float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
@@ -967,6 +987,7 @@ public class MdsDataProvider
                 }
                 if(nextTime != -1) //If a pending request for which time did not expire, schedure a new notification
                 {
+                    currTime = Calendar.getInstance().getTimeInMillis();
                     java.util.Timer timer = new java.util.Timer();
                     timer.schedule(new TimerTask() {
                         public void run()
@@ -976,7 +997,7 @@ public class MdsDataProvider
                                 UpdateWorker.this.notify();
                             }
                         }
-                    }, nextTime - currTime + 1);
+                    }, (nextTime < currTime + 50)?50:(nextTime - currTime + 1));
                 }
             }
         }
