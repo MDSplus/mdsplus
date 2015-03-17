@@ -1,4 +1,49 @@
-commit d672cd44211247eb49dc7e6df7bd32539eb7e145 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c8a210ec14b92e174f393999790cd6e1024e0ff4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 45073d9 4dbcef7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 17:22:11 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 45073d908eeff28f877331721b7d698985d7d660
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 17:21:35 2015 +0100
+
+    Removed useless sleep
+
+commit 4dbcef71932f98cef696e730d8d9f36eb8c2cc94
+Merge: e6d2455 68605e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:54:54 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit e6d2455638b5417c2afc3c952c1eaf36e6fcbb85
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:54:42 2015 +0100
+
+    Handle better timestamped data
+
+commit 68605e448c2e967a80cb68b9ddc222f98b0870d6
+Merge: 1629913 2275182
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:53:43 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 16299137ebbb24ebd2c1ae5268e261627bb1fa49
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:53:05 2015 +0100
+
+    Fix scroll for timestamped data
+
+commit 227518225610aea2e87edd672fbd983b8c411f2d (tag: refs/tags/alpha_release-7-0-13)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 17 10:09:09 2015 -0400
+
+    New ChangeLog
+
+commit d672cd44211247eb49dc7e6df7bd32539eb7e145
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 17 09:46:04 2015 -0400
 
