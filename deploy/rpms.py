@@ -11,6 +11,10 @@ class InstallationPackage(object):
         for extpackages in root.getiterator('external_packages'):
             platforms=extpackages.attrib['platforms']
             for platform in platforms.split(','):
+                print "checking %s\n" % platform
+                print """  self.info['dist']=%s
+  self.info['dist'].lower()=%s
+""" % (self.info['dist'],self.info['dist'].lower())
                 if self.info['dist'].lower().startswith(platform):
                     if len(platform) > matchlen:
                         matchlen = len(platform)
@@ -20,6 +24,7 @@ class InstallationPackage(object):
                                 ans = pkg.attrib['package']
                             else:
                                 ans = package
+                    print "And the answer is! %s\n" % str(ans)
         return ans
 
     def doRequire(self, out, root, require):
