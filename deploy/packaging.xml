@@ -11,6 +11,7 @@
   <package name="java" arch="noarch" summary="Java Applications" description="Java applications and classes">
     <requires package="java_bin"/>
     <requires package="kernel"/>
+    <requires package="java" external="True"/>
     <include dir="/usr/local/mdsplus/java"/>
     <include dir="/usr/local/mdsplus/desktop/java"/>
     <exclude file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
@@ -281,6 +282,7 @@ fi
 
   <package name="kernel" arch="noarch" summary="MDSplus core system" description="MDSplus core system">
     <requires package="kernel_bin"/>
+    <requires external="True" package="xinetd"/>
     <include dironly="/usr/local/mdsplus/idl"/>
     <include dironly="/usr/local/mdsplus/mdsobjects"/>
     <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
@@ -506,7 +508,9 @@ fi
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
-    <requires nonmds="true" package="python-setuptools"/>
+    <requires external="true" package="setuptools"/>
+    <requires external="True" package="python-devel"/>
+    <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
 
@@ -671,4 +675,18 @@ make clean &gt;/dev/null
 
    </install_script>
  </ubuntu>
+ <external_packages platforms="rhel,fc">
+   <python-devel/>
+   <setuptools package="python-setuptools"/>
+   <numpy/>
+   <xinetd/>
+   <java/>
+ </external_packages>
+ <external_packages platforms="ubuntu,debian">
+   <python-devel package="python-dev"/>
+   <setuptools package="python-setuptools"/>
+   <numpy package="python-numpy"/>
+   <xinetd/>
+   <java package="default-jre"/>
+ </external_packages>
 </deploy>

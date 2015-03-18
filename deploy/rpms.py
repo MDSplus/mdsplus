@@ -5,6 +5,23 @@ class InstallationPackage(object):
     def __init__(self,info):
         self.info=info
 
+    def externalPackage(self, root, package):
+        matchlen=0
+        ans = None
+        for extpackages in root.getiterator('external_packages'):
+            platforms=extpackages.attrib['platforms']
+            for platform in platforms.split[',']:
+                if self.info['dist'].lower().startswith(platform):
+                    if len(platform) > matchlen:
+                        matchlen = len(platform)
+                        pkg = extpackages.find(package)
+                        if pkg:
+                            if 'package' in pkg.attrib:
+                                ans = pkg.attrib['package']
+                            else:
+                                ans = package
+        return ans
+
     def exists(self):
         """Check to see if rpms for this release already exist."""
         tree=ET.parse('packaging.xml')
@@ -104,9 +121,10 @@ class InstallationPackage(object):
                 out,specfilename=tempfile.mkstemp()
                 os.write(out,rpmspec % self.info)
                 for require in package.getiterator("requires"):
-                    self.info['reqpkg']=require.attrib['package']
-                    if 'nonmds' in require.attrib:
-                      os.write(out,"Requires: %(reqpkg)s\n" % self.info)
+                    if 'external' in require.attrib:
+                        pkg=self.externalPackage(root,require.attrib['package'])
+                        if pkg:
+                            os.write(out,"Requires: %s\n" % pkg)
                     else:
                       os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
                 os.write(out,"""
