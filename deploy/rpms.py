@@ -25,6 +25,8 @@ class InstallationPackage(object):
                             else:
                                 ans = package
                     print "And the answer is! %s\n" % str(ans)
+        if ans is None:
+            raise Exception("package % not found in external packages")
         return ans
 
     def doRequire(self, out, root, require):
