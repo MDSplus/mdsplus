@@ -16,10 +16,12 @@ class InstallationPackage(object):
   self.info['dist'].lower()=%s
 """ % (self.info['dist'],self.info['dist'].lower())
                 if self.info['dist'].lower().startswith(platform):
+                    print "found platform\n"
                     if len(platform) > matchlen:
+                        print "best match"
                         matchlen = len(platform)
                         pkg = extpackages.find(package)
-                        if pkg:
+                        if pkg is not None:
                             if 'package' in pkg.attrib:
                                 ans = pkg.attrib['package']
                             else:
