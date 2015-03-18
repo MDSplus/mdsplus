@@ -27,9 +27,9 @@ class InstallationPackage(object):
             pkg=self.externalPackage(root,require.attrib['package'])
             if pkg:
                 os.write(out,"Requires: %s\n" % pkg)
-            else:
-                self.info['reqpkg']=require.attrib['package']
-                os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+        else:
+            self.info['reqpkg']=require.attrib['package']
+            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
 
 
     def exists(self):
