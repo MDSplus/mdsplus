@@ -1001,7 +1001,7 @@ function Grid(g, metrics, labels, xIsDateTime)
                 label.setAttributeNS(null,"text-anchor","start");
                 //label.setAttributeNS(null,"x",this.xScaling[1]+idx * this.xScaling[2]);
                 label.setAttributeNS(null,"x",this.metrics.getXPixel(this.xVals[idx]));
-                if(this.labels.xlabel != undefined)
+                if(this.labels != undefined && this.labels.xlabel != undefined)
                     label.setAttributeNS(null,"y",this.height - 20);
                 else
                     label.setAttributeNS(null,"y",this.height - 10);
@@ -1062,7 +1062,7 @@ function Grid(g, metrics, labels, xIsDateTime)
             var label=document.createElementNS("http://www.w3.org/2000/svg","text");
             this.g.appendChild(label);
             label.setAttributeNS(null,"text-anchor","start");
-            if(this.labels.ylabel != null)
+            if(this.labels != undefined && this.labels.ylabel != null)
                 label.setAttributeNS(null,"x",18);
             else
                 label.setAttributeNS(null,"x",10);
@@ -1091,7 +1091,7 @@ function Grid(g, metrics, labels, xIsDateTime)
             lineX.setAttribute("stroke-dasharray", "1,4");
             g.appendChild(lineX);
         }
-        if(this.labels.title != undefined)
+        if(this.labels != undefined && this.labels.title != undefined)
         {
             var title=document.createElementNS("http://www.w3.org/2000/svg","text");
             this.g.appendChild(title);
@@ -1106,8 +1106,26 @@ function Grid(g, metrics, labels, xIsDateTime)
              title.setAttributeNS(null,"font-size","8px"); */
             //title.setAttributeNS(null,"alignment-baseline", "text-after-edge");
             title.appendChild(document.createTextNode(this.labels.title));
+            if(this.labels.errors != undefined)
+            {
+                var errorLabel=document.createElementNS("http://www.w3.org/2000/svg","text");
+                var tooltip=document.createElementNS("http://www.w3.org/2000/svg","title");
+                errorLabel.appendChild(tooltip);
+                this.g.appendChild(errorLabel);
+                errorLabel.setAttributeNS(null,"text-anchor","middle");
+                errorLabel.setAttributeNS(null,"x",this.metrics.width/2);
+                errorLabel.setAttributeNS(null,"y",36);
+                errorLabel.setAttributeNS(null,"font-size","14px");
+                var parsedMessage = this.labels.errors.match(/u'%[A-Za-z\-\,\s_]+/);
+                var errorMessage = '';
+                if(parsedMessage != undefined);
+                    errorMessage = parsedMessage[0].substring(3);
+                //var errorMessage=this.labels.errors.match(/u'%[A-Za-z\-\,\s_]+/)[0].substring(3);
+                errorLabel.appendChild(document.createTextNode(errorMessage));
+                tooltip.appendChild(document.createTextNode(errorMessage));
+            }
         }
-        if(this.labels.ylabel != undefined)
+        if(this.labels != undefined && this.labels.ylabel != undefined)
         {
             var ylabel=document.createElementNS("http://www.w3.org/2000/svg","text");
             this.g.appendChild(ylabel);
@@ -1119,7 +1137,7 @@ function Grid(g, metrics, labels, xIsDateTime)
             //title.setAttributeNS(null,"alignment-baseline", "text-after-edge");
             ylabel.appendChild(document.createTextNode(this.labels.ylabel));
         }
-        if(this.labels.xlabel != undefined)
+        if(this.labels != undefined && this.labels.xlabel != undefined)
         {
             var xlabel=document.createElementNS("http://www.w3.org/2000/svg","text");
             this.g.appendChild(xlabel);
@@ -1148,7 +1166,12 @@ function Wave(signals, color, g, metrics, clippath)
         var signalIdx;
         var clip_path_id=this.clippath.getAttribute("id");
         this.g.setAttribute("clip-path","url(#"+clip_path_id+")");
-        for(signalIdx = 0; signalIdx < this.signals.length; signalIdx++)
+        var numSignals;
+        if(this.signals == undefined)
+            numSignals = 0;
+        else
+            numSignals = this.signals.length;
+        for(signalIdx = 0; signalIdx < numSignals; signalIdx++)
         {
             if(this.signals[signalIdx].mode == PLOT_LINE || this.signals[signalIdx].mode == PLOT_LINE_POINT)
             {    
@@ -1545,18 +1568,15 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
                     
                     var labels = new Object();
                     if((setting = this.getResponseHeader('title')) != null)
-                        labels.title = setting + errors;
-                    else 
-                    {
-                        if(errors != '')
-                            labels.title = errors;
-                    }
+                        labels.title = setting;
                     if((setting = this.getResponseHeader('xlabel')) != null)
                         labels.xlabel = setting;
                     if((setting = this.getResponseHeader('xlabel')) != null)
                         labels.ylabel = setting;
                     if(this.getResponseHeader('X_IS_DATETIME') != null)
                         this.wavePanel.xIsDateTime = true;
+                    if(errors != '')
+                        labels.errors = errors;
                     
                     this.wavePanel.updateSuccess(signals, labels, limits, this.continuousUpdateCase);
                 }
@@ -1753,7 +1773,8 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
         this.svg.parentNode.setAttribute("width", width);
         this.svg.parentNode.setAttribute("height", height);
         this.clippath.getElementsByTagName("path")[0].setAttribute("d","M 0 0 0 " + height + " " + width + " " + height + " " + width + " 0");
-        this.svg.removeChild(this.g);
+        if(this.g != undefined)
+            this.svg.removeChild(this.g);
         this.zoomRect = undefined;
         if(this.crosshairVertLine != undefined)
         {
@@ -1768,7 +1789,10 @@ function WavePanel(svg, panelIdx, numCols, numRows, col, row, clippath, tree, sh
         this.g = document.createElementNS("http://www.w3.org/2000/svg","g");
         this.g.setAttribute("id","viewport");
         this.svg.appendChild(this.g);
-        this.metrics = new Metrics(METRICS_BORDER, width, height, this.metrics.xmin, 
+        if(this.metrics == undefined)
+            this.metrics = new Metrics(METRICS_BORDER, width, height, 0, 1, 0, 1);
+        else
+            this.metrics = new Metrics(METRICS_BORDER, width, height, this.metrics.xmin, 
                 this.metrics.xmax, this.metrics.ymin, this.metrics.ymax);
         this.wave = new Wave(this.signals, this.colors, this.g, this.metrics, this.clippath);
         this.grid = new Grid(this.g, this.metrics, this.labels, this.xIsDateTime);
@@ -2430,7 +2454,7 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
             this.canvas.width = frameWidth;
             this.canvas.height = frameHeight;
         }
-        this.resize(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
+        this.drawFrame(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
         this.currentFrameIdx = frameIdx;
         this.setLabels();
         
@@ -2577,7 +2601,7 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
     }
     this.timeToFrameIdx = timeToFrameIdx;
 
-    function resize(width, height)
+    function drawFrame(width, height)
     {
         if(this.frameSettings.keepRatio)
         {
@@ -2617,13 +2641,18 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
         this.ctx.imageSmoothingEnabled = false;
         this.ctx.mozImageSmoothingEnabled = false;
         this.ctx.msImageSmoothingEnabled = false;
-        // this.ctx.drawImage(this.originalCanvas, 0, 0, this.originalCanvas.width, this.originalCanvas.height, 0, 0, this.canvas.width, this.canvas.height);        
         this.ctx.drawImage(this.originalCanvas, this.pixelMinX, this.pixelMinY, this.pixelMaxX - this.pixelMinX, this.pixelMaxY - this.pixelMinY, 0, 0, this.canvas.width, this.canvas.height);
         this.svg.setAttributeNS(null, 'width', width);
         this.svg.setAttributeNS(null, 'height', height);
         this.svg.setAttribute('viewBox', '0 0 ' + width + ' ' + height);
         this.svg.parentNode.setAttribute('width', width);
         this.svg.parentNode.setAttribute('height', height);
+    }
+    this.drawFrame = drawFrame;
+
+    function resize(width, height)
+    {
+        this.drawFrame(width, height);
     }
     this.resize = resize;
 
@@ -2821,7 +2850,7 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
         this.zoomRatioY *= this.canvas.height / (y1 - y0);
         this.canvas.width = x1 - x0;
         this.canvas.height = y1 - y0;
-        this.resize(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
+        this.drawFrame(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
     }
     this.endZoom = endZoom;
 
@@ -2859,7 +2888,7 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
         this.pixelMaxX = this.startPanRect.pixelMaxX + deltaX;
         this.pixelMinY = this.startPanRect.pixelMinY + deltaY;
         this.pixelMaxY = this.startPanRect.pixelMaxY + deltaY;
-        this.resize(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
+        this.drawFrame(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
     }
     this.dragPan = dragPan;
 
@@ -2895,7 +2924,7 @@ function FramePanel(svg, canvas, numCols, numRows, col, row, tree, shots, signal
         this.pixelMaxY = this.originalCanvas.height;
         this.zoomRatioX = 1;
         this.zoomRatioY = 1;
-        this.resize(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
+        this.drawFrame(parseFloat(this.canvas.parentNode.width), parseFloat(this.canvas.parentNode.height));
     }
     this.autoscale = autoscale;
 
@@ -3090,6 +3119,7 @@ function titleEventFailure(event,response,expression) {}
 
 function loadColorTables(colorTablesData)
 {
+    if(colorTablesData == undefined) return;
     var colorTablesLength = new Uint8Array(colorTablesData, 0, 1)[0];
     var colorTablesRGBData = new Uint8Array(colorTablesData, 1, colorTablesLength * 3 * 256);
     var colorNames = new Array();
