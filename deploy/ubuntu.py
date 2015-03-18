@@ -146,7 +146,7 @@ Description: %(description)s
                 if subprocess.Popen("""
 set -e
 mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
-cat %(debfile)s
+cat %(tmpdir)s/DEBIAN/control
 dpkg-deb --build %(tmpdir)s %(debfile)s
 reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
 """ % self.info,shell=True).wait() != 0:
