@@ -16,7 +16,7 @@ class InstallationPackage(object):
         ans = None
         for extpackages in root.getiterator('external_packages'):
             platforms=extpackages.attrib['platform']
-            for platform in platforms.split[',']:
+            for platform in platforms.split(','):
                 if self.info['dist'].lower().startswith(platform):
                     if len(platform) > matchlen:
                         matchlen = len(platform)
