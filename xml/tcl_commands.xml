@@ -512,12 +512,12 @@
     </help>
     <routine name="TclDispatch"/>
     <parameter name="p1" label="NODE"/>
+    <qualifier name="command" syntax="dispatch_command"/>
     <qualifier name="wait" defaulted="True"/>
     <qualifier name="build" syntax="dispatch_build"/>
     <qualifier name="check" syntax="dispatch_check"/>
     <qualifier name="phase" syntax="dispatch_phase"/>
     <qualifier name="close" syntax="dispatch_close"/>
-    <qualifier name="command" syntax="dispatch_command"/>
   </verb>
 
   <syntax name="dispatch_build">

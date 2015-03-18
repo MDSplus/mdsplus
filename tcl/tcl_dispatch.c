@@ -409,7 +409,7 @@ int TclDispatch_command(void *ctx, char **error, char **output)
       char *msg = MdsGetMsg(sts);
       *error = malloc(strlen(msg) + 100);
       sprintf(*error, "Error: Problem dispatching command\n" "Error message was: %s\n", msg);
-      free(&command->command);
+      free(command->command);
       free(command);
     }
   }
