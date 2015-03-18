@@ -34,7 +34,7 @@ class InstallationPackage(object):
     def doRequire(self, out, root, require):
         if 'external' in require.attrib:
             pkg=self.externalPackage(root,require.attrib['package'])
-            if pkg:
+            if pkg is not None:
                 os.write(out,"Requires: %s\n" % pkg)
         else:
             self.info['reqpkg']=require.attrib['package']
