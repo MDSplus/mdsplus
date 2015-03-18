@@ -1,4 +1,28 @@
-commit c8a210ec14b92e174f393999790cd6e1024e0ff4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 84b892b134d541c0867f742f189c111bdf14961a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 09:15:47 2015 -0400
+
+    mdstcl command fixes for add node/usage=subtree, directory and do/method
+
+commit fe1ad7b2ffc2c862054362738540b96c2f09adf9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 18 10:41:49 2015 +0100
+
+    Remove useless files
+
+commit 2e83eeb853a813c472bbbcae9729591b4d9eda8b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 18 10:01:52 2015 +0100
+
+    Removed some exceptions
+
+commit 9ad9f65019ed8b85cebaef157d844f9cabc64287 (tag: refs/tags/alpha_release-7-0-14)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 17 22:17:13 2015 +0000
+
+    New ChangeLog
+
+commit c8a210ec14b92e174f393999790cd6e1024e0ff4
 Merge: 45073d9 4dbcef7
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Mar 17 17:22:11 2015 +0100
