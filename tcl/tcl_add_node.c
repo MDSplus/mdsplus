@@ -77,6 +77,9 @@ int TclAddNode(void *ctx, char **error, char **output)
       }
     }
     sts = TreeAddNode(nodnam, &nid, usage);
+    if (sts && (usage == TreeUSAGE_SUBTREE)) {
+      sts = TreeSetSubtree(nid);
+    }
   }
   if (sts & 1)
     TclNodeTouched(nid, new);

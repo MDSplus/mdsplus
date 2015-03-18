@@ -42,7 +42,6 @@ int TclDoMethod(void *ctx, char **error, char **output)
 
   cli_get_value(ctx, "OBJECT", &object);
   sts = TreeFindNode(object, &nid);
-  free(object);
   if (sts & 1) {
     do_it = (TreeIsOn(nid) | cli_present(ctx, "OVERRIDE")) & 1;
     if (cli_present(ctx, "IF") & 1) {

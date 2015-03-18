@@ -83,9 +83,9 @@ int TclDirectory(void *ctx, char **error, char **output)
   int retlen;
   int last_parent_nid = -1;
   int version;
-  static int parent_nid;
-  static char nodnamC[12 + 1];
-  static int relationship;
+  int parent_nid;
+  char nodnamC[12 + 1];
+  int relationship;
   int previous_relationship;
   unsigned char nodeUsage;
   NCI_ITM general_info_list[] = {
@@ -117,12 +117,6 @@ int TclDirectory(void *ctx, char **error, char **output)
       }
     }
   }
-  pathnam = TreeGetPath(parent_nid);
-  if (pathnam) {
-    sprintf(msg, "\n%s\n\n", pathnam);
-    free(pathnam);
-    tclAppend(output, msg);
-  }
   while (cli_get_value(ctx, "NODE", &nodnam) & 1) {
     int listlen = 0;
     while ((status = TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask)) & 1) {
@@ -131,12 +125,18 @@ int TclDirectory(void *ctx, char **error, char **output)
       nodnamC[nodnamLen] = '\0';
       if (parent_nid != last_parent_nid) {
 	if (found) {
-	  sprintf(msg, "\nTotal of %d node%s.\n", found, (found > 1) ? "s" : "");
+	  sprintf(msg, "\n\nTotal of %d node%s.\n", found, (found > 1) ? "s" : "");
 	  listlen = 0;
 	  tclAppend(output, msg);
 	}
 	found = 0;
 	last_parent_nid = parent_nid;
+	pathnam = TreeGetPath(parent_nid);
+	if (pathnam) {
+	  sprintf(msg, "\n%s\n\n", pathnam);
+	  free(pathnam);
+	  tclAppend(output, msg);
+	}
 	previous_relationship = relationship;
       }
       found++;
