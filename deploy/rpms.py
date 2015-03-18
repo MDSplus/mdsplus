@@ -11,14 +11,8 @@ class InstallationPackage(object):
         for extpackages in root.getiterator('external_packages'):
             platforms=extpackages.attrib['platforms']
             for platform in platforms.split(','):
-                print "checking %s\n" % platform
-                print """  self.info['dist']=%s
-  self.info['dist'].lower()=%s
-""" % (self.info['dist'],self.info['dist'].lower())
                 if self.info['dist'].lower().startswith(platform):
-                    print "found platform\n"
                     if len(platform) > matchlen:
-                        print "best match"
                         matchlen = len(platform)
                         pkg = extpackages.find(package)
                         if pkg is not None:
@@ -26,9 +20,6 @@ class InstallationPackage(object):
                                 ans = pkg.attrib['package']
                             else:
                                 ans = package
-                    print "And the answer is! %s\n" % str(ans)
-        if ans is None:
-            raise Exception("package %s not found in external packages" % package)
         return ans
 
     def doRequire(self, out, root, require):
