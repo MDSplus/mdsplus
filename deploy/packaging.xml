@@ -134,10 +134,9 @@ fi
     <include file="/usr/local/mdsplus/lib/libRoam*"/>
     <include file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
-    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
-    <triggerin trigger="xinetd">
+    <postinst>
 
+ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 if [ ! -r /etc/xinetd.d/mdsips ]
 then
   cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipsd.xinetd /etc/xinetd.d/mdsips
@@ -146,9 +145,8 @@ then
     echo 'mdsips 8200/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
   fi
 fi
-/sbin/service xinetd reload
-
-    </triggerin>
+    </postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="labview" arch="noarch" summary="National Instruments Labview extensions" description="National Instruments Labview extensions">
@@ -329,7 +327,14 @@ then
   mkdir -p /usr/share/applications/mdsplus
   ln -sf __INSTALL_PREFIX__/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
 fi
-
+if [ ! -r /etx/xinetd.d/mdsip ]
+then
+  cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+  if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
+  then
+    echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
+  fi
+fi
     </postinst>
     <prerm>
 
@@ -344,7 +349,10 @@ then
   if [ -r /etc/xinetd.d/mdsip ]
   then
     rm -f /etc/xinetd.d/mdsip
-    /sbin/service xinetd reload
+    if [ -x /sbin/service ]
+    then
+      /sbin/service xinetd reload
+    fi
   fi
   if ( grep '^mdsip[[:space::]]' /etc/services &gt;/dev/null 2&gt;&amp;1 )
   then
@@ -366,19 +374,7 @@ then
 fi
 
     </postrm>
-    <triggerin trigger="xinetd">
 
-if [ ! -r /etx/xinetd.d/mdsip ]
-then
-  cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
-  if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
-  then
-    echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
-  fi
-fi
-/sbin/service xinetd reload
-
-    </triggerin>
   </package>
 
   <package name="kernel_bin" arch="bin" summary="MDSplus core binaries" description="MDSplus core binaries">
