@@ -67,6 +67,11 @@
     Note: Verb and Qualifier names are case insensitive and may be abbreviated
     as long as the shortened names are unique.
 
+    Note: If you will be executing the command as part of a command script
+    or macro and you want to use argument substitution in the commands using
+    the arguments specified in the @ or DO/MACRO command then you must include
+    placeholders of the form 'Pn'. The single quotes are required.
+
     Note: If you need to include double quotes in parameters or qualifiers
     you must use two adjacent double quotes. For example "current_shot(""CMOD"")"
     would be interpreted by MDSDCL as current_shot("cmod").
@@ -183,6 +188,13 @@
       
       Execute the commands read from a file providing optional arguments to be substituted
       for placeholders in the command lines.
+
+      To include the arguments p1,p2,... etc in a command you specify a placeholder where
+      you want to be placed with the string on the command line. A placeholder is specified
+      as 'pn' or 'Pn' in single quotes. For example:
+
+      SET TREE 'P1' /SHOT='P2'
+      
     </help>
     <routine name="mdsdcl_do_macro"/>
     <parameter name="P1" label="NAME" prompt="Filename" required="True"/>
