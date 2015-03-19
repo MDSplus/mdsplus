@@ -87,3 +87,4 @@ autom4te.cache
 
 # gfortran objects on macintosh
 *.o_i386
+*.dylib_i386
