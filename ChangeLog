@@ -1,4 +1,16 @@
-commit 91882d6601bb6ab89e0cabbd9ae4f6c92196aea6 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 73edac01c948e62109fcd4f2cc35ac5c0820f061 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 15:45:20 2015 -0400
+
+    Add fixes from alpha to stable releases
+
+commit 4b28b7044d4b656ebd6b52009c618450fe5590ca (tag: refs/tags/stable_release-6-1-79)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 12 14:06:46 2015 +0000
+
+    New ChangeLog
+
+commit 91882d6601bb6ab89e0cabbd9ae4f6c92196aea6
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 12 09:37:02 2015 -0400
 
