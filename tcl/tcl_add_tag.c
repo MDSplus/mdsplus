@@ -1,6 +1,6 @@
 #include <mdsshr.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 
 /**********************************************************************
 * TCL_ADD_TAG.C --

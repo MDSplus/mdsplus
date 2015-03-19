@@ -1,8 +1,8 @@
-#include <config.h>
+#include 	<config.h>
 #include        "tclsysdef.h"
 #include        <mds_stdarg.h>
 #include        <mdsshr.h>
-#include <malloc.h>
+#include 	<stdlib.h>
 #ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
 #endif
