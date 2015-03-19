@@ -149,6 +149,18 @@
 /* Define if you have pthread_mutexattr_setkind_np routine. */
 #undef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
 
+/* Define if you have getgrgid to get group name. */
+#undef HAVE_GETGRGID
+
+/* Define if you have grp.h */
+#undef HAVE_GRP_H
+
+/* Define if you have getpwuid. */
+#undef HAVE_GETPWUID
+
+/* Define if you have pwd.h */
+#undef HAVE_PWD_H
+
 /* Define if you have <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 

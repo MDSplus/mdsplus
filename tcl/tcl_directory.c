@@ -4,6 +4,18 @@
 #include        <usagedef.h>
 #include        <string.h>
 #include        <dcl.h>
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+#ifdef HAVE_GRP_H
+#include <grp.h>
+#endif
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 /**********************************************************************
 * TCL_DIRECTORY.C --
@@ -28,9 +40,30 @@ static char *MdsOwner(		/* Return: ptr to "user" string         */
 		       unsigned int owner	/* <r> owner id                         */
     )
 {
-  static char ownerString[20];
-
-  sprintf(ownerString, "[%o,%o]", owner >> 16, owner & 0xFFFF);
+  static char ownerString[512];
+  int gid = owner >> 16;
+  int uid = owner & 0xFFFF;
+  char *groupname=0;
+  char *username=0;
+#ifdef HAVE_GETGRGID
+  struct group *g = getgrgid(gid);
+  if (g) {
+    groupname = alloca(strlen(g->gr_name)+3);
+    sprintf(groupname,"(%s)",g->gr_name);
+  }
+#endif
+#ifdef HAVE_GETPWUID
+  struct passwd *p = getpwuid(uid);
+  if (p) {
+    username = alloca(strlen(p->pw_name)+3);
+    sprintf(username,"(%s)",p->pw_name);
+  }
+#endif
+  if (groupname==0)
+    groupname="";
+  if (username==0)
+    username="";
+  sprintf(ownerString, "gid=%d%s,uid=%d%s", gid, groupname, uid, username);
   return (ownerString);
 }
 
