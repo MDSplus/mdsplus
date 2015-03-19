@@ -1,4 +1,40 @@
-commit 0e8e3b1da4f664fca16155e22f64888c88e0083f (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit dd5ef70d128a7f6e0b5855c773468ebb659f8048 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 10:48:54 2015 -0400
+
+    Add more help
+
+commit 9fdb063ea5106a418c2029c33474d55ee717734c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 10:16:49 2015 -0400
+
+    display gid and uid in decimal and include groupnam and username
+
+commit f25c3c96abebbd5f638083bb7319e07d235dece3
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 04:03:24 2015 -0400
+
+    more gfortran products
+
+commit 6a79e3a5c0df76f33276ce34d6303ded0ee938ec
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 04:01:14 2015 -0400
+
+    a few more malloc.h and an addition .gitignore
+
+commit f19177f1b22095286d8b24d22ab395f2e691faf9
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 03:34:36 2015 -0400
+
+    malloc.h is non standard and malloc is declared in stdlib.h
+
+commit 51404cba3e5763f1522ffa354d638258f14b8481 (tag: refs/tags/alpha_release-7-0-20)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 22:21:26 2015 +0000
+
+    New ChangeLog
+
+commit 0e8e3b1da4f664fca16155e22f64888c88e0083f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 18 17:10:49 2015 -0400
 
