@@ -24,7 +24,6 @@
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static int64_t ViewDate = -1;
-static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree);
 
 extern void **TreeCtx();
 
@@ -87,7 +86,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		    TreeGetExtendedAttributes(info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
 					      &attributes);
 		if (status & 1 && attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
-		  status = TreeGetDsc(info, attributes.facility_offset[STANDARD_RECORD_FACILITY],
+		  status = TreeGetDsc(info, nid->tree, attributes.facility_offset[STANDARD_RECORD_FACILITY],
 				      attributes.facility_length[STANDARD_RECORD_FACILITY], dsc);
 		} else if (status & 1
 			   && attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1) {
@@ -151,7 +150,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
   } else
     status = TreeINVTREE;
   if (status & 1)
-    status = MakeNidsLocal((struct descriptor *)dsc, (unsigned char)nid->tree);
+    status = TreeMakeNidsLocal((struct descriptor *)dsc, nid_in);
   return status;
 }
 
@@ -181,9 +180,10 @@ int TreeOpenDatafileR(TREE_INFO * info)
 typedef RECORD(1) record_one;
 typedef ARRAY(struct descriptor *) array_dsc;
 
-static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
+int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid)
 {
   int status = 1;
+  unsigned char tree = ((NID *)&nid)->tree;
   if (dsc_ptr == NULL)
     status = 1;
   else
@@ -196,7 +196,7 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
       if ((dsc_ptr->dtype != DTYPE_DSC) && (dsc_ptr->dtype != DTYPE_NID))
 	status = 1;
       else if (dsc_ptr->dtype == DTYPE_DSC)
-	status = MakeNidsLocal((struct descriptor *)dsc_ptr->pointer, tree);
+	status = TreeMakeNidsLocal((struct descriptor *)dsc_ptr->pointer, nid);
       else if (dsc_ptr->dtype == DTYPE_NID) {
 	NID *nid_ptr = (NID *) dsc_ptr->pointer;
 	if ((nid_ptr->node == 0) && (nid_ptr->tree == 0))
@@ -220,7 +220,7 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
 	record_one *rptr = (record_one *) dsc_ptr;
 	int i;
 	for (i = 0, status = 1; status && (i < rptr->ndesc); i++)
-	  status = MakeNidsLocal(rptr->dscptrs[i], tree);
+	  status = TreeMakeNidsLocal(rptr->dscptrs[i], nid);
       }
       break;
 
@@ -234,7 +234,7 @@ static int MakeNidsLocal(struct descriptor *dsc_ptr, unsigned char tree)
 	int n_elts = aptr->arsize / aptr->length;
 	int i;
 	for (status = 1, i = 0; ((status & 1) && (i < n_elts)); i++)
-	  status = MakeNidsLocal((struct descriptor *)*(aptr->pointer + i), tree);
+	  status = TreeMakeNidsLocal((struct descriptor *)*(aptr->pointer + i), nid);
       }
       break;
 

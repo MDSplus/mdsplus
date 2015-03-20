@@ -686,7 +686,7 @@ extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
 extern int64_t RfaToSeek(unsigned char *rfa);
 void SeekToRfa(int64_t seek, unsigned char *rfa);
 extern int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state);
-
+extern int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid);
 extern int TreeCloseFiles(TREE_INFO * info, int nci, int data);
 extern int TreeCopyExtended(PINO_DATABASE * dbid1, PINO_DATABASE * dbid2, int nid, NCI * nci);
 extern int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes);
@@ -707,7 +707,7 @@ extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
-extern int TreeGetDsc(TREE_INFO * info, int64_t offset, int length, struct descriptor_xd *dsc);
+extern int TreeGetDsc(TREE_INFO * info, int nid, int64_t offset, int length, struct descriptor_xd *dsc);
 extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset,
 				     EXTENDED_ATTRIBUTES * att);
 extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
