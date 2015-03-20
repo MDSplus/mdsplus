@@ -1,4 +1,16 @@
-commit dd5ef70d128a7f6e0b5855c773468ebb659f8048 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6b4a3894397a350c2408fa1a2b85b3f2cd2b68bb (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 16:05:12 2015 -0400
+
+    remove remaining malloc.h includes
+
+commit 65557b51d2e19ac560fedaec4fc4ab6b8eb5c19a (tag: refs/tags/alpha_release-7-0-21)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 16:08:00 2015 +0000
+
+    New ChangeLog
+
+commit dd5ef70d128a7f6e0b5855c773468ebb659f8048
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 19 10:48:54 2015 -0400
 
