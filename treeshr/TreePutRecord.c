@@ -107,6 +107,7 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
   EXTENDED_ATTRIBUTES attributes;
   int extended = 0;
   int64_t extended_offset;
+  int need_to_unlock_nci=0;
   int compress_utility = utility_update == 2;
 #if !defined(HAVE_WINDOWS_H) && !defined(HAVE_VXWORKS_H)
   if (!saved_uic)
@@ -130,6 +131,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
       return status;
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    if (status & 1)
+      need_to_unlock_nci=1;
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci,&local_nci,sizeof(local_nci));
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
@@ -171,7 +174,8 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	local_nci.DATA_INFO.ERROR_INFO.error_status = open_status;
 	length = local_nci.length = 0;
 	TreePutNci(info_ptr, nidx, &local_nci, 1);
-	return open_status;
+	status = open_status;
+	goto done;
       }
       else
       {
@@ -228,8 +232,6 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	      }
 	      if (status & 1)
 		TreePutNci(info_ptr,nidx,nci,1);
-	      else
-		TreeUnLockNci(info_ptr,0,nidx);
 	    } else if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		(nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		utility_update ||
@@ -240,13 +242,14 @@ int       _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr,
 	      status = UpdateDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
 	  }
 	}
-        else
-	  TreeUnLockNci(info_ptr,0,nidx);
       }
     }
   }
   else
     status = TreeINVTREE;
+ done:
+  if (need_to_unlock_nci)
+    TreeUnLockNci(info_ptr, 0, nidx);
   return status;
 }
 
