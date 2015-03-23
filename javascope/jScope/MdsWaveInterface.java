@@ -10,7 +10,7 @@ class MdsWaveInterface
     extends WaveInterface
 {
 
-    public String in_def_node, in_upd_event, last_upd_event;
+    public String in_upd_event, last_upd_event;
 
     // Configuration parameter
     public String cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax,
@@ -113,10 +113,10 @@ class MdsWaveInterface
         in_title = GetDefaultValue(bit, def_flag);
 
         /*
-               bit = MdsWaveInterface.B_shot;
-               def_flag =    ((defaults & (1<<bit)) == 1<<bit);
-               in_shot       = GetDefaultValue(bit ,  def_flag);
-         */
+        bit = MdsWaveInterface.B_shot;
+        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+        in_shot       = GetDefaultValue(bit ,  def_flag);
+        */
 
         bit = MdsWaveInterface.B_exp;
         def_flag = ( (defaults & (1 << bit)) == 1 << bit);
@@ -165,13 +165,13 @@ class MdsWaveInterface
         bit = MdsWaveInterface.B_update;
         def_flag = ( (defaults & (1 << bit)) == 1 << bit);
         in_upd_limits = (new Boolean(GetDefaultValue(bit, def_flag))).
-            booleanValue();
+        booleanValue();
 
         /*
-               bit = MdsWaveInterface.B_event;
-               def_flag =    ((defaults & (1<<bit)) == 1<<bit);
-               in_upd_event = GetDefaultValue(bit , def_flag );
-         */
+        bit = MdsWaveInterface.B_event;
+        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+        in_upd_event = GetDefaultValue(bit , def_flag );
+        */
     }
 
     /**
@@ -230,6 +230,7 @@ class MdsWaveInterface
             if (error == null)
             {
                 UpdateDefault();
+                /* ces 2015
                 if (in_def_node != null)
                 {
                     String def = in_def_node;
@@ -238,6 +239,7 @@ class MdsWaveInterface
 
                     dp.SetEnvironment("__default_node = " + def);
                 }
+                */
             }
             else
             {

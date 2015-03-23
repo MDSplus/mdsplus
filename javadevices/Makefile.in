@@ -381,8 +381,10 @@ java_DATA = jDevices.jar
 SOURCES = \
 ParameterSetting.java \
 ParameterSettingOld.java\
+DEMOADCSetup.java\
 DIO4Setup.java\
 TRCHSetup.java\
+CYGNET4KSetup.java\
 ADC265Setup.java\
 E1463Setup.java\
 VMEWavesSetup.java\

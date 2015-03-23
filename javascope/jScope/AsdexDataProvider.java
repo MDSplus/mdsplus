@@ -457,7 +457,7 @@ class AsdexDataProvider extends MdsDataProvider
     public synchronized void Update(String exp, long s)
 	{
 	    error = null;
-		shot = s;
+	    shot = s;
 	}
 
 	protected String ParseExpression(String in)

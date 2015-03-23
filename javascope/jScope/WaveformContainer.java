@@ -14,6 +14,9 @@ import java.awt.image.*;
 import java.util.Vector;
 import java.awt.print.*;
 import java.awt.geom.*;
+import java.util.Properties;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.RepaintManager;
 import java.awt.datatransfer.*;
 import javax.swing.*;
@@ -43,7 +46,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
    private   Vector       wave_container_listener = new Vector();
    protected boolean      print_with_legend = false;
    protected boolean      print_bw = false;
-
+   protected String       save_as_txt_directory = null;
 
    
       
@@ -1016,6 +1019,170 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
     }
     
 
+   private String getFileName(Waveform w)
+   {
+        String out;
 
+        Properties prop = new Properties();
+        String pr = w.getProperties();
+        try
+        {
+           prop.load( new StringReader(pr) );
+           out = w.GetTitle();
+           out = out + "_" + prop.getProperty("x_pix");
+           out = out + "_" + prop.getProperty("y_pix");
+           out = out + "_" + prop.getProperty("time");
+           out = out.replace('.', '-') + ".txt";
+}
+        catch (Exception e)
+        {
+            out = null;
+        }
+
+        return out;
+   }
+
+   public void SaveAsText(Waveform w, boolean all)
+   {
+
+        Vector panel = new Vector();
+
+        String title = "Save";
+        if (all)
+            title = "Save all signals in text format";
+        else
+        {
+            Point p = this.getWavePosition(w);
+            if (p != null)
+                title = "Save signals on panel (" + p.x + ", " + p.y +") in text format";
+        }
+        JFileChooser file_diag = new JFileChooser();
+        if (save_as_txt_directory != null &&
+            save_as_txt_directory.trim().length() != 0)
+            file_diag.setCurrentDirectory(new File(save_as_txt_directory));
+
+        file_diag.setDialogTitle(title);
+
+        int returnVal = JFileChooser.CANCEL_OPTION;
+        boolean done = false;
+        String txtsig_file = null;
+
+        while (!done)
+        {
+            String fname = getFileName(w);
+            if( fname != null )
+                file_diag.setSelectedFile(new File(fname));
+
+            returnVal = file_diag.showSaveDialog(this);
+            if (returnVal == JFileChooser.APPROVE_OPTION)
+            {
+                File file = file_diag.getSelectedFile();
+                txtsig_file = file.getAbsolutePath();
+
+                if (file.exists())
+                {
+                    Object[] options =
+                        {
+                        "Yes", "No"};
+                    int val = JOptionPane.showOptionDialog(null,
+                        txtsig_file +
+                        " already exists.\nDo you want to replace it?",
+                        "Save as",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.WARNING_MESSAGE,
+                        null,
+                        options,
+                        options[1]);
+
+                    if (val == JOptionPane.YES_OPTION)
+                        done = true;
+                }
+                else
+                    done = true;
+            }
+            else
+                done = true;
+
+        }
+
+        if (returnVal == JFileChooser.APPROVE_OPTION)
+        {
+            if (txtsig_file != null)
+            {
+                save_as_txt_directory = new String(txtsig_file);
+                if (all)
+                {
+                    for (int i = 0; i < GetWaveformCount(); i++)
+                        panel.addElement(GetWavePanel(i));
+
+                }
+                else
+                    panel.addElement(w);
+
+                String s = "", s1 = "", s2 = "";
+                boolean g_more_point, new_line;
+                StringBuffer space = new StringBuffer();
+
+                try
+                {
+                    
+                    BufferedWriter out = new BufferedWriter(new FileWriter(txtsig_file));
+                    out.write("% Title: "+ w.GetTitle());
+                    out.newLine();
+
+                    Properties prop = new Properties();
+                    String pr = w.getProperties();
+                    try
+                    {
+                       prop.load( new StringReader(pr) );
+                       out.write("% Expression: "+ prop.getProperty("expr"));
+                       out.newLine();
+                       out.write("% x_pixel: "+ prop.getProperty("x_pix"));
+                       out.newLine();
+                       out.write("% y_pixel: "+ prop.getProperty("y_pix"));
+                       out.newLine();
+                       out.write("% time: "+ prop.getProperty("time"));
+                       out.newLine();
+                    } catch (Exception e){}
+
+
+                    double xmax = w.GetWaveformMetrics().XMax();
+                    double xmin = w.GetWaveformMetrics().XMin();
+
+                    s1 = "";
+                    s2 = "";
+                    int nPoint = w.waveform_signal.getNumPoints();
+                    for (int j = 0 ; j < nPoint ; j++)
+                    {
+                        double x = w.waveform_signal.getX(j);
+                        if ( x > xmin && x < xmax)
+                        {
+                            s1 = "" + x;
+                            s2 = "" + w.waveform_signal.getY(j);
+                            out.write(s1);
+                            space.setLength(0);
+                            for (int u = 0; u < 25 - s1.length(); u++)
+                                space.append(' ');
+                            space.append(' ');
+                            out.write(space.toString());
+                            out.write(" ");
+                            out.write(s2);
+                            space.setLength(0);
+                            for (int u = 0; u < 25 - s2.length(); u++)
+                                space.append(' ');
+                            out.write(space.toString());
+                            out.newLine();
+                        }
+                    }
+                    out.close();
+                }
+                catch (IOException e)
+                {
+                    System.out.println(e);
+                }
+            }
+            file_diag = null;
+        }
+    }
 }
 

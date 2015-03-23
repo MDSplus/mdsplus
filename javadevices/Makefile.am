@@ -17,6 +17,7 @@ jDevices.jar: classjava.stamp
 SOURCES = \
 ParameterSetting.java \
 ParameterSettingOld.java\
+DEMOADCSetup.java\
 DIO4Setup.java\
 TRCHSetup.java\
 ADC265Setup.java\

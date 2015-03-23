@@ -17,6 +17,7 @@ public class MdsDataProvider
     String provider;
     String experiment;
     String default_node;
+    String environment_vars;
     private boolean def_node_changed = false;
     long shot;
     boolean open, connected;
@@ -391,14 +392,14 @@ public class MdsDataProvider
         boolean xLabelEvaluated = false;
         boolean yLabelEvaluated = false;
         boolean continuousUpdate = false;
-        String experiment;
-        long shot;
+        String wd_experiment;
+        long wd_shot;
         
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
-            this.experiment = experiment;
-            this.shot = shot;
+            this.wd_experiment = experiment;
+            this.wd_shot = shot;
             this.in_y = in_y;
             v_idx = var_idx;
             var_idx+=2;
@@ -421,8 +422,8 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
         {
-            this.experiment = experiment;
-            this.shot = shot;
+            this.wd_experiment = experiment;
+            this.wd_shot = shot;
             this.in_y = in_y;
             this.in_x = in_x;
             v_idx = var_idx;
@@ -629,8 +630,10 @@ public class MdsDataProvider
         {
              String xExpr, yExpr;
              XYData res = null;
-             if (!CheckOpen())
+             
+             if (!CheckOpen(this.wd_experiment, this.wd_shot))
                 return null;
+
              if(segmentMode == SEGMENTED_UNKNOWN)
              {
                 Vector args = new Vector();
@@ -652,7 +655,7 @@ public class MdsDataProvider
                 yExpr =  in_y;
                 _jscope_set = true;
                 if(in_x == null)
-                    xExpr = "DIM_OF("+in_y+")";
+                    xExpr = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var )";
                 else
                     xExpr = in_x;
             }
@@ -661,9 +664,8 @@ public class MdsDataProvider
                  
                 if(in_x == null)
                 {
-                    yExpr = "(_jscope_tmp = "+in_y+";_jscope_tmp;)";
-                    xExpr = "DIM_OF(_jscope_tmp)";
-                     //xExpr = "DIM_OF(+" +in_y+")";
+                    yExpr =  in_y;
+                    xExpr = "__jScope_var = (" +in_y+") ; DIM_OF(__jScope_var)";
                 }
                 else
                 {
@@ -708,17 +710,17 @@ public class MdsDataProvider
                 }
                 else
                 {
-                    args.addElement(new Descriptor(null, new float[]{(float)xmin}));
-                    args.addElement(new Descriptor(null, new float[]{(float)xmax}));
+                args.addElement(new Descriptor(null, new float[]{(float)xmin}));
+                args.addElement(new Descriptor(null, new float[]{(float)xmax}));
                 }
                 args.addElement(new Descriptor(null, new int[]{numPoints}));
                 byte[] retData;
                 int nSamples;
                 try {
                     if(isLong)
-                        retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
                     else
-                        retData = GetByteArray("JavaOpen(\""+experiment+"\", "+shot+"); "+setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -778,7 +780,7 @@ public class MdsDataProvider
                             maxX = 0;
                    }
                     //Get title, xLabel and yLabel
-                    int titleLen = dis.readInt();
+                   int titleLen = dis.readInt();
                     if(titleLen > 0)
                     {
                         byte []titleBuf = new byte[titleLen];
@@ -792,7 +794,7 @@ public class MdsDataProvider
                         dis.readFully(xLabelBuf);
                         xLabel = new String(xLabelBuf);
                     }
-
+                
                     int yLabelLen = dis.readInt();
                     if(yLabelLen > 0)
                     {
@@ -850,18 +852,44 @@ public class MdsDataProvider
         }
         public float[] getX2D()
         {
-            String in = "DIM_OF("+in_y+", 0)";
+            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0)";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
         }
         public float[] getY2D()
         {
-            String in = "DIM_OF("+in_y+", 1)";
+            String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1)";
             try {
                 return GetFloatArray(in);
             }catch(Exception exc){return null;}
         }
+
+        //Cesare Mar 2015
+        
+        public float[] getX_Z()
+        {
+            try {
+                return GetFloatArray(in_x);
+            }catch(Exception exc){return null;}
+        }
+        public float[] getX_X2D()
+        {
+            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 0)";
+            try {
+                return GetFloatArray(in);
+            }catch(Exception exc){return null;}
+        }
+        public float[] getX_Y2D()
+        {
+            String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 1)";
+            try {
+                return GetFloatArray(in);
+            }catch(Exception exc){return null;}
+        }
+        //End
+        
+        
         //public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
         //public long []getXLong(){System.out.println("BADABUM!!"); return null;}
         public boolean isXLong(){return isXLong;}
@@ -1096,7 +1124,12 @@ public class MdsDataProvider
     public FrameData GetFrameData(String in_y, String in_x, float time_min,
                                   float time_max) throws IOException
     {
-        int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
+        int[] numSegments = null; 
+        try
+        {
+            numSegments = GetIntArray("GetNumSegments("+in_y+")");
+        } catch(Exception exc){ error = null;}
+        
         if(numSegments != null && numSegments[0] > 0)
             return new SegmentedFrameData(in_y, in_x, time_min, time_max, numSegments[0]);
         else
@@ -1120,7 +1153,7 @@ public class MdsDataProvider
 
         String in;
 
-        in = "DIM_OF( _jScope_img = " + in_frame + ", 2)";
+        in = "DIM_OF( _jScope_img = (" + in_frame + "), 2)";
         time = GetFloatArray(in);
         if (time == null || ((time.length >= 2 ) && (time[1] == 1.0)))
         {
@@ -1274,30 +1307,37 @@ public class MdsDataProvider
         return error;
     }
 
+    /* ces 2015
     public synchronized void Update(String exp, long s)
     {
         error = null;
-//        var_idx = 0;
-        /*
-                 if(exp == null || exp.length() == 0)
-                 {
-            experiment = null;
-            open = true;
-            shot = s;
-            return;
-                 }
-         */
+        var_idx = 0;
+        
+        //if(exp == null || exp.length() == 0)
+        //{
+        //    experiment = null;
+        //    open = true;
+        //    shot = s;
+        //    return;
+        //}
+        
         if (s != shot || s == 0 || experiment == null ||
             experiment.length() == 0 || !experiment.equals(exp))
         {
-            //  System.out.println("Close "+experiment+ " "+shot);
+        //  System.out.println("Close "+experiment+ " "+shot);
             experiment = ( (exp != null && exp.trim().length() > 0) ? exp : null);
             shot = s;
             open = false;
-            //  System.out.println("Open "+experiment+ " "+s);
+        //  System.out.println("Open "+experiment+ " "+s);
         }
     }
-
+    */
+    
+    public synchronized void Update(String experiment, long shot)
+    {
+        Update( experiment,  shot, false);
+    }
+    
     public synchronized void Update(String experiment, long shot, boolean resetExperiment)
     {
         this.error = null;
@@ -1355,11 +1395,8 @@ public class MdsDataProvider
         if (in == null || in.length() == 0)
             return;
 
-        if(in.indexOf("pulseSetVer") != 0)
-        {
-            open = false;
-        }
-
+        
+ 
         Properties pr = new Properties();
         pr.load(new ByteArrayInputStream(in.getBytes()));
         String def_node = ( (String) pr.getProperty("__default_node"));
@@ -1371,20 +1408,35 @@ public class MdsDataProvider
             {
                 default_node = (def_node.length() == 0) ? null : def_node;
                 def_node_changed = true;
-                return;
             }
+            return;
         }
+        
+        if( in.indexOf("pulseSetVer") >= 0 )
+        {
+            open = false;
+        }
+        
+        if( environment_vars == null || !environment_vars.equalsIgnoreCase(in) )
+        {
+            open = false;
+            environment_vars = in;
+        }
+    
+/*        
         error = null;
-        //Update(null , 0);
         if (!CheckOpen())
         {
             error = "Cannot connetion to data server";
             return;
         }
-        SetEnvironmentSpecific(in, default_node);
+        
+        if (def_node == null)
+            SetEnvironmentSpecific(in);
+*/        
     }
 
-    void SetEnvironmentSpecific(String in, String defaultNode)
+    void SetEnvironmentSpecific(String in)
     {
 
         Descriptor desc = mds.MdsValue(in);
@@ -1817,6 +1869,11 @@ public class MdsDataProvider
 
     protected synchronized boolean CheckOpen() throws IOException
     {
+        return CheckOpen( this.experiment,  this.shot);
+    }
+    
+    protected synchronized boolean CheckOpen(String experiment, long shot) throws IOException
+    {
         int status;
         if (!connected)
         {
@@ -1832,7 +1889,7 @@ public class MdsDataProvider
             }
             connected = true;
         }
-        if (!open && experiment != null)
+        if (!open && experiment != null || this.shot != shot || !this.experiment.equalsIgnoreCase(experiment) )
         {
             //System.out.println("Open tree "+experiment+ " shot "+ shot);
             Descriptor descr = mds.MdsValue("JavaOpen(\"" + experiment + "\"," +
@@ -1841,14 +1898,21 @@ public class MdsDataProvider
                 && descr.dtype == Descriptor.DTYPE_LONG && descr.int_data != null
                 && descr.int_data.length > 0 && (descr.int_data[0] % 2 == 1))
             {
-                /*
-                              if(default_node != null)
-                     descr = mds.MdsValue("TreeSetDefault(\""+default_node+"\")");
-                              else
-                     descr = mds.MdsValue("TreeSetDefault(\"\\\\"+experiment+"::TOP\")");
-                 */
                 open = true;
                 def_node_changed = true;
+                this.shot = shot;
+                this.experiment = experiment;
+                
+                if( environment_vars != null && environment_vars.length() > 0 )
+                {
+                    this.SetEnvironmentSpecific(environment_vars);
+                    if(error != null)
+                    {
+                        error = "Public variable evaluation error " + experiment + " shot " +
+                        shot + " : " + error;
+                      return false;
+                    }
+                }
             }
             else
             {
@@ -1859,20 +1923,19 @@ public class MdsDataProvider
                     error = "Cannot open experiment " + experiment + " shot " +
                         shot;
                 return false;
-                //return true;
             }
         }
         if (open && def_node_changed)
         {
             Descriptor descr;
-            String set_node;
             if (default_node != null)
             {
-                descr = mds.MdsValue("TreeSetDefault(\"" + default_node + "\")");
+                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
+                if( (descr.int_data[0] & 1 ) == 0   )
+                    mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
             }
             else
-                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + experiment +
-                                     "::TOP\")");
+                descr = mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
 
             def_node_changed = false;
         }
@@ -2136,5 +2199,4 @@ public class MdsDataProvider
         }
 
     }
-
 }

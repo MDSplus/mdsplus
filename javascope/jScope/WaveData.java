@@ -22,7 +22,7 @@ interface WaveData
 
     /**
      * Get Y data (for unidimensional signals) or Z data (for bidimensional signals) as a float array.
-     * If bidimensional sugnals are returned, values are ordered by rows.
+     * If bidimensional signals are returned, values are ordered by rows.
      *
      * @return The signal Y or Z data coded as a float array.
      * @exception java.io.IOException
@@ -35,6 +35,8 @@ interface WaveData
     float[] getZ();
     float[] getX2D();
     float[] getY2D(); 
+
+    
  //   double[] getXLimits();
  //   long []getXLong();
     boolean isXLong();
