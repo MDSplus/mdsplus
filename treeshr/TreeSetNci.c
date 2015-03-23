@@ -47,8 +47,6 @@
 #include <treeshr.h>
 #include <ncidef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
 extern int SetNciRemote();
@@ -168,13 +166,12 @@ int _TreeFlushOff(void *dbid, int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid_ptr = (NID *) & nid;
-  int node_number;
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
     return TreeNOTOPEN;
   if (dblist->remote)
     return TreeFlushOffRemote(dbid, nid);
-  nid_to_tree_nidx(dblist, nid_ptr, tree_info, node_number);
+  nid_to_tree(dblist, nid_ptr, tree_info);
   if (!tree_info)
     return TreeNNF;
   tree_info->flush = 0;
@@ -185,13 +182,12 @@ int _TreeFlushReset(void *dbid, int nid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid_ptr = (NID *) & nid;
-  int node_number;
   TREE_INFO *tree_info;
   if (!(IS_OPEN(dblist)))
     return TreeNOTOPEN;
   if (dblist->remote)
     return TreeFlushResetRemote(dbid, nid);
-  nid_to_tree_nidx(dblist, nid_ptr, tree_info, node_number);
+  nid_to_tree(dblist, nid_ptr, tree_info);
   if (!tree_info)
     return TreeNNF;
   if ((tree_info->flush == 0) && (dblist->shotid == -1)) {
@@ -687,8 +683,7 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
     return TreeNNF;
   node_num = (int)(node - info->node);
   status = TreeGetNciLw(info, node_num, nci);
-  if (status & 1)
-  {
+  if (status & 1) {
     bitassign(state, nci->flags, NciM_PARENT_STATE);
     status = TreePutNci(info, node_num, nci, 0);
   }
@@ -722,9 +717,8 @@ int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted)
 
 int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum)
 {
-  int status =
-      MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
-		  MDS_IO_LOCK_NONE, 0);
+  int status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42,
+			   MDS_IO_LOCK_NONE, 0);
   UnlockMdsShrMutex(&NCIMutex);
   return status;
 }

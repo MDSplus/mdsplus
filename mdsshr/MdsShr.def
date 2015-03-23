@@ -94,3 +94,4 @@ libfreevm_
 libgetvm
 libgetvm_
 LibFindImageSymbol_C
+MdsGetStdMsg

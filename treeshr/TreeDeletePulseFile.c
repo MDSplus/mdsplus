@@ -45,16 +45,8 @@ extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 extern char *MaskReplace();
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot);
-
-#if defined(_WIN32)
-#include <windows.h>
-#else
-STATIC_ROUTINE int DeleteFile(char *src);
-#endif
 
 int TreeDeletePulseFile(int shotid, int allfiles)
 {
@@ -127,11 +119,7 @@ STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot)
   tree_lower[i] = 0;
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
-#if defined(__VMS)
-  pathin = strcpy(malloc(strlen(pathname) + 1, pathname);
-#else
   pathin = TranslateLogical(pathname);
-#endif
   if (pathin) {
     pathlen = strlen(pathin);
     path = malloc(pathlen + 1);
@@ -181,11 +169,3 @@ STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot)
   }
   return retstatus ? status : 0;
 }
-
-#if !defined(_WIN32)
-STATIC_ROUTINE int DeleteFile(char *src)
-{
-  int status = remove(src);
-  return status == 0;
-}
-#endif

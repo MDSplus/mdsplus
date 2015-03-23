@@ -32,8 +32,6 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 int MdsCompareXd(struct descriptor *dsc1_ptr, struct descriptor *dsc2_ptr)
 {
   struct descriptor *d1 = dsc1_ptr;

@@ -41,8 +41,6 @@ int TreeDoMethod( nid_dsc, method_dsc [,args]...)
 #include <mdsshr_messages.h>
 #include <ctype.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 #define  count(num) va_start(incrmtr, method_ptr); \
                      for (num=2; (num < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG);  num++)
 
@@ -103,12 +101,10 @@ int _TreeDoMethod(void *dbid, struct descriptor *nid_dsc, struct descriptor *met
   };
   void (*addr) ();
   static void (*TdiExecute) () = 0;
-  static void (*TdiEvaluate) () = 0;
   STATIC_CONSTANT DESCRIPTOR(close, "$)");
   STATIC_CONSTANT DESCRIPTOR(arg, "$,");
   STATIC_CONSTANT DESCRIPTOR(tdishr, "TdiShr");
   STATIC_CONSTANT DESCRIPTOR(tdiexecute, "TdiExecute");
-  STATIC_CONSTANT DESCRIPTOR(tdievaluate, "TdiEvaluate");
   static struct descriptor_xd xd = { 0, 0, CLASS_XD, 0, 0 };
   static DESCRIPTOR(underunder, "__");
   static struct descriptor_d method = { 0, DTYPE_T, CLASS_D, 0 };

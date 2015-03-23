@@ -7,8 +7,6 @@
 #include "treeshrp.h"
 #include <ctype.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
@@ -857,7 +855,6 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
   TREE_INFO *info_ptr;
   char *answer = NULL;
   NODE *node_ptr;
-  int nidx;
   int *ctx = (int *)ctx_ptr;
   if (!(IS_OPEN(dblist)))
     return NULL;
@@ -878,7 +875,7 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
  calls.
 **********************************************************/
 
-  nid_to_tree_nidx(dblist, nid, info_ptr, nidx);
+  nid_to_tree(dblist, nid, info_ptr);
   if (info_ptr) {
 
   /*********************************************************

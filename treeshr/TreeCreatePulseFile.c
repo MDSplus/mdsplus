@@ -43,8 +43,6 @@ extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 extern char *MaskReplace();
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it);
 #include <fcntl.h>
 #ifdef _WIN32
@@ -157,11 +155,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
   tree_lower[i] = 0;
   strcpy(pathname, tree_lower);
   strcat(pathname, TREE_PATH_SUFFIX);
-#if defined(__VMS)
-  pathin = strcpy(malloc(strlen(pathname) + 1, pathname);
-#else
   pathin = TranslateLogical(pathname);
-#endif
   if (pathin) {
     pathlen = strlen(pathin);
     for (itype = 0; itype < 3 && (status & 1); itype++) {

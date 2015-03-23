@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <messages>
-  <facility name="DEV$_" value="10108">
+  <facility name="DEV" value="10108">
     <status name="BAD_ENDIDX" value="4097" severity="Error"
 	    text="unable to read end index for channel"
 	    facabb="DEV"/>
