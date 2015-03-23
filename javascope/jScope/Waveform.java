@@ -1658,12 +1658,13 @@ public class Waveform
               {
                   if (is_image && frames != null)
                   {
-                      Point p = frames.getFramePoint(new Point(end_x, end_y),
-                          new
-                          Dimension(prev_width, prev_height));
-                      p = frames.getImagePoint(p, d);
-                      end_x = p.x;
-                      end_y = p.y;
+                      try {
+                          Point p = frames.getFramePoint(new Point(end_x, end_y),
+                              new Dimension(prev_width, prev_height));
+                          p = frames.getImagePoint(p, d);
+                          end_x = p.x;
+                          end_y = p.y;
+                      }catch (Exception exc){}
                   }
               }
 
