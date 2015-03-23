@@ -1,0 +1,60 @@
+SUBDIRS = . testing
+
+include ${top_srcdir}/Makefile.inc
+
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
+
+CPPFLAGS += -I$(top_srcdir)/tdishr
+CFLAGS += @SRBINCLUDE@
+CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @LIBS@ @SRBLIB@
+
+CXXSOURCES = \
+        mdsdataobjects.cpp \
+        mdstreeobjects.cpp \
+        mdsipobjects.cpp \
+        mdseventobjects.cpp
+
+SOURCES = mdsdata.c mdstree.c
+
+OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
+EXPORTS = MdsObjectsCppShr.exports
+
+@VS_TRUE@ VSDLL=@MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKELIBDIR@MdsObjectsCppShr-VS.lib @MAKELIBDIR@MdsObjectsCppShr-VS.exp
+
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(VSDLL)
+
+clean:
+	@ $(RM) $(OBJECTS)
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(VSDLL)
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a
+
+depend:
+	@makedepend -- $(CFLAGS) -- $(SOURCES)
+
+install: $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(libdir)
+	@VS_TRUE@ $(INSTALL) -m 755 @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKESHLIBDIR@*.lib $(libdir)
+	if test @SHARETYPE@ != .a ; then \
+	        $(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(libdir); \
+	fi;
+
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) @EXPORTS_FILE@
+	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr $(MAKE_IMPLIB) $(CXXFLAGS)
+
+@MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a : $(OBJECTS)
+	$(AR) -cr $@ $(OBJECTS)
+	@RANLIB@ $@
+
+ObjectsCppShr.exports: MdsObjectsCppShr.def
+	$(SED) -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
+
+
+if VS
+$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB)
+        for i in $$(find $(top_srcdir) -follow -name '*.def'); do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$$i"; done
+        wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
+endif
+
+
