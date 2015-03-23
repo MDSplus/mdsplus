@@ -18,7 +18,7 @@
 #include <mdsshr.h>
 #include <stdlib.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT EMPTYXD(emptyxd);
 

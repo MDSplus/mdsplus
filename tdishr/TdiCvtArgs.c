@@ -15,7 +15,7 @@
 #define SIGNEDNESS      (TdiCAT_B ^ TdiCAT_BU)
 #define FLOATMASK       (TdiCAT_FLOAT | TdiCAT_LENGTH)
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiConvert();
 extern int TdiGetShape();

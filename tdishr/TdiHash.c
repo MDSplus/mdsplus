@@ -19,7 +19,7 @@ STATIC_THREADSAFE short TdiREF_HASH[1024];	/*TdiHASH_MAX]; */
 #include <string.h>
 #include <stdio.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 #define upcase(ptr) ((*(char *)(ptr) >= 'a' && *(char *)(ptr) <= 'z') ? *(char *)(ptr) & 0xdf : *(char *)(ptr))
 

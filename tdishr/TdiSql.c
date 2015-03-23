@@ -50,7 +50,7 @@
 #define MAX(a,b) (((a) > (b)) ? (a): (b))
 #endif
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int stat;
 extern int TdiFindImageSymbol();

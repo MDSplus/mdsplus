@@ -33,7 +33,7 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 #include <mdstypes.h>
 #include <tdishr_messages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();

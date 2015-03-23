@@ -16,7 +16,7 @@
 #include "opcbuiltins.h"
 #undef OPC
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 	/******************************
         Shorthand for conversions:

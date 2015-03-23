@@ -17,7 +17,7 @@
 #include <treeshr.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT DESCRIPTOR(pathtext, "PATH");
 STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");

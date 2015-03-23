@@ -29,7 +29,7 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern unsigned short OpcDescr;
 extern unsigned short OpcRef;

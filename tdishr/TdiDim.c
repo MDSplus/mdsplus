@@ -60,7 +60,7 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiConvert();
 extern int Tdi3Subtract();

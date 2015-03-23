@@ -20,7 +20,7 @@
 #include "tdirefstandard.h"
 #include <libroutines.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int Tdi3undef();
 extern int TdiGetArgs();

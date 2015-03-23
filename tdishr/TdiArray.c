@@ -33,7 +33,7 @@
 #include <unistd.h>
 #endif
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 int Tdi_RandomSeed = 1234567;
 

@@ -52,7 +52,7 @@ int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 typedef struct {
   int longword[2];
