@@ -69,7 +69,6 @@ public class Descriptor
         this.long_data = long_data;
     }
 
-
     public Descriptor(int dims[], float float_data[])
     {
         this.dtype = DTYPE_FLOAT;

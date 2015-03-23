@@ -52,6 +52,9 @@ public class WaveformEvent
     private long dateValue;
     boolean showXasDate = false;
 
+    int x_pixel;
+    int y_pixel;
+
     public WaveformEvent(Object source, int event_id, String status_info)
     {
         super(source, event_id);
@@ -109,12 +112,18 @@ public class WaveformEvent
     }
 
     public WaveformEvent(Object source,
+                         int x_pixel,
+                         int y_pixel,
+                         float frame_time,
                          String name,
                          int pixels_x[], int start_pixel_x,
                          int pixels_y[], int start_pixel_y)
                          //int pixels_signal[], float frames_time[])
     {
         super(source, PROFILE_UPDATE);
+        this.x_pixel = x_pixel;
+        this.y_pixel = y_pixel;
+        this.time_value = frame_time;
         this.name = name;
         this.pixels_x = pixels_x;
         this.pixels_y = pixels_y;
@@ -125,12 +134,18 @@ public class WaveformEvent
     }
 
     public WaveformEvent(Object source,
+                         int x_pixel,
+                         int y_pixel,
+                         float frame_time,
                          String name,
                          float values_x[], int start_pixel_x,
                          float values_y[], int start_pixel_y)
                          //float values_signal[], float frames_time[])
     {
         super(source, PROFILE_UPDATE);
+        this.x_pixel = x_pixel;
+        this.y_pixel = y_pixel;
+        this.time_value = frame_time;
         this.name = name;
         this.values_x = values_x;
         this.values_y = values_y;

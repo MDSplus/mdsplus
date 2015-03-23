@@ -389,9 +389,9 @@ public class jScopeFacade
                 if (txt1.length() != 0 && txt2.length() != 0)
                 {
                     if (txt1.indexOf("_") != 0)
-                        str = "public _" + txt1 + " = " + txt2 + ";";
+                        str = "public _" + txt1 + " = ( " + txt2 + ";)";
                     else
-                        str = "public " + txt1 + " = " + txt2 + ";";
+                        str = "public " + txt1 + " = (" + txt2 + ";)";
                     buf.append(str);
                 }
             }
@@ -414,9 +414,9 @@ public class jScopeFacade
                 if (txt1.length() != 0 && txt2.length() != 0)
                 {
                     if (txt1.indexOf("_") != 0)
-                        str = "public _" + txt1 + " = " + txt2 + ";";
+                        str = "public _" + txt1 + " = (" + txt2 + ";)";
                     else
-                        str = "public " + txt1 + " = " + txt2 + ";";
+                        str = "public " + txt1 + " = (" + txt2 + ";)";
                     buf.append(str);
                 }
             }
@@ -517,7 +517,8 @@ public class jScopeFacade
             {
                 StringTokenizer st = new StringTokenizer(prop, "=");
                 String name = st.nextToken();
-                String expr = st.nextToken();
+                String expr = st.nextToken("");
+                expr =   expr.substring(expr.indexOf('=') + 1) ;//remove first = character in the expression
                 name_list.insertElementAt(name.trim(), idx);
                 expr_list.insertElementAt(expr.trim(), idx);
                 idx++;

@@ -261,7 +261,7 @@ class Frames extends Canvas
             if(fDesc.updateCount == updateCount) //fDesc.updatedImage  is still ok
                 return fDesc.updatedImage;
             //Othewise it is necessary to update it
-            ColorModel colorModel = colorMap.getIndexColorModel(pixelSize);
+            ColorModel colorModel = colorMap.getIndexColorModel( (pixelSize < 32 ? pixelSize : 16) );
             Image img = new BufferedImage(colorModel, ((BufferedImage)fDesc.image).getRaster(), false, null);
             if(bitShift != 0)
             {
@@ -952,7 +952,7 @@ class Frames extends Canvas
     {
         if(!isInImage(idx, x, y))
             return -1;
-        curr_grab_frame = idx;
+        //curr_grab_frame = idx;
         byte[] imgBuf = cache.getBufferAt(idx);
         if(imgBuf != null)
             return (int)imgBuf[(y * img_width) + x];
@@ -964,7 +964,7 @@ class Frames extends Canvas
         if(!isInImage(idx, x, y))
             return -1;
 
-        curr_grab_frame = idx;
+        //curr_grab_frame = idx;
         values_array = cache.getValuesAt(idx);
         return values_array[(y * img_width) + x];
     }
