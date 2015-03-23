@@ -1,4 +1,22 @@
-commit 31019fb9a67070c01138b8a11b316d98ba639ed7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 09e4323a026eeee4c6033c0a808b5b9f53ca178e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 17:02:11 2015 -0400
+
+    Fix more compile warnings with -Wall
+
+commit 019c3156d21f2d37059aaf0d41f355dcf17948d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 16:38:22 2015 -0400
+
+    Fix some of compiler warnings in TdiShr when compiling with -Wall option
+
+commit 82f073e2624f763f5c99e7f87e43844a7c5d977d (tag: refs/tags/alpha_release-7-0-24)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 23 14:40:38 2015 -0400
+
+    New ChangeLog
+
+commit 31019fb9a67070c01138b8a11b316d98ba639ed7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 23 14:12:36 2015 -0400
 
