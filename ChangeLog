@@ -1,4 +1,53 @@
-commit 45d11872fe474693f6e6d335e913bfe5aaad8623 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 31019fb9a67070c01138b8a11b316d98ba639ed7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 14:12:36 2015 -0400
+
+    Remove compiler warnings using the -Wall compiler option
+
+commit 296ade98f25d13ddfa1f8c1f1d242ccdf6f6fc43
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 13:44:25 2015 -0400
+
+    Fix memory override on an error message
+
+commit cb7e9f03e9fbbbbb0af43f2c27360065118cd13d
+Merge: 5685e90 8706c98
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 08:41:00 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 5685e9016798174daf23b6f38a58908ec452b24f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 08:40:55 2015 -0400
+
+    Show no date inserted time if time is 0
+
+commit 8706c98a6259fd2b53cae0135b4991754e0f06a8
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 11:02:16 2015 +0100
+
+    Add DEMOADC
+
+commit c9415dff7f7c02c4825f7d5c0bb03c0905f2627c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 10:54:55 2015 +0100
+
+    Add try block
+
+commit c7c63438e927d3e8a2c1a89ba315aaa3de008cb7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 10:18:57 2015 +0100
+
+    Last fixes
+
+commit 432e4ad6c81bf7de1939b1eb38427f394367e4fd (tag: refs/tags/alpha_release-7-0-23)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 20 22:19:11 2015 +0000
+
+    New ChangeLog
+
+commit 45d11872fe474693f6e6d335e913bfe5aaad8623
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 20 17:26:54 2015 -0400
 
