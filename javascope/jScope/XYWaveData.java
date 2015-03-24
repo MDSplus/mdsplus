@@ -18,6 +18,7 @@ public class XYWaveData implements WaveData
     double x[];
     float y[];
     float x2D[];
+    long x2DLong[];
     float y2D[];
     float z[];
     long xLong[];
@@ -123,11 +124,11 @@ public class XYWaveData implements WaveData
     XYWaveData(long x[], float y[], float z[])
     {
        type = Signal.TYPE_2D;
-        this.x2D = new float[x.length];
+        this.x2DLong = new long[x.length];
         this.y2D = new float[y.length];
         this.z = new float[z.length];
         for(int i = 0; i < x.length; i++)
-            this.x2D[i] = x[i];
+            this.x2DLong[i] = x[i];
         for(int i = 0; i < y.length; i++)
             this.y2D[i] = y[i];
         for(int i = 0; i < z.length; i++)
@@ -266,6 +267,16 @@ public class XYWaveData implements WaveData
         System.out.println("INTERNAL ERROR SimpleWave.getZ for 1D signal");
         return null;
     }
+
+    public long[] getX2DLong() 
+    {
+        if(type == Signal.TYPE_2D)
+            return x2DLong;
+        System.out.println("INTERNAL ERROR SimpleWave.getZ2dLong for 1D signal");
+        return null;
+    }
+
+    
     public float[] getY2D() 
     {
         if(type == Signal.TYPE_2D)

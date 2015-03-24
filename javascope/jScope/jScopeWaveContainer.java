@@ -37,7 +37,6 @@ class jScopeWaveContainer
 
     DataProvider dp;
     private jScopeDefaultValues def_vals;
-    private boolean supports_fast_network = false;
     private boolean supports_local = true;
     private String title = null;
     private DataServerItem server_item = null;
@@ -318,30 +317,8 @@ remove 28/06/2005
         return server_item.name;
     }
 
-    public boolean SupportsFastNetwork()
-    {
-        return supports_fast_network;
-    }
 
-    public boolean SupportsCompression()
-    {
-        if (dp != null)
-            return dp.SupportsCompression();
-        else
-            return false;
-    }
-
-    public void SetCompression(boolean state, UpdateEventListener l) throws
-        IOException
-    {
-        if (dp != null && dp.SupportsCompression())
-        {
-            RemoveAllEvents(l);
-            dp.SetCompression(state);
-            AddAllEvents(l);
-        }
-    }
-
+ 
     public void FreeCache()
     {
         WaveInterface.FreeCache();
@@ -672,11 +649,7 @@ remove 28/06/2005
         return (server_item != null ? server_item.enable_cache : false);
     }
 
-    public boolean IsCompressionEnabled()
-    {
-        return (server_item != null ? server_item.enable_compression : false);
-    }
-
+ 
     public void SetModifiedState(boolean state)
     {
         jScopeMultiWave w;
@@ -1100,15 +1073,6 @@ remove 28/06/2005
                 server_item.enable_cache = false;
             }
 
-            try
-            {
-                server_item.enable_compression = new Boolean(pr.getProperty(
-                    prompt + ".enable_compression")).booleanValue();
-            }
-            catch (Exception exc)
-            {
-                server_item.enable_compression = false;
-            }
         }
         return server_item;
     }
@@ -1392,7 +1356,6 @@ remove 28/06/2005
             switch (option)
             {
                 case DataProvider.LOGIN_OK:
-                    supports_fast_network = dp.SupportsFastNetwork();
                     dp.SetArgument(server_item.argument);
                     break;
                 case DataProvider.LOGIN_ERROR:
@@ -1563,10 +1526,6 @@ remove 28/06/2005
             if (server_item.enable_cache)
                 WaveInterface.WriteLine(out, prompt + "enable_cache: ",
                                         "" + server_item.enable_cache);
-
-            if (server_item.enable_compression)
-                WaveInterface.WriteLine(out, prompt + "enable_compression: ",
-                                        "" + server_item.enable_compression);
 
         }
         WaveInterface.WriteLine(out, prompt + "update_event: ", event);

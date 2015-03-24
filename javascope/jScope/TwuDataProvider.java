@@ -62,6 +62,7 @@ class TwuDataProvider
     //     interface methods for getting *Data objects
     //  ---------------------------------------------------
 
+    public void enableAsyncUpdate(boolean enable){}
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max)
         throws IOException
     {

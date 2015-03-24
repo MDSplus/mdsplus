@@ -1,4 +1,48 @@
-commit 09e4323a026eeee4c6033c0a808b5b9f53ca178e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit bd334693b314b4328819393335296dfd95fe87fa (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 24 12:17:35 2015 +0100
+
+    Make it faster
+
+commit 6bc4f74dc330099c88a964716e70c5d997097a73
+Merge: d26955a 22f3be0
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Mar 24 11:50:44 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d26955a7e60a34ce8ab5f3622436b0599a877cc9
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Mar 24 11:49:59 2015 +0100
+
+    Fixes
+
+commit 22f3be09bf6bcbde59f695bf82310f97dc61424f (tag: refs/tags/alpha_release-7-0-26)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 24 02:45:25 2015 +0000
+
+    New ChangeLog
+
+commit e3173969dd840086d73d2abb4ce429606b79c786
+Merge: 8953fa2 ff99e39
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 22:26:57 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 8953fa2a3abd2e63aa85b12e5a0fb4e4b0e52090
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 22:26:23 2015 -0400
+
+    Fix phase name parameter in DISPATCH/PHASE command
+
+commit ff99e3917520dc2fdb580420a5b0a4d688248762 (tag: refs/tags/alpha_release-7-0-25)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 23 22:19:48 2015 +0000
+
+    New ChangeLog
+
+commit 09e4323a026eeee4c6033c0a808b5b9f53ca178e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 23 17:02:11 2015 -0400
 

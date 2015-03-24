@@ -947,6 +947,8 @@ public class WaveInterface
         if (is_image)
             return;
 
+        dp.enableAsyncUpdate(false);
+
         for (curr_wave = 0; curr_wave < num_waves; curr_wave++)
         {
             if ( ( shot == 0 ) || ( shots[curr_wave] == shot && !evaluated[curr_wave] &&
@@ -968,7 +970,8 @@ public class WaveInterface
                 }
             }
         }
-    }
+        dp.enableAsyncUpdate(true);
+   }
 
     public void setLimits()
     {

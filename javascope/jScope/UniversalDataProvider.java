@@ -50,6 +50,7 @@ class UniversalDataProvider implements DataProvider
 
     public void setContinuousUpdate(){}
 
+    public void enableAsyncUpdate(boolean enable){}
     protected DataProvider SelectProvider(String spec)
     {
         if(spec.startsWith("rfx:"))
