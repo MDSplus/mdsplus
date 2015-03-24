@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<messages>
+  <facility name="Lib" value="21">
+    <status name="INSVIRMEM" value="4162" severity="Fatal" text="Insufficient virtual memory"/>
+    <status name="INVARG" value="4166" severity="Fatal" text="Invalid argument"/>
+    <status name="INVSTRDES" value="4164" severity="Fatal" text="Invalid string descriptor"/>
+    <status name="KEYNOTFOU" value="4191" severity="Fatal" text="Key not found"/>
+    <status name="NOTFOU" value="4174" severity="Fatal" text="Entity not found"/>
+    <status name="QUEWASEMP" value="4189" severity="Fatal" text="Queue was empty"/>
+    <status name="STRTRU" value="4098" severity="Success" text="String truncated"/>
+  </facility>
+  <facility name="Str" value="36">
+    <status name="MATCH" value="4227" severity="Success" text="Strings match"/>
+    <status name="NOMATCH" value="4161" severity="Warning" text="Strings do not match"/>
+    <status name="NOELEM" value="4163" severity="Warning" text="Not enough delimited characters"/>
+    <status name="INVDELIM" value="4162" severity="Warning" text="Not enough delimited characters"/>
+    <status name="STRTOOLON" value="4110" severity="Fatal" text="String too long"/>
+  </facility>
+  <facility name="Ss" value="0">
+    <status name="INTOVF" value="143" severity="Fatal" text="Integer overflow"/>
+  </facility>
+</messages>

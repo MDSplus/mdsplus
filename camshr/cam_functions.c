@@ -47,7 +47,7 @@
 #include <scsi/sg.h>
 
 #include <camdef.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include "common.h"
 #include "prototypes.h"
 

@@ -46,11 +46,9 @@
 ------------------------------------------------------------------------------*/
 #include <string.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <math.h>
 #include <STATICdef.h>
-
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiConvert();
 extern int TdiSubtractQuadword();
@@ -74,7 +72,7 @@ typedef struct {
 
 #define negate128 TdiSubtractOctaword(&octazero,&in[i],&out[i])
 
-STATIC_CONSTANT octaword octazero = { 0, 0, 0, 0 };
+STATIC_CONSTANT octaword octazero = {{{{0,0}},{{0,0}}}};
 
 #define copy64 out[i].int32[0]=in[i].int32[0]; out[i].int32[1]=in[i].int32[1]
 #define zero64 out[i].int32[0]=0; out[i].int32[1]=0

@@ -185,21 +185,21 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
   *out_dim = 0;
   switch (type) {
   case FLOAT:
-    expanded_in = malloc(strlen(in) + 16);
-    sprintf(expanded_in, "fs_float((%s))", in);
+    expanded_in = malloc(strlen(in) + 40);
+    sprintf(expanded_in, "_xxx = %s;fs_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case DOUBLE:
-    expanded_in = malloc(strlen(in) + 16);
-    sprintf(expanded_in, "ft_float((%s))", in);
+    expanded_in = malloc(strlen(in) + 40);
+    sprintf(expanded_in, "_xxx = %s;ft_float(_xxx)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
   case BYTE:
   case LONG:
-    expanded_in = malloc(strlen(in) + 16);
-    sprintf(expanded_in, "long((%s))", in);
+    expanded_in = malloc(strlen(in) + 40);
+    sprintf(expanded_in, "long(%s)", in);
     in_d.length = strlen(expanded_in);
     in_d.pointer = expanded_in;
     break;
@@ -210,14 +210,16 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
     in_d.pointer = expanded_in;
     break;
   }
+
   status = TdiCompile(&in_d, &xd MDS_END_ARG);
-  free(expanded_in);
   if (status & 1)
     status = TdiData(&xd, &xd MDS_END_ARG);
   if (!(status & 1)) {
     strncpy(error_message, MdsGetMsg(status), 512);
+  free(expanded_in);
     return 0;
   }
+  free(expanded_in);
   if (!xd.pointer) {
     strcpy(error_message, "Missing data");
     return 0;
@@ -496,6 +498,8 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNativ
   const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
   int dim;
   double *out_ptr;
+
+
 
   out_ptr = MdsGetArray((char *)in_char, &dim, DOUBLE);
   (*env)->ReleaseStringUTFChars(env, in, in_char);
@@ -940,7 +944,7 @@ static int isSingleFramePerSegment(int nid)
 	 arrPtr->dimct);
     return 0;
   }
-  printf("Segment dimensions: %d %d %d\n", arrPtr->m[0], arrPtr->m[1], arrPtr->m[2]);
+  //printf("Segment dimensions: %d %d %d\n", arrPtr->m[0], arrPtr->m[1], arrPtr->m[2]);
   isSingle = (arrPtr->m[2] == 1);
   MdsFree1Dx(&xd, 0);
   MdsFree1Dx(&dimXd, 0);

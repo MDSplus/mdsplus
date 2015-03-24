@@ -18,7 +18,7 @@
 #include <config.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <time.h>
 #include "tdinelements.h"
@@ -33,7 +33,7 @@
 #include <unistd.h>
 #endif
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 int Tdi_RandomSeed = 1234567;
 

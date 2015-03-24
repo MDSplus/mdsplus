@@ -2,7 +2,7 @@
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <mdsshr.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <STATICdef.h>
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
@@ -279,7 +279,7 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 	array_coeff a_tmp;
 	array_coeff *pi = &a_tmp;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
-	struct descriptor **pdi = (struct descriptor **)pi->pointer;
+	//      struct descriptor **pdi = (struct descriptor **)pi->pointer;
 	struct descriptor **pdo = 0;
 	unsigned int num_dsc;
 	set_length(a_tmp.length);
@@ -352,8 +352,8 @@ STATIC_ROUTINE int copy_rec_dx(char const *in_ptr, struct descriptor_xd *out_dsc
 	array_coeff a_tmp;
 	array_coeff *pi = &a_tmp;
 	array_coeff *po = (array_coeff *) out_dsc_ptr;
-	struct descriptor **pdi = (struct descriptor **)pi->pointer;
-	struct descriptor **pdo = 0;
+	//struct descriptor **pdi = (struct descriptor **)pi->pointer;
+	//struct descriptor **pdo = 0;
 	int offset;
 	set_length(a_tmp.length);
 	a_tmp.dtype = dtype();

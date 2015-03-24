@@ -17,13 +17,13 @@ RULES OF THE GAME:
 #include <STATICdef.h>
 #include "tdirefstandard.h"
 #include "tdishrp.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <stdlib.h>
 #include <string.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT struct descriptor missing = { 0, DTYPE_MISSING, CLASS_S, 0 };
 

@@ -1,6 +1,7 @@
-#include <mdsdescrip.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <dcl.h>
+#include <string.h>
 
 static int ParseQualifiers();
 static int CheckErrors();
@@ -10,9 +11,8 @@ typedef struct {
   unsigned int devstat;
 } IOSB;
 
-static struct descriptor Name = { 0, DTYPE_T, CLASS_D, 0 };
-static struct descriptor DefName = { 0, DTYPE_T, CLASS_D, 0 };
-
+static char *Name;
+static char *DefName;
 static int A = 0;
 static int F = 0;
 static int Mem = 24;
@@ -23,7 +23,6 @@ static IOSB iosb;
 static int LastStatus;
 static int Xrequired = 1;
 static int Qrequired = 0;
-static struct descriptor value = { 0, DTYPE_T, CLASS_D, 0 };
 
 extern int CamBytcnt(IOSB * iosb);
 extern int CamError(int *xexp, int *qexp, IOSB * iosb_in);
@@ -41,46 +40,34 @@ extern int CamStopw(char *name, int a, int f, int count, void *data, int mem, IO
 extern int CamPiow(char *name, int a, int f, void *data, int mem, IOSB * iosb);
 extern int CamPioQrepw(char *name, int a, int f, void *data, int mem, IOSB * iosb);
 extern int CamVerbose(int);
-extern int str_copy_dx(struct descriptor *, struct descriptor *);
-extern int cli_get_value(char *, struct descriptor *);
-extern int cli_present(char *);
 extern char *MdsGetMsg(int);
 extern int MDSfprintf(FILE *, const char *, const char *);
 
 #define not_implemented(a) \
     int a(){printf("\n==>  %s : This command is not implemented on this platform\n\n",#a);return 0;}
 
-#define multi_io(ccl_name,cam_name) int ccl_name()\
+#define multi_io(ccl_name,cam_name) int ccl_name(void *ctx, char **error, char **output) \
 {\
-  int status = ParseQualifiers();\
-  if (status & 1) status = cam_name(Name.pointer,A,F,Count,D,Mem,&iosb);\
-  return CheckErrors(status,&iosb);\
+  int status = ParseQualifiers(ctx, error, output);				\
+  if (status & 1) status = cam_name(Name,A,F,Count,D,Mem,&iosb);\
+  return CheckErrors(status,&iosb, error, output);				\
 }
 
-#define single_io(ccl_name,cam_name) int ccl_name()\
+#define single_io(ccl_name,cam_name) int ccl_name(void *ctx, char **error, char **output) \
 {\
-  int status = ParseQualifiers();\
-  if (status & 1) status = cam_name(Name.pointer,A,F,D,Mem,&iosb);\
-  return CheckErrors(status,&iosb);\
+  int status = ParseQualifiers(ctx, error, output);				\
+  if (status & 1) status = cam_name(Name,A,F,D,Mem,&iosb);\
+  return CheckErrors(status,&iosb, error, output);		  \
 }
 
-not_implemented(ccl_dclst)
-    not_implemented(ccl_execute)
-    not_implemented(ccl_finish)
-    not_implemented(ccl_lamwait)
-    not_implemented(ccl_lpio)
-    not_implemented(ccl_lqscan)
-    not_implemented(ccl_lstop)
-    single_io(ccl_pio, CamPiow)
-    not_implemented(ccl_plot_data)
-    multi_io(ccl_fstop, CamFStopw)
-    multi_io(ccl_fqrep, CamFQrepw)
-    multi_io(ccl_fqstop, CamFQstopw)
-    multi_io(ccl_qrep, CamQrepw)
-    multi_io(ccl_qscan, CamQscanw)
-    multi_io(ccl_qstop, CamQstopw)
-    not_implemented(ccl_rdata)
-    not_implemented(ccl_set_memory)
+single_io(ccl_pio, CamPiow)
+multi_io(ccl_fstop, CamFStopw)
+multi_io(ccl_fqrep, CamFQrepw)
+multi_io(ccl_fqstop, CamFQstopw)
+multi_io(ccl_qrep, CamQrepw)
+multi_io(ccl_qscan, CamQscanw)
+multi_io(ccl_qstop, CamQstopw)
+
 int ccl_set_module();
 int ccl_set_xandq();
 int ccl_show_data();
@@ -89,67 +76,111 @@ int ccl_show_status();
 multi_io(ccl_stop, CamStopw)
     not_implemented(ccl_wdata)
 
-static int ParseQualifiers()
+static int ParseQualifiers(void *ctx, char **error, char **output)
 {
   int memsize;
   int *d32;
   short *d16;
   int binary, hex, octal;
   int i;
-  str_copy_dx(&Name, (cli_get_value("module", &value) & 1) ? &value : &DefName);
-  if (Name.pointer == 0) {
-    printf("No module selected\n");
-    return 0;
+  char *module = 0;
+  char *value = 0;
+  if (cli_get_value(ctx,"module",&module)&1) {
+    if (Name)
+      free(Name);
+    Name = module;
+  } else {
+    if (DefName) {
+      if (Name)
+	free(Name);
+      Name = strdup(DefName);
+    }
+    else {
+      *error = strdup("No module selected\n");
+      return 0;
+    }
   }
-  A = (cli_get_value("address", &value) & 1) ? atoi(value.pointer) : 0;
-  if (A < 0 || A > 15) {
-    printf("BADADDRESS: bad value for /ADDRESS. Use number from 0 to 15\n");
-    return 0;
+  A = 0;
+  if (cli_get_value(ctx,"address", &value) & 1) {
+    char *endptr;
+    A = strtol(value, &endptr, 0);
+    if (*endptr != '\0' || (A < 0) || (A > 0)) {
+      *error = malloc(strlen(value)+100);
+      sprintf(*error, "Error: invalid /ADDRESS value specified '%s'. Use a number from 0 to 15\n",value);
+      free(value);
+      return 0;
+    }
+    free(value);
   }
-  F = (cli_get_value("function", &value) & 1) ? atoi(value.pointer) : 0;
-  if (F < 0 || F > 31) {
-    printf("BADFUNCTION: bad value for /FUNCTION. Use number from 0 to 31\n");
-    return 0;
+  F = 0;
+  if (cli_get_value(ctx,"function", &value) & 1) {
+    char *endptr;
+    F = strtol(value, &endptr, 0);
+    if (*endptr != '\0' || (F < 0) || (F > 31)) {
+      *error = malloc(strlen(value)+100);
+      sprintf(*error, "Error: invalid /FUNCTION value specified '%s'. Use a number from 0 to 31\n",value);
+      free(value);
+      return 0;
+    }
+    free(value);
   }
-  Count = (cli_get_value("count", &value) & 1) ? atoi(value.pointer) : 1;
-  if (Count < 1) {
-    printf("BADCOUNT: bad value for /COUNT. Use number greater than 0.\n");
-    return 0;
+  Count = 1;
+  if (cli_get_value(ctx,"count", &value) & 1) {
+    char *endptr;
+    Count = strtol(value, &endptr, 0);
+    if (*endptr != '\0' || (Count < 0)) {
+      *error = malloc(strlen(value)+100);
+      sprintf(*error, "Error: invalid /COUNT value specified '%s'. Use a number > 0.\n",value);
+      free(value);
+      return 0;
+    }
+    free(value);
   }
-  Mem = (cli_get_value("memory", &value) & 1) ? atoi(value.pointer) : DefMem;
-  if (Mem != 16 && Mem != 24) {
-    printf("BADMEM: bad value for /MEMORY. Use 16 or 24.\n");
-    return 0;
+  Mem = 24;
+  if (cli_get_value(ctx,"memory", &value) & 1) {
+    char *endptr;
+    Mem = strtol(value, &endptr, 0);
+    if (*endptr != '\0' || ((Mem != 16) && (Mem != 24))) {
+      *error = malloc(strlen(value)+100);
+      sprintf(*error, "Error: invalid /MEMORY value specified '%s'. Use 16 or 24.\n",value);
+      free(value);
+      return 0;
+    }
+    free(value);
   }
   if (D)
     free(D);
   D = malloc(Count * ((Mem == 24) ? 4 : 2));
   d16 = (short *)D;
   d32 = (int *)D;
-  binary = cli_present("binary") & 1;
-  hex = cli_present("hex") & 1;
-  octal = cli_present("octal") & 1;
+  binary = cli_present(ctx, "binary") & 1;
+  hex = cli_present(ctx, "hex") & 1;
+  octal = cli_present(ctx, "octal") & 1;
   for (i = 0; i < Count; i++) {
+    char *value = 0;
     int val = 0;
-    if (cli_get_value("data", &value) & 1) {
+    if (cli_get_value(ctx, "data", &value) & 1) {
       if (binary) {
 	int j;
-	for (j = 0; j < value.length; j++) {
-	  if (value.pointer[value.length - j - 1] != '0'
-	      && value.pointer[value.length - j - 1] != '1') {
-	    printf
-		("BADDATA: bad value for /DATA with /BINARY. Number must be specified in binary.\n");
+	for (j = 0; j < strlen(value); j++) {
+	  char v = value[strlen(value) - j - 1];
+	  if (v != '0' && v != '1') {
+	    *error = malloc(strlen(value) + 200);
+	    sprintf(*error,"Error: bad value for /DATA with /BINARY '%s'.\n"
+		    "Number must be specified in binary format (all 0's or 1's).\n",value);
+	    free(value);
 	    return 0;
 	  }
-	  val = val | ((value.pointer[value.length - j - 1] - '0') << j);
+	  val = val | ((v - '0') << j);
 	}
       } else if (hex) {
-	sscanf(value.pointer, "%x", &val);
+	sscanf(value, "%x", &val);
       } else if (octal) {
-	sscanf(value.pointer, "%o", &val);
+	sscanf(value, "%o", &val);
       } else {
-	sscanf(value.pointer, "%d", &val);
+	sscanf(value, "%d", &val);
       }
+      free(value);
     }
     if (Mem == 24)
       d32[i] = val;
@@ -159,77 +190,92 @@ static int ParseQualifiers()
   return 1;
 }
 
-static int CheckErrors(int status, IOSB * iosb)
+static void append(char **target, char *string) {
+  if (*target == NULL)
+    *target = strdup(string);
+  else 
+    *target = strcat(realloc(*target,strlen(*target)+strlen(string)+1),string);
+}
+
+static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
 {
   LastStatus = status;
   if (status & 1) {
     if (Xrequired) {
       int x = CamX(iosb) & 1;
       if (x && (Xrequired == -1))
-	printf("CAMX: got X=1, expecting X=0\n");
+	*output = strdup("CAMX: got X=1, expecting X=0\n");
       else if (!x && (Xrequired == 1))
-	printf("CAMNOX: got X=0, expecting X=1\n");
+	*output = strdup("CAMNOX: got X=0, expecting X=1\n");
     }
     if (Qrequired) {
       int q = CamQ(iosb) & 1;
       if (q && (Qrequired == -1))
-	printf("CAMQ: got Q=1, expecting Q=0\n");
+	*output = strdup("CAMQ: got Q=1, expecting Q=0\n");
       else if (!q && (Qrequired == 1))
-	printf("CAMNOQ: got Q=0, expecting Q=1\n");
+	*output = strdup("CAMNOQ: got Q=0, expecting Q=1\n");
     }
   } else {
-    MDSfprintf(stderr, "Error detected in CAMAC call, %s\n", MdsGetMsg(status));
+    char *msg = MdsGetMsg(status);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error, "Error detected in CAMAC call, %s\n", msg);
   }
-  return 1;
+  return status;
 }
 
-int ccl_set_xandq()
+int ccl_set_xandq(void *ctx, char **error, char **output)
 {
-  if (cli_get_value("x", &value) & 1) {
-    if (value.pointer[0] == 'N' || value.pointer[0] == 'n')
+  char *value = 0;
+  if (cli_get_value(ctx, "x", &value) & 1) {
+    if (value[0] == 'N' || value[0] == 'n')
       Xrequired = -1;
-    else if (value.pointer[0] == 'Y' || value.pointer[0] == 'y')
+    else if (value[0] == 'Y' || value[0] == 'y')
       Xrequired = 1;
     else
       Xrequired = 0;
+    free(value);
   }
-  if (cli_get_value("q", &value) & 1) {
-    if (value.pointer[0] == 'N' || value.pointer[0] == 'n')
+  if (cli_get_value(ctx, "q", &value) & 1) {
+    if (value[0] == 'N' || value[0] == 'n')
       Qrequired = -1;
-    else if (value.pointer[0] == 'Y' || value.pointer[0] == 'y')
+    else if (value[0] == 'Y' || value[0] == 'y')
       Qrequired = 1;
     else
       Qrequired = 0;
+    free(value);
   }
   return 1;
 }
 
-int ccl_set_module()
+int ccl_set_module(void *ctx, char **error, char **output)
 {
-  return cli_get_value("name", &DefName);
+  int status = cli_get_value(ctx, "name", &DefName) & 1;
+  return status;
 }
 
-int ccl_show_module()
+int ccl_show_module(void *ctx, char **error, char **output)
 {
-  printf("Module set to %s\n", DefName.pointer ? DefName.pointer : "<undefined>");
+  *output = malloc((DefName ? strlen(DefName) : 12) + 100);
+  sprintf(*output, "Module set to %s\n", DefName ? DefName : "<undefined>");
   return 1;
 }
 
-int ccl_show_status()
+int ccl_show_status(void *ctx, char **error, char **output)
 {
-  printf("Last status = 0x%x, iosb status = 0x%x, bytcnt = %d, %s, %s\n",
+  *output = malloc(100);
+  sprintf(*output,"Last status = 0x%x, iosb status = 0x%x, bytcnt = %d, %s, %s\n",
 	 LastStatus, iosb.condition, CamBytcnt(&iosb), (CamX(&iosb) & 1) ? "X=1" : "X=0",
 	 (CamQ(&iosb) & 1) ? "Q=1" : "Q=0");
   return 1;
 }
 
-int ccl_show_data()
+int ccl_show_data(void *ctx, char **error, char **output)
 {
   int *d32 = (int *)D;
   short *d16 = (short *)D;
-  int binary = cli_present("binary") & 1;
-  int octal = cli_present("octal") & 1;
-  int hex = cli_present("hex") & 1;
+  int binary = cli_present(ctx, "binary") & 1;
+  int octal = cli_present(ctx, "octal") & 1;
+  int hex = cli_present(ctx, "hex") & 1;
   int first = 1;
   int last = 1;
   int i;
@@ -237,17 +283,24 @@ int ccl_show_data()
   int maxsmps = iosb.bytcnt / ((Mem == 24) ? 4 : 2);
   char *format;
   char outline[256];
-  first = (cli_get_value("START", &value) & 1) ? atoi(value.pointer) : 1;
+  char *value = 0;
+  first = (cli_get_value(ctx, "START", &value) & 1) ? atoi(value) : 1;
+  if (value)
+    free(value);
+  value = 0;
   if (first < 1)
     first = 1;
   if (first > maxsmps)
     first = maxsmps;
-  last = (cli_get_value("END", &value) & 1) ? atoi(value.pointer) : first + 99;
+  last = (cli_get_value(ctx, "END", &value) & 1) ? atoi(value) : first + 99;
+  if (value)
+    free(value);
+  value = 0;
   if (last < first)
     last = first;
   if (last > maxsmps)
     last = maxsmps;
-  for (i = first, chars = 0; i <= last; i++) {
+  for (i = first, chars = 0; (first > 0) && (i <= last); i++) {
     if (chars == 0)
       chars = sprintf(outline, "%06d ", i);
     if (octal)
@@ -271,21 +324,26 @@ int ccl_show_data()
     } else
       chars += sprintf(&outline[chars], format, (Mem == 24) ? d32[i - 1] : d16[i - 1]);
     if (chars > 72) {
-      printf("%s\n", outline);
+      outline[chars++]='\n';
+      outline[chars]='\0';
+      append(output, outline);
       chars = 0;
     }
   }
-  if (chars > 0)
-    printf("%s\n", outline);
+  if (chars > 0) {
+    outline[chars++]='\n';
+    outline[chars]='\0';
+    append(output, outline);
+  }
   return 1;
 }
 
-int ccl_set_verbose()
+int ccl_set_verbose(void *cts, char **error, char **output)
 {
   return CamVerbose(1);
 }
 
-int ccl_set_noverbose()
+int ccl_set_noverbose(void *cts, char **error, char **output)
 {
   return CamVerbose(0);
 }

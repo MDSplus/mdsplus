@@ -2,7 +2,6 @@
 #define EMPTY_NCI
 #include "treeshrp.h"		/*must be first or off_t is misdefined */
 #include <STATICdef.h>
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #include <string.h>
 #include <stdlib.h>
@@ -143,9 +142,10 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  free(node_name);
 	  new_ptr->INFO.TREE_INFO.child = 0;
 	  LoadShort(idx, &new_ptr->conglomerate_elt);
-	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE) {
+	  if (node_type == BROTHER_TYPE_NOWILD || usage == TreeUSAGE_STRUCTURE
+	      || usage == TreeUSAGE_SUBTREE) {
 	    status = TreeInsertChild(parent, new_ptr, dblist->tree_info->header->sort_children);
-	    new_ptr->usage = TreeUSAGE_STRUCTURE;
+	    new_ptr->usage = usage == TreeUSAGE_SUBTREE ? TreeUSAGE_SUBTREE : TreeUSAGE_STRUCTURE;
 	  } else {
 	    status = TreeInsertMember(parent, new_ptr, dblist->tree_info->header->sort_members);
 	    new_ptr->usage = ((usage <= TreeUSAGE_MAXIMUM) && (usage >= 0)) ? usage : TreeUSAGE_ANY;
@@ -364,7 +364,6 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   ncis = ncis > 0 ? ncis : 0;
   vm_bytes = nodes * sizeof(NODE) + ncis * sizeof(NCI);
   if (vm_bytes > edit_ptr->node_vm_size) {
-    vm_bytes = (10 * EXTEND_NODES + header_ptr->nodes) * (sizeof(NODE) + sizeof(NCI));
     ptr = (NODE *) malloc(vm_bytes);
     if (ptr != NULL) {
       int old_node_bytes = header_ptr->nodes * sizeof(NODE);
@@ -413,9 +412,12 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
       return status;
   }
   memcpy(info_ptr->node + header_ptr->nodes, empty_node_array, empty_node_size);
-  if (ncis)
-    memcpy(edit_ptr->nci + header_ptr->nodes - edit_ptr->first_in_mem, empty_nci_array,
-	   empty_nci_size);
+  if (ncis) {
+    int nci_offset = header_ptr->nodes - edit_ptr->first_in_mem;
+    if (nci_offset < 0)
+      nci_offset = 0;
+    memcpy(edit_ptr->nci + nci_offset, empty_nci_array, empty_nci_size);
+  }
 /******************************************
   If the free list was empty then make
   the free list pointer point to the new

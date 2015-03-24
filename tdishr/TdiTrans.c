@@ -58,7 +58,7 @@
 #define MaskTrue (pi0[0] & 1)
 #endif
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern unsigned short
  OpcAccumulate, OpcFirstLoc, OpcLastLoc, OpcProduct, OpcReplicate, OpcSpread;
@@ -67,7 +67,7 @@ extern unsigned short
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>

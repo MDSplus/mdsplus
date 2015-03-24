@@ -25,14 +25,14 @@
 #include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <treeshr.h>
 #include <string.h>
 #include "tdithreadsafe.h"
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 int TdiGetRecord(int nid, struct descriptor_xd *out);

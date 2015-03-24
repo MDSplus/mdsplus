@@ -23,14 +23,14 @@ typedef struct {
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #ifdef __VMS
 #include <starlet.h>
 #endif
 #include <mdsshr.h>
 #include <treeshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiTaskOf();
 extern int TdiGetFloat();

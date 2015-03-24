@@ -749,13 +749,12 @@ remove 28/06/2005
                 abort = true;
             else
                 abort = false;
-/*
-            if (def_vals != null && def_vals.public_variables != null &&
-                def_vals.public_variables.length() != 0)
-*/          
+
+            
             if( def_vals != null && !def_vals.getIsEvaluated() )
             {
                 dp.SetEnvironment(def_vals.getPublicVariables());
+/*
                 if (IsCacheEnabled())
                 {
                     JOptionPane.showMessageDialog(this,
@@ -765,6 +764,7 @@ remove 28/06/2005
 
                     SetCacheState(false);
                 }
+*/
                 def_vals.setIsEvaluated(true);
             }
 
@@ -777,7 +777,7 @@ remove 28/06/2005
                 }
             }
 
-            //    Initialize wave evaluation
+            //Initialize wave evaluation
             for (int i = 0, k = 0; i < 4 && !abort; i++)
             {
                 for (int j = 0; j < rows[i] && !abort; j++, k++)
@@ -794,7 +794,10 @@ remove 28/06/2005
                             dispatchWaveContainerEvent(wce);
                             ( (MdsWaveInterface) wave_all[k].wi).StartEvaluate();
                         }
-                        catch(Exception exc){}
+                        catch(Exception exc)
+                        {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -813,8 +816,7 @@ remove 28/06/2005
                                     wave_all[k].wi.error == null &&
                                     wave_all[k].isWaveformVisible() &&
                                     wave_all[k].wi.num_waves != 0 &&
-                                    ( (MdsWaveInterface) wave_all[k].wi).
-                                    UseDefaultShot())
+                                    ( (MdsWaveInterface) wave_all[k].wi).UseDefaultShot())
                                 {
                                     wce = new WaveContainerEvent(this,
                                         WaveContainerEvent.START_UPDATE,

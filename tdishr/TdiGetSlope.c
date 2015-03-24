@@ -13,7 +13,7 @@
 
 #include <STATICdef.h>
 #include <stdlib.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include "tdirefstandard.h"
 
 #include <mdsshr.h>
@@ -22,7 +22,7 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiData();
 extern int TdiGetLong();

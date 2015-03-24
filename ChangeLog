@@ -1,4 +1,1084 @@
-commit 289c1e11f55ccae5a87fd2e0be896cf4c4a49485 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e3173969dd840086d73d2abb4ce429606b79c786 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 8953fa2 ff99e39
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 22:26:57 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 8953fa2a3abd2e63aa85b12e5a0fb4e4b0e52090
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 22:26:23 2015 -0400
+
+    Fix phase name parameter in DISPATCH/PHASE command
+
+commit ff99e3917520dc2fdb580420a5b0a4d688248762 (tag: refs/tags/alpha_release-7-0-25)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 23 22:19:48 2015 +0000
+
+    New ChangeLog
+
+commit 09e4323a026eeee4c6033c0a808b5b9f53ca178e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 17:02:11 2015 -0400
+
+    Fix more compile warnings with -Wall
+
+commit 019c3156d21f2d37059aaf0d41f355dcf17948d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 16:38:22 2015 -0400
+
+    Fix some of compiler warnings in TdiShr when compiling with -Wall option
+
+commit 82f073e2624f763f5c99e7f87e43844a7c5d977d (tag: refs/tags/alpha_release-7-0-24)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 23 14:40:38 2015 -0400
+
+    New ChangeLog
+
+commit 31019fb9a67070c01138b8a11b316d98ba639ed7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 14:12:36 2015 -0400
+
+    Remove compiler warnings using the -Wall compiler option
+
+commit 296ade98f25d13ddfa1f8c1f1d242ccdf6f6fc43
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 13:44:25 2015 -0400
+
+    Fix memory override on an error message
+
+commit cb7e9f03e9fbbbbb0af43f2c27360065118cd13d
+Merge: 5685e90 8706c98
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 08:41:00 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 5685e9016798174daf23b6f38a58908ec452b24f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 08:40:55 2015 -0400
+
+    Show no date inserted time if time is 0
+
+commit 8706c98a6259fd2b53cae0135b4991754e0f06a8
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 11:02:16 2015 +0100
+
+    Add DEMOADC
+
+commit c9415dff7f7c02c4825f7d5c0bb03c0905f2627c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 10:54:55 2015 +0100
+
+    Add try block
+
+commit c7c63438e927d3e8a2c1a89ba315aaa3de008cb7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 10:18:57 2015 +0100
+
+    Last fixes
+
+commit 432e4ad6c81bf7de1939b1eb38427f394367e4fd (tag: refs/tags/alpha_release-7-0-23)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 20 22:19:11 2015 +0000
+
+    New ChangeLog
+
+commit 45d11872fe474693f6e6d335e913bfe5aaad8623
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 17:26:54 2015 -0400
+
+    Fix nid reference handling in segment dimensions
+
+commit 2c257b9a868737eb5785b75297aed747b76e9bac
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 20 18:58:54 2015 +0100
+
+    removed debug messages
+
+commit db326d885b1feb6c92c730ab667279b20796496c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 20 18:56:21 2015 +0100
+
+    Mode DEMOADC to tutorial
+
+commit 3cc1f677f12c78c8b17c8efabc6540251c72e19b
+Merge: 7453dc7 1fcf0ff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 12:57:39 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 7453dc73ff99bc45fa8072e5b352d2b0a70d34eb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 12:57:31 2015 -0400
+
+    Unlock the nci!
+
+commit 1fcf0ff506b3fb1a1a2a27cb5854939a4817c690 (tag: refs/tags/alpha_release-7-0-22)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 22:20:41 2015 +0000
+
+    New ChangeLog
+
+commit 6b4a3894397a350c2408fa1a2b85b3f2cd2b68bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 16:05:12 2015 -0400
+
+    remove remaining malloc.h includes
+
+commit 65557b51d2e19ac560fedaec4fc4ab6b8eb5c19a (tag: refs/tags/alpha_release-7-0-21)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 16:08:00 2015 +0000
+
+    New ChangeLog
+
+commit dd5ef70d128a7f6e0b5855c773468ebb659f8048
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 10:48:54 2015 -0400
+
+    Add more help
+
+commit 9fdb063ea5106a418c2029c33474d55ee717734c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 10:16:49 2015 -0400
+
+    display gid and uid in decimal and include groupnam and username
+
+commit f25c3c96abebbd5f638083bb7319e07d235dece3
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 04:03:24 2015 -0400
+
+    more gfortran products
+
+commit 6a79e3a5c0df76f33276ce34d6303ded0ee938ec
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 04:01:14 2015 -0400
+
+    a few more malloc.h and an addition .gitignore
+
+commit f19177f1b22095286d8b24d22ab395f2e691faf9
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 03:34:36 2015 -0400
+
+    malloc.h is non standard and malloc is declared in stdlib.h
+
+commit 51404cba3e5763f1522ffa354d638258f14b8481 (tag: refs/tags/alpha_release-7-0-20)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 22:21:26 2015 +0000
+
+    New ChangeLog
+
+commit 0e8e3b1da4f664fca16155e22f64888c88e0083f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 17:10:49 2015 -0400
+
+    add more external dependencies
+
+commit 5e96579d2ece9646b7e4626cfc5d0e7e78ffaaaf (tag: refs/tags/alpha_release-7-0-19)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 21:09:54 2015 +0000
+
+    New ChangeLog
+
+commit b1c288312f95f29b67c274169c5c58a8824c9ebf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:50:11 2015 -0400
+
+    add more external dependencies
+
+commit 66eb9e119ce19a0764dcf52152b9dff3f42977f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:32:29 2015 -0400
+
+    add more external dependencies
+
+commit d5e1e1083da72fb0967122b800f2118b10b617a9 (tag: refs/tags/alpha_release-7-0-18)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 20:27:20 2015 +0000
+
+    New ChangeLog
+
+commit 96051a3040921ccdd9f4c221c5454e59cb72d195
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:11:17 2015 -0400
+
+    add more external dependencies
+
+commit 663819272e25def06b8cb99b3abd160b02740c78
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:09:40 2015 -0400
+
+    add more external dependencies
+
+commit a7efba39ee43fd044f5a4f5e70332d7bfec42388
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:40:33 2015 -0400
+
+    add more external dependencies
+
+commit 72df03933603eaf75d45f48d81b3d1cf6f29944e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:37:17 2015 -0400
+
+    add more external dependencies
+
+commit dd3f7f8507ce9df1df93b2b1a4434c8f225f12eb (tag: refs/tags/alpha_release-7-0-17)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 19:30:56 2015 +0000
+
+    New ChangeLog
+
+commit 79878c9c7e231b4cce11347c72abca0ea59aafba
+Merge: 7db9400 98510ff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:10:30 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 7db9400b3787c899b7efb8e07540119440427fd6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:10:13 2015 -0400
+
+    add more external dependencies
+
+commit 98510ffe25f02e4d1bf2c573334b89053d4399d3 (tag: refs/tags/alpha_release-7-0-16)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 19:04:43 2015 +0000
+
+    New ChangeLog
+
+commit 9f62a6bcfebf8536aa95a999253e6843791c86bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 14:48:27 2015 -0400
+
+    add more external dependencies
+
+commit ec33c736136e93bd7c9525c6a9aef7922b1e722b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 14:33:55 2015 -0400
+
+    add more external dependencies
+
+commit aa7b0710655936bd2748dba5739ab10432eb74f9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 14:26:26 2015 -0400
+
+    Fix dispatch/command
+
+commit 9ee707423148f863b5f3048486605a0b9fb58942
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 11:40:08 2015 -0400
+
+    add more external dependencies
+
+commit 4ed4c3732baefd4f51ffe676545498e9ce67aaac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 11:18:19 2015 -0400
+
+    add more external dependencies
+
+commit acfad92a01545b5dcae53c8fc8963fddaf3745b4 (tag: refs/tags/alpha_release-7-0-15)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 10:21:14 2015 -0400
+
+    New ChangeLog
+
+commit 84b892b134d541c0867f742f189c111bdf14961a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 09:15:47 2015 -0400
+
+    mdstcl command fixes for add node/usage=subtree, directory and do/method
+
+commit fe1ad7b2ffc2c862054362738540b96c2f09adf9
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 18 10:41:49 2015 +0100
+
+    Remove useless files
+
+commit 2e83eeb853a813c472bbbcae9729591b4d9eda8b
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 18 10:01:52 2015 +0100
+
+    Removed some exceptions
+
+commit 9ad9f65019ed8b85cebaef157d844f9cabc64287 (tag: refs/tags/alpha_release-7-0-14)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 17 22:17:13 2015 +0000
+
+    New ChangeLog
+
+commit c8a210ec14b92e174f393999790cd6e1024e0ff4
+Merge: 45073d9 4dbcef7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 17:22:11 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 45073d908eeff28f877331721b7d698985d7d660
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 17:21:35 2015 +0100
+
+    Removed useless sleep
+
+commit 4dbcef71932f98cef696e730d8d9f36eb8c2cc94
+Merge: e6d2455 68605e4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:54:54 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit e6d2455638b5417c2afc3c952c1eaf36e6fcbb85
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:54:42 2015 +0100
+
+    Handle better timestamped data
+
+commit 68605e448c2e967a80cb68b9ddc222f98b0870d6
+Merge: 1629913 2275182
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:53:43 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 16299137ebbb24ebd2c1ae5268e261627bb1fa49
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 15:53:05 2015 +0100
+
+    Fix scroll for timestamped data
+
+commit 227518225610aea2e87edd672fbd983b8c411f2d (tag: refs/tags/alpha_release-7-0-13)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 17 10:09:09 2015 -0400
+
+    New ChangeLog
+
+commit d672cd44211247eb49dc7e6df7bd32539eb7e145
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 17 09:46:04 2015 -0400
+
+    Remove w and g write privileges on installed files
+
+commit 29ba2a1cabab25b2dac0de09f320d0d647ea6620
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 17 09:12:11 2015 -0400
+
+    support for older readline versions
+
+commit 625959e6e1ca39db2cd3e8e495b2be24456fb0d4
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 17 09:40:23 2015 +0100
+
+    Fix units
+
+commit f400e35cd4615f86cdd1ebd01fc509eec2ab3e15 (tag: refs/tags/alpha_release-7-0-12)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 16 22:17:25 2015 +0000
+
+    New ChangeLog
+
+commit 2122e4720b16ed7feb95bd5897814b74614a19a8
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 16 16:18:37 2015 +0100
+
+    Handle signals without timebase
+
+commit 7ef0b144436d6709a758fc4d06718bae89548cf6 (tag: refs/tags/alpha_release-7-0-11)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Mar 15 22:16:26 2015 +0000
+
+    New ChangeLog
+
+commit 413e34e95c97aa24b8feb94cbcc4cd8aebf1223d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Mar 15 13:22:51 2015 -0400
+
+    Only handled the SIGCHLD on linux
+
+commit 2a1ec5e05254dcc95876ebcf2ab03d6e7078698a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Mar 15 13:16:56 2015 -0400
+
+    Include colortable for wsgi
+
+commit 32f7c111eef078ee7a1791670c4d34c02e1c624a (tag: refs/tags/alpha_release-7-0-10)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 13 20:26:24 2015 +0000
+
+    New ChangeLog
+
+commit aa6fd882c54e20afe7b432f007b85778e7d0c2ba
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 13 13:04:13 2015 -0700
+
+    Disable SIGCHLD handler when executing python code
+
+commit 3665bc86d02314c526339fa190527ce0f55d267d (tag: refs/tags/alpha_release-7-0-9)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 13 08:54:13 2015 -0400
+
+    New ChangeLog
+
+commit 0b084e5dccea776b7e282c8aa8cd34a1bcf49c53
+Merge: 54409af e861e82
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 13 08:24:18 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 54409aff92d3d18e4cd622d88eaaa3437a809462
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 13 08:24:10 2015 +0100
+
+    Final version?
+
+commit e861e821cd4d07caec8461806cb286d8fed3e029 (tag: refs/tags/alpha_release-7-0-8)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 12 19:15:28 2015 +0000
+
+    New ChangeLog
+
+commit f2384a2a23b2ea5e4746ff0bab925b37fbe37013
+Merge: 4d72605 6de2e85
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 14:59:49 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 4d72605dfcc51231434711ce4940eafef7b6e81d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 14:59:36 2015 -0400
+
+    remove double equals in setup.py since dash on ubuntu won't parse it
+
+commit 6de2e856c3b2322b56f2365c3c7c907429cb13ff (tag: refs/tags/alpha_release-7-0-7)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 12 13:54:07 2015 +0000
+
+    New ChangeLog
+
+commit 873ff75b028f1679c4682f89dbd89c23ad918c7e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 09:37:47 2015 -0400
+
+    Clean up packaging information
+
+commit aa8408e08def64bd273c9ed3e7a2022aaa9ed4ff
+Merge: 02d70c4 3cb1e33
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 12 09:54:35 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 02d70c45f675d43998b2ba1910741c929230fa12
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Mar 12 09:54:26 2015 +0100
+
+    Added WebScope support for absolute times
+
+commit 3cb1e3358f299044c61324efa3422ee9c778de5e (tag: refs/tags/alpha_release-7-0-6)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 21:44:08 2015 +0000
+
+    New ChangeLog
+
+commit 9ff36953f24edf1d34e89ee5d02b284db294d2b7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 16:40:39 2015 -0400
+
+    Use bash
+
+commit 05312fa8a51dfe9348fa1372488a32fb18f667c0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 16:28:40 2015 -0400
+
+    Add Debian support
+
+commit 3f3e7ec53e4737d0f5d87fce23a9659ea0fa46df (tag: refs/tags/alpha_release-7-0-5)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 15:03:28 2015 -0400
+
+    New ChangeLog
+
+commit 9fbbbb8aa963a2af755d34e79e9748c9884b28d4
+Merge: cbf9c30 dd7cab5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 14:51:17 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit cbf9c305f9841064518345a39ed4f89d7b51bb39
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 14:51:05 2015 -0400
+
+    missing return status
+
+commit dd7cab588d2e1536cecfee3f8a103aae3d6260e4 (tag: refs/tags/alpha_release-7-0-4)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 16:50:29 2015 +0000
+
+    New ChangeLog
+
+commit 6c67bd30e4d792a6ded2d844d47818a49fe8b5b5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 12:36:38 2015 -0400
+
+    More Windows fixes for new mdsdcl
+
+commit 2eff32139f5157a65924dbe17dfc2e327a0b51c1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 12:24:14 2015 -0400
+
+    Add command handler entry points to def files for windows
+
+commit 6fb0a7b614fb2e42234156aab19f6e38cc277b1d (tag: refs/tags/alpha_release-7-0-3)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 15:34:32 2015 +0000
+
+    New ChangeLog
+
+commit 6ed20635cfcf498968d3548ce4a26ac6c1d3bb0e
+Merge: 796c404 a4fefb7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 11:20:19 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 796c40416e96cf87a20fcfc64f07458068406045
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 11:20:03 2015 -0400
+
+    Fix typo in Windows kit configuration
+
+commit a4fefb76e81d7fe214674c8ad39b88136f6beb8a (tag: refs/tags/alpha_release-7-0-2)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 15:18:54 2015 +0000
+
+    New ChangeLog
+
+commit d76f1ea537f14d6bdeb12c6b56df27673f36c161
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 11 10:21:38 2015 -0400
+
+    Add more dll's and the xml files to the windows install kit
+
+commit e8c4c5a183881487c5af2a38f2f1c498bb35b538 (tag: refs/tags/alpha_release-7-0-1)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 11 12:39:26 2015 +0000
+
+    New ChangeLog
+
+commit 6381d6961f0e9dfd3bde26b63b9f4cf49c1cd45e
+Merge: eca35e5 0ff8f3a
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 11 11:30:41 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit eca35e5dc51c41b50d84b65116e5251dae49ab20
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 11 11:30:24 2015 +0100
+
+    Minor fix
+
+commit 0ff8f3ab6a1e1c81b54f869849c49a6213b6344a (tag: refs/tags/alpha_release-7-0-0)
+Merge: b6d7185 0be4666
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 15:43:52 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 0be4666388fbc44d610fe34967a2790ac7f157ef (tag: refs/tags/alpha_release-6-3-485)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 10 18:37:54 2015 +0000
+
+    New ChangeLog
+
+commit b6d7185cd2aafd6057786459227e9b65cf50e3dc
+Merge: 898a4b5 6b1cf2f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 13:59:17 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 898a4b55455193d706c53c626e92f3796ca34ef1
+Merge: ae97c29 751d164
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 13:58:57 2015 -0400
+
+    Merge new mdsdcl and MDSplus status message handling into alpha
+
+commit 6b1cf2fd4ed0ce0a19db35561f8a21edcf5eb6d3
+Merge: 698eec9 8e961dc
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 10 18:51:59 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 698eec98144578b34e702e7b6023614c3e622cd4
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 10 18:51:48 2015 +0100
+
+    New WebScope
+
+commit 8e961dc4332131abce7ecd2e21663460de06f3c8 (tag: refs/tags/alpha_release-6-3-484)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 10 15:19:58 2015 +0000
+
+    New ChangeLog
+
+commit 1bc3bdb48da9e7bb5e1530deec605bb83db7c288
+Merge: be3c745 51886ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 10:48:34 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit be3c74540b307a9f48ab25f2df89052a0d16c86f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 10:48:23 2015 -0400
+
+    Fix test check for abort message to match fixed message text
+
+commit 51886ce265a9da70a8368b3dbdb97efb2a915a04
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 10 09:59:48 2015 -0400
+
+    forgot one file
+
+commit 14cee74d30956e748b61553c77477f036c7dd7c2
+Merge: 22c49f5 ae97c29
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 10 09:57:18 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 22c49f57f3d40ab4b9329ecd5cb2957f1fb54de8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Mar 10 09:57:07 2015 -0400
+
+    disable input protection on the cards (noop if firmware not updated)
+
+commit ae97c29e59029bd8cdbec325c270bbd0a4589bc9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 09:42:27 2015 -0400
+
+    Do not include facility name twice in message text
+
+commit a14cbb0ebbfe9d4cc05949fa421de87ebeba6cad
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 09:41:32 2015 -0400
+
+    Use ldconfig -n
+
+commit 1ad1bdfb877514cd7a8c61d0873685131f40b398 (tag: refs/tags/alpha_release-6-3-483)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 15:55:22 2015 -0400
+
+    New ChangeLog
+
+commit 0d595bdc3fc4a389c62ecc156fc28c145c692aaa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 15:09:00 2015 -0400
+
+    Fix summary and description of noarch packages
+
+commit 38bd69694afb9ce8135e553f70874d141b0a86b7 (tag: refs/tags/alpha_release-6-3-482)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 14:24:29 2015 -0400
+
+    New ChangeLog
+
+commit 64298198074026fa3c0eaf80f502b737a107847f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:49:24 2015 -0400
+
+    Remove unnecessary file unlock
+
+commit 5c7914b7a77b2c5e270026f6629d9fee7e270b5e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:48:45 2015 -0400
+
+    Initialize malloc'd memory to zero
+
+commit 3d204a23550b497b669571dd5b3ad86145d7ef31
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:47:57 2015 -0400
+
+    Fix nci of new node corruption when large number of nodes are added in a single edit session
+
+commit 01989093f1ebd10d868e96f4aa8c61fe1deaaef6 (tag: refs/tags/alpha_release-6-3-481)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 5 18:28:49 2015 -0500
+
+    New ChangeLog
+
+commit e220250d0c62da54b3ce21174ac500c8b27b1db7
+Merge: 10e8d1a d349371
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 5 13:02:20 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 10e8d1aec3c34a3f8db10bed9ef2dc2fb14cb31f
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 5 13:02:11 2015 -0500
+
+    have to load mdsplus before expanding the root file system
+
+commit d349371bc171785599e19bfc746c97c2ceab4ed3 (tag: refs/tags/alpha_release-6-3-480)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 4 18:29:28 2015 -0500
+
+    New ChangeLog
+
+commit 2a1a35e7cdd638ff7a86b98cf9d1820de9adaf5d
+Merge: f2a7738 14bcebf
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 4 11:24:30 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit f2a7738db6714da450d5cd6a99ec3dd8633a72c3
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Mar 4 11:24:10 2015 +0100
+
+    First release of camera device
+
+commit 14bcebf2641e51c5923a41d5bfcf977d7bf4201b (tag: refs/tags/alpha_release-6-3-479)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 3 18:25:50 2015 -0500
+
+    New ChangeLog
+
+commit 75d28062c76c0e1cb9e52dd7b0751b688ad25953
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:42:13 2015 +0100
+
+    First release device support for camera CYGNET4K
+
+commit d6cab3661a62d1c42f309592256ff40c1e7a5ec2
+Merge: f16925e d2b8c7a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:32:43 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit f16925e6abbd62334245962a9508781539744d01
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 3 11:32:13 2015 +0100
+
+    Added one field
+
+commit d2b8c7aca5a824d3cf300aff829d15258bdd5874 (tag: refs/tags/alpha_release-6-3-478)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 2 18:27:54 2015 -0500
+
+    New ChangeLog
+
+commit e882cf6cca1d1803846048b98364bdbb90c32898
+Merge: 5dbab54 d0da8a2
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 2 13:52:39 2015 -0500
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 5dbab545c7f4f1576cd54199b67939b547977c75
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 2 13:52:03 2015 -0500
+
+    add call to disable output protection to the DIO2 outputs
+
+commit d0da8a2778d98be9df9c33f74c8f6c5d93f18f83
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 14:52:46 2015 +0100
+
+    Change options
+
+commit f90d86868522e27997ef0953664984c6364fa15a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 10:59:38 2015 +0100
+
+    Fields changed
+
+commit 93a4abc6d111ccd9ccb0f07d62e4bb96c6ee9adc
+Merge: 4ffdffd ce1106d
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 10:52:40 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit 4ffdffd7cfda958893f1fb13e1de01f9a8b7bd05
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 2 10:52:16 2015 +0100
+
+    Added fields
+
+commit ce1106df9f22f7b4df72c8ed8defd6040cece87a (tag: refs/tags/alpha_release-6-3-477)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Feb 27 18:27:54 2015 -0500
+
+    New ChangeLog
+
+commit ffb1b6537ab00f05094a5938271b7ca0c3402857
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 27 17:43:30 2015 +0100
+
+    minor fix
+
+commit c156d0328a345279c27c114554004c916650af48
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 27 17:35:00 2015 +0100
+
+    New CYGNET Camera interface
+
+commit 96bb586580465ce5ad105d666906408f6429137a
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Feb 27 17:26:29 2015 +0100
+
+    CYGNET Camera development
+
+commit 98d82d3c68239d2bab1a52a69fe35a757402cac6 (tag: refs/tags/alpha_release-6-3-476)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 18:27:50 2015 -0500
+
+    New ChangeLog
+
+commit 751d164684a7b4b5c585a4e55610f3deac27606c (refs/remotes/origin/mdsdcl)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 17:28:44 2015 -0500
+
+    Add python exceptions for all defined statuses
+
+commit 0a5974ce3c3edd1e823e8a0a39a33bfaf3dec703
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 15:03:31 2015 -0500
+
+    Add new status message handling
+
+commit 28e50aa1898c046c60842fd7de84519114d8d4ab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 15:02:53 2015 -0500
+
+    Add new status message handling
+
+commit ad0d648d4a698afaea19fa9c57bf960215398ee8
+Merge: 2e61a21 a02983c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 08:23:48 2015 -0500
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 2e61a2103e908a35571d077c103dd9d364b9b52c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 08:23:36 2015 -0500
+
+    limit push to current branch
+
+commit a02983cb4920ba1b780274e477443d674a76d794 (tag: refs/tags/alpha_release-6-3-475)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 01:30:20 2015 +0000
+
+    New ChangeLog
+
+commit 3630d3285866fe4fe09b09d748b2c89e6517e87d
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 00:55:59 2015 +0000
+
+    New ChangeLog
+
+commit 8e6b96fbefe95d822cae5edf7d15240ec6d9f0a9
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 00:13:34 2015 +0000
+
+    New ChangeLog
+
+commit c3ceb4745cec6cd8dd3ce7787ff657f91e0f08f2
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 25 18:27:51 2015 -0500
+
+    New ChangeLog
+
+commit b737ac0dea0750f2e4fb16997d6c560d6e78c0cd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 25 12:26:14 2015 -0500
+
+    Fix memory issue with TreeExpandnodes
+
+commit 990a552826c71b832e5eefa70c1da3325de55b50
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:34:35 2015 +0100
+
+    add parenthesis
+
+commit a93d1b65b9cc97be845d25f47ca4d52b6f74af7c
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:31:54 2015 +0100
+
+    remove printouts'
+
+commit a9d942c6a514dd84554fd66ca008cb997c0fac85
+Merge: c0a7d22 f57543a
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:25:24 2015 +0100
+
+    Merge branch 'alpha' of ssh://github.com/MDSplus/MDSplus into alpha
+
+commit c0a7d2236222ffc8256f6761efcc36e53cd03808
+Author: Mdsplus <mdsplus@spilds.rfx.local>
+Date:   Wed Feb 25 13:25:15 2015 +0100
+
+    Fix wrong TDI compilation in jScope
+
+commit f57543ac10ebb1717b50d8e4e8a090510fac29ad
+Author: Andrea Rigoni Garola <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 25 11:52:09 2015 +0100
+
+    global Lock on Connection ConnectToMds and DisconnectToMds
+
+commit 9f00395a8ee9b04f9c203433f0d027ff1b5afe9a
+Author: Andrea Rigoni Garola <andrea.rigoni@pd.infn.it>
+Date:   Wed Feb 25 09:02:02 2015 +0100
+
+    removed unnecessary lock
+
+commit 33e4279c2eb1bbd391ae4447f5704d7577d90b6b (refs/heads/mdsdcl)
+Merge: cd74d7a a64b1c0
+Author: root <root@mdsplus-builder.psfc.mit.edu>
+Date:   Mon Feb 23 19:38:09 2015 +0000
+
+    Merge branch 'mdsdcl' of github.com:/MDSplus/mdsplus into mdsdcl
+
+commit a64b1c027d54ceb5fab4f33c2aaf7ff639616fac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 14:37:58 2015 -0500
+
+    Fix control-c handling
+
+commit cd74d7a917adb665f6401f395d055898e0dcfb74
+Merge: a5c661e efb3f8c
+Author: root <root@mdsplus-builder.psfc.mit.edu>
+Date:   Mon Feb 23 18:44:01 2015 +0000
+
+    Merge branch 'mdsdcl' of github.com:/MDSplus/mdsplus into mdsdcl
+
+commit efb3f8c154a66d7aeeeb2f29d9176004ca98879f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 13:43:18 2015 -0500
+
+    Add LibFindImageSymbol_c
+
+commit a5c661ec6cf99575d435666dcde4d22fa234facb
+Merge: 2af5058 a98851d
+Author: root <root@mdsplus-builder.psfc.mit.edu>
+Date:   Mon Feb 23 18:03:54 2015 +0000
+
+    Merge branch 'mdsdcl' of github.com:/MDSplus/mdsplus into mdsdcl
+
+commit a98851d4d7b118bdd0ceb90000c0f3bd557b071b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 13:01:25 2015 -0500
+
+    Fix typo
+
+commit 2af50588006dc512572c1194b2e75870b637ca29
+Author: root <root@mdsplus-builder.psfc.mit.edu>
+Date:   Mon Feb 23 17:58:48 2015 +0000
+
+    Fix typo
+
+commit e1963db9a9e7c4120bf68f1b9992e5cc9f48cab4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 12:57:03 2015 -0500
+
+    fix for no strsep routine
+
+commit f4525a31a0828522208b462f97751d19c7ea878b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:34:50 2015 -0500
+
+    Less exports
+
+commit 054c9c54ddedf4ea0f2801f91d00f029c454cd1f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:33:04 2015 -0500
+
+    More exports
+
+commit 939cba3035839e3e4fc0ed282033fe8b3f19ac13
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:32:37 2015 -0500
+
+    Need pthreads
+
+commit fadc0f798bdd0bd75ae5c6a4028b0c887c6d889c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:21:17 2015 -0500
+
+    Check for HAVE_ALLOCA_H
+
+commit dfbfd2b7d51653dd84fbe4d12549afa46e622395
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:18:28 2015 -0500
+
+    Check for HAVE_ALLOCA_H
+
+commit e03c983118a033272afdd2f5b6336ff82fba8b5d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:09:57 2015 -0500
+
+    Add alloca.h check
+
+commit 5beff1aa7185f8937787849feef3cad7063ccbfe
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:05:25 2015 -0500
+
+    new exports
+
+commit 441e2791c6c8f5aa3530ae591f563fa2baae60b5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 11:03:11 2015 -0500
+
+    reduced set of exports
+
+commit c446a187486d851e1d92f222ebacbe38ff02c6fa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 10:52:55 2015 -0500
+
+    Fix init timer and show timer for windows
+
+commit 623650919a8f0fbb10440bbed9f4129aef6aab4b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 10:52:34 2015 -0500
+
+    Fix init timer and show timer for windows
+
+commit 9f7cebc13bdcb087bc8b2f32d4f608adaa1071be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 23 09:14:39 2015 -0500
+
+    make packaging the same as alpha except for the xml dir
+
+commit 8658342f9617cdb9a9b488a9178668e2de147891 (tag: refs/tags/alpha_release-6-3-474)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Feb 20 18:26:40 2015 -0500
+
+    New ChangeLog
+
+commit 78014cab5d66ccbbadd4c6600a1e96c735350d92
+Merge: 2f07fe8 27e089b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 20 12:07:41 2015 -0500
+
+    Merge branch 'mdsdcl' of github.com:/MDSplus/mdsplus into mdsdcl
+
+commit 2f07fe879a4465d42113a3f948a00451c2da63f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 20 12:07:36 2015 -0500
+
+    Remove dasutil routines
+
+commit 289c1e11f55ccae5a87fd2e0be896cf4c4a49485
 Author: Gabriele Manduchi <gcm@g01.itm.rzg.mpg.de>
 Date:   Fri Feb 20 13:01:04 2015 +0100
 
@@ -24,11 +1104,53 @@ Date:   Wed Feb 18 18:23:03 2015 -0500
 
     New ChangeLog
 
+commit 27e089bfa92e0f318091d969125473ff9a6e72ea (tag: refs/tags/mdsdcl_release-7-0-1)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 18 17:17:07 2015 -0500
+
+    New ChangeLog
+
+commit a51400101d7987ba9b4e33f1d566d903765d0a60
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 18 16:46:10 2015 -0500
+
+    New ChangeLog
+
+commit 10363e74e563f662041b66894d16c94ce21debf8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 16:03:58 2015 -0500
+
+    Allow builds of arbitrary branchs (must not include underscore in branch name)
+
 commit e179cafe9e93e29111676a6153723136f5408e4e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 18 16:03:06 2015 -0500
 
     Allow builds of arbitrary branchs (must not include underscore in branch name)
+
+commit a724ac5d437111f0048816275592fd414d5337be
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 15:12:14 2015 -0500
+
+    merge in changes from alpha
+
+commit e318f8d9e3101681b894e2b97268c4f199b6466f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 15:00:15 2015 -0500
+
+    Add xml directory to kernel package
+
+commit 0ceb536df570f10363cb135e077e6efe5b04edc2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 14:57:30 2015 -0500
+
+    No install for xml here
+
+commit 7c24a29f004ed0cb511d9362e0d60a3a48c3d339 (tag: refs/tags/mdsdcl_release-7-0-0, tag: refs/tags/feature-replace-mdsdcl_release-7-0-0, refs/remotes/origin/feature-replace-mdsdcl, refs/heads/feature-replace-mdsdcl)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 18 13:39:18 2015 -0500
+
+    tcl updates
 
 commit d16ea89dded6c831409beb50c66935cad9de95fb (tag: refs/tags/alpha_release-6-3-472)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -80,6 +1202,84 @@ Date:   Fri Feb 13 18:23:24 2015 -0500
 
     New ChangeLog
 
+commit de8a23bc5d45fe3517edad6783b2c2b3289ba398
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 15:39:13 2015 -0500
+
+    Fix sprintf for error
+
+commit a400e2a50d3941e426dd1bbd77e28552669e5731
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 15:02:46 2015 -0500
+
+    Add help to cts commands
+
+commit eadcc13f4fccc56a8319c231ad1febe5d44cc2f6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 15:00:47 2015 -0500
+
+    Add help to cts commands
+
+commit 5ef5d9eaa24ae6d3039f54cb0086e780aaf90013
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 14:52:34 2015 -0500
+
+    Add help to cts commands
+
+commit ed9daf84f796d7fa737631636f565d4462ff86dd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 14:51:33 2015 -0500
+
+    Add help to cts commands
+
+commit 6cbcdfb625c6818ef256e2a56596ebf8e3056b9b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 14:50:06 2015 -0500
+
+    Add help to cts commands
+
+commit 0e53a07570af405ae672bcefa459b332ffa2928c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 13:06:27 2015 -0500
+
+    Add readline libs to bother libMdsdcl and mdsdcl
+
+commit 03ec295606d44ac3f5f6c911814f4189f66356a7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 13:05:28 2015 -0500
+
+    Fix call to StrMatchWild
+
+commit fc32ac7b894bcdeaacb14b5d6602a87b18520ce4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 13:04:11 2015 -0500
+
+    Add history file
+
+commit 1cc2983bb40bdebd5f1629e51abeb959bbe93f70
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 12:53:48 2015 -0500
+
+    Don't include trailing colon in match string for crates.
+
+commit 8c949d0b10dd09c264f721e0da0e7b67ed4f1898
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 11:11:13 2015 -0500
+
+    remove obsolete routines
+
+commit 2a4d588b07a079f9e83327ba93e6fbe665d2a80e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 11:06:48 2015 -0500
+
+    Include ncurses in links
+
+commit b590f005e16830891cc0b66fca53245a48ed0ee2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 10:59:54 2015 -0500
+
+    Include ncurses in links
+
 commit c475739eb4cfb977d222b54bf28a344577d34330
 Merge: ba21d75 9c6c600
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
@@ -92,6 +1292,24 @@ Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Feb 13 16:00:49 2015 +0100
 
     Added C++ support for python devices
+
+commit 897417506e9b2d91e7ccfc5d58607adca4265c5e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 09:13:05 2015 -0500
+
+    Fix rhel5 compile problem
+
+commit 108c470755950fc40f7063ac316fd96bbb70330e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Feb 13 08:40:44 2015 -0500
+
+    Remove cdu
+
+commit 82ac4c2bee86c425dc7af1f9d32c1efd4aaa7f5a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 12 16:53:13 2015 -0500
+
+    Remove last traces of the daqutil routines and finished up tcl, ccl and cts
 
 commit 9c6c60086d37894c0b2d3ba941002901b3e5bd9d (tag: refs/tags/alpha_release-6-3-469)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -111,6 +1329,24 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 11 10:13:53 2015 -0500
 
     Fix for trees with subtrees on 64-bit platforms
+
+commit e9611f86495ca2f2bafa09d9ad81de69e9d233d4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 10 16:20:24 2015 -0500
+
+    More tcl work
+
+commit ed807b7993719a115634ffab42bb26ed87eea22c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 9 16:53:16 2015 -0500
+
+    Ignore python dist directory
+
+commit 8eb99c5ac426bcb1f0390a170b38b709ef72119b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Feb 9 16:52:04 2015 -0500
+
+    More tcl updates
 
 commit fde39e3f6ec42c12d41bc6341781928ca2742290 (tag: refs/tags/alpha_release-6-3-468)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -142,6 +1378,24 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Feb 5 13:17:57 2015 -0500
 
     Use idl.py to dynamically load idl libraries
+
+commit e4d98e6e1a207ab830025853d0226d35c99ede89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 4 16:27:45 2015 -0500
+
+    more tcl commands work
+
+commit b6dcd3bae35f8c346af835245873b0e200452501
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 3 10:07:49 2015 -0500
+
+    port more tcl commands to new mdsdcl
+
+commit d2ab77e77299de77657d59caf55a3cac7d5fe113
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Feb 3 10:07:03 2015 -0500
+
+    Fix memory leaks
 
 commit c910e939aa14ad8d08b5d8f77380056f236e822e (tag: refs/tags/alpha_release-6-3-467)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -229,6 +1483,12 @@ Date:   Sun Feb 1 14:08:49 2015 -0500
 
     Action Node offsets wrong, inputs start and nodes_per channel wrong
 
+commit 5db5e4155a347ec36ff1933efde3c0db263c17a1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 30 16:51:50 2015 -0500
+
+    Update tcl commands
+
 commit 5fff662c2533f896816df2cc9f122292bcd1a890 (tag: refs/tags/alpha_release-6-3-463)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Jan 29 18:23:48 2015 -0500
@@ -248,11 +1508,23 @@ Date:   Thu Jan 29 18:34:34 2015 +0100
 
     Remove useless updates
 
+commit 22c076ab6bdd13058c471c031033046ee20e02e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 29 12:18:46 2015 -0500
+
+    Handle command comments and add command syntax help
+
 commit 562e8ef6f02d329fd5d7a271efd5bc338a8d68bd (tag: refs/tags/alpha_release-6-3-462)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jan 28 18:22:55 2015 -0500
 
     New ChangeLog
+
+commit 164f4647557374137726e400d599c291140adad1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 28 16:34:00 2015 -0500
+
+    More updates to mdsdcl rewrite
 
 commit 73a3f8fc0707fddb02e12be5edec491ec8dfe23d
 Merge: 870831c 6e9b820
@@ -272,6 +1544,12 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jan 26 18:23:20 2015 -0500
 
     New ChangeLog
+
+commit bcde07cd805d85cdb099a363c5535233f49bc619
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 26 17:00:06 2015 -0500
+
+    add delete/macro command and implement macros
 
 commit b4b4ad1ccb6e69ce34ad6b1733e3bd7b35b91134
 Author: Mdsplus <mdsplus@spild4.rfx.local>
@@ -310,6 +1588,30 @@ Date:   Fri Jan 23 18:24:36 2015 -0500
 
     New ChangeLog
 
+commit 2da1ac793545ef5d42aca2c7c66de0101768892d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 17:08:36 2015 -0500
+
+    format the help text some
+
+commit e92f21ae5f8f706b32a1a927cd78f65fceef54e5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 15:49:03 2015 -0500
+
+    Put xml's in their own directory
+
+commit a520b45f14422af48af2130418c6ba6251a7adec
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 15:47:16 2015 -0500
+
+    Put xml's in their own directory
+
+commit ca03f514afebecadf17487b2cc3f438bbc26339d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 15:29:45 2015 -0500
+
+    Add more help features and linux-like command capabilities
+
 commit 3d3619e525a4c12da911966fdac1350976d57175
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri Jan 23 12:25:39 2015 -0500
@@ -336,6 +1638,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 23 09:23:56 2015 -0500
 
     Remove obsolete *.f.in files
+
+commit 3957906d63af9aff2709a1c76fea096752712463
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 22 14:05:50 2015 -0500
+
+    Add help support for mdsdcl commands
 
 commit f1799c7f1f200d397b3c4c18e2996d6550bf7ea5 (tag: refs/tags/alpha_release-6-3-458)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -384,6 +1692,12 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jan 20 18:14:37 2015 +0100
 
     Remove compiler warnings
+
+commit f4c4da2dafa48d46a6a76e1e2fa1d5f015c42873
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 16 09:42:11 2015 -0500
+
+    Adding mdsdcl rewrite using xml, readline, bison and lex
 
 commit 88b7bdb24165f12f6d734adb8c03f0eb1cdbbf3d (tag: refs/tags/alpha_release-6-3-456)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>

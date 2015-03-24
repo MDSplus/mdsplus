@@ -52,18 +52,17 @@ The expansion routine "xentry":
 #include <mdsshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <STATICdef.h>
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 typedef ARRAY_COEFF(char, 1) array_coef;
 typedef RECORD(4) record_four;
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 STATIC_CONSTANT unsigned short opcode = OpcDECOMPRESS;
 STATIC_CONSTANT record_four rec0 =
-    { sizeof(opcode), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&opcode, 4, 0, 0, 0, 0 };
+  { sizeof(opcode), DTYPE_FUNCTION, CLASS_R, (unsigned char *)&opcode, 4, {0, 0, 0, 0} };
 STATIC_CONSTANT DESCRIPTOR_A(dat0, 1, DTYPE_BU, 0, 0);
 STATIC_CONSTANT struct descriptor EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
@@ -269,7 +268,9 @@ Compact/copy from work.
   {
     status = MdsGet1Dx(&work.l_length, &dsc_dtype, out_ptr, NULL);
     if (status & 1) {
+#ifdef _RECURSIVE_COMPRESS
       int orig_len = work.l_length;
+#endif
       _MOVC3(work.l_length, work.pointer, out_ptr->pointer);
       status =
 	  compress(cimage_ptr, centry_ptr, (char *)out_ptr->pointer - (char *)work.pointer,

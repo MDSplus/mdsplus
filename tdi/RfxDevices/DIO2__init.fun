@@ -481,6 +481,22 @@ write(*, "  Should be all done setting up this chan for pulse");
     
 	if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = [];
 
+        if(_remote != 0)
+        {
+                _status = MdsValue('IF_ERROR(DIO2HWDisableProt($1), 1)', _board_id);
+                if(_status == 0)
+                {
+                        DevLogErr(_nid, "Error disabling hw protection. see CPCI console for details");
+                        abort();
+                }
+        }
+        else
+        {
+                _status = IF_ERROR(DIO2HWDisableProt(_board_id),1);
+                if(_status == 0)
+                abort();
+        }
+
 	if(_remote != 0)
 	{
 		_status = MdsValue('DIO2HWStartChan(0, $1, $2, $3)', _board_id, _channel_mask, size(_synch_event));

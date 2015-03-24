@@ -205,7 +205,6 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
   struct _host_list **nextone;
   STATIC_THREADSAFE int (*rtn) (char *) = 0;
   int socket = -1;
-  int connections = -1;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
   struct sockaddr_in sockaddr;
   int getaddr_status;
@@ -234,7 +233,6 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
       if (inc_count)
 	hostchk->connections++;
       socket = hostchk->socket;
-      connections = hostchk->connections;
     }
   }
   if (socket == -1) {
@@ -250,7 +248,6 @@ STATIC_ROUTINE int RemoteAccessConnect(char *host, int inc_count, void *dbid)
 #endif
       (*nextone)->time = time(0);
       (*nextone)->next = 0;
-      connections = (*nextone)->connections;
     }
   }
   UnlockMdsShrMutex(&HostListMutex);
@@ -528,10 +525,9 @@ char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr)
 {
   struct descrip ans = empty_ans;
   char exp[64];
-  int status;
   char *tag = 0;
   sprintf(exp, "TreeFindNodeTags(%d)", nid_in);
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  MdsValue0(dblist->tree_info->channel, exp, &ans);
   if (ans.ptr && (ans.dtype == DTYPE_T) && (strlen(ans.ptr) > 0)) {
     tag = strcpy(malloc(strlen(ans.ptr) + 1), ans.ptr);
     MdsIpFree(ans.ptr);
@@ -544,12 +540,11 @@ char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath)
   struct descrip ans = empty_ans;
   char *exp = (char *)malloc(strlen(inpath) + 20);
   char *retans = 0;
-  int status;
   if (LeadingBackslash(inpath))
     sprintf(exp, "TreeAbsPath(\"\\%s\")", inpath);
   else
     sprintf(exp, "TreeAbsPath(\"%s\")", inpath);
-  status = MdsValue0(dblist->tree_info->channel, exp, &ans);
+  MdsValue0(dblist->tree_info->channel, exp, &ans);
   free(exp);
   if (ans.ptr) {
     if (ans.dtype == DTYPE_T && (strlen(ans.ptr) > 0)) {
@@ -640,11 +635,10 @@ void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
   struct descrip ans = empty_ans;
-  int status;
   if (*ctx != (TAG_SEARCH *) 0) {
     if ((*ctx)->remote_tag)
       MdsIpFree((*ctx)->remote_tag);
-    status = MdsValue0((*ctx)->socket, "TreeFindTagEnd(_remftwctx)", &ans);
+    MdsValue0((*ctx)->socket, "TreeFindTagEnd(_remftwctx)", &ans);
     if (ans.ptr)
       MdsIpFree(ans.ptr);
   }

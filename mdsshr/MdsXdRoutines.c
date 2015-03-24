@@ -17,11 +17,10 @@
 #include <mdsdescrip.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #define LibVM_FIRST_FIT      1
 #define LibVM_BOUNDARY_TAGS  1
 #define LibVM_EXTEND_AREA    32

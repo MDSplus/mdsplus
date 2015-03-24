@@ -62,10 +62,10 @@
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 #define OP_EQ 0
 #define OP_GE 1

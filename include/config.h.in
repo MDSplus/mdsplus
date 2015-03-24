@@ -89,6 +89,9 @@
 /* Define if you have the <resolv.h> header file.  */
 #undef HAVE_RESOLV_H
 
+/* Define if rl_set_signals available in readline. */
+#undef HAVE_RL_SET_SIGNALS
+
 /* Define if you have the <stdarg.h> header file.  */
 #undef HAVE_STDARG_H
 
@@ -134,6 +137,9 @@
 /* Define if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
+/* Define if you have the <alloca.h> header file. */
+#undef HAVE_ALLOCA_H
+
 /* Define if you have pthread_lock_global_np routine. */
 #undef HAVE_PTHREAD_LOCK_GLOBAL_NP
 
@@ -143,11 +149,29 @@
 /* Define if you have pthread_mutexattr_setkind_np routine. */
 #undef HAVE_PTHREAD_MUTEXATTR_SETKIND_NP
 
+/* Define if you have getgrgid to get group name. */
+#undef HAVE_GETGRGID
+
+/* Define if you have grp.h */
+#undef HAVE_GRP_H
+
+/* Define if you have getpwuid. */
+#undef HAVE_GETPWUID
+
+/* Define if you have pwd.h */
+#undef HAVE_PWD_H
+
 /* Define if you have <readline/readline.h> header file. */
 #undef HAVE_READLINE_READLINE_H
 
 /* Define if you have the getaddrinfo routine */
 #undef HAVE_GETADDRINFO
+
+/* Define if you have the strsep routine */
+#undef HAVE_STRSEP
+
+/* Define if you have the getrusage routine */
+#undef HAVE_GETRUSAGE
 
 /* Is malloc.h available?  */
 #undef HAVE_MALLOC_H

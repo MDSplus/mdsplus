@@ -10,12 +10,12 @@
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <string.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiGetLong();
 extern int TdiGetArgs();

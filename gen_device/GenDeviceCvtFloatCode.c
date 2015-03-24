@@ -22,7 +22,7 @@ int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
 
 ------------------------------------------------------------------------------*/
 
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <treeshr.h>
 
 struct _table {

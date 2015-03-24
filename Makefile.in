@@ -30,7 +30,6 @@ PARTS = \
 	xtreeshr \
         @MDSTCPIP@ \
         mdslibidl \
-        cdu     \
         mdsdcl  \
 	@GEN_DEVICE@ \
 	@CAMSHR@ \
@@ -98,7 +97,7 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics xml
 
 install_DIRS = $(addprefix install_, $(PARTS))
 $(install_DIRS):
@@ -115,10 +114,9 @@ install: $(install_DIRS)
 
 # Interdependent directories:
 actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
-camshr: cdu mdsdcl
-ccl: camshr cdu mdsshr mdsdcl
-cdu: mdsshr
-tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
+camshr: mdsdcl
+ccl: camshr  mdsshr mdsdcl
+tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
 gen_device: tdishr
 javadevices: javatraverser
@@ -126,7 +124,7 @@ javadispatcher: javascope javatraverser
 javamds: mdstcpip 
 javatraverser: javascope
 math: mdsshr
-mdsdcl: cdu mdsshr
+mdsdcl: mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr

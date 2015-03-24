@@ -66,11 +66,10 @@
 #include <string.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <STATICdef.h>
 #include <mdstypes.h>
 #include <stdlib.h>
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
 #define MAXX 1024		/*length of longest run allowed */
@@ -121,9 +120,9 @@ int MdsCmprs(int *nitems_ptr,
   int diff[MAXX], exce[MAXX];
   STATIC_CONSTANT int signif[65] =
       { 0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-5,
+    5,
     6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-	7
+    7
   };
 /***************************
 Text is by the character.

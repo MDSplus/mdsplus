@@ -1,13 +1,13 @@
 #include <string.h>
 #include <stdio.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <math.h>
 #include <STATICdef.h>
 
 #define MAXTYPE (DTYPE_FTC + 1)
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern void CvtConvertFloat();
 extern int IsRoprand();

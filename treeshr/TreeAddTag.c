@@ -34,8 +34,6 @@
 #include "treeshrp.h"
 #include <ctype.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
 #ifdef min
@@ -85,10 +83,21 @@ the tag name specified does not already exist.
   if (len < 1 || len > 24)
     return TreeTAGNAMLEN;
 
-  for (i = 0; i < (int)len; i++)
+  for (i = 0; i < len; i++)
     tag[i] = toupper(tagnam[i]);
   for (i = len; i < 24; i++)
     tag[i] = ' ';
+
+  /* Check to make sure tagname is legal (starts with alpha followed by zero or
+     more alphanumerics or underscores.
+   */
+
+  if ((tag[0] < 'A') || (tag[0] > 'Z'))
+    return TreeINVTAG;
+  for (i = 1; i < len; i++) {
+    if (((tag[i] < 'A') || (tag[i] > 'Z')) && ((tag[i] < '0') || (tag[i] > '9')) && (tag[i] != '_'))
+      return TreeINVTAG;
+  }
 
   nid_to_node(dblist, nid_ptr, node_ptr);
 
@@ -138,7 +147,7 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    new_tags_ptr = malloc(pages_needed * 512);
+    new_tags_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
     if (!(new_tags_ptr)) {
       return TreeFAILURE;
     }
@@ -197,7 +206,7 @@ the tag name specified does not already exist.
   *******************************************************/
 
     pages_needed = pages_needed + 31;
-    new_tag_info_ptr = malloc(pages_needed * 512);
+    new_tag_info_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
     if (!new_tag_info_ptr)
       return TreeFAILURE;
 

@@ -12,13 +12,13 @@
         NEED CHECKS: Dimensions must match except first one and the smaller first dimension is used.
 */
 #include <STATICdef.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include "tdirefcat.h"
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 int TdiGetShape(int narg,
 		struct descriptor_xd dat[1],

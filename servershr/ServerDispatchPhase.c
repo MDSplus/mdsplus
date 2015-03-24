@@ -45,7 +45,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <mdsshr.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <errno.h>
 
 #ifdef HAVE_WINDOWS_H

@@ -1,0 +1,29 @@
+help set verify
+set verify
+help define
+DEFINE gub
+type this is macro gub called with p1='P1' and p3='P3'
+type this is the second line
+
+help define/symbol
+!define/symbol tmpsym gub
+set prompt "DCL> "
+spawn echo $tmpsym
+help env
+!env tmpsym=bar
+spawn echo $tmpsym
+help do/macro
+do/macro gub p1 p2 p3
+help show macro
+show macro
+show macro gub/full
+delete/macro gub
+help init timer
+init timer
+help wait
+wait 5
+help show timer
+show timer
+help quit
+help exit
+exit

@@ -183,7 +183,7 @@ MdsShrThreadStatic *MdsShrGetThreadStatic()
 STATIC_ROUTINE void buffer_destroy(void *buf)
 {
   if (buf != NULL) {
-    MdsShrThreadStatic *ts = (MdsShrThreadStatic *) buf;
+    //MdsShrThreadStatic *ts = (MdsShrThreadStatic *) buf;
     free(buf);
   }
 }

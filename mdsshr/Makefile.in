@@ -13,7 +13,6 @@ libs = $(libStatic) $(libShared) $(IMPLIB)
 
 SOURCES = \
         librtl.c \
-        dasutil_routines4.c \
         mdsmsg.c \
         MDSprintf.c \
         MdsCmprs.c \
@@ -23,6 +22,7 @@ SOURCES = \
         MdsGet1DxA.c \
         MdsGet1DxS.c \
         MdsGetSetShotId.c \
+        MdsGetStdMsg.c \
         MdsPk.c \
         MdsSerialize.c \
         MdsShrThreadSafe.c \
@@ -59,3 +59,5 @@ install: $(libdir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
+#MdsGetStdMsg.c :
+#	python gen_messages.py

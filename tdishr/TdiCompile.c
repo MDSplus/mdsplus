@@ -12,7 +12,7 @@ extern unsigned short OpcCompile;
 #include "tdirefzone.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <STATICdef.h>
@@ -29,7 +29,7 @@ extern unsigned short OpcCompile;
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiEvaluate();
 extern int TdiYacc();

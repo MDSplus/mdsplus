@@ -1,5 +1,8 @@
 #include        "tclsysdef.h"
 #include <strroutines.h>
+#include <string.h>
+#include <readline/readline.h>
+#include <readline/history.h>
 
 /***********************************************************************
 * TCL_PUT_EXPRESSION.C --
@@ -17,53 +20,65 @@ extern int TdiCompile();
 	 * TclPutExpression:
 	 * Put an INTEGER (?) expression into a node.
 	 ***************************************************************/
-int TclPutExpression()
+int TclPutExpression(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
 {
-  static DYNAMIC_DESCRIPTOR(dsc_nodnam);
-  static DYNAMIC_DESCRIPTOR(dsc_ascValue);
+  char *nodnam = 0;
+  char *ascValue = 0;
+  struct descriptor dsc_ascValue = {0, DTYPE_T, CLASS_S, 0};
   static int val;
-  static struct descriptor_xd value_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  struct descriptor_xd value_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int sts;
   int nid;
-  int ctx = 0;
 
-  cli_get_value("NODE", &dsc_nodnam);
-  sts = TreeFindNode(dsc_nodnam.dscA_pointer, &nid);
+  cli_get_value(ctx, "NODE", &nodnam);
+  sts = TreeFindNode(nodnam, &nid);
   if (sts & 1) {
-    if (cli_present("EXTENDED") & 1) {
-      static DYNAMIC_DESCRIPTOR(val_part);
-      static DYNAMIC_DESCRIPTOR(dsc_eof);
-      int use_lf = cli_present("LF") & 1;
-      int symbols = cli_present("SYMBOLS") & 1;
-
-      str_free1_dx(&dsc_ascValue);
-      str_free1_dx(&dsc_eof);
-      cli_get_value("EOF", &dsc_eof);
-      while ((mdsdcl_get_input_nosymbols("PUT> ", &val_part) & 1)) {
-	if (dsc_eof.dscA_pointer && val_part.dscA_pointer) {
-	  if (!strcmp(dsc_eof.dscA_pointer, val_part.dscA_pointer))
-	    break;
-	} else if (!val_part.dscW_length)
+    if (cli_present(ctx, "EXTENDED") & 1) {
+      char *val_part=0;
+      char *eof=0;
+      int use_lf = cli_present(ctx, "LF") & 1;
+      int symbols = cli_present(ctx, "SYMBOLS") & 1;
+      char *line = 0;
+      ascValue=strdup("");
+      cli_get_value(ctx, "EOF", &eof);
+      while ((line = (getline ? getline(getlineinfo) : readline("PUT> ")))
+	     && (strlen(line)) > 0) {
+	if (getline == NULL)
+	  add_history(line);
+	if ((eof && (strcasecmp(line,eof)==0)) || (strlen(line)==0)) {
+	  free(line);
+	  line=0;
 	  break;
-	if (use_lf) {
-	  static DESCRIPTOR(lf, "\n");
-	  StrConcat(&dsc_ascValue, &dsc_ascValue, &val_part, &lf, 0);
-	} else
-	  StrAppend(&dsc_ascValue, &val_part);
+	}
+	tclAppend(&ascValue, line);
+	free(line);
+	line=0;
+	if (use_lf)
+	  tclAppend(&ascValue, "\n");
       }
-      str_free1_dx(&val_part);
+      if (line)
+	free(line);
     } else
-      cli_get_value("VALUE", &dsc_ascValue);
+      cli_get_value(ctx, "VALUE", &ascValue);
+    dsc_ascValue.length=strlen(ascValue);
+    dsc_ascValue.pointer=ascValue;
     sts = TdiCompile(&dsc_ascValue, &value_xd MDS_END_ARG);
     if (sts & 1) {
-      if (!value_xd.dscL_l_length)
-	value_xd.dscB_dtype = DTYPE_DSC;
+      if (!value_xd.l_length)
+	value_xd.dtype = DTYPE_DSC;
       sts = TreePutRecord(nid, (struct descriptor *)&value_xd, 0);
     }
   }
-  str_free1_dx(&dsc_ascValue);
+  if (ascValue)
+    free(ascValue);
+  if (nodnam)
+    free(nodnam);
   MdsFree1Dx(&value_xd, NULL);
-  if (~sts & 1)
-    MdsMsg(sts, "TclPutExpression: error processing command");
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error,"Error: Problem putting expression in node\n"
+	    "Error message was: %s\n",msg);
+  }
   return sts;
 }

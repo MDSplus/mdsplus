@@ -11,9 +11,9 @@
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include <mdsdescrip.h>
 #include "tdinelements.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT int one = 1;
 STATIC_CONSTANT struct descriptor one_dsc = { sizeof(one), DTYPE_L, CLASS_S, (char *)&one };

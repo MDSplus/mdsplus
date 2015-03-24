@@ -39,6 +39,7 @@ EXPORT extern int LibFindFile();
 EXPORT extern int LibFindFileEnd();
 EXPORT extern int LibFindFileRecurseCaseBlind();
 EXPORT extern int LibFindImageSymbol();
+EXPORT extern int LibFindImageSymbol_C();
 EXPORT extern char *LibFindImageSymbolErrString();
 EXPORT extern char *LibFindImageSymbolErrStr();
 EXPORT extern int LibFindVmZone();

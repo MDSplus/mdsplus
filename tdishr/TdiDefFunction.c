@@ -8,11 +8,11 @@
 #include <STATICdef.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsdescrip.h>
 #define COM
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiIntrinsic();
 #define MdsEND_ARG_64 (void *)-1

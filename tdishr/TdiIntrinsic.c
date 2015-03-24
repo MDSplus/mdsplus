@@ -41,10 +41,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 typedef struct _bounds {
   int l;

@@ -39,9 +39,9 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <math.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();

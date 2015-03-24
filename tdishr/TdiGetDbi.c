@@ -13,11 +13,11 @@
 #include <strroutines.h>
 #include <string.h>
 #include <stdlib.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT DESCRIPTOR(pathtext, "PATH");
 STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");

@@ -37,12 +37,12 @@
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 #include "tdithreadsafe.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 extern unsigned short OpcValue;

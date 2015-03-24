@@ -1,8 +1,6 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
 int TreeSetDefault(char *path, int *nid)

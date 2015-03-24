@@ -4,8 +4,9 @@
 #include <mds_stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <dlfcn.h>
+#include <signal.h>
 
 static PyObject *(*DynPyTuple_New) () = 0;
 #define PyTuple_New (*DynPyTuple_New)
@@ -291,6 +292,12 @@ int TdiExtPython(struct descriptor *modname_d,
      as the module in that module passing the arguments and get the answer back from python. */
   int status = TdiUNKNOWN_VAR;
   char *filename;
+  int stat;
+#ifndef HAVE_WINDOWS_H
+  struct sigaction offact = {SIG_DFL, NULL, 0, 0, NULL};
+  struct sigaction oldact;
+  stat=sigaction(SIGCHLD, &offact, &oldact);
+#endif
   char *dirspec = findModule(modname_d, &filename);
   if (dirspec) {
     if (Initialize()) {
@@ -321,5 +328,8 @@ int TdiExtPython(struct descriptor *modname_d,
       Py_EndInterpreter(tstate);
     }
   }
+#ifndef HAVE_WINDOWS_H
+  stat=sigaction(SIGCHLD, &oldact, NULL);
+#endif
   return status;
 }

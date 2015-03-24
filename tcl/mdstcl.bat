@@ -1,2 +1,2 @@
 @echo off
-mdsdcl -prep "set command tcl -prompt='TCL> '"
+mdsdcl -prep "set command tcl"

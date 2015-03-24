@@ -12,12 +12,12 @@
 #include "tdirefstandard.h"
 #include "tdirefcat.h"
 #include "tdinelements.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiGetArgs();
 extern int TdiData();

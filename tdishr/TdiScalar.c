@@ -16,12 +16,12 @@ extern unsigned short OpcDotProduct;
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <string.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int Tdi2Keep();
 extern int TdiCvtArgs();

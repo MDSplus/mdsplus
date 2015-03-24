@@ -6,8 +6,8 @@ using namespace MDSplus;
 using namespace std;
 
 
-//debug mode if defined
-//#define debug
+//DEBUG mode if defined
+//#define DEBUG
 
 
 
@@ -103,27 +103,25 @@ class SaveFrame {
         if(hasMetadata)
 	        metaData = new Int8Array((char *)frameMetadata, 2, metaDims);
 
-
-
 	//check pixel size format
 	    if(pixelSize<=8)
 	    {  
 		    data = new Int8Array((char *)frame, 3, dataDims);  
-	#ifdef debug
+	#ifdef DEBUG
 		    printf("Pixel Format: 8bit.\n");
 	#endif 
 	    }
 	    else if(pixelSize<=16)
 	    {  
 		    data = new Int16Array((short *)frame, 3, dataDims); 
-	#ifdef debug
-		    printf("Pixel Format: 16bit.\n");
+	#ifdef DEBUG
+		    printf("Pixel Format: 16bit. %d %d %d\n", dataDims[0], dataDims[1], dataDims[2]);
 	#endif 
 	    }
 	    else if(pixelSize<=32)
 	    {  
 		    data = new Int32Array((int *)frame, 3, dataDims); 
-	#ifdef debug
+	#ifdef DEBUG
 		    printf("Pixel Format: 32bit.\n");
 	#endif 
 	    }
@@ -138,8 +136,8 @@ class SaveFrame {
 		    try 
 		    {
 			    timebaseNode = new TreeNode(timebaseNid, (Tree *)treePtr);
-    #ifdef debug
-			    printf("SAVE Frame IDX %d\n", frameIdx);
+    #ifdef DEBUG
+			    printf("SAVE Frame IDX %d %s\n", frameIdx, dataNode->decompile());
     #endif
 			    idxData = new Int32(frameIdx);
 			    time = compileWithArgs("fs_float($1[$2])", (Tree *)treePtr, 2, timebaseNode, idxData);
@@ -300,8 +298,9 @@ class SaveFrameList
 	
 			int nItems = 0;
 			for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
+#ifdef DEBUG
 			if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
-	
+#endif	
 			pthread_mutex_unlock(&mutex);
 			currItem->save();
 			delete currItem;
@@ -319,27 +318,29 @@ class SaveFrameList
 		if(threadCreated)
 		{	
 			pthread_join(thread, NULL);
+#ifdef DEBUG
 			printf("SAVE THREAD TERMINATED\n");
+#endif
 		}
     }
  };
 
 
-void *handleSave(void *listPtr)
+static void *handleSave(void *listPtr)
 {
     SaveFrameList *list = (SaveFrameList *)listPtr;
     list->executeItems();
     return NULL;
 }
 
-void startSave(void **retList)
+void camStartSave(void **retList)
 {
     SaveFrameList *saveFrameList = new SaveFrameList;
     saveFrameList->start();
     *retList = (void *)saveFrameList;
 }
 
-void stopSave(void *listPtr)
+void camStopSave(void *listPtr)
 {
     if(listPtr) 
     {
@@ -426,13 +427,12 @@ void camSaveFrame(void *frame, int width, int height, float frameTime, int pixel
     saveList->addFrame(bufFrame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx,  bufMdata,  metaSize,  metaNid);
 }
 
-void camSaveFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
+void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, 
         int frameIdx, void *saveListPtr)
 {
 
     void *bufFrame;
     int frameSize = width * height;
-
     if(pixelSize<=8)
     {
 	     bufFrame = new char[frameSize];  

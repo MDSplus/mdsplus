@@ -119,8 +119,8 @@ static void Doing(LinkedEvent * event);
 static void Done(LinkedEvent * event);
 static void CheckIn(String monitor);
 static void DoOpenTree(LinkedEvent * event);
-static void ActivateImage(struct descriptor *image);
-static void ActivateImages(String images);
+//static void ActivateImage(struct descriptor *image);
+//static void ActivateImages(String images);
 static void Disable(Widget w, int *tag, XmToggleButtonCallbackStruct * cb);
 static void SetKillTarget(Widget w, int *tag, XmListCallbackStruct * cb);
 static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb);
@@ -149,9 +149,7 @@ static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
 static int current_on;
-static const char *blank = " ";
 static const char *asterisks = "****************************************************************";
-static XmFontList fontlist;
 #define MaxLogLines 4000
 #define EventEfn 1
 #define DOING 1
@@ -190,8 +188,7 @@ int main(int argc, String * argv)
     String images;
   } resource_list;
   Widget top;
-  Widget main;
-  int zeros[] = { 0, 0 };
+  Widget mainWidget;
   XInitThreads();
   MrmInitialize();
   MrmRegisterNames(callbacks, XtNumber(callbacks));
@@ -199,13 +196,13 @@ int main(int argc, String * argv)
 			  XmNallowShellResize, 1, NULL);
   XtGetApplicationResources(top, &resource_list, resources, XtNumber(resources), (Arg *) NULL, 0);
   MrmOpenHierarchy(XtNumber(hierarchy_name), hierarchy_name, 0, &drm_hierarchy);
-  MrmFetchWidget(drm_hierarchy, "main", top, &main, &class);
+  MrmFetchWidget(drm_hierarchy, "main", top, &mainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);
-  XtManageChild(main);
+  XtManageChild(mainWidget);
   XtRealizeWidget(top);
-  CurrentWidget = XtNameToWidget(main, "*current_actions");
-  ErrorWidget = XtNameToWidget(main, "*errors");
-  LogWidget = XtNameToWidget(main, "*log");
+  CurrentWidget = XtNameToWidget(mainWidget, "*current_actions");
+  ErrorWidget = XtNameToWidget(mainWidget, "*errors");
+  LogWidget = XtNameToWidget(mainWidget, "*log");
   dispatched_label = XmStringCreateSimple("Dispatched");
   doing_label = XmStringCreateSimple("Doing");
   done_label = XmStringCreateSimple("Done");
@@ -217,6 +214,7 @@ int main(int argc, String * argv)
   CheckIn(resource_list.monitor);
   XtAppAddTimeOut(app_ctx, 1000, DoTimer, 0);
   XtAppMainLoop(app_ctx);
+  return 0;
 }
 
 static void Exit(Widget w, int *tag, XtPointer callback_data)
@@ -257,10 +255,8 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb)
   static int operation;
   static Widget dialog = NULL;
   XmString text_cs;
-  char *choice;
   char message[1024];
   char *server;
-  int idx;
 
   if (!dialog) {
     dialog = XmCreateQuestionDialog(FindTop(w), "ConfirmServerAbort", NULL, 0);
@@ -296,8 +292,6 @@ static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb)
 
 static int executable(const char *script)
 {
-  const static int null = 0;
-  const static int dtype_long = DTYPE_LONG;
   int status;
   static const char *cmd_front = "/bin/sh -c '/usr/bin/which ";
   static const char *cmd_back = " > /dev/null 2>/dev/null'";
@@ -524,8 +518,6 @@ static int FindServer(char *name, ServerList ** srv)
 {
   ServerList *prev, *ptr, *newPtr;
   int idx;
-  char *cptr;
-  int len;
   int match = 1;
   for (prev = NULL, idx = 1, ptr = Servers;
        ptr && (match = strcasecmp(ptr->server, name)) < 0; prev = ptr, ptr = ptr->next, idx++) ;
@@ -642,12 +634,6 @@ static void DoOpenTree(LinkedEvent * event)
   unique_tag_seed = 0;
 }
 
-static unsigned int UniqueTag()
-{
-  unique_tag_seed++;
-  return unique_tag_seed << 16;
-}
-
 static void Phase(LinkedEvent * event)
 {
   static DESCRIPTOR(const unknown, "UNKNOWN");
@@ -696,9 +682,6 @@ static void Done(LinkedEvent * event)
   DoingListItem *prev;
   int *items;
   int num;
-  int i;
-  char message_c[32];
-  int length = 0;
   XmListGetSelectedPos(LogWidget, &items, &num);
   for (prev = 0, doing = DoingList; doing && (doing->nid != event->nid);
        prev = doing, doing = doing->next) ;
@@ -730,7 +713,7 @@ static void CheckIn(String monitor_in)
     }
   }
 }
-
+/*
 static void ActivateImages(String images)
 {
   struct descriptor list = { 0, DTYPE_T, CLASS_S, 0 };
@@ -746,7 +729,8 @@ static void ActivateImages(String images)
 
 static void ActivateImage(struct descriptor *image)
 {
-/*   void (*sym)(); */
-/*   lib$establish(lib$sig_to_ret); */
-/*   lib$find_image_symbol(image,image,&sym); */
+   void (*sym)();
+   lib$establish(lib$sig_to_ret);
+   lib$find_image_symbol(image,image,&sym);
 }
+*/

@@ -14,10 +14,10 @@ extern unsigned short OpcSetRange;
 #include "tdireffunction.h"
 #include "tdirefzone.h"
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int Tdi1Build();
 extern int TdiEvaluate();

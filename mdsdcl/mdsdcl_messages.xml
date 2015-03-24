@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<messages>
+  <facility name="Mdsdcl" value="2050">
+    <status name="SUCCESS" value="1" severity="Success" text="Normal successful completion"/>
+    <status name="EXIT" value="2" severity="Success" text="Normal exit"/>
+    <status name="ERROR" value="3" severity="Warning" text="Unsuccessful execution of command"/>    
+    <status name="NORMAL" value="101" severity="Success" text="Normal successful completion"/>
+    <status name="PRESENT" value="102" severity="Success" text="Entity is present"/>
+    <status name="IVVERB" value="103" severity="Error" text="No such command"/>
+    <status name="ABSENT" value="104" severity="Warning" text="Entity is absent"/>
+    <status name="NEGATED" value="105" severity="Informational" text="Entity is present but negated"/>
+    <status name="NOTNEGATABLE" value="106" severity="Error" text="Entity cannot be negated"/>
+    <status name="IVQUAL" value="107" severity="Error" text="Invalid qualifier"/>
+    <status name="PROMPT_MORE" value="108" severity="Error" text="More input required for command"/>
+    <status name="TOO_MANY_PRMS" value="109" severity="Error" text="Too many parameters specified"/>
+    <status name="TOO_MANY_VALS" value="110" severity="Error" text="Too many values"/>
+    <status name="MISSING_VALUE" value="111" severity="Error" text="Qualifier value needed"/>
+  </facility>
+</messages>

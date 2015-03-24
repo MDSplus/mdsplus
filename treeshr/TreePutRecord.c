@@ -40,7 +40,7 @@
 #include <ncidef.h>
 #include <string.h>
 #include <time.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <strroutines.h>
 #include <libroutines.h>
 #include <fcntl.h>
@@ -51,8 +51,6 @@
 #include <unistd.h>
 #include <sys/time.h>
 #endif
-
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #ifdef min
 #undef min
@@ -92,14 +90,14 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int open_status;
   TREE_INFO *info_ptr;
   int nidx;
-  unsigned int old_record_length;
+  unsigned int old_record_length = 0;
   static int saved_uic = 0;
-  int length = 0;
   int shot_open;
   EXTENDED_ATTRIBUTES attributes;
   int extended = 0;
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
+  int unlock_nci_needed = 0;
 #if !defined(HAVE_WINDOWS_H)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
@@ -121,6 +119,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
       return status;
     TreeGetViewDate(&saved_viewdate);
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
+    if (status & 1)
+      unlock_nci_needed = 1;
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci, &local_nci, sizeof(local_nci));
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
@@ -143,8 +143,6 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	bitassign(0, local_nci.flags, NciM_VERSIONS);
 	local_nci.owner_identifier = TemplateNci.owner_identifier;
 	local_nci.time_inserted = TemplateNci.time_inserted;
-	//      length = local_nci.length = 0;
-	//local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
       } else {
 	bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
@@ -155,9 +153,10 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	local_nci.DATA_INFO.ERROR_INFO.stv = stv;
 	bitassign_c(1, local_nci.flags2, NciM_ERROR_ON_PUT);
 	local_nci.DATA_INFO.ERROR_INFO.error_status = open_status;
-	length = local_nci.length = 0;
+	local_nci.length = 0;
 	TreePutNci(info_ptr, nidx, &local_nci, 1);
-	return open_status;
+	status = open_status;
+	goto done;
       } else {
 	NCI *nci = info_ptr->data_file->asy_nci->nci;
 	*nci = local_nci;
@@ -166,8 +165,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  bitassign(1, nci->flags, NciM_VERSIONS);
 	if (!utility_update) {
 	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK
-			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.DATA_LOCATION.
-	      record_length;
+			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.
+	      DATA_LOCATION.record_length;
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
 	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
@@ -188,10 +187,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 				  && !(nci->flags & NciM_DO_NOT_COMPRESS), &compressible,
 				  &nci->length, &nci->DATA_INFO.DATA_LOCATION.record_length,
 				  &nci->dtype, &nci->class, (nci->flags & NciM_VERSIONS
-							     || extended) ? 0 : sizeof(nci->
-										       DATA_INFO.
-										       DATA_IN_RECORD.
-										       data),
+							     || extended) ? 0 :
+				  sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),
 				  nci->DATA_INFO.DATA_IN_RECORD.data, &data_in_altbuf);
 	  bitassign(TreeGetThreadStatic()->path_reference, nci->flags, NciM_PATH_REFERENCE);
 	  bitassign(TreeGetThreadStatic()->nid_reference, nci->flags, NciM_NID_REFERENCE);
@@ -217,8 +214,6 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	      }
 	      if (status & 1)
 		TreePutNci(info_ptr, nidx, nci, 1);
-	      else
-		TreeUnLockNci(info_ptr, 0, nidx);
 	    } else if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		       (nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		       utility_update ||
@@ -227,12 +222,14 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	    else
 	      status = UpdateDatafile(info_ptr, nidx, nci, info_ptr->data_file->data);
 	  }
-	} else
-	  TreeUnLockNci(info_ptr, 0, nidx);
+	}
       }
     }
   } else
     status = TreeINVTREE;
+ done:
+  if (unlock_nci_needed)
+    TreeUnLockNci(info_ptr, 0, nidx);
   return status;
 }
 
@@ -361,7 +358,6 @@ int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     size_t len = strlen(info->filespec) - 4;
     size_t const filename_length = len + 20;
     char *filename = (char *)alloca(filename_length);
-//    char *filename = strncpy(malloc(len+20),info->filespec,len);
     strncpy(filename, info->filespec, len);
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
@@ -469,12 +465,15 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
   }
   if (nci_ptr->flags & NciM_VERSIONS) {
     char nci_bytes[42];
-    int64_t old_nci_offset;
+    int64_t seek_end;
     TreeSerializeNciOut(old_nci_ptr, nci_bytes);
-    old_nci_offset = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
-    status =
-	(MDS_IO_WRITE(info->data_file->put, nci_bytes, sizeof(nci_bytes)) ==
-	 sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+    seek_end = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
+    if (seek_end != -1) {
+      status =
+	  (MDS_IO_WRITE(info->data_file->put, nci_bytes, sizeof(nci_bytes)) ==
+	   sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+    } else
+      status = TreeFAILURE;
   }
   TreePutNci(info, nodenum, nci_ptr, 1);
   if (locked)

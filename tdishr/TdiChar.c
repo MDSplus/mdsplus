@@ -9,10 +9,10 @@
 #include "tdinelements.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiHash();
 

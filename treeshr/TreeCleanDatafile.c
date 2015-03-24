@@ -98,10 +98,14 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
 	    }
 	  }
 	  _TreeClose(&dbid2, 0, 0);
+	  if (dbid2)
+	    free(dbid2);
 	}
       }
     }
     _TreeClose(&dbid1, 0, 0);
+    if (dbid1)
+      free(dbid1);
     if (status & 1) {
       status = MDS_IO_REMOVE(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
       if (status & 1)

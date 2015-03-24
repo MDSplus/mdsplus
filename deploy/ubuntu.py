@@ -11,6 +11,23 @@ class InstallationPackage(object):
           self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
         self.info['DIST']=os.environ['DIST']
 
+    def externalPackage(self, root, package):
+        matchlen=0
+        ans = None
+        for extpackages in root.getiterator('external_packages'):
+            platforms=extpackages.attrib['platforms']
+            for platform in platforms.split(','):
+                if self.info['dist'].lower().startswith(platform):
+                    if len(platform) > matchlen:
+                        matchlen = len(platform)
+                        pkg = extpackages.find(package)
+                        if pkg is not None:
+                            if 'package' in pkg.attrib:
+                                ans = pkg.attrib['package']
+                            else:
+                                ans = package
+        return ans
+
     def exists(self):
         """Check to see if rpms for this release already exist."""
         tree=ET.parse('packaging.xml')
@@ -95,8 +112,10 @@ cp -av /tmp/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
                         raise Exception("Error building deb")
                 depends=list()
                 for require in package.getiterator("requires"):
-                    if 'nonmds' in require.attrib:
-                        depends.append(require.attrib['package']);
+                    if 'external' in require.attrib:
+                        pkg=self.externalPackage(root,require.attrib['package'])
+                        if pkg is not None:
+                            depends.append(pkg)
                     else:
                         depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package'].replace('_','-')))
                 if len(depends)==0:
@@ -127,6 +146,7 @@ Description: %(description)s
                 if subprocess.Popen("""
 set -e
 mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
+cat %(tmpdir)s/DEBIAN/control
 dpkg-deb --build %(tmpdir)s %(debfile)s
 reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
 """ % self.info,shell=True).wait() != 0:

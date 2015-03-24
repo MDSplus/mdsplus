@@ -33,14 +33,14 @@
 #define NciM_ON (NciM_STATE | NciM_PARENT_STATE)
 #include <usagedef.h>
 #include <strroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <stdio.h>
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern unsigned short OpcVector;
 

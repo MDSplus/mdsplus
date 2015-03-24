@@ -25,13 +25,13 @@ class NI6259AI(Device):
     del i
     parts.append({'path':':END_IDX', 'type':'numeric'})
     parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
+        'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':START_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','READY',50,None),Method(None,'start_store',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_store',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_store',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
         'options':('no_write_shot',)})
 
     parts.append({'path':':START_IDX', 'type':'numeric', 'value':0})
@@ -206,9 +206,9 @@ class NI6259AI(Device):
 ########################AsynchStore class
     class AsynchStore(Thread):
         stopReq = False
-        stopAcq = c_void_p(0)            
+        #stopAcq = c_void_p(0)            
 
-        def configure(self, device, niLib, niInterfaceLib, fd, chanMap, hwChanMap, treePtr):
+        def configure(self, device, niLib, niInterfaceLib, fd, chanMap, hwChanMap, treePtr, stopAcq):
             self.device = device
             self.niLib = niLib
             self.niInterfaceLib = niInterfaceLib
@@ -216,6 +216,8 @@ class NI6259AI(Device):
             self.chanMap = chanMap
             self.hwChanMap = hwChanMap
             self.treePtr = treePtr
+            self.stopAcq = stopAcq
+                
 
 
         def run(self):
@@ -247,7 +249,7 @@ class NI6259AI(Device):
             coeff = coeff_array();
 
 
-            self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
+            #self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
 
             for chan in range(len(self.chanMap)):
                 try:
@@ -683,6 +685,10 @@ class NI6259AI(Device):
         self.worker.stopReq = False
         chanMap = []
 
+        stopAcq = c_void_p(0)
+        niInterfaceLib.getStopAcqFlag(byref(stopAcq));
+        print stopAcq
+
         try:
             inputMode = self.inputModeDict[self.input_mode.data()]
         except: 
@@ -703,9 +709,9 @@ class NI6259AI(Device):
         treePtr = c_void_p(0)
         status = niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-            self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.diffChanMap, treePtr)
+            self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.diffChanMap, treePtr, stopAcq)
         else:
-            self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.nonDiffChanMap, treePtr)
+            self.worker.configure(self, niLib, niInterfaceLib, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
 
         self.saveWorker()
         self.worker.start()

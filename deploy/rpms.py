@@ -5,6 +5,33 @@ class InstallationPackage(object):
     def __init__(self,info):
         self.info=info
 
+    def externalPackage(self, root, package):
+        matchlen=0
+        ans = None
+        for extpackages in root.getiterator('external_packages'):
+            platforms=extpackages.attrib['platforms']
+            for platform in platforms.split(','):
+                if self.info['dist'].lower().startswith(platform):
+                    if len(platform) > matchlen:
+                        matchlen = len(platform)
+                        pkg = extpackages.find(package)
+                        if pkg is not None:
+                            if 'package' in pkg.attrib:
+                                ans = pkg.attrib['package']
+                            else:
+                                ans = package
+        return ans
+
+    def doRequire(self, out, root, require):
+        if 'external' in require.attrib:
+            pkg=self.externalPackage(root,require.attrib['package'])
+            if pkg is not None:
+                os.write(out,"Requires: %s\n" % pkg)
+        else:
+            self.info['reqpkg']=require.attrib['package']
+            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+
+
     def exists(self):
         """Check to see if rpms for this release already exist."""
         tree=ET.parse('packaging.xml')
@@ -104,11 +131,7 @@ class InstallationPackage(object):
                 out,specfilename=tempfile.mkstemp()
                 os.write(out,rpmspec % self.info)
                 for require in package.getiterator("requires"):
-                    self.info['reqpkg']=require.attrib['package']
-                    if 'nonmds' in require.attrib:
-                      os.write(out,"Requires: %(reqpkg)s\n" % self.info)
-                    else:
-                      os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+                    self.doRequire(out,root,require)
                 os.write(out,"""
 %%description
 %(description)s
@@ -163,14 +186,12 @@ rpmbuild -bb --define '_topdir /tmp/%(flavor)s' --buildroot=/tmp/%(flavor)s/BUIL
                 self.info["packagename"]="-%s" % package.attrib["name"]
             else:
                 self.info["packagename"]=""
+            self.info['summary']=package.attrib['summary']
+            self.info['description']=package.attrib['description']
             out,specfilename=tempfile.mkstemp()
             os.write(out,rpmspec % self.info)
             for require in package.getiterator("requires"):
-                self.info['reqpkg']=require.attrib['package']
-                if 'nonmds' in require.attrib:
-                    os.write(out,"Requires: %(reqpkg)s\n" % self.info)
-                else:
-                    os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+                self.doRequire(out, root, require)
             os.write(out,"""
 Buildarch: noarch
 %%description

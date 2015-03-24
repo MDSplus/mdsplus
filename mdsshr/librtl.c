@@ -5,7 +5,7 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <mdsshr.h>
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
@@ -27,12 +27,13 @@
 #include <ctype.h>
 #include "mdsshrthreadsafe.h"
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$ $Name$";
 int LibTimeToVMSTime(time_t * time_in, int64_t * time_out);
 STATIC_CONSTANT int64_t addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
 extern int MdsCopyDxXd();
+/*
 STATIC_ROUTINE char *GetTdiLogical(char *name);
+*/
 
 char *MdsDescrToCstring(struct descriptor *in);
 int StrFree1Dx(struct descriptor *out);
@@ -363,7 +364,10 @@ void *LibCallg(void **arglist, void *(*routine) ())
 #include <pthread.h>
 STATIC_THREADSAFE pthread_mutex_t GlobalMutex;
 STATIC_THREADSAFE int Initialized = 0;
+#ifdef ___DEBUG_IT
 STATIC_THREADSAFE int LockCount = 0;
+STATIC_THREADSAFE pthread_t current_locked_thread = 0;
+#endif
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL
@@ -371,11 +375,11 @@ STATIC_THREADSAFE int LockCount = 0;
 #else /*DECTHREADS*/
 #undef select
 #endif /*DECTHREADS*/
-    STATIC_THREADSAFE pthread_t current_locked_thread = 0;
-
 void pthread_lock_global_np()
 {
+#ifdef ___DEBUG_IT
   pthread_t thread = pthread_self();
+#endif
   if (!Initialized) {
 #if !defined(PTHREAD_MUTEX_RECURSIVE)
 #define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
@@ -460,6 +464,7 @@ STATIC_ROUTINE char *nonblank(char *p)
   return (*p ? p : 0);
 }
 
+/*
 STATIC_ROUTINE char *blank(char *p)
 {
   if (!p)
@@ -467,6 +472,7 @@ STATIC_ROUTINE char *blank(char *p)
   for (; *p && !isspace(*p); p++) ;
   return (*p ? p : 0);
 }
+*/
 
 char *TranslateLogical(char *name)
 {
@@ -813,10 +819,9 @@ STATIC_ROUTINE void dlopen_unlock()
   pthread_mutex_unlock(&dlopen_mutex);
 }
 
-int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
 {
-  char *c_filename = MdsDescrToCstring(filename);
-  char *full_filename = malloc(strlen(c_filename) + 10);
+  char *full_filename = malloc(strlen(filename) + 10);
   void *handle;
   char *tmp_error1 = 0;
   char *tmp_error2 = 0;
@@ -827,18 +832,17 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
   *symbol_value = NULL;
 
 #ifdef HAVE_WINDOWS_H
-  strcpy(full_filename, c_filename);
+  strcpy(full_filename, filename);
   lib_offset = 0;
 #else
-  if (strncmp(c_filename, "lib", 3)) {
+  if (strncmp(filename, "lib", 3)) {
     strcpy(full_filename, "lib");
-    strcat(full_filename, c_filename);
+    strcat(full_filename, filename);
   } else
-    strcpy(full_filename, c_filename);
+    strcpy(full_filename, filename);
 #endif
   if (strncmp
-      (c_filename + strlen(c_filename) - strlen(SHARELIB_TYPE), SHARELIB_TYPE,
-       strlen(SHARELIB_TYPE)))
+      (filename + strlen(filename) - strlen(SHARELIB_TYPE), SHARELIB_TYPE, strlen(SHARELIB_TYPE)))
     strcat(full_filename, SHARELIB_TYPE);
   dlopen_lock();
   old_fis_error = FIS_Error;
@@ -851,7 +855,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     if (tmp_error1 == NULL)
       tmp_error1 = "";
     tmp_error1 = strcpy((char *)malloc(strlen(tmp_error1) + 1), tmp_error1);
-    handle = dlopen(c_filename, dlopen_mode);
+    handle = dlopen(filename, dlopen_mode);
     if (handle == NULL) {
       tmp_error2 = dlerror();
       if (tmp_error2 == NULL)
@@ -861,17 +865,15 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     }
   }
   if (handle != NULL) {
-    char *c_symbol = MdsDescrToCstring(symbol);
-    *symbol_value = dlsym(handle, c_symbol);
+    *symbol_value = dlsym(handle, symbol);
     if (!(*symbol_value)) {
       char *tmp = dlerror();
       if (tmp == NULL)
 	tmp = "";
       sprintf((FIS_Error =
-	       (char *)malloc(strlen(tmp) + strlen("error finding symbol , ") + strlen(c_symbol) +
-			      1)), "error finding symbol %s, %s", c_symbol, tmp);
+	       (char *)malloc(strlen(tmp) + strlen("error finding symbol , ") + strlen(symbol) +
+			      1)), "error finding symbol %s, %s", symbol, tmp);
     }
-    free(c_symbol);
   } else {
     char *tmp = dlerror();
     if (tmp == 0)
@@ -880,7 +882,7 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
 	     (char *)malloc(strlen("Error loading library:\n\t %s - %s\n\t %s, %s\n\t%s - %s\n") +
 			    strlen(full_filename) * 3 + strlen(tmp) + strlen(tmp_error1) +
 			    strlen(tmp_error2) + 10)),
-	    "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n", c_filename, tmp_error1,
+	    "Error loading library:\n\t %s - %s\n\t %s - %s\n\t%s - %s\n", filename, tmp_error1,
 	    full_filename, tmp_error2, &full_filename[3], tmp);
   }
   if (old_fis_error != 0 && old_fis_error != FIS_Error)
@@ -890,12 +892,21 @@ int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, v
     free(tmp_error1);
   if (tmp_error2)
     free(tmp_error2);
-  free(c_filename);
   free(full_filename);
   if (*symbol_value == NULL)
     return LibKEYNOTFOU;
   else
     return 1;
+}
+
+int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+{
+  char *c_filename = MdsDescrToCstring(filename);
+  char *c_symbol = MdsDescrToCstring(symbol);
+  int status = LibFindImageSymbol_C(c_filename, c_symbol, symbol_value);
+  free(c_filename);
+  free(c_symbol);
+  return status;
 }
 
 int StrConcat(struct descriptor *out, struct descriptor *first, ...)
@@ -1197,12 +1208,12 @@ int LibEstablish()
 }
 
 #define SEC_PER_DAY (60*60*24)
-
+/*
 STATIC_ROUTINE time_t parsedate(char *asctim, void *dummy)
 {
   return time(0);
 }
-
+*/
 STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
 {
   int ans = -1;
@@ -1275,7 +1286,7 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
 
     {
       struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-      char *tmp;
+      //      char *tmp;
 #ifdef HAVE_WINDOWS_H
       unsigned int day, year, hour, minute, second;
       char month[4];
@@ -1298,9 +1309,9 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
       tm.tm_hour = hour;
       tm.tm_min = minute;
       tm.tm_sec = second;
-      tmp = asc_time;
+      //      tmp = asc_time;
 #else
-      tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
+      //      tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
       tm.tm_isdst = -1;
       tim = mktime(&tm);
@@ -1367,7 +1378,7 @@ time_t LibCvtTim(int *time_in, double *t)
     int64_t time_local;
     double time_d;
     struct tm *tmval;
-    time_t dummy = 0;
+    //    time_t dummy = 0;
     memcpy(&time_local, time_in, sizeof(time_local));
     time_local = (*(int64_t *) time_in - addin);
     if (time_local < 0)
@@ -2138,14 +2149,14 @@ STATIC_ROUTINE unsigned short icrc1(unsigned short crc)
 unsigned short Crc(unsigned int len, unsigned char *bufptr)
 {
   STATIC_THREADSAFE unsigned short icrctb[256], init = 0;
-  STATIC_THREADSAFE unsigned char rchr[256];
-  STATIC_CONSTANT unsigned it[16] = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
+  //  STATIC_THREADSAFE unsigned char rchr[256];
+  //STATIC_CONSTANT unsigned it[16] = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
   unsigned short j, cword = 0;
   if (!init) {
     init = 1;
     for (j = 0; j < 256; j++) {
       icrctb[j] = icrc1((unsigned short)(j << 8));
-      rchr[j] = (unsigned char)(it[j & 0xF] << 4 | it[j >> 4]);
+      //  rchr[j] = (unsigned char)(it[j & 0xF] << 4 | it[j >> 4]);
     }
   }
   for (j = 0; j < len; j++)
@@ -2212,6 +2223,7 @@ struct descriptor *MdsReleaseDsc()
   return &RELEASE_D;
 }
 
+/*
 STATIC_ROUTINE char *GetTdiLogical(char *name)
 {
   int status;
@@ -2240,3 +2252,4 @@ STATIC_ROUTINE char *GetTdiLogical(char *name)
     ans = 0;
   return ans;
 }
+*/

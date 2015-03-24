@@ -45,8 +45,6 @@ extern void pthread_unlock_global_np();
 #define SrvJobBEFORE_NOTIFY 1
 #define SrvJobAFTER_NOTIFY  2
 
-#define ServerABORT    0xfe18032
-
 typedef struct {
   struct _SrvJob *next;
   struct _SrvJob *previous;

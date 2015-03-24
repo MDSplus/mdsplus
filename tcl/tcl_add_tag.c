@@ -1,6 +1,6 @@
-#include        "tclsysdef.h"
-#include        <ncidef.h>
-#include        <usagedef.h>
+#include <mdsshr.h>
+#include <string.h>
+#include <stdlib.h>
 
 /**********************************************************************
 * TCL_ADD_TAG.C --
@@ -16,25 +16,26 @@
 	 * TclAddTag:
 	 * Add a tag name to a node
 	 *****************************************************************/
-int TclAddTag()
+int TclAddTag(void *ctx, char **error, char **output)
 {				/* Return: status                 */
   int nid;
   int sts;
-  static DYNAMIC_DESCRIPTOR(dsc_nodnam);
-  static DYNAMIC_DESCRIPTOR(dsc_tagnam);
+  char *nodnam = 0;
+  char *tagnam = 0;
 
-  cli_get_value("NODE", &dsc_nodnam);
-  cli_get_value("TAGNAME", &dsc_tagnam);
-  l2u(dsc_nodnam.dscA_pointer, 0);
-  l2u(dsc_tagnam.dscA_pointer, 0);
-  sts = TreeFindNode(dsc_nodnam.dscA_pointer, &nid);
+  cli_get_value(ctx, "NODE", &nodnam);
+  cli_get_value(ctx, "TAGNAME", &tagnam);
+  sts = TreeFindNode(nodnam, &nid);
   if (sts & 1)
-    sts = TreeAddTag(nid, dsc_tagnam.dscA_pointer);
+    sts = TreeAddTag(nid, tagnam);
   if (!(sts & 1)) {
-    MdsMsg(sts, "Error adding tag %s", dsc_tagnam.dscA_pointer);
-#ifdef vms
-    lib$signal(sts, 0);
-#endif
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(tagnam) + strlen(msg) + 100);
+    sprintf(*error, "Error adding tag %s\nError message was: %s\n", tagnam, msg);
   }
+  if (nodnam)
+    free(nodnam);
+  if (tagnam)
+    free(tagnam);
   return sts;
 }

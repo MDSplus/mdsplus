@@ -19,11 +19,11 @@ extern unsigned short OpcValue;
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdithreadsafe.h"
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 0);
 STATIC_CONSTANT int minus_one_value = -1;
