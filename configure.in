@@ -75,24 +75,19 @@ AC_ARG_ENABLE([java],
 PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
 AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
 
-dnl AM_PATH_CHECK(,[have_check="yes"],
-dnl  AC_MSG_WARN([Check not found; cannot run unit tests!])
-dnl  [have_check="no"])
-
-
 AC_ARG_ENABLE([valgrind],
               [AS_HELP_STRING([--enable-valgrind],
                               [Use valgrind when running unit tests])],
-              [AS_VAR_SET([enable_valgrind], [yes])],
+              [AS_VAR_SET([use_valgrind], [yes])],
               [])
 
-if [[ "$enable_valgrind" = "yes" ]]; then
+if [[ "$use_valgrind" = "yes" ]]; then
  AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
  if [[ "$HAVE_VALGRIND" = "no" ]]; then
   AC_MSG_ERROR([Valgrind not found in PATH. ])
  fi
 fi
-AM_CONDITIONAL(USE_VALGRIND, $use_valgrind)
+AM_CONDITIONAL(USE_VALGRIND, test x"$use_valgrind" = "xyes")
 
 
 dnl AC_ARG_ENABLE([universal],
