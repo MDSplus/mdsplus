@@ -48,17 +48,12 @@ char *ServerFindServers(void **ctx, char *wild_match)
       *ctx = dir = opendir(serverdir);
   }
   if (dir) {
-    int done = 0;
-    while (!done) {
+    while (1) {
       struct dirent *entry = readdir(dir);
-      done = 1;
       if (entry) {
-	static char *ans_c = 0;
-	if (ans_c)
-	  free(ans_c);
-	ans_c = strcpy(malloc(strlen(entry->d_name) + 1), entry->d_name);
+	char *ans_c = strcpy(malloc(strlen(entry->d_name) + 1), entry->d_name);
 	if ((strcmp(ans_c, ".") == 0) || (strcmp(ans_c, "..") == 0))
-	  done = 0;
+          continue;
 	else {
 	  struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
 	  struct descriptor wild_d = { 0, DTYPE_T, CLASS_S, 0 };
@@ -66,13 +61,17 @@ char *ServerFindServers(void **ctx, char *wild_match)
 	  ans_d.length = strlen(ans_c);
 	  wild_d.pointer = wild_match;
 	  wild_d.length = strlen(wild_match);
-	  if (!(StrMatchWild(&ans_d, &wild_d) & 1))
-	    done = 0;
-	  else
+	  if ((StrMatchWild(&ans_d, &wild_d) & 1)) {
 	    ans = ans_c;
+            break;
+          }
 	}
-      } else
+        free(ans_c);
+      } else {
 	closedir(dir);
+        *ctx=0;
+        break;
+      }
     }
   }
   return ans;
