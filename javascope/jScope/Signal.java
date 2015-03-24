@@ -139,7 +139,7 @@ public class Signal implements WaveDataListener
      * x min region value saved at signal creation
      */
 
-    private double saved_xmin = -Double.MAX_VALUE;
+    private double saved_xmin = Double.MIN_VALUE;
 
     /**
      * x max region value saved at signal creation
@@ -149,12 +149,12 @@ public class Signal implements WaveDataListener
     /**
      * y min region value saved at signal creation
      */
-    private double saved_ymin;
+    private double saved_ymin = Double.MIN_VALUE;
 
     /**
      * y max region value saved at signal creation
      */
-    private double saved_ymax;
+    private double saved_ymax = Double.MAX_VALUE;;
 
     /**
      * true if symmetrical error defines
@@ -294,6 +294,7 @@ public class Signal implements WaveDataListener
  */
     //2D management
     float x2D[];
+    long  x2DLong[];
     float y2D[];
     float z[];
     
@@ -514,27 +515,27 @@ public class Signal implements WaveDataListener
      */
 
     
-    public Signal(WaveData data, WaveData x_data, double xmin, double xmax)
+    public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal)
    {
-        if(xmin != -Double.MAX_VALUE)
+        if(xminVal != -Double.MAX_VALUE)
         {
-            saved_xmin = this.xmin = curr_xmin = xmin;
+            saved_xmin = this.xmin = curr_xmin = xminVal;
         }
-        if(xmax != Double.MAX_VALUE)
+        if(xmaxVal != Double.MAX_VALUE)
         {
-            saved_xmax = this.xmax = curr_xmax = xmax;
+            saved_xmax = this.xmax = curr_xmax = xmaxVal;
         }
         this.data = data;
         this.x_data = x_data;
         
         try {
             checkData(saved_xmin, saved_xmax);
+            
             if(saved_xmin == -Double.MAX_VALUE)
                 saved_xmin = this.xmin;
             if(saved_xmax == Double.MAX_VALUE)
                 saved_xmax = this.xmax;
-            saved_ymin = ymin;
-            saved_ymax = ymax;
+            
            
             data.addWaveDataListener(this);
         }catch(Exception exc)
@@ -799,6 +800,12 @@ public class Signal implements WaveDataListener
         {
             x2D = new float[s.x2D.length];
             System.arraycopy(s.x2D, 0, x2D, 0, x2D.length);
+        }
+
+        if(s.x2DLong != null )
+        {
+            x2DLong = new long[s.x2DLong.length];
+            System.arraycopy(s.x2DLong, 0, x2DLong, 0, x2DLong.length);
         }
 
         if(s.y2D != null )
@@ -1364,10 +1371,31 @@ public class Signal implements WaveDataListener
         switch (mode)
         {
             case MODE_IMAGE:
+                /*
                 saved_ymin = ymin = y2D_min;
                 saved_ymax = ymax = y2D_max;
                 saved_xmin = xmin = x2D_min;
                 saved_xmax = xmax = x2D_max;
+                */
+                if( saved_ymin == Double.MIN_VALUE )
+                    saved_ymin = ymin = y2D_min;
+                else
+                    ymin = saved_ymin;
+                               
+                if( saved_ymax == Double.MAX_VALUE )
+                    saved_ymax = ymax = y2D_max;
+                else
+                    ymax = saved_ymax;
+                
+                if( saved_xmin == Double.MIN_VALUE )
+                    saved_xmin = xmin = x2D_min;
+                else
+                    xmin = saved_xmin;
+                
+                if( saved_xmax == Double.MAX_VALUE )                
+                    saved_xmax = xmax = x2D_max;
+                else
+                    xmax = saved_xmax;
                 break;
             case MODE_XZ:
                 showXZ((float)value);
@@ -1966,11 +1994,20 @@ public class Signal implements WaveDataListener
                 XYData xyData = low_errorData.getData(xMin, xMax, NUM_POINTS);
                 lowError = xyData.y;
             }
+
+            if(saved_ymin == Double.MIN_VALUE)
+                saved_ymin = ymin;
+            
+            if(saved_ymax == Double.MAX_VALUE)
+                saved_ymax = ymax;            
+            
         }
         else if(numDimensions == 2)
         {
             type = TYPE_2D;
             x2D = data.getX2D();
+            if(x2D == null && data.isXLong())
+               x2DLong = data.getX2DLong();
             y2D = data.getY2D();
             z = data.getZ();
             
@@ -1980,7 +2017,8 @@ public class Signal implements WaveDataListener
                 yY2D = x_data.getY2D();
                 zY2D = x_data.getZ();
                 
-                if( x2D.length != xY2D.length && y2D.length != yY2D.length && z.length != zY2D.length)
+                if( (x2D != null && x2D.length != xY2D.length) || (x2DLong != null && x2DLong.length != xY2D.length) 
+                     && y2D.length != yY2D.length && z.length != zY2D.length)
                 {
                     xY2D = null;
                     yY2D = null;
@@ -2310,9 +2348,6 @@ public class Signal implements WaveDataListener
 
     public void setXLimits(double xmin, double xmax, int mode)
     {
-        
-        
-        
         if(xmin != -Double.MAX_VALUE)
         {
             this.xmin = xmin;

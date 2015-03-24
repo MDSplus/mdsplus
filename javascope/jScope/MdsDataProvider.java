@@ -191,6 +191,7 @@ public class MdsDataProvider
         private int st_idx = -1, end_idx = -1;
         private int n_frames = 0;
         private float times[] = null;
+        private long  long_times[] = null; 
         private Dimension dim = null;
         private int header_size = 0;
 
@@ -230,7 +231,7 @@ public class MdsDataProvider
                 }
                 else
                 {
-                    //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
+                  //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
                     all_times = MdsDataProvider.this.GetWaveData(in_x).getData(MAX_PIXELS).y;
                 }
                 
@@ -256,7 +257,7 @@ public class MdsDataProvider
                 if (in_x == null || in_x.length() == 0)
                     all_times = MdsDataProvider.this.GetFrameTimes(in_y);
                 else
-                    //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
+                  //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
                     all_times = MdsDataProvider.this.GetWaveData(in_x).getData(MAX_PIXELS).y;
 
                 if (all_times == null)
@@ -738,6 +739,12 @@ public class MdsDataProvider
                     else
                         dRes = fRes;
                     nSamples = dis.readInt();
+                    if( nSamples <= 0 )
+                    {
+                        error = "No Samples returned";
+                        return null;
+                    }
+                    
                     byte type = dis.readByte();
                     float y[] = new float[nSamples];
                     for(int i = 0; i < nSamples; i++)
@@ -850,13 +857,32 @@ public class MdsDataProvider
                 return GetFloatArray(in_y);
             }catch(Exception exc){return null;}
         }
+        
+        private long x2DLong[];
         public float[] getX2D()
         {
             String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0)";
             try {
-                return GetFloatArray(in);
-            }catch(Exception exc){return null;}
+                RealArray realArray = GetRealArray(in);
+                if( realArray.isLong() )
+                {
+                    this.isXLong = true;
+                    x2DLong = realArray.getLongArray();
+                    return null;
+                }
+                else
+                {
+                    x2DLong = null;
+                    return realArray.getFloatArray();
+                }
+                //return GetFloatArray(in);
+            } catch(Exception exc){return null;}
         }
+        public long[] getX2DLong()
+        {
+            return x2DLong;
+        }
+          
         public float[] getY2D()
         {
             String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1)";
@@ -1618,7 +1644,7 @@ public class MdsDataProvider
 
     public float[] GetFloatArray(String in) throws IOException
     {
-      RealArray realArray = GetRealArray(in);
+        RealArray realArray = GetRealArray(in);
         if (realArray == null)
             return null;
         return realArray.getFloatArray();
@@ -1626,7 +1652,7 @@ public class MdsDataProvider
 
     public double[] GetDoubleArray(String in) throws IOException
     {
-       RealArray realArray = GetRealArray(in);
+        RealArray realArray = GetRealArray(in);
         if (realArray == null)
             return null;
         return realArray.getDoubleArray();
@@ -1889,7 +1915,7 @@ public class MdsDataProvider
             }
             connected = true;
         }
-        if (!open && experiment != null || this.shot != shot || !this.experiment.equalsIgnoreCase(experiment) )
+        if (!open && experiment != null || this.shot != shot || experiment != null && !experiment.equalsIgnoreCase(this.experiment) )
         {
             //System.out.println("Open tree "+experiment+ " shot "+ shot);
             Descriptor descr = mds.MdsValue("JavaOpen(\"" + experiment + "\"," +

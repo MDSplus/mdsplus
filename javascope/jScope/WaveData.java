@@ -34,7 +34,8 @@ interface WaveData
  
     float[] getZ();
     float[] getX2D();
-    float[] getY2D(); 
+    float[] getY2D();
+    long[]  getX2DLong();
 
     
  //   double[] getXLimits();

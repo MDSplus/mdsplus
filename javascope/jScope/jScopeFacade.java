@@ -407,16 +407,16 @@ public class jScopeFacade
             String txt1, txt2, str;
             StringBuffer buf = new StringBuffer();
 
-            for (int i = 0; i < name_list.size(); i++)
+            for (int i = 0; i < name_list.size() && i < MAX_VARIABLE; i++)
             {
                 txt1 = (String) name_list.elementAt(i);
                 txt2 = (String) expr_list.elementAt(i);
                 if (txt1.length() != 0 && txt2.length() != 0)
                 {
                     if (txt1.indexOf("_") != 0)
-                        str = "public _" + txt1 + " = (" + txt2 + ";)";
+                        str = "public _" + txt1 + " = (" + txt2 + ");";
                     else
-                        str = "public " + txt1 + " = (" + txt2 + ";)";
+                        str = "public " + txt1 + " = (" + txt2 + ");";
                     buf.append(str);
                 }
             }
@@ -434,7 +434,7 @@ public class jScopeFacade
 
             Container p = getContentPane();
 
-            for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i += 2, j++)
+            for (int i = 2, j = 0; j < MAX_VARIABLE; i += 2, j++)
             {
                 txt1 = ( (JTextField) p.getComponent(i)).getText();
                 txt2 = ( (JTextField) p.getComponent(i + 1)).getText();
@@ -450,7 +450,7 @@ public class jScopeFacade
         private void SetPubVar()
         {
             Container p = getContentPane();
-            for (int i = 2, j = 0; j < name_list.size(); i += 2, j++)
+            for (int i = 2, j = 0; j < name_list.size() && j < MAX_VARIABLE; i += 2, j++)
             {
                 ( (JTextField) p.getComponent(i)).setText( (String) name_list.
                     elementAt(j));
@@ -497,7 +497,7 @@ public class jScopeFacade
 
         public void toFile(PrintWriter out, String prompt)
         {
-            for (int i = 0; i < name_list.size(); i++)
+            for (int i = 0; i < name_list.size() && i < MAX_VARIABLE; i++)
             {
                 out.println(prompt + i + ": " + name_list.elementAt(i)
                             + " = " + expr_list.elementAt(i));
@@ -513,7 +513,7 @@ public class jScopeFacade
              name_list.removeAllElements();
              expr_list.removeAllElements();
             
-            while ( (prop = pr.getProperty(prompt + idx)) != null)
+            while ( (prop = pr.getProperty(prompt + idx)) != null && idx < MAX_VARIABLE )
             {
                 StringTokenizer st = new StringTokenizer(prop, "=");
                 String name = st.nextToken();
