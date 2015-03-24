@@ -47,6 +47,7 @@ static int ConnectToMds_(char *host)
   return -1;
 }
 
+#ifndef HAVE_WINDOWS_H
 static int DisconnectFromMds_(int id)
 {
   static DESCRIPTOR(routine_d, "DisconnectFromMds");
@@ -57,6 +58,7 @@ static int DisconnectFromMds_(int id)
   }
   return -1;
 }
+#endif
 
 static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t * len)
 {
@@ -80,6 +82,7 @@ static int MdsEventAst_(int sock, char *eventnam, void (*astadr) (), void *astpr
   return 0;
 }
 
+#ifndef HAVE_WINDOWS_H
 static Message *GetMdsMsg_(int id, int *stat)
 {
   static DESCRIPTOR(routine_d, "GetMdsMsg");
@@ -90,8 +93,9 @@ static Message *GetMdsMsg_(int id, int *stat)
   }
   return 0;
 }
+#endif
 
-/*
+#ifdef HAVE_WINDOWS_H
 static Message *GetMdsMsgOOB_(int id, int *stat)
 {
   static DESCRIPTOR(routine_d, "GetMdsMsgOOB");
@@ -102,7 +106,8 @@ static Message *GetMdsMsgOOB_(int id, int *stat)
   }
   return 0;
 }
-*/
+#endif
+
 static int MdsEventCan_(int id, int eid)
 {
   static DESCRIPTOR(routine_d, "MdsEventCan");
@@ -180,7 +185,7 @@ STATIC_THREADSAFE int external_count = 0;	/* remote event pendings count */
 STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
 STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
 STATIC_THREADSAFE unsigned int threadID;
-STATIC_CONSTANT int zero = 0;
+STATIC_CONSTANT unsigned long zero = 0;
 
 STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
 {
@@ -218,7 +223,7 @@ struct event_struct {
   char *eventnam;
   void (*astadr) (void *, int, char *);
   void *astprm;
-  int len;
+  DWORD len;
   char data[256];
   unsigned long thread;
   HANDLE event;
@@ -234,8 +239,7 @@ STATIC_ROUTINE void EventThreadProc(struct event_struct *event)
 {
   while (WaitForSingleObject(event->event, INFINITE) != WAIT_FAILED) {
     if (event->pipe != INVALID_HANDLE_VALUE) {
-      int status;
-      status = ReadFile(event->pipe, event->data, sizeof(event->data), &event->len, 0);
+      ReadFile(event->pipe, event->data, sizeof(event->data), &event->len, 0);
       _beginthread((void (*)(void *))EventActionProc, 0, (void *)event);
     }
   }
@@ -297,8 +301,6 @@ int old_MDSEventAst(char *eventnam_in, void (*astadr) (void *, int, char *), voi
 
 STATIC_ROUTINE int canEventRemote(int eventid)
 {
-  struct descriptor library_d = { DTYPE_T, CLASS_S, 8, "MdsIpShr" }, routine_d = {
-  DTYPE_T, CLASS_S, 11, "MdsEventCan_"};
   int status = 1, i;
   /* kill external thread before sending messages over the socket */
   if (status & 1) {
@@ -340,7 +342,6 @@ struct MDSWfevent_struct {
 
 STATIC_ROUTINE void MDSWfevent_ast(void *astparam, int data_len, char *data)
 {
-  BOOLEAN status;
   struct MDSWfevent_struct *event = (struct MDSWfevent_struct *)astparam;
   if (event->buffer) {
     if (event->buflen > 0) {
@@ -352,7 +353,7 @@ STATIC_ROUTINE void MDSWfevent_ast(void *astparam, int data_len, char *data)
   }
   if (event->retlen)
     *event->retlen = data_len;
-  status = SetEvent(event->event);
+  SetEvent(event->event);
 }
 
 int MDSWfevent(char *evname, int buflen, char *data, int *datlen)
@@ -524,7 +525,6 @@ int old_MDSEvent(char const *evname_in, int data_len, char *data)
     HANDLE handle = OpenEvent(EVENT_ALL_ACCESS, 0, evname);
     if (handle != NULL) {
       char pipename[256];
-      int status;
       int num;
       HANDLE pipe = 0;
       int fail_count = 0;
@@ -532,8 +532,8 @@ int old_MDSEvent(char const *evname_in, int data_len, char *data)
 	sprintf(pipename, "\\\\.\\pipe\\mdsevents\\%s\\%0x", evname, num);
 	pipe = CreateFile(pipename, GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0);
 	if (pipe != INVALID_HANDLE_VALUE) {
-	  int len_written = 0;
-	  status = WriteFile(pipe, data, data_len, &len_written, 0);
+	  DWORD len_written = 0;
+	  WriteFile(pipe, data, data_len, &len_written, 0);
 	  CloseHandle(pipe);
 	  fail_count = 0;
 	} else {
@@ -557,12 +557,14 @@ STATIC_ROUTINE char *getEnvironmentVar(char *name)
   return trans;
 }
 
+#ifndef HAVE_WINDOWS_H
 STATIC_ROUTINE int searchOpenServer(char *server)
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
   return 0;
 }
+#endif
 
 STATIC_ROUTINE void getServerDefinition(char *env_var, char **servers, int *num_servers,
 					int *use_local)
@@ -792,6 +794,7 @@ STATIC_ROUTINE void newRemoteId(int *id)
   UnlockMdsShrMutex(&event_infoMutex);
 }
 
+#ifndef HAVE_WINDOWS_H
 STATIC_ROUTINE void deleteId(int id)
 {
   LockMdsShrMutex(&event_infoMutex, &event_infoMutex_initialized);
@@ -809,6 +812,7 @@ STATIC_ROUTINE void setLocalId(int id, int evid)
   event_info[id].local_id = evid;
   UnlockMdsShrMutex(&event_infoMutex);
 }
+#endif
 
 STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
 {
@@ -817,6 +821,7 @@ STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
   UnlockMdsShrMutex(&event_infoMutex);
 }
 
+#ifndef HAVE_WINDOWS_H
 STATIC_ROUTINE int getLocalId(int id)
 {
   int retId;
@@ -825,6 +830,7 @@ STATIC_ROUTINE int getLocalId(int id)
   UnlockMdsShrMutex(&event_infoMutex);
   return retId;
 }
+#endif
 
 STATIC_ROUTINE int getRemoteId(int id, int ofs)
 {
