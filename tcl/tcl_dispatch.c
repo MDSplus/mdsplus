@@ -332,7 +332,7 @@ int TclDispatch_phase(void *ctx, char **error, char **output)
   cli_get_value(ctx, "MONITOR", &monitor);
   if (!SyncEfnInit)
     InitSyncEfn();
-  cli_get_value(ctx, "PHASE", &phase);
+  cli_get_value(ctx, "PHASE_NAME", &phase);
   cli_get_value(ctx, "SYNCH", &synch_str);
   sscanf(synch_str, "%d", &synch);
   synch = synch >= 1 ? synch : 1;

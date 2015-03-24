@@ -8,6 +8,7 @@
 #include        <stdlib.h>
 #include        <sys/time.h>
 #include        <unistd.h>
+#include <libroutines.h>
 
 		/*========================================================
 		 * "Define"s and structure definitions ...
@@ -32,7 +33,6 @@ extern void StrCopyDx();
 extern int MDSprintf(char *fmt, ...);
 extern int MDSfprintf(FILE * fp, char *fmt, ...);
 
-
 	/*****************************************************************
 	 * MdsGetMsg:
 	 *****************************************************************/
@@ -43,14 +43,11 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
   STATIC_CONSTANT DESCRIPTOR(msg_files, "MDSMSG_PATH:*Msg.*");
   STATIC_CONSTANT DESCRIPTOR(getmsg_nam, "getmsg");
   struct descriptor_d filnam = { 0, DTYPE_T, CLASS_D, 0 };
-  int i;
-  char *facnam, *msgnam, *msgtext;
+  const char *facnam, *msgnam, *msgtext;
   int status = 0;
   void *ctx = 0;
   const STATIC_CONSTANT char *severity[] = { "W", "S", "E", "I", "F", "?", "?", "?" };
-  int (*getmsg) (int, char **, char **, char **);
-  int max;
-  struct stsText *stsText;
+  int (*getmsg) (int, const char **, const char **, const char **);
 
   if (sts == 1) {
     strcpy((MdsShrGetThreadStatic())->MdsGetMsg_text, "%SS-S-SUCCESS, Success");
@@ -59,7 +56,7 @@ char *MdsGetMsg(		/* Return: addr of "status" string      */
   status = MdsGetStdMsg(sts, &facnam, &msgnam, &msgtext);
   if (status & 1) {
     sprintf((MdsShrGetThreadStatic())->MdsGetMsg_text, "%%%s-%s-%s, %s", facnam,
-		  severity[sts & 0x7], msgnam, msgtext);
+	    severity[sts & 0x7], msgnam, msgtext);
     return (MdsShrGetThreadStatic())->MdsGetMsg_text;
   }
   while (!(status & 1) && (LibFindFile(&msg_files, &filnam, &ctx) & 1)) {
@@ -96,10 +93,8 @@ int MdsMsg(			/* Return: sts provided by user         */
 	    , ...		/* <r:opt> arguments to fmt[]               */
     )
 {
-  int k;
   int write2stdout;
   va_list ap;			/* arg ptr                              */
-  char *text = (MdsShrGetThreadStatic())->MdsMsg_text;
 
   write2stdout = isatty(fileno(stdout)) ^ isatty(fileno(stderr));
   if ((sts & ALREADY_DISPLAYED) && (sts != -1))

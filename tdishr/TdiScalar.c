@@ -21,7 +21,7 @@ extern unsigned short OpcDotProduct;
 #include <mdsshr.h>
 #include <string.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int Tdi2Keep();
 extern int TdiCvtArgs();

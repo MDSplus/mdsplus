@@ -42,7 +42,7 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 #include <errno.h>
 #include <math.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int CvtConvertFloat();
 

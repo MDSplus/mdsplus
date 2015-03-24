@@ -30,8 +30,6 @@
 #endif
 #include "treeshrp.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 
@@ -280,7 +278,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
   if (dblist) {
     if (dblist->remote) {
       status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)      /**** Remote server might have already opened the tree ****/
+      if (status == TreeNOT_OPEN)	   /**** Remote server might have already opened the tree ****/
 	status = TreeNORMAL;
     } else if (local_info) {
 
@@ -509,9 +507,8 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   if (info) {
     for (i = 0; i < info->header->externals; i++) {
       NODE *external_node = info->node + swapint((char *)&info->external[i]);
-      char *subtree =
-	  strncpy(memset(malloc(sizeof(NODE_NAME) + 1), 0, sizeof(NODE_NAME) + 1),
-		  external_node->name, sizeof(NODE_NAME));
+      char *subtree = strncpy(memset(malloc(sizeof(NODE_NAME) + 1), 0, sizeof(NODE_NAME) + 1),
+			      external_node->name, sizeof(NODE_NAME));
       char *blank = strchr(subtree, 32);
       subtree[sizeof(NODE_NAME)] = '\0';
       if (blank)
@@ -1226,7 +1223,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	int fd;
 	memset(info, 0, sizeof(*info));
 	info->flush = ((*dblist)->shotid == -1);
-	info->treenam =strdup(tree);
+	info->treenam = strdup(tree);
 	info->shot = (*dblist)->shotid;
 	fd = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0);
 	if (fd > -1) {

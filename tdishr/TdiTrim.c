@@ -15,7 +15,7 @@
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiGetLong();
 extern int TdiGetArgs();

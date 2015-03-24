@@ -21,8 +21,6 @@
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 static int64_t ViewDate = -1;
 
 extern void **TreeCtx();
@@ -86,8 +84,10 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		    TreeGetExtendedAttributes(info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
 					      &attributes);
 		if (status & 1 && attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
-		  status = TreeGetDsc(info, nid->tree, attributes.facility_offset[STANDARD_RECORD_FACILITY],
-				      attributes.facility_length[STANDARD_RECORD_FACILITY], dsc);
+		  status =
+		      TreeGetDsc(info, nid->tree,
+				 attributes.facility_offset[STANDARD_RECORD_FACILITY],
+				 attributes.facility_length[STANDARD_RECORD_FACILITY], dsc);
 		} else if (status & 1
 			   && attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1) {
 		  status = _TreeGetSegmentedRecord(dbid, nid_in, dsc);
@@ -183,7 +183,7 @@ typedef ARRAY(struct descriptor *) array_dsc;
 int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid)
 {
   int status = 1;
-  unsigned char tree = ((NID *)&nid)->tree;
+  unsigned char tree = ((NID *) & nid)->tree;
   if (dsc_ptr == NULL)
     status = 1;
   else
@@ -302,10 +302,9 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
 	}
 	deleted = 1;
 	while (status & 1 && deleted) {
-	  status =
-	      ((unsigned int)
-	       MDS_IO_READ_X(info->data_file->get, rfa_l + 12, (void *)bptr, partlen,
-			     &deleted) == partlen) ? TreeSUCCESS : TreeFAILURE;
+	  status = ((unsigned int)
+		    MDS_IO_READ_X(info->data_file->get, rfa_l + 12, (void *)bptr, partlen,
+				  &deleted) == partlen) ? TreeSUCCESS : TreeFAILURE;
 	  if (status & 1 && deleted)
 	    status = TreeReopenDatafile(info);
 	}

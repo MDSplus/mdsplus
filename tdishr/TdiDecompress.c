@@ -19,7 +19,7 @@
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiGetArgs();
 extern int Tdi2Vector();

@@ -252,7 +252,7 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
   NODE *node_ptr;
   A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) initialValue;
   struct descriptor *dsc;
-  //  compress_utility = utility_update == 2;
+  // compress_utility = utility_update == 2;
 #if !defined(HAVE_WINDOWS_H)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
@@ -301,6 +301,14 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
+    if ((status & 1) && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT)))
+      status = TreeNOWRITESHOT;
+    if ((status & 1) && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL)))
+      status = TreeNOWRITEMODEL;
+    if (!(status & 1)) {
+      TreeUnLockNci(info_ptr, 0, nidx);
+      return status;
+    }
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -534,7 +542,6 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
     int64_t saved_viewdate;
     int64_t index_offset;
     EXTENDED_ATTRIBUTES attributes;
-    int64_t attributes_offset = -1;
     SEGMENT_HEADER segment_header;
     SEGMENT_INDEX segment_index;
     SEGMENT_INFO *sinfo;
@@ -545,6 +552,14 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
+    if ((status & 1) && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT)))
+      status = TreeNOWRITESHOT;
+    if ((status & 1) && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL)))
+      status = TreeNOWRITEMODEL;
+    if (!(status & 1)) {
+      TreeUnLockNci(info_ptr, 0, nidx);
+      return status;
+    }
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -561,8 +576,6 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
 	  (info_ptr, RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa), &attributes) & 1) == 0)) {
       TreeUnLockNci(info_ptr, 0, nidx);
       return TreeFAILURE;
-    } else {
-      attributes_offset = RfaToSeek(local_nci.DATA_INFO.DATA_LOCATION.rfa);
     }
     /*** See if the node currently has an segment header record. If not, make an empty segment header and flag that
 	 a new one needs to be written.
@@ -704,6 +717,14 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
+    if ((status & 1) && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT)))
+      status = TreeNOWRITESHOT;
+    if ((status & 1) && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL)))
+      status = TreeNOWRITEMODEL;
+    if (!(status & 1)) {
+      TreeUnLockNci(info_ptr, 0, nidx);
+      return status;
+    }
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -869,8 +890,9 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num)
   return status;
 }
 
-static int ReadSegment(TREE_INFO * info_ptr, int nid, SEGMENT_HEADER * segment_header, SEGMENT_INFO * sinfo,
-		       struct descriptor_xd *segment, struct descriptor_xd *dim)
+static int ReadSegment(TREE_INFO * info_ptr, int nid, SEGMENT_HEADER * segment_header,
+		       SEGMENT_INFO * sinfo, struct descriptor_xd *segment,
+		       struct descriptor_xd *dim)
 {
   int status = 1;
   if (sinfo->data_offset != -1) {
@@ -1238,6 +1260,14 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
+    if ((status & 1) && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT)))
+      status = TreeNOWRITESHOT;
+    if ((status & 1) && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL)))
+      status = TreeNOWRITEMODEL;
+    if (!(status & 1)) {
+      TreeUnLockNci(info_ptr, 0, nidx);
+      return status;
+    }
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -1312,7 +1342,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
 			     &attributes.facility_offset[STANDARD_RECORD_FACILITY],
 			     &attributes.facility_length[STANDARD_RECORD_FACILITY]);
 	    }
-	    MdsFree1Dx(&xd,0);
+	    MdsFree1Dx(&xd, 0);
 	  }
 	  if (length <= 0 || !(status & 1)) {
 	    attributes.facility_offset[STANDARD_RECORD_FACILITY] = 0;
@@ -1514,7 +1544,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
       }
       if (found_index != -1) {
 	status =
-	  TreeGetDsc(info_ptr, nid, index.attribute[found_index].offset,
+	    TreeGetDsc(info_ptr, nid, index.attribute[found_index].offset,
 		       index.attribute[found_index].length, value);
       } else if (getnames == 1) {
 	if (namelist == 0) {
@@ -1523,7 +1553,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
 	  char *names = malloc(longestattname * numnames);
 	  DESCRIPTOR_A(name_array, (short)longestattname, DTYPE_T, names,
 		       (unsigned int)(longestattname * numnames));
-	  struct _namelist *p,*pnext;
+	  struct _namelist *p, *pnext;
 	  char *np;
 	  for (p = namelist, np = names; p; p = pnext, np += longestattname) {
 	    size_t i;
@@ -2131,6 +2161,14 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
+    if ((status & 1) && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT)))
+      status = TreeNOWRITESHOT;
+    if ((status & 1) && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL)))
+      status = TreeNOWRITEMODEL;
+    if (!(status & 1)) {
+      TreeUnLockNci(info_ptr, 0, nidx);
+      return status;
+    }
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -2401,6 +2439,14 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
     status = TreeGetNciLw(info_ptr, nidx, &local_nci);
     if (!(status & 1))
       return status;
+    if ((status & 1) && (shot_open && (local_nci.flags & NciM_NO_WRITE_SHOT)))
+      status = TreeNOWRITESHOT;
+    if ((status & 1) && (!shot_open && (local_nci.flags & NciM_NO_WRITE_MODEL)))
+      status = TreeNOWRITEMODEL;
+    if (!(status & 1)) {
+      TreeUnLockNci(info_ptr, 0, nidx);
+      return status;
+    }
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)
       open_status = TreeOpenDatafileW(info_ptr, &stv, 0);
     else
@@ -2427,9 +2473,8 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
       status = status;
     } else if (data->dtype != segment_header.dtype) {
       status = TreeINVDTYPE;
-    } else if (a_coeff->dimct == 1
-	       && !((a_coeff->dimct == segment_header.dimct)
-		    || (a_coeff->dimct == segment_header.dimct - 1))) {
+    } else if (a_coeff->dimct == 1 && !((a_coeff->dimct == segment_header.dimct)
+					|| (a_coeff->dimct == segment_header.dimct - 1))) {
       status = TreeINVSHAPE;
     } else if (a_coeff->dimct > 1
 	       && memcmp(segment_header.dims, a_coeff->m,
@@ -2535,7 +2580,7 @@ static int CopyStandardRecord(TREE_INFO * info1, TREE_INFO * info2, int nid, int
   if (status & 1) {
     status = TreePutDsc(info2, nid, (struct descriptor *)&xd, offset, length);
   }
-  MdsFree1Dx(&xd,0);
+  MdsFree1Dx(&xd, 0);
   if (!(status & 1)) {
     *offset = -1;
     *length = 0;
@@ -2564,7 +2609,7 @@ static int CopyNamedAttributes(TREE_INFO * info1, TREE_INFO * info2, int nid, in
 	    memset(index.attribute[i].name, 0, sizeof(index.attribute[i].name));
 	    index.attribute[i].offset = -1;
 	  }
-	  MdsFree1Dx(&xd,0);
+	  MdsFree1Dx(&xd, 0);
 	}
       }
     }

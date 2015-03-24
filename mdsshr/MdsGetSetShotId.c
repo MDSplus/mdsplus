@@ -26,8 +26,6 @@ int MdsGetCurrentShotId(experiment,shot)
 #include <stdio.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 int MdsGetCurrentShotId(char *experiment)
 {
   printf("MdsGetCurrentShotId is obsolete, use TreeGetCurrentShotId in TreeShr\n");

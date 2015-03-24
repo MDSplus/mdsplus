@@ -80,6 +80,9 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
   static char datime[24];
   static DESCRIPTOR(dsc_datime, datime);
 
+  if (time[0]==0 && time[1]== 0)
+    return "                       ";
+
   sts = LibSysAscTim(&len, &dsc_datime, time, flags);
   datime[len] = '\0';
   return (datime);

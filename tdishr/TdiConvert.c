@@ -7,7 +7,7 @@
 
 #define MAXTYPE (DTYPE_FTC + 1)
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern void CvtConvertFloat();
 extern int IsRoprand();

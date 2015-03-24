@@ -17,7 +17,7 @@ extern unsigned short OpcSetRange;
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int Tdi1Build();
 extern int TdiEvaluate();

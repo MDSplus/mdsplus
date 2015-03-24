@@ -25,7 +25,7 @@
 #include <treeshr.h>
 #include <mds_stdarg.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT DESCRIPTOR(AND, " & ");
 STATIC_CONSTANT DESCRIPTOR(OR, " | ");

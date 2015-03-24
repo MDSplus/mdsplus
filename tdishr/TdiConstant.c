@@ -11,7 +11,7 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 int Tdi1Constant(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {

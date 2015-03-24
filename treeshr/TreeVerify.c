@@ -52,7 +52,7 @@ int _TreeVerify(void *dbid)
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   if (dblist && dblist->tree_info) {
     NODE *firstempty = (dblist->tree_info->header->free == -1) ? (NODE *) 0 :
-      (NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
+	(NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
     nodecount = 0;
     maxnodes = dblist->tree_info->header->nodes;
     if (countnodes(dblist->tree_info->node)) {
@@ -67,7 +67,7 @@ int _TreeVerify(void *dbid)
       }
     }
     status = TreeNORMAL;
-  }  else
+  } else
     status = TreeNOT_OPEN;
   return status;
 }

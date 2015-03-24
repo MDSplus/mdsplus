@@ -576,7 +576,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 
     if (cmdDef->parameters[i]->listOk == 0) {
       if ((i < cmd->parameter_count) && (cmd->parameters[i]->value_count > 1)) {
-	char *errstr = malloc(100);
+	char *errstr = malloc(500);
 	sprintf(errstr, "Parameter number %d does not accept a list of values. "
 		"Perhaps that parameter needs to enclosed in double quotes?\n", i + 1);
 	*error = errstr;

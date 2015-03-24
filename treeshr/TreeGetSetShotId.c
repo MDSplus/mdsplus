@@ -42,8 +42,6 @@ extern char *MaskReplace();
 
 extern char *TranslateLogical();
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 static char *GetFileName(char *experiment, char **ctx)
 {
   char *ans = 0;
