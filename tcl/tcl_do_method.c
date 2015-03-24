@@ -67,7 +67,7 @@ int TclDoMethod(void *ctx, char **error, char **output)
 	while (cli_get_value(ctx, "ARGUMENT", &arg) & 1) {
 	  struct descriptor arg_dsc = { strlen(arg), DTYPE_T, CLASS_S, arg };
 	  xdarg[argc] = empty_xd;
-	  sts = TdiCompile(&arg, &xdarg[argc] MDS_END_ARG);
+	  sts = TdiCompile(&arg_dsc, &xdarg[argc] MDS_END_ARG);
 	  free(arg);
 	  if (sts & 1) {
 	    arglist[argc + 3] = xdarg[argc].pointer;
