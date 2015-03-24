@@ -17,7 +17,9 @@ CXXSOURCES = \
 
 SOURCES = mdsdata.c mdstree.c
 
-OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
+
+
+OBJECTS = $(CXXSOURCES:.cpp.o)  $(SOURCES:.c.o)
 EXPORTS = MdsObjectsCppShr.exports
 
 @VS_TRUE@ VSDLL=@MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKELIBDIR@MdsObjectsCppShr-VS.lib @MAKELIBDIR@MdsObjectsCppShr-VS.exp
@@ -41,7 +43,7 @@ install: $(libdir)
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) @EXPORTS_FILE@
-	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr $(MAKE_IMPLIB) $(CXXFLAGS)
+	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB) $(CXXFLAGS)
 
 @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
