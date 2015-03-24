@@ -8,10 +8,13 @@ AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCp
 
 
 
-# if HAVE_CHECK
+if HAVE_CHECK
 TESTS = \
         buildtest \
         MdsExceptionTest
+else
+TESTS =
+endif
 
 
 LDADD = $(AM_LIBS)
