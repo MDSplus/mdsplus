@@ -79,13 +79,14 @@ dnl AM_PATH_CHECK(,[have_check="yes"],
 dnl  AC_MSG_WARN([Check not found; cannot run unit tests!])
 dnl  [have_check="no"])
 
+
 AC_ARG_ENABLE([valgrind],
               [AS_HELP_STRING([--enable-valgrind],
                               [Use valgrind when running unit tests])],
-                              [],
-              [AS_VAR_SET([use_valgrind], [yes])])
+              [AS_VAR_SET([enable_valgrind], [yes])],
+              [])
 
-if [[ "$use_valgrind" = "yes" ]]; then
+if [[ "$enable_valgrind" = "yes" ]]; then
  AC_CHECK_PROG(HAVE_VALGRIND, valgrind, yes, no)
  if [[ "$HAVE_VALGRIND" = "no" ]]; then
   AC_MSG_ERROR([Valgrind not found in PATH. ])

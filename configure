@@ -6585,15 +6585,14 @@ fi
 
 
 
+
 # Check whether --enable-valgrind was given.
 if test "${enable_valgrind+set}" = set; then :
-  enableval=$enable_valgrind;
-else
-  use_valgrind=yes
+  enableval=$enable_valgrind; enable_valgrind=yes
 fi
 
 
-if [ "$use_valgrind" = "yes" ]; then
+if [ "$enable_valgrind" = "yes" ]; then
  # Extract the first word of "valgrind", so it can be a program name with args.
 set dummy valgrind; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
