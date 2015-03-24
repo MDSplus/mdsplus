@@ -60,6 +60,7 @@ class JetDataProvider implements DataProvider
     {
         throw(new IOException("Frames visualization on JetDataProvider not implemented"));
     }
+    public void enableAsyncUpdate(boolean enable){}
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
     public String  GetString(String in) {return in; }

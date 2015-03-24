@@ -114,17 +114,6 @@ public interface DataProvider
 
 
         /**
-         * Called by jScope to verify whether the DataProvider implementation supports the Fast Network
-         * option. If SupportsFastNetwork return true, jScope retrieves data by calling GetResampledWaveData
-         * which has to be thread safe. GetResampledWaveData is in fact called by a separate
-         * thread each time a zoom is done, to retrieve more points for the selected region.
-         * If SupportsFastNetwork return false, GetWaveData is called instead of GetResampledWaveData,
-         * which can be empty.
-         *
-         * @return The ability of supporting fast network access.
-         */
-        public boolean SupportsFastNetwork();
-        /**
          * If an error is encountered in the evaluation of a signal (GetWaveData or
          * GetResampledWaveData returning null or generation IOException), jScope calls ErrorString
          * method to retrieve the description of the error just occurred.
@@ -226,8 +215,8 @@ public interface DataProvider
 
         /**
          * Method DataPending is called by jScope to verify whether the current signal has been fully
-         * displayed. It DataPending returns false, method GetWaveData is alled again to retrieve a new
-         * version (usually with some more saples) of the signal.
+         * displayed. It DataPending returns false, method GetWaveData is called again to retrieve a new
+         * version (usually with some more samples) of the signal.
          * <br>
          * If method SupportsContinuous() returned false, DataPending is never called by jScope, and
          * can therefore be empty.
@@ -237,24 +226,11 @@ public interface DataProvider
         public boolean DataPending();
 
         /**
-         * Returns tre if the DataProvider impementation supports data compression in communication.
-         * jScope does not make any assumption about compression, simply provides the user interface for enablin
-         * or disabling compression, by means Network->Enable compression option. If compression
-         * is not supported by the DataProvider implementation, the Network->Enable option id disabled.
-         *
-         * @return true if the DataProvider implementation supports compression.
-         */
-        public boolean SupportsCompression();
-
-        /**
-         * Called by jScope to enable or disable data compression in transmission. If the DataProvider
-         * implementation doe not support compression and returned false in SupportsCompression(),
-         * SetCompression is never called.
-         *
-         * @param state Indicates whether compression is enabled or disabled.
-         */
-        public void    SetCompression(boolean state);
-
+         * Method enableAsyncUpdate enables or disables possible asynchronous activity of the data provider.
+         * Asynchronous activity is disabled when data are first retrieved, enabled afterwards
+         * **/
+        public void enableAsyncUpdate(boolean enable);
+        
         /**
          * Method Dispose is called by jScope each time a DataProvider is no more used. Unlike Object.finalize(),
          * method Dispose is guaranteed to be called at the time the DataProvider implementation is no more

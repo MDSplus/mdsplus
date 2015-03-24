@@ -559,6 +559,7 @@ class ASCIIDataProvider implements DataProvider
 
         return buf;
     }
+    public void enableAsyncUpdate(boolean enable){}
     public void getDataAsync(double lowerBound, double upperBound, double resolution){}
     public void setContinuousUpdate(boolean continuousUpdate){}
     public static void main(String args[])

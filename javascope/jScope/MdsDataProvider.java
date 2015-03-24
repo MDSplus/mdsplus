@@ -948,7 +948,7 @@ public class MdsDataProvider
             SimpleWaveData simpleWaveData;
             boolean isXLong;
             long updateTime;
-            UpdateDescriptor(double updateLowerBound, double updateUpperBound, int updatePoints,
+             UpdateDescriptor(double updateLowerBound, double updateUpperBound, int updatePoints,
                     Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
             {
                 this.updateLowerBound = updateLowerBound;
@@ -960,6 +960,7 @@ public class MdsDataProvider
                 this.updateTime = updateTime;
             }
         }
+        boolean enabled = true;
         Vector<UpdateDescriptor>requestsV = new Vector<UpdateDescriptor>();
         void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
                 Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long delay)
@@ -992,6 +993,12 @@ public class MdsDataProvider
             
             notify();
         }
+        synchronized void enableAsyncUpdate(boolean enabled)
+        {
+            this.enabled = enabled;
+            if(enabled)
+                notify();
+        }
         public void run()
         {
             while(true)
@@ -1003,11 +1010,13 @@ public class MdsDataProvider
                     }                           
                     catch(InterruptedException exc) {}
                 }
+                if(!enabled) continue;
                 long currTime = Calendar.getInstance().getTimeInMillis();
                 long nextTime = -1;
                 int i = 0;
                 while(i < requestsV.size())
                 {
+                    if(!enabled) break;
                     UpdateDescriptor currUpdate = requestsV.elementAt(i);
                     if(currUpdate.updateTime < currTime)
                     {
@@ -1333,31 +1342,6 @@ public class MdsDataProvider
         return error;
     }
 
-    /* ces 2015
-    public synchronized void Update(String exp, long s)
-    {
-        error = null;
-        var_idx = 0;
-        
-        //if(exp == null || exp.length() == 0)
-        //{
-        //    experiment = null;
-        //    open = true;
-        //    shot = s;
-        //    return;
-        //}
-        
-        if (s != shot || s == 0 || experiment == null ||
-            experiment.length() == 0 || !experiment.equals(exp))
-        {
-        //  System.out.println("Close "+experiment+ " "+shot);
-            experiment = ( (exp != null && exp.trim().length() > 0) ? exp : null);
-            shot = s;
-            open = false;
-        //  System.out.println("Open "+experiment+ " "+s);
-        }
-    }
-    */
     
     public synchronized void Update(String experiment, long shot)
     {
@@ -1449,17 +1433,6 @@ public class MdsDataProvider
             environment_vars = in;
         }
     
-/*        
-        error = null;
-        if (!CheckOpen())
-        {
-            error = "Cannot connetion to data server";
-            return;
-        }
-        
-        if (def_node == null)
-            SetEnvironmentSpecific(in);
-*/        
     }
 
     void SetEnvironmentSpecific(String in)
@@ -1472,6 +1445,10 @@ public class MdsDataProvider
                 if ( (desc.status & 1) == 0)
                     error = desc.error;
         }
+    }
+    public void enableAsyncUpdate(boolean enable)
+    {
+        updateWorker.enableAsyncUpdate(enable);
     }
 
     
