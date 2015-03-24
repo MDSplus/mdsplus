@@ -1,14 +1,14 @@
-#include <config.h>
+#include 	<config.h>
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
-#include <malloc.h>
-#include <strroutines.h>
+#include 	<stdlib.h>
+#include 	<strroutines.h>
 #ifdef HAVE_ALLOCA_H
-#include <alloca.h>
+#include 	<alloca.h>
 #endif
-#include <string.h>
-#include <readline/readline.h>
-#include <readline/history.h>
+#include 	<string.h>
+#include 	<readline/readline.h>
+#include 	<readline/history.h>
 extern int TdiDecompile();
 extern int TdiSortVal();
 

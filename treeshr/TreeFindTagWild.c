@@ -35,8 +35,6 @@ TreeFindTagEnd(void **ctx);
 #include "treeshrp.h"
 #include <strroutines.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern int MdsCopyDxXd();
 extern char *FindTagWildRemote();
 extern int FindTagEndRemote();
@@ -152,8 +150,10 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 	    static struct descriptor_s s_tag_dsc = { sizeof(TAG_NAME), DTYPE_T, CLASS_S, 0 };
 	    static struct descriptor_d tag_dsc = { 0, DTYPE_T, CLASS_D, 0 };
 	    s_tag_dsc.pointer =
-		(char *)(*ctx)->this_tree_info->
-		tag_info[swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].name;
+		(char *)(*ctx)->
+		this_tree_info->tag_info[swapint
+					 ((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].
+		name;
 	    StrTrim(&tag_dsc, &s_tag_dsc, &len);
 	    if (StrMatchWild(&tag_dsc, &((*ctx)->search_tag)) & 1) {
 	      done = 1;
@@ -175,14 +175,17 @@ char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx_inout)
 	static struct descriptor_s tag_name = { sizeof(TAG_NAME), DTYPE_T, CLASS_S, tagname };
 	unsigned short len;
 	s_tag_name.pointer =
-	    (char *)(*ctx)->this_tree_info->
-	    tag_info[swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].name;
+	    (char *)(*ctx)->
+	    this_tree_info->tag_info[swapint
+				     ((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].
+	    name;
 	StrTrim(&tag_name, &s_tag_name, &len);
 	tagname[len] = '\0';
 	nptr +=
-	    swapint(&(*ctx)->this_tree_info->
-		    tag_info[swapint((char *)&(*ctx)->this_tree_info->tags[(*ctx)->next_tag])].
-		    node_idx);
+	    swapint(&(*ctx)->
+		    this_tree_info->tag_info[swapint
+					     ((char *)&(*ctx)->this_tree_info->
+					      tags[(*ctx)->next_tag])].node_idx);
       } else
 	strcpy(tagname, "TOP");
       strcpy(answer, "\\");

@@ -146,6 +146,9 @@ public class Waveform
 
   protected ColorMap colorMap = new ColorMap();
   
+  private String properties;
+  public void setProperties( String properties) { this.properties = properties;}
+  public String getProperties() { return properties;}
 
 
   class ZoomRegion {
@@ -1246,6 +1249,7 @@ public class Waveform
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
+        
             
         if(xmax != Double.MAX_VALUE && xmin != -Double.MAX_VALUE)
         {
@@ -1457,6 +1461,7 @@ public class Waveform
       if (frame_type == FrameData.BITMAP_IMAGE_32 ||
           frame_type == FrameData.BITMAP_IMAGE_16 ) {
         we = new WaveformEvent(this,
+                               p.x, p.y, (float)(Math.round(frames.GetFrameTime() * 10000) / 10000.) ,
                                frames.getName(),
                                frames.getValuesX(p.y),
                                frames.getStartPixelX(),
@@ -1471,6 +1476,7 @@ public class Waveform
       }
       else {
         we = new WaveformEvent(this,
+                               p.x, p.y, (float)(Math.round(frames.GetFrameTime() * 10000) / 10000.) ,
                                frames.getName(),
                                frames.getPixelsX(p.y),
                                frames.getStartPixelX(),
@@ -1652,12 +1658,13 @@ public class Waveform
               {
                   if (is_image && frames != null)
                   {
-                      Point p = frames.getFramePoint(new Point(end_x, end_y),
-                          new
-                          Dimension(prev_width, prev_height));
-                      p = frames.getImagePoint(p, d);
-                      end_x = p.x;
-                      end_y = p.y;
+                      try {
+                          Point p = frames.getFramePoint(new Point(end_x, end_y),
+                              new Dimension(prev_width, prev_height));
+                          p = frames.getImagePoint(p, d);
+                          end_x = p.x;
+                          end_y = p.y;
+                      }catch (Exception exc){}
                   }
               }
 

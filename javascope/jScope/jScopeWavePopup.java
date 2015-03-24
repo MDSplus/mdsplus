@@ -21,10 +21,10 @@ class jScopeWavePopup
     extends MultiWavePopup
 {
     private SetupDataDialog setup_dialog;
-    protected JMenuItem refresh, saveAsText;
+    protected JMenuItem refresh;
     protected JMenuItem selectWave;
     //profile_dialog;
-    protected JSeparator sep1, sep3;
+    protected JSeparator sep1;
 
     public jScopeWavePopup(SetupDataDialog setup_dialog,
                            ProfileDialog profDialog,
@@ -62,6 +62,7 @@ class jScopeWavePopup
         }
         );
 
+/*
         sep3 = new JSeparator();
         saveAsText = new JMenuItem("Save as text ...");
         saveAsText.addActionListener(new ActionListener()
@@ -73,6 +74,7 @@ class jScopeWavePopup
             }
         }
         );
+ */
         /*************
              profile_dialog = new JMenuItem("Show profile dialog");
              profile_dialog.addActionListener(new ActionListener()

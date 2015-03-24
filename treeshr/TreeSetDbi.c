@@ -40,8 +40,6 @@
 #include "treeshrp.h"
 #include <dbidef.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
 extern int SetDbiRemote();

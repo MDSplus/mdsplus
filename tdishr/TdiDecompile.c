@@ -10,7 +10,7 @@
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 unsigned int TdiDECOMPILE_MAX = 0xffff;
 

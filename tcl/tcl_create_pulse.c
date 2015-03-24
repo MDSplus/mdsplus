@@ -4,7 +4,7 @@
 #include        <ncidef.h>
 #include        <usagedef.h>
 #include        <string.h>
-#include <malloc.h>
+#include 	<stdlib.h>
 #ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
 #endif

@@ -120,9 +120,9 @@ static void *handleMessage(void *arg)
     currPtr += nameLen;
     bufLen = ntohl(*((unsigned int *)currPtr));
     currPtr += sizeof(int);
-    if (recBytes != (nameLen + bufLen + 8)) /*** check for invalid buffer ***/
+    if (recBytes != (nameLen + bufLen + 8))	/*** check for invalid buffer ***/
       continue;
-    if (strncmp(eventInfo->eventName, eventName, nameLen))   /*** check to see if this message matches the event name ***/
+    if (strncmp(eventInfo->eventName, eventName, nameLen))	 /*** check to see if this message matches the event name ***/
       continue;
     eventInfo->astadr(eventInfo->arg, bufLen, currPtr);
   }

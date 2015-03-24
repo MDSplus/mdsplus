@@ -44,8 +44,6 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
 int MdsGet1DxS(unsigned short *length_ptr, unsigned char *dtype_ptr,

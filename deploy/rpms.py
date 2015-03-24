@@ -10,12 +10,12 @@ class InstallationPackage(object):
         ans = None
         for extpackages in root.getiterator('external_packages'):
             platforms=extpackages.attrib['platforms']
-            for platform in platforms.split[',']:
+            for platform in platforms.split(','):
                 if self.info['dist'].lower().startswith(platform):
                     if len(platform) > matchlen:
                         matchlen = len(platform)
                         pkg = extpackages.find(package)
-                        if pkg:
+                        if pkg is not None:
                             if 'package' in pkg.attrib:
                                 ans = pkg.attrib['package']
                             else:
@@ -25,11 +25,11 @@ class InstallationPackage(object):
     def doRequire(self, out, root, require):
         if 'external' in require.attrib:
             pkg=self.externalPackage(root,require.attrib['package'])
-            if pkg:
+            if pkg is not None:
                 os.write(out,"Requires: %s\n" % pkg)
-            else:
-                self.info['reqpkg']=require.attrib['package']
-                os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+        else:
+            self.info['reqpkg']=require.attrib['package']
+            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
 
 
     def exists(self):

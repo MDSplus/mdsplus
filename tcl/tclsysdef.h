@@ -4,7 +4,7 @@
 #include        "mdsshr.h"
 #include        "mds_stdarg.h"
 #include        "treeshr.h"
-#include        <malloc.h>
+#include        <stdlib.h>
 #ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
 #endif

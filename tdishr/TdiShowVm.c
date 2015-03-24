@@ -10,7 +10,7 @@
 #include <libroutines.h>
 #include <mdsshr_messages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiGetLong();
 

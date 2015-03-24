@@ -41,16 +41,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include <Xm/RowColumn.h>
 #include <stdio.h>
 #include <ctype.h>
-
-/*
- * Include stdlib.h and malloc.h if code is C++, ANSI, or Extended ANSI.
- */
-#if defined(__cplusplus) || defined(__STDC__) || defined(__EXTENSIONS__)
 #include <stdlib.h>
-#if !defined(VMS) && !defined(__APPLE__)
-#include <malloc.h>
-#endif
-#endif
 
 /*****************************************************************************
  *       TYPDEFS AND DEFINES

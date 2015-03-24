@@ -91,6 +91,7 @@ static Message *GetMdsMsg_(int id, int *stat)
   return 0;
 }
 
+/*
 static Message *GetMdsMsgOOB_(int id, int *stat)
 {
   static DESCRIPTOR(routine_d, "GetMdsMsgOOB");
@@ -101,7 +102,7 @@ static Message *GetMdsMsgOOB_(int id, int *stat)
   }
   return 0;
 }
-
+*/
 static int MdsEventCan_(int id, int eid)
 {
   static DESCRIPTOR(routine_d, "MdsEventCan");
@@ -124,6 +125,7 @@ static int MdsValue_(int id, char *exp, struct descrip *d1, struct descrip *d2, 
   return 0;
 }
 
+#ifdef GLOBUS
 static int RegisterRead_(int sock)
 {
   STATIC_CONSTANT DESCRIPTOR(library_d, "MdsIpShr");
@@ -138,6 +140,7 @@ static int RegisterRead_(int sock)
   }
   return ((*rtn) (sock));
 }
+#endif
 
 #ifdef HAVE_VXWORKS_H
 int MDSEventAst(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
@@ -1020,7 +1023,6 @@ STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destinati
 
 STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
 {
-  int status;
   char **servers;
   int *sockets;
   int *ids;
@@ -1450,7 +1452,10 @@ STATIC_ROUTINE int createThread(pthread_t * thread, void (*rtn) (), void *par)
 
 STATIC_ROUTINE void startRemoteAstHandler()
 {
-  int status = pipe(fds);
+  if (pipe(fds) != 0) {
+    fprintf(stderr, "Error creating pipes for AstHandler\n");
+    return;
+  }
   external_thread_created = createThread(&external_thread, handleRemoteAst, 0);
 }
 
@@ -1727,11 +1732,10 @@ STATIC_ROUTINE void handleRemoteEvent(int sock)
 
 STATIC_CONSTANT void KillHandler()
 {
-  int status;
   void *dummy;
   external_shutdown = 1;
-  status = write(fds[1], "x", 1) == 1 ? 0 : -1;
-  status = pthread_join(external_thread, &dummy);
+  write(fds[1], "x", 1) == 1 ? 0 : -1;
+  pthread_join(external_thread, &dummy);
   close(fds[0]);
   close(fds[1]);
   external_shutdown = 0;
@@ -1788,7 +1792,6 @@ STATIC_ROUTINE int searchOpenServer(char *server)
 /* Avoid doing MdsConnect on a server already connected before */
 /* for now, allow socket duplications */
 {
-  int i;
   return 0;
 }
 
@@ -1815,7 +1818,6 @@ STATIC_ROUTINE void initializeLocalRemote(int receive_events, int *use_local)
   char *servers[256];
   int num_servers;
   int status = 1, i;
-  void *dummy;
 
   LockMdsShrMutex(&initMutex, &initMutex_initialized);
 
@@ -1886,7 +1888,6 @@ STATIC_ROUTINE int eventAstRemote(char *eventnam, void (*astadr) (), void *astpr
 {
   int status = 1, i;
   int curr_eventid;
-  void *dummy;
   if (status & 1) {
 /* if external_thread running, it must be killed before sending messages over socket */
     if (external_thread_created)
@@ -2248,7 +2249,6 @@ int old_MDSEventAst(char *eventnam_in, void (*astadr) (), void *astprm, int *eve
 STATIC_ROUTINE int canEventRemote(int eventid)
 {
   int status = 1, i;
-  void *dummy;
   /* kill external thread before sending messages over the socket */
   if (status & 1) {
     KillHandler();
@@ -2263,7 +2263,7 @@ STATIC_ROUTINE int canEventRemote(int eventid)
 
 int old_MDSEventCan(int eventid)
 {
-  int i, j, k, curr_id, prev_id, use_local, local_eventid, name_in_use;
+  int i, curr_id, prev_id, use_local, local_eventid, name_in_use;
   struct PrivateEventInfo *evinfo;
 
   if (eventid < 0)
@@ -2394,7 +2394,7 @@ void RemoveAllDeadQueues()
 
 int old_MDSEvent(char const *evname_in, int data_len, char *data)
 {
-  int i, j, name_idx, curr_id, use_local;
+  int j, name_idx, curr_id, use_local;
   unsigned int u;
   char *evname;
   int status = 1;
@@ -2441,7 +2441,7 @@ int old_MDSEvent(char const *evname_in, int data_len, char *data)
 /** For debugging only **/
 int NumActiveSharedEvents()
 {
-  int i, j;
+  int i;
   int num = 0;
 
   getLock();

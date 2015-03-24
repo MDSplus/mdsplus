@@ -36,7 +36,7 @@
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr, unsigned int *out_count)
 {

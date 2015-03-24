@@ -6,7 +6,7 @@
 #include <mdsdescrip.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int Tdi3Multiply();
 extern int Tdi3Complex();

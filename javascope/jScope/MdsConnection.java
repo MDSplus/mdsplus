@@ -5,6 +5,7 @@ import jScope.ConnectionEvent;
 import jScope.ConnectionListener;
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -36,7 +37,7 @@ public class MdsConnection
         transient Hashtable< String, EventItem > hashEventName = new Hashtable< String, EventItem >();
         transient Hashtable< Integer, EventItem > hashEventId = new Hashtable< Integer, EventItem >();
 
-        ProcessUdpEvent processUdpEvent = null;
+        //ProcessUdpEvent processUdpEvent = null;
 
         public String getProvider() { return provider;}
 
@@ -60,7 +61,7 @@ public class MdsConnection
             }
         }
 
-
+/*
         public class ProcessUdpEvent extends Thread
         {
             static final int DEFAULT_UDP_EVENT_PORT = 4000;
@@ -172,7 +173,7 @@ public class MdsConnection
                 }
             }
         }
-
+*/
 
 
         class PMET extends Thread //Process Mds Event Thread
@@ -193,12 +194,14 @@ public class MdsConnection
 
             public void SetEventid(int id)
             {
+                    //System.out.println("Received Event ID " + id);
                     eventId = id;
                     eventName = null;
             }
 
             public void SetEventName(String name)
             {
+                    System.out.println("Received Event Name " + name);
                     eventId = -1;
                     eventName = name;
             }
@@ -449,6 +452,8 @@ public class MdsConnection
         byte idx = 0, totalarg = (byte)(n_args+1);
         Descriptor out;
 
+        //System.out.println("->\n"+expr+"\n<-\n");
+                
         try
         {
             if(expr.indexOf("($") == -1) //If no $ args specified, build argument list 
@@ -502,21 +507,23 @@ public class MdsConnection
     // Read either a string or a float array
     public synchronized  Descriptor MdsValue(String expr)
     {
-	    int i, status;
-	    Descriptor out;
+	int i, status;
+	Descriptor out;
         MdsMessage message = new MdsMessage(expr);
 
+        //System.out.println("->\n"+expr+"\n<-\n");
+        
         try {
             pending_count++;
-	        message.Send(dos);
+	    message.Send(dos);
             out = getAnswer();
-	    }
-	    catch(IOException e)
-	        {
-	            out = new Descriptor("Could not get IO for "+provider + e);
-	        }
+	}
+	catch(IOException e)
+	{
+	    out = new Descriptor("Could not get IO for "+provider + e);
+	}
         message.body = null;
-	    return out;
+	return out;
     }
 
     public  int DisconnectFromMds()
@@ -583,14 +590,14 @@ public class MdsConnection
                     error = "Could not get IO for : Host " + host +" Port "+ port + " User " + user;
                     return 0;
                 }
-
+/*
 		if( processUdpEvent == null )
 		{
 		    processUdpEvent = new ProcessUdpEvent();
 		}
 		if( !processUdpEvent.isAlive() )
 			processUdpEvent.start();
-
+*/
                 connected = true;
             } else {
                 error = "Data provider host:port is <null>";
@@ -672,7 +679,6 @@ public class MdsConnection
 
     public synchronized void dispatchUpdateEvent(int eventid)
     {
-
         if( hashEventId.containsKey(eventid) )
         {
             dispatchUpdateEvent(hashEventId.get(eventid));
@@ -681,6 +687,7 @@ public class MdsConnection
 
     public synchronized void dispatchUpdateEvent(String eventName)
     {
+
 
         if( hashEventName.containsKey(eventName) )
         {
@@ -697,17 +704,20 @@ public class MdsConnection
 
     }
 
+    
     public synchronized void MdsSetEvent(UpdateEventListener l, String event)
     {
          int eventid;
          if((eventid = AddEvent(l, event)) == -1)
               return;
          
+        
+/*         
            if( processUdpEvent != null )
            {
                processUdpEvent.addEvent(event);
            }
-
+*/
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)3, null,
@@ -716,10 +726,11 @@ public class MdsConnection
             sendArg((byte)1, Descriptor.DTYPE_CSTRING,
                          (byte)3, null, event.getBytes());
 
-            byte data[] = {(byte)eventid};
+            
+            byte data[] = {(byte)(eventid)};
 
-            sendArg((byte)2, Descriptor.DTYPE_CSTRING,
-                        (byte)3, null, data);
+            sendArg((byte)2, Descriptor.DTYPE_UBYTE, (byte)3, null, data);
+                        
        } catch(IOException e) {error = new String("Could not get IO for "+provider + e);}
     }
 
@@ -729,12 +740,12 @@ public class MdsConnection
            int eventid;
            if((eventid = RemoveEvent(l, event)) == -1)
                 return;
-
+/*
            if( processUdpEvent != null )
            {
                processUdpEvent.removeEvent(event);
            }
-
+*/
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)2, null,
@@ -773,6 +784,8 @@ public class MdsConnection
                 connection_listener.elementAt(i).processConnectionEvent(e);
             }
         }
+        
     }
+   
   }
 

@@ -29,7 +29,7 @@ extern unsigned short OpcCompile;
 extern void LockMdsShrMutex(pthread_mutex_t *, int *);
 extern void UnlockMdsShrMutex(pthread_mutex_t *);
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiEvaluate();
 extern int TdiYacc();

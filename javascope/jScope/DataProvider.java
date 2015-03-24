@@ -37,7 +37,7 @@ public interface DataProvider
 
         /**
          * Method Update is called by jScope to notify the experiment name and the shot number.
-         * Update can be called several time by jScope dfor the same DataProvider implementation
+         * Update can be called several time by jScope for the same DataProvider implementation
          * in the case user changes either the experiment name or the shot number.
          *
          * @param exp The experiment name
@@ -316,7 +316,7 @@ public interface DataProvider
         /**
          * As DataProvider implementations are instantiated by jScope by means of the
          * Class.newInstance(), no arguments can be passed to the constructor method.
-         * If an additional argument is required fotr the proper initialization of the
+         * If an additional argument is required for the proper initialization of the
          * DataProvider implementation (e.g. the ip address for the MdsDataProvider), the argument,
          * defined in the server_n.argument item of the property file is passed through method SetArgument
          * called by jScope just after the DataProvider instantiation.

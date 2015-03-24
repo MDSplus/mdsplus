@@ -3,7 +3,7 @@
 #include <usagedef.h>
 #include <string.h>
 #include <dcl.h>
-#include <malloc.h>
+#include <stdlib.h>
 /**********************************************************************
 * TCL_ADD_NODE.C --
 *

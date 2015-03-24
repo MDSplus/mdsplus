@@ -16,7 +16,7 @@
 #include <STATICdef.h>
 #include "tdirefcat.h"
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 #ifdef __VMS
 

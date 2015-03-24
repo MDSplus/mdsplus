@@ -33,8 +33,6 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
 static void _RemoveTagIdx(PINO_DATABASE * dblist, int tagidx);

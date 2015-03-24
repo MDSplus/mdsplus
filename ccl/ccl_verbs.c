@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <dcl.h>
 #include <string.h>
-#include <malloc.h>
 
 static int ParseQualifiers();
 static int CheckErrors();

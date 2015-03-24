@@ -12,7 +12,7 @@
 #include <mdsdescrip.h>
 #define COM
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiIntrinsic();
 #define MdsEND_ARG_64 (void *)-1

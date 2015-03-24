@@ -15,13 +15,13 @@ class InstallationPackage(object):
         matchlen=0
         ans = None
         for extpackages in root.getiterator('external_packages'):
-            platforms=extpackages.attrib['platform']
-            for platform in platforms.split[',']:
+            platforms=extpackages.attrib['platforms']
+            for platform in platforms.split(','):
                 if self.info['dist'].lower().startswith(platform):
                     if len(platform) > matchlen:
                         matchlen = len(platform)
                         pkg = extpackages.find(package)
-                        if pkg:
+                        if pkg is not None:
                             if 'package' in pkg.attrib:
                                 ans = pkg.attrib['package']
                             else:
@@ -114,7 +114,7 @@ cp -av /tmp/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
                 for require in package.getiterator("requires"):
                     if 'external' in require.attrib:
                         pkg=self.externalPackage(root,require.attrib['package'])
-                        if pkg:
+                        if pkg is not None:
                             depends.append(pkg)
                     else:
                         depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package'].replace('_','-')))
@@ -146,7 +146,7 @@ Description: %(description)s
                 if subprocess.Popen("""
 set -e
 mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
-cat %(debfile)s
+cat %(tmpdir)s/DEBIAN/control
 dpkg-deb --build %(tmpdir)s %(debfile)s
 reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
 """ % self.info,shell=True).wait() != 0:

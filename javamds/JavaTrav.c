@@ -897,9 +897,7 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
   strcpy(mymodel, model);
 
   TreeGetDefaultNid(&tempNid);
-  printf("CHIAMO TREE ADD CONGLOM %s %s\n", mypath, mymodel);
   status = TreeAddConglom((char *)mypath, (char *)mymodel, &nid);
-  printf("CHIAMATO status: %d %s\n", status, MdsGetMsg(status));
 
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   (*env)->ReleaseStringUTFChars(env, jmodel, model);
@@ -983,8 +981,8 @@ int doAction(int nid)
 
     if (status & 1) {
       struct descriptor *out = xd1.pointer;
-      printf("type   = %d\n", out->dtype);
-      printf("value = %d error %d \n", *(int *)out->pointer, errno);
+//      printf("type   = %d\n", out->dtype);
+//      printf("value = %d error %d \n", *(int *)out->pointer, errno);
 
       if (!xd1.pointer || xd1.pointer->dtype != DTYPE_L) {
 	status = 0;
@@ -1074,8 +1072,8 @@ int doAction(int nid)
     if (status & 1) {
 
       struct descriptor *out = xd1.pointer;
-      printf("type   = %d\n", out->dtype);
-      printf("value = %d\n", *(int *)out->pointer);
+//      printf("type   = %d\n", out->dtype);
+//      printf("value = %d\n", *(int *)out->pointer);
 
       if (!xd1.pointer || xd1.pointer->dtype != DTYPE_L) {
 	status = 0;
@@ -1149,14 +1147,14 @@ int doAction(int nid)
     currPtr = MdsDescrToCstring(language_d_ptr);
     sprintf(&command[strlen(command)], "\' | %s", currPtr);
 
-    printf("Command : %s\n", command);
+//    printf("Command : %s\n", command);
     status = system(command);
     //
     if (status != 0)
       status = 0;
     else
       status = 1;
-    printf("Return status : %d \n", status, errno);
+//    printf("Return status : %d \n", status, errno);
 
     free(command);
     free(decArgs);

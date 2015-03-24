@@ -11,7 +11,6 @@
 #include <time.h>
 #endif
 #include        <mdsdescrip.h>
-#include        <malloc.h>
 #include        <unistd.h>
 #include        <mdsshr.h>
 #include <readline/readline.h>

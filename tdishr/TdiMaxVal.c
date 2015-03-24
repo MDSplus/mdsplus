@@ -54,7 +54,7 @@ extern int Tdi3Divide();
 #include <string.h>
 #include <tdishr_messages.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int CvtConvertFloat();
 

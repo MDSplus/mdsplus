@@ -26,6 +26,7 @@ public class WaveInterface
     //Prameter used to evaluate waveform
     public String in_xmin, in_xmax, in_ymax, in_ymin, in_timemax, in_timemin;
     public String in_title, in_xlabel, in_ylabel;
+    public String in_def_node;
     public boolean in_upd_limits = true;
     public String experiment;
     public int in_grid_mode;
@@ -1274,7 +1275,10 @@ public class WaveInterface
     {
         WaveData up_err = null, low_err = null;
         WaveData wd = null;
-        int dimension;
+        WaveData xwd = null;
+        
+        int xDimension = 1;
+        int yDimension = 1;
         Signal out_signal;
         String xlabel = null, ylabel = null, zlabel = null, title = null;
 
@@ -1288,38 +1292,69 @@ public class WaveInterface
             error = dp.ErrorString();
             return null;
         }
-
+        
+        if( in_def_node != null && in_def_node.length() > 0 )
+        {
+            dp.SetEnvironment("__default_node = " + in_def_node);
+        } 
+        else 
+        {
+            dp.SetEnvironment("__default_node = " + experiment + "::TOP");
+        }
+            
+        if (dp.ErrorString() != null)
+        {
+            error = dp.ErrorString();
+            return null;
+        }
+     
+        try
+        {
+            wd = dp.GetWaveData(in_y[curr_wave]);
+            yDimension = wd.getNumDimension();
+            if (yDimension == 2)
+                zlabel = wd.GetZLabel();
+        }
+        catch (Exception exc)
+        {
+            yDimension = 1;
+        }
+        
         if (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() > 0)
         {
-            dimension = 1;
-        }
-        else
-        {
+ //         dimension = 1;
             try
             {
-                wd = dp.GetWaveData(in_y[curr_wave]);
-                dimension = wd.getNumDimension();
-                if (dimension == 2)
-                    zlabel = wd.GetZLabel();
-            }
+                xwd = dp.GetWaveData(in_x[curr_wave]);
+                xDimension = xwd.getNumDimension();
+           }
             catch (Exception exc)
             {
-                dimension = 1;
+                xDimension = 1;
             }
-
+/*
             if (dp.ErrorString() != null)
             {
                 curr_error = dp.ErrorString();
                 return null;
-            }
+            }       
+*/
         }
-        if (dimension > 2)
+        
+ 
+        if (dp.ErrorString() != null)
         {
-            curr_error = "Can't display signal with more than two dimensions";
+            curr_error = dp.ErrorString();
+            return null;
+        }
+        
+        if ( xDimension > 2 || yDimension > 2 )
+        {
+            curr_error = "Can't display signal with more than two X or Y Dimensions ";
             return null;
         }
 
-        if (in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0)
+        if ( in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0 )
         {
 
             wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave]);
@@ -1346,7 +1381,10 @@ public class WaveInterface
         }
         else // X field not defined
         {
-            if (dimension > 1)
+            if (wd == null)
+                wd = dp.GetWaveData(in_y[curr_wave]);
+/*            
+            if (yDimension > 1)
             {
                 if (wd == null)
                     wd = dp.GetWaveData(in_y[curr_wave]);
@@ -1358,8 +1396,8 @@ public class WaveInterface
                     wd = dp.GetWaveData(in_y[curr_wave]);
                 }
             }
- 
-            if (dimension == 1)
+*/ 
+            if (yDimension == 1)
             {
                 if (in_up_err != null &&
                     in_up_err[curr_wave] != null
@@ -1382,9 +1420,15 @@ public class WaveInterface
             return null;
         }
         wd.setContinuousUpdate(isContinuousUpdate);
-        out_signal = new Signal(wd, xmin, xmax);
-        if(dimension > 1)
-           out_signal.setMode2D( (int) mode2D[curr_wave]);
+        
+        if( xDimension == 1)
+            out_signal = new Signal(wd, xmin, xmax);
+        else
+            out_signal = new Signal(wd, xwd, xmin, xmax);
+            
+        
+        if(yDimension > 1)
+            out_signal.setMode2D( (int) mode2D[curr_wave]);
         else
             out_signal.setMode1D( (int) mode1D[curr_wave]);
  
@@ -1399,10 +1443,10 @@ public class WaveInterface
             out_signal.AddError(up_err);
 
         if (wd != null)
-         {
+        {
              xlabel = wd.GetXLabel();
              ylabel = wd.GetYLabel();
-         }
+        }
         out_signal.setLabels(title, xlabel, ylabel, zlabel);
         return out_signal;
     }

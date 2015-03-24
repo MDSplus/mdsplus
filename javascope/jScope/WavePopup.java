@@ -21,12 +21,12 @@ public class WavePopup
 {
     protected Waveform wave = null;
     protected SetupWaveformParams setup_params;
-    protected JSeparator sep1, sep2;
+    protected JSeparator sep1, sep2, sep3;
     protected JMenuItem setup, autoscale, autoscaleY, autoscaleAll,
         autoscaleAllY,
         allSameScale, allSameXScale, allSameXScaleAutoY, allSameYScale,
         resetScales, resetAllScales, playFrame, remove_panel,
-        set_point, undo_zoom, maximize, cb_copy, profile_dialog, colorMap;
+        set_point, undo_zoom, maximize, cb_copy, profile_dialog, colorMap, saveAsText;
     protected JMenu markerList, colorList, markerStep, mode_2d, mode_1d;
     protected JRadioButtonMenuItem plot_y_time, plot_x_y, plot_contour, plot_image;
     protected JRadioButtonMenuItem plot_line, plot_no_line, plot_step;
@@ -420,7 +420,17 @@ public class WavePopup
             }
         }
         );
-
+        
+        sep3 = new JSeparator();
+        saveAsText = new JMenuItem("Save as text ...");
+        saveAsText.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                ( (WaveformContainer) WavePopup.this.parent).SaveAsText( wave, false);
+            }
+        }
+        );
 
     }
 
@@ -592,6 +602,9 @@ public class WavePopup
             {
                 add(cb_copy);
             }
+            add(sep3);
+            add(saveAsText);
+
         }
     }
 

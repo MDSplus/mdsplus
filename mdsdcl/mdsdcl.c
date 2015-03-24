@@ -4,7 +4,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <malloc.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>

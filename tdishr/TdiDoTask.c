@@ -30,7 +30,7 @@ typedef struct {
 #include <mdsshr.h>
 #include <treeshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiTaskOf();
 extern int TdiGetFloat();

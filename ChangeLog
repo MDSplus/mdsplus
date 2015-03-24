@@ -1,4 +1,271 @@
-commit 84b892b134d541c0867f742f189c111bdf14961a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 09e4323a026eeee4c6033c0a808b5b9f53ca178e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 17:02:11 2015 -0400
+
+    Fix more compile warnings with -Wall
+
+commit 019c3156d21f2d37059aaf0d41f355dcf17948d6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 16:38:22 2015 -0400
+
+    Fix some of compiler warnings in TdiShr when compiling with -Wall option
+
+commit 82f073e2624f763f5c99e7f87e43844a7c5d977d (tag: refs/tags/alpha_release-7-0-24)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 23 14:40:38 2015 -0400
+
+    New ChangeLog
+
+commit 31019fb9a67070c01138b8a11b316d98ba639ed7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 14:12:36 2015 -0400
+
+    Remove compiler warnings using the -Wall compiler option
+
+commit 296ade98f25d13ddfa1f8c1f1d242ccdf6f6fc43
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 13:44:25 2015 -0400
+
+    Fix memory override on an error message
+
+commit cb7e9f03e9fbbbbb0af43f2c27360065118cd13d
+Merge: 5685e90 8706c98
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 08:41:00 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 5685e9016798174daf23b6f38a58908ec452b24f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 23 08:40:55 2015 -0400
+
+    Show no date inserted time if time is 0
+
+commit 8706c98a6259fd2b53cae0135b4991754e0f06a8
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 11:02:16 2015 +0100
+
+    Add DEMOADC
+
+commit c9415dff7f7c02c4825f7d5c0bb03c0905f2627c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 10:54:55 2015 +0100
+
+    Add try block
+
+commit c7c63438e927d3e8a2c1a89ba315aaa3de008cb7
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Mar 23 10:18:57 2015 +0100
+
+    Last fixes
+
+commit 432e4ad6c81bf7de1939b1eb38427f394367e4fd (tag: refs/tags/alpha_release-7-0-23)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 20 22:19:11 2015 +0000
+
+    New ChangeLog
+
+commit 45d11872fe474693f6e6d335e913bfe5aaad8623
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 17:26:54 2015 -0400
+
+    Fix nid reference handling in segment dimensions
+
+commit 2c257b9a868737eb5785b75297aed747b76e9bac
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 20 18:58:54 2015 +0100
+
+    removed debug messages
+
+commit db326d885b1feb6c92c730ab667279b20796496c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Mar 20 18:56:21 2015 +0100
+
+    Mode DEMOADC to tutorial
+
+commit 3cc1f677f12c78c8b17c8efabc6540251c72e19b
+Merge: 7453dc7 1fcf0ff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 12:57:39 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 7453dc73ff99bc45fa8072e5b352d2b0a70d34eb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 12:57:31 2015 -0400
+
+    Unlock the nci!
+
+commit 1fcf0ff506b3fb1a1a2a27cb5854939a4817c690 (tag: refs/tags/alpha_release-7-0-22)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 22:20:41 2015 +0000
+
+    New ChangeLog
+
+commit 6b4a3894397a350c2408fa1a2b85b3f2cd2b68bb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 16:05:12 2015 -0400
+
+    remove remaining malloc.h includes
+
+commit 65557b51d2e19ac560fedaec4fc4ab6b8eb5c19a (tag: refs/tags/alpha_release-7-0-21)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 16:08:00 2015 +0000
+
+    New ChangeLog
+
+commit dd5ef70d128a7f6e0b5855c773468ebb659f8048
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 10:48:54 2015 -0400
+
+    Add more help
+
+commit 9fdb063ea5106a418c2029c33474d55ee717734c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 10:16:49 2015 -0400
+
+    display gid and uid in decimal and include groupnam and username
+
+commit f25c3c96abebbd5f638083bb7319e07d235dece3
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 04:03:24 2015 -0400
+
+    more gfortran products
+
+commit 6a79e3a5c0df76f33276ce34d6303ded0ee938ec
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 04:01:14 2015 -0400
+
+    a few more malloc.h and an addition .gitignore
+
+commit f19177f1b22095286d8b24d22ab395f2e691faf9
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Mar 19 03:34:36 2015 -0400
+
+    malloc.h is non standard and malloc is declared in stdlib.h
+
+commit 51404cba3e5763f1522ffa354d638258f14b8481 (tag: refs/tags/alpha_release-7-0-20)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 22:21:26 2015 +0000
+
+    New ChangeLog
+
+commit 0e8e3b1da4f664fca16155e22f64888c88e0083f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 17:10:49 2015 -0400
+
+    add more external dependencies
+
+commit 5e96579d2ece9646b7e4626cfc5d0e7e78ffaaaf (tag: refs/tags/alpha_release-7-0-19)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 21:09:54 2015 +0000
+
+    New ChangeLog
+
+commit b1c288312f95f29b67c274169c5c58a8824c9ebf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:50:11 2015 -0400
+
+    add more external dependencies
+
+commit 66eb9e119ce19a0764dcf52152b9dff3f42977f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:32:29 2015 -0400
+
+    add more external dependencies
+
+commit d5e1e1083da72fb0967122b800f2118b10b617a9 (tag: refs/tags/alpha_release-7-0-18)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 20:27:20 2015 +0000
+
+    New ChangeLog
+
+commit 96051a3040921ccdd9f4c221c5454e59cb72d195
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:11:17 2015 -0400
+
+    add more external dependencies
+
+commit 663819272e25def06b8cb99b3abd160b02740c78
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 16:09:40 2015 -0400
+
+    add more external dependencies
+
+commit a7efba39ee43fd044f5a4f5e70332d7bfec42388
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:40:33 2015 -0400
+
+    add more external dependencies
+
+commit 72df03933603eaf75d45f48d81b3d1cf6f29944e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:37:17 2015 -0400
+
+    add more external dependencies
+
+commit dd3f7f8507ce9df1df93b2b1a4434c8f225f12eb (tag: refs/tags/alpha_release-7-0-17)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 19:30:56 2015 +0000
+
+    New ChangeLog
+
+commit 79878c9c7e231b4cce11347c72abca0ea59aafba
+Merge: 7db9400 98510ff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:10:30 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 7db9400b3787c899b7efb8e07540119440427fd6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 15:10:13 2015 -0400
+
+    add more external dependencies
+
+commit 98510ffe25f02e4d1bf2c573334b89053d4399d3 (tag: refs/tags/alpha_release-7-0-16)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 19:04:43 2015 +0000
+
+    New ChangeLog
+
+commit 9f62a6bcfebf8536aa95a999253e6843791c86bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 14:48:27 2015 -0400
+
+    add more external dependencies
+
+commit ec33c736136e93bd7c9525c6a9aef7922b1e722b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 14:33:55 2015 -0400
+
+    add more external dependencies
+
+commit aa7b0710655936bd2748dba5739ab10432eb74f9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 14:26:26 2015 -0400
+
+    Fix dispatch/command
+
+commit 9ee707423148f863b5f3048486605a0b9fb58942
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 11:40:08 2015 -0400
+
+    add more external dependencies
+
+commit 4ed4c3732baefd4f51ffe676545498e9ce67aaac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 18 11:18:19 2015 -0400
+
+    add more external dependencies
+
+commit acfad92a01545b5dcae53c8fc8963fddaf3745b4 (tag: refs/tags/alpha_release-7-0-15)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 18 10:21:14 2015 -0400
+
+    New ChangeLog
+
+commit 84b892b134d541c0867f742f189c111bdf14961a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 18 09:15:47 2015 -0400
 

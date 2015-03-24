@@ -34,7 +34,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <dcl.h>
-#include <malloc.h>
 #include <mdsdescrip.h>
 
 #include <math.h>

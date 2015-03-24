@@ -23,7 +23,7 @@ extern unsigned short OpcValue;
 #include <stdlib.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 0);
 STATIC_CONSTANT int minus_one_value = -1;
