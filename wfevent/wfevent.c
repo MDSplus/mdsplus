@@ -17,11 +17,12 @@ Program to wait for MDSPlus event from the command line.
 static void printhelp(char *cmd)
 {
 #ifdef HAVE_WINDOWS_H
-  printf("usage: %s event-name [/d] [/D] [/t:n] [/?]\n", cmd);
+  printf("usage: %s  [/d] [/D] [/t:n] [/?] event-name\n", cmd);
   printf("\n  event-name is the event that you want to wait for."
 	 "\n  /d indicates print event data."
 	 "\n  /D indicates interpret data as serialized and print it."
 	 "\n  /t:nnn or is used to specify a timeout in seconds.\n\n");
+  printf("Note: Include spaces before and after the options.\n\n");
 #else
   printf("usage: %s event-name [-d|--data] [-D|--serialized] [-t n|--timeout=n] [-h|--help]\n",
 	 cmd);
