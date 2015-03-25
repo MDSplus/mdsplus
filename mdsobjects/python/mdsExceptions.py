@@ -1,4 +1,594 @@
 
+class LibINSVIRMEM(Exception):
+    msgnum=0x158210
+    def __str__(self):
+        return "Insufficient virtual memory"
+
+class LibINVARG(Exception):
+    msgnum=0x158230
+    def __str__(self):
+        return "Invalid argument"
+
+class LibINVSTRDES(Exception):
+    msgnum=0x158220
+    def __str__(self):
+        return "Invalid string descriptor"
+
+class LibKEYNOTFOU(Exception):
+    msgnum=0x1582f8
+    def __str__(self):
+        return "Key not found"
+
+class LibNOTFOU(Exception):
+    msgnum=0x158270
+    def __str__(self):
+        return "Entity not found"
+
+class LibQUEWASEMP(Exception):
+    msgnum=0x1582e8
+    def __str__(self):
+        return "Queue was empty"
+
+class LibSTRTRU(Exception):
+    msgnum=0x158010
+    def __str__(self):
+        return "String truncated"
+
+class StrMATCH(Exception):
+    msgnum=0x248418
+    def __str__(self):
+        return "Strings match"
+
+class StrNOMATCH(Exception):
+    msgnum=0x248208
+    def __str__(self):
+        return "Strings do not match"
+
+class StrNOELEM(Exception):
+    msgnum=0x248218
+    def __str__(self):
+        return "Not enough delimited characters"
+
+class StrINVDELIM(Exception):
+    msgnum=0x248210
+    def __str__(self):
+        return "Not enough delimited characters"
+
+class StrSTRTOOLON(Exception):
+    msgnum=0x248070
+    def __str__(self):
+        return "String too long"
+
+class SsINTOVF(Exception):
+    msgnum=0x478
+    def __str__(self):
+        return "Integer overflow"
+
+class TreeALREADY_OFF(Exception):
+    msgnum=0xfd18028
+    def __str__(self):
+        return "Node is already OFF"
+
+class TreeALREADY_ON(Exception):
+    msgnum=0xfd18030
+    def __str__(self):
+        return "Node is already ON"
+
+class TreeALREADY_OPEN(Exception):
+    msgnum=0xfd18038
+    def __str__(self):
+        return "Tree is already OPEN"
+
+class TreeALREADY_THERE(Exception):
+    msgnum=0xfd18088
+    def __str__(self):
+        return "Node is already in the tree"
+
+class TreeBADRECORD(Exception):
+    msgnum=0xfd180b8
+    def __str__(self):
+        return "Data corrupted: cannot read record"
+
+class TreeBOTH_OFF(Exception):
+    msgnum=0xfd18098
+    def __str__(self):
+        return "Both this node and its parent are off"
+
+class TreeBUFFEROVF(Exception):
+    msgnum=0xfd18110
+    def __str__(self):
+        return "Output buffer overflow"
+
+class TreeCONGLOMFULL(Exception):
+    msgnum=0xfd18120
+    def __str__(self):
+        return "Current conglomerate is full"
+
+class TreeCONGLOM_NOT_FULL(Exception):
+    msgnum=0xfd18128
+    def __str__(self):
+        return "Current conglomerate is not yet full"
+
+class TreeCONTINUING(Exception):
+    msgnum=0xfd18960
+    def __str__(self):
+        return "Operation continuing: note following error"
+
+class TreeDUPTAG(Exception):
+    msgnum=0xfd180c8
+    def __str__(self):
+        return "Tag name already in use"
+
+class TreeEDITTING(Exception):
+    msgnum=0xfd18190
+    def __str__(self):
+        return "Tree file open for edit: operation not permitted"
+
+class TreeILLEGAL_ITEM(Exception):
+    msgnum=0xfd18108
+    def __str__(self):
+        return "Invalid item code or part number specified"
+
+class TreeILLPAGCNT(Exception):
+    msgnum=0xfd180d0
+    def __str__(self):
+        return "Illegal page count, error mapping tree file"
+
+class TreeINVDFFCLASS(Exception):
+    msgnum=0xfd18138
+    def __str__(self):
+        return "Invalid data fmt: only CLASS_S can have data in NCI"
+
+class TreeINVDTPUSG(Exception):
+    msgnum=0xfd18188
+    def __str__(self):
+        return "Attempt to store datatype which conflicts with the designated usage of this node"
+
+class TreeINVPATH(Exception):
+    msgnum=0xfd18100
+    def __str__(self):
+        return "Invalid tree pathname specified"
+
+class TreeINVRECTYP(Exception):
+    msgnum=0xfd18140
+    def __str__(self):
+        return "Record type invalid for requested operation"
+
+class TreeINVTREE(Exception):
+    msgnum=0xfd180c0
+    def __str__(self):
+        return "Invalid tree identification structure"
+
+class TreeMAXOPENEDIT(Exception):
+    msgnum=0xfd180d8
+    def __str__(self):
+        return "Too many files open for edit"
+
+class TreeNEW(Exception):
+    msgnum=0xfd18018
+    def __str__(self):
+        return "New tree created"
+
+class TreeNMN(Exception):
+    msgnum=0xfd18060
+    def __str__(self):
+        return "No More Nodes"
+
+class TreeNMT(Exception):
+    msgnum=0xfd18068
+    def __str__(self):
+        return "No More Tags"
+
+class TreeNNF(Exception):
+    msgnum=0xfd18070
+    def __str__(self):
+        return "Node Not Found"
+
+class TreeNODATA(Exception):
+    msgnum=0xfd180e0
+    def __str__(self):
+        return "No data available for this node"
+
+class TreeNODNAMLEN(Exception):
+    msgnum=0xfd18148
+    def __str__(self):
+        return "Node name too long (12 chars max)"
+
+class TreeNOEDIT(Exception):
+    msgnum=0xfd180f0
+    def __str__(self):
+        return "Tree file is not open for edit"
+
+class TreeNOLOG(Exception):
+    msgnum=0xfd181a8
+    def __str__(self):
+        return "Experiment pathname (xxx_path) not defined"
+
+class TreeNOMETHOD(Exception):
+    msgnum=0xfd180b0
+    def __str__(self):
+        return "Method not available for this object"
+
+class TreeNOOVERWRITE(Exception):
+    msgnum=0xfd18180
+    def __str__(self):
+        return "Write-once node: overwrite not permitted"
+
+class TreeNORMAL(Exception):
+    msgnum=0xfd18008
+    def __str__(self):
+        return "Normal successful completion"
+
+class TreeNOTALLSUBS(Exception):
+    msgnum=0xfd18020
+    def __str__(self):
+        return "Main tree opened but not all subtrees found/or connected"
+
+class TreeNOTCHILDLESS(Exception):
+    msgnum=0xfd180f8
+    def __str__(self):
+        return "Node must be childless to become subtree reference"
+
+class TreeNOT_IN_LIST(Exception):
+    msgnum=0xfd181c0
+    def __str__(self):
+        return "Tree being opened was not in the list"
+
+class TreeNOTMEMBERLESS(Exception):
+    msgnum=0xfd18170
+    def __str__(self):
+        return "Subtree reference can not have members"
+
+class TreeNOTOPEN(Exception):
+    msgnum=0xfd180e8
+    def __str__(self):
+        return "No tree file currently open"
+
+class TreeNOTSON(Exception):
+    msgnum=0xfd18178
+    def __str__(self):
+        return "Subtree reference cannot be a member"
+
+class TreeNOT_CONGLOM(Exception):
+    msgnum=0xfd18160
+    def __str__(self):
+        return "Head node of conglomerate does not contain a DTYPE_CONGLOM record"
+
+class TreeNOT_OPEN(Exception):
+    msgnum=0xfd180a8
+    def __str__(self):
+        return "Tree not currently open"
+
+class TreeNOWRITEMODEL(Exception):
+    msgnum=0xfd18198
+    def __str__(self):
+        return "Data for this node can not be written into the MODEL file"
+
+class TreeNOWRITESHOT(Exception):
+    msgnum=0xfd181a0
+    def __str__(self):
+        return "Data for this node can not be written into the SHOT file"
+
+class TreeNO_CONTEXT(Exception):
+    msgnum=0xfd18040
+    def __str__(self):
+        return "There is no active search to end"
+
+class TreeOFF(Exception):
+    msgnum=0xfd180a0
+    def __str__(self):
+        return "Node is OFF"
+
+class TreeON(Exception):
+    msgnum=0xfd18048
+    def __str__(self):
+        return "Node is ON"
+
+class TreeOPEN(Exception):
+    msgnum=0xfd18050
+    def __str__(self):
+        return "Tree is OPEN (no edit)"
+
+class TreeOPEN_EDIT(Exception):
+    msgnum=0xfd18058
+    def __str__(self):
+        return "Tree is OPEN for edit"
+
+class TreePARENT_OFF(Exception):
+    msgnum=0xfd18090
+    def __str__(self):
+        return "Parent of this node is OFF"
+
+class TreeREADERR(Exception):
+    msgnum=0xfd181b8
+    def __str__(self):
+        return "Error reading record for node"
+
+class TreeREADONLY(Exception):
+    msgnum=0xfd181b0
+    def __str__(self):
+        return "Tree was opened with readonly access"
+
+class TreeRESOLVED(Exception):
+    msgnum=0xfd18010
+    def __str__(self):
+        return "Indirect reference successfully resolved"
+
+class TreeSUCCESS(Exception):
+    msgnum=0xfd18640
+    def __str__(self):
+        return "Operation successful"
+
+class TreeTAGNAMLEN(Exception):
+    msgnum=0xfd18150
+    def __str__(self):
+        return "Tagname too long (max 24 chars)"
+
+class TreeTNF(Exception):
+    msgnum=0xfd18078
+    def __str__(self):
+        return "Tag Not Found"
+
+class TreeTREENF(Exception):
+    msgnum=0xfd18080
+    def __str__(self):
+        return "Tree Not Found"
+
+class TreeUNRESOLVED(Exception):
+    msgnum=0xfd18130
+    def __str__(self):
+        return "Not an indirect node reference: No action taken"
+
+class TreeUNSPRTCLASS(Exception):
+    msgnum=0xfd18118
+    def __str__(self):
+        return "Unsupported descriptor class"
+
+class TreeUNSUPARRDTYPE(Exception):
+    msgnum=0xfd18168
+    def __str__(self):
+        return "Complex data types not supported as members of arrays"
+
+class TreeWRITEFIRST(Exception):
+    msgnum=0xfd18158
+    def __str__(self):
+        return "Tree has been modified:  write or quit first"
+
+class TreeFAILURE(Exception):
+    msgnum=0xfd18fa0
+    def __str__(self):
+        return "Operation NOT successful"
+
+class TreeLOCK_FAILURE(Exception):
+    msgnum=0xfd18fb0
+    def __str__(self):
+        return "Error locking file, perhaps NFSLOCKING not enabled on this system"
+
+class TreeFILE_NOT_FOUND(Exception):
+    msgnum=0xfd18fa8
+    def __str__(self):
+        return "File or Directory Not Found"
+
+class TreeCANCEL(Exception):
+    msgnum=0xfd18c80
+    def __str__(self):
+        return "User canceled operation"
+
+class TreeNOSEGMENTS(Exception):
+    msgnum=0xfd18fb8
+    def __str__(self):
+        return "No segments exist in this node"
+
+class TreeINVDTYPE(Exception):
+    msgnum=0xfd18fc0
+    def __str__(self):
+        return "Invalid datatype for data segment"
+
+class TreeINVSHAPE(Exception):
+    msgnum=0xfd18fc8
+    def __str__(self):
+        return "Invalid shape for this data segment"
+
+class TreeINVSHOT(Exception):
+    msgnum=0xfd18fd8
+    def __str__(self):
+        return "Invalid shot number - must be -1 (model), 0 (current), or Positive"
+
+class TreeINVTAG(Exception):
+    msgnum=0xfd18fe8
+    def __str__(self):
+        return "Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"
+
+class CamDONE_Q(Exception):
+    msgnum=0x8018008
+    def __str__(self):
+        return "I/O completed with X=1, Q=1"
+
+class CamDONE_NOQ(Exception):
+    msgnum=0x8018010
+    def __str__(self):
+        return "I/O completed with X=1, Q=0"
+
+class CamDONE_NOX(Exception):
+    msgnum=0x8019000
+    def __str__(self):
+        return "I/O completed with X=0 - probable failure"
+
+class CamSERTRAERR(Exception):
+    msgnum=0x8019800
+    def __str__(self):
+        return "serial transmission error on highway"
+
+class CamSCCFAIL(Exception):
+    msgnum=0x8019840
+    def __str__(self):
+        return "serial crate controller failure"
+
+class CamOFFLINE(Exception):
+    msgnum=0x8019868
+    def __str__(self):
+        return "crate is offline"
+
+class TdiBREAK(Exception):
+    msgnum=0xfd38008
+    def __str__(self):
+        return "BREAK was not in DO FOR SWITCH or WHILE"
+
+class TdiCASE(Exception):
+    msgnum=0xfd38010
+    def __str__(self):
+        return "CASE was not in SWITCH statement"
+
+class TdiCONTINUE(Exception):
+    msgnum=0xfd38018
+    def __str__(self):
+        return "CONTINUE was not in DO FOR or WHILE"
+
+class TdiEXTRANEOUS(Exception):
+    msgnum=0xfd38020
+    def __str__(self):
+        return "Some characters were unused, bad number maybe"
+
+class TdiRETURN(Exception):
+    msgnum=0xfd38028
+    def __str__(self):
+        return "Extraneous RETURN statement, not from a FUN"
+
+class TdiABORT(Exception):
+    msgnum=0xfd38030
+    def __str__(self):
+        return "Program requested abort"
+
+class TdiBAD_INDEX(Exception):
+    msgnum=0xfd38038
+    def __str__(self):
+        return "Index or subscript is too small or too big"
+
+class TdiBOMB(Exception):
+    msgnum=0xfd38040
+    def __str__(self):
+        return "Bad punctuation, could not compile the text"
+
+class TdiEXTRA_ARG(Exception):
+    msgnum=0xfd38048
+    def __str__(self):
+        return "Too many arguments for function, watch commas"
+
+class TdiGOTO(Exception):
+    msgnum=0xfd38050
+    def __str__(self):
+        return "GOTO target label not found"
+
+class TdiINVCLADSC(Exception):
+    msgnum=0xfd38058
+    def __str__(self):
+        return "Storage class not valid, must be scalar or array"
+
+class TdiINVCLADTY(Exception):
+    msgnum=0xfd38060
+    def __str__(self):
+        return "Invalid mixture of storage class and data type"
+
+class TdiINVDTYDSC(Exception):
+    msgnum=0xfd38068
+    def __str__(self):
+        return "Storage data type is not valid"
+
+class TdiINV_OPC(Exception):
+    msgnum=0xfd38070
+    def __str__(self):
+        return "Invalid operator code in a function"
+
+class TdiINV_SIZE(Exception):
+    msgnum=0xfd38078
+    def __str__(self):
+        return "Number of elements does not match declaration"
+
+class TdiMISMATCH(Exception):
+    msgnum=0xfd38080
+    def __str__(self):
+        return "Shape of arguments does not match"
+
+class TdiMISS_ARG(Exception):
+    msgnum=0xfd38088
+    def __str__(self):
+        return "Missing argument is required for function"
+
+class TdiNDIM_OVER(Exception):
+    msgnum=0xfd38090
+    def __str__(self):
+        return "Number of dimensions is over the allowed 8"
+
+class TdiNO_CMPLX(Exception):
+    msgnum=0xfd38098
+    def __str__(self):
+        return "There are no complex forms of this function"
+
+class TdiNO_OPC(Exception):
+    msgnum=0xfd380a0
+    def __str__(self):
+        return "No support for this function, today"
+
+class TdiNO_OUTPTR(Exception):
+    msgnum=0xfd380a8
+    def __str__(self):
+        return "An output pointer is required"
+
+class TdiNO_SELF_PTR(Exception):
+    msgnum=0xfd380b0
+    def __str__(self):
+        return "No $VALUE is defined for signal or validation"
+
+class TdiNOT_NUMBER(Exception):
+    msgnum=0xfd380b8
+    def __str__(self):
+        return "Value is not a scalar number and must be"
+
+class TdiNULL_PTR(Exception):
+    msgnum=0xfd380c0
+    def __str__(self):
+        return "Null pointer where value needed"
+
+class TdiRECURSIVE(Exception):
+    msgnum=0xfd380c8
+    def __str__(self):
+        return "Overly recursive function, calls itself maybe"
+
+class TdiSIG_DIM(Exception):
+    msgnum=0xfd380d0
+    def __str__(self):
+        return "Signal dimension does not match data shape"
+
+class TdiSYNTAX(Exception):
+    msgnum=0xfd380d8
+    def __str__(self):
+        return "Bad punctuation or misspelled word or number"
+
+class TdiTOO_BIG(Exception):
+    msgnum=0xfd380e0
+    def __str__(self):
+        return "Conversion of number lost significant digits"
+
+class TdiUNBALANCE(Exception):
+    msgnum=0xfd380e8
+    def __str__(self):
+        return "Unbalanced () [] {} '' " " or /**/"
+
+class TdiUNKNOWN_VAR(Exception):
+    msgnum=0xfd380f0
+    def __str__(self):
+        return "Unknown/undefined variable name"
+
+class TdiSTRTOOLON(Exception):
+    msgnum=0xfd380f8
+    def __str__(self):
+        return "string is too long (greater than 65535)"
+
+class TdiTIMEOUT(Exception):
+    msgnum=0xfd38100
+    def __str__(self):
+        return "task did not complete in alotted time"
+
 class ServerNOT_DISPATCHED(Exception):
     msgnum=0xfe18008
     def __str__(self):
@@ -28,6 +618,76 @@ class ServerPATH_DOWN(Exception):
     msgnum=0xfe18040
     def __str__(self):
         return "Path to server lost"
+
+class MdsdclSUCCESS(Exception):
+    msgnum=0x8020008
+    def __str__(self):
+        return "Normal successful completion"
+
+class MdsdclEXIT(Exception):
+    msgnum=0x8020010
+    def __str__(self):
+        return "Normal exit"
+
+class MdsdclERROR(Exception):
+    msgnum=0x8020018
+    def __str__(self):
+        return "Unsuccessful execution of command"
+
+class MdsdclNORMAL(Exception):
+    msgnum=0x8020328
+    def __str__(self):
+        return "Normal successful completion"
+
+class MdsdclPRESENT(Exception):
+    msgnum=0x8020330
+    def __str__(self):
+        return "Entity is present"
+
+class MdsdclIVVERB(Exception):
+    msgnum=0x8020338
+    def __str__(self):
+        return "No such command"
+
+class MdsdclABSENT(Exception):
+    msgnum=0x8020340
+    def __str__(self):
+        return "Entity is absent"
+
+class MdsdclNEGATED(Exception):
+    msgnum=0x8020348
+    def __str__(self):
+        return "Entity is present but negated"
+
+class MdsdclNOTNEGATABLE(Exception):
+    msgnum=0x8020350
+    def __str__(self):
+        return "Entity cannot be negated"
+
+class MdsdclIVQUAL(Exception):
+    msgnum=0x8020358
+    def __str__(self):
+        return "Invalid qualifier"
+
+class MdsdclPROMPT_MORE(Exception):
+    msgnum=0x8020360
+    def __str__(self):
+        return "More input required for command"
+
+class MdsdclTOO_MANY_PRMS(Exception):
+    msgnum=0x8020368
+    def __str__(self):
+        return "Too many parameters specified"
+
+class MdsdclTOO_MANY_VALS(Exception):
+    msgnum=0x8020370
+    def __str__(self):
+        return "Too many values"
+
+class MdsdclMISSING_VALUE(Exception):
+    msgnum=0x8020378
+    def __str__(self):
+        return "Qualifier value needed"
 
 class DEVBAD_ENDIDX(Exception):
     msgnum=0x277c8008
@@ -819,101 +1479,6 @@ class ACQWRONG_SHOT(Exception):
     def __str__(self):
         return "Attempt to store ACQ module into different shot than it was armed with"
 
-class LibINSVIRMEM(Exception):
-    msgnum=0x158210
-    def __str__(self):
-        return "Insufficient virtual memory"
-
-class LibINVARG(Exception):
-    msgnum=0x158230
-    def __str__(self):
-        return "Invalid argument"
-
-class LibINVSTRDES(Exception):
-    msgnum=0x158220
-    def __str__(self):
-        return "Invalid string descriptor"
-
-class LibKEYNOTFOU(Exception):
-    msgnum=0x1582f8
-    def __str__(self):
-        return "Key not found"
-
-class LibNOTFOU(Exception):
-    msgnum=0x158270
-    def __str__(self):
-        return "Entity not found"
-
-class LibQUEWASEMP(Exception):
-    msgnum=0x1582e8
-    def __str__(self):
-        return "Queue was empty"
-
-class LibSTRTRU(Exception):
-    msgnum=0x158010
-    def __str__(self):
-        return "String truncated"
-
-class StrMATCH(Exception):
-    msgnum=0x248418
-    def __str__(self):
-        return "Strings match"
-
-class StrNOMATCH(Exception):
-    msgnum=0x248208
-    def __str__(self):
-        return "Strings do not match"
-
-class StrNOELEM(Exception):
-    msgnum=0x248218
-    def __str__(self):
-        return "Not enough delimited characters"
-
-class StrINVDELIM(Exception):
-    msgnum=0x248210
-    def __str__(self):
-        return "Not enough delimited characters"
-
-class StrSTRTOOLON(Exception):
-    msgnum=0x248070
-    def __str__(self):
-        return "String too long"
-
-class SsINTOVF(Exception):
-    msgnum=0x478
-    def __str__(self):
-        return "Integer overflow"
-
-class CamDONE_Q(Exception):
-    msgnum=0x8018008
-    def __str__(self):
-        return "I/O completed with X=1, Q=1"
-
-class CamDONE_NOQ(Exception):
-    msgnum=0x8018010
-    def __str__(self):
-        return "I/O completed with X=1, Q=0"
-
-class CamDONE_NOX(Exception):
-    msgnum=0x8019000
-    def __str__(self):
-        return "I/O completed with X=0 - probable failure"
-
-class CamSERTRAERR(Exception):
-    msgnum=0x8019800
-    def __str__(self):
-        return "serial transmission error on highway"
-
-class CamSCCFAIL(Exception):
-    msgnum=0x8019840
-    def __str__(self):
-        return "serial crate controller failure"
-
-class CamOFFLINE(Exception):
-    msgnum=0x8019868
-    def __str__(self):
-        return "crate is offline"
-
 class TclNORMAL(Exception):
     msgnum=0x2a0008
     def __str__(self):
@@ -924,579 +1489,146 @@ class TclFAILED_ESSENTIAL(Exception):
     def __str__(self):
         return "Essential action failed"
 
-class MdsdclSUCCESS(Exception):
-    msgnum=0x8020008
-    def __str__(self):
-        return "Normal successful completion"
-
-class MdsdclEXIT(Exception):
-    msgnum=0x8020010
-    def __str__(self):
-        return "Normal exit"
-
-class MdsdclERROR(Exception):
-    msgnum=0x8020018
-    def __str__(self):
-        return "Unsuccessful execution of command"
-
-class MdsdclNORMAL(Exception):
-    msgnum=0x8020328
-    def __str__(self):
-        return "Normal successful completion"
-
-class MdsdclPRESENT(Exception):
-    msgnum=0x8020330
-    def __str__(self):
-        return "Entity is present"
-
-class MdsdclIVVERB(Exception):
-    msgnum=0x8020338
-    def __str__(self):
-        return "No such command"
-
-class MdsdclABSENT(Exception):
-    msgnum=0x8020340
-    def __str__(self):
-        return "Entity is absent"
-
-class MdsdclNEGATED(Exception):
-    msgnum=0x8020348
-    def __str__(self):
-        return "Entity is present but negated"
-
-class MdsdclNOTNEGATABLE(Exception):
-    msgnum=0x8020350
-    def __str__(self):
-        return "Entity cannot be negated"
-
-class MdsdclIVQUAL(Exception):
-    msgnum=0x8020358
-    def __str__(self):
-        return "Invalid qualifier"
-
-class MdsdclPROMPT_MORE(Exception):
-    msgnum=0x8020360
-    def __str__(self):
-        return "More input required for command"
-
-class MdsdclTOO_MANY_PRMS(Exception):
-    msgnum=0x8020368
-    def __str__(self):
-        return "Too many parameters specified"
-
-class MdsdclTOO_MANY_VALS(Exception):
-    msgnum=0x8020370
-    def __str__(self):
-        return "Too many values"
-
-class MdsdclMISSING_VALUE(Exception):
-    msgnum=0x8020378
-    def __str__(self):
-        return "Qualifier value needed"
-
-class TreeALREADY_OFF(Exception):
-    msgnum=0xfd18028
-    def __str__(self):
-        return "Node is already OFF"
-
-class TreeALREADY_ON(Exception):
-    msgnum=0xfd18030
-    def __str__(self):
-        return "Node is already ON"
-
-class TreeALREADY_OPEN(Exception):
-    msgnum=0xfd18038
-    def __str__(self):
-        return "Tree is already OPEN"
-
-class TreeALREADY_THERE(Exception):
-    msgnum=0xfd18088
-    def __str__(self):
-        return "Node is already in the tree"
-
-class TreeBADRECORD(Exception):
-    msgnum=0xfd180b8
-    def __str__(self):
-        return "Data corrupted: cannot read record"
-
-class TreeBOTH_OFF(Exception):
-    msgnum=0xfd18098
-    def __str__(self):
-        return "Both this node and its parent are off"
-
-class TreeBUFFEROVF(Exception):
-    msgnum=0xfd18110
-    def __str__(self):
-        return "Output buffer overflow"
-
-class TreeCONGLOMFULL(Exception):
-    msgnum=0xfd18120
-    def __str__(self):
-        return "Current conglomerate is full"
-
-class TreeCONGLOM_NOT_FULL(Exception):
-    msgnum=0xfd18128
-    def __str__(self):
-        return "Current conglomerate is not yet full"
-
-class TreeCONTINUING(Exception):
-    msgnum=0xfd18960
-    def __str__(self):
-        return "Operation continuing: note following error"
-
-class TreeDUPTAG(Exception):
-    msgnum=0xfd180c8
-    def __str__(self):
-        return "Tag name already in use"
-
-class TreeEDITTING(Exception):
-    msgnum=0xfd18190
-    def __str__(self):
-        return "Tree file open for edit: operation not permitted"
-
-class TreeILLEGAL_ITEM(Exception):
-    msgnum=0xfd18108
-    def __str__(self):
-        return "Invalid item code or part number specified"
-
-class TreeILLPAGCNT(Exception):
-    msgnum=0xfd180d0
-    def __str__(self):
-        return "Illegal page count, error mapping tree file"
-
-class TreeINVDFFCLASS(Exception):
-    msgnum=0xfd18138
-    def __str__(self):
-        return "Invalid data fmt: only CLASS_S can have data in NCI"
-
-class TreeINVDTPUSG(Exception):
-    msgnum=0xfd18188
-    def __str__(self):
-        return "Attempt to store datatype which conflicts with the designated usage of this node"
-
-class TreeINVPATH(Exception):
-    msgnum=0xfd18100
-    def __str__(self):
-        return "Invalid tree pathname specified"
-
-class TreeINVRECTYP(Exception):
-    msgnum=0xfd18140
-    def __str__(self):
-        return "Record type invalid for requested operation"
-
-class TreeINVTREE(Exception):
-    msgnum=0xfd180c0
-    def __str__(self):
-        return "Invalid tree identification structure"
-
-class TreeMAXOPENEDIT(Exception):
-    msgnum=0xfd180d8
-    def __str__(self):
-        return "Too many files open for edit"
-
-class TreeNEW(Exception):
-    msgnum=0xfd18018
-    def __str__(self):
-        return "New tree created"
-
-class TreeNMN(Exception):
-    msgnum=0xfd18060
-    def __str__(self):
-        return "No More Nodes"
-
-class TreeNMT(Exception):
-    msgnum=0xfd18068
-    def __str__(self):
-        return "No More Tags"
-
-class TreeNNF(Exception):
-    msgnum=0xfd18070
-    def __str__(self):
-        return "Node Not Found"
-
-class TreeNODATA(Exception):
-    msgnum=0xfd180e0
-    def __str__(self):
-        return "No data available for this node"
-
-class TreeNODNAMLEN(Exception):
-    msgnum=0xfd18148
-    def __str__(self):
-        return "Node name too long (12 chars max)"
-
-class TreeNOEDIT(Exception):
-    msgnum=0xfd180f0
-    def __str__(self):
-        return "Tree file is not open for edit"
-
-class TreeNOLOG(Exception):
-    msgnum=0xfd181a8
-    def __str__(self):
-        return "Experiment pathname (xxx_path) not defined"
-
-class TreeNOMETHOD(Exception):
-    msgnum=0xfd180b0
-    def __str__(self):
-        return "Method not available for this object"
-
-class TreeNOOVERWRITE(Exception):
-    msgnum=0xfd18180
-    def __str__(self):
-        return "Write-once node: overwrite not permitted"
-
-class TreeNORMAL(Exception):
-    msgnum=0xfd18008
-    def __str__(self):
-        return "Normal successful completion"
-
-class TreeNOTALLSUBS(Exception):
-    msgnum=0xfd18020
-    def __str__(self):
-        return "Main tree opened but not all subtrees found/or connected"
-
-class TreeNOTCHILDLESS(Exception):
-    msgnum=0xfd180f8
-    def __str__(self):
-        return "Node must be childless to become subtree reference"
-
-class TreeNOT_IN_LIST(Exception):
-    msgnum=0xfd181c0
-    def __str__(self):
-        return "Tree being opened was not in the list"
-
-class TreeNOTMEMBERLESS(Exception):
-    msgnum=0xfd18170
-    def __str__(self):
-        return "Subtree reference can not have members"
-
-class TreeNOTOPEN(Exception):
-    msgnum=0xfd180e8
-    def __str__(self):
-        return "No tree file currently open"
-
-class TreeNOTSON(Exception):
-    msgnum=0xfd18178
-    def __str__(self):
-        return "Subtree reference cannot be a member"
-
-class TreeNOT_CONGLOM(Exception):
-    msgnum=0xfd18160
-    def __str__(self):
-        return "Head node of conglomerate does not contain a DTYPE_CONGLOM record"
-
-class TreeNOT_OPEN(Exception):
-    msgnum=0xfd180a8
-    def __str__(self):
-        return "Tree not currently open"
-
-class TreeNOWRITEMODEL(Exception):
-    msgnum=0xfd18198
-    def __str__(self):
-        return "Data for this node can not be written into the MODEL file"
-
-class TreeNOWRITESHOT(Exception):
-    msgnum=0xfd181a0
-    def __str__(self):
-        return "Data for this node can not be written into the SHOT file"
-
-class TreeNO_CONTEXT(Exception):
-    msgnum=0xfd18040
-    def __str__(self):
-        return "There is no active search to end"
-
-class TreeOFF(Exception):
-    msgnum=0xfd180a0
-    def __str__(self):
-        return "Node is OFF"
-
-class TreeON(Exception):
-    msgnum=0xfd18048
-    def __str__(self):
-        return "Node is ON"
-
-class TreeOPEN(Exception):
-    msgnum=0xfd18050
-    def __str__(self):
-        return "Tree is OPEN (no edit)"
-
-class TreeOPEN_EDIT(Exception):
-    msgnum=0xfd18058
-    def __str__(self):
-        return "Tree is OPEN for edit"
-
-class TreePARENT_OFF(Exception):
-    msgnum=0xfd18090
-    def __str__(self):
-        return "Parent of this node is OFF"
-
-class TreeREADERR(Exception):
-    msgnum=0xfd181b8
-    def __str__(self):
-        return "Error reading record for node"
-
-class TreeREADONLY(Exception):
-    msgnum=0xfd181b0
-    def __str__(self):
-        return "Tree was opened with readonly access"
-
-class TreeRESOLVED(Exception):
-    msgnum=0xfd18010
-    def __str__(self):
-        return "Indirect reference successfully resolved"
-
-class TreeSUCCESS(Exception):
-    msgnum=0xfd18640
-    def __str__(self):
-        return "Operation successful"
-
-class TreeTAGNAMLEN(Exception):
-    msgnum=0xfd18150
-    def __str__(self):
-        return "Tagname too long (max 24 chars)"
-
-class TreeTNF(Exception):
-    msgnum=0xfd18078
-    def __str__(self):
-        return "Tag Not Found"
-
-class TreeTREENF(Exception):
-    msgnum=0xfd18080
-    def __str__(self):
-        return "Tree Not Found"
-
-class TreeUNRESOLVED(Exception):
-    msgnum=0xfd18130
-    def __str__(self):
-        return "Not an indirect node reference: No action taken"
-
-class TreeUNSPRTCLASS(Exception):
-    msgnum=0xfd18118
-    def __str__(self):
-        return "Unsupported descriptor class"
-
-class TreeUNSUPARRDTYPE(Exception):
-    msgnum=0xfd18168
-    def __str__(self):
-        return "Complex data types not supported as members of arrays"
-
-class TreeWRITEFIRST(Exception):
-    msgnum=0xfd18158
-    def __str__(self):
-        return "Tree has been modified:  write or quit first"
-
-class TreeFAILURE(Exception):
-    msgnum=0xfd18fa0
-    def __str__(self):
-        return "Operation NOT successful"
-
-class TreeLOCK_FAILURE(Exception):
-    msgnum=0xfd18fb0
-    def __str__(self):
-        return "Error locking file, perhaps NFSLOCKING not enabled on this system"
-
-class TreeFILE_NOT_FOUND(Exception):
-    msgnum=0xfd18fa8
-    def __str__(self):
-        return "File or Directory Not Found"
-
-class TreeCANCEL(Exception):
-    msgnum=0xfd18c80
-    def __str__(self):
-        return "User canceled operation"
-
-class TreeNOSEGMENTS(Exception):
-    msgnum=0xfd18fb8
-    def __str__(self):
-        return "No segments exist in this node"
-
-class TreeINVDTYPE(Exception):
-    msgnum=0xfd18fc0
-    def __str__(self):
-        return "Invalid datatype for data segment"
-
-class TreeINVSHAPE(Exception):
-    msgnum=0xfd18fc8
-    def __str__(self):
-        return "Invalid shape for this data segment"
-
-class TreeINVSHOT(Exception):
-    msgnum=0xfd18fd8
-    def __str__(self):
-        return "Invalid shot number - must be -1 (model), 0 (current), or Positive"
-
-class TreeINVTAG(Exception):
-    msgnum=0xfd18fe8
-    def __str__(self):
-        return "Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"
-
-class TdiBREAK(Exception):
-    msgnum=0xfd38008
-    def __str__(self):
-        return "BREAK was not in DO FOR SWITCH or WHILE"
-
-class TdiCASE(Exception):
-    msgnum=0xfd38010
-    def __str__(self):
-        return "CASE was not in SWITCH statement"
-
-class TdiCONTINUE(Exception):
-    msgnum=0xfd38018
-    def __str__(self):
-        return "CONTINUE was not in DO FOR or WHILE"
-
-class TdiEXTRANEOUS(Exception):
-    msgnum=0xfd38020
-    def __str__(self):
-        return "Some characters were unused, bad number maybe"
-
-class TdiRETURN(Exception):
-    msgnum=0xfd38028
-    def __str__(self):
-        return "Extraneous RETURN statement, not from a FUN"
-
-class TdiABORT(Exception):
-    msgnum=0xfd38030
-    def __str__(self):
-        return "Program requested abort"
-
-class TdiBAD_INDEX(Exception):
-    msgnum=0xfd38038
-    def __str__(self):
-        return "Index or subscript is too small or too big"
-
-class TdiBOMB(Exception):
-    msgnum=0xfd38040
-    def __str__(self):
-        return "Bad punctuation, could not compile the text"
-
-class TdiEXTRA_ARG(Exception):
-    msgnum=0xfd38048
-    def __str__(self):
-        return "Too many arguments for function, watch commas"
-
-class TdiGOTO(Exception):
-    msgnum=0xfd38050
-    def __str__(self):
-        return "GOTO target label not found"
-
-class TdiINVCLADSC(Exception):
-    msgnum=0xfd38058
-    def __str__(self):
-        return "Storage class not valid, must be scalar or array"
-
-class TdiINVCLADTY(Exception):
-    msgnum=0xfd38060
-    def __str__(self):
-        return "Invalid mixture of storage class and data type"
-
-class TdiINVDTYDSC(Exception):
-    msgnum=0xfd38068
-    def __str__(self):
-        return "Storage data type is not valid"
-
-class TdiINV_OPC(Exception):
-    msgnum=0xfd38070
-    def __str__(self):
-        return "Invalid operator code in a function"
-
-class TdiINV_SIZE(Exception):
-    msgnum=0xfd38078
-    def __str__(self):
-        return "Number of elements does not match declaration"
-
-class TdiMISMATCH(Exception):
-    msgnum=0xfd38080
-    def __str__(self):
-        return "Shape of arguments does not match"
-
-class TdiMISS_ARG(Exception):
-    msgnum=0xfd38088
-    def __str__(self):
-        return "Missing argument is required for function"
-
-class TdiNDIM_OVER(Exception):
-    msgnum=0xfd38090
-    def __str__(self):
-        return "Number of dimensions is over the allowed 8"
-
-class TdiNO_CMPLX(Exception):
-    msgnum=0xfd38098
-    def __str__(self):
-        return "There are no complex forms of this function"
-
-class TdiNO_OPC(Exception):
-    msgnum=0xfd380a0
-    def __str__(self):
-        return "No support for this function, today"
-
-class TdiNO_OUTPTR(Exception):
-    msgnum=0xfd380a8
-    def __str__(self):
-        return "An output pointer is required"
-
-class TdiNO_SELF_PTR(Exception):
-    msgnum=0xfd380b0
-    def __str__(self):
-        return "No $VALUE is defined for signal or validation"
-
-class TdiNOT_NUMBER(Exception):
-    msgnum=0xfd380b8
-    def __str__(self):
-        return "Value is not a scalar number and must be"
-
-class TdiNULL_PTR(Exception):
-    msgnum=0xfd380c0
-    def __str__(self):
-        return "Null pointer where value needed"
-
-class TdiRECURSIVE(Exception):
-    msgnum=0xfd380c8
-    def __str__(self):
-        return "Overly recursive function, calls itself maybe"
-
-class TdiSIG_DIM(Exception):
-    msgnum=0xfd380d0
-    def __str__(self):
-        return "Signal dimension does not match data shape"
-
-class TdiSYNTAX(Exception):
-    msgnum=0xfd380d8
-    def __str__(self):
-        return "Bad punctuation or misspelled word or number"
-
-class TdiTOO_BIG(Exception):
-    msgnum=0xfd380e0
-    def __str__(self):
-        return "Conversion of number lost significant digits"
-
-class TdiUNBALANCE(Exception):
-    msgnum=0xfd380e8
-    def __str__(self):
-        return "Unbalanced () [] {} '' " " or /**/"
-
-class TdiUNKNOWN_VAR(Exception):
-    msgnum=0xfd380f0
-    def __str__(self):
-        return "Unknown/undefined variable name"
-
-class TdiSTRTOOLON(Exception):
-    msgnum=0xfd380f8
-    def __str__(self):
-        return "string is too long (greater than 65535)"
-
-class TdiTIMEOUT(Exception):
-    msgnum=0xfd38100
-    def __str__(self):
-        return "task did not complete in alotted time"
-
 def MDSplusException(msgnum):
     edict={
+0x158210:"LibINSVIRMEM",
+0x158230:"LibINVARG",
+0x158220:"LibINVSTRDES",
+0x1582f8:"LibKEYNOTFOU",
+0x158270:"LibNOTFOU",
+0x1582e8:"LibQUEWASEMP",
+0x158010:"LibSTRTRU",
+0x248418:"StrMATCH",
+0x248208:"StrNOMATCH",
+0x248218:"StrNOELEM",
+0x248210:"StrINVDELIM",
+0x248070:"StrSTRTOOLON",
+0x478:"SsINTOVF",
+0xfd18028:"TreeALREADY_OFF",
+0xfd18030:"TreeALREADY_ON",
+0xfd18038:"TreeALREADY_OPEN",
+0xfd18088:"TreeALREADY_THERE",
+0xfd180b8:"TreeBADRECORD",
+0xfd18098:"TreeBOTH_OFF",
+0xfd18110:"TreeBUFFEROVF",
+0xfd18120:"TreeCONGLOMFULL",
+0xfd18128:"TreeCONGLOM_NOT_FULL",
+0xfd18960:"TreeCONTINUING",
+0xfd180c8:"TreeDUPTAG",
+0xfd18190:"TreeEDITTING",
+0xfd18108:"TreeILLEGAL_ITEM",
+0xfd180d0:"TreeILLPAGCNT",
+0xfd18138:"TreeINVDFFCLASS",
+0xfd18188:"TreeINVDTPUSG",
+0xfd18100:"TreeINVPATH",
+0xfd18140:"TreeINVRECTYP",
+0xfd180c0:"TreeINVTREE",
+0xfd180d8:"TreeMAXOPENEDIT",
+0xfd18018:"TreeNEW",
+0xfd18060:"TreeNMN",
+0xfd18068:"TreeNMT",
+0xfd18070:"TreeNNF",
+0xfd180e0:"TreeNODATA",
+0xfd18148:"TreeNODNAMLEN",
+0xfd180f0:"TreeNOEDIT",
+0xfd181a8:"TreeNOLOG",
+0xfd180b0:"TreeNOMETHOD",
+0xfd18180:"TreeNOOVERWRITE",
+0xfd18008:"TreeNORMAL",
+0xfd18020:"TreeNOTALLSUBS",
+0xfd180f8:"TreeNOTCHILDLESS",
+0xfd181c0:"TreeNOT_IN_LIST",
+0xfd18170:"TreeNOTMEMBERLESS",
+0xfd180e8:"TreeNOTOPEN",
+0xfd18178:"TreeNOTSON",
+0xfd18160:"TreeNOT_CONGLOM",
+0xfd180a8:"TreeNOT_OPEN",
+0xfd18198:"TreeNOWRITEMODEL",
+0xfd181a0:"TreeNOWRITESHOT",
+0xfd18040:"TreeNO_CONTEXT",
+0xfd180a0:"TreeOFF",
+0xfd18048:"TreeON",
+0xfd18050:"TreeOPEN",
+0xfd18058:"TreeOPEN_EDIT",
+0xfd18090:"TreePARENT_OFF",
+0xfd181b8:"TreeREADERR",
+0xfd181b0:"TreeREADONLY",
+0xfd18010:"TreeRESOLVED",
+0xfd18640:"TreeSUCCESS",
+0xfd18150:"TreeTAGNAMLEN",
+0xfd18078:"TreeTNF",
+0xfd18080:"TreeTREENF",
+0xfd18130:"TreeUNRESOLVED",
+0xfd18118:"TreeUNSPRTCLASS",
+0xfd18168:"TreeUNSUPARRDTYPE",
+0xfd18158:"TreeWRITEFIRST",
+0xfd18fa0:"TreeFAILURE",
+0xfd18fb0:"TreeLOCK_FAILURE",
+0xfd18fa8:"TreeFILE_NOT_FOUND",
+0xfd18c80:"TreeCANCEL",
+0xfd18fb8:"TreeNOSEGMENTS",
+0xfd18fc0:"TreeINVDTYPE",
+0xfd18fc8:"TreeINVSHAPE",
+0xfd18fd8:"TreeINVSHOT",
+0xfd18fe8:"TreeINVTAG",
+0x8018008:"CamDONE_Q",
+0x8018010:"CamDONE_NOQ",
+0x8019000:"CamDONE_NOX",
+0x8019800:"CamSERTRAERR",
+0x8019840:"CamSCCFAIL",
+0x8019868:"CamOFFLINE",
+0xfd38008:"TdiBREAK",
+0xfd38010:"TdiCASE",
+0xfd38018:"TdiCONTINUE",
+0xfd38020:"TdiEXTRANEOUS",
+0xfd38028:"TdiRETURN",
+0xfd38030:"TdiABORT",
+0xfd38038:"TdiBAD_INDEX",
+0xfd38040:"TdiBOMB",
+0xfd38048:"TdiEXTRA_ARG",
+0xfd38050:"TdiGOTO",
+0xfd38058:"TdiINVCLADSC",
+0xfd38060:"TdiINVCLADTY",
+0xfd38068:"TdiINVDTYDSC",
+0xfd38070:"TdiINV_OPC",
+0xfd38078:"TdiINV_SIZE",
+0xfd38080:"TdiMISMATCH",
+0xfd38088:"TdiMISS_ARG",
+0xfd38090:"TdiNDIM_OVER",
+0xfd38098:"TdiNO_CMPLX",
+0xfd380a0:"TdiNO_OPC",
+0xfd380a8:"TdiNO_OUTPTR",
+0xfd380b0:"TdiNO_SELF_PTR",
+0xfd380b8:"TdiNOT_NUMBER",
+0xfd380c0:"TdiNULL_PTR",
+0xfd380c8:"TdiRECURSIVE",
+0xfd380d0:"TdiSIG_DIM",
+0xfd380d8:"TdiSYNTAX",
+0xfd380e0:"TdiTOO_BIG",
+0xfd380e8:"TdiUNBALANCE",
+0xfd380f0:"TdiUNKNOWN_VAR",
+0xfd380f8:"TdiSTRTOOLON",
+0xfd38100:"TdiTIMEOUT",
 0xfe18008:"ServerNOT_DISPATCHED",
 0xfe18010:"ServerINVALID_DEPENDENCY",
 0xfe18018:"ServerCANT_HAPPEN",
 0xfe18020:"ServerINVSHOT",
 0xfe18030:"ServerABORT",
 0xfe18040:"ServerPATH_DOWN",
+0x8020008:"MdsdclSUCCESS",
+0x8020010:"MdsdclEXIT",
+0x8020018:"MdsdclERROR",
+0x8020328:"MdsdclNORMAL",
+0x8020330:"MdsdclPRESENT",
+0x8020338:"MdsdclIVVERB",
+0x8020340:"MdsdclABSENT",
+0x8020348:"MdsdclNEGATED",
+0x8020350:"MdsdclNOTNEGATABLE",
+0x8020358:"MdsdclIVQUAL",
+0x8020360:"MdsdclPROMPT_MORE",
+0x8020368:"MdsdclTOO_MANY_PRMS",
+0x8020370:"MdsdclTOO_MANY_VALS",
+0x8020378:"MdsdclMISSING_VALUE",
 0x277c8008:"DEVBAD_ENDIDX",
 0x277c8010:"DEVBAD_FILTER",
 0x277c8018:"DEVBAD_FREQ",
@@ -1655,140 +1787,8 @@ def MDSplusException(msgnum):
 0x277ca5a0:"ACQWRONG_TREE",
 0x277ca5a8:"ACQWRONG_PATH",
 0x277ca5b0:"ACQWRONG_SHOT",
-0x158210:"LibINSVIRMEM",
-0x158230:"LibINVARG",
-0x158220:"LibINVSTRDES",
-0x1582f8:"LibKEYNOTFOU",
-0x158270:"LibNOTFOU",
-0x1582e8:"LibQUEWASEMP",
-0x158010:"LibSTRTRU",
-0x248418:"StrMATCH",
-0x248208:"StrNOMATCH",
-0x248218:"StrNOELEM",
-0x248210:"StrINVDELIM",
-0x248070:"StrSTRTOOLON",
-0x478:"SsINTOVF",
-0x8018008:"CamDONE_Q",
-0x8018010:"CamDONE_NOQ",
-0x8019000:"CamDONE_NOX",
-0x8019800:"CamSERTRAERR",
-0x8019840:"CamSCCFAIL",
-0x8019868:"CamOFFLINE",
 0x2a0008:"TclNORMAL",
 0x2a0010:"TclFAILED_ESSENTIAL",
-0x8020008:"MdsdclSUCCESS",
-0x8020010:"MdsdclEXIT",
-0x8020018:"MdsdclERROR",
-0x8020328:"MdsdclNORMAL",
-0x8020330:"MdsdclPRESENT",
-0x8020338:"MdsdclIVVERB",
-0x8020340:"MdsdclABSENT",
-0x8020348:"MdsdclNEGATED",
-0x8020350:"MdsdclNOTNEGATABLE",
-0x8020358:"MdsdclIVQUAL",
-0x8020360:"MdsdclPROMPT_MORE",
-0x8020368:"MdsdclTOO_MANY_PRMS",
-0x8020370:"MdsdclTOO_MANY_VALS",
-0x8020378:"MdsdclMISSING_VALUE",
-0xfd18028:"TreeALREADY_OFF",
-0xfd18030:"TreeALREADY_ON",
-0xfd18038:"TreeALREADY_OPEN",
-0xfd18088:"TreeALREADY_THERE",
-0xfd180b8:"TreeBADRECORD",
-0xfd18098:"TreeBOTH_OFF",
-0xfd18110:"TreeBUFFEROVF",
-0xfd18120:"TreeCONGLOMFULL",
-0xfd18128:"TreeCONGLOM_NOT_FULL",
-0xfd18960:"TreeCONTINUING",
-0xfd180c8:"TreeDUPTAG",
-0xfd18190:"TreeEDITTING",
-0xfd18108:"TreeILLEGAL_ITEM",
-0xfd180d0:"TreeILLPAGCNT",
-0xfd18138:"TreeINVDFFCLASS",
-0xfd18188:"TreeINVDTPUSG",
-0xfd18100:"TreeINVPATH",
-0xfd18140:"TreeINVRECTYP",
-0xfd180c0:"TreeINVTREE",
-0xfd180d8:"TreeMAXOPENEDIT",
-0xfd18018:"TreeNEW",
-0xfd18060:"TreeNMN",
-0xfd18068:"TreeNMT",
-0xfd18070:"TreeNNF",
-0xfd180e0:"TreeNODATA",
-0xfd18148:"TreeNODNAMLEN",
-0xfd180f0:"TreeNOEDIT",
-0xfd181a8:"TreeNOLOG",
-0xfd180b0:"TreeNOMETHOD",
-0xfd18180:"TreeNOOVERWRITE",
-0xfd18008:"TreeNORMAL",
-0xfd18020:"TreeNOTALLSUBS",
-0xfd180f8:"TreeNOTCHILDLESS",
-0xfd181c0:"TreeNOT_IN_LIST",
-0xfd18170:"TreeNOTMEMBERLESS",
-0xfd180e8:"TreeNOTOPEN",
-0xfd18178:"TreeNOTSON",
-0xfd18160:"TreeNOT_CONGLOM",
-0xfd180a8:"TreeNOT_OPEN",
-0xfd18198:"TreeNOWRITEMODEL",
-0xfd181a0:"TreeNOWRITESHOT",
-0xfd18040:"TreeNO_CONTEXT",
-0xfd180a0:"TreeOFF",
-0xfd18048:"TreeON",
-0xfd18050:"TreeOPEN",
-0xfd18058:"TreeOPEN_EDIT",
-0xfd18090:"TreePARENT_OFF",
-0xfd181b8:"TreeREADERR",
-0xfd181b0:"TreeREADONLY",
-0xfd18010:"TreeRESOLVED",
-0xfd18640:"TreeSUCCESS",
-0xfd18150:"TreeTAGNAMLEN",
-0xfd18078:"TreeTNF",
-0xfd18080:"TreeTREENF",
-0xfd18130:"TreeUNRESOLVED",
-0xfd18118:"TreeUNSPRTCLASS",
-0xfd18168:"TreeUNSUPARRDTYPE",
-0xfd18158:"TreeWRITEFIRST",
-0xfd18fa0:"TreeFAILURE",
-0xfd18fb0:"TreeLOCK_FAILURE",
-0xfd18fa8:"TreeFILE_NOT_FOUND",
-0xfd18c80:"TreeCANCEL",
-0xfd18fb8:"TreeNOSEGMENTS",
-0xfd18fc0:"TreeINVDTYPE",
-0xfd18fc8:"TreeINVSHAPE",
-0xfd18fd8:"TreeINVSHOT",
-0xfd18fe8:"TreeINVTAG",
-0xfd38008:"TdiBREAK",
-0xfd38010:"TdiCASE",
-0xfd38018:"TdiCONTINUE",
-0xfd38020:"TdiEXTRANEOUS",
-0xfd38028:"TdiRETURN",
-0xfd38030:"TdiABORT",
-0xfd38038:"TdiBAD_INDEX",
-0xfd38040:"TdiBOMB",
-0xfd38048:"TdiEXTRA_ARG",
-0xfd38050:"TdiGOTO",
-0xfd38058:"TdiINVCLADSC",
-0xfd38060:"TdiINVCLADTY",
-0xfd38068:"TdiINVDTYDSC",
-0xfd38070:"TdiINV_OPC",
-0xfd38078:"TdiINV_SIZE",
-0xfd38080:"TdiMISMATCH",
-0xfd38088:"TdiMISS_ARG",
-0xfd38090:"TdiNDIM_OVER",
-0xfd38098:"TdiNO_CMPLX",
-0xfd380a0:"TdiNO_OPC",
-0xfd380a8:"TdiNO_OUTPTR",
-0xfd380b0:"TdiNO_SELF_PTR",
-0xfd380b8:"TdiNOT_NUMBER",
-0xfd380c0:"TdiNULL_PTR",
-0xfd380c8:"TdiRECURSIVE",
-0xfd380d0:"TdiSIG_DIM",
-0xfd380d8:"TdiSYNTAX",
-0xfd380e0:"TdiTOO_BIG",
-0xfd380e8:"TdiUNBALANCE",
-0xfd380f0:"TdiUNKNOWN_VAR",
-0xfd380f8:"TdiSTRTOOLON",
-0xfd38100:"TdiTIMEOUT",
 }
     try:
       return globals()[edict[msgnum]]()
