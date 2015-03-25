@@ -688,7 +688,8 @@
     <help name="DO/METHOD">
       Command: DO/METHOD
       Purpose: Execute a method of a device represented in the tree.
-      Format: DO/METHOD device-node-path method [/IF=expression] [/OVERRIDE]
+      Format: DO/METHOD device-node-path method
+               [/ARG="expression"] [/IF=expression] [/OVERRIDE]
       Description:
       
       The DO/METHOD command is used to perform a method supported for the
@@ -698,6 +699,12 @@
       the device you are trying to operate is accessible on the host where
       you are executing the command as the method is executed in your
       current process context.
+
+      The /ARG qualifier lets you supply an argument to the method. It must be
+      in the form of an tdi expression. If you need to pass a string argument
+      you would do a command such as:
+
+      TCL> DO/METHOD mydevice init /ARG="""mystring"""
 
       The /OVERRIDE qualifier is use to override the current on/off status
       of the device in the tree. If the device nodes are turned off and the

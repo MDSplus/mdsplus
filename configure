@@ -9322,7 +9322,8 @@ then
     SYBASE="SYBASE"
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: using Windows mssql" >&5
 $as_echo "using Windows mssql" >&6; }
-else
+elif test "$SYBASE_LIB" = ""
+then
     OLDLIBS="$LIBS"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dbsqlexec" >&5
 $as_echo_n "checking for library containing dbsqlexec... " >&6; }
@@ -9402,14 +9403,16 @@ $as_echo "have freetds" >&6; }
   	  SYBASE="SYBASE"
           { $as_echo "$as_me:${as_lineno-$LINENO}: result: have sybase open/client" >&5
 $as_echo "have sybase open/client" >&6; }
-    else
+      else
           SYBASE_INC=""
           SYBASE_LIB=""
 	  SYBASE=""
           { $as_echo "$as_me:${as_lineno-$LINENO}: result: no sybase open/client" >&5
 $as_echo "no sybase open/client" >&6; }
+      fi
     fi
-  fi
+else
+  SYBASE="SYBASE"
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if mdssql should be built" >&5
 $as_echo_n "checking if mdssql should be built... " >&6; }

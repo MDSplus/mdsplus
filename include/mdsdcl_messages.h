@@ -10,7 +10,7 @@
 #define MdsdclPRESENT              0x8020331
 #define MdsdclIVVERB               0x802033a
 #define MdsdclABSENT               0x8020340
-#define MdsdclNEGATED              0x802034b
+#define MdsdclNEGATED              0x8020348
 #define MdsdclNOTNEGATABLE         0x8020352
 #define MdsdclIVQUAL               0x802035a
 #define MdsdclPROMPT_MORE          0x8020362
