@@ -139,7 +139,7 @@ public class Signal implements WaveDataListener
      * x min region value saved at signal creation
      */
 
-    private double saved_xmin = Double.MIN_VALUE;
+    private double saved_xmin = -Double.MAX_VALUE;
 
     /**
      * x max region value saved at signal creation
@@ -149,7 +149,7 @@ public class Signal implements WaveDataListener
     /**
      * y min region value saved at signal creation
      */
-    private double saved_ymin = Double.MIN_VALUE;
+    private double saved_ymin = -Double.MAX_VALUE;
 
     /**
      * y max region value saved at signal creation
@@ -1377,7 +1377,7 @@ public class Signal implements WaveDataListener
                 saved_xmin = xmin = x2D_min;
                 saved_xmax = xmax = x2D_max;
                 */
-                if( saved_ymin == Double.MIN_VALUE )
+                if( saved_ymin == -Double.MAX_VALUE )
                     saved_ymin = ymin = y2D_min;
                 else
                     ymin = saved_ymin;
@@ -1387,7 +1387,7 @@ public class Signal implements WaveDataListener
                 else
                     ymax = saved_ymax;
                 
-                if( saved_xmin == Double.MIN_VALUE )
+                if( saved_xmin == -Double.MAX_VALUE )
                     saved_xmin = xmin = x2D_min;
                 else
                     xmin = saved_xmin;
@@ -1995,7 +1995,7 @@ public class Signal implements WaveDataListener
                 lowError = xyData.y;
             }
 
-            if(saved_ymin == Double.MIN_VALUE)
+            if(saved_ymin == -Double.MAX_VALUE)
                 saved_ymin = ymin;
             
             if(saved_ymax == Double.MAX_VALUE)
