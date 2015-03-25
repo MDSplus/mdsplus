@@ -803,7 +803,8 @@ then
     SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
     SYBASE="SYBASE"
     AC_MSG_RESULT(using Windows mssql)
-else
+elif test "$SYBASE_LIB" = ""
+then
     OLDLIBS="$LIBS"
     AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
     LIBS="$OLDLIBS"
@@ -823,13 +824,15 @@ else
           SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
   	  SYBASE="SYBASE"
           AC_MSG_RESULT(have sybase open/client)
-    else
+      else
           SYBASE_INC=""
           SYBASE_LIB=""
 	  SYBASE=""
           AC_MSG_RESULT(no sybase open/client)
+      fi
     fi
-  fi
+else
+  SYBASE="SYBASE"
 fi
 AC_MSG_CHECKING(if mdssql should be built)
 if test -n "$SYBASE_INC"

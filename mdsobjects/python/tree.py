@@ -518,6 +518,10 @@ class Tree(object):
         @type delta: Data
         @rtype: None
         """
+        if isinstance(begin,(str,String)):
+          begin = _mimport('_mdsshr',1).DateToQuad(str.encode(str(begin))).data()
+        if isinstance(end,(str,String)):
+          end = _mimport('_mdsshr',1).DateToQuad(str.encode(str(begin))).data()
         _mimport('_treeshr',1).TreeSetTimeContext(begin,end,delta)
     setTimeContext=staticmethod(setTimeContext)
 

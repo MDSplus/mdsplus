@@ -1,4 +1,66 @@
-commit e3173969dd840086d73d2abb4ce429606b79c786 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit cf55003a667332b505d527759e5cbfc2064b5369 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 24 15:51:12 2015 -0400
+
+    Add help on the /ARG qualifier for the TCL> DO/METHOD command
+
+commit cfe362e1ef024acab647b5d2685b9f33c71e0ab8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 24 15:04:52 2015 -0400
+
+    Fix TCL DO/METHOD with /ARG qualifier
+
+commit fe5c9d3f00a75e7d9199894c50e44605b8d417a2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 24 14:19:05 2015 -0400
+
+    Fix windows on cleaned up code
+
+commit 89aaf0176d4bb2eadb886e7ae35e13c2fc38f01c
+Merge: c75a538 db68952
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 24 11:58:39 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit c75a538a7c9777df326967b92c6570ecbb4af9bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 24 11:58:25 2015 -0400
+
+    Fix invalid memory free
+
+commit db68952f9427990eb01e9b4ee18c31cb065a1ea9 (tag: refs/tags/alpha_release-7-0-27)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 24 08:20:56 2015 -0400
+
+    New ChangeLog
+
+commit bd334693b314b4328819393335296dfd95fe87fa
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Mar 24 12:17:35 2015 +0100
+
+    Make it faster
+
+commit 6bc4f74dc330099c88a964716e70c5d997097a73
+Merge: d26955a 22f3be0
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Mar 24 11:50:44 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d26955a7e60a34ce8ab5f3622436b0599a877cc9
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Mar 24 11:49:59 2015 +0100
+
+    Fixes
+
+commit 22f3be09bf6bcbde59f695bf82310f97dc61424f (tag: refs/tags/alpha_release-7-0-26)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 24 02:45:25 2015 +0000
+
+    New ChangeLog
+
+commit e3173969dd840086d73d2abb4ce429606b79c786
 Merge: 8953fa2 ff99e39
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 23 22:26:57 2015 -0400
