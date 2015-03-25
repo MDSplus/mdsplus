@@ -1,4 +1,16 @@
-commit 73edac01c948e62109fcd4f2cc35ac5c0820f061 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 51b71aba9c8d7c3222ff2b6c8911061257c8ed48 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 13:09:42 2015 -0400
+
+    Unlock nci in TreePutRecord
+
+commit 4d906d397b533cdf33a78c1b0d82929cf66c5c6e (tag: refs/tags/stable_release-6-1-80)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 22:33:25 2015 +0000
+
+    New ChangeLog
+
+commit 73edac01c948e62109fcd4f2cc35ac5c0820f061
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 19 15:45:20 2015 -0400
 
