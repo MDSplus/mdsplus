@@ -1,4 +1,23 @@
-commit 18a4212d54cbf955e1f83a1ab21859958dac0c26 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 7bf9b707240da5beb2c02da105dc93f1306f89c9 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Merge: 8efe231 4c411d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 11:19:57 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 8efe231cdc8754cbefd2f996ef8c7078e0d8f1aa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 11:19:52 2015 -0400
+
+    Allow SYBASE environment variable to identify sybase directory
+
+commit 4c411d9e80935bcda8ba2bd33b0740122a1c4a2f (tag: refs/tags/stable_release-6-1-82)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 25 22:31:57 2015 +0000
+
+    New ChangeLog
+
+commit 18a4212d54cbf955e1f83a1ab21859958dac0c26
 Merge: 1ef5829 f6c7392
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 25 09:56:16 2015 -0400
