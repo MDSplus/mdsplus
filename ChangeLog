@@ -1,4 +1,23 @@
-commit c01c97c4a10e19e1730e69556ce04777bc55ea06 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 7c14af00e800c680499b0ea78c9a9480faf28fb7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: f591892 0dbf468
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 15:55:23 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit f5918922bda581b01e5e4e6f2fccfb2997ca1b6e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 15:55:15 2015 -0400
+
+    Fix parens on macros
+
+commit 0dbf46817498328b927e9ed546e00cf97223649a (tag: refs/tags/alpha_release-7-0-29)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 25 22:19:29 2015 +0000
+
+    New ChangeLog
+
+commit c01c97c4a10e19e1730e69556ce04777bc55ea06
 Merge: 86d6a37 117e130
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 25 16:28:30 2015 -0400
