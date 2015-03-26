@@ -1,4 +1,23 @@
-commit 51b71aba9c8d7c3222ff2b6c8911061257c8ed48 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 18a4212d54cbf955e1f83a1ab21859958dac0c26 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Merge: 1ef5829 f6c7392
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 09:56:16 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 1ef5829e12d9267ecc5dead69f6abdee6377b530
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 09:56:10 2015 -0400
+
+    Fix tab in _mdsshr.py so it will work in python3
+
+commit f6c73920411a0108627242cc4b37aa4e913a6c3f (tag: refs/tags/stable_release-6-1-81)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 20 22:32:18 2015 +0000
+
+    New ChangeLog
+
+commit 51b71aba9c8d7c3222ff2b6c8911061257c8ed48
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 20 13:09:42 2015 -0400
 
