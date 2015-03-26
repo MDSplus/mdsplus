@@ -803,32 +803,43 @@ then
     SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
     SYBASE="SYBASE"
     AC_MSG_RESULT(using Windows mssql)
-elif test "$SYBASE_LIB" = ""
+elif test "$(echo $SYBASE_LIB | grep '\-L')" = ""
 then
+    SYBASE_INC=""
+    SYBASE_LIB=""
     OLDLIBS="$LIBS"
     AC_SEARCH_LIBS([dbsqlexec],[sybdb],SYBASE_LIB="-lsybdb";SYBASE_INC="-DSYBASE";SYBASE="SYBASE",SYBASE_LIB="",)
     LIBS="$OLDLIBS"
     if test "$SYBASE_LIB" = ""
     then
       AC_MSG_CHECKING(for SYBASE open/client or freetds)
-      : ${SYBASE=/usr/local/sybase}
       if test -r "/usr/lib${SYB64}/libsybdb.so"
       then
           SYBASE_INC="-DSYBASE"
           SYBASE_LIB="-lsybdb"
           SYBASE="SYBASE"
           AC_MSG_RESULT(have freetds)
-      elif test -r "$SYBASE/lib${SYB64}/libsybdb.a" 
-      then 
-          SYBASE_INC="-I$SYBASE/include -DSYBASE"
-          SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
-  	  SYBASE="SYBASE"
-          AC_MSG_RESULT(have sybase open/client)
       else
-          SYBASE_INC=""
-          SYBASE_LIB=""
+        : ${SYBASE=/usr/local/sybase}
+        if test -r "$SYBASE/lib"
+	then SYBASE_LIBDIR="$SYBASE/lib"
+	elif test -r "$SYBASE/lib${SYB64}"
+	then SYBASE_LIBDIR="$SYBASE/lib${SYB64}"
+	fi
+	if test "$SYBASE_LIBDIR" != ""
+	then
+	  if test -r "$SYBASE_LIBDIR/libsybdb.a"
+	  then
+	    SYBASE_LIB="-L$SYBASE_LIBDIR $LD_LDARC -lsybdb $LD_LDSHARE"
+	  else
+	    SYBASE_LIB="-L$SYBASE_LIBDIR -lsybdb"
+	  fi
+	  SYBASE_INC="-I$SYBASE/include -DSYBASE"
+	  AC_MSG_RESULT(have sybase)
+	else
 	  SYBASE=""
           AC_MSG_RESULT(no sybase open/client)
+	fi
       fi
     fi
 else
