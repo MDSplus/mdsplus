@@ -369,7 +369,7 @@ Data * Data::getScalarData(int dtype) {
 
 template<class T>
 static std::vector<T> getArray(T * data, int size) {
-	std::vector<T> v(data, data+size);
+	std::vector<T> v(data, data+size);    
 	delete[] data;
 	return v;
 }
@@ -390,7 +390,7 @@ void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete []array;}
 char *Data::getByteArray(int *numElements)
 {
 	AutoPointer<Data> array(getArrayData(DTYPE_B));
-	return array.ptr->getByteArray(numElements);
+    return array.ptr->getByteArray(numElements);
 }
 
 std::vector<char> Data::getByteArray()
@@ -939,7 +939,9 @@ char *Array::getByteArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getByteArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getByteArray() not supported for Complex data type");
 		}
 	}
 	*numElements = size;
@@ -963,7 +965,9 @@ unsigned char *Array::getByteUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getByteUnsignedArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getByteUnsignedArray() not supported for Complex data type");
 		}
 	}
 	*numElements = size;
@@ -986,7 +990,9 @@ short *Array::getShortArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getShortArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getShortArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1008,7 +1014,9 @@ unsigned short *Array::getShortUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getShortUnsignedArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getShortUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1030,7 +1038,9 @@ int *Array::getIntArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getIntArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getIntArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1052,7 +1062,9 @@ unsigned int *Array::getIntUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getIntUnsignedArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getIntUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1074,7 +1086,9 @@ int64_t *Array::getLongArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (int64_t)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int64_t)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getLongArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getLongArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1097,7 +1111,9 @@ uint64_t *Array::getLongUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (uint64_t)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (uint64_t)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getLongUnsignedArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getLongUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1120,7 +1136,9 @@ float *Array::getFloatArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getFloatArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getFloatArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1142,7 +1160,9 @@ double *Array::getDoubleArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getDoubleArray() not supported for Complex data type");
+            case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getDoubleArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1158,7 +1178,9 @@ std::complex<double> *Array::getComplexArray(int *numElements)
 				retArr[i] = std::complex<double>(((float *)ptr)[2*i], ((float *)ptr)[2*i+1]); break;
 			case DTYPE_FTC: 
 				retArr[i] = std::complex<double>(((double *)ptr)[2*i], ((double *)ptr)[2*i+1]); break;
-			default: throw MdsException("getComplexArray() not supported for non complex types");
+            default:
+            delete [] retArr;
+            throw MdsException("getComplexArray() not supported for non Complex data types");
 
 		}
 	*numElements = size;
@@ -1181,7 +1203,9 @@ char **Array::getStringArray(int *numElements)
 					else
 						break;
 				break;
-			default: throw MdsException("Unsupported conversion to char ** array");
+            default:
+            delete [] retArr;
+            throw MdsException("Unsupported conversion to char ** array");
 
 		}
 	*numElements = size;

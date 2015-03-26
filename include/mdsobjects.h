@@ -228,7 +228,7 @@ public:
 		virtual uint64_t getLongUnsigned();
 		virtual float getFloat();
 		virtual double getDouble(); 
-		virtual std::complex<double> getComplex() {throw new MdsException("getComplex() not supported for non compelx data types");}
+        virtual std::complex<double> getComplex() {throw MdsException("getComplex() not supported for non Compelx data types");}
 		virtual char * getString(){return decompile();}
 		virtual int * getShape(int *numDim);
 		virtual char *getByteArray(int *numElements);
@@ -253,7 +253,7 @@ public:
 		virtual std::vector<double> getDoubleArray();
 		virtual std::complex<double> * getComplexArray(int *numElements)
 		{
-			throw MdsException("getComplexArray() not supported for non compelx data types");
+            throw MdsException("getComplexArray() not supported for non Compelx data types");
 		}
 		virtual std::vector<std::complex<double> > getComplexArray();
 		virtual char ** getStringArray(int *numElements)
