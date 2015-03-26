@@ -87,7 +87,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@HAVE_CHECK_TRUE@TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT)
+@HAVE_CHECK_TRUE@TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -100,11 +101,16 @@ CONFIG_HEADER = $(top_builddir)/include/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
 @HAVE_CHECK_TRUE@am__EXEEXT_1 = buildtest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsExceptionTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsExceptionTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT)
+MdsDataTest_SOURCES = MdsDataTest.cpp
+MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
+MdsDataTest_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1)
 MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
 MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1)
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
@@ -139,8 +145,8 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = MdsExceptionTest.cpp buildtest.cpp
-DIST_SOURCES = MdsExceptionTest.cpp buildtest.cpp
+SOURCES = MdsDataTest.cpp MdsExceptionTest.cpp buildtest.cpp
+DIST_SOURCES = MdsDataTest.cpp MdsExceptionTest.cpp buildtest.cpp
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
     n|no|NO) false;; \
@@ -496,6 +502,9 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 PYTHON_INCLUDE_DIR = @PYTHON_INCLUDE_DIR@
 RANLIB = @RANLIB@
 REMCAM = @REMCAM@
@@ -589,7 +598,7 @@ uiddir = @uiddir@
 AM_DEFAULT_SOURCE_EXT = .cpp
 AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
 LDADD = $(AM_LIBS)
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
@@ -632,6 +641,10 @@ $(am__aclocal_m4_deps):
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
+MdsDataTest$(EXEEXT): $(MdsDataTest_OBJECTS) $(MdsDataTest_DEPENDENCIES) $(EXTRA_MdsDataTest_DEPENDENCIES) 
+	@rm -f MdsDataTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_OBJECTS) $(MdsDataTest_LDADD) $(LIBS)
+
 MdsExceptionTest$(EXEEXT): $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_DEPENDENCIES) $(EXTRA_MdsExceptionTest_DEPENDENCIES) 
 	@rm -f MdsExceptionTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_LDADD) $(LIBS)
@@ -646,6 +659,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExceptionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildtest.Po@am__quote@
 
@@ -872,6 +886,13 @@ MdsExceptionTest.log: MdsExceptionTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsDataTest.log: MdsDataTest$(EXEEXT)
+	@p='MdsDataTest$(EXEEXT)'; \
+	b='MdsDataTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 .test.log:
 	@p='$<'; \
 	$(am__set_b); \
@@ -1043,6 +1064,8 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 include ${top_srcdir}/Makefile.inc
+
+tests: $(TESTS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
