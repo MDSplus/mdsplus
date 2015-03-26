@@ -1026,7 +1026,7 @@ public class MdsDataProvider
                             requestsV.removeElementAt(i);
                             XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
                             
-                            if(currData.nSamples == 0)
+                            if( currData == null || currData.nSamples == 0 )
                                 continue;
                             for(int j = 0; j < currUpdate.waveDataListenersV.size(); j++)
                             {
@@ -1038,7 +1038,8 @@ public class MdsDataProvider
                             }
                         }catch(Exception exc)
                         {
-                            System.out.println("Error in asynchUpdate: "+exc);
+                            Date d = new Date();
+                            System.out.println(d+" Error in asynchUpdate: "+exc);
                         }
                     }
                     else
@@ -1356,7 +1357,7 @@ public class MdsDataProvider
         if (resetExperiment) {
           this.experiment = null;
         }
-        if ((shot != this.shot) || (shot == 0L) || (this.experiment == null) || (this.experiment.length() == 0) || (!this.experiment.equals(experiment)))
+        if ((shot != this.shot) || (shot == 0L) || (this.experiment == null) || (this.experiment.length() == 0) || (!this.experiment.equalsIgnoreCase(experiment)))
         {
           this.experiment = ((experiment != null) && (experiment.trim().length() > 0) ? experiment : null);
           this.shot = shot;
@@ -1894,7 +1895,7 @@ public class MdsDataProvider
         }
         if (!open && experiment != null || this.shot != shot || experiment != null && !experiment.equalsIgnoreCase(this.experiment) )
         {
-            //System.out.println("Open tree "+experiment+ " shot "+ shot);
+            //System.out.println("\n-->\nOpen tree "+experiment+ " shot "+ shot +"\n<--\n");
             Descriptor descr = mds.MdsValue("JavaOpen(\"" + experiment + "\"," +
                                             shot + ")");
             if (descr.dtype != Descriptor.DTYPE_CSTRING

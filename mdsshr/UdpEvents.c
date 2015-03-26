@@ -95,9 +95,10 @@ static void *handleMessage(void *arg)
 #ifdef HAVE_WINDOWS_H
     if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
-      if (WSAGetLastError() == WSAESHUTDOWN) {
+      int error = WSAGetLastError();
+      if (error == WSAESHUTDOWN || error == WSAEINTR || error == WSAENOTSOCK) {
       } else {
-	fprintf(stderr,"Error getting data - %d\n", WSAGetLastError());
+	fprintf(stderr,"Error getting data - %d\n", error);
 
       }
       continue;

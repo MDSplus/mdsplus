@@ -1,4 +1,80 @@
-commit cf55003a667332b505d527759e5cbfc2064b5369 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c01c97c4a10e19e1730e69556ce04777bc55ea06 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 86d6a37 117e130
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 16:28:30 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 86d6a37e5026a0657c266ed5b1018d19a0477e0d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 16:28:19 2015 -0400
+
+    clean up for Windows
+
+commit 117e1308f950791da75ebfcdc006f707c99b4e90
+Merge: ebcf226 69f418a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 13:58:04 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit ebcf2264ffa035a0505a3b768ad49290fead79ac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 13:57:55 2015 -0400
+
+    Remove CVS specific tar qualifier on the main Makefile install
+
+commit 69f418a18c899c57bbe3336dce6bf7fe240fd183
+Merge: 4c3ce19 2dfc975
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Wed Mar 25 17:39:23 2015 +0100
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 4c3ce19388fc9b426798a15139f767f2b22d02b2
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Wed Mar 25 17:38:51 2015 +0100
+
+    Last Fixes
+
+commit 2dfc9755fc79691279eee2b04a7087891639d042
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 12:38:15 2015 -0400
+
+    allow SYBASE_LIB and SYBASE_INC overrides
+
+commit 9ea541f6eb301edcf490847b23e9f4c315fcb4b9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 12:30:51 2015 -0400
+
+    Allow begin and end values to setTimeContext be date strings
+
+commit 11358d49e5703aa2ed752e3e2f0454b2ac2fb860
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 12:28:00 2015 -0400
+
+    Change MdsdclNEGATED status to a warning
+
+commit 725ef4062a64473642357d5ca1a200ffaf9a82bb
+Merge: 8a34c31 9a52d66
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 09:58:41 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 8a34c318c15602ada4932df3d3ce86bd62ea891c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 09:58:22 2015 -0400
+
+    Fix tabs so modul will work with python3
+
+commit 9a52d66fcad03e2f1e3024d2d899fa9e052e33ee (tag: refs/tags/alpha_release-7-0-28)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 24 22:20:54 2015 +0000
+
+    New ChangeLog
+
+commit cf55003a667332b505d527759e5cbfc2064b5369
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 24 15:51:12 2015 -0400
 
