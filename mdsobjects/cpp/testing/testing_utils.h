@@ -202,6 +202,119 @@ operator == (const std::vector<_T1,_Alloc1> &v1, const std::vector<_T2,_Alloc2> 
 } // std
 
 
+namespace testing {
+
+namespace detail {
+
+////////////////////////////////////////////////////////////////////////////////
+// type synthesize ( please read: boost implementation  )                     //
+////////////////////////////////////////////////////////////////////////////////
+
+template <typename FuncT>
+struct FunctionTypes {};
+
+template <typename R, class O>
+struct FunctionTypes< R(O::*)() > {
+    typedef R  ref();
+    typedef R (ptr)();
+    typedef O  obj;
+    typedef R ReturnType;
+};
+
+template <typename R, class O, typename T0>
+struct FunctionTypes< R(O::*)(T0) > {
+    typedef R  ref(T0);
+    typedef R (ptr)(T0);
+    typedef O  obj;
+    typedef R ReturnType;
+};
+
+template <typename R, class O, typename T0, typename T1>
+struct FunctionTypes< R(O::*)(T0,T1) > {
+    typedef R  ref(T0,T1);
+    typedef R (ptr)(T0,T1);
+    typedef O  obj;
+    typedef R ReturnType;
+};
+
+template <typename R, class O, typename T0, typename T1, typename T2>
+struct FunctionTypes< R(O::*)(T0,T1,T2) > {
+    typedef R  ref(T0,T1,T2);
+    typedef R (ptr)(T0,T1,T2);
+    typedef O  obj;
+    typedef R ReturnType;
+};
+
+} // detail
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  REMOVE PTR   ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+namespace detail {
+
+template < typename T >
+struct remove_pointer { typedef T type; };
+
+#define _MDS_TESTING_TYPE_TRAIT_IMPL_PARTIAL1(param,trait,spec,result) \
+template<param> struct trait<spec> \
+{ typedef result type; };
+
+_MDS_TESTING_TYPE_TRAIT_IMPL_PARTIAL1(typename T,remove_pointer,T*,T)
+_MDS_TESTING_TYPE_TRAIT_IMPL_PARTIAL1(typename T,remove_pointer,T* const,T)
+_MDS_TESTING_TYPE_TRAIT_IMPL_PARTIAL1(typename T,remove_pointer,T* volatile,T)
+_MDS_TESTING_TYPE_TRAIT_IMPL_PARTIAL1(typename T,remove_pointer,T* const volatile,T)
+
+#undef _MDS_TESTING_TYPE_TRAIT_IMPL_PARTIAL1
+
+} // detail
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  MDS to CPP TYPE TRAIT MAP  /////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+namespace detail {
+
+#define _MDS_TESTING_TYPE_TRAIT_IMPL_SP1(trait,spec,result) \
+    template<> struct trait<spec> \
+        { typedef result type; }; \
+    template<> struct trait<spec##Array>       \
+        { typedef std::vector<result> type; }; \
+    /**/
+
+template < typename T >
+struct mds2cpp_typemap { typedef T type; };
+
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Int8,  char )
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Int16, short)
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Int32, int  )
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Int64, int64_t)
+
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Uint8,  unsigned char )
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Uint16, unsigned short)
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Uint32, unsigned int  )
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Uint64, uint64_t)
+
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Float32, float)
+_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Float64, double)
+
+//_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Complex32, std::complex<float>)
+//_MDS_TESTING_TYPE_TRAIT_IMPL_SP1(mds2cpp_typemap, MDSplus::Complex64, std::complex<double>)
+
+
+#undef _MDS_TESTING_TYPE_TRAIT_IMPL_SP1
+
+} // detail
+
+
+
+
+} // testing
+
+
+
 
 
 

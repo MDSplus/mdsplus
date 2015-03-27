@@ -1,5 +1,8 @@
 
+#ifndef MDS_UNITTEST_TESTING_H
+#define MDS_UNITTEST_TESTING_H
 
+#include <assert.h>
 #include <cmath>
 #include <cstring>
 #include <limits>
@@ -43,3 +46,7 @@ printf("..:: Testing " #name " ::..\n");
 
 #define TEST_MDS_EXCEPTION(val, string) try { val; } catch (mds::MdsException &e) { TEST0( strcmp(e.what(), string) ); }
 
+
+
+
+#endif // MDS_UNITTEST_TESTING_H

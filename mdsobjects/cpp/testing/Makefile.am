@@ -12,7 +12,9 @@ if HAVE_CHECK
 TESTS = \
         buildtest \
         MdsExceptionTest \
-        MdsDataTest
+        MdsDataTest \
+        MdsDataTest_NumericConversion \
+        MdsDataTest_NumericLimits
 else
 TESTS =
 endif
