@@ -341,7 +341,7 @@ typedef struct big_node_linkage {
 
 /* if pointers are more than 32 bits then node offsets can be 
    more than 32 bits */
-#if SIZEOF_INT_P == 8
+#if __SIZEOF_POINTER__ == 8
 #define parent_of(a)\
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
 #define member_of(a)\
