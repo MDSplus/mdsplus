@@ -292,13 +292,14 @@ void *Scalar::convertToDsc()
 }
 
 //Make a dymanically allocated copy of the Data instance Tee
-Data *Data::clone()
-{
-	void *dscPtr = convertToDsc();
-	Data *retData = (Data *)convertFromDsc(dscPtr);
-	freeDsc(dscPtr);
-	return retData;
-}
+//Data *Data::clone()
+//{
+//	void *dscPtr = convertToDsc();
+//	Data *retData = (Data *)convertFromDsc(dscPtr);
+//	freeDsc(dscPtr);
+//	return retData;
+//}
+
 int * Data::getShape(int *numDim)
 {
 	void *dscPtr = convertToDsc();
