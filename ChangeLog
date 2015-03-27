@@ -1,4 +1,41 @@
-commit 7c14af00e800c680499b0ea78c9a9480faf28fb7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f838b4d1e86244ec22c72ce29b5fd9392df5aaac (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 27 16:42:15 2015 -0400
+
+    Use compiler macros instead of configure tests
+
+commit c7098289c88e237c3710577084bb29ae2f4ad2fc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 27 16:40:54 2015 -0400
+
+    Remove VMS lines
+
+commit dbbc53a0f996c50a2484c6550814270b5fa5b70a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 27 16:39:54 2015 -0400
+
+    Remove VMS lines
+
+commit cc9b52acc289ba08783421040e7954a19de17de2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 27 15:29:54 2015 -0400
+
+    Cleanup after using udp for local events
+
+commit 6b7f2ffdc96dab224027dc4900ee59629548d4d6
+Merge: 2a14c86 b0ba381
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 27 14:09:35 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit b0ba381bd9d70c9a9ff24e9a7d5e44d623e3dabf (tag: refs/tags/alpha_release-7-0-30)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 26 22:19:47 2015 +0000
+
+    New ChangeLog
+
+commit 7c14af00e800c680499b0ea78c9a9480faf28fb7
 Merge: f591892 0dbf468
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 26 15:55:23 2015 -0400
@@ -10,6 +47,19 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 26 15:55:15 2015 -0400
 
     Fix parens on macros
+
+commit 2a14c86c23d43b939638575764aaa699c0a478f0
+Merge: 866cef9 0dbf468
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 09:18:29 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 866cef9ce1148539732657cea0a70e6e4a73c729
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 09:18:23 2015 -0400
+
+    Fix use of SYBASE env in configure
 
 commit 0dbf46817498328b927e9ed546e00cf97223649a (tag: refs/tags/alpha_release-7-0-29)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
