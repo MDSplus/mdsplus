@@ -37,20 +37,20 @@ int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(: INPUT_1:GAIN, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_1:GAIN, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.	"
- ADD_NODE_EXPR(: INPUT_1:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_1:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_1.FILTER, 0)
- ADD_NODE(: INPUT_1:OUTPUT, TreeUSAGE_SIGNAL)
+ ADD_NODE(:INPUT_1:OUTPUT, TreeUSAGE_SIGNAL)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_1:FILTER_ON, TreeUSAGE_TEXT)
+ ADD_NODE(:INPUT_1:FILTER_ON, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -59,20 +59,20 @@ int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(: INPUT_2:GAIN, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_2:GAIN, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.	"
- ADD_NODE_EXPR(: INPUT_2:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_2:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_2.FILTER, 0)
- ADD_NODE(: INPUT_2:OUTPUT, TreeUSAGE_SIGNAL)
+ ADD_NODE(:INPUT_2:OUTPUT, TreeUSAGE_SIGNAL)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_2:FILTER_ON, TreeUSAGE_TEXT)
+ ADD_NODE(:INPUT_2:FILTER_ON, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -81,20 +81,20 @@ int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(: INPUT_3:GAIN, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_3:GAIN, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.	"
- ADD_NODE_EXPR(: INPUT_3:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_3:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_3.FILTER, 0)
- ADD_NODE(: INPUT_3:OUTPUT, TreeUSAGE_SIGNAL)
+ ADD_NODE(:INPUT_3:OUTPUT, TreeUSAGE_SIGNAL)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_3:FILTER_ON, TreeUSAGE_TEXT)
+ ADD_NODE(:INPUT_3:FILTER_ON, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -103,20 +103,20 @@ int a3204__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 1.	"
- ADD_NODE_EXPR(: INPUT_4:GAIN, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_4:GAIN, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " 0.	"
- ADD_NODE_EXPR(: INPUT_4:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(:INPUT_4:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_4.FILTER, 0)
- ADD_NODE(: INPUT_4:OUTPUT, TreeUSAGE_SIGNAL)
+ ADD_NODE(:INPUT_4:OUTPUT, TreeUSAGE_SIGNAL)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_4:FILTER_ON, TreeUSAGE_TEXT)
+ ADD_NODE(:INPUT_4:FILTER_ON, TreeUSAGE_TEXT)
       flags |= NciM_WRITE_ONCE;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -148,51 +148,51 @@ int a3204__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (A3204_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (A3204_N_INPUT_1_GAIN + 1):
- COPY_PART_NAME(: INPUT_1:GAIN) break;
+ COPY_PART_NAME(:INPUT_1:GAIN) break;
   case (A3204_N_INPUT_1_OFFSET + 1):
- COPY_PART_NAME(: INPUT_1:OFFSET) break;
+ COPY_PART_NAME(:INPUT_1:OFFSET) break;
   case (A3204_N_INPUT_1_FILTER + 1):
  COPY_PART_NAME(:INPUT_1.FILTER) break;
   case (A3204_N_INPUT_1_OUTPUT + 1):
- COPY_PART_NAME(: INPUT_1:OUTPUT) break;
+ COPY_PART_NAME(:INPUT_1:OUTPUT) break;
   case (A3204_N_INPUT_1_FILTER_ON + 1):
- COPY_PART_NAME(: INPUT_1:FILTER_ON) break;
+ COPY_PART_NAME(:INPUT_1:FILTER_ON) break;
   case (A3204_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (A3204_N_INPUT_2_GAIN + 1):
- COPY_PART_NAME(: INPUT_2:GAIN) break;
+ COPY_PART_NAME(:INPUT_2:GAIN) break;
   case (A3204_N_INPUT_2_OFFSET + 1):
- COPY_PART_NAME(: INPUT_2:OFFSET) break;
+ COPY_PART_NAME(:INPUT_2:OFFSET) break;
   case (A3204_N_INPUT_2_FILTER + 1):
  COPY_PART_NAME(:INPUT_2.FILTER) break;
   case (A3204_N_INPUT_2_OUTPUT + 1):
- COPY_PART_NAME(: INPUT_2:OUTPUT) break;
+ COPY_PART_NAME(:INPUT_2:OUTPUT) break;
   case (A3204_N_INPUT_2_FILTER_ON + 1):
- COPY_PART_NAME(: INPUT_2:FILTER_ON) break;
+ COPY_PART_NAME(:INPUT_2:FILTER_ON) break;
   case (A3204_N_INPUT_3 + 1):
  COPY_PART_NAME(:INPUT_3) break;
   case (A3204_N_INPUT_3_GAIN + 1):
- COPY_PART_NAME(: INPUT_3:GAIN) break;
+ COPY_PART_NAME(:INPUT_3:GAIN) break;
   case (A3204_N_INPUT_3_OFFSET + 1):
- COPY_PART_NAME(: INPUT_3:OFFSET) break;
+ COPY_PART_NAME(:INPUT_3:OFFSET) break;
   case (A3204_N_INPUT_3_FILTER + 1):
  COPY_PART_NAME(:INPUT_3.FILTER) break;
   case (A3204_N_INPUT_3_OUTPUT + 1):
- COPY_PART_NAME(: INPUT_3:OUTPUT) break;
+ COPY_PART_NAME(:INPUT_3:OUTPUT) break;
   case (A3204_N_INPUT_3_FILTER_ON + 1):
- COPY_PART_NAME(: INPUT_3:FILTER_ON) break;
+ COPY_PART_NAME(:INPUT_3:FILTER_ON) break;
   case (A3204_N_INPUT_4 + 1):
  COPY_PART_NAME(:INPUT_4) break;
   case (A3204_N_INPUT_4_GAIN + 1):
- COPY_PART_NAME(: INPUT_4:GAIN) break;
+ COPY_PART_NAME(:INPUT_4:GAIN) break;
   case (A3204_N_INPUT_4_OFFSET + 1):
- COPY_PART_NAME(: INPUT_4:OFFSET) break;
+ COPY_PART_NAME(:INPUT_4:OFFSET) break;
   case (A3204_N_INPUT_4_FILTER + 1):
  COPY_PART_NAME(:INPUT_4.FILTER) break;
   case (A3204_N_INPUT_4_OUTPUT + 1):
- COPY_PART_NAME(: INPUT_4:OUTPUT) break;
+ COPY_PART_NAME(:INPUT_4:OUTPUT) break;
   case (A3204_N_INPUT_4_FILTER_ON + 1):
- COPY_PART_NAME(: INPUT_4:FILTER_ON) break;
+ COPY_PART_NAME(:INPUT_4:FILTER_ON) break;
   case (A3204_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (A3204_N_STORE_ACTION + 1):
