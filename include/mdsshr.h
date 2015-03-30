@@ -75,7 +75,7 @@ extern "C" {
   EXPORT extern void MdsGlobalUnlock();
   EXPORT extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
 
-#if defined HAVE_WINDOWS_H && !defined HAVE_PTHREAD_H
+#if defined _WIN32 && !defined HAVE_PTHREAD_H
   typedef int pthread_key_t;
   typedef void *pthread_t;
 

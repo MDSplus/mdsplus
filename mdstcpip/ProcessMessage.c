@@ -1,7 +1,7 @@
 #include "mdsip_connections.h"
 #include <mdstypes.h>
 #include "cvtdef.h"
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <io.h>
 #define read _read
 #define write _write
@@ -55,7 +55,7 @@ extern int TdiData();
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define lseek _lseeki64
 #endif
 
@@ -862,7 +862,7 @@ Message *ProcessMessage(Connection * c, Message * message)
 	  if (retry_open)
 	    fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
 	}
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
 	  int stat;
 	  char *cmd = (char *)malloc(64 + strlen(filename));

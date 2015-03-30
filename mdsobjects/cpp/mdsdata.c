@@ -39,7 +39,7 @@ extern void convertTimeToAscii(int64_t * timePtr, char *dateBuf, int bufLen, int
 extern void *getManyObj(char *serializedIn);
 extern void *putManyObj(char *serializedIn);
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

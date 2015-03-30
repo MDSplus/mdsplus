@@ -3,7 +3,7 @@
 #include "SystemSpecific.h"
 #include <string.h>
 #include <stdio.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include "WindowsSystemException.h"
 #else
 class EXPORT SystemException {

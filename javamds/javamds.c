@@ -1210,7 +1210,7 @@ JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_unregisterEvent
 
 /* CompositeWaveDisplay management routines for using
 jScope panels outside java application */
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define PATH_SEPARATOR ';'
 #else
 #define PATH_SEPARATOR ':'

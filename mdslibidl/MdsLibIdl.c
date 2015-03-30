@@ -94,7 +94,7 @@ typedef struct {
 
 static int ShortStrings(char *b)
 {
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   extern char *__progname;
   int isGdl = strcmp(__progname, "gdl") == 0;
 #else

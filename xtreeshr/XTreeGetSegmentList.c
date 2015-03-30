@@ -21,7 +21,7 @@ static int timedAccessFlag = 0;
 #define MAX_FUN_NAMELEN 512
 extern int TdiData(), TdiEvaluate();
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
 

@@ -3,7 +3,7 @@
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #else
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef NO_WINDOWS_H
 #include <windows.h>
 #endif

@@ -1849,7 +1849,7 @@ int MdsPut2(char *node, char *expression,
 #ifndef FORTRAN_ENTRY_POINTS
 #define FORTRAN_ENTRY_POINTS
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int zero = 0;
 static SOCKET ___MdsConnect();
 static void ___MdsDisconnect();
@@ -2024,7 +2024,7 @@ If any of these entry points share the same name for fortran
 and c then donot define the macro.
 *************************************************************/
 
-#if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (HAVE_WINDOWS_H)
+#if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (_WIN32)
 #define descr descr_
 #define descr2 descr2_
 #define FortranMdsConnect mdsconnect_

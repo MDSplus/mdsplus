@@ -28,7 +28,7 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 /* DTG: Unix Spec v.2 has <dirent.h> depends on <sys/types.h> */
 #include <sys/types.h>
 #include <dirent.h>
@@ -39,7 +39,7 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
 
 char *ServerFindServers(void **ctx, char *wild_match)
 {
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   char *ans = 0;
   DIR *dir = (DIR *) * ctx;
   if (dir == 0) {

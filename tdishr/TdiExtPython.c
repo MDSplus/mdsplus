@@ -298,7 +298,7 @@ int TdiExtPython(struct descriptor *modname_d,
   int status = TdiUNKNOWN_VAR;
   char *filename;
   int stat;
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   struct sigaction offact = {SIG_DFL, NULL, 0, 0, NULL};
   struct sigaction oldact;
   stat=sigaction(SIGCHLD, &offact, &oldact);
@@ -333,7 +333,7 @@ int TdiExtPython(struct descriptor *modname_d,
       Py_EndInterpreter(tstate);
     }
   }
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   stat=sigaction(SIGCHLD, &oldact, NULL);
 #endif
   return status;

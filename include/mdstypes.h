@@ -14,7 +14,7 @@
 
 #else				/* HAVE_STDINT_H */
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 
 #ifndef _OFF_T_DEFINED
 typedef __int64 off_t;
@@ -27,7 +27,7 @@ typedef off_t _off_t;
 
 #define _STDINT_H
 
-#else				/* HAVE_WINDOWS_H */
+#else				/* _WIN32 */
 
 #if (SIZEOF__INT64 != 8)
 
@@ -51,7 +51,7 @@ typedef unsigned int64_t uint64_t;
 
 #endif				/* SIZEOF_INT64 */
 
-#endif				/* HAVE_WINDOWS_H */
+#endif				/* _WIN32 */
 
 #endif				/* HAVE_STDINT_H */
 

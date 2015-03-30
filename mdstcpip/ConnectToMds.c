@@ -5,7 +5,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <pwd.h>
 #endif
 

@@ -13,7 +13,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
@@ -717,7 +717,7 @@ static void WaitForJob()
   ProgLoc = 11;
   pthread_mutex_lock(&JobWaitMutex);
   ProgLoc = 12;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
 #else
   {
@@ -763,7 +763,7 @@ static int StartThread()
     JobWaitInitialized = 1;
   }
   if (WorkerThreadRunning == 0) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     WorkerThreadRunning = 1;
     status = pthread_create(&WorkerThread, 0, Worker, 0);
 #else
@@ -853,7 +853,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
 {
   int status = 0;
   SOCKET sock;
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
 #endif
   sock = AttachPort(job->h.addr, (short)job->h.port);
@@ -874,7 +874,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
     if (!(status & 1))
       RemoveClient(job);
   }
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGPIPE, SIG_DFL);
 #endif
   return status;

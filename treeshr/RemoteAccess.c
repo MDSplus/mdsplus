@@ -1,4 +1,4 @@
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
@@ -9,7 +9,7 @@
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #include <io.h>
 /*#define write _write
@@ -111,7 +111,7 @@ STATIC_THREADSAFE int HostListMutex_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t IOMutex;
 STATIC_THREADSAFE int IOMutex_initialized = 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -1151,7 +1151,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
       fd = io_open_remote(hostpart, filepart, options, mode, &socket, &enhanced);
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     if ((fd != -1) && ((options & O_CREAT) != 0)) {
       struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
       char *cmd = (char *)malloc(64 + strlen(filename));
@@ -1543,7 +1543,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 #endif
     } else
       status = io_lock_remote(fd, offset, size, mode_in, deleted);
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
     //ThreadLock(fd,offset,size,mode_in);
 #endif
   }

@@ -253,7 +253,7 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
   A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) initialValue;
   struct descriptor *dsc;
   // compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -515,7 +515,7 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
   NODE *node_ptr;
   struct descriptor *dsc;
   //  compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -660,7 +660,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
   DESCRIPTOR_A(data_a, 0, 0, 0, 0);
   A_COEFF_TYPE *a_coeff;
   //  compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -1223,7 +1223,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
   int shot_open;
   NODE *node_ptr;
   //  compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -2115,7 +2115,7 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
   int shot_open;
   NODE *node_ptr;
   A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *) initialValue;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -2381,7 +2381,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   DESCRIPTOR_A(data_a, 0, 0, 0, 0);
   A_COEFF_TYPE *a_coeff;
   //  compress_utility = utility_update == 2;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif

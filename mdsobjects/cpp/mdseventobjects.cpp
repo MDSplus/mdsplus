@@ -5,7 +5,7 @@
 using namespace MDSplus;
 using namespace std;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

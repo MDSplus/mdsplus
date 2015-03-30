@@ -9,7 +9,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <process.h>
 #include <winuser.h>
 #else
@@ -29,7 +29,7 @@ EXPORT IoRoutines *Io()
   return &tunnel_routines;
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 struct TUNNEL_PIPES {
   HANDLE stdin_pipe;
   HANDLE stdout_pipe;
@@ -51,7 +51,7 @@ static struct TUNNEL_PIPES *getTunnelPipes(id)
 	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int tunnel_disconnect(int id)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
@@ -76,7 +76,7 @@ static int tunnel_disconnect(int id)
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
@@ -91,7 +91,7 @@ static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
@@ -106,7 +106,7 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 }
 #endif
 
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
@@ -140,7 +140,7 @@ static void ChildSignalHandler(int num)
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int tunnel_connect(int id, char *protocol, char *host)
 {
   SECURITY_ATTRIBUTES saAttr;
@@ -253,7 +253,7 @@ static int tunnel_connect(int id, char *protocol, char *host)
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int tunnel_listen(int argc, char **argv)
 {
   return 0;

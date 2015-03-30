@@ -272,7 +272,7 @@ nid_to_tree(pino, nid, info)
 
 typedef char NODE_NAME[12];
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #pragma pack(push,1)
 #else
 PACK_START
@@ -463,7 +463,7 @@ typedef struct record_header {
   RFA rfa;
 } RECORD_HEADER;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #pragma pack(pop)
 #else
 PACK_STOP
@@ -698,7 +698,7 @@ extern char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath);
 extern int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #endif
 extern int64_t RfaToSeek(unsigned char *rfa);
@@ -752,7 +752,7 @@ extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef HAVE_PTHREAD_H
 #define ssize_t int64_t
 typedef int mode_t;

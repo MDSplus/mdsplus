@@ -339,7 +339,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	    if (local_info->channel)
 	      MDS_IO_CLOSE(local_info->channel);
 	    if (local_info->section_addr[0]) {
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
 	      if (local_info->mapped) {
 		status =
 		    (munmap(local_info->section_addr[0], local_info->alq * 512) ==
@@ -990,7 +990,7 @@ static int MapFile(int fd, TREE_INFO * info, int edit_flag, int nomap)
 	  (MDS_IO_READ(fd, (void *)info->section_addr[0], 512 * info->alq) ==
 	   (512 * info->alq)) ? TreeNORMAL : TreeFAILURE;
     }
-#if (!defined (HAVE_WINDOWS_H))
+#if (!defined (_WIN32))
     else {
 #ifndef MAP_FILE
 #define MAP_FILE 0

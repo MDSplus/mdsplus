@@ -14,7 +14,7 @@
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 typedef int socklen_t;
 #define ioctl ioctlsocket
 #define FIONREAD_TYPE u_long
@@ -84,7 +84,7 @@ EXPORT IoRoutines *Io()
 
 static void InitializeSockets()
 {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   static int initialized = 0;
   if (!initialized) {
     WSADATA wsaData;
@@ -328,7 +328,7 @@ static void SetSocketOptions(SOCKET s, int reuse)
     debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
     init = 0;
   }
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
 #endif
   setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
@@ -436,7 +436,7 @@ static int tcp_connect(int conid, char *protocol, char *host)
       return -1;
     }
     connectTimer.tv_sec = GetMdsConnectTimeout();
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     if (connectTimer.tv_sec) {
       status = fcntl(s, F_SETFL, O_NONBLOCK);
       status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
@@ -492,7 +492,7 @@ static int tcp_connect(int conid, char *protocol, char *host)
   }
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 VOID CALLBACK ShutdownEvent(PVOID arg, BOOLEAN fired)
 {
   fprintf(stderr, "Service shut down\n");
@@ -552,13 +552,13 @@ static void ChildSignalHandler(int num)
 static int tcp_listen(int argc, char **argv)
 {
   Options options[] = { {"p", "port", 1, 0, 0},
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   {"S", "sockethandle", 1, 0, 0},
 #endif
 
   {0, 0, 0, 0, 0}
   };
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGCHLD, ChildSignalHandler);
 #endif
   ParseCommand(argc, argv, options, 0, 0, 0);
@@ -665,7 +665,7 @@ static int tcp_listen(int argc, char **argv)
       }
     }
   } else {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int sock = getSocketHandle(options[1].value);
 #else
     int sock = 0;
