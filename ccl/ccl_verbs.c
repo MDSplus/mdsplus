@@ -104,7 +104,6 @@ static int ParseQualifiers(void *ctx, char **error, char **output)
   if (cli_get_value(ctx,"address", &value) & 1) {
     char *endptr;
     A = strtol(value, &endptr, 0);
-    printf("A is %d\n", A);
     if (*endptr != '\0' || (A < 0) || (A > 15)) {
       *error = malloc(strlen(value)+100);
       sprintf(*error, "Error: invalid /ADDRESS value specified '%s'. Use a number from 0 to 15\n",value);
