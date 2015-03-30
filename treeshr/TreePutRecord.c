@@ -44,6 +44,11 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include <fcntl.h>
+
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
 #ifdef HAVE_WINDOWS_H
 #include <windows.h>
 #include <io.h>

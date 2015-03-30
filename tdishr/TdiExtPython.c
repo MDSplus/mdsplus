@@ -7,6 +7,11 @@
 #include <tdishr_messages.h>
 #include <dlfcn.h>
 #include <signal.h>
+#include <config.h>
+
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 static PyObject *(*DynPyTuple_New) () = 0;
 #define PyTuple_New (*DynPyTuple_New)
