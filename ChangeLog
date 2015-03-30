@@ -1,4 +1,47 @@
-commit b7c7eb66a5d3291980c4b7d7096bde86e2cd83a4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f6afecc0e9ff2734c9e9ea4317ddc6215fb29493 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 16:19:50 2015 -0400
+
+    Fix LibConvertDateString
+
+commit 58f8a4b8d1747691f68b5628a5f053d3f61246e5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 15:06:08 2015 -0400
+
+    catch errors getting children or member nids
+
+commit 2b6b81939386b12a1c5f827de474061904245a01
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 14:46:52 2015 -0400
+
+    Cleanup configure tests
+
+commit 0219cb9fecacf6a41e0304f8a9fb22330ca50841
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 14:46:01 2015 -0400
+
+    cleanup VMS tests
+
+commit 769a7a22c347d390dfe4fa297a312370d3178f36
+Merge: b5065dd 3db0a61
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 14:45:11 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit b5065dda92a47eb39d8f81e928fe3ee26afeec03
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 14:44:39 2015 -0400
+
+    Cleanup VMS tests and compiler warnings
+
+commit 3db0a6182cc10105a67354222cafb74015944897 (tag: refs/tags/alpha_release-7-0-32)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 30 17:39:48 2015 +0000
+
+    New ChangeLog
+
+commit b7c7eb66a5d3291980c4b7d7096bde86e2cd83a4
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 30 13:23:16 2015 -0400
 
