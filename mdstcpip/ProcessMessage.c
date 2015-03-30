@@ -129,7 +129,7 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int
       int j, k;
       for (j = 0; j < 2; j++)
 	for (k = 0; k < 4; k++)
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	  cray_f[j * 4 + k] = ptr[j * 4 + 3 - k];
 #else
 	  cray_f[(1 - j) * 4 + k] = ptr[j * 4 + 3 - k];
@@ -137,7 +137,7 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int
       ptr = cray_f;
     }
     CvtConvertFloat(ptr, in_type, out_p, out_type, 0);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
     if (out_type == CvtCRAY) {
       int j, k;
       ptr = out_p;
@@ -889,7 +889,7 @@ Message *ProcessMessage(Connection * c, Message * message)
 	int whence = message->h.dims[4];
 	int64_t ans_o;
 	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	int tmp;
 	tmp = message->h.dims[2];
 	message->h.dims[2] = message->h.dims[3];
@@ -948,7 +948,7 @@ Message *ProcessMessage(Connection * c, Message * message)
 	int nowait = mode_in & 0x8;
 	int deleted;
 	DESCRIPTOR_LONG(ans_d, 0);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
 #else
 	offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
@@ -994,7 +994,7 @@ Message *ProcessMessage(Connection * c, Message * message)
 	ssize_t nbytes;
 	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
 	int deleted;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	int tmp;
 	tmp = message->h.dims[2];
 	message->h.dims[2] = message->h.dims[3];

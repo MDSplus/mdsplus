@@ -1229,7 +1229,7 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
   info[1] = FDS[fd - 1].fd;
   info[4] = whence;
   *(off_t *) (&info[2]) = offset;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
@@ -1370,7 +1370,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t
   info[1] = FDS[fd - 1].fd;
   info[4] = (int)count;
   *(off_t *) (&info[2]) = offset;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
@@ -1465,7 +1465,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, i
   info[4] = (int)size;
   info[5] = mode;
   *(off_t *) (&info[2]) = offset;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
