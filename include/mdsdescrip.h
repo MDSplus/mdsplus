@@ -3,11 +3,6 @@
 
 #include <config.h>
 
-#if defined(__VMS)
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif				/* __VMS */
-
 #ifdef _WIN32
 #define __fill_name__ fill
 #define __fill_value__ 0,
