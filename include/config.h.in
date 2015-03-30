@@ -39,9 +39,6 @@
 /* Set SHARELIB_TYPE to ".so",".sl",".a" etc... */
 #undef SHARELIB_TYPE
 
-/* Define if you have the <windows.h> header file. */
-#undef HAVE_WINDOWS_H
-
 /* Define if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
