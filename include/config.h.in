@@ -6,15 +6,6 @@
    byte first (like Motorola and SPARC, unlike Intel and VAX).  */
 #undef WORDS_BIGENDIAN
 
-/* The number of bytes in a long.  */
-#undef SIZEOF_LONG
-
-/* The number of bytes in a long long.  */
-#undef SIZEOF_LONG_LONG
-
-/* The number of bytes in a _int64.  */
-#undef SIZEOF__INT64
-
 /* Define if you have the gettimeofday function.  */
 #undef HAVE_GETTIMEOFDAY
 
@@ -23,9 +14,6 @@
 
 /* Define if you have the sybase includes (freetds) */
 #undef HAVE_SYBASE
-
-/* Define if you have the stdint header file. */
-#undef HAVE_STDINT_H
 
 /* Define if rl_set_signals available in readline. */
 #undef HAVE_RL_SET_SIGNALS
