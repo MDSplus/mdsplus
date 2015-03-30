@@ -217,9 +217,11 @@ static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
 	*output = strdup("CAMNOQ: got Q=0, expecting Q=1\n");
     }
   } else {
-    char *msg = MdsGetMsg(status);
-    *error = malloc(strlen(msg)+100);
-    sprintf(*error, "Error detected in CAMAC call, %s\n", msg);
+    if (*error == NULL) {
+      char *msg = MdsGetMsg(status);
+      *error = malloc(strlen(msg)+100);
+      sprintf(*error, "Error detected in CAMAC call, %s\n", msg);
+    }
   }
   return status;
 }
