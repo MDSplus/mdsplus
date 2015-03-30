@@ -1285,7 +1285,6 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
 
     {
       struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-      //      char *tmp;
 #ifdef _WIN32
       unsigned int day, year, hour, minute, second;
       char month[4];
@@ -1308,9 +1307,8 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
       tm.tm_hour = hour;
       tm.tm_min = minute;
       tm.tm_sec = second;
-      //      tmp = asc_time;
 #else
-      //      tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
+      strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
       tm.tm_isdst = -1;
       tim = mktime(&tm);
