@@ -347,6 +347,7 @@ class ASCIIDataProvider implements DataProvider
 
         public float[] getZ(){System.out.println("BADABUM!!"); return null;}
         public float[] getX2D(){System.out.println("BADABUM!!"); return null;}
+        public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
         public float[] getY2D(){System.out.println("BADABUM!!"); return null;} 
         public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
         public long []getXLong(){System.out.println("BADABUM!!"); return null;}
@@ -558,6 +559,7 @@ class ASCIIDataProvider implements DataProvider
 
         return buf;
     }
+    public void enableAsyncUpdate(boolean enable){}
     public void getDataAsync(double lowerBound, double upperBound, double resolution){}
     public void setContinuousUpdate(boolean continuousUpdate){}
     public static void main(String args[])

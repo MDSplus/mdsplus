@@ -426,6 +426,7 @@ class AsdexDataProvider extends MdsDataProvider
 
         public float[] getZ(){System.out.println("BADABUM!!"); return null;}
         public float[] getX2D(){System.out.println("BADABUM!!"); return null;}
+        public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
         public float[] getY2D(){System.out.println("BADABUM!!"); return null;} 
         public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
         public long []getXLong(){System.out.println("BADABUM!!"); return null;}

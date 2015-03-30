@@ -16,7 +16,7 @@ def _load_library(name):
       return _C.CDLL('lib'+name+'.so')
     libnam=_find_library(name)
     if libnam is None:
-	try:
+        try:
             lib=_C.CDLL('lib'+name+'.so')
         except:
             try:

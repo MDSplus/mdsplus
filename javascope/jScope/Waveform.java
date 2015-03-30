@@ -1251,7 +1251,7 @@ public class Waveform
         ymin =  MinYSignal();
         
             
-        if(xmax != Double.MAX_VALUE && xmin != -Double.MAX_VALUE)
+        if(xmax != Double.MAX_VALUE && xmin != Double.MIN_VALUE)
         {
             double xrange = xmax - xmin;
             xmax += xrange * horizontal_offset / 200.;

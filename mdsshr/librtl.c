@@ -1,5 +1,6 @@
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
+#include <config.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <libroutines.h>
@@ -7,9 +8,12 @@
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 #if defined(__sparc__)
 #include "/usr/include/sys/types.h"
-#elif !defined(HAVE_WINDOWS_H)
+#elif !defined(_WIN32)
 #include <strings.h>
 #ifdef HAVE_GETTIMEOFDAY
 #include <sys/types.h>
@@ -18,6 +22,7 @@
 #endif
 #endif
 
+#include <sys/time.h>
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
@@ -43,11 +48,10 @@ int StrAppend(struct descriptor *out, struct descriptor *tail);
 void TranslateLogicalFree(char *value);
 
 #ifdef HAVE_WINDOWS_H
-#pragma warning (disable : 4100 4201 4115 4214 4514)
 #include <windows.h>
 #include <process.h>
-#define putenv _putenv
-#define tzset _tzset
+//#define putenv _putenv
+//#define tzset _tzset
 
 #define RTLD_LAZY 0
 
@@ -64,7 +68,6 @@ STATIC_ROUTINE void *dlsym(void *handle, char *name)
 STATIC_ROUTINE char *dlerror()
 {
   static LPTSTR error_string = 0;	/* windows NEED TO MAKE THREADSAFE */
-  DWORD last_error = GetLastError();
   if (error_string) {
     LocalFree((HLOCAL) error_string);
     error_string = 0;
@@ -129,17 +132,13 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
 {
   HKEY regkey;
   unsigned char *path = NULL;
-  int status1 = -1, status2 = -1, status3 = -1;
-  if ((status1 =
-       RegOpenKeyEx(where, L"SOFTWARE\\MIT\\MDSplus", 0, KEY_READ, &regkey)) == ERROR_SUCCESS) {
+  if (RegOpenKeyEx(where, "SOFTWARE\\MIT\\MDSplus", 0, KEY_READ, &regkey) == ERROR_SUCCESS) {
     unsigned long valtype;
     unsigned long valsize;
     if (RegQueryValueEx(regkey, pathname, 0, &valtype, NULL, &valsize) == ERROR_SUCCESS) {
-      int plen;
       valsize += 2;
       path = malloc(valsize + 1);
       RegQueryValueEx(regkey, pathname, 0, &valtype, path, &valsize);
-      plen = strlen(path);
     }
     RegCloseKey(regkey);
   }
@@ -181,7 +180,7 @@ int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
     if (strlen(tok) > 0)
       arglist[(arglist[0]++) - (char *)NULL] = tok;
   }
-  arglist[((int)arglist[0])] = NULL;
+  arglist[((int64_t)arglist[0])] = NULL;
   status = (char *)LibCallg(arglist, _spawnlp) - (char *)0;
   /*if (status != 0) perror("Error doing spawn"); */
   free(cmd_c);
@@ -1292,7 +1291,7 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
       char month[4];
       char *months[] =
 	  { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
-      if (sscanf(asc_time, "%u-%3s-%u %u:%u:%u", &day, &month, &year, &hour, &minute, &second) < 6) {
+      if (sscanf(asc_time, "%u-%3s-%u %u:%u:%u", &day, month, &year, &hour, &minute, &second) < 6) {
 	return 0;
       }
       _strupr(month);

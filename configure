@@ -9608,7 +9608,10 @@ then
     SYBASE="SYBASE"
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: using Windows mssql" >&5
 $as_echo "using Windows mssql" >&6; }
-else
+elif test "$(echo $SYBASE_LIB | grep '\-L')" = ""
+then
+    SYBASE_INC=""
+    SYBASE_LIB=""
     OLDLIBS="$LIBS"
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dbsqlexec" >&5
 $as_echo_n "checking for library containing dbsqlexec... " >&6; }
@@ -9673,7 +9676,6 @@ fi
     then
       { $as_echo "$as_me:${as_lineno-$LINENO}: checking for SYBASE open/client or freetds" >&5
 $as_echo_n "checking for SYBASE open/client or freetds... " >&6; }
-      : ${SYBASE=/usr/local/sybase}
       if test -r "/usr/lib${SYB64}/libsybdb.so"
       then
           SYBASE_INC="-DSYBASE"
@@ -9681,21 +9683,33 @@ $as_echo_n "checking for SYBASE open/client or freetds... " >&6; }
           SYBASE="SYBASE"
           { $as_echo "$as_me:${as_lineno-$LINENO}: result: have freetds" >&5
 $as_echo "have freetds" >&6; }
-      elif test -r "$SYBASE/lib${SYB64}/libsybdb.a"
-      then
-          SYBASE_INC="-I$SYBASE/include -DSYBASE"
-          SYBASE_LIB="-L$SYBASE/lib${SYB64} $LD_LDARC -lsybdb $LD_LDSHARE"
-  	  SYBASE="SYBASE"
-          { $as_echo "$as_me:${as_lineno-$LINENO}: result: have sybase open/client" >&5
-$as_echo "have sybase open/client" >&6; }
-    else
-          SYBASE_INC=""
-          SYBASE_LIB=""
+      else
+        : ${SYBASE=/usr/local/sybase}
+        if test -r "$SYBASE/lib"
+	then SYBASE_LIBDIR="$SYBASE/lib"
+	elif test -r "$SYBASE/lib${SYB64}"
+	then SYBASE_LIBDIR="$SYBASE/lib${SYB64}"
+	fi
+	if test "$SYBASE_LIBDIR" != ""
+	then
+	  if test -r "$SYBASE_LIBDIR/libsybdb.a"
+	  then
+	    SYBASE_LIB="-L$SYBASE_LIBDIR $LD_LDARC -lsybdb $LD_LDSHARE"
+	  else
+	    SYBASE_LIB="-L$SYBASE_LIBDIR -lsybdb"
+	  fi
+	  SYBASE_INC="-I$SYBASE/include -DSYBASE"
+	  { $as_echo "$as_me:${as_lineno-$LINENO}: result: have sybase" >&5
+$as_echo "have sybase" >&6; }
+	else
 	  SYBASE=""
           { $as_echo "$as_me:${as_lineno-$LINENO}: result: no sybase open/client" >&5
 $as_echo "no sybase open/client" >&6; }
+	fi
+      fi
     fi
-  fi
+else
+  SYBASE="SYBASE"
 fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking if mdssql should be built" >&5
 $as_echo_n "checking if mdssql should be built... " >&6; }

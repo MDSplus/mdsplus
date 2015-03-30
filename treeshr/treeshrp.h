@@ -155,9 +155,9 @@ typedef struct named_attributes_index {
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 #else
 
-#define swapquad(ptr) (*(int64_t *)ptr)
-#define swapint(ptr) (*(int *)ptr)
-#define swapshort(ptr) (*(short *)ptr)
+#define swapquad(ptr) (*(int64_t *)(ptr))
+#define swapint(ptr) (*(int *)(ptr))
+#define swapshort(ptr) (*(short *)(ptr))
 
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]; \
@@ -341,7 +341,7 @@ typedef struct big_node_linkage {
 
 /* if pointers are more than 32 bits then node offsets can be 
    more than 32 bits */
-#if SIZEOF_INT_P == 8
+#if __SIZEOF_POINTER__ == 8
 #define parent_of(a)\
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
 #define member_of(a)\

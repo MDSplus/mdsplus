@@ -30,6 +30,7 @@ class NotConnectedDataProvider implements DataProvider
     {
         return null;
     }
+    public void enableAsyncUpdate(boolean enable){}
 
     public void    Dispose(){}
     public boolean SupportsCompression(){return false;}
