@@ -149,6 +149,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
     }
     if (status & 1)
       status = TreePutNci(tree_info, node_number, &nci, 1);
+    TreeUnLockNci(tree_info, 0, node_number);
   }
   return status;
 }
