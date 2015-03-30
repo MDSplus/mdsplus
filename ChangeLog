@@ -1,4 +1,78 @@
-commit f838b4d1e86244ec22c72ce29b5fd9392df5aaac (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b7c7eb66a5d3291980c4b7d7096bde86e2cd83a4 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 13:23:16 2015 -0400
+
+    cleanup config.h
+
+commit 1e282dc864548d3726604adbd8cfccf1c97d8d3c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 12:39:16 2015 -0400
+
+    Unlock nci in _TreeSetNci
+
+commit 122f7fe0f49d0d2038df7eb7f66465c60c1ff23c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 11:45:24 2015 -0400
+
+    replace #ifdef HAVE_WINDOWS_H with #ifdef _WIN32
+
+commit 623c68d8fb0270a306fe35aed605cee0f018a821
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 11:32:52 2015 -0400
+
+    cleanup config.h
+
+commit 070e09bfa2c198200b987d68a1e41676a5b410bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 10:04:31 2015 -0400
+
+    Take out printf
+
+commit 4ba2cbef5a638aff9cb53a854bf585fc320e9e23
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 10:01:45 2015 -0400
+
+    Only use status error if error string not already present
+
+commit a0468e21f11df1737c1bc4be65f678649ad51988
+Merge: 0dbb45f 72d324a
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 30 09:46:08 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 0dbb45f7e18871547e4725e5b8cd949f786bbf12
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 30 09:45:52 2015 -0400
+
+    fix check of A arguments
+
+commit 72d324a0c92fcf17c9a52162fb5d7f2d38d2ec5a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 08:55:07 2015 -0400
+
+    include <alloca.h> if available
+
+commit 69664e648af2d3beac8cb00fc54a3f885e1ce9e9
+Merge: 6612813 0c5be90
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Mon Mar 30 08:42:00 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 6612813db5c9d88b4085a8982c3daca768a5308d
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Sun Mar 29 13:43:59 2015 -0400
+
+    fix error in generated code (extra space in subnodes)
+
+commit 0c5be90cf39801bcd8d0fa21332157d4e36e9d89 (tag: refs/tags/alpha_release-7-0-31)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 27 22:19:25 2015 +0000
+
+    New ChangeLog
+
+commit f838b4d1e86244ec22c72ce29b5fd9392df5aaac
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Mar 27 16:42:15 2015 -0400
 
