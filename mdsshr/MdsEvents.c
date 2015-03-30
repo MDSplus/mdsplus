@@ -10,6 +10,9 @@
 #include <fcntl.h>
 #include "../mdstcpip/mdsip_connections.h"
 #include "mdsshrthreadsafe.h"
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <sys/types.h>

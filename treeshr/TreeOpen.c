@@ -9,6 +9,12 @@
 #include <mds_stdarg.h>
 #include <libroutines.h>
 #include <strroutines.h>
+
+#include <config.h>
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
