@@ -1,14 +1,16 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-#ifdef _WIN32
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
+
+# ifdef _WIN32
+#  define EXPORT __declspec(dllexport)
+# else
+#  define EXPORT
+# endif
 
 #include <mdsplus/mdsplus.h>
 #include <mdsplus/ConditionVar.hpp>
 #include <mdsplus/Mutex.hpp>
+
 #include <config.h>
 #include <dbidef.h>
 #include <ncidef.h>
@@ -32,12 +34,27 @@
 #include <sys/sem.h>
 #include <semaphore.h>
 #endif
-#if __cplusplus >= 201103L
-#define NOEXCEPT noexcept
-#else
-#define NOEXCEPT throw()
-#define nullptr NULL
-#endif
+
+
+///@{
+///
+///  NON TROWING EXCEPTION MACRO
+
+# if __cplusplus >= 201103L
+#  define NOEXCEPT noexcept
+# else
+#  define NOEXCEPT throw()
+#  define nullptr NULL
+# endif
+
+///@}
+
+
+///@{
+///
+/// DESCRIPTORS CODE DEFINITIONS
+
+
 #define DTYPE_BU 2 
 #define DTYPE_WU 3 
 #define DTYPE_LU 4 
@@ -85,6 +102,10 @@
 #define DTYPE_DICTIONARY 216
 #define DTYPE_POINTER 51
 #define DTYPE_DSC	24		
+
+///@}
+
+
 #define TreeNEGATE_CONDITION 	7
 #define TreeIGNORE_UNDEFINED 	8
 #define TreeIGNORE_STATUS	9
@@ -98,6 +119,7 @@
 #define MAX_DIMS 32
 
 extern "C" char *MdsGetMsg(int status);
+
 /*
 extern "C" {
     void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
@@ -124,39 +146,86 @@ extern "C" {
 
 
 namespace MDSplus  {
-//Required for handling dynamic memory allocated in a different DLL on windows
-//in Debug configuration
-//MUST revert to old version. Winodws VS crashes otherwise!! The code MUST be moved from include 
-class Tree;
-EXPORT void setActiveTree(Tree *tree);
-EXPORT Tree *getActiveTree();
-/////Exceptions//////////////
-class EXPORT MdsException: public std::exception {
-public:
-    MdsException(const char *msg): msg(msg) { }
-    //MdsException(int status): msg(MdsGetMsg(status)) { }
-    MdsException(int status);
-    virtual ~MdsException() NOEXCEPT { }
 
-    virtual const char* what() const NOEXCEPT {
-        return msg;
-    }
+// Required for handling dynamic memory allocated in a different DLL on windows
+// in Debug configuration
+// MUST revert to old version. Winodws VS crashes otherwise!! The code MUST be moved from include
+
+class Tree;
+
+EXPORT void setActiveTree(Tree *tree);
+
+EXPORT Tree *getActiveTree();
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// MDS EXCEPTION ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+///
+/// \brief The MdsException class
+/// Extends stl exception class and holds a message accessible via virtual funciont what()
+///
+class EXPORT MdsException : public std::exception {
 
     friend EXPORT std::ostream & operator << (std::ostream &outStream, MdsException &exc) {
         return outStream << exc.what();
     }
 
+public:
+
+    MdsException(const char *msg): msg(msg) { }
+    //MdsException(int status): msg(MdsGetMsg(status)) { }
+
+    MdsException(int status);
+
+    virtual ~MdsException() NOEXCEPT { }
+
+    ///
+    /// \brief virtual function to get exception message
+    /// \return error message
+    virtual const char* what() const NOEXCEPT
+    {
+        return msg;
+    }
+
 protected:
+
     const char *msg;
 };
 
-////////////////////Data class//////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+// MDS DATA CLASS //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 class Data;
 EXPORT void deleteData(Data *);
 
+///
+/// \brief Data objects abstract baseclass class
+///
+/// Every data in a tree is also a subclass of the generic Data class.
+/// Subinstances of units, error, help and validation Data are also managed.
+///
+/// This class implements also a reference counting feature of Data objects
+/// though the overloading of new and delete operators.
+///
+///
 class EXPORT Data 
 {
 public:
+
+    /// Default constructor
+    /// reference counting is set to 1 and the data to "changed" state
     Data():
         refCount(1),
         units(nullptr),
@@ -186,6 +255,9 @@ public:
     virtual void setValidation(Data *inValidation);
 
 private:
+
+    ///@{
+    /// Friendship declaration for TDI expression compilation
     friend EXPORT Data *compile(const char *expr);
     friend EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
     friend EXPORT Data *compile(const char *expr, Tree *tree);
@@ -196,12 +268,27 @@ private:
     friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
     friend EXPORT Data *deserialize(char const * serialized);
     friend EXPORT Data *deserialize(Data *serialized);
+    ///@}
+
     virtual void propagateDeletion(){}
 
 public:
-    int clazz, dtype;
-    void *completeConversionToDsc(void *dsc);
-    int refCount;
+    // NOTE: [andrea] why public?
+    int clazz;    ///< data class member
+    int dtype;    ///< data type member
+    int refCount; ///< reference counting member
+
+    /// Pure virtual function matching data to a specific MDS descriptor
+    /// \return MDS descriptor structure
+    /// \ingroup Descrmap
+    virtual void *convertToDsc() = 0;
+
+    /// Complete conversion to csc by condsidering help, units and error
+    /// implementations of convertToDsc() calls this completion function
+    /// \ingroup Descrmap
+    void * completeConversionToDsc(void *dsc);
+
+    /// c style access to internal data members
     virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
     {
         *clazz = this->clazz;
@@ -211,14 +298,35 @@ public:
         *dims = 0;
         *ptr = 0;
     }
-    virtual void *convertToDsc() = 0;
-    virtual bool equals(Data *data) {return false;}
+
+    /// \return true if this and data match, false otherwise and as default
+    virtual bool equals(Data *data) { return false; }
+
+    /// \return Return the result of TDI evaluate
     Data *evaluate();
+
+    /// eports TDI data functionality, i.e. returns a native type
+    /// (scalar or array). \see clone() fnction.
     virtual Data *data();
+
+    /// Return the result of TDI decompile
     char *decompile();
-    //        Data *clone();
+
+    /// Make a dymanically allocated copy of the Data instance Tee
+    Data *clone();
+
+    /// serialize data into non terminated char array using serializeData
+    /// function, if serializeData fails MdsException is trown.
+    ///
+    /// \see serializeData(void *dsc, int *retSize, void **retDsc)
+    /// \param size set to serialized data length
+    /// \return c string representing serialized data
     char *	serialize(int *size);
 
+    ///@{
+    /// Access data as native type using getData() conversion function.
+    /// This function might be overloaded by derived data classes to improve
+    /// conversion.
     virtual char getByte();
     virtual short getShort();
     virtual int getInt();
@@ -229,7 +337,8 @@ public:
     virtual uint64_t getLongUnsigned();
     virtual float getFloat();
     virtual double getDouble();
-    virtual std::complex<double> getComplex() {throw MdsException("getComplex() not supported for non Compelx data types");}
+    virtual std::complex<double> getComplex() {
+        throw MdsException("getComplex() not supported for non Complex data types"); }
     virtual char * getString(){return decompile();}
     virtual int * getShape(int *numDim);
     virtual char *getByteArray(int *numElements);
@@ -252,27 +361,30 @@ public:
     virtual std::vector<uint64_t> getLongUnsignedArray();
     virtual double * getDoubleArray(int *numElements);
     virtual std::vector<double> getDoubleArray();
-    virtual std::complex<double> * getComplexArray(int *numElements)
-    {
-        throw MdsException("getComplexArray() not supported for non Compelx data types");
-    }
+    virtual std::complex<double> * getComplexArray(int *numElements) {
+        throw MdsException("getComplexArray() not supported for non Complex data types"); }
     virtual std::vector<std::complex<double> > getComplexArray();
-    virtual char ** getStringArray(int *numElements)
-    {
-        *numElements = 0;
-        return NULL;
-    }
+    virtual char ** getStringArray(int *numElements) {
+        *numElements = 0; return NULL; }
+    ///@}
+
     virtual Data *getDimensionAt(int dimIdx);
-    virtual int getSize() {return 1;}
+
+    virtual int getSize() { return 1; }
+
+    /// Instanciate a Scope object and plot data into.
+    virtual void plot();
 
     friend EXPORT std::ostream & operator << (std::ostream &outStream, MDSplus::Data *data);
 
-    virtual void plot();
-
 protected:
+
+    /// readonly access
     virtual bool isImmutable() { return true; }
 
-    void setAccessory(Data *units, Data *error, Data *help, Data *validation) {
+    /// Set accessory data (utits, error, help and validation)
+    void setAccessory(Data *units, Data *error, Data *help, Data *validation)
+    {
         this->units = units;
         this->error = error;
         this->help = help;
@@ -280,33 +392,57 @@ protected:
     }
 
 private:
+
+    /// Execute data conversion selecting proper descriptor conversion function.
+    /// If conversion fails a MdsException is thrown.
+    /// \param classType target class type
+    /// \param dataType target data type
     Data * getData(int classType, int dataType);
+
+    /// convert data to array type (CLASS_A) \see getData()
     Data * getArrayData(int dataType);
+
+    /// convert data to scalar type (CLASS_S) \see getData()
     Data * getScalarData(int dataType);
-    Data *units;
-    Data *error;
-    Data *help;
-    Data *validation;
+
+    Data * units;
+    Data * error;
+    Data * help;
+    Data * validation;
 };
 
-class Empty: public Data {
-};
 
+
+////////////////////////////////////////////////////////////////////////////////
+// SCALAR DATA /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+///
+/// \brief The Scalar class
+///
+/// Scalar is the common superclass for all scalar data types
+/// (descriptor class CLASS_S).
 class EXPORT Scalar: public Data
-{
-public:
-    Scalar(): length(0), ptr(0) {
-        clazz = CLASS_S;
-    }
+{    
+    friend class Array; // TODO: Fix this, probably moving ptr in Data
+protected:
 
     int length;
     char *ptr;
+
+public:
+    Scalar(): length(0), ptr(0) { clazz = CLASS_S; }
+
+
     virtual ~Scalar()
     {
         delete []ptr;
     }
 
+    /// convert data to scalar descriptor
     virtual void *convertToDsc();
+
     virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
     {
         *clazz = this->clazz;
@@ -319,6 +455,13 @@ public:
 }; //ScalarData
 
 
+////////////////////////////////////////////////////////////////////////////////
+// INT8 SCALAR /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int8 class object description of DTYPE_B
+///
 class  EXPORT Int8 : public Scalar
 {
 public:
@@ -330,6 +473,11 @@ public:
         ptr[0] = val;
         setAccessory(units, error, help, validation);
     }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     char getByte() {return ptr[0];}
     short getShort() {return (short)ptr[0];}
     int getInt() {return (int)ptr[0];}
@@ -340,8 +488,13 @@ public:
     uint64_t getLongUnsigned() {return (uint64_t)ptr[0];}
     float getFloat() {return (float)ptr[0];}
     double getDouble() {return (double)ptr[0];}
+
+    ///@}
 };
 
+///
+/// \brief The Uint8 class object description of DTYPE_BU
+///
 class  EXPORT Uint8 : public Scalar
 {
 public:
@@ -353,17 +506,33 @@ public:
         ptr[0] = val;
         setAccessory(units, error, help, validation);
     }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     char getByte() {return ptr[0];}
-    short getShort() {return (short)(unsigned char)ptr[0];}
-    int getInt() {return (int)(unsigned char)ptr[0];}
-    int64_t getLong() {return (int64_t)(unsigned char)ptr[0];}
+    short getShort() {return (short)ptr[0];}
+    int getInt() {return (int)ptr[0];}
+    int64_t getLong() {return (int64_t)ptr[0];}
     unsigned char getByteUnsigned() {return (unsigned char)ptr[0];}
-    unsigned short getShortUnsigned() {return (unsigned short)(unsigned char)ptr[0];}
-    unsigned int getIntUnsigned() {return (unsigned int)(unsigned char)ptr[0];}
-    uint64_t getLongUnsigned() {return (uint64_t)(unsigned char)ptr[0];}
-    float getFloat() {return (float)(unsigned char)ptr[0];}
-    double getDouble() {return (double)(unsigned char)ptr[0];}
+    unsigned short getShortUnsigned() {return (unsigned short)ptr[0];}
+    unsigned int getIntUnsigned() {return (unsigned int)ptr[0];}
+    uint64_t getLongUnsigned() {return (uint64_t)ptr[0];}
+    float getFloat() {return (float)ptr[0];}
+    double getDouble() {return (double)ptr[0];}
+
+    ///@}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT16 SCALAR ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int16 class object description of DTYPE_W
+///
 class  EXPORT Int16 : public Scalar
 {
 public:
@@ -375,6 +544,12 @@ public:
         *(short *)ptr = val;
         setAccessory(units, error, help, validation);
     }
+
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     char getByte() {return (char)(*(short *)ptr);}
     short getShort() {return (short)(*(short *)ptr);}
     int getInt() {return (int)(*(short *)ptr);}
@@ -385,7 +560,13 @@ public:
     uint64_t getLongUnsigned() {return (uint64_t)(*(short *)ptr);}
     float getFloat() {return (float)(*(short *)ptr);}
     double getDouble() {return (double)(*(short *)ptr);}
+
+    ///@}
 };
+
+///
+/// \brief The Uint16 class object description of DTYPE_WU
+///
 class  EXPORT Uint16 : public Scalar
 {
 public:
@@ -397,17 +578,35 @@ public:
         *(unsigned short *)ptr = val;
         setAccessory(units, error, help, validation);
     }
-    char getByte() {return (char)(*(unsigned short *)ptr);}
-    short getShort() {return (short)(*(unsigned short *)ptr);}
-    int getInt() {return (int)(*(unsigned short *)ptr);}
-    int64_t getLong() {return (int64_t)(*(unsigned short *)ptr);}
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
+    char getByte() {return (char)(*(short *)ptr);}
+    short getShort() {return (short)(*(short *)ptr);}
+    int getInt() {return (int)(*(short *)ptr);}
+    int64_t getLong() {return (int64_t)(*(short *)ptr);}
     unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned short *)ptr);}
     unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned short *)ptr);}
     unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned short *)ptr);}
     uint64_t getLongUnsigned() {return (uint64_t)(*(unsigned short *)ptr);}
-    float getFloat() {return (float)(*(unsigned short *)ptr);}
-    double getDouble() {return (double)(*(unsigned short *)ptr);}
+    float getFloat() {return (float)(*(short *)ptr);}
+    double getDouble() {return (double)(*(short *)ptr);}
+
+    ///@}
 };
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT32 SCALAR ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int32 class object description of DTYPE_L
+///
 class  EXPORT Int32 : public Scalar
 {
 public:
@@ -419,6 +618,11 @@ public:
         *(int *)ptr = val;
         setAccessory(units, error, help, validation);
     }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     char getByte() {return (char)(*(int *)ptr);}
     short getShort() {return (short)(*(int *)ptr);}
     int getInt() {return (int)(*(int *)ptr);}
@@ -429,7 +633,13 @@ public:
     uint64_t getLongUnsigned() {return (uint64_t)(*(int *)ptr);}
     float getFloat() {return (float)(*(int *)ptr);}
     double getDouble() {return (double)(*(int *)ptr);}
+
+    ///@}
 };
+
+///
+/// \brief The Uint32 class object description of DTYPE_LU
+///
 class  EXPORT Uint32 : public Scalar
 {
 public:
@@ -441,17 +651,34 @@ public:
         *(unsigned int *)ptr = val;
         setAccessory(units, error, help, validation);
     }
-    char getByte() {return (char)(*(unsigned int *)ptr);}
-    short getShort() {return (short)(*(unsigned int *)ptr);}
-    int getInt() {return (int)(*(unsigned int *)ptr);}
-    int64_t getLong() {return (int64_t)(*(unsigned int *)ptr);}
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
+    char getByte() {return (char)(*(int *)ptr);}
+    short getShort() {return (short)(*(int *)ptr);}
+    int getInt() {return (int)(*(int *)ptr);}
+    int64_t getLong() {return (int64_t)(*(int *)ptr);}
     unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned int *)ptr);}
     unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned int *)ptr);}
     unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned int *)ptr);}
     uint64_t getLongUnsigned() {return (uint64_t)(*(unsigned int *)ptr);}
-    float getFloat() {return (float)(*(unsigned int *)ptr);}
-    double getDouble() {return (double)(*(unsigned int *)ptr);}
+    float getFloat() {return (float)(*(int *)ptr);}
+    double getDouble() {return (double)(*(int *)ptr);}
+
+    ///@}
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT64 SCALAR ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int64 class object description of DTYPE_Q
+///
 class EXPORT Int64 : public Scalar
 {
 public:
@@ -463,6 +690,11 @@ public:
         *(int64_t *)ptr = val;
         setAccessory(units, error, help, validation);
     }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     char getByte() {return (char)(*(int64_t *)ptr);}
     short getShort() {return (short)(*(int64_t *)ptr);}
     int getInt() {return (int)(*(int64_t *)ptr);}
@@ -473,7 +705,13 @@ public:
     uint64_t getLongUnsigned() {return (uint64_t)(*(int64_t *)ptr);}
     float getFloat() {return (float)(*(int64_t *)ptr);}
     double getDouble() {return (double)(*(int64_t *)ptr);}
+
+    ///@}
 };
+
+///
+/// \brief The Uint64 class object description of DTYPE_QU
+///
 class EXPORT Uint64 : public Scalar
 {
 public:
@@ -485,18 +723,36 @@ public:
         *(uint64_t *)ptr = val;
         setAccessory(units, error, help, validation);
     }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     unsigned char getByteUnsigned() {return (unsigned char)(*(uint64_t *)ptr);}
     unsigned short getShortUnsigned() {return (unsigned short)(*(uint64_t *)ptr);}
     unsigned int getIntUnsigned() {return (unsigned int)(*(uint64_t *)ptr);}
     uint64_t getLongUnsigned() {return (uint64_t)(*(uint64_t *)ptr);}
-    char getByte() {return (char)(*(uint64_t *)ptr);}
-    short getShort() {return (short)(*(uint64_t *)ptr);}
-    int getInt() {return (int)(*(uint64_t *)ptr);}
-    int64_t getLong() {return (int64_t)(*(uint64_t *)ptr);}
-    float getFloat() {return (float)(*(uint64_t *)ptr);}
-    double getDouble() {return (double)(*(uint64_t *)ptr);}
+    char getByte() {return (char)(*(int64_t *)ptr);}
+    short getShort() {return (short)(*(int64_t *)ptr);}
+    int getInt() {return (int)(*(int64_t *)ptr);}
+    int64_t getLong() {return (int64_t)(*(int64_t *)ptr);}
+    float getFloat() {return (float)(*(int64_t *)ptr);}
+    double getDouble() {return (double)(*(int64_t *)ptr);}
     char *getDate();
+
+    ///@}
 };
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FLOAT32 SCALAR //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Float32 class object description of DTYPE_FLOAT
+///
 class  EXPORT Float32 : public Scalar
 {
 public:
@@ -505,24 +761,34 @@ public:
         dtype = DTYPE_FLOAT;
         length = sizeof(float);
         ptr = new char[sizeof(float)];
-        *(float *)ptr = val;        
+        *(float *)ptr = val;
         setAccessory(units, error, help, validation);
     }
-    unsigned char getByteUnsigned() {return (unsigned char)(*(float *)ptr);}
-    unsigned short getShortUnsigned() {return (unsigned short)(*(float *)ptr);}
-    unsigned int getIntUnsigned() {return (unsigned int)(*(float *)ptr);}
-    uint64_t getLongUnsigned() {return (uint64_t)(*(float *)ptr);}
-    char getByte() {
-        char d = static_cast<char>(*(float *)ptr);
-        std::cout << "d = " << (int)d << "\n";
-        return d;
-    }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
+    char getByte() {return (char)(*(float *)ptr);}
     short getShort() {return (short)(*(float *)ptr);}
     int getInt() {return (int)(*(float *)ptr);}
     int64_t getLong() {return (int64_t)(*(float *)ptr);}
     float getFloat() {return (float)(*(float *)ptr);}
     double getDouble() {return (double)(*(float *)ptr);}
+
+    ///@}
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FLOAT64 SCALAR //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
+///
+/// \brief The Float64 class object description of DTYPE_DOUBLE
+///
 class  EXPORT Float64 : public Scalar
 {
 public:
@@ -534,19 +800,31 @@ public:
         *(double *)ptr = val;
         setAccessory(units, error, help, validation);
     }
-    unsigned char getByteUnsigned() {return (unsigned char)(*(double *)ptr);}
-    unsigned short getShortUnsigned() {return (unsigned short)(*(double *)ptr);}
-    unsigned int getIntUnsigned() {return (unsigned int)(*(double *)ptr);}
-    uint64_t getLongUnsigned() {return (uint64_t)(*(double *)ptr);}
-    char getByte() {
-        return static_cast<char>(*(double *)ptr);
-    }
+
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
+    char getByte() {return (char)(*(double *)ptr);}
     short getShort() {return (short)(*(double *)ptr);}
     int getInt() {return (int)(*(double *)ptr);}
     int64_t getLong() {return (int64_t)(*(double *)ptr);}
     float getFloat() {return (float)(*(double *)ptr);}
     double getDouble() {return (double)(*(double *)ptr);}
+
+    ///@}
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// COMPLEX32 SCALAR ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Complex32 class object description of DTYPE_FSC
+///
 class  EXPORT Complex32 : public Scalar
 {
 public:
@@ -559,10 +837,27 @@ public:
         ((float *)ptr)[1] = im;
         setAccessory(units, error, help, validation);
     }
+
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     float getReal() {return ((float *)ptr)[0];}
     float getImaginary() {return ((float *)ptr)[1];}
     std::complex<double> getComplex() {return std::complex<double>(((float *)ptr)[0], ((float *)ptr)[1]);}
+
+    ///@}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// COMPLEX64 SCALAR ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Complex64 class object description of DTYPE_FTC
+///
 class  EXPORT Complex64 : public Scalar
 {
 public:
@@ -575,10 +870,28 @@ public:
         ((double *)ptr)[1] = im;
         setAccessory(units, error, help, validation);
     }
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     double getReal() {return ((double *)ptr)[0];}
     double getImaginary() {return ((double *)ptr)[1];}
     std::complex<double> getComplex() {return std::complex<double>(((double *)ptr)[0], ((double *)ptr)[1]);}
+
+    ///@}
 };
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING SCALAR ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The String class  object description of DTYPE_T
+///
 class  EXPORT String : public Scalar
 {
 public:
@@ -592,6 +905,7 @@ public:
         char * val = reinterpret_cast<char *>(uval);
         init(val, std::string(val).size(), units, error, help, validation);
     }
+
     //GAB  definition in order to avoid breaking LabVIEW
     String(unsigned char *uval, int numDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
         char * val = reinterpret_cast<char *>(uval);
@@ -602,6 +916,8 @@ public:
         init(val, len, units, error, help, validation);
     }
 
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
     char *getString()
     {
         char *res = new char[length + 1];
@@ -610,6 +926,7 @@ public:
         return res;
     }
 
+    /// check if two strings have the same content.
     bool equals(Data *data);
 
 private:
@@ -622,14 +939,35 @@ private:
         setAccessory(units, error, help, validation);
     }
 };
-////////////////ARRAYS/////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// ARRAY DATA //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Array class object description of DTYPE_A
+///
+/// Common superclass for arrays (CLASS_A). It contains dimension informationThe
+/// contained data is assumed to be row-first ordered.
+/// Array - derived classes will hold actual data in language-specific structures.
+/// This allows for a direct implementation of operations such as getElementAt()
+/// and setElementAt() which would be difficult or impossible to implement via TDI.
+///
+/// For the remaining Data methods, the generic mechanism of the superclass'
+/// implementation (conversion to MDSplus descriptor, TDI operation conversion back
+/// to class instances) is retained.
+
 class EXPORT Array: public Data
 {
 protected:
-    int length;
-    int arsize;
-    int nDims;
-    int dims[MAX_DIMS];
+    int length;          ///< individual size of stored data element
+    int arsize;          ///< total array data storage size
+    int nDims;           ///< number of dimensions of the array access tuple
+    int dims[MAX_DIMS];  ///< store each dimension size
     char *ptr;
 
     void setSpecific(void const * data, int length, int dtype, int nData) {
@@ -652,6 +990,7 @@ protected:
         ptr = new char[arsize];
         std::copy(&dataBytes[0], &dataBytes[arsize], ptr);
     }
+
 public:
     Array(): length(0), arsize(0), nDims(0), ptr(0) {
         clazz = CLASS_A;
@@ -662,6 +1001,7 @@ public:
         delete[] ptr;
     }
 
+    /// returns total array storage size as product of dimensions
     virtual int getSize()
     {
         int retSize = 1;
@@ -669,6 +1009,7 @@ public:
             retSize *= dims[i];
         return retSize;
     }
+
     virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
     {
         *clazz = this->clazz;
@@ -680,20 +1021,54 @@ public:
             (*dims)[i] = this->dims[i];
         *ptr = this->ptr;
     }
+
+    /// Provides a method to get the array shape, i.e. the array of dimension
+    /// sizes and the total number of dimensions.
     virtual int *getShape(int *numDims);
 
+
+    /// Retrieve a single element from the array matrix at the getDims position,
+    /// if the passed number of dimension is equals to the dimension of dims
+    /// field. Otherwise it returns the reshaped array corresponding to the
+    /// passed dimension array. For example, if the array is bi-dimensional, a
+    /// single dimension i will specify the i-th row.
+    ///
+    /// If the position exceeds the array dimension boundaries an exception is
+    /// thrown
+    ///
+    /// \param getDims array of integers identifying the position tuple of the array
+    /// \param getNumDims the size of the position tuple
     Data *getElementAt(int *getDims, int getNumDims);
+
+    // TODO: [andrea] finire ...
+    ///
+    /// If the position exceeds the array dimension boundaries an exception is
+    /// thrown
+    ///
+    /// \param getDims array of integers identifying the position tuple of the array
+    /// \param getNumDims the size of the position tuple
+    /// \param data the data object to set
     void setElementAt(int *getDims, int getNumDims, Data *data);
-    Data *getElementAt(int dim)
-    {
+
+    /// Retrieve an element considering the array as one dimension shaped.
+    Data *getElementAt(int dim) {
         return getElementAt(&dim, 1);
     }
-    Array *getSubArray(int startDim, int nSamples);
-    void setElementAt(int dim, Data *data)
-    {
+
+    /// Set an element considering the array as one dimension shaped.
+    void setElementAt(int dim, Data *data) {
         setElementAt(&dim, 1, data);
     }
-    void *convertToDsc();
+
+    Array *getSubArray(int startDim, int nSamples);
+
+    /// Convert data to array descriptor
+    void * convertToDsc();
+
+    ///@{
+    /// inline overloaded conversion access returning result of cast operator of
+    /// the Scalar object data member
+
     void *getArray() {return ptr;}
     char *getByteArray(int *numElements);
     short *getShortArray(int *numElements);
@@ -707,7 +1082,18 @@ public:
     double *getDoubleArray(int *numElements);
     std::complex<double> *getComplexArray(int *numElements);
     virtual char **getStringArray(int *numElements);
+
+    ///@}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT8 ARRAY DATA /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int8Array class, array of objects of descriptor type DTYPE_B
+///
 class Int8Array: public Array
 {
 public:
@@ -722,6 +1108,10 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+///
+/// \brief The Uint8Array class, array of objects of descriptor type DTYPE_BU
+///
 class EXPORT Uint8Array: public Array
 {
     friend Data *MDSplus::deserialize(Data *serializedData);
@@ -738,6 +1128,16 @@ public:
     }
     Data* deserialize();
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT16 ARRAY DATA ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int16Array class, array of objects of descriptor type DTYPE_W
+///
 class Int16Array: public Array
 {
 public:
@@ -752,6 +1152,10 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+///
+/// \brief The Uint16Array class, array of objects of descriptor type DTYPE_WU
+///
 class Uint16Array: public Array
 {
 public:
@@ -766,6 +1170,16 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT32 ARRAY DATA ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int32Array class, array of objects of descriptor type DTYPE_L
+///
 class Int32Array: public Array
 {
 public:
@@ -780,6 +1194,10 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+///
+/// \brief The Uint32Array, array of objects of descriptor type DTYPE_LU
+///
 class Uint32Array: public Array
 {
 public:
@@ -794,6 +1212,15 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// INT64 ARRAY DATA ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Int64Array class, array of objects of descriptor type DTYPE_Q
+///
 class Int64Array: public Array
 {
 public:
@@ -808,6 +1235,10 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+///
+/// \brief The Uint64Array class object, array of objects of descriptor type DTYPE_QU
+///
 class Uint64Array: public Array
 {
 public:
@@ -822,6 +1253,15 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// FLOAT32 ARRAY DATA //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Float32Array class object, array of objects of descriptor type DTYPE_FLOAT
+///
 class Float32Array: public Array
 {
 public:
@@ -836,6 +1276,10 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+///
+/// \brief The Float64Array class object, array of objects of descriptor type DTYPE_DOUBLE
+///
 class Float64Array: public Array
 {
 public:
@@ -850,6 +1294,15 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// COMPLEX32 ARRAY DATA ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Complex32Array class, array of objects of descriptor type DTYPE_FSC
+///
 class Complex32Array: public Array
 {
 public:
@@ -864,6 +1317,10 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+///
+/// \brief The Complex64Array class, array of objects of descriptor type DTYPE_FTC
+///
 class Complex64Array: public Array
 {
 public:
@@ -878,9 +1335,19 @@ public:
         setAccessory(units, error, help, validation);
     }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+// STRING ARRAY DATA ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The StringArray class, array of objects of descriptor type DTYPE_T
+///
 class StringArray: public Array
 {
 public:
+    /// StringArray constructor from array of c strings
     StringArray(char **data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         //Pad all string to longest
@@ -898,13 +1365,30 @@ public:
         setAccessory(units, error, help, validation);
         delete[] padData;
     }
+
+    /// StringArray constructor from single c string
     StringArray(char const * data, int nStrings, int stringLen, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) //For contiuguous
     {
         setSpecific(data, stringLen, DTYPE_T, nStrings);
         setAccessory(units, error, help, validation);
     }
 };
-/////////////////////////COMPOUND DATA//////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  COMPOUND DATA   ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Compound class object description of DTYPE_R
+///
+/// Compound is the common supreclass for all CLASS_R types.
+/// Its fields contain all the required information (Descriptor array, keyword).
+/// Its getter/setter methods allow to read/replace descriptors, based on their
+/// index.
+/// Derived classes will only define methods with appropriate names for
+/// reading/writing descriptors (i.e. Data objects).
+
 class EXPORT Compound: public Data {
 public:
     Compound() {
@@ -959,15 +1443,17 @@ public:
     }
 
 protected:
-    short opcode;
-    std::vector<Data *> descs;
+    short opcode;                ///< used only by some derived classes.
+    std::vector<Data *> descs;   ///< descriptors storage member
 
+    /// increment reference of each stored data
     void incrementRefCounts() {
         for(std::size_t i = 0; i < descs.size(); ++i)
             if(descs[i])
                 descs[i]->refCount++;
     }
 
+    /// set Data at idx element of contained descriptors
     void assignDescAt(Data *data, int idx) {
         if (descs.at(idx))
             deleteData(descs[idx]);
@@ -977,6 +1463,7 @@ protected:
             data->refCount++;
     }
 
+    /// retrieve Data at the idx position of contained descriptors
     Data * getDescAt(std::size_t idx) {
         if (descs.at(idx))
             descs[idx]->incRefCount();
@@ -984,6 +1471,19 @@ protected:
     }
 
 };
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  SIGNAL COMPOUND  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Signal class object description of DTYPE_SIGNAL
+///
+/// \note This class represents a data descriptor of a signal intended as an
+/// ordered sequence of data. Nothing in common with software objects
+/// signalling systems.
 
 class Signal: public Compound {
 public:
@@ -1051,6 +1551,16 @@ private:
         setAccessory(units, error, help, validation);
     }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  DIMENSION COMPOUND  ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Dimension class object description of DTYPE_DIMENSION
+///
+
 class Dimension: public Compound
 {
 public:
@@ -1074,9 +1584,22 @@ public:
         return getDescAt(1);
     }
 
-    void setWindow(Data *window) {assignDescAt(window, 0);}
-    void setAxis(Data *axis){assignDescAt(axis, 1);}
+    /// Set window as compound data at position 0
+    void setWindow(Data *window) { assignDescAt(window, 0); }
+
+    /// Set axis as compound data at position 1
+    void setAxis(Data *axis){ assignDescAt(axis, 1); }
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  WINDOW COMPOUND  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Window class object description of DTYPE_WINDOW
+///
+
 class Window: public Compound
 {
 public:
@@ -1110,6 +1633,16 @@ public:
     void setEndIdx(Data *endidx){assignDescAt(endidx, 1);}
     void setValueAt0(Data *value_at_idx0) {assignDescAt(value_at_idx0, 2);}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  FUNCTION COMPOUND  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Function class object description of DTYPE_FUNCTION
+///
+
 class Function: public Compound
 {
 public:
@@ -1127,17 +1660,31 @@ public:
         setAccessory(units, error, help, validation);
     }
 
+    /// Get operation code from compiled TDI expression
     short getOpcode() {
         return opcode;
     }
 
+    /// Get number of arguments for this expression.
     int getNumArguments() { return descs.size(); }
+
+    /// Get data argument at position idx
     Data *getArgumentAt(int idx) {
         return getDescAt(idx);
     }
 
+    /// Set idx data argument
     void setArgAt(Data *arg, int idx) {assignDescAt(arg, idx);}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  CONGLOM COMPOUND  //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Conglom class object description of DTYPE_CONGLOM
+///
 
 class Conglom: public Compound
 {
@@ -1156,6 +1703,7 @@ public:
         incrementRefCounts();
         setAccessory(units, error, help, validation);
     }
+
 
     Data *getImage() {
         return getDescAt(0);
@@ -1178,6 +1726,16 @@ public:
     void setName(Data *name) {assignDescAt(name, 2);}
     void setQualifiers(Data *qualifiers) {assignDescAt(qualifiers, 3);}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  RANGE COMPOUND  ////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Range class, object description of DTYPE_RANGE
+///
+
 class Range: public Compound
 {
 public:
@@ -1195,14 +1753,17 @@ public:
         setAccessory(units, error, help, validation);
     }
 
+    /// Get range begin
     Data *getBegin() {
         return getDescAt(0);
     }
 
+    /// Get range end
     Data *getEnding() {
         return getDescAt(1);
     }
 
+    /// Get Range delta
     Data *getDeltaVal() {
         return getDescAt(2);
     }
@@ -1211,6 +1772,16 @@ public:
     void setEnding(Data *ending){assignDescAt(ending, 1);}
     void setDeltaVal(Data *deltaval) {assignDescAt(deltaval, 2);}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  ACTION COMPOUND  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Action class, object description of type DTYPE_ACTION
+///
+
 class Action: public Compound
 {
 public:
@@ -1257,6 +1828,14 @@ public:
     void setPerformance(Data *performance){assignDescAt(performance, 4);}
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  DISPATCH COMPOUND  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Dispatch class, object description of DTYPE_DISPATCH
+///
 class Dispatch: public Compound
 {
 public:
@@ -1297,6 +1876,15 @@ public:
     void setCompletion(Data *completion) {assignDescAt(completion, 3);}
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  PROGRAM COMPOUND  /////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Program class object description of DTYPE_PROGRAM
+///
+
 class Program: public Compound
 {
 protected:
@@ -1326,6 +1914,14 @@ public:
     void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
     void setProgram(Data *program){assignDescAt(program, 1);}
 };
+
+////////////////////////////////////////////////////////////////////////////////
+//  ROUTINE COMPOUND  //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Routine class object description of DTYPE_ROUTINE
+///
 
 class Routine: public Compound
 {
@@ -1370,6 +1966,17 @@ public:
     void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 3 + idx);}
 };
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  PROCEDURE COMPOUND  ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Procedure class object description of DTYPE_PROCEDURE
+///
+
 class Procedure: public Compound
 {
 protected:
@@ -1413,6 +2020,15 @@ public:
     void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 3 + idx);}
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  METHOD COMPOUND  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Method class object description of DTYPE_METHOD
+///
+
 class Method: public Compound
 {
 public:
@@ -1454,6 +2070,15 @@ public:
     void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 3 + idx);}
 };
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  DEPENDENCY COMPOUND  ///////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Dependency class object description of DTYPE_DEPENDENCY
+///
+
 class Dependency: public Compound
 {
 public:
@@ -1491,6 +2116,16 @@ public:
     void setArg2(Data *arg2) {assignDescAt(arg2, 0);}
 };
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  CONDITION COMPOUND  ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Condition class object description of DTYPE_CONDITION
+///
+
 class Condition: public Compound
 {
 public:
@@ -1521,6 +2156,15 @@ public:
 
     void setArg(Data *arg) {assignDescAt(arg, 0);}
 };
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  CALL COMPOUND  /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Call class object description of DTYPE_CALL
+///
 
 class Call: public Compound {
 public:
@@ -1564,11 +2208,16 @@ public:
     void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 2 + idx);}
 };
 
-/////////////////////APD///////////////////////
 
-//NOTE: refCount is not altered by getDescAt(), appendDesc() and setDescAt(). 
-// this simplifies the usage of Apd (not intended in any case for the normal user)
-///////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
+//  APD DATA  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Apd class object description of DTYPE_DSC
+///
+
 class EXPORT Apd: public Data
 {
 public:
@@ -1605,18 +2254,6 @@ public:
     virtual ~Apd() {
         propagateDeletion();
     }
-    /*	    for(size_t i = 0; i < descs.size(); i++)
-        {
-        if(descs[i])
-            descs[i]->decRefCount();
-        }
-    }
-    */
-    /*  CANNOT WORK: Some pointers may be empty!!
-    virtual ~Apd() {
-        std::for_each(descs.begin(), descs.end(), (void (&)(Data *))decRefCount);
-    }
-*/
 
     virtual std::size_t len() {
         return descs.size();
@@ -1667,7 +2304,12 @@ protected:
 
 };
 
-///////////////////LIST///////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  LIST DATA  /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 class EXPORT List: public Apd
 {
 public:
@@ -1708,7 +2350,10 @@ public:
     }
 };
 
-/////Dictionary///////
+////////////////////////////////////////////////////////////////////////////////
+//  DICTIONARY DATA  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 class EXPORT Dictionary: public Apd
 {
 public:
@@ -1758,12 +2403,23 @@ public:
         return Apd::len()/2;
     }
 };
-/////////////////////////////////////////////////////////////////
-//              Tree Objects
-/////////////////////////////////////////////////////////////////
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  TREE DATA   ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 class Tree;
 class TreeNode;
 class TreeNodeArray;
+
+///
+/// \brief The TreeNode class object description of DTYPE_NID
+///
 class  EXPORT TreeNode: public Data
 {
     friend	EXPORT std::ostream &operator<<(std::ostream &stream, TreeNode *treeNode)
@@ -1772,8 +2428,10 @@ class  EXPORT TreeNode: public Data
         return stream;
     }
 protected:
+
     Tree *tree;
-    int nid;
+    int   nid;
+
     virtual bool isCached() {return false;}
     virtual int getCachePolicy() { return 0;}
     //From Data
@@ -1781,40 +2439,113 @@ protected:
     virtual void *convertToDsc();
     bool getFlag(int flagOfs);
     void setFlag(int flagOfs, bool val);
+
+    /// Set the associated Tree instance
+    void setTree(Tree *tree) {this->tree = tree;}
 public:
     virtual Data *data();
+
+    ///
+    /// \brief TreeNode constructor
+    /// \param nid node id (required)
+    /// \param tree the tree that this node belongs to
+    ///
     TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+
     //Force new and delete in dll for windows
     void *operator new(size_t sz);
     void operator delete(void *p);
-    Tree *getTree(){return tree;}
-    void setTree(Tree *tree) {this->tree = tree;}
+
+    /// Get the associated tree instance
+    Tree *getTree() { return tree; }
+
+
+    /// Get the path name for this node
     char *getPath();
+
+    /// Get the minimum path name for this node
+    /// \ref getNci() with Nci code NciMINPATH
     char *getMinPath();
+
+    /// Get the full path name for this node
+    /// \ref getNci() with code NciFULLPATH
     char *getFullPath();
+
+    /// Get the name of this node
+    /// \ref getNci() with code NciNODE_NAME
     char *getNodeName();
+
+    /// Get the original path within the conglomerate to which the node belongs
+    /// \ref getNci() with code NciORIGINAL_PART_NAME
     char *getOriginalPartName();
+
+    /// %String output version of getPath()
     std::string getPathStr();
+
+    /// %String output version of getMinPath()
     std::string getMinPathStr();
+
+    /// %String output version of getFullPath()
     std::string getFullPathStr();
+
+    /// %String output version of getNodeName()
     std::string getNodeNameStr();
+
+    /// %String output version of getOriginalPartName()
     std::string getOriginalPartNameStr();
+
+
+    /// Retrieve node from this tree by its realPath string
     TreeNode *getNode(char const * relPath);
+
+    /// Retrieve node from this tree by its realPath string
     TreeNode *getNode(String *relPathStr);
+
     virtual Data *getData();
     virtual void putData(Data *data);
     virtual void deleteData();
-    virtual void resolveNid(){}
+
+    /// virtual function to resolve node id in the active tree.
+    /// This is called each time a path to nid conversion is needed.
+    virtual void resolveNid() {}
+
     int getNid() { return nid;}
+
+    /// Returns true if the node is On
     bool isOn();
+
+    /// Set on/off for that node
     void setOn(bool on);
+
+    /// Return the length in bytes of the contained data.
+    /// \ref getNci() with code NciLENGTH
     virtual int getLength();
+
+    /// Return the size in bytes of  (possibly compressed) associated data.
+    /// \ref getNci() with code NciRLENGTH
     virtual int getCompressedLength();
+
+    /// Return the Group/Id of the last writer for that node.
+    /// \ref getNci() with code NciOWNER_ID
     int getOwnerId();
+
+    /// Return the status of the completed action (if the node contains ActionData).
+    /// \ref getNci() with code NciSTATUSNciSTATUS
     int getStatus();
+
+    /// Get the time of the last data insertion
+    /// \ref getNci() with code NciTIME_INSERTED
     virtual int64_t getTimeInserted();
+
+    /// Do specified method for this node (valid only if it belongs to a conglomerate)
     void doMethod(char *method);
+
+    ///  Return true if this is setup data (i.e. present in the the model)
     bool isSetup();
+
+
+    ///@{
+    ///  Nci Flags access
     bool isWriteOnce();
     void setWriteOnce(bool flag);
     bool isCompressOnPut();
@@ -1823,50 +2554,140 @@ public:
     void setNoWriteModel(bool flag);
     bool isNoWriteShot();
     void setNoWriteShot(bool flag);
-    TreeNode *getParent();
-    TreeNode *getBrother();
-    TreeNode *getChild();
-    TreeNode *getMember();
-    int getNumMembers();
-    int getNumChildren();
-    int getNumDescendants();
-    TreeNode **getChildren(int *numChildren);
-    TreeNode **getMembers(int *numChildren);
-    TreeNode **getDescendants(int *numChildren);
-
-
-    const char *getClass();
-    const char *getDType();
-    const char *getUsage();
     bool isEssential();
     void setEssential(bool flag);
     bool isIncludedInPulse();
     void setIncludedInPulse(bool flag);
     bool isMember();
     bool isChild();
+    ///@}
+
+    /// Get the parent of this node.
+    /// Ref to \ref getNci() with code NciPARENT
+    TreeNode *getParent();
+
+    /// Return next sibling.
+    /// Ref to \ref getNci() with code NciBROTHER
+    TreeNode *getBrother();
+
+    /// Get the first child of this node.
+    /// Ref to \ref getNci() with code NciCHILD
+    TreeNode *getChild();
+
+    /// Get the first member of this node.
+    /// Ref to \ref getNci() with code NciMEMBER
+    TreeNode *getMember();
+
+    /// Get the number of members for this node.
+    /// Ref to \ref getNci() with code NciNUMBER_OF_MEMBERS
+    int getNumMembers();
+
+    /// Get the number of children for this node.
+    /// Ref to \ref getNci() with code NciNUMBER_OF_CHILDREN
+    int getNumChildren();
+
+    /// Get the number of all descendants (members + children)fir this node.
+    /// Ref to \ref getNci with codes NciNUMBER_OF_MEMBERS and NciNUMBER_OF_MEMBERS
+    int getNumDescendants();
+
+    // NOTE: [andrea] java implementation discrepance (java uses TreeNodeArray instance)
+    /// Get all che child nodes for this node.
+    TreeNode **getChildren(int *numChildren);
+
+    /// Return  all the members of this node
+    TreeNode **getMembers(int *numChildren);
+
+    /// Get all the descendant (members + children)for this node
+    TreeNode **getDescendants(int *numChildren);
+
+
+
+
+    /// Return Nci class name (NciCLASS) as c string
+    const char *getClass();
+
+    /// Return Nci descriptor type (NciDTYPE) as c string
+    const char *getDType();
+
+    /// Return Nci node usage (NciUSAGE) as c string
+    const char *getUsage();
+
+
+
+
+    /// Get index of the node in the corresponding conglomerate.
+    /// Ref to \ref getNci() with code NciCONGLOMERATE_ELT
     int getConglomerateElt();
+
+    /// Return the number of the elements for the conglomerate to which the node
+    ///  belongs
     int getNumElts();
+
+    /// Return the array of nodes corresponding to the elements of the
+    /// conglomeate to which the node belongs
     TreeNodeArray *getConglomerateNodes();
+
+    /// Return the depth of the node in the tree.
+    /// Ref to \ref getNci() with code NciDEPTH
     int getDepth();
+
+    /// Return true if the node contains versions (Nci flags)
     bool containsVersions();
+
+
+
+    // NOTE: [andrea] there are missed members ( vs java impl )
+    /// Begin a new data segment
     void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
     void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
+
+    /// Write (part of) data segment
     void putSegment(Array *data, int ofs);
+
+    /// Update start, end time and dimension for the specified segment
     void updateSegment(Data *start, Data *end, Data *time);
+
+    /// Update start, end time and dimension for the specified segment
     void updateSegment(int idx, Data *start, Data *end, Data *time);
+
+    /// Get the number of segments
     int getNumSegments();
+
+    /// Instantiate two arrays with Segments starts and ends
     void getSegmentLimits(int segmentIdx, Data **start, Data **end);
+
+    /// Get data form the selected segment
     Array *getSegment(int segIdx);
+
+    /// Get the selected segment dimension
     Data *getSegmentDim(int segIdx);
+
+    /// Get both segment and segment dimension
     void getSegmentAndDimension(int segIdx, Array *segment, Data *dimension);
+
+    /// Begin a timestamted segment
     void beginTimestampedSegment(Array *initData);
+
+    /// Make a timestamped segment
     void makeTimestampedSegment(Array *data, int64_t *times);
+
+    /// Write (part of)data in a timestamped segment
     void putTimestampedSegment(Array *data, int64_t *times);
+
+    /// Writre a single row of timestamped data
     void putRow(Data *data, int64_t *time, int size = 1024);
+
+    /// Get segment info
     void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
+
+
     void acceptSegment(Array *data, Data *start, Data *end, Data *times);
     void acceptRow(Data *data, int64_t time, bool isLast);
+
+    /// Retrieve node tags as array of strings
     StringArray *findTags();
+
+
     //////////Edit methods////////////////
     TreeNode *addNode(char const * name, char const * usage);
     void remove(char const * name);
@@ -1913,6 +2734,8 @@ public:
     void terminateSegment();
 };
 #endif
+
+
 ////////////////Class TreeNodeArray///////////////////////
 class EXPORT TreeNodeArray
 {
@@ -2189,6 +3012,7 @@ private:
     Mutex mutex;
     static Mutex globalMutex;
 };
+
 class EXPORT Scope
 {
     int x, y, width, height;
@@ -2199,6 +3023,9 @@ public:
     void oplot(Data *x, Data *y , int row = 1, int col = 1, const char *color = "black");
     void show();
 };
+
+
+
 //////////////Support functions////////
 EXPORT Data *deserialize(char const * serialized);
 EXPORT Data *compile(const char *expr);
@@ -2233,5 +3060,9 @@ EXPORT void deleteNativeArray(char ** array);
 EXPORT void deleteNativeArray(Data ** array); 
 
 
-}
-#endif
+
+
+
+} // MDSplus
+
+#endif // MDSOBJECTS_H

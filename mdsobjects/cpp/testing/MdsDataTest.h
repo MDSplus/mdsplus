@@ -96,7 +96,7 @@ inline void MdsDataTest::test_data_numerics(Data *data, const T value) {
 
     TEST1( data->getByte() == static_cast<char>(value) );
 
-    std::cout << "data->getByte() = " << (int)data->getByte() << " -vs- " << "static_char<char>(vlaue) = " << (int)static_cast<char>(value) << "\n";
+//    std::cout << "data->getByte() = " << (int)data->getByte() << " -vs- " << "static_char<char>(vlaue) = " << (int)static_cast<char>(value) << "\n";
 
     TEST1( data->getShort() == static_cast<short>(value) );
     TEST1( data->getInt() == static_cast<int>(value) );
@@ -111,7 +111,7 @@ inline void MdsDataTest::test_data_numerics(Data *data, const T value) {
     TEST1( data->getDouble() == static_cast<double>(value) );
 
     try { data->getComplex(); } catch (MdsException &e) {
-        TEST0( strcmp(e.what(),"getComplex() not supported for non Compelx data types") );
+        TEST0( strcmp(e.what(),"getComplex() not supported for non Complex data types") );
     }
 }
 

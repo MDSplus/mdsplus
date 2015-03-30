@@ -14,6 +14,8 @@ using namespace std;
 
 #define MAX_ARGS 512
 
+///@{ \ingroup Descrmap
+
 extern "C" {
 	// From mdsshr.h. Can't include because of class keyword usage in mdsdescrip.h
 	char *MdsGetMsg(int sts);
@@ -158,7 +160,16 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
 
+// end of Descrmap
+///@}
+
+
+
+
 ////////MdsException implemenmtation /////
+
+/// \brief MdsException::MdsException
+/// \param status ref to MdsGetMsg()
 MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
@@ -196,7 +207,7 @@ void Data::incRefCount(Data * d) {
 }
 
 void Data::decRefCount() {
-	decRefCount(this);
+    decRefCount(this);
 }
 
 void Data::incRefCount() {
@@ -261,12 +272,13 @@ Data *Data::data()
 	freeDsc(evalPtr);
 	return retData;
 }
+
 Data *Data::evaluate()
 {
 	void *dscPtr = convertToDsc();
 	int retStatus;
 	void *evalPtr = evaluateData(dscPtr, 1, &retStatus);
-	if(!(retStatus & 1))
+    if( !(retStatus & 1) )
 		throw MdsException(retStatus);
 	Data *retData = (Data *)convertFromDsc(evalPtr);
 	freeDsc(dscPtr);
@@ -292,13 +304,13 @@ void *Scalar::convertToDsc()
 }
 
 //Make a dymanically allocated copy of the Data instance Tee
-//Data *Data::clone()
-//{
-//	void *dscPtr = convertToDsc();
-//	Data *retData = (Data *)convertFromDsc(dscPtr);
-//	freeDsc(dscPtr);
-//	return retData;
-//}
+Data *Data::clone()
+{
+	void *dscPtr = convertToDsc();
+	Data *retData = (Data *)convertFromDsc(dscPtr);
+	freeDsc(dscPtr);
+	return retData;
+}
 
 int * Data::getShape(int *numDim)
 {
@@ -315,6 +327,8 @@ int * Data::getShape(int *numDim)
 	return res;
 }
 
+/// \ingroup Descrmap
+///
 Data * Data::getData(int classType, int dataType) {
 	void *dscPtr = convertToDsc();
 	void *retDsc;
@@ -370,7 +384,7 @@ Data * Data::getScalarData(int dtype) {
 
 template<class T>
 static std::vector<T> getArray(T * data, int size) {
-	std::vector<T> v(data, data+size);    
+	std::vector<T> v(data, data+size);
 	delete[] data;
 	return v;
 }
@@ -391,7 +405,7 @@ void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete []array;}
 char *Data::getByteArray(int *numElements)
 {
 	AutoPointer<Data> array(getArrayData(DTYPE_B));
-    return array.ptr->getByteArray(numElements);
+	return array.ptr->getByteArray(numElements);
 }
 
 std::vector<char> Data::getByteArray()
@@ -608,6 +622,22 @@ Data * Data::getDimensionAt(int dimIdx) {
 	return executeWithArgs("DIM_OF($)", 1, this);
 }
 
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// TDI BINDINGS  ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+///@{ \ingroup TDIbind
+
+
+///
+/// \brief MDSplus::compile
+/// \param expr  TDI expression to evaluate
+/// \return new instanced Data representing compiled script
+/// ref to MDSplus::compileWithArgs
 Data * MDSplus::compile(const char *expr) {
 	return compileWithArgs(expr, 0);
 }
@@ -635,10 +665,23 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	return res;
 }
 
+///
+/// \brief MDSplus::compile
+/// \param expr TDI expression to evaluate
+/// \param tree Tree target pointer
+/// \return new instanced Data representing compiled script
+///
 Data * MDSplus::compile(const char *expr, Tree *tree) {
 	return  compileWithArgs(expr, tree, 0);
 }
 
+///
+/// \brief MDSplus::compileWithArgs compile TDI expression with variadic argument
+/// \param expr TDI expression to evaluate
+/// \param tree Tree node pointer
+/// \param nArgs number of arguments of expression
+/// \return new instanced Data representing compiled script
+///
 Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		int i;
 		void *args[MAX_ARGS];
@@ -659,6 +702,7 @@ Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 			throw MdsException(status);
 		return res;
 }
+
 
 Data * MDSplus::execute(const char *expr) {
 	return executeWithArgs(expr, 0);
@@ -790,6 +834,18 @@ void * Data::completeConversionToDsc(void *dsc) {
 	return retDsc;
 }
 
+// TDIbind end
+///@}
+
+
+
+
+
+
+
+
+
+
 int *Array::getShape(int *numDims)
 {
 	int *retDims = new int[nDims];
@@ -872,7 +928,8 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 
 	if((data->dtype != dtype) || (data->clazz != CLASS_S && data->clazz != CLASS_A))
 		throw MdsException("Invalid data type in Array::setElementAt");
-	//Check Dimensionality
+
+    //Check Dimensionality
 	if(getNumDims > nDims)
 		throw MdsException("Invalid passed dimensions in Array::setElementAt");
 	for(i = 0; i < getNumDims; i++)
@@ -895,7 +952,7 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 	if(data->clazz == CLASS_A)
 	{
 		arrayData = (Array *)data;
-//If passed data is an array, its dimensions must match the remaining dimensions
+        //If passed data is an array, its dimensions must match the remaining dimensions
 		if(arrayData->nDims != nDims - getNumDims)
 		{
 			delete [] rowDims;
@@ -909,19 +966,22 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 				throw MdsException("Invalid passed dimensions in Array::setElementAt");
 			}
 		}
-//Dimensionality check passed: copy passed Array
+        //Dimensionality check passed: copy passed Array
 		memcpy(ptr + (length * startIdx), arrayData->ptr, rowDims[getNumDims-1] * length);
 	}
 	else //data->clazz == CLASS_S
 	{
 		scalarData = (Scalar *)data;
-//Propagate the passed scalar to all the remaining dimensions
+        //Propagate the passed scalar to all the remaining dimensions
 		for(i = 0; i < rowDims[getNumDims - 1]; i++)
 			memcpy(ptr + ((startIdx + i) * length), scalarData->ptr, length); 
 	}
 	delete [] rowDims;
 
 }
+
+
+
 char *Array::getByteArray(int *numElements)
 {
 	int size = arsize/length;
@@ -940,9 +1000,7 @@ char *Array::getByteArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getByteArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getByteArray() not supported for Complex data type");
 		}
 	}
 	*numElements = size;
@@ -966,9 +1024,7 @@ unsigned char *Array::getByteUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (char)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (char)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getByteUnsignedArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getByteUnsignedArray() not supported for Complex data type");
 		}
 	}
 	*numElements = size;
@@ -991,9 +1047,7 @@ short *Array::getShortArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getShortArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getShortArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1015,9 +1069,7 @@ unsigned short *Array::getShortUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (short)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (short)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getShortUnsignedArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getShortUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1039,9 +1091,7 @@ int *Array::getIntArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getIntArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getIntArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1063,9 +1113,7 @@ unsigned int *Array::getIntUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (int)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getIntUnsignedArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getIntUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1087,9 +1135,7 @@ int64_t *Array::getLongArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (int64_t)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (int64_t)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getLongArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getLongArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1112,9 +1158,7 @@ uint64_t *Array::getLongUnsignedArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = (uint64_t)*(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = (uint64_t)*(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getLongUnsignedArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getLongUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1137,9 +1181,7 @@ float *Array::getFloatArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getFloatArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getFloatArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1161,9 +1203,7 @@ double *Array::getDoubleArray(int *numElements)
 			case DTYPE_FLOAT: retArr[i] = *(float *)&ptr[i * length]; break;
 			case DTYPE_DOUBLE: retArr[i] = *(double *)&ptr[i * length]; break;
 			case DTYPE_FSC:
-            case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getDoubleArray() not supported for Complex data type");
+			case DTYPE_FTC: throw MdsException("getDoubleArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1179,9 +1219,7 @@ std::complex<double> *Array::getComplexArray(int *numElements)
 				retArr[i] = std::complex<double>(((float *)ptr)[2*i], ((float *)ptr)[2*i+1]); break;
 			case DTYPE_FTC: 
 				retArr[i] = std::complex<double>(((double *)ptr)[2*i], ((double *)ptr)[2*i+1]); break;
-            default:
-            delete [] retArr;
-            throw MdsException("getComplexArray() not supported for non Complex data types");
+            default: throw MdsException("getComplexArray() not supported for non Complex data types");
 
 		}
 	*numElements = size;
@@ -1204,9 +1242,7 @@ char **Array::getStringArray(int *numElements)
 					else
 						break;
 				break;
-            default:
-            delete [] retArr;
-            throw MdsException("Unsupported conversion to char ** array");
+			default: throw MdsException("Unsupported conversion to char ** array");
 
 		}
 	*numElements = size;
