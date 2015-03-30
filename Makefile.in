@@ -31,7 +31,6 @@ PARTS = \
         @MDSTCPIP@ \
         mdslibidl \
         mdsdcl  \
-	@GEN_DEVICE@ \
 	@CAMSHR@ \
         @REMCAM@ \
         ccl \
@@ -118,7 +117,6 @@ camshr: mdsdcl
 ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
-gen_device: tdishr
 javadevices: javatraverser
 javadispatcher: javascope javatraverser
 javamds: mdstcpip 
@@ -131,7 +129,7 @@ mdsmisc: tdishr
 mdsobjects/cpp: mdstcpip 
 mdsobjects/java: javascope
 mdstcpip: tdishr
-mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
+mitdevices: mdsshr tdishr treeshr xmdsshr
 remcam: mdstcpip
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 setevent: mdsshr
