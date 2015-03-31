@@ -1,4 +1,16 @@
-commit f6afecc0e9ff2734c9e9ea4317ddc6215fb29493 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b4f86ee4ca1f96b4b218bf80a4600e3faae62f63 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 31 11:34:34 2015 -0400
+
+    replace HAVE_WINDOWS_H with _WIN32
+
+commit 5f1c2df04cd5c2271c74dbf3867be0186c210c35 (tag: refs/tags/alpha_release-7-0-33)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 30 22:20:15 2015 +0000
+
+    New ChangeLog
+
+commit f6afecc0e9ff2734c9e9ea4317ddc6215fb29493
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 30 16:19:50 2015 -0400
 
