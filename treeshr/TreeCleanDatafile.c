@@ -107,12 +107,12 @@ STATIC_ROUTINE int RewriteDatafile(void **dbid, char *tree, int shot, int compre
     if (dbid1)
       free(dbid1);
     if (status & 1) {
-      status = MDS_IO_REMOVE(to_c) == 0 ? TreeNORMAL : TreeFAILURE;
+      status = MDS_IO_REMOVE(to_c) == 0 ? TreeNORMAL : TreeDELFAIL;
       if (status & 1)
-	status = MDS_IO_REMOVE(to_d) == 0 ? TreeNORMAL : TreeFAILURE;
+	status = MDS_IO_REMOVE(to_d) == 0 ? TreeNORMAL : TreeDELFAIL;
       if (status & 1)
 	status = ((MDS_IO_RENAME(from_c, to_c) == 0)
-		  && (MDS_IO_RENAME(from_d, to_d) == 0)) ? TreeNORMAL : TreeFAILURE;
+		  && (MDS_IO_RENAME(from_d, to_d) == 0)) ? TreeNORMAL : TreeRENFAIL;
     }
     if (from_c)
       free(from_c);

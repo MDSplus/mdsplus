@@ -322,11 +322,11 @@ STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct
   return status;
 }
 
-int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname,
-		      int status)
+int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname)
 {
   int socket;
   logname[strlen(logname) - 2] = '\0';
+  int status = TreeNORMAL;
   socket = RemoteAccessConnect(logname, 1, (void *)dblist);
   if (socket != -1) {
     struct descrip ans = empty_ans;
@@ -354,6 +354,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->channel = socket;
 	  dblist->tree_info = info;
 	  dblist->remote = 1;
+	  status = TreeNORMAL;
 	} else
 	  status = TreeFILE_NOT_FOUND;
       }
@@ -361,9 +362,8 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
       RemoteAccessDisconnect(socket, 0);
     if (ans.ptr)
       MdsIpFree(ans.ptr);
-  }
-  if (status & 1)
-    status = TreeNORMAL;
+  } else
+    status = TreeCONNECTFAIL;
   return status;
 }
 
@@ -1431,8 +1431,11 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
 
   ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
     ssize_t ans = -1;
-    if (count == 0)
+    if (count == 0) {
+      if (deleted)
+	*deleted=0;
       return 0;
+    }
     LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
       if (FDS[fd - 1].socket == SRB_SOCKET) {
@@ -1495,14 +1498,14 @@ STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, i
 
 int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 {
-  int status = TreeFAILURE;
+  int status = TreeLOCK_FAILURE;
   LOCKFDS if (deleted)
     *deleted = 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
     if (FDS[fd - 1].socket == SRB_SOCKET) {
       status = srbUioLock(FDS[fd - 1].fd, offset, size, mode_in);
-      UNLOCKFDS return (status == 0) ? TreeSUCCESS : TreeFAILURE;
+      UNLOCKFDS return (status == 0) ? TreeSUCCESS : TreeLOCK_FAILURE;
     }
 #endif
     if (FDS[fd - 1].socket == -1) {
@@ -1522,10 +1525,10 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 	  flags |= LOCKFILE_FAIL_IMMEDIATELY;
 	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
 	status =
-	    LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+	  LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       } else {
 	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       }
 #else
       struct flock flock_info;

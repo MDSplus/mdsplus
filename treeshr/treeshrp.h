@@ -670,8 +670,7 @@ to databases
 #define TREE_PATH_DELIM  "/"
 
 /************* Prototypes for internal functions *************/
-extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *,
-			     int status);
+extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *);
 extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
 
 extern int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook);
