@@ -991,7 +991,6 @@ camshr/Makefile
 ccl/Makefile 
 d3dshr/Makefile 
 dwscope/Makefile 
-gen_device/Makefile
 hdf5/Makefile
 idlmdsevent/Makefile
 idlmdswidgets/Makefile
