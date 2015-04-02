@@ -1,4 +1,16 @@
-commit c1fc99bbc138e72bf296fe04f05e51ea72a34445 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit d506ea572627a836462de6066808bf90f7329859 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 2 11:25:51 2015 -0400
+
+    Add RfxDevices python module install and do not remove the /etc/xinetd.d/mdsip config file if it had been modified.
+
+commit 7700048db7d941253536da9f0a2ef2aefbed2c62 (tag: refs/tags/alpha_release-7-0-35)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Apr 2 08:29:46 2015 -0400
+
+    New ChangeLog
+
+commit c1fc99bbc138e72bf296fe04f05e51ea72a34445
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 2 08:09:28 2015 -0400
 
