@@ -72,7 +72,7 @@ public:
             c_type & value = max;
             const std::string &str = tmax;
 
-            Data * data = new _MdsT(value);
+            Data * data = new Float32(value);
             print_type_encoded(data);
             MdsDataTest::test_data_numerics(data,value);
             if(!str.empty())
@@ -82,6 +82,7 @@ public:
     }
 
 
+
     // TODO://
     template < typename _MdsT >
     static void test_type_conversion_array(const std::string &tmin = "",
@@ -89,6 +90,22 @@ public:
                                            const std::string &tmax = "") {}
 
 };
+
+
+
+//// TRAIT FOR FLOAT //
+//template <>
+//void TestLimits::test_conversion_limits<Float32>(const std::string &tmin,
+//                                            const std::string &teps,
+//                                            const std::string &tmax)
+//{
+//    typedef typename detail::mds2cpp_typemap<Float32>::type c_type;
+//    c_type max = std::numeric_limits<c_type>::max();
+//    std::cout << " TESTING TRAIT FOR FLOAT: \n"
+//              << " max = " << max << "\n"
+//              << " static_cast<int>(max) = " << static_cast<int>(max) << "\n"
+//              << " numeric_cast<int>(max) = " << Scalar::numeric_cast<int>(max) << "\n";
+//}
 
 } // testing
 
@@ -139,7 +156,7 @@ int main(int argc, char *argv[])
 //    testing::TestLimits::test_conversion_limits<Uint32>("0LU","0LU","4294967295LU");
 //    testing::TestLimits::test_conversion_limits<Uint64>("0X0QU","0X0QU","0XffffffffffffffffQU");
     testing::TestLimits::test_conversion_limits<Float32>("11.7549E-39","119.209E-9","340.282E36");
-//    testing::TestLimits::test_conversion_limits<Float64>("22.25073858507201D-309","222.0446049250313D-18","179.7693134862316D306");
+    testing::TestLimits::test_conversion_limits<Float64>("22.25073858507201D-309","222.0446049250313D-18","179.7693134862316D306");
 
 
 

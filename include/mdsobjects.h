@@ -24,6 +24,9 @@
 #include <string>
 #include <vector>
 
+#include <limits>
+#include <stdexcept>
+
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef MDS_WINDOWS
@@ -418,6 +421,63 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 
 
+namespace detail {
+template < typename Target >
+inline Target scalar_cast(float value) {
+    typedef float Source;
+    static const bool is_coercion = std::numeric_limits<Source>::digits > std::numeric_limits<Target>::digits;
+
+    if(!std::numeric_limits<Target>::has_quiet_NaN && isnan(value) )
+        throw( std::range_error("nan exception") );
+
+    if(is_coercion && value != static_cast<Source>(static_cast<Target>(value)) ) {
+        throw(std::range_error("scalar loss of precision") );
+    }
+    else if ( value < static_cast<Source>(std::numeric_limits<Target>::min()) )
+        throw ( std::underflow_error("scalar cast underflow") );
+    else if( value > static_cast<Source>(std::numeric_limits<Target>::max()) )
+        throw ( std::overflow_error("scalar cast overflow"));
+
+    return static_cast<Target>(value);
+}
+
+template < typename Target >
+inline Target scalar_cast(double value) {
+    typedef double Source;
+
+    if ( value < static_cast<Source>(std::numeric_limits<Target>::min()) )
+        throw ( std::underflow_error("scalar cast underflow") );
+    else if( value > static_cast<Source>(std::numeric_limits<Target>::max()) )
+        throw ( std::overflow_error("scalar cast overflow"));
+
+    return static_cast<Target>(value);
+}
+
+template <typename Target, typename Source>
+inline Target scalar_cast(Source value) {
+
+    static const bool is_coercion = std::numeric_limits<Source>::digits > std::numeric_limits<Target>::digits;
+    static const bool u2s = !std::numeric_limits<Source>::is_signed && std::numeric_limits<Target>::is_signed;
+    static const bool s2u = std::numeric_limits<Source>::is_signed && !std::numeric_limits<Target>::is_signed;
+
+    if( is_coercion && !u2s ) {
+        if ( value < static_cast<Source>(std::numeric_limits<Target>::min()) )
+            throw ( std::underflow_error("scalar cast underflow") );
+        else if( value > static_cast<Source>(std::numeric_limits<Target>::max()) )
+            throw ( std::overflow_error("scalar cast overflow"));
+    }
+    else if( is_coercion && u2s ) {
+        if( value > static_cast<Source>(std::numeric_limits<Target>::max()) )
+            throw ( std::overflow_error("scalar cast overflow"));
+    }
+    else if( !is_coercion && s2u ) {
+        if ( value < 0 )
+            throw ( std::underflow_error("scalar cast underflow") );
+    }
+    return static_cast<Target>(value);
+}
+} // detail
+
 ///
 /// \brief The Scalar class
 ///
@@ -451,7 +511,14 @@ public:
         *nDims = 0;
         *dims = 0;
         *ptr = this->ptr;
+    }    
+
+    template <typename Target, typename Source>
+    static inline Target scalar_cast(Source value) {
+        return detail::scalar_cast<Target>(value);
     }
+
+
 }; //ScalarData
 
 
@@ -511,16 +578,16 @@ public:
     /// inline overloaded conversion access returning result of cast operator of
     /// the Scalar object data member
 
-    char getByte() {return ptr[0];}
-    short getShort() {return (short)ptr[0];}
-    int getInt() {return (int)ptr[0];}
-    int64_t getLong() {return (int64_t)ptr[0];}
-    unsigned char getByteUnsigned() {return (unsigned char)ptr[0];}
-    unsigned short getShortUnsigned() {return (unsigned short)ptr[0];}
-    unsigned int getIntUnsigned() {return (unsigned int)ptr[0];}
-    uint64_t getLongUnsigned() {return (uint64_t)ptr[0];}
-    float getFloat() {return (float)ptr[0];}
-    double getDouble() {return (double)ptr[0];}
+    char getByte() {return (char)(*(unsigned char *)ptr);}
+    short getShort() {return (short)(*(unsigned char *)ptr);}
+    int getInt() {return (int)(*(unsigned char *)ptr);}
+    int64_t getLong() {return (int64_t)(*(unsigned char *)ptr);}
+    unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned char *)ptr);}
+    unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned char *)ptr);}
+    unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned char *)ptr);}
+    uint64_t getLongUnsigned() {return (uint64_t)(*(unsigned char *)ptr);}
+    float getFloat() {return (float)(*(unsigned char *)ptr);}
+    double getDouble() {return (double)(*(unsigned char *)ptr);}
 
     ///@}
 };
@@ -583,16 +650,16 @@ public:
     /// inline overloaded conversion access returning result of cast operator of
     /// the Scalar object data member
 
-    char getByte() {return (char)(*(short *)ptr);}
-    short getShort() {return (short)(*(short *)ptr);}
-    int getInt() {return (int)(*(short *)ptr);}
-    int64_t getLong() {return (int64_t)(*(short *)ptr);}
+    char getByte() {return (char)(*(unsigned short *)ptr);}
+    short getShort() {return (short)(*(unsigned short *)ptr);}
+    int getInt() {return (int)(*(unsigned short *)ptr);}
+    int64_t getLong() {return (int64_t)(*(unsigned short *)ptr);}
     unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned short *)ptr);}
     unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned short *)ptr);}
     unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned short *)ptr);}
     uint64_t getLongUnsigned() {return (uint64_t)(*(unsigned short *)ptr);}
-    float getFloat() {return (float)(*(short *)ptr);}
-    double getDouble() {return (double)(*(short *)ptr);}
+    float getFloat() {return (float)(*(unsigned short *)ptr);}
+    double getDouble() {return (double)(*(unsigned short *)ptr);}
 
     ///@}
 };
@@ -656,16 +723,16 @@ public:
     /// inline overloaded conversion access returning result of cast operator of
     /// the Scalar object data member
 
-    char getByte() {return (char)(*(int *)ptr);}
-    short getShort() {return (short)(*(int *)ptr);}
-    int getInt() {return (int)(*(int *)ptr);}
-    int64_t getLong() {return (int64_t)(*(int *)ptr);}
+    char getByte() {return (char)(*(unsigned int *)ptr);}
+    short getShort() {return (short)(*(unsigned int *)ptr);}
+    int getInt() {return (int)(*(unsigned int *)ptr);}
+    int64_t getLong() {return (int64_t)(*(unsigned int *)ptr);}
     unsigned char getByteUnsigned() {return (unsigned char)(*(unsigned int *)ptr);}
     unsigned short getShortUnsigned() {return (unsigned short)(*(unsigned int *)ptr);}
     unsigned int getIntUnsigned() {return (unsigned int)(*(unsigned int *)ptr);}
     uint64_t getLongUnsigned() {return (uint64_t)(*(unsigned int *)ptr);}
-    float getFloat() {return (float)(*(int *)ptr);}
-    double getDouble() {return (double)(*(int *)ptr);}
+    float getFloat() {return (float)(*(unsigned int *)ptr);}
+    double getDouble() {return (double)(*(unsigned int *)ptr);}
 
     ///@}
 };
@@ -732,12 +799,12 @@ public:
     unsigned short getShortUnsigned() {return (unsigned short)(*(uint64_t *)ptr);}
     unsigned int getIntUnsigned() {return (unsigned int)(*(uint64_t *)ptr);}
     uint64_t getLongUnsigned() {return (uint64_t)(*(uint64_t *)ptr);}
-    char getByte() {return (char)(*(int64_t *)ptr);}
-    short getShort() {return (short)(*(int64_t *)ptr);}
-    int getInt() {return (int)(*(int64_t *)ptr);}
-    int64_t getLong() {return (int64_t)(*(int64_t *)ptr);}
-    float getFloat() {return (float)(*(int64_t *)ptr);}
-    double getDouble() {return (double)(*(int64_t *)ptr);}
+    char getByte() {return (char)(*(uint64_t *)ptr);}
+    short getShort() {return (short)(*(uint64_t *)ptr);}
+    int getInt() {return (int)(*(uint64_t *)ptr);}
+    int64_t getLong() {return (int64_t)(*(uint64_t *)ptr);}
+    float getFloat() {return (float)(*(uint64_t *)ptr);}
+    double getDouble() {return (double)(*(uint64_t *)ptr);}
     char *getDate();
 
     ///@}
@@ -772,7 +839,12 @@ public:
     char getByte() {return (char)(*(float *)ptr);}
     short getShort() {return (short)(*(float *)ptr);}
     int getInt() {return (int)(*(float *)ptr);}
+    //    int getInt() {return numeric_cast<int>(*(float *)ptr);}
     int64_t getLong() {return (int64_t)(*(float *)ptr);}
+    unsigned char getByteUnsigned() {return (unsigned char)(*(float *)ptr);}
+    unsigned short getShortUnsigned() {return (unsigned short)(*(float *)ptr);}
+    unsigned int getIntUnsigned() {return (unsigned int)(*(float *)ptr);}
+    uint64_t getLongUnsigned() {return (uint64_t)(*(float *)ptr);}
     float getFloat() {return (float)(*(float *)ptr);}
     double getDouble() {return (double)(*(float *)ptr);}
 
@@ -810,6 +882,10 @@ public:
     short getShort() {return (short)(*(double *)ptr);}
     int getInt() {return (int)(*(double *)ptr);}
     int64_t getLong() {return (int64_t)(*(double *)ptr);}
+    unsigned char getByteUnsigned() {return (unsigned char)(*(double *)ptr);}
+    unsigned short getShortUnsigned() {return (unsigned short)(*(double *)ptr);}
+    unsigned int getIntUnsigned() {return (unsigned int)(*(double *)ptr);}
+    uint64_t getLongUnsigned() {return (uint64_t)(*(double *)ptr);}
     float getFloat() {return (float)(*(double *)ptr);}
     double getDouble() {return (double)(*(double *)ptr);}
 
