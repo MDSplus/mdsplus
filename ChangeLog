@@ -1,4 +1,60 @@
-commit b4f86ee4ca1f96b4b218bf80a4600e3faae62f63 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c1fc99bbc138e72bf296fe04f05e51ea72a34445 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 2 08:09:28 2015 -0400
+
+    remove gen_device
+
+commit 52406a9a079391b3924a50220952b341365eb2e3
+Merge: 4001564 94c3050
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Apr 2 08:45:09 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 40015647e1eb07cab4dd5b35431e8c2e0b261828
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Apr 2 08:44:29 2015 +0200
+
+    Increase resolution
+
+commit 94c30505b756af9e5a79318470915ffee98f96c1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 1 16:52:05 2015 -0400
+
+    Allow python subscripting of Signal
+
+commit 3fd4ddb1a8454307472c2c380e5d8893930371b1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 1 14:54:30 2015 -0400
+
+    Add more status messages to treeshr. More to come.
+
+commit fcdea8e435db5116d7d26f98047e7ba2bc5187a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 1 14:53:58 2015 -0400
+
+    remove gen_device and libGenDevShr and move library functions to mitdevices
+
+commit 746c53579f76c373177a2967e6604534a801eaf4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 1 13:33:43 2015 -0400
+
+    Fix Int64Array reference in _treeshr.py
+
+commit 16cd4796caedcc992f01d5432b9b2ddf254c0d6a
+Merge: 0499ea4 630f26f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 1 13:32:52 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 630f26f583c35c4dec3cee9969798ed0b751ca4d (tag: refs/tags/alpha_release-7-0-34)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 31 15:52:16 2015 +0000
+
+    New ChangeLog
+
+commit b4f86ee4ca1f96b4b218bf80a4600e3faae62f63
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Mar 31 11:34:34 2015 -0400
 
@@ -9,6 +65,12 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Mar 30 22:20:15 2015 +0000
 
     New ChangeLog
+
+commit 0499ea4065a3b812943264687a48e6ad2d751ce9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 30 16:28:32 2015 -0400
+
+    remove gen_device and libGeDevShr and move library functions to mitdevices since that's the only place now used.
 
 commit f6afecc0e9ff2734c9e9ea4317ddc6215fb29493
 Author: Tom Fredian <twf@psfc.mit.edu>
