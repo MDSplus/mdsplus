@@ -68,5 +68,22 @@
     <status name="INVSHAPE" value="4601" severity="Error" text="Invalid shape for this data segment"/>
     <status name="INVSHOT" value="4603" severity="Error" text="Invalid shot number - must be -1 (model), 0 (current), or Positive"/>
     <status name="INVTAG" value="4605" severity="Error" text="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"/>
+    <status name="NOPATH" value="4606" severity="Error" text="No 'treename'_path environment variable defined. Cannot locate tree files."/>
+    <status name="TREEFILEREADERR" value="4607" severity="Error" text="Error reading in tree file contents."/>
+    <status name="MEMERR" value="4608" severity="Error" text="Memory allocation error."/>
+    <status name="NOCURRENT" value="4609" severity="Error" text="No current shot number set for this tree."/>
+    <status name="FOPENW" value="4610" severity="Error" text="Error opening file for read-write."/>
+    <status name="FOPENR" value="4611" severity="Error" text="Error opening file read-only."/>
+    <status name="FCREATE" value="4612" severity="Error" text="Error creating new file."/>
+    <status name="CONNECTFAIL" value="4613" severity="Error" text="Error connecting to remote server."/>
+    <status name="NCIWRITE" value="4614" severity="Error" text="Error writing node characterisitics to file."/>
+    <status name="DELFAIL" value="4615" severity="Error" text="Error deleting file."/>
+    <status name="RENFAIL" value="4616" severity="Error" text="Error renaming file."/>
+    <status name="EMPTY" value="4617" severity="Warning" text="Empty string provided."/>
+    <status name="PARSEERR" value="4618" severity="Error" text="Invalid node search string."/>
+    <status name="NCIREAD" value="4619" severity="Error" text="Error reading node characteristics from file."/>
+    <status name="NOVERSION" value="4620" severity="Error" text="No version available."/>
+    <status name="DFREAD" value="4621" severity="Error" text="Error reading from datafile."/>
+    
   </facility>
 </messages>

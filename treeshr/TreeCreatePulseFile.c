@@ -265,7 +265,7 @@ int TreeCreateTreeFiles(char *tree, int shot, int source_shot)
 
 STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 {
-  int status = TreeFAILURE;
+  int status;
 
   int src_fd = MDS_IO_OPEN(src, O_RDONLY | O_BINARY | O_RANDOM, 0);
   if (src_fd != -1) {
@@ -293,13 +293,15 @@ STATIC_ROUTINE int _CopyFile(char *src, char *dst, int lock_it)
 	  free(buff);
 	if (bytes_to_go == 0)
 	  status = TreeSUCCESS;
-      } else if (src_len == 0)
+      } else
 	status = TreeSUCCESS;
       if (lock_it)
 	MDS_IO_LOCK(src_fd, 0, (int)src_len, MDS_IO_LOCK_NONE, 0);
       MDS_IO_CLOSE(dst_fd);
-    }
+    } else
+      status = TreeFCREATE;
     MDS_IO_CLOSE(src_fd);
-  }
+  } else
+    status = TreeFOPENR;
   return status;
 }

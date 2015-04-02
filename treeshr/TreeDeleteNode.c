@@ -68,7 +68,7 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
     unsigned char *old_list = TREE_DELETE_LIST;
     TREE_DELETE_LIST = malloc(vm_needed);
     if (!TREE_DELETE_LIST)
-      return TreeFAILURE;
+      return TreeMEMERR;
     if (reset) {
       memset(TREE_DELETE_LIST, 0, vm_needed);
       if (count)

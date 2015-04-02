@@ -395,6 +395,8 @@ class _Signal(Compound):
         @type idx: Data
         @rtype: Signal
         """
+        if isinstance(idx,slice):
+          idx = Range(idx.start,idx.stop,idx.step)
         return _data.Data.execute('$[$]',self,idx)
     
     def getDimensionAt(self,idx=0):
