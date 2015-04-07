@@ -1,4 +1,16 @@
-commit d506ea572627a836462de6066808bf90f7329859 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit eaf3fd162b4374e86593f4c2e152e91387d021ee (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Apr 7 12:24:58 2015 +0200
+
+    Change Dispatcher properties file managements and jServer errors report fixes
+
+commit 5f49052b04f67508bc7d984ae74f75bd04a89c8d (tag: refs/tags/alpha_release-7-0-36)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Apr 2 15:52:31 2015 +0000
+
+    New ChangeLog
+
+commit d506ea572627a836462de6066808bf90f7329859
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 2 11:25:51 2015 -0400
 
