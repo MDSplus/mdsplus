@@ -86,29 +86,28 @@ public:
         if(data_getString_differs_from_test) std::cout << "tdi decompile: " << data_str << "\n"
                                             << "test string:   " << str << "\n";
         delete[] data_str;
-    }
+    }    
+
 };
 
 
 template < typename T >
 inline void MdsDataTest::test_data_numerics(Data *data, const T value) {
     TEST1( data->getSize() == 1 );
-
-    TEST1( data->getByte() == static_cast<char>(value) );
-
 //    std::cout << "data->getByte() = " << (int)data->getByte() << " -vs- " << "static_char<char>(vlaue) = " << (int)static_cast<char>(value) << "\n";
 
-    TEST1( data->getShort() == static_cast<short>(value) );
-    TEST1( data->getInt() == static_cast<int>(value) );
-    TEST1( data->getLong() == static_cast<int64_t>(value) );
+    TEST1( data->getByte() == numeric_cast<char>(value) );
+    TEST1( data->getShort() == numeric_cast<short>(value) );
+    TEST1( data->getInt() == numeric_cast<int>(value) );
+    TEST1( data->getLong() == numeric_cast<int64_t>(value) );
 
-    TEST1( data->getByteUnsigned() == static_cast<unsigned char>(value) );
-    TEST1( data->getShortUnsigned() == static_cast<unsigned short>(value) );
-    TEST1( data->getIntUnsigned() == static_cast<unsigned int>(value) );
-    TEST1( data->getLongUnsigned() == static_cast<uint64_t>(value) );
+    TEST1( data->getByteUnsigned() == numeric_cast<unsigned char>(value) );
+    TEST1( data->getShortUnsigned() == numeric_cast<unsigned short>(value) );
+    TEST1( data->getIntUnsigned() == numeric_cast<unsigned int>(value) );
+    TEST1( data->getLongUnsigned() == numeric_cast<uint64_t>(value) );
 
-    TEST1( data->getFloat() == static_cast<float>(value) );
-    TEST1( data->getDouble() == static_cast<double>(value) );
+    TEST1( data->getFloat() == numeric_cast<float>(value) );
+    TEST1( data->getDouble() == numeric_cast<double>(value) );
 
     try { data->getComplex(); } catch (MdsException &e) {
         TEST0( strcmp(e.what(),"getComplex() not supported for non Complex data types") );

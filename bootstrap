@@ -4,7 +4,7 @@ aclocal
 
 autoheader
 
-# libtoolize
+libtoolize
 
 automake --add-missing
 
