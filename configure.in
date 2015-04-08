@@ -41,6 +41,7 @@ AS_CASE([$enable_shared],
 AC_SUBST([LINKWHOLE])
 AC_MSG_RESULT([$enable_shared])
 
+
 dnl See if the linker supports -rpath-link
 AC_MSG_CHECKING([whether the linker supports -rpath-link])
 AS_VAR_SET_IF([LDFLAGS], [AS_VAR_SET([save_LDFLAGS], ["$LDFLAGS"])])
@@ -1032,6 +1033,7 @@ mdslib/Makefile
 mdslibidl/Makefile 
 mdsobjects/cpp/Makefile
 mdsobjects/cpp/testing/Makefile
+mdsobjects/cpp/testing/testutils/Makefile
 mdsobjects/java/Makefile
 mdsobjects/labview/Makefile
 mdsmisc/Makefile

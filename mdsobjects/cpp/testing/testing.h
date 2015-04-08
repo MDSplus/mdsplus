@@ -44,9 +44,10 @@ printf("..:: Testing " #name " ::..\n");
 #define TEST1(val) {int _fail = (val)==0; PRINT_TEST1(_fail,val); testing::Singleton<testing::TestResults>::get_instance().fails() += _fail;}
 #define TEST0(val) {int _fail = (val)!=0; PRINT_TEST0(_fail,val); testing::Singleton<testing::TestResults>::get_instance().fails() += _fail;}
 
+#define TEST_STD_EXCEPTION(val, string) try { val; } catch (std::exception &e)    { TEST0( strcmp(e.what(), string) ); }
 #define TEST_MDS_EXCEPTION(val, string) try { val; } catch (mds::MdsException &e) { TEST0( strcmp(e.what(), string) ); }
-
-
-
+#define TEST_EXCEPTION(val, ExceptionClass) { bool correct_exception_caught = false; \
+    try { val; } catch (ExceptionClass &e) { correct_exception_caught=true; } catch (...) {} \
+    TEST1(correct_exception_caught); }
 
 #endif // MDS_UNITTEST_TESTING_H

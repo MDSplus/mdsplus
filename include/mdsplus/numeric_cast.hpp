@@ -1,0 +1,5 @@
+#ifndef NUMERIC_CAST_HPP
+#define NUMERIC_CAST_HPP
+
+#endif // NUMERIC_CAST_HPP
+

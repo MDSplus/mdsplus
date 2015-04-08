@@ -1,10 +1,12 @@
+SUBDIRS = testutils .
+
 include ${top_srcdir}/Makefile.inc
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
 AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
+AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ testutils/limMdsTestUtils.a
 #@LIBS@ @SRBLIB@
 
 
@@ -14,7 +16,8 @@ TESTS = \
         MdsExceptionTest \
         MdsDataTest \
         MdsDataTest_NumericConversion \
-        MdsDataTest_NumericLimits
+        MdsDataTest_NumericLimits \
+        MdsDataTest_ScalarCast
 else
 TESTS =
 endif
