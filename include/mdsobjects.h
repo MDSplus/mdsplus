@@ -468,7 +468,6 @@ public:
 ///
 class  EXPORT Int8 : public Scalar
 {
-    char m_storage;
 public:
     Int8(char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {

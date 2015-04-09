@@ -18,21 +18,9 @@
 
 namespace MDSplus {
 
-/// Numeric Limits for Floating types
-template < typename T, typename EnableIf = void >
-class numeric_limits : public std::numeric_limits<T>
-{
-public:
-    typedef std::numeric_limits<T> BaseClass;
-    static inline T highest() { return BaseClass::max(); }
-    static inline T lowest() { return -BaseClass::max(); }
-};
-
 /// Numeric Limits for Integer types
-template < typename T >
-class numeric_limits<T, typename enable_if<
-        std::numeric_limits<T>::is_integer>
-        ::type > :
+template < typename T, typename EnableIf = void >
+class numeric_limits :
         public std::numeric_limits<T>
 {
 public:
@@ -40,6 +28,21 @@ public:
     static inline T highest() { return BaseClass::max(); }
     static inline T lowest() { return BaseClass::min(); }
 };
+
+/// Numeric Limits for Floating types
+template < typename T >
+class numeric_limits<T, typename enable_if<
+        !std::numeric_limits<T>::is_integer &&
+        std::numeric_limits<T>::is_signed
+        >::type > :
+        public std::numeric_limits<T>
+{
+public:
+    typedef std::numeric_limits<T> BaseClass;
+    static inline T highest() { return BaseClass::max(); }
+    static inline T lowest() { return -BaseClass::max(); }
+};
+
 
 } // MDSplus
 
