@@ -70,6 +70,22 @@
 #define TreeINVSHAPE             0xfd18fca
 #define TreeINVSHOT              0xfd18fda
 #define TreeINVTAG               0xfd18fea
+#define TreeNOPATH               0xfd18ff2
+#define TreeTREEFILEREADERR      0xfd18ffa
+#define TreeMEMERR               0xfd19002
+#define TreeNOCURRENT            0xfd1900a
+#define TreeFOPENW               0xfd19012
+#define TreeFOPENR               0xfd1901a
+#define TreeFCREATE              0xfd19022
+#define TreeCONNECTFAIL          0xfd1902a
+#define TreeNCIWRITE             0xfd19032
+#define TreeDELFAIL              0xfd1903a
+#define TreeRENFAIL              0xfd19042
+#define TreeEMPTY                0xfd19048
+#define TreePARSEERR             0xfd19052
+#define TreeNCIREAD              0xfd1905a
+#define TreeNOVERSION            0xfd19062
+#define TreeDFREAD               0xfd1906a
 
 
 #endif

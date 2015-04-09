@@ -15,6 +15,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     Hashtable<String, ServerInfo> serversInfo = new Hashtable<String, ServerInfo>();
     
     ShotsPerformance shotsPerformance = new ShotsPerformance();
+    String experiment;
 
     class UpdateList implements Runnable
     {
@@ -455,12 +456,14 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     public jDispatchMonitor()
     {
-        this(null);
+        this(null, null);
     }
 
-    public jDispatchMonitor(String monitor_server)
+    public jDispatchMonitor(String monitor_server, String experiment)
     {
         
+	this.experiment = experiment;        
+
         addWindowListener(new java.awt.event.WindowAdapter() 
         {   
             public void windowClosing(java.awt.event.WindowEvent e) 
@@ -484,17 +487,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         setWindowTitle();
         this.monitor_server = monitor_server;
 
-        Properties properties = new Properties();
-        try {
-            FileInputStream prop = new FileInputStream("jDispatcher.properties");
-            properties.load(prop);
-            prop.close();
-        }
-        catch(Exception exc)
-        {
-            System.out.println("Cannot open properties file");
+        Properties properties = MdsHelper.initialization(experiment);
+	if( properties == null )
             System.exit(0);
-        }
+
         int error_port = -1;
         try {
             error_port = Integer.parseInt(properties.getProperty("jDispatcher.error_port"));
@@ -1314,15 +1310,50 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
       }
     }
 
-    public static void main(String arg[])
+    public static void main(String[] args)
     {
 
         jDispatchMonitor dm;
+	int i;
+	String experiment = null;
+	String monitor_server = null;
 
-        if(arg != null &&  arg.length > 0 && arg[0].length() != 0)
-            dm = new jDispatchMonitor(arg[0]);
+	if(args != null && args.length > 3 )
+	{
+	    System.out.println( "jDispatchMonitor [monitor_server] [-e experiment ] \n");
+	    System.exit(0);
+	}
+
+
+	if( args.length > 0 )
+	{
+		for( i = 0; i < args.length && !args[i].equals("-e") ; i++ );
+
+		if( i < args.length )
+		{
+		    experiment = args[i + 1];
+		    if( args.length >= 3 )
+			monitor_server =  ( (i == 0) ? args[i+2] : args[0] );	
+	
+		} else {
+		    monitor_server = args[0];
+		}
+	}
+
+	System.out.println("jDispatchMonitor "+monitor_server+" "+experiment);
+	
+	MdsHelper.initialization(experiment);
+
+
+        dm = new jDispatchMonitor(monitor_server, experiment);
+
+
+/*
+        if(args != null &&  args.length > 0 && args[0].length() != 0)
+            dm = new jDispatchMonitor(args[0]);
         else
             dm = new jDispatchMonitor();
+*/
         dm.pack();
         dm.setSize(600, 700);
         dm.setVisible(true);

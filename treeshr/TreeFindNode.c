@@ -97,7 +97,7 @@ int _TreeFindNode(void *dbid, char const *path, int *outnid)
   ctx = malloc(sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   ctx->type = EOL;
-  ctx->string = strcpy(malloc(len + 1), path);
+  ctx->string = strdup(path);
   for (i = 0; i < len && path[i] != ' '; i++)
     ctx->string[i] = toupper(path[i]);
   ctx->string[i] = 0;
@@ -146,7 +146,7 @@ int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_ino
       ctx->string[i] = 0;
       status = Parse(ctx, 1);
     } else
-      status = TreeFAILURE;
+      status = TreeMEMERR;
     if (status == TreeNORMAL) {
       node = dblist->default_node;
       ctx->level = 1;
@@ -437,7 +437,7 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
   if (not_eos(char_ptr))
     status = TreeNORMAL;
   else
-    return TreeFAILURE;
+    return TreeEMPTY;
 
 /**************************************************
  For each character in 
@@ -483,12 +483,12 @@ path name check for the
       case BROTHER_TYPE_NOWILD:
       case MEMBER_TYPE_NOWILD:
 	if (++tokencnt > 12)
-	  return TreeFAILURE;
+	  return TreePARSEERR;
 	break;
 
       case TAG_TYPE:
 	if (++tokencnt > 24)
-	  return TreeFAILURE;
+	  return TreePARSEERR;
 	break;
 
       default:
@@ -576,7 +576,7 @@ path name check for the
 	case ANCESTOR_TYPE:
 	  break;
 	default:
-	  return TreeFAILURE;
+	  return TreeNNF;
 	}
       }
       tokencnt++;
@@ -619,7 +619,7 @@ path name check for the
       case ANCESTOR_TYPE:
 	break;
       default:
-	return TreeFAILURE;
+	return TreePARSEERR;
       }
       tokencnt++;
     }
@@ -642,12 +642,12 @@ path name check for the
 	      do_action(SON_BROTHER_TYPE);
 	      char_ptr += 2;
 	    } else
-	      return TreeFAILURE;
+	      return TreePARSEERR;
 	  } else {
 	    state = BROTHER_START;
 	  }
 	} else
-	  return TreeFAILURE;
+	  return TreePARSEERR;
       } else {
 	if (state != ASTASTAST_TYPE) {
 	  do_action(state);
@@ -672,11 +672,11 @@ path name check for the
 	    tokencnt = 0;
 	    tokenptr = char_ptr + 1;
 	  } else
-	    return TreeFAILURE;
+	    return TreePARSEERR;
 	} else
-	  return TreeFAILURE;
+	  return TreePARSEERR;
       } else
-	return TreeFAILURE;
+	return TreePARSEERR;
 
   /***************************************************
    See if it a colon.
@@ -715,13 +715,13 @@ path name check for the
 	if (not_eos(char_ptr + 1))
 	  state = MEMBER_START;
 	else
-	  return TreeFAILURE;
+	  return TreePARSEERR;
 	break;
       case MEMBER_START:
-	return TreeFAILURE;
+	return TreePARSEERR;
 	break;
       case BROTHER_START:
-	return TreeFAILURE;
+	return TreePARSEERR;
 	break;
       default:
 	do_action(state);
@@ -746,11 +746,11 @@ path name check for the
 	    tokencnt = 0;
 	    tokenptr = char_ptr + 1;
 	  } else
-	    return TreeFAILURE;
+	    return TreePARSEERR;
 	} else
-	  return TreeFAILURE;
+	  return TreePARSEERR;
       } else
-	return TreeFAILURE;
+	return TreePARSEERR;
 
   /****************************************************
    See if it is a hyphen character. If current state
@@ -765,9 +765,9 @@ path name check for the
 	do_action(PARENT_TYPE);
 	state = NONE;
       } else
-	return TreeFAILURE;
+	return TreePARSEERR;
     else
-      return TreeFAILURE;
+      return TreePARSEERR;
     char_ptr++;
   }
   if ((state != MEMBER_START) && (state != NONE) && (state != ASTASTAST_TYPE)

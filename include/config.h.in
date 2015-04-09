@@ -93,7 +93,7 @@
 #define LONG_LONG_CONSTANT(value) value
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

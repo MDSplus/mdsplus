@@ -169,7 +169,7 @@ int TreeOpenDatafileR(TREE_INFO * info)
     strcat(filename, "datafile");
     df_ptr->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
     free(filename);
-    status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
+    status = (df_ptr->get == -1) ? TreeFOPENR : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;
   }
@@ -287,7 +287,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)&hdr, 12, &deleted) ==
-	     12) ? TreeSUCCESS : TreeFAILURE;
+	     12) ? TreeSUCCESS : TreeDFREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenDatafile(info);
       }
@@ -304,7 +304,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
 	while (status & 1 && deleted) {
 	  status = ((unsigned int)
 		    MDS_IO_READ_X(info->data_file->get, rfa_l + 12, (void *)bptr, partlen,
-				  &deleted) == partlen) ? TreeSUCCESS : TreeFAILURE;
+				  &deleted) == partlen) ? TreeSUCCESS : TreeDFREAD;
 	  if (status & 1 && deleted)
 	    status = TreeReopenDatafile(info);
 	}
@@ -323,7 +323,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)record, *buffer_size, &deleted) ==
-	     *buffer_size) ? TreeSUCCESS : TreeFAILURE;
+	     *buffer_size) ? TreeSUCCESS : TreeDFREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenDatafile(info);
       }
@@ -342,7 +342,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)buffer, blen, &deleted) ==
-	     blen) ? TreeSUCCESS : TreeFAILURE;
+	     blen) ? TreeSUCCESS : TreeDFREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenDatafile(info);
       }
@@ -401,7 +401,7 @@ int TreeGetVersionNci(TREE_INFO * info, NCI * nci, NCI * v_nci)
     while (status & 1 && deleted) {
       status =
 	  (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)nci_bytes, 42, &deleted) ==
-	   42) ? TreeSUCCESS : TreeFAILURE;
+	   42) ? TreeSUCCESS : TreeDFREAD;
       if (status & 1 && deleted)
 	status = TreeReopenDatafile(info);
     }
