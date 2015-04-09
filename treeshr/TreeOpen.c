@@ -289,7 +289,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
   if (dblist) {
     if (dblist->remote) {
       status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)	   /**** Remote server might have already opened the tree ****/
+      if (status == TreeNOT_OPEN)	       /**** Remote server might have already opened the tree ****/
 	status = TreeNORMAL;
     } else if (local_info) {
 
@@ -345,7 +345,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
 	      MDS_IO_CLOSE(local_info->channel);
 	    if (local_info->section_addr[0]) {
 #if !defined(_WIN32)
-	      if (local_info->mapped) 
+	      if (local_info->mapped)
 		munmap(local_info->section_addr[0], local_info->alq * 512);
 #endif
 	      if (local_info->vm_addr)
@@ -842,45 +842,46 @@ static int OpenOne(TREE_INFO * info, char *tree, int shot, char *type, int new, 
     else
       status = TreeINVSHOT;
     if (status & 1) {
-    for (i = 0, part = path; (i < (pathlen + 1)) && (fd == -1); i++) {
-      if (*part == ' ')
-	part++;
-      else if ((path[i] == ';' || path[i] == 0) && strlen(part)) {
-	path[i] = 0;
-	resnam = strcpy(malloc(strlen(part) + strlen(name) + strlen(type) + 2), part);
-	if (resnam[strlen(resnam) - 1] == '+')
-	  resnam[strlen(resnam) - 1] = '\0';
-	else {
-	  if (strcmp(resnam + strlen(resnam) - 1, TREE_PATH_DELIM))
-	    strcat(resnam, TREE_PATH_DELIM);
-	  strcat(resnam, name);
-	}
-	strcat(resnam, type);
-	if (is_tree) {
-	  info->channel = 0;
-	  info->mapped = 0;
-	}
-	if (new) {
-	  fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0777);
-	  if (fd == -1)
-	    status = TreeFCREATE;
-	} else {
-	  fd = MDS_IO_OPEN(resnam, edit_flag ? O_RDWR : O_RDONLY, 0);
+      for (i = 0, part = path; (i < (pathlen + 1)) && (fd == -1); i++) {
+	if (*part == ' ')
+	  part++;
+	else if ((path[i] == ';' || path[i] == 0) && strlen(part)) {
+	  path[i] = 0;
+	  resnam = strcpy(malloc(strlen(part) + strlen(name) + strlen(type) + 2), part);
+	  if (resnam[strlen(resnam) - 1] == '+')
+	    resnam[strlen(resnam) - 1] = '\0';
+	  else {
+	    if (strcmp(resnam + strlen(resnam) - 1, TREE_PATH_DELIM))
+	      strcat(resnam, TREE_PATH_DELIM);
+	    strcat(resnam, name);
+	  }
+	  strcat(resnam, type);
+	  if (is_tree) {
+	    info->channel = 0;
+	    info->mapped = 0;
+	  }
+	  status = TreeNORMAL;
+	  if (new) {
+	    fd = MDS_IO_OPEN(resnam, O_RDWR | O_CREAT, 0777);
+	    if (fd == -1)
+	      status = TreeFCREATE;
+	  } else {
+	    fd = MDS_IO_OPEN(resnam, edit_flag ? O_RDWR : O_RDONLY, 0);
 #if (defined(__osf__) || defined(__linux) || defined(__hpux) || defined(__sun) || defined(__sgi) || defined(_AIX) || defined(__APPLE__))
-	  info->mapped = (MDS_IO_SOCKET(fd) == -1);
+	    info->mapped = (MDS_IO_SOCKET(fd) == -1);
 #endif
-	  if (fd == -1)
-	    status = edit_flag ? TreeFOPENW : TreeFOPENR;
+	    if (fd == -1)
+	      status = edit_flag ? TreeFOPENW : TreeFOPENR;
+	  }
+	  if (fd == -1) {
+	    free(resnam);
+	    resnam = NULL;
+	  } else if (is_tree) {
+	    info->channel = fd;
+	  }
+	  part = &path[i + 1];
 	}
-	if (fd == -1) {
-	  free(resnam);
-	  resnam = NULL;
-	} else if (is_tree) {
-	  info->channel = fd;
-	}
-	part = &path[i + 1];
       }
-    }
     }
     if (path)
       TranslateLogicalFree(path);
@@ -925,7 +926,7 @@ static int OpenTreefile(char *tree, int shot, TREE_INFO * info, int edit_flag, i
   int status;
 
   char *resnam;
-  status = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report, edit_flag,fd);
+  status = OpenOne(info, tree, shot, TREE_TREEFILE_TYPE, 0, &resnam, report, edit_flag, fd);
   if (status & 1) {
     info->alq = (int)(MDS_IO_LSEEK(*fd, 0, SEEK_END) / 512);
     if (info->alq < 1) {
@@ -1233,7 +1234,9 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	info->flush = ((*dblist)->shotid == -1);
 	info->treenam = strdup(tree);
 	info->shot = (*dblist)->shotid;
-	status = OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0, &fd);
+	status =
+	    OpenOne(info, tree, (*dblist)->shotid, TREE_TREEFILE_TYPE, 1, &info->filespec, 0, 0,
+		    &fd);
 	if (fd > -1) {
 	  char *resnam = 0;
 	  MDS_IO_CLOSE(fd);
@@ -1243,7 +1246,8 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	    free(resnam);
 	  if (fd > -1) {
 	    MDS_IO_CLOSE(fd);
-	    status = OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0, 0, &fd);
+	    status =
+		OpenOne(info, tree, (*dblist)->shotid, TREE_DATAFILE_TYPE, 1, &resnam, 0, 0, &fd);
 	    if (resnam)
 	      free(resnam);
 	    if (fd > -1)
