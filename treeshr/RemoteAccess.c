@@ -1431,8 +1431,11 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
 
   ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
     ssize_t ans = -1;
-    if (count == 0)
+    if (count == 0) {
+      if (deleted) 
+	*deleted=0;
       return 0;
+    }
     LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
       if (FDS[fd - 1].socket == SRB_SOCKET) {
