@@ -1,4 +1,38 @@
-commit eaf3fd162b4374e86593f4c2e152e91387d021ee (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e3fc4de8d77958c12d8fec67fe5689bf62620a1c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 9 08:23:25 2015 -0400
+
+    Fix status return on successful open after failing from previous attempts on the tree path
+
+commit 9835709abca6df6ef17ef9adf9ad58fc74792eaa
+Merge: 487b81e b9e8059
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 9 08:02:27 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+    
+    Conflicts:
+    	treeshr/RemoteAccess.c
+
+commit 487b81e4bd1ebda171ced1e98c7f680a092a00cc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 9 07:58:43 2015 -0400
+
+    Fix deleted logic in MDS_IO_READ_X
+
+commit 5b6330fcfe7511bb8d40ec49326f1689c77a4b1b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 9 07:57:08 2015 -0400
+
+    Add slice type subscripting to Signals
+
+commit b9e805980acafbc17cddaec5d25d8e5ddbd4b96a (tag: refs/tags/alpha_release-7-0-37)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Apr 7 22:20:48 2015 +0000
+
+    New ChangeLog
+
+commit eaf3fd162b4374e86593f4c2e152e91387d021ee
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Tue Apr 7 12:24:58 2015 +0200
 
