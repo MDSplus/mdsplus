@@ -1,26 +1,35 @@
-#include <mdsobjects.h>
 #include <string>
 #include <cstring>
 
+#include <mdsobjects.h>
 
 #include "testing.h"
-
 #include "MdsDataTest.h"
 
 using namespace MDSplus;
 using namespace testing;
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  NumericLimits Test  ////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 namespace testing {
 
-
+///
+/// \brief The TestLimits class
+///
+/// This tests numeric conversion of Data object with numerical limits ..
+/// it may trigger an exception where overflow should be thrown by numeric_cast
+///
 class TestLimits {
 public:
     template < typename _MdsT >
     static void print_type_conversion_test(const std::string &type_name) {
         typedef typename detail::mds2cpp_typemap<_MdsT>::type c_type;
-        c_type min = std::numeric_limits<c_type>::min();
-        c_type eps = std::numeric_limits<c_type>::epsilon();
-        c_type max = std::numeric_limits<c_type>::max();
+        c_type min = numeric_limits<c_type>::lowest();
+        c_type eps = numeric_limits<c_type>::epsilon();
+        c_type max = numeric_limits<c_type>::highest();
 
         Data * mds_min = new _MdsT(min);
         Data * mds_eps = new _MdsT(eps);
@@ -42,9 +51,9 @@ public:
                                        const std::string &tmax = "")
     {
         typedef typename detail::mds2cpp_typemap<_MdsT>::type c_type;
-        c_type min = std::numeric_limits<c_type>::min();
-        c_type eps = std::numeric_limits<c_type>::epsilon();
-        c_type max = std::numeric_limits<c_type>::max();
+        c_type min = numeric_limits<c_type>::lowest();
+        c_type eps = numeric_limits<c_type>::epsilon();
+        c_type max = numeric_limits<c_type>::highest();
 
         { // MIN //
             c_type & value = min;
@@ -72,7 +81,7 @@ public:
             c_type & value = max;
             const std::string &str = tmax;
 
-            Data * data = new Float32(value);
+            Data * data = new _MdsT(value);
             print_type_encoded(data);
             MdsDataTest::test_data_numerics(data,value);
             if(!str.empty())
@@ -83,17 +92,18 @@ public:
 
 
 
-    // TODO://
+    // TODO: //
     template < typename _MdsT >
     static void test_type_conversion_array(const std::string &tmin = "",
                                            const std::string &teps = "",
-                                           const std::string &tmax = "") {}
+                                           const std::string &tmax = "")
+    {}
 
 };
 
 
 
-//// TRAIT FOR FLOAT //
+// SPECIAL TRAIT FOR FLOAT  ..  //
 //template <>
 //void TestLimits::test_conversion_limits<Float32>(const std::string &tmin,
 //                                            const std::string &teps,
@@ -109,12 +119,13 @@ public:
 
 } // testing
 
+
+
+
+
+
 #define MDS_TEST_PRINT_TESTLINE(type) \
     testing::TestLimits::print_type_conversion_test<type>(#type);
-
-
-
-
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MAIN  //////////////////////////////////////////////////////////////////////
@@ -147,17 +158,17 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-//    testing::TestLimits::test_conversion_limits<Int8>("-128B","0B","127B");
-//    testing::TestLimits::test_conversion_limits<Int16>("-32768W","0W","32767W");
-//    testing::TestLimits::test_conversion_limits<Int32>("-2147483648","0","2147483647");
-//    testing::TestLimits::test_conversion_limits<Int64>("0X8000000000000000Q","0X0Q","0X7fffffffffffffffQ");
-//    testing::TestLimits::test_conversion_limits<Uint8>("0BU","0BU","255BU");
-//    testing::TestLimits::test_conversion_limits<Uint16>("0WU","0WU","65535WU");
-//    testing::TestLimits::test_conversion_limits<Uint32>("0LU","0LU","4294967295LU");
-//    testing::TestLimits::test_conversion_limits<Uint64>("0X0QU","0X0QU","0XffffffffffffffffQU");
-    testing::TestLimits::test_conversion_limits<Float32>("11.7549E-39","119.209E-9","340.282E36");
-    testing::TestLimits::test_conversion_limits<Float64>("22.25073858507201D-309","222.0446049250313D-18","179.7693134862316D306");
 
+    testing::TestLimits::test_conversion_limits<Int8>("-128B","0B","127B");
+    testing::TestLimits::test_conversion_limits<Int16>("-32768W","0W","32767W");
+    testing::TestLimits::test_conversion_limits<Int32>("-2147483648","0","2147483647");
+    testing::TestLimits::test_conversion_limits<Int64>("0X8000000000000000Q","0X0Q","0X7fffffffffffffffQ");
+    testing::TestLimits::test_conversion_limits<Uint8>("0BU","0BU","255BU");
+    testing::TestLimits::test_conversion_limits<Uint16>("0WU","0WU","65535WU");
+    testing::TestLimits::test_conversion_limits<Uint32>("0LU","0LU","4294967295LU");
+    testing::TestLimits::test_conversion_limits<Uint64>("0X0QU","0X0QU","0XffffffffffffffffQU");
+    testing::TestLimits::test_conversion_limits<Float32>("-340.282E36","119.209E-9","340.282E36");
+    testing::TestLimits::test_conversion_limits<Float64>("-179.7693134862316D306","222.0446049250313D-18","179.7693134862316D306");
 
 
     std::cout << "\n";

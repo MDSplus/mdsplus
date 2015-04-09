@@ -45,6 +45,7 @@ struct FunctionTypes< R(O::*)(T0,T1,T2) > {
 };
 
 } // detail
+} // testing
 
 #endif // FUNCTIONTYPES_H
 

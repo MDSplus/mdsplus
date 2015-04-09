@@ -2,6 +2,9 @@
 #include <string>
 #include <cstring>
 
+#include "testutils/CommaInit.h"
+#include "testutils/vector_test.h"
+
 #include "testing.h"
 
 #include "MdsDataTest.h"

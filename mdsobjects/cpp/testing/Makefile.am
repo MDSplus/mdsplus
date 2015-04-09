@@ -6,7 +6,7 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 
 AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ testutils/limMdsTestUtils.a
+AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
 #@LIBS@ @SRBLIB@
 
 
@@ -23,7 +23,7 @@ TESTS =
 endif
 
 
-LDADD = $(AM_LIBS)
+LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 
 if USE_VALGRIND
 LOG_COMPILER = valgrind
