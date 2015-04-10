@@ -104,6 +104,14 @@ struct numeric_cast_precision_rule {
     }
 };
 
+template < typename Target, typename Source, typename EnableIf = void >
+struct numeric_cast_nan_rule {
+    typedef numeric_cast_trait<Target,Source> trait;
+    static inline void apply(Source value) {
+        if( isnan(value) ) throw(std::range_error("Trying to convert Nan to an Integer type"));
+    }
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  NumericCastImpl  ///////////////////////////////////////////////////////////
@@ -126,11 +134,9 @@ struct NumericCastImpl < Target, Source,
         ::type >
 {
     static Target numeric_cast(Source value ) {
-        if( numeric_cast_trait<Target,Source>::is_u2s )
-            numeric_cast_max_rule<Target,Source>::apply(value);
-        else
+        if( !numeric_cast_trait<Target,Source>::is_u2s )
             numeric_cast_min_rule<Target,Source>::apply(value);
-            numeric_cast_max_rule<Target,Source>::apply(value);
+        numeric_cast_max_rule<Target,Source>::apply(value);
         return static_cast<Target>(value);
     }
 };
@@ -193,6 +199,7 @@ struct NumericCastImpl < Target, Source,
     static Target numeric_cast(Source value ) {
         numeric_cast_min_rule<Target,Source>::apply(value);
         numeric_cast_max_rule<Target,Source>::apply(value);
+        numeric_cast_nan_rule<Target,Source>::apply(value);
         numeric_cast_precision_rule<Target,Source>::apply(value);
         return static_cast<Target>(value);
 

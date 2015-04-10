@@ -1102,6 +1102,7 @@ int *Array::getIntArray(int *numElements)
         case DTYPE_DOUBLE: retArr[i] = numeric_cast<int>(*(double *)&ptr[i * length]); break;
         case DTYPE_FSC:
         case DTYPE_FTC:
+            delete [] retArr;
             throw MdsException("getIntArray() not supported for Complex data type");
 		}
 	*numElements = size;
@@ -1148,7 +1149,9 @@ int64_t *Array::getLongArray(int *numElements)
         case DTYPE_FLOAT: retArr[i] = numeric_cast<long>(*(float *)&ptr[i * length]); break;
         case DTYPE_DOUBLE: retArr[i] = numeric_cast<long>(*(double *)&ptr[i * length]); break;
         case DTYPE_FSC:
-        case DTYPE_FTC: throw MdsException("getLongArray() not supported for Complex data type");
+        case DTYPE_FTC:
+            delete [] retArr;
+            throw MdsException("getLongArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1238,7 +1241,9 @@ std::complex<double> *Array::getComplexArray(int *numElements)
 				retArr[i] = std::complex<double>(((float *)ptr)[2*i], ((float *)ptr)[2*i+1]); break;
 			case DTYPE_FTC: 
 				retArr[i] = std::complex<double>(((double *)ptr)[2*i], ((double *)ptr)[2*i+1]); break;
-            default: throw MdsException("getComplexArray() not supported for non Complex data types");
+            default:
+            delete [] retArr;
+            throw MdsException("getComplexArray() not supported for non Complex data types");
 
 		}
 	*numElements = size;

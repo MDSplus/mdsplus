@@ -12,7 +12,6 @@ using namespace MDSplus;
 
 namespace testing {
 
-
 ////////////////////////////////////////////////////////////////////////////////
 //  TEST STRING CONVERSION  ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,13 +39,6 @@ inline std::string mdsdata_to_string(Data *data) {
 
 // we assume vector std allocator to be contiguous //
 // see note: http://www.open-std.org/jtc1/sc22/wg21/docs/lwg-defects.html#69
-
-#define MDS_GETARRAY_FUNCPT(type,name) \
-    ((type *(Data::*)(int*))&Data::name)
-
-#define MDS_GETNUMERIC_FUNCPT(type,name) \
-    ((type (Data::*)())&Data::name)
-
 
 class MdsDataTest {
 
@@ -88,6 +80,10 @@ public:
 };
 
 
+///
+/// Takes a Data object and a getter of Array and returns a vector of the obtained
+/// elements.
+///
 template < typename Fn >
 inline typename MdsDataTest::ArrayFnptr<Fn>::VectorType
 MdsDataTest::get_vector(Data *data, Fn fn)
@@ -104,6 +100,10 @@ MdsDataTest::get_vector(Data *data, Fn fn)
 }
 
 
+///
+/// If the numeric_cast throws an exception this chatch and compare with the
+/// getter method of the Data object. Otherwise the casted values are checked.
+///
 template < typename Fn, typename T >
 inline void MdsDataTest::test_numeric_cast_function(Data *data, Fn fn, const T value)
 {
@@ -117,22 +117,29 @@ inline void MdsDataTest::test_numeric_cast_function(Data *data, Fn fn, const T v
 }
 
 
+
+#define MDS_GETARRAY_FUNCPT(type,name) \
+    ((type *(Data::*)(int*))&Data::name)
+
+#define MDS_GETNUMERIC_FUNCPT(type,name) \
+    ((type (Data::*)())&Data::name)
+
 template < typename T >
 inline void MdsDataTest::test_data_numerics(Data *data, const T value) {
     TEST1( data->getSize() == 1 );
 
-//    TEST1( data->getByte() == numeric_cast<char>(value) );
-//    TEST1( data->getShort() == numeric_cast<short>(value) );
-//    TEST1( data->getInt() == numeric_cast<int>(value) );
-//    TEST1( data->getLong() == numeric_cast<int64_t>(value) );
+    //    TEST1( data->getByte() == numeric_cast<char>(value) );
+    //    TEST1( data->getShort() == numeric_cast<short>(value) );
+    //    TEST1( data->getInt() == numeric_cast<int>(value) );
+    //    TEST1( data->getLong() == numeric_cast<int64_t>(value) );
 
-//    TEST1( data->getByteUnsigned() == numeric_cast<unsigned char>(value) );
-//    TEST1( data->getShortUnsigned() == numeric_cast<unsigned short>(value) );
-//    TEST1( data->getIntUnsigned() == numeric_cast<unsigned int>(value) );
-//    TEST1( data->getLongUnsigned() == numeric_cast<uint64_t>(value) );
+    //    TEST1( data->getByteUnsigned() == numeric_cast<unsigned char>(value) );
+    //    TEST1( data->getShortUnsigned() == numeric_cast<unsigned short>(value) );
+    //    TEST1( data->getIntUnsigned() == numeric_cast<unsigned int>(value) );
+    //    TEST1( data->getLongUnsigned() == numeric_cast<uint64_t>(value) );
 
-//    TEST1( data->getFloat() == numeric_cast<float>(value) );
-//    TEST1( data->getDouble() == numeric_cast<double>(value) );
+    //    TEST1( data->getFloat() == numeric_cast<float>(value) );
+    //    TEST1( data->getDouble() == numeric_cast<double>(value) );
 
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(char, getByte), value);
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(short, getShort), value);
@@ -250,14 +257,14 @@ inline void MdsDataTest::test_data_numerics(Data *data, const std::vector<std::c
     TEST1( MdsDataTest::get_vector(data, MDS_GETARRAY_FUNCPT(std::complex<double>,getComplexArray)) == array_d );
 }
 
+#undef MDS_GETARRAY_FUNCPT
+#undef MDS_GETNUMERIC_FUNCPT
 
 
 
 } // testing
 
 
-#undef MDS_GETARRAY_FUNCPT
-#undef MDS_GETNUMERIC_FUNCPT
 
 
 #endif // MDSDATATEST_H
