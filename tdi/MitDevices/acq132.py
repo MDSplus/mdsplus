@@ -216,6 +216,8 @@ class ACQ132(acq.ACQ):
             print "clock_src = %s\n" % (clock_src,)
         if clock_src == 'INT_CLOCK' :
             intClock = float(settings['getInternalClock'].split()[1])
+            if intClock > 16000000:
+		intClock = 2000000
             delta=1./float(intClock)
             self.clock.record = MDSplus.Range(None, None, delta)
         else:
