@@ -92,7 +92,7 @@ public:
 
 
 
-    // TODO: //
+    // TODO: check limits for arrays //
     template < typename _MdsT >
     static void test_type_conversion_array(const std::string &tmin = "",
                                            const std::string &teps = "",

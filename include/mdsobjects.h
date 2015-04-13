@@ -237,8 +237,8 @@ public:
 
     virtual ~Data();
 
-    void *operator new(size_t sz);
-    void operator delete(void *p);
+//    void *operator new(size_t sz);
+//    void operator delete(void *p);
 
     static void incRefCount(Data * d);
     static void decRefCount(Data * d);
@@ -249,10 +249,10 @@ public:
     virtual Data *getError();
     virtual Data *getHelp();
     virtual Data *getValidation();
-    virtual void setUnits(Data *inUnits);
-    virtual void setError(Data *inError);
-    virtual void setHelp(Data *inHelp);
-    virtual void setValidation(Data *inValidation);
+    virtual void setUnits(Data *in);
+    virtual void setError(Data *in);
+    virtual void setHelp(Data *in);
+    virtual void setValidation(Data *in);
 
 private:
 
@@ -289,14 +289,18 @@ public:
     void * completeConversionToDsc(void *dsc);
 
     /// c style access to internal data members
-    virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
+    virtual void getInfo(char *clazz, char *dtype,
+                         short *length = NULL,
+                         char *nDims = NULL,
+                         int **dims = NULL,
+                         void **ptr = NULL)
     {
         *clazz = this->clazz;
         *dtype = this->dtype;
-        *length = 0;
-        *nDims = 0;
-        *dims = 0;
-        *ptr = 0;
+        if(length) *length = 0;
+        if(nDims) *nDims = 0;
+        if(dims) *dims = 0;
+        if(ptr) *ptr = 0;
     }
 
     /// \return true if this and data match, false otherwise and as default
@@ -306,7 +310,7 @@ public:
     Data *evaluate();
 
     /// eports TDI data functionality, i.e. returns a native type
-    /// (scalar or array). \see clone() fnction.
+    /// (scalar or array).
     virtual Data *data();
 
     /// Return the result of TDI decompile
@@ -372,7 +376,7 @@ public:
 
     virtual int getSize() { return 1; }
 
-    /// Instanciate a Scope object and plot data into.
+    /// Instantiate a Scope object and plot data into.
     virtual void plot();
 
     friend EXPORT std::ostream & operator << (std::ostream &outStream, MDSplus::Data *data);
@@ -385,10 +389,10 @@ protected:
     /// Set accessory data (utits, error, help and validation)
     void setAccessory(Data *units, Data *error, Data *help, Data *validation)
     {
-        this->units = units;
-        this->error = error;
-        this->help = help;
-        this->validation = validation;
+        setUnits(units);
+        setError(error);
+        setHelp(help);
+        setValidation(validation);
     }
 
 private:
@@ -408,6 +412,7 @@ private:
     ///
     /// @{
     /// Accessory information added on this data
+    friend void MDSplus::deleteData(Data *data);
     Data * units;
     Data * error;
     Data * help;
@@ -428,7 +433,7 @@ private:
 /// (descriptor class CLASS_S).
 class EXPORT Scalar: public Data
 {    
-    friend class Array; // TODO: Fix this, probably moving ptr in Data
+    friend class Array;
 protected:
 
     int length;
@@ -446,14 +451,18 @@ public:
     /// convert data to scalar descriptor
     virtual void *convertToDsc();
 
-    virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
+    virtual void getInfo(char *clazz, char *dtype,
+                         short *length = NULL,
+                         char *nDims = NULL,
+                         int **dims = NULL,
+                         void **ptr = NULL)
     {
         *clazz = this->clazz;
         *dtype = this->dtype;
-        *length = this->length;
-        *nDims = 0;
-        *dims = 0;
-        *ptr = this->ptr;
+        if(length) *length = this->length;
+        if(nDims) *nDims = 0;
+        if(dims) *dims = 0;
+        if(ptr) *ptr = this->ptr;
     }    
 
 }; //ScalarData
@@ -1022,16 +1031,23 @@ public:
         return retSize;
     }
 
-    virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
+    virtual void getInfo(char *clazz, char *dtype,
+                         short *length = NULL,
+                         char *nDims = NULL,
+                         int **dims = NULL,
+                         void **ptr = NULL)
     {
         *clazz = this->clazz;
         *dtype = this->dtype;
-        *length = this->length;
-        *nDims = this->nDims;
-        *dims = new int[this->nDims];
-        for(int i = 0; i < this->nDims; i++)
-            (*dims)[i] = this->dims[i];
-        *ptr = this->ptr;
+        if(length) *length = this->length;
+        if(nDims) *nDims = this->nDims;
+        if(dims)
+        {
+            *dims = new int[this->nDims];
+            for(int i = 0; i < this->nDims; i++)
+                (*dims)[i] = this->dims[i];
+        }
+        if(ptr) *ptr = this->ptr;
     }
 
     /// Provides a method to get the array shape, i.e. the array of dimension
@@ -1422,8 +1438,6 @@ public:
             break;
         default:
             opcode = 0;
-
-
         }
         if(nDescs > 0) {
             for(int i = 0; i < nDescs; ++i) {
@@ -1433,8 +1447,8 @@ public:
             }
         }
 
-        this->dtype = dtype;
         clazz = CLASS_R;
+        this->dtype = dtype;
         setAccessory(units, error, help, validation);
     }
 

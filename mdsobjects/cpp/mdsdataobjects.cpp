@@ -174,28 +174,34 @@ MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
 Data::~Data() {
-	decRefCount();
+//	decRefCount();
 }
 
-void *Data::operator new(size_t sz) {
-	return ::operator new(sz);
-}
+//void *Data::operator new(size_t sz) {
+//	return ::operator new(sz);
+//}
 
-
-void Data::operator delete(void *p) {
-	Data * data = reinterpret_cast<Data *>(p);
-	delete data->units;
-	delete data->error;
-	delete data->help;
-	delete data->validation;
-	//data->propagateDeletion();
-	::operator delete(p);
-}
+//void Data::operator delete(void *p) {
+//	Data * data = reinterpret_cast<Data *>(p);
+////    if(data->units) { data->units->decRefCount(); deleteData(data->units); }
+////    if(data->error) { data->error->decRefCount(); deleteData(data->error); }
+////    if(data->help) { data->help->decRefCount(); deleteData(data->help); }
+////    if(data->validation) { data->validation->decRefCount(); deleteData(data->validation); }
+//    //data->propagateDeletion();
+//	::operator delete(p);
+//}
 
 void MDSplus::deleteData(Data *data) {
 	if (data->refCount <= 1) {
-		delete data;
-	}
+        if(data->units) { data->units->decRefCount(); deleteData(data->units); }
+        if(data->error) { data->error->decRefCount(); deleteData(data->error); }
+        if(data->help) { data->help->decRefCount(); deleteData(data->help); }
+        if(data->validation) { data->validation->decRefCount(); deleteData(data->validation); }
+        delete data;
+        data = NULL;
+    } else {
+        data->decRefCount();
+    }
 }
 
 void Data::decRefCount(Data * d) {
@@ -215,9 +221,8 @@ void Data::incRefCount() {
 }
 
 static Data * getMember(Data * member) {
-	if (member)
-		member->refCount++;
-	return member;
+    if (member) member->incRefCount();
+    return member;
 }
 
 Data * Data::getUnits() {
@@ -236,27 +241,28 @@ Data * Data::getValidation() {
 	return getMember(validation);
 }
 
-static void setMember(Data * oldMbr, Data * newMbr) {
-	if (oldMbr)
-		deleteData(oldMbr);
-	oldMbr = newMbr;
-	oldMbr->refCount++;
+static void setMember(Data *&target, Data *member) {
+    if(target) { target->decRefCount(); deleteData(target); }
+    if(member) {
+        target = member;
+        target->incRefCount();
+    }
 }
 
-void Data::setUnits(Data * inUnits) {
-	setMember(units, inUnits);
+void Data::setUnits(Data * in) {
+    setMember(this->units, in);
 }
 
-void Data::setError(Data * inError) {
-	setMember(error, inError);
+void Data::setError(Data * in) {
+    setMember(this->error, in);
 }
 
-void Data::setHelp(Data * inHelp) {
-	setMember(help, inHelp);
+void Data::setHelp(Data * in) {
+    setMember(this->help, in);
 }
 
-void Data::setValidation(Data * inValidation) {
-	setMember(validation, inValidation);
+void Data::setValidation(Data * in) {
+    setMember(this->validation, in);
 }
 
 Data *Data::data()
