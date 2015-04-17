@@ -147,9 +147,13 @@ class MARTE_GENERIC(Device):
       Event.setevent(self.getEventName(), eventStr)
       return 1
  
-    def store(self, arg):
-      eventStr = "COLLECTION_COMPLETE"
-      Event.setevent(self.getEventName(), eventStr)
+    def store(self,arg):
+      eventStr = "STORE " + str(self.id.data())
+      eventStr = eventStr + " " + str(self.signals_adc_in.getNid())
+      eventStr = eventStr + " " + str(self.signals_dac_out.getNid())
+      eventStr = eventStr + " " + str(self.signals_user.getNid())
+      Event.setevent("MARTE", eventStr)
+      time.sleep(3)
       return 1
  
     def abort(self, arg):
