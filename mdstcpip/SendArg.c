@@ -2,6 +2,22 @@
 #include <stdlib.h>
 #include <string.h>
 
+
+///
+/// This function can be used to send data form a mds descriptor. It was designed
+/// to pass descriptors arguments of a TDI command.
+///
+///
+/// \param id the id of the instanced connection in the connections list
+/// \param idx
+/// \param dtype
+/// \param nargs
+/// \param length
+/// \param ndims
+/// \param dims
+/// \param bytes
+/// \return
+///
 int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 	    int *dims, char *bytes)
 {
@@ -10,8 +26,8 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short le
   int i;
   int nbytes = length;
   Message *m;
-  int msgid = (idx == 0
-	       || nargs == 0) ? IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
+  int msgid = (idx == 0 || nargs == 0) ?
+              IncrementConnectionMessageId(id) : GetConnectionMessageId(id);
   if (msgid < 1)
     return 0;
   if (idx > nargs) {

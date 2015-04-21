@@ -545,7 +545,7 @@ int main(int argc, char **argv)
   if (!CommandParsed)
     ParseCommand(argc, argv, &Portname, &port, &hostfile, &mode, &flags, &MaxCompressionLevel);
 
-#endif
+//#endif
   MdsSetServerPortname(Portname);
   if (IsService) {
     InitializeService();

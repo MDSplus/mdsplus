@@ -241,7 +241,7 @@ EXPORT void PrintHelp(char *);
 EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short length,
 		   char ndims, int *dims, char *bytes);
-EXPORT int SendMdsMsg(int id, Message * m, int nowait);
+EXPORT int SendMdsMsg(int id, Message * m, int msg_options);
 void SetConnectionCompression(int conid, int compression);
 EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len);
 EXPORT int SetCompressionLevel(int setting);

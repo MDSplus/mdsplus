@@ -9,6 +9,10 @@ static Connection *ConnectionList = 0;
 static int connection_mutex_initialized = 0;
 static pthread_mutex_t connection_mutex;
 
+///
+/// \brief lock_connection_list
+/// for safe multithreading access to ConnectionList static variable.
+///
 static void lock_connection_list()
 {
   if (!connection_mutex_initialized) {
@@ -18,6 +22,9 @@ static void lock_connection_list()
   pthread_mutex_lock(&connection_mutex);
 }
 
+///
+/// \brief unlock_connection_list
+/// for safe multithreading access to ConnectionList static variable.
 static void unlock_connection_list()
 {
 
@@ -29,6 +36,15 @@ static void unlock_connection_list()
   pthread_mutex_unlock(&connection_mutex);
 }
 
+///
+/// \brief FindConnection
+/// finds a Connection structure inside the static defined list ConnectionList.
+/// \note The connection list is locked during operation.
+///
+/// \param id the Connection id to be searched for
+/// \param prev if prev is set the Connection found is copied inside prev instance
+/// \return the Connection intance identified by id or NULL pointer of not found.
+///
 Connection *FindConnection(int id, Connection ** prev)
 {
   Connection *c = 0, *p;
@@ -39,6 +55,7 @@ Connection *FindConnection(int id, Connection ** prev)
   unlock_connection_list();
   return c;
 }
+
 
 int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
 {
@@ -89,6 +106,14 @@ static void exitHandler(void)
 }
 #endif
 
+/// Creates new Connection instance, the proper ioRoutines is loaded selecting the protocol
+/// from input argument. The created Connection is added to the static ConnectionList using
+/// a thread safe lock.
+/// The new Connection is initialized with the next connection id and the assigned protocol.
+///
+/// \param protocol the protocol to be used for this Connection
+/// \return The new instanced connection id or -1 if error occurred.
+///
 int NewConnection(char *protocol)
 {
   Connection *oldhead, *new;
@@ -119,6 +144,20 @@ static int AuthorizeClient(int id, char *username)
   return c && c->io ? (c->io->authorize ? c->io->authorize(id, username) : 1) : 0;
 }
 
+///
+/// \brief AcceptConnection
+/// creates a new connection instance using protocol from args, if a valid connection is instanced
+///
+///
+/// \param protocol
+/// \param info_name
+/// \param readfd
+/// \param info
+/// \param info_len
+/// \param id
+/// \param usr
+/// \return
+///
 int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len,
 		     int *id, char **usr)
 {
@@ -166,6 +205,11 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
   return ok;
 }
 
+///
+/// \brief FreeDescriptors
+/// free all desctriptors held by the Connection structure in argument.
+/// \param c the connection to be freed
+///
 void FreeDescriptors(Connection * c)
 {
   int i;
@@ -183,6 +227,13 @@ void FreeDescriptors(Connection * c)
   }
 }
 
+///
+/// \brief DisconnectConnection
+/// disconnect the connection identified by id.
+///
+/// \param conid the id of connection to be disconnected
+/// \return true if the connection was correctly freed or false otherwise.
+///
 int DisconnectConnection(int conid)
 {
   int status = 0;
@@ -209,6 +260,14 @@ int DisconnectConnection(int conid)
   return status;
 }
 
+///
+/// \brief GetConnectionIo
+/// finds the Connection structure in ConnectionList and
+/// returns the ioRoutines structure associated to a given Connection identified by id.
+///
+/// \param conid id of the connection that holds the ioRoutines
+/// \return ioRoutines structure in the io field of Connection element found.
+///
 IoRoutines *GetConnectionIo(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -231,6 +290,18 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len)
   return ans;
 }
 
+///
+/// \brief SetConnectionInfo
+/// sets connection info to a \ref Connection structure identified by id.
+/// For example the TCP routine "tcp_connect" of ioRoutinesTcp.c uses this
+/// function as the following: SetConnectionInfo(conid, "tcp", soket_id, 0, 0);
+///
+/// \param conid the connection id to set the info to.
+/// \param info_name the name associated to the info structure inside \ref Connection
+/// \param readfd the file descriptor associated to the Connection
+/// \param info accessory info descriptor
+/// \param len length of accessory info descriptor
+///
 void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len)
 {
   Connection *c = FindConnection(conid, 0);
@@ -247,6 +318,16 @@ void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_
   }
 }
 
+
+///
+/// \brief SetConnectionCompression
+/// finds the Connection intance held in the list of connections by id and
+/// sets the compression level indicated in arguments.
+/// Compression level spans from 0 (no compression) to \ref GetMaxCompressionLevel (maximum compression level usually the integer value 9)
+///
+/// \param conid id of the Connection to set the compression
+/// \param compression the compression level to set
+///
 void SetConnectionCompression(int conid, int compression)
 {
   Connection *c = FindConnection(conid, 0);
@@ -255,6 +336,15 @@ void SetConnectionCompression(int conid, int compression)
   }
 }
 
+///
+/// \brief GetConnectionCompression
+/// finds the Connection intance held in the list of connections by id and
+/// get the value of compression level stored inside.
+/// Compression level spans from 0 (no compression) to \ref GetMaxCompressionLevel (maximum compression level usually the integer value 9)
+///
+/// \param conid the Connection structure id to query.
+/// \return the compression level value found or 0 (no compression) if Connection was not found
+///
 int GetConnectionCompression(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -264,6 +354,15 @@ int GetConnectionCompression(int conid)
     return 0;
 }
 
+
+///
+/// \brief IncrementConnectionMessageId
+/// finds the Connection intance held in the list of connections by id and
+/// increments the connection message id.
+///
+/// \param conid id of the connection
+/// \return the incremented connection message id or 0 if connection was not found.
+///
 unsigned char IncrementConnectionMessageId(int conid)
 {
   unsigned char ans = 0;
@@ -277,6 +376,13 @@ unsigned char IncrementConnectionMessageId(int conid)
   return ans;
 }
 
+///
+/// \brief GetConnectionMessageId
+/// finds connection by id and returns its the message id
+///
+/// \param conid the connection id
+/// \return message_id field of selected connection or 0 as no connection found
+///
 unsigned char GetConnectionMessageId(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -286,6 +392,15 @@ unsigned char GetConnectionMessageId(int conid)
     return 0;
 }
 
+///
+/// \brief SetConnectionClientType
+/// finds connection by id and
+/// sets the client_type field of the connection structure.
+/// \note see ClientType() function.
+///
+/// \param conid the connection id
+/// \param client_type the type of connection to be set
+///
 void SetConnectionClientType(int conid, int client_type)
 {
   Connection *c = FindConnection(conid, 0);
@@ -294,6 +409,15 @@ void SetConnectionClientType(int conid, int client_type)
   }
 }
 
+///
+/// \brief GetConnectionClientType
+/// finds connection by id and
+/// gets the client_type field of the connection structure
+/// \note see ClientType() function.
+///
+/// \param conid the connection id
+/// \return client_type value stored in connection structure
+///
 int GetConnectionClientType(int conid)
 {
   Connection *c = FindConnection(conid, 0);
