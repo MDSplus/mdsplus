@@ -18,7 +18,7 @@
 int TclShowDB(void *ctx, char **error, char **output)
 {
   int sts;
-  char outstr[132];
+  char outstr[512];
   static int open;
   static int idx;
   static char nameStr[64 + 1];
@@ -50,7 +50,7 @@ int TclShowDB(void *ctx, char **error, char **output)
       if (sts & 1) {
 	nameStr[nameLen] = '\0';
 	pathStr[pathLen] = '\0';
-	sprintf(outstr, "%03d  %-32s  shot: %d [%s] %s%s\n",
+	sprintf(outstr, "%03d  %-12s  shot: %d [%s] %s%s\n",
 		idx, nameStr, shotid, pathStr,
 		edit ? "open for edit" : " ", modified ? ",modified" : " ");
 	tclAppend(output, outstr);
