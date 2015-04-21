@@ -1,4 +1,16 @@
-commit 7bf9b707240da5beb2c02da105dc93f1306f89c9 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 4352e8d4978c4d2f375b2d0094078295e826bbbb (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 08:43:56 2015 -0400
+
+    Fix nid references in segment dimensions back ported from alpha branch fix
+
+commit 5e6dfea65f1209e66ba49c63b245cb496a6cbf8e (tag: refs/tags/stable_release-6-1-83)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 26 22:33:04 2015 +0000
+
+    New ChangeLog
+
+commit 7bf9b707240da5beb2c02da105dc93f1306f89c9
 Merge: 8efe231 4c411d9
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 26 11:19:57 2015 -0400
