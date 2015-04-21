@@ -1280,12 +1280,11 @@ char **Array::getStringArray(int *numElements)
 }
 
 bool String::equals(Data *data) {
-	if(data->clazz != clazz || data->dtype != dtype)
-		return false;
+    if(data->clazz != clazz || data->dtype != dtype)
+        return false;
 
-	AutoString first(ptr);
-	AutoString second(((String *)data)->getString());
-	return first.string == second.string;
+    AutoString second(((String *)data)->getString());
+    return std::string(ptr) == second.string;
 }
 
 char *Uint64::getDate()

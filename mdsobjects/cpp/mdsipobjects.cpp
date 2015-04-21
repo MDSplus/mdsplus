@@ -234,7 +234,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	}
     //	unlockGlobal();
 	
-    	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
 		throw MdsException(status);
