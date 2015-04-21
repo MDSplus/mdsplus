@@ -95,8 +95,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
   insures that you are not renameing the node
   off into space.)
 ************************************************/
-  nid_to_node(dblist, (nid_ptr), oldnode_ptr);
-  for (nptr = newnode; nptr; nptr = parent_of(nptr))
+  oldnode_ptr = nid_to_node(dblist, (nid_ptr));
+  for (nptr = newnode; nptr; nptr = parent_of(dblist, nptr))
     if (nptr == oldnode_ptr) {
       status = TreeINVPATH;
       goto cleanup;
@@ -115,33 +115,33 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 /************************************************
  OK so far so disconnect the old node
 *************************************************/
-  pptr = parent_of(oldnode_ptr);
-  if (child_of(pptr) == oldnode_ptr)
-    if (oldnode_ptr->INFO.TREE_INFO.brother) {
-      link_it(pptr->INFO.TREE_INFO.child, brother_of(oldnode_ptr), pptr);
+  pptr = parent_of(dblist, oldnode_ptr);
+  if (child_of(dblist, pptr) == oldnode_ptr)
+    if (oldnode_ptr->brother) {
+      pptr->child = node_offset(brother_of(dblist, oldnode_ptr), pptr);
     } else
-      pptr->INFO.TREE_INFO.child = 0;
+      pptr->child = 0;
   else {
-    for (nptr = child_of(pptr); nptr && (brother_of(nptr) != oldnode_ptr);
-	 nptr = brother_of(nptr)) ;
+    for (nptr = child_of(dblist, pptr); nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+	 nptr = brother_of(dblist, nptr)) ;
     if (nptr)
-      if (oldnode_ptr->INFO.TREE_INFO.brother) {
-	link_it(nptr->INFO.TREE_INFO.brother, brother_of(oldnode_ptr), nptr);
+      if (oldnode_ptr->brother) {
+	nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
       } else
-	nptr->INFO.TREE_INFO.brother = 0;
+	nptr->brother = 0;
     else if (member_of(pptr) == oldnode_ptr)
-      if (oldnode_ptr->INFO.TREE_INFO.brother) {
-	link_it(pptr->INFO.TREE_INFO.member, brother_of(oldnode_ptr), pptr);
+      if (oldnode_ptr->brother) {
+	pptr->member = node_offset( brother_of(dblist, oldnode_ptr), pptr);
       } else
-	pptr->INFO.TREE_INFO.member = 0;
+	pptr->member = 0;
     else {
-      for (nptr = member_of(pptr); nptr && (brother_of(nptr) != oldnode_ptr);
-	   nptr = brother_of(nptr)) ;
+      for (nptr = member_of(pptr); nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+	   nptr = brother_of(dblist, nptr)) ;
       if (nptr)
-	if (oldnode_ptr->INFO.TREE_INFO.brother) {
-	  link_it(nptr->INFO.TREE_INFO.brother, brother_of(oldnode_ptr), nptr);
+	if (oldnode_ptr->brother) {
+	  nptr->brother = node_offset( brother_of(dblist, oldnode_ptr), nptr);
 	} else
-	  nptr->INFO.TREE_INFO.brother = 0;
+	  nptr->brother = 0;
       else {
 	status = TreeINVTREE;
 	goto cleanup;

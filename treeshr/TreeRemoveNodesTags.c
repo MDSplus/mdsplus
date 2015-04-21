@@ -65,7 +65,7 @@ int _TreeRemoveNodesTags(void *dbid, int nid)
 ***********************************/
 
   status = TreeTNF;
-  nid_to_node(dblist, nid_ptr, node);
+  node = nid_to_node(dblist, nid_ptr);
   for (tagidx = swapint((char *)&node->tag_link); tagidx != 0; tagidx = next_tag) {
     next_tag = swapint((char *)&dblist->tree_info->tag_info[tagidx - 1].tag_link);
     _RemoveTagIdx(dblist, tagidx);
