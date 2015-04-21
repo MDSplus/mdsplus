@@ -1,4 +1,34 @@
-commit e3fc4de8d77958c12d8fec67fe5689bf62620a1c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 751b0dbe7e6f335bb9d528ac2a1d8a144ca7c602 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Apr 17 18:09:23 2015 +0200
+
+    Fix wrong method
+
+commit 1bbd3b9cba3807c1ab98d52422252a1447a75f6b (tag: refs/tags/alpha_release-7-0-39, refs/remotes/origin/feature-detail-levels)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Apr 13 22:22:20 2015 +0000
+
+    New ChangeLog
+
+commit 0362fcd6386324ebfc714a60316bd8cf45522cab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 13 14:11:17 2015 -0400
+
+    Remove obsolete files
+
+commit 1952fce173546418297f619fd8ae561b93bd209c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 13 13:00:49 2015 -0400
+
+    Fix for ealier gcc compiler without __SIZEOF_POINTER__ predefined macro
+
+commit 7f5f9859a7a9d0a9e6f7798bebd7a34b1669d2ce (tag: refs/tags/alpha_release-7-0-38)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Apr 9 13:44:41 2015 +0000
+
+    New ChangeLog
+
+commit e3fc4de8d77958c12d8fec67fe5689bf62620a1c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 9 08:23:25 2015 -0400
 
