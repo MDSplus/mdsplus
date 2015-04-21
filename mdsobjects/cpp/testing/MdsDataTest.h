@@ -39,7 +39,7 @@ inline std::string mdsdata_to_string(Data *data) {
 
 // we assume vector std allocator to be contiguous //
 // see note: http://www.open-std.org/jtc1/sc22/wg21/docs/lwg-defects.html#69
-
+//
 class MdsDataTest {
 
     template < typename _Fn >

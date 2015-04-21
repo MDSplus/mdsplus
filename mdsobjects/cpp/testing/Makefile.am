@@ -15,9 +15,11 @@ TESTS = \
         buildtest \
         MdsExceptionTest \
         MdsDataTest \
-        MdsDataTest_NumericConversion \
-        MdsDataTest_NumericLimits \
-        MdsDataTest_ScalarCast
+        MdsScalarTest_NumericConversion \
+        MdsScalarTest_NumericLimits \
+        MdsScalarTest_ScalarCast \
+        MdsStringTest \
+        MdsCompoundTest
 else
 TESTS =
 endif

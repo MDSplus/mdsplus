@@ -13,10 +13,7 @@
 
 
 ////////////////////////////////////////////////////////////////////////////////
-//  TO BE TESTED:  /////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
+//  WAITING TO BE TESTED:
 
 //virtual int * getShape(int *numDim);
 //virtual Data *getDimensionAt(int dimIdx);
@@ -24,7 +21,6 @@
 
 using namespace MDSplus;
 using namespace testing;
-
 
 int main(int argc, char *argv[])
 {
@@ -60,6 +56,24 @@ int main(int argc, char *argv[])
 
         deleteData(data);
     }
+
+
+    { // nested setter getter calls //
+        unique_ptr<Data> data1 = new Int32(5552368);
+        unique_ptr<Data> data2 = new Int32(5552369);
+
+        data1->setUnits(new String("units") );
+        {
+            Data * d1 = data1->getUnits();
+            Data * d2 = data1->getUnits();
+            data2->setUnits(d1);
+            deleteData(d2);
+        }
+
+        unique_ptr<Data> d1 = data2->getUnits();
+        { char * str = unique_ptr<Data>(d1)->getString(); TEST0( strcmp( str,"units") ); delete[] str; }
+    }
+
 
     END_TESTING;
 }
