@@ -414,6 +414,6 @@ class jDispatcherIp
          try {
             dispatcherIp.getListenThread().join();
         }
-        catch (InterruptedException exc) {}
+        catch (Exception exc) {}
     }
 }
