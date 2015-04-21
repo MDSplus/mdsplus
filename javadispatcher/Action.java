@@ -3,7 +3,7 @@ import java.util.*;
 class Action
 {
     ActionData action;
-    String server_address="CACCA";
+    String server_address="DUMMY";
     int nid;
     String name;
     boolean on;

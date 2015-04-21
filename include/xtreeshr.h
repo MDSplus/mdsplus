@@ -2,7 +2,7 @@
 #include <string.h>
 #include <mdsshr.h>
 #include <mdstypes.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

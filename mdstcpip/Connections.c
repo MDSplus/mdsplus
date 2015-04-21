@@ -73,7 +73,7 @@ int FlushConnection(int id)
     return -1;
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static void exitHandler(void)
 {
 }

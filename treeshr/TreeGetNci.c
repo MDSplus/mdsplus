@@ -658,7 +658,7 @@ int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 	status =
 	    MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes,
 			  sizeof(nci_bytes),
-			  &deleted) == sizeof(nci_bytes) ? TreeSUCCESS : TreeFAILURE;
+			  &deleted) == sizeof(nci_bytes) ? TreeSUCCESS : TreeNCIREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenNci(info);
       }
@@ -670,7 +670,7 @@ int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 	  if (nci->flags & NciM_VERSIONS) {
 	    status = TreeGetVersionNci(info, nci, nci);
 	  } else {
-	    status = TreeFAILURE;
+	    status = 0;
 	  }
 	}
 	if (!(status & 1)) {
@@ -683,7 +683,7 @@ int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 	  status = TreeGetVersionNci(info, nci, nci);
 	  n_version++;
 	} else
-	  status = TreeFAILURE;
+	  status = TreeNOVERSION;
       }
     }
   } else {
@@ -696,7 +696,7 @@ int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 
       memcpy(nci, info->edit->nci + node_num - info->edit->first_in_mem, sizeof(NCI));
     else
-      status = TreeFAILURE;
+      status = TreeNOVERSION;
   }
 
   return status;
@@ -724,7 +724,7 @@ int TreeOpenNciR(TREE_INFO * info)
     strcat(filename, "characteristics");
     info->nci_file->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
     free(filename);
-    status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
+    status = (info->nci_file->get == -1) ? TreeFOPENR : TreeNORMAL;
     if (!(status & 1)) {
       free(info->nci_file);
       info->nci_file = NULL;

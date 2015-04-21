@@ -2,7 +2,7 @@
 #define __SERVERSHR
 
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #else

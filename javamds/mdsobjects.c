@@ -2770,7 +2770,7 @@ struct EventDescr {
   int64_t eventId;
   struct EventDescr *nxt;
 };
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static unsigned long *eventMutex;
 static int eventMutex_initialized = 0;
 #else

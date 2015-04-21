@@ -14,7 +14,7 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <usagedef.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define putenv _putenv
 #define snprintf _snprintf
 #endif

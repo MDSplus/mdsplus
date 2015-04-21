@@ -84,12 +84,7 @@ static int va_descr(int *dtype, void *data, int *dim1, ...)
   dsc = descrs[next];
 
   dsc->dtype = *dtype;
-#ifdef __VMS
-  if ((dsc->dtype == DTYPE_CSTRING) && (((struct descriptor *)data)->dtype == DTYPE_CSTRING))
-    dsc->pointer = ((struct descriptor *)data)->pointer;
-  else
-#endif
-    dsc->pointer = (char *)data;
+  dsc->pointer = (char *)data;
   dsc->length = 0;
   dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
@@ -347,31 +342,23 @@ static int va_descr2(int *dtype, int *dim1, ...)
   return retval;
 }
 
-#ifdef __VMS
-static int va_MdsValue(struct dsc$descriptor *expressiondsc, ...)
-{
-#else
 static int va_MdsValue(char *expression, ...)
 {
-#endif
   va_list incrmtr;
   int a_count;
   int i;
   unsigned char nargs;
   struct descriptor *dsc;
   int *length;
-  static int clear = 4;
-  static DESCRIPTOR_LONG(clear_d, &clear);
-  EMPTYXD(tmpxd);
   int status = 1;
   int *descnum = &status;	/* initialize to point at non zero value */
-
-#ifdef __VMS
-  char *expression = DscToCstring(expressiondsc);
-  va_start(incrmtr, expressiondsc);
-#else
-  va_start(incrmtr, expression);
+#ifndef _CLIENT_ONLY
+  EMPTYXD(tmpxd);
+  static int clear=0;
+  static DESCRIPTOR_LONG(clear_d, &clear);
 #endif
+
+  va_start(incrmtr, expression);
   for (a_count = 0; *descnum != 0; a_count++) {
     descnum = va_arg(incrmtr, int *);
   }
@@ -388,11 +375,7 @@ static int va_MdsValue(char *expression, ...)
     struct descrip *arg = &exparg;
     char *newexpression;
 
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
     nargs = a_count - 1;	/* -1 for answer argument */
 
     /* Get last argument - it is the answer descriptor number */
@@ -406,9 +389,6 @@ static int va_MdsValue(char *expression, ...)
      * It malloc's space for newexpression that needs to be freed after
      */
     newexpression = MdsValueRemoteExpression(expression, dscAnswer);
-#ifdef __VMS
-    free(expression);
-#endif
     arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, newexpression);
     status =
 	SendArg(mdsSocket, (char)0, arg->dtype, (unsigned char)(nargs + 1), ArgLen(arg), arg->ndims,
@@ -417,11 +397,7 @@ static int va_MdsValue(char *expression, ...)
 
     /* send each argument */
 
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
     for (i = 1; i <= nargs && (status & 1); i++) {
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0) {
@@ -535,20 +511,14 @@ static int va_MdsValue(char *expression, ...)
     dexpression.length = strlen((char *)expression);
     dexpression.pointer = (char *)expression;
     arglist[argidx++] = (void *)&dexpression;
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
     for (i = 1; i < a_count; i++) {
       descnum = va_arg(incrmtr, int *);
       dsc = descrs[*descnum - 1];
       arglist[argidx++] = (void *)dsc;
     }
     arglist[argidx++] = (void *)&xd1;
-#ifndef __VMS
     arglist[argidx++] = MdsEND_ARG;
-#endif
     *(int *)&arglist[0] = argidx - 1;
     status = LibCallg(arglist, TdiExecute);
 
@@ -586,13 +556,8 @@ static int va_MdsValue(char *expression, ...)
 
 }
 
-#ifdef __VMS
-static int va_MdsValue2(struct dsc$descriptor *expressiondsc, ...)
-{
-#else
 static int va_MdsValue2(char *expression, ...)
 {
-#endif
   va_list incrmtr;
   int a_count;
   int i;
@@ -600,19 +565,13 @@ static int va_MdsValue2(char *expression, ...)
   struct descriptor *dsc;
   int *length;
   int status = 1;
-  void *ptr = 0;
   int *descnum = &status;	/* initialize to point at non zero value */
 
-#ifdef __VMS
-  char *expression = DscToCstring(expressiondsc);
-  va_start(incrmtr, expressiondsc);
-#else
   va_start(incrmtr, expression);
-#endif
   for (a_count = 0; *descnum != 0; a_count++) {
     descnum = va_arg(incrmtr, int *);
     if (*descnum != 0)
-      ptr = va_arg(incrmtr, void *);
+      va_arg(incrmtr, void *);
   }
   a_count--;			/* subtract one for terminator of argument list */
 
@@ -627,11 +586,7 @@ static int va_MdsValue2(char *expression, ...)
     struct descrip *arg = &exparg;
     char *newexpression;
 
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
     nargs = a_count - 1;	/* -1 for answer argument */
 
     /* Get last argument - it is the answer descriptor number */
@@ -645,9 +600,6 @@ static int va_MdsValue2(char *expression, ...)
      * It malloc's space for newexpression that needs to be freed after
      */
     newexpression = MdsValueRemoteExpression(expression, dscAnswer);
-#ifdef __VMS
-    free(expression);
-#endif
     arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, newexpression);
     status =
 	SendArg(mdsSocket, (char)0, arg->dtype, (unsigned char)(nargs + 1), ArgLen(arg), arg->ndims,
@@ -656,11 +608,7 @@ static int va_MdsValue2(char *expression, ...)
 
     /* send each argument */
 
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
     for (i = 1; i <= nargs && (status & 1); i++) {
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0) {
@@ -775,11 +723,7 @@ static int va_MdsValue2(char *expression, ...)
     dexpression.length = strlen((char *)expression);
     dexpression.pointer = (char *)expression;
     arglist[argidx++] = (void *)&dexpression;
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
     for (i = 1; i < a_count; i++) {
       descnum = va_arg(incrmtr, int *);
       dsc = descrs[*descnum - 1];
@@ -787,9 +731,7 @@ static int va_MdsValue2(char *expression, ...)
       arglist[argidx++] = (void *)dsc;
     }
     arglist[argidx++] = (void *)&xd1;
-#ifndef __VMS
     arglist[argidx++] = MdsEND_ARG;
-#endif
     *(int *)&arglist[0] = argidx - 1;
     status = LibCallg(arglist, TdiExecute);
 
@@ -826,13 +768,8 @@ static int va_MdsValue2(char *expression, ...)
 
 }
 
-#ifdef __VMS
-static int va_MdsPut(struct dsc$descriptor *pathnamedsc, struct dsc$descriptor *expressiondsc, ...)
-{
-#else
 static int va_MdsPut(char *pathname, char *expression, ...)
 {
-#endif
   va_list incrmtr;
   int a_count;
   int i;
@@ -842,13 +779,7 @@ static int va_MdsPut(char *pathname, char *expression, ...)
   int status = 1;
   int *descnum = &status;	/* initialize to point at non zero value */
 
-#ifdef __VMS
-  char *pathname = DscToCstring(pathnamedsc);
-  char *expression = DscToCstring(expressiondsc);
-  va_start(incrmtr, expressiondsc);
-#else
   va_start(incrmtr, expression);
-#endif
   for (a_count = 0; *descnum != 0; a_count++) {
     descnum = va_arg(incrmtr, int *);
   }
@@ -869,11 +800,7 @@ static int va_MdsPut(char *pathname, char *expression, ...)
       strcat(putexp, argplace);
     putexp[strlen(putexp) - 1] = ')';
 
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
 
     nargs = nargs + 1;		/* add 1 for putexp  sent first */
     arg = MakeDescrip(&putexparg, DTYPE_CSTRING, 0, 0, putexp);
@@ -923,39 +850,24 @@ static int va_MdsPut(char *pathname, char *expression, ...)
     int i;
     int nid;
 
-#ifdef __VMS
-    struct descriptor pdsc = { strlen(pathname), DTYPE_T, CLASS_S, pathname };
-    if ((status = TreeFindNode(&pdsc, &nid)) & 1) {
-#else
     if ((status = TreeFindNode(pathname, &nid)) & 1) {
-#endif
       dexpression.length = strlen((char *)expression);
       dexpression.pointer = (char *)expression;
       arglist[argidx++] = (void *)&dexpression;
-#ifdef __VMS
-      va_start(incrmtr, expressiondsc);
-#else
       va_start(incrmtr, expression);
-#endif
       for (i = 1; i <= a_count; i++) {
 	descnum = va_arg(incrmtr, int *);
 	dsc = descrs[*descnum - 1];
 	arglist[argidx++] = (void *)dsc;
       }
       arglist[argidx++] = (void *)&tmp;
-#ifndef __VMS
       arglist[argidx++] = MdsEND_ARG;
-#endif
       *(int *)&arglist[0] = argidx - 1;
 
       status = LibCallg(arglist, TdiCompile);
 
       if (status & 1) {
-#ifdef __VMS
-	if ((status = TreePutRecord(&nid, (struct descriptor *)arglist[argidx - 1], 0)) & 1) {
-#else
 	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2], 0)) & 1) {
-#endif
 	  TreeWait();
 	}
       }
@@ -963,41 +875,25 @@ static int va_MdsPut(char *pathname, char *expression, ...)
     }
 
   }
-#endif
-#ifdef __VMS
-  free(pathname);
-  free(expression);
 #endif
   return (status);
 }
 
-#ifdef __VMS
-static int va_MdsPut2(struct dsc$descriptor *pathnamedsc, struct dsc$descriptor *expressiondsc, ...)
-{
-#else
 static int va_MdsPut2(char *pathname, char *expression, ...)
 {
-#endif
   va_list incrmtr;
   int a_count;
   int i;
   unsigned char nargs;
-  void *ptr;
 
   struct descriptor *dsc;
   int status = 1;
   int *descnum = &status;	/* initialize to point at non zero value */
 
-#ifdef __VMS
-  char *pathname = DscToCstring(pathnamedsc);
-  char *expression = DscToCstring(expressiondsc);
-  va_start(incrmtr, expressiondsc);
-#else
   va_start(incrmtr, expression);
-#endif
   for (a_count = 0; *descnum != 0; a_count++) {
     descnum = va_arg(incrmtr, int *);
-    ptr = va_arg(incrmtr, void *);
+    va_arg(incrmtr, void *);
   }
   a_count--;			/* subtract one for terminator of argument list */
 
@@ -1016,11 +912,7 @@ static int va_MdsPut2(char *pathname, char *expression, ...)
       strcat(putexp, argplace);
     putexp[strlen(putexp) - 1] = ')';
 
-#ifdef __VMS
-    va_start(incrmtr, expressiondsc);
-#else
     va_start(incrmtr, expression);
-#endif
 
     nargs = nargs + 1;		/* add 1 for putexp  sent first */
     arg = MakeDescrip(&putexparg, DTYPE_CSTRING, 0, 0, putexp);
@@ -1071,20 +963,11 @@ static int va_MdsPut2(char *pathname, char *expression, ...)
     int i;
     int nid;
 
-#ifdef __VMS
-    struct descriptor pdsc = { strlen(pathname), DTYPE_T, CLASS_S, pathname };
-    if ((status = TreeFindNode(&pdsc, &nid)) & 1) {
-#else
     if ((status = TreeFindNode(pathname, &nid)) & 1) {
-#endif
       dexpression.length = strlen((char *)expression);
       dexpression.pointer = (char *)expression;
       arglist[argidx++] = (void *)&dexpression;
-#ifdef __VMS
-      va_start(incrmtr, expressiondsc);
-#else
       va_start(incrmtr, expression);
-#endif
       for (i = 1; i <= a_count; i++) {
 	descnum = va_arg(incrmtr, int *);
 	dsc = descrs[*descnum - 1];
@@ -1092,19 +975,13 @@ static int va_MdsPut2(char *pathname, char *expression, ...)
 	arglist[argidx++] = (void *)dsc;
       }
       arglist[argidx++] = (void *)&tmp;
-#ifndef __VMS
       arglist[argidx++] = MdsEND_ARG;
-#endif
       *(int *)&arglist[0] = argidx - 1;
 
       status = LibCallg(arglist, TdiCompile);
 
       if (status & 1) {
-#ifdef __VMS
-	if ((status = TreePutRecord(&nid, (struct descriptor *)arglist[argidx - 1]), 0) & 1) {
-#else
 	if ((status = TreePutRecord(nid, (struct descriptor *)arglist[argidx - 2]), 0) & 1) {
-#endif
 	  TreeWait();
 	}
       }
@@ -1112,10 +989,6 @@ static int va_MdsPut2(char *pathname, char *expression, ...)
     }
 
   }
-#endif
-#ifdef __VMS
-  free(pathname);
-  free(expression);
 #endif
   return (status);
 }
@@ -1178,21 +1051,8 @@ static int dtype_length(struct descriptor *d)
   return len;
 }
 
-#ifdef __VMS
-char *DscToCstring(struct dsc$descriptor *dsc)
-{
-  char *ans = (dsc->dsc$b_dtype == DSC$K_DTYPE_T) ?
-      strcpy((char *)malloc(strlen(dsc->dsc$a_pointer) + 1), dsc->dsc$a_pointer) :
-      strcpy((char *)malloc(strlen((char *)dsc) + 1), (char *)dsc);
-  int i;
-  char *p;
-  for (p = ans ? ans + strlen(ans) - 1 : 0; p && *p == ' ' && p >= ans; p--)
-    *p = 0;
-  return ans;
-}
-#endif
 
-#if !defined(_VMS) && !defined(_CLIENT_ONLY)
+#if !defined(_CLIENT_ONLY)
 int *cdescr(int dtype, void *data, ...)
 {
   void *arglist[MAXARGS];
@@ -1215,9 +1075,7 @@ int *cdescr(int dtype, void *data, ...)
     dsc = va_arg(incrmtr, int);
     arglist[argidx++] = (void *)&dsc;
   }
-#ifndef __VMS
   arglist[argidx++] = MdsEND_ARG;
-#endif
   *(int *)&arglist[0] = argidx - 1;
   status = LibCallg(arglist, va_descr);
   return (&status);
@@ -1462,14 +1320,8 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
   }
 }
 #else				/* FORTRAN_ENTRY_POINTS */
-#ifdef __VMS
-int MdsOpen(struct dsc$descriptor *treedsc, int *shot)
-{
-  char *tree = DscToCstring(treedsc);
-#else
 int MdsOpen(char *tree, int *shot)
 {
-#endif
   return ___MdsOpen(tree, shot);
 }
 
@@ -1485,12 +1337,7 @@ static int ___MdsOpen(char *tree, int *shot)
     int dtype_long = DTYPE_LONG;
     int null = 0;
 
-#ifdef __VMS
-    static $DESCRIPTOR(expressiondsc, "TreeOpen($,$)\0");
-    static struct dsc$descriptor *expression = (struct dsc$descriptor *)&expressiondsc;
-#else
     static char *expression = "TreeOpen($,$)";
-#endif
 
     length = strlen(tree);
     d1 = va_descr(&dtype_cstring, tree, &null, &length);
@@ -1510,19 +1357,7 @@ static int ___MdsOpen(char *tree, int *shot)
   }
 #else
   {
-
-#ifdef __VMS
-    struct descriptor treeexp = { 0, DTYPE_T, CLASS_S, 0 };
-    int status;
-    treeexp.length = strlen((char *)tree);
-    treeexp.pointer = (char *)tree;
-    status = MDS$OPEN(&treeexp, shot);
-    free(tree);
-    return status;
-#else
     return TreeOpen(tree, *shot, 0);
-#endif
-
   }
 #endif
   return status;
@@ -1540,14 +1375,8 @@ int MdsSetSocket(SOCKET * newsocket)
   return ___MdsSetSocket(newsocket);
 }
 
-#ifdef __VMS
-int MdsClose(struct dsc$descriptor *treedsc, int *shot)
-{
-  char *tree = DscToCstring(treedsc);
-#else
 int MdsClose(char *tree, int *shot)
 {
-#endif
   return ___MdsClose(tree, shot);
 }
 
@@ -1563,12 +1392,7 @@ static int ___MdsClose(char *tree, int *shot)
     int dtype_long = DTYPE_LONG;
     int null = 0;
 
-#ifdef __VMS
-    static $DESCRIPTOR(expressiondsc, "TreeClose($,$)\0");
-    static struct dsc$descriptor *expression = (struct dsc$descriptor *)&expressiondsc;
-#else
     static char *expression = "TreeClose($,$)";
-#endif
 
     length = strlen(tree);
     d1 = va_descr(&dtype_cstring, tree, &null, &length);
@@ -1577,9 +1401,7 @@ static int ___MdsClose(char *tree, int *shot)
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
 
-#ifdef __VMS
     free(tree);
-#endif
     if ((status & 1)) {
       return *(int *)&answer;
     } else
@@ -1592,30 +1414,14 @@ static int ___MdsClose(char *tree, int *shot)
   }
 #else
   {
-#ifdef __VMS
-    struct descriptor treeexp = { 0, DTYPE_T, CLASS_S, 0 };
-    int status;
-    treeexp.length = strlen((char *)tree);
-    treeexp.pointer = (char *)tree;
-    status = MDS$CLOSE(&treeexp, shot);
-    free(tree);
-    return status;
-#else
     return TreeClose(tree, *shot);
-#endif
   }
 #endif
   return status;
 }
 
-#ifdef __VMS
-int MdsSetDefault(struct dsc$descriptor *nodedsc)
-{
-  char *node = DscToCstring(nodedsc);
-#else
 int MdsSetDefault(char *node)
 {
-#endif
   return ___MdsSetDefault(node);
 }
 
@@ -1625,9 +1431,6 @@ static int ___MdsSetDefault(char *node)
 
   if (mdsSocket != INVALID_SOCKET) {
     char *expression = strcpy((char *)malloc(strlen(node) + 20), "TreeSetDefault('");
-#ifdef __VMS
-    static struct dsc$descriptor expressiondsc = { 0, DTYPE_T, CLASS_S, 0 };
-#endif
     long answer;
     int length = strlen(node);
     int null = 0;
@@ -1637,14 +1440,7 @@ static int ___MdsSetDefault(char *node)
       strcat(expression, "\\");
     strcat(expression, node);
     strcat(expression, "')");
-#ifdef __VMS
-    expressiondsc.dsc$w_length = strlen(expression) + 1;
-    expressiondsc.dsc$a_pointer = expression;
-    free(node);
-    status = MdsValue(&expressiondsc, &d1, &null, &length);
-#else
     status = MdsValue(expression, &d1, &null, &length);
-#endif
     free(expression);
     if ((status & 1)) {
       return *(int *)&answer;
@@ -1662,18 +1458,8 @@ static int ___MdsSetDefault(char *node)
 
   {
 
-#ifdef __VMS
-    struct descriptor defaultexp = { 0, DTYPE_T, CLASS_S, 0 };
-    int status;
-    defaultexp.length = strlen((char *)node);
-    defaultexp.pointer = (char *)node;
-    status = MDS$SET_DEFAULT(&defaultexp);
-    free(node);
-    return status;
-#else
     int nid;
     return TreeSetDefault(node, &nid);
-#endif
   }
 #endif
   return status;
@@ -1690,14 +1476,8 @@ static void ___MdsDisconnect()
   mdsSocket = INVALID_SOCKET;	   /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
 }
 
-#ifdef __VMS
-SOCKET MdsConnect(struct dsc$descriptor *hostdsc)
-{
-  char *host = DscToCstring(hostdsc);
-#else
 SOCKET MdsConnect(char *host)
 {
-#endif
   return ___MdsConnect(host);
 }
 
@@ -1707,9 +1487,6 @@ static SOCKET ___MdsConnect(char *host)
     MdsDisconnect();
   }
   mdsSocket = ConnectToMds(host);  /*** SETS GLOBAL VARIABLE mdsSOCKET ***/
-#ifdef __VMS
-  free(host);
-#endif
   return (mdsSocket);
 }
 
@@ -1849,7 +1626,7 @@ int MdsPut2(char *node, char *expression,
 #ifndef FORTRAN_ENTRY_POINTS
 #define FORTRAN_ENTRY_POINTS
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int zero = 0;
 static SOCKET ___MdsConnect();
 static void ___MdsDisconnect();
@@ -2024,7 +1801,7 @@ If any of these entry points share the same name for fortran
 and c then donot define the macro.
 *************************************************************/
 
-#if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (HAVE_WINDOWS_H)
+#if defined(__hpux) || defined(__osf__) || defined(__sgi) || defined(__sun) || defined(__linux) || defined(__APPLE__) || defined (_WIN32)
 #define descr descr_
 #define descr2 descr2_
 #define FortranMdsConnect mdsconnect_
@@ -2049,11 +1826,7 @@ and c then donot define the macro.
 #define MdsPut2 mdsput2
 #define MdsValue2 mdsvalue2
 #endif
-#ifdef __VMS
 int MdsValue();
-#else
-int MdsValue();
-#endif
 static SOCKET ___MdsConnect(char *host);
 int descr();
 static int ___MdsClose(char *tree, int *shot);

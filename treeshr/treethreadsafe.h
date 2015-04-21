@@ -10,11 +10,11 @@
 #define PTHREAD_ONCE_INIT 0
 #endif				/*HAVE_PTHREAD_H */
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef NO_WINDOWS_H
 #include <windows.h>
 #endif
-#else				/*HAVE_WINDOWS_H */
+#else				/*_WIN32 */
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
 #define pthread_mutexattr_default NULL

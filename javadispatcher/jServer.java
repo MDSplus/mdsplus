@@ -584,11 +584,32 @@ public class jServer
 
             //Gabriele jan 2014: let doAction return the true status and get error message 
             //via  JNI method GetMdsMessage(status)
+
             status = mdsTree.doAction(nid, 0);
             if((status & 1) == 0)
-               System.err.println("Action Execution failed: " + mdsTree.getMdsMessage(status));
+			{
+			   Data d = mdsTree.dataFromExpr("getLastError()");
+			   String errMsg = mdsTree.evaluateSimpleData(d, 0).getString();
              
-/*            try {
+               //System.err.println("Action Execution failed: " + mdsTree.getMdsMessage(status));
+			   if( status != 0 )
+			   { 	
+               		System.out.println("" + new Date() + ", Failed " + name + " in " +
+                               	tree + " shot " + shot + ": " + mdsTree.getMdsMessage(status) + " " + (errMsg == null ? "" : errMsg) );
+               }
+			   else
+			   {
+               		System.out.println("" + new Date() + ", Failed " + name + " in " +
+                               	tree + " shot " + shot + ": " + (errMsg == null ? "Uknown error reason" : errMsg) );
+			   }
+
+			}
+			else
+			{
+               System.out.println("" + new Date() + ", Done " + name + " in " + tree + " shot " + shot);
+			}
+/*             
+            try {
                 mdsTree.doAction(nid, 0);
             }catch(Exception exc) {
                 System.err.println("Exception generated in Action execution: " + exc);
@@ -603,13 +624,13 @@ public class jServer
             }
 */         
       
-            System.out.println("" + new Date() + ", Done " + name + " in " +
-                               tree + " shot " + shot);
             //status = 1;
         }
         catch (Exception exc) {
+
             System.out.println("" + new Date() + ", Failed " + name + " in " +
-                               tree + " shot " + shot + ": " + exc);
+                               tree + " shot " + shot + ": " +  exc);
+
             if (exc instanceof DatabaseException)
                 status = ( (DatabaseException) exc).getStatus();
             else

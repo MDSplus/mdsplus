@@ -101,7 +101,7 @@ int main(int argc, char *argv[])
 	 vULongLong[_QUAD_LOWWORD], UINT_MAX - 1, vULongLong[_QUAD_HIGHWORD], UINT_MAX);
 #else
   msg = ((vULongLong[0] == UINT_MAX - 1) && (vULongLong[1] == UINT_MAX) ? " ok" : "BAD");
-  printf("%s ULONGLONG[0]: %lu = %lu     ULONGLONG[1]: %lu = %lu\n", msg,
+  printf("%s ULONGLONG[0]: %lu = %u     ULONGLONG[1]: %lu = %u\n", msg,
 	 vULongLong[0], UINT_MAX - 1, vULongLong[1], UINT_MAX);
 #endif
 
@@ -165,6 +165,6 @@ int main(int argc, char *argv[])
   printf("\n");
   printf("\n");
 
-  exit(0);
+  exit((status  & 1)==0);
 
 }

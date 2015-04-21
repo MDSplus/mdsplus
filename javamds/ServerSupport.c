@@ -54,7 +54,7 @@ extern int TdiDimOf();
 extern int TdiCompile();
 #define MAX_POINTS 1000
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

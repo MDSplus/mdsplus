@@ -16,7 +16,7 @@
 #include <unistd.h>
 #endif
 #include <ctype.h>
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/wait.h>
@@ -33,7 +33,7 @@ static void CompressString(struct descriptor *in, int upcase)
     StrRight(in, in, &two);
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   return 1;

@@ -6,13 +6,8 @@
  */
 
 #include <stdlib.h>
-#ifdef VMS
-extern void math$csakm();
-extern float math$csval();
-#else
 extern void csakm_();
 extern float csval_();
-#endif
 
 int LinFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float *x, float *y)
 {
@@ -78,17 +73,9 @@ int SplineFit(int *num_knots, float *knots_x, float *knots_y, int *num_v, float 
   if (*num_knots > 2) {
     float *fbreak = (float *)calloc(*num_knots, sizeof(float));
     float *cscoef = (float *)calloc(*num_knots * 4, sizeof(float));
-#ifdef VMS
-    math$csakm(num_knots, knots_x, knots_y, fbreak, cscoef);
-#else
     csakm_(num_knots, knots_x, knots_y, fbreak, cscoef);
-#endif
     for (i = 0; i < *num_v; i++)
-#ifdef VMS
-      y[i] = math$csval(&x[i], num_knots, fbreak, cscoef);
-#else
       y[i] = csval_(&x[i], num_knots, fbreak, cscoef);
-#endif
     free((char *)fbreak);
     free((char *)cscoef);
     return 1;

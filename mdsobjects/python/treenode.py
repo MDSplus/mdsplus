@@ -432,7 +432,10 @@ class TreeNode(_data.Data):
         @return: Children of this node
         @rtype: TreeNodeArray
         """
-        return self.children_nids
+        try:
+          return self.children_nids
+        except:
+          return None
 
     def getClass(self):
         """Return MDSplus class name of this node
@@ -482,8 +485,14 @@ class TreeNode(_data.Data):
         @rtype: TreeNodeArray
         """
         ans=None
-        members=self.member_nids
-        children=self.children_nids
+        try:
+          members=self.member_nids
+        except:
+          members=None
+        try:
+          children=self.children_nids
+        except:
+          children=None
         if members is None:
           ans=children
         elif children is None:
@@ -559,7 +568,10 @@ class TreeNode(_data.Data):
         @return: members of this node
         @rtype: TreeNodeArray
         """
-        return self.member_nids
+        try:
+          return self.member_nids
+        except:
+          return None
 
     def getMinPath(self):
         """Return shortest path string for this node

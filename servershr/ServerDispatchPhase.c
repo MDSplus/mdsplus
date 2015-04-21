@@ -48,7 +48,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <tdishr_messages.h>
 #include <errno.h>
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 extern int pthread_cond_signal();
 extern int pthread_mutex_lock();
 extern int pthread_mutex_unlock();
@@ -179,7 +179,7 @@ STATIC_ROUTINE char *now(char *buf)
 {
   time_t tim = time(0);
   tim = time(0);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   return ctime(&tim);
 #else
   ctime_r(&tim, buf);
@@ -361,7 +361,7 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 	      : (AbortInProgress ? 1 : NoOutstandingActions(first_g, last_g)))) {
     ProgLoc = 600;
     pthread_mutex_lock(&JobWaitMutex);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
 #else
     {
@@ -595,7 +595,7 @@ STATIC_ROUTINE void WakeCompletedActionQueue()
 STATIC_ROUTINE void WaitForActionDoneQueue()
 {
   pthread_mutex_lock(&wake_completed_mutex);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, 1000);
 #else
   {
@@ -670,7 +670,7 @@ STATIC_ROUTINE void ProcessActionDone()
 STATIC_ROUTINE void StartActionDoneThread()
 {
   pthread_t thread;
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   size_t ssize;
   pthread_attr_t attr;
   pthread_attr_init(&attr);
@@ -702,7 +702,7 @@ STATIC_ROUTINE void WakeSendMonitorQueue()
 STATIC_ROUTINE void WaitForSendMonitorQueue()
 {
   pthread_mutex_lock(&wake_send_monitor_mutex);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, 1000);
 #else
   {
@@ -782,7 +782,7 @@ STATIC_ROUTINE void SendMonitorThread()
 STATIC_ROUTINE void StartSendMonitorThread()
 {
   pthread_t thread;
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   size_t ssize;
   pthread_attr_t attr;
   pthread_attr_init(&attr);

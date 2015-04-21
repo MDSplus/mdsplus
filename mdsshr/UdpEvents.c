@@ -1,5 +1,5 @@
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <ws2tcpip.h>
 #include <stdio.h>
 #else
@@ -92,7 +92,7 @@ static void *handleMessage(void *arg)
   struct EventInfo *eventInfo = (struct EventInfo *)arg;
   thisNameLen = strlen(eventInfo->eventName);
   while (1) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
       int error = WSAGetLastError();
@@ -132,7 +132,7 @@ static void *handleMessage(void *arg)
 
 static void initialize()
 {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   static int initialized = 0;
 
   WSADATA wsaData;
@@ -199,7 +199,7 @@ static int getSocket()
   LockMdsShrMutex(&getSocketMutex, &getSocketMutex_initialized);
   if (!sendSocket) {
     if ((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
       int error = WSAGetLastError();
       fprintf(stderr, "Error creating socket - errcode=%d\n", error);
 #else
@@ -284,7 +284,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
 		   int *eventid)
 {
   struct sockaddr_in serverAddr;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   char flag = 1;
 #else
   int flag = 1;
@@ -299,7 +299,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   initialize();
 
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int error = WSAGetLastError();
     fprintf(stderr, "Error creating socket - errcode=%d\n", error);
 #else
@@ -315,7 +315,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   // Allow multiple connections
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {
     printf("Cannot set REUSEADDR option\n");
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     switch (WSAGetLastError()) {
     case WSANOTINITIALISED:
       printf("WSAENETDOWN\n");
@@ -355,7 +355,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
 #endif
     return 0;
   }
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   if (bind(udpSocket, (SOCKADDR *) & serverAddr, sizeof(serverAddr)) != 0)
 #else
   if (bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0)
@@ -369,7 +369,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
   ipMreq.imr_interface.s_addr = INADDR_ANY;
   if (setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int error = WSAGetLastError();
     char *errorstr = 0;
     switch (error) {
@@ -439,7 +439,7 @@ int MDSUdpEventCan(int eventid)
 {
   struct EventInfo *currInfo = getEventInfo(eventid);
   if (currInfo) {
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     pthread_cancel(currInfo->thread);
     close(currInfo->socket);
 #else
@@ -497,7 +497,7 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   LockMdsShrMutex(&sendEventMutex, &sendEventMutex_initialized);
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     perror("Error sending UDP message!\n");
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     switch (WSAGetLastError()) {
     case WSANOTINITIALISED:
       printf("WSAENETDOWN\n");

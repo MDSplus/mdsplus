@@ -1,4 +1,4 @@
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
@@ -9,7 +9,7 @@
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #include <io.h>
 /*#define write _write
@@ -111,7 +111,7 @@ STATIC_THREADSAFE int HostListMutex_initialized = 0;
 STATIC_THREADSAFE pthread_mutex_t IOMutex;
 STATIC_THREADSAFE int IOMutex_initialized = 0;
 #if defined(HAVE_GETADDRINFO) && !defined(GLOBUS)
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
 #include <sys/socket.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -322,11 +322,11 @@ STATIC_ROUTINE int MdsValue1(int socket, char *exp, struct descrip *arg1, struct
   return status;
 }
 
-int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname,
-		      int status)
+int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname)
 {
   int socket;
   logname[strlen(logname) - 2] = '\0';
+  int status = TreeNORMAL;
   socket = RemoteAccessConnect(logname, 1, (void *)dblist);
   if (socket != -1) {
     struct descrip ans = empty_ans;
@@ -354,6 +354,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->channel = socket;
 	  dblist->tree_info = info;
 	  dblist->remote = 1;
+	  status = TreeNORMAL;
 	} else
 	  status = TreeFILE_NOT_FOUND;
       }
@@ -361,9 +362,8 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
       RemoteAccessDisconnect(socket, 0);
     if (ans.ptr)
       MdsIpFree(ans.ptr);
-  }
-  if (status & 1)
-    status = TreeNORMAL;
+  } else
+    status = TreeCONNECTFAIL;
   return status;
 }
 
@@ -1151,7 +1151,7 @@ int MDS_IO_OPEN(char *filename, int options, mode_t mode)
       fd = io_open_remote(hostpart, filepart, options, mode, &socket, &enhanced);
   else {
     fd = open(filename, options | O_BINARY | O_RANDOM, mode);
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     if ((fd != -1) && ((options & O_CREAT) != 0)) {
       struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
       char *cmd = (char *)malloc(64 + strlen(filename));
@@ -1229,7 +1229,7 @@ STATIC_ROUTINE off_t io_lseek_remote(int fd, off_t offset, int whence)
   info[1] = FDS[fd - 1].fd;
   info[4] = whence;
   *(off_t *) (&info[2]) = offset;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
@@ -1370,7 +1370,7 @@ STATIC_ROUTINE ssize_t io_read_x_remote(int fd, off_t offset, void *buff, size_t
   info[1] = FDS[fd - 1].fd;
   info[4] = (int)count;
   *(off_t *) (&info[2]) = offset;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
@@ -1431,8 +1431,11 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
 
   ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted) {
     ssize_t ans = -1;
-    if (count == 0)
+    if (count == 0) {
+      if (deleted)
+	*deleted=0;
       return 0;
+    }
     LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
       if (FDS[fd - 1].socket == SRB_SOCKET) {
@@ -1465,7 +1468,7 @@ STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, i
   info[4] = (int)size;
   info[5] = mode;
   *(off_t *) (&info[2]) = offset;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
   status = info[2];
   info[2] = info[3];
   info[3] = status;
@@ -1495,14 +1498,14 @@ STATIC_ROUTINE int io_lock_remote(int fd, off_t offset, size_t size, int mode, i
 
 int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 {
-  int status = TreeFAILURE;
+  int status = TreeLOCK_FAILURE;
   LOCKFDS if (deleted)
     *deleted = 0;
   if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
 #ifdef SRB
     if (FDS[fd - 1].socket == SRB_SOCKET) {
       status = srbUioLock(FDS[fd - 1].fd, offset, size, mode_in);
-      UNLOCKFDS return (status == 0) ? TreeSUCCESS : TreeFAILURE;
+      UNLOCKFDS return (status == 0) ? TreeSUCCESS : TreeLOCK_FAILURE;
     }
 #endif
     if (FDS[fd - 1].socket == -1) {
@@ -1522,10 +1525,10 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 	  flags |= LOCKFILE_FAIL_IMMEDIATELY;
 	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
 	status =
-	    LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+	  LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       } else {
 	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeFAILURE : TreeNORMAL;
+	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       }
 #else
       struct flock flock_info;
@@ -1543,7 +1546,7 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 #endif
     } else
       status = io_lock_remote(fd, offset, size, mode_in, deleted);
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
     //ThreadLock(fd,offset,size,mode_in);
 #endif
   }

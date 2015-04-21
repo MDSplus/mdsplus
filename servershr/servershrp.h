@@ -1,7 +1,7 @@
 #ifndef SERVERSHRP_H
 #define SERVERSHRP_H
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>

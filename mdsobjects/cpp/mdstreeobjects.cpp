@@ -1,4 +1,4 @@
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define NOMINMAX
 #endif
 #include <mdsobjects.h>
@@ -925,7 +925,7 @@ int TreeNode::getDepth() {
 	return getNci<int>(tree->getCtx(), nid, NciDEPTH);
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define pthread_mutex_t int
 static void LockMdsShrMutex(){}
 static void UnlockMdsShrMutex(){}

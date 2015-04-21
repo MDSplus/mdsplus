@@ -4,7 +4,7 @@
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <getopt.h>
 #endif
 
@@ -16,7 +16,7 @@ Program to wait for MDSPlus event from the command line.
 
 static void printhelp(char *cmd)
 {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   printf("usage: %s  [/d] [/D] [/t:n] [/?] event-name\n", cmd);
   printf("\n  event-name is the event that you want to wait for."
 	 "\n  /d indicates print event data."
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
   int status;
   int serialized = 0;
   int i;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   int optind = argc;
   for (i = 1; i < argc; i++) {
     if (argv[i][0] == '/') {

@@ -149,6 +149,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
     }
     if (status & 1)
       status = TreePutNci(tree_info, node_number, &nci, 1);
+    TreeUnLockNci(tree_info, 0, node_number);
   }
   return status;
 }
@@ -690,7 +691,7 @@ static int SetNodeParentState(PINO_DATABASE * db, NODE * node, NCI * nci, unsign
   return status;
 }
 
-#if defined HAVE_WINDOWS_H && !defined HAVE_PTHREAD_H
+#if defined _WIN32 && !defined HAVE_PTHREAD_H
 #define pthread_mutex_t int
 static void LockMdsShrMutex()
 {

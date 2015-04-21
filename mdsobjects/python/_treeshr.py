@@ -545,7 +545,7 @@ def TreeGetNumSegments(n):
 def TreePutTimestampedSegment(n,timestampArray,value):
     """Put a timestampedsegment"""
     
-    timestampArray=Int64Array(timestampArray)
+    timestampArray=_mimport('mdsarray',1).Int64Array(timestampArray)
     value=_mimport('mdsarray',1).makeArray(value)
     try:
         n.tree.lock()

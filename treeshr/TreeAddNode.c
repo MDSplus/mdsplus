@@ -735,16 +735,15 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	TreeCallHook(WriteTree, info_ptr, 0);
       } else {
 	(*dblist)->modified = 0;
-	status = TreeFAILURE;
+	status = TreeFCREATE;
       }
+    error_exit:
       if (nfilenam)
 	free(nfilenam);
     }
   }
   return status;
 
- error_exit:
-  return status & 1 ? TreeFAILURE : status;
 }
 
 STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr)
@@ -803,7 +802,7 @@ STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
       TreeSerializeNciOut(&nci, nci_bytes);
       status =
 	  (MDS_IO_WRITE(info->nci_file->put, nci_bytes, nbytes) ==
-	   nbytes) ? TreeNORMAL : TreeFAILURE;
+	   nbytes) ? TreeNORMAL : TreeNCIWRITE;
       if (status & 1)
 	info->edit->first_in_mem++;
     }
@@ -869,7 +868,7 @@ int _TreeSetSubtree(void *dbid, int nid)
   pages_allocated = max((numext * 4 + 507) / 512, dblist->tree_info->edit->external_pages);
   if (pages_needed > pages_allocated) {
     new_external_ptr = malloc(pages_needed * 512);
-    status = new_external_ptr == 0 ? TreeFAILURE : TreeNORMAL;
+    status = new_external_ptr == 0 ? TreeMEMERR : TreeNORMAL;
     if ((status & 1) != 1) {
       return status;
     }

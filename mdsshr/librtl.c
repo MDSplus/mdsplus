@@ -47,7 +47,7 @@ int StrCopyDx(struct descriptor *out, struct descriptor *in);
 int StrAppend(struct descriptor *out, struct descriptor *tail);
 void TranslateLogicalFree(char *value);
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #include <process.h>
 //#define putenv _putenv
@@ -782,7 +782,7 @@ char *LibFindImageSymbolErrString()
 }
 
 STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
 #else
 STATIC_THREADSAFE HANDLE dlopen_mutex;
@@ -793,7 +793,7 @@ STATIC_ROUTINE void dlopen_lock()
 
   if (!dlopen_mutex_initialized) {
     dlopen_mutex_initialized = 1;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     pthread_mutex_init(&dlopen_mutex, NULL);
 #else
     pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
@@ -808,7 +808,7 @@ STATIC_ROUTINE void dlopen_unlock()
 
   if (!dlopen_mutex_initialized) {
     dlopen_mutex_initialized = 1;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     pthread_mutex_init(&dlopen_mutex, NULL);
 #else
     pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
@@ -830,7 +830,7 @@ int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
 
   *symbol_value = NULL;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   strcpy(full_filename, filename);
   lib_offset = 0;
 #else
@@ -1076,7 +1076,7 @@ int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *star
   return StrFree1Dx(&tmp);
 }
 
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 STATIC_THREADSAFE pthread_mutex_t VmMutex;
 #else
 STATIC_THREADSAFE HANDLE VmMutex;
@@ -1285,8 +1285,7 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
 
     {
       struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-      //      char *tmp;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
       unsigned int day, year, hour, minute, second;
       char month[4];
       char *months[] =
@@ -1308,15 +1307,14 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
       tm.tm_hour = hour;
       tm.tm_min = minute;
       tm.tm_sec = second;
-      //      tmp = asc_time;
 #else
-      //      tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
+      strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
       tm.tm_isdst = -1;
       tim = mktime(&tm);
       if ((int)tim == -1)
 	return 0;
-#if defined(HAVE_WINDOWS_Hxxxxx)
+#if defined(_WIN32xxxxx)
       _tzset();
       tim -= _timezone;
 #endif
@@ -1336,7 +1334,7 @@ int LibTimeToVMSTime(time_t * time_in, int64_t * time_out)
   time_t t;
 #ifdef HAVE_GETTIMEOFDAY
   struct timeval tm;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   typedef long long suseconds_t;
 #endif
   suseconds_t microseconds = 0;
@@ -1399,7 +1397,7 @@ time_t LibCvtTim(int *time_in, double *t)
   return (bintim);
 }
 
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <sys/time.h>
 #endif
 int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)

@@ -327,7 +327,7 @@ then
   mkdir -p /usr/share/applications/mdsplus
   ln -sf __INSTALL_PREFIX__/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
 fi
-if [ ! -r /etx/xinetd.d/mdsip ]
+if [ ! -r /etc/xinetd.d/mdsip ]
 then
   cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
   if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
@@ -348,10 +348,13 @@ then
   rm -Rf /usr/share/applications/mdsplus
   if [ -r /etc/xinetd.d/mdsip ]
   then
-    rm -f /etc/xinetd.d/mdsip
-    if [ -x /sbin/service ]
-    then
-      /sbin/service xinetd reload
+    if ( diff -q /etc/xinetd.d/mdsip __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd &gt; /dev/null )
+    then 
+      rm -f /etc/xinetd.d/mdsip
+      if [ -x /sbin/service ]
+      then
+        /sbin/service xinetd reload
+      fi
     fi
   fi
   if ( grep '^mdsip[[:space::]]' /etc/services &gt;/dev/null 2&gt;&amp;1 )
@@ -491,6 +494,25 @@ fi
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
+    <postinst>
+
+pushd __INSTALL_PREFIX__/mdsplus/tdi/RfxDevices
+rm -Rf %{python_sitelib}/RfxDevices*
+rm -Rf build dist
+python setup.py -q install
+rm -Rf build dist RfxDevices.egg-info
+popd
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf %{python_sitearch}/RfxDevices*
+fi
+
+    </prerm>
+
   </package>
 
   <package name="kbsidevices" arch="noarch" summary="Support for KBSI data acquisition devices" description="Support for KBSI data acquisition devices">

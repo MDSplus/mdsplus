@@ -26,7 +26,7 @@
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include <STATICdef.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <process.h>
 #endif
 #ifdef HAVE_UNISTD_H
@@ -210,7 +210,7 @@ int Tdi3Random(struct descriptor_a *out_ptr)
   int i;
 
   if (Tdi_RandomSeed == 1234567) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     srand((unsigned int)time(0) + _getpid());
     Tdi_RandomSeed = rand();
 #else

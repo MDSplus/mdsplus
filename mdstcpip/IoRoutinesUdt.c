@@ -14,7 +14,7 @@
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include "udtc.h"
 typedef int socklen_t;
 #define snprintf _snprintf
@@ -79,7 +79,7 @@ EXPORT IoRoutines *Io()
 
 static void InitializeSockets()
 {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   static int initialized = 0;
   if (!initialized) {
     WSADATA wsaData;
@@ -441,7 +441,7 @@ static int UDT_connect(int conid, char *protocol, char *host)
   }
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 VOID CALLBACK ShutdownEvent(PVOID arg, BOOLEAN fired)
 {
   fprintf(stderr, "Service shut down\n");
@@ -501,12 +501,12 @@ static void ChildSignalHandler(int num)
 static int UDT_listen(int argc, char **argv)
 {
   Options options[] = { {"p", "port", 1, 0, 0},
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   {"S", "sockethandle", 1, 0, 0},
 #endif
   {0, 0, 0, 0, 0}
   };
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGCHLD, ChildSignalHandler);
 #endif
   ParseCommand(argc, argv, options, 0, 0, 0);
@@ -648,7 +648,7 @@ static int UDT_listen(int argc, char **argv)
       }
     }
   } else {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int sock = getSocketHandle(options[1].value);
 #else
     UDTSOCKET sock = 0;

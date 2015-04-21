@@ -114,7 +114,7 @@ static int (*SYB_dbdatlen) () = 0;
 static char *(*SYB_dbdata) () = 0;
 static int (*SYB_dbcoltype) () = 0;
 
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include "sybfront.h"
 #include "sybdb.h"
 #else
