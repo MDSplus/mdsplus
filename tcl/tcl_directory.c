@@ -354,7 +354,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       if (partlen) {
 	pathnam = TreeGetPath(head_nid);
 	partC[partlen] = 0;
-	sprintf(msg, "      Original element name: %s%s", pathnam, partC);
+	sprintf(msg, "      Original element name: %s%s\n", pathnam, partC);
 	tclAppend(output, msg);
 	free(pathnam);
       }
