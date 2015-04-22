@@ -162,6 +162,7 @@ static void ABORT(int sigval)
   unlock_socket_list();
 }
 
+
 static int tcp_authorize(int conid, char *username)
 {
   int s = getSocket(conid);

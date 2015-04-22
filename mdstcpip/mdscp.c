@@ -1,12 +1,14 @@
 #define _LARGEFILE_SOURCE
 #define _FILE_OFFSET_BITS 64
 #define __USE_FILE_OFFSET64
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+
 #define MDS_IO_OPEN_K   1
 #define MDS_IO_CLOSE_K  2
 #define MDS_IO_LSEEK_K  3
@@ -26,6 +28,8 @@
 #define MDS_IO_O_RDWR   0x00000002
 
 #define MAX_IO_SIZE 1000000
+
+#include "mdsip_connections.h"
 
 struct mdsfile {
   int socket;

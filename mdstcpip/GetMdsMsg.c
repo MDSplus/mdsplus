@@ -34,6 +34,7 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv)
   return 0;
 }
 
+
 Message *GetMdsMsg(int id, int *status)
 {
   MsgHdr header;

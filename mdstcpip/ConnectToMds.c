@@ -9,6 +9,11 @@
 #include <pwd.h>
 #endif
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse Host  ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 static void ParseHost(char *hostin, char **protocol, char **host)
 {
   size_t i;
@@ -30,6 +35,11 @@ static void ParseHost(char *hostin, char **protocol, char **host)
       break;
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//  Do Login  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 static int DoLogin(int id)
 {
@@ -101,6 +111,12 @@ static int DoLogin(int id)
   return status;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  Reuse Check  ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
   int status;
@@ -126,6 +142,30 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
     free(host);
   return status;
 }
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  ConnectToMds  //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief Remote mdsip server connection.
+///
+/// The \em hostin input argument are parsed to find host name protocol and port to connect to.
+/// Then a connection structure with the above properties is instaced and added to the connection
+/// list calling \ref NewConnection().
+/// Once the connection is established the \em connect function from protocol IoRoutines is called.
+/// To log into the remote sever the system login user and passwd is used.
+/// The compression level of the new connection is set to the client value ( not the server one )
+/// as the client may have to make tuning.
+///
+/// The connection address follows this syntax: \em host:8000::/mydir/mysubdir/myfile.dat
+/// see ParseHost() for further details
+///
+/// \return The id of the new connection instanced if success or -1 otherwise.
+///
 
 int ConnectToMds(char *hostin)
 {

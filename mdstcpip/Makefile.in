@@ -37,9 +37,10 @@ endif #MINGW
 ifeq "@SHARETYPEMOD@" "@SHARETYPE@"
 	modules =
 else #SHARETYPE
-	modules = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ 
+        modules = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@
 endif #SHARETYPE
 
+## MdsIpShr sources ##
 LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventAst.c\
 	  MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
 	  IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c\
@@ -49,10 +50,13 @@ LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventA
 
 LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
 
+## MdsIpSrvShr sources ##
 SERVER_LIB_SOURCES = ProcessMessage.c RemoveConnection.c 
 SERVER_LIB_OBJECTS = $(SERVER_LIB_SOURCES:.c=.o)
+
 SERVER_SOURCES = mdsip.c 
 SERVER_OBJECTS = $(SERVER_SOURCES:.c=.o)
+
 TCP_SOURCES = IoRoutinesTcp.c
 TCP_OBJECTS = $(TCP_SOURCES:.c=.o)
 TCPV6_SOURCES = IoRoutinesTcpv6.c
@@ -157,6 +161,11 @@ install: $(bindir) $(libdir) $(sysconfdir)
         ifdef MdsIpGSI
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
         endif
+
+.PHONY: docs
+docs:
+	doxygen docs/doxy.conf
+
 
 @MAKEBINDIR@mdsiptest$(EXE): t.c $(MdsIpShr)
 	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
