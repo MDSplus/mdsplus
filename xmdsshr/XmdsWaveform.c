@@ -124,7 +124,6 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static int height_page;
 enum crosshairsmode {
   move_xh, first_xh, last_xh
@@ -1644,12 +1643,10 @@ static void SetCursor(XmdsWaveformWidget w)
   static Cursor zoom_cursor;
   static Cursor drag_cursor;
   static Cursor point_cursor;
-  static Cursor draw_cursor;
   static Cursor edit_cursor;
   if (first) {
     drag_cursor = XCreateFontCursor(XtDisplay(w), XC_fleur);
     point_cursor = XCreateFontCursor(XtDisplay(w), XC_crosshair);
-    draw_cursor = XCreateFontCursor(XtDisplay(w), XC_dotbox);
     zoom_cursor = XCreateFontCursor(XtDisplay(w), XC_sizing);
     edit_cursor = XCreateFontCursor(XtDisplay(w), XC_exchange);
     first = 0;

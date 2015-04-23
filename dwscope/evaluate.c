@@ -87,8 +87,6 @@ void CloseDataSources();
 #define _toupper(c)	(((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void EventUpdate(XtPointer client_data, int *source, XtInputId * id);
 
 #if defined(__VMS)
@@ -412,7 +410,6 @@ Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean * event,
   TdiExecute(&idxv, &ival_d, &ival_d MDS_END_ARG);
   if (strlen(database)) {
     static int shotnum;
-    static int one = 1;
     shotnum = 0;
     if (strlen(shot)) {
       struct descriptor shot_dsc = { 0, DTYPE_T, CLASS_S, 0 };
@@ -541,7 +538,6 @@ static Widget this_widget;
 static void EventAst(void *astparam, int dlen, char *data)
 {
   Boolean *received = (Boolean *) astparam;
-  XClientMessageEvent event;
   *received = 1;
   XtAppAddTimeOut(this_app_context, 1, (XtTimerCallbackProc) EventUpdate, 0);
   event.type = ClientMessage;
@@ -573,7 +569,6 @@ static int event_pipe[2];
 static void EventAst(void *astparam, int dlen, char *data)
 {
   Boolean *received = (Boolean *) astparam;
-  XClientMessageEvent event;
   char buf[1];
   *received = 1;
   write(event_pipe[1], buf, 1);
@@ -599,7 +594,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
 
 void SetupEventInput(XtAppContext app_context, Widget w)
 {
-  int status = pipe(event_pipe);
+  pipe(event_pipe);
   XtAppAddInput(app_context, event_pipe[0], (XtPointer) XtInputReadMask, DoEventUpdate, 0);
 
 }

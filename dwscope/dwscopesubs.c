@@ -80,7 +80,6 @@
 extern int sys$filescan();
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int XmdsManageWindow();
 Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned long length, CutHeader * header,
@@ -934,7 +933,6 @@ void ExpandReset(Widget w, int *tag, XtPointer callback_data)
   Widget dsw;
   Widget exw;
   String exp;
-  XmString expression;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw)) ;
   if (*tag)
     XtVaGetValues(dsw, XmNuserData, &dsw, NULL);
@@ -963,9 +961,6 @@ void ExpandOk(Widget w, int *tag, XtPointer callback_data)
   Widget dsw;
   Widget exw;
   String exp;
-  int length;
-  int status;
-  XmString expression;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw)) ;
   if (*tag)
     XtVaGetValues(dsw, XmNuserData, &dsw, NULL);

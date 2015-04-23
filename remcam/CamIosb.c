@@ -1,8 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern unsigned short RemCamLastIosb[4];
 
 int CamVerbose(int flag)
