@@ -74,7 +74,6 @@ static int QJob(SrvJob * job);
 static void FreeJob(SrvJob * job);
 static void SetCurrentJob(SrvJob * job);
 static SrvJob *GetCurrentJob();
-static SrvJob *LastJob();
 static char *Now();
 static int RemoveLast();
 
@@ -269,22 +268,6 @@ static int QJob(SrvJob * job)
   return StartThread();
 }
 
-static SrvJob *LastJob()
-{
-  SrvJob *job;
-  LockQueue();
-  job = LastQueueEntry;
-  if (job) {
-    LastQueueEntry = job->h.previous;
-    if (LastQueueEntry)
-      LastQueueEntry->h.next = 0;
-    else
-      FirstQueueEntry = 0;
-  }
-  UnlockQueue();
-  return job;
-}
-
 static int RemoveLast()
 {
   SrvJob *job;
@@ -470,7 +453,6 @@ static int DoSrvAction(SrvJob * job_in)
     DESCRIPTOR(fullpath_d, "FULLPATH");
     DESCRIPTOR(nullstr, "\0");
     DESCRIPTOR_NID(niddsc, 0);
-    struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
     niddsc.pointer = (char *)&job->nid;
     doingNid = job->nid;
     status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
@@ -588,8 +570,6 @@ static void SendToMonitor(MonitorList * m, MonitorList * prev, SrvJob * job_in)
   DESCRIPTOR(fullpath_d, "FULLPATH");
   DESCRIPTOR(nullstr, "\0");
   DESCRIPTOR_NID(niddsc, 0);
-  struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
-  struct descriptor phasenum_d = { sizeof(int), DTYPE_L, CLASS_S, 0 };
   char *status_text = MdsGetMsg(job->status);
 
   status = TreeOpen(job->tree, job->shot, 0);
@@ -713,7 +693,6 @@ static void UnlockQueue()
 
 static void WaitForJob()
 {
-  int status;
   ProgLoc = 11;
   pthread_mutex_lock(&JobWaitMutex);
   ProgLoc = 12;
@@ -721,14 +700,9 @@ static void WaitForJob()
   status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
 #else
   {
-    struct timespec one_sec = { 1, 0 };
     struct timespec abstime;
     struct timeval tmval;
     ProgLoc = 12;
-    /*
-       pthread_get_expiration_np(&one_sec,&abstime);
-     */
-
     gettimeofday(&tmval, 0);
     abstime.tv_sec = tmval.tv_sec + 1;
     abstime.tv_nsec = tmval.tv_usec * 1000;
