@@ -10,7 +10,7 @@ int debug=0;
 char *restOfLine=0;
 %}
 
-%option reentrant bison-bridge bison-locations nodefault noyywrap yylineno outfile="cmdParseLex.c" header-file="dcllex.h"
+%option noinput reentrant bison-bridge bison-locations nodefault noyywrap yylineno outfile="cmdParseLex.c" header-file="dcllex.h"
 %option case-insensitive interactive prefix="dcl_"
 
 %x command verb qualifier qualifier_with_value qualifier_with_value_list qualval qualval_list rest_of_line parameter
