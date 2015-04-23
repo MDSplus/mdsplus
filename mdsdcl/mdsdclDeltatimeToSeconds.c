@@ -771,34 +771,28 @@ YY_DECL {
       YY_RULE_SETUP
 #line 18 "mdsdclDeltatimeToSeconds.x"
 	  ;
-    YY_BREAK case 2:
-      YY_RULE_SETUP
+      YY_BREAK case 2:YY_RULE_SETUP
 #line 19 "mdsdclDeltatimeToSeconds.x"
-	  BEGIN has_day;
-    YY_BREAK case 3:
-      YY_RULE_SETUP
+       BEGIN has_day;
+      YY_BREAK case 3:YY_RULE_SETUP
 #line 20 "mdsdclDeltatimeToSeconds.x"
-	  day = atoi(yytext);
+       day = atoi(yytext);
       BEGIN INITIAL;
-    YY_BREAK case 4:
-      YY_RULE_SETUP
+      YY_BREAK case 4:YY_RULE_SETUP
 #line 21 "mdsdclDeltatimeToSeconds.x"
-	  times[idx] = atoi(yytext);
-    YY_BREAK case 5:
-      YY_RULE_SETUP
+       times[idx] = atoi(yytext);
+      YY_BREAK case 5:YY_RULE_SETUP
 #line 22 "mdsdclDeltatimeToSeconds.x"
-	  if (idx > 2)
-	yyterminate();
+      if (idx > 2)
+	 yyterminate();
       idx++;
-    YY_BREAK case 6:
-      YY_RULE_SETUP
+      YY_BREAK case 6:YY_RULE_SETUP
 #line 23 "mdsdclDeltatimeToSeconds.x"
-	  error = 1;
+       error = 1;
       yyterminate();
-    YY_BREAK case 7:
-      YY_RULE_SETUP
+      YY_BREAK case 7:YY_RULE_SETUP
 #line 25 "mdsdclDeltatimeToSeconds.x"
-	  ECHO;
+       ECHO;
       YY_BREAK
 #line 833 "mdsdclDeltatimeToSeconds.c"
     case YY_STATE_EOF(INITIAL):

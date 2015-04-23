@@ -1,9 +1,13 @@
-#include        <mdstypes.h>
-#include	<config.h>
-#include        "tclsysdef.h"
-#include        <ncidef.h>
-#include        <usagedef.h>
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdstypes.h>
+#include <libroutines.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <ncidef.h>
+#include <usagedef.h>
 #include <strroutines.h>
 #include <libroutines.h>
 

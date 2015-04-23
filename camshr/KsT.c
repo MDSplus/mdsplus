@@ -13,11 +13,12 @@
 // Mon Oct 15 16:35:42 EDT 2001 -- seperated out
 //-----------------------------------------------------------
 
+#include "prototypes.h"
+
 //-----------------------------------------------------------
 int KsTranslateIosb(RequestSenseData * sense, int cam_status)
 {
-  char dev_name[5];
-  int scsiDevice, status;
+  int status;
 
   //  union {
   //    ErrorStatusRegister esr;
@@ -105,7 +106,6 @@ int KsTranslateIosb(RequestSenseData * sense, int cam_status)
     LastIosb.list = 0;		// list processing not supported
 //      LastIosb.lbytcnt =  0;                  // list processing not supported
   }
- KsTranslateIosb_Exit:
   if (MSGLVL(DETAILS)) {
     printf("%s(): LastIosb.status = %d [0x%x]\n", KT_ROUTINE_NAME, LastIosb.status,
 	   LastIosb.status);

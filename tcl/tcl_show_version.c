@@ -1,6 +1,8 @@
-#include        "tclsysdef.h"
-#include        <mdsshr.h>
 #include <string.h>
+
+#include <mdsshr.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_SHOW_VERSION.C --

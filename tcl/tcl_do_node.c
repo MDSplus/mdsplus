@@ -1,6 +1,11 @@
-#include        "tclsysdef.h"
-#include		<mds_stdarg.h>
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <treeshr.h>
 
 /**********************************************************************
 * TCL_DO_NODE.C --

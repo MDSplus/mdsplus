@@ -1,13 +1,17 @@
-#include	<config.h>
-#include        "tclsysdef.h"
-#include        <dbidef.h>
-#include        <ncidef.h>
-#include        <usagedef.h>
-#include        <string.h>
-#include 	<stdlib.h>
+#include <config.h>
+#include <string.h>
+#include <stdlib.h>
 #ifdef HAVE_ALLOCA_H
-#include        <alloca.h>
+#include <alloca.h>
 #endif
+#include <dbidef.h>
+#include <ncidef.h>
+#include <usagedef.h>
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_CREATE_PULSE.C --
@@ -35,9 +39,6 @@ typedef struct _server {
   struct _server *next;
 } Server;
 
-static int DispatchCreatePulse(Server * s);
-
-static char unixMsg[] = "\n==> unix not yet handling %s <==\n\n";
 
 extern int TdiExecute();
 
@@ -78,6 +79,7 @@ static int CheckCondition(int nid)
          * FreeServerList:
          ***************************************************************/
 /*
+static int DispatchCreatePulse(Server * s);
 static Server *ServerList = 0;
 static int Efn1 = 0;
 static int Efn2 = 0;

@@ -104,7 +104,6 @@ int TestUnitReady(char *serial_driver);
 int add_entry(int dbType, char *newEntry);
 int bisearch(int dbType, const void *target, int size,
 	     int (*compare) (const void *key1, const void *key2));
-static void Blank(UserParams * user);
 int check_for_file(char *FileName);
 int check_sema4();
 int commit_entry(int dbType);
@@ -120,9 +119,6 @@ int get_file_count(int dbType);
 char *get_file_name(char *filename);
 int get_scsi_device_number(char *highway_name, int *enhanced, int *online);
 int issort(void *data, int size, int esize, int (*compare) (const void *key1, const void *key2));
-static int JorwayTranslateIosb(int reqbytcnt, SenseData * sense, char senslen, unsigned int bytcnt,
-			       int scsi_status);
-static int KsTranslateIosb(RequestSenseData * sense, int scsi_status);
 int lock_file();
 int lookup_entry(int dbType, char *module_name);
 int map_data_file(int dbType);
@@ -141,10 +137,13 @@ int xlate_logicalname(char *Name, CamKey * Key);
 //-------------------------------------------------------------------------
 void dump_db(int count);
 void ShowStatus(int statcode);
+int scsi_lock(int scsiDevice, int lock);
 
 int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
 	    unsigned char cmd_len, char *buffer, unsigned int buflen,
 	    unsigned char *sbp, unsigned char mx_sb_len,
 	    unsigned char *sb_out_len, int *transfer_len);
+int SGSetMAXBUF(int scsiDevice, int new);
+int SGGetMAXBUF(int scsiDevice);
 
 #endif

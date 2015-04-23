@@ -31,10 +31,10 @@
    version 2.2 of Bison.  */
 
 #ifndef YY_YY_CMDPARSE_TAB_H_INCLUDED
-# define YY_YY_CMDPARSE_TAB_H_INCLUDED
+#define YY_YY_CMDPARSE_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+#define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -42,30 +42,27 @@ extern int yydebug;
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-  enum yytokentype
-  {
-    CMDFILE = 258,
-    VERB = 259,
-    QUALIFIER = 260,
-    EQUALS = 261,
-    VALUE = 262,
-    PVALUE = 263,
-    COMMA = 264,
-    END = 265,
-    COMMENT = 266
-  };
+#define YYTOKENTYPE
+enum yytokentype {
+  CMDFILE = 258,
+  VERB = 259,
+  QUALIFIER = 260,
+  EQUALS = 261,
+  VALUE = 262,
+  PVALUE = 263,
+  COMMA = 264,
+  END = 265,
+  COMMENT = 266
+};
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef union YYSTYPE YYSTYPE;
-# define YYSTYPE_IS_TRIVIAL 1
-# define YYSTYPE_IS_DECLARED 1
+#define YYSTYPE_IS_TRIVIAL 1
+#define YYSTYPE_IS_DECLARED 1
 #endif
 
+int yyparse(YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr * dclcmd, char **error);
 
-
-int yyparse (YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error);
-
-#endif /* !YY_YY_CMDPARSE_TAB_H_INCLUDED  */
+#endif				/* !YY_YY_CMDPARSE_TAB_H_INCLUDED  */

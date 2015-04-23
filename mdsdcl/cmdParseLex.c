@@ -978,29 +978,27 @@ YY_DECL {
       {
 	return (COMMENT);
       }
-    YY_BREAK case 2:
-      YY_RULE_SETUP
+      YY_BREAK case 2:YY_RULE_SETUP
 #line 33 "cmdParse.x"
       {
 	if (debug)
 	  printf("Begin command\n");
 	BEGIN command;
       }
-    YY_BREAK case 3:
+      YY_BREAK case 3:
 /* rule 3 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 38 "cmdParse.x"
       {
 	if (debug)
 	  printf("got DO/INDIRECT %s\n", yytext);
 	yylval->str = strdup(yytext);
 	BEGIN verb;
-	return (CMDFILE);
+	 return (CMDFILE);
       }
       YY_BREAK
 /* <command>{name}/[[:blank:]/] {*/
-    case 4:
-      YY_RULE_SETUP
+      case 4:YY_RULE_SETUP
 #line 46 "cmdParse.x"
       {
 	if (debug)
@@ -1009,18 +1007,16 @@ YY_DECL {
 	BEGIN verb;
 	return (VERB);
       }
-    YY_BREAK case 5:
-      YY_RULE_SETUP
+      YY_BREAK case 5:YY_RULE_SETUP
 #line 53 "cmdParse.x"
       {
 	if (debug)
 	  printf("got qualifier with value %s\n", yytext);
 	yylval->str = strdup(yytext + 1);
 	BEGIN qualifier_with_value;
-	return (QUALIFIER);
+	 return (QUALIFIER);
       }
-    YY_BREAK case 6:
-      YY_RULE_SETUP
+      YY_BREAK case 6:YY_RULE_SETUP
 #line 60 "cmdParse.x"
       {
 	if (debug)
@@ -1028,27 +1024,25 @@ YY_DECL {
 	yylval->str = strdup(yytext + 1);
 	return (QUALIFIER);
       }
-    YY_BREAK case 7:
-      YY_RULE_SETUP
+      YY_BREAK case 7:YY_RULE_SETUP
 #line 66 "cmdParse.x"
       {
 	if (debug)
 	  printf("got a qualval_list\n");
 	BEGIN qualval_list;
-	return (EQUALS);
+	 return (EQUALS);
       }
-    YY_BREAK case 8:
-      YY_RULE_SETUP
+      YY_BREAK case 8:YY_RULE_SETUP
 #line 72 "cmdParse.x"
       {
 	if (debug)
 	  printf("got a qualval nolist\n");
 	BEGIN qualval;
-	return (EQUALS);
+	 return (EQUALS);
       }
-    YY_BREAK case 9:
+      YY_BREAK case 9:
 /* rule 9 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 78 "cmdParse.x"
       {
 	if (debug)
@@ -1056,15 +1050,14 @@ YY_DECL {
 	yylval->str = strdup(yytext);
 	return (VALUE);
       }
-    YY_BREAK case 10:
-      YY_RULE_SETUP
+      YY_BREAK case 10:YY_RULE_SETUP
 #line 84 "cmdParse.x"
       {
 	BEGIN verb;
       }
-    YY_BREAK case 11:
+      YY_BREAK case 11:
 /* rule 11 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 88 "cmdParse.x"
       {
 	if (debug)
@@ -1072,73 +1065,66 @@ YY_DECL {
 	yylval->str = strdup(yytext);
 	return (VALUE);
       }
-    YY_BREAK case 12:
+      YY_BREAK case 12:
 /* rule 12 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 94 "cmdParse.x"
       {
 	if (debug)
 	  printf("got qualval |%s|\n", yytext);
 	yylval->str = strdup(yytext);
 	BEGIN verb;
-	return (VALUE);
+	 return (VALUE);
       }
-    YY_BREAK case 13:
-      YY_RULE_SETUP
+      YY_BREAK case 13:YY_RULE_SETUP
 #line 101 "cmdParse.x"
       {
 	yyterminate();
       }
-    YY_BREAK case 14:
+      YY_BREAK case 14:
 /* rule 14 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 105 "cmdParse.x"
       {
 	BEGIN rest_of_line;
-	unput(yytext[0]);
+	 unput(yytext[0]);
       }
-    YY_BREAK case 15:
-      YY_RULE_SETUP
+      YY_BREAK case 15:YY_RULE_SETUP
 #line 109 "cmdParse.x"
       {
 	int i;
-	restOfLine = strdup(yytext);
+	 restOfLine = strdup(yytext);
 	for (i = strlen(restOfLine) - 1; i >= 0; i--)
-	  unput(restOfLine[i]);
+	   unput(restOfLine[i]);
 	BEGIN parameter;
       }
-    YY_BREAK case 16:
-      YY_RULE_SETUP
+      YY_BREAK case 16:YY_RULE_SETUP
 #line 116 "cmdParse.x"
-	  BEGIN parameter;
-    YY_BREAK case 17:
+       BEGIN parameter;
+      YY_BREAK case 17:
 /* rule 17 can match eol */
-      YY_RULE_SETUP
+       YY_RULE_SETUP
 #line 118 "cmdParse.x"
       {
 	dclValuePtr value = malloc(sizeof(dclValue));
-	value->value = strdup(yytext);
-	value->restOfLine = restOfLine;
-	restOfLine = 0;
+	 value->value = strdup(yytext);
+	 value->restOfLine = restOfLine;
+	 restOfLine = 0;
 	BEGIN verb;
-	yylval->pvalue = value;
-	return (PVALUE);
+	 yylval->pvalue = value;
+	 return (PVALUE);
       }
-    YY_BREAK case 18:
-      YY_RULE_SETUP
+      YY_BREAK case 18:YY_RULE_SETUP
 #line 127 "cmdParse.x"
-	  return (COMMA);
-    YY_BREAK case 19:
-      YY_RULE_SETUP
+       return (COMMA);
+      YY_BREAK case 19:YY_RULE_SETUP
 #line 129 "cmdParse.x"
-	  ;
-    YY_BREAK case 20:
-      YY_RULE_SETUP
+      ;
+      YY_BREAK case 20:YY_RULE_SETUP
 #line 131 "cmdParse.x"
-    YY_BREAK case 21:
-      YY_RULE_SETUP
+       YY_BREAK case 21:YY_RULE_SETUP
 #line 133 "cmdParse.x"
-	  YY_FATAL_ERROR("flex scanner jammed");
+       YY_FATAL_ERROR("flex scanner jammed");
       YY_BREAK
 #line 1181 "cmdParseLex.c"
     case YY_STATE_EOF(INITIAL):

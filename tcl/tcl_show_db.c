@@ -1,6 +1,12 @@
-#include        "tclsysdef.h"
-#include        <dbidef.h>
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <dbidef.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_SHOW_DB.C --

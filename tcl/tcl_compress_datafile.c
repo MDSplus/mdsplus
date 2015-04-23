@@ -1,6 +1,11 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdlib.h>
+
+#include <mdsshr.h>
+#include <treeshr.h>
 #include <dcl.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_COMPRESS_DATAFILE.C --
