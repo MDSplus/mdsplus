@@ -818,7 +818,7 @@ STATIC_ROUTINE void dlopen_unlock()
   pthread_mutex_unlock(&dlopen_mutex);
 }
 
-int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
+int LibFindImageSymbol_C(const char *filename, const char *symbol, void **symbol_value)
 {
   char *full_filename = malloc(strlen(filename) + 10);
   void *handle;
