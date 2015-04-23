@@ -111,9 +111,12 @@ int mdsdcl_init_timer(void *ctx, char *error, char *output)
 int mdsdcl_show_timer(void *ctx, char **error, char **output)
 {
   struct timeval TIMER_NOW_TIME;
-  int esec=0, emsec=0;
+  time_t esec=0;
+  suseconds_t emsec=0;
 #ifdef HAVE_SYS_RESOURCE_H
-  int usec=0, umsec=0, ssec=0, smsec=0, sf=0, hf=0;
+  time_t usec=0, ssec=0;
+  suseconds_t umsec=0, smsec=0;
+  long int sf=0, hf=0;
   struct rusage TIMER_NOW_USAGE;
 #else
   clock_t cpu_now;
@@ -138,7 +141,7 @@ int mdsdcl_show_timer(void *ctx, char **error, char **output)
   smsec = (TIMER_NOW_USAGE.ru_stime.tv_usec - TIMER_START_USAGE.ru_stime.tv_usec) / 10000;
   sf = TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt;
   hf = TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt;
-  sprintf(*error, "elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
+  sprintf(*error, "elapsed=%ld.%02ld user=%ld.%02ld sys=%ld.%02ld sf=%ld hf=%ld\n",
 	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
 #else
   usec = (clock() - cpu_start) / CLOCKS_PER_SEC;
