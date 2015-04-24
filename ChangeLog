@@ -1,4 +1,65 @@
-commit 3a46e4baa06e81d5fe0499068526aede767495d5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 3db1b4352c59bf532691fe1b650332a4d02e7e4b (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 21:17:32 2015 -0400
+
+    mdsdclAddCommand returns zero on success
+
+commit 545861d3992c1673a3b8a8a06ba5444521b8d64d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 16:51:42 2015 -0400
+
+    Fix compiler warnings
+
+commit 1417d7c4dbe98a8a40ca6eca4134acf62d75b2ea
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 16:31:10 2015 -0400
+
+    Fix compiler warnings
+
+commit 7e347dc32ba072c762734c7d08fa6face7bf06e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 14:59:48 2015 -0400
+
+    Fix compiler warnings in servershr
+
+commit dbd8517ab75d0ad357de3933dc45eb3336eed056
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 14:40:01 2015 -0400
+
+    Fix compiler warnings
+
+commit b1baf8b03dc1952333988d53260970cce41bc273
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 14:26:15 2015 -0400
+
+    Fix compiler warning on mdsdcl utilities
+
+commit 07bb623f0f6bc059aa4807f96dfe0662b598bff7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 11:22:12 2015 -0400
+
+    Rename tclsysdef.h to tcl_p.h
+
+commit 88fa955da83dc256ce288f40cdc60b5709e50628
+Merge: 736921f 50b412e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 08:44:13 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 736921f4ac4ea99b43b0f1fabbfbe6946b4fe4ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 08:44:02 2015 -0400
+
+    Fix type used for second, usecs, and faults in show timer
+
+commit 50b412eb317d40187240befa74dceae783cf6e28 (tag: refs/tags/alpha_release-7-0-42)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Apr 22 22:20:46 2015 +0000
+
+    New ChangeLog
+
+commit 3a46e4baa06e81d5fe0499068526aede767495d5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Apr 22 13:51:58 2015 -0400
 
