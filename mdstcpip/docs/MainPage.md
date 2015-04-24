@@ -51,3 +51,5 @@ the following transports were supported:
 
 
 \page plugins Protocol plugins
+\page clients Clients connection
+\page bindings Objects oriented bindings
