@@ -1,4 +1,22 @@
-commit 3db1b4352c59bf532691fe1b650332a4d02e7e4b (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 953b4732c04db5cb2c39489de47da7d980deaafd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 24 08:58:01 2015 -0400
+
+    Fix for windows
+
+commit 1afa6d9de746b4c03d6bf3b6dc7a7c50c03c7b1a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 24 08:16:37 2015 -0400
+
+    Fix for windows
+
+commit de71fa1787f005451c4bd5ab0289e14fce88afc9 (tag: refs/tags/alpha_release-7-0-43)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Apr 24 01:34:38 2015 +0000
+
+    New ChangeLog
+
+commit 3db1b4352c59bf532691fe1b650332a4d02e7e4b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 23 21:17:32 2015 -0400
 
