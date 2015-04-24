@@ -335,7 +335,7 @@ int mdsdcl_set_command(void *ctx, char **error, char **output)
   char *history = 0;
   cli_get_value(ctx, "TABLE", &table);
   if (table) {
-    status = mdsdclAddCommands(table, error);
+    status = mdsdclAddCommands(table, error) == 0;
     free(table);
   } else {
     *error = strdup("Error: command table not specified\n");
