@@ -232,8 +232,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			throw MdsException(status);
 		}
 	}
-    //	unlockGlobal();
-	
+    //	unlockGlobal();	
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
@@ -332,7 +331,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
-			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
+			throw MdsException("Invalid argument passed to Connection::put(). Can only be Scalar or Array");
 	}
 
 	//Double backslashes!!
