@@ -113,15 +113,14 @@ int mdsdcl_init_timer(void *ctx, char *error, char *output)
 int mdsdcl_show_timer(void *ctx, char **error, char **output)
 {
   struct timeval TIMER_NOW_TIME;
-  time_t esec = 0;
-  suseconds_t emsec = 0;
+  long int esec = 0;
+  long int emsec = 0;
 #ifdef HAVE_SYS_RESOURCE_H
   time_t usec = 0, ssec = 0;
   suseconds_t umsec = 0, smsec = 0;
   long int sf = 0, hf = 0;
   struct rusage TIMER_NOW_USAGE;
 #else
-  clock_t cpu_now;
   clock_t usec;
 #endif
 
