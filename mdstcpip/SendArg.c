@@ -5,14 +5,16 @@
 
 ///
 /// This function can be used to send data form a mds descriptor. It was designed
-/// to pass descriptors arguments of a TDI command.
-///
+/// to pass descriptors arguments of a TDI command. It accepts the data descriptor
+/// info values as input arguments, then a Message is compiled with these informations
+/// and the proper connection message id. the SendMdsMsg() is used to format message
+/// memory and actually send it through the connection.
 ///
 /// \param id the id of the instanced connection in the connections list
-/// \param idx
-/// \param dtype
-/// \param nargs
-/// \param length
+/// \param idx the id of the descriptor argument in a evaluated expression
+/// \param dtype the descriptor type code
+/// \param nargs number of descriptor arguments
+/// \param length 
 /// \param ndims
 /// \param dims
 /// \param bytes

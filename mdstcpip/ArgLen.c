@@ -1,6 +1,6 @@
+#include <string.h>
 
 #include "mdsip_connections.h"
-#include <string.h>
 
 short ArgLen(struct descrip *d)
 {

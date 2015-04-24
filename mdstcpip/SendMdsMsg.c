@@ -1,9 +1,11 @@
-#include "mdsip_connections.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <stdio.h>
-#include "zlib.h"
+
+#include "zlib/zlib.h"
+
+#include "mdsip_connections.h"
 
 
 static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options)

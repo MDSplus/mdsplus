@@ -1,4 +1,3 @@
-#include "mdsip_connections.h"
 #include <mdsshr.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -21,6 +20,8 @@
 #include <pwd.h>
 #include <sys/wait.h>
 #endif
+
+#include "mdsip_connections.h"
 
 static void CompressString(struct descriptor *in, int upcase)
 {

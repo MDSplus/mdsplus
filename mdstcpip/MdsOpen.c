@@ -4,7 +4,18 @@
 #include <stdlib.h>
 
 
-
+///
+/// Opens a MDSplus tree parsefile identified by tree name and shot number.
+/// The actual implementation relies on the MdsValue() of the TDI expression 
+/// "TreeOpen($1,$2) with name and shot arguments. If 
+/// 
+/// \param id the id of the connection to use
+/// \param tree the tree name to be opened
+/// \param shot the shot id
+/// \return status if evaluation was succesfull this is the exit status 
+/// of the TreeOpen command converted to int, the status of MdsValue() is returned 
+/// otherwise.
+///
 int MdsOpen(int id, char *tree, int shot)
 {
   struct descrip treearg;
