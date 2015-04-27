@@ -1331,7 +1331,7 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
 
 int LibTimeToVMSTime(time_t * time_in, int64_t * time_out)
 {
-  time_t t;
+  time_t t=0;
   struct timeval tm;
   struct tm *tmval;
   tzset();
@@ -1356,6 +1356,7 @@ time_t LibCvtTim(int *time_in, double *t)
 {
   double t_out;
   time_t bintim = time(&bintim);
+  tzset();
   if (time_in) {
     int64_t time_local;
     double time_d;
@@ -1371,7 +1372,6 @@ time_t LibCvtTim(int *time_in, double *t)
     t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;
     bintim -= tmval->tm_gmtoff;
 #else
-    tzset();
     t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
   } else
