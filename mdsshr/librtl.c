@@ -55,12 +55,12 @@ void TranslateLogicalFree(char *value);
 
 #define RTLD_LAZY 0
 
-STATIC_ROUTINE void *dlopen(char *filename, int flags)
+STATIC_ROUTINE void *dlopen(const char *filename, int flags)
 {
   return (void *)LoadLibrary(filename);
 }
 
-STATIC_ROUTINE void *dlsym(void *handle, char *name)
+STATIC_ROUTINE void *dlsym(void *handle, const char *name)
 {
   return (void *)GetProcAddress((HINSTANCE) handle, name);
 }
@@ -1332,37 +1332,22 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
 int LibTimeToVMSTime(time_t * time_in, int64_t * time_out)
 {
   time_t t;
-#ifdef HAVE_GETTIMEOFDAY
   struct timeval tm;
-#ifdef _WIN32
-  typedef long long suseconds_t;
-#endif
-  suseconds_t microseconds = 0;
+  struct tm *tmval;
+  tzset();
+  tmval = localtime(&t);
   if (time_in == NULL) {
     gettimeofday(&tm, 0);
     t = tm.tv_sec;
-    microseconds = tm.tv_usec;
   } else
     t = *time_in;
-#else
-  int microseconds = 0;
-  t = (time_in == NULL) ? t = time(0) : *time_in;
-#endif
-#if defined(USE_TM_GMTOFF)
-  /* this is a suggestion to change all code 
-     for this as timezone is depricated unix
-     annother alternative is to use gettimeofday */
-  {
-    struct tm *tm;
-    tm = localtime(&t);
-    *time_out =
-	(int64_t) ((unsigned int)t + tm->tm_gmtoff) * (int64_t) 10000000 + addin +
-	microseconds * 10;
-  }
-#else
-  tzset();
+#ifdef _WIN32
   *time_out =
-      (int64_t) (t - timezone + daylight * 3600) * (int64_t) 10000000 + addin + microseconds * 10;
+    (int64_t) (t - timezone + daylight * (tmval->tm_isdst ? 3600 : 0)) * (int64_t) 10000000 + addin + (time_in ? 0 : tm.tv_usec) * 10;
+#else
+  *time_out =
+    (int64_t) ((unsigned int)t + tmval->tm_gmtoff) * (int64_t) 10000000 + addin +
+    (time_in ? 0 : tm.tv_usec) * 10;
 #endif
   return 1;
 }
@@ -1375,7 +1360,6 @@ time_t LibCvtTim(int *time_in, double *t)
     int64_t time_local;
     double time_d;
     struct tm *tmval;
-    //    time_t dummy = 0;
     memcpy(&time_local, time_in, sizeof(time_local));
     time_local = (*(int64_t *) time_in - addin);
     if (time_local < 0)
@@ -1383,13 +1367,13 @@ time_t LibCvtTim(int *time_in, double *t)
     bintim = time_local / LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000)) * 1E-7;
     tmval = localtime(&bintim);
-#ifdef USE_TM_GMTOFF
-    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;	// - (tmval->tm_isdst ? 3600 : 0);
+#ifndef _WIN32
+    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;
     bintim -= tmval->tm_gmtoff;
 #else
+    tzset();
     t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
-    //    bintim = (long)t_out;
   } else
     bintim = (long)(t_out = (double)time(0));
   if (t != 0)
@@ -1397,29 +1381,13 @@ time_t LibCvtTim(int *time_in, double *t)
   return (bintim);
 }
 
-#ifndef _WIN32
-#include <sys/time.h>
-#endif
 int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
   char *time_str;
   char time_out[23];
   unsigned short slen = sizeof(time_out);
   time_t bintim = LibCvtTim(time_in, 0);
-  int64_t chunks = 0;
-  int64_t *time_q = (int64_t *) time_in;
-  tzset();
-  if (time_in != NULL) {
-#ifdef HAVE_GETTIMEOFDAY
-    int64_t tmp;
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv, &tz);
-    tmp = (*time_q - 0x7c95674beb4000ULL) / 10000000 + tz.tz_minuteswest * 60 - (daylight * 3600);
-    bintim = (tmp < 0) ? (time_t) 0 : (time_t) tmp;
-#endif
-    chunks = *time_q % 10000000;
-  }
+  int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
   time_str = ctime(&bintim);
   if (time_str) {
     time_out[0] = time_str[8];
