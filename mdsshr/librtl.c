@@ -15,11 +15,9 @@
 #include "/usr/include/sys/types.h"
 #elif !defined(_WIN32)
 #include <strings.h>
-#ifdef HAVE_GETTIMEOFDAY
-#include <sys/types.h>
-#include <sys/time.h>
-#include <strings.h>
 #endif
+#ifdef HAVE_GETTIMEOFDAY
+#include <sys/time.h>
 #endif
 
 #include <sys/time.h>
@@ -50,8 +48,6 @@ void TranslateLogicalFree(char *value);
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
-//#define putenv _putenv
-//#define tzset _tzset
 
 #define RTLD_LAZY 0
 
@@ -1314,41 +1310,32 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
       tim = mktime(&tm);
       if ((int)tim == -1)
 	return 0;
-#if defined(_WIN32xxxxx)
-      _tzset();
-      tim -= _timezone;
-#endif
     }
   }
-  if (tim > 0) {
+  if (tim > 0)
     LibTimeToVMSTime(&tim, qtime);
-    return tim > 0;
-    *qtime = ((int64_t) tim + daylight * 3600) * 10000000 + addin;
-  } else
+  else
     *qtime = 0;
   return tim > 0;
 }
 
 int LibTimeToVMSTime(time_t * time_in, int64_t * time_out)
 {
-  time_t t=0;
-  struct timeval tm;
-  struct tm *tmval;
-  tzset();
-  tmval = localtime(&t);
-  if (time_in == NULL) {
-    gettimeofday(&tm, 0);
-    t = tm.tv_sec;
-  } else
-    t = *time_in;
-#ifdef _WIN32
-  *time_out =
-    (int64_t) (t - timezone + daylight * (tmval->tm_isdst ? 3600 : 0)) * (int64_t) 10000000 + addin + (time_in ? 0 : tm.tv_usec) * 10;
+  time_t time_to_use = time_in ? *time_in : time(NULL);
+  struct tm *tmval = localtime(&time_to_use);
+  time_t tz_offset;
+  struct timeval tv;
+  if (time_in)
+    tv.tv_usec = 0;
+  else
+    gettimeofday(&tv,0);
+  
+#ifdef USE_TM_GMTOFF
+  tz_offset = tmval->tm_gmtoff;
 #else
-  *time_out =
-    (int64_t) ((unsigned int)t + tmval->tm_gmtoff) * (int64_t) 10000000 + addin +
-    (time_in ? 0 : tm.tv_usec) * 10;
+  tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
+  *time_out = (int64_t) (time_to_use + tz_offset) * (int64_t) 10000000 + tv.tv_usec * 10 + addin;
   return 1;
 }
 
@@ -1356,7 +1343,6 @@ time_t LibCvtTim(int *time_in, double *t)
 {
   double t_out;
   time_t bintim = time(&bintim);
-  tzset();
   if (time_in) {
     int64_t time_local;
     double time_d;
