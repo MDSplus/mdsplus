@@ -1347,6 +1347,7 @@ time_t LibCvtTim(int *time_in, double *t)
     int64_t time_local;
     double time_d;
     struct tm *tmval;
+    time_t tz_offset;
     memcpy(&time_local, time_in, sizeof(time_local));
     time_local = (*(int64_t *) time_in - addin);
     if (time_local < 0)
@@ -1354,12 +1355,13 @@ time_t LibCvtTim(int *time_in, double *t)
     bintim = time_local / LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000)) * 1E-7;
     tmval = localtime(&bintim);
-#ifndef _WIN32
-    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;
-    bintim -= tmval->tm_gmtoff;
+#ifdef USE_TM_GMTOFF
+    tz_offset = tmval->tm_gmtoff;
 #else
-    t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
+    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
+    t_out = (time_d > 0 ? time_d : 0) - tz_offset;
+    bintim -= tz_offset;
   } else
     bintim = (long)(t_out = (double)time(0));
   if (t != 0)
