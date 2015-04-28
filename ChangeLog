@@ -1,4 +1,34 @@
-commit 953b4732c04db5cb2c39489de47da7d980deaafd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 1802a9535d8f79bee30cddda0fcec7038f515369 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 13:43:04 2015 -0400
+
+    Fix time handling
+
+commit 4bb7ec8106e21648fe8f5621b21f8132d53a525f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 13:31:14 2015 -0400
+
+    Fix time handling
+
+commit 95ce84e853c63c2274621d0ab5ce813640e62af4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 09:48:25 2015 -0400
+
+    Fix time handling again
+
+commit 60cbc7d971d638089ec6884e242e5165f2a2ee79
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 09:32:15 2015 -0400
+
+    Fix time handling again
+
+commit f4016878bc2b77406218f173fe373ad86b6f2f13 (tag: refs/tags/alpha_release-7-0-44)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Apr 24 13:12:31 2015 +0000
+
+    New ChangeLog
+
+commit 953b4732c04db5cb2c39489de47da7d980deaafd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Apr 24 08:58:01 2015 -0400
 
