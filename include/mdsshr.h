@@ -65,7 +65,7 @@ extern "C" {
   EXPORT extern char *TranslateLogical(char *name);
   EXPORT extern void TranslateLogicalFree(char *value);
   EXPORT extern int TranslateLogicalXd(struct descriptor *in, struct descriptor_xd *out);
-  EXPORT extern char *MdsRelease();
+  EXPORT extern const char *MdsRelease();
   EXPORT extern void MdsFloatToTime(double floatTime, uint64_t * outTime);
   EXPORT extern void MdsFloatToDelta(double floatTime, uint64_t * outTime);
   EXPORT extern void MdsTimeToFloat(uint64_t inTime, float *outFloat);
@@ -75,29 +75,6 @@ extern "C" {
   EXPORT extern void MdsGlobalUnlock();
   EXPORT extern int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out);
 
-#if defined _WIN32 && !defined HAVE_PTHREAD_H
-  typedef int pthread_key_t;
-  typedef void *pthread_t;
-
-  EXPORT extern void pthread_once(int *one_time, void (*key_alloc));
-  EXPORT extern void *pthread_getspecific(pthread_key_t buffer_key);
-  EXPORT extern void pthread_setspecific(pthread_key_t buffer_key, void *p);
-  EXPORT extern void pthread_key_create(pthread_key_t * buffer_key, void *d2);
-  EXPORT extern int pthread_mutex_lock(void **mutex);
-  EXPORT extern int pthread_mutex_unlock(void **mutex);
-  EXPORT extern int pthread_mutex_init(void **mutex, void *);
-  EXPORT extern void pthread_cleanup_pop();
-  EXPORT extern void pthread_cleanup_push();
-  EXPORT extern int pthread_cond_init(void **cond, void *def);
-  EXPORT extern int pthread_cond_wait(void **cond, void **mutex);
-  EXPORT extern int pthread_create(pthread_t * thread, void *dummy, void *(*rtn) (void *),
-				   void *rtn_param);
-  EXPORT extern int pthread_cond_signal(void *cond);
-  EXPORT extern int pthread_cond_timedwait(void **cond, void **mutex, int msec);
-  EXPORT extern int pthread_cond_destroy(void **cond);
-  EXPORT extern int pthread_mutex_destroy(void **mutex);
-  EXPORT extern void pthread_cancel(void *thread);
-#endif
 
 #ifdef __cplusplus
 }

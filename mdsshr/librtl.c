@@ -31,6 +31,7 @@
 #include <STATICdef.h>
 #include <ctype.h>
 #include "mdsshrthreadsafe.h"
+#include <release.h>
 
 STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
@@ -1750,33 +1751,16 @@ int libffs(int *position, int *size, char *base, int *find_position)
   }
   return status;
 }
-STATIC_THREADSAFE char RELEASE[512] = { 0 };
-STATIC_THREADSAFE struct descriptor RELEASE_D = { 0, DTYPE_T, CLASS_S, RELEASE };
 
-char *MdsRelease()
+const char *MdsRelease()
 {
-#include <release.h>
-  STATIC_CONSTANT const char *tag = MDSPLUS_RELEASE;
-  if (RELEASE[0] == 0) {
-    int major = 0;
-    int minor = 0;
-    int sub = 0;
-    int status = sscanf(&tag[1], "Name: release-%d-%d-%d", &major, &minor, &sub);
-    if (status == 0)
-      strcpy(RELEASE, "MDSplus, beta version");
-    else if (status == 1)
-      sprintf(RELEASE, "MDSplus, Version %d", major);
-    else if (status == 2)
-      sprintf(RELEASE, "MDSplus, Version %d.%d", major, minor);
-    else if (status == 3)
-      sprintf(RELEASE, "MDSplus, Version %d.%d-%d", major, minor, sub);
-    RELEASE_D.length = strlen(RELEASE);
-  }
   return RELEASE;
 }
 
 struct descriptor *MdsReleaseDsc()
 {
-  MdsRelease();
+  static struct descriptor RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
+  RELEASE_D.length = (int)strlen(RELEASE);
+  RELEASE_D.pointer = (char *)RELEASE;
   return &RELEASE_D;
 }
