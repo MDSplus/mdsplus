@@ -84,7 +84,7 @@ if __name__ == "__main__":
 
 set -e
 git archive --format=tar --prefix=%(tag)s/ %(flavor)s | (cd /tmp/ && tar xf -)
-echo 'static const char *RELEASE = "%(tag)s";' > /tmp/%(tags)s/include/release.h
+echo 'static const char *RELEASE = "%(tag)s";' > /tmp/%(tag)s/include/release.h
 cp ChangeLog /tmp/%(tag)s/
 pushd /tmp/%(tag)s/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
