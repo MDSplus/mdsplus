@@ -65,19 +65,18 @@ step 1 and 5 has been added to manage the remote connection.
 
 As a tree node may contain data of an arbitrary type (string, scalar, array, integer, float etc.), 
 we need a mechanism for mapping the returned data type into the receiving variable. 
-This is achieved by the usage of descriptors. 
-A descriptor specified the kind of variable used for receiving MDSplus data. 
+In the low-level data management libraries of MDSplus a descriptors infrastructure 
+was adopted, originally coming from the OpenVMS system.
+
 
 In particular, a descriptor will specify:
  * The type of the receiving variable
  * Its dimension
  * Its starting address 
 
-In the low-level data management libraries of MDSplus a descriptors infrastructure 
-was adopted, originally coming from the OpenVMS system.
-As stated these descriptors simply contain a reference to the actual instance
-and the total length of memory occupied, this is strongly architecture dependent
-and for this reason MDSip always checks that all data transfer is done with the 
+So these descriptors simply contain a reference to the actual instance
+and the total length of memory occupied. This is strongly architecture dependent
+and for this reason MDSip always checks that each data transfer is done matching the 
 same memory organization of the server.
 
 The client memory organization is always recorded inside client_type field of the
@@ -86,13 +85,11 @@ the client type using ClientType() function.
 As the tree data stored to the server is organized in its own memory architecture
 the client must convert each descriptor trasaction.
 The conversion of the message is handled using the FlipHeader() and FlipData() 
-functions each time a client whats to get or put data to the server.
+functions each time a client starts to get or put data to the server.
 
 
-
-All main declarations used within a mdsip session are provided by mdsip_connections.h  
-where the core of mdsip functionalities are declared.
-These can be resumed in the following functions:
+The main functions used within a mdsip session are provided by mdsip_connections.h  
+where the core of mdsip functionalities are declared. They are:
 
 
 - NewConnection() Creates the new connection structure and appends it to the client
@@ -122,7 +119,7 @@ These can be resumed in the following functions:
 
 
  
-
+The simplest way to transfer data through the connection is to send to create a 
 
 
 

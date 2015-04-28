@@ -3,6 +3,9 @@
 
 #include "mdsip_connections.h"
 
+///
+/// Closes active connection identified by id calling removeConnection()
+///
 int CloseConnection(int id)
 {
   int status = 0;

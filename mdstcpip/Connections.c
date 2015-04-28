@@ -139,6 +139,12 @@ int NewConnection(char *protocol)
     return -1;
 }
 
+///
+/// \brief 
+/// \param id
+/// \param username
+/// \return 
+///
 static int AuthorizeClient(int id, char *username)
 {
   Connection *c = FindConnection(id, 0);
@@ -146,7 +152,13 @@ static int AuthorizeClient(int id, char *username)
 }
 
 ///
-/// Creates a new connection instance using protocol from args, if a valid connection is instanced
+/// Creates a new connection instance using given protocol, if a valid 
+/// connection is instanced. 
+/// 
+/// Executes:
+/// 1. SetConnectionInfo()
+/// 2. AuthorizeClient()
+/// 3. SetConnectionCompression()
 ///
 ///
 /// \param protocol

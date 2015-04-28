@@ -58,6 +58,8 @@ static IoRoutines tcp_routines =
     { tcp_connect, tcp_send, tcp_recv, tcp_flush, tcp_listen, tcp_authorize, tcp_reuseCheck,
 tcp_disconnect };
 
+
+/// Connected client definition for client list
 typedef struct _client {
   int sock;
   int id;
@@ -66,16 +68,20 @@ typedef struct _client {
   struct _client *next;
 } Client;
 
+/// List of clients connected to server instance.
 static Client *ClientList = 0;
 
+/// active select file descriptor
 static fd_set fdactive;
 
+/// List of active sockets
 typedef struct _socket_list {
   int socket;
   struct _socket_list *next;
-} SocketList;
+} Socket;
 
-static SocketList *Sockets = 0;
+/// List of connected Sockets
+static Socket *SocketList = 0;
 
 EXPORT IoRoutines *Io()
 {
@@ -128,25 +134,25 @@ static void unlock_socket_list()
 
 static void PushSocket(int socket)
 {
-  SocketList *oldhead;
+  Socket *oldhead;
   lock_socket_list();
-  oldhead = Sockets;
-  Sockets = malloc(sizeof(SocketList));
-  Sockets->socket = socket;
-  Sockets->next = oldhead;
+  oldhead = SocketList;
+  SocketList = malloc(sizeof(Socket));
+  SocketList->socket = socket;
+  SocketList->next = oldhead;
   unlock_socket_list();
 }
 
 static void PopSocket(int socket)
 {
-  SocketList *p, *s;
+  Socket *p, *s;
   lock_socket_list();
-  for (s = Sockets, p = 0; s && s->socket != socket; p = s, s = s->next) ;
+  for (s = SocketList, p = 0; s && s->socket != socket; p = s, s = s->next) ;
   if (s) {
     if (p)
       p->next = s->next;
     else
-      Sockets = s->next;
+      SocketList = s->next;
     free(s);
   }
   unlock_socket_list();
@@ -154,9 +160,9 @@ static void PopSocket(int socket)
 
 static void ABORT(int sigval)
 {
-  SocketList *s;
+  Socket *s;
   lock_socket_list();
-  for (s = Sockets; s; s = s->next) {
+  for (s = SocketList; s; s = s->next) {
     shutdown(s->socket, 2);
   }
   unlock_socket_list();
@@ -569,7 +575,10 @@ static int tcp_listen(int argc, char **argv)
   else if (GetPortname() == 0)
     SetPortname("mdsip");
   InitializeSockets();
+  
   if (GetMulti()) {
+      // MULTIPLE CONNECTION MODE             //
+      // multiple connection with own context //      
     unsigned short port = GetPort(GetPortname());
     char *matchString[] = { "multi" };
     int s;
@@ -605,6 +614,7 @@ static int tcp_listen(int argc, char **argv)
     while (1) {
       readfds = fdactive;
       if (select(tablesize, &readfds, 0, 0, 0) != -1) {
+          
 	error_count = 0;
 	if (FD_ISSET(s, &readfds)) {
 	  socklen_t len = sizeof(sin);
@@ -615,6 +625,7 @@ static int tcp_listen(int argc, char **argv)
 	  SetSocketOptions(sock, 0);
 	  status = AcceptConnection("tcp", "tcp", sock, 0, 0, &id, &username);
 	  if (status & 1) {
+	      // Adds client to client list //
 	    Client *new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
 	    new->id = id;
 	    new->sock = sock;
@@ -624,13 +635,15 @@ static int tcp_listen(int argc, char **argv)
 	    ClientList = new;
 	    FD_SET(sock, &fdactive);
 	  }
-	} else {
+	} 
+	else {
 	  Client *c;
 	  for (c = ClientList; c;) {
 	    if (FD_ISSET(c->sock, &readfds)) {
 	      Client *c_chk;
-	      MdsSetClientAddr(c->addr);
-	      DoMessage(c->id);
+	      MdsSetClientAddr(c->addr);	      
+	      // DO MESSAGE ---> ProcessMessage() form MdsIpSrvShr //
+	      DoMessage(c->id); 
 	      for (c_chk = ClientList; c_chk && c_chk != c; c_chk = c_chk->next) ;
 	      if (c_chk)
 		FD_CLR(c->sock, &readfds);
@@ -669,11 +682,13 @@ static int tcp_listen(int argc, char **argv)
       }
     }
   } else {
-#ifdef HAVE_WINDOWS_H
-    int sock = getSocketHandle(options[1].value);
-#else
-    int sock = 0;
-#endif
+      // SERVER MODE                                //
+      // multiple connections with the same context //
+#   ifdef HAVE_WINDOWS_H
+      int sock = getSocketHandle(options[1].value);
+#   else
+      int sock = 0;
+#   endif
     int id;
     char *username;
     int status;
@@ -681,7 +696,7 @@ static int tcp_listen(int argc, char **argv)
     if (status & 1) {
       struct sockaddr_in sin;
       socklen_t n = sizeof(sin);
-      Client *new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+      Client * new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
       if (getpeername(sock, (struct sockaddr *)&sin, &n) == 0)
 	MdsSetClientAddr(*(int *)&sin.sin_addr);
       new->id = id;
@@ -692,7 +707,8 @@ static int tcp_listen(int argc, char **argv)
       FD_SET(sock, &fdactive);
     }
     while (status & 1)
-      status = DoMessage(id);
+      // DO MESSAGE ---> ProcessMessage() from MdsIpSrvShr //
+      status = DoMessage(id); 
   }
   return 1;
 }

@@ -77,7 +77,7 @@ typedef struct _connection {
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor *descrip[MAX_ARGS];
+  struct descriptor *descrip[MAX_ARGS]; ///< list of descriptors for the message arguments
   struct _eventlist *event;
   void *tdicontext[6];
   int addr;
@@ -268,7 +268,7 @@ EXPORT char *MdsGetServerPortname();
 
 /* MdsIpSrvShr routines */
 
-EXPORT Message *ProcessMessage(Connection *, Message * message);
+EXPORT Message *ProcessMessage(Connection *connection, Message * message);
 EXPORT int RemoveConnection(int id);
 
 #endif

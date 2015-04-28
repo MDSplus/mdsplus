@@ -177,7 +177,7 @@ docs:
 	doxygen docs/doxy.conf
 
 
-@MAKEBINDIR@mdsiptest$(EXE): t.c $(MdsIpShr)
+@MAKEBINDIR@mdsiptest$(EXE): testing/mdsiptest.c $(MdsIpShr)
 	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr $(LIBS)
 
 @MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)

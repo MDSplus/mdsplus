@@ -5,6 +5,9 @@
 static int ast_mutex_initialized = 0;
 static pthread_mutex_t ast_mutex;
 
+///
+/// Locks AST mutex
+///
 void LockAsts()
 {
   if (!ast_mutex_initialized) {
@@ -14,6 +17,9 @@ void LockAsts()
   pthread_mutex_lock(&ast_mutex);
 }
 
+///
+/// Unlocks AST mutex
+///
 void UnlockAsts()
 {
   if (!ast_mutex_initialized) {

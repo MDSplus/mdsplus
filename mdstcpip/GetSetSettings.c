@@ -81,17 +81,26 @@ char *SetHostfile(char *newhostfile)
   return old;
 }
 
+///
+/// Get multi mode active in this scope. 
+/// Mutiple connection mode (accepts multiple connections each with own context)
+/// 
 unsigned char GetMulti()
 {
   return multi;
 }
 
+///
+/// Set multi mode active in this scope. 
+/// Mutiple connection mode (accepts multiple connections each with own context)
+/// 
 unsigned char SetMulti(unsigned char s)
 {
   unsigned char old_multi = multi;
   multi = s;
   return old_multi;
 }
+
 
 int GetContextSwitching()
 {

@@ -1,6 +1,8 @@
 #include "mdsip.h"
 #include <STATICdef.h>
 #include <ctype.h>
+
+
 extern int GetAnswerInfoTS(SOCKET sock, char *dtype, short *length, char *ndims, int *dims,
 			   int *numbytes, void * *dptr, void **m);
 

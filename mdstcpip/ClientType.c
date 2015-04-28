@@ -1,5 +1,26 @@
 #include "mdsip_connections.h"
 
+//#define VMS_CLIENT       1
+//#define IEEE_CLIENT      2
+//#define JAVA_CLIENT      3
+//#define VMSG_CLIENT      4
+//#define CRAY_IEEE_CLIENT 7
+//#define CRAY_CLIENT      8
+
+
+/// 
+/// Gets the id of this client machine using internal test function.
+/// The client types discovered by this function are the followings:
+/// 
+/// |client type       | value |
+/// |:-----------------|-------|
+/// | VMS_CLIENT       |   1   |
+/// | IEEE_CLIENT      |   2   |
+/// | VMSG_CLIENT      |   4   |
+/// | CRAY_IEEE_CLIENT |   7   |
+/// | CRAY_CLIENT      |   8   |
+/// 
+/// 
 char ClientType(void)
 {
   static char ctype = 0;
