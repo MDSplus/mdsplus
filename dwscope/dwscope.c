@@ -1968,12 +1968,7 @@ static void RestoreDatabase(String dbname, Widget w)
   override_shot = GetResource(scopedb, "Scope.override_shot", NULL);
   if (override_shot)
     XmTextFieldSetString(XtNameToWidget(TopWidget, "*override_shot"), override_shot);
-#ifdef __VMS
-  ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "sys$login:dwscope.ps"),
-		0);
-#else
   ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "dwscope.ps"), 0);
-#endif
   ScopePrintPortrait = atoi(GetResource(scopedb, "Scope.print_portrait", "0"));
   ScopePrintWindowTitle = atoi(GetResource(scopedb, "Scope.print_window_title", "0"));
   default_printer = getenv("PRINTER");

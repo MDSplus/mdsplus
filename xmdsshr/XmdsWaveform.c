@@ -116,10 +116,6 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #include <X11/Xatom.h>
 #include <Xmds/XmdsWaveformP.h>
 
-#ifdef __VMS
-#include <lib$routines.h>
-#endif
-
 /*------------------------------------------------------------------------------
 
  Local variables:                                                             */
@@ -1514,12 +1510,8 @@ static void ConvertToPix(int num, float *minvalin, float *maxvalin, float *value
   float maxval = *maxvalin;
   float span = maxval - minval;
   int *ival = (int *)value;
-#ifdef __VMS
-  lib$establish(lib$sig_to_ret);
-#endif
   if (span) {
     float pix_over_span = pixspan / span;
-#ifndef __VAX
     if (value) {
       for (i = 0; i < num; i++) {
 	if (ival[i] == roprand)
@@ -1534,9 +1526,6 @@ static void ConvertToPix(int num, float *minvalin, float *maxvalin, float *value
 	  pixval[i] = fpixval < -1E9 ? -1E9 : (fpixval > 1E9 ? 1E9 : fpixval);
 	}
       }
-#ifdef __VMS
-      lib$revert();
-#endif
     } else {
       if (reverse)
 	for (i = 0; i < num; i++)
@@ -1545,31 +1534,6 @@ static void ConvertToPix(int num, float *minvalin, float *maxvalin, float *value
 	for (i = 0; i < num; i++)
 	  pixval[i] = ival[i] == roprand ? missing : (i - minval) * pix_over_span;
     }
-#else
-    if (value) {
-      lib$establish(FixupMissing);
-      if (reverse)
-	for (i = 0; i < num; i++) {
-	  float fpixval = (maxval - value[i]) * pix_over_span;
-	  pixval[i] = fpixval < -1E9 ? -1E9 : (fpixval > 1E9 ? 1E9 : fpixval);
-	}
-/*	  pixval[i] = (maxval - value[i]) * pix_over_span; */
-      else
-	for (i = 0; i < num; i++) {
-	  float fpixval = (value[i] - minval) * pix_over_span;
-	  pixval[i] = fpixval < -1E9 ? -1E9 : (fpixval > 1E9 ? 1E9 : fpixval);
-	}
-/*	  pixval[i] = (value[i] - minval) * pix_over_span; */
-      lib$revert();
-    } else {
-      if (reverse)
-	for (i = 0; i < num; i++)
-	  pixval[i] = (maxval - i) * pix_over_span;
-      else
-	for (i = 0; i < num; i++)
-	  pixval[i] = (i - minval) * pix_over_span;
-    }
-#endif
   }
 }
 
@@ -1968,9 +1932,6 @@ static void SetWave(Widget w_in, int count, float *x, float *y, Boolean * wavefo
 static void SetCrosshairs(Widget w_in, float *x, float *y, Boolean attach)
 {
   XmdsWaveformWidget w = (XmdsWaveformWidget) w_in;
-#ifdef __VMS
-  lib$establish(lib$sig_to_ret);
-#endif
   if (waveformCount(w)) {
     xCrosshair(w) = *x;
     yCrosshair(w) = *y;
@@ -2056,11 +2017,7 @@ static void Print(XmdsWaveformWidget w, FILE * filefid, int inp_total_width, int
 /* If multiple plot on a single page, the first plot printed must be the one located at top left hand corner. */
 {
 
-#ifdef __VMS
-  static char *libname = "MDS$ROOT:[SYSLIB]MDS$LIB.PS";
-#else				/* __VMS */
   char *libname = getenv("MDS_LIB_PS");
-#endif				/* __VMS */
   static char buf[500];
   static FILE *libfid;
   static Position xorigin, yorigin;
