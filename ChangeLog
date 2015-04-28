@@ -1,4 +1,66 @@
-commit 1802a9535d8f79bee30cddda0fcec7038f515369 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit bfe34160058aea7bab1a1859b3ee21255b79b411 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 16:03:48 2015 -0400
+
+    Take out MdsRelease prototype. It is defined in the mdsshr header file.
+
+commit adb6060af23e54f1bbf0ce737c5dddc6bfaae41d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 15:57:34 2015 -0400
+
+    Fix typo
+
+commit eb5964b40013014c8f8b6b94eb09a60cb70ccc0a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 15:09:59 2015 -0400
+
+    Use git tag for MdsRelease
+
+commit 1f2e33b027414c7785ca3033d96f68b6b64f670f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 14:42:06 2015 -0400
+
+    Clean out unnecessary msc windows code
+
+commit 8e3996a1f880a58cbf3a6344563c2948e44543e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 11:37:33 2015 -0400
+
+    Remove old cvs related files
+
+commit 06eb482511117403572ad44f2f862d3414cc66ac
+Merge: a314d09 55e4c8a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 10:02:19 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit a314d0912df3f5386af48c2dc74ea5d1140536f4
+Merge: 390125a 4c853d5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 10:01:30 2015 -0400
+
+    Merge in feature_new_subtree_linkage branch to change the way subtree linkage occurs on 64-bit platforms. The new strategy is to assign special node usages to nodes which involve linkage to subtrees. When the parent, member, brother or child node linkage refers to a different subtree, a nid will be used for that linkage.
+
+commit 55e4c8aef749306b7a0fe31a02dcc3bb0cc74147
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 08:52:00 2015 -0400
+
+    Fix Slope with less than three arguments
+
+commit 390125a334ce26809d7dce5c6ff8119d0df6a145
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 07:51:43 2015 -0400
+
+    Clean up compiler warnings
+
+commit ceccbca7633be6537f5993858200740f5f293415 (tag: refs/tags/alpha_release-7-0-45)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Apr 27 23:18:31 2015 -0400
+
+    New ChangeLog
+
+commit 1802a9535d8f79bee30cddda0fcec7038f515369
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Apr 27 13:43:04 2015 -0400
 
@@ -118,6 +180,12 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Apr 21 22:21:07 2015 +0000
 
     New ChangeLog
+
+commit 4c853d537bf184becfc48aea152af773aa42c3b0 (refs/remotes/origin/feature_new_subtree_linkage)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 15:14:18 2015 -0400
+
+    Use nid for subtree linkages instead of offsets
 
 commit a52142163bb269261b0f1025935b33d74efdbac9
 Merge: 89d537f dd3df95
