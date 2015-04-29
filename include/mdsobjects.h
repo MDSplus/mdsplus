@@ -947,6 +947,17 @@ public:
         return res;
     }
 
+    /// get a string array of a single element
+    char **getStringArray(int *numElements)
+    {
+        char **res = new char*[1];
+	res[0] = new char[length + 1];
+        std::copy(&ptr[0], &ptr[length + 1], res[0]);
+        res[0][length] = 0;
+	*numElements = 1;
+        return res;
+    }
+
     /// check if two strings have the same content.
     bool equals(Data *data);
 
