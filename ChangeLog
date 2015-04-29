@@ -1,4 +1,22 @@
-commit bfe34160058aea7bab1a1859b3ee21255b79b411 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6bdc04b57cc850501e6991021b34ccce9a57ab67 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 29 10:51:53 2015 -0400
+
+    Revert subtree linkage changes. It does not work! Will need to revisit
+
+commit a11a58c14c16c86912be2e3c9622882f0d079402
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 29 15:39:18 2015 +0200
+
+    Added Strring::getStringArray()
+
+commit f55affd143738f84a61dbb99c18b65d3d3f42e57 (tag: refs/tags/alpha_release-7-0-46)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Apr 28 16:26:00 2015 -0400
+
+    New ChangeLog
+
+commit bfe34160058aea7bab1a1859b3ee21255b79b411
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Apr 28 16:03:48 2015 -0400
 
