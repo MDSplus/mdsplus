@@ -1,4 +1,16 @@
-commit 6bdc04b57cc850501e6991021b34ccce9a57ab67 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e7bc789af07ae63dc929013ad085bea7ab50f341 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 29 14:39:13 2015 -0400
+
+    Fix quoted parameters with commas
+
+commit c168a04e57db958a8639bbdb018ec26864569f4a (tag: refs/tags/alpha_release-7-0-47)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Apr 29 15:09:51 2015 +0000
+
+    New ChangeLog
+
+commit 6bdc04b57cc850501e6991021b34ccce9a57ab67
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Apr 29 10:51:53 2015 -0400
 
