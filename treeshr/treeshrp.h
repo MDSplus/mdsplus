@@ -541,10 +541,14 @@ static inline NODE *child_of(PINO_DATABASE * dbid, NODE * a)
 {
   NODE *ans = 0;
   if (a && a->child) {
-    ans = (NODE *) ((char *)a + swapint((char *)&a->child));
-    if (ans->usage == TreeUSAGE_SUBTREE_REF)
-      ans = nid_to_node(dbid, (NID *) & ans->child);
+    if (a->usage == TreeUSAGE_SUBTREE_REF) {
+      ans = nid_to_node(dbid, (NID *) & a->child);
+    } else {
+      ans = (NODE *) ((char *)a + swapint((char *)&a->child));
+    }
   }
+  if (ans && ans->usage == TreeUSAGE_SUBTREE_REF)
+    ans = nid_to_node(dbid, (NID *) & ans->child);
   return ans;
 }
 
@@ -552,10 +556,16 @@ static inline NODE *brother_of(PINO_DATABASE * dbid, NODE * a)
 {
   NODE *ans = 0;
   if (a && a->brother) {
-    ans = (NODE *) ((char *)a + swapint((char *)&a->brother));
-    if (ans->usage == TreeUSAGE_SUBTREE_REF)
-      ans = nid_to_node(dbid, (NID *) & ans->child);
+    if (a->usage == TreeUSAGE_SUBTREE_TOP) {
+      ans = nid_to_node(dbid, (NID *) & a->brother);
+    } else {
+      ans = (NODE *) ((char *)a + swapint((char *)&a->brother));
+      if (ans->usage == TreeUSAGE_SUBTREE_REF)
+	ans = nid_to_node(dbid, (NID *) & ans->child);
+    }
   }
+  if (ans && ans->usage == TreeUSAGE_SUBTREE_REF)
+    ans = nid_to_node(dbid, (NID *) & ans->child);
   return ans;
 }
 
