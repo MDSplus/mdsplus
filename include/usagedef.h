@@ -1,10 +1,13 @@
+/*  VAX/DEC CMS REPLACEMENT HISTORY, Element USAGEDEF.H */
+/*  *4    27-DEC-1990 10:42:05 TWF "Add COMPOUND_DATA" */
+/*  *3    10-AUG-1990 10:08:42 JAS "adding usage subtree" */
+/*  *1     2-JAN-1990 12:34:10 TWF "Usage value definitions" */
+/*  VAX/DEC CMS REPLACEMENT HISTORY, Element USAGEDEF.H */
 /*  USAGEDEF.H ************************************
 
 Node Usage definitions
 
 **************************************************/
-
-#ifndef USAGEDEF_H
 
 #define TreeUSAGE_ANY       0
 #define TreeUSAGE_NONE      1 /******* USAGE_NONE is now USAGE_STRUCTURE *******/
@@ -21,7 +24,3 @@ Node Usage definitions
 #define TreeUSAGE_SUBTREE  11
 #define TreeUSAGE_COMPOUND_DATA 12
 #define TreeUSAGE_MAXIMUM  TreeUSAGE_COMPOUND_DATA
-#define TreeUSAGE_SUBTREE_REF 14 /* Runtime only special usage */
-#define TreeUSAGE_SUBTREE_TOP 15 /* Runtime only special usage */
-
-#endif

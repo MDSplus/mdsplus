@@ -36,8 +36,8 @@ int TreeVerify( )
 
 static int maxnodes;
 static int nodecount;
-static int countnodes(PINO_DATABASE *dblist, NODE * node);
-static int countfree(PINO_DATABASE *dblist, NODE * node);
+static int countnodes(NODE * node);
+static int countfree(NODE * node);
 
 extern void **TreeCtx();
 
@@ -55,11 +55,11 @@ int _TreeVerify(void *dbid)
 	(NODE *) ((char *)dblist->tree_info->node + dblist->tree_info->header->free);
     nodecount = 0;
     maxnodes = dblist->tree_info->header->nodes;
-    if (countnodes(dblist, dblist->tree_info->node)) {
+    if (countnodes(dblist->tree_info->node)) {
       int allocated = nodecount;
       printf("Node summary:\n");
       printf("  Allocated = %d/%d\n", nodecount, maxnodes);
-      if (countfree(dblist, firstempty)) {
+      if (countfree(firstempty)) {
 	int free = nodecount - allocated;
 	int other = maxnodes - nodecount;
 	printf("  Free      = %d/%d\n", free, maxnodes);
@@ -72,7 +72,7 @@ int _TreeVerify(void *dbid)
   return status;
 }
 
-static int countnodes(PINO_DATABASE *dblist, NODE * node)
+static int countnodes(NODE * node)
 {
   if (node) {
     nodecount++;
@@ -80,41 +80,38 @@ static int countnodes(PINO_DATABASE *dblist, NODE * node)
       printf("Too many nodes found - exceeds total nodes %d\n", maxnodes);
       return 0;
     }
-    switch (node->usage) {
-    case TreeUSAGE_SUBTREE_REF: break;
-    case TreeUSAGE_SUBTREE_TOP: break;
-    default:
-      if (member_of(node)) {
-	if (parent_of(dblist, member_of(node)) != node)
-	  printf("Bad node linkage\n");
-	countnodes(dblist, member_of(node));
-      }
-      if (child_of(dblist, node)) {
-	if (parent_of(dblist, child_of(dblist, node)) != node)
-	  printf("Bad node linkage\n");
-	countnodes(dblist, child_of(dblist, node));
-      }
-    }
-    if (brother_of(dblist, node)) {
-      if (parent_of(dblist, brother_of(dblist, node)) != parent_of(dblist, node))
+    if (member_of(node)) {
+      if (parent_of(member_of(node)) != node)
 	printf("Bad node linkage\n");
-      countnodes(dblist, brother_of(dblist, node));
+      if (node->usage != TreeUSAGE_SUBTREE || node->parent == 0)
+	countnodes(member_of(node));
+    }
+    if (child_of(node)) {
+      if (parent_of(child_of(node)) != node)
+	printf("Bad node linkage\n");
+      if (node->usage != TreeUSAGE_SUBTREE || node->parent == 0)
+	countnodes(child_of(node));
+    }
+    if (brother_of(node)) {
+      if (parent_of(brother_of(node)) != parent_of(node))
+	printf("Bad node linkage\n");
+      countnodes(brother_of(node));
     }
   }
   return 1;
 }
 
-static int countfree(PINO_DATABASE *dblist, NODE * node)
+static int countfree(NODE * node)
 {
   NODE *lnode;
-  for (lnode = node; lnode; lnode = parent_of(dblist, lnode)) {
+  for (lnode = node; lnode; lnode = parent_of(lnode)) {
     nodecount++;
     if (nodecount > maxnodes) {
       printf("Too many nodes found - exceeds total nodes %d\n", maxnodes);
       return 0;
     }
     if (lnode->parent)
-      if (child_of(dblist, parent_of(dblist, lnode)) != lnode)
+      if (child_of(parent_of(lnode)) != lnode)
 	printf("Bad node linkage\n");
   }
   return 1;

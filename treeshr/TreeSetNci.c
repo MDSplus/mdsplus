@@ -135,7 +135,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 	  if (!(IS_OPEN_FOR_EDIT(dblist)))
 	    return TreeNOEDIT;
 
-	  node_ptr = nid_to_node(dblist, nid_ptr);
+	  nid_to_node(dblist, nid_ptr, node_ptr);
 	  if (node_ptr->usage != *(unsigned char *)itm_ptr->pointer) {
 	    node_ptr->usage = *(unsigned char *)itm_ptr->pointer;
 	    dblist->modified = 1;
@@ -509,10 +509,10 @@ int _TreeTurnOn(void *dbid, int nid_in)
     if (~status & 1)
       return status;
     if (!(nci.flags & NciM_PARENT_STATE)) {
-      node = nid_to_node(dblist, nid);
-      if (node->child)
-	status = SetParentState(dblist, child_of(dblist, node), 0);
-      if (node->member)
+      nid_to_node(dblist, nid, node);
+      if (node->INFO.TREE_INFO.child)
+	status = SetParentState(dblist, child_of(node), 0);
+      if (node->INFO.TREE_INFO.member)
 	status = SetParentState(dblist, member_of(node), 0);
     } else
       status = TreePARENT_OFF;
@@ -580,10 +580,10 @@ int _TreeTurnOff(void *dbid, int nid_in)
     if (~status & 1)
       return status;
     if (!(nci.flags & NciM_PARENT_STATE)) {
-      node = nid_to_node(dblist, nid);
-      if (node->child)
-	status = SetParentState(dblist, child_of(dblist, node), 1);
-      if (node->member)
+      nid_to_node(dblist, nid, node);
+      if (node->INFO.TREE_INFO.child)
+	status = SetParentState(dblist, child_of(node), 1);
+      if (node->INFO.TREE_INFO.member)
 	status = SetParentState(dblist, member_of(node), 1);
     }
   } else {
@@ -630,11 +630,11 @@ int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state)
   NCI nci;
   NODE *lnode;
   status = TreeNORMAL;
-  for (lnode = node; lnode && (status & 1); lnode = brother_of(db, lnode)) {
+  for (lnode = node; lnode && (status & 1); lnode = brother_of(lnode)) {
     status = SetNodeParentState(db, lnode, &nci, state);
-    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->child))
-      status = SetParentState(db, child_of(db, lnode), state);
-    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->member))
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->INFO.TREE_INFO.child))
+      status = SetParentState(db, child_of(lnode), state);
+    if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->INFO.TREE_INFO.member))
       status = SetParentState(db, member_of(lnode), state);
   }
   return status;

@@ -107,16 +107,16 @@ STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count)
   if (!getbit(bitnum)) {
     NODE *node;
     NODE *descendent;
-    node = nid_to_node(dblist, nid);
+    nid_to_node(dblist, nid, node);
     if (count)
       (*count)++;
     setbit(bitnum);
-    for (descendent = member_of(node); descendent; descendent = brother_of(0, descendent)) {
+    for (descendent = member_of(node); descendent; descendent = brother_of(descendent)) {
       NID nid;
       node_to_nid(dblist, descendent, (&nid));
       check_nid(dblist, &nid, count);
     }
-    for (descendent = child_of(0, node); descendent; descendent = brother_of(0, descendent)) {
+    for (descendent = child_of(node); descendent; descendent = brother_of(descendent)) {
       NID nid;
       node_to_nid(dblist, descendent, (&nid));
       check_nid(dblist, &nid, count);
@@ -127,7 +127,7 @@ STATIC_ROUTINE void check_nid(PINO_DATABASE * dblist, NID * nid, int *count)
       unsigned short elt_num = 1;
       elt_nid.node = nid->node - swapshort((char *)&node->conglomerate_elt) + 1;
       elt_nid.tree = nid->tree;
-      elt_node = nid_to_node(dblist, &elt_nid);
+      nid_to_node(dblist, (&elt_nid), elt_node);
       for (; swapshort((char *)&elt_node->conglomerate_elt) == elt_num;
 	   elt_nid.node++, elt_num++, elt_node++)
 	check_nid(dblist, &elt_nid, count);
@@ -188,42 +188,42 @@ extern void _TreeDeleteNodeExecute(void *dbid)
     int found = 0;
     _TreeRemoveNodesTags(dbid, *(int *)&nid);
     _TreeSetNoSubtree(dbid, *(int *)&nid);
-    node = nid_to_node(dblist, &nid);
-    parent = parent_of(0, node);
-    if (child_of(0, parent) == node) {
+    nid_to_node(dblist, (&nid), node);
+    parent = parent_of(node);
+    if (child_of(parent) == node) {
       found = 1;
-      if (node->brother) {
-	parent->child = node_offset( brother_of(0, node), parent);
+      if (node->INFO.TREE_INFO.brother) {
+	link_it(parent->INFO.TREE_INFO.child, brother_of(node), parent);
       } else
-	parent->child = 0;
-    } else if (parent->child) {
+	parent->INFO.TREE_INFO.child = 0;
+    } else if (parent->INFO.TREE_INFO.child) {
       NODE *bro;
-      for (bro = child_of(0, parent); bro->brother && (brother_of(0, bro) != node);
-	   bro = brother_of(0, bro)) ;
-      if (brother_of(0, bro) == node) {
+      for (bro = child_of(parent); bro->INFO.TREE_INFO.brother && (brother_of(bro) != node);
+	   bro = brother_of(bro)) ;
+      if (brother_of(bro) == node) {
 	found = 1;
-	if (node->brother) {
-	  bro->brother = node_offset(brother_of(0, node), bro);
+	if (node->INFO.TREE_INFO.brother) {
+	  link_it(bro->INFO.TREE_INFO.brother, brother_of(node), bro);
 	} else
-	  bro->brother = 0;
+	  bro->INFO.TREE_INFO.brother = 0;
       }
     }
     if (!found) {
       if (member_of(parent) == node) {
-	if (node->brother) {
-	  parent->member = node_offset( brother_of(0, node), parent);
+	if (node->INFO.TREE_INFO.brother) {
+	  link_it(parent->INFO.TREE_INFO.member, brother_of(node), parent);
 	} else
-	  parent->member = 0;
-      } else if (parent->member) {
+	  parent->INFO.TREE_INFO.member = 0;
+      } else if (parent->INFO.TREE_INFO.member) {
 	NODE *bro;
-	for (bro = member_of(parent); bro->brother && (brother_of(0, bro) != node);
-	     bro = brother_of(0, bro)) ;
-	if (brother_of(0, bro) == node) {
+	for (bro = member_of(parent); bro->INFO.TREE_INFO.brother && (brother_of(bro) != node);
+	     bro = brother_of(bro)) ;
+	if (brother_of(bro) == node) {
 	  found = 1;
-	  if (node->brother) {
-	    bro->brother = node_offset(brother_of(0, node), bro);
+	  if (node->INFO.TREE_INFO.brother) {
+	    link_it(bro->INFO.TREE_INFO.brother, brother_of(node), bro);
 	  } else
-	    bro->brother = 0;
+	    bro->INFO.TREE_INFO.brother = 0;
 	}
       }
     }
@@ -236,25 +236,25 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       memcpy(edit->nci + nid.node - edit->first_in_mem, &empty_nci, sizeof(struct nci));
     memcpy(node->name, "deleted node", sizeof(node->name));
     LoadShort(zero, &node->conglomerate_elt);
-    node->member = 0;
-    node->brother = 0;
+    node->INFO.TREE_INFO.member = 0;
+    node->INFO.TREE_INFO.brother = 0;
     node->usage = 0;
     if (prevnode) {
       int tmp;
-      prevnode->parent = node_offset(node, prevnode);
+      link_it(prevnode->parent, node, prevnode);
       tmp = -swapint((char *)&prevnode->parent);
-      node->child = swapint((char *)&tmp);
+      node->INFO.TREE_INFO.child = swapint((char *)&tmp);
     } else {
       int tmp;
-      tmp = node_offset( node, dblist->tree_info->node);
+      link_it(tmp, node, dblist->tree_info->node);
       dblist->tree_info->header->free = swapint((char *)&tmp);
-      node->child = 0;
+      node->INFO.TREE_INFO.child = 0;
     }
     if (firstempty) {
       int tmp;
-      node->parent = node_offset(firstempty, node);
+      link_it(node->parent, firstempty, node);
       tmp = -swapint((char *)&node->parent);
-      firstempty->child = swapint((char *)&tmp);
+      firstempty->INFO.TREE_INFO.child = swapint((char *)&tmp);
     } else
       node->parent = 0;
     prevnode = node;
