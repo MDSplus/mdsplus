@@ -51,7 +51,7 @@ higher level operations to the passage of TDI commands and decriptors agruments.
 
 The steps for reading/writing in a remote MDSplus trees are:
 
- ||
+ |                                                 |
  |:------------------------------------------------|
  | 1. Establish a connection with a mdsip server   |
  | 2. Open a tree                                  |
@@ -63,7 +63,8 @@ This is actually the same procedure of the local mdslib access to a tree where t
 step 1 and 5 has been added to manage the remote connection.
 
 
-As a tree node may contain data of an arbitrary type (string, scalar, array, integer, float etc.), 
+As a tree node may contain data of an arbitrary type 
+(string, scalar, array, integer, float etc.), 
 we need a mechanism for mapping the returned data type into the receiving variable. 
 In the low-level data management libraries of MDSplus a descriptors infrastructure 
 was adopted, originally coming from the OpenVMS system.
@@ -119,23 +120,142 @@ where the core of mdsip functionalities are declared. They are:
 
 
  
-The simplest way to transfer data through the connection is to send to create a 
-
 
 
 
  
+     
+ ### 1) Establish a connection with a mdsip server
+ 
+ The client that wants to connect to a mdsip server running on a remote machine
+ has first to establish a valid connection through a Login process.
+ The connection handshake for this procedure is shown in the picture below:
+  
+ 
+ \image html  img/mdsip_login.png "Mdsip login message sequence"
+ \image latex  img/mdsip_login.pdf "Mdsip login message sequence"
+ 
+
+ The link is requested using ConnectToMds() function passing the remote server 
+ address formatted as in protocol description (see \ref plugins).
+ This function creates a new \ref Connection instance at the server side, filled
+ with parameters that it has beed parsed by address string and calling 
+ NewConnection() with selected protocol name.
+ 
+ At the server side a running mdsip process has initialized a listening socket
+ created with proper protocol and port. The way that the actual connection is 
+ catched is handled by the listen() IoRoutine method so it depends from the protocol
+ that is going to be used. Anyway two options for handling incoming connection are 
+ possible: single and multi clients connection.
+ The single mode ("-s" server argument) makes the server accepting only one client 
+ at a time granting full priority to that connection, this is particularly suitable
+ for dispatching action messages. In this case a single active Connction structure
+ is accounted by the server.
+ In the multi mode ("-m" argument) connection many clients can be connected to a
+ mdsip server handling the transfer process in a active socket queue. In this mode
+ each connected client has been associated to a proper Connection pushed in the 
+ connection list (see \ref FindConnection()).
+ 
+ To establish the channel the client calls connect() member of its IoRoutines that
+ triggers the connection handshake for the selected plugin. This is represented 
+ by the arrow named "C" in the picture. Actually a bidirectional transfer is done
+ at this point. For example in TCP we expect that the messages passed will be
+ the usual three way handshake connection packets, while UDP will use an euristic 
+ connection handling, attempting to reduce the delay time of the handshake.
+ 
+ Once the soket has been opened the server enters the AcceptConnection() procedure
+ that actually instances the client \ref Connection structure. Then it puts itself
+ in a loop waiting for data, calling GetMdsMsg() function that triggers recv() 
+ IoRoutine method. 
+ The client steps into the DoLogin() function that sends a \ref Message (label M1
+ in figure) to the server holding the username string and the client compression 
+ level in the status field.
+ User is authorised at the server side using authorize() plugin routine and the
+ answer collected by AcceptConnection is sent back to the client by a new Message
+ structure filled only by status field.
+ Here the status has a special formatting that carry the actual authorization 
+ result in the first bit and the server value of accepted connection compression
+ in the higher four bits.
+ 
+ \note Please note that at the time of writing tha actual compression of the 
+ established connection is always the level requested by client clipped inside
+ an interval of [0, 32]. So ot is the client that is actually responsible to 
+ decide which is the compression level of the channel.
+ 
+ 
+ ### 2) Open a tree
+ 
+ When the connection has been established and all structures valorized with proper
+ settings the listen() routine enters a loop that asks socket new incoming messages.
+ Whe a new message arrives the funcion DoMessage handles it.
+ The message that it expects to receive are of two kinds: TDI expressions to be 
+ evaluated and special coded io commands identified by MDS_IO_xxxx macros inside 
+ the code. The former is the method of almost all thin client transaction, the 
+ latter is a set of tools that are used within the distributed client access and
+ will be presented later.
+ 
+ The tree opening comes through the internal funcion MdsOpen() that recursively 
+ executes the TDI function `Open($,$)` via MdsValue() call at the client side.
+ 
+ \image html img/tc_open.png "Mdsip open remote tree sequence"
+ \image latex img/tc_open.pdf "Mdsip open remote tree sequence"
+ 
+
+ All the low level communication that unregoes the TDI remote evaluation is provided
+ by the SendArg() and GetAnswerInfo() functions for the client.
+ On the server side DoMessage() calls an intenal library function called ProcessMessage(),
+ this collects the function string and all the argument needed, converts values
+ to the server memory mapping and calls the actual tdishr execution (see ExecuteMessage()).
+ 
+ 
+ 
+ ### 3) Read and write data
+ 
+ All read and write data operations are done using the same pattern as the one
+ shown in open tree picture. For further clarity the MdsValue function scheme is
+ reported below.
+ 
+ \image html img/tc_value.png "Mdsip remote MdsValue() sequence"
+ \image latex img/tc_value.pdf "Mdsip remote MdsValue() sequence"
+ 
+ The use of MdsValue is actually not mandatory, it symply iterates the SendArg()
+ function to send the command string at the fisrt message and all agruments on 
+ the others, then it waits for the server to respond with the command execution 
+ exit status.
+ Each message passing has its own index 
  
 
 
+ ### 4) Close tree
+ 
+ ### 5) Close connection
 
 
 
 
 
-
-
-
+ ### Server step by step:
+ 
+ 1. ParseStdArgs()  - finds options and sets static variables.
+ 2. LoadIo()        - loads protocol Io Routine 
+ 3. io->listen()    - calls protocol listen()     
+ 4. SetPort  - finds `(p) port` and `(S) sockethandle` options
+ 5. IF (multi or server)   
+   51. *Multi* 
+      * bind(socket)
+      * listen(socket)
+      * select(fd)
+      * accept(socket)
+      * SetSocketOptions()
+      * AcceptConnection()
+   52. *Single*
+      * AcceptConnection()
+ 6. DoMessage()
+   61. ProcessMessage()
+      * ExecuteMessage()
+      * directly do MDS_IO_xxx actions
+      * BuildAnswer()
+   65. send ans
 
 
 

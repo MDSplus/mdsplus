@@ -22,8 +22,8 @@ typedef int ssize_t;
 #define NULL (void *)0
 #endif
 
-#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
-#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
+//#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
+//#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
 
 #define VMS_CLIENT       1
 #define IEEE_CLIENT      2
@@ -97,6 +97,10 @@ int errno = 0;
 #define bits16
 #endif
 
+
+///
+/// \brief Header of Message structure.
+/// 
 typedef struct _msghdr {
   int msglen bits32;
   int status bits32;
@@ -115,11 +119,28 @@ typedef struct _msghdr {
 #endif
 } MsgHdr;
 
+///
+/// \brief Message structure for passing data through connections
+/// 
 typedef struct _mds_message {
   MsgHdr h;
   char bytes[1];
 } Message, *MsgPtr;
 
+///
+/// \brief Structure for Protocol plugin anchor function
+/// 
+/// | function ptr | description                     |
+/// |:--------|--------------------------------------|
+/// | connect | connects client using connectString  |
+/// | send    | send buffer throug connection        |
+/// | recv    | receive buffer from cocnection       |
+/// | flush   | flush pending connection messages    |
+/// | listen  | listen for new incoming  connections |
+/// | authorize  | authorize client with username    |
+/// | reuseCheck |                                   |
+/// | disconnect | clear connection instance         |
+///
 typedef struct _io_routines {
   int (*connect) (int conid, char *protocol, char *connectString);
   ssize_t(*send) (int conid, const void *buffer, size_t buflen, int nowait);
@@ -130,6 +151,7 @@ typedef struct _io_routines {
   int (*reuseCheck) (char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect) (int conid);
 } IoRoutines;
+
 
 #define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"

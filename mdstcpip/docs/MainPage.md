@@ -1,8 +1,8 @@
 
-MainPage {#mainpage}
+Overview {#mainpage}
 ========
 
-MDSip (MDSplus Remote Data Acess Protocol)
+MDSip (MDSplus remote data acess protocol)
 ==========================================
 
 MDSplus provides a very simple but powerful protocol for connecting to remote

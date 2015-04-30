@@ -155,6 +155,16 @@ ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
   }
 }
 
+
+
+///
+/// 
+/// \param client_type
+/// \param message_id
+/// \param status
+/// \param d
+/// \return 
+///
 static Message *BuildResponse(int client_type, unsigned char message_id,
 			      int status, struct descriptor *d)
 {
@@ -693,7 +703,10 @@ static Message *ExecuteMessage(Connection * connection)
 }
 
 ///
-/// \brief Handle message from server listen routine
+/// Handle message from server listen routine. A new descriptor instance is created
+/// with the message buffer size and the message memory is copyed inside. A proper
+/// conversion of memory structure is applied if neede for the type of client
+/// connected.
 /// 
 /// \param connection the connection instance to handle
 /// \param message the message to process
@@ -704,11 +717,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
 
   Message *ans = 0;
 
-  if (connection->message_id != message->h.message_id) {
-
-    // COMING NEW MESSAGE  //
-    // reset connection id //
-
+  // COMING NEW MESSAGE  //
+  // reset connection id //
+  if (connection->message_id != message->h.message_id) {      
     FreeDescriptors(connection);
     if (message->h.nargs < MAX_ARGS - 1) {
       connection->message_id = message->h.message_id;
@@ -723,20 +734,19 @@ Message *ProcessMessage(Connection * connection, Message * message)
     }
   }
 
+  // STANADARD COMMANDS ////////////////////////////////////////////////////////
+  // idx < nargs        ////////////////////////////////////////////////////////
   if (message->h.descriptor_idx < connection->nargs) {
-
-    // STANADARD COMMANDS //
-    // idx < nargs        //
 
     // set connection to the message client_type  //
     connection->client_type = message->h.client_type;
 
     // d -> reference to curent idx argument desctriptor  //
     int idx = message->h.descriptor_idx;
-    struct descriptor *d = connection->descrip[idx];
-
+    struct descriptor *d = connection->descrip[idx];    
+    
     if (!d) {
-      // instance new connection descriptor  //                    
+      // instance the connection descriptor field //
       static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
       switch (message->h.ndims) {
 	static struct descriptor scalar = { 0, 0, CLASS_S, 0 };
@@ -792,7 +802,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
       connection->descrip[message->h.descriptor_idx] = d;
     }
     if (d) {
-      // have valid connection descriptor instance //
+        // have valid connection descriptor instance     //
+        // copy the message buffer into the descriptor   //
+        
       int dbytes = d->class == CLASS_S ? (int)d->length : (int)((ARRAY_7 *) d)->arsize;
       int num = dbytes / max(1, d->length);
 
@@ -907,11 +919,10 @@ Message *ProcessMessage(Connection * connection, Message * message)
     }
   }
 
+  // SPECIAL I/O MESSAGES //////////////////////////////////////////////////////
+  // idx >= nargs         ////////////////////////////////////////////////////// 
   else {
-
-    // SPECIAL I/O MESSAGES //
-    // idx >= nargs         // 
-
+      
     connection->client_type = message->h.client_type;
     switch (message->h.descriptor_idx) {
     case MDS_IO_OPEN_K:

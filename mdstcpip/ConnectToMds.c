@@ -40,7 +40,13 @@ static void ParseHost(char *hostin, char **protocol, char **host)
 //  Do Login  //////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
+///
+/// Execute login inside server using given connection
+/// 
+/// \param id of connection (on client) to be used
+/// \return status o login into server 1 if success, -1 if not authorized or error
+/// occurred
+///
 static int DoLogin(int id)
 {
   int status;
@@ -100,6 +106,7 @@ static int DoLogin(int id)
 	free(m);
 	return -1;
       }
+      // SET CLIENT COMPRESSION FROM SERVER //
       SetConnectionCompression(id, (m->h.status & 0x1e) >> 1);
     }
     if (m)
@@ -116,7 +123,9 @@ static int DoLogin(int id)
 //  Reuse Check  ///////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-
+///
+/// Trigger reuse check funcion for IoRoutines on host.
+/// 
 int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
   int status;

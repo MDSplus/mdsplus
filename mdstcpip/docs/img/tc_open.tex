@@ -1,0 +1,96 @@
+\documentclass[tikz,border=3mm]{standalone}
+\usepackage{pgf-umlsd}
+\usetikzlibrary{shadows,positioning}
+\begin{document}
+    %\tiny
+    \begin{sequencediagram}
+        \newinst[0]{s}{Srv}
+        \newinst[2]{ps}{io}
+        \newinst[3]{pc}{io}
+        \newinst[2]{c}{Clt}
+
+
+
+	    \begin{call}{s}{listen}{ps}{ }
+	      
+	      
+	      \begin{sdblock}{login}{}
+	      \begin{callself}{c}{ConnectToMds}{}
+	      
+	      \prelevel 
+	      \begin{call}{c}{}{pc}{}
+          \mess[0]{pc}{C}{ps}
+          \mess[0]{pc}{M1}{ps}		  
+		  \mess[0]{ps}{M2}{pc}	
+	      \end{call} %
+	      		  
+          \end{callself} %ConnectToMds
+		  \end{sdblock}
+		  
+		  \begin{call}{ps}{DoMessage}{s}{}	
+          
+          \begin{callself}{c}{MdsOpen}{} 
+		  %\begin{callself}{c}{MdsValue}{}
+		  	  
+		  \begin{callself}{s}{ProcessMessage}{} 
+		    \setthreadbias{west}	
+			\begin{call}{s}{recv}{ps}{}
+			\setthreadbias{center}	
+			
+			\prelevel
+			\begin{callself}{c}{SendArg}{}
+			\begin{call}{c}{send}{pc}{}
+	        \mess[1]{pc}{Cmd}{ps}
+  	        \mess[1]{pc}{Tree}{ps}
+	        \mess[1]{pc}{Shot}{ps}   	        
+			\end{call} %send
+			\end{callself}
+			
+			\setthreadbias{west}	
+			\end{call}		  
+		    \setthreadbias{center}	
+
+			\begin{callself}{c}{GetAnswerInfo}{}
+			
+			\begin{call}{c}{recv}{pc}{}			
+		    
+		    \setthreadbias{west}	
+			\begin{call}{s}{send}{ps}{}
+			\setthreadbias{center}													
+
+	        \mess[1]{ps}{R}{pc}   	        			
+			
+			\setthreadbias{west}	
+			\end{call} %send
+		    \setthreadbias{center}	
+
+			\end{call} %recv		    
+		    \end{callself} %GetAnswerInfo
+		    
+		  \end{callself} %ProcessMessage
+		  
+		  %\end{callself} %MdsValue
+		  \end{callself} %MdsOpen
+		  
+		  \end{call}	%DoMessage	  
+		  
+	    \end{call}
+	    
+		  
+%	    \node[left=0 of listen to]{ test };
+
+%        \mess[1]{c}{A}{s}
+%        \node[right=0 of A from] {First message};         
+%        \mess[1]{s}{B}{c}
+%        \draw[line width=3pt] (A to) -- (B from);
+%        \mess[1]{c}{A}{s}
+%        \mess[1]{s}{B}{c}
+%        \mess[1]{c}{...}{s}
+%        \mess[1]{s}{...}{c}
+%        \stepcounter{seqlevel}
+%        \mess[1]{s}{C}{c}
+%        \path(C from) -- (C to) node[midway, above=1cm]
+%        {\vdots};
+
+    \end{sequencediagram}
+\end{document}

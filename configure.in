@@ -3,11 +3,17 @@ dnl @(#)$RCSfile$ $Revision$
 AC_PREREQ([2.63])
 AC_INIT([MDSplus], [6.0a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
+
+AC_CANONICAL_TARGET
+AC_CANONICAL_HOST
+
+
 AM_INIT_AUTOMAKE([1.11.1 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 #AC_CONFIG_HEADER(include/config.h)
-AC_CANONICAL_HOST
+#AC_CANONICAL_TARGET
+#AC_CANONICAL_HOST
 AC_CHECK_SIZEOF(int *)
 AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
 AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
@@ -1040,6 +1046,8 @@ mdsmisc/Makefile
 mdsshr/Makefile 
 mdssql/Makefile
 mdstcpip/Makefile 
+mdstcpip/zlib/Makefile
+mdstcpip/docs/img/Makefile
 mdsvme/Makefile
 mitdevices/Makefile 
 remcam/Makefile 

@@ -117,33 +117,34 @@ static void exitHandler(void)
 ///
 int NewConnection(char *protocol)
 {
-  Connection *oldhead, *new;
+  Connection *oldhead, *connection;
   IoRoutines *io = LoadIo(protocol);
   static int id = 1;
   static int registerExitHandler = 1;
   if (io) {
     registerExitHandler = registerExitHandler ? atexit(exitHandler) : 0;
-    new = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
-    new->io = io;
-    new->readfd = -1;
+    connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
+    connection->io = io;
+    connection->readfd = -1;
     lock_connection_list();
     oldhead = ConnectionList;
-    ConnectionList = new;
-    new->id = id++;
-    new->message_id = -1;
-    new->next = oldhead;
-    new->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    ConnectionList = connection;
+    connection->id = id++;
+    connection->message_id = -1;
+    connection->next = oldhead;
+    connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
     unlock_connection_list();
-    return new->id;
+    return connection->id;
   } else
     return -1;
 }
 
 ///
-/// \brief 
-/// \param id
-/// \param username
-/// \return 
+/// Authorize client by username calling protocol IoRoutine.
+/// 
+/// \param id of the connection to use
+/// \param username of the user to be authorized for access
+/// \return true if authorized user found, false otherwise
 ///
 static int AuthorizeClient(int id, char *username)
 {
@@ -161,10 +162,10 @@ static int AuthorizeClient(int id, char *username)
 /// 3. SetConnectionCompression()
 ///
 ///
-/// \param protocol
-/// \param info_name
-/// \param readfd
-/// \param info
+/// \param protocol the protocol name identifier
+/// \param info_name info name passed to SetConnectionInfo()
+/// \param readfd input file descriptor i.e. the socket id
+/// \param info 
 /// \param info_len
 /// \param id
 /// \param usr
@@ -182,6 +183,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     char *user_p = 0;
     int status;
     int m_status;
+    
+    // SET INFO //
     SetConnectionInfo(*id, info_name, readfd, info, info_len);
     m_user = GetMdsMsg(*id, &status);
     if (m_user == 0 || !(status & 1)) {
@@ -190,6 +193,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       return 0;
     }
     m.h.msglen = sizeof(MsgHdr);
+    
+    // AUTHORIZE //
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING)) {
       user = malloc(m_user->h.length + 1);
       memcpy(user, m_user->bytes, m_user->h.length);
@@ -197,16 +202,24 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     }
     user_p = user ? user : "?";
     ok = AuthorizeClient(*id, user_p);
+    
+    // SET COMPRESSION //
     if (ok & 1) {
       SetConnectionCompression(*id, m_user->h.status & 0xf);
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
     } else
       *usr = 0;
-    m_status = m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
+    m_status = m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;    
+    
+    // client type //
     m.h.client_type = m_user ? m_user->h.client_type : 0;
+    
     if (m_user)
       MdsIpFree(m_user);
+    
+    // reply to client //
     SendMdsMsg(*id, &m, 0);
+    
     if (!(ok & 1)) {
       fprintf(stderr, "Access denied\n");
       DisconnectConnection(*id);
