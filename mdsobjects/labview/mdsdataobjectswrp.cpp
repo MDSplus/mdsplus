@@ -225,8 +225,6 @@ DLLEXPORT void mdsplus_array_getByteArray(const void *lvArrayPtr, LByteArrHdl lv
 
 	{
 
-		deleteNativeArray(byteArrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = e.what();
@@ -285,8 +283,6 @@ DLLEXPORT void mdsplus_array_getDoubleArray(const void *lvArrayPtr, LDblArrHdl l
 
 	{
 
-		deleteNativeArray(doubleArrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = e.what();
@@ -332,7 +328,6 @@ DLLEXPORT void mdsplus_array_getElementAt(const void *lvArrayPtr, void **lvDataP
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -385,10 +380,6 @@ DLLEXPORT void mdsplus_array_getElementAt_dims(const void *lvArrayPtr, void **lv
 	catch (const MdsException & e)
 
 	{
-
-		delete[] intArr;
-
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -446,8 +437,6 @@ DLLEXPORT void mdsplus_array_getFloatArray(const void *lvArrayPtr, LFltArrHdl lv
 	catch (const MdsException & e)
 
 	{
-
-		deleteNativeArray(floatArrOut);
 
 		errorCode = bogusError;
 
@@ -517,8 +506,6 @@ DLLEXPORT void mdsplus_array_getInfo(const void *lvArrayPtr, char *clazzOut, cha
 
 	{
 
-		deleteNativeArray(dims);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(mdsE.what());
@@ -583,8 +570,6 @@ DLLEXPORT void mdsplus_array_getIntArray(const void *lvArrayPtr, LIntArrHdl lvIn
 
 	{
 
-		deleteNativeArray(intArrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(mdsE.what());
@@ -648,8 +633,6 @@ DLLEXPORT void mdsplus_array_getLongArray(const void *lvArrayPtr, LLngArrHdl lvL
 	catch (const MdsException & mdsE)
 
 	{
-
-		deleteNativeArray(longArrOut);
 
 		errorCode = bogusError;
 
@@ -717,8 +700,6 @@ DLLEXPORT void mdsplus_array_getShape(const void *lvArrayPtr, LIntArrHdl lvIntAr
 
 	{
 
-		deleteNativeArray(intArrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(mdsE.what());
@@ -782,8 +763,6 @@ DLLEXPORT void mdsplus_array_getShortArray(const void *lvArrayPtr, LShtArrHdl lv
 	catch (const MdsException & mdsE)
 
 	{
-
-		deleteNativeArray(shortArrOut);
 
 		errorCode = bogusError;
 
@@ -991,7 +970,6 @@ DLLEXPORT void mdsplus_array_setElementAt_dims(const void *lvArrayPtr, const LIn
 
 	{
 
-		delete[] intArr;
 
 		errorCode = bogusError;
 
@@ -1053,7 +1031,6 @@ DLLEXPORT void mdsplus_data_compile(void **lvDataPtrOut, const char *exprIn, Err
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1147,7 +1124,6 @@ DLLEXPORT void mdsplus_data_data(const void *lvDataPtr, void **lvDataPtrOut, Err
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1255,7 +1231,6 @@ DLLEXPORT void mdsplus_data_deserialize(void **lvDataPtrOut, const char *seriali
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1303,7 +1278,6 @@ DLLEXPORT void mdsplus_data_deserialize_data(void **lvDataPtrOut, const void *lv
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1354,7 +1328,6 @@ DLLEXPORT void mdsplus_data_evaluate(const void *lvDataPtr, void **lvDataPtrOut,
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1398,7 +1371,6 @@ DLLEXPORT void mdsplus_data_execute(void **lvDataPtrOut, const char *exprIn, Err
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1445,8 +1417,6 @@ DLLEXPORT void mdsplus_data_execute_tree(void **lvDataPtrOut, const char *exprIn
 	catch (const MdsException & mdsE)
 
 	{
-
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -1512,7 +1482,6 @@ DLLEXPORT void mdsplus_data_getByteArray(const void *lvDataPtr, LByteArrHdl lvBy
 
 	} catch (const MdsException & e) {
 
-		deleteNativeArray(byteArrOut);
 
 		errorCode = bogusError;
 
@@ -1575,8 +1544,6 @@ DLLEXPORT void mdsplus_data_getDoubleArray(const void *lvDataPtr, LDblArrHdl lvD
 		deleteNativeArray(doubleArrOut);
 
 	} catch (const MdsException & e) {
-
-		deleteNativeArray(doubleArrOut);
 
 		errorCode = bogusError;
 
@@ -1644,7 +1611,6 @@ DLLEXPORT void mdsplus_data_getFloatArray(const void *lvDataPtr, LFltArrHdl lvFl
 
 	} catch (const MdsException & e) {
 
-		deleteNativeArray(floatArrOut);
 
 		errorCode = bogusError;
 
@@ -1716,7 +1682,6 @@ DLLEXPORT void mdsplus_data_getInfo(const void *lvDataPtr, char *clazzOut, char 
 
 	{
 
-		deleteNativeArray(dims);
 
 		errorCode = bogusError;
 
@@ -1779,8 +1744,6 @@ DLLEXPORT void mdsplus_data_getIntArray(const void *lvDataPtr, LIntArrHdl lvIntA
 		deleteNativeArray(intArrOut);
 
 	} catch (const MdsException & e) {
-
-		deleteNativeArray(intArrOut);
 
 		errorCode = bogusError;
 
@@ -1846,8 +1809,6 @@ DLLEXPORT void mdsplus_data_getLongArray(const void *lvDataPtr, LLngArrHdl lvLng
 
 	} catch (const MdsException & e) {
 
-		deleteNativeArray(longArrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = e.what();
@@ -1907,8 +1868,6 @@ DLLEXPORT void mdsplus_data_getShape(const void *lvDataPtr, LIntArrHdl lvIntArrH
 		deleteNativeArray(intArrOut);
 
 	} catch (const MdsException & e) {
-
-		deleteNativeArray(intArrOut);
 
 		errorCode = bogusError;
 
@@ -1973,8 +1932,6 @@ DLLEXPORT void mdsplus_data_getShortArray(const void *lvDataPtr, LShtArrHdl lvSh
 		deleteNativeArray(shortArrOut);
 
 	} catch (const MdsException & e) {
-
-		deleteNativeArray(shortArrOut);
 
 		errorCode = bogusError;
 
@@ -2041,8 +1998,6 @@ DLLEXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdl
 	catch (const MdsException &e)
 
 	{
-
-		deleteNativeArray(strOut);
 
 		errorCode = bogusError;
 
@@ -2158,11 +2113,6 @@ DLLEXPORT void mdsplus_data_getStringArray(const void *lvDataPtr, LStrArrHdl lvS
 
 	} catch (const MdsException & e) {
 
-		for (int i = 0; i < stringArrLen; i++)
-
-			deleteNativeArray(stringArrOut[i]);
-
-		deleteNativeArray(stringArrOut);
 
 		errorCode = bogusError;
 
@@ -2266,7 +2216,6 @@ DLLEXPORT void mdsplus_data_serialize(const void *lvDataPtr, LByteArrHdl lvByteA
 
 	} catch (const MdsException & e) {
 
-		deleteNativeArray(byteArrOut);
 
 		errorCode = bogusError;
 
@@ -2728,8 +2677,6 @@ DLLEXPORT void mdsplus_int16array_constructor(void **lvInt16ArrayPtrOut, const L
 
 		delete[] int16Arr;
 
-		deleteData(int16ArrayPtrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(e.what());
@@ -2798,7 +2745,6 @@ DLLEXPORT void mdsplus_int16array_constructor_dims(void **lvInt16ArrayPtrOut, co
 
 		delete[] intArr;
 
-		deleteData(int16ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -3117,8 +3063,6 @@ DLLEXPORT void mdsplus_int32array_constructor(void **lvInt32ArrayPtrOut, const L
 
 		delete[] int32Arr;
 
-		deleteData(int32ArrayPtrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(e.what());
@@ -3186,8 +3130,6 @@ DLLEXPORT void mdsplus_int32array_constructor_dims(void **lvInt32ArrayPtrOut, co
 		delete[] int32Arr;
 
 		delete[] intArr;
-
-		deleteData(int32ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -3506,7 +3448,6 @@ DLLEXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const L
 
 		delete[] int64Arr;
 
-		deleteData(int64ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -3574,7 +3515,6 @@ DLLEXPORT void mdsplus_int64array_constructor_dims(void **lvInt64ArrayPtrOut, co
 
 		delete[] intArr;
 
-		deleteData(int64ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -3895,8 +3835,6 @@ DLLEXPORT void mdsplus_int8array_constructor(void **lvInt8ArrayPtrOut, const LBy
 
 		delete[] int8Arr;
 
-		deleteData(int8ArrayPtrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(e.what());
@@ -3965,8 +3903,6 @@ DLLEXPORT void mdsplus_int8array_constructor_dims(void **lvInt8ArrayPtrOut, cons
 
 		delete[] intArr;
 
-		deleteData(int8ArrayPtrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(e.what());
@@ -4030,8 +3966,6 @@ DLLEXPORT void mdsplus_range_constructor(void **lvRangePtrOut, const void *lvBeg
 
 	{
 
-		deleteData(rangePtrOut);
-
 		errorCode = bogusError;
 
 		errorMessage = const_cast<char *>(e.what());
@@ -4079,7 +4013,6 @@ DLLEXPORT void mdsplus_range_getBegin(const void *lvRangePtr, void **lvDataPtrOu
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -4127,7 +4060,6 @@ DLLEXPORT void mdsplus_range_getEnding(const void *lvRangePtr, void **lvDataPtrO
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -4172,8 +4104,6 @@ DLLEXPORT void mdsplus_range_getDeltaVal(const void *lvRangePtr, void **lvDataPt
 	catch (const MdsException &e)
 
 	{
-
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -4413,8 +4343,6 @@ DLLEXPORT void mdsplus_signal_getData(const void *lvSignalPtr, void **lvDataPtrO
 	catch (const MdsException &e)
 
 	{
-
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
@@ -4714,7 +4642,6 @@ DLLEXPORT void mdsplus_scalar_getInfo(const void *lvScalarPtr, char *clazzOut, c
 
 	{
 
-		deleteNativeArray(dims);
 
 		errorCode = bogusError;
 
@@ -4811,7 +4738,6 @@ DLLEXPORT void mdsplus_string_getString(const void *lvStringPtr, LStrHandle lvSt
 
 	{
 
-		deleteNativeArray(strOut);
 
 		errorCode = bogusError;
 
@@ -4901,13 +4827,6 @@ DLLEXPORT void mdsplus_stringarray_constructor(void **lvStringArrayPtrOut, const
 
 	{
 
-		for (int i = 0; i < stringArrLen; i++)
-
-			delete[] stringArr[i];
-
-		delete[] stringArr;
-
-		deleteData(stringArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -4949,7 +4868,6 @@ DLLEXPORT void mdsplus_stringarray_constructor_stringLen(void **lvStringArrayPtr
 
 	{
 
-		deleteData(stringArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -5268,7 +5186,6 @@ DLLEXPORT void mdsplus_uint16array_constructor(void **lvUint16ArrayPtrOut, const
 
 		delete[] uint16Arr;
 
-		deleteData(uint16ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -5338,7 +5255,6 @@ DLLEXPORT void mdsplus_uint16array_constructor_dims(void **lvUint16ArrayPtrOut, 
 
 		delete[] intArr;
 
-		deleteData(uint16ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -5657,7 +5573,6 @@ DLLEXPORT void mdsplus_uint32array_constructor(void **lvUint32ArrayPtrOut, const
 
 		delete[] uint32Arr;
 
-		deleteData(uint32ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -5726,8 +5641,6 @@ DLLEXPORT void mdsplus_uint32array_constructor_dims(void **lvUint32ArrayPtrOut, 
 		delete[] uint32Arr;
 
 		delete[] intArr;
-
-		deleteData(uint32ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -5846,7 +5759,6 @@ DLLEXPORT void mdsplus_uint64_getDate(const void *lvUint64Ptr, LStrHandle lvStrH
 
 	{
 
-		deleteNativeArray(strOut);
 
 		errorCode = bogusError;
 
@@ -6110,7 +6022,6 @@ DLLEXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const
 
 		delete[] uint64Arr;
 
-		deleteData(uint64ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -6180,7 +6091,6 @@ DLLEXPORT void mdsplus_uint64array_constructor_dims(void **lvUint64ArrayPtrOut, 
 
 		delete[] intArr;
 
-		deleteData(uint64ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -6499,7 +6409,6 @@ DLLEXPORT void mdsplus_uint8array_constructor(void **lvUint8ArrayPtrOut, const L
 
 		delete[] uint8Arr;
 
-		deleteData(uint8ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -6569,7 +6478,6 @@ DLLEXPORT void mdsplus_uint8array_constructor_dims(void **lvUint8ArrayPtrOut, co
 
 		delete[] intArr;
 
-		deleteData(uint8ArrayPtrOut);
 
 		errorCode = bogusError;
 
@@ -6615,7 +6523,6 @@ DLLEXPORT void mdsplus_uint8array_deserialize(const void *lvUint8ArrayPtr, void 
 
 	{
 
-		deleteData(dataPtrOut);
 
 		errorCode = bogusError;
 
