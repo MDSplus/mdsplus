@@ -1,4 +1,16 @@
-commit e7bc789af07ae63dc929013ad085bea7ab50f341 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 046052611b273f48dc92cf2fa6024c165630a41d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Apr 30 16:56:25 2015 +0200
+
+    Remove dangerous delete in exception catchers
+
+commit c3e88997c86264ea9b1f419a33705ae8d09e6f75 (tag: refs/tags/alpha_release-7-0-48)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Apr 29 19:17:09 2015 +0000
+
+    New ChangeLog
+
+commit e7bc789af07ae63dc929013ad085bea7ab50f341
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Apr 29 14:39:13 2015 -0400
 
@@ -211,7 +223,7 @@ Date:   Tue Apr 21 22:21:07 2015 +0000
 
     New ChangeLog
 
-commit 4c853d537bf184becfc48aea152af773aa42c3b0 (refs/remotes/origin/feature_new_subtree_linkage)
+commit 4c853d537bf184becfc48aea152af773aa42c3b0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Apr 21 15:14:18 2015 -0400
 
