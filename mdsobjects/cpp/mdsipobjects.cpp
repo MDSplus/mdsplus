@@ -29,6 +29,7 @@ extern "C" int MdsSetDefault(int sock, char *node);
 extern "C" int MdsClose(int sock);
 extern "C" int ConnectToMds(char *host);
 extern "C" int ConnectToMdsEvents(char *host);
+extern "C" int SetCompressionLevel(int level);
 extern "C" void DisconnectFromMds(int sockId);
 extern "C" void FreeMessage(void *m);
 
@@ -150,10 +151,11 @@ void *putManyObj(char *serializedIn)
 
 Mutex Connection::globalMutex;
 
-Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
+Connection::Connection(char *mdsipAddr, int clevel) //mdsipAddr of the form <IP addr>[:<port>]
 {
     lockGlobal();
-	sockId = ConnectToMds(mdsipAddr);
+    SetCompressionLevel(clevel);
+    sockId = ConnectToMds(mdsipAddr);
     unlockGlobal();
 	if(sockId <= 0) {
 		std::string msg("Cannot connect to ");
