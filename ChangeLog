@@ -1,4 +1,16 @@
-commit 046052611b273f48dc92cf2fa6024c165630a41d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 4f3f0f9726dda6287a6e4d0280c6991710bcf56d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon May 4 17:11:47 2015 -0400
+
+    add configuration settings to UdpEvents
+
+commit 6630989ed5470ddd68e55a757627bf6f38c75d79 (tag: refs/tags/alpha_release-7-0-49)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Apr 30 22:21:44 2015 +0000
+
+    New ChangeLog
+
+commit 046052611b273f48dc92cf2fa6024c165630a41d
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Apr 30 16:56:25 2015 +0200
 
