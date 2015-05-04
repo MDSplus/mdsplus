@@ -3015,7 +3015,7 @@ public:
 class EXPORT Connection
 {
 public:
-    Connection(char *mdsipAddr);
+    Connection(char *mdsipAddr, int clevel = 9);
     ~Connection();
     void openTree(char *tree, int shot);
     void closeAllTrees();
