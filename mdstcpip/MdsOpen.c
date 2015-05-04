@@ -7,7 +7,7 @@
 ///
 /// Opens a MDSplus tree parsefile identified by tree name and shot number.
 /// The actual implementation relies on the MdsValue() of the TDI expression 
-/// "TreeOpen($1,$2) with name and shot arguments. If 
+/// "TreeOpen($1,$2) with name and shot arguments. 
 /// 
 /// \param id the id of the connection to use
 /// \param tree the tree name to be opened

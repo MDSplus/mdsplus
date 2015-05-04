@@ -4,7 +4,8 @@
 #include "mdsip_connections.h"
 
 ///
-/// Closes active connection identified by id calling removeConnection()
+/// Closes active connection identified by id calling removeConnection() from
+/// the server "MdsIpSrvShr" library.
 ///
 int CloseConnection(int id)
 {

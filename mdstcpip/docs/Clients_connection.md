@@ -2,10 +2,10 @@ Clients connection {#clients}
 ==================
 
 Several data access libraries are available in MDSplus. 
-In particular using the C interface the "mdslib" library is intended to provide 
-local data access while the remote access is provided by this library.
+In particular, using the C interface, the "mdslib" library is intended to provide 
+local data access while this library provides the remote access.
 
-The different access methods to access data stored in MDSplus trees can be divided
+The different methods to access data stored in MDSplus trees can be divided
 in this categories:
 
   - Local
@@ -15,15 +15,16 @@ in this categories:
 
 The "Local" method is used when no explicit connection to an MDSplus server is
 performed and the tree path definition refers to local file systems.
-All expressions are evaluated in you process context and the files are accessed
-using direct file I/O. The MDSip library in not involved in this kind of access.
+All expressions are evaluated within the same process context and the files are accessed
+using direct file I/O. The MDSip library in not involved in this kind of access so 
+it will not be described in the folloiwng ( see treeshr for further details ).
 
 The "thin client" method is used when you do a connection to an MDSplus data server
-directly. In the mdsobject cpp interface this is done using the Connectin object.
-All expression evaluation and file I/O is done by the server.
-No tree path definitions are required on the client machine.
+directly.
+All expression evaluations and file I/O is done by the server.
+No tree path definitions are required in the client machine environment variables.
 This method places most of the cpu and I/O load on the server machine.
-Since the data is decompressed and evaluated on the server before sending the
+Since the data is decompressed and evaluated within the server before sending the
 results to the client, this method usually results in a heavy load on the network.
 
 The "thick client" method is used when no explicit connection to an MDSplus data
@@ -63,8 +64,8 @@ This is actually the same procedure of the local mdslib access to a tree where t
 step 1 and 5 has been added to manage the remote connection.
 
 
-As a tree node may contain data of an arbitrary type 
-(string, scalar, array, integer, float etc.), 
+As a tree node may contain data of an arbitrary type (string, scalar, array, integer, 
+float etc.), 
 we need a mechanism for mapping the returned data type into the receiving variable. 
 In the low-level data management libraries of MDSplus a descriptors infrastructure 
 was adopted, originally coming from the OpenVMS system.
@@ -80,8 +81,8 @@ and the total length of memory occupied. This is strongly architecture dependent
 and for this reason MDSip always checks that each data transfer is done matching the 
 same memory organization of the server.
 
-The client memory organization is always recorded inside client_type field of the
-\ref Message passing through the connection, the actual value is then tested to match
+The client memory organization is always recorded inside the client_type field of the
+\ref Message structures passing through the connection, this value is then tested to match
 the client type using ClientType() function.
 As the tree data stored to the server is organized in its own memory architecture
 the client must convert each descriptor trasaction.
@@ -118,12 +119,10 @@ where the core of mdsip functionalities are declared. They are:
 - MdsValue()      This is the remoted version of the usual mdslib function to execute a TDI
                   expression. The remote execution exit status code is retured back to client.
 
-
  
 
-
-
- 
+Detailed description of the five steps of a thin client connection follows with 
+particular focus on the use of the mentioned MDSip functions.
      
  ### 1) Establish a connection with a mdsip server
  
@@ -142,11 +141,11 @@ where the core of mdsip functionalities are declared. They are:
  with parameters that it has beed parsed by address string and calling 
  NewConnection() with selected protocol name.
  
- At the server side a running mdsip process has initialized a listening socket
- created with proper protocol and port. The way that the actual connection is 
+ At the server side a listening socket has been initialized by the running mdsip 
+ process, with proper protocol and port. The way that the actual connection is 
  catched is handled by the listen() IoRoutine method so it depends from the protocol
- that is going to be used. Anyway two options for handling incoming connection are 
- possible: single and multi clients connection.
+ that is going to be used. Anyway two options for handling incoming connections are 
+ possible: the \em single and the \em multi clients connection.
  The single mode ("-s" server argument) makes the server accepting only one client 
  at a time granting full priority to that connection, this is particularly suitable
  for dispatching action messages. In this case a single active Connction structure
@@ -155,13 +154,17 @@ where the core of mdsip functionalities are declared. They are:
  mdsip server handling the transfer process in a active socket queue. In this mode
  each connected client has been associated to a proper Connection pushed in the 
  connection list (see \ref FindConnection()).
+ Please note that the multi mode server is not actually handling the opened sockets
+ in parallel, its role is simply to switch the tree context matching the 
+ active client. For a true parallel handling see the xinetd resident initialization.
  
  To establish the channel the client calls connect() member of its IoRoutines that
  triggers the connection handshake for the selected plugin. This is represented 
  by the arrow named "C" in the picture. Actually a bidirectional transfer is done
  at this point. For example in TCP we expect that the messages passed will be
- the usual three way handshake connection packets, while UDP will use an euristic 
- connection handling, attempting to reduce the delay time of the handshake.
+ the usual three way handshake connection packets, while UDT will use an euristic 
+ connection handling, attempting to reduce the connection time in high latency 
+ connections.
  
  Once the soket has been opened the server enters the AcceptConnection() procedure
  that actually instances the client \ref Connection structure. Then it puts itself
@@ -170,27 +173,27 @@ where the core of mdsip functionalities are declared. They are:
  The client steps into the DoLogin() function that sends a \ref Message (label M1
  in figure) to the server holding the username string and the client compression 
  level in the status field.
- User is authorised at the server side using authorize() plugin routine and the
+ User is authorised at the server side using authorize() plugin routine, and the
  answer collected by AcceptConnection is sent back to the client by a new Message
- structure filled only by status field.
- Here the status has a special formatting that carry the actual authorization 
+ structure only filled in the status field.
+ Here the status has a special formatting that carries the actual authorization 
  result in the first bit and the server value of accepted connection compression
  in the higher four bits.
  
  \note Please note that at the time of writing tha actual compression of the 
  established connection is always the level requested by client clipped inside
- an interval of [0, 32]. So ot is the client that is actually responsible to 
- decide which is the compression level of the channel.
+ an interval of [0, 32]. So the client is the only responsible in deciding how
+ the compression level of the channel will be set.
  
  
  ### 2) Open a tree
  
- When the connection has been established and all structures valorized with proper
- settings the listen() routine enters a loop that asks socket new incoming messages.
- Whe a new message arrives the funcion DoMessage handles it.
- The message that it expects to receive are of two kinds: TDI expressions to be 
- evaluated and special coded io commands identified by MDS_IO_xxxx macros inside 
- the code. The former is the method of almost all thin client transaction, the 
+ As the connection has been established, and all structures valorized with proper
+ settings, the listen() routine enters a loop that asks the socket for new incoming 
+ messages. When a new message arrives the funcion DoMessage() handles it.
+ The messages attended by the server are of two kinds: TDI expressions that have 
+ to be evaluated, and special io commands identified by MDS_IO_xxxx macros inside 
+ the code. The former is the method of almost all thin client transactions, the 
  latter is a set of tools that are used within the distributed client access and
  will be presented later.
  
@@ -204,15 +207,15 @@ where the core of mdsip functionalities are declared. They are:
  All the low level communication that unregoes the TDI remote evaluation is provided
  by the SendArg() and GetAnswerInfo() functions for the client.
  On the server side DoMessage() calls an intenal library function called ProcessMessage(),
- this collects the function string and all the argument needed, converts values
- to the server memory mapping and calls the actual tdishr execution (see ExecuteMessage()).
+ this collects the function string and all the arguments needed, converts values
+ to the server memory mapping and finally calls the tdishr execution (see ExecuteMessage()).
  
  
  
  ### 3) Read and write data
  
  All read and write data operations are done using the same pattern as the one
- shown in open tree picture. For further clarity the MdsValue function scheme is
+ shown in open tree picture. For better clarity the MdsValue function scheme is
  reported below.
  
  \image html img/tc_value.png "Mdsip remote MdsValue() sequence"
@@ -222,14 +225,24 @@ where the core of mdsip functionalities are declared. They are:
  function to send the command string at the fisrt message and all agruments on 
  the others, then it waits for the server to respond with the command execution 
  exit status.
- Each message passing has its own index 
+ Each message that is passing through has its own index to be always uniquely 
+ identified.
  
 
 
  ### 4) Close tree
  
- ### 5) Close connection
+ As in the MdsOpen the Close action is sent by the client via the MdsValue() function
+ executing the `TreeClose()` TDI command. The tree path is not specified in the args
+ as it has already been set within the active context in the opening procedure.
 
+ ### 5) Close connection
+ 
+ Finally, the client asks to close the channel calling disconnect() IoRoutine function.
+ The socket descriptor is released and the connection shut down on both ends without
+ any further message passed through the channel. All the arguments descriptors allocated
+ inside the connection buffer is released also.
+ 
 
 
 
