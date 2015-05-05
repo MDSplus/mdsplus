@@ -209,10 +209,10 @@ int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mode,
       fprintf(stderr, "%s: in %s (%s, line %d): Failed to enumerate cameras - restarting server\n",
 	      dc1394_error_get_string(err), __FUNCTION__, __FILE__, __LINE__);
       exit(0);
-      if (list->num == 0) {
+    }
+    if (list->num == 0) {
 	fprintf(stderr, "no cameras found - restarting server\n");
 	exit(0);
-      }
     }
   }
   if (camera == NULL) {
