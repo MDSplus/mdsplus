@@ -1,4 +1,16 @@
-commit 4f3f0f9726dda6287a6e4d0280c6991710bcf56d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6277bf29f54bb470bda7c9408b4eec401cac9a40 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 5 15:04:29 2015 -0400
+
+    Fix check for cameras found
+
+commit db45dc350bd86193bfaeea48015572430ce47faa (tag: refs/tags/alpha_release-7-0-50)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon May 4 22:21:45 2015 +0000
+
+    New ChangeLog
+
+commit 4f3f0f9726dda6287a6e4d0280c6991710bcf56d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon May 4 17:11:47 2015 -0400
 
