@@ -27,7 +27,7 @@ def makeArray(value):
             if str(ans.dtype)[1:2]=='U':
               ans=ans.astype('S')
             return makeArray(ans)
-        except ValueError:
+        except (ValueError,TypeError) as e:
             newlist=list()
             for i in value:
                 newlist.append(_data.makeData(i).data())
