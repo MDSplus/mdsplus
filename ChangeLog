@@ -1,4 +1,34 @@
-commit 6277bf29f54bb470bda7c9408b4eec401cac9a40 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 9f2d3ce69233ee74c52ae28b2637cb1ed1da1837 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 6 16:15:53 2015 -0400
+
+    Remove obsolete VMS password checker
+
+commit ee2669025626afcb9d7897ba29ba6ef984511d21
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 6 15:29:47 2015 -0400
+
+    Remove compiler warnings
+
+commit 578d3b7a3bdcfa8ffece1859b52adcac368a9030
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 6 12:02:22 2015 -0400
+
+    new versions of numpy throw a TypeError where it used to throw a ValueError. The makearray code now checkes for either of these two exceptions.
+
+commit 0624a7b148874a4940b075862cfeaaaa08da3f95
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed May 6 15:38:50 2015 +0200
+
+    Fix ymin-ymax
+
+commit 1a895dc2d2587266fc7e127cff735fdc486381e3 (tag: refs/tags/alpha_release-7-0-51)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 5 22:22:41 2015 +0000
+
+    New ChangeLog
+
+commit 6277bf29f54bb470bda7c9408b4eec401cac9a40
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue May 5 15:04:29 2015 -0400
 
