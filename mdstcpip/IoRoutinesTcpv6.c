@@ -101,7 +101,7 @@ static int getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "tcpv6") == 0) ? readfd : -1;
 }
 
@@ -252,7 +252,6 @@ static int tcp_disconnect(int conid)
       if (FD_ISSET(s, &fdactive)) {
 	FD_CLR(s, &fdactive);
 	if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-	  int num = 1;
 	  char iphost[INET6_ADDRSTRLEN];
 	  inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN);
 	  timestr[strlen(timestr) - 1] = 0;
@@ -532,7 +531,7 @@ static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -575,7 +574,6 @@ static int tcp_listen(int argc, char **argv)
     int tablesize = FD_SETSIZE;
     int error_count = 0;
     fd_set readfds;
-    int one = 1;
     int status;
     FD_ZERO(&fdactive);
     CheckClient(0, 1, matchString);
@@ -675,8 +673,6 @@ static int tcp_listen(int argc, char **argv)
     int status;
     status = AcceptConnection("tcpv6", "tcpv6", sock, 0, 0, &id, &username);
     if (status & 1) {
-      struct sockaddr_in6 sin;
-      socklen_t n = sizeof(sin);
       Client *new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
       new->id = id;
       new->sock = sock;
