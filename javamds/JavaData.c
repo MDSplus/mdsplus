@@ -60,7 +60,7 @@ JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls, jstring jexp
 
 JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls, jstring jsource) {
   EMPTYXD(out_xd);
-  EMPTYXD(dec_xd);
+  //EMPTYXD(dec_xd);
   int status;
   const char *source = (*env)->GetStringUTFChars(env, jsource, 0);
   char *error_msg;
@@ -115,7 +115,7 @@ jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
   struct descriptor_a *array_d;
   struct descriptor_r *record_d;
   char *buf;
-  EMPTYXD(float_xd);
+  //EMPTYXD(float_xd);
   EMPTYXD(ca_xd);
   int is_ca = 0;
 

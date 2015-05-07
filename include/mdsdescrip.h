@@ -215,7 +215,7 @@ struct descriptor_r {
 				}
 
 #define DESCRIPTOR_R(name, type, ndesc) \
-	RECORD(ndesc) name = {0, type, CLASS_R, 0, ndesc, __fill_value__ 0}
+	RECORD(ndesc) name = {0, type, CLASS_R, 0, ndesc, __fill_value__ {0}}
 
 /************************************************
   CLASS_CA Compressed array descriptor definition.
