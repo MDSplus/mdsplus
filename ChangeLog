@@ -1,4 +1,64 @@
-commit 9f2d3ce69233ee74c52ae28b2637cb1ed1da1837 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 786a11613661c9bf6c27aa58ee8752165dc0fdc0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 15:57:30 2015 -0400
+
+    Fix compiler warnings
+
+commit 122f090dc0710a6f7538d6cf543232ba3f794a9e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 15:38:31 2015 -0400
+
+    Fix compiler warnings
+
+commit 44db6d2f05d06691cd8b385153019009fe922a36
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 13:56:47 2015 -0400
+
+    Fix compiler warnings
+
+commit a87738e1398e872c780853fd83706cb071f2dfcd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 13:14:03 2015 -0400
+
+    Fix compiler warnings
+
+commit fbd6f07b0cdccf881baaed09c3332f1c97ff1715
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:56:44 2015 -0400
+
+    Fix compiler warnings
+
+commit 119f182e3baffa920122a8b195dba26f4003a91e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:52:30 2015 -0400
+
+    Fix compiler warnings
+
+commit 6df5673ef68401d66b7d16ef5145913dec47a4e1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:50:59 2015 -0400
+
+    Fix compiler warnings
+
+commit 0b11f285e41c04d36374c612a39b4ae6cf309dca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:50:22 2015 -0400
+
+    Fix compiler warnings
+
+commit fcc205dbbfcf7f8f97c87d076ea236eebb9f3141
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 08:11:56 2015 -0400
+
+    Fix multiple exception catch syntax for python 2.4
+
+commit cc5b2279eaa18e6acc0347cfa5e6859f13225e7a (tag: refs/tags/alpha_release-7-0-52)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 6 22:19:53 2015 +0000
+
+    New ChangeLog
+
+commit 9f2d3ce69233ee74c52ae28b2637cb1ed1da1837
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 6 16:15:53 2015 -0400
 
