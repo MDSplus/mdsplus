@@ -154,7 +154,7 @@ struct descriptor_a {
 
 #define DESCRIPTOR_A_COEFF_2(name, len, type, ptr, arsize, rows, columns) \
 	ARRAY_COEFF(char, 2) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,0}, 2, arsize, (char *)ptr,\
-            rows, columns}
+            {rows, columns}}
 
 #define DESCRIPTOR_A_BOUNDS(name, len, type, ptr, dimct, arsize) \
 	ARRAY_BOUNDS(char, dimct) name = {len, type, CLASS_A, (char *)ptr, 0, 0, {0,1,1,1,1}, dimct, arsize}
@@ -321,11 +321,11 @@ struct descriptor_signal {
 
 #define DESCRIPTOR_SIGNAL_1(name, data, raw, dimension) \
 	SIGNAL(1) name = {0, DTYPE_SIGNAL, CLASS_R, 0, 3, __fill_value__\
-	(struct descriptor *)data, (struct descriptor *)raw, (struct descriptor *)dimension}
+	(struct descriptor *)data, (struct descriptor *)raw, {(struct descriptor *)dimension}}
 
 #define DESCRIPTOR_SIGNAL_2(name, data, raw, dim_1, dim_2) \
 	SIGNAL(2) name = {0, DTYPE_SIGNAL, CLASS_R, 0, 4, __fill_value__\
-	(struct descriptor *)data, (struct descriptor *)raw, (struct descriptor *)dim_1, (struct descriptor *)dim_2}
+	(struct descriptor *)data, (struct descriptor *)raw, {(struct descriptor *)dim_1, (struct descriptor *)dim_2}}
 
 #define DTYPE_DIMENSION	196
 
@@ -392,11 +392,11 @@ struct descriptor_function {
 
 #define DESCRIPTOR_FUNCTION_1(name, op_code_ptr, arg) \
 	struct descriptor_function name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, \
-						(unsigned char *)op_code_ptr, 1, __fill_value__	(struct descriptor *)arg}
+						(unsigned char *)op_code_ptr, 1, __fill_value__	{(struct descriptor *)arg}}
 
 #define DESCRIPTOR_FUNCTION_2(name, op_code_ptr, arg_1, arg_2) \
 	FUNCTION(2) name = {sizeof(unsigned short), DTYPE_FUNCTION, CLASS_R, (unsigned char *)op_code_ptr, 2, __fill_value__\
-	(struct descriptor *)arg_1, (struct descriptor *)arg_2}
+	{(struct descriptor *)arg_1, (struct descriptor *)arg_2}}
 
 #define DTYPE_CONGLOM	200
 
