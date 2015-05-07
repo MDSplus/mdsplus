@@ -98,7 +98,8 @@ static int Msg_Handler(DBPROCESS * dbproc, DBINT msgno, int msgstate, int severi
   if (msgno == 5701)
     return 0;			/*just a USE DATABASE notice */
   if (severity) {
-    sprintf(msg, "\nMsg %ld, Level %d, State %d\n", msgno, severity, msgstate);
+    sprintf(msg, (sizeof(msgno) == 8) ? "\nMsg %ld, Level %d, State %d\n" :
+	    "\nMsg %d, Level %d, State %d\n", msgno, severity, msgstate);
     strcatn(DBMSGTEXT, msg, MAXMSG);
     if (servername)
       if (strlen(servername)) {
@@ -142,7 +143,6 @@ void Logout_Sybase()
 /*------------------------------CONNECT--------------------------------------*/
 int Login_Sybase(char *host, char *user, char *pass)
 {
-  int siz;
 
 #ifdef RETRY_CONNECTS
   int try;
@@ -193,7 +193,7 @@ int Login_Sybase(char *host, char *user, char *pass)
 #endif
   if (!dbproc)
     return 0;
-  siz = dbgetpacket(dbproc);
+  dbgetpacket(dbproc);
   dbclropt(dbproc, DBBUFFER, "0");
 
   return SUCCEED;
