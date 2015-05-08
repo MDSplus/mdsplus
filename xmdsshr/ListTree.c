@@ -39,8 +39,6 @@
 #endif
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 #ifdef DEBUG
 #include <stdlib.h>
 #include <stdarg.h>

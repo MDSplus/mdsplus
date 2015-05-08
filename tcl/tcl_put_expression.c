@@ -1,8 +1,18 @@
-#include        "tclsysdef.h"
-#include <strroutines.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+
+
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <strroutines.h>
+#include <dcl.h>
+
+#include "tcl_p.h"
 
 /***********************************************************************
 * TCL_PUT_EXPRESSION.C --
@@ -25,7 +35,6 @@ int TclPutExpression(void *ctx, char **error, char **output, char *(*getline)(),
   char *nodnam = 0;
   char *ascValue = 0;
   struct descriptor dsc_ascValue = {0, DTYPE_T, CLASS_S, 0};
-  static int val;
   struct descriptor_xd value_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int sts;
   int nid;
@@ -34,10 +43,8 @@ int TclPutExpression(void *ctx, char **error, char **output, char *(*getline)(),
   sts = TreeFindNode(nodnam, &nid);
   if (sts & 1) {
     if (cli_present(ctx, "EXTENDED") & 1) {
-      char *val_part=0;
       char *eof=0;
       int use_lf = cli_present(ctx, "LF") & 1;
-      int symbols = cli_present(ctx, "SYMBOLS") & 1;
       char *line = 0;
       ascValue=strdup("");
       cli_get_value(ctx, "EOF", &eof);

@@ -14,6 +14,7 @@
 #ifndef _AIX
 #include <strings.h>
 #endif
+#include <dcl.h>
 #include <ctype.h>
 #include <Xm/Xm.h>
 #include <Mrm/MrmPublic.h>
@@ -106,9 +107,9 @@ typedef enum { on_off, rename_node, delete, new, tree, set_def } NodeTouchType;
 static char *get_node_name(int nid)
 {
   char *name;
-  char *ans;
-  int def_nid;
-  int status;
+  //char *ans;
+  //int def_nid;
+  //int status;
   static int c_nid;
   static DESCRIPTOR_NID(nid_dsc, &c_nid);
   static char *getnci =
@@ -369,7 +370,7 @@ void HighlightCallback(Widget w, XtPointer client, XtPointer call)
 {
   ListTreeMultiReturnStruct *ret;
   ListTreeItem *item;
-  int count, i;
+  int i;
 
   ret = (ListTreeMultiReturnStruct *) call;
   for (i = 0; i < ret->count; i++) {
@@ -399,18 +400,18 @@ XtPointer call;
 void ActivateCallback(Widget w, XtPointer client, XtPointer call)
 {
   ListTreeActivateStruct *ret;
-  ListTreeMultiReturnStruct ret2;
-  ListTreeItem *item;
+  //ListTreeMultiReturnStruct ret2;
+  //ListTreeItem *item;
   int count;
-  struct node *node_ptr;
-  int nid;
+  //struct node *node_ptr;
+  //int nid;
 
   ret = (ListTreeActivateStruct *) call;
   count = 0;
   while (count < ret->count) {
     count++;
   }
-  node_ptr = (struct node *)(ret->path[count - 1]->user_data);
+  //node_ptr = (struct node *)(ret->path[count - 1]->user_data);
   if (!is_populated(ret->path[count - 1])) {
     ListTreeRefreshOff(w);
     add_descendents(w, ret->path[count - 1], get_nid(ret->path[count - 1]));
@@ -445,7 +446,7 @@ static ListTreeItem *Open(Widget tree, int nid)
 static void set_default(Widget w, ListTreeItem * item)
 {
   int status;
-  int old_def;
+  //int old_def;
   int nid = get_nid(item);
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
   if (default_item != NULL) {
@@ -494,7 +495,7 @@ static void Init(Widget tree)
 static void CommandLineOpen(Display * display, Widget tree)
 {
   char chars[132];
-  int status;
+  //int status;
   typedef struct {
     int shot;
     Boolean edit;
@@ -621,8 +622,8 @@ static void NodeTouched(int nid, NodeTouchType type)
 	  break;
 	case new:
 	  {
-	    ListTreeItem *itm;
-	    itm = insert_item(treew, this_item, nid);
+	    //ListTreeItem *itm;
+	    insert_item(treew, this_item, nid);
 	    FixUpName(treew, this_item);
 	    break;
 	  }
@@ -709,7 +710,7 @@ static Widget TREE;
 void AddListTree(Widget w, XtPointer client_data, XtPointer call_data)
 {
   Widget tree;
-  ListTreeItem *item;
+  //ListTreeItem *item;
   tree = XtCreateWidget("tree", listtreeWidgetClass, w, NULL, 0);
   TREE = tree;
   XtVaSetValues(tree,
@@ -742,16 +743,13 @@ void AddListTree(Widget w, XtPointer client_data, XtPointer call_data)
  *			XtPointer	call:	the call data (unused).
  */
 
-#ifdef VMS
-#include <stdlib.h>
-#endif
 
 extern void CloseWindow();
 /* ARGSUSED */
 void
 BxExitCB ARGLIST((w, client, call)) UARG(Widget, w) ARG(XtPointer, client) GRAU(XtPointer, call)
 {
-  int *exitValue = (int *)client;
+  //int *exitValue = (int *)client;
   CloseWindow(w, client, call);
 }
 
@@ -849,7 +847,7 @@ void TurnOnOff(Widget w, XtPointer client_data, XtPointer call_data)
   int i;
   int on = *(int *)client_data;
   Widget tree = XtNameToWidget(BxFindTopShell(w), "*.tree");
-  XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
+  //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
   ListTreeRefreshOff(tree);
   for (i = 0; i < num_selected; i++) {
     int nid = get_nid(selections[i]);
@@ -1342,7 +1340,7 @@ void OpenTree(Widget w, XtPointer client_data, XtPointer call_data)
 
 void MDoAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-  XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
+  //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
 }
 
 void SetDefault(Widget w, XtPointer client_data, XtPointer call_data)
@@ -1363,7 +1361,7 @@ void MSetDefault(Widget w, XtPointer client_data, XtPointer call_data)
 
 void DoAction(Widget w, XtPointer client_data, XtPointer call_data)
 {
-  XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
+  //XmAnyCallbackStruct *acs = (XmAnyCallbackStruct *) call_data;
 }
 
 static unsigned int usage = 0;
@@ -1487,7 +1485,7 @@ void SetUsage(Widget w, XtPointer client_data, XtPointer call_data)
 void SetDeviceType(Widget w, XtPointer client_data, XtPointer call_data)
 {
   char *sptr, *dptr;
-  XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *) call_data;
+  //XmToggleButtonCallbackStruct *cb = (XmToggleButtonCallbackStruct *) call_data;
   device_type = realloc(device_type, strlen(w->core.name) + 1);
   for (sptr = w->core.name, dptr = device_type; *sptr; *dptr++ = tolower(*sptr++)) ;
   *dptr = '\0';
@@ -1500,9 +1498,9 @@ void CommandEntered(Widget w, XtPointer client_data, XtPointer call_data)
   char *cmd;
   char *output=0;
   char *error=0;
-  int status;
+  //int status;
   cmd = XmStringUnparse(cb->value, NULL, 0, XmCHARSET_TEXT, NULL, 0, XmOUTPUT_ALL);
-  status = mdsdcl_do_command_extra_args(cmd, 0, &error, &output, 0, 0);
+  mdsdcl_do_command_extra_args(cmd, 0, &error, &output, 0, 0);
   if (output != NULL) {
     if (strlen(output) > 1)
       TOutput(output);
@@ -1534,10 +1532,10 @@ void CreateAddDevice(Widget w, XtPointer client_data, XtPointer call_data)
       };
       int i;
       Widget rb;
-      int status = GetSupportedDevices(&devnames, &imagenames, &num);
       static XtCallbackRec device_changed_list[] = { {(XtCallbackProc) SetDeviceType, 0}, {0, 0} };
       args[0].value = (long)device_changed_list;
       rb = XtNameToWidget(top, "*.ad_radioBox1");
+      GetSupportedDevices(&devnames, &imagenames, &num);
       for (i = 0; i < num; i++) {
 
 	Widget w = XmCreateToggleButton(rb, devnames[i], args, 1);
@@ -1588,7 +1586,7 @@ static void TagsReset(Widget w, int nid)
 {
   char *path;
   char *tag;
-  int status;
+  //int status;
   XmString path_str;
   Widget list_widget;
   void *ctx;

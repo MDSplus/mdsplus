@@ -57,7 +57,6 @@ int XmdsXdBoxOnOffButtonApply(Widget w);
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 typedef struct _Resources {
   int nid;

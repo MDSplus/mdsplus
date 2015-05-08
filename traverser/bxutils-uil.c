@@ -1,4 +1,4 @@
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+//static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 /*
  * WARNING: This file is overwritten at code generation time.
  * Any changes to this file will be lost.
@@ -50,7 +50,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 /*
  * Undefine this if you want to use native strcasecmp.
  */
-#define LOCAL_STRCASECMP
+//#define LOCAL_STRCASECMP
 
 #ifdef _NO_PROTO
 #ifdef NeedFunctionPrototypes
@@ -525,7 +525,7 @@ ARG(wchar_t **, txtStart) ARG(int *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSe
   Boolean sep;
   int dir;
   Boolean done;
-  int *lenUp;
+  //int *lenUp;
   Boolean checkDir;
   wchar_t *commonWChars;
   wchar_t emptyStrWcs[1];
@@ -542,7 +542,7 @@ ARG(wchar_t **, txtStart) ARG(int *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSe
   dir = XmSTRING_DIRECTION_L_TO_R;
   sep = False;
   done = False;
-  lenUp = NULL;
+  //lenUp = NULL;
   commonWChars = CStrCommonWideCharsGet();
 
   /*
@@ -1371,13 +1371,13 @@ void SET_BACKGROUND_COLOR
 ARGLIST((w, args, argcnt, bg_color))
 ARG(Widget, w) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
 {
+
+#if ((XmVERSION == 1) && (XmREVISION > 0))
   int i;
   int topShadowLoc;
   int bottomShadowLoc;
   int selectLoc;
   int fgLoc;
-
-#if ((XmVERSION == 1) && (XmREVISION > 0))
 
   /*
    * Walk through the arglist to see if the user set the top or

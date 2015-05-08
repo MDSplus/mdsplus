@@ -1,4 +1,4 @@
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
+//static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 /*
  * README: Portions of this file are merged at file generation
  * time. Edits can be made *only* in between specified code blocks, look
@@ -154,9 +154,9 @@ int main(int argc, char **argv)
   Arg args[256];
   Cardinal ac;
   /*SUPPRESS 591 */
-  Boolean argok;
+  //Boolean argok;
   XtAppContext context;
-  Widget w;
+  //Widget w;
   Widget parent;
 
   /* Begin user code block <declarations> */

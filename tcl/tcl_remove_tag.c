@@ -1,5 +1,10 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
 
 /**********************************************************************
 * TCL_REMOVE_TAG.C --

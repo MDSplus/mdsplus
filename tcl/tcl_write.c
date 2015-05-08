@@ -1,6 +1,10 @@
-#include <config.h>
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
 
 /**********************************************************************
 * TCL_WRITE.C --

@@ -111,7 +111,7 @@ static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -209,8 +209,7 @@ static int tunnel_connect(int id, char *protocol, char *host)
 #else
 static int tunnel_connect(int id, char *protocol, char *host)
 {
-  pid_t pid, xpid;
-  int sts = 0;
+  pid_t pid;
   int pipe_fd1[2], pipe_fd2[2];
   pipe(pipe_fd1);
   pipe(pipe_fd2);
@@ -221,8 +220,6 @@ static int tunnel_connect(int id, char *protocol, char *host)
     char *remotecmd =
 	strcpy((char *)malloc(strlen(protocol) + strlen("mdsip-server-") + 1), "mdsip-server-");
     char *arglist[] = { localcmd, host, remotecmd, 0 };
-    char *p;
-    int i = 0;
     strcat(localcmd, protocol);
     strcat(remotecmd, protocol);
     signal(SIGCHLD, SIG_IGN);
@@ -230,7 +227,7 @@ static int tunnel_connect(int id, char *protocol, char *host)
     close(pipe_fd2[0]);
     dup2(pipe_fd1[1], 1);
     close(pipe_fd1[1]);
-    sts = execvp(arglist[0], arglist);
+    execvp(arglist[0], arglist);
     exit(1);
   } else if (pid == -1) {
     fprintf(stderr, "Error %d from fork()\n", errno);
@@ -264,13 +261,12 @@ static int tunnel_listen(int argc, char **argv)
   struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;
   char *username;
-  int status;
   p.stdin_pipe = dup2(1, 10);
   p.stdout_pipe = dup2(0, 11);
   close(0);
   close(1);
   dup2(2, 1);
-  status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
+  AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
   if (username)
     free(username);
   while (DoMessage(id) != 0) ;

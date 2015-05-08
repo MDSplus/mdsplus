@@ -15,6 +15,8 @@
 #include        <mdsshr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <dcl.h>
+#include "dcl_p.h"
 
 typedef struct dclMacroList {
   char *name;			/*!<  macro name */
@@ -23,7 +25,7 @@ typedef struct dclMacroList {
   struct dclMacroList *next;
 } dclMacroList, *dclMacroListPtr;
 
-static int STOP_ON_FAIL=1;
+static int STOP_ON_FAIL = 1;
 
 /**********************************************************************
 * mdsdcl_commands.c --
@@ -52,7 +54,7 @@ static int STOP_ON_FAIL=1;
 static char *PROMPT = 0;
 static char *DEF_FILE = 0;
 
-void mdsdclSetPrompt(char *prompt)
+void mdsdclSetPrompt(const char *prompt)
 {
   if (PROMPT)
     free(PROMPT);
@@ -66,7 +68,7 @@ char *mdsdclGetPrompt()
   return strdup(PROMPT);
 }
 
-void mdsdclSetDefFile(char *deffile)
+void mdsdclSetDefFile(const char *deffile)
 {
   if (DEF_FILE)
     free(DEF_FILE);
@@ -103,7 +105,7 @@ int mdsdcl_init_timer(void *ctx, char *error, char *output)
 #ifdef HAVE_GETRUSAGE
   getrusage(RUSAGE_SELF, &TIMER_START_USAGE);
 #else
-  cpu_start = clock();  
+  cpu_start = clock();
 #endif
   return (1);
 }
@@ -111,12 +113,14 @@ int mdsdcl_init_timer(void *ctx, char *error, char *output)
 int mdsdcl_show_timer(void *ctx, char **error, char **output)
 {
   struct timeval TIMER_NOW_TIME;
-  int esec=0, emsec=0;
+  long int esec = 0;
+  long int emsec = 0;
 #ifdef HAVE_SYS_RESOURCE_H
-  int usec=0, umsec=0, ssec=0, smsec=0, sf=0, hf=0;
+  time_t usec = 0, ssec = 0;
+  suseconds_t umsec = 0, smsec = 0;
+  long int sf = 0, hf = 0;
   struct rusage TIMER_NOW_USAGE;
 #else
-  clock_t cpu_now;
   clock_t usec;
 #endif
 
@@ -138,7 +142,7 @@ int mdsdcl_show_timer(void *ctx, char **error, char **output)
   smsec = (TIMER_NOW_USAGE.ru_stime.tv_usec - TIMER_START_USAGE.ru_stime.tv_usec) / 10000;
   sf = TIMER_NOW_USAGE.ru_minflt - TIMER_START_USAGE.ru_minflt;
   hf = TIMER_NOW_USAGE.ru_majflt - TIMER_START_USAGE.ru_majflt;
-  sprintf(*error, "elapsed=%ld.%02d user=%ld.%02d sys=%ld.%02d sf=%ld hf=%ld\n",
+  sprintf(*error, "elapsed=%ld.%02ld user=%ld.%02ld sys=%ld.%02ld sf=%ld hf=%ld\n",
 	  esec, emsec, usec, umsec, ssec, smsec, sf, hf);
 #else
   usec = (clock() - cpu_start) / CLOCKS_PER_SEC;
@@ -330,51 +334,53 @@ int mdsdcl_set_command(void *ctx, char **error, char **output)
   char *history = 0;
   cli_get_value(ctx, "TABLE", &table);
   if (table) {
-    status = mdsdclAddCommands(table, error);
+    status = mdsdclAddCommands(table, error) == 0;
     free(table);
   } else {
     *error = strdup("Error: command table not specified\n");
-    return 0;
+    status = 0;
   }
+  if (status & 1) {
   /*------------------------------------------------------
    * Check for other qualifiers ...
    *-----------------------------------------------------*/
-  cli_get_value(ctx, "PROMPT", &prompt);
-  if (prompt) {
-    mdsdclSetPrompt(prompt);
-    free(prompt);
-  }
-  cli_get_value(ctx, "DEF_FILE", &def_file);
-  if (def_file) {
-    if (def_file[0]=='*') {
-      char *tmp = strdup(def_file+1);
-      free(def_file);
-      def_file = tmp;
+    cli_get_value(ctx, "PROMPT", &prompt);
+    if (prompt) {
+      mdsdclSetPrompt(prompt);
+      free(prompt);
     }
-    if (DEF_FILE)
-      free(DEF_FILE);
-    DEF_FILE=def_file;
-  }
-  cli_get_value(ctx, "HISTORY", &history);
-  if (history) {
+    cli_get_value(ctx, "DEF_FILE", &def_file);
+    if (def_file) {
+      if (def_file[0] == '*') {
+	char *tmp = strdup(def_file + 1);
+	free(def_file);
+	def_file = tmp;
+      }
+      if (DEF_FILE)
+	free(DEF_FILE);
+      DEF_FILE = def_file;
+    }
+    cli_get_value(ctx, "HISTORY", &history);
+    if (history) {
 #ifdef _WIN32
-    char *home = getenv("USERPROFILE");
-    char *sep = "\\";
+      char *home = getenv("USERPROFILE");
+      char *sep = "\\";
 #else
-    char *home = getenv("HOME");
-    char *sep = "/";
+      char *home = getenv("HOME");
+      char *sep = "/";
 #endif
-    if (history_file)
-      free(history_file);
-    if (home) {
-      history_file = malloc(strlen(history) + strlen(home) + 100);
-      sprintf(history_file, "%s%s%s", home, sep, history);
-      free(history);
-      read_history(history_file);
+      if (history_file)
+	free(history_file);
+      if (home) {
+	history_file = malloc(strlen(history) + strlen(home) + 100);
+	sprintf(history_file, "%s%s%s", home, sep, history);
+	free(history);
+	read_history(history_file);
+      }
     }
   }
 
-  return (1);
+  return status;
 }
 
 	/**************************************************************
@@ -410,7 +416,7 @@ int mdsdcl_help(void *ctx, char **error, char **output)
   sts = mdsdcl_do_help(p1, error, output);
   if (p1)
     free(p1);
-  return 1;
+  return sts;
 }
 
 static dclMacroListPtr MLIST = 0;
@@ -444,7 +450,7 @@ static dclMacroListPtr mdsdclNewMacro(char *name)
   return l;
 }
 
-int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline)(), void *getlineinfo)
+int mdsdcl_define(void *ctx, char **error, char **output, char *(*getline) (), void *getlineinfo)
 {
   char *name = 0;
   char *line;
@@ -513,7 +519,6 @@ int mdsdcl_show_macro(void *ctx, char **error, char **output)
 static void mdsdclSubstitute(char **cmd, char *p1, char *p2, char *p3, char *p4, char *p5, char *p6,
 			     char *p7)
 {
-  int i;
   char *ps[7] = { p1, p2, p3, p4, p5, p6, p7 };
   int p;
   for (p = 0; p < 7; p++) {
@@ -544,14 +549,15 @@ typedef struct getNextLineInfo {
   dclMacroListPtr m;
 } getNextLineInfo, *getNextLineInfoPtr;
 
-static char *getNextLine( getNextLineInfoPtr info ) {
+static char *getNextLine(getNextLineInfoPtr info)
+{
   *info->idx = *info->idx + 1;
   if (*info->idx < info->m->lines)
     return strdup(info->m->cmds[*info->idx]);
   else
     return strdup("");
 }
-  
+
 int mdsdcl_do_macro(void *ctx, char **error, char **output)
 {
   char *name = 0;
@@ -572,13 +578,12 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
   cli_get_value(ctx, "p7", &p7);
   //void *oldOutputRtn = mdsdclSetOutputRtn(0);
   if (indirect) {
-    int i;
     FILE *f = NULL;
     char line[4096];
     if (DEF_FILE &&
-	(strlen(DEF_FILE) > 0) && !(
-				    (strlen(name) > strlen(DEF_FILE)) &&
-				    (strcmp(name+strlen(name)-strlen(DEF_FILE),DEF_FILE) == 0))) {
+	(strlen(DEF_FILE) > 0) && !((strlen(name) > strlen(DEF_FILE)) &&
+				    (strcmp(name + strlen(name) - strlen(DEF_FILE), DEF_FILE) ==
+				     0))) {
       defname = strdup(name);
       defname = strcat(realloc(defname, strlen(defname) + strlen(DEF_FILE) + 1), DEF_FILE);
       f = fopen(defname, "r");
@@ -588,12 +593,10 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
     if (f == NULL) {
       if (defname) {
 	*error = malloc(strlen(name) + strlen(defname) + 100);
-	sprintf(*error, "Error: Unable to open either %s or %s\n",
-		defname, name);
-      }
-      else {
+	sprintf(*error, "Error: Unable to open either %s or %s\n", defname, name);
+      } else {
 	*error = malloc(strlen(name) + 100);
-	sprintf(*error, "Error: Unable to open %s\n",name);
+	sprintf(*error, "Error: Unable to open %s\n", name);
       }
     }
     if (f != NULL) {
@@ -631,7 +634,7 @@ int mdsdcl_do_macro(void *ctx, char **error, char **output)
       for (i = 0; (failed == 0) && (i < l->lines); i++) {
 	char *m_output = 0;
 	char *m_error = 0;
-	getNextLineInfo info = {&i, l};
+	getNextLineInfo info = { &i, l };
 	char *cmd;
 	if (strlen(l->cmds[i]) == 0)
 	  continue;
@@ -733,13 +736,14 @@ int mdsdcl_delete_macro(void *ctx, char **error, char **output)
   }
   if (name)
     free(name);
-  return 1;
+  return status;
 }
 
-int mdsdcl_set_stoponfail(void *ctx, char **error, char **output) {
-  if (cli_present(ctx,"ON") & 1)
-    STOP_ON_FAIL=1;
-  else if (cli_present(ctx,"OFF") & 1)
-    STOP_ON_FAIL=0;
+int mdsdcl_set_stoponfail(void *ctx, char **error, char **output)
+{
+  if (cli_present(ctx, "ON") & 1)
+    STOP_ON_FAIL = 1;
+  else if (cli_present(ctx, "OFF") & 1)
+    STOP_ON_FAIL = 0;
   return 1;
 }

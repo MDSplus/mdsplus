@@ -62,7 +62,6 @@ int XmdsCreateCancelButton(Widget parent, String name, ArgList args, Cardinal nu
 #include <Xmds/XmdsOkButtons.h>
 #include <Xmds/XmdsCallbacks.h>
 #include <xmdsshr.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static Widget CreateButton(Widget parent, String name, ArgList args, Cardinal numargs, String ident,
 			   Boolean set_default);

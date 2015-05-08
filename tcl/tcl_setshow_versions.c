@@ -1,8 +1,11 @@
-#include        <mds_stdarg.h>
-#include        "tclsysdef.h"
-#include <dbidef.h>
 #include <string.h>
+#include <stdlib.h>
+
+#include <mds_stdarg.h>
+#include <dbidef.h>
 #include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
 
 /***************************************************************
  * TclSetVersions:

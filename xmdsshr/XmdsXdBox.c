@@ -130,7 +130,6 @@ extern char *DescToNull(struct descriptor_s *desc);
 #include <Xmds/XmdsExpr.h>
 #include <Xmds/XmdsExprField.h>
 #include <xmdsshr.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern int TdiCompile();
 /*------------------------------------------------------------------------------
@@ -157,7 +156,6 @@ static void Resize();
  */
 static void ExpressionCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount);
 static void ExpressionLoad(Widget w, struct descriptor_xd *xd);
-static void ExpressionSetEnclosures(XmdsXdBoxWidget w);
 static struct descriptor_xd *ExpressionUnload(Widget w);
 
 static void ActionCreate(XmdsXdBoxWidget w, ArgList args, Cardinal argcount);
@@ -267,14 +265,6 @@ static XtResource resources[] = {
    XtRImmediate, (void *)1},
   {XmdsNautoPut, "AutoPut", XtRBoolean, sizeof(Boolean), XtOffset(XmdsXdBoxWidget, xdbox.auto_put),
    XtRImmediate, 0}
-};
-
-static CompositeClassExtensionRec composite_extension = {
-  /* next extension          */ NULL,
-  /* record type             */ NULLQUARK,
-  /* version                 */ XtCompositeExtensionVersion,
-  /* record_size             */ sizeof(CompositeClassExtensionRec),
-  /* accepts objects         */ TRUE
 };
 
 XmdsXdBoxClassRec xmdsXdBoxClassRec = {
@@ -656,7 +646,6 @@ static Boolean SetValues(Widget old, Widget req, Widget new)
   XmdsXdBoxWidget old_xd_w = (XmdsXdBoxWidget) old;
   XmdsXdBoxWidget req_xd_w = (XmdsXdBoxWidget) req;
   XmdsXdBoxWidget new_xd_w = (XmdsXdBoxWidget) new;
-  int status;
   if ((req_xd_w->xdbox.nid != old_xd_w->xdbox.nid)
       || (req_xd_w->xdbox.nid_offset != old_xd_w->xdbox.nid_offset)) {
     if (req_xd_w->xdbox.nid == -1)
@@ -727,8 +716,6 @@ static void ActionLoad(Widget w, struct descriptor_xd *xd)
 {
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor *ptr = (struct descriptor *)xd;
-  static struct descriptor_d expr_txt = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = 1;
   Widget menu_widget = XtNameToWidget(w, "action_menu");
   Widget expr_widget = XtNameToWidget(w, "action_expr");
   Widget action_widget = XtNameToWidget(w, "action_box");
@@ -787,7 +774,6 @@ struct descriptor_xd *ActionUnload(Widget w)
 {
   struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
-  Widget menu_widget = XtNameToWidget(w, "action_menu");
   Widget action_expr = XtNameToWidget(w, "action_expr");
   Widget action_box = XtNameToWidget(w, "action_box");
 
@@ -844,8 +830,6 @@ static void AxisLoad(Widget w, struct descriptor_xd *xd)
 {
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor *ptr = (struct descriptor *)xd;
-  static struct descriptor_d expr_txt = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = 1;
   Widget menu_widget = XtNameToWidget(w, "axis_menu");
   Widget expr_widget = XtNameToWidget(w, "axis_expr");
   Widget axis_widget = XtNameToWidget(w, "axis_box");
@@ -910,7 +894,6 @@ struct descriptor_xd *AxisUnload(Widget w)
   struct descriptor_xd *data = 0;
   struct descriptor_xd *units = 0;
   static DESCRIPTOR(w_units, "BUILD_WITH_UNITS($,$)");
-  Widget menu_widget = XtNameToWidget(w, "axis_menu");
   Widget units_widget = XtNameToWidget(w, "axis_units");
   Widget expr_widget = XtNameToWidget(w, "axis_expr");
   Widget axis_widget = XtNameToWidget(w, "axis_box");
@@ -978,8 +961,6 @@ static void DispatchLoad(Widget w, struct descriptor_xd *xd)
 {
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor_xd *ptr = xd;
-  static struct descriptor_d expr_txt = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = 1;
   Widget menu_widget = XtNameToWidget(w, "dispatch_menu");
   Widget expr_widget = XtNameToWidget(w, "dispatch_expr");
   Widget dispatch_widget = XtNameToWidget(w, "dispatch_box");
@@ -1026,7 +1007,6 @@ struct descriptor_xd *DispatchUnload(Widget w)
 {
   struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
   struct descriptor_xd *data = 0;
-  Widget menu_widget = XtNameToWidget(w, "dispatch_menu");
   Widget dispatch_expr = XtNameToWidget(w, "dispatch_expr");
   Widget dispatch_box = XtNameToWidget(w, "dispatch_box");
 
@@ -1084,8 +1064,6 @@ static void ExpressionLoad(Widget w, struct descriptor_xd *xd)
 {
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor_xd *ptr = xd;
-  static struct descriptor_d expr_txt = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = 1;
   Widget menu_widget = XtNameToWidget(w, "expression_menu");
   Widget units_widget = XtNameToWidget(w, "expression_units");
   Widget units_label_widget = XtNameToWidget(w, "expression_units_label");
@@ -1121,7 +1099,6 @@ static struct descriptor_xd *ExpressionUnload(Widget w)
   struct descriptor_xd *data = 0;
   struct descriptor_xd *units = 0;
   static DESCRIPTOR(w_units, "BUILD_WITH_UNITS($,$)");
-  Widget menu_widget = XtNameToWidget(w, "expression_menu");
   Widget units_widget = XtNameToWidget(w, "expression_units");
   Widget expr_widget = XtNameToWidget(w, "expression_expr");
 
@@ -1193,8 +1170,6 @@ static void TaskLoad(Widget w, struct descriptor_xd *xd)
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   int arg;
   struct descriptor_xd *ptr = xd;
-  static struct descriptor_d expr_txt = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = 1;
   Widget menu_widget = XtNameToWidget(w, "task_menu");
   Widget expr_widget = XtNameToWidget(w, "task_expr");
   Widget routine_widget = XtNameToWidget(w, "routine_box");
@@ -1396,8 +1371,6 @@ static void WindowLoad(Widget w, struct descriptor_xd *xd)
 {
   XmdsXdBoxWidget xdbw = FindXdBoxWidget(w);
   struct descriptor_xd *ptr = xd;
-  static struct descriptor_d expr_txt = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = 1;
   Widget menu_widget = XtNameToWidget(w, "window_menu");
   Widget expr_widget = XtNameToWidget(w, "window_expr");
   Widget window_widget = XtNameToWidget(w, "window_box");

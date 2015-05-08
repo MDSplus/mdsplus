@@ -1,25 +1,18 @@
-#include        <mds_stdarg.h>
-#include        "tclsysdef.h"
-#include        <stdlib.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
 #include <dcl.h>
-
-/**********************************************************************
-* TCL_DIRECTORY.C --
-*
-* TclDirectory:  Perform directory function.
-*
-* History:
-*  11-May-1998  TRG  Use TdiExecute to decode ascii shotnumber.
-*  xx-Dec-1997  TRG  Create.  Ported from original mds code.
-*
-************************************************************************/
-
-#define READONLY    1
-
+#include <mdsshr.h>
 #include <treeshr.h>
+#include <treeshr_messages.h>
+
+#include "tcl_p.h"
 
 extern int TdiExecute();
+
 int tclStringToShot(char *str, int *shot_out, char **error)
 {
   int shot = -2;
@@ -75,7 +68,7 @@ int TclSetTree(void *ctx, char **error, char **output)
   sts = tclStringToShot(asciiShot, &shot, error);
   if (sts & 1) {
     if (cli_present(ctx, "READONLY") & 1)
-      sts = TreeOpen(filnam, shot, READONLY);
+      sts = TreeOpen(filnam, shot, 1);
     else
       sts = TreeOpen(filnam, shot, 0);
     if (sts & 1)

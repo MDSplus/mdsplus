@@ -38,7 +38,16 @@ def getLatestRelease(flavor):
     info['tag']=tag
     info['major']=int(v[0])
     info['minor']=int(v[1])
-    info['release']=int(v[2])
+##### When issuing a new major or minor releae
+##### tag the latest released version with a tag
+##### like stable_release-m-n-X. This will produce
+##### a new release of m-n-0. I.e. to release
+##### 7.0.0, tag the last 6.n release with
+##### stable_release-7-0-X.
+    if v[2].isdigit():
+      info['release']=int(v[2])
+    else:
+      info['release']=-1
     info['executable']=sys.executable
     return info
   else:
@@ -84,6 +93,7 @@ if __name__ == "__main__":
 
 set -e
 git archive --format=tar --prefix=%(tag)s/ %(flavor)s | (cd /tmp/ && tar xf -)
+echo 'static const char *RELEASE = "%(tag)s";' > /tmp/%(tag)s/include/release.h
 cp ChangeLog /tmp/%(tag)s/
 pushd /tmp/%(tag)s/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d

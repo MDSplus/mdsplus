@@ -20,19 +20,22 @@ be added using the "SET COMMAND table-name" command.
  \param argv [in] An array of command line option strings.
 */
 
-static void flushOut(char *output) {
-  fprintf(stdout,"%s",output);
+static void flushOut(char *output)
+{
+  fprintf(stdout, "%s", output);
   fflush(stdout);
-  output[0]=0;
+  output[0] = 0;
 }
 
-static void flushError(char *error) {
-  fprintf(stderr,"%s",error);
+static void flushError(char *error)
+{
+  fprintf(stderr, "%s", error);
   fflush(stderr);
-  error[0]=0;
+  error[0] = 0;
 }
 
-void handle_signals(int signo) {
+void handle_signals(int signo)
+{
 }
 
 int main(int argc, char const *argv[])
@@ -53,9 +56,8 @@ int main(int argc, char const *argv[])
 
   mdsdclAddCommands("mdsdcl_commands", &error);
   if (error) {
-    fprintf(stderr,"%s",error);
-    fflush(stderr),
-    free(error);
+    fprintf(stderr, "%s", error);
+    fflush(stderr), free(error);
     exit(1);
   }
 
@@ -124,7 +126,7 @@ int main(int argc, char const *argv[])
     if (prompt == NULL)
       prompt = mdsdclGetPrompt();
 
-#ifdef HAVE_RL_SET_SIGNALS    
+#ifdef HAVE_RL_SET_SIGNALS
     rl_catch_signals = 1;
     rl_set_signals();
 #endif
@@ -146,9 +148,9 @@ int main(int argc, char const *argv[])
 	} else {
 	  free(cmd);
 	  free(command);
-	  command=0;
+	  command = 0;
 	  free(prompt);
-	  prompt=0;
+	  prompt = 0;
 	  continue;
 	}
       } else
@@ -176,14 +178,14 @@ int main(int argc, char const *argv[])
 	}
 	status = mdsdcl_do_command_extra_args(command, &prompt_more, &error, &output, 0, 0);
 	if (prompt_more != NULL) {
-          HIST_ENTRY *hist;
+	  HIST_ENTRY *hist;
 	  hist = remove_history(where_history());
-          if (hist) {
-            if (hist->line) 
-              free(hist->line);
-            free(hist);
-          }
-          
+	  if (hist) {
+	    if (hist->line)
+	      free(hist->line);
+	    free(hist);
+	  }
+
 	  command = strcat(realloc(command, strlen(command) + 2), " ");
 	  if (prompt)
 	    free(prompt);
@@ -225,4 +227,5 @@ int main(int argc, char const *argv[])
   if (history_file)
     write_history(history_file);
   free(history_file);
+  return status;
 }

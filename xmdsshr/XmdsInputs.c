@@ -56,7 +56,6 @@
 #include <Xmds/XmdsInputs.h>
 #include <Xmds/XmdsExpr.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 /*------------------------------------------------------------------------------
 
@@ -122,7 +121,6 @@ void XmdsPutInputSetup(Widget inputs_dlog, XmdsInputCtx ctx, int chan)
 
 int XmdsWidgetToNumber(Widget w, String prefix)
 {
-  int i;
   Widget widg;
   int number = -1;
   int length = strlen(prefix);

@@ -131,7 +131,7 @@ static int getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : -1;
 }
 
@@ -461,13 +461,8 @@ static int StartReceiver(short *port_out)
 	  pthread_cond_timedwait(&worker_condition, &worker_mutex, 1000);
 #else
 	{
-	  struct timespec one_sec = { 1, 0 };
 	  struct timespec abstime;
 	  struct timeval tmval;
-	  /*
-	     pthread_get_expiration_np(&one_sec,&abstime);
-	   */
-
 	  gettimeofday(&tmval, 0);
 	  abstime.tv_sec = tmval.tv_sec + 1;
 	  abstime.tv_nsec = tmval.tv_usec * 1000;
@@ -609,7 +604,6 @@ int ServerDisconnect(char *server_in)
   int status = 0;
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
-  int found = 0;
   unsigned int addr;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };

@@ -85,7 +85,7 @@ int SGGetMAXBUF(int scsiDevice)
 {
   if (scsiDevice >= 0 || scsiDevice <= 9) {
     char *bufptr;
-    int fd = OpenScsi(scsiDevice, &bufptr);
+    OpenScsi(scsiDevice, &bufptr);
     return BUFFSIZE[scsiDevice];
   } else
     return -1;
@@ -147,7 +147,7 @@ static int OpenScsi(int scsiDevice, char **buff_out)
       }
     }
   } else {
-    fprintf(stderr, "%(): scsi device number (%d) is out of range, must be between 0 and 9\n",
+    fprintf(stderr, "%s: scsi device number (%d) is out of range, must be between 0 and 9\n",
 	    ROUTINE_NAME, scsiDevice);
   }
   *buff_out = buff;
@@ -251,7 +251,7 @@ int scsi_io(int scsiDevice, int direction, unsigned char *cmdp,
       if ((sghdr.sb_len_wr == 0) && (mx_sb_len > 0)) {
 	int len = 0;
 	unsigned char sense_cmd[] = { 3, 0, 0, 0, mx_sb_len, 0 };
-	scsi_io(scsiDevice, 1, sense_cmd, sizeof(sense_cmd), sbp, mx_sb_len, 0, 0, 0, &len);
+	scsi_io(scsiDevice, 1, sense_cmd, sizeof(sense_cmd), (char *)sbp, mx_sb_len, 0, 0, 0, &len);
 	if (sb_out_len != 0)
 	  *sb_out_len = (unsigned char)len;
       } else if (sb_out_len != 0)

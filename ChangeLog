@@ -1,4 +1,441 @@
-commit e3fc4de8d77958c12d8fec67fe5689bf62620a1c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2166145217469dd9aaee73a89ce96fa2ace90876 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:51:42 2015 -0400
+
+    fix typo
+
+commit aadf7aa60ee57521b2c8e3e9b00de30ae977a9a0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:31:15 2015 -0400
+
+    Add MDSplus_LV2012 to make install
+
+commit cf16ecb124c682c2b6ad18c48981260badab0b78
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:10:16 2015 -0400
+
+    Add LabView 2012 support
+
+commit f9dad9b14a9da8a7b868c3528084ecc501676538
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri May 8 11:20:02 2015 +0200
+
+    LabVIEW 2012 VIs
+
+commit 35766423db2c486014c8dbb82ff5446097a078b9 (tag: refs/tags/alpha_release-7-0-53)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 7 22:19:49 2015 +0000
+
+    New ChangeLog
+
+commit 786a11613661c9bf6c27aa58ee8752165dc0fdc0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 15:57:30 2015 -0400
+
+    Fix compiler warnings
+
+commit 122f090dc0710a6f7538d6cf543232ba3f794a9e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 15:38:31 2015 -0400
+
+    Fix compiler warnings
+
+commit 44db6d2f05d06691cd8b385153019009fe922a36
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 13:56:47 2015 -0400
+
+    Fix compiler warnings
+
+commit a87738e1398e872c780853fd83706cb071f2dfcd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 13:14:03 2015 -0400
+
+    Fix compiler warnings
+
+commit fbd6f07b0cdccf881baaed09c3332f1c97ff1715
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:56:44 2015 -0400
+
+    Fix compiler warnings
+
+commit 119f182e3baffa920122a8b195dba26f4003a91e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:52:30 2015 -0400
+
+    Fix compiler warnings
+
+commit 6df5673ef68401d66b7d16ef5145913dec47a4e1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:50:59 2015 -0400
+
+    Fix compiler warnings
+
+commit 0b11f285e41c04d36374c612a39b4ae6cf309dca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 12:50:22 2015 -0400
+
+    Fix compiler warnings
+
+commit fcc205dbbfcf7f8f97c87d076ea236eebb9f3141
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 7 08:11:56 2015 -0400
+
+    Fix multiple exception catch syntax for python 2.4
+
+commit cc5b2279eaa18e6acc0347cfa5e6859f13225e7a (tag: refs/tags/alpha_release-7-0-52)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 6 22:19:53 2015 +0000
+
+    New ChangeLog
+
+commit 9f2d3ce69233ee74c52ae28b2637cb1ed1da1837
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 6 16:15:53 2015 -0400
+
+    Remove obsolete VMS password checker
+
+commit ee2669025626afcb9d7897ba29ba6ef984511d21
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 6 15:29:47 2015 -0400
+
+    Remove compiler warnings
+
+commit 578d3b7a3bdcfa8ffece1859b52adcac368a9030
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 6 12:02:22 2015 -0400
+
+    new versions of numpy throw a TypeError where it used to throw a ValueError. The makearray code now checkes for either of these two exceptions.
+
+commit 0624a7b148874a4940b075862cfeaaaa08da3f95
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed May 6 15:38:50 2015 +0200
+
+    Fix ymin-ymax
+
+commit 1a895dc2d2587266fc7e127cff735fdc486381e3 (tag: refs/tags/alpha_release-7-0-51)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 5 22:22:41 2015 +0000
+
+    New ChangeLog
+
+commit 6277bf29f54bb470bda7c9408b4eec401cac9a40
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 5 15:04:29 2015 -0400
+
+    Fix check for cameras found
+
+commit db45dc350bd86193bfaeea48015572430ce47faa (tag: refs/tags/alpha_release-7-0-50)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon May 4 22:21:45 2015 +0000
+
+    New ChangeLog
+
+commit 4f3f0f9726dda6287a6e4d0280c6991710bcf56d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon May 4 17:11:47 2015 -0400
+
+    add configuration settings to UdpEvents
+
+commit 6630989ed5470ddd68e55a757627bf6f38c75d79 (tag: refs/tags/alpha_release-7-0-49)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Apr 30 22:21:44 2015 +0000
+
+    New ChangeLog
+
+commit 046052611b273f48dc92cf2fa6024c165630a41d
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Apr 30 16:56:25 2015 +0200
+
+    Remove dangerous delete in exception catchers
+
+commit c3e88997c86264ea9b1f419a33705ae8d09e6f75 (tag: refs/tags/alpha_release-7-0-48)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Apr 29 19:17:09 2015 +0000
+
+    New ChangeLog
+
+commit e7bc789af07ae63dc929013ad085bea7ab50f341
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 29 14:39:13 2015 -0400
+
+    Fix quoted parameters with commas
+
+commit c168a04e57db958a8639bbdb018ec26864569f4a (tag: refs/tags/alpha_release-7-0-47)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Apr 29 15:09:51 2015 +0000
+
+    New ChangeLog
+
+commit 6bdc04b57cc850501e6991021b34ccce9a57ab67
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 29 10:51:53 2015 -0400
+
+    Revert subtree linkage changes. It does not work! Will need to revisit
+
+commit a11a58c14c16c86912be2e3c9622882f0d079402
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Apr 29 15:39:18 2015 +0200
+
+    Added Strring::getStringArray()
+
+commit f55affd143738f84a61dbb99c18b65d3d3f42e57 (tag: refs/tags/alpha_release-7-0-46)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Apr 28 16:26:00 2015 -0400
+
+    New ChangeLog
+
+commit bfe34160058aea7bab1a1859b3ee21255b79b411
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 16:03:48 2015 -0400
+
+    Take out MdsRelease prototype. It is defined in the mdsshr header file.
+
+commit adb6060af23e54f1bbf0ce737c5dddc6bfaae41d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 15:57:34 2015 -0400
+
+    Fix typo
+
+commit eb5964b40013014c8f8b6b94eb09a60cb70ccc0a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 15:09:59 2015 -0400
+
+    Use git tag for MdsRelease
+
+commit 1f2e33b027414c7785ca3033d96f68b6b64f670f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 14:42:06 2015 -0400
+
+    Clean out unnecessary msc windows code
+
+commit 8e3996a1f880a58cbf3a6344563c2948e44543e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 11:37:33 2015 -0400
+
+    Remove old cvs related files
+
+commit 06eb482511117403572ad44f2f862d3414cc66ac
+Merge: a314d09 55e4c8a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 10:02:19 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit a314d0912df3f5386af48c2dc74ea5d1140536f4
+Merge: 390125a 4c853d5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 10:01:30 2015 -0400
+
+    Merge in feature_new_subtree_linkage branch to change the way subtree linkage occurs on 64-bit platforms. The new strategy is to assign special node usages to nodes which involve linkage to subtrees. When the parent, member, brother or child node linkage refers to a different subtree, a nid will be used for that linkage.
+
+commit 55e4c8aef749306b7a0fe31a02dcc3bb0cc74147
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 08:52:00 2015 -0400
+
+    Fix Slope with less than three arguments
+
+commit 390125a334ce26809d7dce5c6ff8119d0df6a145
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 28 07:51:43 2015 -0400
+
+    Clean up compiler warnings
+
+commit ceccbca7633be6537f5993858200740f5f293415 (tag: refs/tags/alpha_release-7-0-45)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Apr 27 23:18:31 2015 -0400
+
+    New ChangeLog
+
+commit 1802a9535d8f79bee30cddda0fcec7038f515369
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 13:43:04 2015 -0400
+
+    Fix time handling
+
+commit 4bb7ec8106e21648fe8f5621b21f8132d53a525f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 13:31:14 2015 -0400
+
+    Fix time handling
+
+commit 95ce84e853c63c2274621d0ab5ce813640e62af4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 09:48:25 2015 -0400
+
+    Fix time handling again
+
+commit 60cbc7d971d638089ec6884e242e5165f2a2ee79
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 27 09:32:15 2015 -0400
+
+    Fix time handling again
+
+commit f4016878bc2b77406218f173fe373ad86b6f2f13 (tag: refs/tags/alpha_release-7-0-44)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Apr 24 13:12:31 2015 +0000
+
+    New ChangeLog
+
+commit 953b4732c04db5cb2c39489de47da7d980deaafd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 24 08:58:01 2015 -0400
+
+    Fix for windows
+
+commit 1afa6d9de746b4c03d6bf3b6dc7a7c50c03c7b1a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Apr 24 08:16:37 2015 -0400
+
+    Fix for windows
+
+commit de71fa1787f005451c4bd5ab0289e14fce88afc9 (tag: refs/tags/alpha_release-7-0-43)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Apr 24 01:34:38 2015 +0000
+
+    New ChangeLog
+
+commit 3db1b4352c59bf532691fe1b650332a4d02e7e4b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 21:17:32 2015 -0400
+
+    mdsdclAddCommand returns zero on success
+
+commit 545861d3992c1673a3b8a8a06ba5444521b8d64d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 16:51:42 2015 -0400
+
+    Fix compiler warnings
+
+commit 1417d7c4dbe98a8a40ca6eca4134acf62d75b2ea
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 16:31:10 2015 -0400
+
+    Fix compiler warnings
+
+commit 7e347dc32ba072c762734c7d08fa6face7bf06e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 14:59:48 2015 -0400
+
+    Fix compiler warnings in servershr
+
+commit dbd8517ab75d0ad357de3933dc45eb3336eed056
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 14:40:01 2015 -0400
+
+    Fix compiler warnings
+
+commit b1baf8b03dc1952333988d53260970cce41bc273
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 14:26:15 2015 -0400
+
+    Fix compiler warning on mdsdcl utilities
+
+commit 07bb623f0f6bc059aa4807f96dfe0662b598bff7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 11:22:12 2015 -0400
+
+    Rename tclsysdef.h to tcl_p.h
+
+commit 88fa955da83dc256ce288f40cdc60b5709e50628
+Merge: 736921f 50b412e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 08:44:13 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 736921f4ac4ea99b43b0f1fabbfbe6946b4fe4ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Apr 23 08:44:02 2015 -0400
+
+    Fix type used for second, usecs, and faults in show timer
+
+commit 50b412eb317d40187240befa74dceae783cf6e28 (tag: refs/tags/alpha_release-7-0-42)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Apr 22 22:20:46 2015 +0000
+
+    New ChangeLog
+
+commit 3a46e4baa06e81d5fe0499068526aede767495d5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 22 13:51:58 2015 -0400
+
+    Add line feed to original part line
+
+commit b395b4f07582d6a188f75ef9f769b84726461e54 (tag: refs/tags/alpha_release-7-0-41)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Apr 21 22:21:07 2015 +0000
+
+    New ChangeLog
+
+commit 4c853d537bf184becfc48aea152af773aa42c3b0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 15:14:18 2015 -0400
+
+    Use nid for subtree linkages instead of offsets
+
+commit a52142163bb269261b0f1025935b33d74efdbac9
+Merge: 89d537f dd3df95
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 15:04:51 2015 -0400
+
+    Fix show db string handling
+
+commit 89d537f531f4c8ce5cc4519a60369dc685003854
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 15:01:10 2015 -0400
+
+    Fix show db string handling
+
+commit dd3df95db4c33549491e1325cf6fbe947c6a51ac
+Merge: c622728 30bc470
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 14:33:06 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit c622728c23ec41b7e3f6d251caa54d0dc3948306
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 14:32:58 2015 -0400
+
+    Fix outpath length to hold larger paths
+
+commit 30bc4707b862dbd2d6d2355bc508b516d4f76a3e (tag: refs/tags/alpha_release-7-0-40)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Apr 17 22:21:33 2015 +0000
+
+    New ChangeLog
+
+commit 751b0dbe7e6f335bb9d528ac2a1d8a144ca7c602
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Apr 17 18:09:23 2015 +0200
+
+    Fix wrong method
+
+commit 1bbd3b9cba3807c1ab98d52422252a1447a75f6b (tag: refs/tags/alpha_release-7-0-39)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Apr 13 22:22:20 2015 +0000
+
+    New ChangeLog
+
+commit 0362fcd6386324ebfc714a60316bd8cf45522cab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 13 14:11:17 2015 -0400
+
+    Remove obsolete files
+
+commit 1952fce173546418297f619fd8ae561b93bd209c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Apr 13 13:00:49 2015 -0400
+
+    Fix for ealier gcc compiler without __SIZEOF_POINTER__ predefined macro
+
+commit 7f5f9859a7a9d0a9e6f7798bebd7a34b1669d2ce (tag: refs/tags/alpha_release-7-0-38)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Apr 9 13:44:41 2015 +0000
+
+    New ChangeLog
+
+commit e3fc4de8d77958c12d8fec67fe5689bf62620a1c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Apr 9 08:23:25 2015 -0400
 
