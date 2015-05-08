@@ -1,4 +1,60 @@
-commit 786a11613661c9bf6c27aa58ee8752165dc0fdc0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 3fa9cc76ada4990c43d935ef58c6895f0fbb6ce2 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 13:43:51 2015 -0400
+
+    Fix typo in release.py code
+
+commit e611579c6ce2cb392722b47b13c97dab3ec80a6b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 12:40:44 2015 -0400
+
+    Support for m-n-0 releases
+
+commit e5a15144b99fb0bb8b7f6ce288961070f09d5925
+Merge: 2ef60f4 2166145
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 09:05:23 2015 -0400
+
+    Merge branch 'alpha' into stable
+
+commit 2ef60f4b987eef2e97e2707c03929dbe28cd7908
+Merge: b1e400d 1952fce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 09:02:54 2015 -0400
+
+    Promote alpha to stable 7.0
+
+commit 2166145217469dd9aaee73a89ce96fa2ace90876
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:51:42 2015 -0400
+
+    fix typo
+
+commit aadf7aa60ee57521b2c8e3e9b00de30ae977a9a0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:31:15 2015 -0400
+
+    Add MDSplus_LV2012 to make install
+
+commit cf16ecb124c682c2b6ad18c48981260badab0b78
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:10:16 2015 -0400
+
+    Add LabView 2012 support
+
+commit f9dad9b14a9da8a7b868c3528084ecc501676538
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri May 8 11:20:02 2015 +0200
+
+    LabVIEW 2012 VIs
+
+commit 35766423db2c486014c8dbb82ff5446097a078b9 (tag: refs/tags/alpha_release-7-0-53)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 7 22:19:49 2015 +0000
+
+    New ChangeLog
+
+commit 786a11613661c9bf6c27aa58ee8752165dc0fdc0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 7 15:57:30 2015 -0400
 
@@ -331,6 +387,12 @@ Date:   Wed Apr 22 13:51:58 2015 -0400
 
     Add line feed to original part line
 
+commit b1e400d46324160c70cbd132ff68361f533308de (tag: refs/tags/stable_release-7-0-X, tag: refs/tags/stable_release-6-1-84)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Apr 21 22:33:56 2015 +0000
+
+    New ChangeLog
+
 commit b395b4f07582d6a188f75ef9f769b84726461e54 (tag: refs/tags/alpha_release-7-0-41)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Apr 21 22:21:07 2015 +0000
@@ -368,6 +430,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Apr 21 14:32:58 2015 -0400
 
     Fix outpath length to hold larger paths
+
+commit 4352e8d4978c4d2f375b2d0094078295e826bbbb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Apr 21 08:43:56 2015 -0400
+
+    Fix nid references in segment dimensions back ported from alpha branch fix
 
 commit 30bc4707b862dbd2d6d2355bc508b516d4f76a3e (tag: refs/tags/alpha_release-7-0-40)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -685,6 +753,12 @@ Date:   Fri Mar 27 14:09:35 2015 -0400
 
     Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
 
+commit 5e6dfea65f1209e66ba49c63b245cb496a6cbf8e (tag: refs/tags/stable_release-6-1-83)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 26 22:33:04 2015 +0000
+
+    New ChangeLog
+
 commit b0ba381bd9d70c9a9ff24e9a7d5e44d623e3dabf (tag: refs/tags/alpha_release-7-0-30)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Mar 26 22:19:47 2015 +0000
@@ -704,6 +778,19 @@ Date:   Thu Mar 26 15:55:15 2015 -0400
 
     Fix parens on macros
 
+commit 7bf9b707240da5beb2c02da105dc93f1306f89c9
+Merge: 8efe231 4c411d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 11:19:57 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 8efe231cdc8754cbefd2f996ef8c7078e0d8f1aa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 26 11:19:52 2015 -0400
+
+    Allow SYBASE environment variable to identify sybase directory
+
 commit 2a14c86c23d43b939638575764aaa699c0a478f0
 Merge: 866cef9 0dbf468
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -716,6 +803,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 26 09:18:23 2015 -0400
 
     Fix use of SYBASE env in configure
+
+commit 4c411d9e80935bcda8ba2bd33b0740122a1c4a2f (tag: refs/tags/stable_release-6-1-82)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Mar 25 22:31:57 2015 +0000
+
+    New ChangeLog
 
 commit 0dbf46817498328b927e9ed546e00cf97223649a (tag: refs/tags/alpha_release-7-0-29)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -792,6 +885,19 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Mar 25 09:58:22 2015 -0400
 
     Fix tabs so modul will work with python3
+
+commit 18a4212d54cbf955e1f83a1ab21859958dac0c26
+Merge: 1ef5829 f6c7392
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 09:56:16 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 1ef5829e12d9267ecc5dead69f6abdee6377b530
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Mar 25 09:56:10 2015 -0400
+
+    Fix tab in _mdsshr.py so it will work in python3
 
 commit 9a52d66fcad03e2f1e3024d2d899fa9e052e33ee (tag: refs/tags/alpha_release-7-0-28)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -941,6 +1047,12 @@ Date:   Mon Mar 23 10:18:57 2015 +0100
 
     Last fixes
 
+commit f6c73920411a0108627242cc4b37aa4e913a6c3f (tag: refs/tags/stable_release-6-1-81)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Mar 20 22:32:18 2015 +0000
+
+    New ChangeLog
+
 commit 432e4ad6c81bf7de1939b1eb38427f394367e4fd (tag: refs/tags/alpha_release-7-0-23)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Mar 20 22:19:11 2015 +0000
@@ -965,6 +1077,12 @@ Date:   Fri Mar 20 18:56:21 2015 +0100
 
     Mode DEMOADC to tutorial
 
+commit 51b71aba9c8d7c3222ff2b6c8911061257c8ed48
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Mar 20 13:09:42 2015 -0400
+
+    Unlock nci in TreePutRecord
+
 commit 3cc1f677f12c78c8b17c8efabc6540251c72e19b
 Merge: 7453dc7 1fcf0ff
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -978,6 +1096,12 @@ Date:   Fri Mar 20 12:57:31 2015 -0400
 
     Unlock the nci!
 
+commit 4d906d397b533cdf33a78c1b0d82929cf66c5c6e (tag: refs/tags/stable_release-6-1-80)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 19 22:33:25 2015 +0000
+
+    New ChangeLog
+
 commit 1fcf0ff506b3fb1a1a2a27cb5854939a4817c690 (tag: refs/tags/alpha_release-7-0-22)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Mar 19 22:20:41 2015 +0000
@@ -989,6 +1113,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 19 16:05:12 2015 -0400
 
     remove remaining malloc.h includes
+
+commit 73edac01c948e62109fcd4f2cc35ac5c0820f061
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 19 15:45:20 2015 -0400
+
+    Add fixes from alpha to stable releases
 
 commit 65557b51d2e19ac560fedaec4fc4ab6b8eb5c19a (tag: refs/tags/alpha_release-7-0-21)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -1314,6 +1444,12 @@ Date:   Thu Mar 12 14:59:36 2015 -0400
 
     remove double equals in setup.py since dash on ubuntu won't parse it
 
+commit 4b28b7044d4b656ebd6b52009c618450fe5590ca (tag: refs/tags/stable_release-6-1-79)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Mar 12 14:06:46 2015 +0000
+
+    New ChangeLog
+
 commit 6de2e856c3b2322b56f2365c3c7c907429cb13ff (tag: refs/tags/alpha_release-7-0-7)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Mar 12 13:54:07 2015 +0000
@@ -1325,6 +1461,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Mar 12 09:37:47 2015 -0400
 
     Clean up packaging information
+
+commit 91882d6601bb6ab89e0cabbd9ae4f6c92196aea6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 12 09:37:02 2015 -0400
+
+    Add debian support and clean up packaging information
 
 commit aa8408e08def64bd273c9ed3e7a2022aaa9ed4ff
 Merge: 02d70c4 3cb1e33
@@ -1534,6 +1676,31 @@ Date:   Tue Mar 10 09:41:32 2015 -0400
 
     Use ldconfig -n
 
+commit e534c419aa00c8321cccef23a98e0bb9af516799 (tag: refs/tags/stable_release-6-1-78)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Mar 10 09:19:13 2015 -0400
+
+    New ChangeLog
+
+commit 3156f5e85ea627601c2323969f347a9ecd6012a7
+Merge: 1b93686 03681bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 08:50:00 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 1b93686de0716c8491da7c57f088fbd1fba93163
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Mar 10 08:49:55 2015 -0400
+
+    Fix typo in memset call in yesterdays patch
+
+commit 03681bf8666154ad234c32cca6296cae53787fed (tag: refs/tags/stable_release-6-1-77)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 16:26:56 2015 -0400
+
+    New ChangeLog
+
 commit 1ad1bdfb877514cd7a8c61d0873685131f40b398 (tag: refs/tags/alpha_release-6-3-483)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Mar 9 15:55:22 2015 -0400
@@ -1546,11 +1713,42 @@ Date:   Mon Mar 9 15:09:00 2015 -0400
 
     Fix summary and description of noarch packages
 
+commit 295585af86a2f51433222d31e92b0f9a874cf646
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 15:06:50 2015 -0400
+
+    Fix summary and description of noarch packages
+
+commit 7014f99a59645ea81afc9394e07b5c7a48243bc6
+Merge: 2a626f9 7a9d23d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 15:06:04 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 7a9d23de7487fcd64728fd7bf122f78bd7717de8 (tag: refs/tags/stable_release-6-1-76)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Mar 9 14:54:13 2015 -0400
+
+    New ChangeLog
+
+commit 2a626f9dff60a544bd5b61ff33c3ec4bdb1df095
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 14:51:06 2015 -0400
+
+    provide java 6 compatibility
+
 commit 38bd69694afb9ce8135e553f70874d141b0a86b7 (tag: refs/tags/alpha_release-6-3-482)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Mar 9 14:24:29 2015 -0400
 
     New ChangeLog
+
+commit b0fbda8be0ffcae8cec36ec4fb6a71894b4e34ab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:49:38 2015 -0400
+
+    Remove unnecessary file unlock
 
 commit 64298198074026fa3c0eaf80f502b737a107847f
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1558,11 +1756,23 @@ Date:   Mon Mar 9 13:49:24 2015 -0400
 
     Remove unnecessary file unlock
 
+commit 31c64465526a5f03f4bf79dcac529ca7571bff84
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:48:54 2015 -0400
+
+    Initialize malloc'd memory to zero
+
 commit 5c7914b7a77b2c5e270026f6629d9fee7e270b5e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Mar 9 13:48:45 2015 -0400
 
     Initialize malloc'd memory to zero
+
+commit 616b1d7484efdb19c37d907bd344b9514ffac0bc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Mar 9 13:48:10 2015 -0400
+
+    Fix nci of new node corruption when large number of nodes are added in a single edit session
 
 commit 3d204a23550b497b669571dd5b3ad86145d7ef31
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1725,6 +1935,24 @@ Date:   Thu Feb 26 15:02:53 2015 -0500
 
     Add new status message handling
 
+commit 1082e35b2e0424dbc81c5708a9b7969b47a5fd71 (tag: refs/tags/stable_release-6-1-75)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 12:14:53 2015 -0500
+
+    New ChangeLog
+
+commit 38f58d36602d009767b33d99f5f7aaed81d4637b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 11:35:51 2015 -0500
+
+    Use correct nciList1
+
+commit 667bc3cd9fb2b8527d9281050a73561d32e3114d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Feb 26 09:25:48 2015 -0500
+
+    Fix getMember to use NciMEMBER instead of NciChild
+
 commit ad0d648d4a698afaea19fa9c57bf960215398ee8
 Merge: 2e61a21 a02983c
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1738,9 +1966,21 @@ Date:   Thu Feb 26 08:23:36 2015 -0500
 
     limit push to current branch
 
+commit 9f596af29666519cc65d0dd879065e0bf0076305 (tag: refs/tags/stable_release-6-1-74)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 01:46:25 2015 +0000
+
+    New ChangeLog
+
 commit a02983cb4920ba1b780274e477443d674a76d794 (tag: refs/tags/alpha_release-6-3-475)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Feb 26 01:30:20 2015 +0000
+
+    New ChangeLog
+
+commit 25495f9bc5125ecbdc815b75c1b2dcd06af548d7
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 01:13:05 2015 +0000
 
     New ChangeLog
 
@@ -1750,9 +1990,21 @@ Date:   Thu Feb 26 00:55:59 2015 +0000
 
     New ChangeLog
 
+commit 450e0b497a3b45b1c81fa0ff51a68263bd306e58
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Feb 26 00:32:52 2015 +0000
+
+    New ChangeLog
+
 commit 8e6b96fbefe95d822cae5edf7d15240ec6d9f0a9
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Feb 26 00:13:34 2015 +0000
+
+    New ChangeLog
+
+commit 31777550e10bf309a4e5e43419d891f9532a2ac8
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Feb 25 18:52:25 2015 -0500
 
     New ChangeLog
 
@@ -1761,6 +2013,12 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Feb 25 18:27:51 2015 -0500
 
     New ChangeLog
+
+commit e6a1759a26044d1c1099349d0829f7230491f5b1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Feb 25 12:29:34 2015 -0500
+
+    Fix memory issue with TreeExpandnodes
 
 commit b737ac0dea0750f2e4fb16997d6c560d6e78c0cd
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -2481,11 +2739,23 @@ Date:   Fri Jan 23 12:25:39 2015 -0500
 
     Make scalar strings return native matlab strings instead of java.lang.String
 
+commit 805216b85fb26fff481e2e40457dfd6045718210 (tag: refs/tags/stable_release-6-1-73)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jan 23 11:38:39 2015 -0500
+
+    New ChangeLog
+
 commit 6fde9fa7740968826b51b91fd566e2737230d463 (tag: refs/tags/alpha_release-6-3-459)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jan 23 10:20:11 2015 -0500
 
     New ChangeLog
+
+commit ec09cc0a8cf92c483a1c57aadcbd61bd0aa40367
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:51:42 2015 -0500
+
+    Remove all objects during clean
 
 commit d8ad4d258c22d0f3a63519c7ab5de9bcd57e348d
 Merge: 77928e1 f1799c7
@@ -2501,6 +2771,18 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jan 23 09:23:56 2015 -0500
 
     Remove obsolete *.f.in files
+
+commit 291b413cc7a9cc22b5b30d8394651960c447a11d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:19:52 2015 -0500
+
+    remove obsolete *.f.in files
+
+commit bd678a5e357d0c49e0cf8ba023b12db8c06178e9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 23 09:14:39 2015 -0500
+
+    Fix undefined reference because of const declaration on deserialize
 
 commit 3957906d63af9aff2709a1c76fea096752712463
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -2598,6 +2880,12 @@ Date:   Wed Jan 7 14:05:08 2015 +0000
 
     New ChangeLog
 
+commit 35f8c2906f7f3297d44519e220adffe68d5a3465 (tag: refs/tags/stable_release-6-1-72)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jan 7 13:49:03 2015 +0000
+
+    New ChangeLog
+
 commit 27bed6472a3dd8e3e5c01c91a136d49eee04ad9f
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jan 7 13:37:50 2015 +0000
@@ -2610,9 +2898,27 @@ Date:   Wed Jan 7 08:24:38 2015 -0500
 
     Do not depend on numpy. Package with that name not available on Ubuntu
 
+commit abae4df64963cbb7707f674e922add8d67560fb5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jan 7 08:24:00 2015 -0500
+
+    Do not depend on numpy. Package with that name not available on Ubuntu
+
+commit caf5e4ed0ec0c0172885259ee7baf54524e6d88a (tag: refs/tags/stable_release-6-1-71)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 23:59:20 2015 +0000
+
+    New ChangeLog
+
 commit b4f9793d42f43fceb00a7c61a111234ee52b1108 (tag: refs/tags/alpha_release-6-3-453)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jan 6 23:40:46 2015 +0000
+
+    New ChangeLog
+
+commit f1f5e8dc4728d0119ef44ea05682c14619d75ed0
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 21:47:27 2015 +0000
 
     New ChangeLog
 
@@ -2621,6 +2927,30 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 6 16:23:33 2015 -0500
 
     Add numpy dependency on python package
+
+commit eab1217dea026f3c3704ddae3270c7c3213c2bf4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 16:22:50 2015 -0500
+
+    Add numpy dependency on python package
+
+commit 1aa015463b2541e2d7280104477a3041ae797a7c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 20:31:56 2015 +0000
+
+    New ChangeLog
+
+commit de67f8182a23b86ffe09057d155b260dcfa78234
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 19:26:10 2015 +0000
+
+    New ChangeLog
+
+commit 63a6193de718dcd4181c6a80ccefb4d791f4e9fd
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 18:49:05 2015 +0000
+
+    New ChangeLog
 
 commit 9cf2782d0e1c96136f3cd78cdd7c13cae9b1336b (tag: refs/tags/alpha_release-6-3-452)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -2634,6 +2964,18 @@ Date:   Tue Jan 6 18:24:26 2015 +0000
 
     New ChangeLog
 
+commit ebe41a2e45fecb87e928a0fd08b42f41c486befc
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 12:48:45 2015 -0500
+
+    New ChangeLog
+
+commit ab2e9edc142c1b9157a7b9e479cdc7238fed0f45
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 12:14:09 2015 -0500
+
+    Handle nonmds dependencies
+
 commit 79c78a3ab158f3d953a0ac5b25ae0b60d082405e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 6 12:13:06 2015 -0500
@@ -2646,17 +2988,35 @@ Date:   Tue Jan 6 09:59:38 2015 -0500
 
     New ChangeLog
 
+commit b1b34a7b61a4f1c74355320ffb690726d710885d (tag: refs/tags/stable_release-6-1-70)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jan 6 09:07:18 2015 -0500
+
+    New ChangeLog
+
 commit 3fca653dfdc0c444b6a8a340f919fd4c017072b1
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jan 6 08:47:35 2015 -0500
 
     New ChangeLog
 
+commit 15cf07171d9c3ef72c944edbd8321cda5b46913b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 08:26:43 2015 -0500
+
+    Special require for nonmds dependency
+
 commit fa311708272cea42bdc444428d81d2354c95b997
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jan 6 08:24:33 2015 -0500
 
     special require for nonmds dependencies
+
+commit d362b2b8dfc1551854d32311cea67f0cf166748b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jan 6 08:18:23 2015 -0500
+
+    Ignore intermediate files
 
 commit a5c8ff07787f92c7055deb75347093435feff37c (tag: refs/tags/alpha_release-6-3-450)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -2669,6 +3029,18 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jan 5 15:27:08 2015 -0500
 
     fix non MDSplus requires rules
+
+commit b157e95f485ea92ce7061b3a843277b169e09f6b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 15:22:52 2015 -0500
+
+    fix non MDSplus requires rules
+
+commit af27c67d41af03e4439a4b4dbb0122204d2e5eb6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jan 5 14:25:27 2015 -0500
+
+    Do not use yacc and lex
 
 commit 0ce490792bde28e8062eac807db6953a61990a47
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -2700,6 +3072,12 @@ Date:   Fri Jan 2 14:32:11 2015 -0500
 
     Add dependency on python-setuptools
 
+commit 861aac27f249775c99da19c4cc60a3405cb326bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jan 2 14:30:51 2015 -0500
+
+    Add dependency on python-setuptools
+
 commit 6e207d0f4b8b42045e2407c8b9d8d12900f27f96
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 1 23:49:38 2015 -0500
@@ -2717,6 +3095,18 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jan 1 16:20:14 2015 -0500
 
     Prevent using lex and yacc
+
+commit 7a61c66147a756984af4c687ea828a0c25cd3c0a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jan 1 16:14:18 2015 -0500
+
+    Avoid using lex and yacc
+
+commit d317a380ef939fb30e94de77027b7eece87a6e0c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 31 16:29:49 2014 -0500
+
+    Fix find library to deal with the case where LD_LIBRARY_PATH is specified
 
 commit c0f35c76f15cda451e1109da856aa08c87af05a8 (tag: refs/tags/alpha_release-6-3-449)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -2736,6 +3126,31 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Dec 30 14:31:40 2014 -0500
 
     Return TreeINVSHOT when bad shot number provided
+
+commit 832dc5ad9a98dee8569639e6e81d2ca4031ffedc (tag: refs/tags/stable_release-6-1-69)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Dec 24 09:13:51 2014 -0500
+
+    New ChangeLog
+
+commit acfce7c14801948e2ddc0ee7b6b2aceb2ad0bde4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 24 08:49:50 2014 -0500
+
+    Fixes needed for changes in eventBuf handling in mdsobjects/cpp
+
+commit 6a7ad9f5cc19d488436efb8188b53f765451c9f9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 24 08:25:03 2014 -0500
+
+    Store Event::eventBuf internally as a std::string.  This removes the memory leak where eventBuf is newed but not deleted, and removes the C memcpy in favor of a simply string assignment that can take in a char *.  It also simplifies the bookeeping, since std::string records the length itself.  Doing this requires changing the return type of getRaw and waitRaw to be char const * instead of char *, which is good.  Without const, users can mess with the internal structure of the Event object.
+    (Keith)
+
+commit 0d89ac654ab1fd2eb680897c4d8d68c2d7ec0a27
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Dec 24 08:22:08 2014 -0500
+
+    disable running lex and yacc
 
 commit b9f749b107da23d867efc5004ab2bfb71231b6d8 (tag: refs/tags/alpha_release-6-3-448)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -3017,6 +3432,18 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Nov 14 17:56:26 2014 +0100
 
     remove debug messages
+
+commit bf7fd3590b90e6bf8f611757615bf5c4b3fff040 (tag: refs/tags/stable_release-6-1-68)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Nov 14 11:54:24 2014 -0500
+
+    New ChangeLog
+
+commit 103063cecb7145e2212d8e4d767e90f1d2a6c7df
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Nov 14 11:15:53 2014 -0500
+
+    Fix event id for java clients
 
 commit 01ffb644835c509c04711e985f4e2b0ec085a6ae
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -3378,9 +3805,28 @@ Date:   Sat Nov 1 20:54:51 2014 +0000
 
     New ChangeLog
 
+commit 9ba7b0b086cb8362fab5c6599e75cbb6ac534e8c (tag: refs/tags/stable_release-6-1-67)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sat Nov 1 19:58:31 2014 +0000
+
+    New ChangeLog
+
 commit eb0f47f1025a7943045d1ddb8173ba153da4af9c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sat Nov 1 15:22:05 2014 -0400
+
+    define DIST in info
+
+commit 9742df1a66403f368f77e578d7bc66c811d3f00f
+Merge: 143a6cf fca94f3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sat Nov 1 15:20:18 2014 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 143a6cfd2a7873efeeb36f0c705ce1d6b1e1332d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sat Nov 1 15:20:02 2014 -0400
 
     define DIST in info
 
@@ -3390,11 +3836,23 @@ Date:   Fri Oct 31 18:23:19 2014 -0400
 
     New ChangeLog
 
+commit fca94f3107e4e887122170fe9a0aaefa52dfe20b (tag: refs/tags/stable_release-6-1-66)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 21:13:28 2014 +0000
+
+    New ChangeLog
+
 commit 49667533e16218626d16f22b945722000ad4a39c
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 20:55:44 2014 +0000
 
     New ChangeLog
+
+commit 539c143f5a5647704358f9d2361801ade48a25e1
+Author: Joshua Stillerman <jas@psfc.mit.edu>
+Date:   Fri Oct 31 16:49:17 2014 -0400
+
+    The gitignore after a large number of additions
 
 commit 61f21f2f07ce4e5a4295e0ad1c24ebb3082cf312
 Merge: ca3d02e 93c62b4
@@ -3470,6 +3928,19 @@ Date:   Fri Oct 31 14:34:21 2014 -0400
 
     New ChangeLog
 
+commit 48de1303fed100b6ab7e34a6956e320465cb4368 (tag: refs/tags/stable_release-6-1-65)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 14:30:44 2014 -0400
+
+    New ChangeLog
+
+commit 282ccb40013df3143140c086c484888773d3cc6d
+Merge: b36e23c 69ead3c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 14:09:53 2014 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
 commit 5b2499b812111866d0647e07c4ba0f255b2658a2
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 14:09:20 2014 -0400
@@ -3482,6 +3953,18 @@ Date:   Fri Oct 31 14:07:05 2014 -0400
 
     Add MDSbuilder name to commits
 
+commit 69ead3cb27fcda2f7e6c65b09678be7bc50d351e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 31 14:07:05 2014 -0400
+
+    Add MDSbuilder name to commits
+
+commit 570b21ea9340aed53fe1549977cbe2c376aae98b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 31 13:48:33 2014 -0400
+
+    Add ChangeLog handling
+
 commit bff17c250f1b83a198e6b2d92be23f09f4dbfb06
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Oct 31 13:48:33 2014 -0400
@@ -3493,6 +3976,25 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Oct 31 13:32:28 2014 -0400
 
     Add ChangeLog handling
+
+commit 14860238f214091b1ed5a1534aae276cca9e484b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 31 13:32:28 2014 -0400
+
+    Add ChangeLog handling
+
+commit b36e23cccbca37c3d7b758febf43c529f87acaa5 (tag: refs/tags/stable_release-6-1-64)
+Merge: d2e4a84 7b5941c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 11:59:36 2014 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 7b5941c47adbfa89a4d53642e3ee90e4cae0eefa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 31 11:30:19 2014 -0400
+
+    Fix for new builds without new release
 
 commit 1a022a931530c5c1730b444e9005bb932e7239d9 (tag: refs/tags/alpha_release-6-3-425)
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -3510,6 +4012,18 @@ Date:   Fri Oct 31 08:47:41 2014 -0400
 commit 0aa40a30046b86fc613797038966cbdb4c363bf4
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Oct 31 08:40:05 2014 -0400
+
+    Use git
+
+commit d2e4a848d106d3dc986243d0c8992b2b6cc4b422 (tag: refs/tags/stable_release-6-1-63)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 08:39:33 2014 -0400
+
+    Use git
+
+commit fc3159feb49d21485f93ee41b372ebc5455bc78f
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Oct 31 08:19:37 2014 -0400
 
     Use git
 
@@ -3677,6 +4191,12 @@ Date:   Thu Oct 23 12:24:26 2014 +0000
 
     Remove -nodefaultlibs flag
 
+commit c948377d5339755ecf44f2069a551733b389787f (tag: refs/tags/stable_release-6-1-62)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed Oct 22 15:33:25 2014 +0000
+
+    Fix 64-bit issues with XtGet/SetValues
+
 commit 0b714979dc0d8dc5eac4b6fb3eb00ffe54657946 (tag: refs/tags/alpha_release-6-3-412)
 Author: Joshua Stillerman <jas@psfc.mit.edu>
 Date:   Wed Oct 22 15:03:58 2014 +0000
@@ -3736,6 +4256,12 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Oct 22 14:18:24 2014 +0000
 
     Fixes for bugs manifested in VC 2013
+
+commit 458c374e9ed42a1197bbd84bcd30481cae872e36 (tag: refs/tags/stable_release-6-1-61)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 17 13:52:56 2014 +0000
+
+    Clean udt6 objects
 
 commit 61b64e525361534611cbfe30761c7d7bf8c9ea16 (tag: refs/tags/alpha_release-6-3-411)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -3838,6 +4364,12 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Oct 14 12:00:58 2014 +0000
 
     Add label parameter to plot method
+
+commit 09a2c1901f8f7df61a5e00023bf6de23d91dfac7 (tag: refs/tags/stable_release-6-1-60)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Oct 10 16:44:39 2014 +0000
+
+    Convert from mac line endings
 
 commit c095eea4ebb3ba5d0e2dce873ebee2bb517b7b20 (tag: refs/tags/alpha_release-6-3-406)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -3947,6 +4479,12 @@ Date:   Tue Sep 30 20:12:03 2014 +0000
 
     insure that XtSetValues and XtGetValues sources and targets are the size of pointers
 
+commit 05a79876f8529cc12ae97b6e6de98c7f606f9445 (tag: refs/tags/stable_release-6-1-59)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 29 17:16:20 2014 +0000
+
+    Make traceback on exceptions optional
+
 commit 8a6870ab060784bea361d0d13b15ef252accdec8 (tag: refs/tags/alpha_release-6-3-397)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Mon Sep 29 17:15:22 2014 +0000
@@ -4001,17 +4539,41 @@ Date:   Fri Sep 26 17:09:30 2014 +0000
 
     Fix getShape()
 
+commit 58587397e6c6eccb7a3fcffbcf94fbbc6f0f6fd6 (tag: refs/tags/stable_release-6-1-58)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 26 16:12:21 2014 +0000
+
+    Fix for python3
+
 commit b656d00df44b7e322295220aed2bbedea1bb3905
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Sep 26 16:11:28 2014 +0000
 
     Fix for python3
 
+commit 39dc6e436cf7579ba225e07b4df78afe4471f0c7 (tag: refs/tags/stable_release-6-1-57)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 26 14:00:59 2014 +0000
+
+    Fix directory creation
+
 commit 49941edbb54f91214a10ef797671f15990d741e1 (tag: refs/tags/alpha_release-6-3-391)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Sep 26 13:50:49 2014 +0000
 
     Fix directory creation
+
+commit 18d6e330319a12a324ad182c7ed022fb8fc8c26e (tag: refs/tags/stable_release-6-1-56)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 24 18:36:01 2014 +0000
+
+    fix arch determination in docker builds
+
+commit 2a2106bda2c0ad77f8776e253b8b19740d30c9b1 (tag: refs/tags/stable_release-6-1-55)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 24 18:17:32 2014 +0000
+
+    Fix arch definition for docker builds
 
 commit 7735858e1d8282e61cd781cbf442007fe3c2782a (tag: refs/tags/alpha_release-6-3-390)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -4037,6 +4599,12 @@ Date:   Tue Sep 23 18:19:37 2014 +0000
 
     Removed nodebug and mdsip_connection options
 
+commit a9a0651c8b51b6f971d73b3bcdcf283d36d21502 (tag: refs/tags/stable_release-6-1-54)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 23 18:02:51 2014 +0000
+
+    Use disable not disabled
+
 commit 10720212de03d88674deedf45c160871134ab32c (tag: refs/tags/alpha_release-6-3-386)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Sep 23 18:02:19 2014 +0000
@@ -4055,6 +4623,72 @@ Date:   Fri Sep 19 19:41:28 2014 +0000
 
     Ok to use sudo
 
+commit b29825c07f12af06f9a1521c7058270a698e609c (tag: refs/tags/stable_release-6-1-53)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 14:32:07 2014 +0000
+
+    Fix signing keys setup
+
+commit 5d1ac624a70138135be8afefccf133b8a303981e (tag: refs/tags/stable_release-6-1-52)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 14:16:28 2014 +0000
+
+    Fix test prep
+
+commit 90141ae503eb348ed98aa2d9cd141db538527ce9 (tag: refs/tags/stable_release-6-1-51)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 13:57:08 2014 +0000
+
+    remove erroneous test for 64-bit
+
+commit 6247820879416809ca7e10ba12c13a6d9afd2f0f (tag: refs/tags/stable_release-6-1-50)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 13:41:37 2014 +0000
+
+    remove erroneous test for 64-bit
+
+commit b03c2f8e4e91f04f57fc5ca36eb5a75b97ac0f24 (tag: refs/tags/stable_release-6-1-49)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 13:18:49 2014 +0000
+
+    remove erroneous test for 64-bit
+
+commit f7b324f38a5742188b3122ba19d62c765ff5896a (tag: refs/tags/stable_release-6-1-48)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 12:58:29 2014 +0000
+
+    Fix encoding
+
+commit bb76bed3fd5cef48e90ba5ccc2b62aedc60f1196 (tag: refs/tags/stable_release-6-1-47)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 12:52:51 2014 +0000
+
+    Fix for osx
+
+commit 353a02e65a0b18c623a0a1e4cb50bc9c0aea4163 (tag: refs/tags/stable_release-6-1-46)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 12:40:19 2014 +0000
+
+    Fix for osx
+
+commit 867e45b586363bd600324c68ee4781c198397299 (tag: refs/tags/stable_release-6-1-45)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 12:26:47 2014 +0000
+
+    Fix for osx
+
+commit 32dd056f7fa6f7dfad9dfc96a8447dafe49f50ea (tag: refs/tags/stable_release-6-1-44)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 19 11:59:41 2014 +0000
+
+    Fix for osx
+
+commit 32118f08c81816749ccf8a24460f0279879cdddd (tag: refs/tags/stable_release-6-1-43)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 16 16:24:30 2014 +0000
+
+    Don't check sizeof_long
+
 commit f61cbb1127b7523ce58a27a59c585449c754acbe (tag: refs/tags/alpha_release-6-3-383)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Sep 16 15:16:39 2014 +0000
@@ -4066,6 +4700,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Sep 16 14:50:31 2014 +0000
 
     Fix declaration of mdsplus_string_constructor_len
+
+commit 56da2651a0c549f7a04b2d523c90d12a47f89e82 (tag: refs/tags/stable_release-6-1-42)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Sep 12 12:32:48 2014 +0000
+
+    Use python device setup
 
 commit dd045b2a082069e3577dd70737f520e8785a815d (tag: refs/tags/alpha_release-6-3-381)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -4079,11 +4719,23 @@ Date:   Sat Sep 6 19:30:57 2014 +0000
 
     Add WinMessages.nsh
 
+commit 5f5b5382a8447ccd9addb8fe0322c2ffd6722193 (tag: refs/tags/stable_release-6-1-41)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 5 19:20:34 2014 +0000
+
+    Fix MDSPLUS_DIST usage
+
 commit 55f161beaca5b36830dca5aaa580b7aedd8619cd (tag: refs/tags/alpha_release-6-3-379)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Sep 5 19:20:14 2014 +0000
 
     Fix MDSPLUS_DIST usage
+
+commit 14c9dfc7f420e0dd6743db9bc64413dec85e66e0 (tag: refs/tags/stable_release-6-1-40)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 5 19:07:42 2014 +0000
+
+    Reorganize mdsplus build directories
 
 commit 88311b04fd5212e782bbfd694daf3fff35c8829e (tag: refs/tags/alpha_release-6-3-378)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -4102,6 +4754,18 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Sep 5 17:21:23 2014 +0000
 
     pyhton3 fix
+
+commit fbf7cb3b0b7f1718e0f0fc26b160d59667361a77 (tag: refs/tags/stable_release-6-1-39)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 5 16:53:55 2014 +0000
+
+    Add windows build script
+
+commit c7b86fac5971e8bdac777a9ff385c556eddf997f
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Sep 5 16:53:13 2014 +0000
+
+    New environment variables for builds
 
 commit 6a65480a7451b18e7ccb35155600f3e7e3800fda (tag: refs/tags/alpha_release-6-3-376)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -4259,6 +4923,75 @@ Date:   Thu Sep 4 12:33:14 2014 +0000
 
     Try using -encoding argument
 
+commit 5800fd0d22a3359e58602c486197426a4f3ab1ae (tag: refs/tags/stable_release-6-1-38)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed Sep 3 14:01:32 2014 +0000
+
+    Fix compile error on linux
+
+commit 146969b542b1e02cfb9083dc94f7ecac1d5e9f6a (tag: refs/tags/stable_release-6-1-37)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Sep 2 15:34:16 2014 +0000
+
+    Fix memory allocation/deallocation problems
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit b3db835adbb63cbf2db643c84806468efe34343c (tag: refs/tags/stable_release-6-1-36)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 1 13:42:00 2014 +0000
+
+    Fix allocation and deallocation
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit a253a4556da45039e347c7e5d98d4c74607fd6fc (tag: refs/tags/stable_release-6-1-35)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Sep 1 13:21:25 2014 +0000
+
+    Use correct include for 64-bit
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit 7482c2815f4a8d3800f9737936259e662482cbc9 (tag: refs/tags/stable_release-6-1-34)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 31 14:52:48 2014 +0000
+
+    Turn off optimization for now
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit 5f0aeb868363bccd237f2faae3bdb72fe2ca6513
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 31 14:52:30 2014 +0000
+
+    Use char* for array deletions
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit 5312b4fe2999b7cd76332e0311f45c1a867dcd43
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 31 14:48:03 2014 +0000
+
+    Windows error returns have changed apparently
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit 0c55724f5fbbb4d88ea1e438fe180f1e78d22690
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 31 14:46:47 2014 +0000
+
+    blen arg to MDSWfeventTimed is by value
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
 commit 9116d7efe5190bf4f948e66e32fc833c78a468c8 (tag: refs/tags/alpha_release-6-3-367)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 29 19:17:00 2014 +0000
@@ -4270,6 +5003,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 29 18:44:12 2014 +0000
 
     Fix scalar destroy
+
+commit 2dc86ad5d8817044428995a5f870f52d83be2efe (tag: refs/tags/stable_release-6-1-33)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 29 18:40:28 2014 +0000
+
+    fix dependencies
 
 commit f12acca41007330ef9d6c24e0302d813c377bfa5
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -4283,9 +5022,33 @@ Date:   Fri Aug 29 18:26:18 2014 +0000
 
     remove quotes in variable
 
+commit bf3bd93c761c3027c0792505b394ea284871c4c8 (tag: refs/tags/stable_release-6-1-32)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 29 17:16:08 2014 +0000
+
+    Fix accvio. Do not call deleteNativeArray routine in a Scalar object
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
+commit d991c62577e7e63351227c697bd6acc701e74ee0 (tag: refs/tags/stable_release-6-1-31)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu Aug 28 16:35:30 2014 +0000
+
+    Fix buffer overrun in error msg handling
+    Committed on the Free edition of March Hare Software CVSNT Client.
+    Upgrade to CVS Suite for more features and support:
+    http://march-hare.com/cvsnt/
+
 commit cf415e447461c480a521d95827dc344085aa94f1 (tag: refs/tags/alpha_release-6-3-365)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 27 18:24:17 2014 +0000
+
+    Fix for python27 when executed in mdsip process
+
+commit fb26e80a6cc974df14fe48c953eec44d60240dda (tag: refs/tags/stable_release-6-1-30)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 27 18:22:56 2014 +0000
 
     Fix for python27 when executed in mdsip process
 
@@ -4709,6 +5472,12 @@ Date:   Thu Aug 7 14:32:28 2014 +0000
 
     Added Tree Context to Data
 
+commit b53d3d59ea2a13d1fcfd93a55dcf44384a3bfabb (tag: refs/tags/stable_release-6-1-29)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 5 19:16:29 2014 +0000
+
+    Fix problem with getActiveTree
+
 commit c96fc035e54b6e4f94c0727684d0c0a0cfd2d976 (tag: refs/tags/alpha_release-6-3-320)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Aug 5 18:52:37 2014 +0000
@@ -4925,11 +5694,23 @@ Date:   Fri Aug 1 08:36:33 2014 +0000
 
     Moved data frame acquisition loop from python to Flir driver C++
 
+commit 95b95cc620f8e91d00aaa4de93f1d77b7202354c (tag: refs/tags/stable_release-6-1-28)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 31 20:30:53 2014 +0000
+
+    Fix tabbing for python3
+
 commit edc0803be77c2148439b24289f7c217f93df37d2 (tag: refs/tags/alpha_release-6-3-303)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 31 20:24:47 2014 +0000
 
     Fix repository directory
+
+commit 0b82b38ffdfdc7f11a35bb39d5a425ed351193df (tag: refs/tags/stable_release-6-1-27)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 31 19:40:53 2014 +0000
+
+    Add close method to Tree class
 
 commit ecf2e01e2c916af33ee088700802c132515aaaad (tag: refs/tags/alpha_release-6-3-302)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -5032,6 +5813,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 31 12:26:56 2014 +0000
 
     Make java builds compatible with java version 6
+
+commit 4684fc3c3e7e5209d6175f90172aeaf2a4335dba
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 31 12:00:44 2014 +0000
+
+    Add close method to Tree
 
 commit 24d4fcc81a4c18451499fae880fa4442c6c12905 (tag: refs/tags/alpha_release-6-3-295)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -5645,11 +6432,23 @@ Date:   Tue Jul 8 17:01:35 2014 +0000
 
     Use bash shell
 
+commit 90c3764c570ab852d9ab141cedc49f942b50416e (tag: refs/tags/stable_release-6-1-26)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 8 14:28:05 2014 +0000
+
+    do not fail build on python builds. i.e. no python3
+
 commit d21fc243bfbb60594db5cca1a743eb3936405c5f (tag: refs/tags/alpha_release-6-3-256)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 8 14:27:32 2014 +0000
 
     do not fail build on python builds. i.e. no python3
+
+commit 0b8feaede15e537be3df8fe898a0ad1d07e5c31b (tag: refs/tags/stable_release-6-1-25)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 8 13:36:13 2014 +0000
+
+    Clean out the workspace if necessary before building
 
 commit b2c0525a0359a1ba8b5d6a562023cd55a470f205
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -5662,6 +6461,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 8 13:25:52 2014 +0000
 
     fix symlinks on install
+
+commit 548fddfdf6503756bb13d2f4a759bbaf185eaaf2
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 8 13:20:14 2014 +0000
+
+    Fix release check file format
 
 commit 3453f983dc375d82862bb1c7129c58435545fb0e (tag: refs/tags/alpha_release-6-3-254)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -7434,6 +8239,12 @@ Date:   Mon Jun 23 13:12:09 2014 +0000
 
     Add TOKAMAK vertical shift control flag (VSHIF_CONTR)
 
+commit 60f58561d1e1d03cfe64adc092f7e813db9b7cb1 (tag: refs/tags/stable_release-6-1-24)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 23 12:05:41 2014 +0000
+
+    Force new build with new release processing
+
 commit 0ed6f2864c4c78931b3e96c9fb10e5aea7362368 (tag: refs/tags/alpha_release-6-3-161)
 Author: Keith Erickson <kerickso@pppl.gov>
 Date:   Mon Jun 23 04:10:12 2014 +0000
@@ -7613,6 +8424,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri Jun 20 14:57:59 2014 +0000
 
     Remove obsolete distribution build configuration and scripts
+
+commit 09a9a54d94ad2392260031af468293cd0a04049d (tag: refs/tags/stable_release-6-1-23)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri Jun 20 13:56:43 2014 +0000
+
+    New packaging for ubuntu
 
 commit 7f57ceda307ef85ff9432bf202c7c31df310ac95 (tag: refs/tags/alpha_release-6-3-154)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -7842,6 +8659,12 @@ Date:   Tue Jun 17 18:48:03 2014 +0000
 
     Add ubuntu support
 
+commit c1c4803d380363cb5dbd697ec6708aab10af8d04 (tag: refs/tags/stable_release-6-1-22)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 17 17:23:02 2014 +0000
+
+    Need to make BUILD dir for rhel5 rpmbuild
+
 commit 839bebef32dae83deac285ab61b9fafb9c11dfde (tag: refs/tags/alpha_release-6-3-127)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 17 17:21:07 2014 +0000
@@ -7854,11 +8677,29 @@ Date:   Tue Jun 17 16:09:52 2014 +0000
 
     Use same python executable in subprocess command
 
+commit f3f5f08890ed1b729637d39d58974e291cebe085 (tag: refs/tags/stable_release-6-1-21)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 17 15:17:32 2014 +0000
+
+    Fix exists for main package
+
 commit 17fbc22ff2fd76b50d1fdc3e196385be8d0eb739 (tag: refs/tags/alpha_release-6-3-125)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 17 15:16:54 2014 +0000
 
     Fix exists for main package
+
+commit a11f85919ad320d16ee6b87362748b599d1a7ab5
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 17 15:12:49 2014 +0000
+
+    man vs share for stable
+
+commit f645badd1c48511a04fcc074d37f3616f60e7b32 (tag: refs/tags/stable_release-6-1-20)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 17 14:37:37 2014 +0000
+
+    Use new packaging method via xml
 
 commit 53f1b28be208083a2121583e48fe585b98c7c50d (tag: refs/tags/alpha_release-6-3-124)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -8213,6 +9054,12 @@ Date:   Thu Jun 5 14:52:51 2014 +0000
 
     Take out debug print
 
+commit 8622913c1571772ed3f744b1f7381cff0fc682c7 (tag: refs/tags/stable_release-6-1-19)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed Jun 4 20:55:41 2014 +0000
+
+    rhel5 support
+
 commit fa7354b0307c0f8bfb21c404f6f5f66906dd09a1
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Jun 4 20:42:49 2014 +0000
@@ -8285,6 +9132,12 @@ Date:   Tue Jun 3 20:03:50 2014 +0000
 
     Enable mdsplus test repository
 
+commit 0ef525350c43b0609fe2de5ae4d5564d7600b857 (tag: refs/tags/stable_release-6-1-18)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 3 18:48:34 2014 +0000
+
+    Fix for older systems
+
 commit 01983ddeeea8ad283a358930e0b21c67d19de8cf (tag: refs/tags/alpha_release-6-3-91)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 3 18:05:07 2014 +0000
@@ -8309,9 +9162,21 @@ Date:   Tue Jun 3 16:19:39 2014 +0000
 
     Fix NO build ID note rpm bug
 
+commit 9f0e0f5b1e1dbfb2323b1585b2b44fef3c0602db (tag: refs/tags/stable_release-6-1-17)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 3 14:13:41 2014 +0000
+
+    Fix for older redhat platforms
+
 commit 7a8954496553ff79101d21bf6bc8712eb0ff6c16 (tag: refs/tags/alpha_release-6-3-87)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 3 14:13:00 2014 +0000
+
+    Fix for older redhat platforms
+
+commit 07902bcf981cedfdd54a5dcb9545c652d06669af (tag: refs/tags/stable_release-6-1-16)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 3 14:04:21 2014 +0000
 
     Fix for older redhat platforms
 
@@ -8320,6 +9185,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 3 14:03:10 2014 +0000
 
     Fix for older redhat platforms
+
+commit f57d5164ee44c53c6bfa3242470441a34c3817bb (tag: refs/tags/stable_release-6-1-15)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 20:35:18 2014 +0000
+
+    Fix checking and silence tarball creation
 
 commit 361e73b9ff4c5925c7d0345d140fd2ae3d6d2eec (tag: refs/tags/alpha_release-6-3-85)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -8332,6 +9203,12 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 2 20:32:18 2014 +0000
 
     Silence %prep
+
+commit 6ad12554f762fdde55df02ee91a3450279f231e2
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 20:03:21 2014 +0000
+
+    Fix check
 
 commit ddfd1d17a99be2eedb8b686cb4c19691d1b2d49c (tag: refs/tags/alpha_release-6-3-83)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -8351,11 +9228,29 @@ Date:   Mon Jun 2 18:14:53 2014 +0000
 
     Indentation problem in exists method
 
+commit f65efb743ebbec0bb9e5bf7a9c155d3c18b409b5 (tag: refs/tags/stable_release-6-1-14)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 18:14:31 2014 +0000
+
+    Indentation problem in exists method
+
+commit 15cdd8e5b3c4d2671e0b3edf9990abccd32bcfbb (tag: refs/tags/stable_release-6-1-13)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 17:13:03 2014 +0000
+
+    Make rflavor conditional
+
 commit 558c83a37dc3f4cd49da40b352b5ee702edb7319 (tag: refs/tags/alpha_release-6-3-80)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 2 17:11:40 2014 +0000
 
     Make rflavor conditional
+
+commit 862d7159c977bab75a6c3d7807a04c665345c428
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 16:57:33 2014 +0000
+
+    *** empty log message ***
 
 commit 61a81bb5db79fdd914d1a829576fc232a12867d7
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -8369,9 +9264,21 @@ Date:   Mon Jun 2 15:51:14 2014 +0000
 
     *** empty log message ***
 
+commit 14f49ea15af4a1b5419e1ef9a4ed98e77ccc0471 (tag: refs/tags/stable_release-6-1-12)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 15:50:23 2014 +0000
+
+    *** empty log message ***
+
 commit 8a0f0dce95272a0508efd4b5ec5791dd290de645 (tag: refs/tags/alpha_release-6-3-78)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 2 15:45:37 2014 +0000
+
+    *** empty log message ***
+
+commit ab0ff5ea537ee86eaa09b019af9a105ed5d7b7b9 (tag: refs/tags/stable_release-6-1-10)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 15:11:40 2014 +0000
 
     *** empty log message ***
 
@@ -8404,6 +9311,18 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 2 13:02:41 2014 +0000
 
     *** empty log message ***
+
+commit 7017cb47dac779d4daf60ac8470c27acaa099077 (tag: refs/tags/stable_release-6-1-9)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 12:23:15 2014 +0000
+
+    Fix man in rpm spec for beta and stable branches
+
+commit 311d3f1f9882c56cb1142f6c4373c2112079dd90
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 2 12:21:12 2014 +0000
+
+    Add new deploy system
 
 commit 5e6bfd50ce450c0459cb5c71e3e55a31456e3622 (tag: refs/tags/alpha_release-6-3-74)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -8526,6 +9445,12 @@ Date:   Thu May 29 00:59:18 2014 +0000
 
     Move AutoString earlier in the file, and use it to factor out getNode code.
 
+commit 134e4e1d65319efd2ff131c7407717f229580d61 (tag: refs/tags/stable_release-6-1-8)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed May 28 17:51:04 2014 +0000
+
+    make str.encode operates on strings
+
 commit e0060df4eeee8869d6c291dad19e96751fae3a15 (tag: refs/tags/alpha_release-6-3-66)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed May 28 17:50:10 2014 +0000
@@ -8553,6 +9478,12 @@ Date:   Wed May 28 12:57:21 2014 +0000
 commit da2b8215ececbec789d39f4f8ad7ecb0194aa5bf
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed May 28 12:55:20 2014 +0000
+
+    Put release info in top directory of source tarball
+
+commit 9adf4db3759b873e8675ee67eeec3c33fc31d757 (tag: refs/tags/stable_release-6-1-7)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed May 28 12:46:50 2014 +0000
 
     Put release info in top directory of source tarball
 
@@ -8627,6 +9558,12 @@ Author: Keith Erickson <kerickso@pppl.gov>
 Date:   Tue May 27 21:33:50 2014 +0000
 
     Remove unused variable
+
+commit 64ebf1057aac910f2224ca647d07cf261bf04bc1 (tag: refs/tags/stable_release-6-1-6)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue May 27 21:29:00 2014 +0000
+
+    Fix decompile of Arrays
 
 commit 9753b8d7d43fea73eb72ef5cf32e518bd3679914
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
@@ -8814,9 +9751,21 @@ Date:   Tue May 20 17:42:30 2014 +0000
 
     First attempt at a way to convert static to shared libs
 
+commit 6edfbc3e0bfc9473214eecc861df3a4889e00106 (tag: refs/tags/stable_release-6-1-5)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue May 20 15:34:50 2014 +0000
+
+    New build scripts
+
 commit c35909adc0ecc310c3c4fc07d76fa7e2cb900cb6 (tag: refs/tags/alpha_release-6-3-49)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Tue May 20 15:30:06 2014 +0000
+
+    Updated funs from d3d
+
+commit e434544c272266b16fbd1995b5691ee4f5d4d2f7
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Tue May 20 15:29:57 2014 +0000
 
     Updated funs from d3d
 
@@ -9055,6 +10004,12 @@ Date:   Fri May 16 20:12:44 2014 +0000
 
     remove old makefiles
 
+commit ae4a550a9a05988659a6416e8f6f5e3daff14d28 (tag: refs/tags/stable_release-6-1-4)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri May 16 19:37:35 2014 +0000
+
+    Add new build scripts for macosx
+
 commit 038c4594711f875ae0fa12d1b13045aaf9abff71
 Author: Keith Erickson <kerickso@pppl.gov>
 Date:   Fri May 16 19:37:09 2014 +0000
@@ -9157,6 +10112,12 @@ Date:   Fri May 16 12:50:41 2014 +0000
 
     X_CFLAGS and friends are automatically AC_SUBST'd by AC_PATH_XTRA
 
+commit 41f0ed682d90b2fd12cd64cb35bae905f047bbd7 (tag: refs/tags/stable_release-6-1-3)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu May 15 20:38:15 2014 +0000
+
+    add ubuntu support to new build scripts
+
 commit 8d32e606d3093a5efa276f8358fd3d4bea3bee93 (tag: refs/tags/alpha_release-6-3-22)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Thu May 15 20:02:23 2014 +0000
@@ -9193,9 +10154,21 @@ Date:   Wed May 14 16:14:17 2014 +0000
 
     Stub out CLOCK_REALTIME for mac
 
+commit 4e8c65a220306b47a896259baec657db25a50834 (tag: refs/tags/stable_release-6-1-2)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed May 14 16:11:06 2014 +0000
+
+    *** empty log message ***
+
 commit 00850fc1d896ac4d3b834777053cc7971311cd79 (tag: refs/tags/alpha_release-6-3-17)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed May 14 15:54:38 2014 +0000
+
+    Display list of changed modules
+
+commit 6013fbf3cce9bb47cfc6ee5fbae9201866ed005a
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed May 14 15:43:55 2014 +0000
 
     Display list of changed modules
 
@@ -9246,6 +10219,18 @@ Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed May 14 12:28:01 2014 +0000
 
     Use job name to determine flavor
+
+commit e1be06af2fad441d9d1e15b128cbd4a747cd7b3b
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed May 14 12:27:46 2014 +0000
+
+    Use job name to determine flavor
+
+commit dab82d827a32af32f0efdfc587d9f89204e311c8 (tag: refs/tags/stable_release-6-1-1)
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Wed May 14 11:55:07 2014 +0000
+
+    New build scripts
 
 commit 8a53b521c77404736130aa95ae115d2955a9d599 (tag: refs/tags/alpha_release-6-3-12)
 Author: Keith Erickson <kerickso@pppl.gov>
@@ -9439,15 +10424,33 @@ Date:   Mon May 12 18:03:04 2014 +0000
 
     Revert
 
+commit deae5f2eb34d8ed51cf5e57137fbb7c2e50834e2
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri May 9 19:26:31 2014 +0000
+
+    change off by one on arglistlens
+
 commit 34728a23baf838e24f8cd094a60313fc6e04831c
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri May 9 19:24:47 2014 +0000
 
     change off by one on arglistlens
 
+commit 9bf009a46eb71834504b6ed6ddf996dd338efb17
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri May 9 19:12:58 2014 +0000
+
+    Fix size of arglist
+
 commit d31565c3b11d196417dbee9821cf3f7a28e0af04
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Fri May 9 13:18:30 2014 +0000
+
+    Add config.h
+
+commit f0d9389ba79855c777bbe6b0337c3a64998cf1fa
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Fri May 9 12:51:59 2014 +0000
 
     Add config.h
 
@@ -10491,6 +11494,18 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Mar 6 14:53:48 2014 +0000
 
     Use Device Python setup when Java DwSetup fails
+
+commit 5b6e698d1094937330c49f0b2cdddae72dce33eb
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 6 14:42:24 2014 +0000
+
+    Install cpci scripts and tar files
+
+commit 1620dec887289d4f9982145cb84f7e5ec480166c
+Author: Thomas W. Fredian <twf@psfc.mit.edu>
+Date:   Thu Mar 6 12:53:09 2014 +0000
+
+    Reference String from _scalar
 
 commit 331a6e0da0cdbd0b58f2f8f30eaf058229f0a171
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
