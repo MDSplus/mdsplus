@@ -1,6 +1,10 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_CLEAN_DATAFILE.C --

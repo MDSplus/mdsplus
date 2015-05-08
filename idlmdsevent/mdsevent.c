@@ -61,7 +61,7 @@ static EventStruct *EventList = (EventStruct *) 0;
 static int EventCount = 1;
 static void EventAst(EventStruct * e, int eventid, char *data);
 #include <export.h>
-#if defined(__VMS) || defined(WIN32)
+#ifdef _WIN32
 #define BlockSig(arg)
 #define UnBlockSig(arg)
 #else

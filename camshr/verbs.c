@@ -35,9 +35,11 @@
 #include <unistd.h>
 #include <dcl.h>
 #include <mdsdescrip.h>
+#include <strroutines.h>
 
 #include <math.h>
 
+#include <ctype.h>
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -48,11 +50,7 @@
 
 #include "common.h"
 #include "prototypes.h"
-
-#ifdef __toupper
-#undef __toupper
-#endif
-#define __toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
+#include "cts_p.h"
 
 //-------------------------------------------------------------------------
 // global stuff
@@ -91,7 +89,7 @@ static void str_upcase(char *str)
 int Assign(void *ctx, char **error, char *output)
 {
   char line[MODULE_ENTRY + 1];
-  int dbFileSize, fd, i, nullMask, numOfEntries, rc;
+  int dbFileSize, fd, i, nullMask, numOfEntries;
   int status = SUCCESS;		// assume the best
   char *phy_name = 0;
   char *log_name = 0;
@@ -216,7 +214,6 @@ int Autoconfig(void *ctx, char **error, char **output)
   FILE *fp;
 
   int j;
-  int found, retries;
 
   // check to see if db file memory mapped
   if (CRATEdbFileIsMapped == FALSE) {	// is not, so try
@@ -271,7 +268,7 @@ int Autoconfig(void *ctx, char **error, char **output)
 int Deassign(void *ctx, char **error, char **output)
 {
   char db_tmp[64];
-  int i, index, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name;
+  int i, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name;
   int status = SUCCESS;
   struct Module_ Mod, *pMod;
   char *wild = 0;
@@ -375,9 +372,7 @@ int SetCrate(void *ctx, char **error, char **output)
   char *cratename;
   void *ctx2 = 0;
   char *wild = 0;
-  struct descriptor wild_d = {0, DTYPE_T, CLASS_S, 0};
 
-  int off = cli_present(ctx, "OFFLINE") & 1;
   int on = cli_present(ctx, "ONLINE") & 1;
   int quiet = cli_present(ctx, "QUIET") & 1;
 
@@ -420,13 +415,10 @@ int SetCrate(void *ctx, char **error, char **output)
 int ShowCrate(void *ctx, char **error, char **output)
 {
   char colorENH[9], colorON[9];
-  char tmp[7];
-  char tmp2[11];
-  int enhanced, i, j, online, moduleFound, numOfCrates, numOfModules;
+  int enhanced, i, online, moduleFound, numOfCrates, numOfModules;
   int crateStatus;
   int status;
   struct Crate_ Cr8, *pCr8;
-  struct Module_ Mod, *pMod;
   char *wild = 0;
   struct descriptor wild_d = {0, DTYPE_T, CLASS_S, 0};
   struct descriptor crate_d = {0, DTYPE_T, CLASS_S, 0};
@@ -465,7 +457,6 @@ int ShowCrate(void *ctx, char **error, char **output)
   *output = strdup(" CRATE   ONL LAM PRV ENH\n=======  === === === ===\n");
 
   pCr8 = &Cr8;			// point to some actual storage
-  pMod = &Mod;
 
   // get number of crates in db file
   if ((numOfCrates = get_file_count(CRATE_DB)) > 0) {	// possibly something to show
@@ -523,7 +514,6 @@ int ShowCrate(void *ctx, char **error, char **output)
   char db_tmp[64];		// enough space for a logical name and a cstring terminator     [2002.02.20]
   int i, numOfEntries, status = SUCCESS;
 
-  static DESCRIPTOR(blank, " ");
 
   static const char *heading1 =
     "  #  Logical Name                     Physical   Comment";
@@ -536,7 +526,6 @@ int ShowCrate(void *ctx, char **error, char **output)
 
   struct descriptor pattern;
 
-  int format = cli_present(ctx, "FORMAT") & 1;
   int physical_name = cli_present(ctx, "PHYSICAL") & 1;	// 2002.01.16
 
   cli_get_value(ctx, "MODULE", &wild);
@@ -726,7 +715,7 @@ int DelCrate(void *ctx, char **error, char **output)
  DelCrate_Exit:
   if (phy_name)
     free(phy_name);
-  return SUCCESS;
+  return status;
 }
 
 //-------------------------------------------------------------------------

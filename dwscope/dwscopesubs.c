@@ -69,19 +69,6 @@
 #include <Xmds/XmdsWaveform.h>
 #include "dwscope.h"
 
-#if defined(__VMS) || defined(__osf__)
-#include <DXm/DXmHelpB.h>
-#endif
-
-#ifdef __VMS
-#include <fscndef.h>
-#include <descrip.h>
-#include <str$routines.h>
-extern int sys$filescan();
-#endif
-
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern int XmdsManageWindow();
 Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned long length, CutHeader * header,
 			       WaveInfo * info);
@@ -765,49 +752,6 @@ Boolean ReplaceString(String * old, String new, Boolean free)
 
 void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data)
 {
-#ifdef __VMS
-  static $DESCRIPTOR(const name, "*.DAT\0");
-  struct dsc$descriptor filnam = { 0, DSC$K_DTYPE_T, DSC$K_CLASS_S, 0 };
-  struct dsc$descriptor_d wild = { 0, DSC$K_DTYPE_T, DSC$K_CLASS_D, 0 };
-  typedef struct {
-    short length;
-    short code;
-    String address;
-  } ItmLst;
-  ItmLst valuelst[] = { {0, FSCN$_NODE, 0},
-  {0, FSCN$_DEVICE, 0},
-  {0, FSCN$_DIRECTORY, 0},
-  {0, 0, 0}
-  };
-  int flags;
-  XmString mask;
-  filnam.dsc$w_length = strlen(*file);
-  filnam.dsc$a_pointer = *file;
-  sys$filescan(&filnam, valuelst, &flags);
-  if (flags & FSCN$M_NODE) {
-    struct dsc$descriptor node = { 0, DSC$K_DTYPE_T, DSC$K_CLASS_S, 0 };
-    node.dsc$w_length = valuelst[0].length;
-    node.dsc$a_pointer = valuelst[0].address;
-    str$append(&wild, &node);
-  }
-  if (flags & FSCN$M_DEVICE) {
-    struct dsc$descriptor device = { 0, DSC$K_DTYPE_T, DSC$K_CLASS_S, 0 };
-    device.dsc$w_length = valuelst[1].length;
-    device.dsc$a_pointer = valuelst[1].address;
-    str$append(&wild, &device);
-  }
-  if (flags & FSCN$M_DIRECTORY) {
-    struct dsc$descriptor directory = { 0, DSC$K_DTYPE_T, DSC$K_CLASS_S, 0 };
-    directory.dsc$w_length = valuelst[2].length;
-    directory.dsc$a_pointer = valuelst[2].address;
-    str$append(&wild, &directory);
-  }
-  str$append(&wild, &name);
-  mask = XmStringCreateSimple(wild.dsc$a_pointer);
-  XtVaSetValues(w, XmNdirMask, mask, NULL);
-  XmStringFree(mask);
-  str$free1_dx(&wild);
-#else
   if (*file) {
     XmString mask;
     char *tmpfile = strcpy(malloc(strlen(*file) + 10), *file);
@@ -827,25 +771,10 @@ void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data)
     XmStringFree(mask);
     free(tmpfile);
   }
-#endif
 }
 
 void DisplayHelp(Widget w_in, String tag, XtPointer callback_data)
 {
-#if defined(__VMS) || defined(__osf__)
-  Widget top;
-  Widget w;
-  Widget hw;
-  for (w = w_in; w; top = w, w = XtParent(w)) ;
-  hw = XtNameToWidget(top, "*help_window");
-  if (tag && hw) {
-    XmString topic = XmStringCreateSimple(tag);
-    XtVaSetValues(hw, DXmNfirstTopic, topic, NULL);
-    XmStringFree(topic);
-    XmdsManageWindow(hw);
-  }
-  return;
-#endif
 }
 
 void ResetWave(WaveInfo * info)
@@ -934,7 +863,6 @@ void ExpandReset(Widget w, int *tag, XtPointer callback_data)
   Widget dsw;
   Widget exw;
   String exp;
-  XmString expression;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw)) ;
   if (*tag)
     XtVaGetValues(dsw, XmNuserData, &dsw, NULL);
@@ -963,9 +891,6 @@ void ExpandOk(Widget w, int *tag, XtPointer callback_data)
   Widget dsw;
   Widget exw;
   String exp;
-  int length;
-  int status;
-  XmString expression;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw)) ;
   if (*tag)
     XtVaGetValues(dsw, XmNuserData, &dsw, NULL);

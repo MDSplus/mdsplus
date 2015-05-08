@@ -1,14 +1,22 @@
-#include 	<config.h>
-#include        "tclsysdef.h"
-#include        <mdsshr.h>
-#include 	<stdlib.h>
-#include 	<strroutines.h>
+#include <config.h>
 #ifdef HAVE_ALLOCA_H
 #include 	<alloca.h>
 #endif
-#include 	<string.h>
-#include 	<readline/readline.h>
-#include 	<readline/history.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+
+#include <dcl.h>
+#include <mds_stdarg.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <strroutines.h>
+
+#include "tcl_p.h"
+
+
 extern int TdiDecompile();
 extern int TdiSortVal();
 
@@ -91,8 +99,7 @@ int TclSetAttribute(void *ctx, char **error, char **output, char *(*getline)(), 
   char *attname = 0;
   char *ascValue = 0;
   struct descriptor dsc_ascValue = { 0, DTYPE_T, CLASS_S, 0 };
-  static int val;
-  static struct descriptor_xd value_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
+  struct descriptor_xd value_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int sts;
   int nid;
 

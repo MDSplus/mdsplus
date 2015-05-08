@@ -1,15 +1,19 @@
-#include        <servershr.h>
-#include        "tclsysdef.h"
-#include        <stdlib.h>
-#include        <dbidef.h>
-#include        <ncidef.h>
-#include        <string.h>
-#include        <dcl.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include <dbidef.h>
+#include <ncidef.h>
+#include <dcl.h>
 #include <strroutines.h>
+#include <servershr.h>
+#include <mdsshr.h>
+#include <mds_stdarg.h>
+#include <treeshr.h>
+#include <tcl_messages.h>
+
+#include "tcl_p.h"
+
 extern int TdiData();
-extern char *ServerGetInfo(int full, char *server);
-extern int ServerFreeDispatchTable();
 
 /**********************************************************************
 * TCL_DISPATCH.C --
@@ -101,7 +105,6 @@ static void WaitfrEf(int *id)
 
 int TclDispatch(void *ctx, char **error, char **output)
 {
-  char *ident = 0;
   char *treenode = 0;
   int sts;
   int iostatus;
@@ -228,12 +231,10 @@ int TclDispatch_set_server(void *ctx, char **error, char **output)
 {
   int sts = 1;
   int logqual;
-  int statqual;
   char logging = 0;
   char *ident = 0;
 
   logqual = cli_present(ctx, "LOG");
-  statqual = cli_present(ctx, "STATISTICS");
   if (logqual == MdsdclPRESENT) {
     char *log_type = 0;
     cli_get_value(ctx, "LOG", &log_type);
@@ -427,7 +428,7 @@ int TclDispatch_check(void *ctx, char **error, char **output)
 {
   if (ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET") & 1)) {
     *error = strdup("Error: A essential action failed!\n");
-    return TCL_STS_FAILED_ESSENTIAL;
+    return TclFAILED_ESSENTIAL;
   } else
-    return TCL_STS_NORMAL;
+    return TclNORMAL;
 }

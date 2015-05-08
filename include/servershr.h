@@ -46,5 +46,6 @@ extern int ServerSetLogging(char *server, char logging_mode);
 extern int ServerStartServer(char *server);
 extern int ServerStopServer(char *server);
 extern void ServerWait(int id);
-
+extern int ServerFreeDispatchTable(void *vtable);
+extern char *ServerGetInfo(int full, char *server);
 #endif

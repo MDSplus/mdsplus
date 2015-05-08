@@ -75,8 +75,6 @@ struct dsc$descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected);
 #include <xmdsshr.h>
 #include <mds_stdarg.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 typedef struct _Resources {
   int nid;
   int nid_offset;
@@ -91,7 +89,6 @@ extern int MdsCompareXd();
 
 static Resources *GetResources(Widget w);
 static void Destroy(Widget w, Resources * info, XtPointer cb);
-static void Popup(Widget w, Resources * info, XtPointer cb);
 static void ButtonPushed(Widget w, int index, XmPushButtonCallbackStruct * cb);
 static void MenuChanged(Widget w, Resources * info, XmRowColumnCallbackStruct * cb);
 static XtResource resources[] = {
@@ -254,7 +251,6 @@ struct descriptor_xd *XmdsNidOptionMenuIdxGetXd(Widget w, int selected)
 {
   struct descriptor_xd *xd = 0;
   Resources *info = GetResources(w);
-  int status = 0;
   if (info) {
     int num;
     Widget *buttons;
@@ -278,7 +274,6 @@ struct descriptor_xd *XmdsNidOptionMenuGetXd(Widget w)
 {
   struct descriptor_xd *xd = 0;
   Resources *info = GetResources(w);
-  int status = 0;
   if (info) {
     int selected = XmdsGetOptionIdx(w);
     int num;
@@ -344,7 +339,6 @@ int XmdsNidOptionMenuApply(Widget w)
 static void MenuChanged(Widget w, Resources * info, XmRowColumnCallbackStruct * cb)
 {
   if (cb->reason == XmCR_ACTIVATE) {
-    int status = 0;
     int num;
     int bnum = (char *)cb->data - (char *)0;
     Widget *buttons;
@@ -353,7 +347,6 @@ static void MenuChanged(Widget w, Resources * info, XmRowColumnCallbackStruct * 
     num--;
     XtCallCallbacks(cb->widget, XmNactivateCallback, cb->data);
     if (bnum < num) {
-      struct descriptor_xd *ans = (struct descriptor_xd *)XtMalloc(sizeof(struct descriptor_xd));
       XtVaGetValues(buttons[bnum], XmNuserData, &xd, NULL);
       XmdsXdBoxSetXd(XmdsXdBoxDialogButtonGetXdBox(buttons[num]), (struct descriptor *)xd);
     }

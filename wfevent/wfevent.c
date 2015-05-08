@@ -45,9 +45,9 @@ int main(int argc, char **argv)
   char *event;
   int status;
   int serialized = 0;
-  int i;
 #ifdef _WIN32
   int optind = argc;
+  int i;
   for (i = 1; i < argc; i++) {
     if (argv[i][0] == '/') {
       switch (argv[i][1]) {

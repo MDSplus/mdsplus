@@ -54,7 +54,6 @@ int XmdsOnOffToggleButtonApply(Widget w);
 #include <Xmds/XmdsOnOffToggleButton.h>
 #include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Cardinal argcount);
 Boolean XmdsIsOnOffToggleButton(Widget w);
 void XmdsOnOffToggleButtonReset(Widget w);
@@ -98,7 +97,6 @@ Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args, Car
   if (info->show_path && info->nid + info->nid_offset) {
     char *path_c;
     XmString path;
-    int nid = info->nid + info->nid_offset;
     path_c = TreeGetMinimumPath(0, info->nid + info->nid_offset);
     path = XmStringCreateSimple(path_c);
     TreeFree(path_c);

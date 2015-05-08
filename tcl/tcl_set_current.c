@@ -1,6 +1,12 @@
-#include        "tclsysdef.h"
-#include        <mdsshr.h>
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
+#include "tcl_p.h"
+
 
 /***********************************************************************
 * TCL_SET_CURRENT.C --
@@ -24,8 +30,6 @@ int TclSetCurrent(void *ctx, char **error, char **output)
   char *experiment = 0;
   char *shotasc = 0;
   int shot;
-
-  DESCRIPTOR_LONG(dsc_shot, &shot);
 
   cli_get_value(ctx, "EXPERIMENT", &experiment);
   if (cli_present(ctx, "INCREMENT") & 1) {

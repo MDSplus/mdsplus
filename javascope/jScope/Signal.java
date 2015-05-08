@@ -667,7 +667,7 @@ public class Signal implements WaveDataListener
         setAxis();
         //Here xmin and xmax have been passed, so override values computed by setAxis()
         ymin = saved_ymin;
-        ymax = saved_xmax;
+        ymax = saved_ymax;
         
         saved_xmin = curr_xmin = xmin;
         saved_xmax = curr_xmax = xmax;

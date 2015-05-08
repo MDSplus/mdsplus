@@ -16,7 +16,6 @@ static char *DefName;
 static int A = 0;
 static int F = 0;
 static int Mem = 24;
-static int DefMem = 24;
 static void *D = 0;
 static int Count;
 static IOSB iosb;
@@ -78,7 +77,6 @@ multi_io(ccl_stop, CamStopw)
 
 static int ParseQualifiers(void *ctx, char **error, char **output)
 {
-  int memsize;
   int *d32;
   short *d16;
   int binary, hex, octal;

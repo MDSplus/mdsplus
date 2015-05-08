@@ -155,7 +155,6 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
 			      struct descriptor *d)
 {
   Message *m = 0;
-  int flag = 0;
   int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *) d)->arsize;
   int num = nbytes / ((d->length < 1) ? 1 : d->length);
   short length = d->length;
@@ -513,7 +512,6 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
 {
   int conid = e->conid;
   Connection *c = FindConnection(e->conid, 0);
-  int status = 1;
   int i;
   char client_type = c->client_type;
   Message *m;
@@ -678,7 +676,6 @@ Message *ProcessMessage(Connection * c, Message * message)
   }
   if (message->h.descriptor_idx < c->nargs) {
     struct descriptor *d = c->descrip[message->h.descriptor_idx];
-    int idx = message->h.descriptor_idx;
     c->client_type = message->h.client_type;
     if (!d) {
       static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
@@ -864,10 +861,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	}
 #ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
-	  int stat;
 	  char *cmd = (char *)malloc(64 + strlen(filename));
 	  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  stat = system(cmd);
+	  system(cmd);
 	  free(cmd);
 	}
 #endif
@@ -992,7 +988,6 @@ Message *ProcessMessage(Connection * c, Message * message)
 	void *buf = malloc(message->h.dims[4]);
 	size_t num = (size_t) message->h.dims[4];
 	ssize_t nbytes;
-	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
 	int deleted;
 #ifdef WORDS_BIGENDIAN
 	int tmp;

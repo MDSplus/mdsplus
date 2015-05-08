@@ -74,8 +74,6 @@ extern int MdsCompareXd();
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 static struct descriptor_xd empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 
 /*------------------------------------------------------------------------------

@@ -203,7 +203,7 @@ SetOutPath "$INSTDIR\LabView"
 File LabView/*.vi
 SetOutPath "$INSTDIR\mdsobjects\LabView"
 File /r LabView/MDSplus
-SetOutPath "$INSTDIR\mdsobjects\LabView\MDSplus"
+File /r LabView/MDSplus_LV2012
 SectionEnd
 
 Section EPICS

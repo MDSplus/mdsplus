@@ -1,4 +1,7 @@
-#include        "tclsysdef.h"
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
 
 /**********************************************************************
 * TCL_SETEVENT.C --
