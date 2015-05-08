@@ -1,4 +1,34 @@
-commit 786a11613661c9bf6c27aa58ee8752165dc0fdc0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2166145217469dd9aaee73a89ce96fa2ace90876 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:51:42 2015 -0400
+
+    fix typo
+
+commit aadf7aa60ee57521b2c8e3e9b00de30ae977a9a0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:31:15 2015 -0400
+
+    Add MDSplus_LV2012 to make install
+
+commit cf16ecb124c682c2b6ad18c48981260badab0b78
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 08:10:16 2015 -0400
+
+    Add LabView 2012 support
+
+commit f9dad9b14a9da8a7b868c3528084ecc501676538
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri May 8 11:20:02 2015 +0200
+
+    LabVIEW 2012 VIs
+
+commit 35766423db2c486014c8dbb82ff5446097a078b9 (tag: refs/tags/alpha_release-7-0-53)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 7 22:19:49 2015 +0000
+
+    New ChangeLog
+
+commit 786a11613661c9bf6c27aa58ee8752165dc0fdc0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 7 15:57:30 2015 -0400
 
