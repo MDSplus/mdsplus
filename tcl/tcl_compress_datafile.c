@@ -1,4 +1,6 @@
 #include        "tclsysdef.h"
+#include <string.h>
+#include <dcl.h>
 
 /**********************************************************************
 * TCL_COMPRESS_DATAFILE.C --
@@ -10,35 +12,31 @@
 *
 ************************************************************************/
 
-
-
 	/****************************************************************
 	 * TclCompressDatafile:
 	 ****************************************************************/
-int   TclCompressDatafile()
-   {
-    int   shot;
-    int   sts;
-    static DYNAMIC_DESCRIPTOR(dsc_filnam);
-    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
-    static char  nocompress[] = "Compress of pulse file may destroy\
- previous archive versions:  REFUSED";
+int TclCompressDatafile(void *ctx, char **error, char **output)
+{
+  int shot;
+  int sts;
+  char *filnam = 0;
+  char *asciiShot = 0;
 
-    cli_get_value("FILE",&dsc_filnam);
-    cli_get_value("SHOTID",&dsc_asciiShot);
-    sscanf(dsc_asciiShot.dscA_pointer,"%d",&shot);
-    if ((shot != -1) && (!(cli_present("OVERRIDE") & 1)))
-       {
-        TclTextOut(nocompress);
-        return 1;
-       }
-    sts = TreeCompressDatafile(dsc_filnam.dscA_pointer,shot);
-    if (~sts & 1)
-       {
-        MdsMsg(sts,"Problem compressing %s",dsc_filnam.dscA_pointer);
-#ifdef vms
-        lib$signal(sts,0);
-#endif
-       }
-    return sts;
-   }
+  cli_get_value(ctx, "FILE", &filnam);
+  cli_get_value(ctx, "SHOTID", &asciiShot);
+  sts = tclStringToShot(asciiShot, &shot, error);
+  if (sts & 1) {
+    sts = TreeCompressDatafile(filnam, shot);
+    if (!(sts & 1)) {
+      char *msg = MdsGetMsg(sts);
+      *error = malloc(strlen(msg) + strlen(filnam) + 100);
+      sprintf(*error, "Error: Problem compressing tree '%s' shot '%d'\nError message was: %s\n",
+	      filnam, shot, msg);
+    }
+  }
+  if (filnam)
+    free(filnam);
+  if (asciiShot)
+    free(asciiShot);
+  return sts;
+}

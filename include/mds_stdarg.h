@@ -18,4 +18,4 @@
 #else
 #define MDS_END_ARG ,MdsEND_ARG
 #endif
-#endif /* MDS_STDARG */
+#endif				/* MDS_STDARG */

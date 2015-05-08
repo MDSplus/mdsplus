@@ -8,7 +8,7 @@ class jDispatcherIp
     extends MdsIp {
     jDispatcher dispatcher;
     int shot;
-    static Vector servers = new Vector();
+    static Vector<Server> servers = new Vector<Server>();
     String treeName;
     String currTreeName;
 
@@ -271,17 +271,15 @@ class jDispatcherIp
             treeName = args[0];
         else
             treeName = "RFX";
+
+		Properties properties = MdsHelper.initialization(treeName);
+		if( properties == null )
+		  System.exit(0);
+
         Balancer balancer = new Balancer();
         jDispatcher dispatcher = new jDispatcher(balancer);
 		dispatcher.addServer(new InfoServer());
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream("jDispatcher.properties"));
-        }
-        catch (Exception exc) {
-            System.out.println("Cannot open properties file");
-            System.exit(0);
-        }
+
         int port = 0;
         try {
             port = Integer.parseInt(properties.getProperty("jDispatcher.port"));
@@ -377,7 +375,7 @@ class jDispatcherIp
             "jDispatcher.default_server_idx");
         try {
             int default_server_idx = Integer.parseInt(default_server) - 1;
-            Server server = (Server) servers.elementAt(default_server_idx);
+            Server server = servers.elementAt(default_server_idx);
             dispatcher.setDefaultServer(server);
         }
         catch (Exception exc) {}
@@ -390,15 +388,11 @@ class jDispatcherIp
         i = 1;
         while (true) 
         {
-            String phaseName = properties.getProperty("jDispatcher.phase_" +
-                i +
-                ".name");
+            String phaseName = properties.getProperty("jDispatcher.phase_" + i + ".name");
             if (phaseName == null)
                 break;
-            Vector currSynchNumbers = new Vector();
-            String currSynchStr = properties.getProperty("jDispatcher.phase_" +
-            i +
-            ".synch_seq_numbers");
+            Vector<Integer> currSynchNumbers = new Vector<Integer>();
+            String currSynchStr = properties.getProperty("jDispatcher.phase_" + i + ".synch_seq_numbers");
             if(currSynchStr != null)
             {
                 StringTokenizer st = new StringTokenizer(currSynchStr, " ,");

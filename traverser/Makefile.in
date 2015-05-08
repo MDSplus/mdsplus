@@ -1,18 +1,11 @@
-SHELL=/bin/sh
-CC=@CC@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+include @top_srcdir@/Makefile.inc
+
 X_CFLAGS=@X_CFLAGS@
-CFLAGS=@CFLAGS@ $(X_CFLAGS)
-LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
+CFLAGS=@CFLAGS@ $(X_CFLAGS) @TARGET_ARCH@
 UIL=@UIL@
 X_LIBS=@X_LIBS@
 X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_PRE_LIBS=@X_PRE_LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
 MOTIF_LIBS = @MOTIF_LDARC@ @XM_LIBS@ @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MLIBS = $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS)
 
@@ -41,19 +34,13 @@ clean :
 	@ $(RM) @MAKEUIDDIR@traverser.uid
 
 
-install:
+install: $(bindir) @uiddir@
 	$(INSTALL) -m 644  @MAKEUIDDIR@traverser.uid @uiddir@
 	$(INSTALL) -m 755  @MAKEBINDIR@traverser @bindir@
 
 
 @MAKEBINDIR@traverser : $(OBJECTS)
-	 $(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS) $(LIBS)
-
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
-
-@MAKEUIDDIR@ :
-	mkdir @MAKEUIDDIR@
+	 $(CC) -o $@ $(CFLAGS) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lXmdsShr $(MLIBS) $(LIBS)
 
 @MAKEUIDDIR@traverser.uid : traverser.uil
 	$(UIL) -o $@ traverser.uil

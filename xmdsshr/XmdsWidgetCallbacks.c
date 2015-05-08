@@ -47,7 +47,6 @@ void XmdsManageWindow(Widget w);
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <Xm/Xm.h>
@@ -57,16 +56,16 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static Widget FindShellChild(Widget w)
 {
   Widget sc;
-  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc));
+  for (sc = w; sc && !XtIsShell(XtParent(sc)); sc = XtParent(sc)) ;
   return sc;
 }
 
 void XmdsRaiseWindow(Widget w)
 {
   Widget shell;
-  for (shell = w; shell && !XtIsShell(shell); shell = XtParent(shell));
+  for (shell = w; shell && !XtIsShell(shell); shell = XtParent(shell)) ;
   if (shell)
-    XtPopup(shell,XtGrabNone);
+    XtPopup(shell, XtGrabNone);
 }
 
 void XmdsManageWindow(Widget w)
@@ -77,22 +76,22 @@ void XmdsManageWindow(Widget w)
     XmdsRaiseWindow(w);
 }
 
-void XmdsManageChildCallback(Widget w1,Widget *w2)
+void XmdsManageChildCallback(Widget w1, Widget * w2)
 {
   XmdsManageWindow(*w2);
 }
 
-void XmdsUnmanageChildCallback(Widget w1,Widget *w2)
+void XmdsUnmanageChildCallback(Widget w1, Widget * w2)
 {
   XtUnmanageChild(*w2);
 }
 
-void XmdsDestroyWidgetCallback(Widget w1,Widget *w2)
+void XmdsDestroyWidgetCallback(Widget w1, Widget * w2)
 {
   XtDestroyWidget(*w2);
 }
 
-void XmdsRegisterWidgetCallback(Widget w1,Widget *w2)
+void XmdsRegisterWidgetCallback(Widget w1, Widget * w2)
 {
   *w2 = w1;
 }
@@ -123,7 +122,7 @@ int XmdsApplyCallback(Widget w)
     status = XmdsApplyAllXds(db);
   return status;
 }
-#endif /* _NO_XDS */
+#endif				/* _NO_XDS */
 
 void XmdsCancelCallback(Widget w)
 {

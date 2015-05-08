@@ -12,6 +12,8 @@ envsyms
 bin/
 bin32/
 bin64/
+bin_x86/
+bin_x86_64/
 etc/
 lib/
 lib32/
@@ -19,6 +21,12 @@ lib64/
 *.class
 *.jar
 *.stamp
+*.manifest
+*.egg-info
+*.stamp
+*.gcno
+*.gcda
+*.gcov
 actions/actions
 actions/actmon
 cdu/cdu
@@ -36,6 +44,15 @@ setevent/setevent
 wfevent/wfevent
 xmdsshr/.dirstamp
 camshr/cts_commands.c
+# Emacs autosave files
+\#*#
+
+# vi autosave files
+*~
+
+# python compiled files
+*.pyc
+
 # Compiled Object files
 *.slo
 *.lo
@@ -64,3 +81,10 @@ camshr/cts_commands.c
 *.exe
 *.out
 *.app
+
+# automake 
+aclocal.m4
+autom4te.cache
+# gfortran objects on macintosh
+*.o_i386
+*.dylib_i386

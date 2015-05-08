@@ -36,9 +36,9 @@
  * Device register offsets for DMAEX device        * 
  ***************************************************/
 
-#define DMAEX_CSR_OFF   0       /* One byte control/status register */
-#define DMAEX_COUNT_OFF 1       /* Short byte count */
-#define DMAEX_ADDR_OFF  4       /* 32-bit VMEbus transfer address */ 
+#define DMAEX_CSR_OFF   0	/* One byte control/status register */
+#define DMAEX_COUNT_OFF 1	/* Short byte count */
+#define DMAEX_ADDR_OFF  4	/* 32-bit VMEbus transfer address */
 
 /****************************************************
  * Convenience defines for calls to sizeof operator *
@@ -52,11 +52,11 @@
  * Bits for csr device offset register             *
  ***************************************************/
 
-#define  IE         0001   /* Interrupt Enable */
-#define  DMA_GO     0002   /* Start DMA */
-#define  RESET      0010   /* Ready for data transfer */
-#define  ERROR      0020   /* Indicate error */
-#define  READ       0040   /* Indicate data transfer is read */
+#define  IE         0001	/* Interrupt Enable */
+#define  DMA_GO     0002	/* Start DMA */
+#define  RESET      0010	/* Ready for data transfer */
+#define  ERROR      0020	/* Indicate error */
+#define  READ       0040	/* Indicate data transfer is read */
 
 /***************************************************
  *         Define the ioctl macros                 *
@@ -80,10 +80,9 @@ struct dmaex_ioctl_data {
  * by the the driver. This number MUST match the value
  * specified in the CMA_Option of the sysconfigtab file
  * fragment.
- */ 
+ */
 #define PHYS_CONTIG_BUF_SIZE (128 * 1024)
-#define CONTIG_RD_WRT_BUF_SIZE (PHYS_CONTIG_BUF_SIZE / 2) 
-
+#define CONTIG_RD_WRT_BUF_SIZE (PHYS_CONTIG_BUF_SIZE / 2)
 
 /*
  * The following definitions define the data transfer
@@ -92,7 +91,7 @@ struct dmaex_ioctl_data {
  * dmaex_minphys and dmaex_strategy interfaces. The
  * dmaex_strategy interface then performs the data transfer
  * using the specified transfer mode.
- */ 
+ */
 #define PIO_XFER_MODE   0
 #define DEVICE_DMA_MODE 1
 #define BLOCK_DMA_MODE  2
@@ -116,11 +115,12 @@ struct dmaex_ioctl_data {
 #define MMAP_K_TO_U_MEM_WRT 1
 #define MMAP_K_TO_U_MEM_RD  2
 
-enum dmaex_commands {  C1, C2, C3, C4, C5, C6, C7,
-                       C8, C9, C10, C11, C12, C13,
-                       C14, C15, C16, C17, C18, C19,
-                       C20, C21, C22, C23, C24, C25,
-                       C26, C27, C28 };
+enum dmaex_commands { C1, C2, C3, C4, C5, C6, C7,
+  C8, C9, C10, C11, C12, C13,
+  C14, C15, C16, C17, C18, C19,
+  C20, C21, C22, C23, C24, C25,
+  C26, C27, C28
+};
 
 #define SET_MMAP_MODE              _IOWR('t', C1,  struct dmaex_ioctl_data)
 #define GET_MMAP_MODE              _IOWR('t', C2,  struct dmaex_ioctl_data)

@@ -8,4 +8,4 @@
    Defines the ways in which a utilitiy (TCL) 
    can affect a node.
 */
-typedef enum {on_off, rename_node, delete, new, tree, set_def} NodeTouchType; 
+typedef enum { on_off, rename_node, delete, new, tree, set_def } NodeTouchType;

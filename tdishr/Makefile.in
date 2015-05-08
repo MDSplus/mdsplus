@@ -1,16 +1,10 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@ @GCCLIB@
-SYBASE_INC=@SYBASE_INC@
+include @top_srcdir@/Makefile.inc
 
-INSTALL=@top_srcdir@/conf/install-sh -c
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TdiShr.dll.a
+@MINGW_TRUE@ DEF=TdiShr.def
+
+LIBS=-L@MAKESHLIBDIR@  -lTreeShr -lMdsShr @LIBS@ @LIBM@ @SOCKETLIB@ $(THREAD) @LIBDL@
+SYBASE_INC=@SYBASE_INC@
 
 SOURCES = \
 CvtConvertFloat.c \
@@ -91,10 +85,7 @@ TdiXxx.c \
 TdiYaccSubs.c \
 TdiYacc.c
 
-OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TdiShr.exports
-
-all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libTdiShr@SHARETYPE@ @MAKELIBDIR@libTdiShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@TdiShr.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
@@ -105,32 +96,39 @@ depend:
 clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libTdiShr@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libTdiShr.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB)
+	@ $(RM) @MAKELIBDIR@@LIBPRE@TdiShr.a
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libTdiShr@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
+install: $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) @libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libTdiShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@libTdiShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+ifneq "@PYTHON_INCLUDE_DIR@" ""
+TdiExtPython = TdiExtPython.o
 
-@MAKELIBDIR@libTdiShr.a : $(OBJECTS)
+TdiExtPython.o : TdiExtPython.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $< -I @PYTHON_INCLUDE_DIR@
+
+TdiVar.o : TdiVar.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $< -DPYTHON
+endif
+
+OBJECTS = $(SOURCES:.c=.o) $(TdiExtPython)
+EXPORTS = TdiShr.exports
+
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(TdiExtPython) $(DEF) @EXPORTS_FILE@
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
+
+@MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
 TdiShr.exports: TdiShr.def
-	sed -e /LIBRARY/\;/\;/d TdiShr.def > $@
+	$(SED) -e /LIBRARY/\;/\;/d $< > $@
 
 TdiSql.o : TdiSql.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< $(SYBASE_INC)
+

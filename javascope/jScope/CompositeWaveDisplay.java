@@ -424,10 +424,8 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
     private void setDataAccess()
     {
-        DataAccessURL.addProtocol(new RdaAccess());
         DataAccessURL.addProtocol(new MdsAccess());
         DataAccessURL.addProtocol(new TwuAccess());
-        DataAccessURL.addProtocol(new DemoAccess());
     }
 
     public void addProtocol(DataAccess dataAccess)
@@ -1046,7 +1044,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
             if(da != null && wi != null)
             {
-                wi.experiment = da.getExperiment();
+                wi.setExperiment(da.getExperiment());
                 wi.AddFrames(da.getSignalName());
                 wi.setShotArray(da.getShot());
 
@@ -1144,7 +1142,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
             if(da != null && wi != null)
             {
 
-                wi.experiment = da.getExperiment();
+                wi.setExperiment(da.getExperiment());
                 wi.AddSignal(da.getSignalName());
                 wi.setShotArray(da.getShot());
 

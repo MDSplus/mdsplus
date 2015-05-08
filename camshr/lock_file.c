@@ -1,14 +1,14 @@
 // lock_file.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -36,44 +36,45 @@
 // 'lock' with semaphore -- may take more than one try, hence 'do-while' loop
 // NB! see note about the 'dreaded' GOTO statement
 //
-// input:	none
-// output:	status
+// input:       none
+// output:      status
 //-------------------------------------------------------------------------
 int lock_file()
 {
-	int				status = SUCCESS;		// assume the best case
-	struct sembuf	sb = {0, P_SEMA4, 0};
-	extern int		semid;					// see 'create_sema4()'
-	extern int		sema4Exists;			// see 'create_sema4()'
+  int status = SUCCESS;		// assume the best case
+  struct sembuf sb = { 0, P_SEMA4, 0 };
+  extern int semid;		// see 'create_sema4()'
+  extern int sema4Exists;	// see 'create_sema4()'
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "lock_file()\n" );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("lock_file()\n");
 
-	sb.sem_op = P_SEMA4;					// prepare to 'purchase' a semaphore
+  sb.sem_op = P_SEMA4;		// prepare to 'purchase' a semaphore
 
-	// check for semaphore existance
-	//	NB! failure to create a sema4 is a fatal error
-	if( sema4Exists == FALSE )
-		create_sema4();
+  // check for semaphore existance
+  //      NB! failure to create a sema4 is a fatal error
+  if (sema4Exists == FALSE)
+    create_sema4();
 
-	do {
-		if( semop(semid, &sb, 1) == ERROR ) {
-			if( MSGLVL(ALWAYS) )
-				perror("semop()");
+  do {
+    if (semop(semid, &sb, 1) == ERROR) {
+      if (MSGLVL(ALWAYS))
+	perror("semop()");
 
-			status = ERROR;
+      status = ERROR;
 
-			goto LockFile_Exit;		// 'early' exit due to error
-			// NOTE: 'goto' is used in kernel code for appropriate things;
-			// it is believed that this is an appropriate place to use one
-			// for 'exception handling'
-		}
-	} while( check_sema4() );
+      goto LockFile_Exit;	// 'early' exit due to error
+      // NOTE: 'goto' is used in kernel code for appropriate things;
+      // it is believed that this is an appropriate place to use one
+      // for 'exception handling'
+    }
+  } while (check_sema4());
 
-LockFile_Exit:
-	if( MSGLVL(DETAILS) ) {
-		printf( "lock_file(): " ); ShowStatus( status );
-	}
+ LockFile_Exit:
+  if (MSGLVL(DETAILS)) {
+    printf("lock_file(): ");
+    ShowStatus(status);
+  }
 
-	return status;
+  return status;
 }

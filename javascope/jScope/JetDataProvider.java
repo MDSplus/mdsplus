@@ -60,6 +60,7 @@ class JetDataProvider implements DataProvider
     {
         throw(new IOException("Frames visualization on JetDataProvider not implemented"));
     }
+    public void enableAsyncUpdate(boolean enable){}
     public void    SetEnvironment(String s) {}
     public void    Dispose(){}
     public String  GetString(String in) {return in; }
@@ -72,7 +73,7 @@ class JetDataProvider implements DataProvider
     public boolean SupportsFastNetwork(){return false;}
     public void    SetArgument(String arg){};
     public boolean SupportsTunneling() {return false; }
-
+    public void setContinuousUpdate(){}
 
     class SimpleWaveData implements WaveData
     {
@@ -88,7 +89,8 @@ class JetDataProvider implements DataProvider
             this.in_x = in_x;
         }
 
-        public int GetNumDimension()throws IOException
+        public void setContinuousUpdate(boolean continuopusUpdate){}
+        public int getNumDimension()throws IOException
         {
             GetFloatArray(in_y, DATA);
             return dimension;
@@ -130,6 +132,31 @@ class JetDataProvider implements DataProvider
         {
             return null;
         }
+                public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+         public XYData getData(int numPoints)throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+
+        public float[] getZ(){System.out.println("BADABUM!!"); return null;}
+        public float[] getX2D(){System.out.println("BADABUM!!"); return null;}
+        public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
+        public float[] getY2D(){System.out.println("BADABUM!!"); return null;} 
+        public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
+        public long []getXLong(){System.out.println("BADABUM!!"); return null;}
+        public boolean isXLong(){return false;}
+        public void addWaveDataListener(WaveDataListener listener){}
+        public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
+
+
+
    }
 
     public WaveData GetWaveData(String in)

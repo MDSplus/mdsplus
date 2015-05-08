@@ -1,86 +1,63 @@
-SHELL=/bin/sh
-CXX=@CXX@
-CC=@CC@
-LD=@CXX@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@ @LV_INC@ -fPIC
-CXXFLAGS=-g -O2 -Wno-deprecated -fPIC @CFLAGS@ @LV_INC@
-LDFLAGS=@LDFLAGS@
-CLIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lRtEventsShr -lMdsIpShr -lMdsObjectsCppShr -lLV @LIBS@ 
-INSTALL=@top_srcdir@/conf/install-sh -c
+include @top_srcdir@/Makefile.inc
 
+LD=@CXX@
+CFLAGS=@CFLAGS@ -I@LV_CINTOOLS@ -fPIC @TARGET_ARCH@
+CXXFLAGS=-Wno-deprecated -fPIC @CFLAGS@ -I@LV_CINTOOLS@ @TARGET_ARCH@ @CXXFLAGS@
+CLIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
+@MINGW_TRUE@ LV_LIB="@LV_CINTOOLS@/labview.lib"
+@MINGW_FALSE@ LV_LIB=-lLV
+CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr $(LV_LIB) @LIBS@ 
+@MINGW_FALSE@ LV_SHR=@MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@  @MAKELIBDIR@@LIBPRE@LV.a @MAKESHLIBDIR@MDSobjectsLVShr @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr
 CSOURCES = lv.c
 
 CXXSOURCES = \
 	mdsdataobjectswrp.cpp  mdseventobjectswrp.cpp  mdsipobjectswrp.cpp  mdstreeobjectswrp.cpp
-	
 
 COBJECTS= $(CSOURCES:.c=.o)
 OBJECTS = $(CXXSOURCES:.cpp=.o)
 EXPORTS = MdsObjectsCppShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libLV@SHARETYPE@  @MAKELIBDIR@libLV.a @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@libMDSobjectsLVShr.a @MAKESHLIBDIR@MDSobjectsLVShr @MAKESHLIBDIR@libMDSobjectsLVShr
+all : @MAKELIBDIR@ @MAKESHLIBDIR@ $(LV_SHR) @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a  
 
 clean:
 	@ $(RM) $(COBJECTS)
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr
 	@ $(RM) @MAKESHLIBDIR@MDSobjectsLVShr
-	@ $(RM) @MAKESHLIBDIR@libLV@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libLV.a
-	@ $(RM) @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMDSobjectsLVShr.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@LV.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a
 
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @exec_prefix@/LabView ] ; then \
-                mkdir @exec_prefix@/LabView; \
-                chmod 755 @exec_prefix@/LabView; \
-        fi;
+install: $(libdir)
+	$(MKDIR_P) $(exec_prefix)/LabView
 	tar cf - --exclude="CVS" MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
-	if [ ! -d @libdir@ ] ; then \
-		mkdir @libdir@; \
-		chmod 755 @libdir@; \
-	fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMDSobjectsLVShr @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libLV@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr @libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@ @libdir@
 
-	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libTreeShr.a @libdir@; \
-		$(INSTALL) -m 644  @MAKESHLIBDIR@libLV.a @libdir@;\
-	fi;
+@MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@: $(COBJECTS) @EXPORTS_FILE@
+	$(LD) -o $@ $(CFLAGS) @LINKSHARED@ $(COBJECTS) $(CLIBS) $(LIBS) $(CXXFLAGS)
 
-	
-@MAKESHLIBDIR@libLV@SHARETYPE@ : $(COBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ $(CFLAGS) $(CLIBS) @LINKSHARED@ $(COBJECTS) $(LIBS) 
-
-@MAKELIBDIR@libLV.a : $(COBJECTS)
+@MAKELIBDIR@@LIBPRE@LV.a : $(COBJECTS)
 	$(AR) -cr $@ $(COBJECTS)
 	@RANLIB@ $@
 
+@MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
+	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(CXXLIBS) 
 
-@MAKESHLIBDIR@libMDSobjectsLVShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@ 
-	$(LD) -o $@ $(CXXFLAGS) @LINKSHARED@ $(OBJECTS) $(CXXLIBS)
-
-@MAKELIBDIR@libMDSobjectsLVShr.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MDSobjectsLVShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
-@MAKESHLIBDIR@libMDSobjectsLVShr :
-	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
+ifneq "@LIBPRE@" ""
+@MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr :
+	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@
+endif
 
 @MAKESHLIBDIR@MDSobjectsLVShr :
-	ln -sf  libMDSobjectsLVShr@SHARETYPE@ $@
-
+	ln -sf @LIBPRE@MDSobjectsLVShr@SHARETYPE@ $@

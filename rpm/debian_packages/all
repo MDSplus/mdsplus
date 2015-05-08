@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR--
-Version: 1.0
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---camac,mdsplus--FLAVOR---d3d,mdsplus--FLAVOR---devel,mdsplus--FLAVOR---epics,mdsplus--FLAVOR---gsi,mdsplus--FLAVOR---hdf5,mdsplus--FLAVOR---idl,mdsplus--FLAVOR---java,mdsplus--FLAVOR---kbsidevices,mdsplus--FLAVOR---kernel,mdsplus--FLAVOR---labview,mdsplus--FLAVOR---matlab,mdsplus--FLAVOR---mitdevices,mdsplus--FLAVOR---motif,mdsplus--FLAVOR---mssql,mdsplus--FLAVOR---php,mdsplus--FLAVOR---python,mdsplus--FLAVOR---rfxdevices
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: All main MDSplus distribution packages.

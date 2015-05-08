@@ -31,8 +31,8 @@
 
 /* Resources */
 
-#define XmdsNnid		    "nid"		/* Nid of first channel */
-#define XmdsNnidOffset		    "nidOffset"		/* Nid offset */
+#define XmdsNnid		    "nid"	/* Nid of first channel */
+#define XmdsNnidOffset		    "nidOffset"	/* Nid offset */
 
 /* External creation routines:
 */
@@ -43,8 +43,8 @@ extern Boolean XmdsIsDisplay();
 
 #else				/* _NO_PROTO */
 
-extern Widget	XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount);
-extern Boolean	XmdsIsDisplay(Widget w);
+extern Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount);
+extern Boolean XmdsIsDisplay(Widget w);
 
 #endif				/* _NO_PROTO */
 

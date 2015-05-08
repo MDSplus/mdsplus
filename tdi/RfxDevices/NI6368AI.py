@@ -37,13 +37,13 @@ class NI6368AI(Device):
     del i
 
     parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':START_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','READY',50,None),Method(None,'start_store',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_store',head))",
         'options':('no_write_shot',)})
     parts.append({'path':':STOP_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_store',head))",
+        'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
         'options':('no_write_shot',)})
 
     
@@ -134,9 +134,9 @@ class NI6368AI(Device):
         try:
             idx = ni6368Nids.index(self.getNid())
             self.ai_fd = ni6368AiFds[idx]
-            #print 'RESTORE INFO HANDLE FOUND'
+            print 'RESTORE INFO HANDLE FOUND'
         except:
-            #print 'RESTORE INFO HANDLE NOT FOUND'
+            print 'RESTORE INFO HANDLE NOT FOUND'
             try: 
                 boardId = self.board_id.data();
             except:
@@ -145,7 +145,7 @@ class NI6368AI(Device):
             try:
                 fileName = '/dev/PXIe-6368.'+str(boardId)+'.ai';
                 self.ai_fd = os.open(fileName, os.O_RDWR);
-                #print 'Open ai_fd: ', self.ai_fd
+                print 'Open fileName : ', fileName
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName)
                 return 0
@@ -202,14 +202,15 @@ class NI6368AI(Device):
 
 ########################AsynchStore class
     class AsynchStore(Thread):
-        stopReq = False
-        stopAcq = c_void_p(0)
         #chanFd = []
         #chanNid = []
         #saveList = c_void_p(0)
-            
+        stopReq = False
+        #stopAcq = c_void_p(0)
 
-        def configure(self, device, niLib, niInterfaceLib, ai_fd, chanMap, hwChanMap, treePtr):
+
+        def configure(self, device, niLib, niInterfaceLib, ai_fd, chanMap, hwChanMap, treePtr, stopAcq):
+            print "=========== Async Store initialization =========="
             self.device = device
             self.niLib = niLib
             self.niInterfaceLib = niInterfaceLib
@@ -217,6 +218,9 @@ class NI6368AI(Device):
             self.chanMap = chanMap
             self.hwChanMap = hwChanMap
             self.treePtr = treePtr
+            self.stopAcq = stopAcq
+            print self.stopAcq
+            print "=========== Fine =========="
 
 
         def run(self):
@@ -256,7 +260,8 @@ class NI6368AI(Device):
             saveList = c_void_p(0)
 
 
-            self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
+            #self.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
+
 
             coeff_array = c_float*4
             coeff = coeff_array();
@@ -311,6 +316,8 @@ class NI6368AI(Device):
                         
             self.niInterfaceLib.startSave(byref(saveList))
 
+            print "---------- SAVE list", saveList 
+
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
              
@@ -326,6 +333,9 @@ class NI6368AI(Device):
            
 	    #timeAt0 = timesIdx0[trigCount] + startTime;
 	    timeAt0 = startTime;
+        
+            print self.stopAcq
+
 
             while not self.stopReq:
                 status = self.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
@@ -730,6 +740,8 @@ class NI6368AI(Device):
         self.worker.stopReq = False
         chanMap = []
 
+        print self.worker
+
         numChannels = 16
         for chan in range(0, numChannels):
             try:
@@ -742,8 +754,13 @@ class NI6368AI(Device):
 
         treePtr = c_void_p(0)
         status = niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
+
+        stopAcq = c_void_p(0)
+        niInterfaceLib.getStopAcqFlag(byref(stopAcq));
+        print stopAcq
+
         #if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-        self.worker.configure(self, niLib, niInterfaceLib, self.ai_fd, chanMap, self.diffChanMap, treePtr)
+        self.worker.configure(self, niLib, niInterfaceLib, self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)
         #else:
         #    self.worker.configure(self, niLib, niInterfaceLib, self.ai_fd, chanMap, self.nonDiffChanMap, treePtr)
 

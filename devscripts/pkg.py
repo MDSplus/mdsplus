@@ -12,11 +12,7 @@ from pkg_utils import checkReleasesCommand
 from pkg_utils import newReleaseCommand
 from pkg_utils import promoteCommand
 from pkg_utils import newVersionCommand
-from pkg_rpms import makeRpmsCommand
-from pkg_msi import makeMsiCommand
-from pkg_deb import makeDebsCommand
 from pkg_solaris import makeSolarisPkgsCommand
-from pkg_macosx import makeMacosxPkgCommand
 
 cmds=[]
 icmds=[]

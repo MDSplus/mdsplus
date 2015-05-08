@@ -51,6 +51,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	private java.lang.String name;
         private java.lang.String mode;
         private int ctx1, ctx2;
+        private boolean open = false;
         
 	public Tree(java.lang.String name, int shot) throws MdsException
         {
@@ -58,6 +59,8 @@ static public final int  TreeUSAGE_ANY  = 0,
             this.name = name;
             mode = "NORMAL";
             openTree(name, shot, false);
+            open = true;
+            
 	}
 
 	public Tree(java.lang.String name, int shot, java.lang.String mode) throws MdsException
@@ -74,13 +77,18 @@ static public final int  TreeUSAGE_ANY  = 0,
                 editTree(name, shot, true);
             if(upMode.equals("EDIT"))
                 editTree(name, shot, false);
+            open = true;
             
 	}
 
         public void close() throws MdsException
         {
             closeTree(ctx1, ctx2, name, shot);
+            open = false;
         }
+
+        
+        public boolean isOpen() { return open;}
         public java.lang.String toString()
         {
             return("Tree("+ name + ", " +getShot() + ", " + mode + ")");
@@ -152,7 +160,9 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public TreeNode getNode(java.lang.String path) throws MdsException
         {
-            return new TreeNode(findNode(ctx1, ctx2, path), this);
+            TreeNode t = new TreeNode(findNode(ctx1, ctx2, path), this);
+            t.setCtxTree(this);
+            return t;
 	}
 
 	/**

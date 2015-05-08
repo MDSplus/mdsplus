@@ -150,7 +150,7 @@ class MDSplusBuild(object):
     self.release=v.release
     self.topdir=v.topdir
     self.dist=v.dist
-    self.packages=self.getPackages()
+#    self.packages=self.getPackages()
     if self.dist != 'win':
       self.machine=os.uname()[-1]
       if self.machine=='x86_64':

@@ -7,7 +7,7 @@ import errno
 from ctypes import *
 
 class ACQIPPSETUP(Device):
-    print 'PROBEPSETUP'
+    print 'ACQIPPSETUP'
     Int32(1).setTdiVar('_PyReleaseThreadLock')
     """IPP probe & thermocoupels acquisition setup"""
 
@@ -39,7 +39,10 @@ class ACQIPPSETUP(Device):
     parts.append({'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_wave_gen',head))",
         'options':('no_write_shot',)})
-
+    
+    parts.append({'path':'.SWEEP_WAVE:WAVE_EXPR', 'type':'numeric'})
+		
+		
     isRunning = False
 
     class AsynchWaveGen(Thread):            
@@ -180,7 +183,7 @@ class ACQIPPSETUP(Device):
 
         print '========= Stop waveform generation ============'
         global niInterfaceLib
- 	global isRunning
+        global isRunning
 
         self.restoreInfo()
         isRunning = False

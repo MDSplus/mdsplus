@@ -555,7 +555,9 @@ public class TreeNode extends Data
 	public Data getData() throws MdsException
         {
             resolveNid();
-            return getData(nid, tree.getCtx1(), tree.getCtx2());
+            Data  data = getData(nid, tree.getCtx1(), tree.getCtx2());
+            data.setCtxTree(tree);
+            return data;
 	}
 
 	/**

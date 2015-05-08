@@ -26,26 +26,25 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
 #include <servershr.h>
 #include "servershrp.h"
 
-int ServerMonitorCheckin(char *server, void (*ast)(), void *astprm)
-{ 
-  struct descrip p1,p2,p3,p4,p5,p6,p7,p8;
+int ServerMonitorCheckin(char *server, void (*ast) (), void *astprm)
+{
+  struct descrip p1, p2, p3, p4, p5, p6, p7, p8;
   char *cstring = "";
   int zero = 0;
   int mode = MonitorCheckin;
-  return ServerSendMessage(0, server, SrvMonitor, 0, 0, ast, astprm, 0, 
-                    8,MakeDescrip(&p1,DTYPE_CSTRING,0,0,cstring),
-                      MakeDescrip(&p2,DTYPE_LONG,0,0,&zero),
-                      MakeDescrip(&p3,DTYPE_LONG,0,0,&zero),
-                      MakeDescrip(&p4,DTYPE_LONG,0,0,&zero),
-                      MakeDescrip(&p5,DTYPE_LONG,0,0,&zero),
-                      MakeDescrip(&p6,DTYPE_LONG,0,0,&mode),
-                      MakeDescrip(&p7,DTYPE_CSTRING,0,0,cstring),
-                      MakeDescrip(&p8,DTYPE_LONG,0,0,&zero));
+  return ServerSendMessage(0, server, SrvMonitor, 0, 0, ast, astprm, 0,
+			   8, MakeDescrip(&p1, DTYPE_CSTRING, 0, 0, cstring),
+			   MakeDescrip(&p2, DTYPE_LONG, 0, 0, &zero),
+			   MakeDescrip(&p3, DTYPE_LONG, 0, 0, &zero),
+			   MakeDescrip(&p4, DTYPE_LONG, 0, 0, &zero),
+			   MakeDescrip(&p5, DTYPE_LONG, 0, 0, &zero),
+			   MakeDescrip(&p6, DTYPE_LONG, 0, 0, &mode),
+			   MakeDescrip(&p7, DTYPE_CSTRING, 0, 0, cstring),
+			   MakeDescrip(&p8, DTYPE_LONG, 0, 0, &zero));
 }

@@ -392,7 +392,7 @@ class dataTests(TestCase):
         except Exception:
             import sys
             e=sys.exc_info()[1]
-            self.assertEqual(str(e),'%TDI-E-TdiABORT, Program requested abort')
+            self.assertEqual(str(e),'%TDI-E-ABORT, Program requested abort')
 
         """Test abs"""
         self.assertEqual(abs(Uint8(255)),Uint8(255))

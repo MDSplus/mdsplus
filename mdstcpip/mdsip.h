@@ -29,11 +29,7 @@
 #ifdef FIONREAD
 #define I_NREAD FIONREAD
 #else
-#if defined(HAVE_VXWORKS_H)
-#include <vxWorks.h>
-#include <ioLib.h>
-#define I_NREAD FIONREAD
-#elif !defined(__sparc__) && !defined(__QNX__)
+#if !defined(__sparc__) && !defined(__QNX__)
 #include <stropts.h>
 #endif
 #endif
@@ -49,14 +45,7 @@
 #elif defined (__QNX__)
 #include <errno.h>
 #else
-#ifndef HAVE_VXWORKS_H
 #include <sys/errno.h>
-#endif
-#endif
-#ifdef HAVE_VXWORKS_H
-#include <types/vxTypesOld.h>
-#include <errno.h>
-#include <time.h>
 #endif
 #if defined(_WIN32)
 //#include <windows.h>
@@ -69,25 +58,19 @@
 #ifdef __APPLE__
 #include <pwd.h>
 #endif
-#ifndef HAVE_VXWORKS_H
-#ifndef __VMS
 #include <fcntl.h>
-#endif
 #include <sys/time.h>
-#endif
 #ifdef _XOPEN_SOURCE_EXTENDED
-#include <arpa/inet.h>      
+#include <arpa/inet.h>
 #else
 #include <netinet/in.h>
 #endif
 #include <sys/socket.h>
-#ifndef HAVE_VXWORKS_H
 #include <netdb.h>
-#endif
 #include "signal.h"
 #include <netinet/tcp.h>
 #endif
-#ifdef _AIX /* IBM AIX */
+#ifdef _AIX			/* IBM AIX */
 #include <sys/select.h>
 #endif
 #endif
@@ -97,7 +80,7 @@
 #ifdef _USE_VARARGS
 #include <varargs.h>
 #define _NO_MDS_PROTO
-#else            
+#else
 #include <stdarg.h>
 #endif
 #ifdef __MWERKS__
@@ -167,41 +150,46 @@ int errno = 0;
 #define bits16
 #endif
 
-typedef struct _eventinfo { char          data[12];
-                            int          eventid;
-			    void      (*astadr)(void *, int, char *);
-                            void          *astprm;
-                          } MdsEventInfo;
+typedef struct _eventinfo {
+  char data[12];
+  int eventid;
+  void (*astadr) (void *, int, char *);
+  void *astprm;
+} MdsEventInfo;
 
-typedef struct _jeventinfo { char          data[12];
-                             char          eventid;
-                          } JMdsEventInfo;
+typedef struct _jeventinfo {
+  char data[12];
+  char eventid;
+} JMdsEventInfo;
 
-typedef struct _eventlist { SOCKET        sock;
-                            int          eventid;
-			    char           jeventid;
-                            MdsEventInfo  *info;
-			    int		  info_len;
-                            struct _eventlist *next;
-                          } MdsEventList;
+typedef struct _eventlist {
+  SOCKET sock;
+  int eventid;
+  char jeventid;
+  MdsEventInfo *info;
+  int info_len;
+  struct _eventlist *next;
+} MdsEventList;
 
-typedef struct _msghdr { int msglen bits32;
-			 int status bits32;
-                         short length bits16;
-                         unsigned char nargs;
-                         unsigned char descriptor_idx;
-                         unsigned char message_id;
-			 unsigned char dtype;
-                         signed char client_type;
-                         unsigned char ndims;
+typedef struct _msghdr {
+  int msglen bits32;
+  int status bits32;
+  short length bits16;
+  unsigned char nargs;
+  unsigned char descriptor_idx;
+  unsigned char message_id;
+  unsigned char dtype;
+  signed char client_type;
+  unsigned char ndims;
 #if defined(__CRAY) || defined(CRAY)
-			 long  dims[(MAX_DIMS+1)/2];
+  long dims[(MAX_DIMS + 1) / 2];
 #else
-                         int  dims[MAX_DIMS];
-                         int  fill;
+  int dims[MAX_DIMS];
+  int fill;
 #endif
-                       } MsgHdr;
+} MsgHdr;
 
-typedef struct _mds_message { MsgHdr h;
-                          char bytes[1];
-			} Message, *MsgPtr;
+typedef struct _mds_message {
+  MsgHdr h;
+  char bytes[1];
+} Message, *MsgPtr;

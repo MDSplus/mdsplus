@@ -9,7 +9,7 @@ class MdsIp implements Runnable
     public MdsIp(int port) {this.port = port; }
     ServerSocket server_sock;
     boolean listening = true;
-    Vector listeners = new Vector();
+    Vector<ConnectionListener> listeners = new Vector<ConnectionListener>();
     Thread listen_thread;
 
     public Thread getListenThread() { return listen_thread; }
@@ -51,10 +51,10 @@ class MdsIp implements Runnable
 
    protected synchronized void fireConnectionEvent()
    {
-        Enumeration listener_list = listeners.elements();
+        Enumeration<ConnectionListener> listener_list = listeners.elements();
         while(listener_list.hasMoreElements())
         {
-            ConnectionListener listener = (ConnectionListener)listener_list.nextElement();
+            ConnectionListener listener = listener_list.nextElement();
             listener.processConnectionEvent(new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION,
                 "Lost connection to mdsip client"));
         }

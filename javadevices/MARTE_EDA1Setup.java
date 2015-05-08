@@ -59,6 +59,13 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField93 = new DeviceField();
         deviceField94 = new DeviceField();
         deviceField133 = new DeviceField();
+        deviceChoice9 = new DeviceChoice();
+        deviceField152 = new DeviceField();
+        deviceField153 = new DeviceField();
+        deviceField154 = new DeviceField();
+        deviceField155 = new DeviceField();
+        deviceField156 = new DeviceField();
+        deviceField157 = new DeviceField();
         jPanel12 = new javax.swing.JPanel();
         deviceField13 = new DeviceField();
         deviceField14 = new DeviceField();
@@ -313,6 +320,26 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         jPanel125 = new javax.swing.JPanel();
         deviceTable7 = new DeviceTable();
         deviceTable8 = new DeviceTable();
+        jPanel126 = new javax.swing.JPanel();
+        jPanel127 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
+        deviceField144 = new DeviceField();
+        deviceField145 = new DeviceField();
+        deviceField146 = new DeviceField();
+        jPanel128 = new javax.swing.JPanel();
+        deviceField147 = new DeviceField();
+        deviceField148 = new DeviceField();
+        deviceChoice3 = new DeviceChoice();
+        deviceChoice4 = new DeviceChoice();
+        jPanel129 = new javax.swing.JPanel();
+        deviceField149 = new DeviceField();
+        deviceChoice5 = new DeviceChoice();
+        deviceField150 = new DeviceField();
+        deviceField151 = new DeviceField();
+        jPanel130 = new javax.swing.JPanel();
+        deviceChoice6 = new DeviceChoice();
+        deviceChoice7 = new DeviceChoice();
+        deviceChoice8 = new DeviceChoice();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe EDA1Setup");
@@ -430,6 +457,45 @@ public class MARTE_EDA1Setup extends DeviceSetup {
         deviceField133.setLabelString("Check Disruption: ");
         deviceField133.setOffsetNid(1897);
         jPanel11.add(deviceField133);
+
+        deviceChoice9.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice9.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice9.setConvert(true);
+        deviceChoice9.setIdentifier("");
+        deviceChoice9.setLabelString("TokFastRampUpIp:");
+        deviceChoice9.setOffsetNid(1963);
+        deviceChoice9.setUpdateIdentifier("");
+        jPanel11.add(deviceChoice9);
+
+        deviceField152.setIdentifier("");
+        deviceField152.setLabelString("TokTstartCheckMode:");
+        deviceField152.setOffsetNid(1903);
+        jPanel11.add(deviceField152);
+
+        deviceField153.setIdentifier("");
+        deviceField153.setLabelString("TokThresholdBpmode:");
+        deviceField153.setOffsetNid(1909);
+        jPanel11.add(deviceField153);
+
+        deviceField154.setIdentifier("");
+        deviceField154.setLabelString("TokIpLowQ:");
+        deviceField154.setOffsetNid(1915);
+        jPanel11.add(deviceField154);
+
+        deviceField155.setIdentifier("");
+        deviceField155.setLabelString("TokTunIpFR:");
+        deviceField155.setOffsetNid(1921);
+        jPanel11.add(deviceField155);
+
+        deviceField156.setIdentifier("");
+        deviceField156.setLabelString("TokVpcatRampUp:");
+        deviceField156.setOffsetNid(1927);
+        jPanel11.add(deviceField156);
+
+        deviceField157.setIdentifier("");
+        deviceField157.setLabelString("TokTunVpcat");
+        deviceField157.setOffsetNid(1933);
+        jPanel11.add(deviceField157);
 
         jTabbedPane2.addTab("Tokamak", jPanel11);
 
@@ -1608,6 +1674,129 @@ public class MARTE_EDA1Setup extends DeviceSetup {
 
         jTabbedPane1.addTab("Triggers", jPanel125);
 
+        jPanel126.setLayout(new java.awt.GridLayout(4, 1));
+
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice2.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("Tok2Dn:");
+        deviceChoice2.setOffsetNid(1819);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel127.add(deviceChoice2);
+
+        deviceField144.setIdentifier("");
+        deviceField144.setLabelString("DNSTT0:");
+        deviceField144.setNumCols(4);
+        deviceField144.setOffsetNid(1807);
+        jPanel127.add(deviceField144);
+
+        deviceField145.setIdentifier("");
+        deviceField145.setLabelString("DNSTT1:");
+        deviceField145.setNumCols(4);
+        deviceField145.setOffsetNid(1813);
+        jPanel127.add(deviceField145);
+
+        deviceField146.setIdentifier("");
+        deviceField146.setLabelString("LqgControlOn:");
+        deviceField146.setNumCols(4);
+        deviceField146.setOffsetNid(1825);
+        jPanel127.add(deviceField146);
+
+        jPanel126.add(jPanel127);
+
+        deviceField147.setIdentifier("");
+        deviceField147.setLabelString("TSTartLQGControl:");
+        deviceField147.setNumCols(4);
+        deviceField147.setOffsetNid(1831);
+        jPanel128.add(deviceField147);
+
+        deviceField148.setIdentifier("");
+        deviceField148.setLabelString("TEndLQGControl:");
+        deviceField148.setNumCols(4);
+        deviceField148.setOffsetNid(1837);
+        jPanel128.add(deviceField148);
+
+        deviceChoice3.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice3.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice3.setConvert(true);
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("LqgFbk:");
+        deviceChoice3.setOffsetNid(1849);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel128.add(deviceChoice3);
+
+        deviceChoice4.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice4.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice4.setConvert(true);
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("LqgRef:");
+        deviceChoice4.setOffsetNid(1855);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel128.add(deviceChoice4);
+
+        jPanel126.add(jPanel128);
+
+        deviceField149.setIdentifier("");
+        deviceField149.setLabelString("LqgFbkKproGain:");
+        deviceField149.setNumCols(4);
+        deviceField149.setOffsetNid(1861);
+        jPanel129.add(deviceField149);
+
+        deviceChoice5.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice5.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice5.setConvert(true);
+        deviceChoice5.setIdentifier("");
+        deviceChoice5.setLabelString("LqgFfw:");
+        deviceChoice5.setOffsetNid(1867);
+        deviceChoice5.setUpdateIdentifier("");
+        jPanel129.add(deviceChoice5);
+
+        deviceField150.setIdentifier("");
+        deviceField150.setLabelString("LqgFfwGain:");
+        deviceField150.setNumCols(4);
+        deviceField150.setOffsetNid(1873);
+        jPanel129.add(deviceField150);
+
+        deviceField151.setIdentifier("");
+        deviceField151.setLabelString("IFS_DN:");
+        deviceField151.setNumCols(25);
+        deviceField151.setOffsetNid(1939);
+        jPanel129.add(deviceField151);
+
+        jPanel126.add(jPanel129);
+
+        deviceChoice6.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice6.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice6.setConvert(true);
+        deviceChoice6.setIdentifier("");
+        deviceChoice6.setLabelString("LQGIpfilter:");
+        deviceChoice6.setOffsetNid(1945);
+        deviceChoice6.setUpdateIdentifier("");
+        jPanel130.add(deviceChoice6);
+
+        deviceChoice7.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice7.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice7.setConvert(true);
+        deviceChoice7.setIdentifier("");
+        deviceChoice7.setLabelString("LQGContIpnorm:");
+        deviceChoice7.setOffsetNid(1951);
+        deviceChoice7.setUpdateIdentifier("");
+        jPanel130.add(deviceChoice7);
+
+        deviceChoice8.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice8.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice8.setConvert(true);
+        deviceChoice8.setIdentifier("");
+        deviceChoice8.setLabelString("LQGEquilIpNorm: ");
+        deviceChoice8.setOffsetNid(1957);
+        deviceChoice8.setUpdateIdentifier("");
+        jPanel130.add(deviceChoice8);
+
+        jPanel126.add(jPanel130);
+
+        jTabbedPane1.addTab("X Point Shape", jPanel126);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -1617,6 +1806,14 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
+    private DeviceChoice deviceChoice4;
+    private DeviceChoice deviceChoice5;
+    private DeviceChoice deviceChoice6;
+    private DeviceChoice deviceChoice7;
+    private DeviceChoice deviceChoice8;
+    private DeviceChoice deviceChoice9;
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField100;
@@ -1667,7 +1864,21 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private DeviceField deviceField141;
     private DeviceField deviceField142;
     private DeviceField deviceField143;
+    private DeviceField deviceField144;
+    private DeviceField deviceField145;
+    private DeviceField deviceField146;
+    private DeviceField deviceField147;
+    private DeviceField deviceField148;
+    private DeviceField deviceField149;
     private DeviceField deviceField15;
+    private DeviceField deviceField150;
+    private DeviceField deviceField151;
+    private DeviceField deviceField152;
+    private DeviceField deviceField153;
+    private DeviceField deviceField154;
+    private DeviceField deviceField155;
+    private DeviceField deviceField156;
+    private DeviceField deviceField157;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
     private DeviceField deviceField18;
@@ -1798,7 +2009,12 @@ public class MARTE_EDA1Setup extends DeviceSetup {
     private javax.swing.JPanel jPanel123;
     private javax.swing.JPanel jPanel124;
     private javax.swing.JPanel jPanel125;
+    private javax.swing.JPanel jPanel126;
+    private javax.swing.JPanel jPanel127;
+    private javax.swing.JPanel jPanel128;
+    private javax.swing.JPanel jPanel129;
     private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel130;
     private javax.swing.JPanel jPanel14;
     private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel16;

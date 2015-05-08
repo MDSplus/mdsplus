@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <string.h>
 
 /***********************************************************************
 * TCL_VERIFY_TREE.C --
@@ -10,22 +11,19 @@
 ************************************************************************/
 
 
-#ifdef vms
-#define TreeVerify  TREE$VERIFY_TREE
-int   TREE$VERIFY_TREE();
-#endif
-
-
-
 	/***************************************************************
 	 * TclVerifyTree:
 	 ***************************************************************/
-int   TclVerifyTree()		/* Returns: status			*/
-   {
-    int   sts;
+int TclVerifyTree(void *ctx, char **error, char **output)
+{				/* Returns: status                        */
+  int sts;
 
-    sts = TreeVerify();
-    if (~sts & 1)
-        MdsMsg(sts,0);
-    return(sts);
-   }
+  sts = TreeVerify();
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+100);
+    sprintf(*error,"Error: problem verifying tree\n"
+	    "Error message was: %s\n", msg);
+  }
+  return (sts);
+}

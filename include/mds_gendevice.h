@@ -25,11 +25,10 @@ extern int CamStopw(char *name, int a, int f, int count, void *data, int mem, sh
 extern int CamPiow(char *name, int a, int f, void *data, int mem, short *iosb);
 extern int CamPioQrepw(char *name, int a, int f, void *data, int mem, short *iosb);
 
-
 extern int TdiData();
 extern int TdiCompile();
-extern int GenDeviceSignal(int,unsigned long, unsigned long);
-extern int GenDeviceCallData(int,int,struct descriptor_xd *);
+extern int GenDeviceSignal(int, unsigned long, unsigned long);
+extern int GenDeviceCallData(int, int, struct descriptor_xd *);
 extern int GenDeviceCvtFloatCode();
 extern int GenDeviceCvtIntCode();
 extern int GenDeviceCvtStringCode();
@@ -89,56 +88,96 @@ extern int GenDeviceHeadNid();
 
 #ifdef MSG_LIBRARY
 
-
 int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 {
-  static struct msg { int sts; char *facnam; char *msgnam; char *msgtext; } msgs[] = {
-        {DEV$_BAD_ENDIDX,"DEV","BAD_ENDIDX","unable to read end index for channel"}
-        ,{DEV$_BAD_FILTER,"DEV","BAD_FILTER","illegal filter selected"}
-        ,{DEV$_BAD_FREQ,"DEV","BAD_FREQ","illegal digitization frequency selected"}
-        ,{DEV$_BAD_GAIN,"DEV","BAD_GAIN","illegal gain selected"}
-        ,{DEV$_BAD_HEADER,"DEV","BAD_HEADER","unable to read header selection"}
-        ,{DEV$_BAD_HEADER_IDX,"DEV","BAD_HEADER_IDX","unknown header configuration index"}
-        ,{DEV$_BAD_MEMORIES,"DEV","BAD_MEMORIES","unable to read number of memory modules"}
-        ,{DEV$_BAD_MODE,"DEV","BAD_MODE","illegal mode selected"}
-        ,{DEV$_BAD_NAME,"DEV","BAD_NAME","unable to read module name"}
-        ,{DEV$_BAD_OFFSET,"DEV","BAD_OFFSET","illegal offset selected"}
-        ,{DEV$_BAD_STARTIDX,"DEV","BAD_STARTIDX","unable to read start index for channel"}
-        ,{DEV$_NOT_TRIGGERED,"DEV","NOT_TRIGGERED","device was not triggered,  check wires and triggering device"}
-        ,{DEV$_FREQ_TO_HIGH,"DEV","FREQ_TO_HIGH","the frequency is set to high for the requested number of channels"}
-        ,{DEV$_INVALID_NOC,"DEV","INVALID_NOC","the NOC (number of channels) requested is greater than the physical number of channels"}
-        ,{DEV$_RANGE_MISMATCH,"DEV","RANGE_MISMATCH","the range specified on the menu doesn't match the range setting on the device"}
-        ,{DEV$_CAMACERR,"DEV","CAMACERR","Error doing CAMAC IO"}
-        ,{DEV$_BAD_VERBS,"DEV","BAD_VERBS","Error reading interpreter list (:VERBS)"}
-        ,{DEV$_BAD_COMMANDS,"DEV","BAD_COMMANDS","Error reading command list"}
-        ,{DEV$_CAM_ADNR,"DEV","CAM_ADNR","CAMAC: Address not recognized (2160)"}
-        ,{DEV$_CAM_ERR,"DEV","CAM_ERR","CAMAC: Error reported by crate controler"}
-        ,{DEV$_CAM_LOSYNC,"DEV","CAM_LOSYNC","CAMAC: Lost Syncronization error"}
-        ,{DEV$_CAM_LPE,"DEV","CAM_LPE","CAMAC: Longitudinal Parity error"}
-        ,{DEV$_CAM_TMO,"DEV","CAM_TMO","CAMAC: Highway time out error"}
-        ,{DEV$_CAM_TPE,"DEV","CAM_TPE","CAMAC: Transverse Parity error"}
-        ,{DEV$_CAM_STE,"DEV","CAM_STE","CAMAC: Serial Transmission error"}
-        ,{DEV$_CAM_DERR,"DEV","CAM_DERR","CAMAC: Delayed error from SCC"}
-        ,{DEV$_CAM_SQ,"DEV","CAM_SQ","CAMAC: I/O completion with Q = 1"}
-        ,{DEV$_CAM_NOSQ,"DEV","CAM_NOSQ","CAMAC: I/O completion with Q = 0"}
-        ,{DEV$_CAM_SX,"DEV","CAM_SX","CAMAC: I/O completion with X = 1"}
-        ,{DEV$_CAM_NOSX,"DEV","CAM_NOSX","CAMAC: I/O completion with X = 0"}
-        ,{DEV$_INV_SETUP,"DEV","INV_SETUP","device was not properly set up"}
-        ,{GEN_DEV$_NODATA,"GEN_DEV","NODATA","Data not Found"}
-        ,{GEN_DEV$_INV_SETUP,"GEN_DEV","INV_SETUP","!%T - Device !AS model !AS - invalid setup "}
-        ,{GEN_DEV$_X_IO_ERR,"GEN_DEV","X_IO_ERR"," Hardware Error: X response failed"}
+  static struct msg {
+    int sts;
+    char *facnam;
+    char *msgnam;
+    char *msgtext;
+  } msgs[] = {
+    {
+    DEV$_BAD_ENDIDX, "DEV", "BAD_ENDIDX", "unable to read end index for channel"}
+    , {
+    DEV$_BAD_FILTER, "DEV", "BAD_FILTER", "illegal filter selected"}
+    , {
+    DEV$_BAD_FREQ, "DEV", "BAD_FREQ", "illegal digitization frequency selected"}
+    , {
+    DEV$_BAD_GAIN, "DEV", "BAD_GAIN", "illegal gain selected"}
+    , {
+    DEV$_BAD_HEADER, "DEV", "BAD_HEADER", "unable to read header selection"}
+    , {
+    DEV$_BAD_HEADER_IDX, "DEV", "BAD_HEADER_IDX", "unknown header configuration index"}
+    , {
+    DEV$_BAD_MEMORIES, "DEV", "BAD_MEMORIES", "unable to read number of memory modules"}
+    , {
+    DEV$_BAD_MODE, "DEV", "BAD_MODE", "illegal mode selected"}
+    , {
+    DEV$_BAD_NAME, "DEV", "BAD_NAME", "unable to read module name"}
+    , {
+    DEV$_BAD_OFFSET, "DEV", "BAD_OFFSET", "illegal offset selected"}
+    , {
+    DEV$_BAD_STARTIDX, "DEV", "BAD_STARTIDX", "unable to read start index for channel"}
+    , {
+    DEV$_NOT_TRIGGERED, "DEV", "NOT_TRIGGERED",
+	  "device was not triggered,  check wires and triggering device"}
+    , {
+    DEV$_FREQ_TO_HIGH, "DEV", "FREQ_TO_HIGH",
+	  "the frequency is set to high for the requested number of channels"}
+    , {
+    DEV$_INVALID_NOC, "DEV", "INVALID_NOC",
+	  "the NOC (number of channels) requested is greater than the physical number of channels"}
+    , {
+    DEV$_RANGE_MISMATCH, "DEV", "RANGE_MISMATCH",
+	  "the range specified on the menu doesn't match the range setting on the device"}
+    , {
+    DEV$_CAMACERR, "DEV", "CAMACERR", "Error doing CAMAC IO"}
+    , {
+    DEV$_BAD_VERBS, "DEV", "BAD_VERBS", "Error reading interpreter list (:VERBS)"}
+    , {
+    DEV$_BAD_COMMANDS, "DEV", "BAD_COMMANDS", "Error reading command list"}
+    , {
+    DEV$_CAM_ADNR, "DEV", "CAM_ADNR", "CAMAC: Address not recognized (2160)"}
+    , {
+    DEV$_CAM_ERR, "DEV", "CAM_ERR", "CAMAC: Error reported by crate controler"}
+    , {
+    DEV$_CAM_LOSYNC, "DEV", "CAM_LOSYNC", "CAMAC: Lost Syncronization error"}
+    , {
+    DEV$_CAM_LPE, "DEV", "CAM_LPE", "CAMAC: Longitudinal Parity error"}
+    , {
+    DEV$_CAM_TMO, "DEV", "CAM_TMO", "CAMAC: Highway time out error"}
+    , {
+    DEV$_CAM_TPE, "DEV", "CAM_TPE", "CAMAC: Transverse Parity error"}
+    , {
+    DEV$_CAM_STE, "DEV", "CAM_STE", "CAMAC: Serial Transmission error"}
+    , {
+    DEV$_CAM_DERR, "DEV", "CAM_DERR", "CAMAC: Delayed error from SCC"}
+    , {
+    DEV$_CAM_SQ, "DEV", "CAM_SQ", "CAMAC: I/O completion with Q = 1"}
+    , {
+    DEV$_CAM_NOSQ, "DEV", "CAM_NOSQ", "CAMAC: I/O completion with Q = 0"}
+    , {
+    DEV$_CAM_SX, "DEV", "CAM_SX", "CAMAC: I/O completion with X = 1"}
+    , {
+    DEV$_CAM_NOSX, "DEV", "CAM_NOSX", "CAMAC: I/O completion with X = 0"}
+    , {
+    DEV$_INV_SETUP, "DEV", "INV_SETUP", "device was not properly set up"}
+    , {
+    GEN_DEV$_NODATA, "GEN_DEV", "NODATA", "Data not Found"}
+    , {
+    GEN_DEV$_INV_SETUP, "GEN_DEV", "INV_SETUP", "!%T - Device !AS model !AS - invalid setup "}
+    , {
+    GEN_DEV$_X_IO_ERR, "GEN_DEV", "X_IO_ERR", " Hardware Error: X response failed"}
   };
   int i;
   int status = 0;
-  for (i=0;i<sizeof(msgs)/sizeof(struct msg);i++)
-  {
-    if (msgs[i].sts == sts)
-    {
-       *facnam = msgs[i].facnam;
-       *msgnam = msgs[i].msgnam;
-       *msgtext = msgs[i].msgtext;
-       status = 1;
-       break;
+  for (i = 0; i < sizeof(msgs) / sizeof(struct msg); i++) {
+    if (msgs[i].sts == sts) {
+      *facnam = msgs[i].facnam;
+      *msgnam = msgs[i].msgnam;
+      *msgtext = msgs[i].msgtext;
+      status = 1;
+      break;
     }
   }
   return status;
@@ -162,7 +201,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	if(status & 1) status = TreePutRecord(curr_nid, &num_d,0);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
         flags = 0;}
-	 
+
 #define ADD_NODE_FLOAT(name, value, usage)\
     {	float num = value;\
 	int curr_usage = usage;\
@@ -173,7 +212,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	if(status & 1) status = TreePutRecord(curr_nid, &num_d, 0);\
 	 if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
          flags = 0;}
-	 
+
 #define ADD_NODE_STRING(name, string, usage)\
     {	DESCRIPTOR(string_d, string);\
 	int curr_usage = usage;\
@@ -206,7 +245,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
 	MdsFree1Dx(&comp_expr_xd,0);\
         flags = 0;}
-	
+
 #define ADD_NODE_ACTION(name, method_in, phase_in, sequence, completion_in, timout, server, usage)\
     {	DESCRIPTOR(phase_d, STRING_LITERAL(phase_in));\
 	DESCRIPTOR(method_d, STRING_LITERAL(method_in));\
@@ -239,12 +278,11 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	if(status & 1) status = TreePutRecord(curr_nid, (struct descriptor *)&action_d, 0);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
         flags = 0;}
-	
- 
+
 #define COPY_PART_NAME(name)\
 {   DESCRIPTOR(return_d, STRING_LITERAL(name));\
     status = StrCopyDx(out_d, &return_d); }
-	
+
 #define DevNODATA        2
 #define DevMODSTR        1
 #define DevMODINT        2
@@ -253,7 +291,6 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define DevMODRAN        5
 #define DevMODSEAR       6
 #define DevMODRANLON     7
-
 
 #define declare_variables(in_struct_type)\
 	int error_code = 1;\
@@ -386,4 +423,3 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define build_results_and_return\
     *in_ptr = in_struct;\
     return error_code
-

@@ -11,6 +11,7 @@
   <package name="java" arch="noarch" summary="Java Applications" description="Java applications and classes">
     <requires package="java_bin"/>
     <requires package="kernel"/>
+    <requires package="java" external="True"/>
     <include dir="/usr/local/mdsplus/java"/>
     <include dir="/usr/local/mdsplus/desktop/java"/>
     <exclude file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
@@ -83,6 +84,8 @@ fi
     <include file="/usr/local/mdsplus/bin/MonitorCpciData*"/>
     <include file="/usr/local/mdsplus/lib/libMit*"/>
     <include file="/usr/local/mdsplus/lib/libMIT*"/>
+    <include file="/usr/local/mdsplus/lib/libdc1394_support*"/>
+    <include file="/usr/local/mdsplus/lib/libdc1394_support*.so"/>
     <include file="/usr/local/mdsplus/lib/acq_root_filesystem*"/>
     <include file="/usr/local/mdsplus/uid/A*"/>
     <include file="/usr/local/mdsplus/uid/B*"/>
@@ -131,10 +134,9 @@ fi
     <include file="/usr/local/mdsplus/lib/libRoam*"/>
     <include file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
     <exclude_staticlibs/>
-    <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
-    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
-    <triggerin trigger="xinetd">
+    <postinst>
 
+ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 if [ ! -r /etc/xinetd.d/mdsips ]
 then
   cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipsd.xinetd /etc/xinetd.d/mdsips
@@ -143,9 +145,8 @@ then
     echo 'mdsips 8200/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
   fi
 fi
-/sbin/service xinetd reload
-
-    </triggerin>
+    </postinst>
+    <postrm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postrm>
   </package>
 
   <package name="labview" arch="noarch" summary="National Instruments Labview extensions" description="National Instruments Labview extensions">
@@ -279,13 +280,15 @@ fi
 
   <package name="kernel" arch="noarch" summary="MDSplus core system" description="MDSplus core system">
     <requires package="kernel_bin"/>
+    <requires external="True" package="xinetd"/>
     <include dironly="/usr/local/mdsplus/idl"/>
     <include dironly="/usr/local/mdsplus/mdsobjects"/>
     <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
     <include file="/usr/local/mdsplus/ChangeLog"/>
     <include dir="/usr/local/mdsplus/etc"/>
-    <include dir="/usr/local/mdsplus/man"/>
+    <include dir="/usr/local/mdsplus/share"/>
     <include dir="/usr/local/mdsplus/rpm"/>
+    <include dir="/usr/local/mdsplus/xml"/>
     <include file="/usr/local/mdsplus/setup.*"/>
     <include dir="/usr/local/mdsplus/tdi"/>
     <include dir="/usr/local/mdsplus/trees"/>
@@ -324,7 +327,14 @@ then
   mkdir -p /usr/share/applications/mdsplus
   ln -sf __INSTALL_PREFIX__/mdsplus/desktop/kernel /usr/share/applications/mdsplus/
 fi
-
+if [ ! -r /etc/xinetd.d/mdsip ]
+then
+  cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
+  if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
+  then
+    echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
+  fi
+fi
     </postinst>
     <prerm>
 
@@ -338,8 +348,14 @@ then
   rm -Rf /usr/share/applications/mdsplus
   if [ -r /etc/xinetd.d/mdsip ]
   then
-    rm -f /etc/xinetd.d/mdsip
-    /sbin/service xinetd reload
+    if ( diff -q /etc/xinetd.d/mdsip __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd &gt; /dev/null )
+    then 
+      rm -f /etc/xinetd.d/mdsip
+      if [ -x /sbin/service ]
+      then
+        /sbin/service xinetd reload
+      fi
+    fi
   fi
   if ( grep '^mdsip[[:space::]]' /etc/services &gt;/dev/null 2&gt;&amp;1 )
   then
@@ -361,19 +377,7 @@ then
 fi
 
     </postrm>
-    <triggerin trigger="xinetd">
 
-if [ ! -r /etx/xinetd.d/mdsip ]
-then
-  cp __INSTALL_PREFIX__/mdsplus/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
-  if ( ! grep '^mdsip[[:space:]]' /etc/services &gt;/dev/null 2&gt;&amp;1)
-  then
-    echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
-  fi
-fi
-/sbin/service xinetd reload
-
-    </triggerin>
   </package>
 
   <package name="kernel_bin" arch="bin" summary="MDSplus core binaries" description="MDSplus core binaries">
@@ -408,6 +412,7 @@ fi
     <exclude file="/usr/local/mdsplus/lib/lib*Sql*"/>
     <exclude file="/usr/local/mdsplus/lib/libMit*"/>
     <exclude file="/usr/local/mdsplus/lib/libMIT*"/>
+    <exclude file="/usr/local/mdsplus/lib/libdc1394_support*"/>
     <exclude file="/usr/local/mdsplus/lib/libRoam*"/>
     <exclude file="/usr/local/mdsplus/lib/libMdsIpGSI*"/>
     <exclude file="/usr/local/mdsplus/lib/libhdf5*"/>
@@ -489,6 +494,25 @@ fi
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
     <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
+    <postinst>
+
+pushd __INSTALL_PREFIX__/mdsplus/tdi/RfxDevices
+rm -Rf %{python_sitelib}/RfxDevices*
+rm -Rf build dist
+python setup.py -q install
+rm -Rf build dist RfxDevices.egg-info
+popd
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf %{python_sitearch}/RfxDevices*
+fi
+
+    </prerm>
+
   </package>
 
   <package name="kbsidevices" arch="noarch" summary="Support for KBSI data acquisition devices" description="Support for KBSI data acquisition devices">
@@ -502,7 +526,9 @@ fi
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
-    <requires nonmds="true" package="python-setuptools"/>
+    <requires external="true" package="setuptools"/>
+    <requires external="True" package="python-devel"/>
+    <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/mdsobjects/python"/>
     <postinst>
 
@@ -667,4 +693,18 @@ make clean &gt;/dev/null
 
    </install_script>
  </ubuntu>
+ <external_packages platforms="rhel,fc">
+   <python-devel/>
+   <setuptools package="python-setuptools"/>
+   <numpy/>
+   <xinetd/>
+   <java/>
+ </external_packages>
+ <external_packages platforms="ubuntu,debian">
+   <python-devel package="python-dev"/>
+   <setuptools package="python-setuptools"/>
+   <numpy package="python-numpy"/>
+   <xinetd/>
+   <java package="default-jre"/>
+ </external_packages>
 </deploy>

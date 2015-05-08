@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.7" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <NonVisualComponents>
+    <Component class="DeviceTableBeanInfo" name="deviceTableBeanInfo1">
+    </Component>
+  </NonVisualComponents>
   <Properties>
     <Property name="deviceProvider" type="java.lang.String" value="localhost"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe MhdBr Setup"/>
@@ -278,6 +282,48 @@
                     </Constraint>
                   </Constraints>
                 </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Br Corrections">
+                    <Property name="tabTitle" type="java.lang.String" value="Br Corrections"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel11">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceTable" name="deviceTable2">
+                      <Properties>
+                        <Property name="columnNames" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="4">
+                            <StringItem index="0" value="1"/>
+                            <StringItem index="1" value="2"/>
+                            <StringItem index="2" value="3"/>
+                            <StringItem index="3" value="4"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="displayRowNumber" type="boolean" value="true"/>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="numRows" type="int" value="48"/>
+                        <Property name="offsetNid" type="int" value="1369"/>
+                        <Property name="preferredColumnWidth" type="int" value="100"/>
+                      </Properties>
+                      <Constraints>
+                        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+                          <BorderConstraints direction="Center"/>
+                        </Constraint>
+                      </Constraints>
+                    </Component>
+                  </SubComponents>
+                </Container>
               </SubComponents>
             </Container>
           </SubComponents>

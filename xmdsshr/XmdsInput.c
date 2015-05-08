@@ -32,7 +32,6 @@
   void InputReset(Widget w);
   void InputSetNid(Widget w, int nid);
 
-
 ------------------------------------------------------------------------------
    Copyright (c) 1990
    Property of Massachusetts Institute of Technology, Cambridge MA 02139.
@@ -126,32 +125,32 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
   InputSetNid, InputReset, and InputPut to attach to
   the nids of a particular channel.
 ****************************************************/
-Widget XmdsCreateInput(Widget parent,char *name,ArgList args,int argcount)
+Widget XmdsCreateInput(Widget parent, char *name, ArgList args, int argcount)
 {
   Widget widg;
-  static char *hierarchy_name[] = {"XmdsInput.uid"};
+  static char *hierarchy_name[] = { "XmdsInput.uid" };
   MrmHierarchy hierarchy = 0;
   MrmType class;
-  MrmOpenHierarchy(1,hierarchy_name,0,&hierarchy);
-  MrmFetchWidgetOverride(hierarchy,"input_box",parent,name,args,argcount,&widg,&class);
+  MrmOpenHierarchy(1, hierarchy_name, 0, &hierarchy);
+  MrmFetchWidgetOverride(hierarchy, "input_box", parent, name, args, argcount, &widg, &class);
   MrmCloseHierarchy(hierarchy);
   return widg;
 }
 
-void XmdsInputSetNid(Widget w,int nid)
+void XmdsInputSetNid(Widget w, int nid)
 {
   WidgetList children;
   XtPointer user_data;
   XtVaGetValues(w, XtNchildren, &children, NULL);
-  XtVaSetValues(children[START_IDX],XmdsNnid,nid,NULL);
-  XtVaSetValues(children[END_IDX],XmdsNnid,nid,NULL);
-  XtVaGetValues(children[PATH],XmNuserData,&user_data,NULL);
+  XtVaSetValues(children[START_IDX], XmdsNnid, nid, NULL);
+  XtVaSetValues(children[END_IDX], XmdsNnid, nid, NULL);
+  XtVaGetValues(children[PATH], XmNuserData, &user_data, NULL);
   user_data += nid;
-  XtVaSetValues(children[ON_OFF],XmNuserData,user_data,NULL);
-  XtVaSetValues(children[PATH],XmNuserData,user_data,NULL);
-  XtVaGetValues(children[IDX_TIME],XmNuserData,&user_data,NULL);
+  XtVaSetValues(children[ON_OFF], XmNuserData, user_data, NULL);
+  XtVaSetValues(children[PATH], XmNuserData, user_data, NULL);
+  XtVaGetValues(children[IDX_TIME], XmNuserData, &user_data, NULL);
   user_data += nid;
-  XtVaSetValues(children[IDX_TIME],XmNuserData,user_data,NULL);
+  XtVaSetValues(children[IDX_TIME], XmNuserData, user_data, NULL);
 }
 
 void XmdsInputReset(Widget w)
@@ -164,17 +163,17 @@ void XmdsInputReset(Widget w)
 
   XtVaGetValues(w, XtNchildren, &children, NULL);
   XmdsResetAllXds(w);
-  XtVaGetValues(children[ON_OFF],XmNuserData,&userdata,NULL);
-  nid=(char *)userdata - (char *)0;
-  XmToggleButtonSetState(children[ON_OFF],(TreeIsOn((int)nid) & 1),(Boolean) 0);
-  XtVaGetValues(children[IDX_TIME],XmNuserData,&userdata,NULL);
-  nid=(char *)userdata - (char *)0;
-  XmToggleButtonSetState(children[IDX_TIME],XmdsGetNidBooleanValue(nid, 1) & 1,(Boolean) 0);
-  XtVaGetValues(children[PATH],XmNuserData,&userdata,NULL);
-  nid=(char *)userdata - (char *)0;
-  label = XmStringCreateSimple(path = TreeGetMinimumPath(0,nid));
+  XtVaGetValues(children[ON_OFF], XmNuserData, &userdata, NULL);
+  nid = (char *)userdata - (char *)0;
+  XmToggleButtonSetState(children[ON_OFF], (TreeIsOn((int)nid) & 1), (Boolean) 0);
+  XtVaGetValues(children[IDX_TIME], XmNuserData, &userdata, NULL);
+  nid = (char *)userdata - (char *)0;
+  XmToggleButtonSetState(children[IDX_TIME], XmdsGetNidBooleanValue(nid, 1) & 1, (Boolean) 0);
+  XtVaGetValues(children[PATH], XmNuserData, &userdata, NULL);
+  nid = (char *)userdata - (char *)0;
+  label = XmStringCreateSimple(path = TreeGetMinimumPath(0, nid));
   TreeFree(path);
-  XtVaSetValues(children[PATH],XmNlabelString,label,NULL);
+  XtVaSetValues(children[PATH], XmNlabelString, label, NULL);
   XmStringFree(label);
 }
 
@@ -182,14 +181,14 @@ void XmdsInputPut(Widget w)
 {
   WidgetList children;
   XtPointer userdata;
-  int       nid;
+  int nid;
   XtVaGetValues(w, XtNchildren, &children, NULL);
-  XtVaGetValues(children[ON_OFF],XmNuserData,&userdata,NULL);
-  nid=(char *)userdata - (char *)0;
-  XmdsSetState(nid,children[ON_OFF]);
-  XtVaGetValues(children[IDX_TIME],XmNuserData,&userdata,NULL);
-  nid=(char *)userdata - (char *)0;
-  XmdsPutNidToggleButton(children[IDX_TIME],nid,1 & XmdsGetNidBooleanValue(nid, 1));
+  XtVaGetValues(children[ON_OFF], XmNuserData, &userdata, NULL);
+  nid = (char *)userdata - (char *)0;
+  XmdsSetState(nid, children[ON_OFF]);
+  XtVaGetValues(children[IDX_TIME], XmNuserData, &userdata, NULL);
+  nid = (char *)userdata - (char *)0;
+  XmdsPutNidToggleButton(children[IDX_TIME], nid, 1 & XmdsGetNidBooleanValue(nid, 1));
   XmdsExprPut(children[START_IDX]);
   XmdsExprPut(children[END_IDX]);
 }

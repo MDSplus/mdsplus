@@ -37,7 +37,7 @@ public interface DataProvider
 
         /**
          * Method Update is called by jScope to notify the experiment name and the shot number.
-         * Update can be called several time by jScope dfor the same DataProvider implementation
+         * Update can be called several time by jScope for the same DataProvider implementation
          * in the case user changes either the experiment name or the shot number.
          *
          * @param exp The experiment name
@@ -72,10 +72,10 @@ public interface DataProvider
         public double   GetFloat(String in) throws IOException;
 
         /**
-         * Method GetWaveData is called by jScope when a waveform has to be avaluated and only the Y
+         * Method GetWaveData is called by jScope when a waveform has to be evaluated and only the Y
          * axis is defined. In this case jScope assumes that the specification is enough and it is up
          * to the data provider implementation to retrieve X and Y axis.
-         * The evaluated signal is not directly treturned as a vector, rather as a object implementing
+         * The evaluated signal is not directly returned as a vector, rather as a object implementing
          * the WaveData interface. The WaveData interface defines the following methods:
          *
          * <br>- int GetNumDimensions() returns the number of dimensions. Currently only signals (dimension=1)
@@ -109,62 +109,10 @@ public interface DataProvider
          */
         public WaveData GetWaveData(String in_y, String in_x);
 
-        /**
-         * When the network->fast network access option is enabled, jScope uses GetResampledWaveData
-         * instead of GetWaveData to evaluate waveformes. Method GetResampledWaveData should
-         * return the resampled version of the specified waveform, and resampling should be done
-         * at the data server site in orer to reduce network transfer time for large signals.
-         * GetResampledData is also asynchronously called when users zoom a resampled waveform
-         * in order to collect more points of the selected region.
-         * DataProvider implementations can enable the ast network access option by returning true
-         * in method SupportsFastNetwork. Otherwise an empty implementation of GetResampledWaveData
-         * suffices.
-         *
-         * @param in Y axisi definition as typed in the setup data source popup dialog.
-         * @param start Start X value for the requested region.
-         * @param end End X valus for the requested region.
-         * @param n_points Number of points for the resampled signal.
-         * @return The evaluated signal, embedded in a WaveData object, or null if an error is encountered.
-         * @see WaveData
-         */
-        public WaveData GetResampledWaveData(String in, double start, double end, int n_points);
-
-        /**
-         * Same as the GetResampledWaveData, except that it is called when both X and Y axis are
-         * specified.
-         *
-         * @param in_y Y axis definition for the requested signal.
-         * @param in_x X axis definition for the requested signal.
-         * @param start Start X value.
-         * @param end End X value.
-         * @param n_points Number of points for the resampling.
-         * @return The evaluated signal, embedded in a WaveData object, or null if an error is encountered.
-         * @see WaveData
-         */
-        public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points);
-
-
-         /**
-         * Called by jScope to verify whether the DataProvider implementation supports
-         * Secure Shell (ssh) tunneling option.
-         *
-         * @return The ability of supporting ssh tunneling.
-         */
 
         public boolean SupportsTunneling();
 
 
-        /**
-         * Called by jScope to verify whether the DataProvider implementation supports the Fast Network
-         * option. If SupportsFastNetwork return true, jScope retrieves data by calling GetResampledWaveData
-         * which has to be thread safe. GetResampledWaveData is in fact called by a separate
-         * thread each time a zoom is done, to retrieve more points for the selected region.
-         * If SupportsFastNetwork return false, GetWaveData is called instead of GetResampledWaveData,
-         * which can be empty.
-         *
-         * @return The ability of supporting fast network access.
-         */
-        public boolean SupportsFastNetwork();
         /**
          * If an error is encountered in the evaluation of a signal (GetWaveData or
          * GetResampledWaveData returning null or generation IOException), jScope calls ErrorString
@@ -267,8 +215,8 @@ public interface DataProvider
 
         /**
          * Method DataPending is called by jScope to verify whether the current signal has been fully
-         * displayed. It DataPending returns false, method GetWaveData is alled again to retrieve a new
-         * version (usually with some more saples) of the signal.
+         * displayed. It DataPending returns false, method GetWaveData is called again to retrieve a new
+         * version (usually with some more samples) of the signal.
          * <br>
          * If method SupportsContinuous() returned false, DataPending is never called by jScope, and
          * can therefore be empty.
@@ -278,24 +226,11 @@ public interface DataProvider
         public boolean DataPending();
 
         /**
-         * Returns tre if the DataProvider impementation supports data compression in communication.
-         * jScope does not make any assumption about compression, simply provides the user interface for enablin
-         * or disabling compression, by means Network->Enable compression option. If compression
-         * is not supported by the DataProvider implementation, the Network->Enable option id disabled.
-         *
-         * @return true if the DataProvider implementation supports compression.
-         */
-        public boolean SupportsCompression();
-
-        /**
-         * Called by jScope to enable or disable data compression in transmission. If the DataProvider
-         * implementation doe not support compression and returned false in SupportsCompression(),
-         * SetCompression is never called.
-         *
-         * @param state Indicates whether compression is enabled or disabled.
-         */
-        public void    SetCompression(boolean state);
-
+         * Method enableAsyncUpdate enables or disables possible asynchronous activity of the data provider.
+         * Asynchronous activity is disabled when data are first retrieved, enabled afterwards
+         * **/
+        public void enableAsyncUpdate(boolean enable);
+        
         /**
          * Method Dispose is called by jScope each time a DataProvider is no more used. Unlike Object.finalize(),
          * method Dispose is guaranteed to be called at the time the DataProvider implementation is no more
@@ -357,7 +292,7 @@ public interface DataProvider
         /**
          * As DataProvider implementations are instantiated by jScope by means of the
          * Class.newInstance(), no arguments can be passed to the constructor method.
-         * If an additional argument is required fotr the proper initialization of the
+         * If an additional argument is required for the proper initialization of the
          * DataProvider implementation (e.g. the ip address for the MdsDataProvider), the argument,
          * defined in the server_n.argument item of the property file is passed through method SetArgument
          * called by jScope just after the DataProvider instantiation.
@@ -368,4 +303,5 @@ public interface DataProvider
         public void    SetArgument(String arg) throws IOException;
 
         public long[]   GetShots(String in) throws IOException;
-    }
+        
+     }

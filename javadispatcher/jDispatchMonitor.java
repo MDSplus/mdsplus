@@ -12,9 +12,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     public static final int ACTION_NOT_FOUND = -2;
     
     ServersInfoPanel serversInfoPanel = null;
-    Hashtable<String, ServerInfo> serversInfo = new Hashtable();
+    Hashtable<String, ServerInfo> serversInfo = new Hashtable<String, ServerInfo>();
     
     ShotsPerformance shotsPerformance = new ShotsPerformance();
+    String experiment;
 
     class UpdateList implements Runnable
     {
@@ -70,14 +71,14 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 case MdsMonitorEvent.MonitorDone       :
                     status = me.ret_status;
 
-		    Hashtable actions = null;
+		    Hashtable<Integer, MdsMonitorEvent> actions = null;
 
 		    if(phase_failed.containsKey(new Integer(me.phase)))
 		    {
-			actions = (Hashtable)phase_failed.get(new Integer(me.phase));
+			actions = phase_failed.get(new Integer(me.phase));
                         if(actions.containsKey(new Integer(me.nid)))
 			{
-			    MdsMonitorEvent me_failed = (MdsMonitorEvent)actions.get(new Integer(me.nid));
+			    MdsMonitorEvent me_failed = actions.get(new Integer(me.nid));
 			    if(me.error_message == null || me.error_message.indexOf("SS-W-NOMSG") != -1)
 				me.error_message = me_failed.error_message;
 			    else
@@ -163,13 +164,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             if(nids == null || message == null)
                 return new MdsMessage((byte)1);
 
-            Hashtable actions = null;
+            Hashtable<Integer, MdsMonitorEvent> actions = null;
 
             if(phase_failed.containsKey(new Integer(curr_phase)))
-                actions = (Hashtable)phase_failed.get(new Integer(curr_phase));
+                actions = phase_failed.get(new Integer(curr_phase));
             else
             {
-                actions  = new Hashtable();
+                actions = new Hashtable<Integer, MdsMonitorEvent>();
                 phase_failed.put(new Integer(curr_phase), actions);
             }
 
@@ -233,9 +234,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     DefaultListModel failed_list = new DefaultListModel();
     private int      num_window = 0;
 
-    Hashtable phase_hash   = new Hashtable();
-    Hashtable phase_name   = new Hashtable();
-    Hashtable phase_failed = new Hashtable();
+    Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+    Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+    Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
 
     ErrorMgr error_mgr;
     int      info_port;
@@ -455,12 +456,14 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     public jDispatchMonitor()
     {
-        this(null);
+        this(null, null);
     }
 
-    public jDispatchMonitor(String monitor_server)
+    public jDispatchMonitor(String monitor_server, String experiment)
     {
         
+	this.experiment = experiment;        
+
         addWindowListener(new java.awt.event.WindowAdapter() 
         {   
             public void windowClosing(java.awt.event.WindowEvent e) 
@@ -484,17 +487,10 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
         setWindowTitle();
         this.monitor_server = monitor_server;
 
-        Properties properties = new Properties();
-        try {
-            FileInputStream prop = new FileInputStream("jDispatcher.properties");
-            properties.load(prop);
-            prop.close();
-        }
-        catch(Exception exc)
-        {
-            System.out.println("Cannot open properties file");
+        Properties properties = MdsHelper.initialization(experiment);
+	if( properties == null )
             System.exit(0);
-        }
+
         int error_port = -1;
         try {
             error_port = Integer.parseInt(properties.getProperty("jDispatcher.error_port"));
@@ -1093,7 +1089,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     private int getIndex(MdsMonitorEvent me, int idx)
     {
-        Hashtable actions = null;
+        Hashtable<Integer, MdsMonitorEvent> actions = null;
         int ph = -1;
 
         if( show_phase != curr_phase )
@@ -1102,7 +1098,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             ph = me.phase;
                 
         if( phase_hash.containsKey(new Integer(ph)) )
-            actions = (Hashtable)phase_hash.get(new Integer(ph));
+            actions = phase_hash.get(new Integer(ph));
         else
         {
             String phase_st = MdsHelper.toPhaseName(me.phase);
@@ -1113,7 +1109,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             phase_l.setText("Phase: "+phase_st);
             curr_phase = show_phase = me.phase;
 */
-            actions = new Hashtable();
+            actions = new Hashtable<Integer, MdsMonitorEvent>();
             phase_hash.put(new Integer(me.phase), actions);
             idx = 0;
         }
@@ -1123,7 +1119,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
         if(actions.containsKey(new Integer(me.nid)))
         {
-            MdsMonitorEvent e = (MdsMonitorEvent)actions.get(new Integer(me.nid));
+            MdsMonitorEvent e = actions.get(new Integer(me.nid));
 
             //System.out.println("Replace action nid "+ e.nid + " " + e.error_message);
             //Check if the current MdsMonitorActionEvenr is added
@@ -1229,7 +1225,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
 
     private void showPhase(String phase)
     {
-        Hashtable actions;
+        Hashtable<Integer, MdsMonitorEvent> actions;
         MdsMonitorEvent me;
         //int phase_id = Integer.parseInt(phase);
 
@@ -1238,7 +1234,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
             show_phase = Integer.parseInt(phase);
             executing_list.removeAllElements();
             failed_list.removeAllElements();
-            actions = (Hashtable)phase_hash.get(new Integer(phase));
+            actions = phase_hash.get(new Integer(phase));
             executing_list.setSize(actions.size());
 
             int s_done = 0, s_failed = 0;
@@ -1314,15 +1310,50 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
       }
     }
 
-    public static void main(String arg[])
+    public static void main(String[] args)
     {
 
         jDispatchMonitor dm;
+	int i;
+	String experiment = null;
+	String monitor_server = null;
 
-        if(arg != null &&  arg.length > 0 && arg[0].length() != 0)
-            dm = new jDispatchMonitor(arg[0]);
+	if(args != null && args.length > 3 )
+	{
+	    System.out.println( "jDispatchMonitor [monitor_server] [-e experiment ] \n");
+	    System.exit(0);
+	}
+
+
+	if( args.length > 0 )
+	{
+		for( i = 0; i < args.length && !args[i].equals("-e") ; i++ );
+
+		if( i < args.length )
+		{
+		    experiment = args[i + 1];
+		    if( args.length >= 3 )
+			monitor_server =  ( (i == 0) ? args[i+2] : args[0] );	
+	
+		} else {
+		    monitor_server = args[0];
+		}
+	}
+
+	System.out.println("jDispatchMonitor "+monitor_server+" "+experiment);
+	
+	MdsHelper.initialization(experiment);
+
+
+        dm = new jDispatchMonitor(monitor_server, experiment);
+
+
+/*
+        if(args != null &&  args.length > 0 && args[0].length() != 0)
+            dm = new jDispatchMonitor(args[0]);
         else
             dm = new jDispatchMonitor();
+*/
         dm.pack();
         dm.setSize(600, 700);
         dm.setVisible(true);
@@ -1381,9 +1412,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
     
         PrintStream log;
                 
-        Vector<String> labelText = new Vector();
+        Vector<String> labelText = new Vector<String>();
         
-        Hashtable< Long, Vector > shotsInfo = new  Hashtable();
+        Hashtable<Long, Vector<String>> shotsInfo = new Hashtable<Long, Vector<String>>();
         Vector<String> phaseDuration;
                 
         public ShotsPerformance()
@@ -1436,7 +1467,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener,
                 labelText.add(phase);
             if( !shotsInfo.containsKey(key) )
             {
-                phaseDuration = new Vector();
+                phaseDuration = new Vector<String>();
                 shotsInfo.put(key, phaseDuration);               
             }
             else

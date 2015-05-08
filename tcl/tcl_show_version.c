@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
+#include <string.h>
 
 /**********************************************************************
 * TCL_SHOW_VERSION.C --
@@ -16,8 +17,9 @@ extern char *MdsRelease();
 /***************************************************************
  * TclShowVersion:
  ***************************************************************/
-int TclShowVersion()
-   {
-     TclTextOut(MdsRelease());
-     return 1;
-   }
+int TclShowVersion(void *ctx, char **error, char **output)
+{
+  *output = strdup(MdsRelease());
+  tclAppend(output, "\n");
+  return 1;
+}

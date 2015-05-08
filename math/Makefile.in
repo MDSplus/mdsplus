@@ -1,16 +1,6 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@FORLD@
-prefix=@prefix@
-top_srcdir=@top_srcdir@
-exec_prefix=@exec_prefix@
-RM=$(top_srcdir)/devscripts/rm_if
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-INSTALL=@top_srcdir@/conf/install-sh -c
-FC=@F77@
-FFLAGS=@FFLAGS@
-LIBS=@LIBS@ @LIBM@
+include @top_srcdir@/Makefile.inc
+
+@MINGW_TRUE@ DEF=MdsMath.def
 
 SOURCES = \
 	caxpy.f \
@@ -49,54 +39,44 @@ SOURCES = \
 	zgeco.f  \
 	zmul.f
 
+@LIBPRE@MdsMath = @MAKESHLIBDIR@@LIBPRE@MdsMath@SHARETYPE@
+all: @MAKESHLIBDIR@ $(@LIBPRE@MdsMath)
+
 OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
+OBJECTS_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
+%.o_i386 : %.f
+	$(COMPILE.f) $< $(OUTPUT_OPTION)
+
 EXPORTS = MdsMath.export
 
-all: @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsMath@SHARETYPE@ 
+local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
+local@LIBPRE@MdsMath32 = @LIBPRE@MdsMath@SHARETYPE@_i386
+
+LDFLAGS+=@FFLAGS@
+
+
+ifeq "@MACOSX@" ""
+LIBRARIES = $(@LIBPRE@MdsMath)
+else
+LIBRARIES = $(local@LIBPRE@MdsMath)
+$(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@ @LIBPRE@MdsMath@SHARETYPE@_i386
+	lipo -create -o $@ $^
+endif
+
+$(local@LIBPRE@MdsMath32) %.o_i386: TARGET_ARCH = -m32
+$(local@LIBPRE@MdsMath32): $(OBJECTS_i386) $(DEF)
+	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
+
+$(LIBRARIES): $(OBJECTS)  $(DEF)
+	$(FC) $(LDFLAGS) $(TARGET_ARCH) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsMath@SHARETYPE@ @libdir@
-
-@MAKESHLIBDIR@ :
-	mkdir @MAKESHLIBDIR@
-
-ifeq "@MACOSX@" ""
+install: $(libdir)
+	$(INSTALL) -m 755 $(@LIBPRE@MdsMath) $(libdir)
 
 clean:
-	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMdsMath@SHARETYPE@
-
-
-@MAKESHLIBDIR@libMdsMath@SHARETYPE@ : $(OBJECTS) 
-	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS)
-
-else
-
-OBJ_i386 = $(SOURCES:.f=.o_i386) boxsmooth.o
-
-%.o_i386 : %.f
-	$(FC) -c $(FFLAGS) -m32 $< -o $@
-
-clean:
-	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) libMdsMath@SHARETYPE@* @MAKESHLIBDIR@libMdsMath@SHARETYPE@
-
-@MAKESHLIBDIR@libMdsMath@SHARETYPE@ : libMdsMath@SHARETYPE@ libMdsMath@SHARETYPE@_i386
-	lipo -create -o $@ $^
-
-libMdsMath@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS)
-
-libMdsMath@SHARETYPE@_i386 : $(OBJECTS_i386)
-	$(LD) -o $@ @FOR_LINKSHARED@ $(OBJECTS_i386) -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBS) $(LDFLAGS) -m32
-endif
+	$(RM) $(OBJECTS) $(OBJECTS_i386)
+	$(RM) $(@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath) $(local@LIBPRE@MdsMath32)
 

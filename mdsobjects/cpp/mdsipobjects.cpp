@@ -1,7 +1,13 @@
-#include <stdio.h>
-#include "mdsobjects.h"
-#ifdef HAVE_WINDOWS_H
-#include <Windows.h>
+#include <mdsobjects.h>
+#include <mdsplus/mdsplus.h>
+#include <mdsplus/AutoPointer.hpp>
+
+#include <cstddef>
+#include <iostream>
+#include <string>
+
+#ifdef _WIN32
+#include <windows.h>
 #else
 #include <sys/types.h>
 #include <sys/ipc.h>
@@ -60,276 +66,180 @@ static int convertType(int mdsType)
 
 void *getManyObj(char *serializedIn)
 {
-	bool dataReported = false, errorReported = false;
-	List *inArgs = (List *)deserialize(serializedIn);
+	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
-	{
-		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
-		return 0;
-	}
+		throw MdsException("INTERNAL ERROR: Get Multi did not receive a LIST argument");
 
 	int nArgs = inArgs->len();
-	String *nameKey = new String("name");
-	String *exprKey = new String("exp");
-	String *argsKey = new String("args");
-	String *valueKey = new String("value");
-	String *errorKey = new String("error");
-	Dictionary *result = new Dictionary();
+	String nameKey("name");
+	String exprKey("exp");
+	String argsKey("args");
+	AutoData<Dictionary> result(new Dictionary());
 	for(int idx = 0; idx < nArgs; idx++)
 	{
-		Dictionary *currArg = (Dictionary* )inArgs->getElementAt(idx);
+		AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
 		if(currArg->clazz != CLASS_APD)// || currArg->dtype != DTYPE_DICTIONARY)
-		{
-			printf("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument\n");
-			return 0;
-		}
-		String *nameData = (String *)currArg->getItem(nameKey);
-		String *exprData = (String *)currArg->getItem(exprKey);
-		char *expr = exprData->getString();
-		List *argsData = (List *)currArg->getItem(argsKey);
-		
-		Dictionary *answDict = new Dictionary();
-		Data *currAnsw;
-		try {
-			if(argsData && argsData->len() > 0)
-				currAnsw = executeWithArgs(expr, 2, argsData->getDscs(), argsData->len());
-			else
-				currAnsw = execute(expr);
+			throw MdsException("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument");
 
-			answDict->setItem(valueKey, currAnsw);
-			dataReported = true;
-		}catch(MdsException const & exc)
-		{
-			String *errorData = new String(exc.what());
-			answDict->setItem(errorKey, errorData);
-			errorReported = true;
+		AutoData<String> nameData((String *)currArg->getItem(&nameKey));
+		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
+		AutoArray<char> expr(exprData->getString());
+		AutoData<List> argsData((List *)currArg->getItem(&argsKey));
+
+		AutoData<Dictionary> answDict(new Dictionary());
+		try {
+			Data *currAnsw;
+			if(argsData.get() && argsData->len() > 0)
+				currAnsw = executeWithArgs(expr.get(), 2, argsData->getDscs(), argsData->len());
+			else
+				currAnsw = execute(expr.get());
+
+			AutoData<String> valueKey(new String("value"));
+			answDict->setItem(valueKey.get(), currAnsw);
+		} catch(MdsException const & e) {
+			AutoData<String> errorKey(new String("error"));
+			AutoData<String> errorData(new String(e.what()));
+			answDict->setItem(errorKey.get(), errorData.get());
 		}
-		result->setItem(nameData, answDict);
-		deleteData(exprData);
-		deleteData(nameData);
-		delete [] expr;
-		deleteData(argsData);
-		deleteData(currArg);
+		result->setItem(nameData.get(), answDict.get());
 	}
-	void *resDsc = result->convertToDsc();
-	deleteData(nameKey);
-	deleteData(exprKey);
-	deleteData(argsKey);
-	if(!dataReported)
-		deleteData(valueKey);
-	if(!errorReported)
-		deleteData(errorKey);
-	deleteData(result);
-	deleteData(inArgs);
-	return resDsc;
+
+	return result->convertToDsc();
 }
 
 void *putManyObj(char *serializedIn)
 {
-	List *inArgs = (List *)deserialize(serializedIn);
+	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
-	{
-		printf("INTERNAL ERROR: Get Multi did not receive a LIST argument\n");
-		return 0;
-	}
+		throw MdsException("INTERNAL ERROR: Get Multi did not receive a LIST argument");
 
 	int nArgs = inArgs->len();
-	String *nodeKey = new String("node");
-	String *exprKey = new String("exp");
-	String *argsKey = new String("args");
-	Dictionary *result = new Dictionary();
-	for(int idx = 0; idx < nArgs; idx++)
-	{
-		Dictionary *currArg = (Dictionary* )inArgs->getElementAt(idx);
+	String nodeKey("node");
+	String exprKey("exp");
+	String argsKey("args");
+	AutoData<Dictionary> result(new Dictionary());
+	for(int idx = 0; idx < nArgs; idx++) {
+		AutoData<Dictionary> currArg((Dictionary *)inArgs->getElementAt(idx));
 		if(currArg->clazz != CLASS_APD)// || currArg->dtype != DTYPE_DICTIONARY)
-		{
-			printf("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument\n");
-			return 0;
-		}
-		String *nodeNameData = (String *)currArg->getItem(nodeKey);
-		String *exprData = (String *)currArg->getItem(exprKey);
-		char *expr = exprData->getString();
-		List *argsData = (List *)currArg->getItem(argsKey);
+			throw MdsException("INTERNAL ERROR: Get Multi Argument is not a DICTIONARY argument");
+
+		AutoData<String> nodeNameData((String *)currArg->getItem(&nodeKey));
+		AutoData<String> exprData((String *)currArg->getItem(&exprKey));
+		AutoArray<char> expr(exprData->getString());
+		AutoData<List> argsData((List *)currArg->getItem(&argsKey));
+
 		int nPutArgs = 0;
-		if(argsData)
+		if(argsData.get())
 			nPutArgs = argsData->len();
 
 		try {
-			Tree *tree = getActiveTree();
-			Data *compiledData = (Data *)compileFromExprWithArgs(expr, nPutArgs, (argsData)?argsData->getDscs():0, tree);
-			TreeNode *node = tree->getNode(nodeNameData);
-			node->putData(compiledData);
-			delete node;
-			deleteData(compiledData);
-			String *successData = new String("Success");
-			result->setItem(nodeNameData, successData);
-			delete tree;
-		}catch(MdsException const & exc)
-		{
-			String *errorData = new String(exc.what());
-			result->setItem(nodeNameData, errorData);
+			AutoPointer<Tree> tree(getActiveTree());
+			AutoData<Data> compiledData = (Data *)compileFromExprWithArgs(expr.get(), nPutArgs, (argsData.get())?argsData->getDscs():0, tree.get());
+			AutoPointer<TreeNode> node = tree->getNode(nodeNameData.get());
+			node->putData(compiledData.get());
+			AutoData<String> successData(new String("Success"));
+			result->setItem(nodeNameData.get(), successData.get());
+		} catch(MdsException const & e) {
+			AutoData<String> errorData(new String(e.what()));
+			result->setItem(nodeNameData.get(), errorData.get());
 		}
-		delete [] expr;
-		deleteData(exprData);
-		deleteData(argsData);
-		deleteData(currArg);
-		deleteData(nodeNameData);
 	}
-	void *resDsc = result->convertToDsc();
-	deleteData(nodeKey);
-	deleteData(exprKey);
-	deleteData(argsKey);
-	deleteData(inArgs);
-	deleteData(result);
-	return resDsc;
+
+	return result->convertToDsc();
 }
 
-
-#ifdef HAVE_WINDOWS_H
-bool Connection::globalSemHInitialized;
-HANDLE Connection::globalSemH;
-#else
-pthread_mutex_t Connection::globalMutex = PTHREAD_MUTEX_INITIALIZER;
-sem_t semStruct;
-bool semInitialized;
-#endif
-
+Mutex Connection::globalMutex;
 
 Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
 {
-#ifdef HAVE_WINDOWS_H
-	semH = CreateSemaphore(NULL, 1, 16, NULL);
-	if(!globalSemHInitialized)
-	{
-	    globalSemH = CreateSemaphore(NULL, 1, 16, NULL);
-	    globalSemHInitialized = true;
-	}
-#else
-	int status = sem_init(&semStruct, 0, 1);
-	if(status != 0)
-		throw MdsException("Cannot create lock semaphore");
-#endif
-
+    lockGlobal();
 	sockId = ConnectToMds(mdsipAddr);
-	if(sockId <= 0)
-	{
-		char currMsg[256];
-		strcpy(currMsg, "Cannot connect to ");
-		strncpy(&currMsg[strlen(currMsg)], mdsipAddr, 255 - strlen(currMsg));
-		throw MdsException(currMsg);
+    unlockGlobal();
+	if(sockId <= 0) {
+		std::string msg("Cannot connect to ");
+		msg += mdsipAddr;
+		throw MdsException(msg.c_str());
 	}
 }
-Connection::~Connection()
-{
-#ifdef HAVE_WINDOWS_H
-#else
-	sem_destroy(&semStruct);
-#endif
+
+Connection::~Connection() {
+    lockGlobal();
 	DisconnectFromMds(sockId);
+    unlockGlobal();
 }
 
-#ifdef HAVE_WINDOWS_H
-void Connection::lock() 
-{
-	if(semH)
-		WaitForSingleObject(semH, INFINITE);      
+void Connection::lockLocal() {
+	mutex.lock();
 }
-void Connection::unlock()
-{
-	if(semH)
-		ReleaseSemaphore(semH, 1, NULL);
-}
-void Connection::lockGlobal() 
-{
-	if(globalSemH)
-		WaitForSingleObject(globalSemH, INFINITE);      
-}
-void Connection::unlockGlobal()
-{
-	if(globalSemH)
-		ReleaseSemaphore(globalSemH, 1, NULL);
-}
-#else
-void Connection::lock() 
-{
-	sem_wait(&semStruct);
-}
-void Connection::unlock()
-{
-	sem_post(&semStruct);
-}
-void Connection::lockGlobal() 
-{
-	pthread_mutex_lock(&globalMutex);
-}
-void Connection::unlockGlobal()
-{
-	pthread_mutex_unlock(&globalMutex);
-}
-#endif
 
+void Connection::unlockLocal() {
+	mutex.unlock();
+}
 
+void Connection::lockGlobal() {
+	globalMutex.lock();
+}
 
+void Connection::unlockGlobal() {
+	globalMutex.unlock();
+}
 
-void Connection::openTree(char *tree, int shot)
-{
+void Connection::openTree(char *tree, int shot) {
 	int status = MdsOpen(sockId, tree, shot);
-printf("SOCK ID: %d\n", sockId);
+	std::cout << "SOCK ID: " << sockId << std::endl;
 	if(!(status & 1))
 		throw MdsException(status);
 }
-void Connection::closeAllTrees()
-{
+
+void Connection::closeAllTrees() {
 	int status = MdsClose(sockId);
 	if(!(status & 1))
 		throw MdsException(status);
 }
+
 Data *Connection::get(const char *expr, Data **args, int nArgs)
 {
 	char clazz, dtype, nDims;
 	short length;
 	int *dims;
-	int status, argIdx, numBytes;
+	int status, numBytes;
 	void *ptr, *mem = 0;
 	char *buf;
 	int retDims[MAX_DIMS];
 	Data *resData;
 
 	//Check whether arguments are compatible (Scalars or Arrays)
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
-	lock();
-	lockGlobal();
-	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen((char *)expr), 0, 0, (char *)expr);
-	if(!(status & 1))
-	{
-		unlock();
+
+	lockLocal();
+    //	lockGlobal();
+	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, std::string(expr).size(), 0, 0, (char *)expr);
+	if(!(status & 1)) {
+		unlockLocal();
 		throw MdsException(status);
 	}
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
 		if(!(status & 1))
 		{
-			unlock();
+			unlockLocal();
 			throw MdsException(status);
 		}
 	}
-	unlockGlobal();
+    //	unlockGlobal();
 	
     	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
-	unlock();
+	unlockLocal();
 	if(!(status & 1))
-	{
 		throw MdsException(status);
-	}
-	if(nDims == 0)
-	{
+
+	if(nDims == 0) {
 		switch(dtype) {
 			case DTYPE_CHAR_IP:
 				resData = new Int8(*(char *)ptr);
@@ -361,20 +271,17 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			case DTYPE_DOUBLE_IP:
 				resData = new Float64(*(double *)ptr);
 				break;
-			case DTYPE_CSTRING_IP:
-				buf = new char[length + 1];
-				memcpy(buf, ptr, length);
-				buf[length] = 0;
-				resData = new String(buf);
-				delete[] buf;
+			case DTYPE_CSTRING_IP: {
+				std::string buf(reinterpret_cast<char *>(ptr), length);
+				resData = new String(buf.c_str());
 				break;
+			}
 			default: 
-				printf("Unexpected data type returned by mdsip: %d\n", dtype);
+				std::cerr << "Unexpected data type returned by mdsip: " << dtype << std::endl;
 				throw MdsException("Unexpected data type returned by mdsip");
 		}
-	}
-	else //nDims > 0
-	{
+	} else {
+		//nDims > 0
 		switch(dtype) {
 			case DTYPE_CHAR_IP:
 				resData = new Int8Array((char *)ptr, nDims, retDims);
@@ -403,9 +310,12 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			case DTYPE_DOUBLE_IP:
 				resData = new Float64Array((double *)ptr, nDims, retDims);
 				break;
-			default: throw MdsException("Unexpected data type returned by mdsip");
+			default:
+				std::cerr << "Unexpected data type returned by mdsip: " << dtype << std::endl;
+				throw MdsException("Unexpected data type returned by mdsip");
 		}
 	}
+
 	if(mem) FreeMessage(mem);
 	return resData;	
 }
@@ -415,68 +325,50 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	char clazz, dtype, nDims;
 	short length;
 	int *dims;
-	int status, argIdx, numBytes;
+	int status;
 	void *ptr, *mem = 0;
-	int retDims[MAX_DIMS];
-	int varIdx;
-
-	//Double backslashes!!
-	char *path = new char[strlen(inPath)+2];
-	if(inPath[0] == '\\')
-	{
-		path[0] = '\\';
-		strcpy(&path[1], inPath);
-	}
-	else
-		strcpy(path, inPath);
-
 
 	//Check whether arguments are compatible (Scalars or Arrays)
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
 
-	char *putExpr = new char[strlen("TreePut(") + strlen(expr) +strlen(path) + 5 + nArgs * 2 + 2];
-	if(nArgs > 0)
-		sprintf(putExpr, "TreePut(\'%s\',\'%s\',", path, expr);
-	else
-		sprintf(putExpr, "TreePut(\'%s\',\'%s\'", path, expr);
-	for(varIdx = 0; varIdx < nArgs; varIdx++)
-	{
-		if(varIdx < nArgs - 1)
-			sprintf(&putExpr[strlen(putExpr)], "$,");
-		else
-			sprintf(&putExpr[strlen(putExpr)], "$");
-	}
-	sprintf(&putExpr[strlen(putExpr)], ")");
-    delete [] path;
+	//Double backslashes!!
+	std::string path(inPath);
+	if (path.at(0) == '\\')
+		path.insert(path.begin(), '\\');
 
-	lock();
-	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, strlen(putExpr), 0, 0, putExpr);
-	delete[] putExpr;
-	if(!(status & 1))
-	{
-		unlock();
+	std::string putExpr("TreePut(\'");
+	putExpr += path + "\',\'" + expr + "\'";
+	for(int varIdx = 0; varIdx < nArgs; ++varIdx)
+		putExpr += ",$";
+	putExpr += ")";
+
+	lockLocal();
+	status = SendArg(sockId, 0, DTYPE_CSTRING_IP, nArgs+1, putExpr.length(), 0, 0, const_cast<char *>(putExpr.c_str()));
+
+	if(!(status & 1)) {
+		unlockLocal();
 		throw MdsException(status);
 	}
-	for(argIdx = 0; argIdx < nArgs; argIdx++)
-	{
+
+	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
-		if(!(status & 1))
-		{
-			unlock();
+		if(!(status & 1)) {
+			unlockLocal();
 			throw MdsException(status);
 		}
 	}
 
+	int retDims[MAX_DIMS];
+	int numBytes;
     status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
-	unlock();
-    if (status & 1 && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
-      memcpy(&status,ptr,numBytes);
+	unlockLocal();
+    if ((status & 1) && dtype == DTYPE_LONG_IP && nDims == 0 && numBytes == sizeof(int))
+    	status = *(reinterpret_cast<int *>(ptr));
     if (mem) FreeMessage(mem);
 	if(!(status & 1))
 		throw MdsException(status);
@@ -491,25 +383,28 @@ void Connection::setDefault(char *path)
 
 void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
 {
-	String *nameStr = new String(name);
-	String *exprStr = new String(expr);
-	Dictionary *dict = new Dictionary();
-	dict->setItem(new String("name"), nameStr);
-	dict->setItem(new String("exp"), exprStr);
-	List *list = new List();
+	AutoData<String> fieldName(new String("name"));
+	AutoData<String> nameStr(new String(name));
+	AutoData<String> fieldExp(new String("exp"));
+	AutoData<String> exprStr(new String(expr));
+
+	AutoData<Dictionary> dict(new Dictionary());
+	dict->setItem(fieldName.get(), nameStr.get());
+	dict->setItem(fieldExp.get(), exprStr.get());
+
+	AutoData<String> argStr(new String("args"));
+	AutoData<List> list(new List());
 	for(int i = 0; i < nArgs; i++)
 		list->append(args[i]);
-	dict->setItem(new String("args"), list);
+	dict->setItem(argStr.get(), list.get());
 
 	if(idx >= len())
-		List::append(dict);
+		List::append(dict.get());
 	else
-		List::insert(idx, dict);
+		List::insert(idx, dict.get());
 }
 
-
-void GetMany::append(char *name, char *expr, Data **args, int nArgs)
-{
+void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
@@ -517,211 +412,145 @@ void GetMany::insert(char * beforeName, char *name, char *expr, Data **args, int
 {
 	int nItems = len();
 	int idx;
-	String *nameKey = new String("name");
-	String *nameStr = new String(name);
-	for(idx = 0; idx < nItems; idx++)
-	{
-		Dictionary *currDict = (Dictionary *)getElementAt(idx);
-		String *currName = (String *)currDict->getItem(nameKey);
-		if(currName->equals(nameStr))
-		{
-			deleteData(currName);
-			deleteData(currDict);
+	String nameKey("name");
+	String nameStr(name);
+	for(idx = 0; idx < nItems; idx++) {
+		AutoData<Dictionary> currDict((Dictionary *)getElementAt(idx));
+		AutoData<String> currName((String *)currDict->getItem(&nameKey));
+		if(currName->equals(&nameStr))
 			break;
-		}
-		deleteData(currName);
-		deleteData(currDict);
 	}
+
 	insert(idx, name, expr, args, nArgs);
-	deleteData(nameKey);
-	deleteData(nameStr);
 }
 
 void GetMany::remove(char *name)
 {
 	int nItems = len();
 	int idx;
-	String *nameKey = new String("name");
-	String *nameStr = new String(name);
-	for(idx = 0; idx < nItems; idx++)
-	{
-		Dictionary *currDict = (Dictionary *)getElementAt(idx);
-		String *currName = (String *)currDict->getItem(nameKey);
-		if(currName->equals(nameStr))
-		{
-			deleteData(currName);
-			deleteData(currDict);
-			break;
-		}
-		deleteData(currName);
-		deleteData(currDict);
+	String nameKey("name");
+	String nameStr(name);
+	for(idx = 0; idx < nItems; idx++) {
+		AutoData<Dictionary> currDict((Dictionary *)getElementAt(idx));
+		AutoData<String> currName((String *)currDict->getItem(&nameKey));
+		if(currName->equals(&nameStr))
+			List::remove(idx);
 	}
-	deleteData(nameKey);
-	deleteData(nameStr);
-	List::remove(idx);
 }
 
 void GetMany::execute()
 {
 	int serSize;
-	char *ser = serialize(&serSize);
+	AutoArray<char> ser(serialize(&serSize));
 
-	Data *serData = new Uint8Array((unsigned char *)ser, serSize);
-	Data *serEvalRes = (Uint8Array *)conn->get("GetManyExecute($)", &serData, 1);
-	delete [] ser;
-	deleteData(serData);
-	evalRes = (Dictionary *)deserialize(serEvalRes);
-	deleteData(serEvalRes);
+	AutoData<Uint8Array> serData(new Uint8Array((unsigned char *)ser.get(), serSize));
+	Data * serPtr = (Data *)serData.get();
+	AutoData<Data> serEvalRes(conn->get("GetManyExecute($)", &serPtr, 1));
+	evalRes = (Dictionary *)deserialize(serEvalRes.get());
 }
 
-
-Data *GetMany::get(char *name)
-{
+Data *GetMany::get(char *name) {
 	if(!evalRes)
-		throw MdsException("Data have not been evaluated yet");
-	String *nameStr = new String(name);
-	Dictionary *resItem = (Dictionary *)evalRes->getItem(nameStr);
-	deleteData(nameStr);
-	if(!resItem)
-		throw MdsException("Missing data item in evaluation list");
-	String *valueKey = new String("value");
+		throw MdsException("Data not yet evaluated");
 
-	Data *result = resItem->getItem(valueKey);
-	deleteData(valueKey);
-	if(result)
-	{
-		deleteData(resItem);
-		return result;
-	}
-	String *errorKey = new String("error");
-	String *error = (String *)resItem->getItem(errorKey);
-	deleteData(errorKey);
-	deleteData(resItem);
-	if(!error)
+	String nameStr(name);
+	AutoData<Dictionary> dictionary((Dictionary *)evalRes->getItem(&nameStr));
+	if(!dictionary.get())
+		throw MdsException("Missing data item in evaluation list");
+
+	String valueKey("value");
+	AutoData<Data> result(dictionary->getItem(&valueKey));
+	if(result.get())
+		return result.get();
+
+	String errorKey("error");
+	AutoData<String> error((String *)dictionary->getItem(&errorKey));
+	if(!error.get())
 		throw MdsException("Unknown Error");
-	else
-	{
-		char *errBuf = error->getString();
-		deleteData(error);
-		MdsException *exc = new MdsException(errBuf);
-		delete [] errBuf;
-		throw exc;
+	else {
+		AutoPointer<char> errBuf(error->getString());
+		throw MdsException(errBuf.get());
 	}
+
 	return 0;
 }
 
 /////////////////
 
-void PutMany::insert(int idx, char *nodeName, char *expr, Data **args, int nArgs)
-{
-	String *nodeNameStr = new String(nodeName);
-	String *exprStr = new String(expr);
-	Dictionary *dict = new Dictionary();
-	dict->setItem(new String("node"), nodeNameStr);
-	dict->setItem(new String("exp"), exprStr);
-	List *list = new List();
+void PutMany::insert(int idx, char *nodeName, char *expr, Data **args, int nArgs) {
+	AutoData<String> node(new String("node"));
+	AutoData<String> nodeNameStr(new String(nodeName));
+	AutoData<String> exp(new String("exp"));
+	AutoData<String> exprStr(new String(expr));
+
+	AutoData<Dictionary> dict(new Dictionary());
+	dict->setItem(node.get(), nodeNameStr.get());
+	dict->setItem(exp.get(), exprStr.get());
+
+	AutoData<String> argStr(new String("args"));
+	AutoData<List> list(new List());
 	for(int i = 0; i < nArgs; i++)
 		list->append(args[i]);
-	dict->setItem(new String("args"), list);
+	dict->setItem(argStr.get(), list.get());
 
 	if(idx >= len())
-		List::append(dict);
+		List::append(dict.get());
 	else
-		List::insert(idx, dict);
+		List::insert(idx, dict.get());
 }
 
-
-void PutMany::append(char *name, char *expr, Data **args, int nArgs)
-{
+void PutMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args, int nArgs)
-{
+void PutMany::insert(char * beforeName, char *nodeName, char *expr, Data **args, int nArgs) {
 	int nItems = len();
 	int idx;
-	String *nameKey = new String("node");
-	String *nodeNameStr = new String(nodeName);
-	for(idx = 0; idx < nItems; idx++)
-	{
-		Dictionary *currDict = (Dictionary *)getElementAt(idx);
-		String *currName = (String *)currDict->getItem(nameKey);
-		if(currName->equals(nodeNameStr))
-		{
-			deleteData(currName);
-			deleteData(currDict);
+	String nameKey("node");
+	String nodeNameStr(nodeName);
+	for(idx = 0; idx < nItems; idx++) {
+		AutoData<Dictionary> currDict((Dictionary *)getElementAt(idx));
+		AutoData<String> currName = (String *)currDict->getItem(&nameKey);
+		if(currName->equals(&nodeNameStr))
 			break;
-		}
-		deleteData(currName);
-		deleteData(currDict);
 	}
+
 	insert(idx, nodeName, expr, args, nArgs);
-	deleteData(nameKey);
-	deleteData(nodeNameStr);
 }
 
-void PutMany::remove(char *nodeName)
-{
-	int nItems = len();
-	int idx;
-	String *nodeKey = new String("node");
-	String *nodeNameStr = new String(nodeName);
-	for(idx = 0; idx < nItems; idx++)
-	{
-		Dictionary *currDict = (Dictionary *)getElementAt(idx);
-		String *currName = (String *)currDict->getItem(nodeKey);
-		if(currName->equals(nodeNameStr))
-		{
-			deleteData(currName);
-			deleteData(currDict);
-			break;
-		}
-		deleteData(currName);
-		deleteData(currDict);
+void PutMany::remove(char *nodeName) {
+	std::size_t nItems = len();
+	String nodeKey("node");
+	String nodeNameStr(nodeName);
+	for(std::size_t idx = 0; idx < nItems; ++idx) {
+		AutoData<Dictionary> currDict = (Dictionary *)getElementAt(idx);
+		AutoData<String> currName = (String *)currDict->getItem(&nodeKey);
+		if(currName->equals(&nodeNameStr))
+			List::remove(idx);
 	}
-	deleteData(nodeKey);
-	deleteData(nodeNameStr);
-	List::remove(idx);
 }
 
-void PutMany::execute()
-{
+void PutMany::execute() {
 	int serSize;
-	char *ser = serialize(&serSize);
+	AutoArray<char> ser(serialize(&serSize));
 
-	Data *serData = new Uint8Array((unsigned char *)ser, serSize);
-	Data *serEvalRes = (Uint8Array *)conn->get("PutManyExecute($)", &serData, 1);
-	delete [] ser;
-	deleteData(serData);
-	evalRes = (Dictionary *)deserialize(serEvalRes);
-	deleteData(serEvalRes);
+	AutoData<Uint8Array> serData(new Uint8Array((unsigned char *)ser.get(), serSize));
+	Data * serPtr = (Data *)serData.get();
+	AutoData<Data> serEvalRes(conn->get("PutManyExecute($)", &serPtr, 1));
+	evalRes = (Dictionary *)deserialize(serEvalRes.get());
 }
 
-
-void PutMany::checkStatus(char *nodeName)
-{
+void PutMany::checkStatus(char *nodeName) {
 	if(!evalRes)
-		throw MdsException("Data have not written yet");
-	String *nodeNameStr = new String(nodeName);
-	String *resItem = (String *)evalRes->getItem(nodeNameStr);
-	deleteData(nodeNameStr);
-	if(!resItem)
+		throw MdsException("Data not yet written");
+
+	String nodeNameStr(nodeName);
+	AutoData<String> resItem((String *)evalRes->getItem(&nodeNameStr));
+	if(!resItem.get())
 		throw MdsException("Missing data item in evaluation list");
 
-	String *successStr = new String("Success");
-	if(!successStr->equals(resItem))
-	{
-		char *errMsg = resItem->getString();
-		MdsException *exc = new MdsException(errMsg);
-		delete [] errMsg;
-		deleteData(successStr);
-		deleteData(resItem);
-		throw exc;
+	if(!String("Success").equals(resItem.get())) {
+		AutoArray<char> errMsg(resItem->getString());
+		throw MdsException(errMsg.get());
 	}
-	deleteData(successStr);
-	deleteData(resItem);
 }
-
-
-
-

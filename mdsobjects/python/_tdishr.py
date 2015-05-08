@@ -1,4 +1,5 @@
-from ctypes import CDLL,pointer,c_void_p
+import ctypes as _C
+
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):
     return __import__(name,globals())
@@ -29,7 +30,7 @@ def TdiCompile(expression,args=None):
         Tree.lock()
         restoreContext()
         if args is None:
-            status=TdiShr.TdiCompile(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
+            status=TdiShr.TdiCompile(_C.pointer(descriptor(expression)),_C.pointer(xd),_C.c_void_p(-1))
         else:
             if isinstance(args,tuple):
                 if len(args) > 0:
@@ -37,10 +38,10 @@ def TdiCompile(expression,args=None):
                         ans = TdiCompile(expression,args[0])
                         done=True
                 if not done:
-                    exp='TdiShr.TdiCompile(pointer(descriptor(expression))'
+                    exp='TdiShr.TdiCompile(_C.pointer(descriptor(expression))'
                     for i in range(len(args)):
-                        exp=exp+',pointer(descriptor(args[%d]))' % i
-                    exp=exp+',pointer(xd),c_void_p(-1))'
+                        exp=exp+',_C.pointer(descriptor(args[%d]))' % i
+                    exp=exp+',_C.pointer(xd),_C.c_void_p(-1))'
                     status=eval(exp)
             else:
                 raise TypeError('Arguments must be passed as a tuple')
@@ -65,7 +66,7 @@ def TdiExecute(expression,args=None):
         Tree.lock()
         restoreContext()
         if args is None:
-            status=TdiShr.TdiExecute(pointer(descriptor(expression)),pointer(xd),c_void_p(-1))
+            status=TdiShr.TdiExecute(_C.pointer(descriptor(expression)),_C.pointer(xd),_C.c_void_p(-1))
         else:
             if isinstance(args,tuple):
                 if len(args) > 0:
@@ -73,10 +74,10 @@ def TdiExecute(expression,args=None):
                         ans = TdiExecute(expression,args[0])
                         done=True
                 if not done:
-                    exp='TdiShr.TdiExecute(pointer(descriptor(expression))'
+                    exp='TdiShr.TdiExecute(_C.pointer(descriptor(expression))'
                     for i in range(len(args)):
-                        exp=exp+',pointer(descriptor(args[%d]))' % i
-                    exp=exp+',pointer(xd),c_void_p(-1))'
+                        exp=exp+',_C.pointer(descriptor(args[%d]))' % i
+                    exp=exp+',_C.pointer(xd),_C.c_void_p(-1))'
                     status=eval(exp)
             else:
                 raise TypeError('Arguments must be passed as a tuple')
@@ -99,7 +100,7 @@ def TdiDecompile(value):
     try:
         Tree.lock()
         restoreContext()
-        status=TdiShr.TdiDecompile(pointer(descriptor(value)),pointer(xd),c_void_p(-1))
+        status=TdiShr.TdiDecompile(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
         Tree.unlock()
     if (status & 1 != 0):
@@ -120,7 +121,7 @@ def TdiEvaluate(value):
     try:
         Tree.lock()
         restoreContext()
-        status=TdiShr.TdiEvaluate(pointer(descriptor(value)),pointer(xd),c_void_p(-1))
+        status=TdiShr.TdiEvaluate(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
         Tree.unlock()
     if (status & 1 != 0):
@@ -138,7 +139,7 @@ def TdiData(value):
     try:
         Tree.lock()
         restoreContext()
-        status=TdiShr.TdiData(pointer(descriptor(value)),pointer(xd),c_void_p(-1))
+        status=TdiShr.TdiData(_C.pointer(descriptor(value)),_C.pointer(xd),_C.c_void_p(-1))
     finally:
         Tree.unlock()
     if (status & 1 != 0):

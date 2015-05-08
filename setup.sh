@@ -77,15 +77,15 @@ doExport()
   fi
 }
 
-if (test "$MDSPLUS_DIR" = "")
-then
+if [ -n "$MDSPLUS_DIR" ]; then
+  :
+elif [ -r /etc/.mdsplus_dir ]; then
+  MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
+else
   MDSPLUS_DIR=/usr/local/mdsplus
-  if ( test -r /etc/.mdsplus_dir )
-  then
-    MDSPLUS_DIR=`/bin/cat /etc/.mdsplus_dir`
-  fi
-  doExport MDSPLUS_DIR
 fi
+doExport MDSPLUS_DIR
+
 if ( test "$temp_sym_name" != "") 
 then
   eval temp_sym_old_value=$`echo $temp_sym_name`
@@ -182,3 +182,16 @@ else
     unset temp_file
   fi
 fi
+if [ -z "$PyLib" ]
+then
+  pyver="$(python -V 2>&1)"
+  if [ $? = 0 -a "$pyver" != "" ]
+  then
+    PyLib=$(echo $pyver | awk '{print $2}' 2>/dev/null | awk -F. '{print "python"$1"."$2}' 2>/dev/null)
+    if [ $? = 0 ]
+    then
+      doExport PyLib
+    fi
+  fi
+fi
+

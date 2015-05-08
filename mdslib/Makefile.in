@@ -1,42 +1,23 @@
-SHELL=/bin/sh
-CC=@CC@
-FC=@F77@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-FFLAGS=@FFLAGS@
-LDFLAGS=@LDFLAGS@
+include @top_srcdir@/Makefile.inc
+
+@MINGW_TRUE@ IMPLIB_MdsLib=@MAKELIBDIR@MdsLib.dll.a
+@MINGW_TRUE@ IMPLIB_MdsLib_client=@MAKELIBDIR@MdsLib_client.dll.a
+@MINGW_TRUE@ DEF=MdsLib.def
+
 LIBS=@GLOBUS_LIBS@ @LIBS@ @LIBSOCKET@ @LIBNSL@ @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
-INSTALL=@top_srcdir@/conf/install-sh -c
-
-ifeq "@MDSTCPIP@" "mdsip_xio"
-include makefile-header
-CFLAGS = $(GLOBUS_CFLAGS) $(GLOBUS_INCLUDES) -I$(top_srcdir)/include
-LDFLAGS = $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) --allow-multiple-definition
-endif
-
-ifeq "@MDSIP_CONNECTIONS@" "yes"
-MdsIpUtil="MdsIpShr"
-else
-MdsIpUtil="MdsIpUtil"
-endif
 
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o) 
 EXPORTS = MdsLib.export
 
 OBJECTS_CLIENT = MdsLib_client.o 
-OBJECTS_CLIENT_ARCHIVE = ../mdstcpip/mdsiputil.o
 
 all: @MAKEBINDIR@ @MAKELIBDIR@ \
-         @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ \
-         @MAKESHLIBDIR@libMdsLib@SHARETYPE@ \
-         @MAKELIBDIR@libMdsLib_client.a \
-         @MAKELIBDIR@libMdsLib.a @MAKEBINDIR@mdslib_ctest  \
+         @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
+         @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)\
+         @MAKELIBDIR@@LIBPRE@MdsLib_client.a \
+         @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKEBINDIR@mdslib_ctest  \
          @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest \
 	 @MAKEBINDIR@dtype_test
 
@@ -45,57 +26,45 @@ depend:
 
 clean:
 	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT) mdslib_ftest.o
-	@ $(RM) so_locations
-	@ $(RM) @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMdsLib_client.a
-	@ $(RM) @MAKESHLIBDIR@libMdsLib@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@libMdsLib.a
-	@ $(RM) @MAKEBINDIR@mdslib_*test
-	@ $(RM) @MAKEBINDIR@dtype_test
+	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client)
+	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib_client.a @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ @libdir@
-	$(INSTALL) -m 644  @MAKELIBDIR@libMdsLib.a @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsLib@SHARETYPE@ @libdir@
+install: $(libdir)
+	$(MKDIR_P) $(libdir)
+	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a $(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client) $(libdir)
 
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
+MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 
-@MAKESHLIBDIR@libMdsLib@SHARETYPE@ : $(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) @MEMCHKLIB@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS) @GCCLIB@
+@MINGW_TRUE@ MAKE_IMPLIB_MdsLib=-Wl,--out-implib,$(IMPLIB_MdsLib)
+$(MdsLib): $(OBJECTS) $(DEF)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsIpShr -L@MAKESHLIBDIR@ $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib)
 
-@MAKELIBDIR@libMdsLib.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsLib.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
-@MAKESHLIBDIR@libMdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
-	$(LD) -o $@ @LINKSHARED@ $(LDFLAGS) $^ -L@MAKELIBDIR@ -l$(MdsIpUtil) $(LIBS) @MEMCHKLIB@  $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+@MINGW_TRUE@ MAKE_IMPLIB_MdsLib_client=-Wl,--out-implib,$(IMPLIB_MdsLib_client)
+@MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT) $(DEF)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsIpShr $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib_client)
 
-@MAKELIBDIR@libMdsLib_client.a : $(OBJECTS_CLIENT) $(OBJECTS_CLIENT_ARCHIVE)
+@MAKELIBDIR@@LIBPRE@MdsLib_client.a : $(OBJECTS_CLIENT) 
 	$(AR) -cr $@ $^
+	@RANLIB@ $@
 
 MdsLib_client.o : MdsLib.c
-	$(CC) -o $@ -c $(CFLAGS) $^ -D_CLIENT_ONLY
+	$(COMPILE.c) $< $(OUTPUT_OPTION) -D_CLIENT_ONLY
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
+@MAKEBINDIR@dtype_test : dtype_test.c $(MdsLib)
+	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@mdslib_ctest : mdslib_ctest.c
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+@MAKEBINDIR@mdslib_ctest : mdslib_ctest.c $(MdsLib)
+	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@mdslib_ftest : mdslib_ftest.f
-	$(FC) -o $@ $(FFLAGS) $^ @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+@MAKEBINDIR@mdslib_ftest : mdslib_ftest.f $(MdsLib)
+	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f
-	$(FC) -o $@ $(FFLAGS) $^ @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
+@MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f $(MdsLib)
+	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
 
-@MAKEBINDIR@dtype_test : dtype_test.c
-	$(CC) -o $@ $(CFLAGS) @CC_LDFLAGS@ $^ -L@MAKESHLIBDIR@ -lMdsLib -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS) $(GLOBUS_LIBS) $(GLOBUS_PKG_LIBS)
-
-makefile-header:  
-	@GLOBUS_LOCATION@/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio > makefile-header

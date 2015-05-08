@@ -1,15 +1,7 @@
-SHELL=/bin/sh
-FC=@F77@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
+include @top_srcdir@/Makefile.inc
+
 FFLAGS=@FFLAGS@ @D3D_FFLAGS@
 D3DLIB=@D3DLIB@
-LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
 
 SOURCES = mdsptdata.f
 OBJECTS = $(SOURCES:.f=.o)
@@ -23,15 +15,8 @@ clean :
 	@ $(RM) $(OBJECTS)
 	@ $(RM) @MAKELIBDIR@libMdsD3D@SHARETYPE@
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
+install: $(libdir)
 	$(INSTALL) -m 755  @MAKELIBDIR@libMdsD3D@SHARETYPE@ @libdir@
-
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
 
 @MAKELIBDIR@libMdsD3D@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  $(D3DLIB) -ld3 $(LIBS) @FOR_LDFLAGS@ 

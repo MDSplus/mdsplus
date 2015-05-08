@@ -14,11 +14,13 @@ import jScope.FrameData;
 import jScope.MdsWaveInterface;
 import jScope.ColorMap;
 import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
 import java.util.*;
 import java.io.*;
 import javax.swing.SwingUtilities;
 import java.awt.image.*;
 import java.awt.geom.*;
+import javax.swing.TransferHandler;
 
 /**
  Class MultiWaveform extends the capability of class Waveform to deal with multiple
@@ -34,6 +36,7 @@ public class jScopeMultiWave
     {
         super();
         wi = new MdsWaveInterface(this, dp, def_values, cache_enabled);
+        setTransferHandler(new ToTransferHandler());
     }
 
     public void processUpdateEvent(UpdateEvent e)
@@ -73,7 +76,12 @@ public class jScopeMultiWave
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
                 boolean cache_state = mwi.cache_enabled;
                 mwi.cache_enabled = false;
-                mwi.refresh();
+                try {
+                    mwi.refresh();
+                }catch(Exception exc)
+                {
+                    System.out.println(exc);
+                }
                 mwi.cache_enabled = cache_state;
 
                 SwingUtilities.invokeLater(new Runnable()
@@ -107,9 +115,9 @@ public class jScopeMultiWave
             {
                 MdsWaveInterface mwi = (MdsWaveInterface) wi;
                 boolean cache_state = mwi.cache_enabled;
-                mwi.cache_enabled = false;
-                mwi.refresh();
-                mwi.cache_enabled = cache_state;
+                try {
+                    mwi.refresh();
+                }catch(Exception exc){}
 
                 SwingUtilities.invokeLater(new Runnable()
                     {
@@ -408,4 +416,46 @@ public class jScopeMultiWave
                 0F, 0F));
         }
     }
+    
+          //Inner class ToTransferHandler to receive jTraverser info
+    class ToTransferHandler extends TransferHandler
+    {
+        public boolean canImport(TransferHandler.TransferSupport support)
+        {
+            if(!support.isDrop())
+                return false;
+            if(!support.isDataFlavorSupported(DataFlavor.stringFlavor))
+                return false;
+            if((support.getSourceDropActions() & TransferHandler.COPY_OR_MOVE) == 0)
+                return false;
+            //support.setDropAction(TransferHandler.COPY);
+            return true;
+        }
+        public boolean importData(TransferHandler.TransferSupport support)
+        {
+            if(!canImport(support))
+                return false;
+            try {
+                
+                String data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
+               StringTokenizer st = new StringTokenizer(data, ":");
+                String experiment = st.nextToken();
+                String path = data.substring(experiment.length()+1);
+                 if(support.getDropAction() ==  TransferHandler.MOVE)
+                    wi.Erase();
+                wi.setExperiment(experiment);
+                wi.AddSignal(path);
+                WaveformEvent we = new WaveformEvent(jScopeMultiWave.this,
+                    WaveformEvent.EVENT_UPDATE, "Update on Drop event ");
+                dispatchWaveformEvent(we);
+            }catch(Exception exc)
+            {
+                return false;
+            }
+            return true;
+        }
+     }
+    
+
+
 }

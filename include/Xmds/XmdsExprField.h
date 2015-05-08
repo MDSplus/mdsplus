@@ -32,39 +32,39 @@
 
 #ifndef XmdsIsExprField
 #define XmdsIsExprField(w) XtIsSubclass(w, xmdsExprFieldWidgetClass)
-#endif /* XmdsIsExprField */
+#endif				/* XmdsIsExprField */
 
 /* XmdsExprField Widget Class */
 externalref WidgetClass xmdsExprFieldWidgetClass;
 
-typedef struct _XmdsExprFieldClassRec  *XmdsExprFieldWidgetClass;
+typedef struct _XmdsExprFieldClassRec *XmdsExprFieldWidgetClass;
 typedef struct _XmdsExprFieldWidgetRec *XmdsExprFieldWidget;
 
 #ifdef _NO_PROTO
 
-extern Widget	XmdsCreateExprField();
-extern Boolean	XmdsExprFieldApply();
-extern struct descriptor *XmdsExprFieldGetXd ();
-extern Boolean	XmdsExprFieldPut();
-extern void	XmdsExprFieldRegister();
-extern void	XmdsExprFieldReset();
-extern void	XmdsExprFieldSetDefaultNid();
-extern void	XmdsExprFieldSetNid();
-extern void	XmdsExprFieldSetXd();
+extern Widget XmdsCreateExprField();
+extern Boolean XmdsExprFieldApply();
+extern struct descriptor *XmdsExprFieldGetXd();
+extern Boolean XmdsExprFieldPut();
+extern void XmdsExprFieldRegister();
+extern void XmdsExprFieldReset();
+extern void XmdsExprFieldSetDefaultNid();
+extern void XmdsExprFieldSetNid();
+extern void XmdsExprFieldSetXd();
 
-#else /* _NO_PROTO */
+#else				/* _NO_PROTO */
 
-extern Widget	XmdsCreateExprField(Widget parent,char *name,ArgList args,Cardinal argcount);
-extern Boolean	XmdsExprFieldApply(Widget w);
-extern struct descriptor *XmdsExprFieldGetXd (Widget w);
-extern Boolean	XmdsExprFieldPut(Widget w);
-extern void	XmdsExprFieldRegister();
-extern void	XmdsExprFieldReset(Widget w);
-extern void	XmdsExprFieldSetDefaultNid(Widget w,int nid);
-extern void	XmdsExprFieldSetNid(Widget w,int nid,int offset);
-extern void	XmdsExprFieldSetXd(Widget w,struct descriptor *dsc);
+extern Widget XmdsCreateExprField(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Boolean XmdsExprFieldApply(Widget w);
+extern struct descriptor *XmdsExprFieldGetXd(Widget w);
+extern Boolean XmdsExprFieldPut(Widget w);
+extern void XmdsExprFieldRegister();
+extern void XmdsExprFieldReset(Widget w);
+extern void XmdsExprFieldSetDefaultNid(Widget w, int nid);
+extern void XmdsExprFieldSetNid(Widget w, int nid, int offset);
+extern void XmdsExprFieldSetXd(Widget w, struct descriptor *dsc);
 
-#endif /* _NO_PROTO */
+#endif				/* _NO_PROTO */
 
 /* Resources */
 
@@ -82,5 +82,5 @@ extern void	XmdsExprFieldSetXd(Widget w,struct descriptor *dsc);
 
 externalref WidgetClass xmdsExprFieldWidgetClass;
 
-#endif /* _XmdsExprField_H */
+#endif				/* _XmdsExprField_H */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

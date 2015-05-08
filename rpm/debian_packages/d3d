@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---d3d
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---kernel
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: MDSplus support for accessing data from the D3D experiment at General Atomics.

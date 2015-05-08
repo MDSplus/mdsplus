@@ -1,22 +1,17 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ 
-INSTALL=@top_srcdir@/conf/install-sh -c
+include @top_srcdir@/Makefile.inc
+
+CFLAGS += $(THREAD) 
+LDFLAGS += $(THREAD)
+
+@MINGW_TRUE@ MDSTCL=mdstcl.bat
+@MINGW_FALSE@ MDSTCL=mdstcl
+@MINGW_TRUE@ DEF=tcl_commands.def
 
 SOURCES = 			\
-	tcl_dummy.c		\
 	tcl_add_node.c	\
 	tcl_add_tag.c		\
 	tcl_clean_datafile.c		\
 	tcl_close.c		\
-	tcl_commands.c	\
 	tcl_compress_datafile.c		\
 	tcl_create_pulse.c	\
 	tcl_decompile.c	\
@@ -51,33 +46,30 @@ SOURCES = 			\
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = tcl_commands.export
 
-all:	@MAKEBINDIR@mdstcl @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
+all:	@MAKEBINDIR@$(MDSTCL) @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
 
 depend: 
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) tcl_commands.c
-	@ $(RM) @MAKEBINDIR@mdstcl
-	@ $(RM) @MAKESHLIBDIR@libtcl_commands@SHARETYPE@
+	@ $(RM) @MAKEBINDIR@$(MDSTCL)
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libtcl_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@mdstcl @bindir@
+install: $(libdir) $(bindir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755 @MAKEBINDIR@$(MDSTCL) $(bindir)
 
-@MAKEBINDIR@mdstcl:	tcl
-	cp  tcl $@
-	chmod +x $@
+@MAKEBINDIR@$(MDSTCL): $(MDSTCL)
+	$(INSTALL) -m 755 $< $@
 
-tcl_commands.c:	tcl_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < tcl_commands.ocld
+cdudir = $(top_builddir)/cdu
+CDU = $(cdudir)/cdu
+
+tcl_commands.c-disabled:	tcl_commands.ocld
+	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < tcl_commands.ocld;\
+              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < tcl_commands.ocld; fi
 	$(MAKE) depend
 
-@MAKESHLIBDIR@libtcl_commands@SHARETYPE@:	$(OBJECTS)
-	$(LD)  -o $@ @LINKSHARED@ $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS) $(LDFLAGS)
+@MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@: $(OBJECTS) $(DEF)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lMdsServerShr -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr $(LIBS) @LIBREADLINE@

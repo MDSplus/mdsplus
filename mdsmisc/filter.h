@@ -22,63 +22,57 @@
 /*  DEC/CMS REPLACEMENT HISTORY, Element FILTER.H */
 #include "complex.h"
 
-
-typedef struct { int	num_degree,
-			den_degree;
-		double *num,
-			*den;
-	} FilterUnit;
+typedef struct {
+  int num_degree, den_degree;
+  double *num, *den;
+} FilterUnit;
 
 typedef struct {
-	int num_parallels;
-	FilterUnit *units;
-  }Filter;
-
+  int num_parallels;
+  FilterUnit *units;
+} Filter;
 
 #define MAX_FILTER_BUF 64
 #define MAX_FILTER_UNITS 16
 
-typedef struct{
-	double oldX[MAX_FILTER_BUF];
-	double oldY[MAX_FILTER_UNITS][MAX_FILTER_BUF];
-	int idx;
-}RunTimeFilter;
-
+typedef struct {
+  double oldX[MAX_FILTER_BUF];
+  double oldY[MAX_FILTER_UNITS][MAX_FILTER_BUF];
+  int idx;
+} RunTimeFilter;
 
 /* Public Function prototypes */
 Filter *ButtwInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
 Filter *ButtwBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
-Filter *ChebInvar(float * fp, float * fs, float * ap, float * as, float * fc, int *out_n);
-Filter *ChebBilinear(float * fp, float * fs, float * ap, float * as, float * fc, int *out_n);
-Filter *BessInvar(float * fp, float * fs, float * ap, float * as, float * fc, float * delay, int *out_n);
+Filter *ChebInvar(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
+Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as, float *fc, int *out_n);
+Filter *BessInvar(float *fp, float *fs, float *ap, float *as, float *fc, float *delay, int *out_n);
 
-Filter *FirRectangular(float * fc, float * s_f, int *n);
-Filter *FirBartlett(float * fc, float * s_f, int *n);
-Filter *FirHanning(float * fc, float * s_f, int *n);
-Filter *FirHamming(float * fc, float * s_f, int *n);
-Filter *FirBlackmann(float * fc, float * s_f, int *n);
+Filter *FirRectangular(float *fc, float *s_f, int *n);
+Filter *FirBartlett(float *fc, float *s_f, int *n);
+Filter *FirHanning(float *fc, float *s_f, int *n);
+Filter *FirHamming(float *fc, float *s_f, int *n);
+Filter *FirBlackmann(float *fc, float *s_f, int *n);
 
-
-void 	DoFilter(Filter *filter, float *in, float *out, int *n_samples);
-void 	DoFilterResample(Filter *filter, float *in, float *out, int *n_samples, int *start_idx, int *delta_idx, int *max_out_idx);
-void 	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_samples, int *start_idx, 
-	int *delta_idx, int *max_out_idx, int step_raw);
-void	TestFilter(Filter *filter, float fc, int n_points, float *module, float *phase);
-void	FreeFilter(Filter *filter);
-
+void DoFilter(Filter * filter, float *in, float *out, int *n_samples);
+void DoFilterResample(Filter * filter, float *in, float *out, int *n_samples, int *start_idx,
+		      int *delta_idx, int *max_out_idx);
+void DoFilterResampleVME(Filter * filter, short *in, float *out, int *n_samples, int *start_idx,
+			 int *delta_idx, int *max_out_idx, int step_raw);
+void TestFilter(Filter * filter, float fc, int n_points, float *module, float *phase);
+void FreeFilter(Filter * filter);
 
 /* Public Function prototypes internally used */
-Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)());
-Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n, Complex* (*FindPoles)());
-Complex *FindFactors(Complex *poles, double fc, int n, double gain);
+Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n,
+		  Complex * (*FindPoles) ());
+Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out_n,
+		 Complex * (*FindPoles) ());
+Complex *FindFactors(Complex * poles, double fc, int n, double gain);
 
 /* Real time support */
 //Prepare the description of a butterworth 
 Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles);
 //Initialize then data structures whichb are required for real-time filtering
-void initializeRunTimeFilter(RunTimeFilter *rtf);
+void initializeRunTimeFilter(RunTimeFilter * rtf);
 /* Perform step filtering */
-double getFiltered(double in, Filter *flt, RunTimeFilter *rtf);
-
-
-
+double getFiltered(double in, Filter * flt, RunTimeFilter * rtf);

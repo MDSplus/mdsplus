@@ -1,4 +1,4 @@
-LIBRARY	RemCamShr
+LIBRARY	CamShr
 EXPORTS
 ;
 CamBytcnt
@@ -16,3 +16,4 @@ CamQstopw
 CamStopw
 CamPiow
 CamPioQrepw
+CamVerbose

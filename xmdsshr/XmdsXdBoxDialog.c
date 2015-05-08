@@ -21,7 +21,6 @@
 
 	Call sequence:
 
-
 ------------------------------------------------------------------------------
    Copyright (c) 1992
    Property of Massachusetts Institute of Technology, Cambridge MA 02139.
@@ -32,20 +31,19 @@
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <Xm/DialogS.h>
 #include <Xmds/XmdsXdBoxP.h>
 static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-static void LoadDialog(Widget shell,Widget xdbw);
+static void LoadDialog(Widget shell, Widget xdbw);
 extern void XmdsXdBoxLoad();
 /****************************************************
   Routine to create a Popup Xd Widget.  Use
   resources originalXd, and buttonCallback to setup
   the initial widget.
 ****************************************************/
-Widget XmdsCreateXdBoxDialog(Widget parent,char *name,ArgList args,Cardinal argcount)
+Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Cardinal argcount)
 {
 
   /*------------------------------------------------------------------------------
@@ -71,9 +69,10 @@ Widget XmdsCreateXdBoxDialog(Widget parent,char *name,ArgList args,Cardinal argc
   Widget hidden;
   Widget widg;
 
-  static Arg shell_args[] = {{XmNallowShellResize, 1},
-			    {XmNoverrideRedirect,0},
-			    {XmNdeleteResponse, XmDESTROY}};
+  static Arg shell_args[] = { {XmNallowShellResize, 1},
+  {XmNoverrideRedirect, 0},
+  {XmNdeleteResponse, XmDESTROY}
+  };
 
   Arg *sub_args;
   int i, cnt;
@@ -84,12 +83,12 @@ Widget XmdsCreateXdBoxDialog(Widget parent,char *name,ArgList args,Cardinal argc
   
    Executable:                                                                  */
 
-  strcpy((char *) new_name,name);
-  strcpy((char *) &new_name[strlen(name)],"_popup");
+  strcpy((char *)new_name, name);
+  strcpy((char *)&new_name[strlen(name)], "_popup");
 
-  hidden = XmCreateDialogShell(parent,(char *) new_name,shell_args,XtNumber(shell_args));
+  hidden = XmCreateDialogShell(parent, (char *)new_name, shell_args, XtNumber(shell_args));
   XtFree(new_name);
-  XtSetValues(hidden,args,argcount);
+  XtSetValues(hidden, args, argcount);
   /**************************************
     Create the widget with the
     users arguments.  And realize the
@@ -98,26 +97,26 @@ Widget XmdsCreateXdBoxDialog(Widget parent,char *name,ArgList args,Cardinal argc
     first copy the input arguments removing
     XmNx and XmNy
    *************************************/
-  sub_args = (Arg *)XtMalloc(sizeof(Arg)*argcount);
-  for (i=0, cnt=0; i < argcount; i++) {
-    if ((strcmp(args[i].name, XmNx) != 0) &&
-        (strcmp(args[i].name, XmNy) != 0)) {
+  sub_args = (Arg *) XtMalloc(sizeof(Arg) * argcount);
+  for (i = 0, cnt = 0; i < argcount; i++) {
+    if ((strcmp(args[i].name, XmNx) != 0) && (strcmp(args[i].name, XmNy) != 0)) {
       sub_args[cnt].name = args[i].name;
       sub_args[cnt++].value = args[i].value;
     }
   }
-  widg = XtCreateWidget(name,xmdsXdBoxWidgetClass,hidden,sub_args, cnt);
-  XtFree((XtPointer)sub_args);
+  widg = XtCreateWidget(name, xmdsXdBoxWidgetClass, hidden, sub_args, cnt);
+  XtFree((XtPointer) sub_args);
 
   /*************************************
      Add a callback to load the dialog
      box when it is popped up
    *************************************/
-  XtAddCallback(hidden,XmNpopupCallback,(XtCallbackProc)LoadDialog,widg);
+  XtAddCallback(hidden, XmNpopupCallback, (XtCallbackProc) LoadDialog, widg);
   XtRealizeWidget(hidden);
   return widg;
 }
-static void LoadDialog(Widget shell,Widget xdbw)
+
+static void LoadDialog(Widget shell, Widget xdbw)
 {
   XmdsXdBoxLoad(xdbw);
 }

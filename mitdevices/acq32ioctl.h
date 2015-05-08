@@ -101,28 +101,28 @@
  */
 
 #define ACQ32_IOCGMEM      _IOR(ACQ32_IOC_MAGIC,   1, sizeof(void*))
-#define ACQ32_IOSLIMIT     _IO (ACQ32_IOC_MAGIC,  2 ) // set readout limit
+#define ACQ32_IOSLIMIT     _IO (ACQ32_IOC_MAGIC,  2 )	// set readout limit
 
 // arg for LIMIT is limit count of samples per read
 
-#define ACQ32_IOSFORMAT    _IO (ACQ32_IOC_MAGIC,  3 ) // set output format
+#define ACQ32_IOSFORMAT    _IO (ACQ32_IOC_MAGIC,  3 )	// set output format
 
-#define ACQ32_IOARMSPIN    _IO(ACQ32_IOC_MAGIC,  4 ) // make ARM spin 
-#define ACQ32_IOARMRESET   _IO(ACQ32_IOC_MAGIC,  5 ) // reset ARM
+#define ACQ32_IOARMSPIN    _IO(ACQ32_IOC_MAGIC,  4 )	// make ARM spin
+#define ACQ32_IOARMRESET   _IO(ACQ32_IOC_MAGIC,  5 )	// reset ARM
 
-#define ACQ32_IOSDEBUG     _IOW(ACQ32_IOC_MAGIC, 6, 4) // set debug level
+#define ACQ32_IOSDEBUG     _IOW(ACQ32_IOC_MAGIC, 6, 4)	// set debug level
 // arg for format is
 
 enum ChannelMode {
-    CM_BINARY,
-    CM_HEX,
-    CM_DEC,
-    CM_VOLTS,
+  CM_BINARY,
+  CM_HEX,
+  CM_DEC,
+  CM_VOLTS,
 
-    CM_EXCLUSIVE_OPTS = 0xf,
+  CM_EXCLUSIVE_OPTS = 0xf,
 
-    CM_LINENUMS = 0x40,
-    CM_DOS_LINES = 0x80
+  CM_LINENUMS = 0x40,
+  CM_DOS_LINES = 0x80
 };
 
 /*
@@ -138,11 +138,10 @@ enum ChannelMode {
     _IOR(ACQ32_IOC_MAGIC, ACQ32_IO_MBX_NR +(ix), sizeof(unsigned*))
 
 #define ACQ32_IOSROM_WORD_A01     _IO( ACQ32_IOC_MAGIC, 14 )
-#define ACQ32_IOCHARDRESET        _IO (ACQ32_IOC_MAGIC, 15 ) /* debugging tool */
+#define ACQ32_IOCHARDRESET        _IO (ACQ32_IOC_MAGIC, 15 )	/* debugging tool */
 #define ACQ32_IOSENDI2O           _IO (ACQ32_IOC_MAGIC, 16 )
 #define ACQ32_IOREAD_LOCALBUF     _IO (ACQ32_IOC_MAGIC, 17 )
 #define ACQ32_IOC_MAXNR 18
-
 
 /*
  * ioctls are less important that command strings:
@@ -161,15 +160,15 @@ enum ChannelMode {
 #define CC_FORMAT_LINENUMS "lines"
 #define CC_FORMAT_DOS      "dos"
 
-#define CC_LIMIT           "limit"   // limit n - limit output to n samples
+#define CC_LIMIT           "limit"	// limit n - limit output to n samples
 
-#define CC_SEEK            "seek"    // seek {whence} n
+#define CC_SEEK            "seek"	// seek {whence} n
 #define CC_SEEK_BEGIN      "start"
 #define CC_SEEK_END        "end"
 #define CC_SEEK_CURRENT    "current"
 #define CC_SEEK_TRIG       "trig"
 
-#define CC_STREAM          "stream" // stream [stride [, mean]]
+#define CC_STREAM          "stream"	// stream [stride [, mean]]
 
 /*
  * master commands - apply to master dev only
@@ -179,34 +178,33 @@ enum ChannelMode {
 #define MC_GET_NUMSAMPLES   "getNumSamples"
 #define MC_GET_SETSAMPLES   "getSetNumSamples"
 #define MC_GET_STATE        "getState"
-    
-#define MC_SET_CHANNEL_MASK "setChannelMask" // <mask> {0|1}*N
+
+#define MC_SET_CHANNEL_MASK "setChannelMask"	// <mask> {0|1}*N
 #define MC_GET_CHANNEL_MASK "getChannelMask"
 
-#define MC_GET_MEMORY_DEPTH "getMemoryDepth" // <channel>
-#define MC_SET_MODE         "setMode"        // <mode> <samples> [RUN_BLOCK]
-#define MC_GET_MODE         "getMode"        // <mode> <samples>
+#define MC_GET_MEMORY_DEPTH "getMemoryDepth"	// <channel>
+#define MC_SET_MODE         "setMode"	// <mode> <samples> [RUN_BLOCK]
+#define MC_GET_MODE         "getMode"	// <mode> <samples>
 #define MC_SET_ARM          "setArm"
 #define MC_SET_ABORT        "setAbort"
 
-#define MC_SET_ROUTE        "setRoute"       // raw, row, channel 
-#define MC_SET_DISTRIBUTOR  "setDistributor" // 0..n
+#define MC_SET_ROUTE        "setRoute"	// raw, row, channel
+#define MC_SET_DISTRIBUTOR  "setDistributor"	// 0..n
 
 #define MC_MODE_GATED_TRANSIENT  "GATED_TRANSIENT"
 #define MC_MODE_GATED_CONTINUOUS "GATED_CONTINUOUS"
 #define MC_MODE_SOFT_TRANSIENT   "SOFT_TRANSIENT"
 #define MC_MODE_SOFT_CONTINUOUS  "SOFT_CONTINUOUS"
 
-#define MC_SET_MODE_GC      "setModeGatedContinuous" // <pre> <post>
-#define MC_SET_MODE_TRC     "setModeTriggeredContinuous" // <pre> <post>
-
+#define MC_SET_MODE_GC      "setModeGatedContinuous"	// <pre> <post>
+#define MC_SET_MODE_TRC     "setModeTriggeredContinuous"	// <pre> <post>
 
 #define MC_STATE_STOP            "ST_STOP"
 #define MC_STATE_ARM             "ST_ARM"
 #define MC_STATE_RUN             "ST_RUN"
 #define MC_STATE_TRIGGER         "ST_TRIGGER"
 
-#define MC_MODE_RUN_BLOCK        "RUN_BLOCK" 
+#define MC_MODE_RUN_BLOCK        "RUN_BLOCK"
 
 #define MC_SET_ARMED        "setArmed"
 #define MC_SET_ABORT        "setAbort"
@@ -225,10 +223,10 @@ enum ChannelMode {
  * valid on SC device
  */
 
-#define SC_SET_DIO         "setDIO"     // setDIO <dio-mask>
-#define SC_GET_DIO         "getDIO"     // getDIO
-#define SC_SET_CHANNEL     "setChannel" // setChannel <ch>,<g1>,<g2>,<v_ex>
-#define SC_SET_STREAMING   "stream"     // stream <stride> <mean>
+#define SC_SET_DIO         "setDIO"	// setDIO <dio-mask>
+#define SC_GET_DIO         "getDIO"	// getDIO
+#define SC_SET_CHANNEL     "setChannel"	// setChannel <ch>,<g1>,<g2>,<v_ex>
+#define SC_SET_STREAMING   "stream"	// stream <stride> <mean>
 #define DIO_MASK_INPUT     '-'
 #define DIO_MASK_OUTPUT1   '1'
 #define DIO_MASK_OUTPUT0   '0'
@@ -245,21 +243,21 @@ enum ChannelMode {
 /*
  * acq32 specific error codes
  */
- 
+
 enum {
-    EACQ32_NO_INCOMING_I2O    = 3200,
-    EACQ32_NO_MAPPING
+  EACQ32_NO_INCOMING_I2O = 3200,
+  EACQ32_NO_MAPPING
 };
 
 /*
  * ACQ32_IOREAD_LOCALBUF
  */
- 
+
 struct READ_LOCALBUF_DESCR {
-    short* buffer;            // MUST be buffer returned from mmap()
-    int nsamples;
-    int istart;
-    int istride;   
+  short *buffer;		// MUST be buffer returned from mmap()
+  int nsamples;
+  int istart;
+  int istride;
 };
 
-#endif //    _ACQ32IOCTL_H_
+#endif				//    _ACQ32IOCTL_H_

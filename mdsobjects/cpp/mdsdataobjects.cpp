@@ -1,34 +1,34 @@
 #include "mdsobjects.h"
+
+#include <mdsplus/mdsplus.h>
+#include <mdsplus/AutoPointer.hpp>
+
+#include <cstdio>
+#include <iostream>
+#include <stdarg.h>
+#include <string.h>
+
 //#include "mdstree.h"
 using namespace MDSplus;
 using namespace std;
 
-#ifdef HAVE_WINDOWS_H
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
-#endif
-
 #define MAX_ARGS 512
 
-
-
 extern "C" {
-	char * MdsGetMsg(int status);
+	// From mdsshr.h. Can't include because of class keyword usage in mdsdescrip.h
+	char *MdsGetMsg(int sts);
 
 	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
 	void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus);
 	void freeDsc(void *dscPtr);
 	void *convertFromDsc(void *dscPtr);
 	char *decompileDsc(void *dscPtr);
-	char *decompileDsc(void *dscPtr);
 	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree, int *retStatus);
-	void freeChar(void *);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
 	void *convertToApdDsc(int type, int ndescs, void **ptr);
 	char * serializeData(void *dsc, int *retSize, void **retDsc);
-	void *deserializeData(char const *serialized);
+	void *deserializeData(char const * serialized);
 
 	void * convertToByte(void *dsc); 
 	void * convertToShort(void *dsc); 
@@ -48,7 +48,6 @@ extern "C" {
 	void convertToIEEEFloatArray(int dtype, int length, int nDims, int *dims, void *ptr);
 	void convertTimeToAscii(int64_t *timePtr, char *dateBuf, int bufLen, int *retLen);
 }
-
 
 //////Wrapper functions called by C code to build a Data class instance from a MDSplus descriptor///////////
 
@@ -87,7 +86,6 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 	return 0;
 }
 
-
 extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, char *ptr, 
 								 Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
@@ -122,7 +120,8 @@ extern "C" void *createArrayData(int dtype, int length, int nDims, int *dims, ch
 extern "C" void *createCompoundData(int dtype, int length, char *ptr, int nDescs, char **descs, 
 									Data *unitsData, Data *errorData, Data *helpData, Data *validationData)
 {
-	switch (dtype) {
+//printf("CREATE COMPOUND DATA nDescs = %d ptr= %x\n", nDescs, ptr);
+  switch (dtype) {
 		case DTYPE_SIGNAL: return new Signal(dtype, length, ptr, nDescs, descs, unitsData, errorData, helpData, validationData);
 		case DTYPE_DIMENSION: return new Dimension(dtype, length, ptr, nDescs, descs, unitsData, errorData, helpData, validationData);
 		case DTYPE_WINDOW: return new Window(dtype, length, ptr, nDescs, descs, unitsData, errorData, helpData, validationData);
@@ -159,40 +158,108 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 	return new Dictionary(nData, (Data **) dataPtrs, unitsData, errorData, helpData, validationData);
 }
 
+////////MdsException implemenmtation /////
+MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
-EXPORT void *Data::operator new(size_t sz)
-{
+Data::~Data() {
+	decRefCount();
+}
+
+void *Data::operator new(size_t sz) {
 	return ::operator new(sz);
 }
-EXPORT void Data::operator delete(void *p)
-{
+
+
+void Data::operator delete(void *p) {
+	Data * data = reinterpret_cast<Data *>(p);
+	delete data->units;
+	delete data->error;
+	delete data->help;
+	delete data->validation;
+	//data->propagateDeletion();
 	::operator delete(p);
+}
+
+void MDSplus::deleteData(Data *data) {
+	if (data->refCount <= 1) {
+		delete data;
+	}
+}
+
+void Data::decRefCount(Data * d) {
+	d->refCount--;
+}
+
+void Data::incRefCount(Data * d) {
+	d->refCount++;
+}
+
+void Data::decRefCount() {
+	decRefCount(this);
+}
+
+void Data::incRefCount() {
+	incRefCount(this);
+}
+
+static Data * getMember(Data * member) {
+	if (member)
+		member->refCount++;
+	return member;
+}
+
+Data * Data::getUnits() {
+	return getMember(units);
+}
+
+Data * Data::getError() {
+	return getMember(error);
+}
+
+Data * Data::getHelp() {
+	return getMember(help);
+}
+
+Data * Data::getValidation() {
+	return getMember(validation);
+}
+
+static void setMember(Data * oldMbr, Data * newMbr) {
+	if (oldMbr)
+		deleteData(oldMbr);
+	oldMbr = newMbr;
+	oldMbr->refCount++;
+}
+
+void Data::setUnits(Data * inUnits) {
+	setMember(units, inUnits);
+}
+
+void Data::setError(Data * inError) {
+	setMember(error, inError);
+}
+
+void Data::setHelp(Data * inHelp) {
+	setMember(help, inHelp);
+}
+
+void Data::setValidation(Data * inValidation) {
+	setMember(validation, inValidation);
 }
 
 Data *Data::data()
 {
-	if(!hasChanged() && !dataCache)
-	{
-		printf("FATAL: has changed and no data cached\n");
-		exit(0);
-	}
-	if(!hasChanged())
-		return dataCache->clone();
-
 	void *dscPtr = convertToDsc();
 	int retStatus;
 	void *evalPtr = evaluateData(dscPtr, 0, &retStatus);
 	if(!(retStatus & 1))
 		throw MdsException(retStatus);
 
-	if(dataCache)
-		deleteData(dataCache);
-	dataCache = (Data *)convertFromDsc(evalPtr);
+	Data *retData = (Data *)convertFromDsc(evalPtr);
 	freeDsc(dscPtr);
 	freeDsc(evalPtr);
-	changed = false;
-	return dataCache->clone();
+	return retData;
 }
 Data *Data::evaluate()
 {
@@ -210,15 +277,14 @@ Data *Data::evaluate()
 char *Data::decompile()
 {
 	void *dscPtr = convertToDsc();
-	char *dec = decompileDsc(dscPtr);
-	char *retStr = new char[strlen(dec)+1];
-	strcpy(retStr, dec);
-	freeChar(dec);
+	char * retStr = decompileDsc(dscPtr);
 	freeDsc(dscPtr);
-	return retStr;
+	//Get rid of malloc'd stuff
+	char *retDec = new char[strlen(retStr)+1];
+	strcpy(retDec, retStr);
+	free(retStr);
+	return retDec;
 }
-
-
 
 void *Scalar::convertToDsc()
 {
@@ -248,245 +314,217 @@ int * Data::getShape(int *numDim)
 	return res;
 }
 
-char *Data::getByteArray(int *numElements)
-{
+Data * Data::getData(int classType, int dataType) {
 	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
+	void *retDsc;
+	switch(dataType)  
+	{
+	  case DTYPE_B: 
+	    retDsc = convertToByte(dscPtr); 
+	    break;
+	  case DTYPE_BU:
+	    retDsc = convertToByteUnsigned(dscPtr); 
+	    break;
+	  case DTYPE_W:
+	    retDsc = convertToShort(dscPtr); 
+	    break;
+	  case DTYPE_WU:
+	    retDsc = convertToShortUnsigned(dscPtr);
+	    break;
+	  case DTYPE_L:
+	    retDsc = convertToInt(dscPtr);
+	    break;
+	  case DTYPE_LU:
+	    retDsc = convertToIntUnsigned(dscPtr);
+	    break;
+	  case DTYPE_Q:
+	    retDsc = convertToLong(dscPtr);
+	    break;
+	  case DTYPE_QU:
+	    retDsc = convertToLongUnsigned(dscPtr);
+	    break;
+	  case DTYPE_FLOAT:
+	    retDsc = convertToFloat(dscPtr);
+	    break;
+	  case DTYPE_DOUBLE:
+	    retDsc = convertToDouble(dscPtr);
+	    break;
+	}
 	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Byte Array");
+	if(!retData || retData->clazz != classType)
+		throw MdsException("Cannot convert to desired type");
 	freeDsc(dscPtr);
 	freeDsc(retDsc);
-	
-	char *res = retData->getByteArray(numElements);
-	deleteData(retData);
-	return res;
+
+	return retData;
+}
+
+Data * Data::getArrayData(int dtype) {
+	return getData(CLASS_A, dtype);
+}
+
+Data * Data::getScalarData(int dtype) {
+	return getData(CLASS_S, dtype);
+}
+
+template<class T>
+static std::vector<T> getArray(T * data, int size) {
+	std::vector<T> v(data, data+size);
+	delete[] data;
+	return v;
+}
+
+void MDSplus::deleteNativeArray(char * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned char * array){delete []array;}
+void MDSplus::deleteNativeArray(short * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned short * array){delete []array;}
+void MDSplus::deleteNativeArray(int * array){delete []array;}
+void MDSplus::deleteNativeArray(unsigned int * array){delete []array;}
+void MDSplus::deleteNativeArray(int64_t * array){delete []array;}
+void MDSplus::deleteNativeArray(uint64_t * array){delete []array;}
+void MDSplus::deleteNativeArray(float * array){delete []array;}
+void MDSplus::deleteNativeArray(double * array){delete []array;}
+void MDSplus::deleteNativeArray(char ** array){delete []array;}
+void MDSplus::deleteNativeArray(MDSplus::Data ** array){delete []array;}
+
+char *Data::getByteArray(int *numElements)
+{
+	AutoPointer<Data> array(getArrayData(DTYPE_B));
+	return array.ptr->getByteArray(numElements);
 }
 
 std::vector<char> Data::getByteArray()
 {
 	int numElements;
 	char *retData = getByteArray(&numElements);
-	std::vector<char> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
-
-
 
 unsigned char *Data::getByteUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByteUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Byte Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned char *res = retData->getByteUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_BU));
+	return array.ptr->getByteUnsignedArray(numElements);
 }
+
 std::vector<unsigned char> Data::getByteUnsignedArray()
 {
 	int numElements;
 	unsigned char *retData = getByteUnsignedArray(&numElements);
-	std::vector<unsigned char> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 short * Data::getShortArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Short Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	short *res = retData->getShortArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_W));
+	return array.ptr->getShortArray(numElements);
 }
+
 std::vector<short> Data::getShortArray()
 {
 	int numElements;
 	short *retData = getShortArray(&numElements);
-	std::vector<short> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 unsigned short * Data::getShortUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShortUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Short Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned short *res = retData->getShortUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_WU));
+	return array.ptr->getShortUnsignedArray(numElements);
 }
+
 std::vector<unsigned short> Data::getShortUnsignedArray()
 {
 	int numElements;
 	unsigned short *retData = getShortUnsignedArray(&numElements);
-	std::vector<unsigned short> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 int * Data::getIntArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Int Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int *res = retData->getIntArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_L));
+	return array.ptr->getIntArray(numElements);
 }
+
 std::vector<int> Data::getIntArray()
 {
 	int numElements;
 	int *retData = getIntArray(&numElements);
-	std::vector<int> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 unsigned int * Data::getIntUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToIntUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Int Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned int *res = retData->getIntUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_LU));
+	return array.ptr->getIntUnsignedArray(numElements);
 }
+
 std::vector<unsigned int> Data::getIntUnsignedArray()
 {
 	int numElements;
 	unsigned int *retData = getIntUnsignedArray(&numElements);
-	std::vector<unsigned int> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 int64_t * Data::getLongArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Long Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int64_t *res = retData->getLongArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_Q));
+	return array.ptr->getLongArray(numElements);
 }
+
 std::vector<int64_t> Data::getLongArray()
 {
 	int numElements;
 	int64_t *retData = getLongArray(&numElements);
-	std::vector<int64_t> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
+
 uint64_t * Data::getLongUnsignedArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLongUnsigned(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Long Unsigned Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	uint64_t *res = retData->getLongUnsignedArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_QU));
+	return array.ptr->getLongUnsignedArray(numElements);
 }
+
 std::vector<uint64_t> Data::getLongUnsignedArray()
 {
 	int numElements;
 	uint64_t *retData = getLongUnsignedArray(&numElements);
-	std::vector<uint64_t> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
+
 float * Data::getFloatArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToFloat(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Float Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	float *res = retData->getFloatArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_FLOAT));
+	return array.ptr->getFloatArray(numElements);
 }
+
 std::vector<float> Data::getFloatArray()
 {
 	int numElements;
 	float *retData = getFloatArray(&numElements);
-	std::vector<float> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
 double * Data::getDoubleArray(int *numElements)
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToDouble(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_A)
-		throw MdsException("Cannot convert to Double Array");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	double *res = retData->getDoubleArray(numElements);
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> array(getArrayData(DTYPE_DOUBLE));
+	return array.ptr->getDoubleArray(numElements);
 }
+
 std::vector<double> Data::getDoubleArray()
 {
 	int numElements;
 	double *retData = getDoubleArray(&numElements);
-	std::vector<double> retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
+
 std::vector<std::complex<double> > Data::getComplexArray()
 {
 	int numElements;
 	std::complex<double> *retData = getComplexArray(&numElements);
-	std::vector<std::complex<double> > retVect(retData, retData+numElements);
-	delete [] retData;
-	return retVect;
+	return getArray(retData, numElements);
 }
 
-char *	Data::serialize(int *size)
+char * Data::serialize(int *size)
 {
 	void *dscPtr = convertToDsc();
 	void *retDsc;
@@ -505,220 +543,102 @@ char *	Data::serialize(int *size)
 	return retSerialized;
 }
 
-
-
-
 char Data::getByte()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Byte");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	char res = retData->getByte();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_B));
+	return scalar.ptr->getByte();
 }
 
 short Data::getShort()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Short");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	short res = retData->getShort();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_W));
+	return scalar.ptr->getShort();
 }
 
 int Data::getInt()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Int");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int res = retData->getInt();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_L));
+	return scalar.ptr->getInt();
 }
 
 int64_t Data::getLong()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Long");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	int64_t res = retData->getLong();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_Q));
+	return scalar.ptr->getLong();
 }
 
 unsigned char Data::getByteUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToByte(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Byte");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned char res = retData->getByteUnsigned();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_BU));
+	return scalar.ptr->getByteUnsigned();
 }
 
 unsigned short Data::getShortUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToShort(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Short");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned short res = retData->getShortUnsigned();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_WU));
+	return scalar.ptr->getShortUnsigned();
 }
 
 unsigned int Data::getIntUnsigned()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToInt(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Int");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	unsigned int res = retData->getIntUnsigned();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_LU));
+	return scalar.ptr->getIntUnsigned();
 }
-#ifdef HAVE_WINDOWS_H
-uint64_t Data::getLongUnsigned()
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Long");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	uint64_t res = retData->getLongUnsigned();
-	deleteData(retData);
-	return res;
-}
-#else
-uint64_t Data::getLongUnsigned()
-{
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToLong(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Long");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	uint64_t res = retData->getLongUnsigned();
-	deleteData(retData);
-	return res;
-}
-#endif
 
+uint64_t Data::getLongUnsigned()
+{
+	AutoPointer<Data> scalar(getScalarData(DTYPE_QU));
+	return scalar.ptr->getLongUnsigned();
+}
 
 float Data::getFloat()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToFloat(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Float");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	float res = retData->getFloat();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_FLOAT));
+	return scalar.ptr->getFloat();
 }
 
 double Data::getDouble()
 {
-	void *dscPtr = convertToDsc();
-	void *retDsc = convertToDouble(dscPtr);
-	Data *retData = (Data *)convertFromDsc(retDsc);
-	if(!retData || retData->clazz != CLASS_S)
-		throw MdsException("Cannot convert to Double");
-	freeDsc(dscPtr);
-	freeDsc(retDsc);
-	
-	double res = retData->getDouble();
-	deleteData(retData);
-	return res;
+	AutoPointer<Data> scalar(getScalarData(DTYPE_DOUBLE));
+	return scalar.ptr->getDouble();
 }
 
-Data *Data::getDimensionAt(int dimIdx)
-{
+Data * Data::getDimensionAt(int dimIdx) {
 	return executeWithArgs("DIM_OF($)", 1, this);
 }
 
-
-	EXPORT	Data *MDSplus::compile(const char *expr)
-	{
-		return compileWithArgs(expr, 0);
-	}
-	
+Data * MDSplus::compile(const char *expr) {
+	return compileWithArgs(expr, 0);
+}
 		
-	EXPORT	Data *MDSplus::compileWithArgs(const char *expr, int nArgs ...)
-	{
-		int i;
-		void *args[MAX_ARGS];
-
-		va_list v;
-		va_start(v, nArgs);
-		for(i = 0; i < nArgs; i++)
-		{
-			Data *currArg = va_arg(v, Data *);
-			args[i] = currArg->convertToDsc();
+Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
+	struct Lambda {
+		std::vector<void *> args;
+		~Lambda() {
+			std::for_each(args.begin(), args.end(), freeDsc);
 		}
-		int status;
-		Tree *actTree = 0;
-		try {
-			actTree = getActiveTree();
-		}catch(MdsException const & exc){actTree = 0;}
-		Data *res =  (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
-		for(i = 0; i < nArgs; i++)
-		    freeDsc(args[i]);
-		if(actTree) delete actTree;
-		if(!(status & 1))
-			throw MdsException(status);
-		return res;
+	} lambda;
 
-	}
-	EXPORT	Data *MDSplus::compile(const char *expr, Tree *tree)
-	{
-		return  compileWithArgs(expr, tree, 0);
-	}
-	EXPORT	Data *MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...)
-	{
+	std::vector<void *> & args = lambda.args;
+	va_list v;
+	va_start(v, nArgs);
+	for(int i = 0; i < nArgs; ++i)
+		args.push_back((va_arg(v, Data *))->convertToDsc());
+	va_end(v);
+
+	int status;
+	AutoPointer<Tree> actTree(getActiveTree());
+	Data * res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+	if(!(status & 1))
+		throw MdsException(status);
+	return res;
+}
+
+Data * MDSplus::compile(const char *expr, Tree *tree) {
+	return  compileWithArgs(expr, tree, 0);
+}
+
+Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		int i;
 		void *args[MAX_ARGS];
 
@@ -737,20 +657,18 @@ Data *Data::getDimensionAt(int dimIdx)
 		if(!(status & 1))
 			throw MdsException(status);
 		return res;
-	}
+}
 
-	EXPORT	Data *MDSplus::execute(const char *expr)
-	{
-		return executeWithArgs(expr, 0);
-	}
+Data * MDSplus::execute(const char *expr) {
+	return executeWithArgs(expr, 0);
+}
 
-	EXPORT	Data *MDSplus::executeWithArgs(const char *expr, int nArgs ...)
-	{
-
+Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 		void *args[MAX_ARGS];
 
 		va_list v;
 		va_start(v, nArgs);
+		
 		for(int i = 0; i < nArgs; i++)
 		{
 			Data *currArg = va_arg(v, Data *);
@@ -770,15 +688,15 @@ Data *Data::getDimensionAt(int dimIdx)
 		    freeDsc(args[i]);
 		if(actTree)
 			delete(actTree);
-		return evalData;
-	}
 
-	EXPORT	Data *MDSplus::execute(const char *expr, Tree *tree)
-	{
-		return executeWithArgs(expr, tree, 0);
-	}
-	EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...)
-	{
+		return evalData;
+}
+
+Data * MDSplus::execute(const char *expr, Tree *tree) {
+	return executeWithArgs(expr, tree, 0);
+}
+
+Data * MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		void *args[MAX_ARGS];
 
 		va_list v;
@@ -795,22 +713,17 @@ Data *Data::getDimensionAt(int dimIdx)
 		if(!(status & 1))
 			throw MdsException(status);
 		if(!compData)
-		{
-			char *msg = new char[20 + strlen(expr)];
-			sprintf(msg, "Cannot compile %s", expr);
-			MdsException *exc = new MdsException(msg);
-			delete [] msg;
-			throw exc;
-		}
+			throw MdsException("Cannot compile expression");
+
 		Data *evalData = compData->data();
 		deleteData(compData);
 		for(int i = 0; i < nArgs; i++)
 		    freeDsc(args[i]);
 		return evalData;
-	}
+}
 
 /*
-EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nArgs)
+Data * MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nArgs)
 	{
 		void *args[MAX_ARGS];
 		int i;
@@ -836,15 +749,13 @@ EXPORT	Data *MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nAr
 		    freeDsc(args[i]);
 
 		return evalData;
-	}
+}
 */
 
 //Complete Conversion to Dsc by condsidering help, units and error
 
-void * Data::completeConversionToDsc(void *dsc)
-{
+void * Data::completeConversionToDsc(void *dsc) {
 	void *retDsc = dsc;
-
 
 	if(help || validation)
 	{
@@ -878,56 +789,6 @@ void * Data::completeConversionToDsc(void *dsc)
 	return retDsc;
 }
 
-
-//Controlled deletion of dynamic data
-EXPORT void MDSplus::deleteData(Data *data)
-{
-	if(!data) return;
-	data->refCount--;
-	if(data->refCount <= 0)
-	{
-		if(data->dataCache)
-			deleteData(data->dataCache);
-		if(data->error)
-			deleteData(data->error);
-		if(data->units)
-			deleteData(data->units);
-		if(data->help)
-			deleteData(data->help);
-		if(data->validation)
-		deleteData(data->validation);
-		data->error = data->units = data->help = data->validation = 0;
-		data->propagateDeletion();
-		delete data;
-	}
-}
-void Array::setSpecific(char *data, int length, int dtype, int nData)
-{
-	clazz = CLASS_A;
-	this->dtype = dtype;
-	this->length = length;
-	arsize = nData * length;
-	nDims = 1;
-	dims[0] = nData;
-	ptr = new char[arsize];
-	memcpy(ptr, data, arsize);
-}
-void Array::setSpecific(char *data, int length, int dtype, int nDims, int *dims)
-{
-	clazz = CLASS_A;
-	this->dtype = dtype;
-	this->length = length;
-	arsize = length;
-	for(int i = 0; i < nDims; i++)
-	{
-		arsize *= dims[i];
-		this->dims[i] = dims[i];
-	}
-	this->nDims = nDims;
-	ptr = new char[arsize];
-	memcpy(ptr, data, arsize);
-}
-
 int *Array::getShape(int *numDims)
 {
 	int *retDims = new int[nDims];
@@ -940,29 +801,24 @@ int *Array::getShape(int *numDims)
 //Array Methods setElementAt and getElementAt
 Data * Array::getElementAt(int *getDims, int getNumDims)
 {
-	int i;
-
 	//Check Dimensionality
 	if(getNumDims > nDims)
 		throw MdsException("Invalid passed dimensions in Array::getElementAt");
-	for(i = 0; i < getNumDims; i++)
-	{
+
+	for(int i = 0; i < getNumDims; ++i)
 		if(getDims[i] < 0 || getDims[i] >= dims[i])
 			throw MdsException("Invalid passed dimensions in Array::getElementAt");
-	}
 
 	//Prepare actual row dimensions
-	int *rowDims = new int[nDims];
+	std::vector<int> rowDims(nDims);
 	rowDims[nDims - 1] = 1;
-	for(i = nDims - 2; i >= 0; i--)
+	for(int i = nDims - 2; i >= 0; --i)
 		rowDims[i] = rowDims[i+1] * dims[i+1];
 
 	//Compute startIdx of selected data portion
 	int startIdx = 0;
-	for(i = 0; i < getNumDims; i++)
+	for(int i = 0; i < getNumDims; ++i)
 		startIdx += getDims[i] * rowDims[i];
-
-	delete [] rowDims;
 
 	if(getNumDims == nDims) //return a scalar
 		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0, 0);
@@ -1063,7 +919,6 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 			memcpy(ptr + ((startIdx + i) * length), scalarData->ptr, length); 
 	}
 	delete [] rowDims;
-	changed = true;
 
 }
 char *Array::getByteArray(int *numElements)
@@ -1224,7 +1079,7 @@ int64_t *Array::getLongArray(int *numElements)
 	*numElements = size;
 	return retArr;
 }
-#ifdef HAVE_WINDOWS_H
+
 uint64_t *Array::getLongUnsignedArray(int *numElements)
 {
 	int size = arsize/length;
@@ -1247,30 +1102,6 @@ uint64_t *Array::getLongUnsignedArray(int *numElements)
 	*numElements = size;
 	return retArr;
 }
-#else
-uint64_t *Array::getLongUnsignedArray(int *numElements)
-{
-	int size = arsize/length;
-	uint64_t *retArr = new uint64_t[size];
-	for(int i = 0; i < size; i++)
-		switch(dtype) {
-			case DTYPE_B: retArr[i] = *(char *)&ptr[i * length]; break;
-			case DTYPE_BU: retArr[i] = *(unsigned char *)&ptr[i * length]; break;
-			case DTYPE_W: retArr[i] = *(short *)&ptr[i * length]; break;
-			case DTYPE_WU: retArr[i] = *(unsigned short *)&ptr[i * length]; break;
-			case DTYPE_L: retArr[i] = *(int *)&ptr[i * length]; break;
-			case DTYPE_LU: retArr[i] = *(unsigned int *)&ptr[i * length]; break;
-			case DTYPE_Q: retArr[i] = *(uint64_t *)&ptr[i * length]; break; 
-			case DTYPE_QU: retArr[i] = *(uint64_t *)&ptr[i * length]; break;
-			case DTYPE_FLOAT: retArr[i] = (uint64_t)*(float *)&ptr[i * length]; break;
-			case DTYPE_DOUBLE: retArr[i] = (uint64_t)*(double *)&ptr[i * length]; break;
-			case DTYPE_FSC:
-			case DTYPE_FTC: throw MdsException("getLongUnsignedArray() not supported for Complex data type");
-		}
-	*numElements = size;
-	return retArr;
-}
-#endif
 
 float *Array::getFloatArray(int *numElements)
 {
@@ -1357,6 +1188,15 @@ char **Array::getStringArray(int *numElements)
 	return retArr;
 }
 
+bool String::equals(Data *data) {
+	if(data->clazz != clazz || data->dtype != dtype)
+		return false;
+
+	AutoString first(ptr);
+	AutoString second(((String *)data)->getString());
+	return first.string == second.string;
+}
+
 char *Uint64::getDate()
 {
 	char dateBuf[512];
@@ -1371,7 +1211,7 @@ char *Uint64::getDate()
 
 EXPORT void *TreePath::convertToDsc()
 {
-	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, length, ptr));
+	return completeConversionToDsc(convertToScalarDsc(clazz, dtype, path.length(), const_cast<char *>(path.c_str())));
 }
 
 EXPORT void *Array::convertToDsc()
@@ -1381,15 +1221,16 @@ EXPORT void *Array::convertToDsc()
 
 EXPORT void *Compound::convertToDsc()
 {
-	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, length, ptr, nDescs, (void **)descs));
+	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, sizeof(short), (void *)&opcode, descs.size(), (void **)(&descs[0])));
 }
+
 EXPORT void *Apd::convertToDsc()
 {
-	return completeConversionToDsc(convertToApdDsc(dtype, nDescs, (void **)descs));
+	return completeConversionToDsc(convertToApdDsc(dtype, descs.size(), (void **)&descs[0]));
 }
 
 
-EXPORT Data *MDSplus::deserialize(char const *serialized)
+EXPORT Data *MDSplus::deserialize(char const * serialized)
 {
 	void *dscPtr = deserializeData(serialized);
 	if(!dscPtr) throw MdsException("Cannot build Data instance from serialized content");
@@ -1401,15 +1242,28 @@ EXPORT Data *MDSplus::deserialize(char const *serialized)
 EXPORT Data *MDSplus::deserialize(Data *serializedData)
 {
 	Uint8Array *serializedArr = (Uint8Array *)serializedData;
-	return deserialize(serializedArr->ptr);
+	return deserialize((const char *)serializedArr->ptr);
 }
 
-ostream& operator<<(ostream& output, Data *data)
+/*ostream& operator<<(ostream& output, Data *data)
 {
-	output << data->decompile();
-	return output;
+//	output << data->decompile();
+//	return output;
+	char * str = data->decompile();
+	output << str;
+	delete[] str;
+    return output;
 }
-
+*/
+std::ostream& MDSplus::operator<<(std::ostream& output, Data *data)
+{
+//	output << data->decompile();
+//	return output;
+	char * str = data->decompile();
+	output << str;
+	delete[] str;
+    return output;
+}
 EXPORT Data *Uint8Array::deserialize()
 {
     return (Data *)deserializeData(ptr);
@@ -1418,18 +1272,16 @@ EXPORT Data *Uint8Array::deserialize()
 EXPORT void Scope::show()
 {
 	char expr[256];
-	sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
+	std::sprintf(expr, "JavaShowWindow(%d, %d, %d, %d, %d)", idx, x, y, width, height);
 	Data *ris = execute(expr);
 	deleteData(ris);
 }
 EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
 {
-	char *expr = new char[64+strlen(name)];
-	sprintf(expr, "JavaNewWindow(\"%s\", -1)", name);
-	Data *ris = execute(expr);
+	std::string expr("JavaNewWindow(" + std::string(name) + ", -1");
+	Data *ris = execute(expr.c_str());
 	idx = ris->getInt();
 	deleteData(ris);
-	delete [] expr;
 	this->x = x;
 	this->y = y;
 	this->width = width;
@@ -1439,27 +1291,15 @@ EXPORT Scope::Scope(const char *name, int x, int y, int width, int height)
 EXPORT void Scope::plot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
-	sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+	std::sprintf(expr, "JavaReplaceSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
 EXPORT void Scope::oplot(Data *x, Data *y , int row, int col, const char *color)
 {
 	char expr[256];
-	sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
+	std::sprintf(expr, "JavaAddSignal(%d, $1, $2, %d, %d, \"%s\")", idx, row, col, color);
 	Data *ris = executeWithArgs(expr, 2, x, y);
 	deleteData(ris);
 }
-
-//Required in Windows Debug configuation to propely de-allocate native arrays and strings
-EXPORT void MDSplus::deleteNativeArray(char *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(short *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(int *array){delete [] array;}
-//EXPORT void MDSplus::deleteNativeArray(long *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(int64_t *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(float *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(double *array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(char **array){delete [] array;}
-EXPORT void MDSplus::deleteNativeArray(Data **array){delete [] array;}
-EXPORT void MDSplus::deleteString(char *str){delete[] str;}
 

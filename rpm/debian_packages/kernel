@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---kernel
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: xinetd
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: MDSplus kernel package. Contains MDSplus internals libaries, core applications and mdsip communications software.

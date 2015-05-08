@@ -372,5 +372,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         }
         GetFloatNative(limitsExpr);
     }
+    boolean supportsLargeSignals() {return false;} //Subclass LocalDataProvider will return false
+
 
 }

@@ -11,22 +11,18 @@
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
 
-int Tdi1Constant(int opcode, int narg, struct descriptor *list[],
-                 struct descriptor_xd *out_ptr)
+
+int Tdi1Constant(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
-    int status = 1;
+  int status = 1;
 
 /*
      struct descriptor *(*fun)()=(struct descriptor *(*)())*TdiRefFunction[opcode].f3;
         status = MdsCopyDxXd(fun(),out_ptr);
 */
-    return
-        MdsCopyDxXd(((struct descriptor * (*)())*TdiRefFunction[opcode].f3) (),
-                    out_ptr);
-    return status;
+  return MdsCopyDxXd(((struct descriptor * (*)())*TdiRefFunction[opcode].f3) (), out_ptr);
+  return status;
 }
 
 /*------------------------------------------------
@@ -69,7 +65,7 @@ typedef void (*MISSING) ();
 typedef unsigned char BU;
 typedef float FLOAT;
 typedef struct {
-    float x, y;
+  float x, y;
 } FLOAT_COMPLEX;
 typedef unsigned int FROP;
 
@@ -108,36 +104,36 @@ typedef unsigned int FROP;
 #define II {(float)0., (float)1.}
 #define RR 0x8000
 
-    DATUM(FLOAT, 2Pi, (float)6.2831853072)     /* circumference/radius    */
-    UERR(FLOAT, A0, (float)5.29177249e-11, (float)0.00000024e-11, "m")  /*a0       Bohr radius             */
-    DERR(FLOAT, Alpha, (float)7.29735308e-3, (float)0.00000033e-3)      /* fine-structure constant */
-    UERR(FLOAT, Amu, (float)1.6605402e-27, (float)0.0000010e-27, "kg")  /* u atomic mass unit, unified */
-    UNITS(FLOAT, C, (float)299792458., "m/s")   /* c speed of light(exact) */
-    UNITS(FLOAT, Cal, (float)4.1868, "J")       /* calorie                 */
-    DATUM(FLOAT, Degree, (float).01745329252)   /* pi/180                  */
-    UNITS(FLOAT, Epsilon0, (float)8.854187817e-12, "F/m")       /* permitivity of vacuum(exact) */
-    UERR(FLOAT, Ev, (float)1.60217733e-19, (float)0.00000049e-19, "J/eV")       /* eV electron volt        */
-    DATUM(BU, False, 0)         /* logically false         */
-    UERR(FLOAT, Faraday, (float)9.6485309e4, (float)0.0000029e4, "C/mol")       /*F        Faraday constant        */
-    UERR(FLOAT, G, (float)6.67259e-11, (float)0.00085, "m^3/s^2/kg")    /*G gravitational constant */
-    UERR(FLOAT, Gas, (float)8.314510, (float)0.000070, "J/K/mol")       /*R       gas constant            */
-    UNITS(FLOAT, Gn, (float)9.80665, "m/s^2")   /*gn       acceleration of gravity(exact) */
-    UERR(FLOAT, H, (float)6.6260755e-34, (float)0.0000040, "J*s")       /*h        Planck constant         */
-    UERR(FLOAT, Hbar, (float)1.05457266e-34, (float)0.00000063, "J*s")  /*hbar h/(2pi)             */
-    DATUM(FLOAT_COMPLEX, I, II) /*i        imaginary               */
-    UERR(FLOAT, K, (float)1.380658e-23, (float)0.000012e-23, "J/K")     /*k        Boltzmann constant      */
-    UERR(FLOAT, Me, (float)9.1093897e-31, (float)0.0000054e-31, "kg")   /*me       mass of electron        */
-    DATUM(MISSING, Missing, 0)  /* missing argument        */
-    UERR(FLOAT, Mp, (float)1.6726231e-27, (float)0.0000010e-27, "kg")   /*mp       mass of proton          */
-    UNITS(FLOAT, Mu0, (float)12.566370614e-7, "N/A^2")  /* permeability of vacuum(exact) */
-    UERR(FLOAT, N0, (float)2.686763e25, (float)0.000023e25, "/m^3")     /*n0       Loschmidt's number (STP) */
-    UERR(FLOAT, Na, (float)6.0221367e23, (float)0.0000036e23, "/mol")   /*NA or L Avogadro number  */
-    UNITS(FLOAT, P0, (float)1.01325e5, "Pa")    /*atm      atmospheric pressure(exact) */
-    DATUM(FLOAT, Pi, (float)3.1415926536)       /* circumference/diameter  */
-    UERR(FLOAT, Qe, (float)1.60217733e-19, (float)0.000000493 - 19, "C")        /*e        charge on electron      */
-    UERR(FLOAT, Re, (float)2.81794092e-15, (float)0.00000038e-15, "m")  /*re       classical electron radius */
-    DATUM(FROP, Roprand, RR)    /* reserved operand        */
-    UERR(FLOAT, Rydberg, (float)1.0973731534e7, (float)0.0000000013e7, "/m")    /*Rinf Rydberg constant    */
-    UNITS(FLOAT, T0, (float)273.16, "K")        /*?        standard temperature    */
-    UNITS(FLOAT, Torr, (float)1.3332e2, "Pa")   /*?torr 1mm Hg pressure    */
+DATUM(FLOAT, 2Pi, (float)6.2831853072)	/* circumference/radius    */
+    UERR(FLOAT, A0, (float)5.29177249e-11, (float)0.00000024e-11, "m")	/*a0       Bohr radius             */
+    DERR(FLOAT, Alpha, (float)7.29735308e-3, (float)0.00000033e-3)	/* fine-structure constant */
+    UERR(FLOAT, Amu, (float)1.6605402e-27, (float)0.0000010e-27, "kg")	/* u atomic mass unit, unified */
+    UNITS(FLOAT, C, (float)299792458., "m/s")	/* c speed of light(exact) */
+    UNITS(FLOAT, Cal, (float)4.1868, "J")	/* calorie                 */
+    DATUM(FLOAT, Degree, (float).01745329252)	/* pi/180                  */
+    UNITS(FLOAT, Epsilon0, (float)8.854187817e-12, "F/m")	/* permitivity of vacuum(exact) */
+    UERR(FLOAT, Ev, (float)1.60217733e-19, (float)0.00000049e-19, "J/eV")	/* eV electron volt        */
+    DATUM(BU, False, 0)		/* logically false         */
+    UERR(FLOAT, Faraday, (float)9.6485309e4, (float)0.0000029e4, "C/mol")	/*F        Faraday constant        */
+    UERR(FLOAT, G, (float)6.67259e-11, (float)0.00085, "m^3/s^2/kg")	/*G gravitational constant */
+    UERR(FLOAT, Gas, (float)8.314510, (float)0.000070, "J/K/mol")	/*R       gas constant            */
+    UNITS(FLOAT, Gn, (float)9.80665, "m/s^2")	/*gn       acceleration of gravity(exact) */
+    UERR(FLOAT, H, (float)6.6260755e-34, (float)0.0000040, "J*s")	/*h        Planck constant         */
+    UERR(FLOAT, Hbar, (float)1.05457266e-34, (float)0.00000063, "J*s")	/*hbar h/(2pi)             */
+    DATUM(FLOAT_COMPLEX, I, II)	/*i        imaginary               */
+    UERR(FLOAT, K, (float)1.380658e-23, (float)0.000012e-23, "J/K")	/*k        Boltzmann constant      */
+    UERR(FLOAT, Me, (float)9.1093897e-31, (float)0.0000054e-31, "kg")	/*me       mass of electron        */
+    DATUM(MISSING, Missing, 0)	/* missing argument        */
+    UERR(FLOAT, Mp, (float)1.6726231e-27, (float)0.0000010e-27, "kg")	/*mp       mass of proton          */
+    UNITS(FLOAT, Mu0, (float)12.566370614e-7, "N/A^2")	/* permeability of vacuum(exact) */
+    UERR(FLOAT, N0, (float)2.686763e25, (float)0.000023e25, "/m^3")	/*n0       Loschmidt's number (STP) */
+    UERR(FLOAT, Na, (float)6.0221367e23, (float)0.0000036e23, "/mol")	/*NA or L Avogadro number  */
+    UNITS(FLOAT, P0, (float)1.01325e5, "Pa")	/*atm      atmospheric pressure(exact) */
+    DATUM(FLOAT, Pi, (float)3.1415926536)	/* circumference/diameter  */
+    UERR(FLOAT, Qe, (float)1.60217733e-19, (float)0.000000493 - 19, "C")	/*e        charge on electron      */
+    UERR(FLOAT, Re, (float)2.81794092e-15, (float)0.00000038e-15, "m")	/*re       classical electron radius */
+    DATUM(FROP, Roprand, RR)	/* reserved operand        */
+    UERR(FLOAT, Rydberg, (float)1.0973731534e7, (float)0.0000000013e7, "/m")	/*Rinf Rydberg constant    */
+    UNITS(FLOAT, T0, (float)273.16, "K")	/*?        standard temperature    */
+    UNITS(FLOAT, Torr, (float)1.3332e2, "Pa")	/*?torr 1mm Hg pressure    */
     DATUM(BU, True, 1)

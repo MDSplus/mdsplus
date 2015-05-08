@@ -7,38 +7,55 @@
 #include "treeshrp.h"
 #include <ctype.h>
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
 
-#ifndef HAVE_VXWORKS_H
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-#endif
 
-
-STATIC_ROUTINE int IsMember(NODE *node);
+STATIC_ROUTINE int IsMember(NODE * node);
 STATIC_ROUTINE int Compare(char *string, int len, char *matchstring, int mlen);
 STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mlen);
-STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT *search);
-STATIC_ROUTINE void Push(SEARCH_CONTEXT *search, NODE *node);
-STATIC_ROUTINE int Parse(SEARCH_CONTEXT *ctx, int wild);
-STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param);
-STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out);
+STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT * search);
+STATIC_ROUTINE void Push(SEARCH_CONTEXT * search, NODE * node);
+STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild);
+STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT * ctx, char **tree, int *treelen, int tokencnt,
+				char *tokenptr, SEARCH_TYPE param);
+STATIC_ROUTINE int TreeSearch(PINO_DATABASE * db, SEARCH_CONTEXT * ctx, int idx,
+			      NODE ** node_in_out);
 STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
-STATIC_ROUTINE char *Treename(PINO_DATABASE *dblist, int nidin);
+STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nidin);
 STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one);
 
+int TreeFindNode(char const *path, int *outnid)
+{
+  return _TreeFindNode(*TreeCtx(), path, outnid);
+}
 
-int TreeFindNode(char const * path, int *outnid) { return _TreeFindNode(*TreeCtx(),path,outnid); }
-int TreeFindNodeWild(char const * path, int *nid_out, void **ctx_inout, int usage_mask) {
-  return _TreeFindNodeWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask); }
-int TreeFindNodeEnd(void **ctx_in) { return _TreeFindNodeEnd(*TreeCtx(), ctx_in); }
-char *TreeFindNodeTags(int nid_in, void **ctx_ptr) { return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr); }
-char *TreeAbsPath(char const * inpath) { return _TreeAbsPath(*TreeCtx(), inpath); }
-int TreeFindTag(const char *tagnam, const char *treename, int *tagidx) {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)*TreeCtx();
+int TreeFindNodeWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+{
+  return _TreeFindNodeWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask);
+}
+
+int TreeFindNodeEnd(void **ctx_in)
+{
+  return _TreeFindNodeEnd(*TreeCtx(), ctx_in);
+}
+
+char *TreeFindNodeTags(int nid_in, void **ctx_ptr)
+{
+  return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr);
+}
+
+char *TreeAbsPath(char const *inpath)
+{
+  return _TreeAbsPath(*TreeCtx(), inpath);
+}
+
+int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
+{
+  PINO_DATABASE *dblist = (PINO_DATABASE *) * TreeCtx();
   NODE *nodeptr;
-  return _TreeFindTag(*TreeCtx(), dblist->default_node, (short)strlen(treename), treename, (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
+  return _TreeFindTag(*TreeCtx(), dblist->default_node, (short)strlen(treename), treename,
+		      (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
 }
 
 #define isident(b) ( ((*(b) >= 'A') && (*(b) <= 'Z')) || \
@@ -63,11 +80,11 @@ int TreeFindTag(const char *tagnam, const char *treename, int *tagidx) {
 ( (ctx[ctx->level+1].type != EOL) || \
   ((1<<node->usage) & usage_mask) )
 
-int _TreeFindNode(void *dbid, char const * path, int *outnid)
+int _TreeFindNode(void *dbid, char const *path, int *outnid)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID	    *nid = (NID *)outnid;
-  int       status = TreeNORMAL;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  NID *nid = (NID *) outnid;
+  int status = TreeNORMAL;
   NODE *node;
   SEARCH_CONTEXT *ctx;
   int current_level;
@@ -76,17 +93,16 @@ int _TreeFindNode(void *dbid, char const * path, int *outnid)
   if (!IS_OPEN(dblist))
     return TreeNOT_OPEN;
   if (dblist->remote)
-	  return FindNodeRemote(dblist,path,outnid);
+    return FindNodeRemote(dblist, path, outnid);
   ctx = malloc(sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
-  memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+  memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   ctx->type = EOL;
-  ctx->string = strcpy(malloc(len+1),path);
-  for (i=0;i<len && path[i] != ' ';i++)
+  ctx->string = strdup(path);
+  for (i = 0; i < len && path[i] != ' '; i++)
     ctx->string[i] = toupper(path[i]);
-  ctx->string[i]=0;
-  status = Parse(ctx,0);
-  if (status & 1)
-  {
+  ctx->string[i] = 0;
+  status = Parse(ctx, 0);
+  if (status & 1) {
     node = dblist->default_node;
     ctx[0].node = node;
     for (current_level = 1; ctx[current_level].type != EOL && (status & 1); current_level++)
@@ -98,64 +114,56 @@ int _TreeFindNode(void *dbid, char const * path, int *outnid)
   return status;
 }
 
-int _TreeFindNodeWild(void *dbid, char const * path, int *nid_out, void **ctx_inout, int usage_mask)
+int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID *nid = (NID *)nid_out;
-  SEARCH_CONTEXT *ctx = *(SEARCH_CONTEXT **)ctx_inout;
-  int       status = TreeNORMAL;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  NID *nid = (NID *) nid_out;
+  SEARCH_CONTEXT *ctx = *(SEARCH_CONTEXT **) ctx_inout;
+  int status = TreeNORMAL;
   NODE *node; /*************** static????????? ***********/
   SEARCH_CONTEXT *not_first_time = ctx;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
   if (dblist->remote)
-	  return FindNodeWildRemote(dbid,path,nid_out,ctx_inout,usage_mask);
+    return FindNodeWildRemote(dbid, path, nid_out, ctx_inout, usage_mask);
 
 /********************************************
   If there is no context now then need to
   parse and set up stuff for a new search.
 **********************************************/
 
-  if (ctx == 0)
-  {
+  if (ctx == 0) {
     *ctx_inout = malloc(sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
-    ctx = *(SEARCH_CONTEXT **)ctx_inout;
-    if (ctx)
-    {
+    ctx = *(SEARCH_CONTEXT **) ctx_inout;
+    if (ctx) {
       size_t i;
       size_t len = strlen(path);
-      memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+      memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
       ctx->type = EOL;
-      ctx->string = strcpy(malloc(len+1),path);
-      for (i=0;i<len && path[i] != ' ';i++)
-        ctx->string[i] = toupper(path[i]);
-      ctx->string[i]=0;
-      status = Parse(ctx,1);
-    }
-    else
-      status = TreeFAILURE;
-    if (status == TreeNORMAL)
-    {
+      ctx->string = strcpy(malloc(len + 1), path);
+      for (i = 0; i < len && path[i] != ' '; i++)
+	ctx->string[i] = toupper(path[i]);
+      ctx->string[i] = 0;
+      status = Parse(ctx, 1);
+    } else
+      status = TreeMEMERR;
+    if (status == TreeNORMAL) {
       node = dblist->default_node;
       ctx->level = 1;
       ctx[0].node = node;
     }
-  }
-  else
-  {
+  } else {
   /********************************************
     Otherwise this is an old search.  So start
     it where the other search left off (check for
     the '.' case.
   **********************************************/
 
-    for (ctx->level = 1; ctx[ctx->level].type != EOL; ctx->level++);
-    if (ctx->level > 1)
-    {
+    for (ctx->level = 1; ctx[ctx->level].type != EOL; ctx->level++) ;
+    if (ctx->level > 1) {
       (ctx->level)--;
       node = ctx[ctx->level].node;
-    }
-    else
+    } else
       status = TreeNMN;
   }
 
@@ -164,21 +172,19 @@ int _TreeFindNodeWild(void *dbid, char const * path, int *nid_out, void **ctx_in
     For each level starting as above until
     failure or success do.
 **********************************************/
-  if (status == TreeNORMAL)
-  {
-    for (; ctx[ctx->level].type != EOL;)
-    {
+  if (status == TreeNORMAL) {
+    for (; ctx[ctx->level].type != EOL;) {
     /********************************************
       Look for this thing.  If OK then move
       on to next thing, otherwise move back to
       previous one.
     ********************************************/
 
-      while (((status = TreeSearch(dblist, ctx, ctx->level, &node)) == TreeNORMAL) && !match_usage);
+      while (((status = TreeSearch(dblist, ctx, ctx->level, &node)) == TreeNORMAL)
+	     && !match_usage) ;
       if (status == TreeNORMAL)
 	(ctx->level)++;
-      else
-      {
+      else {
 	ctx[ctx->level].node = 0;
 	(ctx->level)--;
 	if (ctx->level >= 0)
@@ -186,147 +192,135 @@ int _TreeFindNodeWild(void *dbid, char const * path, int *nid_out, void **ctx_in
       }
     }
   }
-  if (status == TreeNORMAL)
-  {
+  if (status == TreeNORMAL) {
     node_to_nid(dblist, node, nid);
-  }
-  else if ((status == TreeNNF) && not_first_time)
+  } else if ((status == TreeNNF) && not_first_time)
     status = TreeNMN;
   return status;
 }
 
-STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, NODE **node_in_out)
+STATIC_ROUTINE int TreeSearch(PINO_DATABASE * db, SEARCH_CONTEXT * ctx, int idx,
+			      NODE ** node_in_out)
 {
   int tagidx;
   NODE *node = *node_in_out;
   SEARCH_CONTEXT *search = ctx + idx;
-  switch (search->type)
-  {
-    case BROTHER_TYPE_NOWILD:
+  switch (search->type) {
+  case BROTHER_TYPE_NOWILD:
     {
-      for (node = *node_in_out,node = search->node ? brother_of(node) : child_of(node); node && !compare(node); node = brother_of(node));
+      for (node = *node_in_out, node = search->node ? brother_of(node) : child_of(node);
+	   node && !compare(node); node = brother_of(node)) ;
       if (node == 0)
-        for (node = *node_in_out,node = search->node ? brother_of(node) : member_of(node); node && !compare(node); node = brother_of(node));
+	for (node = *node_in_out, node = search->node ? brother_of(node) : member_of(node);
+	     node && !compare(node); node = brother_of(node)) ;
       break;
     }
-    case BROTHER_TYPE:
+  case BROTHER_TYPE:
     {
-      for (node = search->node ? brother_of(node) : child_of(node); node && !compare_wild(node); node = brother_of(node));
+      for (node = search->node ? brother_of(node) : child_of(node); node && !compare_wild(node);
+	   node = brother_of(node)) ;
       break;
     }
-    case MEMBER_TYPE_NOWILD:
+  case MEMBER_TYPE_NOWILD:
     {
-      for (node = *node_in_out, node = search->node ? brother_of(node) : member_of(node); node && !compare(node); node = brother_of(node));
+      for (node = *node_in_out, node = search->node ? brother_of(node) : member_of(node);
+	   node && !compare(node); node = brother_of(node)) ;
       if (node == 0)
-        for (node = *node_in_out, node = search->node ? brother_of(node) : child_of(node); node && !compare(node); node = brother_of(node));
+	for (node = *node_in_out, node = search->node ? brother_of(node) : child_of(node);
+	     node && !compare(node); node = brother_of(node)) ;
       break;
     }
-    case MEMBER_TYPE:
+  case MEMBER_TYPE:
     {
-      for (node = search->node ? brother_of(node) : member_of(node); node && !compare_wild(node); node = brother_of(node));
+      for (node = search->node ? brother_of(node) : member_of(node); node && !compare_wild(node);
+	   node = brother_of(node)) ;
       break;
     }
-    case SON_MEMBER_TYPE_NOWILD:
+  case SON_MEMBER_TYPE_NOWILD:
     {
-      for (node = search->node ? SiblingOf(node) : FirstChild(node); node && !compare(node); node = SiblingOf(node));
+      for (node = search->node ? SiblingOf(node) : FirstChild(node); node && !compare(node);
+	   node = SiblingOf(node)) ;
       break;
     }
-    case SON_MEMBER_TYPE:
+  case SON_MEMBER_TYPE:
     {
-      for (node = search->node ? SiblingOf(node) : FirstChild(node); node && !compare_wild(node); node = SiblingOf(node));
+      for (node = search->node ? SiblingOf(node) : FirstChild(node); node && !compare_wild(node);
+	   node = SiblingOf(node)) ;
       break;
     }
-    case TAG_TYPE:
+  case TAG_TYPE:
     {
-      if(search->node)
-        node = 0;
+      if (search->node)
+	node = 0;
       else
-        _TreeFindTag(db, node, search->tag_tree_name_len, search->tag_tree_name, search->len, search->string, &node, &tagidx); 
+	_TreeFindTag(db, node, search->tag_tree_name_len, search->tag_tree_name, search->len,
+		     search->string, &node, &tagidx);
       break;
     }
-    case ANCESTOR_TYPE:
+  case ANCESTOR_TYPE:
     {
-      for (node = parent_of(node); node && !compare(node); node = parent_of(node));
+      for (node = parent_of(node); node && !compare(node); node = parent_of(node)) ;
       break;
     }
-    case PARENT_TYPE:
+  case PARENT_TYPE:
     {
       node = search->node ? 0 : parent_of(node);
       break;
     }
-    case SON_BROTHER_TYPE:
+  case SON_BROTHER_TYPE:
     {
-      if (search->node == 0)
-      {
-        if (child_of(node))
-        {
-          search->stop = node;
-          node = child_of(node);
-        }
-      }
-      else if (brother_of(node))
-      {
-        node = brother_of(node);
-      }
-      else
-      {
-        int looking_for_child = 1;
-        node = FirstChildOfParent(node);
-        while (node && (node != search->stop))
-        {
-          if (looking_for_child)
-          {
-            if (child_of(node))
-            {
-              node = child_of(node);
-              break;
-            }
-            else if (brother_of(node))
-              node = brother_of(node);
-            else
-            {
-              looking_for_child = 0;
-              node = parent_of(node);
-            }
-          }
-          else
-          {
-            if (brother_of(node))
-            {
-              looking_for_child = 1;
-              node = brother_of(node);
-            }
-            else
-              node = parent_of(node);
-          }
-        }
-        if (node == search->stop) node = 0;
+      if (search->node == 0) {
+	if (child_of(node)) {
+	  search->stop = node;
+	  node = child_of(node);
+	}
+      } else if (brother_of(node)) {
+	node = brother_of(node);
+      } else {
+	int looking_for_child = 1;
+	node = FirstChildOfParent(node);
+	while (node && (node != search->stop)) {
+	  if (looking_for_child) {
+	    if (child_of(node)) {
+	      node = child_of(node);
+	      break;
+	    } else if (brother_of(node))
+	      node = brother_of(node);
+	    else {
+	      looking_for_child = 0;
+	      node = parent_of(node);
+	    }
+	  } else {
+	    if (brother_of(node)) {
+	      looking_for_child = 1;
+	      node = brother_of(node);
+	    } else
+	      node = parent_of(node);
+	  }
+	}
+	if (node == search->stop)
+	  node = 0;
       }
       break;
     }
-    case SON_MEMBER_BROTHER_TYPE:
+  case SON_MEMBER_BROTHER_TYPE:
     {
-      if (search->node == 0) 
-      {
-        if ((search+1)->type == EOL)
-          node = FirstChild(node);
-        search->stack = 0;
+      if (search->node == 0) {
+	if ((search + 1)->type == EOL)
+	  node = FirstChild(node);
+	search->stack = 0;
+      } else if (SiblingOf(node))
+	node = SiblingOf(node);
+      else if (search->stack) {
+	node = Pop(search);
+	node = FirstChild(node);
+      } else
+	node = 0;
+      if (node) {
+	if (FirstChild(node))
+	  Push(search, node);
       }
-      else if (SiblingOf(node))
-        node = SiblingOf(node);
-      else if (search->stack)
-      {
-        node = Pop(search);
-        node = FirstChild(node);
-      }
-      else
-        node = 0;
-      if (node) 
-      {
-        if (FirstChild(node))
-          Push(search, node);
-      }
-      break;            
+      break;
     }
   default:
     break;
@@ -342,7 +336,7 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE  *db, SEARCH_CONTEXT *ctx, int idx, 
   of nodes to be looked at.  When the Q
   is empty returns 0.
 ***************************************/
-STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT *search)
+STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT * search)
 {
   NODE *ans;
   NODELIST *ptr;
@@ -351,8 +345,7 @@ STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT *search)
     ptr = search->stack;
     search->stack = ptr->next;
     free(ptr);
-  }
-  else
+  } else
     ans = 0;
   return ans;
 }
@@ -362,17 +355,17 @@ STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT *search)
      pushes a node onto the que of places that need 
    to be explored in the future of this *** search.
 *****************************************************/
-STATIC_ROUTINE void Push(SEARCH_CONTEXT *search, NODE *node)
+STATIC_ROUTINE void Push(SEARCH_CONTEXT * search, NODE * node)
 {
   NODELIST *node_list = malloc(sizeof(NODELIST));
   node_list->next = 0;
   node_list->node = node;
-  if(search->stack == 0)
+  if (search->stack == 0)
     search->stack = node_list;
   else {
     NODELIST *end_of_list;
-    for (end_of_list=search->stack; end_of_list->next; end_of_list = end_of_list->next);
-    end_of_list->next = node_list;    
+    for (end_of_list = search->stack; end_of_list->next; end_of_list = end_of_list->next) ;
+    end_of_list->next = node_list;
   }
 }
 
@@ -380,14 +373,12 @@ STATIC_ROUTINE int Compare(char *string, int len, char *matchstring, int mlen)
 {
   int i;
   int match;
-  if (mlen > len) 
+  if (mlen > len)
     match = 0;
-  else if ((mlen == len) || (string[mlen] == ' '))
-  {
-    for (i=0;i<mlen && string[i] == matchstring[i];i++);
-    match = i==mlen;
-  }
-  else
+  else if ((mlen == len) || (string[mlen] == ' ')) {
+    for (i = 0; i < mlen && string[i] == matchstring[i]; i++) ;
+    match = i == mlen;
+  } else
     match = 0;
   return match;
 }
@@ -398,36 +389,35 @@ STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mle
   int j;
   int match = 1;
   int slen;
-  for (slen=len;slen && string[slen-1] == ' ';slen--);
-  for (i=0,j=0;i < mlen && match;i++,j++)
-  {
-    if (matchstring[i] == '*')
-    {
-      if (i != (mlen-1))
-      {
-        if (j < slen)
-          for (;j<slen && !(match = CompareWild(&string[j],slen-j,&matchstring[i+1],mlen-(i+1)));j++);
-        else
-          for (;i<mlen && (match = matchstring[i] == '*');i++);
+  for (slen = len; slen && string[slen - 1] == ' '; slen--) ;
+  for (i = 0, j = 0; i < mlen && match; i++, j++) {
+    if (matchstring[i] == '*') {
+      if (i != (mlen - 1)) {
+	if (j < slen)
+	  for (;
+	       j < slen
+	       && !(match = CompareWild(&string[j], slen - j, &matchstring[i + 1], mlen - (i + 1)));
+	       j++) ;
+	else
+	  for (; i < mlen && (match = matchstring[i] == '*'); i++) ;
       }
       j = slen;
       break;
-    }
-    else
-      match = j<slen && ((matchstring[i] == '%') || (matchstring[i] == string[j]));
+    } else
+      match = j < slen && ((matchstring[i] == '%') || (matchstring[i] == string[j]));
   }
-  return match && j==slen;
+  return match && j == slen;
 }
 
-STATIC_ROUTINE int IsMember(NODE *node)
+STATIC_ROUTINE int IsMember(NODE * node)
 {
   NODE *n = 0;
   if (parent_of(node))
-    for(n=member_of(parent_of(node));n && n != node;n=brother_of(n));
+    for (n = member_of(parent_of(node)); n && n != node; n = brother_of(n)) ;
   return n == node;
 }
 
-STATIC_ROUTINE int Parse(SEARCH_CONTEXT *ctx, int wild)
+STATIC_ROUTINE int Parse(SEARCH_CONTEXT * ctx, int wild)
 {
   int tokencnt;
   char *tokenptr;
@@ -447,7 +437,7 @@ STATIC_ROUTINE int Parse(SEARCH_CONTEXT *ctx, int wild)
   if (not_eos(char_ptr))
     status = TreeNORMAL;
   else
-    return TreeFAILURE;
+    return TreeEMPTY;
 
 /**************************************************
  For each character in 
@@ -455,8 +445,7 @@ path name check for the
  various types of path name tokens.
 ***************************************************/
 
-  while (not_eos(char_ptr))
-  {
+  while (not_eos(char_ptr)) {
 
   /********************************************
    See if the character is an alphanumeric.
@@ -465,46 +454,44 @@ path name check for the
    Increment the tokencnt.
   ********************************************/
 
-    if (isident(char_ptr))
-    {
-      switch (state)
-      {
-       case NONE:
+    if (isident(char_ptr)) {
+      switch (state) {
+      case NONE:
 	state = MEMBER_TYPE_NOWILD;
 	tokencnt = 1;
 	tokenptr = char_ptr;
 	break;
 
-       case MEMBER_START:
+      case MEMBER_START:
 	state = MEMBER_TYPE_NOWILD;
 	tokencnt = 1;
 	tokenptr = char_ptr;
 	break;
 
-       case ASTASTAST_TYPE:
+      case ASTASTAST_TYPE:
 	state = SON_MEMBER_TYPE_NOWILD;
 	tokencnt = 1;
 	tokenptr = char_ptr;
 	break;
 
-       case BROTHER_START:
+      case BROTHER_START:
 	state = BROTHER_TYPE_NOWILD;
 	tokencnt = 1;
 	tokenptr = char_ptr;
 	break;
 
-       case BROTHER_TYPE_NOWILD:
-       case MEMBER_TYPE_NOWILD:
+      case BROTHER_TYPE_NOWILD:
+      case MEMBER_TYPE_NOWILD:
 	if (++tokencnt > 12)
-	  return TreeFAILURE;
+	  return TreePARSEERR;
 	break;
 
-       case TAG_TYPE:
+      case TAG_TYPE:
 	if (++tokencnt > 24)
-	  return TreeFAILURE;
+	  return TreePARSEERR;
 	break;
 
-       default:
+      default:
 	tokencnt++;
 	break;
       }
@@ -520,24 +507,21 @@ path name check for the
    Otherwise we must return parse failure.
   *************************************************/
 
-    else if (isast(char_ptr) && wild)
-    {
+    else if (isast(char_ptr) && wild) {
       wild_ast = 1;
       if (not_eos(char_ptr + 2))
-	if (isast(char_ptr + 1) && isast(char_ptr + 2))
-	{
+	if (isast(char_ptr + 1) && isast(char_ptr + 2)) {
 	  wild_ast = 0;
-	  switch (state)
-	  {
-	   case NONE:
-	   case ASTASTAST_TYPE:
+	  switch (state) {
+	  case NONE:
+	  case ASTASTAST_TYPE:
 	    {
 	      do_action(SON_MEMBER_BROTHER_TYPE);
 	      state = ASTASTAST_TYPE;
 	      char_ptr += 2;
 	      break;
 	    }
-	   case MEMBER_START:
+	  case MEMBER_START:
 	    {
 	      tokencnt = 1;
 	      tokenptr = char_ptr;
@@ -546,7 +530,7 @@ path name check for the
 	      char_ptr--;
 	      break;
 	    }
-	   case BROTHER_START:
+	  case BROTHER_START:
 	    {
 	      tokencnt = 1;
 	      tokenptr = char_ptr;
@@ -555,7 +539,7 @@ path name check for the
 	      char_ptr--;
 	      break;
 	    }
-	   default:
+	  default:
 	    {
 	      do_action(state);
 	      state = NONE;
@@ -564,37 +548,35 @@ path name check for the
 	    }
 	  }
 	}
-      if (wild_ast)
-      {
-	switch (state)
-	{
-	 case NONE:
-	 case MEMBER_START:
+      if (wild_ast) {
+	switch (state) {
+	case NONE:
+	case MEMBER_START:
 	  tokencnt = 0;
 	  tokenptr = char_ptr;
-	 case MEMBER_TYPE_NOWILD:
+	case MEMBER_TYPE_NOWILD:
 	  state = MEMBER_TYPE;
 	  break;
-	 case BROTHER_START:
+	case BROTHER_START:
 	  tokencnt = 0;
 	  tokenptr = char_ptr;
-	 case BROTHER_TYPE_NOWILD:
+	case BROTHER_TYPE_NOWILD:
 	  state = BROTHER_TYPE;
 	  break;
 
-	 case ASTASTAST_TYPE:
+	case ASTASTAST_TYPE:
 	  tokencnt = 0;
 	  tokenptr = char_ptr;
-	 case SON_MEMBER_TYPE_NOWILD:
+	case SON_MEMBER_TYPE_NOWILD:
 	  state = SON_MEMBER_TYPE;
 	  break;
-	 case BROTHER_TYPE:
-	 case MEMBER_TYPE:
-	 case SON_MEMBER_TYPE:
-	 case ANCESTOR_TYPE:
+	case BROTHER_TYPE:
+	case MEMBER_TYPE:
+	case SON_MEMBER_TYPE:
+	case ANCESTOR_TYPE:
 	  break;
-	 default:
-	  return TreeFAILURE;
+	default:
+	  return TreeNNF;
 	}
       }
       tokencnt++;
@@ -610,36 +592,34 @@ path name check for the
    Otherwise we must return parse failure.
   *************************************************/
 
-    else if (iswild(char_ptr) && wild)
-    {
-      switch (state)
-      {
-       case NONE:
-       case MEMBER_START:
+    else if (iswild(char_ptr) && wild) {
+      switch (state) {
+      case NONE:
+      case MEMBER_START:
 	tokencnt = 0;
 	tokenptr = char_ptr;
-       case MEMBER_TYPE_NOWILD:
+      case MEMBER_TYPE_NOWILD:
 	state = MEMBER_TYPE;
 	break;
-       case BROTHER_START:
+      case BROTHER_START:
 	tokencnt = 0;
 	tokenptr = char_ptr;
-       case BROTHER_TYPE_NOWILD:
+      case BROTHER_TYPE_NOWILD:
 	state = BROTHER_TYPE;
 	break;
-       case ASTASTAST_TYPE:
+      case ASTASTAST_TYPE:
 	tokencnt = 0;
 	tokenptr = char_ptr;
-       case SON_MEMBER_TYPE_NOWILD:
+      case SON_MEMBER_TYPE_NOWILD:
 	state = SON_MEMBER_TYPE;
 	break;
-       case BROTHER_TYPE:
-       case MEMBER_TYPE:
-       case SON_MEMBER_TYPE:
-       case ANCESTOR_TYPE:
+      case BROTHER_TYPE:
+      case MEMBER_TYPE:
+      case SON_MEMBER_TYPE:
+      case ANCESTOR_TYPE:
 	break;
-       default:
-	return TreeFAILURE;
+      default:
+	return TreePARSEERR;
       }
       tokencnt++;
     }
@@ -655,32 +635,21 @@ path name check for the
    *************************************************/
 
     else if (isdot(char_ptr))
-      if (state == NONE)
-      {
-	if (not_eos(char_ptr + 1))
-	{
-	  if (isdot(char_ptr + 1) && not_eos(char_ptr + 2))
-	  {
-	    if (isdot(char_ptr + 2))
-	    {
+      if (state == NONE) {
+	if (not_eos(char_ptr + 1)) {
+	  if (isdot(char_ptr + 1) && not_eos(char_ptr + 2)) {
+	    if (isdot(char_ptr + 2)) {
 	      do_action(SON_BROTHER_TYPE);
 	      char_ptr += 2;
-	    }
-	    else
-	      return TreeFAILURE;
-	  }
-	  else
-	  {
+	    } else
+	      return TreePARSEERR;
+	  } else {
 	    state = BROTHER_START;
 	  }
-	}
-	else
-	  return TreeFAILURE;
-      }
-      else
-      {
-	if (state != ASTASTAST_TYPE)
-	{
+	} else
+	  return TreePARSEERR;
+      } else {
+	if (state != ASTASTAST_TYPE) {
 	  do_action(state);
 	}
 	state = NONE;
@@ -696,24 +665,18 @@ path name check for the
   ***************************************************/
 
     else if (isslash(char_ptr))
-      if (state == NONE)
-      {
-	if (not_eos(char_ptr + 1))
-	{
-	  if (isident(char_ptr + 1))
-	  {
+      if (state == NONE) {
+	if (not_eos(char_ptr + 1)) {
+	  if (isident(char_ptr + 1)) {
 	    state = TAG_TYPE;
 	    tokencnt = 0;
 	    tokenptr = char_ptr + 1;
-	  }
-	  else
-	    return TreeFAILURE;
-	}
-	else
-	  return TreeFAILURE;
-      }
-      else
-	return TreeFAILURE;
+	  } else
+	    return TreePARSEERR;
+	} else
+	  return TreePARSEERR;
+      } else
+	return TreePARSEERR;
 
   /***************************************************
    See if it a colon.
@@ -725,49 +688,42 @@ path name check for the
   ***************************************************/
 
     else if (iscolon(char_ptr))
-      switch (state)
-      {
-       case TAG_TYPE:
-	if (not_eos(char_ptr + 2))
-	{
-	  if (iscolon(char_ptr + 1) && isident(char_ptr + 2))
-	  {
+      switch (state) {
+      case TAG_TYPE:
+	if (not_eos(char_ptr + 2)) {
+	  if (iscolon(char_ptr + 1) && isident(char_ptr + 2)) {
 	    tokencnt += 2;
 	    do_action(TAG_TREE_TYPE);
 	    ctx--;
 	    tokencnt = 0;
 	    tokenptr = char_ptr + 2;
 	    char_ptr++;
-	  }
-	  else
-	  {
+	  } else {
 	    do_action(state);
 	    state = NONE;
 	    char_ptr--;
 	  }
-	}
-	else
-	{
+	} else {
 	  do_action(state);
 	  state = NONE;
 	  char_ptr--;
 	}
 	break;
 
-       case NONE:
-       case ASTASTAST_TYPE:
+      case NONE:
+      case ASTASTAST_TYPE:
 	if (not_eos(char_ptr + 1))
 	  state = MEMBER_START;
 	else
-	  return TreeFAILURE;
+	  return TreePARSEERR;
 	break;
-       case MEMBER_START:
-	return TreeFAILURE;
+      case MEMBER_START:
+	return TreePARSEERR;
 	break;
-       case BROTHER_START:
-	return TreeFAILURE;
+      case BROTHER_START:
+	return TreePARSEERR;
 	break;
-       default:
+      default:
 	do_action(state);
 	state = NONE;
 	char_ptr--;
@@ -783,24 +739,18 @@ path name check for the
   ****************************************************/
 
     else if (isup(char_ptr))
-      if (state == NONE || state == ASTASTAST_TYPE)
-      {
-	if (not_eos(char_ptr + 1))
-	{
-	  if (isident(char_ptr + 1) || iswild(char_ptr + 1))
-	  {
+      if (state == NONE || state == ASTASTAST_TYPE) {
+	if (not_eos(char_ptr + 1)) {
+	  if (isident(char_ptr + 1) || iswild(char_ptr + 1)) {
 	    state = ANCESTOR_TYPE;
 	    tokencnt = 0;
 	    tokenptr = char_ptr + 1;
-	  }
-	  else
-	    return TreeFAILURE;
-	}
-	else
-	  return TreeFAILURE;
-      }
-      else
-	return TreeFAILURE;
+	  } else
+	    return TreePARSEERR;
+	} else
+	  return TreePARSEERR;
+      } else
+	return TreePARSEERR;
 
   /****************************************************
    See if it is a hyphen character. If current state
@@ -809,49 +759,45 @@ path name check for the
   ******************************************************/
 
     else if (ishyphen(char_ptr))
-      if (state == NONE || state == ASTASTAST_TYPE)
-      {
+      if (state == NONE || state == ASTASTAST_TYPE) {
 	do_action(PARENT_TYPE);
-      }
-      else if (state == BROTHER_START)
-      {
+      } else if (state == BROTHER_START) {
 	do_action(PARENT_TYPE);
 	state = NONE;
-      }
-      else
-	return TreeFAILURE;
+      } else
+	return TreePARSEERR;
     else
-      return TreeFAILURE;
+      return TreePARSEERR;
     char_ptr++;
   }
-  if ((state != MEMBER_START) && (state != NONE) && (state != ASTASTAST_TYPE) && (state != BROTHER_START))
+  if ((state != MEMBER_START) && (state != NONE) && (state != ASTASTAST_TYPE)
+      && (state != BROTHER_START))
     do_action(state);
   ctx++;
   ctx->type = EOL;
   return status;
 }
 
-STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, int tokencnt, char *tokenptr, SEARCH_TYPE param)
+STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT * ctx, char **tree, int *treelen, int tokencnt,
+				char *tokenptr, SEARCH_TYPE param)
 {
-  switch (param)
-  {
+  switch (param) {
 
-    case TAG_TREE_TYPE:
+  case TAG_TREE_TYPE:
     {				/*   case tree name in tag */
       *treelen = tokencnt - 2;	/*      save away the tree name for later */
       *tree = tokenptr;
       break;
     }
 
-   default:
+  default:
     {
       ctx->len = tokencnt;
       ctx->string = tokenptr;
       ctx->type = param;
       ctx->node = 0;
       ctx->stop = 0;
-      if (param == TAG_TYPE)	/* if it is a tag search */
-      {
+      if (param == TAG_TYPE) {	/* if it is a tag search */
 	ctx->tag_tree_name_len = *treelen;	/*   fill in the saved tree name stuff */
 	ctx->tag_tree_name = *tree;
       }
@@ -862,64 +808,58 @@ STATIC_ROUTINE void ParseAction(SEARCH_CONTEXT *ctx, char **tree, int *treelen, 
 
 int _TreeFindNodeEnd(void *dbid, void **ctx_in)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  SEARCH_CONTEXT *ctx = (SEARCH_CONTEXT *)*ctx_in;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  SEARCH_CONTEXT *ctx = (SEARCH_CONTEXT *) * ctx_in;
   int status = TreeNORMAL;
   if (dblist && dblist->remote)
-	  return FindNodeEndRemote(dblist,ctx_in);
-  if (ctx)
-  {
+    return FindNodeEndRemote(dblist, ctx_in);
+  if (ctx) {
     NODELIST *ptr;
-    int       i;
-    if (ctx->string) free(ctx->string);
+    int i;
+    if (ctx->string)
+      free(ctx->string);
     for (i = 0; i < MAX_SEARCH_LEVELS; i++)
       if ((ctx[i].type == SON_MEMBER_BROTHER_TYPE) && ctx[i].stack)
-	for (ptr = ctx[i].stack; ptr;)
-	{
+	for (ptr = ctx[i].stack; ptr;) {
 	  NODELIST *tmp = ptr;
-          ptr = ptr->next;
-          free(tmp);
+	  ptr = ptr->next;
+	  free(tmp);
 	}
     free(ctx);
     *ctx_in = NULL;
-  }
-  else
+  } else
     status = TreeNO_CONTEXT;
 
   return status;
 }
 
-
 int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
 {
   int status;
   char *tagname = TreeFindNodeTags(nid_in, ctx_ptr);
-  if (tagname)
-  {
-    struct descriptor tagd = {0,DTYPE_T,CLASS_S,0};
+  if (tagname) {
+    struct descriptor tagd = { 0, DTYPE_T, CLASS_S, 0 };
     tagd.length = (unsigned short)strlen(tagname);
     tagd.pointer = tagname;
-    StrCopyDx(tag,&tagd);
+    StrCopyDx(tag, &tagd);
     status = 1;
-  }
-  else
+  } else
     status = 0;
   return status;
 }
 
 char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID *nid = (NID *)&nid_in;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  NID *nid = (NID *) & nid_in;
   TREE_INFO *info_ptr;
-  char      *answer = NULL;
-  NODE     *node_ptr;
-  int       nidx;
-  int      *ctx = (int *)ctx_ptr;
+  char *answer = NULL;
+  NODE *node_ptr;
+  int *ctx = (int *)ctx_ptr;
   if (!(IS_OPEN(dblist)))
     return NULL;
   if (dblist->remote)
-	  return FindNodeTagsRemote(dblist,nid_in,ctx_ptr);
+    return FindNodeTagsRemote(dblist, nid_in, ctx_ptr);
 
 /*******************************************************
  First we must find the tree to which the node belongs.
@@ -935,9 +875,8 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
  calls.
 **********************************************************/
 
-  nid_to_tree_nidx(dblist, nid, info_ptr, nidx);
-  if (info_ptr)
-  {
+  nid_to_tree(dblist, nid, info_ptr);
+  if (info_ptr) {
 
   /*********************************************************
    If the context argument is zero then begin at the nodes
@@ -947,152 +886,137 @@ char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
    is the tag index of the next tag to be returned to the called.
   **********************************************************/
 
-    if (*ctx == 0)
-    {
+    if (*ctx == 0) {
       nid_to_node(dblist, nid, node_ptr);
       *ctx = swapint((char *)&node_ptr->tag_link);
-    }
-    else if (*ctx == -1)
-    {
+    } else if (*ctx == -1) {
       *ctx = 0;
     }
-    if ((*ctx > 0) && (*ctx <= info_ptr->header->tags))
-    {
+    if ((*ctx > 0) && (*ctx <= info_ptr->header->tags)) {
       unsigned int i;
-      char *name = (char *) (info_ptr->tag_info + *ctx - 1)->name;
-      for (i=0;i<sizeof(TAG_NAME) && name[i] != ' ';i++);
-      answer = strncpy(malloc(i+1),name,i);
-      answer[i]='\0';
+      char *name = (char *)(info_ptr->tag_info + *ctx - 1)->name;
+      for (i = 0; i < sizeof(TAG_NAME) && name[i] != ' '; i++) ;
+      answer = strncpy(malloc(i + 1), name, i);
+      answer[i] = '\0';
       *ctx = swapint((char *)&(info_ptr->tag_info + *ctx - 1)->tag_link);
       if (*ctx == 0)
 	*ctx = -1;
-    }
-    else
+    } else
       *ctx = 0;
-  }
-  else
+  } else
     *ctx = 0;
   return answer;
 }
 
 char *_TreeAbsPath(void *dbid, char const *inpath)
-{ 
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
+{
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int nid;
   char *answer;
   if (!IS_OPEN(dblist))
     return NULL;
   if (dblist->remote)
-	  return AbsPathRemote(dblist,inpath);
+    return AbsPathRemote(dblist, inpath);
   _TreeGetDefaultNid(dbid, &nid);
   answer = AbsPath(dbid, inpath, nid);
-  _TreeSetDefaultNid(dbid,nid);
+  _TreeSetDefaultNid(dbid, nid);
   return answer;
 }
 
-STATIC_ROUTINE char * AbsPath(void *dbid, char const * inpath, int nid_in)
+STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
   char *tmppath = NULL;
-  char const * pathptr = inpath;
+  char const *pathptr = inpath;
   char *answer = NULL;
   size_t len;
   size_t i;
-  _TreeSetDefaultNid(dbid,nid_in);
-  if (strlen(inpath))
-  {
+  _TreeSetDefaultNid(dbid, nid_in);
+  if (strlen(inpath)) {
     int nid;
     if (_TreeFindNode(dbid, inpath, &nid) & 1)
       pathptr = tmppath = _TreeGetPath(dbid, nid);
-  }
-  else
+  } else
     pathptr = tmppath = _TreeGetPath(dbid, nid_in);
-  memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+  memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   len = strlen(pathptr);
   ctx->type = EOL;
-  ctx->string = strcpy(malloc(len+1),pathptr);
-  for (i=0;i<len && pathptr[i] != ' ';i++)
+  ctx->string = strcpy(malloc(len + 1), pathptr);
+  for (i = 0; i < len && pathptr[i] != ' '; i++)
     ctx->string[i] = toupper(pathptr[i]);
-  ctx->string[i]=0;
-  if (Parse(ctx,0) & 1)
-  {
-    if (ctx[1].type == TAG_TYPE)
-    {
-      if (ctx[1].tag_tree_name_len)
-      {
-        answer = ctx->string;
-        ctx->string = NULL;
+  ctx->string[i] = 0;
+  if (Parse(ctx, 0) & 1) {
+    if (ctx[1].type == TAG_TYPE) {
+      if (ctx[1].tag_tree_name_len) {
+	answer = ctx->string;
+	ctx->string = NULL;
+      } else {
+	answer = malloc(16 + strlen(pathptr));
+	strcpy(answer, "\\");
+	strcat(answer, Treename(dblist, nid_in));
+	strcat(answer, "::");
+	strcat(answer, pathptr + 1);
       }
-      else
-      {
-        answer = malloc(16+strlen(pathptr));
-        strcpy(answer,"\\");
-        strcat(answer,Treename(dblist,nid_in));
-        strcat(answer,"::");
-        strcat(answer,pathptr+1);
-      }
-    }
-    else if (ctx[1].type == PARENT_TYPE)
-    {
+    } else if (ctx[1].type == PARENT_TYPE) {
       int nid;
       NODE node;
       NODE *nodeptr = &node;
-      NID *nidptr = (NID *)&nid;
-      NID *nidinptr = (NID *)&nid_in;
-      if (nid_in)
-      {
-        nid_to_node(dblist, nidinptr, nodeptr);
+      NID *nidptr = (NID *) & nid;
+      NID *nidinptr = (NID *) & nid_in;
+      if (nid_in) {
+	nid_to_node(dblist, nidinptr, nodeptr);
 	node_to_nid(dblist, parent_of(nodeptr), nidptr);
 	answer = AbsPath(dbid, &pathptr[2], nid);
-      }
-      else
+      } else
 	answer = NULL;
-    }
-    else
-    {
+    } else {
       char *tmp = _TreeGetPath(dbid, nid_in);
-      answer = strcpy(malloc(strlen(tmp)+strlen(pathptr)+2),tmp);
+      answer = strcpy(malloc(strlen(tmp) + strlen(pathptr) + 2), tmp);
       free(tmp);
-      switch (pathptr[0])
-      {
-       case '.':
-       case ':': strcat(answer,pathptr);
-                 break;
-       default:  strcat(answer,":");
-                 strcat(answer,pathptr);
-                 break;
+      switch (pathptr[0]) {
+      case '.':
+      case ':':
+	strcat(answer, pathptr);
+	break;
+      default:
+	strcat(answer, ":");
+	strcat(answer, pathptr);
+	break;
       }
     }
   }
-  if (ctx->string) free(ctx->string);
-  if (tmppath) free(tmppath);
+  if (ctx->string)
+    free(ctx->string);
+  if (tmppath)
+    free(tmppath);
   return answer;
 }
 
-STATIC_ROUTINE char *Treename(PINO_DATABASE *dblist, int nid_in)
+STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in)
 {
   TREE_INFO *info;
-  NID nid = *(NID *)&nid_in;
+  NID nid = *(NID *) & nid_in;
   unsigned int treenum;
-  for (info = dblist->tree_info, treenum=0; info && treenum < nid.tree; info = info->next_info);
+  for (info = dblist->tree_info, treenum = 0; info && treenum < nid.tree; info = info->next_info) ;
   return info ? info->treenam : "";
 }
 
-struct tag_search { TAG_NAME   tag;
-                    TREE_INFO *info;
-                  };
+struct tag_search {
+  TAG_NAME tag;
+  TREE_INFO *info;
+};
 
-int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const char *tree, short taglen, const char *tagnam, NODE **nodeptr, int *tagidx)
-
+int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
+		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx)
 {
-  int len = min(taglen,(short)sizeof(TAG_NAME));
+  int len = min(taglen, (short)sizeof(TAG_NAME));
   int i;
   int *idx;
   int status;
   struct tag_search tsearch;
-  memset(tsearch.tag,32,sizeof(TAG_NAME));
-  for (i=0;i<len;i++)
+  memset(tsearch.tag, 32, sizeof(TAG_NAME));
+  for (i = 0; i < len; i++)
     tsearch.tag[i] = toupper(tagnam[i]);
   *nodeptr = NULL;
 /********************************************
@@ -1102,20 +1026,17 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const cha
  by the current default node.
 *********************************************/
 
-  for (tsearch.info = db->tree_info; tsearch.info; tsearch.info = tsearch.info->next_info)
-  {
-	  if (tree)
-	  {
-		  size_t len = strlen(tsearch.info->treenam);
-		  if ((len == (size_t)treelen) && strncmp(tsearch.info->treenam,tree,len) == 0)
-			  break;
-	  }
-	  else if ((default_node >= tsearch.info->node) && 
-		  (default_node < tsearch.info->node + tsearch.info->header->nodes))
-		  break;
+  for (tsearch.info = db->tree_info; tsearch.info; tsearch.info = tsearch.info->next_info) {
+    if (tree) {
+      size_t len = strlen(tsearch.info->treenam);
+      if ((len == (size_t) treelen) && strncmp(tsearch.info->treenam, tree, len) == 0)
+	break;
+    } else if ((default_node >= tsearch.info->node) &&
+	       (default_node < tsearch.info->node + tsearch.info->header->nodes))
+      break;
   }
   if (tsearch.info == NULL)
-	  return TreeTNF;
+    return TreeTNF;
 
 	  /***********************************************
 	  If the tag name specified is the reserved name
@@ -1124,14 +1045,11 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const cha
 	  Otherwise we must look up the tagname in the
 	  tagname table of the tree.
       ***********************************************/
-  if (taglen == 3 && strncmp(tagnam,"TOP",3) == 0)
-  {
-      *nodeptr = tsearch.info->root;
-      *tagidx = 0;
-      return TreeNORMAL;
-  }
-  else
-  {
+  if (taglen == 3 && strncmp(tagnam, "TOP", 3) == 0) {
+    *nodeptr = tsearch.info->root;
+    *tagidx = 0;
+    return TreeNORMAL;
+  } else {
     /******************************************************
      To look up the tag in the tag table we will use a
      binary search. If there are no tags defined, just return
@@ -1141,49 +1059,48 @@ int _TreeFindTag(PINO_DATABASE *db, NODE *default_node, short treelen, const cha
      we will just use the C binary search routine to find the
      tag in the table.
     ********************************************************/
-      switch (tsearch.info->header->tags)
-      {
-	  case 0:	status = TreeTNF;
-				break;
-	  case 1: if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0)
-			  {
-				  *nodeptr = tsearch.info->node + swapint((char *)&tsearch.info->tag_info->node_idx);
-                                  *tagidx = 1;
-				  return TreeNORMAL;
-			  }
-		      else
-			    status = TreeTNF;
-			break;
-       default:
-		   if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags, 
-			   tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0)
-		   {
-			   *nodeptr = tsearch.info->node + swapint((char *)&(tsearch.info->tag_info + swapint((char *)idx))->node_idx);
-                           *tagidx = swapint((char *)idx) + 1;
-			   return TreeNORMAL;
-		   }
-		   else
-			   status = TreeTNF;
-		   break;
+    switch (tsearch.info->header->tags) {
+    case 0:
+      status = TreeTNF;
+      break;
+    case 1:
+      if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0) {
+	*nodeptr = tsearch.info->node + swapint((char *)&tsearch.info->tag_info->node_idx);
+	*tagidx = 1;
+	return TreeNORMAL;
+      } else
+	status = TreeTNF;
+      break;
+    default:
+      if ((idx = bsearch((const void *)&tsearch, (const void *)tsearch.info->tags,
+			 tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0) {
+	*nodeptr =
+	    tsearch.info->node +
+	    swapint((char *)&(tsearch.info->tag_info + swapint((char *)idx))->node_idx);
+	*tagidx = swapint((char *)idx) + 1;
+	return TreeNORMAL;
+      } else
+	status = TreeTNF;
+      break;
+    }
+    if (status == TreeTNF && tree == 0) {
+      char *tag;
+      void *ctx = 0;
+      int nid;
+      NODE *node;
+      NID *nidptr = (NID *) & nid;
+      int i;
+      for (i = 0; i < sizeof(tsearch.tag); i++)
+	if (tsearch.tag[i] == ' ')
+	  tsearch.tag[i] = '\0';
+      tag = _TreeFindTagWild(db, tsearch.tag, &nid, &ctx);
+      if (tag) {
+	status = TreeNORMAL;
+	nid_to_node(db, nidptr, node);
+	*nodeptr = node;
       }
-      if (status == TreeTNF && tree == 0)
-      {
-        char *tag;
-        void *ctx=0;
-        int nid;
-        NODE *node;
-        NID *nidptr=(NID *)&nid;
-        int i;
-        for (i=0;i<sizeof(tsearch.tag);i++) if (tsearch.tag[i]==' ') tsearch.tag[i]='\0';
-        tag = _TreeFindTagWild(db, tsearch.tag, &nid, &ctx);
-        if (tag)
-	{
-          status = TreeNORMAL;
-          nid_to_node(db, nidptr, node);
-          *nodeptr = node;
-        }
-        TreeFindTagEnd(&ctx);
-      }
+      TreeFindTagEnd(&ctx);
+    }
   }
   return status;
 }
@@ -1204,30 +1121,29 @@ STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
   return strncmp((char *)tsearch->tag, (char *)tag, sizeof(TAG_NAME));
 }
 
-int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, char **namedsc_ptr, SEARCH_TYPE *type_ptr)
+int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr, char **namedsc_ptr,
+		   SEARCH_TYPE * type_ptr)
 {
   SEARCH_CONTEXT ctx[MAX_SEARCH_LEVELS];
-  int       status;
-  NODE     *node_ptr;
-  int       ctxidx;
-  size_t       len = strlen(path_ptr);
-  size_t       i;
+  int status;
+  NODE *node_ptr;
+  int ctxidx;
+  size_t len = strlen(path_ptr);
+  size_t i;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
   status = TreeNORMAL;
-  memset(ctx,0,sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
+  memset(ctx, 0, sizeof(SEARCH_CONTEXT) * MAX_SEARCH_LEVELS);
   ctx->type = EOL;
-  ctx->string = strcpy(malloc(len+1),path_ptr);
-  for (i=0;i<len && path_ptr[i] != ' ';i++)
+  ctx->string = strcpy(malloc(len + 1), path_ptr);
+  for (i = 0; i < len && path_ptr[i] != ' '; i++)
     ctx->string[i] = toupper(path_ptr[i]);
-  ctx->string[i]=0;
-  status = Parse(ctx,0);
-  if (status & 1)
-  {
+  ctx->string[i] = 0;
+  status = Parse(ctx, 0);
+  if (status & 1) {
     node_ptr = dblist->default_node;
     ctxidx = 1;
-    for (; ctx[ctxidx + 1].type != EOL;)
-    {
+    for (; ctx[ctxidx + 1].type != EOL;) {
     /********************************************
        Look for this thing.  If OK then move
        on to next thing, otherwise move back to
@@ -1237,28 +1153,25 @@ int TreeFindParent(PINO_DATABASE *dblist, char *path_ptr, NODE **node_ptrptr, ch
       status = TreeSearch(dblist, ctx, ctxidx, &node_ptr);
       if (status & 1)
 	ctxidx++;
-      else
-      {
+      else {
 	ctx[ctxidx].node = NULL;
 	ctxidx--;
 	if (ctxidx >= 0)
 	  node_ptr = ctx[ctxidx].node;
       }
     }
-    if (status & 1)
-    {
-      *namedsc_ptr = strcpy(malloc(strlen(ctx[ctxidx].string)+1),ctx[ctxidx].string);
+    if (status & 1) {
+      *namedsc_ptr = strcpy(malloc(strlen(ctx[ctxidx].string) + 1), ctx[ctxidx].string);
       *type_ptr = ctx[ctxidx].type;
       *node_ptrptr = node_ptr;
-    }
-    else
-    {
+    } else {
       *namedsc_ptr = NULL;
       *type_ptr = NONE;
       *node_ptrptr = NULL;
     }
   }
-  if (ctx->string) free(ctx->string);
+  if (ctx->string)
+    free(ctx->string);
   return status;
 }
 
@@ -1267,13 +1180,12 @@ int TreeAbsPathDsc(char *inpath, struct descriptor *outpath)
   char *ans_c = TreeAbsPath(inpath);
   if (ans_c == 0)
     return 0;
-  else
-    {
-      struct descriptor ans_d = {0, DTYPE_T, CLASS_S, 0};
-      ans_d.length = (unsigned short)strlen(ans_c);
-      ans_d.pointer = ans_c;
-      StrCopyDx(outpath,&ans_d);
-      free(ans_c);
-    }
+  else {
+    struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
+    ans_d.length = (unsigned short)strlen(ans_c);
+    ans_d.pointer = ans_c;
+    StrCopyDx(outpath, &ans_d);
+    free(ans_c);
+  }
   return 1;
 }

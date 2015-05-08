@@ -138,6 +138,14 @@ typedef struct named_attributes_index {
 
 #if defined(WORDS_BIGENDIAN)
 
+#define swapquad(ptr) ( (((int64_t)((unsigned char *)ptr)[7]) << 56) | (((int64_t)((unsigned char *)ptr)[6]) << 48) | \
+                        (((int64_t)((unsigned char *)ptr)[5]) << 40) | (((int64_t)((unsigned char *)ptr)[4]) << 32) | \
+                        (((int64_t)((unsigned char *)ptr)[3]) << 24) | (((int64_t)((unsigned char *)ptr)[2]) << 16) | \
+                        (((int64_t)((unsigned char *)ptr)[1]) <<  8) | (((int64_t)((unsigned char *)ptr)[0]) ))
+#define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
+                       (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) ))
+#define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
+
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[1]; ((char *)(outp))[1] = ((char *)&in)[0]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[3]; ((char *)(outp))[1] = ((char *)&in)[2]; \
                            ((char *)(outp))[2] = ((char *)&in)[1]; ((char *)(outp))[3] = ((char *)&in)[0]
@@ -147,6 +155,10 @@ typedef struct named_attributes_index {
                            (outp)[6] = ((char *)&in)[1]; (outp)[7] = ((char *)&in)[0]
 #else
 
+#define swapquad(ptr) (*(int64_t *)(ptr))
+#define swapint(ptr) (*(int *)(ptr))
+#define swapshort(ptr) (*(short *)(ptr))
+
 #define LoadShort(in,outp) ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]
 #define LoadInt(in,outp)   ((char *)(outp))[0] = ((char *)&in)[0]; ((char *)(outp))[1] = ((char *)&in)[1]; \
                            ((char *)(outp))[2] = ((char *)&in)[2]; ((char *)(outp))[3] = ((char *)&in)[3]
@@ -155,14 +167,6 @@ typedef struct named_attributes_index {
                            (outp)[4] = ((char *)&in)[4]; (outp)[5] = ((char *)&in)[5]; \
                            (outp)[6] = ((char *)&in)[6]; (outp)[7] = ((char *)&in)[7]
 #endif
-
-#define swapquad(ptr) ( (((int64_t)((unsigned char *)ptr)[7]) << 56) | (((int64_t)((unsigned char *)ptr)[6]) << 48) | \
-                        (((int64_t)((unsigned char *)ptr)[5]) << 40) | (((int64_t)((unsigned char *)ptr)[4]) << 32) | \
-                        (((int64_t)((unsigned char *)ptr)[3]) << 24) | (((int64_t)((unsigned char *)ptr)[2]) << 16) | \
-                        (((int64_t)((unsigned char *)ptr)[1]) <<  8) | (((int64_t)((unsigned char *)ptr)[0]) ))
-#define swapint(ptr) ( (((int)((unsigned char *)(ptr))[3]) << 24) | (((int)((unsigned char *)(ptr))[2]) << 16) | \
-                       (((int)((unsigned char *)(ptr))[1]) <<  8) | (((int)((unsigned char *)(ptr))[0]) ))
-#define swapshort(ptr) ( (((int)((unsigned char *)ptr)[1]) << 8) | (((int)((unsigned char *)ptr)[0]) ))
 
 #define bitassign(bool,value,mask) value = (bool) ? (value) | (mask) : (value) & ~(mask)
 #define bitassign_c(bool,value,mask) value = (char)((bool) ? (value) | (mask) : (value) & ~(mask))
@@ -244,6 +248,20 @@ nid_to_tree_nidx(pino, nid, info, nidx)
       info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
       nidx = info ? nid->node : 0; \
     }
+/******************************************
+Another useful macro based on nid:
+
+nid_to_tree(pino, nid, info)
+*******************************************/
+
+#define nid_to_tree(pino, nid, info) \
+    {\
+      unsigned int nid_to_tree_nidx__i;\
+      info = pino->tree_info;\
+      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
+               info = info->next_info; \
+      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
+    }
 
 /********************************************
    NODE
@@ -254,7 +272,7 @@ nid_to_tree_nidx(pino, nid, info, nidx)
 
 typedef char NODE_NAME[12];
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #pragma pack(push,1)
 #else
 PACK_START
@@ -323,7 +341,16 @@ typedef struct big_node_linkage {
 
 /* if pointers are more than 32 bits then node offsets can be 
    more than 32 bits */
-#if SIZEOF_INT_P == 8
+
+#ifndef __SIZEOF_POINTER__
+#ifdef i386
+#define __SIZEOF_POINTER__ 4
+#else
+#define __SIZEOF_POINTER__ 8
+#endif
+#endif
+
+#if __SIZEOF_POINTER__ == 8
 #define parent_of(a)\
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
 #define member_of(a)\
@@ -332,7 +359,7 @@ typedef struct big_node_linkage {
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->child : (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0))
 #define brother_of(a)\
   (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
-#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0) ? (char *)(a) - (char *)(b) : 0); swapint((char *)&out)
+#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0) ? (char *)(a) - (char *)(b) : 0); out=swapint((char *)&out)
 #define link_it2(dblist,nodeptr,field,a,b)  \
   {\
     int i; \
@@ -445,7 +472,7 @@ typedef struct record_header {
   RFA rfa;
 } RECORD_HEADER;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #pragma pack(pop)
 #else
 PACK_STOP
@@ -652,8 +679,7 @@ to databases
 #define TREE_PATH_DELIM  "/"
 
 /************* Prototypes for internal functions *************/
-extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *,
-			     int status);
+extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *);
 extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
 
 extern int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook);
@@ -680,7 +706,7 @@ extern char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath);
 extern int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #endif
 extern int64_t RfaToSeek(unsigned char *rfa);
@@ -707,7 +733,8 @@ extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, unsigned char *rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
-extern int TreeGetDsc(TREE_INFO * info, int nid, int64_t offset, int length, struct descriptor_xd *dsc);
+extern int TreeGetDsc(TREE_INFO * info, int nid, int64_t offset, int length,
+		      struct descriptor_xd *dsc);
 extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset,
 				     EXTENDED_ATTRIBUTES * att);
 extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
@@ -733,7 +760,7 @@ extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef HAVE_PTHREAD_H
 #define ssize_t int64_t
 typedef int mode_t;

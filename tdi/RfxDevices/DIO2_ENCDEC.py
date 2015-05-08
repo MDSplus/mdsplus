@@ -212,7 +212,6 @@ class DIO2_ENCDEC(Device):
         for c in range(8):
             if getattr(self, 'channel_%d'%(c+1)).isOn():
                 print '===== Channel %d ON'%(c+1)
-                channelMask = channelMask | (1 << c)
                 try:
                     function = getattr(self, 'channel_%d_function'%(c+1)).data()
                 except:
@@ -221,6 +220,7 @@ class DIO2_ENCDEC(Device):
                 print '===== FUNCTION: ' + function
 
                 if function != 'ENCODER':
+                    channelMask = channelMask | (1 << c)
                     if swMode == 'REMOTE':
                         status = Data.execute('MdsValue("DIO2_ENCDECHWSetIOConnectionChan(0, $1, $2)", $1,$2)', boardId, c);
                         if status == 0:
@@ -398,8 +398,8 @@ class DIO2_ENCDEC(Device):
                                 if l == 0:
                                     raise
                                 eventSize = eA.size
-                                #print 'event: ' + str(event)
-                                #print 'event size: ' + str(eventSize)
+                                print 'event: ' + str(event)
+                                print 'event size: ' + str(eventSize)
                                 if eventSize == 1:
                                     eventCodes.append(Data.execute('TimingDecodeEvent($1)', event))
 
@@ -431,7 +431,7 @@ class DIO2_ENCDEC(Device):
                             return 0
  
                         duration = getattr(self,'channel_%d_duration'%(c+1)).data()
-                        #print 'duration: ', duration
+                        print 'duration: ', duration
                         if duration < 0 :
                             Data.execute('DevLogErr($1, $2)', self.getNid(), 'Invalid gated clock duration parameter for channel %d'%(c+1))
                             return 0
@@ -460,14 +460,19 @@ class DIO2_ENCDEC(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Gated Clock parameters for channel %d'%(c+1))
                         return 0
 
+                    print  boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0]
+
                     if swMode == 'REMOTE':
-                        status = Data.execute('MdsValue("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)", $1,$2,$3,$4,$5,$6,$7,$8)', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle)
+                        #status = Data.execute('MdsValue("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)", $1,$2,$3,$4,$5,$6,$7,$8)', boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle)
+                        status = Data.execute('MdsValue("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7)", $1,$2,$3,$4,$5,$6,$7)', boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0])
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW GClock setup. See CPCI console for details')
                             return 0
                     else:               
-                        status = Data.execute("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle)
+                        #status = Data.execute("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, frequency, delay, duration, makeArray(eventCodes), dutyCycle)
+                        status = Data.execute("DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7)",boardId, c, trigModeCode, frequency, delay, duration, eventCodes[0])
+
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW GClock setup')
                             return 0
@@ -543,14 +548,14 @@ class DIO2_ENCDEC(Device):
 
                     if swMode == 'REMOTE':
                         #status = Data.execute('MdsValue("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)", $1,$2,$3,$4,$5,$6,$7,$8,$9)', boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes), terminationCode)
-                        status = Data.execute('MdsValue("DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)", $1,$2,$3,$4,$5,$6,$7,$8)', boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute('MdsValue("DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)", $1,$2,$3,$4,$5,$6,$7,$8)', boardId, c, trigModeCode, freq1, freq2, delay, duration, eventCodes[0])
                         if status == 0:
                             Data.execute('MdsDisconnect()')
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW GClock setup. See CPCI console for details')
                             return 0
                     else:
                         #status = Data.execute("DIO4HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8, $9)",boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes), terminationCode)
-                        status = Data.execute("DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, freq1, freq2, delay, duration, makeArray(eventCodes))
+                        status = Data.execute("DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)",boardId, c, trigModeCode, freq1, freq2, delay, duration, eventCodes[0])
                         if status == 0:
                             Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW DClock setup')
                             return 0
@@ -657,7 +662,7 @@ class DIO2_ENCDEC(Device):
                                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW set event setup')
                                 return 0            
             else:
-                #If Channel is OFF for DIO2 module compatibiliti odd channel is configure
+                #If Channel is OFF for DIO2 module compatibility with DIO2 driver odd channel is configure
                 #as input even as output
                 if swMode == 'REMOTE':
                     status = Data.execute('MdsValue("DIO2_ENCDECHWSetIOConnectionChan(0, $1, $2)", $1,$2)', boardId, c);
@@ -830,6 +835,8 @@ class DIO2_ENCDEC(Device):
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute DIO2HWGetRecEvents')
                 return 0;
 
+        print "recEventNum ", recEventNum
+
         if recEventNum > 0 :
             self.rec_events.putData(recEvents)
 
@@ -841,7 +848,7 @@ class DIO2_ENCDEC(Device):
                 recStartTime = Data.execute('TimingGetEventTime($1)', recStartEv)
             else:
                 recStartTime = 0
-            #print "rec_times ", recStartTime + recStartTime
+            print "rec_times ", recStartTime + recStartTime
             self.rec_times.putData(recTimes + recStartTime)
 
         channelMask = 0
@@ -995,6 +1002,8 @@ class DIO2_ENCDEC(Device):
                 if status == 0:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
                     return 0
+		"""
+		Il canale non capisco perche debba essere generato un veneto software con codice 0
         else:
             print '===== Sofware Event OFF'
             evCode = 0;
@@ -1010,7 +1019,7 @@ class DIO2_ENCDEC(Device):
                 if status == 0:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
                     return 0
-
+        """
             
         if swMode == 'REMOTE':
             Data.execute('MdsDisconnect()')

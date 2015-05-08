@@ -9,7 +9,7 @@
 #include <ncidef.h>
 #include "treethreadsafe.h"
 #include <treeshr.h>
-#include <librtl_messages.h>
+#include <mdsshr_messages.h>
 #include <errno.h>
 #include <fcntl.h>
 #ifndef O_BINARY
@@ -20,8 +20,6 @@
 #endif
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
-
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 static int64_t ViewDate = -1;
 
@@ -86,8 +84,10 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		    TreeGetExtendedAttributes(info, RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa),
 					      &attributes);
 		if (status & 1 && attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
-		  status = TreeGetDsc(info, nid->tree, attributes.facility_offset[STANDARD_RECORD_FACILITY],
-				      attributes.facility_length[STANDARD_RECORD_FACILITY], dsc);
+		  status =
+		      TreeGetDsc(info, nid->tree,
+				 attributes.facility_offset[STANDARD_RECORD_FACILITY],
+				 attributes.facility_length[STANDARD_RECORD_FACILITY], dsc);
 		} else if (status & 1
 			   && attributes.facility_offset[SEGMENTED_RECORD_FACILITY] != -1) {
 		  status = _TreeGetSegmentedRecord(dbid, nid_in, dsc);
@@ -169,7 +169,7 @@ int TreeOpenDatafileR(TREE_INFO * info)
     strcat(filename, "datafile");
     df_ptr->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
     free(filename);
-    status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
+    status = (df_ptr->get == -1) ? TreeFOPENR : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = 0;
   }
@@ -183,7 +183,7 @@ typedef ARRAY(struct descriptor *) array_dsc;
 int TreeMakeNidsLocal(struct descriptor *dsc_ptr, int nid)
 {
   int status = 1;
-  unsigned char tree = ((NID *)&nid)->tree;
+  unsigned char tree = ((NID *) & nid)->tree;
   if (dsc_ptr == NULL)
     status = 1;
   else
@@ -287,7 +287,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)&hdr, 12, &deleted) ==
-	     12) ? TreeSUCCESS : TreeFAILURE;
+	     12) ? TreeSUCCESS : TreeDFREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenDatafile(info);
       }
@@ -302,10 +302,9 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
 	}
 	deleted = 1;
 	while (status & 1 && deleted) {
-	  status =
-	      ((unsigned int)
-	       MDS_IO_READ_X(info->data_file->get, rfa_l + 12, (void *)bptr, partlen,
-			     &deleted) == partlen) ? TreeSUCCESS : TreeFAILURE;
+	  status = ((unsigned int)
+		    MDS_IO_READ_X(info->data_file->get, rfa_l + 12, (void *)bptr, partlen,
+				  &deleted) == partlen) ? TreeSUCCESS : TreeDFREAD;
 	  if (status & 1 && deleted)
 	    status = TreeReopenDatafile(info);
 	}
@@ -324,7 +323,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)record, *buffer_size, &deleted) ==
-	     *buffer_size) ? TreeSUCCESS : TreeFAILURE;
+	     *buffer_size) ? TreeSUCCESS : TreeDFREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenDatafile(info);
       }
@@ -343,7 +342,7 @@ int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_size, c
       while (status & 1 && deleted) {
 	status =
 	    (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)buffer, blen, &deleted) ==
-	     blen) ? TreeSUCCESS : TreeFAILURE;
+	     blen) ? TreeSUCCESS : TreeDFREAD;
 	if (status & 1 && deleted)
 	  status = TreeReopenDatafile(info);
       }
@@ -402,7 +401,7 @@ int TreeGetVersionNci(TREE_INFO * info, NCI * nci, NCI * v_nci)
     while (status & 1 && deleted) {
       status =
 	  (MDS_IO_READ_X(info->data_file->get, rfa_l, (void *)nci_bytes, 42, &deleted) ==
-	   42) ? TreeSUCCESS : TreeFAILURE;
+	   42) ? TreeSUCCESS : TreeDFREAD;
       if (status & 1 && deleted)
 	status = TreeReopenDatafile(info);
     }

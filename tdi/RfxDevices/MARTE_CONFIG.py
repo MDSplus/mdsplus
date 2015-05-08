@@ -18,4 +18,5 @@ class MARTE_CONFIG(Device):
       {'path':':VOLT_CONTR', 'type':'numeric', 'value':0},
       {'path':':EQUIFLUX', 'type':'numeric', 'value':0},
       {'path':':STRAIN_AL', 'type':'numeric', 'value':0},
-      {'path':':CHK_DISRUP', 'type':'numeric', 'value':0}]
+      {'path':':CHK_DISRUP', 'type':'numeric', 'value':0},
+      {'path':':VSHIFT_CONTR', 'type':'numeric', 'value':0}]

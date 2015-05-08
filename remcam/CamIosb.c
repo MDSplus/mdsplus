@@ -19,9 +19,9 @@ int CamError(int *xexp, int *qexp, unsigned short *iosb_in)
 {
   unsigned short *iosb = iosb_in ? iosb_in : RemCamLastIosb;
   return ((!(iosb[0] & 1)) ||
-     (xexp && ((*xexp & 1) != (iosb[2] & 1))) ||
-     (qexp && ((*qexp & 1) != ((iosb[2] >> 1) & 1))));
-}    
+	  (xexp && ((*xexp & 1) != (iosb[2] & 1))) ||
+	  (qexp && ((*qexp & 1) != ((iosb[2] >> 1) & 1))));
+}
 
 int CamX(unsigned short *iosb_in)
 {
@@ -37,11 +37,12 @@ int CamQ(unsigned short *iosb_in)
 
 int CamGetStat(unsigned short *iosb_in)
 {
-  memcpy(iosb_in,RemCamLastIosb,sizeof(RemCamLastIosb));
+  memcpy(iosb_in, RemCamLastIosb, sizeof(RemCamLastIosb));
   return 1;
 }
 
 int CamXandQ(unsigned short *iosb_in)
-{  unsigned short *iosb = iosb_in ? iosb_in : RemCamLastIosb;
+{
+  unsigned short *iosb = iosb_in ? iosb_in : RemCamLastIosb;
   return ((iosb[0] & 1) && ((iosb[2] & 3) == 3));
 }

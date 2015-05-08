@@ -177,8 +177,8 @@
               </Constraints>
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-                <Property name="columns" type="int" value="0"/>
-                <Property name="rows" type="int" value="4"/>
+                <Property name="columns" type="int" value="1"/>
+                <Property name="rows" type="int" value="5"/>
               </Layout>
               <SubComponents>
                 <Container class="javax.swing.JPanel" name="jPanel15">
@@ -321,6 +321,36 @@
                         <Property name="labelString" type="java.lang.String" value="rVesselTuningFactor: "/>
                         <Property name="numCols" type="int" value="4"/>
                         <Property name="offsetNid" type="int" value="1423"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel3">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField11">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="thetaNom:"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1429"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField12">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="tTrigVth:"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1435"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField13">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="deltaTBT1Vth:"/>
+                        <Property name="numCols" type="int" value="4"/>
+                        <Property name="offsetNid" type="int" value="1441"/>
                       </Properties>
                     </Component>
                   </SubComponents>
@@ -2043,6 +2073,60 @@
                     </Container>
                   </SubComponents>
                 </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel12">
+              <Constraints>
+                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                  <JTabbedPaneConstraints tabName="Inverter Error Compensation">
+                    <Property name="tabTitle" type="java.lang.String" value="Inverter Error Compensation"/>
+                  </JTabbedPaneConstraints>
+                </Constraint>
+              </Constraints>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceChoice" name="deviceChoice2">
+                  <Properties>
+                    <Property name="choiceIntValues" type="[I" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                      <PropertyValue value="[1, 0]"/>
+                    </Property>
+                    <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                      <StringArray count="2">
+                        <StringItem index="0" value="ON"/>
+                        <StringItem index="1" value="OFF"/>
+                      </StringArray>
+                    </Property>
+                    <Property name="convert" type="boolean" value="true"/>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="DeadTimeComp: "/>
+                    <Property name="offsetNid" type="int" value="1447"/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField14">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="kDeadTimeComp:"/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="1453"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField15">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="DeTiMinHystCurrThreshold: "/>
+                    <Property name="offsetNid" type="int" value="1459"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField16">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="DeTiMaxHystCurrThreshold: "/>
+                    <Property name="numCols" type="int" value="4"/>
+                    <Property name="offsetNid" type="int" value="1465"/>
+                  </Properties>
+                </Component>
               </SubComponents>
             </Container>
           </SubComponents>

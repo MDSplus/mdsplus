@@ -10,9 +10,6 @@
 #include        <stdio.h>
 #include        <stdlib.h>
 
-#include        "mdsdcldef.h"
-#include        "clidef.h"
-
 
 /***********************************************************************
 * TCLDEF.H --
@@ -24,17 +21,15 @@
 #define TCL_STS_FAILED_ESSENTIAL  TCL_STS(2)
 
 #ifdef CREATE_STS_TEXT
-struct stsText  tcl_stsText[] = {
-        STS_TEXT(TCL_STS_NORMAL,"Normal successful completion")
-       ,STS_TEXT(TCL_STS_FAILED_ESSENTIAL,"Essential action failed")
-       };
+struct stsText tcl_stsText[] = {
+  STS_TEXT(TCL_STS_NORMAL, "Normal successful completion")
+      , STS_TEXT(TCL_STS_FAILED_ESSENTIAL, "Essential action failed")
+};
 #endif
-
-
 
 	/*****************************************************************
 	 * Function prototypes:  user functions
 	 *****************************************************************/
 int TclSetTree();
 
-#endif		/* __TCLDEF_H	*/
+#endif				/* __TCLDEF_H   */

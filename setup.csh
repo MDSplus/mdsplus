@@ -62,13 +62,15 @@
 # 
 #
 #
-if ( ! $?MDSPLUS_DIR ) then
-  set MDSPLUS_DIR=/usr/local/mdsplus
-  if ( -r /etc/.mdsplus_dir ) then
-    set MDSPLUS_DIR=`cat /etc/.mdsplus_dir`
-  endif
+
+if ( $?MDSPLUS_DIR ) then
+  setenv MDSPLUS_DIR $MDSPLUS_DIR 
+else if ( -r /etc/.mdsplus_dir ) then
+  setenv MDSPLUS_DIR `cat /etc/.mdsplus_dir`
+else
+  setenv MDSPLUS_DIR /usr/local/mdsplus
 endif
-setenv MDSPLUS_DIR $MDSPLUS_DIR 
+
 if ( $?temp_sym_name ) then
   set temp_sym_old_value=`printenv $temp_sym_name`
   if ( $temp_sym_old_value == '' ) then
@@ -142,3 +144,11 @@ else
     unset temp_file
   endif
 endif
+if ( ! $?PyLib ) then
+  set pyver=`python -V >& /dev/stdout`
+  if ( $? == 0 ) then
+    set PyLib=`echo $pyver | awk '{print $2}' | awk -F. '{print "python"$1"."$2;}'`
+  endif
+  unset pyver
+endif
+

@@ -1,8 +1,7 @@
 #ifndef _TREESHR_HOOKS_H
 #define _TREESHR_HOOKS_H
 
-typedef enum
-{
+typedef enum {
   OpenTree,
   OpenTreeEdit,
   RetrieveTree,
@@ -14,6 +13,6 @@ typedef enum
   GetNci,
   PutData,
   PutNci
-}         TreeshrHookType;
+} TreeshrHookType;
 
 #endif

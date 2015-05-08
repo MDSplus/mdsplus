@@ -1,1 +1,1 @@
-javaw -cp "%MDSPLUSDIR%\Java\Classes\jTraverser.jar" jTraverser
+start javaw -cp "%MDSPLUS_DIR%\Java\Classes\jTraverser.jar" jTraverser

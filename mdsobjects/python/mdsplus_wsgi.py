@@ -113,13 +113,13 @@ Currently the following request-types are supported:
 
   treepath - Return tree_path environment variable
 
-    URL: http://mywebserver-host/mdsplusWsgi/treename
+    URL: http://mywebserver-host/mdsplusWsgi/treepath/treename
 
   getnid - Return node identifier
 
-    URL: http://mywebserver-host/mdsplusWsgi/treename/shot-number?node=node-name-spec
+    URL: http://mywebserver-host/mdsplusWsgi/getNid/treename/shot-number?node=node-name-spec
 
-       example: http://mywebserver-host/mdsplusWsgi/cmod/-1?node=\ip
+       example: http://mywebserver-host/mdsplusWsgi/getNid/cmod/-1?node=\ip
 
 """
 from MDSplus import *

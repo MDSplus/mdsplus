@@ -6,780 +6,735 @@
  * Enumeration value vectors for each enumeration set
  */
 
+static unsigned short int enum_value_vec1[] = {
+  25,
+  28,
+  24,
+};
 
-static unsigned short int enum_value_vec1[] =
-  {
-    25,
-    28,
-    24,
-  };
+static unsigned short int enum_value_vec2[] = {
+  35,
+  32,
+  33,
+  34,
+};
 
-static unsigned short int enum_value_vec2[] =
-  {
-    35,
-    32,
-    33,
-    34,
-  };
+static unsigned short int enum_value_vec3[] = {
+  38,
+  37,
+  39,
+  43,
+  40,
+  41,
+  42,
+};
 
-static unsigned short int enum_value_vec3[] =
-  {
-    38,
-    37,
-    39,
-    43,
-    40,
-    41,
-    42,
-  };
+static unsigned short int enum_value_vec4[] = {
+  101,
+  45,
+};
 
-static unsigned short int enum_value_vec4[] =
-  {
-    101,
-    45,
-  };
+static unsigned short int enum_value_vec5[] = {
+  114,
+  112,
+  113,
+};
 
-static unsigned short int enum_value_vec5[] =
-  {
-    114,
-    112,
-    113,
-  };
+static unsigned short int enum_value_vec6[] = {
+  85,
+  87,
+  86,
+};
 
-static unsigned short int enum_value_vec6[] =
-  {
-    85,
-    87,
-    86,
-  };
+static unsigned short int enum_value_vec7[] = {
+  23,
+  25,
+  22,
+  29,
+  30,
+};
 
-static unsigned short int enum_value_vec7[] =
-  {
-    23,
-    25,
-    22,
-    29,
-    30,
-  };
+static unsigned short int enum_value_vec8[] = {
+  49,
+  50,
+};
 
-static unsigned short int enum_value_vec8[] =
-  {
-    49,
-    50,
-  };
+static unsigned short int enum_value_vec9[] = {
+  54,
+  56,
+  60,
+  63,
+  65,
+  70,
+  71,
+};
 
-static unsigned short int enum_value_vec9[] =
-  {
-    54,
-    56,
-    60,
-    63,
-    65,
-    70,
-    71,
-  };
+static unsigned short int enum_value_vec10[] = {
+  52,
+  140,
+  79,
+};
 
-static unsigned short int enum_value_vec10[] =
-  {
-    52,
-    140,
-    79,
-  };
+static unsigned short int enum_value_vec11[] = {
+  72,
+  66,
+  64,
+  76,
+  59,
+  53,
+};
 
-static unsigned short int enum_value_vec11[] =
-  {
-    72,
-    66,
-    64,
-    76,
-    59,
-    53,
-  };
+static unsigned short int enum_value_vec12[] = {
+  67,
+  69,
+  76,
+  58,
+  57,
+  61,
+  62,
+  68,
+  74,
+  75,
+  73,
+  55,
+};
 
-static unsigned short int enum_value_vec12[] =
-  {
-    67,
-    69,
-    76,
-    58,
-    57,
-    61,
-    62,
-    68,
-    74,
-    75,
-    73,
-    55,
-  };
+static unsigned short int enum_value_vec13[] = {
+  128,
+  100,
+};
 
-static unsigned short int enum_value_vec13[] =
-  {
-    128,
-    100,
-  };
+static unsigned short int enum_value_vec14[] = {
+  84,
+  83,
+};
 
-static unsigned short int enum_value_vec14[] =
-  {
-    84,
-    83,
-  };
+static unsigned short int enum_value_vec15[] = {
+  106,
+  105,
+};
 
-static unsigned short int enum_value_vec15[] =
-  {
-    106,
-    105,
-  };
+static unsigned short int enum_value_vec16[] = {
+  4,
+  1,
+};
 
-static unsigned short int enum_value_vec16[] =
-  {
-    4,
-    1,
-  };
+static unsigned short int enum_value_vec17[] = {
+  81,
+  115,
+};
 
-static unsigned short int enum_value_vec17[] =
-  {
-    81,
-    115,
-  };
+static unsigned short int enum_value_vec18[] = {
+  132,
+  111,
+};
 
-static unsigned short int enum_value_vec18[] =
-  {
-    132,
-    111,
-  };
+static unsigned short int enum_value_vec19[] = {
+  51,
+  143,
+  118,
+};
 
-static unsigned short int enum_value_vec19[] =
-  {
-    51,
-    143,
-    118,
-  };
+static unsigned short int enum_value_vec20[] = {
+  97,
+  98,
+};
 
-static unsigned short int enum_value_vec20[] =
-  {
-    97,
-    98,
-  };
+static unsigned short int enum_value_vec21[] = {
+  101,
+  135,
+  131,
+  80,
+};
 
-static unsigned short int enum_value_vec21[] =
-  {
-    101,
-    135,
-    131,
-    80,
-  };
+static unsigned short int enum_value_vec22[] = {
+  103,
+  144,
+  88,
+};
 
-static unsigned short int enum_value_vec22[] =
-  {
-    103,
-    144,
-    88,
-  };
+static unsigned short int enum_value_vec23[] = {
+  104,
+  109,
+  107,
+  108,
+};
 
-static unsigned short int enum_value_vec23[] =
-  {
-    104,
-    109,
-    107,
-    108,
-  };
+static unsigned short int enum_value_vec24[] = {
+  92,
+  89,
+  90,
+  91,
+};
 
-static unsigned short int enum_value_vec24[] =
-  {
-    92,
-    89,
-    90,
-    91,
-  };
+static unsigned short int enum_value_vec25[] = {
+  119,
+  116,
+  117,
+};
 
-static unsigned short int enum_value_vec25[] =
-  {
-    119,
-    116,
-    117,
-  };
+static unsigned short int enum_value_vec26[] = {
+  145,
+  93,
+  96,
+  95,
+  94,
+};
 
-static unsigned short int enum_value_vec26[] =
-  {
-    145,
-    93,
-    96,
-    95,
-    94,
-  };
+static unsigned short int enum_value_vec27[] = {
+  36,
+  44,
+  130,
+  31,
+};
 
-static unsigned short int enum_value_vec27[] =
-  {
-    36,
-    44,
-    130,
-    31,
-  };
+static unsigned short int enum_value_vec28[] = {
+  138,
+  46,
+  139,
+  47,
+};
 
-static unsigned short int enum_value_vec28[] =
-  {
-    138,
-    46,
-    139,
-    47,
-  };
+static unsigned short int enum_value_vec29[] = {
+  44,
+  51,
+  31,
+};
 
-static unsigned short int enum_value_vec29[] =
-  {
-    44,
-    51,
-    31,
-  };
+static unsigned short int enum_value_vec30[] = {
+  129,
+  99,
+  82,
+  48,
+};
 
-static unsigned short int enum_value_vec30[] =
-  {
-    129,
-    99,
-    82,
-    48,
-  };
+static unsigned short int enum_value_vec31[] = {
+  127,
+  78,
+  126,
+  77,
+  102,
+  120,
+  122,
+  121,
+  123,
+};
 
-static unsigned short int enum_value_vec31[] =
-  {
-    127,
-    78,
-    126,
-    77,
-    102,
-    120,
-    122,
-    121,
-    123,
-  };
+static unsigned short int enum_value_vec32[] = {
+  124,
+  125,
+  120,
+  122,
+};
 
-static unsigned short int enum_value_vec32[] =
-  {
-    124,
-    125,
-    120,
-    122,
-  };
+static unsigned short int enum_value_vec33[] = {
+  133,
+  134,
+};
 
-static unsigned short int enum_value_vec33[] =
-  {
-    133,
-    134,
-  };
+static unsigned short int enum_value_vec34[] = {
+  137,
+  136,
+};
 
-static unsigned short int enum_value_vec34[] =
-  {
-    137,
-    136,
-  };
+static unsigned short int enum_value_vec35[] = {
+  110,
+  20,
+  18,
+  21,
+  19,
+};
 
-static unsigned short int enum_value_vec35[] =
-  {
-    110,
-    20,
-    18,
-    21,
-    19,
-  };
+static unsigned short int enum_value_vec36[] = {
+  142,
+  141,
+};
 
-static unsigned short int enum_value_vec36[] =
-  {
-    142,
-    141,
-  };
+static unsigned short int enum_value_vec37[] = {
+  23,
+  25,
+  22,
+  27,
+  26,
+};
 
-static unsigned short int enum_value_vec37[] =
-  {
-    23,
-    25,
-    22,
-    27,
-    26,
-  };
+static unsigned short int enum_value_vec38[] = {
+  143,
+  130,
+  51,
+};
 
-static unsigned short int enum_value_vec38[] =
-  {
-    143,
-    130,
-    51,
-  };
+static unsigned short int enum_value_vec39[] = {
+  146,
+  147,
+};
 
-static unsigned short int enum_value_vec39[] =
-  {
-    146,
-    147,
-  };
+static unsigned short int enum_value_vec40[] = {
+  2,
+  3,
+};
 
-static unsigned short int enum_value_vec40[] =
-  {
-    2,
-    3,
-  };
+static unsigned short int enum_value_vec41[] = {
+  156,
+  152,
+  153,
+  157,
+  148,
+  151,
+  149,
+  150,
+  154,
+  155,
+};
 
-static unsigned short int enum_value_vec41[] =
-  {
-    156,
-    152,
-    153,
-    157,
-    148,
-    151,
-    149,
-    150,
-    154,
-    155,
-  };
+static unsigned short int enum_value_vec42[] = {
+  159,
+  160,
+  158,
+};
 
-static unsigned short int enum_value_vec42[] =
-  {
-    159,
-    160,
-    158,
-  };
-
-static unsigned short int enum_value_vec43[] =
-  {
-    6,
-    13,
-    5,
-    9,
-    10,
-    11,
-    12,
-    15,
-    16,
-    17,
-    7,
-    14,
-    8,
-  };
+static unsigned short int enum_value_vec43[] = {
+  6,
+  13,
+  5,
+  9,
+  10,
+  11,
+  12,
+  15,
+  16,
+  17,
+  7,
+  14,
+  8,
+};
 
 /*
  * Enumeration set descriptor table
  */
-static UilEnumSetDescDef enum_set_table_vec[] =
-  {
-    {0,NULL},
-    {3,enum_value_vec1},
-    {4,enum_value_vec2},
-    {7,enum_value_vec3},
-    {2,enum_value_vec4},
-    {3,enum_value_vec5},
-    {3,enum_value_vec6},
-    {5,enum_value_vec7},
-    {2,enum_value_vec8},
-    {7,enum_value_vec9},
-    {3,enum_value_vec10},
-    {6,enum_value_vec11},
-    {12,enum_value_vec12},
-    {2,enum_value_vec13},
-    {2,enum_value_vec14},
-    {2,enum_value_vec15},
-    {2,enum_value_vec16},
-    {2,enum_value_vec17},
-    {2,enum_value_vec18},
-    {3,enum_value_vec19},
-    {2,enum_value_vec20},
-    {4,enum_value_vec21},
-    {3,enum_value_vec22},
-    {4,enum_value_vec23},
-    {4,enum_value_vec24},
-    {3,enum_value_vec25},
-    {5,enum_value_vec26},
-    {4,enum_value_vec27},
-    {4,enum_value_vec28},
-    {3,enum_value_vec29},
-    {4,enum_value_vec30},
-    {9,enum_value_vec31},
-    {4,enum_value_vec32},
-    {2,enum_value_vec33},
-    {2,enum_value_vec34},
-    {5,enum_value_vec35},
-    {2,enum_value_vec36},
-    {5,enum_value_vec37},
-    {3,enum_value_vec38},
-    {2,enum_value_vec39},
-    {2,enum_value_vec40},
-    {10,enum_value_vec41},
-    {3,enum_value_vec42},
-    {13,enum_value_vec43},
-  };
-externaldef(uil_sym_glbl) UilEnumSetDescDef *enum_set_table =
-		enum_set_table_vec;
+static UilEnumSetDescDef enum_set_table_vec[] = {
+  {0, NULL},
+  {3, enum_value_vec1},
+  {4, enum_value_vec2},
+  {7, enum_value_vec3},
+  {2, enum_value_vec4},
+  {3, enum_value_vec5},
+  {3, enum_value_vec6},
+  {5, enum_value_vec7},
+  {2, enum_value_vec8},
+  {7, enum_value_vec9},
+  {3, enum_value_vec10},
+  {6, enum_value_vec11},
+  {12, enum_value_vec12},
+  {2, enum_value_vec13},
+  {2, enum_value_vec14},
+  {2, enum_value_vec15},
+  {2, enum_value_vec16},
+  {2, enum_value_vec17},
+  {2, enum_value_vec18},
+  {3, enum_value_vec19},
+  {2, enum_value_vec20},
+  {4, enum_value_vec21},
+  {3, enum_value_vec22},
+  {4, enum_value_vec23},
+  {4, enum_value_vec24},
+  {3, enum_value_vec25},
+  {5, enum_value_vec26},
+  {4, enum_value_vec27},
+  {4, enum_value_vec28},
+  {3, enum_value_vec29},
+  {4, enum_value_vec30},
+  {9, enum_value_vec31},
+  {4, enum_value_vec32},
+  {2, enum_value_vec33},
+  {2, enum_value_vec34},
+  {5, enum_value_vec35},
+  {2, enum_value_vec36},
+  {5, enum_value_vec37},
+  {3, enum_value_vec38},
+  {2, enum_value_vec39},
+  {2, enum_value_vec40},
+  {10, enum_value_vec41},
+  {3, enum_value_vec42},
+  {13, enum_value_vec43},
+};
+
+externaldef(uil_sym_glbl)
+UilEnumSetDescDef *enum_set_table = enum_set_table_vec;
 /*
  * Enumeration set table, accessed by sym_k_..._arg code. Each non-zero entry
  * is the sym_k_..._enumset code for the argument's enumeration set.
  */
-static unsigned short int argument_enumset_table_vec[] =
-  {
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    2,
-    4,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    3,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    5,
-    6,
-    7,
-    0,
-    0,
-    0,
-    0,
-    0,
-    8,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    9,
-    0,
-    0,
-    10,
-    0,
-    11,
-    0,
-    12,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    13,
-    0,
-    1,
-    0,
-    0,
-    37,
-    0,
-    0,
-    0,
-    0,
-    14,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    15,
-    0,
-    0,
-    0,
-    16,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    17,
-    0,
-    0,
-    0,
-    0,
-    18,
-    3,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    19,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    1,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    20,
-    0,
-    0,
-    0,
-    0,
-    0,
-    21,
-    0,
-    0,
-    0,
-    0,
-    22,
-    0,
-    23,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    24,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    25,
-    0,
-    3,
-    0,
-    0,
-    0,
-    26,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    27,
-    28,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    29,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    30,
-    0,
-    0,
-    31,
-    0,
-    0,
-    32,
-    35,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    33,
-    0,
-    0,
-    34,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    3,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    35,
-    36,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    38,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    39,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    40,
-    41,
-    0,
-    0,
-    42,
-    0,
-    0,
-    0,
-    0,
-    0,
-    43,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-  };
-externaldef(uil_sym_glbl) unsigned short int *argument_enumset_table =
-		argument_enumset_table_vec;
+static unsigned short int argument_enumset_table_vec[] = {
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  2,
+  4,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  3,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  5,
+  6,
+  7,
+  0,
+  0,
+  0,
+  0,
+  0,
+  8,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  9,
+  0,
+  0,
+  10,
+  0,
+  11,
+  0,
+  12,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  13,
+  0,
+  1,
+  0,
+  0,
+  37,
+  0,
+  0,
+  0,
+  0,
+  14,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  15,
+  0,
+  0,
+  0,
+  16,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  17,
+  0,
+  0,
+  0,
+  0,
+  18,
+  3,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  19,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  1,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  20,
+  0,
+  0,
+  0,
+  0,
+  0,
+  21,
+  0,
+  0,
+  0,
+  0,
+  22,
+  0,
+  23,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  24,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  25,
+  0,
+  3,
+  0,
+  0,
+  0,
+  26,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  27,
+  28,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  29,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  30,
+  0,
+  0,
+  31,
+  0,
+  0,
+  32,
+  35,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  33,
+  0,
+  0,
+  34,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  3,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  35,
+  36,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  38,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  39,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  40,
+  41,
+  0,
+  0,
+  42,
+  0,
+  0,
+  0,
+  0,
+  0,
+  43,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+  0,
+};
+
+externaldef(uil_sym_glbl)
+unsigned short int *argument_enumset_table = argument_enumset_table_vec;
 /*
  * Enumeration value table, accessed by sym_k_..._enumval code. Each entry is
  * the actual value associated with the code.
  */
-static int enumval_values_table_vec[] =
-  {
+static int enumval_values_table_vec[] = {
   0,
   IconicState,
   NciABSOLUTE_PATH,
@@ -941,6 +896,7 @@ static int enumval_values_table_vec[] =
   XmdsSHOW_MODE_BOTH,
   XmdsSHOW_MODE_LINE,
   XmdsSHOW_MODE_POINTS,
-  };
-externaldef(uil_sym_glbl) int *enumval_values_table =
-		enumval_values_table_vec;
+};
+
+externaldef(uil_sym_glbl)
+int *enumval_values_table = enumval_values_table_vec;

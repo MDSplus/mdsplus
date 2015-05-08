@@ -27,10 +27,10 @@ def getRelease():
     return (release,name)
 
 
-from setuptools import setup, Extension, find_packages
-version,name=getRelease()
-print (version,name)
-setup(name=name,
+try:
+  from setuptools import setup, Extension, find_packages
+  version,name=getRelease()
+  setup(name=name,
       version=version,
       description='MDSplus Python Objects',
       long_description = """
@@ -51,7 +51,7 @@ setup(name=name,
                   name+'.tests',
                   name+'.widgets',
                   name+'.wsgi'],
-      package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html']},
+      package_data = {'':['doc/*.*','widgets/*.glade','js/*.js','html/*.html','wsgi/*.tbl']},
       include_package_data = True,
       platforms = ('Any',),
       classifiers = [ 'Development Status :: 4 - Beta',
@@ -66,3 +66,5 @@ setup(name=name,
       test_suite='tests.test_all',
       zip_safe = False,
      )
+except Exception:
+    print("Error installing MDSplus: %s" % (sys.exc_info()[1]))

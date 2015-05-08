@@ -1,5 +1,8 @@
 #include        <mds_stdarg.h>
 #include        "tclsysdef.h"
+#include        <stdlib.h>
+#include <string.h>
+#include <dcl.h>
 
 /**********************************************************************
 * TCL_DIRECTORY.C --
@@ -12,50 +15,81 @@
 *
 ************************************************************************/
 
-
 #define READONLY    1
-#ifdef vms
-#define TdiExecute    TDI$EXECUTE
-#endif
 
+#include <treeshr.h>
 
-extern int   TdiExecute();
-
+extern int TdiExecute();
+int tclStringToShot(char *str, int *shot_out, char **error)
+{
+  int shot = -2;
+  int status = TreeINVSHOT;
+  char *endptr;
+  if (str && strlen(str) > 0) {
+    status = 1;
+    /* First try just treating arg as an integer string */
+    shot = strtol(str, &endptr, 0);
+    if (*endptr != 0) {
+      /* Next see if the string "model" was used. */
+      if (strcasecmp(str, "model") == 0)
+	shot = -1;
+      else {
+	/* Next see if TDI can make sense of the string */
+	DESCRIPTOR_LONG(dsc_shot, &shot);
+	struct descriptor str_d = { strlen(str), DTYPE_T, CLASS_S, str };
+	status = TdiExecute(&str_d, &dsc_shot MDS_END_ARG);
+	if (!(status & 1)) {
+	  *error = malloc(strlen(str) + 100);
+	  sprintf(*error, "Error: Could not convert shot specified '%s' to a valid shot number.\n",
+		  str);
+	}
+      }
+    }
+    if ((status & 1) && (shot < -1)) {
+      *error = malloc(100);
+      sprintf(*error, "Error: Invalid shot number specified - %d\n", shot);
+      status = TreeINVSHOT;
+    }
+  } else
+    *error = strdup("Error: Zero length shot string specified\n");
+  if (status & 1)
+    *shot_out = shot;
+  return status;
+}
 
 	/***************************************************************
 	 * TclSetTree:
 	 **************************************************************/
-int TclSetTree()
-   {
-    int   sts;
-    static int   shot;
-    static DESCRIPTOR_LONG(dsc_shot,&shot);
-    char  *filnam;
-    static DYNAMIC_DESCRIPTOR(dsc_filnam);
-    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+int TclSetTree(void *ctx, char **error, char **output)
+{
+  int sts = MdsdclIVVERB;
+  int shot;
+  char *filnam = 0;
+  char *asciiShot = 0;
 
 		/*--------------------------------------------------------
 		 * Executable ...
 		 *-------------------------------------------------------*/
-    cli_get_value("FILE",&dsc_filnam);
-    cli_get_value("SHOTID",&dsc_asciiShot);
-    dsc_asciiShot.dscB_class = CLASS_S;		/* vms: malloc vs str$	*/
-    sts = TdiExecute(&dsc_asciiShot,&dsc_shot MDS_END_ARG);
-    dsc_asciiShot.dscB_class = CLASS_D;
-    if (sts & 1)
-       {
-        filnam = dsc_filnam.dscA_pointer;
-        if (cli_present("READONLY") & 1)
-            sts = TreeOpen(filnam,shot,READONLY);
-        else
-            sts = TreeOpen(filnam,shot,0);
-       }
-    if (sts & 1)
-        TclNodeTouched(0,tree);
+  cli_get_value(ctx, "FILE", &filnam);
+  cli_get_value(ctx, "SHOTID", &asciiShot);
+  sts = tclStringToShot(asciiShot, &shot, error);
+  if (sts & 1) {
+    if (cli_present(ctx, "READONLY") & 1)
+      sts = TreeOpen(filnam, shot, READONLY);
     else
-        MdsMsg(sts,"Failed to open tree '%s', shot %s",(char *)dsc_filnam.dscA_pointer,(char *)dsc_asciiShot.dscA_pointer);
-
-    str_free1_dx(&dsc_filnam);
-    str_free1_dx(&dsc_asciiShot);
-    return sts;
-   }
+      sts = TreeOpen(filnam, shot, 0);
+    if (sts & 1)
+      TclNodeTouched(0, tree);
+    else {
+      char *msg = MdsGetMsg(sts);
+      *error = malloc(strlen(filnam) + strlen(msg) + 100);
+      sprintf(*error, "Error: Failed to open tree '%s' shot %d\n"
+	      "Error message was: %s\n", filnam, shot, msg);
+    }
+  }
+  if (filnam)
+    free(filnam);
+  if (asciiShot)
+    free(asciiShot);
+  return sts;
+}

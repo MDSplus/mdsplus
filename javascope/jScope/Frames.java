@@ -109,7 +109,7 @@ class Frames extends Canvas
             this.bitClip = bitClip;
             updateCount++;
          }
-        void loadFrame(int idx) throws IOException
+        void loadFrame(int idx) throws Exception
         {
             frameType = fd.GetFrameType();
             frameDim = fd.GetFrameDimension();
@@ -261,7 +261,7 @@ class Frames extends Canvas
             if(fDesc.updateCount == updateCount) //fDesc.updatedImage  is still ok
                 return fDesc.updatedImage;
             //Othewise it is necessary to update it
-            ColorModel colorModel = colorMap.getIndexColorModel(pixelSize);
+            ColorModel colorModel = colorMap.getIndexColorModel( (pixelSize < 32 ? pixelSize : 16) );
             Image img = new BufferedImage(colorModel, ((BufferedImage)fDesc.image).getRaster(), false, null);
             if(bitShift != 0)
             {
@@ -351,15 +351,28 @@ class Frames extends Canvas
             byte []buf = fDescr.buffer;
             int n_pix = frameDim.width * frameDim.height;
             float values[] = new float[n_pix];
+            ByteArrayInputStream b;
+            DataInputStream din;
             switch(frameType)
             {
                 case FrameData.BITMAP_IMAGE_8  :
-                    System.out.println("INTERNAL ERROR frame values requested for BITMAP_IMAGE_8");
-                    return null;
+//                    System.out.println("INTERNAL ERROR frame values requested for BITMAP_IMAGE_8");
+//                    return null;
+                    b = new ByteArrayInputStream(buf);
+                    din = new DataInputStream(b);
+                    try {
+                        for (int j = 0; j < n_pix; j++)
+                            values[j] = din.readByte();
+                    }catch(IOException exc)
+                    {
+                        System.out.println("INTERNAL ERROR Getting Frame values: " + exc);
+                        return null;
+                    }
+                    break;
                 case FrameData.BITMAP_IMAGE_16 :
                 {
-                    ByteArrayInputStream b = new ByteArrayInputStream(buf);
-                    DataInputStream din = new DataInputStream(b);
+                    b = new ByteArrayInputStream(buf);
+                    din = new DataInputStream(b);
                     try {
                         for (int j = 0; j < n_pix; j++)
                             values[j] = 0xffff & din.readShort();
@@ -372,8 +385,8 @@ class Frames extends Canvas
                 }
                 case FrameData.BITMAP_IMAGE_32 :
                 {
-                    ByteArrayInputStream b = new ByteArrayInputStream(buf);
-                    DataInputStream din = new DataInputStream(b);
+                    b = new ByteArrayInputStream(buf);
+                    din = new DataInputStream(b);
                     try {
                         for(int j = 0; j < n_pix; j++)
                             values[j] = din.readFloat();
@@ -514,7 +527,7 @@ class Frames extends Canvas
         tracker = null;
     }
 */
-    public void SetFrameData(FrameData fd) throws IOException
+    public void SetFrameData(FrameData fd) throws Exception
     {
         cache.setFrameData(fd);
         curr_frame_idx = 0;
@@ -856,45 +869,8 @@ class Frames extends Canvas
         }
         } catch (IOException e) {}
     }
-/*
-    public boolean AddFrame(byte[] buf, float t)
-    {
-        Image img;
-        if(buf == null) return false;
-//        img = getToolkit().createImage(buf);
-        img = Toolkit.getDefaultToolkit().createImage(buf);
-        return AddFrame(img, t);
-
-    }
-
-    public boolean AddFrame(Image img, float t)
-    {
-        if(img != null)
-        {
-            AddFrame((Object)img, t);
-            tracker.addImage(img, 0);
-            return true;
-        } else
-            return false;
-    }
-
-    public boolean AddFrame(Object f, float t)
-    {
-        frame.addElement(f);
-        frame_time.addElement(new Float(t));
-        return true;
-    }
-
-
-    public void WaitLoadFrame() throws InterruptedException
-    {
-        tracker.waitForID(0);
-     }
-*/
     protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
     {
-
-//       Image img = (Image)frame.elementAt(idx);
         Image img;
         try {
             img =  cache.getImageAt(idx);
@@ -922,8 +898,6 @@ class Frames extends Canvas
 
     protected float[] getValueArray(int idx, int x, int y, int img_w, int img_h)
     {
-         //if (idx >= frame_values.size()) return null;
-       //float values[] = (float[])frame_values.elementAt(idx);
         float values[];
         Image img;
         try {
@@ -952,7 +926,7 @@ class Frames extends Canvas
 
     protected void grabFrame()
     {
-        if(curr_frame_idx != curr_grab_frame)
+        if(curr_frame_idx != curr_grab_frame || pixel_array == null)
         {
             if( (pixel_array = getPixelArray(curr_frame_idx, 0, 0, -1, -1)) != null)
             {
@@ -978,38 +952,19 @@ class Frames extends Canvas
     {
         if(!isInImage(idx, x, y))
             return -1;
-        curr_grab_frame = idx;
+        //curr_grab_frame = idx;
         byte[] imgBuf = cache.getBufferAt(idx);
         if(imgBuf != null)
             return (int)imgBuf[(y * img_width) + x];
         return -1;
-/*        if(idx != curr_grab_frame)
-        {
-
-            if( (pixel_array = getPixelArray(idx, 0, 0, -1, -1)) != null)
-            {
-System.out.println("GET PICESL ARRAY Returned " + pixel_array.length);
-                values_array = getValueArray(curr_frame_idx, 0, 0, -1, -1);
-                curr_grab_frame = idx;
-            }
-        }
-        return pixel_array[(y * img_width) + x];
-*/    }
+    }
 
     public float getPointValue(int idx, int x, int y)
     {
         if(!isInImage(idx, x, y))
             return -1;
 
-/*        if(idx != curr_grab_frame)
-        {
-            if( (pixel_array = getPixelArray(idx, 0, 0, -1, -1)) != null)
-            {
-                values_array = getValueArray(curr_frame_idx, 0, 0, -1, -1);
-                curr_grab_frame = idx;
-            }
-        }*/
-        curr_grab_frame = idx;
+        //curr_grab_frame = idx;
         values_array = cache.getValuesAt(idx);
         return values_array[(y * img_width) + x];
     }
@@ -1045,7 +1000,6 @@ System.out.println("GET PICESL ARRAY Returned " + pixel_array.length);
 
         for(int i = 0; i < n_point; i++)
         {
-          //y = (int)(st_y + (i - st_x) * ((double)end_y - st_y)/(end_x - st_x));
             x = (int)( st_x + (double)i * (end_x - st_x)/n_point);
             y = (int)( st_y + (double)i * (end_y - st_y)/n_point);
             pixels_line[i] = pixel_array[(y * img_width) + x];
@@ -1260,17 +1214,6 @@ System.out.println("GET PICESL ARRAY Returned " + pixel_array.length);
     }
 
 
-/*    public Object GetFrameAtTime(float t)
-    {
-        int idx = GetFrameIdxAtTime(t);
-
-        if(idx != -1)
-            return GetFrame(idx);
-        else
-            return null;
-
-    }
-*/
     public float[] getFramesTime()
     {
         if(frame_time == null || frame_time.size() == 0)
@@ -1278,7 +1221,6 @@ System.out.println("GET PICESL ARRAY Returned " + pixel_array.length);
 
         if(ft == null)
         {
-            //float frames_time[] = new float[frame_time.size()];
             ft = new float[frame_time.size()];
             for(int i = 0; i < frame_time.size(); i++)
             {
@@ -1618,17 +1560,6 @@ System.out.println("GET PICESL ARRAY Returned " + pixel_array.length);
             idx = numFrames - 1;
         //if(idx < 0)// || frame.elementAt(idx) == null) return null;
         curr_frame_idx = idx;
- /*       try
-        {
-            WaitLoadFrame();
-        }
-        catch(InterruptedException exc)
-        {
-            return null;
-        }
-        return frame.elementAt(idx);
-
-  */
         Image img;
         try {
             img = cache.getImageAt(idx);

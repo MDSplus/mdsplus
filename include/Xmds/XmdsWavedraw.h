@@ -71,30 +71,28 @@
 
 /* Callback structures */
 
-typedef struct 
-{ 
-    int reason;
-    XEvent  *event;
-    int     idx;
-    float   oldx;
-    float   oldy;
-    float   newx;
-    float   newy;
-    int     count;
-    float   *x;
-    float   *y;
-    Boolean *selected;
+typedef struct {
+  int reason;
+  XEvent *event;
+  int idx;
+  float oldx;
+  float oldy;
+  float newx;
+  float newy;
+  int count;
+  float *x;
+  float *y;
+  Boolean *selected;
 } XmdsWavedrawValueCBStruct;
 
-typedef struct 
-{
-    int reason;
-    XEvent *event;
-    int     count;
-    float   *x;
-    float   *y;
-    Boolean *selected;
-    Boolean *pen_down;
+typedef struct {
+  int reason;
+  XEvent *event;
+  int count;
+  float *x;
+  float *y;
+  Boolean *selected;
+  Boolean *pen_down;
 } XmdsWavedrawFitCBStruct;
 
 /* Callback reasons */
@@ -132,19 +130,21 @@ typedef struct _XmdsWavedrawRec *XmdsWavedrawWidget;
 */
 #ifdef _NO_PROTO_
 
-extern Widget	XmdsCreateWavedraw();
+extern Widget XmdsCreateWavedraw();
 extern Boolean XmdsWavedrawAddPoint();
-extern void	XmdsWavedrawDeletePoint();
-extern Boolean	XmdsWavedrawMovePoint();
+extern void XmdsWavedrawDeletePoint();
+extern Boolean XmdsWavedrawMovePoint();
 
 #else				/* _NO_PROTO_ */
 
-extern Widget	XmdsCreateWavedraw(Widget parent,char *name,ArgList args,Cardinal argcount);
-extern Boolean XmdsWavedrawAddPoint(Widget w,int idx,float *newx,float *newy,Boolean callcallbacks,
-			     enum XmdsWaveformMotionRestriction motion);
-extern void	XmdsWavedrawDeletePoint(Widget w,int idx,Boolean callcallbacks);
-extern Boolean	XmdsWavedrawMovePoint(XmdsWavedrawWidget w,int idx,float *desired_x,float *desired_y,float *new_x,float *new_y,
-			      Boolean callcallbacks,XEvent *event);
+extern Widget XmdsCreateWavedraw(Widget parent, char *name, ArgList args, Cardinal argcount);
+extern Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy,
+				    Boolean callcallbacks,
+				    enum XmdsWaveformMotionRestriction motion);
+extern void XmdsWavedrawDeletePoint(Widget w, int idx, Boolean callcallbacks);
+extern Boolean XmdsWavedrawMovePoint(XmdsWavedrawWidget w, int idx, float *desired_x,
+				     float *desired_y, float *new_x, float *new_y,
+				     Boolean callcallbacks, XEvent * event);
 
 #endif				/* _NO_PROTO_ */
 

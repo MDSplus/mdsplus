@@ -61,7 +61,7 @@ public fun bRadCheck(in _save, optional _debug)
 	*/
 
 
-
+	_chopperState = \RFX::PR_CONFIG:CHOP_STATE;
 
 	_PrMaxCurrent = \RFX::PR_CONFIG:SENT_1_12[12 * 9];
 	_level = _PrMaxCurrent * 0.9;
@@ -111,8 +111,19 @@ public fun bRadCheck(in _save, optional _debug)
 				}
 
 
-				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) || ( _h == 22 && _k == 3 ) || ( _h == 26 && _k == 4 )  ) )
+
+
+/*
+				if( _chopperState[ (_h-1) * 4 + ( _k - 1 ) ] == 0 )
+					write(*, "DISABLE ", _h, _k );
+				if( ! ( ( _h == 2 && _k == 3) || ( _h == 9 && _k == 3) || ( _h == 22 && _k == 3 ) || ( _h == 42 && _k == 2 ) || ( _h == 26 && _k == 4 ) || ( _h == 18 && _k == 2 ) ) )
+*/
+
+				if( _chopperState[ (_h-1) * 4 + ( _k - 1 ) ] == 1 )
 				{
+/*
+					write(*, "ENABLE ", _h, _k );
+*/
 					_signalRef = execute(_sigNameRef);
   					_yRef = abs( data(_signalRef) );
             		_val = sum( ( _yRef > .8 ) * 1.0 );

@@ -29,12 +29,12 @@
 #include <Xm/Xm.h>
 #endif
 
-typedef enum pathType { NciABSOLUTE_PATH, NciRELATIVE_PATH} XmdsPathType;
+typedef enum pathType { NciABSOLUTE_PATH, NciRELATIVE_PATH } XmdsPathType;
 /* Resources */
 
-#define XmdsNnid		    "nid"		/* Nid of first channel */
-#define XmdsNnidOffset		    "nidOffset"		/* Nid offset */
-#define XmdsNpathType               "pathType"          /* TreeABS_PATH or TreeREL_PATH */
+#define XmdsNnid		    "nid"	/* Nid of first channel */
+#define XmdsNnidOffset		    "nidOffset"	/* Nid offset */
+#define XmdsNpathType               "pathType"	/* TreeABS_PATH or TreeREL_PATH */
 
 /* External creation routines:
 */
@@ -45,8 +45,8 @@ extern Boolean XmdsIsPath();
 
 #else				/* _NO_PROTO */
 
-extern Widget	XmdsCreatePath(Widget parent,String name,ArgList args,Cardinal argcount);
-extern Boolean	XmdsIsPath(Widget w);
+extern Widget XmdsCreatePath(Widget parent, String name, ArgList args, Cardinal argcount);
+extern Boolean XmdsIsPath(Widget w);
 
 #endif				/* _NO_PROTO */
 

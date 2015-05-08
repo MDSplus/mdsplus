@@ -39,100 +39,98 @@
 #include "filter.h"
 #include "complex.h"
 
-static Filter *Fir(double fc, double s_f, int n, void(*Window)(double *, int));
+static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int));
 static void Rectangular(double *w, int n);
 static void Bartlett(double *w, int n);
 static void Hanning(double *w, int n);
 static void Hamming(double *w, int n);
 static void Blackmann(double *w, int n);
 
-Filter *FirRectangular(float * fc, float * s_f, int *n)
+Filter *FirRectangular(float *fc, float *s_f, int *n)
 {
-    return Fir(*fc, *s_f, *n, Rectangular);
+  return Fir(*fc, *s_f, *n, Rectangular);
 }
 
-Filter *FirBartlett(float * fc, float * s_f, int * n)
+Filter *FirBartlett(float *fc, float *s_f, int *n)
 {
-    return Fir(*fc, *s_f, *n, Bartlett);
+  return Fir(*fc, *s_f, *n, Bartlett);
 }
 
-Filter *FirHanning(float * fc, float * s_f, int * n)
+Filter *FirHanning(float *fc, float *s_f, int *n)
 {
-    return Fir(*fc, *s_f, *n, Hanning);
+  return Fir(*fc, *s_f, *n, Hanning);
 }
 
-Filter *FirHamming(float * fc, float * s_f, int * n)
+Filter *FirHamming(float *fc, float *s_f, int *n)
 {
-    return Fir(*fc, *s_f, *n, Hamming);
+  return Fir(*fc, *s_f, *n, Hamming);
 }
 
-Filter *FirBlackmann(float * fc, float * s_f, int * n)
+Filter *FirBlackmann(float *fc, float *s_f, int *n)
 {
-    return Fir(*fc, *s_f, *n, Blackmann);
+  return Fir(*fc, *s_f, *n, Blackmann);
 }
 
-
-static Filter *Fir(double fc, double s_f, int n, void(*Window)(double *, int))
+static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int))
 {
-    int i;
-    Filter *filter;
-    double *w, wc, alpha;
+  int i;
+  Filter *filter;
+  double *w, wc, alpha;
 
-    wc = 2 * PI * fc / s_f;
+  wc = 2 * PI * fc / s_f;
 
-    filter = (Filter *)malloc(sizeof(Filter));
-    filter->num_parallels = 1;
-    filter->units = (FilterUnit *)malloc(sizeof(FilterUnit));
-    filter->units[0].num_degree = n;
-    filter->units[0].den_degree = 0;
-    filter->units[0].num = (double *)malloc(n * sizeof(double));
-    w = (double *)malloc(n * sizeof(double));
-    Window(w, n);
-    alpha = (n-1) * 0.5;
-    for(i = 0; i < n; i++)
-	if(fabs(i- alpha) > 1E-6)
-	    filter->units[0].num[i] = w[i] * sin(wc * (i - alpha))/(PI * (i - alpha));
-	else
-	    filter->units[0].num[i] = wc/PI;
-    free((char *)w);
-    return filter;    
+  filter = (Filter *) malloc(sizeof(Filter));
+  filter->num_parallels = 1;
+  filter->units = (FilterUnit *) malloc(sizeof(FilterUnit));
+  filter->units[0].num_degree = n;
+  filter->units[0].den_degree = 0;
+  filter->units[0].num = (double *)malloc(n * sizeof(double));
+  w = (double *)malloc(n * sizeof(double));
+  Window(w, n);
+  alpha = (n - 1) * 0.5;
+  for (i = 0; i < n; i++)
+    if (fabs(i - alpha) > 1E-6)
+      filter->units[0].num[i] = w[i] * sin(wc * (i - alpha)) / (PI * (i - alpha));
+    else
+      filter->units[0].num[i] = wc / PI;
+  free((char *)w);
+  return filter;
 }
-
 
 static void Rectangular(double *w, int n)
 {
-    int i;
-    for(i = 0; i < n; i++)
-	w[i] = 1;
+  int i;
+  for (i = 0; i < n; i++)
+    w[i] = 1;
 }
 
 static void Bartlett(double *w, int n)
 {
-    int i;
-    for(i = 0; i <= (n - 1)/2 ; i++)
-	w[i] = 2 * i/(double)(n - 1);
-    for(; i < n; i++)
-	w[i] = 2 - 2 * i/(double)(n - 1);
+  int i;
+  for (i = 0; i <= (n - 1) / 2; i++)
+    w[i] = 2 * i / (double)(n - 1);
+  for (; i < n; i++)
+    w[i] = 2 - 2 * i / (double)(n - 1);
 }
 
 static void Hanning(double *w, int n)
 {
-    int i;
-    for(i = 0; i < n; i++)
-	w[i] = 0.5 * (1 - cos(2 * PI * i/(double)(n - 1)));
+  int i;
+  for (i = 0; i < n; i++)
+    w[i] = 0.5 * (1 - cos(2 * PI * i / (double)(n - 1)));
 }
 
 static void Hamming(double *w, int n)
 {
-    int i;
-    for(i = 0; i < n; i++)
-	w[i] = 0.54 - 0.46 * cos(2 * PI * i/(double)(n - 1));
+  int i;
+  for (i = 0; i < n; i++)
+    w[i] = 0.54 - 0.46 * cos(2 * PI * i / (double)(n - 1));
 }
-
 
 static void Blackmann(double *w, int n)
 {
-    int i;
-    for(i = 0; i < n; i++)
-	w[i] = 0.42 - 0.5 * cos(2 * PI * i/(double)(n - 1)) + 0.08 * cos(4 * PI * i/(double)(n - 1));
+  int i;
+  for (i = 0; i < n; i++)
+    w[i] =
+	0.42 - 0.5 * cos(2 * PI * i / (double)(n - 1)) + 0.08 * cos(4 * PI * i / (double)(n - 1));
 }

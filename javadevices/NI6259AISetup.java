@@ -301,7 +301,7 @@ public class NI6259AISetup extends DeviceSetup {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jPanel39.setLayout(new java.awt.GridLayout(32, 1));
+        jPanel39.setLayout(new java.awt.GridLayout(16, 2));
 
         jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 1"));
 
@@ -311,17 +311,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice3.setOffsetNid(10);
         deviceChoice3.setUpdateIdentifier("");
         jPanel7.add(deviceChoice3);
-
+/*
         deviceChoice4.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Polarity: ");
         deviceChoice4.setOffsetNid(11);
         deviceChoice4.setUpdateIdentifier("");
         jPanel7.add(deviceChoice4);
-
+*/
         deviceChoice5.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Range: ");
+        deviceChoice5.setLabelString("Range +/-: ");
         deviceChoice5.setOffsetNid(12);
         deviceChoice5.setUpdateIdentifier("");
         jPanel7.add(deviceChoice5);
@@ -336,17 +336,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice6.setOffsetNid(15);
         deviceChoice6.setUpdateIdentifier("");
         jPanel8.add(deviceChoice6);
-
+/*
         deviceChoice7.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Polarity: ");
         deviceChoice7.setOffsetNid(16);
         deviceChoice7.setUpdateIdentifier("");
         jPanel8.add(deviceChoice7);
-
+*/
         deviceChoice8.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Range: ");
+        deviceChoice8.setLabelString("Range +/- : ");
         deviceChoice8.setOffsetNid(17);
         deviceChoice8.setUpdateIdentifier("");
         jPanel8.add(deviceChoice8);
@@ -361,17 +361,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice9.setOffsetNid(20);
         deviceChoice9.setUpdateIdentifier("");
         jPanel9.add(deviceChoice9);
-
+/*
         deviceChoice10.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Polarity: ");
         deviceChoice10.setOffsetNid(21);
         deviceChoice10.setUpdateIdentifier("");
         jPanel9.add(deviceChoice10);
-
+*/
         deviceChoice11.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("Range: ");
+        deviceChoice11.setLabelString("Range +/- : ");
         deviceChoice11.setOffsetNid(22);
         deviceChoice11.setUpdateIdentifier("");
         jPanel9.add(deviceChoice11);
@@ -386,17 +386,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice12.setOffsetNid(25);
         deviceChoice12.setUpdateIdentifier("");
         jPanel10.add(deviceChoice12);
-
+/*
         deviceChoice13.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Polarity: ");
         deviceChoice13.setOffsetNid(26);
         deviceChoice13.setUpdateIdentifier("");
         jPanel10.add(deviceChoice13);
-
+*/
         deviceChoice14.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("Range: ");
+        deviceChoice14.setLabelString("Range +/- : ");
         deviceChoice14.setOffsetNid(27);
         deviceChoice14.setUpdateIdentifier("");
         jPanel10.add(deviceChoice14);
@@ -411,17 +411,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice15.setOffsetNid(30);
         deviceChoice15.setUpdateIdentifier("");
         jPanel11.add(deviceChoice15);
-
+/*
         deviceChoice16.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Polarity: ");
         deviceChoice16.setOffsetNid(31);
         deviceChoice16.setUpdateIdentifier("");
         jPanel11.add(deviceChoice16);
-
+*/
         deviceChoice17.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("Range: ");
+        deviceChoice17.setLabelString("Range +/- : ");
         deviceChoice17.setOffsetNid(32);
         deviceChoice17.setUpdateIdentifier("");
         jPanel11.add(deviceChoice17);
@@ -436,17 +436,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice18.setOffsetNid(35);
         deviceChoice18.setUpdateIdentifier("");
         jPanel12.add(deviceChoice18);
-
+/*
         deviceChoice19.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Polarity: ");
         deviceChoice19.setOffsetNid(36);
         deviceChoice19.setUpdateIdentifier("");
         jPanel12.add(deviceChoice19);
-
+*/
         deviceChoice20.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("Range: ");
+        deviceChoice20.setLabelString("Range +/- : ");
         deviceChoice20.setOffsetNid(37);
         deviceChoice20.setUpdateIdentifier("");
         jPanel12.add(deviceChoice20);
@@ -461,17 +461,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice21.setOffsetNid(40);
         deviceChoice21.setUpdateIdentifier("");
         jPanel13.add(deviceChoice21);
-
+/*
         deviceChoice22.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Polarity: ");
         deviceChoice22.setOffsetNid(41);
         deviceChoice22.setUpdateIdentifier("");
         jPanel13.add(deviceChoice22);
-
+*/
         deviceChoice23.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("Range: ");
+        deviceChoice23.setLabelString("Range +/- : ");
         deviceChoice23.setOffsetNid(42);
         deviceChoice23.setUpdateIdentifier("");
         jPanel13.add(deviceChoice23);
@@ -486,17 +486,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice24.setOffsetNid(45);
         deviceChoice24.setUpdateIdentifier("");
         jPanel14.add(deviceChoice24);
-
+/*
         deviceChoice25.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Polarity: ");
         deviceChoice25.setOffsetNid(46);
         deviceChoice25.setUpdateIdentifier("");
         jPanel14.add(deviceChoice25);
-
+*/
         deviceChoice26.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice26.setIdentifier("");
-        deviceChoice26.setLabelString("Range: ");
+        deviceChoice26.setLabelString("Range +/- : ");
         deviceChoice26.setOffsetNid(47);
         deviceChoice26.setUpdateIdentifier("");
         jPanel14.add(deviceChoice26);
@@ -511,17 +511,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice27.setOffsetNid(50);
         deviceChoice27.setUpdateIdentifier("");
         jPanel15.add(deviceChoice27);
-
+/*
         deviceChoice28.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Polarity: ");
         deviceChoice28.setOffsetNid(51);
         deviceChoice28.setUpdateIdentifier("");
         jPanel15.add(deviceChoice28);
-
+*/
         deviceChoice29.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice29.setIdentifier("");
-        deviceChoice29.setLabelString("Range: ");
+        deviceChoice29.setLabelString("Range +/- : ");
         deviceChoice29.setOffsetNid(52);
         deviceChoice29.setUpdateIdentifier("");
         jPanel15.add(deviceChoice29);
@@ -536,17 +536,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice30.setOffsetNid(55);
         deviceChoice30.setUpdateIdentifier("");
         jPanel16.add(deviceChoice30);
-
+/*
         deviceChoice31.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice31.setIdentifier("");
         deviceChoice31.setLabelString("Polarity: ");
         deviceChoice31.setOffsetNid(56);
         deviceChoice31.setUpdateIdentifier("");
         jPanel16.add(deviceChoice31);
-
+*/
         deviceChoice32.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice32.setIdentifier("");
-        deviceChoice32.setLabelString("Range: ");
+        deviceChoice32.setLabelString("Range +/- : ");
         deviceChoice32.setOffsetNid(57);
         deviceChoice32.setUpdateIdentifier("");
         jPanel16.add(deviceChoice32);
@@ -561,17 +561,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice33.setOffsetNid(60);
         deviceChoice33.setUpdateIdentifier("");
         jPanel17.add(deviceChoice33);
-
+/*
         deviceChoice34.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice34.setIdentifier("");
         deviceChoice34.setLabelString("Polarity: ");
         deviceChoice34.setOffsetNid(61);
         deviceChoice34.setUpdateIdentifier("");
         jPanel17.add(deviceChoice34);
-
+*/
         deviceChoice35.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice35.setIdentifier("");
-        deviceChoice35.setLabelString("Range: ");
+        deviceChoice35.setLabelString("Range +/- : ");
         deviceChoice35.setOffsetNid(62);
         deviceChoice35.setUpdateIdentifier("");
         jPanel17.add(deviceChoice35);
@@ -586,17 +586,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice36.setOffsetNid(65);
         deviceChoice36.setUpdateIdentifier("");
         jPanel18.add(deviceChoice36);
-
+/*
         deviceChoice37.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice37.setIdentifier("");
         deviceChoice37.setLabelString("Polarity: ");
         deviceChoice37.setOffsetNid(66);
         deviceChoice37.setUpdateIdentifier("");
         jPanel18.add(deviceChoice37);
-
+*/
         deviceChoice38.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice38.setIdentifier("");
-        deviceChoice38.setLabelString("Range: ");
+        deviceChoice38.setLabelString("Range +/- : ");
         deviceChoice38.setOffsetNid(67);
         deviceChoice38.setUpdateIdentifier("");
         jPanel18.add(deviceChoice38);
@@ -611,17 +611,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice39.setOffsetNid(70);
         deviceChoice39.setUpdateIdentifier("");
         jPanel19.add(deviceChoice39);
-
+/*
         deviceChoice40.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice40.setIdentifier("");
         deviceChoice40.setLabelString("Polarity: ");
         deviceChoice40.setOffsetNid(71);
         deviceChoice40.setUpdateIdentifier("");
         jPanel19.add(deviceChoice40);
-
+*/
         deviceChoice41.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice41.setIdentifier("");
-        deviceChoice41.setLabelString("Range: ");
+        deviceChoice41.setLabelString("Range +/- : ");
         deviceChoice41.setOffsetNid(72);
         deviceChoice41.setUpdateIdentifier("");
         jPanel19.add(deviceChoice41);
@@ -636,17 +636,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice42.setOffsetNid(75);
         deviceChoice42.setUpdateIdentifier("");
         jPanel20.add(deviceChoice42);
-
+/*
         deviceChoice43.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice43.setIdentifier("");
         deviceChoice43.setLabelString("Polarity: ");
         deviceChoice43.setOffsetNid(76);
         deviceChoice43.setUpdateIdentifier("");
         jPanel20.add(deviceChoice43);
-
+*/
         deviceChoice44.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice44.setIdentifier("");
-        deviceChoice44.setLabelString("Range: ");
+        deviceChoice44.setLabelString("Range +/- : ");
         deviceChoice44.setOffsetNid(77);
         deviceChoice44.setUpdateIdentifier("");
         jPanel20.add(deviceChoice44);
@@ -661,17 +661,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice45.setOffsetNid(80);
         deviceChoice45.setUpdateIdentifier("");
         jPanel21.add(deviceChoice45);
-
+/*
         deviceChoice46.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice46.setIdentifier("");
         deviceChoice46.setLabelString("Polarity: ");
         deviceChoice46.setOffsetNid(81);
         deviceChoice46.setUpdateIdentifier("");
         jPanel21.add(deviceChoice46);
-
+*/
         deviceChoice47.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice47.setIdentifier("");
-        deviceChoice47.setLabelString("Range: ");
+        deviceChoice47.setLabelString("Range +/- : ");
         deviceChoice47.setOffsetNid(82);
         deviceChoice47.setUpdateIdentifier("");
         jPanel21.add(deviceChoice47);
@@ -686,17 +686,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice48.setOffsetNid(85);
         deviceChoice48.setUpdateIdentifier("");
         jPanel22.add(deviceChoice48);
-
+/*
         deviceChoice49.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice49.setIdentifier("");
         deviceChoice49.setLabelString("Polarity: ");
         deviceChoice49.setOffsetNid(86);
         deviceChoice49.setUpdateIdentifier("");
         jPanel22.add(deviceChoice49);
-
+*/
         deviceChoice50.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice50.setIdentifier("");
-        deviceChoice50.setLabelString("Range: ");
+        deviceChoice50.setLabelString("Range +/- : ");
         deviceChoice50.setOffsetNid(87);
         deviceChoice50.setUpdateIdentifier("");
         jPanel22.add(deviceChoice50);
@@ -711,17 +711,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice51.setOffsetNid(90);
         deviceChoice51.setUpdateIdentifier("");
         jPanel23.add(deviceChoice51);
-
+/*
         deviceChoice52.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice52.setIdentifier("");
         deviceChoice52.setLabelString("Polarity: ");
         deviceChoice52.setOffsetNid(91);
         deviceChoice52.setUpdateIdentifier("");
         jPanel23.add(deviceChoice52);
-
+*/
         deviceChoice53.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice53.setIdentifier("");
-        deviceChoice53.setLabelString("Range: ");
+        deviceChoice53.setLabelString("Range +/- : ");
         deviceChoice53.setOffsetNid(92);
         deviceChoice53.setUpdateIdentifier("");
         jPanel23.add(deviceChoice53);
@@ -736,17 +736,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice54.setOffsetNid(95);
         deviceChoice54.setUpdateIdentifier("");
         jPanel24.add(deviceChoice54);
-
+/*
         deviceChoice55.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice55.setIdentifier("");
         deviceChoice55.setLabelString("Polarity: ");
         deviceChoice55.setOffsetNid(96);
         deviceChoice55.setUpdateIdentifier("");
         jPanel24.add(deviceChoice55);
-
+*/
         deviceChoice56.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice56.setIdentifier("");
-        deviceChoice56.setLabelString("Range: ");
+        deviceChoice56.setLabelString("Range +/- : ");
         deviceChoice56.setOffsetNid(97);
         deviceChoice56.setUpdateIdentifier("");
         jPanel24.add(deviceChoice56);
@@ -761,17 +761,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice57.setOffsetNid(100);
         deviceChoice57.setUpdateIdentifier("");
         jPanel25.add(deviceChoice57);
-
+/*
         deviceChoice58.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice58.setIdentifier("");
         deviceChoice58.setLabelString("Polarity: ");
         deviceChoice58.setOffsetNid(101);
         deviceChoice58.setUpdateIdentifier("");
         jPanel25.add(deviceChoice58);
-
+*/
         deviceChoice59.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice59.setIdentifier("");
-        deviceChoice59.setLabelString("Range: ");
+        deviceChoice59.setLabelString("Range +/- : ");
         deviceChoice59.setOffsetNid(102);
         deviceChoice59.setUpdateIdentifier("");
         jPanel25.add(deviceChoice59);
@@ -786,17 +786,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice60.setOffsetNid(105);
         deviceChoice60.setUpdateIdentifier("");
         jPanel26.add(deviceChoice60);
-
+/*
         deviceChoice61.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice61.setIdentifier("");
         deviceChoice61.setLabelString("Polarity: ");
         deviceChoice61.setOffsetNid(106);
         deviceChoice61.setUpdateIdentifier("");
         jPanel26.add(deviceChoice61);
-
+*/
         deviceChoice62.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice62.setIdentifier("");
-        deviceChoice62.setLabelString("Range: ");
+        deviceChoice62.setLabelString("Range +/- : ");
         deviceChoice62.setOffsetNid(107);
         deviceChoice62.setUpdateIdentifier("");
         jPanel26.add(deviceChoice62);
@@ -811,17 +811,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice63.setOffsetNid(110);
         deviceChoice63.setUpdateIdentifier("");
         jPanel27.add(deviceChoice63);
-
+/*
         deviceChoice64.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice64.setIdentifier("");
         deviceChoice64.setLabelString("Polarity: ");
         deviceChoice64.setOffsetNid(111);
         deviceChoice64.setUpdateIdentifier("");
         jPanel27.add(deviceChoice64);
-
+*/
         deviceChoice65.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice65.setIdentifier("");
-        deviceChoice65.setLabelString("Range: ");
+        deviceChoice65.setLabelString("Range +/- : ");
         deviceChoice65.setOffsetNid(112);
         deviceChoice65.setUpdateIdentifier("");
         jPanel27.add(deviceChoice65);
@@ -836,17 +836,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice66.setOffsetNid(115);
         deviceChoice66.setUpdateIdentifier("");
         jPanel28.add(deviceChoice66);
-
+/*
         deviceChoice67.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice67.setIdentifier("");
         deviceChoice67.setLabelString("Polarity: ");
         deviceChoice67.setOffsetNid(116);
         deviceChoice67.setUpdateIdentifier("");
         jPanel28.add(deviceChoice67);
-
+*/
         deviceChoice68.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice68.setIdentifier("");
-        deviceChoice68.setLabelString("Range: ");
+        deviceChoice68.setLabelString("Range +/- : ");
         deviceChoice68.setOffsetNid(117);
         deviceChoice68.setUpdateIdentifier("");
         jPanel28.add(deviceChoice68);
@@ -861,17 +861,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice69.setOffsetNid(120);
         deviceChoice69.setUpdateIdentifier("");
         jPanel29.add(deviceChoice69);
-
+/*
         deviceChoice70.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice70.setIdentifier("");
         deviceChoice70.setLabelString("Polarity: ");
         deviceChoice70.setOffsetNid(121);
         deviceChoice70.setUpdateIdentifier("");
         jPanel29.add(deviceChoice70);
-
+*/
         deviceChoice71.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice71.setIdentifier("");
-        deviceChoice71.setLabelString("Range: ");
+        deviceChoice71.setLabelString("Range +/- : ");
         deviceChoice71.setOffsetNid(122);
         deviceChoice71.setUpdateIdentifier("");
         jPanel29.add(deviceChoice71);
@@ -886,17 +886,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice72.setOffsetNid(125);
         deviceChoice72.setUpdateIdentifier("");
         jPanel30.add(deviceChoice72);
-
+/*
         deviceChoice73.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice73.setIdentifier("");
         deviceChoice73.setLabelString("Polarity: ");
         deviceChoice73.setOffsetNid(126);
         deviceChoice73.setUpdateIdentifier("");
         jPanel30.add(deviceChoice73);
-
+*/
         deviceChoice74.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice74.setIdentifier("");
-        deviceChoice74.setLabelString("Range: ");
+        deviceChoice74.setLabelString("Range +/- : ");
         deviceChoice74.setOffsetNid(127);
         deviceChoice74.setUpdateIdentifier("");
         jPanel30.add(deviceChoice74);
@@ -911,17 +911,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice75.setOffsetNid(130);
         deviceChoice75.setUpdateIdentifier("");
         jPanel31.add(deviceChoice75);
-
+/*
         deviceChoice76.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice76.setIdentifier("");
         deviceChoice76.setLabelString("Polarity: ");
         deviceChoice76.setOffsetNid(131);
         deviceChoice76.setUpdateIdentifier("");
         jPanel31.add(deviceChoice76);
-
+*/
         deviceChoice77.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice77.setIdentifier("");
-        deviceChoice77.setLabelString("Range: ");
+        deviceChoice77.setLabelString("Range +/- : ");
         deviceChoice77.setOffsetNid(132);
         deviceChoice77.setUpdateIdentifier("");
         jPanel31.add(deviceChoice77);
@@ -936,17 +936,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice78.setOffsetNid(135);
         deviceChoice78.setUpdateIdentifier("");
         jPanel32.add(deviceChoice78);
-
+/*
         deviceChoice79.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice79.setIdentifier("");
         deviceChoice79.setLabelString("Polarity: ");
         deviceChoice79.setOffsetNid(136);
         deviceChoice79.setUpdateIdentifier("");
         jPanel32.add(deviceChoice79);
-
+*/
         deviceChoice80.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice80.setIdentifier("");
-        deviceChoice80.setLabelString("Range: ");
+        deviceChoice80.setLabelString("Range +/- : ");
         deviceChoice80.setOffsetNid(137);
         deviceChoice80.setUpdateIdentifier("");
         jPanel32.add(deviceChoice80);
@@ -961,17 +961,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice81.setOffsetNid(140);
         deviceChoice81.setUpdateIdentifier("");
         jPanel33.add(deviceChoice81);
-
+/*
         deviceChoice82.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice82.setIdentifier("");
         deviceChoice82.setLabelString("Polarity: ");
         deviceChoice82.setOffsetNid(141);
         deviceChoice82.setUpdateIdentifier("");
         jPanel33.add(deviceChoice82);
-
+*/
         deviceChoice83.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice83.setIdentifier("");
-        deviceChoice83.setLabelString("Range: ");
+        deviceChoice83.setLabelString("Range +/- : ");
         deviceChoice83.setOffsetNid(142);
         deviceChoice83.setUpdateIdentifier("");
         jPanel33.add(deviceChoice83);
@@ -986,17 +986,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice84.setOffsetNid(145);
         deviceChoice84.setUpdateIdentifier("");
         jPanel34.add(deviceChoice84);
-
+/*
         deviceChoice85.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice85.setIdentifier("");
         deviceChoice85.setLabelString("Polarity: ");
         deviceChoice85.setOffsetNid(146);
         deviceChoice85.setUpdateIdentifier("");
         jPanel34.add(deviceChoice85);
-
+*/
         deviceChoice86.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice86.setIdentifier("");
-        deviceChoice86.setLabelString("Range: ");
+        deviceChoice86.setLabelString("Range +/- : ");
         deviceChoice86.setOffsetNid(147);
         deviceChoice86.setUpdateIdentifier("");
         jPanel34.add(deviceChoice86);
@@ -1011,17 +1011,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice87.setOffsetNid(150);
         deviceChoice87.setUpdateIdentifier("");
         jPanel35.add(deviceChoice87);
-
+/*
         deviceChoice88.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice88.setIdentifier("");
         deviceChoice88.setLabelString("Polarity: ");
         deviceChoice88.setOffsetNid(151);
         deviceChoice88.setUpdateIdentifier("");
         jPanel35.add(deviceChoice88);
-
+*/
         deviceChoice89.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice89.setIdentifier("");
-        deviceChoice89.setLabelString("Range: ");
+        deviceChoice89.setLabelString("Range +/- : ");
         deviceChoice89.setOffsetNid(152);
         deviceChoice89.setUpdateIdentifier("");
         jPanel35.add(deviceChoice89);
@@ -1036,17 +1036,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice90.setOffsetNid(155);
         deviceChoice90.setUpdateIdentifier("");
         jPanel36.add(deviceChoice90);
-
+/*
         deviceChoice91.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice91.setIdentifier("");
         deviceChoice91.setLabelString("Polarity: ");
         deviceChoice91.setOffsetNid(156);
         deviceChoice91.setUpdateIdentifier("");
         jPanel36.add(deviceChoice91);
-
+*/
         deviceChoice92.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice92.setIdentifier("");
-        deviceChoice92.setLabelString("Range: ");
+        deviceChoice92.setLabelString("Range +/- : ");
         deviceChoice92.setOffsetNid(157);
         deviceChoice92.setUpdateIdentifier("");
         jPanel36.add(deviceChoice92);
@@ -1061,17 +1061,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice93.setOffsetNid(160);
         deviceChoice93.setUpdateIdentifier("");
         jPanel37.add(deviceChoice93);
-
+/*
         deviceChoice94.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice94.setIdentifier("");
         deviceChoice94.setLabelString("Polarity: ");
         deviceChoice94.setOffsetNid(161);
         deviceChoice94.setUpdateIdentifier("");
         jPanel37.add(deviceChoice94);
-
+*/
         deviceChoice95.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice95.setIdentifier("");
-        deviceChoice95.setLabelString("Range: ");
+        deviceChoice95.setLabelString("Range +/- : ");
         deviceChoice95.setOffsetNid(162);
         deviceChoice95.setUpdateIdentifier("");
         jPanel37.add(deviceChoice95);
@@ -1086,17 +1086,17 @@ public class NI6259AISetup extends DeviceSetup {
         deviceChoice96.setOffsetNid(165);
         deviceChoice96.setUpdateIdentifier("");
         jPanel38.add(deviceChoice96);
-
+/*
         deviceChoice97.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
         deviceChoice97.setIdentifier("");
         deviceChoice97.setLabelString("Polarity: ");
         deviceChoice97.setOffsetNid(166);
         deviceChoice97.setUpdateIdentifier("");
         jPanel38.add(deviceChoice97);
-
+*/
         deviceChoice98.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
         deviceChoice98.setIdentifier("");
-        deviceChoice98.setLabelString("Range: ");
+        deviceChoice98.setLabelString("Range +/- : ");
         deviceChoice98.setOffsetNid(167);
         deviceChoice98.setUpdateIdentifier("");
         jPanel38.add(deviceChoice98);
@@ -1268,3 +1268,4 @@ public class NI6259AISetup extends DeviceSetup {
     // End of variables declaration//GEN-END:variables
 
 }
+

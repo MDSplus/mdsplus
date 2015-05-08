@@ -25,7 +25,6 @@
 
 	Description:
 
-
 +-----------------------------------------------------------------------------*/
 #include <STATICdef.h>
 #include <stdlib.h>
@@ -34,9 +33,6 @@
 #include <treeshr.h>
 #include "treeshrp.h"
 #include <ctype.h>
-
-
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 extern void **TreeCtx();
 
@@ -49,30 +45,30 @@ extern void **TreeCtx();
 #endif
 #define max(a,b)  ( (a) >= (b) ? (a) : (b) )
 
-int TreeAddTag(int nid, char const * tagnam)
+int TreeAddTag(int nid, char const *tagnam)
 {
   return _TreeAddTag(*TreeCtx(), nid, tagnam);
 }
 
-int _TreeAddTag(void *dbid, int nid_in, char const * tagnam)
+int _TreeAddTag(void *dbid, int nid_in, char const *tagnam)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  NID       *nid_ptr = (NID *)&nid_in;
-  int       status;
-  NODE     *node_ptr;
-  int       tags;
-  int       pages_needed;
-  int       pages_allocated;
-  int      *new_tags_ptr;
-  int      *old_tags_ptr;
-  int       tidx;
-  int       newtag_idx;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  NID *nid_ptr = (NID *) & nid_in;
+  int status;
+  NODE *node_ptr;
+  int tags;
+  int pages_needed;
+  int pages_allocated;
+  int *new_tags_ptr;
+  int *old_tags_ptr;
+  int tidx;
+  int newtag_idx;
   TAG_INFO *new_tag_info_ptr;
-  TAG_INFO  tag_info;
-  size_t    len;
-  char      tag[24];
-  size_t    i;
-  int       tmp;
+  TAG_INFO tag_info;
+  size_t len;
+  char tag[24];
+  size_t i;
+  int tmp;
 
 /************************************************
 First we make sure tree is open for editting and
@@ -87,8 +83,21 @@ the tag name specified does not already exist.
   if (len < 1 || len > 24)
     return TreeTAGNAMLEN;
 
-  for (i=0;i<(int)len;i++) tag[i] = toupper(tagnam[i]);
-  for (i=len;i<24;i++) tag[i] = ' ';
+  for (i = 0; i < len; i++)
+    tag[i] = toupper(tagnam[i]);
+  for (i = len; i < 24; i++)
+    tag[i] = ' ';
+
+  /* Check to make sure tagname is legal (starts with alpha followed by zero or
+     more alphanumerics or underscores.
+   */
+
+  if ((tag[0] < 'A') || (tag[0] > 'Z'))
+    return TreeINVTAG;
+  for (i = 1; i < len; i++) {
+    if (((tag[i] < 'A') || (tag[i] > 'Z')) && ((tag[i] < '0') || (tag[i] > '9')) && (tag[i] != '_'))
+      return TreeINVTAG;
+  }
 
   nid_to_node(dblist, nid_ptr, node_ptr);
 
@@ -99,26 +108,22 @@ the tag name specified does not already exist.
 
   tags = dblist->tree_info->header->tags;
   old_tags_ptr = dblist->tree_info->tags;
-  if (tags > 0)
-  {
+  if (tags > 0) {
     newtag_idx = 0;
-    for (tidx=0;tidx<tags;tidx++)
-    {
-      int idx = swapint((char *)(old_tags_ptr+tidx));
+    for (tidx = 0; tidx < tags; tidx++) {
+      int idx = swapint((char *)(old_tags_ptr + tidx));
       char *defined_tag = (char *)(dblist->tree_info->tag_info + idx)->name;
       int cmp = strncmp(tag, defined_tag, sizeof(TAG_NAME));
       if (cmp == 0)
-        return TreeDUPTAG;
-      else if (cmp < 0)
-      {
-        newtag_idx = tidx;
-        break;
+	return TreeDUPTAG;
+      else if (cmp < 0) {
+	newtag_idx = tidx;
+	break;
       }
     }
     if (newtag_idx == 0)
       newtag_idx = tidx;
-  }
-  else
+  } else
     newtag_idx = 0;
 
 /*******************************************************
@@ -129,8 +134,7 @@ the tag name specified does not already exist.
 
   pages_needed = ((tags + 1) * 4 + 511) / 512;
   pages_allocated = max((tags * 4 + 511) / 512, dblist->tree_info->edit->tags_pages);
-  if (pages_needed > pages_allocated)
-  {
+  if (pages_needed > pages_allocated) {
 
   /********************************************************
    If we need to allocate more pages for tag indices we
@@ -143,21 +147,19 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    new_tags_ptr = memset(malloc(pages_needed * 512),0,pages_needed*512);
-    if (!(new_tags_ptr))
-    {
-      return TreeFAILURE;
+    new_tags_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
+    if (!(new_tags_ptr)) {
+      return TreeMEMERR;
     }
     memcpy(new_tags_ptr, old_tags_ptr, newtag_idx * sizeof(int));
-    memcpy(new_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx, (tags - newtag_idx) * sizeof(int));
+    memcpy(new_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
+	   (tags - newtag_idx) * sizeof(int));
     *(new_tags_ptr + newtag_idx) = swapint((char *)&tags);
     if (dblist->tree_info->edit->tags_pages > 0)
       free(old_tags_ptr);
     dblist->tree_info->tags = new_tags_ptr;
     dblist->tree_info->edit->tags_pages = pages_needed;
-  }
-  else
-  {
+  } else {
 
   /********************************************************
    If we don't need to allocate more pages for tag indices we
@@ -168,7 +170,8 @@ the tag name specified does not already exist.
    to the end of the existing tag information blocks.
   ********************************************************/
 
-    memmove(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx, (tags - newtag_idx) * sizeof(int));
+    memmove(old_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
+	    (tags - newtag_idx) * sizeof(int));
     *(old_tags_ptr + newtag_idx) = swapint((char *)&tags);	/* Load new */
   }
 
@@ -177,7 +180,7 @@ the tag name specified does not already exist.
  for the new tag.
 *********************************************/
 
-  memcpy(tag_info.name,tag,sizeof(tag));
+  memcpy(tag_info.name, tag, sizeof(tag));
   tmp = (int)(node_ptr - dblist->tree_info->node);
   tag_info.node_idx = swapint((char *)&tmp);
   tag_info.tag_link = node_ptr->tag_link;
@@ -191,8 +194,7 @@ the tag name specified does not already exist.
   pages_needed = ((tags + 1) * sizeof(TAG_INFO) + 511) / 512;
   pages_allocated = max((int)(tags * sizeof(TAG_INFO) + 511) / 512,
 			dblist->tree_info->edit->tag_info_pages);
-  if (pages_needed > pages_allocated)
-  {
+  if (pages_needed > pages_allocated) {
 
   /*******************************************************
    If we need to get more memory we should get more than
@@ -204,9 +206,9 @@ the tag name specified does not already exist.
   *******************************************************/
 
     pages_needed = pages_needed + 31;
-    new_tag_info_ptr = memset(malloc(pages_needed * 512),0,pages_needed * 512);
+    new_tag_info_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
     if (!new_tag_info_ptr)
-      return TreeFAILURE;
+      return TreeMEMERR;
 
     memcpy(new_tag_info_ptr, dblist->tree_info->tag_info, tags * sizeof(TAG_INFO));
     *(new_tag_info_ptr + tags) = tag_info;	/* Load new */
@@ -214,9 +216,7 @@ the tag name specified does not already exist.
       free(dblist->tree_info->tag_info);
     dblist->tree_info->tag_info = new_tag_info_ptr;
     dblist->tree_info->edit->tag_info_pages = pages_needed;
-  }
-  else
-  {
+  } else {
 
   /***************************************************
    If we don't have to expand, just add the new tag
@@ -225,7 +225,6 @@ the tag name specified does not already exist.
 
     *(dblist->tree_info->tag_info + tags) = tag_info;	/* Load new */
   }
-
 
 /******************************************
  To finish up we need to load the tag index
@@ -240,4 +239,3 @@ the tag name specified does not already exist.
   return TreeNORMAL;
 
 }
-

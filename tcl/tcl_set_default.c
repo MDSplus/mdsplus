@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include  <string.h>
 
 /**********************************************************************
 * TCL_SET_DEFAULT.C --
@@ -11,43 +12,42 @@
 *
 ************************************************************************/
 
-
-
 	/****************************************************************
 	 * TclSetDefault:
 	 ****************************************************************/
-int   TclSetDefault()
-   {
-    int   nid;
-    int   sts;
-    static DYNAMIC_DESCRIPTOR(dsc_nodename);
+int TclSetDefault(void *ctx, char **error, char **output)
+{
+  int nid;
+  int sts;
+  char *nodename;
 
-    cli_get_value("NODE",&dsc_nodename);
-    l2u(dsc_nodename.dscA_pointer,0);		/* to upper case	*/
-
-    sts = TreeSetDefault(dsc_nodename.dscA_pointer,&nid);
-    if (sts & 1)
-        TclNodeTouched(nid,set_def);
-    else
-        MdsMsg(sts,"Error trying to set default to %s",
-            dsc_nodename.dscA_pointer);
-    return sts;
-   }
-
-
+  cli_get_value(ctx, "NODE", &nodename);
+  sts = TreeSetDefault(nodename, &nid);
+  if (sts & 1)
+    TclNodeTouched(nid, set_def);
+  else {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + strlen(nodename) + 100);
+    sprintf(*error,"Error: Problem setting default to node '%s'\n"
+	    "Error message was: %s\n", nodename, msg);
+  }
+  if (nodename)
+    free(nodename);
+  return sts;
+}
 
 	/***************************************************************
 	 * TclShowDefault:
 	 ***************************************************************/
-int   TclShowDefault()		/* Returns: status			*/
-   {
-    char  *p;
-    int nid;
-    TreeGetDefaultNid(&nid);
-    if ((p = TreeGetPath(nid)))
-       {
-        TclTextOut(p);
-        TreeFree(p);
-       }
-    return(p ? 1 : 0);
-   }
+int TclShowDefault(void *ctx, char **error, char **output)
+{				/* Returns: status                        */
+  char *p;
+  int nid;
+  TreeGetDefaultNid(&nid);
+  if ((p = TreeGetPath(nid))) {
+    *output = malloc(strlen(p) + 10);
+    sprintf(*output, "%s\n", p);
+    TreeFree(p);
+  }
+  return (p ? 1 : 0);
+}

@@ -56,6 +56,14 @@ public class MARTE_DEQUSetup extends DeviceSetup {
         deviceTable2 = new DeviceTable();
         jPanel11 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
+        jPanel12 = new javax.swing.JPanel();
+        deviceChoice2 = new DeviceChoice();
+        deviceField10 = new DeviceField();
+        jPanel13 = new javax.swing.JPanel();
+        deviceChoice3 = new DeviceChoice();
+        deviceField11 = new DeviceField();
+        deviceChoice4 = new DeviceChoice();
+        deviceField12 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe Dequ Setup");
@@ -187,6 +195,55 @@ public class MARTE_DEQUSetup extends DeviceSetup {
 
         jTabbedPane1.addTab("Limits", jPanel11);
 
+        deviceChoice2.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice2.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice2.setConvert(true);
+        deviceChoice2.setIdentifier("");
+        deviceChoice2.setLabelString("FP Correction:");
+        deviceChoice2.setOffsetNid(1363);
+        deviceChoice2.setUpdateIdentifier("");
+        jPanel12.add(deviceChoice2);
+
+        deviceField10.setIdentifier("");
+        deviceField10.setLabelString("FluxDiffCorrectionCoeffs:");
+        deviceField10.setNumCols(20);
+        deviceField10.setOffsetNid(1369);
+        jPanel12.add(deviceField10);
+
+        jTabbedPane1.addTab("Fp Correction", jPanel12);
+
+        deviceChoice3.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice3.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice3.setConvert(true);
+        deviceChoice3.setIdentifier("");
+        deviceChoice3.setLabelString("AliasRemove");
+        deviceChoice3.setOffsetNid(1375);
+        deviceChoice3.setUpdateIdentifier("");
+        jPanel13.add(deviceChoice3);
+
+        deviceField11.setIdentifier("");
+        deviceField11.setLabelString("TimeCOnstLpfMandF");
+        deviceField11.setNumCols(4);
+        deviceField11.setOffsetNid(1381);
+        jPanel13.add(deviceField11);
+
+        deviceChoice4.setChoiceIntValues(new int[] {1, 0});
+        deviceChoice4.setChoiceItems(new String[] {"ON", "OFF"});
+        deviceChoice4.setConvert(true);
+        deviceChoice4.setIdentifier("");
+        deviceChoice4.setLabelString("FourthHarmRec:");
+        deviceChoice4.setOffsetNid(1387);
+        deviceChoice4.setUpdateIdentifier("");
+        jPanel13.add(deviceChoice4);
+
+        deviceField12.setIdentifier("");
+        deviceField12.setLabelString("deltaTequ: ");
+        deviceField12.setNumCols(4);
+        deviceField12.setOffsetNid(1393);
+        jPanel13.add(deviceField12);
+
+        jTabbedPane1.addTab("Equilibrium reconstruction", jPanel13);
+
         jPanel1.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
@@ -196,7 +253,13 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
+    private DeviceChoice deviceChoice2;
+    private DeviceChoice deviceChoice3;
+    private DeviceChoice deviceChoice4;
     private DeviceField deviceField1;
+    private DeviceField deviceField10;
+    private DeviceField deviceField11;
+    private DeviceField deviceField12;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -212,6 +275,8 @@ public class MARTE_DEQUSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

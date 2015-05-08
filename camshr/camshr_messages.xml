@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<messages>
+  <facility name="Cam" value="2049">
+    <status name="DONE_Q" value="4097" severity="Success" text="I/O completed with X=1, Q=1"/>
+    <status name="DONE_NOQ" value="4098" severity="Success" text="I/O completed with X=1, Q=0"/>
+    <status name="DONE_NOX" value="4608" severity="Warning" text="I/O completed with X=0 - probable failure"/>    
+    <status name="SERTRAERR" value="4864" severity="Error" text="serial transmission error on highway"/>
+    <status name="SCCFAIL" value="4872" severity="Error" text="serial crate controller failure"/>
+    <status name="OFFLINE" value="4877" severity="Error" text="crate is offline"/>
+  </facility>
+</messages>

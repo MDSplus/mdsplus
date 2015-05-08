@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include  <string.h>
 
 /***********************************************************************
 * TCL_EDIT.C --
@@ -10,35 +11,35 @@
 *
 ************************************************************************/
 
-
-
 	/***************************************************************
 	 * TclEdit:
 	 * Open tree for edit
 	 ***************************************************************/
-int TclEdit()
-   {
-    int   shot;
-    int   sts;
-    static DYNAMIC_DESCRIPTOR(dsc_filnam);
-    static DYNAMIC_DESCRIPTOR(dsc_asciiShot);
+int TclEdit(void *ctx, char **error, char **output)
+{
+  int shot;
+  int sts;
+  char *filnam = 0;
+  char *asciiShot = 0;
 
-    cli_get_value("FILE",&dsc_filnam);
-    cli_get_value("SHOTID",&dsc_asciiShot);
-    sscanf(dsc_asciiShot.dscA_pointer,"%d",&shot);
-    if (cli_present("NEW") & 1)
-        sts = TreeOpenNew(dsc_filnam.dscA_pointer,shot);
-    else
-        sts = TreeOpenEdit(dsc_filnam.dscA_pointer,shot);
-    if (sts & 1)
-        TclNodeTouched(0,tree);
-    else
-       {
-        sts = MdsMsg(sts,"Error opening tree-file %s for EDIT",
-                dsc_filnam.dscA_pointer);
-#ifdef vms
-        lib$signal(sts,0);
-#endif
-       }
-    return sts;
-   }
+  cli_get_value(ctx, "FILE", &filnam);
+  cli_get_value(ctx, "SHOTID", &asciiShot);
+  sscanf(asciiShot, "%d", &shot);
+  if (cli_present(ctx, "NEW") & 1)
+    sts = TreeOpenNew(filnam, shot);
+  else
+    sts = TreeOpenEdit(filnam, shot);
+  if (sts & 1)
+    TclNodeTouched(0, tree);
+  else {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg) + 100);
+    sprintf(*error, "Error: Unable to edit shot number %d of the '%s' tree\nError msg was: %s\n",
+	    shot, filnam, msg);
+  }
+  if (filnam)
+    free(filnam);
+  if (asciiShot)
+    free(asciiShot);
+  return sts;
+}

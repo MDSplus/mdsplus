@@ -252,18 +252,20 @@ public class Node
                 }
                 catch (Exception e)
                 {
-                    try {
-                        experiment.doDeviceMethod(nid, "SETUP", Tree.context);
-                    }catch(Exception exc)
-                    {
-                        JOptionPane.showMessageDialog(FrameRepository.frame,
-                                                      e.getMessage(),
-                                                      "Error in device setup: " + e,
-                                                      JOptionPane.WARNING_MESSAGE);
-                        e.printStackTrace();
-                    }
-                    return;
-                }
+                    
+             		try {
+                		experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
+            		}catch(Exception exc) {
+                   
+                     	JOptionPane.showMessageDialog(FrameRepository.frame,
+                                                  e.getMessage(),
+                                                  "Error in device setup: " + e,
+                                                  JOptionPane.WARNING_MESSAGE);
+                    	e.printStackTrace();
+                    	return;
+                	}
+				}
+
             }
         }
         JOptionPane.showMessageDialog(null, "Missing model in descriptor",

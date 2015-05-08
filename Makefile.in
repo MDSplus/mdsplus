@@ -1,8 +1,7 @@
 #@(#)$RCSfile$ $Revision$
 # @configure_input@
-prefix=@prefix@
-SHELL=/bin/sh
-exec_prefix=@exec_prefix@
+
+include Makefile.inc
 
 JAVA_APS = javamds \
 	   javascope \
@@ -30,14 +29,11 @@ PARTS = \
         tditest \
 	xtreeshr \
         @MDSTCPIP@ \
-	@RTEVENTS@ \
         mdslibidl \
-        cdu     \
         mdsdcl  \
-	@GEN_DEVICE@ \
 	@CAMSHR@ \
         @REMCAM@ \
-        @CCL@     \
+        ccl \
 	servershr \
         tcl \
         @TDIC@ \
@@ -55,17 +51,20 @@ PARTS = \
 	@MOTIF_APS@ \
 	@MDSSQL@ \
 	@IDLMDSEVENT@ \
-	@MDSVME@ \
 	@HDF5_APS@ \
 	@LV@ \
-	@MACOSX@
+	LabView \
+	@MACOSX@ \
+	@ICONS@
+
 
 .PHONY: all $(PARTS)
 all: $(PARTS)
 
-$(PARTS):
-	$(MAKE) -C $@
+DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 
+$(PARTS): $(DIRECTORIES)
+	$(MAKE) -C $@
 
 clean_DIRS = $(addprefix clean_, $(PARTS))
 
@@ -97,46 +96,50 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-CHANGELOG :
-	devscripts/MakeChangeLog
+MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog mdsplus.ico include mdsobjects/python desktop pixmaps matlab php epics xml
 
-RELEASE:
-	devscripts/MakeRelease
+install_DIRS = $(addprefix install_, $(PARTS))
+$(install_DIRS):
+	$(MAKE) -C $(@:install_%=%) install
 
-RPM :
-	devscripts/MakeRpm
-
-MISC_PARTS = tdi idl trees setup.sh setup.csh ChangeLog java LabView include mdsobjects/python desktop pixmaps matlab php epics
-
-install: 
-	devscripts/mkdirhier @exec_prefix@/local/tdi
-	devscripts/mkdirhier @exec_prefix@/java
-	cdir=`pwd`;\
-	set -e; for dir in $(PARTS) ; do\
-	  cd $${dir}; $${MAKE:=make} install; cd $$cdir;\
-	done
-	tar cf - --exclude="CVS" $(MISC_PARTS) | (cd @exec_prefix@; tar xf -)
-	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > @exec_prefix@/mdsobjects/python/mdsplus_version.py; fi
-	cp MDSplus-License.txt @exec_prefix@ 
-	(cd @exec_prefix@; chmod -R 755 $(MISC_PARTS))
-
-BINARIES = bin etc lib uid \
-           tdi idl trees envsyms \
-           setup.sh setup.csh java LabView \
-           include/ipdesc.h include/mdslib.inc
-
-CLIENT_BINARIES = include/ipdesc.h include/mdslib.inc lib/libMdsIpShr.* lib/libMdsLib*.* idl
-
-binaries :
-	tar cvf - $(BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.tar.Z
-	tar cvf - $(CLIENT_BINARIES) | compress -c - > ../binaries/MDSplus.`uname`.client.tar.Z
-
+.PHONY: install
+install: $(install_DIRS)
+	$(MKDIR_P) $(prefix)/local/tdi
+	$(MKDIR_P) $(prefix)/java
+	tar cf - $(MISC_PARTS) | (cd $(exec_prefix); tar xf -)
+	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
+	$(INSTALL) MDSplus-License.txt MDSplus-License.rtf $(exec_prefix)
+	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 # Interdependent directories:
-ccl: cdu mdsshr mdsdcl
-tcl: cdu mdsshr treeshr tdishr mdstcpip servershr mdsdcl
-camshr: cdu mdsdcl
-mdsdcl: cdu mdsshr
+actions: mdsshr tdishr treeshr xmdsshr mdstcpip servershr
+camshr: mdsdcl
+ccl: camshr  mdsshr mdsdcl
+tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
+dwscope: xmdsshr
+javadevices: javatraverser
+javadispatcher: javascope javatraverser
+javamds: mdstcpip 
+javatraverser: javascope
+math: mdsshr
+mdsdcl: mdsshr
 mdslib: mdstcpip
+mdslibidl: tdishr
+mdsmisc: tdishr
+mdsobjects/cpp: mdstcpip 
+mdsobjects/java: javascope
+mdstcpip: tdishr
+mitdevices: mdsshr tdishr treeshr xmdsshr
+remcam: mdstcpip
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
+setevent: mdsshr
+tdic: mdstcpip
+tdishr: mdsshr treeshr
+tditest: tdishr
+traverser: xmdsshr
+treeshr: mdsshr
+wfevent: tdishr mdsshr
+xmdsshr: tdishr
+xtreeshr: tdishr
 
+am--refresh:

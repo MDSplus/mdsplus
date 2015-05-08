@@ -37,60 +37,57 @@
 
 /* New fields for the  Expr Widget record */
 
-typedef struct _XmdsExprPart
-{
-    struct descriptor_xd *xd;
-    int			  nid;
-    int                   nid_offset;
-    int                   default_nid;
+typedef struct _XmdsExprPart {
+  struct descriptor_xd *xd;
+  int nid;
+  int nid_offset;
+  int default_nid;
 
-    Boolean		(*compile)();
-    Boolean		(*decompile)();
+   Boolean(*compile) ();
+   Boolean(*decompile) ();
 
-    Widget		open_quote_widget;
-    Widget		text_widget;
-    Widget		close_quote_widget;
-    Boolean		is_text;
-    Boolean		auto_quote;
-    Boolean		default_quote;
-    Boolean		put_on_apply;
-    int extension;
+  Widget open_quote_widget;
+  Widget text_widget;
+  Widget close_quote_widget;
+  Boolean is_text;
+  Boolean auto_quote;
+  Boolean default_quote;
+  Boolean put_on_apply;
+  int extension;
 } XmdsExprPart;
 
 /*
  * now define the actual widget data struct
  */
 typedef struct _XmdsExprWidgetRec {
-    CorePart		    core;		/* basic widget */
-    CompositePart           composite;
-    ConstraintPart	    constraint;
-    XmManagerPart           manager;
-    XmdsExprPart	    expr;		/*  Expr specific */
+  CorePart core;		/* basic widget */
+  CompositePart composite;
+  ConstraintPart constraint;
+  XmManagerPart manager;
+  XmdsExprPart expr;		/*  Expr specific */
 } XmdsExprWidgetRec;
 
 /*
  * Expr Class part is empty.
  */
 
-typedef struct _XmdsExprClassPart{
-    caddr_t		extension;	/* Pointer to extension record */
-}   XmdsExprClassPart;
-
+typedef struct _XmdsExprClassPart {
+  caddr_t extension;		/* Pointer to extension record */
+} XmdsExprClassPart;
 
 /*
  * The Expr Class record is a Dialog box class record plus
  * the empty ExprClassPart
 */
-typedef struct _XmdsExprClassRec 
-{
-    CoreClassPart	    core_class;
-    CompositeClassPart      composite;
-    ConstraintClassPart	    constraint;
-    XmManagerClassPart      manager;
-    XmdsExprClassPart       expr_class;
+typedef struct _XmdsExprClassRec {
+  CoreClassPart core_class;
+  CompositeClassPart composite;
+  ConstraintClassPart constraint;
+  XmManagerClassPart manager;
+  XmdsExprClassPart expr_class;
 } XmdsExprClassRec;
 
 externalref XmdsExprClassRec xmdsExprClassRec;
 
-#endif /* XmdsExprP_H */
+#endif				/* XmdsExprP_H */
 /* DON'T ADD ANYTHING AFTER THIS #endif */

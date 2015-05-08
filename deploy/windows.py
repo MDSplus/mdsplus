@@ -26,22 +26,25 @@ cd ..
 ./configure --host=x86_64-w64-mingw32 --build=x86_64-redhat-linux-gnu --target=x86_64-w64-mingw32 \
         --prefix=/tmp/%(flavor)s --exec-prefix=/tmp/%(flavor)s \
         --libdir=/tmp/%(flavor)s/bin_x86_64 \
-        --bindir=/tmp/%(flavor)s/bin_x86_64 --enable-mdsip_connections --with-labview=$LABVIEW64_DIR \
-        --with-jdk=$JDK_DIR --with-idl=$IDL64_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+        --bindir=/tmp/%(flavor)s/bin_x86_64 --with-labview=$LABVIEW64_DIR \
+        --with-jdk=$JDK_DIR --with-idl=$IDL64_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+        --with-visual_studio=/mdsplus/visual-studio-2008
 make clean
 make
 make install
 ./configure --host=i686-w64-mingw32 --build=i686-redhat-linux-gnu --target=i686-w64-mingw32 \
         --prefix=/tmp/%(flavor)s --exec-prefix=/tmp/%(flavor)s \
         --libdir=/tmp/%(flavor)s/bin_x86 \
-        --bindir=/tmp/%(flavor)s/bin_x86 --enable-mdsip_connections --with-labview=$LABVIEW_DIR \
-        --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+        --bindir=/tmp/%(flavor)s/bin_x86 --with-labview=$LABVIEW_DIR \
+        --with-jdk=$JDK_DIR --with-idl=$IDL_DIR --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+        --with-visual_studio=/mdsplus/visual-studio-2008
 make clean
 make
 make install
+makedir=$(pwd)
 pushd /tmp/%(flavor)s
 makensis -DMAJOR=%(major)d -DMINOR=%(minor)d -DRELEASE=%(release)d -DFLAVOR=%(rflavor)s -NOCD \
-        -DOUTDIR=/tmp/%(flavor)s /tmp/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)d/deploy/mdsplus.nsi
+        -DOUTDIR=/tmp/%(flavor)s -DVisualStudio ${makedir}/deploy/mdsplus.nsi
 echo mdsplus | signcode -spc /mdsplus/certs/mdsplus.spc \
          -v /mdsplus/certs/mdsplus.pvk \
          -a sha1 \
@@ -50,6 +53,7 @@ echo mdsplus | signcode -spc /mdsplus/certs/mdsplus.spc \
          -i http://www.mdsplus.org/ \
          -t http://timestamp.verisign.com/scripts/timestamp.dll \
          -tr 10 /tmp/%(flavor)s/MDSplus%(rflavor)s-%(major)d.%(minor)d-%(release)d.exe
+popd
 """ % self.info,shell=True).wait()
         if status != 0:
             raise Exception("Error building windows kit for package mdsplus%(rflavor)s.%(major)d.%(minor)d-%(release)d.exe" % self.info)

@@ -30,6 +30,7 @@ class NotConnectedDataProvider implements DataProvider
     {
         return null;
     }
+    public void enableAsyncUpdate(boolean enable){}
 
     public void    Dispose(){}
     public boolean SupportsCompression(){return false;}
@@ -91,6 +92,7 @@ class NotConnectedDataProvider implements DataProvider
     public void    RemoveConnectionListener(ConnectionListener l)
     {
     }
+    public void setContinuousUpdate(){}
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {

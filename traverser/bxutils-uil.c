@@ -1,4 +1,4 @@
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$"; 
+static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 /*
  * WARNING: This file is overwritten at code generation time.
  * Any changes to this file will be lost.
@@ -41,16 +41,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #include <Xm/RowColumn.h>
 #include <stdio.h>
 #include <ctype.h>
-
-/*
- * Include stdlib.h and malloc.h if code is C++, ANSI, or Extended ANSI.
- */
-#if defined(__cplusplus) || defined(__STDC__) || defined(__EXTENSIONS__)
 #include <stdlib.h>
-#if !defined(VMS) && !defined(__APPLE__)
-#include <malloc.h>
-#endif
-#endif
 
 /*****************************************************************************
  *       TYPDEFS AND DEFINES
@@ -115,7 +106,7 @@ static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 #ifndef NeedFunctionPrototypes
 static int StrCasecmp();
 #else
-static int StrCasecmp(char*, char*);
+static int StrCasecmp(char *, char *);
 #endif
 #else
 #define STRCASECMP	strcasecmp
@@ -142,9 +133,10 @@ static int StrCasecmp(char*, char*);
  * entry in the enum.  This will maintain correct memory usage, etc.
  */
 enum { WNull, WTab, WNewLine, WCarriageReturn, WFormFeed, WVerticalTab,
-       WBackSlash, WQuote, WHash, WColon, WideF, WideL, WideN, WideR,
-       WideT, WideV, WideUF, WideUL, WideUR, WideUT, WideZero, WideOne,
-       NUM_COMMON_WCHARS };
+  WBackSlash, WQuote, WHash, WColon, WideF, WideL, WideN, WideR,
+  WideT, WideV, WideUF, WideUL, WideUR, WideUT, WideZero, WideOne,
+  NUM_COMMON_WCHARS
+};
 
 /*****************************************************************************
  *       GLOBAL DECLARATIONS
@@ -161,35 +153,34 @@ enum { WNull, WTab, WNewLine, WCarriageReturn, WFormFeed, WVerticalTab,
 #ifndef NeedFunctionPrototypes
 
 #ifndef SUPPORTS_WCHARS
-static int	 mblen			();
+static int mblen();
 #endif
-static int	strlenWc		();
-static size_t	doMbstowcs		();
-static size_t	doWcstombs 		();
-static void	copyWcsToMbs		();
-static int 	dombtowc		();
-static Boolean	extractSegment		();
-static XmString	StringToXmString	();
-static char*	getNextCStrDelim	();
-static int	getCStrCount		();
-static wchar_t *CStrCommonWideCharsGet	();
+static int strlenWc();
+static size_t doMbstowcs();
+static size_t doWcstombs();
+static void copyWcsToMbs();
+static int dombtowc();
+static Boolean extractSegment();
+static XmString StringToXmString();
+static char *getNextCStrDelim();
+static int getCStrCount();
+static wchar_t *CStrCommonWideCharsGet();
 
 #else
 
 #ifndef SUPPORTS_WCHARS
-static int 	mblen			(char*, size_t);
+static int mblen(char *, size_t);
 #endif
-static int	strlenWc		(wchar_t*);
-static size_t	doMbstowcs		(wchar_t*, char*, size_t);
-static size_t	doWcstombs 		(char*, wchar_t*, size_t);
-static void	copyWcsToMbs		(char*, wchar_t*, int, Boolean);
-static int 	dombtowc		(wchar_t*, char*, size_t);
-static Boolean	extractSegment		(wchar_t**, wchar_t**, int *,
-					 wchar_t**, int*, int*,	Boolean*);
-static XmString	StringToXmString	(char*);
-static char*	getNextCStrDelim	(char*);
-static int	getCStrCount		(char*);
-static wchar_t *CStrCommonWideCharsGet	();
+static int strlenWc(wchar_t *);
+static size_t doMbstowcs(wchar_t *, char *, size_t);
+static size_t doWcstombs(char *, wchar_t *, size_t);
+static void copyWcsToMbs(char *, wchar_t *, int, Boolean);
+static int dombtowc(wchar_t *, char *, size_t);
+static Boolean extractSegment(wchar_t **, wchar_t **, int *, wchar_t **, int *, int *, Boolean *);
+static XmString StringToXmString(char *);
+static char *getNextCStrDelim(char *);
+static int getCStrCount(char *);
+static wchar_t *CStrCommonWideCharsGet();
 
 #endif
 
@@ -197,7 +188,7 @@ static wchar_t *CStrCommonWideCharsGet	();
  *	STATIC CODE
  *****************************************************************************/
 
-#if defined(LOCAL_STRCASECMP) 
+#if defined(LOCAL_STRCASECMP)
 
 /*
  * Function:
@@ -211,29 +202,23 @@ static wchar_t *CStrCommonWideCharsGet	();
  *      int :  0; s1 == s2
  *             1; s1 != s2
  */
-static int StrCasecmp
-    ARGLIST((s1, s2))
-        ARG(register char *, s1)
-        GRA(register char *, s2)
+static int StrCasecmp ARGLIST((s1, s2)) ARG(register char *, s1) GRA(register char *, s2)
 {
-    register int        c1, c2;
-    
-    while (*s1 && *s2)
-    {
-        c1 = isupper(*s1) ? tolower(*s1) : *s1;
-        c2 = isupper(*s2) ? tolower(*s2) : *s2;
-        if (c1 != c2)
-        {
-            return(1);
-        }
-        s1++;
-        s2++;
+  register int c1, c2;
+
+  while (*s1 && *s2) {
+    c1 = isupper(*s1) ? tolower(*s1) : *s1;
+    c2 = isupper(*s2) ? tolower(*s2) : *s2;
+    if (c1 != c2) {
+      return (1);
     }
-    if (*s1 || *s2)
-    {
-        return(1);
-    }
-    return(0);
+    s1++;
+    s2++;
+  }
+  if (*s1 || *s2) {
+    return (1);
+  }
+  return (0);
 }
 #endif
 
@@ -251,12 +236,9 @@ static int StrCasecmp
  * Output:
  *      int : always 1
  */
-static int mblen
-    ARGLIST((s, n))
-        ARG(char *, s)
-        GRA(size_t, n)
+static int mblen ARGLIST((s, n)) ARG(char *, s) GRA(size_t, n)
 {
-    return(1);
+  return (1);
 }
 #endif
 
@@ -271,17 +253,17 @@ static int mblen
  * Output:
  *      int : the number of characters found
  */
-static int strlenWc
-    ARGLIST((ptr))
-        GRA(wchar_t *,ptr)
+static int strlenWc ARGLIST((ptr)) GRA(wchar_t *, ptr)
 {
-    register wchar_t	*p = ptr;
-    register int	x = 0;
-    
-    if (!ptr) return(0);
-    
-    while (*p++) x++;
-    return (x);
+  register wchar_t *p = ptr;
+  register int x = 0;
+
+  if (!ptr)
+    return (0);
+
+  while (*p++)
+    x++;
+  return (x);
 }
 
 /*
@@ -296,23 +278,18 @@ static int strlenWc
  * Output:
  *      bytesConv - size_t : number of bytes converted
  */
-static size_t doMbstowcs
-    ARGLIST((wcs, mbs, n))
-        ARG(wchar_t *,wcs)
-        ARG(char *, mbs)
-        GRA(size_t, n)
+static size_t doMbstowcs ARGLIST((wcs, mbs, n)) ARG(wchar_t *, wcs) ARG(char *, mbs) GRA(size_t, n)
 {
 #ifndef SUPPORTS_WCHARS
-    int i;
-    
-    for (i = 0; i < n && mbs[i] != 0; ++i)
-    {
-	wcs[i] = mbs[i];
-    }
-    wcs[i++] = 0;
-    return(i);
+  int i;
+
+  for (i = 0; i < n && mbs[i] != 0; ++i) {
+    wcs[i] = mbs[i];
+  }
+  wcs[i++] = 0;
+  return (i);
 #else
-    return(mbstowcs(wcs, mbs, n));
+  return (mbstowcs(wcs, mbs, n));
 #endif
 }
 
@@ -328,27 +305,24 @@ static size_t doMbstowcs
  * Output:
  *      bytesConv - size_t : number of bytes converted
  */
-static size_t doWcstombs
-    ARGLIST((mbs, wcs, n))
-        ARG(char *, mbs)
-        ARG(wchar_t *, wcs)
-        GRA(size_t, n)
+static size_t doWcstombs ARGLIST((mbs, wcs, n)) ARG(char *, mbs) ARG(wchar_t *, wcs) GRA(size_t, n)
 {
 #ifndef SUPPORTS_WCHARS
-    int i;
-    
-    for (i = 0; i < n && wcs[i] != 0; ++i)
-    {
-	mbs[i] = wcs[i];
-    }
-    mbs[i] = 0;
-    return(i);
-#else
-    size_t	retval;
+  int i;
 
-    retval = wcstombs(mbs, wcs, (n * sizeof(wchar_t)));
-    if ( retval == (size_t)-1 ) return(0);
-    else return(retval);
+  for (i = 0; i < n && wcs[i] != 0; ++i) {
+    mbs[i] = wcs[i];
+  }
+  mbs[i] = 0;
+  return (i);
+#else
+  size_t retval;
+
+  retval = wcstombs(mbs, wcs, (n * sizeof(wchar_t)));
+  if (retval == (size_t) - 1)
+    return (0);
+  else
+    return (retval);
 #endif
 }
 
@@ -368,97 +342,75 @@ static size_t doWcstombs
  *      None
  */
 static void copyWcsToMbs
-    ARGLIST((mbs, wcs, len, process_it))
-        ARG(char *, mbs)
-        ARG(wchar_t *, wcs)
-        ARG(int, len)
-        GRA(Boolean, process_it)
+ARGLIST((mbs, wcs, len, process_it))
+ARG(char *, mbs) ARG(wchar_t *, wcs) ARG(int, len) GRA(Boolean, process_it)
 {
-    static	wchar_t	*tbuf = NULL;
-    static	int	tbufSize = 0;
-    
-    int		numCvt;
-    int		lenToConvert;
-    wchar_t	*fromP = wcs;
-    wchar_t	*x = &fromP[len];
-    wchar_t	*toP;
-    wchar_t	*commonWChars = CStrCommonWideCharsGet();
-    wchar_t	tmp;
-    
-    /*
-     * Make sure there's room in the buffer
-     */
-    if (tbufSize < len)
-    {
-	tbuf = (wchar_t*)XtRealloc((char*)tbuf, (len + 1) * sizeof(wchar_t));
-	tbufSize = len;
-    }
-    
-    /*
-     * Now copy and process
-     */
-    toP = tbuf;
-    lenToConvert = 0;
-    while (fromP < x)
-    {
-	/*
-	 * Check for quoted characters
-	 */
-	if ((*fromP == commonWChars[WBackSlash]) && process_it)
-	{
-	    fromP++;		/* Skip quote */
-	    if (fromP == x)	/* Hanging quote? */
-	    {
-		*toP++ = commonWChars[WBackSlash];
-		lenToConvert++;
-		break;
-	    }
-	    tmp = *fromP++;
-	    if (tmp == commonWChars[WideN])
-	    {
-		*toP++ = commonWChars[WNewLine];
-	    }
-	    else if (tmp == commonWChars[WideT])
-	    {
-		*toP++ = commonWChars[WTab];
-	    }
-	    else if (tmp == commonWChars[WideR])
-	    {
-		*toP++ = commonWChars[WCarriageReturn];
-	    }
-	    else if (tmp == commonWChars[WideF])
-	    {
-		*toP++ = commonWChars[WFormFeed];
-	    }
-	    else if (tmp == commonWChars[WideV])
-	    {
-		*toP++ = commonWChars[WVerticalTab];
-	    }
-	    else if (tmp == commonWChars[WBackSlash])
-	    {
-		*toP++ = commonWChars[WBackSlash];
-	    }
-	    else
-	    {
-                /*
-		 * No special translation needed
-		 */
-		*toP++ = tmp;
-	    }
-	}
-	else
-	{
-	    *toP++ = *fromP++;
-	}
-	lenToConvert++;
-    }
+  static wchar_t *tbuf = NULL;
+  static int tbufSize = 0;
 
-    tmp = tbuf[lenToConvert];
-    tbuf[lenToConvert] = 0; /* (wchar_t) NULL; */
-    numCvt = doWcstombs(mbs, tbuf, lenToConvert);
-    tbuf[lenToConvert] = tmp;
-    
-    mbs[numCvt] = '\0';
+  int numCvt;
+  int lenToConvert;
+  wchar_t *fromP = wcs;
+  wchar_t *x = &fromP[len];
+  wchar_t *toP;
+  wchar_t *commonWChars = CStrCommonWideCharsGet();
+  wchar_t tmp;
+
+  /*
+   * Make sure there's room in the buffer
+   */
+  if (tbufSize < len) {
+    tbuf = (wchar_t *) XtRealloc((char *)tbuf, (len + 1) * sizeof(wchar_t));
+    tbufSize = len;
+  }
+
+  /*
+   * Now copy and process
+   */
+  toP = tbuf;
+  lenToConvert = 0;
+  while (fromP < x) {
+    /*
+     * Check for quoted characters
+     */
+    if ((*fromP == commonWChars[WBackSlash]) && process_it) {
+      fromP++;			/* Skip quote */
+      if (fromP == x) {		/* Hanging quote? */
+	*toP++ = commonWChars[WBackSlash];
+	lenToConvert++;
+	break;
+      }
+      tmp = *fromP++;
+      if (tmp == commonWChars[WideN]) {
+	*toP++ = commonWChars[WNewLine];
+      } else if (tmp == commonWChars[WideT]) {
+	*toP++ = commonWChars[WTab];
+      } else if (tmp == commonWChars[WideR]) {
+	*toP++ = commonWChars[WCarriageReturn];
+      } else if (tmp == commonWChars[WideF]) {
+	*toP++ = commonWChars[WFormFeed];
+      } else if (tmp == commonWChars[WideV]) {
+	*toP++ = commonWChars[WVerticalTab];
+      } else if (tmp == commonWChars[WBackSlash]) {
+	*toP++ = commonWChars[WBackSlash];
+      } else {
+	/*
+	 * No special translation needed
+	 */
+	*toP++ = tmp;
+      }
+    } else {
+      *toP++ = *fromP++;
+    }
+    lenToConvert++;
+  }
+
+  tmp = tbuf[lenToConvert];
+  tbuf[lenToConvert] = 0;	/* (wchar_t) NULL; */
+  numCvt = doWcstombs(mbs, tbuf, lenToConvert);
+  tbuf[lenToConvert] = tmp;
+
+  mbs[numCvt] = '\0';
 }
 
 /*
@@ -479,31 +431,26 @@ static void copyWcsToMbs
  *	       the multibyte character.
  */
 static int dombtowc
-    ARGLIST((wide, multi, size))
-        ARG(wchar_t *, wide)
-        ARG(char *, multi)
-        GRA(size_t, size)
+ARGLIST((wide, multi, size)) ARG(wchar_t *, wide) ARG(char *, multi) GRA(size_t, size)
 {
-    int		retVal = 0;
-    
+  int retVal = 0;
+
 #ifndef SUPPORTS_WCHARS
-    if ((multi == NULL) || (*multi == '\000'))
-    {
-	if (wide) wide[0] = '\0';
-	return (0);
+  if ((multi == NULL) || (*multi == '\000')) {
+    if (wide)
+      wide[0] = '\0';
+    return (0);
+  }
+
+  for (retVal = 0; retVal < size && multi[retVal] != '\000'; retVal++) {
+    if (wide != NULL) {
+      wide[retVal] = multi[retVal];
     }
-    
-    for (retVal = 0; retVal < size && multi[retVal] != '\000'; retVal++)
-    {
-	if (wide != NULL)
-	{
-	    wide[retVal] = multi[retVal];
-	}
-    }
+  }
 #else
-    retVal = mbtowc(wide, multi, size);
+  retVal = mbtowc(wide, multi, size);
 #endif
-    return(retVal);
+  return (retVal);
 }
 
 /*
@@ -518,35 +465,27 @@ static int dombtowc
  *	ptr - wchar_t* : pointer to character, if found, points to end
  *			of string otherwise ('\0').
  */
-static wchar_t* getNextSeparator
-    ARGLIST((str))
-        GRA(wchar_t *, str)	
+static wchar_t *getNextSeparator ARGLIST((str)) GRA(wchar_t *, str)
 {
-    wchar_t	*ptr = str;
-    wchar_t	*commonWChars = CStrCommonWideCharsGet();
-    
-    while (*ptr)
-    {
-	/*
-	 * Check for separator
-	 */
-	if ((*ptr == commonWChars[WHash]) ||
-	    (*ptr == commonWChars[WQuote]) ||
-	    (*ptr == commonWChars[WColon]))
-	{
-	    return(ptr);
-	}
-	else if (*ptr == commonWChars[WBackSlash])
-	{
-	    ptr++;
-	    if (*ptr) ptr++;	/* Skip quoted character */
-	}
-	else
-	{
-	    ptr++;
-	}
+  wchar_t *ptr = str;
+  wchar_t *commonWChars = CStrCommonWideCharsGet();
+
+  while (*ptr) {
+    /*
+     * Check for separator
+     */
+    if ((*ptr == commonWChars[WHash]) ||
+	(*ptr == commonWChars[WQuote]) || (*ptr == commonWChars[WColon])) {
+      return (ptr);
+    } else if (*ptr == commonWChars[WBackSlash]) {
+      ptr++;
+      if (*ptr)
+	ptr++;			/* Skip quoted character */
+    } else {
+      ptr++;
     }
-    return(ptr);
+  }
+  return (ptr);
 }
 
 /*
@@ -570,199 +509,165 @@ static wchar_t* getNextSeparator
  *			False means done.
  */
 static Boolean extractSegment
-    ARGLIST((str, tagStart, tagLen, txtStart, txtLen, pDir, pSep))
-        ARG(wchar_t **, str)
-        ARG(wchar_t **, tagStart)
-        ARG(int *, tagLen)
-        ARG(wchar_t **, txtStart)
-        ARG(int *, txtLen)
-        ARG(int *, pDir)
-        GRA(Boolean *, pSep)
+ARGLIST((str, tagStart, tagLen, txtStart, txtLen, pDir, pSep))
+ARG(wchar_t **, str)
+ARG(wchar_t **, tagStart)
+ARG(int *, tagLen)
+ARG(wchar_t **, txtStart) ARG(int *, txtLen) ARG(int *, pDir) GRA(Boolean *, pSep)
 {
-    wchar_t		*start;
-    wchar_t		*text;
-    int			textL;
-    Boolean		tagSeen;
-    wchar_t		*tag;
-    int			tagL;
-    Boolean		modsSeen;
-    Boolean		sep;
-    int			dir;
-    Boolean		done;
-    int			*lenUp;
-    Boolean		checkDir;
-    wchar_t		*commonWChars;
-    wchar_t		emptyStrWcs[1];
+  wchar_t *start;
+  wchar_t *text;
+  int textL;
+  Boolean tagSeen;
+  wchar_t *tag;
+  int tagL;
+  Boolean modsSeen;
+  Boolean sep;
+  int dir;
+  Boolean done;
+  int *lenUp;
+  Boolean checkDir;
+  wchar_t *commonWChars;
+  wchar_t emptyStrWcs[1];
 
-    /*
-     * Initialize variables
-     */
-    text = NULL;
-    textL = 0;
-    tagSeen = False;
-    tag = NULL;
-    tagL = 0;
-    modsSeen = False;
-    dir = XmSTRING_DIRECTION_L_TO_R;
-    sep = False;
+  /*
+   * Initialize variables
+   */
+  text = NULL;
+  textL = 0;
+  tagSeen = False;
+  tag = NULL;
+  tagL = 0;
+  modsSeen = False;
+  dir = XmSTRING_DIRECTION_L_TO_R;
+  sep = False;
+  done = False;
+  lenUp = NULL;
+  commonWChars = CStrCommonWideCharsGet();
+
+  /*
+   * Guard against nulls
+   */
+  if (!(start = *str)) {
+    start = emptyStrWcs;
+    emptyStrWcs[0] = commonWChars[WNull];
+  }
+
+  /*
+   * If the first character of the string isn't a # or a ", then we
+   * just have a regular old simple string. Do the same the thing for
+   * the empty string.
+   */
+  if ((*start == '\0') || (start != getNextSeparator(start))) {
+    text = start;
+    if (!(textL = strlenWc(start))) {
+      text = NULL;
+    }
+    start += textL;
+  } else {
     done = False;
-    lenUp = NULL;
-    commonWChars = CStrCommonWideCharsGet();
-
-    /*
-     * Guard against nulls
-     */
-    if (!(start = *str))
-    {
-	start = emptyStrWcs;
-	emptyStrWcs[0] = commonWChars[WNull];
-    }
-
-    /*
-     * If the first character of the string isn't a # or a ", then we
-     * just have a regular old simple string. Do the same the thing for
-     * the empty string.
-     */
-    if ((*start == '\0') || (start != getNextSeparator(start)))
-    {
-	text = start;
-	if (!(textL = strlenWc(start)))
-	{
-	    text = NULL;
+    while (!done) {
+      if (*start == commonWChars[WHash]) {
+	if (tagSeen) {
+	  done = True;
+	  break;
+	} else {
+	  tagSeen = True;
+	  tag = ++start;
+	  start = getNextSeparator(tag);
+	  if ((tagL = start - tag) == 0) {
+	    tag = NULL;		/* Null tag specified */
+	  }
 	}
-	start += textL;
-    }
-    else
-    {
-	done = False;
-	while (!done)
-	{
-	    if (*start == commonWChars[WHash])
-	    {
-		if (tagSeen)
-		{
-		    done = True;
-		    break;
-		}
-		else
-		{
-		    tagSeen = True;
-		    tag = ++start;
-		    start = getNextSeparator(tag);
-		    if ((tagL = start - tag) == 0)
-		    {
-			tag = NULL;		/* Null tag specified */
-		    }
-		}
-	    }
-	    else if (*start == commonWChars[WQuote])
-	    {
-		text = ++start;
-		start = getNextSeparator(start);
-		while (!((*start == commonWChars[WQuote]) ||
-			 (*start == commonWChars[WNull])))
-		{
-		    start = getNextSeparator(++start);
-		}
-		
-		if ((textL = start - text) == 0)
-		{
-		    text = NULL;	/* Null text specified  */
-		}
-                /*
-		 * if a quote, skip over it
-		 */
-		if (*start == commonWChars[WQuote])
-		{
-		    start++;
-		}
-		done = True;
-	    }
-	    else if (*start == commonWChars[WColon])
-	    {
-		if (modsSeen)
-		{
-		    done = True;
-		    break;
-		}
-		
-		/*
-		 * If the next character is a t or f, the we've got 
-		 * a separator.
-		 */
-		modsSeen = True;
-		checkDir = False;
-		start++;
-		if ((*start == commonWChars[WideT]) ||
-		    (*start == commonWChars[WideUT]) ||
-		    (*start == commonWChars[WideOne]))
-		{
-		    sep = True;
-		    start++;
-		    checkDir = True;
-		}
-		else if ((*start == commonWChars[WideF]) ||
-			 (*start == commonWChars[WideUF]) ||
-			 (*start == commonWChars[WideZero]))
-		{
-		    sep = False;
-		    start++;
-		    checkDir = True;
-		}
-		else if ((*start == commonWChars[WideR]) ||
-			 (*start == commonWChars[WideUR]))
-		{
-		    start++;
-		    dir = XmSTRING_DIRECTION_R_TO_L;
-		}
-		else if ((*start == commonWChars[WideL]) ||
-			 (*start == commonWChars[WideUL]))
-		{
-		    start++;
-		    dir = XmSTRING_DIRECTION_L_TO_R;
-		}
-		/*
-		 * Look for direction if necessary. This requires a bit of
-		 * look ahead.
-		 */
-		if (checkDir && (*start == commonWChars[WColon]))
-		{
-		    if ((*(start + 1) == commonWChars[WideL]) ||
-			(*(start + 1) == commonWChars[WideUL]))
-		    {
-			dir = XmSTRING_DIRECTION_L_TO_R;
-			start += 2;
-		    }
-		    else if ((*(start + 1) == commonWChars[WideR]) ||
-			     (*(start + 1) == commonWChars[WideUR]))
-		    {
-			dir = XmSTRING_DIRECTION_R_TO_L;
-			start+=2;
-		    }
-		}
-	    }
-            else
-	    {
-		/*
-		 * A bad string format! We'll just skip the character.
-		 */
-		start++;
-	    }
+      } else if (*start == commonWChars[WQuote]) {
+	text = ++start;
+	start = getNextSeparator(start);
+	while (!((*start == commonWChars[WQuote]) || (*start == commonWChars[WNull]))) {
+	  start = getNextSeparator(++start);
 	}
+
+	if ((textL = start - text) == 0) {
+	  text = NULL;		/* Null text specified  */
+	}
+	/*
+	 * if a quote, skip over it
+	 */
+	if (*start == commonWChars[WQuote]) {
+	  start++;
+	}
+	done = True;
+      } else if (*start == commonWChars[WColon]) {
+	if (modsSeen) {
+	  done = True;
+	  break;
+	}
+
+	/*
+	 * If the next character is a t or f, the we've got 
+	 * a separator.
+	 */
+	modsSeen = True;
+	checkDir = False;
+	start++;
+	if ((*start == commonWChars[WideT]) ||
+	    (*start == commonWChars[WideUT]) || (*start == commonWChars[WideOne])) {
+	  sep = True;
+	  start++;
+	  checkDir = True;
+	} else if ((*start == commonWChars[WideF]) ||
+		   (*start == commonWChars[WideUF]) || (*start == commonWChars[WideZero])) {
+	  sep = False;
+	  start++;
+	  checkDir = True;
+	} else if ((*start == commonWChars[WideR]) || (*start == commonWChars[WideUR])) {
+	  start++;
+	  dir = XmSTRING_DIRECTION_R_TO_L;
+	} else if ((*start == commonWChars[WideL]) || (*start == commonWChars[WideUL])) {
+	  start++;
+	  dir = XmSTRING_DIRECTION_L_TO_R;
+	}
+	/*
+	 * Look for direction if necessary. This requires a bit of
+	 * look ahead.
+	 */
+	if (checkDir && (*start == commonWChars[WColon])) {
+	  if ((*(start + 1) == commonWChars[WideL]) || (*(start + 1) == commonWChars[WideUL])) {
+	    dir = XmSTRING_DIRECTION_L_TO_R;
+	    start += 2;
+	  } else if ((*(start + 1) == commonWChars[WideR]) ||
+		     (*(start + 1) == commonWChars[WideUR])) {
+	    dir = XmSTRING_DIRECTION_R_TO_L;
+	    start += 2;
+	  }
+	}
+      } else {
+	/*
+	 * A bad string format! We'll just skip the character.
+	 */
+	start++;
+      }
     }
+  }
 
-    /*
-     * Now fill in return values
-     */
-    if (*str)		*str = start;
-    if (tagStart)	*tagStart = tag;
-    if (tagLen)		*tagLen = tagL;
-    if (txtStart)	*txtStart = text;
-    if (txtLen)		*txtLen = textL;
-    if (pDir)		*pDir = dir;
-    if (pSep)		*pSep = sep;
+  /*
+   * Now fill in return values
+   */
+  if (*str)
+    *str = start;
+  if (tagStart)
+    *tagStart = tag;
+  if (tagLen)
+    *tagLen = tagL;
+  if (txtStart)
+    *txtStart = text;
+  if (txtLen)
+    *txtLen = textL;
+  if (pDir)
+    *pDir = dir;
+  if (pSep)
+    *pSep = sep;
 
-    return ((*start == commonWChars[WNull]) ? False : True);
+  return ((*start == commonWChars[WNull]) ? False : True);
 }
 
 /*
@@ -775,137 +680,125 @@ static Boolean extractSegment
  * Outputs:
  *	xstr - XmString : the allocated return structure
  */
-static XmString StringToXmString
-    ARGLIST((str))
-        GRA(char *,str)
+static XmString StringToXmString ARGLIST((str)) GRA(char *, str)
 {
-    static char*	tagBuf = NULL;
-    static int		tagBufLen = 0;
-    static char*	textBuf = NULL;
-    static int		textBufLen = 0;
+  static char *tagBuf = NULL;
+  static int tagBufLen = 0;
+  static char *textBuf = NULL;
+  static int textBufLen = 0;
 
-    wchar_t		*ctx;
-    wchar_t		*tag;
-    int			tagLen;
-    wchar_t		*text;
-    int			textLen;
-    Boolean		sep;
-    int			dir;
-    
-    Boolean		more;
-    wchar_t		*wcStr;
-    int			curDir;
-    XmString		xmStr;
-    XmString		s1;
-    XmString		s2;
+  wchar_t *ctx;
+  wchar_t *tag;
+  int tagLen;
+  wchar_t *text;
+  int textLen;
+  Boolean sep;
+  int dir;
 
-    if (!str) return(NULL);
+  Boolean more;
+  wchar_t *wcStr;
+  int curDir;
+  XmString xmStr;
+  XmString s1;
+  XmString s2;
 
+  if (!str)
+    return (NULL);
+
+  /*
+   * For expediencies sake, we'll overallocate this buffer so that
+   * the wcs is guaranteed to fit (1 wc per byte in original string).
+   */
+  wcStr = (wchar_t *) XtMalloc((strlen(str) + 1) * sizeof(wchar_t));
+  doMbstowcs(wcStr, str, strlen(str) + 1);
+
+  /*
+   * Create the beginning segment
+   */
+  curDir = XmSTRING_DIRECTION_L_TO_R;
+  xmStr = XmStringDirectionCreate(curDir);
+
+  /*
+   * Convert the string.
+   */
+  more = True;
+  ctx = wcStr;
+  while (more) {
+    more = extractSegment(&ctx, &tag, &tagLen, &text, &textLen, &dir, &sep);
     /*
-     * For expediencies sake, we'll overallocate this buffer so that
-     * the wcs is guaranteed to fit (1 wc per byte in original string).
+     * Pick up a direction change
      */
-    wcStr = (wchar_t*)XtMalloc((strlen(str) + 1) * sizeof(wchar_t));
-    doMbstowcs(wcStr, str, strlen(str) + 1);
-
-    /*
-     * Create the beginning segment
-     */
-    curDir = XmSTRING_DIRECTION_L_TO_R;
-    xmStr = XmStringDirectionCreate(curDir);
-
-    /*
-     * Convert the string.
-     */
-    more = True;
-    ctx = wcStr;
-    while (more)
-    {
-	more = extractSegment(&ctx, &tag, &tagLen,
-			      &text, &textLen, &dir, &sep);
-	/*
-	 * Pick up a direction change
-	 */
-	if (dir != curDir)
-	{
+    if (dir != curDir) {
 #if defined(VMS) || (defined(__osf__) && defined(__alpha))
 #if XmVERSION > 1 || (XmVERSION == 1 && XmREVISION >= 2)
-	    /*
-	     * This is required on DEC Windows systems because they've
-	     * added the REVERT direction.
-	     */
-	    s1 = XmStringDirectionCreate(XmSTRING_DIRECTION_REVERT);
-	    s2 = xmStr;
-	    xmStr = XmStringConcat(s2, s1);
-	    XmStringFree(s1);
-	    XmStringFree(s2);
+      /*
+       * This is required on DEC Windows systems because they've
+       * added the REVERT direction.
+       */
+      s1 = XmStringDirectionCreate(XmSTRING_DIRECTION_REVERT);
+      s2 = xmStr;
+      xmStr = XmStringConcat(s2, s1);
+      XmStringFree(s1);
+      XmStringFree(s2);
 #endif
 #endif
-	    curDir = dir;
-	    s1 = XmStringDirectionCreate(curDir);
-	    s2 = xmStr;
-	    xmStr = XmStringConcat(s2, s1);
-	    XmStringFree(s1);
-	    XmStringFree(s2);
+      curDir = dir;
+      s1 = XmStringDirectionCreate(curDir);
+      s2 = xmStr;
+      xmStr = XmStringConcat(s2, s1);
+      XmStringFree(s1);
+      XmStringFree(s2);
 
-	}
-
-	/*
-	 * Create the segment. Text and tag first.
-	 */
-	if (textLen)
-	{
-	    if (textBufLen <= (textLen * sizeof(wchar_t)))
-	    {
-		textBufLen = (textLen + 1) * sizeof(wchar_t);
-		textBuf = (char*)XtRealloc(textBuf, textBufLen);
-	    }
-	    copyWcsToMbs(textBuf, text, textLen, True);
-
-	    if (tagLen)
-	    {
-		if (tagBufLen <= (tagLen * sizeof(wchar_t)))
-		{
-		    tagBufLen = (tagLen + 1) * sizeof(wchar_t);
-		    tagBuf = (char*)XtRealloc(tagBuf, tagBufLen);
-		}
-		copyWcsToMbs(tagBuf, tag, tagLen, False);
-	    }
-	    else
-	    {
-		if (!tagBuf)
-		{
-		    tagBufLen = strlen(XmSTRING_DEFAULT_CHARSET) + 1;
-		    tagBuf = (char*)XtMalloc(tagBufLen);
-		}
-		strcpy(tagBuf, XmSTRING_DEFAULT_CHARSET);
-	    }
-
-	    s1 = XmStringCreate(textBuf, tagBuf); 
-	    s2 = xmStr;
-	    xmStr = XmStringConcat(s2, s1);
-	    XmStringFree(s1);
-	    XmStringFree(s2);
-	}
-
-	/*
-	 * Add in the separators.
-	 */
-	if (sep)
-	{
-	    s1 = XmStringSeparatorCreate();
-	    s2 = xmStr;
-	    xmStr = XmStringConcat(s2, s1);
-	    XmStringFree(s1);
-	    XmStringFree(s2);
-	}
     }
-    
+
     /*
-     * Free up memory and return
+     * Create the segment. Text and tag first.
      */
-    XtFree((char*)wcStr);
-    return(xmStr);
+    if (textLen) {
+      if (textBufLen <= (textLen * sizeof(wchar_t))) {
+	textBufLen = (textLen + 1) * sizeof(wchar_t);
+	textBuf = (char *)XtRealloc(textBuf, textBufLen);
+      }
+      copyWcsToMbs(textBuf, text, textLen, True);
+
+      if (tagLen) {
+	if (tagBufLen <= (tagLen * sizeof(wchar_t))) {
+	  tagBufLen = (tagLen + 1) * sizeof(wchar_t);
+	  tagBuf = (char *)XtRealloc(tagBuf, tagBufLen);
+	}
+	copyWcsToMbs(tagBuf, tag, tagLen, False);
+      } else {
+	if (!tagBuf) {
+	  tagBufLen = strlen(XmSTRING_DEFAULT_CHARSET) + 1;
+	  tagBuf = (char *)XtMalloc(tagBufLen);
+	}
+	strcpy(tagBuf, XmSTRING_DEFAULT_CHARSET);
+      }
+
+      s1 = XmStringCreate(textBuf, tagBuf);
+      s2 = xmStr;
+      xmStr = XmStringConcat(s2, s1);
+      XmStringFree(s1);
+      XmStringFree(s2);
+    }
+
+    /*
+     * Add in the separators.
+     */
+    if (sep) {
+      s1 = XmStringSeparatorCreate();
+      s2 = xmStr;
+      xmStr = XmStringConcat(s2, s1);
+      XmStringFree(s1);
+      XmStringFree(s2);
+    }
+  }
+
+  /*
+   * Free up memory and return
+   */
+  XtFree((char *)wcStr);
+  return (xmStr);
 }
 
 /*
@@ -919,60 +812,54 @@ static XmString StringToXmString
  *      nextCStr - char* : pointer to the next delimiter. Returns NULL if no
  *			delimiter found.
  */
-static char* getNextCStrDelim
-    ARGLIST((str))
-        GRA(char *,str)
+static char *getNextCStrDelim ARGLIST((str)) GRA(char *, str)
 {
-    char	*comma = str;
-    Boolean	inQuotes = False;
-    int		len;
+  char *comma = str;
+  Boolean inQuotes = False;
+  int len;
 
-    if (!str) return(NULL);
-    if (!*str) return(NULL);	/* At end */
+  if (!str)
+    return (NULL);
+  if (!*str)
+    return (NULL);		/* At end */
 
 #ifdef __CENTERLINE__
-    mblen((char *)NULL, sizeof(wchar_t));
+  mblen((char *)NULL, sizeof(wchar_t));
 #else
-    mblen(NULL, sizeof(wchar_t));
+  mblen(NULL, sizeof(wchar_t));
 #endif
-    while (*comma)
-    {
-	if ((len = mblen(comma, sizeof(wchar_t))) > 1)
-	{
-	    comma += len;
-	    continue;
-	}
-	
-	if (*comma == '\\')
-	{
-	    comma++;	/* Over quote */
-	    comma += mblen(comma, sizeof(wchar_t));
-	    continue;
-	}
-
-	/*
-	 * See if we have a delimiter
-	 */
-	if (!inQuotes)
-	{
-	    if ((*comma == ',') || (*comma == '\012'))
-	    {
-		return(comma);
-	    }
-	}
-
-	/*
-	 * Deal with quotes
-	 */
-	if (*comma == '\"')
-	{
-	    inQuotes = ~inQuotes;
-	}
-
-	comma++;
+  while (*comma) {
+    if ((len = mblen(comma, sizeof(wchar_t))) > 1) {
+      comma += len;
+      continue;
     }
 
-    return(NULL);		/* None found */
+    if (*comma == '\\') {
+      comma++;			/* Over quote */
+      comma += mblen(comma, sizeof(wchar_t));
+      continue;
+    }
+
+    /*
+     * See if we have a delimiter
+     */
+    if (!inQuotes) {
+      if ((*comma == ',') || (*comma == '\012')) {
+	return (comma);
+      }
+    }
+
+    /*
+     * Deal with quotes
+     */
+    if (*comma == '\"') {
+      inQuotes = ~inQuotes;
+    }
+
+    comma++;
+  }
+
+  return (NULL);		/* None found */
 }
 
 /*
@@ -986,22 +873,21 @@ static char* getNextCStrDelim
  * Output:
  *      cnt - int : the number of XmStrings found
  */
-static int getCStrCount
-    ARGLIST((str))
-        GRA(char *, str)
+static int getCStrCount ARGLIST((str)) GRA(char *, str)
 {
-    int		x = 1;
-    char	*newStr;
+  int x = 1;
+  char *newStr;
 
-    if (!str) return(0);
-    if (!*str) return(0);
+  if (!str)
+    return (0);
+  if (!*str)
+    return (0);
 
-    while ((newStr = getNextCStrDelim(str)))
-    {
-	x++;
-	str = ++newStr;
-    }
-    return(x);
+  while ((newStr = getNextCStrDelim(str))) {
+    x++;
+    str = ++newStr;
+  }
+  return (x);
 }
 
 /*
@@ -1016,32 +902,30 @@ static int getCStrCount
  */
 static wchar_t *CStrCommonWideCharsGet()
 {
-    static wchar_t	*CommonWideChars = NULL;
+  static wchar_t *CommonWideChars = NULL;
+  /*
+   * If you add to this array, don't forget to change the enum in
+   * the TYPEDEFS and DEFINES section above to correspond to this
+   * array.
+   */
+  static char *characters[] = { "\000", "\t", "\n", "\r", "\f", "\v",
+    "\\", "\"", "#", ":", "f", "l", "n", "r",
+    "t", "v", "F", "L", "R", "T", "0", "1"
+  };
+
+  if (CommonWideChars == NULL) {
+    int i;
+
     /*
-     * If you add to this array, don't forget to change the enum in
-     * the TYPEDEFS and DEFINES section above to correspond to this
-     * array.
+     * Allocate and create the array.
      */
-    static char	*characters[] = { "\000", "\t", "\n", "\r", "\f", "\v",
-				  "\\", "\"", "#", ":", "f", "l", "n", "r",
-				  "t", "v", "F", "L", "R", "T", "0", "1" };
-	
+    CommonWideChars = (wchar_t *) XtMalloc(NUM_COMMON_WCHARS * sizeof(wchar_t));
 
-    if (CommonWideChars == NULL)
-    {
-	int	i;
-
-	/*
-	 * Allocate and create the array.
-	 */
-	CommonWideChars = (wchar_t*)XtMalloc(NUM_COMMON_WCHARS * sizeof(wchar_t));
-	
-	for (i = 0; i < NUM_COMMON_WCHARS; i++)
-	{
-	    (void)dombtowc(&(CommonWideChars[i]), characters[i], 1);
-	}
+    for (i = 0; i < NUM_COMMON_WCHARS; i++) {
+      (void)dombtowc(&(CommonWideChars[i]), characters[i], 1);
     }
-    return(CommonWideChars);
+  }
+  return (CommonWideChars);
 }
 
 /*
@@ -1062,78 +946,63 @@ static wchar_t *CStrCommonWideCharsGet()
  *	Standard.
  */
 static Boolean CvtStringToXmString
-    ARGLIST((d, args, num_args, fromVal, toVal, data))
-        ARG(Display *, d)
-        UARG(XrmValue *, args)
-        ARG(Cardinal *, num_args)
-        ARG(XrmValue *, fromVal)
-        ARG(XrmValue *, toVal)
-        GRAU(XtPointer, data)
+ARGLIST((d, args, num_args, fromVal, toVal, data))
+ARG(Display *, d)
+UARG(XrmValue *, args)
+ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data)
 {
-    static XmString	resStr;
-    char		*str;
+  static XmString resStr;
+  char *str;
 
-    /*
-     * This converter takes no parameters
-     */
-    if (*num_args != 0)
-    {
-	XtAppWarningMsg(XtDisplayToApplicationContext(d), 
-			"cvtStringToXmString",
-			"wrongParameters",
-			"XtToolkitError",
-			"String to XmString converter needs no extra arguments",
-			(String *)NULL,
-			(Cardinal *)NULL);
-    }
+  /*
+   * This converter takes no parameters
+   */
+  if (*num_args != 0) {
+    XtAppWarningMsg(XtDisplayToApplicationContext(d),
+		    "cvtStringToXmString",
+		    "wrongParameters",
+		    "XtToolkitError",
+		    "String to XmString converter needs no extra arguments",
+		    (String *) NULL, (Cardinal *) NULL);
+  }
 
+  /*
+   * See if this is a simple string
+   */
+  str = (char *)fromVal->addr;
+  if (strncmp(str, "::", 2)) {
+    resStr = XmStringCreateLtoR(fromVal->addr, XmSTRING_DEFAULT_CHARSET);
+  } else {
     /*
-     * See if this is a simple string
+     * Convert into internal format
      */
-    str = (char*)fromVal->addr;
-    if (strncmp(str, "::", 2))
-    {
-	resStr = XmStringCreateLtoR(fromVal->addr, XmSTRING_DEFAULT_CHARSET);
-    }
-    else
-    {
-	/*
-	 * Convert into internal format
-	 */
-	resStr = StringToXmString(fromVal->addr + 2);	/* skip :: */
-    }
+    resStr = StringToXmString(fromVal->addr + 2);	/* skip :: */
+  }
 
-    /*
-     * Done, return result
-     */
-    if (toVal->addr == NULL)
-    {
-	toVal->addr = (XTPOINTER)&resStr;
-	toVal->size = sizeof(XmString);
-    }
-    else if (toVal->size < sizeof(XmString))
-    {
-	toVal->size = sizeof(XmString);
-	XtDisplayStringConversionWarning(d, fromVal->addr, "XmString");
-	XmStringFree(resStr);
-	return(False);
-    }
-    else 
-    {
-	*(XmString *)toVal->addr = resStr;
-	toVal->size = sizeof(XmString);
-    }
-    return(True);
+  /*
+   * Done, return result
+   */
+  if (toVal->addr == NULL) {
+    toVal->addr = (XTPOINTER) & resStr;
+    toVal->size = sizeof(XmString);
+  } else if (toVal->size < sizeof(XmString)) {
+    toVal->size = sizeof(XmString);
+    XtDisplayStringConversionWarning(d, fromVal->addr, "XmString");
+    XmStringFree(resStr);
+    return (False);
+  } else {
+    *(XmString *) toVal->addr = resStr;
+    toVal->size = sizeof(XmString);
+  }
+  return (True);
 }
+
 static void XmStringCvtDestroy
-    ARGLIST((app, to, data, args, num_args))
-        UARG(XtAppContext, app)
-        ARG(XrmValue *, to)
-        UARG(XtPointer, data)
-        UARG(XrmValue *, args)
-        GRAU(Cardinal *, num_args)
+ARGLIST((app, to, data, args, num_args))
+UARG(XtAppContext, app)
+ARG(XrmValue *, to) UARG(XtPointer, data) UARG(XrmValue *, args) GRAU(Cardinal *, num_args)
 {
-    XmStringFree(*(XmString*)(to->addr));
+  XmStringFree(*(XmString *) (to->addr));
 }
 
 /*
@@ -1156,149 +1025,131 @@ static void XmStringCvtDestroy
  *	Standard.
  */
 static Boolean CvtStringToXmStringTable
-    ARGLIST((d, args, num_args, fromVal, toVal, data))
-        ARG(Display *, d)
-        ARG(XrmValue *, args)
-        ARG(Cardinal *, num_args)
-        ARG(XrmValue *, fromVal)
-        ARG(XrmValue *, toVal)
-        GRAU(XtPointer, data)
+ARGLIST((d, args, num_args, fromVal, toVal, data))
+ARG(Display *, d)
+ARG(XrmValue *, args)
+ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data)
 {
-    static XmString	*CStrTable;
-    XmString		*tblPtr;
-    char		*str;
-    char		*tmpBuf;
-    char		*nextDelim;
-    XrmValue		fVal;
-    XrmValue		tVal;
+  static XmString *CStrTable;
+  XmString *tblPtr;
+  char *str;
+  char *tmpBuf;
+  char *nextDelim;
+  XrmValue fVal;
+  XrmValue tVal;
 
-    /*
-     * This converter takes no parameters
-     */
-    if (*num_args != 0)
-    {
-	XtAppWarningMsg
-	    (XtDisplayToApplicationContext(d), 
-	     "cvtStringToXmStringTable",
-	     "wrongParameters",
-	     "XtToolkitError",
-	     "String to XmStringTable converter needs no extra arguments",
-	     (String *)NULL,
-	     (Cardinal *)NULL);
+  /*
+   * This converter takes no parameters
+   */
+  if (*num_args != 0) {
+    XtAppWarningMsg
+	(XtDisplayToApplicationContext(d),
+	 "cvtStringToXmStringTable",
+	 "wrongParameters",
+	 "XtToolkitError",
+	 "String to XmStringTable converter needs no extra arguments",
+	 (String *) NULL, (Cardinal *) NULL);
+  }
+
+  /*
+   * Set str and make sure there's somethin' there
+   */
+  if (!(str = (char *)fromVal->addr)) {
+    str = "";
+  }
+
+  /*
+   * Allocate the XmStrings + 1 for NULL termination
+   */
+  CStrTable = (XmString *) XtMalloc((getCStrCount(str) + 1) * sizeof(XmString *));
+
+  /*
+   * Use the string converter for the strings
+   */
+  tmpBuf = (char *)XtMalloc(strlen(str) + 1);
+  strcpy(tmpBuf, str);
+  str = tmpBuf;
+
+  /*
+   * Create strings
+   */
+  tblPtr = CStrTable;
+  if (*str) {
+    while (str) {
+      nextDelim = getNextCStrDelim(str);
+
+      /*
+       * Overwrite nextDelim
+       */
+      if (nextDelim) {
+	*nextDelim = '\0';
+	nextDelim++;
+      }
+
+      /*
+       * Convert it
+       */
+      fVal.size = strlen(str) + 1;
+      fVal.addr = str;
+      tVal.size = sizeof(XTPOINTER);
+      tVal.addr = (XTPOINTER) tblPtr;
+
+      /*
+       * Call converter ourselves since this is used to create
+       * the strings in the table we create. We need to do this
+       * since we don't have a widget to send to the XtConvertAndStore
+       * function. Side effects are that we can never get these
+       * compound strings cached and that no destructor function is
+       * called when the strings leave existance, but we nuke 'em
+       * in the XmStringTable destuctor.
+       */
+      CvtStringToXmString(d, args, num_args, &fVal, &tVal, NULL);
+      tblPtr++;
+      str = nextDelim;
     }
+  }
+  XtFree(tmpBuf);
 
-    /*
-     * Set str and make sure there's somethin' there
-     */
-    if (!(str = (char*)fromVal->addr))
-    {
-	str = "";
-    }
+  /*
+   * Null terminate
+   */
+  *tblPtr = NULL;
 
-    /*
-     * Allocate the XmStrings + 1 for NULL termination
-     */
-    CStrTable = (XmString*)XtMalloc((getCStrCount(str) + 1) * sizeof(XmString*));
+  /*
+   * Done, return result
+   */
+  if (toVal->addr == NULL) {
+    toVal->addr = (XTPOINTER) & CStrTable;
+    toVal->size = sizeof(XmString);
+  } else if (toVal->size < sizeof(XmString *)) {
+    toVal->size = sizeof(XmString *);
+    XtDisplayStringConversionWarning(d, fromVal->addr, "XmStringTable");
 
-    /*
-     * Use the string converter for the strings
-     */
-    tmpBuf = (char*)XtMalloc(strlen(str) + 1);
-    strcpy(tmpBuf, str);
-    str = tmpBuf;
-
-    /*
-     * Create strings
-     */
     tblPtr = CStrTable;
-    if (*str)
-    {
-	while (str)
-	{
-	    nextDelim = getNextCStrDelim(str);
-	    
-	    /*
-	     * Overwrite nextDelim
-	     */
-	    if (nextDelim)
-	    {
-		*nextDelim = '\0';
-		nextDelim++;
-	    }
-	    
-	    /*
-	     * Convert it
-	     */
-	    fVal.size = strlen(str) + 1;
-	    fVal.addr = str;
-	    tVal.size = sizeof(XTPOINTER);
-	    tVal.addr = (XTPOINTER)tblPtr;
-	    
-	    /*
-	     * Call converter ourselves since this is used to create
-	     * the strings in the table we create. We need to do this
-	     * since we don't have a widget to send to the XtConvertAndStore
-	     * function. Side effects are that we can never get these
-	     * compound strings cached and that no destructor function is
-	     * called when the strings leave existance, but we nuke 'em
-	     * in the XmStringTable destuctor.
-	     */
-	    CvtStringToXmString(d, args, num_args, &fVal, &tVal, NULL);
-	    tblPtr++;
-	    str = nextDelim;
-	}
+    while (*tblPtr) {
+      XmStringFree(*tblPtr);
     }
-    XtFree(tmpBuf);
-
-    /*
-     * Null terminate
-     */
-    *tblPtr = NULL;
-
-    /*
-     * Done, return result
-     */
-    if (toVal->addr == NULL)
-    {
-	toVal->addr = (XTPOINTER)&CStrTable;
-	toVal->size = sizeof(XmString);
-    }
-    else if (toVal->size < sizeof(XmString*))
-    {
-	toVal->size = sizeof(XmString*);
-	XtDisplayStringConversionWarning(d, fromVal->addr, "XmStringTable");
-
-	tblPtr = CStrTable;
-	while (*tblPtr)
-	{
-	    XmStringFree(*tblPtr);
-	}
-	XtFree((char*)CStrTable);
-	return(False);
-    }
-    else 
-    {
-	*(XmString **)toVal->addr = CStrTable;
-	toVal->size = sizeof(XmString*);
-    }
-    return(True);
+    XtFree((char *)CStrTable);
+    return (False);
+  } else {
+    *(XmString **) toVal->addr = CStrTable;
+    toVal->size = sizeof(XmString *);
+  }
+  return (True);
 }
-static void XmStringTableCvtDestroy
-    ARGLIST((app, to, data, args, num_args))
-        UARG(XtAppContext, app)
-        ARG(XrmValue *, to)
-        UARG(XtPointer, data)
-        UARG(XrmValue *, args)
-        GRAU(Cardinal *, num_args)
-{
-    XmString	*tblPtr = *(XmString**)(to->addr);
 
-    while (*tblPtr)
-    {
-	XmStringFree(*tblPtr);
-    }
-    XtFree((char*)(*(XmString**)(to->addr)));
-}    
+static void XmStringTableCvtDestroy
+ARGLIST((app, to, data, args, num_args))
+UARG(XtAppContext, app)
+ARG(XrmValue *, to) UARG(XtPointer, data) UARG(XrmValue *, args) GRAU(Cardinal *, num_args)
+{
+  XmString *tblPtr = *(XmString **) (to->addr);
+
+  while (*tblPtr) {
+    XmStringFree(*tblPtr);
+  }
+  XtFree((char *)(*(XmString **) (to->addr)));
+}
 
 /*****************************************************************************
  *	GLOBAL CODE
@@ -1317,17 +1168,15 @@ static void XmStringTableCvtDestroy
  * Output:
  *      None
  */
-void RegisterBxConverters
-    ARGLIST((appContext))
-        GRA(XtAppContext, appContext)
+void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext)
 {
-    XtAppSetTypeConverter(appContext, XmRString, XmRXmString,
-			  (XtTypeConverter)CvtStringToXmString,
-			  NULL, 0, XtCacheNone, XmStringCvtDestroy);
+  XtAppSetTypeConverter(appContext, XmRString, XmRXmString,
+			(XtTypeConverter) CvtStringToXmString,
+			NULL, 0, XtCacheNone, XmStringCvtDestroy);
 
-    XtAppSetTypeConverter(appContext, XmRString, XmRXmStringTable,
-			  (XtTypeConverter)CvtStringToXmStringTable,
-			  NULL, 0, XtCacheNone, XmStringTableCvtDestroy);
+  XtAppSetTypeConverter(appContext, XmRString, XmRXmStringTable,
+			(XtTypeConverter) CvtStringToXmStringTable,
+			NULL, 0, XtCacheNone, XmStringTableCvtDestroy);
 }
 
 /*
@@ -1346,129 +1195,117 @@ void RegisterBxConverters
  */
 #ifndef IGNORE_CONVERT
 XtPointer CONVERT
-    ARGLIST((w, from_string, to_type, to_size, success))
-        ARG(Widget, w)
-        ARG(char *, from_string)
-        ARG(char *, to_type)
-        ARG(int, to_size)
-        GRA(Boolean *, success)
+ARGLIST((w, from_string, to_type, to_size, success))
+ARG(Widget, w)
+ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size) GRA(Boolean *, success)
 {
-    XrmValue		fromVal, toVal;	/* resource holders		*/
-    Boolean		convResult;	/* return value			*/
-    XtPointer		val;		/* Pointer size return value    */
+  XrmValue fromVal, toVal;	/* resource holders             */
+  Boolean convResult;		/* return value                 */
+  XtPointer val;		/* Pointer size return value    */
 
-    to_size = 0;
+  to_size = 0;
 
+  /*
+   * We will assume that the conversion is going to fail and change this
+   * value later if the conversion is a success.
+   */
+  *success = False;
+
+  /*
+   * Since we are converting from a string to some type we need to
+   * set the fromVal structure up with the string information that
+   * the caller passed in.
+   */
+  fromVal.size = strlen(from_string) + 1;
+  fromVal.addr = from_string;
+
+  /*
+   * Since we are not sure what type and size of data we are going to
+   * get back we will set this up so that the converter will point us
+   * at a block of valid data.
+   */
+  toVal.size = 0;
+  toVal.addr = NULL;
+
+  /*
+   * Now lets try to convert this data by calling this handy-dandy Xt
+   * routine.
+   */
+  convResult = XtConvertAndStore(w, XmRString, &fromVal, to_type, &toVal);
+
+  /*
+   * Now we have two conditions here.  One the conversion was a success
+   * and two the conversion failed.
+   */
+  if (!convResult) {
     /*
-     * We will assume that the conversion is going to fail and change this
-     * value later if the conversion is a success.
+     * If this conversion failed that we can pretty much return right
+     * here because there is nothing else we can do.
      */
-    *success = False;
+    return ((XtPointer) NULL);
+  }
 
+  /*
+   * If we get this far that means we did the conversion and all is
+   * well.  Now we have to handle the special cases for type and
+   * size constraints.
+   */
+  if (!strcmp(to_type, "String")) {
     /*
-     * Since we are converting from a string to some type we need to
-     * set the fromVal structure up with the string information that
-     * the caller passed in.
+     * Since strings are handled different in Xt we have to deal with
+     * the conversion from a string to a string.  When this happens the
+     * toVal.size will hold the strlen of the string so generic
+     * conversion code can't handle it.  It is possible for a string to
+     * string conversion to happen so we do have to watch for it.
      */
-    fromVal.size = strlen(from_string) + 1;
-    fromVal.addr = from_string;
-
+    val = (XTPOINTER) toVal.addr;
+  } else if (!strcmp(to_type, "Double")) {
+    val = (XTPOINTER) ((double *)toVal.addr);
+  } else if (!strcmp(to_type, "Float")) {
+    val = (XTPOINTER) ((float *)toVal.addr);
+  } else {
     /*
-     * Since we are not sure what type and size of data we are going to
-     * get back we will set this up so that the converter will point us
-     * at a block of valid data.
+     * Here is the generic conversion return value handler.  This 
+     * just does some size specific casting so that value that we
+     * return is in the correct bytes of the XtPointer that we
+     * return.  Here we check all sizes from 1 to 8 bytes.
      */
-    toVal.size = 0;
-    toVal.addr = NULL;
-
-    /*
-     * Now lets try to convert this data by calling this handy-dandy Xt
-     * routine.
-     */
-    convResult = XtConvertAndStore(w, XmRString, &fromVal, to_type, &toVal);
-    
-
-    /*
-     * Now we have two conditions here.  One the conversion was a success
-     * and two the conversion failed.
-     */
-    if(!convResult)
-    {
-	/*
-	 * If this conversion failed that we can pretty much return right
-	 * here because there is nothing else we can do.
-	 */
-	return((XtPointer) NULL);
+    union {
+      char c;
+      short s;
+      int i;
+      long l;
+      XTPOINTER p;
+    } uval;
+    switch (toVal.size) {
+    case 1:
+      uval.c = *(char *)toVal.addr;
+      break;
+    case 2:
+      uval.s = *(short *)toVal.addr;
+      break;
+    case 4:
+      uval.i = *(int *)toVal.addr;
+      break;
+    case 8:
+    default:
+      uval.l = *(long *)toVal.addr;
+      break;
     }
+    val = uval.p;
+  }
 
-    /*
-     * If we get this far that means we did the conversion and all is
-     * well.  Now we have to handle the special cases for type and
-     * size constraints.
-     */
-    if(!strcmp(to_type, "String"))
-    {
-	/*
-	 * Since strings are handled different in Xt we have to deal with
-	 * the conversion from a string to a string.  When this happens the
-	 * toVal.size will hold the strlen of the string so generic
-	 * conversion code can't handle it.  It is possible for a string to
-	 * string conversion to happen so we do have to watch for it.
-	 */
-	val = (XTPOINTER)toVal.addr;
-    }
-    else if(!strcmp(to_type, "Double"))
-    {
-	val = (XTPOINTER)((double*)toVal.addr);
-    }
-    else if(!strcmp(to_type, "Float"))
-    {
-	val = (XTPOINTER)((float*)toVal.addr);
-    }
-    else
-    {
-	/*
-	 * Here is the generic conversion return value handler.  This 
-	 * just does some size specific casting so that value that we
-	 * return is in the correct bytes of the XtPointer that we
-	 * return.  Here we check all sizes from 1 to 8 bytes.
-	 */
-      union { char c;
-	      short s;
-	      int   i;
-	      long  l;
-	      XTPOINTER p;
-            } uval;
-	switch(toVal.size)
-	{
-        case 1:
-	    uval.c = *(char*)toVal.addr;
-	    break;
-	case 2:
-	    uval.s = *(short*)toVal.addr;
-	    break;
-	case 4:
-	    uval.i = *(int*)toVal.addr;
-	    break;
-	case 8:
-	default:
-	    uval.l = *(long*)toVal.addr;
-	    break;
-	}
-        val = uval.p;
-    }
+  /*
+   * Well everything is done and the conversion was a success so lets
+   * set the success flag to True.
+   */
+  *success = convResult;
 
-    /*
-     * Well everything is done and the conversion was a success so lets
-     * set the success flag to True.
-     */
-    *success = convResult;
-
-    /*
-     * Finally lets return the converted value.
-     */
-    /*SUPPRESS 80*/
-    return(val);
+  /*
+   * Finally lets return the converted value.
+   */
+  /*SUPPRESS 80 */
+  return (val);
 }
 #endif
 
@@ -1489,25 +1326,23 @@ XtPointer CONVERT
 #ifndef IGNORE_MENU_POST
 
 void MENU_POST
-    ARGLIST((p, mw, ev, dispatch))
-        UARG(Widget, p)
-        ARG(XtPointer, mw)
-        ARG(XEvent *, ev)
-        GRAU(Boolean *, dispatch)
+ARGLIST((p, mw, ev, dispatch))
+UARG(Widget, p) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch)
 {
-    Arg	args[2];
-    int	argcnt;
-    int	button;
-    Widget m = (Widget)mw;
-    XButtonEvent *e = (XButtonEvent *)ev;
+  Arg args[2];
+  int argcnt;
+  int button;
+  Widget m = (Widget) mw;
+  XButtonEvent *e = (XButtonEvent *) ev;
 
-    argcnt = 0;
-    XtSetArg(args[argcnt], XmNwhichButton, &button);
-    argcnt++;
-    XtGetValues(m, args, argcnt);
-    if(e->button != button) return;
-    XmMenuPosition(m, e);
-    XtManageChild(m);
+  argcnt = 0;
+  XtSetArg(args[argcnt], XmNwhichButton, &button);
+  argcnt++;
+  XtGetValues(m, args, argcnt);
+  if (e->button != button)
+    return;
+  XmMenuPosition(m, e);
+  XtManageChild(m);
 }
 #endif
 
@@ -1533,98 +1368,80 @@ void MENU_POST
  */
 
 void SET_BACKGROUND_COLOR
-    ARGLIST((w, args, argcnt, bg_color))
-        ARG(Widget, w)
-        ARG(ArgList, args)
-        ARG(Cardinal *, argcnt)
-        GRA(Pixel, bg_color)
+ARGLIST((w, args, argcnt, bg_color))
+ARG(Widget, w) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
 {
-    int		i;
-    int		topShadowLoc;
-    int		bottomShadowLoc;
-    int		selectLoc;
-    int		fgLoc;
+  int i;
+  int topShadowLoc;
+  int bottomShadowLoc;
+  int selectLoc;
+  int fgLoc;
 
 #if ((XmVERSION == 1) && (XmREVISION > 0))
 
-    /*
-     * Walk through the arglist to see if the user set the top or
-     * bottom shadow colors.
-     */
-    selectLoc = topShadowLoc =  bottomShadowLoc = UNSET;
-    for (i = 0; i < *argcnt; i++)
-    {
-	if ((strcmp(args[i].name, XmNtopShadowColor) == 0) ||
-	    (strcmp(args[i].name, XmNtopShadowPixmap) == 0))
-	{
-	    topShadowLoc = i;
-	}
-	else if ((strcmp(args[i].name, XmNbottomShadowColor) == 0) ||
-		 (strcmp(args[i].name, XmNbottomShadowPixmap) == 0))
-	{
-	    bottomShadowLoc = i;
-	}
-	else if (strcmp(args[i].name, XmNarmColor) == 0)
-	{
-	    selectLoc = i;
-	}
-	else if (strcmp(args[i].name, XmNforeground) == 0)
-	{
-	    fgLoc = i;
-	}
+  /*
+   * Walk through the arglist to see if the user set the top or
+   * bottom shadow colors.
+   */
+  selectLoc = topShadowLoc = bottomShadowLoc = UNSET;
+  for (i = 0; i < *argcnt; i++) {
+    if ((strcmp(args[i].name, XmNtopShadowColor) == 0) ||
+	(strcmp(args[i].name, XmNtopShadowPixmap) == 0)) {
+      topShadowLoc = i;
+    } else if ((strcmp(args[i].name, XmNbottomShadowColor) == 0) ||
+	       (strcmp(args[i].name, XmNbottomShadowPixmap) == 0)) {
+      bottomShadowLoc = i;
+    } else if (strcmp(args[i].name, XmNarmColor) == 0) {
+      selectLoc = i;
+    } else if (strcmp(args[i].name, XmNforeground) == 0) {
+      fgLoc = i;
+    }
+  }
+
+  /*
+   * If either the top or bottom shadow are not set then we
+   * need to use XmGetColors to get the shadow colors from the backgound
+   * color and add those that are not already in the arglist to the
+   * arglist.
+   * 
+   */
+  if ((bottomShadowLoc == UNSET) ||
+      (topShadowLoc == UNSET) || (selectLoc == UNSET) || (fgLoc == UNSET)) {
+    Arg larg[1];
+    Colormap cmap;
+    Pixel topShadow;
+    Pixel bottomShadow;
+    Pixel select;
+    Pixel fgColor;
+
+    XtSetArg(larg[0], XmNcolormap, &cmap);
+    XtGetValues(w, larg, 1);
+    XmGetColors(XtScreen(w), cmap, bg_color, &fgColor, &topShadow, &bottomShadow, &select);
+
+    if (topShadowLoc == UNSET) {
+      XtSetArg(args[*argcnt], XmNtopShadowColor, topShadow);
+      (*argcnt)++;
     }
 
-    /*
-     * If either the top or bottom shadow are not set then we
-     * need to use XmGetColors to get the shadow colors from the backgound
-     * color and add those that are not already in the arglist to the
-     * arglist.
-     * 
-     */
-    if ((bottomShadowLoc == UNSET) ||
-	(topShadowLoc == UNSET) ||
-	(selectLoc == UNSET) ||
-	(fgLoc == UNSET))
-    {
-	Arg		larg[1];
-	Colormap	cmap;
-	Pixel		topShadow;
-	Pixel		bottomShadow;
-	Pixel		select;
-	Pixel		fgColor;
-
-	XtSetArg(larg[0], XmNcolormap, &cmap);
-	XtGetValues(w, larg, 1);
-	XmGetColors(XtScreen(w), cmap, bg_color, 
-		    &fgColor, &topShadow, &bottomShadow, &select);
-
-	if (topShadowLoc == UNSET)
-	{
-	    XtSetArg(args[*argcnt], XmNtopShadowColor, topShadow); 
-	    (*argcnt)++;
-	}
-	
-	if (bottomShadowLoc == UNSET)
-	{
-	    XtSetArg(args[*argcnt], XmNbottomShadowColor, bottomShadow); 
-	    (*argcnt)++;
-	}
-
-	if (selectLoc == UNSET)
-	{
-	    XtSetArg(args[*argcnt], XmNarmColor, select); 
-	    (*argcnt)++;
-	}
-
-	if (fgLoc == UNSET)
-	{
-	    XtSetArg(args[*argcnt], XmNforeground, fgColor); 
-	    (*argcnt)++;
-	}
+    if (bottomShadowLoc == UNSET) {
+      XtSetArg(args[*argcnt], XmNbottomShadowColor, bottomShadow);
+      (*argcnt)++;
     }
+
+    if (selectLoc == UNSET) {
+      XtSetArg(args[*argcnt], XmNarmColor, select);
+      (*argcnt)++;
+    }
+
+    if (fgLoc == UNSET) {
+      XtSetArg(args[*argcnt], XmNforeground, fgColor);
+      (*argcnt)++;
+    }
+  }
 #endif
 
-    XtSetArg(args[*argcnt], XmNbackground, bg_color); (*argcnt)++;
+  XtSetArg(args[*argcnt], XmNbackground, bg_color);
+  (*argcnt)++;
 }
 
 /*
@@ -1640,19 +1457,16 @@ void SET_BACKGROUND_COLOR
 #ifndef _BX_FIND_TOP_SHELL
 #define _BX_FIND_TOP_SHELL
 
-Widget BxFindTopShell
-    ARGLIST((start))
-        GRA(Widget, start)
+Widget BxFindTopShell ARGLIST((start)) GRA(Widget, start)
 {
-    Widget	p;
-    
-    while((p = XtParent(start)))
-    {
-	start = p;
-    }
-    return(start);
+  Widget p;
+
+  while ((p = XtParent(start))) {
+    start = p;
+  }
+  return (start);
 }
-#endif /* _BX_FIND_TOP_SHELL */
+#endif				/* _BX_FIND_TOP_SHELL */
 
 /*
  * Function:
@@ -1671,153 +1485,130 @@ Widget BxFindTopShell
 #define _BX_WIDGETIDS_FROM_NAMES
 
 WidgetList BxWidgetIdsFromNames
-    ARGLIST((ref, cbName, stringList))
-        ARG(Widget, ref)
-        ARG(char, *cbName)
-        GRA(char, *stringList)
+ARGLIST((ref, cbName, stringList)) ARG(Widget, ref) ARG(char, *cbName)GRA(char, *stringList)
 {
-    WidgetList	wgtIds = NULL;
-    int		wgtCount = 0;
-    Widget	inst;
-    Widget	current;
-    String	tmp;
-    String	start;
-    String	widget;
-    char       *ptr;
-    
-    /*
-     * For backward compatibility, remove [ and ] from the list.
-     */
-    tmp = start = XtNewString(stringList);
-    if((start = strchr(start, '[')) != NULL) start++;
-    else start = tmp;
-    
-    while((start && *start) && isspace(*start))
-    {
-	start++;
+  WidgetList wgtIds = NULL;
+  int wgtCount = 0;
+  Widget inst;
+  Widget current;
+  String tmp;
+  String start;
+  String widget;
+  char *ptr;
+
+  /*
+   * For backward compatibility, remove [ and ] from the list.
+   */
+  tmp = start = XtNewString(stringList);
+  if ((start = strchr(start, '[')) != NULL)
+    start++;
+  else
+    start = tmp;
+
+  while ((start && *start) && isspace(*start)) {
+    start++;
+  }
+  ptr = strrchr(start, ']');
+  if (ptr) {
+    *ptr = '\0';
+  }
+
+  ptr = start + strlen(start) - 1;
+  while (ptr && *ptr) {
+    if (isspace(*ptr)) {
+      ptr--;
+    } else {
+      ptr++;
+      break;
     }
-    ptr = strrchr(start, ']');
-    if (ptr)
-    {
-	*ptr = '\0';
+  }
+  if (ptr && *ptr) {
+    *ptr = '\0';
+  }
+
+  /*
+   * start now points to the first character after the [.
+   * the list is now either empty, one, or more widget
+   * instance names.
+   */
+  start = strtok(start, ",");
+  while (start) {
+    while ((start && *start) && isspace(*start)) {
+      start++;
     }
-    
     ptr = start + strlen(start) - 1;
-    while(ptr && *ptr)
-    {
-	if (isspace(*ptr))
-	{
-	    ptr--;
-	}
-	else
-	{
-	    ptr++;
-	    break;
-	}
+    while (ptr && *ptr) {
+      if (isspace(*ptr)) {
+	ptr--;
+      } else {
+	ptr++;
+	break;
+      }
     }
-    if (ptr && *ptr)
-    {
-	*ptr = '\0';
+    if (ptr && *ptr) {
+      *ptr = '\0';
     }
-    
+
     /*
-     * start now points to the first character after the [.
-     * the list is now either empty, one, or more widget
-     * instance names.
+     * Form a string to use with XtNameToWidget().
      */
-    start = strtok(start, ",");
-    while(start)
-    {
-        while((start && *start) && isspace(*start))
-        {
-            start++;
-        }
-        ptr = start + strlen(start) - 1;
-        while(ptr && *ptr)
-        {
-            if (isspace(*ptr))
-            {
-                ptr--;
-            }
-            else
-            {
-                ptr++;
-                break;
-            }
-        }
-        if (ptr && *ptr)
-        {
-            *ptr = '\0';
-        }
+    widget = (char *)XtMalloc((strlen(start) + 2) * sizeof(char));
+    sprintf(widget, "*%s", start);
 
-	/*
-	 * Form a string to use with XtNameToWidget().
-	 */
-        widget = (char *)XtMalloc((strlen(start) + 2) * sizeof(char));
-        sprintf(widget, "*%s", start);
-	
-	/*
-	 * Start at this level and continue up until the widget is found 
-	 * or until the top of the hierarchy is reached.
-	 */
-	current = ref;
-	while (current != NULL)
-	{
-	    inst = XtNameToWidget(current, widget);
-	    if (inst != NULL )
-	    {
-		wgtCount++;
-		wgtIds = (WidgetList)XtRealloc((char *)wgtIds, 
-					       wgtCount * sizeof(Widget));
-		wgtIds[wgtCount - 1] = inst;
-		break;
-	    }
-	    current = XtParent(current);
-	}
+    /*
+     * Start at this level and continue up until the widget is found 
+     * or until the top of the hierarchy is reached.
+     */
+    current = ref;
+    while (current != NULL) {
+      inst = XtNameToWidget(current, widget);
+      if (inst != NULL) {
+	wgtCount++;
+	wgtIds = (WidgetList) XtRealloc((char *)wgtIds, wgtCount * sizeof(Widget));
+	wgtIds[wgtCount - 1] = inst;
+	break;
+      }
+      current = XtParent(current);
+    }
 
-	if (current == NULL)
-        {
-            printf("Callback Error (%s):\n\t\
+    if (current == NULL) {
+      printf("Callback Error (%s):\n\t\
 Cannot find widget %s\n", cbName, widget);
-        }
-        XtFree(widget);
-        start = strtok(NULL, ",");
     }
+    XtFree(widget);
+    start = strtok(NULL, ",");
+  }
 
-    /*
-     * NULL terminate the list.
-     */
-    wgtIds = (WidgetList)XtRealloc((char *)wgtIds, 
-				   (wgtCount + 1) * sizeof(Widget));
-    wgtIds[wgtCount] = NULL;
+  /*
+   * NULL terminate the list.
+   */
+  wgtIds = (WidgetList) XtRealloc((char *)wgtIds, (wgtCount + 1) * sizeof(Widget));
+  wgtIds[wgtCount] = NULL;
 
-    XtFree((char *)tmp);
-    return(wgtIds);
+  XtFree((char *)tmp);
+  return (wgtIds);
 }
-#endif /* _BX_WIDGETIDS_FROM_NAMES */
+#endif				/* _BX_WIDGETIDS_FROM_NAMES */
 
-XtPointer SINGLE
-    ARGLIST((val))
-    GRA(float, val)
+XtPointer SINGLE ARGLIST((val)) GRA(float, val)
 {
-    XtPointer pointer;
-    
-    pointer = (XtPointer)XtMalloc(sizeof(float));
-    if ( pointer != NULL ) *((float *)pointer) = val;
-    return(pointer);
+  XtPointer pointer;
+
+  pointer = (XtPointer) XtMalloc(sizeof(float));
+  if (pointer != NULL)
+    *((float *)pointer) = val;
+  return (pointer);
 }
 
-XtPointer DOUBLE
-    ARGLIST((val))
-    GRA(double, val)
+XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
 {
-    XtPointer	pointer;
-    
-    pointer = (XtPointer)XtMalloc(sizeof(double));
-    if ( pointer != NULL ) *((double *)pointer) = val;
-    return(pointer);
-}
+  XtPointer pointer;
 
+  pointer = (XtPointer) XtMalloc(sizeof(double));
+  if (pointer != NULL)
+    *((double *)pointer) = val;
+  return (pointer);
+}
 
 /*      Function Name:	BxStoreWidgetId
  *
@@ -1833,23 +1624,20 @@ XtPointer DOUBLE
  */
 
 /* ARGSUSED */
-void
-BxStoreWidgetId(
+void BxStoreWidgetId(
 #if NeedFunctionPrototypes
-	 Widget w, XtPointer client, XtPointer call)
+		      Widget w, XtPointer client, XtPointer call)
 #else
-	 w, client, call)
-	Widget w;
-	XtPointer client;
-	XtPointer call;
+		      w, client, call)
+Widget w;
+XtPointer client;
+XtPointer call;
 #endif
 {
-    Widget     *widAddr = (Widget *)client;
+  Widget *widAddr = (Widget *) client;
 
-    if ( widAddr == NULL )
-    {
-        return;
-    } 
-    *widAddr = w;
+  if (widAddr == NULL) {
+    return;
+  }
+  *widAddr = w;
 }
-

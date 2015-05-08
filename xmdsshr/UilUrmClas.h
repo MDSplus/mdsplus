@@ -4,61 +4,61 @@
 
 /*  Define mapping of UIL widget types to convenience functions.  */
 static char *uil_widget_funcs_vec[] = {
-  "",	  /* NOT USED */
-  "XmCreateArrowButton",	
-  "XmCreateArrowButtonGadget",	
-  "XmCreateBulletinBoard",	
-  "XmCreateBulletinBoardDialog",	
-  "XmCreateCascadeButton",	
-  "XmCreateCascadeButtonGadget",	
-  "XmCreateCommand",	
-  "XmCreateDialogShell",	
-  "XmCreateDrawingArea",	
-  "XmCreateDrawnButton",	
-  "XmCreateErrorDialog",	
-  "XmCreateFileSelectionBox",	
-  "XmCreateFileSelectionDialog",	
-  "XmCreateForm",	
-  "XmCreateFormDialog",	
-  "XmCreateFrame",	
-  "XmCreateInformationDialog",	
-  "XmCreateLabel",	
-  "XmCreateLabelGadget",	
-  "XmCreateList",	
-  "XmCreateMainWindow",	
-  "XmCreateMenuBar",	
-  "XmCreateMenuShell",	
-  "XmCreateMessageBox",	
-  "XmCreateMessageDialog",	
-  "XmCreateOptionMenu",	
-  "XmCreatePanedWindow",	
-  "XmCreatePopupMenu",	
-  "XmCreatePromptDialog",	
-  "XmCreatePulldownMenu",	
-  "XmCreatePushButton",	
-  "XmCreatePushButtonGadget",	
-  "XmCreateQuestionDialog",	
-  "XmCreateRadioBox",	
-  "XmCreateRowColumn",	
-  "XmCreateScale",	
-  "XmCreateScrollBar",	
-  "XmCreateScrolledList",	
-  "XmCreateScrolledText",	
-  "XmCreateScrolledWindow",	
-  "XmCreateSelectionBox",	
-  "XmCreateSelectionDialog",	
-  "XmCreateSeparator",	
-  "XmCreateSeparatorGadget",	
-  "",	
-  "XmCreateTemplateDialog",	
-  "XmCreateText",	
-  "XmCreateTextField",	
-  "XmCreateToggleButton",	
-  "XmCreateToggleButtonGadget",	
-  "XmCreateWarningDialog",	
-  "XmCreateWorkArea",	
-  "XmCreateWorkingDialog",	
-  "user_defined",	
+  "",				/* NOT USED */
+  "XmCreateArrowButton",
+  "XmCreateArrowButtonGadget",
+  "XmCreateBulletinBoard",
+  "XmCreateBulletinBoardDialog",
+  "XmCreateCascadeButton",
+  "XmCreateCascadeButtonGadget",
+  "XmCreateCommand",
+  "XmCreateDialogShell",
+  "XmCreateDrawingArea",
+  "XmCreateDrawnButton",
+  "XmCreateErrorDialog",
+  "XmCreateFileSelectionBox",
+  "XmCreateFileSelectionDialog",
+  "XmCreateForm",
+  "XmCreateFormDialog",
+  "XmCreateFrame",
+  "XmCreateInformationDialog",
+  "XmCreateLabel",
+  "XmCreateLabelGadget",
+  "XmCreateList",
+  "XmCreateMainWindow",
+  "XmCreateMenuBar",
+  "XmCreateMenuShell",
+  "XmCreateMessageBox",
+  "XmCreateMessageDialog",
+  "XmCreateOptionMenu",
+  "XmCreatePanedWindow",
+  "XmCreatePopupMenu",
+  "XmCreatePromptDialog",
+  "XmCreatePulldownMenu",
+  "XmCreatePushButton",
+  "XmCreatePushButtonGadget",
+  "XmCreateQuestionDialog",
+  "XmCreateRadioBox",
+  "XmCreateRowColumn",
+  "XmCreateScale",
+  "XmCreateScrollBar",
+  "XmCreateScrolledList",
+  "XmCreateScrolledText",
+  "XmCreateScrolledWindow",
+  "XmCreateSelectionBox",
+  "XmCreateSelectionDialog",
+  "XmCreateSeparator",
+  "XmCreateSeparatorGadget",
+  "",
+  "XmCreateTemplateDialog",
+  "XmCreateText",
+  "XmCreateTextField",
+  "XmCreateToggleButton",
+  "XmCreateToggleButtonGadget",
+  "XmCreateWarningDialog",
+  "XmCreateWorkArea",
+  "XmCreateWorkingDialog",
+  "user_defined",
   "XmdsCreateApplyButton",
   "XmdsCreateCancelButton",
   "XmdsCreateDigChans",
@@ -79,11 +79,13 @@ static char *uil_widget_funcs_vec[] = {
   "XmdsCreateXdBoxOnOffButton",
   "ZmdsCreateXdBoxOnOffButton",
 };
-externaldef(uil_sym_glbl) char **uil_widget_funcs = uil_widget_funcs_vec;
+
+externaldef(uil_sym_glbl)
+char **uil_widget_funcs = uil_widget_funcs_vec;
 
 /*  Define mapping of UIL widget classes to matching gadget class.  */
 static unsigned short int uil_gadget_variants_vec[] = {
-  0,	  /* NOT USED */
+  0,				/* NOT USED */
   sym_k_XmArrowButtonGadget_object,
   0,
   0,
@@ -158,12 +160,13 @@ static unsigned short int uil_gadget_variants_vec[] = {
   0,
   0,
 };
-externaldef(uil_sym_glbl) unsigned short int *uil_gadget_variants =
-		uil_gadget_variants_vec;
+
+externaldef(uil_sym_glbl)
+unsigned short int *uil_gadget_variants = uil_gadget_variants_vec;
 
 /*  Define mapping of dialog types to non-dialog URM widget classes.  */
 static unsigned short int uil_urm_nondialog_class_vec[] = {
-  0,	/* NOT USED */
+  0,				/* NOT USED */
   0,
   0,
   0,
@@ -238,12 +241,13 @@ static unsigned short int uil_urm_nondialog_class_vec[] = {
   0,
   0,
 };
-externaldef(uil_sym_glbl) unsigned short int *uil_urm_nondialog_class =
-		uil_urm_nondialog_class_vec;
+
+externaldef(uil_sym_glbl)
+unsigned short int *uil_urm_nondialog_class = uil_urm_nondialog_class_vec;
 
 /*  Define mapping of widget controls to a (subtree) resource.  */
 static unsigned short int uil_urm_subtree_resource_vec[] = {
-  0,	/* NOT USED */
+  0,				/* NOT USED */
   0,
   0,
   0,
@@ -318,12 +322,13 @@ static unsigned short int uil_urm_subtree_resource_vec[] = {
   0,
   0,
 };
-externaldef(uil_sym_glbl) unsigned short int *uil_urm_subtree_resource =
-		uil_urm_subtree_resource_vec;
+
+externaldef(uil_sym_glbl)
+unsigned short int *uil_urm_subtree_resource = uil_urm_subtree_resource_vec;
 
 /*  Define mapping of arguments to toolkit names.  */
 static char *uil_argument_toolkit_names_vec[] = {
-  "",	  /* NOT USED */
+  "",				/* NOT USED */
   XmNaccelerator,
   XmNacceleratorText,
   XmNaccelerators,
@@ -684,12 +689,13 @@ static char *uil_argument_toolkit_names_vec[] = {
   XmdsNyLabels,
   XmdsNyMinDistance,
 };
-externaldef(uil_sym_glbl) char **uil_argument_toolkit_names =
-		uil_argument_toolkit_names_vec;
+
+externaldef(uil_sym_glbl)
+char **uil_argument_toolkit_names = uil_argument_toolkit_names_vec;
 
 /*  Define mapping of reasons to toolkit names.  */
 static char *uil_reason_toolkit_names_vec[] = {
-  "",	/* NOT USED */
+  "",				/* NOT USED */
   MrmNcreateCallback,
   XmNactivateCallback,
   XmNapplyCallback,
@@ -755,5 +761,6 @@ static char *uil_reason_toolkit_names_vec[] = {
   XmdsNunderlayCallback,
   XmdsNvalueChangedCallback,
 };
-externaldef(uil_sym_glbl) char **uil_reason_toolkit_names =
-		uil_reason_toolkit_names_vec;
+
+externaldef(uil_sym_glbl)
+char **uil_reason_toolkit_names = uil_reason_toolkit_names_vec;

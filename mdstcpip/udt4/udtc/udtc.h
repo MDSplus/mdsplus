@@ -92,7 +92,7 @@ written by
 
 #else
 
-   #ifdef __MINGW__
+   #if defined __MINGW__ || defined __MINGW64__
 
       #include <stdint.h>
 
@@ -110,7 +110,7 @@ written by
 
 #ifdef WIN32
 
-   #ifndef __MINGW__
+   #if !defined __MINGW__ && !defined __MINGW64__
 
       // Explicitly define 32-bit and 64-bit numbers
 
@@ -164,7 +164,7 @@ written by
 
 #ifdef WIN32
 
-   #ifndef __MINGW__
+   #if !defined __MINGW__ && !defined __MINGW64__
 
       typedef SOCKET SYSSOCKET;
 

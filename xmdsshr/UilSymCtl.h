@@ -8,2407 +8,2262 @@
  */
 
 /* sym_k_XmArrowButton_object */
-static unsigned char object_class_vec1[] =
-  {
+static unsigned char object_class_vec1[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmArrowButtonGadget_object */
-static unsigned char object_class_vec2[] =
-  {
+static unsigned char object_class_vec2[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmBulletinBoard_object */
-static unsigned char object_class_vec3[] =
-  {
+static unsigned char object_class_vec3[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmBulletinBoardDialog_object */
-static unsigned char object_class_vec4[] =
-  {
+static unsigned char object_class_vec4[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmCascadeButton_object */
-static unsigned char object_class_vec5[] =
-  {
+static unsigned char object_class_vec5[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmCascadeButtonGadget_object */
-static unsigned char object_class_vec6[] =
-  {
+static unsigned char object_class_vec6[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmCommand_object */
-static unsigned char object_class_vec7[] =
-  {
+static unsigned char object_class_vec7[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmDialogShell_object */
-static unsigned char object_class_vec8[] =
-  {
+static unsigned char object_class_vec8[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmDrawingArea_object */
-static unsigned char object_class_vec9[] =
-  {
+static unsigned char object_class_vec9[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmDrawnButton_object */
-static unsigned char object_class_vec10[] =
-  {
+static unsigned char object_class_vec10[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmErrorDialog_object */
-static unsigned char object_class_vec11[] =
-  {
+static unsigned char object_class_vec11[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmFileSelectionBox_object */
-static unsigned char object_class_vec12[] =
-  {
+static unsigned char object_class_vec12[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmFileSelectionDialog_object */
-static unsigned char object_class_vec13[] =
-  {
+static unsigned char object_class_vec13[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmForm_object */
-static unsigned char object_class_vec14[] =
-  {
+static unsigned char object_class_vec14[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmFormDialog_object */
-static unsigned char object_class_vec15[] =
-  {
+static unsigned char object_class_vec15[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmFrame_object */
-static unsigned char object_class_vec16[] =
-  {
+static unsigned char object_class_vec16[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmInformationDialog_object */
-static unsigned char object_class_vec17[] =
-  {
+static unsigned char object_class_vec17[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmLabel_object */
-static unsigned char object_class_vec18[] =
-  {
+static unsigned char object_class_vec18[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmLabelGadget_object */
-static unsigned char object_class_vec19[] =
-  {
+static unsigned char object_class_vec19[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmList_object */
-static unsigned char object_class_vec20[] =
-  {
+static unsigned char object_class_vec20[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmMainWindow_object */
-static unsigned char object_class_vec21[] =
-  {
+static unsigned char object_class_vec21[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmMenuBar_object */
-static unsigned char object_class_vec22[] =
-  {
+static unsigned char object_class_vec22[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmMenuShell_object */
-static unsigned char object_class_vec23[] =
-  {
+static unsigned char object_class_vec23[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmMessageBox_object */
-static unsigned char object_class_vec24[] =
-  {
+static unsigned char object_class_vec24[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmMessageDialog_object */
-static unsigned char object_class_vec25[] =
-  {
+static unsigned char object_class_vec25[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmOptionMenu_object */
-static unsigned char object_class_vec26[] =
-  {
+static unsigned char object_class_vec26[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmPanedWindow_object */
-static unsigned char object_class_vec27[] =
-  {
+static unsigned char object_class_vec27[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmPopupMenu_object */
-static unsigned char object_class_vec28[] =
-  {
+static unsigned char object_class_vec28[] = {
   _BIT_MASK(sym_k_XmArrowButton_object) |
-  _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  _BIT_MASK(sym_k_XmCascadeButton_object) |
-  _BIT_MASK(sym_k_XmCommand_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmDrawnButton_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmLabel_object) |
-  _BIT_MASK(sym_k_XmList_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPushButton_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  _BIT_MASK(sym_k_XmScrollBar_object) |
-  _BIT_MASK(sym_k_XmScrolledList_object) |
-  _BIT_MASK(sym_k_XmScrolledText_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmSeparator_object) |
-  _BIT_MASK(sym_k_XmTearOffButton_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  _BIT_MASK(sym_k_XmText_object) |
-  0, _BIT_MASK(sym_k_XmTextField_object) |
-  _BIT_MASK(sym_k_XmToggleButton_object) |
-  _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoard_object) |
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      _BIT_MASK(sym_k_XmCascadeButton_object) |
+      _BIT_MASK(sym_k_XmCommand_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmDrawnButton_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmLabel_object) |
+      _BIT_MASK(sym_k_XmList_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPushButton_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      _BIT_MASK(sym_k_XmScrollBar_object) |
+      _BIT_MASK(sym_k_XmScrolledList_object) |
+      _BIT_MASK(sym_k_XmScrolledText_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmSeparator_object) |
+      _BIT_MASK(sym_k_XmTearOffButton_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      _BIT_MASK(sym_k_XmText_object) |
+      0, _BIT_MASK(sym_k_XmTextField_object) |
+      _BIT_MASK(sym_k_XmToggleButton_object) |
+      _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmPromptDialog_object */
-static unsigned char object_class_vec29[] =
-  {
+static unsigned char object_class_vec29[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmPulldownMenu_object */
-static unsigned char object_class_vec30[] =
-  {
+static unsigned char object_class_vec30[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  _BIT_MASK(sym_k_XmCascadeButton_object) |
-  _BIT_MASK(sym_k_XmCascadeButtonGadget_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmOptionMenu_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      _BIT_MASK(sym_k_XmCascadeButton_object) |
+      _BIT_MASK(sym_k_XmCascadeButtonGadget_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmOptionMenu_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmPushButton_object */
-static unsigned char object_class_vec31[] =
-  {
+static unsigned char object_class_vec31[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmPushButtonGadget_object */
-static unsigned char object_class_vec32[] =
-  {
+static unsigned char object_class_vec32[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmQuestionDialog_object */
-static unsigned char object_class_vec33[] =
-  {
+static unsigned char object_class_vec33[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmRadioBox_object */
-static unsigned char object_class_vec34[] =
-  {
+static unsigned char object_class_vec34[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmRowColumn_object */
-static unsigned char object_class_vec35[] =
-  {
+static unsigned char object_class_vec35[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuShell_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuShell_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmScale_object */
-static unsigned char object_class_vec36[] =
-  {
+static unsigned char object_class_vec36[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmScrollBar_object */
-static unsigned char object_class_vec37[] =
-  {
+static unsigned char object_class_vec37[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmScrolledList_object */
-static unsigned char object_class_vec38[] =
-  {
+static unsigned char object_class_vec38[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmScrolledText_object */
-static unsigned char object_class_vec39[] =
-  {
+static unsigned char object_class_vec39[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmScrolledWindow_object */
-static unsigned char object_class_vec40[] =
-  {
+static unsigned char object_class_vec40[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmSelectionBox_object */
-static unsigned char object_class_vec41[] =
-  {
+static unsigned char object_class_vec41[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmSelectionDialog_object */
-static unsigned char object_class_vec42[] =
-  {
+static unsigned char object_class_vec42[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmSeparator_object */
-static unsigned char object_class_vec43[] =
-  {
+static unsigned char object_class_vec43[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmSeparatorGadget_object */
-static unsigned char object_class_vec44[] =
-  {
+static unsigned char object_class_vec44[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmTearOffButton_object */
-static unsigned char object_class_vec45[] =
-  {
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+static unsigned char object_class_vec45[] = {
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
 /* sym_k_XmTemplateDialog_object */
-static unsigned char object_class_vec46[] =
-  {
+static unsigned char object_class_vec46[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmText_object */
-static unsigned char object_class_vec47[] =
-  {
+static unsigned char object_class_vec47[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmTextField_object */
-static unsigned char object_class_vec48[] =
-  {
+static unsigned char object_class_vec48[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmToggleButton_object */
-static unsigned char object_class_vec49[] =
-  {
+static unsigned char object_class_vec49[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmToggleButtonGadget_object */
-static unsigned char object_class_vec50[] =
-  {
+static unsigned char object_class_vec50[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmWarningDialog_object */
-static unsigned char object_class_vec51[] =
-  {
+static unsigned char object_class_vec51[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmWorkArea_object */
-static unsigned char object_class_vec52[] =
-  {
+static unsigned char object_class_vec52[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDialogShell_object) |
-  _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDialogShell_object) |
+      _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_XmWorkingDialog_object */
-static unsigned char object_class_vec53[] =
-  {
+static unsigned char object_class_vec53[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_user_defined_object */
-static unsigned char object_class_vec54[] =
-  {
+static unsigned char object_class_vec54[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsApplyButton_object */
-static unsigned char object_class_vec55[] =
-  {
+static unsigned char object_class_vec55[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsCancelButton_object */
-static unsigned char object_class_vec56[] =
-  {
+static unsigned char object_class_vec56[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsDigChans_object */
-static unsigned char object_class_vec57[] =
-  {
+static unsigned char object_class_vec57[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsDisplay_object */
-static unsigned char object_class_vec58[] =
-  {
+static unsigned char object_class_vec58[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsExpr_object */
-static unsigned char object_class_vec59[] =
-  {
+static unsigned char object_class_vec59[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsExprField_object */
-static unsigned char object_class_vec60[] =
-  {
+static unsigned char object_class_vec60[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsInput_object */
-static unsigned char object_class_vec61[] =
-  {
+static unsigned char object_class_vec61[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsNidOptionMenu_object */
-static unsigned char object_class_vec62[] =
-  {
+static unsigned char object_class_vec62[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsOkButton_object */
-static unsigned char object_class_vec63[] =
-  {
+static unsigned char object_class_vec63[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsOnOffToggleButton_object */
-static unsigned char object_class_vec64[] =
-  {
+static unsigned char object_class_vec64[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsPath_object */
-static unsigned char object_class_vec65[] =
-  {
+static unsigned char object_class_vec65[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsResetButton_object */
-static unsigned char object_class_vec66[] =
-  {
+static unsigned char object_class_vec66[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsWavedraw_object */
-static unsigned char object_class_vec67[] =
-  {
+static unsigned char object_class_vec67[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsWaveform_object */
-static unsigned char object_class_vec68[] =
-  {
+static unsigned char object_class_vec68[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsXdBox_object */
-static unsigned char object_class_vec69[] =
-  {
+static unsigned char object_class_vec69[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsXdBoxDialog_object */
-static unsigned char object_class_vec70[] =
-  {
+static unsigned char object_class_vec70[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsXdBoxDialogButton_object */
-static unsigned char object_class_vec71[] =
-  {
+static unsigned char object_class_vec71[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  _BIT_MASK(sym_k_XmMenuBar_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPopupMenu_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  _BIT_MASK(sym_k_XmPulldownMenu_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      _BIT_MASK(sym_k_XmMenuBar_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPopupMenu_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      _BIT_MASK(sym_k_XmPulldownMenu_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_xmdsXdBoxOnOffButton_object */
-static unsigned char object_class_vec72[] =
-  {
+static unsigned char object_class_vec72[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /* sym_k_zmdsXdBoxOnOffButton_object */
-static unsigned char object_class_vec73[] =
-  {
+static unsigned char object_class_vec73[] = {
   _BIT_MASK(sym_k_XmBulletinBoard_object) |
-  _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
-  0, _BIT_MASK(sym_k_XmDrawingArea_object) |
-  _BIT_MASK(sym_k_XmErrorDialog_object) |
-  _BIT_MASK(sym_k_XmFileSelectionBox_object) |
-  _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmForm_object) |
-  _BIT_MASK(sym_k_XmFormDialog_object) |
-  0, _BIT_MASK(sym_k_XmFrame_object) |
-  _BIT_MASK(sym_k_XmInformationDialog_object) |
-  _BIT_MASK(sym_k_XmMainWindow_object) |
-  0, _BIT_MASK(sym_k_XmMessageBox_object) |
-  _BIT_MASK(sym_k_XmMessageDialog_object) |
-  _BIT_MASK(sym_k_XmPanedWindow_object) |
-  _BIT_MASK(sym_k_XmPromptDialog_object) |
-  0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
-  _BIT_MASK(sym_k_XmRadioBox_object) |
-  _BIT_MASK(sym_k_XmRowColumn_object) |
-  _BIT_MASK(sym_k_XmScale_object) |
-  0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
-  _BIT_MASK(sym_k_XmSelectionBox_object) |
-  _BIT_MASK(sym_k_XmSelectionDialog_object) |
-  _BIT_MASK(sym_k_XmTemplateDialog_object) |
-  0, _BIT_MASK(sym_k_XmWarningDialog_object) |
-  _BIT_MASK(sym_k_XmWorkArea_object) |
-  _BIT_MASK(sym_k_XmWorkingDialog_object) |
-  _BIT_MASK(sym_k_user_defined_object) |
-  0, 0, 0, 0};
+      _BIT_MASK(sym_k_XmBulletinBoardDialog_object) |
+      0, _BIT_MASK(sym_k_XmDrawingArea_object) |
+      _BIT_MASK(sym_k_XmErrorDialog_object) |
+      _BIT_MASK(sym_k_XmFileSelectionBox_object) |
+      _BIT_MASK(sym_k_XmFileSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmForm_object) |
+      _BIT_MASK(sym_k_XmFormDialog_object) |
+      0, _BIT_MASK(sym_k_XmFrame_object) |
+      _BIT_MASK(sym_k_XmInformationDialog_object) |
+      _BIT_MASK(sym_k_XmMainWindow_object) |
+      0, _BIT_MASK(sym_k_XmMessageBox_object) |
+      _BIT_MASK(sym_k_XmMessageDialog_object) |
+      _BIT_MASK(sym_k_XmPanedWindow_object) |
+      _BIT_MASK(sym_k_XmPromptDialog_object) |
+      0, _BIT_MASK(sym_k_XmQuestionDialog_object) |
+      _BIT_MASK(sym_k_XmRadioBox_object) |
+      _BIT_MASK(sym_k_XmRowColumn_object) |
+      _BIT_MASK(sym_k_XmScale_object) |
+      0, _BIT_MASK(sym_k_XmScrolledWindow_object) |
+      _BIT_MASK(sym_k_XmSelectionBox_object) |
+      _BIT_MASK(sym_k_XmSelectionDialog_object) |
+      _BIT_MASK(sym_k_XmTemplateDialog_object) |
+      0, _BIT_MASK(sym_k_XmWarningDialog_object) |
+      _BIT_MASK(sym_k_XmWorkArea_object) |
+      _BIT_MASK(sym_k_XmWorkingDialog_object) | _BIT_MASK(sym_k_user_defined_object) | 0, 0, 0, 0
+};
 
 /*
  * Table of bit vectors accessed by sym_k_..._object
  */
-static unsigned char *allowed_control_table_vec[] =
-  {
-  NULL,	/* UNUSED */
+static unsigned char *allowed_control_table_vec[] = {
+  NULL,				/* UNUSED */
   object_class_vec1,
   object_class_vec2,
   object_class_vec3,
@@ -2482,6 +2337,7 @@ static unsigned char *allowed_control_table_vec[] =
   object_class_vec71,
   object_class_vec72,
   object_class_vec73,
-  };
-externaldef(uil_sym_glbl) unsigned char **allowed_control_table =
-		allowed_control_table_vec;
+};
+
+externaldef(uil_sym_glbl)
+unsigned char **allowed_control_table = allowed_control_table_vec;

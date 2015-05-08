@@ -2,6 +2,20 @@
 #include        "tclsysdef.h"
 #include        <ncidef.h>
 #include        <usagedef.h>
+#include        <string.h>
+#include        <dcl.h>
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_PWD_H
+#include <pwd.h>
+#endif
+#ifdef HAVE_GRP_H
+#include <grp.h>
+#endif
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 /**********************************************************************
 * TCL_DIRECTORY.C --
@@ -14,398 +28,346 @@
 *
 ************************************************************************/
 
-
-extern char  *MdsDtypeString();
-extern char  *MdsClassString();
-#ifdef vms
-extern int  sys$asctim();
-#else
+extern char *MdsDtypeString();
+extern char *MdsClassString();
 extern int LibSysAscTim();
-#endif
 
-static int doFull(int nid,unsigned char nodeUsage,int version);
+static int doFull(char **output, int nid, unsigned char nodeUsage, int version);
 	/****************************************************************
 	 * MdsOwner:
 	 ****************************************************************/
-static char  *MdsOwner(		/* Return: ptr to "user" string		*/
-    unsigned int   owner	/* <r> owner id				*/
-   )
-   {
-    static char  ownerString[20];
-
-    sprintf(ownerString,"[%o,%o]",owner>>16,owner&0xFFFF);
-    return(ownerString);
-   }
-
-
+static char *MdsOwner(		/* Return: ptr to "user" string         */
+		       unsigned int owner	/* <r> owner id                         */
+    )
+{
+  static char ownerString[512];
+  int gid = owner >> 16;
+  int uid = owner & 0xFFFF;
+  char *groupname=0;
+  char *username=0;
+#ifdef HAVE_GETGRGID
+  struct group *g = getgrgid(gid);
+  if (g) {
+    groupname = alloca(strlen(g->gr_name)+3);
+    sprintf(groupname,"(%s)",g->gr_name);
+  }
+#endif
+#ifdef HAVE_GETPWUID
+  struct passwd *p = getpwuid(uid);
+  if (p) {
+    username = alloca(strlen(p->pw_name)+3);
+    sprintf(username,"(%s)",p->pw_name);
+  }
+#endif
+  if (groupname==0)
+    groupname="";
+  if (username==0)
+    username="";
+  sprintf(ownerString, "gid=%d%s,uid=%d%s", gid, groupname, uid, username);
+  return (ownerString);
+}
 
 	/***************************************************************
 	 * MdsDatime:
 	 ***************************************************************/
-static char  *MdsDatime(	/* Return: ptr to date+time string	*/
-    int   time[]	/* <r> date/time to display: quadword	*/
-   )
-   {
-    int   flags = 0;
-    int   sts;
-    short len;
-    static char  datime[24];
-    static DESCRIPTOR(dsc_datime,datime);
+static char *MdsDatime(		/* Return: ptr to date+time string      */
+			int time[]	/* <r> date/time to display: quadword       */
+    )
+{
+  int flags = 0;
+  int sts;
+  short len;
+  static char datime[24];
+  static DESCRIPTOR(dsc_datime, datime);
 
-#ifdef vms
-    sts = sys$asctim(&len,&dsc_datime,time,flags);
-#else
-    sts = LibSysAscTim(&len,&dsc_datime,time,flags);
-#endif
-    datime[len] = '\0';
-    return(datime);
-   }
+  if (time[0]==0 && time[1]== 0)
+    return "                       ";
 
+  sts = LibSysAscTim(&len, &dsc_datime, time, flags);
+  datime[len] = '\0';
+  return (datime);
+}
 
+void tclAppend(char **output, char *str)
+{
+  if (*output)
+    *output = strcat(realloc(*output, strlen(*output) + strlen(str) + 1), str);
+  else
+    *output = strdup(str);
+}
 
 	/****************************************************************
 	 * TclDirectory:
 	 * Perform directory function
 	 ****************************************************************/
-int   TclDirectory()
-   {
-    unsigned int   usage;
-    char  *tagnam;
-    char  textLine[128];
-    static char  fmtTotal[] = "Total of %d node%s.";
-    static char  fmtGrandTotal[] = "Grand total of %d node%s.";
-    static DYNAMIC_DESCRIPTOR(dsc_nodnam);
-    static DYNAMIC_DESCRIPTOR(dsc_nodeList);
-    static DYNAMIC_DESCRIPTOR(dsc_outline);
-    char  *pathnam;
-
-    int nid;
-    int status;
-    void  *ctx = 0;
-    void  *ctx2 = 0;
-    int   found = 0;
-    int   grand_found = 0;
-    int   first_tag;
-    int   full;
-    static int   nodnamLen;
-
-    static int   retlen;
-    int last_parent_nid = -1;
-    int version;
-    static int parent_nid;
-    static char nodnamC[12+1];
-    static int relationship;
-    int previous_relationship;
-    static unsigned char nodeUsage;
-    static NCI_ITM general_info_list[] = {
-          {4,NciPARENT,&parent_nid,0}
-         ,{12,NciNODE_NAME,nodnamC,&nodnamLen}
-         ,{4,NciPARENT_RELATIONSHIP,&relationship,0}
-         ,{1,NciUSAGE,&nodeUsage,0}
-         ,{0,NciEND_OF_LIST,0,0}
-         };
-    static int elmnt;
-    static DYNAMIC_DESCRIPTOR(dsc_allUsage);
-    static DYNAMIC_DESCRIPTOR(dsc_usageStr);
-    int usageMask = -1;
-
-
-    parent_nid = 0;
-
-    full = cli_present("FULL") & 1;
-    if (cli_present("USAGE") & 1)
-       {
-        usageMask = 0;
-        str_free1_dx(&dsc_allUsage);
-        while (cli_get_value("USAGE",&dsc_usageStr) & 1)
-           {
-            str_concat(&dsc_allUsage,&dsc_allUsage,&dsc_usageStr,",",0);
-
-            str_concat(&dsc_usageStr,"USAGE.",&dsc_usageStr,0);
-            if (cli_get_value(&dsc_usageStr,&dsc_usageStr) & 1)
-               {
-                sscanf(dsc_usageStr.dscA_pointer,"%d",&usage);
-                usageMask = usageMask | (1 << usage);
-               }
-            else
-                MdsMsg(0,"Error getting usage id#",0);
-           }
-       }
-    str_free1_dx(&dsc_outline);
-    while (cli_get_value("NODE",&dsc_nodeList) & 1)
-       {
-        l2u(dsc_nodeList.dscA_pointer,0);
-        for (elmnt=0; str_element(&dsc_nodnam,elmnt,',',&dsc_nodeList) & 1; elmnt++)
-           {
-            while ((status = TreeFindNodeWild(dsc_nodnam.dscA_pointer,&nid,&ctx,usageMask)) & 1)
-               {
-                grand_found++;
-                status = TreeGetNci(nid,general_info_list);
-                nodnamC[nodnamLen] = '\0';
-                if (parent_nid != last_parent_nid)
-                   {
-                    if (found)
-                       {
-                        if (!full && dsc_outline.dscW_length)
-			{
-                            TclTextOut(dsc_outline.dscA_pointer);
-                            str_free1_dx(&dsc_outline);
-                        }
-                        TclTextOut("  ");
-                        sprintf(textLine,fmtTotal,found,(found>1)?"s":"");
-                        TclTextOut(textLine);
-                       }
-                    TclTextOut("  ");
-                    pathnam = TreeGetPath(parent_nid);
-                    TclTextOut(pathnam);
-                    TreeFree(pathnam);		/* free the string	*/
-                    TclTextOut("  ");
-                    found = 0;
-                    last_parent_nid = parent_nid;
-                    previous_relationship = relationship;
-                   }
-                found++;
-                if (full)
-                   {
-                    if (previous_relationship != relationship)
-                       {
-                        TclTextOut("  ");
-                        previous_relationship = relationship;
-                       }
-                    if (relationship == NciK_IS_CHILD)
-                        str_concat(&dsc_outline,"  ",nodnamC,0);
-                    else
-                        str_concat(&dsc_outline," :",nodnamC,0);
-
-                    ctx2 = 0;
-                    first_tag = 1;
-                    while ((tagnam = TreeFindNodeTags(nid,&ctx2)))
-                       {
-                        str_concat(&dsc_outline,&dsc_outline,
-                                (first_tag?" tags: \\":",\\"),tagnam,0);
-                        TreeFree(tagnam);
-                        first_tag = 0;
-                       }
-                    TclTextOut(dsc_outline.dscA_pointer);
-                    str_free1_dx(&dsc_outline);
-                    version=0;
-                    while(doFull(nid,nodeUsage,version++)&1);
-#ifdef vms
-                    else
-                      lib$signal(status,0);
-#endif
-                   }
-                else
-                   {
-                    if (previous_relationship != relationship)
-                       {
-                        TclTextOut(dsc_outline.dscA_pointer);
-                        str_free1_dx(&dsc_outline);
-                        TclTextOut("  ");
-                        previous_relationship = relationship;
-                       }
-                    if (relationship == NciK_IS_CHILD)
-                        str_concat(&dsc_outline,
-                            &dsc_outline,"  ",nodnamC,0);
-                    else
-                        str_concat(&dsc_outline,
-                            &dsc_outline," :",nodnamC,0);
-                    if (dsc_outline.dscW_length > 60)
-                       {
-                        TclTextOut(dsc_outline.dscA_pointer);
-                        str_free1_dx(&dsc_outline);
-                       }
-                   }
-               }
-            TreeFindNodeEnd(&ctx);
-           }
-       }
-    if (found)
-       {
-        if (!full)
-           {
-            if (dsc_outline.dscW_length)
-	    {
-              TclTextOut(dsc_outline.dscA_pointer);
-              str_free1_dx(&dsc_outline);
-            }
-           }
-        TclTextOut("  ");
-        sprintf(textLine,fmtTotal,found,(found>1)?"s":"");
-        TclTextOut(textLine);
-       }
-    if (grand_found)
-       {
-        if (found != grand_found)
-           {
-            TclTextOut("  ");
-            sprintf(textLine,fmtGrandTotal,grand_found,
-                    (grand_found>1)?"s":"");
-            TclTextOut(textLine);
-           }
-       }
-#ifdef vms
-    else
-        lib$signal(status,0);
-#endif
-
-    return ((status == TreeNMN) || (status == TreeNNF)) ? 1 : status;
-   }
-
-
-static int doFull(int nid,unsigned char nodeUsage,int version) 
+int TclDirectory(void *ctx, char **error, char **output)
 {
-  static char  fmtConglom2[] = "      Original element name: %s%s";
-  char  *pathnam;
-  static int   time[2];
-  static char partC[64+1];
-   static int   retlen;
-  static int   head_nid;
-  static int   partlen;
-  static NCI_ITM cong_list[] = {
-    {4,NciCONGLOMERATE_NIDS,&head_nid,&retlen}
-    ,{64,NciORIGINAL_PART_NAME,partC,&partlen}
-    ,{0,NciEND_OF_LIST,0,0}
+  char *tagnam;
+  char msg[128];
+  char *nodnam = 0;
+  char *pathnam;
+
+  int nid;
+  int status = 1;
+  void *ctx1 = 0;
+  void *ctx2 = 0;
+  int found = 0;
+  int grand_found = 0;
+  int first_tag;
+  int full;
+  int nodnamLen;
+  int retlen;
+  int last_parent_nid = -1;
+  int version;
+  int parent_nid;
+  char nodnamC[12 + 1];
+  int relationship;
+  int previous_relationship;
+  unsigned char nodeUsage;
+  NCI_ITM general_info_list[] = {
+    {4, NciPARENT, &parent_nid, 0}
+    , {12, NciNODE_NAME, nodnamC, &nodnamLen}
+    , {4, NciPARENT_RELATIONSHIP, &relationship, 0}
+    , {1, NciUSAGE, &nodeUsage, 0}
+    , {0, NciEND_OF_LIST, 0, 0}
   };
-  char  *reference;
-  static DYNAMIC_DESCRIPTOR(dsc_outline);
-  static char  fmtStates[] = "      Status: %s,parent is %s, usage %s%s%s%s";
-  static char  fmtTime[] = "      Data inserted: %s    Owner: %s";
-  static char  fmtDescriptor[] = "      Dtype: %-20s  Class: %-18s  Length: %d bytes";
-  static char  fmtConglom1[] = "      Model element: %d";
-  int   k;
-  char *p;
-  char  textLine[128];
-  static char *usages[] = { "any",
-                            "structure",
-                            "action",
-                            "device",
-                            "dispatch",
-                            "numeric",
-                            "signal",
-                            "task",
-                            "text",
-                            "window",
-                            "axis",
-                            "subtree",
-                            "compound data",
-                            "unknown"};
-#define MAX_USAGES   (sizeof(usages)/sizeof(usages[0]))
-  static int   nciFlags;
-  static unsigned int   owner;
-  static char class;
-  static char dtype;
-  static int   dataLen;
-  static unsigned short conglomerate_elt;
-  static int vers;
-  static NCI_ITM full_list[] = {
-    {4,NciVERSION,&vers,0}
-    ,{4,NciGET_FLAGS,&nciFlags,0}
-    ,{8,NciTIME_INSERTED,time,0}
-    ,{4,NciOWNER_ID,&owner,0}
-    ,{1,NciCLASS,&class,0}
-    ,{1,NciDTYPE,&dtype,0}
-    ,{4,NciLENGTH,&dataLen,0}
-    ,{2,NciCONGLOMERATE_ELT,&conglomerate_elt,0}
-    ,{0,NciEND_OF_LIST,0,0}
-  };
-  int status;
-  vers=version;
-  status = TreeGetNci(nid,full_list);
-  if (status & 1)
-    {
-      if (version == 0) {
-	k = (nodeUsage<MAX_USAGES) ?
-	  nodeUsage : (MAX_USAGES-1);
-	p = usages[k];
-	sprintf(textLine,fmtStates,
-		(nciFlags & NciM_STATE) ? "off" : "on",
-		(nciFlags & NciM_PARENT_STATE) ? "off" : "on",
-		p,
-		(nciFlags & NciM_WRITE_ONCE) ?
-		(dataLen?",readonly":",write-once") : "",
-		(nciFlags & NciM_ESSENTIAL) ? ",essential":"",
-		(nciFlags & NciM_CACHED) ? ",cached" : "");
-	TclTextOut(textLine);
-      
-	if (nciFlags & NciM_NO_WRITE_MODEL)
-	  TclTextOut("      not writeable in model");
-	if (nciFlags & NciM_NO_WRITE_SHOT)
-	  TclTextOut("      not writeable in pulse file");
-	if (nodeUsage == TreeUSAGE_SUBTREE)
-	{
-	  sprintf(textLine,
-		  "      subtree %sincluded in pulse file.",
-		  (nciFlags & NciM_INCLUDE_IN_PULSE)?"":"NOT");
-	  TclTextOut(textLine);
-	}
-      
-	if (nciFlags & NciM_COMPRESSIBLE)
-	{
-	  str_copy_dx(&dsc_outline,"compressible");
-	  if (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS))
-	    str_append(&dsc_outline,",");
-	}
-	if (nciFlags & NciM_COMPRESS_ON_PUT)
-	{
-	  str_append(&dsc_outline,"compress on put");
-	  if (nciFlags & NciM_DO_NOT_COMPRESS)
-	    str_append(&dsc_outline,",");
-	}
-	if (nciFlags & NciM_DO_NOT_COMPRESS)
-	  str_append(&dsc_outline,"do not compress");
-	if (dsc_outline.dscW_length)
-	{
-	  str_prefix(&dsc_outline,"      ");
-	  TclTextOut(dsc_outline.dscA_pointer);
-	  str_free1_dx(&dsc_outline);
-	}
-      
-	switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE)) {
-	case NciM_PATH_REFERENCE:
-	  reference = " (paths only)";  break;
-	case NciM_NID_REFERENCE:
-	  reference = " (node ids only)";  break;
-	case NciM_PATH_REFERENCE | NciM_NID_REFERENCE:
-	  reference = " (paths and node ids)";  break;
-	default:
-	  reference = 0;  break;
-	}
-	if (reference)
-	{
-	  str_concat(&dsc_outline,
-		     "      contains node references",reference,0);
-	  TclTextOut(dsc_outline.dscA_pointer);
+  int usageMask = -1;
+
+  parent_nid = 0;
+  if (*output == 0)
+    *output = strdup("");
+  full = cli_present(ctx, "FULL") & 1;
+  if (cli_present(ctx, "USAGE") & 1) {
+    char *usageStr = 0;
+    usageMask = 0;
+    while (cli_get_value(ctx, "USAGE", &usageStr) & 1) {
+      if (usageStr) {
+	char usage = tclUsageToNumber(usageStr, error);
+	if (usage == -1) {
+	  free(usageStr);
+	  return 0;
+	} else {
+	  usageMask = usageMask | (1 << usage);
+	  free(usageStr);
 	}
       }
-      else
-	TclTextOut("");
-      sprintf(textLine,fmtTime,MdsDatime(time),MdsOwner(owner));
-      TclTextOut(textLine);
-      if (dataLen)
-	{
-	  sprintf(textLine,fmtDescriptor,
-		  MdsDtypeString((int)dtype),
-		  MdsClassString((int)class),dataLen);
-	  TclTextOut(textLine);
-	}
-      else
-	TclTextOut("      There is no data stored for this node");
-      if (conglomerate_elt != 0)
-	{
-	  sprintf(textLine,fmtConglom1,conglomerate_elt);
-	  TclTextOut(textLine);
-	  partlen = 0;  
-	  TreeGetNci(nid,cong_list);
-	  if (partlen)
-	    {
-	      pathnam = TreeGetPath(head_nid);
-	      partC[partlen] = 0;
-	      sprintf(textLine,fmtConglom2,pathnam,partC);
-	      TclTextOut(textLine);
-	      TreeFree(pathnam);
-	    }
-	}
     }
+  }
+  while (cli_get_value(ctx, "NODE", &nodnam) & 1) {
+    int listlen = 0;
+    while ((status = TreeFindNodeWild(nodnam, &nid, &ctx1, usageMask)) & 1) {
+      grand_found++;
+      status = TreeGetNci(nid, general_info_list);
+      nodnamC[nodnamLen] = '\0';
+      if (parent_nid != last_parent_nid) {
+	if (found) {
+	  sprintf(msg, "\n\nTotal of %d node%s.\n", found, (found > 1) ? "s" : "");
+	  listlen = 0;
+	  tclAppend(output, msg);
+	}
+	found = 0;
+	last_parent_nid = parent_nid;
+	pathnam = TreeGetPath(parent_nid);
+	if (pathnam) {
+	  sprintf(msg, "\n%s\n\n", pathnam);
+	  free(pathnam);
+	  tclAppend(output, msg);
+	}
+	previous_relationship = relationship;
+      }
+      found++;
+      if (full) {
+	if (previous_relationship != relationship) {
+	  tclAppend(output, "\n");
+	  previous_relationship = relationship;
+	}
+	sprintf(msg, " %s%s", (relationship == NciK_IS_CHILD) ? " " : ":", nodnamC);
+	tclAppend(output, msg);
+	ctx2 = 0;
+	first_tag = 1;
+	while ((tagnam = TreeFindNodeTags(nid, &ctx2))) {
+	  sprintf(msg, "%s\\%s", first_tag ? " tags: " : ",", tagnam);
+	  tclAppend(output, msg);
+	  free(tagnam);
+	  first_tag = 0;
+	}
+	tclAppend(output, "\n");
+	version = 0;
+	while (doFull(output, nid, nodeUsage, version++) & 1) ;
+      } else {
+	if (previous_relationship != relationship) {
+	  tclAppend(output, "\n\n");
+	  listlen = 0;
+	  previous_relationship = relationship;
+	}
+	sprintf(msg, " %s%s", (relationship == NciK_IS_CHILD) ? " " : ":", nodnamC);
+	tclAppend(output, msg);
+	listlen = listlen + strlen(msg);
+	if (listlen > 60) {
+	  tclAppend(output, "\n");
+	  listlen = 0;
+	}
+      }
+      mdsdclFlushOutput(*output);
+    }
+    TreeFindNodeEnd(&ctx1);
+    if (nodnam)
+      free(nodnam);
+  }
+  sprintf(msg, "%s\nTotal of %d node%s.\n", full ? "" : "\n", found,
+	  ((found > 1) || (found == 0)) ? "s" : "");
+  tclAppend(output, msg);
+  if (grand_found) {
+    if (found != grand_found) {
+      sprintf(msg, "\n\nGrand total of %d node%s.\n", grand_found,
+	      ((grand_found > 1) || (grand_found == 0)) ? "s" : "");
+      tclAppend(output, msg);
+    }
+  }
+  return ((status == TreeNMN) || (status == TreeNNF)) ? 1 : status;
+}
+
+static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
+{
+  char *pathnam;
+  int time[2];
+  char partC[64 + 1];
+  int retlen;
+  int head_nid;
+  int partlen;
+  NCI_ITM cong_list[] = {
+    {4, NciCONGLOMERATE_NIDS, &head_nid, &retlen}
+    , {64, NciORIGINAL_PART_NAME, partC, &partlen}
+    , {0, NciEND_OF_LIST, 0, 0}
+  };
+  char *reference;
+  int k;
+  char *p;
+  char msg[128];
+  static char *usages[] = { "any",
+    "structure",
+    "action",
+    "device",
+    "dispatch",
+    "numeric",
+    "signal",
+    "task",
+    "text",
+    "window",
+    "axis",
+    "subtree",
+    "compound data",
+    "unknown"
+  };
+#define MAX_USAGES   (sizeof(usages)/sizeof(usages[0]))
+  int nciFlags;
+  unsigned int owner;
+  char class;
+  char dtype;
+  int dataLen;
+  unsigned short conglomerate_elt;
+  int vers;
+  NCI_ITM full_list[] = {
+    {4, NciVERSION, &vers, 0}
+    , {4, NciGET_FLAGS, &nciFlags, 0}
+    , {8, NciTIME_INSERTED, time, 0}
+    , {4, NciOWNER_ID, &owner, 0}
+    , {1, NciCLASS, &class, 0}
+    , {1, NciDTYPE, &dtype, 0}
+    , {4, NciLENGTH, &dataLen, 0}
+    , {2, NciCONGLOMERATE_ELT, &conglomerate_elt, 0}
+    , {0, NciEND_OF_LIST, 0, 0}
+  };
+  int status;
+  vers = version;
+  status = TreeGetNci(nid, full_list);
+  if (status & 1) {
+    if (version == 0) {
+      k = (nodeUsage < MAX_USAGES) ? nodeUsage : (MAX_USAGES - 1);
+      p = usages[k];
+      sprintf(msg, "      Status: %s,parent is %s, usage %s%s%s%s\n",
+	      (nciFlags & NciM_STATE) ? "off" : "on",
+	      (nciFlags & NciM_PARENT_STATE) ? "off" : "on",
+	      p,
+	      (nciFlags & NciM_WRITE_ONCE) ?
+	      (dataLen ? ",readonly" : ",write-once") : "",
+	      (nciFlags & NciM_ESSENTIAL) ? ",essential" : "",
+	      (nciFlags & NciM_CACHED) ? ",cached" : "");
+      tclAppend(output, msg);
+      if (nciFlags & NciM_NO_WRITE_MODEL)
+	tclAppend(output, "      not writeable in model\n");
+      if (nciFlags & NciM_NO_WRITE_SHOT)
+	tclAppend(output, "      not writeable in pulse file\n");
+      if (nodeUsage == TreeUSAGE_SUBTREE) {
+	sprintf(msg,
+		"      subtree %sincluded in pulse file.\n",
+		(nciFlags & NciM_INCLUDE_IN_PULSE) ? "" : "NOT ");
+	tclAppend(output, msg);
+      }
+      msg[0] = 0;
+      if (nciFlags & NciM_COMPRESSIBLE) {
+	strcat(msg, "compressible");
+	strcat(msg, (nciFlags & (NciM_COMPRESS_ON_PUT | NciM_DO_NOT_COMPRESS)) ? "," : "\n");
+      }
+      if (nciFlags & NciM_COMPRESS_ON_PUT) {
+	strcat(msg, "compress on put");
+	strcat(msg, (nciFlags & NciM_DO_NOT_COMPRESS) ? "," : "\n");
+      }
+      if (nciFlags & NciM_DO_NOT_COMPRESS)
+	strcat(msg, "do not compress\n");
+      if (strlen(msg) > 0) {
+	tclAppend(output, "      ");
+	tclAppend(output, msg);
+      }
+
+      switch (nciFlags & (NciM_PATH_REFERENCE | NciM_NID_REFERENCE)) {
+      case NciM_PATH_REFERENCE:
+	reference = "      contains node references (paths only)\n";
+	break;
+      case NciM_NID_REFERENCE:
+	reference = "      contains node references (node ids only)\n";
+	break;
+      case NciM_PATH_REFERENCE | NciM_NID_REFERENCE:
+	reference = "      contains node references (paths and node ids)\n";
+	break;
+      default:
+	reference = 0;
+	break;
+      }
+      if (reference) {
+	tclAppend(output, reference);
+      }
+    }
+    sprintf(msg, "      Data inserted: %s    Owner: %s\n", MdsDatime(time), MdsOwner(owner));
+    tclAppend(output, msg);
+    if (dataLen) {
+      sprintf(msg, "      Dtype: %-20s  Class: %-18s  Length: %d bytes\n",
+	      MdsDtypeString((int)dtype), MdsClassString((int)class), dataLen);
+      tclAppend(output, msg);
+    } else
+      tclAppend(output, "      There is no data stored for this node\n");
+    if (conglomerate_elt != 0) {
+      sprintf(msg, "      Model element: %d\n", conglomerate_elt);
+      tclAppend(output, msg);
+      partlen = 0;
+      TreeGetNci(nid, cong_list);
+      if (partlen) {
+	pathnam = TreeGetPath(head_nid);
+	partC[partlen] = 0;
+	sprintf(msg, "      Original element name: %s%s", pathnam, partC);
+	tclAppend(output, msg);
+	free(pathnam);
+      }
+    }
+  }
   return status;
+}
+
+int TclLs(void *ctx)
+{
+  char *cmd = 0;
+  cli_get_value(ctx, "command_line", &cmd);
+  printf("TclLs called with command line: '%s'\n", cmd);
+  free(cmd);
+  return 1;
 }

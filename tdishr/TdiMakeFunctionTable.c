@@ -16,10 +16,9 @@
 #include "opcbuiltins.h"
 #undef OPC
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
 
-        /******************************
+
+	/******************************
         Shorthand for conversions:
         Destinctive forms.
         VV=logical 0/1
@@ -53,8 +52,7 @@ const struct TdiFunctionStruct TdiRefFunction[] = {
            DTYPE_##i1,DTYPE_##i2,DTYPE_##o1,DTYPE_##o2,m1,m2,token},
 #include "opcbuiltins.h"
 #undef OPC
-    {0}
+  {0}
 };
 
-const int TdiFUNCTION_MAX =
-    sizeof(TdiRefFunction) / sizeof(struct TdiFunctionStruct) - 1;
+const int TdiFUNCTION_MAX = sizeof(TdiRefFunction) / sizeof(struct TdiFunctionStruct) - 1;

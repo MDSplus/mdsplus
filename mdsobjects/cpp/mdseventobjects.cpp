@@ -1,15 +1,17 @@
 #include "mdsobjects.h"
+
+#include <string>
+
 using namespace MDSplus;
 using namespace std;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT
 #endif
 
 #define MAX_ARGS 512
-
 
 extern "C" {
 	int64_t convertAsciiToTime(const char *ascTime);
@@ -25,14 +27,14 @@ extern "C" {
 	int MdsEventTriggerAndWait(char *name, char *buf, int size);
 }
 
-
 extern "C" void eventAst(void *arg, int len, char *buf)
 {
 	Event *ev = (Event *)arg;
-	ev->eventBuf.assign(buf,len);
+	ev->eventBuf.assign(buf, len);
 	ev->eventTime = convertAsciiToTime("now");
 	ev->run();
 }
+
 extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
 {
 	eventAst(arg, len, buf);
@@ -54,31 +56,15 @@ Data *Event::getData()
 	if(eventBuf.length() == 0)
 		return NULL;
     return deserialize(eventBuf.c_str());
-
 }
 
-
-void REvent::connectToEvents()
-{
-	reventId = MdsEventAddListener(eventName,  reventAst, this);
-}
-void REvent::disconnectFromEvents()
-{
-	MdsEventRemoveListener(reventId);
-}
 
 Event::Event(char *evName)
 {
-	sem.initialize(0);
-	eventName = new char[strlen(evName) + 1];
-	strcpy(eventName, evName);
-	eventId = -1;
-	connectToEvents();
-}
-REvent::REvent(char *evName)
-{
-	eventName = new char[strlen(evName) + 1];
-	strcpy(eventName, evName);
+	std::size_t size = std::string(evName).size();
+	eventName = new char[size + 1];
+	std::copy(&evName[0], &evName[size], eventName);
+	eventName[size] = 0;
 	eventId = -1;
 	connectToEvents();
 }
@@ -89,44 +75,18 @@ Event::~Event()
 	delete [] eventName;
 	if(eventId != -1)
 		disconnectFromEvents();
-		
 }
-
 
 void Event::setEvent(char *evName, Data *evData)
 {
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
-//	MDSUdpEvent(eventId);
-	MDSEvent(evName, bufLen, buf);
+	setEventRaw(evName, bufLen, buf);
 }
+
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
 {
 //	MDSUdpEvent(evName, bufLen, buf);
 	MDSEvent(evName, bufLen, buf);
-}
-
-void REvent::setEvent(char *evName, Data *evData)
-{
-	int bufLen;
-	char *buf = evData->serialize(&bufLen);
-	MdsEventTrigger(evName, buf, bufLen);
-}
-
-void REvent::setEventAndWait(char *evName, Data *evData)
-{
-	int bufLen;
-	char *buf = evData->serialize(&bufLen);
-	MdsEventTriggerAndWait(evName, buf, bufLen);
-}
-
-void REvent::setEventRaw(char *evName, int bufLen, char *buf)
-{
-	MdsEventTrigger(evName, buf, bufLen);
-}
-
-void REvent::setEventRawAndWait(char *evName, int bufLen, char *buf)
-{
-	MdsEventTriggerAndWait(evName, buf, bufLen);
 }
 

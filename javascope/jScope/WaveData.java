@@ -18,57 +18,31 @@ interface WaveData
      * @return The number of dimension for the represented signal.
      * @exception java.io.IOException
      */
-    public int GetNumDimension()throws IOException;
+    public int getNumDimension()throws IOException;
 
     /**
      * Get Y data (for unidimensional signals) or Z data (for bidimensional signals) as a float array.
-     * If bidimensional sugnals are returned, values are ordered by rows.
+     * If bidimensional signals are returned, values are ordered by rows.
      *
      * @return The signal Y or Z data coded as a float array.
      * @exception java.io.IOException
      */
-    public float[] GetFloatData() throws IOException;
 
-    /**
-     * Get X array, usually representing the time values for signals.
-     *
-     * @return The returned X values coded as a float array
-     * @exception java.io.IOException
-     */
-    public float[] GetXData()   throws IOException;
-    /**
-     * Get X array, in double format.
-     *
-     * @return The returned X values coded as a double array,
-     * or null if the Data provider does not support double values for X axis
-     * @exception java.io.IOException
-     */
-    public double[] GetXDoubleData()   throws IOException;
+    
+    XYData getData(double xmin, double xmax, int numPoints) throws Exception;
+    XYData getData(int numPoints) throws Exception;
+ 
+    float[] getZ();
+    float[] getX2D();
+    float[] getY2D();
+    long[]  getX2DLong();
 
-    /**
-     * Get X array, in long format.
-     *
-     * @return The returned X values coded as a long array,
-     * or null if the Data provider does not support long values for X axis
-     * @exception java.io.IOException
-     */
-    public long[] GetXLongData()   throws IOException;
+    
+ //   double[] getXLimits();
+ //   long []getXLong();
+    boolean isXLong();
+    void addWaveDataListener(WaveDataListener listener);
 
-    /**
-     * Get Y data description (only for bidimensional signals)
-     *
-     * @return The Y data specification coded as a float array.
-     * @exception java.io.IOException
-     */
-    public float[] GetYData()   throws IOException;
-
-    /**
-     * Get the associated title for the signal. It is displayed if no title is defined in the setup
-     * data definition.
-     *
-     * @return The title string.
-     * @exception java.io.IOException
-     */
     public String GetTitle()   throws IOException;
 
     /**
@@ -97,4 +71,7 @@ interface WaveData
      * @exception java.io.IOException
      */
     public String GetZLabel()  throws IOException;
+    
+    void getDataAsync(double lowerBound, double upperBound, int numPoints);
+    void setContinuousUpdate(boolean continuopusUpdate);
 }

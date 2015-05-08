@@ -2,7 +2,7 @@
 
 XmString GetNciString(int nid)
 {
-    char *cstring = "GETNCI is not yet implemented";
-    XmString ans = XmStringCreateLtoR(cstring, XmSTRING_DEFAULT_CHARSET);
-    return ans;
+  char *cstring = "GETNCI is not yet implemented";
+  XmString ans = XmStringCreateLtoR(cstring, XmSTRING_DEFAULT_CHARSET);
+  return ans;
 }

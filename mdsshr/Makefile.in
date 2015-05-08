@@ -1,18 +1,18 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-prefix=@prefix@
-top_srcdir=@top_srcdir@
-exec_prefix=@exec_prefix@
-RM=$(top_srcdir)/devscripts/rm_if
-CFLAGS=@CFLAGS@ @GLOBUS_CFLAGS@
-LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@ @LIBDL@ @GCCLIB@ @SOCKETLIB@ @NSLLIB@
-INSTALL=@top_srcdir@/conf/install-sh -c
+include @top_srcdir@/Makefile.inc
+
+CFLAGS += $(THREAD) @GLOBUS_CFLAGS@
+LDFLAGS += $(THREAD)
+LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
+@MINGW_TRUE@ DEF=MdsShr.def
+
+lib_LIBRARIES = MdsShr
+libStatic = $(addsuffix .a, $(addprefix @MAKELIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
+libShared = $(addsuffix @SHARETYPE@, $(addprefix @MAKESHLIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
+libs = $(libStatic) $(libShared) $(IMPLIB)
 
 SOURCES = \
         librtl.c \
-        dasutil_routines4.c \
         mdsmsg.c \
         MDSprintf.c \
         MdsCmprs.c \
@@ -22,50 +22,42 @@ SOURCES = \
         MdsGet1DxA.c \
         MdsGet1DxS.c \
         MdsGetSetShotId.c \
+        MdsGetStdMsg.c \
         MdsPk.c \
         MdsSerialize.c \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \
-	MdsMalloc.c \
 	mds_dsc_string.c \
 	MdsFloatToTime.c \
 	UdpEvents.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsShr.exports
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @MAKELIBDIR@libMdsShr.a
+all: @MAKELIBDIR@ @MAKESHLIBDIR@ $(libs)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-clean :
+clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) @MAKELIBDIR@libMdsShr.a 
-	@ $(RM) @MAKESHLIBDIR@libMdsShr@SHARETYPE@ 
+	@ $(RM) $(libs)
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                @MAKEBINDIR@mkdirhier @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsShr@SHARETYPE@ @libdir@
-	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsShr.a @libdir@; \
-	fi;
+install: $(libdir)
+	$(INSTALL) -m 755 $(libs) $(libdir)
 
-@MAKESHLIBDIR@libMdsShr@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS) $(DEF)
+	$(LINK.c) -o $@ @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
 
-@MAKELIBDIR@libMdsShr.a : $(OBJECTS)
+#%.so %.dylib: $(OBJECTS)
+#	$(LINK.o) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
+
+@MAKELIBDIR@libMdsShr.so @MAKELIBDIR@libMdsShr.dylib: $(OBJECTS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS)
+
+%.a: $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKELIBDIR@ :
-	mkdir @MAKELIBDIR@
-
-@MAKESHLIBDIR_RULE@
-
-MdsShr.exports: MdsShr.def
-	sed -e /LIBRARY/\;/\;/d MdsShr.def > $@
+#MdsGetStdMsg.c :
+#	python gen_messages.py

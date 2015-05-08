@@ -1,47 +1,45 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr @LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
+include @top_srcdir@/Makefile.inc
 
-SOURCES = ccl_commands.c ccl_verbs.c
+SOURCES = ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = ccl_commands.export
 
-all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@libccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@mdsccl
+@MINGW_TRUE@ MDSCCL=mdsccl.bat
+@MINGW_FALSE@ MDSCCL=mdsccl
+
+all:	@MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@  @MAKEBINDIR@ @MAKEBINDIR@$(MDSCCL) 
 
 clean:
 	@ $(RM) $(OBJECTS)
-	@ $(RM) so_locations
-	@ $(RM) ccl_commands.c
-	@ $(RM) @MAKESHLIBDIR@libccl_commands@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@mdsccl
 
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libccl_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@mdsccl @bindir@
+install: $(libdir) $(bindir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@ $(libdir)
+	@MINGW_FALSE@ $(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(bindir)
+	@MINGW_TRUE@ $(INSTALL) -m 755 @MAKEBINDIR@mdsccl.bat $(bindir)
 
-ccl_commands.c:	ccl_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < ccl_commands.ocld
+cdudir = $(top_builddir)/cdu
+CDU = $(cdudir)/cdu
+
+ccl_commands.c_disabled:	ccl_commands.ocld
+	if [ "@LIBPATH@" == "PATH" ]; then env PATH="@MAKESHLIBDIR@:$$(dirname $$(which gcc))" $(CDU) < ccl_commands.ocld;\
+              else env @LIBPATH@=@MAKESHLIBDIR@ $(CDU) < ccl_commands.ocld; fi
 	$(MAKE) depend
 
-@MAKESHLIBDIR@libccl_commands@SHARETYPE@:	$(OBJECTS)
-	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS) $(LDFLAGS)
+@MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@: $(OBJECTS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ $(LIBS) -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lCamShr
 
-@MAKEBINDIR@mdsccl:	ccl
-	cp ccl $@
+ifneq "@MINGW@" "yes"
+@MAKEBINDIR@mdsccl: ccl
+	cp $< $@
 	chmod +x $@
+else
+@MAKEBINDIR@mdsccl.bat: mdsccl.bat
+	cp $< $@
+	chmod +x $@
+endif
 

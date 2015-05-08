@@ -30,7 +30,6 @@ int XmdsBells(int *number_of_bells )
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <X11/Xlib.h>
@@ -44,7 +43,7 @@ int XmdsBells(int *num_bells)
   if (!display)
     display = XOpenDisplay(0);
   for (i = 0; display && i < *num_bells; i++)
-    XBell(display,0);
+    XBell(display, 0);
   XFlush(display);
   return display != 0;
 }

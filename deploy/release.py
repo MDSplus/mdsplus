@@ -70,12 +70,12 @@ def processChanges(flavor):
   return info
 
 if __name__ == "__main__":
+  flavors=('alpha','stable')
   if len(sys.argv) == 3:
     flavors=sys.argv[2].split(',')
-  elif 'BUILD_FLAVOR' in os.environ and os.environ['BUILD_FLAVOR'] in ('alpha','stable'):
-    flavors=[os.environ['BUILD_FLAVOR'],]
-  else:
-    flavors=('alpha','stable')
+  elif 'BUILD_FLAVOR' in os.environ:
+    if os.environ['BUILD_FLAVOR'] != "all":
+      flavors=os.environ['BUILD_FLAVOR'].split(',')
   errors=""
   for flavor in flavors:
     info = processChanges(flavor)
@@ -84,6 +84,7 @@ if __name__ == "__main__":
 
 set -e
 git archive --format=tar --prefix=%(tag)s/ %(flavor)s | (cd /tmp/ && tar xf -)
+echo 'static const char *RELEASE = "%(tag)s";' > /tmp/%(tag)s/include/release.h
 cp ChangeLog /tmp/%(tag)s/
 pushd /tmp/%(tag)s/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d

@@ -4,8 +4,8 @@ import MARTE_GENERIC
 
 class MARTE_DEQU(MARTE_GENERIC.MARTE_GENERIC):
     print 'MARTe DEQU'
-    parNames = ['InputMapping', 'InputAutozero', 'bpCorrectionCoeffs', 'torI2TLimit']
-    parValues = [0,0, Data.compile('zero(32, 0.)+1.'), 0]
+    parNames = ['InputMapping', 'InputAutozero', 'bpCorrectionCoeffs', 'torI2TLimit', 'FluxDiffCorrectionOn', 'FluxDiffCorrectionCoeffs', 'AliasRemoveOn', 'TimeConstLpfMandF', 'FourthHarmRecOn', 'deltaTequ']
+    parValues = [0,0, Data.compile('zero(32, 0.)+1.'), 0, 0, Data.compile('[-331.63E-9,-123.053E-9,-24.8494E-9,10.2545E-9,15.5055E-9,-35.3507E-9,-186.869E-9]'), 0, 0.16, 0, 0.05]
     parts = []
     for i in range(len(MARTE_GENERIC.MARTE_GENERIC.parts)):
       parts.append(MARTE_GENERIC.MARTE_GENERIC.parts[i])

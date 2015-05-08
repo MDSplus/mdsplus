@@ -63,6 +63,7 @@ public class jScopeFacade
     public static final int MAX_NUM_SHOT = 30;
     public static final int MAX_VARIABLE = 10;
     private static int spos_x = 100, spos_y = 100;
+    static  long refreshPeriod = -1;
 
     JWindow aboutScreen;
 
@@ -92,7 +93,6 @@ public class jScopeFacade
     private JPanel panel, panel1;
     private ButtonGroup pointer_mode = new ButtonGroup();
     private JRadioButton zoom, point, copy, pan;
-    private JCheckBoxMenuItem fast_network_i, enable_compression_i, use_cache_i;
     private JLabel shot_l, lab;
     private JTextField shot_t, signal_expr;
     private JButton apply_b;
@@ -389,9 +389,9 @@ public class jScopeFacade
                 if (txt1.length() != 0 && txt2.length() != 0)
                 {
                     if (txt1.indexOf("_") != 0)
-                        str = "public _" + txt1 + " = " + txt2 + ";";
+                        str = "public _" + txt1 + " = ( " + txt2 + ";)";
                     else
-                        str = "public " + txt1 + " = " + txt2 + ";";
+                        str = "public " + txt1 + " = (" + txt2 + ";)";
                     buf.append(str);
                 }
             }
@@ -407,16 +407,16 @@ public class jScopeFacade
             String txt1, txt2, str;
             StringBuffer buf = new StringBuffer();
 
-            for (int i = 0; i < name_list.size(); i++)
+            for (int i = 0; i < name_list.size() && i < MAX_VARIABLE; i++)
             {
                 txt1 = (String) name_list.elementAt(i);
                 txt2 = (String) expr_list.elementAt(i);
                 if (txt1.length() != 0 && txt2.length() != 0)
                 {
                     if (txt1.indexOf("_") != 0)
-                        str = "public _" + txt1 + " = " + txt2 + ";";
+                        str = "public _" + txt1 + " = (" + txt2 + ");";
                     else
-                        str = "public " + txt1 + " = " + txt2 + ";";
+                        str = "public " + txt1 + " = (" + txt2 + ");";
                     buf.append(str);
                 }
             }
@@ -434,7 +434,7 @@ public class jScopeFacade
 
             Container p = getContentPane();
 
-            for (int i = 2, j = 0; i < MAX_VARIABLE * 2; i += 2, j++)
+            for (int i = 2, j = 0; j < MAX_VARIABLE; i += 2, j++)
             {
                 txt1 = ( (JTextField) p.getComponent(i)).getText();
                 txt2 = ( (JTextField) p.getComponent(i + 1)).getText();
@@ -450,7 +450,7 @@ public class jScopeFacade
         private void SetPubVar()
         {
             Container p = getContentPane();
-            for (int i = 2, j = 0; j < name_list.size(); i += 2, j++)
+            for (int i = 2, j = 0; j < name_list.size() && j < MAX_VARIABLE; i += 2, j++)
             {
                 ( (JTextField) p.getComponent(i)).setText( (String) name_list.
                     elementAt(j));
@@ -497,7 +497,7 @@ public class jScopeFacade
 
         public void toFile(PrintWriter out, String prompt)
         {
-            for (int i = 0; i < name_list.size(); i++)
+            for (int i = 0; i < name_list.size() && i < MAX_VARIABLE; i++)
             {
                 out.println(prompt + i + ": " + name_list.elementAt(i)
                             + " = " + expr_list.elementAt(i));
@@ -513,11 +513,12 @@ public class jScopeFacade
              name_list.removeAllElements();
              expr_list.removeAllElements();
             
-            while ( (prop = pr.getProperty(prompt + idx)) != null)
+            while ( (prop = pr.getProperty(prompt + idx)) != null && idx < MAX_VARIABLE )
             {
                 StringTokenizer st = new StringTokenizer(prop, "=");
                 String name = st.nextToken();
-                String expr = st.nextToken();
+                String expr = st.nextToken("");
+                expr =   expr.substring(expr.indexOf('=') + 1) ;//remove first = character in the expression
                 name_list.insertElementAt(name.trim(), idx);
                 expr_list.insertElementAt(expr.trim(), idx);
                 idx++;
@@ -1040,54 +1041,6 @@ public class jScopeFacade
         network_m = new JMenu("Network");
         mb.add(network_m);
 
-        fast_network_i = new JCheckBoxMenuItem("Faster, sub-sampled, access", false);
-        fast_network_i.setEnabled(false);
-        network_m.add(fast_network_i);
-        fast_network_i.addItemListener(this);
-
-        use_cache_i = new JCheckBoxMenuItem("Enable signals cache", false);
-        use_cache_i.setEnabled(false);
-        network_m.add(use_cache_i);
-        use_cache_i.addItemListener(this);
-
-        free_cache_i = new JMenuItem("Free cache");
-        free_cache_i.setEnabled(false);
-        network_m.add(free_cache_i);
-        free_cache_i.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent e)
-            {
-                String cache_directory = System.getProperty(
-                    "Signal.cache_directory");
-                if (cache_directory != null &&
-                    cache_directory.trim().length() != 0)
-                {
-                    Object[] options =
-                        {
-                        "OK", "CANCEL"};
-                    int opt = JOptionPane.showOptionDialog(null,
-                        "Remove all files in jScope cache directory " +
-                        cache_directory, "Warning",
-                        JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                        null, options, options[0]);
-                    if (opt == JOptionPane.OK_OPTION)
-                        wave_panel.FreeCache();
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(null,
-                                                  "Undefined cache directory",
-                                                  "alert",
-                                                  JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        }
-        );
-
-        enable_compression_i = new JCheckBoxMenuItem("Enable compression", false);
-        enable_compression_i.setEnabled(false);
-        network_m.add(enable_compression_i);
-        enable_compression_i.addItemListener(this);
 
         servers_m = new JMenu("Servers");
         network_m.add(servers_m);
@@ -1113,24 +1066,7 @@ public class jScopeFacade
         network_m.add(server_list_i);
         server_list_i.addActionListener(this);
 
-        network_m.addMenuListener(new MenuListener()
-        {
-            public void menuSelected(MenuEvent e)
-            {
-                use_cache_i.setSelected(wave_panel.IsCacheEnabled());
-            }
-
-            public void menuCanceled(MenuEvent e)
-            {
-            }
-
-            public void menuDeselected(MenuEvent e)
-            {
-            }
-        }
-        );
-
-        point_pos = new JLabel("[0.000000000, 0.000000000]");
+         point_pos = new JLabel("[0.000000000, 0.000000000]");
         point_pos.setFont(new Font("Courier", Font.PLAIN, 12));
         info_text = new JTextField(" Status : ", 85);
         info_text.setBorder(BorderFactory.createLoweredBevelBorder());
@@ -1709,9 +1645,22 @@ public class jScopeFacade
                 timeMode = EPICS_TIME;
             //Add here new time formats
         }
+        String refreshPeriodStr = js_prop.getProperty("jScope.refresh_period");
+        if(refreshPeriodStr != null)
+        {
+            try {
+                refreshPeriod = Integer.parseInt(refreshPeriodStr);
+                //Not shorted than 0.5 s
+                if(refreshPeriod < 500) refreshPeriod = 500;
+            } catch(Exception exc)
+            {
+                refreshPeriod = -1;
+            }
+        }
 
     }
 
+    public static long getRefreshPeriod() {return refreshPeriod;}
     private boolean IsIpAddress(String addr)
     {
         if (addr.trim().indexOf(".") != -1 && addr.trim().indexOf(" ") == -1)
@@ -2198,20 +2147,6 @@ public class jScopeFacade
             wave_panel.SetDataServer(new_srv_item, this);
 
             wave_panel.SetCacheState(new_srv_item.enable_cache);
-            use_cache_i.setState(new_srv_item.enable_cache);
-            free_cache_i.setEnabled(new_srv_item.enable_cache);
-
-            fast_network_i.setEnabled(wave_panel.SupportsFastNetwork());
-            fast_network_i.setState(wave_panel.GetFastNetworkState());
-            SetFastNetworkState(wave_panel.GetFastNetworkState());
-
-            enable_compression_i.setEnabled(wave_panel.SupportsCompression());
-            if (!wave_panel.SupportsCompression())
-                new_srv_item.enable_compression = false;
-
-            enable_compression_i.setState(new_srv_item.enable_compression);
-            SetCompressionState(new_srv_item.enable_compression);
-
             setDataServerLabel();
 
             return true;
@@ -2756,85 +2691,38 @@ public class jScopeFacade
 //	    wi.colors[i] = color_dialog.GetColorAt(wi.colors_idx[i]);
     }
 
-    public void SetFastNetworkState(boolean state)
-    {
-        wave_panel.SetFastNetworkState(state);
-        if (state)
-        {
-            use_cache_i.setState(false);
-            wave_panel.SetCacheState(false);
-        }
-        use_cache_i.setEnabled(!state);
-        free_cache_i.setEnabled(!state);
-
-    }
-
-    public void SetCacheState(boolean state)
-    {
-        wave_panel.SetCacheState(state);
-        free_cache_i.setEnabled(state);
-    }
-
-    public void SetCompressionState(boolean state) throws IOException
-    {
-        wave_panel.SetCompression(state, this);
-    }
-
-    public void itemStateChanged(ItemEvent e)
+     public void itemStateChanged(ItemEvent e)
     {
 
         Object ob = e.getSource();
 
-        try
+        if (ob == brief_error_i)
         {
-            if (ob == fast_network_i)
-            {
-                SetFastNetworkState(fast_network_i.getState());
-            }
-
-            if (ob == enable_compression_i)
-            {
-                SetCompressionState(enable_compression_i.getState());
-            }
-
-            if (ob == brief_error_i)
-            {
-                WaveInterface.brief_error = brief_error_i.getState();
+            WaveInterface.brief_error = brief_error_i.getState();
 //	        wave_panel.SetBriefError(brief_error_i.getState());
-            }
-
-            if (ob == use_cache_i)
-            {
-                SetCacheState(use_cache_i.getState());
-            }
-
-            if (e.getStateChange() != ItemEvent.SELECTED)
-                return;
-
-            if (ob == copy)
-            {
-                wave_panel.SetMode(Waveform.MODE_COPY);
-            }
-
-            if (ob == zoom)
-            {
-                wave_panel.SetMode(Waveform.MODE_ZOOM);
-            }
-
-            if (ob == point)
-            {
-                wave_panel.SetMode(Waveform.MODE_POINT);
-            }
-
-            if (ob == pan)
-            {
-                wave_panel.SetMode(Waveform.MODE_PAN);
-            }
         }
-        catch (IOException ev)
+
+         if (e.getStateChange() != ItemEvent.SELECTED)
+            return;
+
+        if (ob == copy)
         {
-            JOptionPane.showMessageDialog(null, ev.getMessage(), "alert itemStateChanged",
-                                          JOptionPane.ERROR_MESSAGE);
+            wave_panel.SetMode(Waveform.MODE_COPY);
+        }
+
+        if (ob == zoom)
+        {
+            wave_panel.SetMode(Waveform.MODE_ZOOM);
+        }
+
+        if (ob == point)
+        {
+            wave_panel.SetMode(Waveform.MODE_POINT);
+        }
+
+        if (ob == pan)
+        {
+            wave_panel.SetMode(Waveform.MODE_PAN);
         }
 
     }
@@ -3228,10 +3116,6 @@ remove 28/06/2005
             root.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
-    public boolean isFastNetworkEnabled()
-    {
-        return fast_network_i.getState();
-    }
 }
 
 class WindowDialog
@@ -3449,6 +3333,7 @@ class ServerDialog
     JLabel server_label, user_label;
     JTextField server_l, server_a, server_u;
     JCheckBox automatic;
+//    JComboBox<String> data_provider_list;
     JComboBox data_provider_list;
 
     JCheckBox tunneling;
@@ -3502,8 +3387,7 @@ class ServerDialog
                     server_l.setText(dw.server_ip_list[idx].name);
                     server_a.setText(dw.server_ip_list[idx].argument);
                     server_u.setText(dw.server_ip_list[idx].user);
-                    data_provider_list.setSelectedItem(dw.server_ip_list[idx].
-                        class_name);
+                    data_provider_list.setSelectedItem(dw.server_ip_list[idx].class_name);
                     if (dw.server_ip_list[idx].tunnel_port != null)
                     {
                         if (dw.server_ip_list[idx].tunnel_port.trim().length() ==
@@ -3629,16 +3513,16 @@ class ServerDialog
 
         c.gridwidth = GridBagConstraints.REMAINDER;
         c.fill = GridBagConstraints.BOTH;
+ //       data_provider_list = new JComboBox<String>();
         data_provider_list = new JComboBox();
         gridbag.setConstraints(data_provider_list, c);
         getContentPane().add(data_provider_list);
-        data_provider_list.addActionListener(new ActionListener()
-        {
+        data_provider_list.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 try
                 {
-                    String srv = (String) data_provider_list.getSelectedItem();
+                    String srv = (String)data_provider_list.getSelectedItem();
                     if (srv != null)
                     {
                         Class cl = Class.forName("jScope."+srv);
@@ -3877,8 +3761,7 @@ class ServerDialog
 
                 addServerIp(new DataServerItem(srv, server_a.getText().trim(),
                                                server_u.getText().trim(),
-                                               (String) data_provider_list.
-                                               getSelectedItem(),
+                                               (String)data_provider_list.getSelectedItem(),
                                                null, null, tunnel_port.getText(), false));
             }
         }
@@ -3926,8 +3809,7 @@ class ServerDialog
                     }
                     dw.server_ip_list[idx].argument = server_a.getText().trim();
                     dw.server_ip_list[idx].user = server_u.getText().trim();
-                    dw.server_ip_list[idx].class_name = (String)
-                    data_provider_list.getSelectedItem();
+                    dw.server_ip_list[idx].class_name = (String)data_provider_list.getSelectedItem();
                     dw.server_ip_list[idx].tunnel_port = tunnel_port.getText();
                     server_list.repaint();
                     //It is need to update the current data server if it is

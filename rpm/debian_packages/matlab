@@ -1,8 +1,0 @@
-Package: mdsplus--FLAVOR---matlab
-Version: --VERSION--.--RELEASE--
-Section: admin
-Priority: optional
-Architecture: --ARCH--
-Depends: mdsplus--FLAVOR---kernel
-Maintainer: Tom Fredian <twf@www.mdsplus.org>
-Description: MDSplus MATLAB integration configuration files.

@@ -118,7 +118,7 @@ static void GetPodSettings(int nid, int *settings);
 #define pio(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, 0),status)
 #define pioq(f,a,d)  return_on_error(DevCamChk(CamPiow(setup->name, a, f, d, 16, 0), &one, &one),status)
 #define stopw(f,a,count,d)  return_on_error(DevCamChk(CamStopw(setup->name, a, f, count, d, 16, 0), &one, 0),status)
-#define lamwait //CamLamwait(setup->name, 30);
+#define lamwait			//CamLamwait(setup->name, 30);
 
 #define send_hv2(cs,vm,t) {\
 				 unsigned short ndata=1024*cs + 16*vm+t;\
@@ -132,10 +132,10 @@ static void GetPodSettings(int nid, int *settings);
 	stopw(2,0,33,buf);\
 	}
 
-static int one=1;
+static int one = 1;
 extern int DevWait(float);
 
-int hv4032___init(struct descriptor *niddsc, InInitStruct *setup)
+int hv4032___init(struct descriptor *niddsc, InInitStruct * setup)
 {
   int status = 1;
   int pod;
@@ -143,24 +143,23 @@ int hv4032___init(struct descriptor *niddsc, InInitStruct *setup)
   int i;
   static int settings[HV4032_K_MAX_CHANNELS];
 
-  for (pod=0,ind=0; pod<HV4032_K_MAX_PODS; pod++, ind+= HV4032_K_CHANS_PER_POD)  
+  for (pod = 0, ind = 0; pod < HV4032_K_MAX_PODS; pod++, ind += HV4032_K_CHANS_PER_POD)
     GetPodSettings(setup->head_nid + HV4032_N_POD_1 + pod, &settings[ind]);
 
-  pio(9,0,0);		       		/* clear the interface */
-  pio(26,1,0);                		/* enable lam2 */
-  send_hv2(37,0,0);			/* send data to to chan 99 all frames */
-  send_hv2(0,3,1);			/* 125 V/sec ramp */
-  wait_hv2;				/* wait for it to complete */
-  send_hv2(0,16,2)			/* send 32 channels to frame 16 */
-  for (i=0; i<HV4032_K_MAX_CHANNELS; i++) {
-    if(settings[i] != -1) {
-      send_hv2(0, settings[i], 1);		/* write the settings for this channel */
-    }
-    else {
-      send_hv2(0, 0, 1);			/* write zero for this channel */
+  pio(9, 0, 0);			/* clear the interface */
+  pio(26, 1, 0);		/* enable lam2 */
+  send_hv2(37, 0, 0);		/* send data to to chan 99 all frames */
+  send_hv2(0, 3, 1);		/* 125 V/sec ramp */
+  wait_hv2;			/* wait for it to complete */
+  send_hv2(0, 16, 2)		/* send 32 channels to frame 16 */
+      for (i = 0; i < HV4032_K_MAX_CHANNELS; i++) {
+    if (settings[i] != -1) {
+      send_hv2(0, settings[i], 1);	/* write the settings for this channel */
+    } else {
+      send_hv2(0, 0, 1);	/* write zero for this channel */
     }
   }
-  wait_hv2;			 		/* wait for it to complete */
+  wait_hv2;			/* wait for it to complete */
   /* lib$wait(&15.); */
   return status;
 }
@@ -169,61 +168,64 @@ static void GetPodSettings(int nid, int *settings)
 {
   static int dev_nid;
   int status = DevNid(&nid, &dev_nid);
-  if (status&1) {
+  if (status & 1) {
     static DESCRIPTOR(get_settings, "GET_SETTINGS");
     static DESCRIPTOR_NID(nid_dsc, &dev_nid);
-    status = TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV4032_K_CHANS_PER_POD, settings MDS_END_ARG);
+    status =
+	TreeDoMethod(&nid_dsc, (struct descriptor *)&get_settings, HV4032_K_CHANS_PER_POD,
+		     settings MDS_END_ARG);
   }
-  if ((status&1)==0) {
+  if ((status & 1) == 0) {
     int i;
-    for (i=0; i<HV4032_K_CHANS_PER_POD; i++)
+    for (i = 0; i < HV4032_K_CHANS_PER_POD; i++)
       settings[i] = 0;
   }
   return;
 }
 
-int hv4032___store(struct descriptor *niddsc, InStoreStruct *setup)
+int hv4032___store(struct descriptor *niddsc, InStoreStruct * setup)
 {
   int status = 1;
   int i;
   static int settings[HV4032_K_MAX_CHANNELS];
   static DESCRIPTOR(out_dsc, "BUILD_WITH_UNITS($, 'Volts')");
   static DESCRIPTOR_A(settings_dsc, sizeof(int), DTYPE_L, settings, sizeof(settings));
-  static struct descriptor_xd out_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};
+  static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   int readout_nid = setup->head_nid + HV4032_N_READOUT;
-  pio(9,0,0);
-  pio(26,1,0);
-  send_hv2(0,16,4);
+  pio(9, 0, 0);
+  pio(26, 1, 0);
+  send_hv2(0, 16, 4);
   DevWait((float).01);
-  for (i=0; i < HV4032_K_MAX_CHANNELS; i++) {
+  for (i = 0; i < HV4032_K_MAX_CHANNELS; i++) {
     int ivolt;
     unsigned short attempts;
-    for(ivolt=0,attempts=0; ivolt%16 != 3 && attempts < 40; attempts++) {
-      pio(2,0,&ivolt);
-      settings[i] = (ivolt-3)/16;
+    for (ivolt = 0, attempts = 0; ivolt % 16 != 3 && attempts < 40; attempts++) {
+      pio(2, 0, &ivolt);
+      settings[i] = (ivolt - 3) / 16;
       DevWait((float).005);
     }
-    if (attempts == 40) settings[i] = -1;
+    if (attempts == 40)
+      settings[i] = -1;
   }
   wait_hv2;
   return_on_error(TdiCompile(&out_dsc, &settings_dsc, &out_xd MDS_END_ARG), status);
   return_on_error(TreePutRecord(readout_nid, (struct descriptor *)&out_xd, 0), status);
-  MdsFree1Dx(&out_xd,0);
+  MdsFree1Dx(&out_xd, 0);
   return status;
 }
 
-int hv4032___on(struct descriptor *niddsc, InOnStruct *setup)
+int hv4032___on(struct descriptor *niddsc, InOnStruct * setup)
 {
   int status = 1;
-  send_hv2(1,0,5);
+  send_hv2(1, 0, 5);
   wait_hv2;
   return status;
 }
 
-int hv4032___off(struct descriptor *niddsc_ptr, InOffStruct *setup)
+int hv4032___off(struct descriptor *niddsc_ptr, InOffStruct * setup)
 {
   int status = 1;
-  send_hv2(0,0,5);
+  send_hv2(0, 0, 5);
   wait_hv2;
   return status;
 }

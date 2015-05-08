@@ -36,7 +36,6 @@ void XmdsUsageIconsInitialize(Widget w);
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <X11/Xlib.h>
@@ -73,33 +72,29 @@ static Pixmap *gray_icons;
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */
 
 void XmdsUsageIconsInitialize(Widget w)
 {
-  static String hierarchy_name[] = {"xmds_usage_icons.uid"};
+  static String hierarchy_name[] = { "xmds_usage_icons.uid" };
   static MrmHierarchy mrm_hierarchy;
   int usage;
   int usages;
-  if (!icons)
-  {
+  if (!icons) {
     MrmInitialize();
-    MrmOpenHierarchy(1,hierarchy_name,0,&mrm_hierarchy);
+    MrmOpenHierarchy(1, hierarchy_name, 0, &mrm_hierarchy);
     usages = 13;
-    icons = (unsigned long *) XtMalloc(sizeof(Pixmap) * usages * 2);
+    icons = (unsigned long *)XtMalloc(sizeof(Pixmap) * usages * 2);
     gray_icons = icons + usages;
-    for (usage = 0; usage < usages; usage++)
-    {
-      char name[] = {'U',0,0,0,0};
+    for (usage = 0; usage < usages; usage++) {
+      char name[] = { 'U', 0, 0, 0, 0 };
       name[1] = '0' + (usage / 10);
       name[2] = '0' + usage - (usage / 10) * 10;
-      MrmFetchIconLiteral(mrm_hierarchy,name,XtScreen(w),XtDisplay(w),0,1,&icons[usage]);
+      MrmFetchIconLiteral(mrm_hierarchy, name, XtScreen(w), XtDisplay(w), 0, 1, &icons[usage]);
       name[0] = 'X';
-      MrmFetchIconLiteral(mrm_hierarchy,name,XtScreen(w),XtDisplay(w),0,1,&gray_icons[usage]);
+      MrmFetchIconLiteral(mrm_hierarchy, name, XtScreen(w), XtDisplay(w), 0, 1, &gray_icons[usage]);
     }
     MrmCloseHierarchy(mrm_hierarchy);
   }

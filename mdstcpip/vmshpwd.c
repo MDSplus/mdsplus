@@ -46,15 +46,11 @@ Comments:	The overall speed of this routine is not great.  This is
 #	include "b_order.h"
 #endif
 
-
 /* Uncomment this #define if you want the output in string comparable format */
-/* #define STRING_OUTPUT	*/			/* String format */
-
+							/* #define STRING_OUTPUT	*//* String format */
 
 #ifndef VMS
-#ifndef HAVE_VXWORKS_H
-#include <memory.h>			/* for memset/memcpy */
-#endif
+#include <memory.h>		/* for memset/memcpy */
 #endif
 
 #ifdef VMS
@@ -67,11 +63,10 @@ Comments:	The overall speed of this routine is not great.  This is
 #endif
 
 /* Encryption method codes */
-#define UaiAD_II   0	     /* AUTODIN-II 32 bit crc code       */
-#define UaiPURDY   1	     /* Purdy polynomial over salted input */
-#define UaiPURDY_V 2	     /* Purdy polynomial + variable length username */
-#define UaiPURDY_S 3      /* PURDY_V + additional bit rotation */
-
+#define UaiAD_II   0		/* AUTODIN-II 32 bit crc code       */
+#define UaiPURDY   1		/* Purdy polynomial over salted input */
+#define UaiPURDY_V 2		/* Purdy polynomial + variable length username */
+#define UaiPURDY_S 3		/* PURDY_V + additional bit rotation */
 
 /** Type definitions **/
 
@@ -91,255 +86,212 @@ Comments:	The overall speed of this routine is not great.  This is
 /*
  *	Fixed-Length Descriptor:
  */
-struct	descriptor_s
-{
-	unsigned short	length;	/* length of data item in bytes */
-	unsigned char	dtype;	/* data type code (ignore) */
-	unsigned char	class;	/* descriptor class code (ignore) */
-	char		*pointer;	/* address of first byte of data storage */
+struct descriptor_s {
+  unsigned short length;	/* length of data item in bytes */
+  unsigned char dtype;		/* data type code (ignore) */
+  unsigned char class;		/* descriptor class code (ignore) */
+  char *pointer;		/* address of first byte of data storage */
 };
 #endif
 
-
 typedef struct descriptor_s string;
-
 
 /*
  *	Create a quadword data type as successive longwords.
  */
 typedef struct {
-	unsigned int	l_low,	/* Low order longword in the quadword */
-			l_high;	/* High order longword in the quadword */
-	} QUAD;
-
+  unsigned int l_low,		/* Low order longword in the quadword */
+   l_high;			/* High order longword in the quadword */
+} QUAD;
 
 /*
  *	The following table of coefficients is used by the Purdy polynmial
  *	algorithm.  They are prime, but the algorithm does not require this.
  */
 struct {
-	QUAD	C1,
-		C2,
-		C3,
-		C4,
-		C5;
-	} C = { {-83,  -1}, {-179, -1}, {-257, -1}, {-323, -1}, {-363, -1} };
-
-
+  QUAD C1, C2, C3, C4, C5;
+} C = { {
+-83, -1}, {
+-179, -1}, {
+-257, -1}, {
+-323, -1}, {
+-363, -1}};
 
 /** Function prototypes **/
 
-static void COLLAPSE_R2 (string *r3, char *r4, char r7);
+static void COLLAPSE_R2(string * r3, char *r4, char r7);
 						/* r3 -> input descriptor
 						   r4 -> output buffer
 						   r7 : Method 3 flag */
-void Purdy (QUAD *U);				/* U -> output buffer */
-static void PQMOD_R0 (QUAD *U);			/* U MOD P       */
-static void PQEXP_R3 (QUAD *U,
-		      unsigned int n,
-		      QUAD *result);		/* U^n MOD P     */
-static void PQADD_R0 (QUAD *U,
-		      QUAD *Y,
-		      QUAD *result);		/* U + Y MOD P   */
-static void PQMUL_R2 (QUAD *U,
-		      QUAD *Y,
-		      QUAD *result);		/* U * Y MOD P   */
-static void EMULQ    (unsigned int a,
-		      unsigned int b,
-		      QUAD *result);		/*  (a * b)	 */
-static void PQLSH_R0 (QUAD *U,
-		      QUAD *result); 		/* 2^32*U MOD P  */
-void reverse_buf (char *buf, int size);
-
-
+void Purdy(QUAD * U);		/* U -> output buffer */
+static void PQMOD_R0(QUAD * U);	/* U MOD P       */
+static void PQEXP_R3(QUAD * U, unsigned int n, QUAD * result);	/* U^n MOD P     */
+static void PQADD_R0(QUAD * U, QUAD * Y, QUAD * result);	/* U + Y MOD P   */
+static void PQMUL_R2(QUAD * U, QUAD * Y, QUAD * result);	/* U * Y MOD P   */
+static void EMULQ(unsigned int a, unsigned int b, QUAD * result);	/*  (a * b)      */
+static void PQLSH_R0(QUAD * U, QUAD * result);	/* 2^32*U MOD P  */
+void reverse_buf(char *buf, int size);
 
 /** RELATIVELY GLOBAL variables **/
 
-unsigned int 		MAXINT = 4294967295LU;	/* Largest 32 bit number */
-unsigned int 		a = 59;	/* 2^64 - 59 is the biggest quadword prime */
-QUAD			P;	/* P = 2^64 - 59 */
-                        	
-
+unsigned int MAXINT = 4294967295LU;	/* Largest 32 bit number */
+unsigned int a = 59;		/* 2^64 - 59 is the biggest quadword prime */
+QUAD P;				/* P = 2^64 - 59 */
 
 /** LGIHPWD entry point **/
 
-int Lgihpwd(
-	string *output_hash,
-	string *password,
-	unsigned char encrypt,
-	unsigned short salt,
-	string *username)
+int Lgihpwd(string * output_hash,
+	    string * password, unsigned char encrypt, unsigned short salt, string * username)
 {
 
-char *U;			/* Points to start of output buffer */
-unsigned int    r0;		/* Index register */
-string		*r3;		/* Holds descriptors for COLLAPSE_R2 */
-QUAD        	*r4;		/* Address of the output buffer */
-unsigned int	r5;		/* Length of username */
-char		*r6,		/* Username descriptor */
-		r7 = 0,		/* Flag for encryption method # 3 */
-		*bytptr;	/* Pointer for adding in random salt */
-QUAD		qword;		/* Quadword form of the output buffer */
-char		uname[13] = "            ";
+  char *U;			/* Points to start of output buffer */
+  unsigned int r0;		/* Index register */
+  string *r3;			/* Holds descriptors for COLLAPSE_R2 */
+  QUAD *r4;			/* Address of the output buffer */
+  unsigned int r5;		/* Length of username */
+  char *r6,			/* Username descriptor */
+   r7 = 0,			/* Flag for encryption method # 3 */
+      *bytptr;			/* Pointer for adding in random salt */
+  QUAD qword;			/* Quadword form of the output buffer */
+  char uname[13] = "            ";
 
 /* ------------------------------------------------------------------------ */
 
-
 /* Check for invalid parameters */
-if (output_hash->length != 8)
-   {
-      printf("Internal coding error, output_hash is not 8 bytes long.\n");
-      exit(SsABORT);
-   }
-if ((encrypt < 1) || (encrypt > 3))
-   {
-      printf("Encrypt error; only algorithms 1-3 are currently supported.\n");
-      exit(SsABORT);
-   }
-if (username->length > 31)
-   {
-      printf("Internal coding error, username is more than 31 bytes long.\n");
-      exit(SsABORT);
-   }
-
+  if (output_hash->length != 8) {
+    printf("Internal coding error, output_hash is not 8 bytes long.\n");
+    exit(SsABORT);
+  }
+  if ((encrypt < 1) || (encrypt > 3)) {
+    printf("Encrypt error; only algorithms 1-3 are currently supported.\n");
+    exit(SsABORT);
+  }
+  if (username->length > 31) {
+    printf("Internal coding error, username is more than 31 bytes long.\n");
+    exit(SsABORT);
+  }
 
 /* Setup pointer references */
-U = output_hash->pointer; /* eg. U[1]..U[8] equals obuf[1]..obuf[8] */
-r3 = password;			/* 1st COLLAPSE uses the password desc.   */
-r4 = (QUAD *)output_hash->pointer;	/* @r4..@r4+7 equals obuf */
-r5 = username->length;
-r6 = (char *)username;
-r7 = (encrypt == 3);
-
+  U = output_hash->pointer;	/* eg. U[1]..U[8] equals obuf[1]..obuf[8] */
+  r3 = password;		/* 1st COLLAPSE uses the password desc.   */
+  r4 = (QUAD *) output_hash->pointer;	/* @r4..@r4+7 equals obuf */
+  r5 = username->length;
+  r6 = (char *)username;
+  r7 = (encrypt == 3);
 
 /* Define P = 2^64 - a = MAXINT.MAXINT - a + 1	*/
 /* since MAXINT.MAXINT = 2^64 - 1		*/
-P.l_high = MAXINT;
-P.l_low = MAXINT - a + 1;
-
+  P.l_high = MAXINT;
+  P.l_low = MAXINT - a + 1;
 
 /* Clear the output buffer (zero the quadword) */
-memset(U, 0, 8);
-
+  memset(U, 0, 8);
 
 /* Check for the null password */
-if (password->length == 0)
-   {
-	exit(SsNORMAL);
-   }
+  if (password->length == 0) {
+    exit(SsNORMAL);
+  }
 
-switch (encrypt) {
+  switch (encrypt) {
 
-   case UaiAD_II:		/* CRC algorithm with Autodin II poly */
-	/* As yet unsupported */
-	break;
+  case UaiAD_II:		/* CRC algorithm with Autodin II poly */
+    /* As yet unsupported */
+    break;
 
-   case UaiPURDY:		/* Purdy algorithm */
+  case UaiPURDY:		/* Purdy algorithm */
 
- 	/* Use a blank padded username */
-	strncpy(uname, username->pointer, r5);
-	username->pointer = (char *)uname;
-	username->length = 12;
-	break;
+    /* Use a blank padded username */
+    strncpy(uname, username->pointer, r5);
+    username->pointer = (char *)uname;
+    username->length = 12;
+    break;
 
-   case UaiPURDY_V:		/* Purdy with blanks stripped */
-   case UaiPURDY_S:		/* Hickory algorithm; Purdy_V with rotation */
+  case UaiPURDY_V:		/* Purdy with blanks stripped */
+  case UaiPURDY_S:		/* Hickory algorithm; Purdy_V with rotation */
 
-	/* Check padding.  Don't count blanks in the string length.
-	* Remember:  r6->username_descriptor   the first word is length, then
-	* 2 bytes of class information (4 bytes total), then the address of the
-	* buffer.  Usernames can not be longer than 31 characters.
-	*/
-	for (r0=0; (strcmp(r6+4+r0," ")==0) || (r0==r5) || (r0==31);
-	     /* r0++,(unsigned short)*r6++); */
-					r0++,r6++);
-	/* This part       ^^^^^^^     is the buffer holding the username */
+    /* Check padding.  Don't count blanks in the string length.
+     * Remember:  r6->username_descriptor   the first word is length, then
+     * 2 bytes of class information (4 bytes total), then the address of the
+     * buffer.  Usernames can not be longer than 31 characters.
+     */
+    for (r0 = 0; (strcmp(r6 + 4 + r0, " ") == 0) || (r0 == r5) || (r0 == 31);
+	 /* r0++,(unsigned short)*r6++); */
+	 r0++, r6++) ;
+    /* This part       ^^^^^^^     is the buffer holding the username */
 
-	/* If Purdy_S:  Bytes 0-1 => plaintext length */
-	if (r7) {
-	   *(unsigned short *)(U) = password->length;
-	   if (BIG_ENDIAN) reverse_buf (U, 2);	/* Fix for byte order */
-	}
+    /* If Purdy_S:  Bytes 0-1 => plaintext length */
+    if (r7) {
+      *(unsigned short *)(U) = password->length;
+      if (BIG_ENDIAN)
+	reverse_buf(U, 2);	/* Fix for byte order */
+    }
 
-	break;
-   }
-
+    break;
+  }
 
 /* Collapse the password to a quadword U; buffer pointed to by r4 */
-COLLAPSE_R2 (r3, (char *)r4, r7);
-				/* r3 already points to password descriptor */
-
+  COLLAPSE_R2(r3, (char *)r4, r7);
+  /* r3 already points to password descriptor */
 
 /* Add random salt into the middle of U */
 /* This has to be done byte-wise because the Sun will not allow you */
 /* to add unaligned words, or it will give you a bus error and core dump :) */
-bytptr = (char *)((char *)r4 + 3 + 1);
-*bytptr += (char)(salt>>8);			/* Add the high byte */
+  bytptr = (char *)((char *)r4 + 3 + 1);
+  *bytptr += (char)(salt >> 8);	/* Add the high byte */
 
 /* Check for carry out of the low byte */
-bytptr--;
-if ( (short)((unsigned char)*bytptr + (unsigned char)(salt & 0xff)) > 255) {
-   *(bytptr + 1) += 1;				/* Account for the carry */
-   }
-*bytptr += (char)(salt & 0xff);			/* Add the low byte */
-
-
+  bytptr--;
+  if ((short)((unsigned char)*bytptr + (unsigned char)(salt & 0xff)) > 255) {
+    *(bytptr + 1) += 1;		/* Account for the carry */
+  }
+  *bytptr += (char)(salt & 0xff);	/* Add the low byte */
 
 /* Collapse the username into the quadword */
-r3 = username;			/* Point r3 to the valid username desriptor */
-COLLAPSE_R2 (r3, (char *)r4, r7);
+  r3 = username;		/* Point r3 to the valid username desriptor */
+  COLLAPSE_R2(r3, (char *)r4, r7);
 
 /* U (qword) contains the 8 character output buffer in quadword format */
-if (BIG_ENDIAN) {
-   reverse_buf(U, 8);
-   memcpy(&qword.l_high, U, 4);	/* Reverse high and low longwords */
-   memcpy(&qword.l_low, U+4, 4);
-   }
-else {
-   memcpy (&qword, U, 8);
-}
-
+  if (BIG_ENDIAN) {
+    reverse_buf(U, 8);
+    memcpy(&qword.l_high, U, 4);	/* Reverse high and low longwords */
+    memcpy(&qword.l_low, U + 4, 4);
+  } else {
+    memcpy(&qword, U, 8);
+  }
 
 /* Run U through the polynomial mod P */
-Purdy (&qword);
-
+  Purdy(&qword);
 
 #ifdef STRING_OUTPUT
 
 /* We only need to fix up the buffer for BIG_ENDIAN machines */
-if (BIG_ENDIAN) {
-   memcpy(U, &qword.l_high, 4);
-   memcpy(U+4, &qword.l_low, 4);
-   reverse_buf(U, 8);
-   }
-else {
-   memcpy (U, &qword, 8);
-}
+  if (BIG_ENDIAN) {
+    memcpy(U, &qword.l_high, 4);
+    memcpy(U + 4, &qword.l_low, 4);
+    reverse_buf(U, 8);
+  } else {
+    memcpy(U, &qword, 8);
+  }
 
-#else 				/* Numerically correct answer */
+#else				/* Numerically correct answer */
 
 /* Write qword back into the output buffer */
-memcpy (U, &qword, 8);
+  memcpy(U, &qword, 8);
 
 #endif
 
-
 /* Normal exit */
-return SsNORMAL;
+  return SsNORMAL;
 
-} /* LGIHPWD */
-
-
-
+}				/* LGIHPWD */
 
 /***************	Functions Section	*******************/
-
 
 /***************
    COLLAPSE_R2
  ***************/
 
-static void COLLAPSE_R2 (string *r3, char *r4, char r7)
+static void COLLAPSE_R2(string * r3, char *r4, char r7)
 /*
    r3 :  input string descriptor
    r4 :  output buffer (quadword)
@@ -352,76 +304,70 @@ the input string.  Additionally, after every 8 characters, each longword in
 the resultant hash is rotated by one bit (PURDY_S only).
 
 */
-
 {
-unsigned short r0, r1;
-unsigned int high, low, rotate;
-char *r2, mask = -8;
+  unsigned short r0, r1;
+  unsigned int high, low, rotate;
+  char *r2, mask = -8;
 
 /* ------------------------------------------------------------------------- */
 
-r0 = r3->length;			/* Obtain the number of input bytes */
+  r0 = r3->length;		/* Obtain the number of input bytes */
 
-if (r0 != 0) {
+  if (r0 != 0) {
 
-   r2 = r3->pointer;		/* Obtain pointer to input string */
+    r2 = r3->pointer;		/* Obtain pointer to input string */
 
-   for (; (r0 != 0); r0--) {		/* Loop until input string exhausted */
+    for (; (r0 != 0); r0--) {	/* Loop until input string exhausted */
 
-	r1 = (~mask & r0);		/* Obtain cyclic index into out buff */
-	*(r4+r1) += *r2++;		/* Add in this character */
+      r1 = (~mask & r0);	/* Obtain cyclic index into out buff */
+      *(r4 + r1) += *r2++;	/* Add in this character */
 
-	if ((r7) && (r1 == 7))		/* If Purdy_S and last byte ... */
-	{
-	   if (BIG_ENDIAN) {
-   		reverse_buf(r4, 8);
-		memcpy ((unsigned int *)&low, r4+4, 4);
-		memcpy ((unsigned int *)&high, r4, 4);
-	      }
-	   else {
-		memcpy ((unsigned int *)&low, r4, 4);
-		memcpy ((unsigned int *)&high, r4+4, 4);
-	   }
+      if ((r7) && (r1 == 7)) {	/* If Purdy_S and last byte ... */
+	if (BIG_ENDIAN) {
+	  reverse_buf(r4, 8);
+	  memcpy((unsigned int *)&low, r4 + 4, 4);
+	  memcpy((unsigned int *)&high, r4, 4);
+	} else {
+	  memcpy((unsigned int *)&low, r4, 4);
+	  memcpy((unsigned int *)&high, r4 + 4, 4);
+	}
 
-	   /* Rotate first longword one bit */
-	   rotate = low & 0x80000000;
-	   low <<= 1;
-	   rotate >>=31;
-	   low |= rotate;
+	/* Rotate first longword one bit */
+	rotate = low & 0x80000000;
+	low <<= 1;
+	rotate >>= 31;
+	low |= rotate;
 
-	   /* Rotate second longword one bit */
-	   rotate = high & 0x80000000;
-	   high <<= 1;
-	   rotate >>=31;
-	   high |= rotate;
+	/* Rotate second longword one bit */
+	rotate = high & 0x80000000;
+	high <<= 1;
+	rotate >>= 31;
+	high |= rotate;
 
-	   /* Stick the rotated longwords back into the buffer */
-	   if (BIG_ENDIAN) {
-		memcpy (r4+4, &low, 4);
-		memcpy (r4, &high, 4);
-   		reverse_buf(r4, 8);
-	      }
-	   else {
-		memcpy (r4, &low, 4);
-		memcpy (r4+4, &high, 4);
-	      }
-	} /* if Purdy_S */
+	/* Stick the rotated longwords back into the buffer */
+	if (BIG_ENDIAN) {
+	  memcpy(r4 + 4, &low, 4);
+	  memcpy(r4, &high, 4);
+	  reverse_buf(r4, 8);
+	} else {
+	  memcpy(r4, &low, 4);
+	  memcpy(r4 + 4, &high, 4);
+	}
+      }
+      /* if Purdy_S */
+    }				/* for loop */
 
-     } /* for loop */
+  }
+  /* if not 0 length buffer */
+  return;
 
-   } /* if not 0 length buffer */
-
-return;
-
-} /* COLLAPSE_R2 */
-
-
+}				/* COLLAPSE_R2 */
 
 /*********
    Purdy
  *********/
 
-void Purdy (QUAD *U)
+void Purdy(QUAD * U)
 
 /*
 U : output buffer (quadword)
@@ -439,76 +385,68 @@ Note:  Part1 is calculated by its congruence  (X^(n0-n1) + C1)*X^n1
 
 The input U is an unsigned quadword.
 */
-
 {
-QUAD 	     *r5 = (QUAD *)&C;	/* Address of table (C) */
-unsigned int n0 = 16777213,	/* These exponents are prime, but this is  */
-	      n1 = 16777153;	/* not required by the algorithm 	   */
-				/* n0 = 2^24 - 3;  n1 = 2^24 - 63;  n0-n1 = 60*/
-QUAD	      X,		/* The variable X in the polynomial */
-	      stack,		/* Returned quadword on stack */
-	      part1,		/* Collect the polynomial ... */
-	      part2;		/* ... in two parts */
-
+  QUAD *r5 = (QUAD *) & C;	/* Address of table (C) */
+  unsigned int n0 = 16777213,	/* These exponents are prime, but this is  */
+      n1 = 16777153;		/* not required by the algorithm           */
+  /* n0 = 2^24 - 3;  n1 = 2^24 - 63;  n0-n1 = 60 */
+  QUAD X,			/* The variable X in the polynomial */
+   stack,			/* Returned quadword on stack */
+   part1,			/* Collect the polynomial ... */
+   part2;			/* ... in two parts */
 
 /* ------------------------------------------------------------------------- */
 
-
 /* Ensure U less than P by taking U MOD P  */
 /* Save copy of result:  X = U MOD P       */
-X.l_low = U->l_low;
-X.l_high = U->l_high;
+  X.l_low = U->l_low;
+  X.l_high = U->l_high;
 
-PQMOD_R0 (&X);				/* Make sure U is less than P   */
+  PQMOD_R0(&X);			/* Make sure U is less than P   */
 
-PQEXP_R3 (&X, n1, &stack);		/* Calculate X^n1		*/
+  PQEXP_R3(&X, n1, &stack);	/* Calculate X^n1               */
 
-PQEXP_R3 (&X, (n0-n1), &part1);		/* Calculate X^(n0-n1)		*/
+  PQEXP_R3(&X, (n0 - n1), &part1);	/* Calculate X^(n0-n1)          */
 
-PQADD_R0 (&part1, r5, &part2);		/* X^(n0-n1) + C1 		*/
+  PQADD_R0(&part1, r5, &part2);	/* X^(n0-n1) + C1               */
 
-PQMUL_R2 (&stack, &part2, &part1);	/* X^n0 + X^n1*C1		*/
+  PQMUL_R2(&stack, &part2, &part1);	/* X^n0 + X^n1*C1               */
 /* Part 1 complete */
 
+  r5++;				/* Point to C2                  */
 
-r5++;					/* Point to C2			*/
+  PQMUL_R2(&X, r5, &stack);	/* X*C2                         */
 
-PQMUL_R2 (&X, r5, &stack);		/* X*C2				*/
+  r5++;				/* C3                           */
 
-r5++;					/* C3				*/
+  PQADD_R0(&stack, r5, &part2);	/* X*C2 + C3                    */
 
-PQADD_R0 (&stack, r5, &part2);		/* X*C2 + C3			*/
+  PQMUL_R2(&X, &part2, &stack);	/* X^2*C2 + X*C3                */
 
-PQMUL_R2 (&X, &part2, &stack);		/* X^2*C2 + X*C3		*/
+  r5++;				/* C4                           */
 
-r5++;					/* C4				*/
+  PQADD_R0(&stack, r5, &part2);	/* X^2*C2 + X*C3 + C4           */
 
-PQADD_R0 (&stack, r5, &part2);		/* X^2*C2 + X*C3 + C4		*/
+  PQMUL_R2(&X, &part2, &stack);	/* X^3*C2 + X^2*C3 + X*C4       */
 
-PQMUL_R2 (&X, &part2, &stack);		/* X^3*C2 + X^2*C3 + X*C4	*/
+  r5++;				/* C5                           */
 
-r5++;					/* C5				*/
-
-PQADD_R0 (&stack, r5, &part2);		/* X^3*C2 + X^2*C3 + X*C4 + C5	*/
+  PQADD_R0(&stack, r5, &part2);	/* X^3*C2 + X^2*C3 + X*C4 + C5  */
 /* Part 2 complete */
 
-
 /* Add in the high order terms.  Replace U with f(x) */
-PQADD_R0 (&part1, &part2, (QUAD *)U);
-
+  PQADD_R0(&part1, &part2, (QUAD *) U);
 
 /* Outta here... */
-return;
+  return;
 
-} /* Purdy */
-
-
+}				/* Purdy */
 
 /*********
    EMULQ
  *********/
 
-static void EMULQ (unsigned int a, unsigned int b, QUAD *result)
+static void EMULQ(unsigned int a, unsigned int b, QUAD * result)
 
 /*
 a, b   : longwords that we want to multiply (quadword result)
@@ -535,77 +473,70 @@ allocating space for the vectors and matrices.  Last, I removed the matrix, and
 added all the values to the 'temp' vector on the fly.  This greatly increased
 the speed, but still nowhere near Knuth or calling LIB$EMULQ.
 */
-
 {
-char bin_a[32], bin_b[32];
-char temp[64], i, j;
-char retbuf[8];
-
+  char bin_a[32], bin_b[32];
+  char temp[64], i, j;
+  char retbuf[8];
 
 /* Initialize */
-for (i=0; i<=63; i++) temp[i] = 0;
-for (i=0; i<=31; i++) bin_a[i] = bin_b[i] = 0;
-for (i=0; i<=7; retbuf[i]=0, i++);
-
+  for (i = 0; i <= 63; i++)
+    temp[i] = 0;
+  for (i = 0; i <= 31; i++)
+    bin_a[i] = bin_b[i] = 0;
+  for (i = 0; i <= 7; retbuf[i] = 0, i++) ;
 
 /* Store the binary representation of a & b */
-for (i=0; i<=31; i++) {
-	bin_a[i] = a & 1;
-	bin_b[i] = b & 1;
-	a >>= 1;
-	b >>= 1;
-    }
-
+  for (i = 0; i <= 31; i++) {
+    bin_a[i] = a & 1;
+    bin_b[i] = b & 1;
+    a >>= 1;
+    b >>= 1;
+  }
 
 /* Add in the shifted multiplicand */
-for (i=0; i<=31; i++) {
+  for (i = 0; i <= 31; i++) {
 
-        /* For each 1 in bin_b, add in bin_a, starting in the ith position */
-	if (bin_b[i] == 1) {
-		for (j=i; j<=i+31; j++)
-			temp[j] += bin_a[j-i];
-	}
+    /* For each 1 in bin_b, add in bin_a, starting in the ith position */
+    if (bin_b[i] == 1) {
+      for (j = i; j <= i + 31; j++)
+	temp[j] += bin_a[j - i];
     }
-
+  }
 
 /* Carry into the next position and set the binary value */
-for (j=0; j<=62; j++) {
-	temp[j+1] += temp[j] / 2;
-	temp[j] = temp[j] % 2;
-    }
-temp[63] = temp[63] % 2;
-
+  for (j = 0; j <= 62; j++) {
+    temp[j + 1] += temp[j] / 2;
+    temp[j] = temp[j] % 2;
+  }
+  temp[63] = temp[63] % 2;
 
 /* Convert binary bytes back into 8 packed bytes. */
 /* LEAST SIGNIFICANT BYTE FIRST!!!  This is LITTLE ENDIAN format. */
-for (i=0; i<=7; i++) {
-	for (j=0; j<=7; j++) retbuf[i] += temp[i*8 + j] * (1<<j);
-    }
-
+  for (i = 0; i <= 7; i++) {
+    for (j = 0; j <= 7; j++)
+      retbuf[i] += temp[i * 8 + j] * (1 << j);
+  }
 
 /* Copy the 8 byte buffer into result */
-if (BIG_ENDIAN) {
-   reverse_buf(retbuf, sizeof(retbuf));
+  if (BIG_ENDIAN) {
+    reverse_buf(retbuf, sizeof(retbuf));
 
-   /* Reverse high and low longwords */
-   memcpy((char *)result, retbuf+4, 4);
-   memcpy((char *)result+4, retbuf, 4);
-   }
-else {
-   memcpy ((char *)result, retbuf, 8);
-}
+    /* Reverse high and low longwords */
+    memcpy((char *)result, retbuf + 4, 4);
+    memcpy((char *)result + 4, retbuf, 4);
+  } else {
+    memcpy((char *)result, retbuf, 8);
+  }
 
-return;
+  return;
 
-} /* EMULQ */
-
-
+}				/* EMULQ */
 
 /************
    PQMOD_R0
  ************/
 
-static void PQMOD_R0 (QUAD *U)
+static void PQMOD_R0(QUAD * U)
 /*
 U : output buffer (quadword)
 
@@ -622,27 +553,24 @@ possibly be larger than P, and U MOD P = U.  If U is larger than MAXINT - 59,
 then U MOD P is the differential between (MAXINT - 59) and U, else U MOD P = U.
 If U equals P, then U MOD P = 0 = (P + 59).
 */
-
 {
 
 /* Check if U is larger/equal to P.  If not, then leave U alone. */
 
-if (U->l_high == P.l_high && U->l_low >= P.l_low) {
-	U->l_low += a;		/* This will have a carry out, and ...	*/
-	U->l_high = 0;		/* the carry will make l_high go to 0   */
-   }
+  if (U->l_high == P.l_high && U->l_low >= P.l_low) {
+    U->l_low += a;		/* This will have a carry out, and ...  */
+    U->l_high = 0;		/* the carry will make l_high go to 0   */
+  }
 
-return;
+  return;
 
-} /* PQMOD_R0 */
-
-
+}				/* PQMOD_R0 */
 
 /************
    PQEXP_R3
  ************/
 
-static void PQEXP_R3 (QUAD *U, unsigned int n, QUAD *result)
+static void PQEXP_R3(QUAD * U, unsigned int n, QUAD * result)
 /*
 U     : pointer to output buffer (quadword)
 n     : unsigned longword (exponent for U)
@@ -656,54 +584,49 @@ fewer than (n-1) multiplies.  The result is U^n MOD P only because the
 multiplication routine is MOD P.  Knuth's example is from Pingala's Hindu
 algorthim in the Chandah-sutra.
 */
-
 {
-QUAD Y, Z, Z1, Z2;		/* Intermediate factors for U */
-unsigned int odd;		/* Test for n odd/even */
-
+  QUAD Y, Z, Z1, Z2;		/* Intermediate factors for U */
+  unsigned int odd;		/* Test for n odd/even */
 
 /* Initialize */
-Y.l_low = 1;			/* Y = 1 */
-Y.l_high = 0;
-Z = *U;
-
+  Y.l_low = 1;			/* Y = 1 */
+  Y.l_high = 0;
+  Z = *U;
 
 /* Loop until n is zero */
-while (n != 0) {
+  while (n != 0) {
 
-   /* Test n */
-   odd = n % 2;
+    /* Test n */
+    odd = n % 2;
 
-   /* Halve n */
-   n /= 2;
+    /* Halve n */
+    n /= 2;
 
-   /* If n was odd, then we need an extra x (U) */
-   if (odd) 	/* n was odd */	{
-      PQMUL_R2 (&Y, &Z, result);
+    /* If n was odd, then we need an extra x (U) */
+    if (odd) {			/* n was odd */
+      PQMUL_R2(&Y, &Z, result);
       if (n == 0)
-	 break;			/* This is the stopping condition */
-				/* Disregard the exponent, which  */
-				/* would be the final Z^2.	  */
+	break;			/* This is the stopping condition */
+      /* Disregard the exponent, which  */
+      /* would be the final Z^2.        */
       Y = *result;		/* Copy for next pass */
-      }
+    }
 
-   /* Square Z; this squares the current power for Z */
-   Z1 = Z2 = Z;
-   PQMUL_R2 (&Z1, &Z2, &Z);
+    /* Square Z; this squares the current power for Z */
+    Z1 = Z2 = Z;
+    PQMUL_R2(&Z1, &Z2, &Z);
 
-}
+  }
 
-return;
+  return;
 
-} /* PQEXP_R3 */
-
-
+}				/* PQEXP_R3 */
 
 /************
    PQMUL_R2
  ************/
 
-static void PQMUL_R2 (QUAD *U, QUAD *Y, QUAD *result)
+static void PQMUL_R2(QUAD * U, QUAD * Y, QUAD * result)
 
 /*
 U, Y : quadwords we want to multiply
@@ -725,57 +648,47 @@ v is the high longword of U;	v = U.l_high
 y is the low longword of  Y;	y = Y.l_low
 z is the high longword of Y;	z = Y.l_high
 */
-
 {
-QUAD stack, part1, part2, part3;
+  QUAD stack, part1, part2, part3;
 
+  EMULQ(U->l_high, Y->l_high, &stack);	/* Multiply   v*z      */
 
-EMULQ(U->l_high, Y->l_high, &stack);		/* Multiply   v*z      */
-
-PQMOD_R0(&stack);				/* Get   (v*z) MOD P   */
-
+  PQMOD_R0(&stack);		/* Get   (v*z) MOD P   */
 
 /*** 1st term ***/
-PQLSH_R0(&stack, &part1);			/* Get   2^32*(v*z) MOD P  */
+  PQLSH_R0(&stack, &part1);	/* Get   2^32*(v*z) MOD P  */
 
+  EMULQ(U->l_high, Y->l_low, &stack);	/* Multiply   v*y      */
 
-EMULQ(U->l_high, Y->l_low, &stack);		/* Multiply   v*y      */
+  PQMOD_R0(&stack);		/* Get   (v*y) MOD P   */
 
-PQMOD_R0(&stack);				/* Get   (v*y) MOD P   */
+  EMULQ(U->l_low, Y->l_high, &part2);	/* Multiply   u*z      */
 
-EMULQ(U->l_low, Y->l_high, &part2);		/* Multiply   u*z      */
+  PQMOD_R0(&part2);		/* Get   (u*z) MOD P   */
 
-PQMOD_R0(&part2);				/* Get   (u*z) MOD P   */
+  PQADD_R0(&stack, &part2, &part3);	/* Get   (v*y + u*z)   */
 
-PQADD_R0 (&stack, &part2, &part3);		/* Get   (v*y + u*z)   */
-
-PQADD_R0 (&part1, &part3, &stack);   /* Get   2^32*(v*z) + (v*y + u*z) */
-
+  PQADD_R0(&part1, &part3, &stack);	/* Get   2^32*(v*z) + (v*y + u*z) */
 
 /*** 1st & 2nd terms ***/
-PQLSH_R0(&stack, &part1);	/* Get   2^64*(v*z) + 2^32*(v*y + u*z) */
+  PQLSH_R0(&stack, &part1);	/* Get   2^64*(v*z) + 2^32*(v*y + u*z) */
 
-
-EMULQ(U->l_low, Y->l_low, &stack);		/* Multiply   u*y      */
-
+  EMULQ(U->l_low, Y->l_low, &stack);	/* Multiply   u*y      */
 
 /*** Last term ***/
-PQMOD_R0(&stack);				
+  PQMOD_R0(&stack);
 
+  PQADD_R0(&part1, &stack, result);	/* Whole thing */
 
-PQADD_R0(&part1, &stack, result);		/* Whole thing */
+  return;
 
-return;
-
-} /* PQMUL_R2 */
-
-
+}				/* PQMUL_R2 */
 
 /************
    PQLSH_R0
  ************/
 
-static void PQLSH_R0 (QUAD *U, QUAD *result)
+static void PQLSH_R0(QUAD * U, QUAD * result)
 
 /*
 Computes the product 2^32*U MOD P where P is of the form P = 2^64 - a.
@@ -788,77 +701,68 @@ The product 2^64*v + 2^32*u is congruent a*v + 2^32*U MOD P.
 u is the low longword in U
 v is the high longword in U
 */
-
 {
-QUAD stack;
-
+  QUAD stack;
 
 /* Get	a*v   */
-EMULQ(U->l_high, a, &stack);
+  EMULQ(U->l_high, a, &stack);
 
 /* Form  Y = 2^32*u  */
-U->l_high = U->l_low;
-U->l_low = 0;
-
+  U->l_high = U->l_low;
+  U->l_low = 0;
 
 /* Get	U + Y MOD P  */
-PQADD_R0 (U, &stack, result);
+  PQADD_R0(U, &stack, result);
 
-return;
+  return;
 
-} /* PQLSH_R0 */
-
-
+}				/* PQLSH_R0 */
 
 /************
    PQADD_R0
  ************/
 
-static void PQADD_R0 (QUAD *U, QUAD *Y, QUAD *result)
+static void PQADD_R0(QUAD * U, QUAD * Y, QUAD * result)
 
 /*
 U, Y : quadwords that we want to add
-
 
 Computes the sum U + Y MOD P where P is of the form P = 2^64 - a.
 U, Y are quadwords less than P.
 
 Fixed with the help of the code written by Terence Lee (DEC/HKO).
 */
-
 {
-unsigned int carry = 0;
-
+  unsigned int carry = 0;
 
 /* Add the low longwords, checking for carry out */
-if ( (MAXINT - U->l_low) < Y->l_low ) carry = 1;
-result->l_low = U->l_low + Y->l_low;
+  if ((MAXINT - U->l_low) < Y->l_low)
+    carry = 1;
+  result->l_low = U->l_low + Y->l_low;
 
 /* Add the high longwords */
-result->l_high = U->l_high + Y->l_high + carry;
+  result->l_high = U->l_high + Y->l_high + carry;
 
 /* Test for carry out of high bit in the quadword */
-if ( (MAXINT - U->l_high) < (Y->l_high + carry) )
-	carry = 1;
-else
-	carry = 0;
+  if ((MAXINT - U->l_high) < (Y->l_high + carry))
+    carry = 1;
+  else
+    carry = 0;
 
 /* Check if we have to MOD P the result */
-if (!carry && Y->l_high != MAXINT) return;	/* Outta here? */
-if ( Y->l_low > (MAXINT - a) )
-	carry = 1;
-else
-	carry = 0;
-result->l_low += a;				/* U + Y MOD P */
-result->l_high += carry;
+  if (!carry && Y->l_high != MAXINT)
+    return;			/* Outta here? */
+  if (Y->l_low > (MAXINT - a))
+    carry = 1;
+  else
+    carry = 0;
+  result->l_low += a;		/* U + Y MOD P */
+  result->l_high += carry;
 
+  return;			/* Outta here! */
+}				/* PQADD_R0 */
 
-return;						/* Outta here! */
-} /* PQADD_R0 */
-
-
-
-void reverse_buf (char *buf, int size)
+void reverse_buf(char *buf, int size)
 
 /*
 This routine will take an array of bytes (char) and reverses their order in
@@ -866,20 +770,20 @@ the array.  Useful for correcting for byte order different machines.
 
 Usage:	reverse_buf ((char *)&buffer, sizeof(buffer));
 */
-
 {
-char	*temp;
-int	i;
+  char *temp;
+  int i;
 
-temp = (char *)malloc(size);
-if (temp != NULL) {
-   for (i=0; i<=(size-1); i++) *(temp+i) = *(buf+(size-i-1));
-   for (i=0; i<=(size-1); i++) *(buf+i) = *(temp+i);
-   free(temp);
-   }
-else {
-   fputs("Memory allocation error in 'reverse_buf'\n", stderr);
-   exit(0);
-   }
+  temp = (char *)malloc(size);
+  if (temp != NULL) {
+    for (i = 0; i <= (size - 1); i++)
+      *(temp + i) = *(buf + (size - i - 1));
+    for (i = 0; i <= (size - 1); i++)
+      *(buf + i) = *(temp + i);
+    free(temp);
+  } else {
+    fputs("Memory allocation error in 'reverse_buf'\n", stderr);
+    exit(0);
+  }
 
-} /* reverse_buf */
+}				/* reverse_buf */

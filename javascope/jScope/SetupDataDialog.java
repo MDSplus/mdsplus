@@ -58,6 +58,10 @@ import javax.swing.event.*;
     JTextField time_min = new JTextField(10);
     JCheckBox x_max_b = new JCheckBox("X max");
 
+    //GAB 2014
+    JCheckBox continuous_update_b = new JCheckBox("Continuous Update");
+    
+    
     JCheckBox upd_limits_b = new JCheckBox("");
     JCheckBox upd_limits = new JCheckBox("Upd. Limits");
 
@@ -245,10 +249,11 @@ import javax.swing.event.*;
    class SList extends JPanel implements ItemListener
    {
     private JList            sig_list;
+//    private DefaultListModel<String> list_model = new DefaultListModel<String>();
     private DefaultListModel list_model = new DefaultListModel();
     private JComboBox        mode1D, mode2D, color, marker;
     private JTextField	     marker_step_t;
-    private Vector	         signals = new Vector();
+    private Vector<Data>     signals = new Vector<Data>();
     private long		     shots[]=null;
     private int              list_num_shot = 0;
     private int              sel_signal = -1;
@@ -660,7 +665,7 @@ import javax.swing.event.*;
 
       private void addSignalSetup(Data ws)
       {
-	    signals.addElement((Object)ws);
+	    signals.addElement(ws);
       }
 
       public void addSignals()
@@ -763,15 +768,15 @@ import javax.swing.event.*;
 			        signals.setElementAt(signals.elementAt(j+i),k);
 		        } else {
 			        Data ws = new Data();
-			        ws.copy(((Data)signals.elementAt(j)));
+			        ws.copy(signals.elementAt(j));
 			        color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
 			        ws.color_idx = color_idx;
 			        signals.insertElementAt(ws, k);
 		        }
 		        if(shots != null)
-		            ((Data)signals.elementAt(k)).shot = shots[i];
+		            signals.elementAt(k).shot = shots[i];
 		        else
-		            ((Data)signals.elementAt(k)).shot = UNDEF_SHOT;
+		            signals.elementAt(k).shot = UNDEF_SHOT;
 
 		        k++;
 		    }
@@ -802,10 +807,10 @@ import javax.swing.event.*;
 	            for (i = 0,  j = 0 ; i < num_signal; i++)
 		            if(i >= start_idx && i < end_idx)
 		            {
-		                ((Data)signals.elementAt(i)).label     = signal_label.getText();
-		                ((Data)signals.elementAt(i)).x_expr    = x_expr.getText();
-		                ((Data)signals.elementAt(i)).y_expr    = y_expr.getText();
-		                signalListReplace(i + 1, (Data)signals.elementAt(i));
+		                signals.elementAt(i).label  = signal_label.getText();
+		                signals.elementAt(i).x_expr = x_expr.getText();
+		                signals.elementAt(i).y_expr = y_expr.getText();
+		                signalListReplace(i + 1, signals.elementAt(i));
 		            }
 	            signalSelect(start_idx);
 	        }
@@ -815,7 +820,7 @@ import javax.swing.event.*;
 	 {
 	    if(getSignalSelect() == -1)
 		    return;
-	    error_w.setError((Data)signals.elementAt(getSignalSelect()));
+	    error_w.setError(signals.elementAt(getSignalSelect()));
 	 }
 
 	 public void signalListRefresh()
@@ -826,7 +831,7 @@ import javax.swing.event.*;
             list_model.removeRange(1, list_model.size() - 1);
 		}
 	    for(int i = 0; i < signals.size(); i++)
-		    signalListAdd((Data)signals.elementAt(i));
+		    signalListAdd(signals.elementAt(i));
 	  }
 
 	  private String getExpressionList(String expr)
@@ -902,7 +907,7 @@ import javax.swing.event.*;
 	    if(ob == marker_step_t && getSignalSelect() != -1)
 	    {
 		    try {
-		        ((Data)signals.elementAt(getSignalSelect())).marker_step = new Integer(marker_step_t.getText()).intValue();
+		        signals.elementAt(getSignalSelect()).marker_step = new Integer(marker_step_t.getText()).intValue();
 		    } catch (NumberFormatException ex) {
 		        marker_step_t.setText("1");
 		    }
@@ -923,22 +928,22 @@ import javax.swing.event.*;
 	    if(ob == marker)
 	    {
 	        int m_idx =  marker.getSelectedIndex();
-	        ((Data)signals.elementAt(getSignalSelect())).marker = m_idx;
+	        signals.elementAt(getSignalSelect()).marker = m_idx;
 	        setMarkerTextState(m_idx);
     	}
 
 	    if(ob == mode1D)
 	    {
-	        setPlotMode1D( ((Data)signals.elementAt(getSignalSelect())), mode1D.getSelectedIndex());
+	        setPlotMode1D(signals.elementAt(getSignalSelect()), mode1D.getSelectedIndex());
 	    }
 
 	    if(ob == mode2D)
 	    {
-	        setPlotMode2D( ((Data)signals.elementAt(getSignalSelect())), mode2D.getSelectedIndex());
+	        setPlotMode2D(signals.elementAt(getSignalSelect()), mode2D.getSelectedIndex());
 	    }
 
 	    if(ob == color) {
-	        ((Data)signals.elementAt(getSignalSelect())).color_idx = color.getSelectedIndex();
+	        signals.elementAt(getSignalSelect()).color_idx = color.getSelectedIndex();
 	    }
 
       }
@@ -1122,16 +1127,10 @@ import javax.swing.event.*;
 
 		p6.add(x_max_b);
 		p6.add(x_max);
+                
+                p6.add(continuous_update_b);
 
-        p6.add(upd_limits_b);
-        JPanel pp1 = new JPanel();
-
-        upd_limits.setMargin(new Insets(1,1,1,1));
-        BevelBorder bb = (BevelBorder)BorderFactory.createBevelBorder(BevelBorder.LOWERED);
-        pp1.setBorder(bb);
-		pp1.add(upd_limits);
-		p6.add(pp1);
-
+ 
 
 		p6.add(keep_ratio_b);
 		keep_ratio_b.setVisible(false);
@@ -1142,6 +1141,16 @@ import javax.swing.event.*;
 		p7.add(shot_b);
 		p7.add(shot);
 
+       p7.add(upd_limits_b);
+        JPanel pp1 = new JPanel();
+
+        upd_limits.setMargin(new Insets(1,1,1,1));
+        BevelBorder bb = (BevelBorder)BorderFactory.createBevelBorder(BevelBorder.LOWERED);
+        pp1.setBorder(bb);
+		pp1.add(upd_limits);
+		p7.add(pp1);
+                
+                
 		p7.add(horizontal_flip_b);
 		horizontal_flip_b.setVisible(false);
 
@@ -1502,6 +1511,10 @@ import javax.swing.event.*;
        y_expr.setText("");
        x_log.setSelected(wi.x_log);
        y_log.setSelected(wi.y_log);
+       
+       //GAB 2014
+       continuous_update_b.setSelected(wi.isContinuousUpdate);
+       
        //upd_limits.setSelected(wi.cin_upd_limits);
 //	}
 //	else {
@@ -1532,7 +1545,9 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(true);
 		x_max_b.setVisible(false);
 		x_min_b.setVisible(false);
-
+                //GAB 2014
+                continuous_update_b.setVisible(false);
+                
 		pix_y_max.setVisible(true);
 		pix_y_min.setVisible(true);
 		y_max_b.setVisible(false);
@@ -1569,6 +1584,7 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(false);
 		x_max_b.setVisible(true);
 		x_min_b.setVisible(true);
+                continuous_update_b.setVisible(true);
 
 		pix_y_max.setVisible(false);
 		pix_y_min.setVisible(false);
@@ -1684,8 +1700,10 @@ import javax.swing.event.*;
 	    if(!main_scope.equalsString(s[i].up_err,  wave_wi.in_up_err[i]))   return true;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
+        //GAB 2014
+        if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
 
-	return false;
+        return false;
     }
 
     private void updateDataSetup()
@@ -1735,6 +1753,9 @@ import javax.swing.event.*;
 	    wi.cin_xlabel    = x_label.getText();
       if(!y_label_b.isSelected() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
 	    wi.cin_ylabel    = y_label.getText();
+      
+      //GAB 2014
+      wi.isContinuousUpdate = continuous_update_b.isSelected();
 
    }
 
@@ -1762,7 +1783,6 @@ import javax.swing.event.*;
 
           if(!wi.getModified())
           {
-                wave.wi.full_flag = !main_scope.wave_panel.GetFastNetworkState();
                 if(wi.is_image)
                 {
                     if( wave.frames != null )
@@ -1811,7 +1831,6 @@ import javax.swing.event.*;
           wi.x_log        = x_log.isSelected();
           wi.y_log        = y_log.isSelected();
           wi.in_upd_limits   = upd_limits.isSelected();
-          wi.full_flag    = !main_scope.wave_panel.GetFastNetworkState();
           wi.num_shot     = signalList.getNumShot();
           wi.defaults     = getDefaultFlags();
 
@@ -1827,6 +1846,8 @@ import javax.swing.event.*;
       wi.interpolates = new boolean[num_signal];
       wi.mode2D       = new int[num_signal];
       wi.mode1D       = new int[num_signal];
+      //GAB 2014
+      wi.isContinuousUpdate = continuous_update_b.isSelected();
 
       if(s[0].shot != UNDEF_SHOT)
         wi.shots        = new long[num_signal];

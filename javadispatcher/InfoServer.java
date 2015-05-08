@@ -71,11 +71,11 @@ class InfoServer implements Server
     public synchronized Action[] collectActions()
     {
         Action action;
-        Vector action_vect = new Vector();
+        Vector<Action> action_vect = new Vector<Action>();
         int nid_int, num_actions;
         String name;
         Boolean on;
-        Hashtable action_table = new Hashtable();
+        Hashtable<Integer, ActionData> action_table = new Hashtable<Integer, ActionData>();
 
         if(model_database == null)
         {
@@ -123,13 +123,13 @@ class InfoServer implements Server
     }
 
 
-    protected Data traverseAction(Data data, Hashtable action_table)
+    protected Data traverseAction(Data data, Hashtable<Integer, ActionData> action_table)
     {
         ActionData action_d;
         if(data instanceof NidData)
         {
             try {
-                action_d = (ActionData)action_table.get(new Integer(data.getInt()));
+                action_d = action_table.get(new Integer(data.getInt()));
             }catch(Exception exc) {return data; }
             if(action_d == null)
                 return data;
@@ -141,7 +141,7 @@ class InfoServer implements Server
             NidData nid = null;
             try {
                 nid = model_database.resolve((PathData)data, 0);
-                action_d = (ActionData)action_table.get(new Integer(nid.getInt()));
+                action_d = action_table.get(new Integer(nid.getInt()));
             }catch(Exception exc) {return data; }
             if(action_d == null)
                 return data;

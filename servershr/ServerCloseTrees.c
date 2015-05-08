@@ -26,7 +26,6 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 
  	Description:
 
-
 ------------------------------------------------------------------------------*/
 
 #include <ipdesc.h>
@@ -34,6 +33,6 @@ int SERVER$CLOSE_TREES( struct dsc$descriptor *server )
 #include "servershrp.h"
 
 int ServerCloseTrees(char *server)
-{ 
+{
   return ServerSendMessage(0, server, SrvClose, 0, 0, 0, 0, 0, 0);
 }

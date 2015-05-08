@@ -64,6 +64,7 @@ class TwuWaveData
           abscissa_X = new TwuSingleSignal (dp, mainSignal);
 
     }
+    public void setContinuousUpdate(boolean continuopusUpdate){}
 
     public void
     setZoom (float xmin, float xmax, int n_points)
@@ -173,7 +174,7 @@ class TwuWaveData
     }
 
     public  int
-    GetNumDimension()
+    getNumDimension()
         throws IOException
     {
         return mainSignal.getTWUProperties(shotOfThisData).Dimensions () ;
@@ -190,7 +191,7 @@ class TwuWaveData
         if (title != null)
           return title ;
 
-        int dim = GetNumDimension() ;
+        int dim = getNumDimension() ;
         if (dim != 0)
           title = mainSignal.getTWUProperties(shotOfThisData).Title() ;
         else
@@ -235,6 +236,32 @@ class TwuWaveData
     {
         return mainSignal.getTWUProperties(shotOfThisData) ;
     }
+    
+            //GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
+        
+         public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+         public XYData getData(int numPoints)throws Exception
+         {
+             double x[] = GetXDoubleData();
+             float y[] = GetFloatData();
+             return new XYData(x, y, Double.MAX_VALUE);
+         }
+
+    public float[] getZ(){System.out.println("BADABUM!!"); return null;}
+    public float[] getX2D(){System.out.println("BADABUM!!"); return null;}
+    public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
+    public float[] getY2D(){System.out.println("BADABUM!!"); return null;} 
+    public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
+    public long []getXLong(){System.out.println("BADABUM!!"); return null;}
+    public boolean isXLong(){return false;}
+    public void addWaveDataListener(WaveDataListener listener){}
+    public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
+
 
 }
 

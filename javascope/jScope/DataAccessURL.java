@@ -70,17 +70,17 @@ class DataAccessURL
         return null;
     }    
 
-    static public void getImages(String url, Frames f) throws IOException
+    static public void getImages(String url, Frames f) throws Exception
     {
         getImages(url, null, null, f);
     }
 
-    static public void getImages(String url, String passwd, Frames f) throws IOException
+    static public void getImages(String url, String passwd, Frames f) throws Exception
     {
         getImages(url, null, passwd, f);
     }
 
-    static public void getImages(String url, String name, String passwd, Frames f) throws IOException
+    static public void getImages(String url, String name, String passwd, Frames f) throws Exception
     {
         DataAccess da = null;
         

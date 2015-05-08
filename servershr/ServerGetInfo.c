@@ -42,45 +42,40 @@ extern int GetAnswerInfoTS();
 
 char *ServerGetInfo(int full, char *server)
 {
-  char *cmd = "MdsServerShr->ServerInfo:dsc()"; 
+  char *cmd = "MdsServerShr->ServerInfo:dsc()";
   char *ans;
   char *ansret;
   short len = 0;
   void *mem = 0;
   int sock = ServerConnect(server);
-  if (sock >= 0)
-  {
-    int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
-    if (status & 1) 
-    {
+  if (sock >= 0) {
+    int status =
+	SendArg(sock, (unsigned char)0, (char)DTYPE_CSTRING, (unsigned char)1, (short)strlen(cmd),
+		0, 0, cmd);
+    if (status & 1) {
       char dtype;
       char ndims;
       int dims[8];
       int numbytes;
       char *reply;
-      status = GetAnswerInfoTS(sock,&dtype,&len,&ndims,dims,&numbytes,(void **)&reply,&mem);
+      status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, (void **)&reply, &mem);
       if ((status & 1) && (dtype == DTYPE_CSTRING))
-        ans = reply;
-      else
-      {
-        ans = "Invalid response from server";
-        len = strlen(ans);
+	ans = reply;
+      else {
+	ans = "Invalid response from server";
+	len = strlen(ans);
       }
-    }
-    else
-    {
+    } else {
       ans = "No response from server";
       len = strlen(ans);
     }
-  }
-  else
-  {
+  } else {
     ans = "Error connecting to server";
     len = strlen(ans);
   }
-  ansret = strncpy((char *)malloc(len+1),ans,len);
+  ansret = strncpy((char *)malloc(len + 1), ans, len);
   if (mem)
     free(mem);
   ansret[len] = 0;
-  return(ansret);
+  return (ansret);
 }

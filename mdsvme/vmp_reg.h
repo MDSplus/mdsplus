@@ -7,25 +7,25 @@
  */
 
 struct pio_info {
-    unsigned int pio_addr; /* VME address to map outbound to */
-    unsigned int pio_size; /* Size to map outbound to */
-    unsigned int pio_am;   /* Address modifier for pio_addr */
-    unsigned int pio_access; /* Access type */
-	unsigned int intcount;
-    };
+  unsigned int pio_addr;	/* VME address to map outbound to */
+  unsigned int pio_size;	/* Size to map outbound to */
+  unsigned int pio_am;		/* Address modifier for pio_addr */
+  unsigned int pio_access;	/* Access type */
+  unsigned int intcount;
+};
 
 struct vmpioctl {
-    unsigned int vmp_addr; /* VMEbus address  */
-    unsigned int vmp_size; /* Size VMEbus Window */
-    unsigned int vmp_am;   /* Address modifier */
-    char         *vmp_buf; /* Start of mem.  buffer to be mapped to VME =
-*/
-    unsigned int vmp_return; /* Return value */
+  unsigned int vmp_addr;	/* VMEbus address  */
+  unsigned int vmp_size;	/* Size VMEbus Window */
+  unsigned int vmp_am;		/* Address modifier */
+  char *vmp_buf;		/* Start of mem.  buffer to be mapped to VME =
+				 */
+  unsigned int vmp_return;	/* Return value */
 };
 
 struct vmpintr_info {
-    int	priority;	/* Interrupt priority */
-    int	vector;		/* Interrupt vector */
+  int priority;			/* Interrupt priority */
+  int vector;			/* Interrupt vector */
 };
 
 /* ioctl defines 

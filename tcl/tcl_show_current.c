@@ -1,5 +1,6 @@
 #include        "tclsysdef.h"
 #include        <mdsshr.h>
+#include <string.h>
 
 /**********************************************************************
 * TCL_SHOW_CURRENT.C --
@@ -11,24 +12,24 @@
 *
 ************************************************************************/
 
-
 	/***************************************************************
 	 * TclShowCurrent:
 	 ***************************************************************/
-int TclShowCurrent()
-   {
-    int   shot;
-    char  text[80];
-    static DYNAMIC_DESCRIPTOR(dsc_experiment);
+int TclShowCurrent(void *ctx, char **error, char **output)
+{
+  int shot;
+  char text[80];
+  char *experiment = 0;
 
-    cli_get_value("EXPERIMENT",&dsc_experiment);
-    shot = TreeGetCurrentShotId(dsc_experiment.dscA_pointer);
-    if (shot)
-       {
-        sprintf(text,"Current shot is %d",shot);
-        TclTextOut(text);
-       }
-    else
-        MdsMsg(0,"Failed to get shotid!");
-    return 1;
-   }
+  cli_get_value(ctx, "EXPERIMENT", &experiment);
+  shot = TreeGetCurrentShotId(experiment);
+  if (shot) {
+    *output = malloc(100);
+    sprintf(*output, "Current shot is %d\n", shot);
+  } else {
+    *error = strdup("Failed to get shotid.\n");
+  }
+  if (experiment)
+    free(experiment);
+  return 1;
+}

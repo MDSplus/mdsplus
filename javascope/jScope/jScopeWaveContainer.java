@@ -37,7 +37,6 @@ class jScopeWaveContainer
 
     DataProvider dp;
     private jScopeDefaultValues def_vals;
-    private boolean supports_fast_network = false;
     private boolean supports_local = true;
     private String title = null;
     private DataServerItem server_item = null;
@@ -166,7 +165,6 @@ class jScopeWaveContainer
         for (int i = 0; i < c.length; i++)
         {
             wave = BuildjScopeMultiWave(dp, def_vals);
-            wave.wi.full_flag = !GetFastNetworkState();
             wave.addWaveformListener(this);
             SetWaveParams(wave);
             c[i] = wave;
@@ -319,30 +317,8 @@ remove 28/06/2005
         return server_item.name;
     }
 
-    public boolean SupportsFastNetwork()
-    {
-        return supports_fast_network;
-    }
 
-    public boolean SupportsCompression()
-    {
-        if (dp != null)
-            return dp.SupportsCompression();
-        else
-            return false;
-    }
-
-    public void SetCompression(boolean state, UpdateEventListener l) throws
-        IOException
-    {
-        if (dp != null && dp.SupportsCompression())
-        {
-            RemoveAllEvents(l);
-            dp.SetCompression(state);
-            AddAllEvents(l);
-        }
-    }
-
+ 
     public void FreeCache()
     {
         WaveInterface.FreeCache();
@@ -673,11 +649,7 @@ remove 28/06/2005
         return (server_item != null ? server_item.enable_cache : false);
     }
 
-    public boolean IsCompressionEnabled()
-    {
-        return (server_item != null ? server_item.enable_compression : false);
-    }
-
+ 
     public void SetModifiedState(boolean state)
     {
         jScopeMultiWave w;
@@ -700,7 +672,6 @@ remove 28/06/2005
             w = (jScopeMultiWave) getGridComponent(i);
             if (w != null && w.wi != null)
             {
-                w.wi.full_flag = !state;
                 w.wi.setModified(true);
             }
         }
@@ -751,13 +722,12 @@ remove 28/06/2005
                 abort = true;
             else
                 abort = false;
-/*
-            if (def_vals != null && def_vals.public_variables != null &&
-                def_vals.public_variables.length() != 0)
-*/          
+
+            
             if( def_vals != null && !def_vals.getIsEvaluated() )
             {
                 dp.SetEnvironment(def_vals.getPublicVariables());
+/*
                 if (IsCacheEnabled())
                 {
                     JOptionPane.showMessageDialog(this,
@@ -767,6 +737,7 @@ remove 28/06/2005
 
                     SetCacheState(false);
                 }
+*/
                 def_vals.setIsEvaluated(true);
             }
 
@@ -779,7 +750,7 @@ remove 28/06/2005
                 }
             }
 
-            //    Initialize wave evaluation
+            //Initialize wave evaluation
             for (int i = 0, k = 0; i < 4 && !abort; i++)
             {
                 for (int j = 0; j < rows[i] && !abort; j++, k++)
@@ -796,7 +767,10 @@ remove 28/06/2005
                             dispatchWaveContainerEvent(wce);
                             ( (MdsWaveInterface) wave_all[k].wi).StartEvaluate();
                         }
-                        catch(Exception exc){}
+                        catch(Exception exc)
+                        {
+                            exc.printStackTrace();
+                        }
                     }
                 }
             }
@@ -815,8 +789,7 @@ remove 28/06/2005
                                     wave_all[k].wi.error == null &&
                                     wave_all[k].isWaveformVisible() &&
                                     wave_all[k].wi.num_waves != 0 &&
-                                    ( (MdsWaveInterface) wave_all[k].wi).
-                                    UseDefaultShot())
+                                    ( (MdsWaveInterface) wave_all[k].wi).UseDefaultShot())
                                 {
                                     wce = new WaveContainerEvent(this,
                                         WaveContainerEvent.START_UPDATE,
@@ -1100,15 +1073,6 @@ remove 28/06/2005
                 server_item.enable_cache = false;
             }
 
-            try
-            {
-                server_item.enable_compression = new Boolean(pr.getProperty(
-                    prompt + ".enable_compression")).booleanValue();
-            }
-            catch (Exception exc)
-            {
-                server_item.enable_compression = false;
-            }
         }
         return server_item;
     }
@@ -1392,7 +1356,6 @@ remove 28/06/2005
             switch (option)
             {
                 case DataProvider.LOGIN_OK:
-                    supports_fast_network = dp.SupportsFastNetwork();
                     dp.SetArgument(server_item.argument);
                     break;
                 case DataProvider.LOGIN_ERROR:
@@ -1563,10 +1526,6 @@ remove 28/06/2005
             if (server_item.enable_cache)
                 WaveInterface.WriteLine(out, prompt + "enable_cache: ",
                                         "" + server_item.enable_cache);
-
-            if (server_item.enable_compression)
-                WaveInterface.WriteLine(out, prompt + "enable_compression: ",
-                                        "" + server_item.enable_compression);
 
         }
         WaveInterface.WriteLine(out, prompt + "update_event: ", event);
@@ -1881,7 +1840,7 @@ remove 28/06/2005
                                 if (wi.signals[i] != null && wi.signals[i].hasX())
                                 {
                                     for (j = start_idx[k][i];
-                                         j < wi.signals[i].getLength(); j++)
+                                         j < wi.signals[i].getNumPoints(); j++)
                                     {
                                         if (wi.signals[i].getX(j) > xmin &&
                                             wi.signals[i].getX(j) < xmax)

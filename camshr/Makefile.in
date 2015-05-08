@@ -1,21 +1,14 @@
-SHELL=/bin/sh
-CC=@CC@
-LD=@LD@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
-LIBRARYNAME=CamShr
+include @top_srcdir@/Makefile.inc
 
-#MAJOR	=	$(shell awk '{split($$0,a,"_"); print a[2];}' CVS/Tag)
-#MINOR	=	$(shell awk '{split($$0,a,"_"); print a[3];}' CVS/Tag)
+@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@CamShr.dll.a
+
+LIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
 
 MAJOR = 1
 MINOR = 8
+LIBRARYNAME=CamShr
+SHLIB = @LIBPRE@$(LIBRARYNAME)@SHARETYPE@
+SHLIB_BUILD = @MAKESHLIBDIR@$(SHLIB)
 
 SOURCES	= \
 		add_entry.c              \
@@ -54,61 +47,44 @@ SOURCES	= \
 
 OBJECTS =	$(SOURCES:.c=.o)
 
-CTS_SOURCES = cts_commands.c verbs.c
+CTS_SOURCES = verbs.c
 
 CTS_OBJECTS = $(CTS_SOURCES:.c=.o)
 
-all : @MAKESHLIBDIR@ @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ \
-      @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @MAKEBINDIR@mdscts
+all : @MAKEBINDIR@ @MAKESHLIBDIR@ \
+	@MAKEBINDIR@mdscts \
+	$(SHLIB_BUILD) \
+	@MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@ 
 
 .PHONY: clean
 clean:
 	@ $(RM) $(OBJECTS) $(CTS_OBJECTS)
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR)
-	@ $(RM) @MAKESHLIBDIR@libRem$(LIBRARYNAME)@SHARETYPE@
-	@ $(RM) so_locations
-	@ $(RM) cts_commands.c
+	@ $(RM) $(SHLIB_BUILD) $(IMPLIB)
+	@ $(RM) $(SHLIB_BUILD).$(MAJOR)
+	@ $(RM) $(SHLIB_BUILD).$(MAJOR).$(MINOR)
 	@ $(RM) @MAKEBINDIR@mdscts
-	@ $(RM) @MAKESHLIBDIR@libcts_commands@SHARETYPE@
-	@ $(RM) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
+	@ $(RM) @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@
 
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @libdir@/lib$(LIBRARYNAME)@SHARETYPE@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libcts_commands@SHARETYPE@ @libdir@
-	$(INSTALL) -m 755  @MAKEBINDIR@mdscts @bindir@
+install: $(libdir) $(bindir)
+	$(INSTALL) -m 755 @MAKEBINDIR@mdscts $(bindir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@ $(libdir)
+	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(libdir)
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
 
-
-@MAKEBINDIR@mdscts:	cts
-	cp  cts $@
+@MAKEBINDIR@mdscts: cts
+	cp $< $@
 	chmod +x $@
 
-cts_commands.c:	cts_commands.ocld
-	env @LIBPATH@=@MAKESHLIBDIR@ @MAKEBINDIR@cdu < cts_commands.ocld
-	$(MAKE) depend
+@MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@: $(CTS_OBJECTS) $(SHLIB_BUILD)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -l$(LIBRARYNAME) -lMdsdcl $(LIBS)
 
-@MAKESHLIBDIR@libcts_commands@SHARETYPE@:	$(CTS_OBJECTS) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
-	$(LD)  -o $@ @LINKSHARED@ $(CTS_OBJECTS) -L@MAKESHLIBDIR@ -lMdsdcl -lCamShr $(LIBS)
+@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+$(SHLIB_BUILD) $(IMPLIB): $(OBJECTS)
+	$(LINK.c) @LINKSHARED@ -nostartfiles -Wl,-soname=$(SHLIB) -o $@.$(MAJOR).$(MINOR) $^ -L@MAKESHLIBDIR@ -lMdsShr $(MAKE_IMPLIB)
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $@.$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $@
 
-@MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@ : $(OBJECTS)
-	$(CC) -g $(CFLAGS) -nostartfiles -shared -Wl,-soname=lib$(LIBRARYNAME)@SHARETYPE@ \
-		-o @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) $(OBJECTS) -L@MAKESHLIBDIR@ -lMdsShr -lc
-	if [ ! -d @MAKESHLIBDIR@ ] ; then \
-		mkdir @MAKESHLIBDIR@; \
-		chmod 755 @MAKESHLIBDIR@; \
-	fi;
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR).$(MINOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR)
-	ln -sf lib$(LIBRARYNAME)@SHARETYPE@.$(MAJOR) @MAKESHLIBDIR@lib$(LIBRARYNAME)@SHARETYPE@
-
-@MAKESHLIBDIR@ :
-	mkdir @MAKESHLIBDIR@

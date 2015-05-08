@@ -1,9 +1,9 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=jScope
+Name=jTraverser
 Comment=MDSplus JAVA based MDSplus Tree Manipulation application
 Exec=jTraverser
-Icon=$MDSPLUS_DIR/pixmaps/traverser.png
+Icon=/usr/local/mdsplus/pixmaps/traverser.png
 Terminal=false
 Type=Application
 Categories=GNOME;Application;MDSplus;X-Red-Hat-Base;

@@ -1,31 +1,36 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-#include <mdstypes.h>
-#include <stdio.h>
-#include <iostream>
-#include <vector>
-#include <complex>
-#include <string.h>
-#include <stdlib.h>
-#include <stdarg.h>
-#include <exception>
+#ifdef _WIN32
+#define EXPORT __declspec(dllexport)
+#else
+#define EXPORT
+#endif
+
+#include <mdsplus/mdsplus.h>
+#include <mdsplus/ConditionVar.hpp>
+#include <mdsplus/Mutex.hpp>
 #include <config.h>
-#include <ncidef.h>
 #include <dbidef.h>
+#include <ncidef.h>
+#include <mdstypes.h>
 #include <usagedef.h>
-#ifdef HAVE_WINDOWS_H
-#include <Windows.h>
+
+#include <algorithm>
+#include <complex>
+#include <exception>
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <stdio.h>
+#include <stdlib.h>
+#ifdef MDS_WINDOWS
+#include <windows.h>
 #else
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
-#include <errno.h>
 #include <semaphore.h>
-#endif
-#ifdef HAVE_WINDOWS_H
-#define EXPORT __declspec(dllexport)
-#else
-#define EXPORT
 #endif
 #if __cplusplus >= 201103L
 #define NOEXCEPT noexcept
@@ -91,11 +96,7 @@
 #define CLASS_R 194 
 #define CLASS_APD 196 
 #define MAX_DIMS 32
-#ifndef HAVE_WINDOWS_H
-#define EXPORT
-#else
-#define EXPORT __declspec(dllexport)
-#endif
+
 extern "C" char *MdsGetMsg(int status);
 /*
 extern "C" {
@@ -120,54 +121,71 @@ extern "C" {
 	void * convertToShape(void *dcs);
 }
 */
+
+
 namespace MDSplus  {
 //Required for handling dynamic memory allocated in a different DLL on windows
 //in Debug configuration
-EXPORT void deleteNativeArray(char *array);
-EXPORT void deleteNativeArray(short *array);
-EXPORT void deleteNativeArray(int *array);
-//EXPORT void deleteNativeArray(long *array);
-EXPORT void deleteNativeArray(int64_t *array);
-EXPORT void deleteNativeArray(float *array);
-EXPORT void deleteNativeArray(double *array);
-EXPORT void deleteNativeArray(char **array);
-class Data;
-EXPORT void deleteNativeArray(Data **array);
-	
-	
-	
-EXPORT void deleteString(char *str);
+//MUST revert to old version. Winodws VS crashes otherwise!! The code MUST be moved from include 
 class Tree;
 EXPORT void setActiveTree(Tree *tree);
 EXPORT Tree *getActiveTree();
 /////Exceptions//////////////
-	class EXPORT MdsException: public std::exception
-	{
-	protected:
-		const char *msg;
-	public:
-		MdsException(const char *msg) : msg(msg)
-		{
-		}
-		MdsException(int status) : msg(MdsGetMsg(status))
-		{
-		}
-		virtual ~MdsException() NOEXCEPT
-		{
-		}
-		virtual const char* what() const NOEXCEPT
-		{
-			return msg;
-		}
-		friend std::ostream & operator << (std::ostream &outStream, MdsException &exc)
-		{
-		    return outStream << exc.what();
-		}
-		
-	};
+class EXPORT MdsException: public std::exception {
+public:
+	MdsException(const char *msg): msg(msg) { }
+	//MdsException(int status): msg(MdsGetMsg(status)) { }
+	MdsException(int status);
+	virtual ~MdsException() NOEXCEPT { }
+
+	virtual const char* what() const NOEXCEPT {
+		return msg;
+	}
+
+	friend EXPORT std::ostream & operator << (std::ostream &outStream, MdsException &exc) {
+		return outStream << exc.what();
+	}
+
+protected:
+	const char *msg;
+};
+
 ////////////////////Data class//////////////////////////////
+class Data;
+EXPORT void deleteData(Data *);
+
 class EXPORT Data 
 {
+public:
+	Data():
+		refCount(1),
+		units(nullptr),
+		error(nullptr),
+		help(nullptr),
+		validation(nullptr)
+	{
+	}
+
+	virtual ~Data();
+
+	void *operator new(size_t sz);
+	void operator delete(void *p);
+
+	static void incRefCount(Data * d);
+	static void decRefCount(Data * d);
+	void incRefCount();
+	void decRefCount();
+
+	virtual Data *getUnits();
+	virtual Data *getError();
+	virtual Data *getHelp();
+	virtual Data *getValidation();
+	virtual void setUnits(Data *inUnits);
+	virtual void setError(Data *inError);
+	virtual void setHelp(Data *inHelp);
+	virtual void setValidation(Data *inValidation);
+
+private:
 		friend EXPORT Data *compile(const char *expr);
 		friend EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
 		friend EXPORT Data *compile(const char *expr, Tree *tree);
@@ -176,31 +194,13 @@ class EXPORT Data
 		friend EXPORT Data *executeWithArgs(const char *expr, int nArgs ...);
 		friend EXPORT Data *execute(const char *expr, Tree *tree);
 		friend EXPORT Data *executeWithArgs(const char *expr, Tree *tree, int nArgs ...);
-		friend EXPORT Data *deserialize(char *serialized);
+		friend EXPORT Data *deserialize(char const * serialized);
 		friend EXPORT Data *deserialize(Data *serialized);
-		friend EXPORT void deleteData(Data *);
 		virtual void propagateDeletion(){}
-		Data *units;
-		Data *error;
-		Data *validation;
-		Data *help;
-protected:
-		bool changed;
-		Data *dataCache;
-		virtual bool isImmutable() {return true;}
 	
-	public: 
+public:
 		int clazz, dtype;
-		virtual bool hasChanged() {return !isImmutable() || changed;}
 		void *completeConversionToDsc(void *dsc);
-		void setAccessory(Data *units, Data *error, Data *help, Data *validation)
-		{
-			this->units = units;
-			this->error = error;
-			this->help = help;
-			this->validation = validation;
-		}
-		
 		int refCount;
 		virtual void getInfo(char *clazz, char *dtype, short *length, char *nDims, int **dims, void **ptr)
 		{
@@ -212,23 +212,7 @@ protected:
 			*ptr = 0;
 		}
 		virtual void *convertToDsc() = 0;
-		void *operator new(size_t sz);
-		void operator delete(void *p);
 		virtual bool equals(Data *data) {return false;}
-		Data():
-			units(nullptr),
-			error(nullptr),
-			validation(nullptr),
-			help(nullptr),
-			changed(true),
-			dataCache(nullptr),
-			refCount(0)
-		{
-		}
-
-		virtual ~Data()
-		{
-		}
 		Data *evaluate();
 		virtual Data *data();
 		char *decompile();
@@ -269,7 +253,7 @@ protected:
 		virtual std::vector<double> getDoubleArray();
 		virtual std::complex<double> * getComplexArray(int *numElements)
 		{
-			throw new MdsException("getComplexArray() not supported for non compelx data types");
+			throw MdsException("getComplexArray() not supported for non compelx data types");
 		}
 		virtual std::vector<std::complex<double> > getComplexArray();
 		virtual char ** getStringArray(int *numElements)
@@ -279,85 +263,46 @@ protected:
 		}
 		virtual Data *getDimensionAt(int dimIdx);
 		virtual int getSize() {return 1;}
-		virtual Data *getUnits()
-		{
-			if(units)
-				units->refCount++;
-			return units;
-		}
-		virtual void setUnits(Data *inUnits)
-		{
-			if(units)
-			{
-				deleteData(units);
-			}
-			units = inUnits;
-			inUnits->refCount++;
-		}
-		virtual Data *getError()
-		{
-			if(error)
-				error->refCount++;
-			return error;
-		}
-		virtual void setError(Data *inError)
-		{
-			if(error)
-			{
-				deleteData(error);
-			}
-			error = inError;
-			inError->refCount++;
-		}
-		virtual Data *getHelp()
-		{
-			if(help)
-				help->refCount++;
-			return help;
-		}
-		virtual void setHelp(Data *inHelp)
-		{
-			if(help)
-			{
-				deleteData(help);
-			}
-			help = inHelp;
-			inHelp->refCount++;
-		}
-		virtual Data *getValidation()
-		{
-			if(validation)
-				validation->refCount++;
-			return validation;
-		}
-		virtual void setValidation(Data *inValidation)
-		{
-			if(validation)
-			{
-				deleteData(validation);
-			}
-			validation = inValidation;
-			inValidation->refCount++;
-		}
-		friend std::ostream & operator << (std::ostream &outStream, Data *data)
-		{
-		    return outStream << data->decompile();
-		}
+
+		friend EXPORT std::ostream & operator << (std::ostream &outStream, MDSplus::Data *data);
+
 		virtual void plot();
-	};
-	class Empty: public Data
-	{
-	public:
-		Empty(){};
-	};
+
+protected:
+	virtual bool isImmutable() { return true; }
+
+	void setAccessory(Data *units, Data *error, Data *help, Data *validation) {
+		this->units = units;
+		this->error = error;
+		this->help = help;
+		this->validation = validation;
+	}
+
+private:
+	Data * getData(int classType, int dataType);
+	Data * getArrayData(int dataType);
+	Data * getScalarData(int dataType);
+	Data *units;
+	Data *error;
+	Data *help;
+	Data *validation;
+};
+
+class Empty: public Data {
+};
+
 	class EXPORT Scalar: public Data
 	{
-		public:
+	public:
+		Scalar(): length(0), ptr(0) {
+			clazz = CLASS_S;
+		}
+
 		int length;
 		char *ptr;
-		~Scalar()
+		virtual ~Scalar()
 		{
-			deleteNativeArray(ptr);
+			delete []ptr;
 		}
 		 
 		virtual void *convertToDsc();
@@ -376,7 +321,6 @@ protected:
 	public:
 		Int8(char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_B;
 			length = 1;
 			ptr = new char[1];
@@ -399,7 +343,6 @@ protected:
 	public:
 		Uint8(unsigned char val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_BU;
 			length = 1;
 			ptr = new char[1];
@@ -422,7 +365,6 @@ protected:
 	public:
 		Int16(short val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_W;
 			length = 2;
 			ptr = new char[2];
@@ -445,7 +387,6 @@ protected:
 	public:
 		Uint16(unsigned short val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_WU;
 			length = 2;
 			ptr = new char[2];
@@ -468,7 +409,6 @@ protected:
 	public:
 		Int32(int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_L;
 			length = sizeof(int);
 			ptr = new char[sizeof(int)];
@@ -491,7 +431,6 @@ protected:
 	public:
 		Uint32(unsigned int val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_LU;
 			length = sizeof(int);
 			ptr = new char[sizeof(int)];
@@ -514,7 +453,6 @@ protected:
 	public:
 		Int64(int64_t val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_Q;
 			length = sizeof(int64_t);
 			ptr = new char[sizeof(int64_t)];
@@ -537,7 +475,6 @@ protected:
 	public:
 		Uint64(uint64_t val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_QU;
 			length = sizeof(int64_t);
 			ptr = new char[sizeof(int64_t)];
@@ -561,7 +498,6 @@ protected:
 	public:
 		Float32(float val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_FLOAT;
 			length = sizeof(float);
 			ptr = new char[sizeof(float)];
@@ -580,7 +516,6 @@ protected:
 	public:
 		Float64(double val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_DOUBLE;
 			length = sizeof(double);
 			ptr = new char[sizeof(double)];
@@ -599,7 +534,6 @@ protected:
 	public:
 		Complex32(float re, float im, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_FSC;
 			length = 2 * sizeof(float);
 			ptr = new char[2*sizeof(float)];
@@ -616,7 +550,6 @@ protected:
 	public:
 		Complex64(double re, double im, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			clazz = CLASS_S;
 			dtype = DTYPE_FTC;
 			length = 2 * sizeof(double);
 			ptr = new char[2*sizeof(double)];
@@ -631,39 +564,53 @@ protected:
 	class  EXPORT String : public Scalar
 	{
 	public:
-		String(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_S;
-			dtype = DTYPE_T;
-			length = strlen(val);
-			ptr = new char[length+1];
-			ptr[length] = 0;
-			memcpy(ptr, val, length);
-			setAccessory(units, error, help, validation);
+		String(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			init(val, std::string(val).size(), units, error, help, validation);
 		}
-		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_S;
-			dtype = DTYPE_T;
-			length = len;
-			ptr = new char[length+1];
-			memcpy(ptr, val, length);
-			ptr[length] = 0;
-			setAccessory(units, error, help, validation);
+
+		String(unsigned char *uval, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			// FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
+			// FIXME: Warning: Do not use this constructor in user code
+			char * val = reinterpret_cast<char *>(uval);
+			init(val, std::string(val).size(), units, error, help, validation);
 		}
+//GAB  definition in order to avoid breaking LabVIEW
+		String(unsigned char *uval, int numDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			char * val = reinterpret_cast<char *>(uval);
+			init(val, std::string(val).size(), units, error, help, validation);
+		}
+
+		String(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+			init(val, len, units, error, help, validation);
+		}
+
 		char *getString()
 		{
 			char *res = new char[length + 1];
-			memcpy(res, ptr, length);
+			std::copy(&ptr[0], &ptr[length + 1], res);
 			res[length] = 0;
 			return res;
 		}
-		bool equals(Data *data)
+		char **getStringArray(int *numElements)
 		{
-			if(data->clazz != clazz || data->dtype != dtype) return false;
-			String *dataStr = (String *)data;
-			if (dataStr->length != length) return false;
-			return !strncmp(dataStr->ptr, ptr, length);
+			char **res = new char*[1];
+			res[0] = new char[length + 1];
+			std::copy(&ptr[0], &ptr[length + 1], res[0]);
+			res[0][length] = 0;
+			*numElements = 1;
+			return res;
+		}
+
+		bool equals(Data *data);
+
+	private:
+		void init(char const * val, int len, Data * units, Data * error, Data * help, Data * validation) {
+			dtype = DTYPE_T;
+			length = len;
+			ptr = new char[length+1];
+			std::copy(&val[0], &val[length], ptr);
+			ptr[length] = 0;
+			setAccessory(units, error, help, validation);
 		}
 	};
 ////////////////ARRAYS/////////////////////
@@ -675,15 +622,37 @@ protected:
 		int nDims;
 		int dims[MAX_DIMS];
 		char *ptr;
-		//Gabriele September 2014. Move code in cpp file
-		void setSpecific(char *data, int length, int dtype, int nData);
-		void setSpecific(char *data, int length, int dtype, int nDims, int *dims);
-	public:
-		Array() {clazz = CLASS_A;}
-		~Array()
-		{
-			deleteNativeArray(ptr);
+
+		void setSpecific(void const * data, int length, int dtype, int nData) {
+			setSpecific(data, length, dtype, 1, &nData);
 		}
+
+		void setSpecific(void const * data, int length, int dtype, int nDims, int *dims)
+		{
+			this->dtype = dtype;
+			this->nDims = nDims;
+			this->length = length;
+			arsize = length;
+			for(int i = 0; i < nDims; i++)
+			{
+				arsize *= dims[i];
+				this->dims[i] = dims[i];
+			}
+
+			char const * dataBytes = reinterpret_cast<char const *>(data);
+			ptr = new char[arsize];
+			std::copy(&dataBytes[0], &dataBytes[arsize], ptr);
+		}
+	public:
+		Array(): length(0), arsize(0), nDims(0), ptr(0) {
+			clazz = CLASS_A;
+		}
+
+		~Array() {
+//			deleteNativeArray(ptr);
+			delete[] ptr;
+		}
+
 		virtual int getSize() 
 		{
 			int retSize = 1;
@@ -733,12 +702,12 @@ protected:
 	class Int8Array: public Array
 	{
 	public:
-		Int8Array(char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int8Array(char const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 1, DTYPE_B, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int8Array(char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int8Array(char const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			setSpecific(data, 1, DTYPE_B, nDims, dims);
 			setAccessory(units, error, help, validation);
@@ -748,14 +717,14 @@ protected:
 	{
 	friend Data *MDSplus::deserialize(Data *serializedData);
 	public:
-		Uint8Array(unsigned char *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint8Array(unsigned char const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 1, DTYPE_BU, nData);
+			setSpecific(data, 1, DTYPE_BU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint8Array(unsigned char *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint8Array(unsigned char const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 1, DTYPE_BU, nDims, dims);
+			setSpecific(data, 1, DTYPE_BU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 		Data* deserialize();
@@ -763,140 +732,140 @@ protected:
 	class Int16Array: public Array
 	{
 	public:
-		Int16Array(short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int16Array(short const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_W, nData);
+			setSpecific(data, 2, DTYPE_W, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int16Array(short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int16Array(short const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_W, nDims, dims);
+			setSpecific(data, 2, DTYPE_W, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Uint16Array: public Array
 	{
 	public:
-		Uint16Array(unsigned short *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint16Array(unsigned short const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_WU, nData);
+			setSpecific(data, 2, DTYPE_WU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint16Array(unsigned short *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint16Array(unsigned short const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 2, DTYPE_WU, nDims, dims);
+			setSpecific(data, 2, DTYPE_WU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Int32Array: public Array
 	{
 	public:
-		Int32Array(int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int32Array(int const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_L, nData);
+			setSpecific(data, sizeof(int), DTYPE_L, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int32Array(int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int32Array(int const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_L, nDims, dims);
+			setSpecific(data, sizeof(int), DTYPE_L, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Uint32Array: public Array
 	{
 	public:
-		Uint32Array(unsigned int *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint32Array(unsigned int const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_LU, nData);
+			setSpecific(data, sizeof(int), DTYPE_LU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint32Array(unsigned int *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint32Array(unsigned int const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(int), DTYPE_LU, nDims, dims);
+			setSpecific(data, sizeof(int), DTYPE_LU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Int64Array: public Array
 	{
 	public:
-		Int64Array(int64_t *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int64Array(int64_t const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_Q, nData);
+			setSpecific(data, 8, DTYPE_Q, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Int64Array(int64_t *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Int64Array(int64_t const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_Q, nDims, dims);
+			setSpecific(data, 8, DTYPE_Q, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Uint64Array: public Array
 	{
 	public:
-		Uint64Array(uint64_t *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(uint64_t const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_QU, nData);
+			setSpecific(data, 8, DTYPE_QU, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Uint64Array(uint64_t *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Uint64Array(uint64_t const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, 8, DTYPE_QU, nDims, dims);
+			setSpecific(data, 8, DTYPE_QU, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Float32Array: public Array
 	{
 	public:
-		Float32Array(float *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float32Array(float const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(float), DTYPE_FLOAT, nData);
+			setSpecific(data, sizeof(float), DTYPE_FLOAT, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Float32Array(float *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float32Array(float const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(float), DTYPE_FLOAT, nDims, dims);
+			setSpecific(data, sizeof(float), DTYPE_FLOAT, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Float64Array: public Array
 	{
 	public:
-		Float64Array(double *data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float64Array(double const * data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(double), DTYPE_DOUBLE, nData);
+			setSpecific(data, sizeof(double), DTYPE_DOUBLE, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Float64Array(double *data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Float64Array(double const * data, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)data, sizeof(double), DTYPE_DOUBLE, nDims, dims);
+			setSpecific(data, sizeof(double), DTYPE_DOUBLE, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Complex32Array: public Array
 	{
 	public:
-		Complex32Array(float *reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex32Array(float const * reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(float), DTYPE_FSC, nData);
+			setSpecific(reIm, 2*sizeof(float), DTYPE_FSC, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Complex32Array(float *reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex32Array(float const * reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(float), DTYPE_FSC, nDims, dims);
+			setSpecific(reIm, 2*sizeof(float), DTYPE_FSC, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
 	class Complex64Array: public Array
 	{
 	public:
-		Complex64Array(double *reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex64Array(double const * reIm, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(double), DTYPE_FTC, nData);
+			setSpecific(reIm, 2*sizeof(double), DTYPE_FTC, nData);
 			setAccessory(units, error, help, validation);
 		}
-		Complex64Array(double *reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Complex64Array(double const * reIm, int nDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			setSpecific((char *)reIm, 2*sizeof(double), DTYPE_FTC, nDims, dims);
+			setSpecific(reIm, 2*sizeof(double), DTYPE_FTC, nDims, dims);
 			setAccessory(units, error, help, validation);
 		}
 	};
@@ -906,178 +875,172 @@ protected:
 		StringArray(char **data, int nData, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			//Pad all string to longest 
-			int i;
 			int maxLen = 0;
-			for(i = 0; i < nData; i++)
-			{
-				if(strlen(data[i]) > (unsigned int)maxLen)
-					maxLen = strlen(data[i]);
-			}
+			for(int i = 0; i < nData; i++)
+				maxLen = std::max(std::string(data[i]).size(), (std::size_t)maxLen);
+
 			char *padData = new char[nData * maxLen];
-			for(i = 0; i < nData; i++)
-			{
-				int currLen = strlen(data[i]);
-				memcpy(&padData[i * maxLen], data[i], currLen);
-				if(currLen < maxLen)
-					memset(&padData[i*maxLen + currLen], ' ', maxLen - currLen);
+			for(int i = 0; i < nData; i++) {
+				std::size_t currLen = std::string(data[i]).size();
+				std::copy(&data[i][0], &data[i][currLen], &padData[i * maxLen]);
+				std::fill(&padData[i*maxLen + currLen], &padData[i*maxLen + maxLen], ' ');
 			}
 			setSpecific(padData, maxLen, DTYPE_T, nData);
 			setAccessory(units, error, help, validation);
 			delete[] padData;
 		}
-		StringArray(char *data, int nStrings, int stringLen, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) //For contiuguous
+		StringArray(char const * data, int nStrings, int stringLen, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) //For contiuguous
 		{
 			setSpecific(data, stringLen, DTYPE_T, nStrings);
 			setAccessory(units, error, help, validation);
 		}
 	};
 /////////////////////////COMPOUND DATA//////////////////////////////////
-	class EXPORT Compound: public Data
+class EXPORT Compound: public Data {
+public:
+	Compound() {
+		clazz = CLASS_R;
+		opcode = 0;
+	}
+
+	Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 	{
-	protected:
-		int length;
-		char *ptr;
-		int nDescs;
-		Data **descs;
-		void incrementRefCounts()
-		{
-			for(int i = 0; i < nDescs; i++)
-			{
-				if(descs[i]) descs[i]->refCount++;
+		switch(length) {
+		  case 1:
+			opcode = *(char *)ptr;
+			break;
+		  case 2:
+			opcode = *(short *)ptr;
+			break;
+		  case 4:
+			opcode = *(int *)ptr;
+			break;
+		  default:
+			opcode = 0;
+		    
+		
+		}
+		if(nDescs > 0) {
+			for(int i = 0; i < nDescs; ++i) {
+				this->descs.push_back((Data *)descs[i]);
+				if (this->descs[i])
+					this->descs[i]->incRefCount();
 			}
 		}
-		void assignDescAt(Data *data, int idx)
-		{
-			if(descs[idx])
-			{
-				deleteData(descs[idx]);
-			}
-			descs[idx] = data;
-			if(data) data->refCount++;
-			changed = true;
-		}
-		bool hasChanged()
-		{
-			if (changed || !isImmutable()) return true;
-			for(int i = 0; i < nDescs; i++)
-				if(descs[i] && descs[i]->hasChanged())
-					return true;
-			return false;
-		}
-	public:
-		Compound() {clazz = CLASS_R;}
-		Compound(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			this->dtype = dtype;
-			this->length = length;
-			if(length > 0)
-			{
-				this->ptr = new char[length];
-				memcpy(this->ptr, ptr, length);
-			}
-			else
-				this->ptr = 0;
-			this->nDescs = nDescs;
-			if(nDescs > 0)
-			{
-				this->descs = new Data *[nDescs];
-				for(int i = 0; i < nDescs; i++)
-				{
-					this->descs[i] = (Data *)descs[i];
-					if(this->descs[i])
-						this->descs[i]->refCount++;
-				}
-			}
-			else
-				this->descs = 0;
-			setAccessory(units, error, help, validation);
-		}
-		virtual ~Compound()
-		{
-			if(length > 0)
-				deleteNativeArray(ptr);
-			if(nDescs > 0)
-				deleteNativeArray(descs);
-		}
-		virtual void propagateDeletion()
-		{
-			for(int i = 0; i < nDescs; i++)
-			{
-				if(descs[i])
-				{
-					deleteData(descs[i]);
-				}
-			}
-		}
-		void *convertToDsc();
-	};
-	class Signal: public Compound
+
+		this->dtype = dtype;
+		clazz = CLASS_R;
+		setAccessory(units, error, help, validation);
+	}
+
+	virtual void propagateDeletion() {
+		for(std::size_t i = 0; i < descs.size(); ++i)
+		    if (descs[i])
+		    {
+			descs[i]->decRefCount();
+			deleteData(descs[i]);
+		    }
+	}
+
+	void * convertToDsc();
+
+	virtual ~Compound() 
 	{
+	    propagateDeletion();
+	}
+
+protected:
+	short opcode;
+	std::vector<Data *> descs;
+
+	void incrementRefCounts() {
+		for(std::size_t i = 0; i < descs.size(); ++i)
+			if(descs[i])
+				descs[i]->refCount++;
+	}
+
+	void assignDescAt(Data *data, int idx) {
+		if (descs.at(idx))
+			deleteData(descs[idx]);
+
+		descs.at(idx) = data;
+		if (data)
+			data->refCount++;
+	}
+
+	Data * getDescAt(std::size_t idx) {
+		if (descs.at(idx))
+			descs[idx]->incRefCount();
+		return descs[idx];
+	}
+
+};
+
+class Signal: public Compound {
 	public: 
-		Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+		Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+			Compound(dtype, length, ptr, nDescs, descs)
 		{
 			setAccessory(units, error, help, validation);
 		}
+
 		Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
-			nDescs = 3;
-			descs = new Data *[3];
-			descs[0] = data;
-			descs[1] = raw;
-			descs[2] = dimension;
-			incrementRefCounts();
-			setAccessory(units, error, help, validation);
+			descs.push_back(data);
+			descs.push_back(raw);
+			descs.push_back(dimension);
+			init(units, error, help, validation);
 		}
+
 		Signal(Data *data, Data *raw, Data *dimension1, Data *dimension2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
-			nDescs = 4;
-			descs = new Data *[4];
-			descs[0] = data;
-			descs[1] = raw;
-			descs[2] = dimension1;
-			descs[3] = dimension2;
-			incrementRefCounts();
-			setAccessory(units, error, help, validation);
+			descs.push_back(data);
+			descs.push_back(raw);
+			descs.push_back(dimension1);
+			descs.push_back(dimension2);
+			init(units, error, help, validation);
 		}
+
 		Signal(Data *data, Data *raw, int nDims, Data **dimensions, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
-			dtype = DTYPE_SIGNAL;
-			length = 0;
-			ptr = 0;
-			nDescs = 2 + nDims;
-			descs = new Data *[nDescs];
-			descs[0] = data;
-			descs[1] = raw;
+			descs.push_back(data);
+			descs.push_back(raw);
 			for(int i = 0; i < nDims; i++)
-			{
-				descs[2+i] = dimensions[i];
-			}
-			incrementRefCounts();
-			setAccessory(units, error, help, validation);
+				descs.push_back(dimensions[i]);
+			init(units, error, help, validation);
 		}
-		Data *getData(){return descs[0];}
-		Data *getRaw(){return descs[1];}
-		Data *getDimension()
-		{
-			descs[2]->refCount++;
-			return descs[2];
+
+		Data *getData() {
+			return getDescAt(0);
 		}
-		int genNumDimensions() {return nDescs - 2;}
-		Data *getDimensionAt(int idx) 
-		{	
-			if(descs[2+idx]) descs[2 + idx]->refCount++;
-			return descs[2 + idx];
+
+		Data *getRaw() {
+			return getDescAt(1);
 		}
+
+		Data *getDimension() {
+			return getDescAt(2);
+		}
+
+		Data *getDimensionAt(int idx) {
+			return getDescAt(idx + 2);
+		}
+
+		int getNumDimensions() {
+			return descs.size() - 2;
+		}
+
 		void setData(Data *data) {assignDescAt(data, 0);}
 		void setRaw(Data *raw){assignDescAt(raw, 1);}
 		void setDimension(Data *dimension) {assignDescAt(dimension, 2);}
 		void setDimensionAt(Data *dimension, int idx) {assignDescAt(dimension, 2 + idx);}
+
+	private:
+		void init(Data * units, Data * error, Data * help, Data * validation) {
+			dtype = DTYPE_SIGNAL;
+			incrementRefCounts();
+			setAccessory(units, error, help, validation);
+		}
 	};
 	class Dimension: public Compound
 	{
@@ -1089,23 +1052,19 @@ protected:
 		Dimension(Data *window, Data *axis, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DIMENSION;
-			length = 0;
-			ptr = 0;
-			nDescs = 2;
-			descs = new Data *[2];
-			descs[0] = window;
-			descs[1] = axis;
+			descs.push_back(window);
+			descs.push_back(axis);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
 		Data *getWindow(){
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+			return getDescAt(0);
 		}
+
 		Data *getAxis(){
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+			return getDescAt(1);
 		}
+
 		void setWindow(Data *window) {assignDescAt(window, 0);}
 		void setAxis(Data *axis){assignDescAt(axis, 1);}
 	};
@@ -1119,19 +1078,25 @@ protected:
 		Window(Data *startidx, Data *endidx, Data *value_at_idx0, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_WINDOW;
-			length = 0;
-			ptr = 0;
-			nDescs = 3;
-			descs = new Data *[3];
-			descs[0] = startidx;
-			descs[1] = endidx;
-			descs[2] = value_at_idx0;
+			descs.push_back(startidx);
+			descs.push_back(endidx);
+			descs.push_back(value_at_idx0);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getStartIdx(){return descs[0];}
-		Data *getEndIdx(){return descs[1];}
-		Data *getValueAt0(){return descs[2];}
+
+		Data *getStartIdx() {
+			return getDescAt(0);
+		}
+
+		Data *getEndIdx() {
+			return getDescAt(1);
+		}
+
+		Data *getValueAt0() {
+			return getDescAt(2);
+		}
+
 		void setStartIdx(Data *startidx) {assignDescAt(startidx, 0);}
 		void setEndIdx(Data *endidx){assignDescAt(endidx, 1);}
 		void setValueAt0(Data *value_at_idx0) {assignDescAt(value_at_idx0, 2);}
@@ -1143,28 +1108,28 @@ protected:
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Function(char opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Function(short opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_FUNCTION;
-			length = 1;
-			ptr = new char[1];
-			*ptr = opcode;
-			nDescs = nargs;
-			descs = new Data *[nargs];
+			this->opcode = opcode;
 			for(int i = 0; i < nargs; i++)
-				descs[i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		char getOpcode() { return *ptr;}
-		int getNumArguments() { return nDescs;}
-		Data *getArgumentAt(int idx) 
-		{
-			if(descs[idx]) descs[idx]->refCount++;
-			return descs[idx];
+
+		short getOpcode() {
+			return opcode;
 		}
+
+		int getNumArguments() { return descs.size(); }
+		Data *getArgumentAt(int idx) {
+			return getDescAt(idx);
+		}
+
 		void setArgAt(Data *arg, int idx) {assignDescAt(arg, idx);}
 	};
+
 	class Conglom: public Compound
 	{
 	public: 
@@ -1175,38 +1140,30 @@ protected:
 		Conglom(Data *image, Data *model, Data *name, Data *qualifiers, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONGLOM;
-			length = 0;
-			ptr = 0;
-			nDescs = 4;
-			descs = new Data *[4];
-			descs[0] = image;
-			descs[1] = model;
-			descs[2] = name;
-			descs[3] = qualifiers;
+			descs.push_back(image);
+			descs.push_back(model);
+			descs.push_back(name);
+			descs.push_back(qualifiers);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getImage()
-		{	
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+
+		Data *getImage() {
+			return getDescAt(0);
 		}
-		Data *getModel()
-		{
-			if(descs[1])
-				descs[1]->refCount++;
-			return descs[1];
+
+		Data *getModel() {
+			return getDescAt(1);
 		}
-		Data *getName()
-		{
-			if(descs[2]) descs[2]->refCount++;
-			return descs[2];
+
+		Data *getName() {
+			return getDescAt(2);
 		}
-		Data *getQualifiers()
-		{
-			if(descs[3]) descs[3]->refCount++;
-			return descs[3];
+
+		Data *getQualifiers() {
+			return getDescAt(3);
 		}
+
 		void setImage(Data *image) {assignDescAt(image, 0);}
 		void setModel(Data *model){assignDescAt(model, 1);}
 		void setName(Data *name) {assignDescAt(name, 2);}
@@ -1222,31 +1179,25 @@ protected:
 		Range(Data *begin, Data *ending, Data *deltaval, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_RANGE;
-			length = 0;
-			ptr = 0;
-			nDescs = 3;
-			descs = new Data *[3];
-			descs[0] = begin;
-			descs[1] = ending;
-			descs[2] = deltaval;
+			descs.push_back(begin);
+			descs.push_back(ending);
+			descs.push_back(deltaval);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getBegin()
-		{
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+
+		Data *getBegin() {
+			return getDescAt(0);
 		}
-		Data *getEnding()
-		{
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+
+		Data *getEnding() {
+			return getDescAt(1);
 		}
-		Data *getDeltaVal()
-		{
-			if(descs[2]) descs[2]->refCount++;			
-			return descs[2];
+
+		Data *getDeltaVal() {
+			return getDescAt(2);
 		}
+
 		void setBegin(Data *begin) {assignDescAt(begin, 0);}
 		void setEnding(Data *ending){assignDescAt(ending, 1);}
 		void setDeltaVal(Data *deltaval) {assignDescAt(deltaval, 2);}
@@ -1261,49 +1212,42 @@ protected:
 		Action(Data *dispatch, Data *task, Data *errorlogs, Data *completion_message, Data *performance, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_ACTION;
-			length = 0;
-			ptr = 0;
-			nDescs = 5;
-			descs = new Data *[5];
-			descs[0] = dispatch;
-			descs[1] = task;
-			descs[2] = errorlogs;
-			descs[3] = completion_message;
-			descs[4] = performance;
+			descs.push_back(dispatch);
+			descs.push_back(task);
+			descs.push_back(errorlogs);
+			descs.push_back(completion_message);
+			descs.push_back(performance);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getDispatch()
-		{
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+
+		Data *getDispatch() {
+			return getDescAt(0);
 		}
-		Data *getTask()
-		{
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+
+		Data *getTask() {
+			return getDescAt(1);
 		}
-		Data *getErrorLogs()
-		{
-			if(descs[2]) descs[2]->refCount++;
-			return descs[2];
+
+		Data *getErrorLogs() {
+			return getDescAt(2);
 		}
-		Data *getCompletionMessage()
-		{
-			if(descs[3]) descs[3]->refCount++;
-			return descs[3];
+
+		Data *getCompletionMessage() {
+			return getDescAt(3);
 		}
-		Data *getPerformance()
-		{
-			if(descs[4]) descs[4]->refCount++;
-			return descs[4];
+
+		Data *getPerformance() {
+			return getDescAt(4);
 		}
+
 		void setDispatch(Data *dispatch) {assignDescAt(dispatch, 0);}
 		void setTask(Data *task){assignDescAt(task, 1);}
 		void setErrorLogs(Data *errorlogs){assignDescAt(errorlogs, 2);}
 		void setCompletionMessage(Data *completion_message) {assignDescAt(completion_message, 3);}
 		void setPerformance(Data *performance){assignDescAt(performance, 4);}
 	};
+
 	class Dispatch: public Compound
 	{
 	public: 
@@ -1314,40 +1258,36 @@ protected:
 		Dispatch(Data *ident, Data *phase, Data *when, Data *completion, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DISPATCH;
-			length = 0;
-			ptr = 0;
-			nDescs = 4;
-			descs = new Data *[4];
-			descs[0] = ident;
-			descs[1] = phase;
-			descs[2] = when;
-			descs[3] = completion;
+			descs.push_back(ident);
+			descs.push_back(phase);
+			descs.push_back(when);
+			descs.push_back(completion);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
+
 		Data *getIdent(){
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+			return getDescAt(0);
 		}
+
 		Data *getPhase(){
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+			return getDescAt(1);
 		}
-		Data *getWhen()
-		{
-			if(descs[2]) descs[2]->refCount++;
-			return descs[2];
+
+		Data *getWhen() {
+			return getDescAt(2);
 		}
-		Data *getCompletion()
-		{
-			if(descs[3]) descs[3]->refCount++;
-			return descs[3];
+
+		Data *getCompletion() {
+			return getDescAt(3);
 		}
+
 		void setIdent(Data *ident) {assignDescAt(ident, 0);}
 		void setPhase(Data *phase){assignDescAt(phase, 1);}
 		void setWhen(Data *when) {assignDescAt(when, 2);}
 		void setCompletion(Data *completion) {assignDescAt(completion, 3);}
 	};
+
 	class Program: public Compound
 	{
 	protected:
@@ -1360,28 +1300,24 @@ protected:
 		Program(Data *timeout, Data *program, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_PROGRAM;
-			length = 0;
-			ptr = 0;
-			nDescs = 2;
-			descs = new Data *[2];
-			descs[0] = timeout;
-			descs[1] = program;
+			descs.push_back(timeout);
+			descs.push_back(program);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getTimeout()
-		{
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+
+		Data *getTimeout() {
+			return getDescAt(0);
 		}
-		Data *getProgram()
-		{
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+
+		Data *getProgram() {
+			return getDescAt(1);
 		}
+
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setProgram(Data *program){assignDescAt(program, 1);}
 	};
+
 	class Routine: public Compound
 	{
 	protected:
@@ -1394,42 +1330,37 @@ protected:
 		Routine(Data *timeout, Data *image, Data *routine, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_ROUTINE;
-			length = 0;
-			ptr = 0;
-			nDescs = 3 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = timeout;
-			descs[1] = image;
-			descs[2] = routine;
+			descs.push_back(timeout);
+			descs.push_back(image);
+			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
-				descs[3+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		Data *getTimeout()
-		{
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+
+		Data *getTimeout() {
+			return getDescAt(0);
 		}
+
 		Data *getImage(){
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+			return getDescAt(1);
 		}
-		Data *getRoutine()
-		{
-			if(descs[2]) descs[2]->refCount++;
-			return descs[2];
+
+		Data *getRoutine() {
+			return getDescAt(2);
 		}
-		Data *getArgumentAt(int idx)
-		{
-			if(descs[3+idx]) descs[3+idx]->refCount++;
-			return descs[3 + idx];
+
+		Data *getArgumentAt(int idx) {
+			return getDescAt(idx + 3);
 		}
+
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setImage(Data *image){assignDescAt(image, 1);}
 		void setRoutine(Data *routine) {assignDescAt(routine, 2);}
 		void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 3 + idx);}
 	};
+
 	class Procedure: public Compound
 	{
 	protected:
@@ -1442,41 +1373,37 @@ protected:
 		Procedure(Data *timeout, Data *language, Data *procedure, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_PROCEDURE;
-			length = 0;
-			ptr = 0;
-			nDescs = 3 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = timeout;
-			descs[1] = language;
-			descs[2] = procedure;
+			descs.push_back(timeout);
+			descs.push_back(language);
+			descs.push_back(procedure);
 			for(int i = 0; i < nargs; i++)
-				descs[3+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
+
 		Data *getTimeout(){
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+			return getDescAt(0);
 		}
+
 		Data *getLanguage(){
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+			return getDescAt(1);
 		}
-		Data *getProcedure()
-		{
-			if(descs[2]) descs[2]->refCount++;
-			return descs[2];
+
+		Data *getProcedure() {
+			return getDescAt(2);
 		}
-		Data *getArgumentAt(int idx)
-		{
-			if(descs[3+idx]) descs[3+idx]->refCount++;
-			return descs[3 + idx];
+
+		Data *getArgumentAt(int idx) {
+			return getDescAt(idx + 3);
 		}
+
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setLanguage(Data *language){assignDescAt(language, 1);}
 		void seProcedure(Data *procedure) {assignDescAt(procedure, 2);}
 		void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 3 + idx);}
 	};
+
 	class Method: public Compound
 	{
 	public: 
@@ -1487,42 +1414,37 @@ protected:
 		Method(Data *timeout, Data *method, Data *object, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_METHOD;
-			length = 0;
-			ptr = 0;
-			nDescs = 3 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = timeout;
-			descs[1] = method;
-			descs[2] = object;
+			descs.push_back(timeout);
+			descs.push_back(method);
+			descs.push_back(object);
 			for(int i = 0; i < nargs; i++)
-				descs[3+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
+
 		Data *getTimeout(){
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+			return getDescAt(0);
 		}
-		Data *getMethod()
-		{
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+
+		Data *getMethod() {
+			return getDescAt(1);
 		}
-		Data *getObject()
-		{
-			if(descs[2]) descs[2]->refCount++;
-			return descs[2];
+
+		Data *getObject() {
+			return getDescAt(2);
 		}
-		Data *getArgumentAt(int idx)
-		{
-			if(descs[3+idx]) descs[3+idx]->refCount++;
-			return descs[3 + idx];
+
+		Data *getArgumentAt(int idx) {
+			return getDescAt(idx + 3);
 		}
+
 		void setTimeout(Data *timeout) {assignDescAt(timeout, 0);}
 		void setMethod(Data *method){assignDescAt(method, 1);}
 		void setObject(Data *object) {assignDescAt(object, 2);}
 		void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 3 + idx);}
 	};
+
 	class Dependency: public Compound
 	{
 	public: 
@@ -1530,35 +1452,36 @@ protected:
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Dependency(char opcode, Data *arg1, Data *arg2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Dependency(short opcode, Data *arg1, Data *arg2, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_DEPENDENCY;
-			length = 1;
-			ptr = new char[1];
-			*ptr = opcode;
-			nDescs = 2;
-			descs = new Data *[2];
-			descs[0] = arg1;
-			descs[1] = arg2;
+			this->opcode = opcode;
+			descs.push_back(arg1);
+			descs.push_back(arg2);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		char getOpcode(){return *ptr;}
+
+		short getOpcode() {
+			return opcode;
+		}
+
 		Data *getArg1(){
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+			return getDescAt(0);
 		}
+
 		Data *getArg2(){
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+			return getDescAt(1);
 		}
-		void setOpcode(char opcode)
-		{
-			*ptr = opcode;
+
+		void setOpcode(short opcode) {
+			this->opcode = opcode;
 		}
+
 		void setArg1(Data *arg1) {assignDescAt(arg1, 0);}
 		void setArg2(Data *arg2) {assignDescAt(arg2, 0);}
 	};
+
 	class Condition: public Compound
 	{
 	public: 
@@ -1566,31 +1489,31 @@ protected:
 		{
 			setAccessory(units, error, help, validation);
 		}
-		Condition(char opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+		Condition(short opcode, Data *arg, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CONDITION;
-			length = 1;
-			ptr = new char[1];
-			*ptr = opcode;
-			nDescs = 1;
-			descs = new Data *[1];
-			descs[0] = arg;
+			this->opcode = opcode;
+			descs.push_back(arg);
 			incrementRefCounts();
 			setAccessory(units, error, help, validation);
 		}
-		char getOpcode(){return *ptr;}
+
+		short getOpcode() {
+			return opcode;
+		}
+
 		Data *getArg(){
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+			return getDescAt(0);
 		}
-		void setOpcode(char opcode)
-		{
-			*ptr = opcode;
+
+		void setOpcode(short opcode) {
+			this->opcode = opcode;
 		}
+
 		void setArg(Data *arg) {assignDescAt(arg, 0);}
 	};
-	class Call: public Compound
-	{
+
+class Call: public Compound {
 	public: 
 		Call(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
 		{
@@ -1599,272 +1522,233 @@ protected:
 		Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
 		{
 			dtype = DTYPE_CALL;
-			length = 1;
-			ptr = new char;
-			*ptr = retType;
-			nDescs = 2 + nargs;
-			descs = new Data *[nDescs];
-			descs[0] = image;
-			descs[1] = routine;
+			opcode = retType;
+			descs.push_back(image);
+			descs.push_back(routine);
 			for(int i = 0; i < nargs; i++)
-				descs[2+i] = args[i];
+				descs.push_back(args[i]);
 			incrementRefCounts();
 		}
-		char getRetType() {return *ptr;}
-		void setRetType(char retType){*ptr = retType;}
-		Data *getImage()
-		{
-			if(descs[0]) descs[0]->refCount++;
-			return descs[0];
+
+		char getRetType() {
+			return opcode;
 		}
+
+		void setRetType(char retType) {
+			opcode = retType;
+		}
+
+		Data *getImage() {
+			return getDescAt(0);
+		}
+
 		Data *getRoutine(){
-			if(descs[1]) descs[1]->refCount++;
-			return descs[1];
+			return getDescAt(1);
 		}
-		Data *getArgumentAt(int idx)
-		{
-			if(descs[2+idx]) descs[2+idx]->refCount++;
-			return descs[2 + idx];
+
+		Data *getArgumentAt(int idx) {
+			return getDescAt(idx + 2);
 		}
+
 		void setImage(Data *image){assignDescAt(image, 0);}
 		void setRoutine(Data *routine) {assignDescAt(routine, 1);}
 		void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 2 + idx);}
 	};
+
 /////////////////////APD///////////////////////
-#define DSCS_STEP 64
-	class EXPORT Apd: public Data
+
+//NOTE: refCount is not altered by getDescAt(), appendDesc() and setDescAt(). 
+// this simplifies the usage of Apd (not intended in any case for the normal user)
+///////////////////////////////////////////////
+class EXPORT Apd: public Data
+{
+public:
+	Apd(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+		clazz = CLASS_APD;
+		dtype = DTYPE_DSC;
+		setAccessory(units, error, help, validation);
+	}
+
+	Apd(std::size_t nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+		clazz = CLASS_APD;
+		dtype = DTYPE_DSC;
+		for(std::size_t i = 0; i < nData; ++i) {
+			if(descs[i]) descs[i]->incRefCount();
+			this->descs.push_back(descs[i]);
+		}
+		setAccessory(units, error, help, validation);
+	}
+	
+	
+	virtual void propagateDeletion() 
 	{
-	protected:
-		int nDescs;
-		int descsSize;
-		Data **descs;
-		void resize()
+	    for(std::size_t i = 0; i < descs.size(); ++i)
+	    {
+		if (descs[i])
 		{
-			descsSize += DSCS_STEP;
-			Data **newDescs = new Data *[descsSize];
-			for(int i = 0; i < nDescs; i++)
-				newDescs[i] = descs[i];
-			if(descs)
-				deleteNativeArray(descs);
-			descs = newDescs;
+		    descs[i]->decRefCount();
+		    deleteData(descs[i]);
 		}
-		
-	public:
-		Apd(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
+	    }
+	}
+
+
+	virtual ~Apd() {
+	    propagateDeletion();
+	}
+/*	    for(size_t i = 0; i < descs.size(); i++)
+	    {
+		if(descs[i])
+		    descs[i]->decRefCount();
+	    }
+	}
+	*/
+/*  CANNOT WORK: Some pointers may be empty!!
+	virtual ~Apd() {
+		std::for_each(descs.begin(), descs.end(), (void (&)(Data *))decRefCount);
+	}
+*/
+
+	virtual std::size_t len() {
+		return descs.size();
+	}
+
+	Data ** getDscs() {
+		// FIXME: This doesn't increment refCounts.
+		return &descs[0];
+	}
+
+	std::size_t getDimension() {
+		return Apd::len();
+	}
+
+	Data ** getDscArray() {
+		return getDscs();
+	}
+
+	Data * getDescAt(std::size_t i) {
+		//descs.at(i)->incRefCount();
+		return descs.at(i);
+	}
+
+	bool hasDescAt(std::size_t i) {
+		return descs.size() > i && descs[i] != NULL;
+	}
+	void setDescAt(std::size_t i, Data * data) {
+		if(descs.size() <= i)
 		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DSC; 
-			nDescs = descsSize = 0;
-			descs = 0;
-			setAccessory(units, error, help, validation);
+		    for(size_t j = descs.size(); j < i; j++)
+			descs.push_back(NULL);
+		    descs.push_back(data);
 		}
-		Apd(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DSC; 
-			nDescs = nData;
-			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = new Data *[descsSize];
-			for(int i = 0; i < nData; i++)
-			{
-				if(descs[i])
-					descs[i]->refCount++;
-				this->descs[i] = descs[i];
-			}
-			setAccessory(units, error, help, validation);
-		}
-		virtual ~Apd()
-		{
-			if(descsSize > 0)
-			{
-				deleteNativeArray(descs);
-			}
-		}
-		virtual void propagateDeletion()
-		{
-			if(nDescs > 0)
-			{
-				for(int i = 0; i < nDescs; i++)
-				{
-					if(descs[i])
-					{
-						deleteData(descs[i]);
-					}
-				}
-			}
-		}
-		virtual bool hasChanged()
-		{
-			if (changed || !isImmutable()) return true;
-			for(int i = 0; i < nDescs; i++)
-				if(descs[i] && descs[i]->hasChanged())
-					return true;
-			return false;
-		}
-		virtual int len()
-		{
-			return nDescs;
-		}
-		Data **getDscs()
-		{
-			return descs;
-		}
-		void *convertToDsc();
-		int getDimension() {return nDescs;}
-		Data **getDscArray() {return descs;}
-		Data *getDescAt(int idx) 
-		{
-			if(descs[idx]) descs[idx]->refCount++;
-			return descs[idx];
-		}
-		void setDescAt(int idx, Data *data)
-		{
-			descs[idx] = data;
-			data->refCount++;
-			changed = true;
-		}
-	};
+		else
+//INSERT AND BEGIN() WORK ONLY IF VECTOR NON EMPTY!!		      
+		    descs.insert(descs.begin() + i, data);
+		//data->incRefCount();
+	} 
+	void appendDesc(Data * data)
+	{
+		descs.push_back(data);
+		//if(data) data->incRefCount();
+	}
+	void *convertToDsc();
+
+protected:
+	std::vector<Data*> descs;
+
+};
+
 ///////////////////LIST///////////////
-	class EXPORT List: public Apd
+class EXPORT List: public Apd
+{
+public:
+	List(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(units, error, help, validation)
 	{
-	public:
-		List(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_LIST; 
-			nDescs = 0;
-			setAccessory(units, error, help, validation);
-		}
-		List(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_LIST; 
-			nDescs = nData;
-			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = new Data *[descsSize];
-			for(int i = 0; i < nData; i++)
-			{
-				if(descs[i])
-					descs[i]->refCount++;
-				this->descs[i] = descs[i];
-			}
-			setAccessory(units, error, help, validation);
-		}
-		void append(Data *data)
-		{
-			if(nDescs == descsSize)
-			    resize();
-			descs[nDescs++] = data;
-			data->refCount++;
-		}
+		dtype = DTYPE_LIST;
+	}
+
+	List(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(nData, descs, units, error, help, validation)
+	{
+		dtype = DTYPE_LIST;
+	}
+
+	void append(Data * data) {
+		appendDesc(data);
+	}
 		
-		void remove(Data *data)
-		{
-			for(int i = 0; i < nDescs; i++)
-			{
-				if(descs[i] == data)
-				{
-					deleteData(descs[i]);
-					for(int j = i; j < nDescs-1; j++)
-						descs[j] = descs[j+1];
-					nDescs--;
-					return;
-				}
-			}
-		}
-		void remove(int idx)
-		{
-			if(idx < 0 || idx >= nDescs)
-				return;
-			deleteData(descs[idx]);
-			for(int j = idx; j < nDescs-1; j++)
-				descs[j] = descs[j+1];
-			nDescs--;
-		}
-		void insert(int idx, Data *data)
-		{
-			if(nDescs == descsSize)
-			    resize();
-			for(int i = nDescs; i > idx; i--)
-				descs[i] = descs[i-1];
-			descs[idx] = data;
-			data->refCount++;
-		}
-		Data *getElementAt(int idx)
-		{
-			if(idx < 0 || idx > nDescs) return 0;
-			if(descs[idx])
-				descs[idx]->refCount++;
-			return descs[idx];
-		}
-	};
+	void remove(Data * data) {
+		descs.erase(std::remove(descs.begin(), descs.end(), data), descs.end());
+		data->decRefCount();
+	}
+
+	void remove(std::size_t i) {
+		descs.at(i)->decRefCount();
+		descs.erase(descs.begin() + i);
+	}
+
+	void insert(std::size_t i, Data *data) {
+		descs.insert(descs.begin() + i, data);
+		data->incRefCount();
+	}
+
+	Data * getElementAt(std::size_t i) {
+		descs.at(i)->incRefCount();
+		return descs[i];
+	}
+};
+
 /////Dictionary///////
-	class EXPORT Dictionary: public Apd
+class EXPORT Dictionary: public Apd
+{
+public:
+	Dictionary(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(units, error, help, validation)
 	{
-	public:
-		Dictionary(Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) 
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DICTIONARY; 
-			nDescs = 0;
-			setAccessory(units, error, help, validation);
-		}
-		Dictionary(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
-		{
-			clazz = CLASS_APD; 
-			dtype = DTYPE_DICTIONARY; 
-			nDescs = nData;
-			descsSize = DSCS_STEP * (nData/DSCS_STEP + 1);
-			this->descs = new Data *[descsSize];
-			for(int i = 0; i < nData; i++)
-			{
-				if(descs[i])
-					descs[i]->refCount++;
-				this->descs[i] = descs[i];
+		dtype = DTYPE_DICTIONARY;
+	}
+
+	Dictionary(int nData, Data **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
+		Apd(nData, descs, units, error, help, validation)
+	{
+		dtype = DTYPE_DICTIONARY;
+	}
+
+	Data * getItem(String *strData) {
+		for(std::size_t i = 0; i < descs.size(); i += 2) {
+			if(strData->equals(descs[i])) {
+				descs[i+1]->incRefCount();
+				return descs[i+1];
 			}
-			setAccessory(units, error, help, validation);
 		}
-		Data *getItem(String *strData)
-		{
-			for(int i = 0; i < nDescs/2; i++)
-			{
-				if(strData->equals(descs[2*i]))
-				{
-					if(descs[2*i+1])
-						descs[2*i+1]->refCount++;
-					return descs[2*i+1];
-				}
+		return 0;
+	}
+
+	void setItem(String *strData, Data *data) {
+		for(std::size_t i = 0; i < descs.size(); i += 2) {
+			if(strData->equals(descs[i])) {
+				descs[i]->decRefCount();
+				descs[i] = strData;
+				strData->incRefCount();
+
+				descs[i+1]->decRefCount();
+				descs[i+1] = data;
+				data->incRefCount();
+				return;
 			}
-			return 0;
 		}
-		void setItem(String *strData, Data *data)
-		{
-			for(int i = 0; i < nDescs/2; i++)
-			{
-				if(strData->equals(descs[2*i]))
-				{
-					deleteData(descs[2*i]);
-					descs[2*i] = strData;
-					strData->refCount++;
-					deleteData(descs[2*i+1]);
-					descs[2*i+1] = data;
-					data->refCount++;
-					return ;
-				}
-			}
-			if(nDescs+2 > descsSize)
-				resize();
-			descs[nDescs] = strData;
-			strData->refCount++;
-			descs[nDescs + 1] = data;
-			data->refCount++;
-			nDescs+=2;
-		}
-		int len()
-		{
-			return nDescs/2;
-		}
-	};
+
+		descs.push_back(strData);
+		descs.push_back(data);
+		strData->incRefCount();
+		data->incRefCount();
+	}
+
+	std::size_t len() {
+		return Apd::len()/2;
+	}
+};
 /////////////////////////////////////////////////////////////////
 //              Tree Objects
 /////////////////////////////////////////////////////////////////
@@ -1873,7 +1757,11 @@ protected:
 	class TreeNodeArray;
 	class  EXPORT TreeNode: public Data
 	{
-	friend	std::ostream &operator<<(std::ostream &stream, TreeNode *treeNode);
+		friend	EXPORT std::ostream &operator<<(std::ostream &stream, TreeNode *treeNode)
+		{
+			stream << treeNode->getFullPathStr();
+			return stream;
+		}
 	protected:
 		Tree *tree;
 		int nid;
@@ -1882,7 +1770,7 @@ protected:
 //From Data
 		virtual bool isImmutable() {return false;}
 		virtual void *convertToDsc();
-		int getFlag(int flagOfs);
+		bool getFlag(int flagOfs);
 		void setFlag(int flagOfs, bool val);
 	public:
 		virtual Data *data();
@@ -1897,6 +1785,11 @@ protected:
 		char *getFullPath();
 		char *getNodeName();
 		char *getOriginalPartName();
+		std::string getPathStr();
+		std::string getMinPathStr();
+		std::string getFullPathStr();
+		std::string getNodeNameStr();
+		std::string getOriginalPartNameStr();
 		TreeNode *getNode(char const * relPath);
 		TreeNode *getNode(String *relPathStr);
 		virtual Data *getData();
@@ -1951,10 +1844,12 @@ protected:
 		void makeSegment(Data *start, Data *end, Data *time, Array *initialData);
 		void putSegment(Array *data, int ofs);
 		void updateSegment(Data *start, Data *end, Data *time);
+		void updateSegment(int idx, Data *start, Data *end, Data *time);
 		int getNumSegments();
 		void getSegmentLimits(int segmentIdx, Data **start, Data **end);
-			
 		Array *getSegment(int segIdx);
+		Data *getSegmentDim(int segIdx);
+		void getSegmentAndDimension(int segIdx, Array *segment, Data *dimension);
 		void beginTimestampedSegment(Array *initData);
 		void makeTimestampedSegment(Array *data, int64_t *times);
 		void putTimestampedSegment(Array *data, int64_t *times);
@@ -1974,18 +1869,21 @@ protected:
 		void removeTag(std::string const & tagName);
 		void setSubtree(bool isSubtree);
 	};
+
 /////////////////End Class TreeTreeNode///////////////
-	class EXPORT TreePath : public TreeNode
-	{
-		int length;
-		char *ptr;
-	public:
-		TreePath(char *val, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
-		TreePath(char *val, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
-		void *convertToDsc();
-		void resolveNid();
-	};
-	
+
+class EXPORT TreePath: public TreeNode
+{
+public:
+	TreePath(std::string const & path, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+	TreePath(char const * path, int len, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
+	void *convertToDsc();
+	void resolveNid();
+
+private:
+	std::string path;
+};
+
 #ifdef CACHEDTREES	
 /////////////////CachedTreeNode/////////////////////////////
 #define MDS_WRITE_THROUGH 1
@@ -2053,7 +1951,7 @@ protected:
 		Tree(void *dbid, char const * name, int shot);
 	protected:
 		Tree(){}
-		char *name;
+		std::string name;
 		int shot;
 		void *ctx;
 	
@@ -2125,80 +2023,63 @@ protected:
 /////////////////End CachedTree/////////
 #endif
 /////////////Class Event///////////
-#include <UnnamedSemaphore.h>
-	class EXPORT Event
-	{
-	UnnamedSemaphore sem;
-	protected:
-		virtual void connectToEvents();
-		virtual void disconnectFromEvents();
+class EXPORT Event {
 	public:
 		char *eventName;
 		std::string eventBuf;
 		int eventId;
 		bool waitingEvent;
 		int64_t eventTime;
-		Event(){sem.initialize(0);}
+		Event() {}
 		Event(char *evName);
 		virtual ~Event();
-		char const *getRaw(std::size_t *size)
-		{
+
+		char const * getRaw(std::size_t * size) {
 			*size = eventBuf.length();
 			return eventBuf.c_str();
 		}
-		Uint64 *getTime()
-		{
+
+		Uint64 *getTime() {
 			return new Uint64(eventTime);
 		}
-		char *getName() { return eventName;}
+
+		char *getName() {
+			return eventName;
+		}
+
 	    Data *getData();
-		void wait()
-		{
-			waitingEvent = true;
-			sem.wait();
-			waitingEvent = false;
+
+		void wait() {
+			condition.wait();
 		}
-		void wait(int secs)
-		{
-			waitingEvent = true;
-			MdsTimeout timeout(secs, 0);
-			int status = sem.timedWait(timeout);
-			waitingEvent = false;
-			if(status)
+
+		void wait(std::size_t secs) {
+			if (condition.waitTimeout(secs * 1000) == false)
 				throw MdsException("Timeout Occurred");
 		}
-		Data *waitData()
-		{
-			waitingEvent = true;
-			sem.wait();
-			waitingEvent = false;
+
+		Data *waitData() {
+			wait();
 			return getData();
 		}
-		Data *waitData(int secs)
-		{
-			waitingEvent = true;
-			MdsTimeout timeout(secs, 0);
-			//timedWait returns 0 if no timeout, 1 otherwise
-			int status = sem.timedWait(timeout);
-			waitingEvent = false;
-			if(status)
-				throw MdsException("Timeout Occurred");
+
+		Data *waitData(std::size_t secs) {
+			wait(secs);
 			return getData();
 		}
-		void abort()
-		{
-			if(waitingEvent)
-				sem.post();
+
+		void abort() {
 		}
-		char const *waitRaw(std::size_t *size)
-		{
-			sem.wait();
+
+		char const * waitRaw(std::size_t * size) {
+			wait();
 			return getRaw(size);
 		}
-		virtual void run() 
-		{
-			sem.post();
+
+		virtual void run() {
+			condition.notify();
 		}
+
 		static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
 		static void setEventRaw(char *evName, int bufLen, char *buf);
 		static void setEvent(char *evName, Data *evData);
@@ -2206,22 +2087,15 @@ protected:
 		static void setevent(char *evName) {setEvent(evName); }
 		static void seteventRaw(char *evName, int bufLen, char *buf){setEventRaw(evName, bufLen, buf);}
 		static void setevent(char *evName, Data *evData);
-	};
-	class  EXPORT REvent:public Event
-	{
-		void *reventId;
-	protected:
-		virtual void connectToEvents();
-		virtual void disconnectFromEvents();
-	public:
-		REvent(char *evName);
-		virtual ~REvent(){}
-		static void setEvent(char *evName, Data *data);
-		static void setEventRaw(char *evName, int bufLen, char *buf);
-		static void setEventAndWait(char *evName, Data *data);
-		static void setEventRawAndWait(char *evName, int bufLen, char *buf);
-	};
-//////////////End Class Event//////////////
+
+protected:
+	virtual void connectToEvents();
+	virtual void disconnectFromEvents();
+
+private:
+	ConditionVar condition;
+};
+
 ///////////////remote data access classes ////////////////
 	class Connection;
 	class EXPORT GetMany: public List
@@ -2237,7 +2111,7 @@ protected:
 		~GetMany()
 		{
 			if(evalRes)
-				deleteData(evalRes);
+				delete evalRes;
 		}
 		void append(char *name, char *expr, Data **args, int nArgs);
 		void insert(int idx, char *name, char *expr, Data **args, int nArgs);
@@ -2259,7 +2133,7 @@ protected:
 		~PutMany()
 		{
 			if(evalRes)
-				deleteData(evalRes);
+				delete evalRes;
 		}
 		void append(char *name, char *expr, Data **args, int nArgs);
 		void insert(int idx, char *name, char *expr, Data **args, int nArgs);
@@ -2268,23 +2142,10 @@ protected:
 		void execute();
 		void checkStatus(char *name);
 	};
-	class EXPORT Connection 
-	{
-#ifdef HAVE_WINDOWS_H
-		HANDLE semH;
-		static HANDLE globalSemH;
-		static bool globalSemHInitialized;
-#else
-		sem_t semStruct;
-		bool semInitialized;
-		static pthread_mutex_t globalMutex;
-#endif
-		int sockId;
-		void lock();
-		void unlock();
-		void lockGlobal();
-		void unlockGlobal();
-	public:
+
+class EXPORT Connection
+{
+public:
 		Connection(char *mdsipAddr);
 		~Connection();
 		void openTree(char *tree, int shot);
@@ -2297,7 +2158,7 @@ protected:
 		Data *get(const char *expr, Data **args, int nArgs);
 		Data *get(const char *expr)
 		{
-		    return get(expr, 0, 0);
+			return get(expr, 0, 0);
 		}
 		void put(const char *path, char *expr, Data **args, int nArgs);
 		PutMany *putMany()
@@ -2308,7 +2169,17 @@ protected:
 		{
 			return new GetMany(this);
 		}
-	};
+
+private:
+	void lockLocal();
+	void unlockLocal();
+	void lockGlobal();
+	void unlockGlobal();
+
+	int sockId;
+	Mutex mutex;
+	static Mutex globalMutex;
+};
 	class EXPORT Scope 
 	{
 		int x, y, width, height;
@@ -2320,8 +2191,7 @@ protected:
 		void show();
 	};
 //////////////Support functions////////
-EXPORT void deleteData(Data *);
-EXPORT Data *deserialize(char const *serialized);
+EXPORT Data *deserialize(char const * serialized);
 EXPORT Data *compile(const char *expr);
 EXPORT Data *compileWithArgs(const char *expr, int nArgs ...);
 EXPORT Data *compile(const char *expr, Tree *tree);
@@ -2337,5 +2207,22 @@ void setActiveTree(Tree *tree);
 EXPORT void deleteTreeNode(TreeNode *node);
 EXPORT void deleteTree(Tree *tree);
 EXPORT void deleteTreeNodeArray(TreeNodeArray *nodeArray);
+EXPORT std::ostream &operator<<(std::ostream &stream, MDSplus::Data *data);
+
+
+EXPORT void deleteNativeArray(char * array); 
+EXPORT void deleteNativeArray(unsigned char * array); 
+EXPORT void deleteNativeArray(short * array); 
+EXPORT void deleteNativeArray(unsigned short * array); 
+EXPORT void deleteNativeArray(int * array); 
+EXPORT void deleteNativeArray(unsigned int * array); 
+EXPORT void deleteNativeArray(int64_t * array);
+EXPORT void deleteNativeArray(uint64_t * array);
+EXPORT void deleteNativeArray(float * array); 
+EXPORT void deleteNativeArray(double * array); 
+EXPORT void deleteNativeArray(char ** array); 
+EXPORT void deleteNativeArray(Data ** array); 
+
+
 }
 #endif

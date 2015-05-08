@@ -30,6 +30,6 @@
 #ifdef _NO_PROTO
 Widget XmdsCreateXdBoxDialog();
 #else
-Widget XmdsCreateXdBoxDialog( Widget parent, char *name, ArgList args, Cardinal argcount );
+Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Cardinal argcount);
 #endif
 #endif

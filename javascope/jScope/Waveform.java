@@ -13,13 +13,14 @@ import java.util.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.Insets;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.image.*;
 import java.awt.geom.*;
 
 
 
-public class Waveform
-    extends JComponent {
+public class Waveform 
+    extends JComponent implements SignalListener{
 
   public static int MAX_POINTS = 1000;
   static public boolean is_debug = false;
@@ -120,9 +121,9 @@ public class Waveform
 
   private static boolean bug_image = true;
 
-  private Vector waveform_listener = new Vector();
+  private Vector<WaveformListener> waveform_listener = new Vector<WaveformListener>();
 
-  private Vector undo_zoom = new Vector();
+  private Vector<ZoomRegion> undo_zoom = new Vector<ZoomRegion>();
   private boolean send_profile = false;
 
   protected Border unselect_border;
@@ -145,6 +146,9 @@ public class Waveform
 
   protected ColorMap colorMap = new ColorMap();
   
+  private String properties;
+  public void setProperties( String properties) { this.properties = properties;}
+  public String getProperties() { return properties;}
 
 
   class ZoomRegion {
@@ -164,15 +168,9 @@ public class Waveform
   static int ixxxx = 0;
   public Waveform(Signal s) {
     this();
-    waveform_signal = new Signal(s, 1000);
-//      Reshape al piu' con 1000 punti
+    waveform_signal = s;
+    waveform_signal.registerSignalListener(this);
     not_drawn = true;
-//	    double xmax = MaxXSignal(), xmin = MinXSignal(), ymax = MaxYSignal(), ymin = MinYSignal();
-
-    //{{REGISTER_LISTENERS
-    SymContainer aSymContainer = new SymContainer();
-    this.addContainerListener(aSymContainer);
-    //}}
   }
 
   public Waveform() {
@@ -211,14 +209,7 @@ public class Waveform
     setMouse();
     setKeys();
     SetDefaultColors();
-        try
-        {
-            jbInit();
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
-        }
+
     }
 
   static String ConvertToString(double f, boolean is_log) {
@@ -494,39 +485,6 @@ public class Waveform
     }
   }
 
-/*
-  public int getSignalMode() {
-    int mode = -1;
-    if (waveform_signal != null) {
-      if (waveform_signal.getType() == Signal.TYPE_2D) {
-        mode = waveform_signal.getMode2D();
-      }
-      else
-      if (waveform_signal.getType() == Signal.TYPE_1D) {
-        mode = waveform_signal.getMode1D();
-      }
-    }
-    return mode;
-  }
-
-  public void setSignalMode(int mode) {
-    if (waveform_signal != null) {
-      if (waveform_signal.getType() == Signal.TYPE_2D) {
-        waveform_signal.setMode2D(mode);
-        Autoscale();
-        sendUpdateEvent();
-      }
-      else
-      if (waveform_signal.getType() == Signal.TYPE_1D) {
-        waveform_signal.setMode1D(mode);
-      }
-      not_drawn = true;
-      repaint();
-    }
-  }
-*/
-
-
 
   public void SetSignalState(boolean state) {
     if (waveform_signal != null) {
@@ -654,6 +612,7 @@ public class Waveform
                   }
                 }
               }
+              //ReportChanges();
               repaint();
               sendUpdateEvent();
           
@@ -666,6 +625,7 @@ public class Waveform
       });
   }
 
+  
 
   protected void setMouse() {
     final Waveform w = this;
@@ -844,6 +804,14 @@ public class Waveform
                      update_timestamp);
           grid = null;
           not_drawn = true;
+          //July 2014 in order to force resolution adjustment
+          try {
+            waveform_signal.setXLimits(MinXSignal(), MaxXSignal(), Signal.SIMPLE);
+            setXlimits((float)MinXSignal(), (float)MaxXSignal());
+          }catch(Exception exc)
+          {
+              System.out.println(exc);
+          }
         }
 
         prev_point_x = prev_point_y = -1;
@@ -936,9 +904,6 @@ public class Waveform
         }
         if (mode == MODE_POINT) {
           not_drawn = false;
-          //  repaint();
-          //  System.out.println("-----------------------------------------------------");
-          //	System.out.println("Dragged Paint Immediately on "+getName()+" "+getBounds());
           sendUpdateEvent();
           paintImmediately(0, 0, d.width, d.height);
           if (is_image && send_profile) {
@@ -970,11 +935,8 @@ public class Waveform
   public void Erase() {
     update_timestamp = 0;
     waveform_signal = null;
-//	    mode = MODE_ZOOM;
     dragging = false;
-//	    interpolate = true;
     first_set_point = true;
-//	    marker = Signal.NONE;
     marker_width = MARKER_WIDTH;
     x_log = y_log = false;
     off_image = null;
@@ -1066,22 +1028,14 @@ public class Waveform
       return;
     }
 
-    if (waveform_signal == null) {
-      Update(new Signal(x, y));
-    }
-    else {
-      waveform_signal.setAxis(x, y, x.length);
-      wm = null;
-      curr_rect = null;
-      prev_point_x = prev_point_y = -1;
-      not_drawn = true;
-      repaint();
-    }
-  }
+    Update(new Signal(x, y));
+    repaint();
+   }
 
   synchronized public void Update(Signal s) {
     update_timestamp++;
     waveform_signal = s;
+    waveform_signal.registerSignalListener(this);
     wm = null;
     curr_rect = null;
     prev_point_x = prev_point_y = -1;
@@ -1108,6 +1062,7 @@ public class Waveform
 
   public void UpdateSignal(Signal s) { //Same as Update, except for grid and metrics
     waveform_signal = s;
+   waveform_signal.registerSignalListener(this);
     curr_rect = null;
     prev_point_x = prev_point_y = -1;
     not_drawn = true;
@@ -1211,25 +1166,27 @@ public class Waveform
     int i;
     int curr_mode = waveform_signal.getMode1D();
     if (curr_mode == Signal.MODE_STEP) {
-      num_points = waveform_signal.n_points * 2 - 1;
+      num_points = waveform_signal.getNumPoints() * 2 - 1;
     }
     else {
-      num_points = waveform_signal.n_points;
+      num_points = waveform_signal.getNumPoints();
 
     }
-    int x[] = new int[waveform_signal.n_points];
-    int y[] = new int[waveform_signal.n_points];
-    points = new Point[waveform_signal.n_points];
+    int x[] = new int[waveform_signal.getNumPoints()];
+    int y[] = new int[waveform_signal.getNumPoints()];
+    points = new Point[waveform_signal.getNumPoints()];
 
     if (curr_mode == Signal.MODE_STEP) {
-      for (i = 1; i < waveform_signal.n_points - 1; i += 2) {
+      for (i = 1; i < waveform_signal.getNumPoints() - 1; i += 2) {
+        x[i-1] = wm.XPixel(waveform_signal.getX(i), d);
+        y[i-1] = wm.YPixel(waveform_signal.getY(i), d);
         x[i] = x[i - 1];
         y[i] = y[i + 1];
         points[i] = new Point(x[i - 1], y[i + 1]);
       }
     }
     else {
-      for (i = 0; i < waveform_signal.n_points; i++) {
+      for (i = 0; i < waveform_signal.getNumPoints(); i++) {
         x[i] = wm.XPixel(waveform_signal.getX(i), d);
         y[i] = wm.YPixel(waveform_signal.getY(i), d);
         points[i] = new Point(x[i], y[i]);
@@ -1253,19 +1210,10 @@ public class Waveform
       curr_rect = null;
     }
 
-    //	   if(resizing) // If new Grid and WaveformMetrics have not been computed before
-//	   {
-
-    grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label,
+     grid = new Grid(xmax, ymax, xmin, ymin, x_log, y_log, grid_mode, x_label,
                     y_label,
                     title, wave_error, grid_step_x, grid_step_y, int_xlabel,
                     int_ylabel, true);
-    //grid.font = font;
-    //resizing = false;
-//	   }
-//	   else
-//		    resizing = false;
-
     if (!is_min_size) {
       grid.paint(g, d, this, null);
 
@@ -1301,10 +1249,14 @@ public class Waveform
         xmin =  MinXSignal();
         ymax =  MaxYSignal();
         ymin =  MinYSignal();
+        
             
-        double xrange = xmax - xmin;
-        xmax += xrange * horizontal_offset / 200.;
-        xmin -= xrange * horizontal_offset / 200.;
+        if(xmax != Double.MAX_VALUE && xmin != Double.MIN_VALUE)
+        {
+            double xrange = xmax - xmin;
+            xmax += xrange * horizontal_offset / 200.;
+            xmin -= xrange * horizontal_offset / 200.;
+        }
         double yrange = ymax - ymin;
         ymax += yrange * vertical_offset / 200.;
         ymin -= yrange * vertical_offset / 200.;
@@ -1445,7 +1397,7 @@ public class Waveform
                                frames.getPixel(frames.GetFrameIdx(), p.x, p.y),
                                0);
 
-        if (frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_16 ) {
+        if (frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_16 || frame_type == FrameData.BITMAP_IMAGE_8 ) {
           we.setPointValue(frames.getPointValue(frames.GetFrameIdx(), p.x, p.y));
         }
         we.setFrameType(frame_type);
@@ -1455,8 +1407,6 @@ public class Waveform
     }
     else {
       if (waveform_signal != null && wm != null)
-//	                && mode == MODE_POINT
-//	                && !not_drawn && !is_min_size)
       {
 
         curr_x = wm.XValue(end_x, d);
@@ -1506,19 +1456,17 @@ public class Waveform
       WaveformEvent we;
       Dimension d = getWaveSize();
       Point p = frames.getFramePoint(new Point(end_x, end_y), d);
-//      int frame_type = frames.getFrameType(frames.GetFrameIdx());
       int frame_type = frames.getFrameType();
 
       if (frame_type == FrameData.BITMAP_IMAGE_32 ||
           frame_type == FrameData.BITMAP_IMAGE_16 ) {
         we = new WaveformEvent(this,
+                               p.x, p.y, (float)(Math.round(frames.GetFrameTime() * 10000) / 10000.) ,
                                frames.getName(),
                                frames.getValuesX(p.y),
                                frames.getStartPixelX(),
                                frames.getValuesY(p.x),
                                frames.getStartPixelY());
-                               //frames.getValuesSignal(p.x, p.y),
-                               //frames.getFramesTime());
         if (show_measure) {
           Point p_pos = new Point( (int) mark_point_x, (int) mark_point_y);
           Point mp = frames.getFramePoint(p_pos, d);
@@ -1528,13 +1476,12 @@ public class Waveform
       }
       else {
         we = new WaveformEvent(this,
+                               p.x, p.y, (float)(Math.round(frames.GetFrameTime() * 10000) / 10000.) ,
                                frames.getName(),
                                frames.getPixelsX(p.y),
                                frames.getStartPixelX(),
                                frames.getPixelsY(p.x),
                                frames.getStartPixelY());
-                               //frames.getPixelsSignal(p.x, p.y),
-                               //frames.getFramesTime());
         if (show_measure) {
           Point p_pos = new Point( (int) mark_point_x, (int) mark_point_y);
           Point mp = frames.getFramePoint(p_pos, d);
@@ -1711,12 +1658,13 @@ public class Waveform
               {
                   if (is_image && frames != null)
                   {
-                      Point p = frames.getFramePoint(new Point(end_x, end_y),
-                          new
-                          Dimension(prev_width, prev_height));
-                      p = frames.getImagePoint(p, d);
-                      end_x = p.x;
-                      end_y = p.y;
+                      try {
+                          Point p = frames.getFramePoint(new Point(end_x, end_y),
+                              new Dimension(prev_width, prev_height));
+                          p = frames.getImagePoint(p, d);
+                          end_x = p.x;
+                          end_y = p.y;
+                      }catch (Exception exc){}
                   }
               }
 
@@ -1894,7 +1842,7 @@ public class Waveform
       y = s.getY(idx);
       x = s.getX(idx);
     }
-    else if(s.isDoubleX())
+    else
     {
       if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
           s.getMode1D() != Signal.MODE_STEP || s.findNaN()) {
@@ -1930,7 +1878,7 @@ public class Waveform
           }
           else {
             y = s.getY(idx) + (s.getY(idx + 1) - s.getY(idx)) * (x - s.getX(idx)) /
-                (s.getY(idx + 1) - s.getX(idx));
+                (s.getX(idx + 1) - s.getX(idx));
           }
         }
         catch (ArrayIndexOutOfBoundsException e) {
@@ -1938,6 +1886,7 @@ public class Waveform
         }
       }
     }
+    /* No more float X
     else
     {
      if (s.getMarker() != Signal.NONE && !s.getInterpolate() &&
@@ -1980,8 +1929,8 @@ public class Waveform
        catch (ArrayIndexOutOfBoundsException e) {
          //System.out.println("Exception on " + getName() + " " + s.getLength() + " " + idx);
        }
-     }
-   }
+     } 
+   } */
     wave_point_x = x;
     wave_point_y = y;
     return new Point(wm.XPixel(x, d), wm.YPixel(y, d));
@@ -2129,8 +2078,8 @@ public class Waveform
 
   protected void drawSignalContour(Signal s, Graphics g, Dimension d)
   {
-    Vector cs = s.contourSignals;
-    Vector ls = s.contourLevelValues;
+    Vector cs = s.getContourSignals();
+    Vector ls = s.getContourLevelValues();
     int numLevel = cs.size();
     Vector cOnLevel;
     float level;
@@ -2139,7 +2088,17 @@ public class Waveform
     {
       cOnLevel = (Vector) cs.elementAt(l);
       level = ( (Float) ls.elementAt(l)).floatValue();
-      g.setColor(colorMap.getColor(level, s.z2D_min, s.z2D_max));
+      float z[] = s.getZ();
+      float zMin, zMax;
+      zMin = zMax = z[0];
+      for(int i = 0; i < z.length; i++)
+      {
+          if(z[i] < zMin) 
+              zMin = z[i];
+          if(z[i] > zMax) 
+              zMax = z[i];
+      }
+      g.setColor(colorMap.getColor(level, zMin, zMax));
       drawContourLevel(cOnLevel, g, d);
     }
   }
@@ -2173,35 +2132,6 @@ public class Waveform
     drawSignal(waveform_signal, g, d);
   }
 
-/***********************************************************************
-  protected void drawSignal(Signal s, Graphics g, Dimension d) {
-    Shape prev_clip = g.getClip();
-    DrawWave(d);
-
-    if (waveform_signal.getColor() != null) {
-      g.setColor(waveform_signal.getColor());
-    }
-    else {
-      g.setColor(colors[waveform_signal.getColorIdx() % colors.length]);
-
-    }
-
-    if (waveform_signal.getInterpolate()) {
-      g.drawPolyline(polygon.xpoints, polygon.ypoints, polygon.npoints);
-    }
-    if (waveform_signal.getMarker() != Signal.NONE) {
-      DrawMarkers(g, points, num_points, waveform_signal.getMarker(),
-                  waveform_signal.getMarkerStep(),
-                  waveform_signal.getMode1D());
-      // ???????????????????/
-      //   if(waveform_signal.error)
-      //    DrawError(off_graphics, d, waveform_signal);
-      //
-      //g.setClip(prev_clip);
-
-    }
-  }
-****************************************************************/
 
   protected void drawSignal(Signal s, Graphics g, Dimension d)
   {
@@ -2276,9 +2206,14 @@ public class Waveform
   }
 
 
-  public void setFixedLimits() {
-    setXlimits(lx_min, lx_max);
-    setYlimits(ly_min, ly_max);
+    public void setFixedLimits() {
+        try {
+            waveform_signal.setXLimits(lx_min, lx_max, Signal.SIMPLE);
+        }catch(Exception exc)
+        {
+            System.out.println(exc);
+        }
+        setYlimits(ly_min, ly_max);
     change_limits = true;
   }
 
@@ -2286,7 +2221,12 @@ public class Waveform
     if (waveform_signal == null) {
       return;
     }
-    waveform_signal.setXlimits(xmin, xmax);
+    try {
+        waveform_signal.setXLimits(xmin, xmax, Signal.SIMPLE);
+        }catch(Exception exc)
+        {
+            System.out.println(exc);
+        }
   }
 
   public void setYlimits(float ymin, float ymax) {
@@ -2441,7 +2381,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
     void drawError(Signal sig, Graphics g, Dimension d)
     {
-      if (!sig.error)
+      if (!sig.hasError())
       {
         return;
       }
@@ -2450,10 +2390,10 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       float up_error[] = sig.getUpError();
       float low_error[] = sig.getLowError();
 
-      for (int i = 0; i < sig.n_points; i++)
+      for (int i = 0; i < sig.getNumPoints(); i++)
       {
         up = wm.YPixel(up_error[i] + sig.getY(i), d);
-        if (!sig.asym_error)
+        if (!sig.hasAsymError())
         {
           low = wm.YPixel(sig.getY(i) - up_error[i], d);
         }
@@ -2468,30 +2408,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
         g.drawLine(x - 2, low, x + 2, low);
       }
     }
-/*
-  void drawError(Signal sig, Graphics g, Dimension d)
-  {
-    int up, low, x, y;
-    float up_error[] = sig.getUpError();
-    float low_error[] = sig.getLowError();
-
-    for (int i = 0; i < sig.n_points; i++) {
-      up = wm.YPixel(up_error[i] + sig.y[i], d);
-      if (!sig.asym_error) {
-        low = wm.YPixel(sig.y[i] - up_error[i], d);
-      }
-      else {
-        low = wm.YPixel(sig.y[i] - low_error[i], d);
-      }
-
-      x = wm.XPixel(sig.isDoubleX()?sig.x_double[i]:sig.x[i], d);
-
-      g.drawLine(x, up, x, low);
-      g.drawLine(x - 2, up, x + 2, up);
-      g.drawLine(x - 2, low, x + 2, low);
-    }
-  }
-*/
 
   public void UpdatePoint(double curr_x)
   {
@@ -2499,7 +2415,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   public synchronized void UpdatePoint(double curr_x, double curr_y) {
-    double xrange;
     Dimension d = getWaveSize();
     Insets i = getInsets();
 
@@ -2509,34 +2424,18 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     curr_point = curr_x;
     curr_point_y = curr_y;
 
-    //System.out.println("Update Curr point "+curr_point+" on "+getName());
-
     if (!is_image) {
-      // if(wm == null) { System.out.println("wm == null"); return;}
-
-      // if(dragging || mode != MODE_POINT || waveform_signal == null)
-      if (mode != MODE_POINT || waveform_signal == null) {
+       if (mode != MODE_POINT || waveform_signal == null) {
         return;
       }
 
           if(waveform_signal.getType() == Signal.TYPE_2D &&
             waveform_signal.getMode2D() ==  Signal.MODE_YZ)
           {
-              waveform_signal.showYZ(waveform_signal.getMode2D(), (float)curr_x);
+              waveform_signal.showYZ((float)curr_x);
               not_drawn = true;
           }
-          // else
-
-        /*
-          {
-          if(curr_x < waveform_signal.x[0])
-           curr_x = waveform_signal.x[0];
-           xrange = waveform_signal.x[waveform_signal.n_points - 1] - waveform_signal.x[0];
-            end_x = wm.XPixel(curr_x, d);
-          }
-       */
-      //repaint();
-      paintImmediately(0, 0, d.width, d.height);
+       paintImmediately(0, 0, d.width, d.height);
     }
     else {
       if (frames != null && !is_playing) {
@@ -2566,30 +2465,22 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
                                          waveform_signal.getYmin());
 
       undo_zoom.addElement(r_prev);
+      waveform_signal.freeze();
     }
     else {
       undo_zoom.removeElement(r);
-
+      if(undo_zoom.size() == 0)
+          waveform_signal.unfreeze();
     }
-
-    waveform_signal.setXmin( r.start_xs, Signal.SIMPLE);
-    waveform_signal.setXmax( r.end_xs, Signal.SIMPLE);
+    //GABRIELE AUGUST 2014
+    setXlimits((float)r.start_xs, (float)r.end_xs);
+    waveform_signal.setXLimits( r.start_xs, r.end_xs, Signal.SIMPLE);
     waveform_signal.setYmin( r.end_ys, Signal.SIMPLE);
     waveform_signal.setYmax( r.start_ys, Signal.SIMPLE);
     change_limits = true;
 
   }
 
-  /*
-     public void update(Graphics g)
-     {
-       //if((mode == MODE_ZOOM && curr_rect == null) ||
-     //    (mode == MODE_POINT && prev_point_x == -1))
-      //    super.update(g);
-      //else
-          paint(g);
-     }
-   */
   public void Autoscale() {
     if (is_image && frames != null && frames.getNumFrame() != 0) {
       frames.Resize();
@@ -2601,6 +2492,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       }
       waveform_signal.Autoscale();
     }
+    waveform_signal.unfreeze();
     ReportChanges();
   }
 
@@ -2617,8 +2509,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     if (waveform_signal == null) {
       return;
     }
-    waveform_signal.setXmin(w.waveform_signal.getXmin(), Signal.SIMPLE);
-    waveform_signal.setXmax(w.waveform_signal.getXmax(), Signal.SIMPLE);
+    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     waveform_signal.setYmin(w.waveform_signal.getYmin(), Signal.SIMPLE);
     waveform_signal.setYmax(w.waveform_signal.getYmax(), Signal.SIMPLE);
     ReportChanges();
@@ -2630,12 +2521,8 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       return;
     }
 
-    System.out.println("SETXMAX@@@@!!!!!");
 
-
-
-    waveform_signal.setXmin(w.waveform_signal.getXmin(), Signal.SIMPLE);
-    waveform_signal.setXmax(w.waveform_signal.getXmax(), Signal.SIMPLE);
+    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
     ReportChanges();
   }
 
@@ -2655,9 +2542,8 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     if (waveform_signal == null) {
       return;
     }
-    waveform_signal.setXmin(w.waveform_signal.getXmin(), Signal.SIMPLE);
-    waveform_signal.setXmax(w.waveform_signal.getXmax(), Signal.SIMPLE);
-
+    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+ 
     waveform_signal.AutoscaleY();
     ReportChanges();
   }
@@ -2667,6 +2553,8 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       return;
     }
     waveform_signal.ResetScales();
+    undo_zoom.clear();
+    waveform_signal.unfreeze();
     ReportChanges();
   }
 
@@ -2696,25 +2584,19 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     ReportLimits(r, true);
 
     not_drawn = true;
-    //  repaint();
-  }
+   }
 
   public void undoZoom() {
     if (undo_zoom.size() == 0) {
       return;
     }
 
-    ZoomRegion r = (ZoomRegion) undo_zoom.lastElement();
-    //if(undo_zoom.size() == 0)
+    ZoomRegion r = undo_zoom.lastElement();
     {
       ReportLimits(r, false);
       not_drawn = true;
       repaint();
     }
-    //else {
-    //    undo_zoom.removeElement(r);
-    //    this.Autoscale();
-    //}
   }
 
   public void performZoom() {
@@ -2727,7 +2609,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     end_xs = wm.XValue(end_x, d);
     start_ys = wm.YValue(start_y, d);
     end_ys = wm.YValue(end_y, d);
-    //NotifyZoom(start_xs, end_xs, start_ys, end_ys, update_timestamp);
 
     ZoomRegion r = new ZoomRegion(start_xs, end_xs, start_ys, end_ys);
     ReportLimits(r, true);
@@ -2758,9 +2639,10 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   }
 
   void ReportChanges() {
-    if (undo_zoom.size() != 0) {
+ /*   if (undo_zoom.size() != 0) {
       undo_zoom.removeAllElements();
     }
+    */
     wm = null;
     not_drawn = true;
     if (mode == MODE_POINT && is_image && frames != null) {
@@ -2824,7 +2706,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     wm = null;
     grid = null;
     not_drawn = true;
-    //repaint();
   }
 
   public int GetGridStepX() {
@@ -2855,7 +2736,6 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       this.reversed = reversed;
       if (grid != null) {
         grid.SetReversed(reversed);
-        // repaint();
       }
     }
   }
@@ -2921,8 +2801,7 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
     }
     if (waveform_listener != null) {
       for (int i = 0; i < waveform_listener.size(); i++) {
-        ( (WaveformListener) waveform_listener.elementAt(i)).
-            processWaveformEvent(e);
+        waveform_listener.elementAt(i).processWaveformEvent(e);
       }
     }
   }
@@ -2940,8 +2819,17 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
   void Waveform_ComponentAdded(java.awt.event.ContainerEvent event) {
     // to do: code goes here.
   }
-
-    private void jbInit() throws Exception
-    {
-    }
+  
+  public void signalUpdated(boolean changeLimits)
+  {
+      change_limits = changeLimits;
+      not_drawn = true;
+      repaint();
+  }
+  
+  
+ 
+  
+  
+  
 }

@@ -1,4 +1,0 @@
-#!/bin/sh
-cd /usr/local/mdsplus/tdi/MitDevices
-python setup.py install >/dev/null 2>&1
-rm -Rf build  dist  MitDevices.egg-info

@@ -1,36 +1,20 @@
-SHELL=/bin/sh
-CC=@CC@
-top_srcdir=@top_srcdir@
-RM=$(top_srcdir)/devscripts/rm_if
-prefix=@prefix@
-exec_prefix=@exec_prefix@
-CFLAGS=@CFLAGS@
-LDFLAGS=@LDFLAGS@
-LIBS=@LIBS@
-INSTALL=@top_srcdir@/conf/install-sh -c
+include @top_srcdir@/Makefile.inc
+
+@MINGW_TRUE@ EXE=.exe
 
 SOURCES = tditest.c
-OBJECTS = $(SOURCES:.c=.o)
 
-all : @MAKEBINDIR@ @MAKEBINDIR@tditest
+all : @MAKEBINDIR@ @MAKEBINDIR@tditest$(EXE)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install:
-	if [ ! -d @bindir@ ] ; then \
-                mkdir @bindir@; \
-                chmod 755 @bindir@; \
-        fi;
-	$(INSTALL) -m 755  @MAKEBINDIR@tditest @bindir@
+install: $(bindir)
+	$(INSTALL) -m 755  @MAKEBINDIR@tditest$(EXE) $(bindir)
 
 clean :
-	@ $(RM) $(OBJECTS)
-	@ $(RM) @MAKEBINDIR@tditest
+	@ $(RM) @MAKEBINDIR@tditest$(EXE)
 
-@MAKEBINDIR@tditest : $(OBJECTS)
-	$(CC) -o $@ $(OBJECTS) $(CFLAGS) @CC_LDFLAGS@ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS)
-
-@MAKEBINDIR@ :
-	mkdir @MAKEBINDIR@
+@MAKEBINDIR@tditest$(EXE) : $(SOURCES)
+	$(LINK.c) $(OUTPUT_OPTION) $^ -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr $(LIBS) @SOCKETLIB@
 

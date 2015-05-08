@@ -5,6 +5,7 @@ import jScope.ConnectionEvent;
 import jScope.ConnectionListener;
 import java.io.*;
 import java.net.*;
+import java.nio.ByteBuffer;
 import java.util.Hashtable;
 import java.util.Vector;
 import java.util.logging.Level;
@@ -29,14 +30,14 @@ public class MdsConnection
         public boolean connected;
         int pending_count = 0;
 
-        transient Vector   connection_listener = new Vector<EventItem>();
-        transient boolean  event_flags[]       = new boolean[MAX_NUM_EVENTS];
-        transient Vector<EventItem>   event_list          = new Vector<EventItem>();
+        transient Vector<ConnectionListener> connection_listener = new Vector<ConnectionListener>();
+        transient Vector<EventItem> event_list = new Vector<EventItem>();
+        transient boolean event_flags[] = new boolean[MAX_NUM_EVENTS];
 
         transient Hashtable< String, EventItem > hashEventName = new Hashtable< String, EventItem >();
         transient Hashtable< Integer, EventItem > hashEventId = new Hashtable< Integer, EventItem >();
 
-        ProcessUdpEvent processUdpEvent = null;
+        //ProcessUdpEvent processUdpEvent = null;
 
         public String getProvider() { return provider;}
 
@@ -45,13 +46,13 @@ public class MdsConnection
         {
             String  name;
             int     eventid;
-            Vector  listener = new Vector();
+            Vector<UpdateEventListener>  listener = new Vector<UpdateEventListener>();
 
             public EventItem (String name, int eventid, UpdateEventListener l)
             {
                 this.name = name;
                 this.eventid = eventid;
-                listener.addElement((Object) l);
+                listener.addElement(l);
             }
 
             public String toString()
@@ -60,7 +61,7 @@ public class MdsConnection
             }
         }
 
-
+/*
         public class ProcessUdpEvent extends Thread
         {
             static final int DEFAULT_UDP_EVENT_PORT = 4000;
@@ -172,7 +173,7 @@ public class MdsConnection
                 }
             }
         }
-
+*/
 
 
         class PMET extends Thread //Process Mds Event Thread
@@ -193,12 +194,14 @@ public class MdsConnection
 
             public void SetEventid(int id)
             {
+                    //System.out.println("Received Event ID " + id);
                     eventId = id;
                     eventName = null;
             }
 
             public void SetEventName(String name)
             {
+                    System.out.println("Received Event Name " + name);
                     eventId = -1;
                     eventName = name;
             }
@@ -449,14 +452,19 @@ public class MdsConnection
         byte idx = 0, totalarg = (byte)(n_args+1);
         Descriptor out;
 
+        //System.out.println("->\n"+expr+"\n<-\n");
+                
         try
         {
-            if(n_args > 0)
+            if(expr.indexOf("($") == -1) //If no $ args specified, build argument list 
             {
-                cmd.append("(");
-                for(int i = 0; i < n_args - 1; i++)
-                    cmd.append("$,");
-                cmd.append("$)");
+                if(n_args > 0)
+                {
+                    cmd.append("(");
+                    for(int i = 0; i < n_args - 1; i++)
+                        cmd.append("$,");
+                    cmd.append("$)");
+                }
             }
             sendArg(idx++, Descriptor.DTYPE_CSTRING, totalarg, null, cmd.toString().getBytes());
             Descriptor p;
@@ -499,21 +507,23 @@ public class MdsConnection
     // Read either a string or a float array
     public synchronized  Descriptor MdsValue(String expr)
     {
-	    int i, status;
-	    Descriptor out;
+	int i, status;
+	Descriptor out;
         MdsMessage message = new MdsMessage(expr);
 
+        //System.out.println("->\n"+expr+"\n<-\n");
+        
         try {
             pending_count++;
-	        message.Send(dos);
+	    message.Send(dos);
             out = getAnswer();
-	    }
-	    catch(IOException e)
-	        {
-	            out = new Descriptor("Could not get IO for "+provider + e);
-	        }
+	}
+	catch(IOException e)
+	{
+	    out = new Descriptor("Could not get IO for "+provider + e);
+	}
         message.body = null;
-	    return out;
+	return out;
     }
 
     public  int DisconnectFromMds()
@@ -580,14 +590,14 @@ public class MdsConnection
                     error = "Could not get IO for : Host " + host +" Port "+ port + " User " + user;
                     return 0;
                 }
-
+/*
 		if( processUdpEvent == null )
 		{
 		    processUdpEvent = new ProcessUdpEvent();
 		}
 		if( !processUdpEvent.isAlive() )
 			processUdpEvent.start();
-
+*/
                 connected = true;
             } else {
                 error = "Data provider host:port is <null>";
@@ -632,7 +642,7 @@ public class MdsConnection
        if( hashEventName.containsKey(eventName) )
        {
            eventItem = hashEventName.get(eventName);
-           if(!eventItem.listener.contains((Object)l))
+           if(!eventItem.listener.contains(l))
                 eventItem.listener.addElement(l);
        }
        else
@@ -669,7 +679,6 @@ public class MdsConnection
 
     public synchronized void dispatchUpdateEvent(int eventid)
     {
-
         if( hashEventId.containsKey(eventid) )
         {
             dispatchUpdateEvent(hashEventId.get(eventid));
@@ -679,6 +688,7 @@ public class MdsConnection
     public synchronized void dispatchUpdateEvent(String eventName)
     {
 
+
         if( hashEventName.containsKey(eventName) )
         {
             dispatchUpdateEvent(hashEventName.get(eventName));
@@ -687,24 +697,27 @@ public class MdsConnection
 
     private void dispatchUpdateEvent(EventItem eventItem)
     {
-        Vector eventListener = eventItem.listener;
+        Vector<UpdateEventListener> eventListener = eventItem.listener;
         UpdateEvent e = new UpdateEvent(this, eventItem.name);
         for(int i = 0; i < eventListener.size(); i++)
-            ((UpdateEventListener)eventListener.elementAt(i)).processUpdateEvent(e);
+            eventListener.elementAt(i).processUpdateEvent(e);
 
     }
 
+    
     public synchronized void MdsSetEvent(UpdateEventListener l, String event)
     {
          int eventid;
          if((eventid = AddEvent(l, event)) == -1)
               return;
          
+        
+/*         
            if( processUdpEvent != null )
            {
                processUdpEvent.addEvent(event);
            }
-
+*/
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)3, null,
@@ -713,10 +726,11 @@ public class MdsConnection
             sendArg((byte)1, Descriptor.DTYPE_CSTRING,
                          (byte)3, null, event.getBytes());
 
-            byte data[] = {(byte)eventid};
+            
+            byte data[] = {(byte)(eventid)};
 
-            sendArg((byte)2, Descriptor.DTYPE_CSTRING,
-                        (byte)3, null, data);
+            sendArg((byte)2, Descriptor.DTYPE_UBYTE, (byte)3, null, data);
+                        
        } catch(IOException e) {error = new String("Could not get IO for "+provider + e);}
     }
 
@@ -726,12 +740,12 @@ public class MdsConnection
            int eventid;
            if((eventid = RemoveEvent(l, event)) == -1)
                 return;
-
+/*
            if( processUdpEvent != null )
            {
                processUdpEvent.removeEvent(event);
            }
-
+*/
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)2, null,
@@ -767,9 +781,11 @@ public class MdsConnection
         {
             for(int i = 0; i < connection_listener.size(); i++)
             {
-                ((ConnectionListener)connection_listener.elementAt(i)).processConnectionEvent(e);
+                connection_listener.elementAt(i).processConnectionEvent(e);
             }
         }
+        
     }
+   
   }
 

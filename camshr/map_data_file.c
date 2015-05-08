@@ -1,14 +1,14 @@
 // map_data_file.c
 //-------------------------------------------------------------------------
-//	Stuart Sherman
-//	MIT / PSFC
-//	Cambridge, MA 02139  USA
+//      Stuart Sherman
+//      MIT / PSFC
+//      Cambridge, MA 02139  USA
 //
-//	This is a port of the MDSplus system software from VMS to Linux, 
-//	specifically:
-//			CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
+//      This is a port of the MDSplus system software from VMS to Linux, 
+//      specifically:
+//                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
-//	$Id$
+//      $Id$
 //-------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------
@@ -37,100 +37,102 @@
 // Thu Jan  4 16:56:59 EST 2001
 // Tue Apr  3 16:43:39 EDT 2001
 // Wed Apr 18 11:23:26 EDT 2001 -- use macro support, ie 'Open()'
-// Tue Sep 18 15:29:10 EDT 2001	-- added some comments
+// Tue Sep 18 15:29:10 EDT 2001 -- added some comments
 //-------------------------------------------------------------------------
 // Memory map database file. This allows very fast data access to the
-// 	data bases. It also allows for data sharing. This function is called
-// 	because a db file was *NOT* memory mapped.
+//      data bases. It also allows for data sharing. This function is called
+//      because a db file was *NOT* memory mapped.
 //
-// input:	db type
-// output:	status
+// input:       db type
+// output:      status
 //-------------------------------------------------------------------------
-int map_data_file( int dbType )
+int map_data_file(int dbType)
 {
-	char					*FileName;
-	int						db_size, fd, *FileIsMapped; 
-	int						status = SUCCESS;
-	extern int				CTSdbFileIsMapped;
-	extern int				CRATEdbFileIsMapped;
-	extern struct MODULE	*CTSdb;			// pointer to in-memory copy of data file
-	extern struct CRATE		*CRATEdb;
+  char *FileName;
+  int db_size, fd, *FileIsMapped;
+  int status = SUCCESS;
+  extern int CTSdbFileIsMapped;
+  extern int CRATEdbFileIsMapped;
+  extern struct MODULE *CTSdb;	// pointer to in-memory copy of data file
+  extern struct CRATE *CRATEdb;
 
-	// set db specific parameters
-	switch( dbType ) {
-		case CTS_DB:
-			FileName        = CTS_DB_FILE;
-			FileIsMapped 	= &CTSdbFileIsMapped;
-			break;
+  // set db specific parameters
+  switch (dbType) {
+  case CTS_DB:
+    FileName = CTS_DB_FILE;
+    FileIsMapped = &CTSdbFileIsMapped;
+    break;
 
-		case CRATE_DB:
-			FileName        = CRATE_DB_FILE;
-			FileIsMapped 	= &CRATEdbFileIsMapped;
-			break;
-	}
+  case CRATE_DB:
+    FileName = CRATE_DB_FILE;
+    FileIsMapped = &CRATEdbFileIsMapped;
+    break;
+  }
 
-	if( MSGLVL(FUNCTION_NAME) )
-		printf( "map_data_file('%s')\n", FileName );
+  if (MSGLVL(FUNCTION_NAME))
+    printf("map_data_file('%s')\n", FileName);
 
-	// check to see if db file exists
-	if( check_for_file( FileName ) != SUCCESS ) {
-		status = FILE_ERROR;
-		goto MapData_Exit;					// no file, so we're out'a here
-	}
+  // check to see if db file exists
+  if (check_for_file(FileName) != SUCCESS) {
+    status = FILE_ERROR;
+    goto MapData_Exit;		// no file, so we're out'a here
+  }
+  // get file size
+  if ((db_size = get_db_file_size(FileName)) == ERROR) {
+    status = ERROR;
+    goto MapData_Exit;
+  }
+  // get a file descriptor -- NB! special version of 'Open()'
+  if ((fd = Open(FileName, O_RDWR)) == ERROR) {
+    perror("open()");
+    status = FILE_ERROR;	// error flag
+    goto MapData_Exit;
+  }
+  // now, memory map database file
+  switch (dbType) {
+  case CTS_DB:
+    if ((CTSdb =
+	 (struct MODULE *)mmap((caddr_t) 0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
+			       fd, 0)) == MAP_FAILED) {
+      if (MSGLVL(ALWAYS))
+	perror("mmap(CTS)");
 
-	// get file size
-	if( (db_size = get_db_file_size( FileName )) == ERROR ) {
-		status = ERROR;
-		goto MapData_Exit;
-	}
+      status = MAP_ERROR;	// error flag -- could not map file
+      *FileIsMapped = FALSE;
+      goto MapData_Exit;
+    }
 
-	// get a file descriptor -- NB! special version of 'Open()'
-	if( (fd = Open( FileName, O_RDWR )) == ERROR ) {
-		perror("open()");
-		status = FILE_ERROR;				// error flag
-		goto MapData_Exit;
-	}
+    break;
 
-	// now, memory map database file
-	switch( dbType ) {
-		case CTS_DB: 
-			if( (CTSdb = (struct MODULE *)mmap((caddr_t)0, db_size, PROT_READ|PROT_WRITE, MAP_FILE|MAP_SHARED, fd, 0)) == MAP_FAILED ) {
-				if( MSGLVL(ALWAYS) )
-					perror("mmap(CTS)");
+  case CRATE_DB:
+    if ((CRATEdb =
+	 (struct CRATE *)mmap((caddr_t) 0, db_size, PROT_READ | PROT_WRITE, MAP_FILE | MAP_SHARED,
+			      fd, 0)) == MAP_FAILED) {
+      if (MSGLVL(ALWAYS))
+	perror("mmap(CRATE)");
 
-				status        = MAP_ERROR;	// error flag -- could not map file
-				*FileIsMapped = FALSE;
-				goto MapData_Exit;
-			}
+      status = MAP_ERROR;	// error flag -- could not map file
+      *FileIsMapped = FALSE;
+      goto MapData_Exit;
+    }
 
-			break;
+    break;
+  }
 
-		case CRATE_DB:
-			if( (CRATEdb = (struct CRATE *)mmap((caddr_t)0, db_size, PROT_READ|PROT_WRITE, MAP_FILE|MAP_SHARED, fd, 0)) == MAP_FAILED ) {
-				if( MSGLVL(ALWAYS) )
-					perror("mmap(CRATE)");
+  // if we get this far, all is OK
+  status = SUCCESS;		// success !!!
+  *FileIsMapped = TRUE;
 
-				status        = MAP_ERROR;	// error flag -- could not map file
-				*FileIsMapped = FALSE;
-				goto MapData_Exit;
-			}
+ MapData_Exit:
+  if (fd != ERROR)		// still open ...
+    close(fd);			// ... finished with file descriptor
 
-			break;
-	}
+  if (status != SUCCESS)
+    printf("Error mapping %s\n", FileName);
+  if (MSGLVL(DETAILS)) {
+    printf("map_data_file('%s'): ", FileName);
+    ShowStatus(status);
+  }
 
-	// if we get this far, all is OK
-	status        = SUCCESS;				// success !!!
-	*FileIsMapped = TRUE;
-
-MapData_Exit:
-	if( fd != ERROR )						// still open ...
-		close(fd);							// ... finished with file descriptor
-
-        if (status != SUCCESS)
-          printf("Error mapping %s\n",FileName);
-	if( MSGLVL(DETAILS) ) {
-		printf( "map_data_file('%s'): ", FileName ); ShowStatus( status );
-	}
-
-	return status;							// return results
+  return status;		// return results
 }

@@ -10,7 +10,7 @@ class MdsWaveInterface
     extends WaveInterface
 {
 
-    public String in_def_node, in_upd_event, last_upd_event;
+    public String in_upd_event, last_upd_event;
 
     // Configuration parameter
     public String cin_xmin, cin_xmax, cin_ymax, cin_ymin, cin_timemax,
@@ -113,10 +113,10 @@ class MdsWaveInterface
         in_title = GetDefaultValue(bit, def_flag);
 
         /*
-               bit = MdsWaveInterface.B_shot;
-               def_flag =    ((defaults & (1<<bit)) == 1<<bit);
-               in_shot       = GetDefaultValue(bit ,  def_flag);
-         */
+        bit = MdsWaveInterface.B_shot;
+        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+        in_shot       = GetDefaultValue(bit ,  def_flag);
+        */
 
         bit = MdsWaveInterface.B_exp;
         def_flag = ( (defaults & (1 << bit)) == 1 << bit);
@@ -165,13 +165,13 @@ class MdsWaveInterface
         bit = MdsWaveInterface.B_update;
         def_flag = ( (defaults & (1 << bit)) == 1 << bit);
         in_upd_limits = (new Boolean(GetDefaultValue(bit, def_flag))).
-            booleanValue();
+        booleanValue();
 
         /*
-               bit = MdsWaveInterface.B_event;
-               def_flag =    ((defaults & (1<<bit)) == 1<<bit);
-               in_upd_event = GetDefaultValue(bit , def_flag );
-         */
+        bit = MdsWaveInterface.B_event;
+        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+        in_upd_event = GetDefaultValue(bit , def_flag );
+        */
     }
 
     /**
@@ -230,6 +230,7 @@ class MdsWaveInterface
             if (error == null)
             {
                 UpdateDefault();
+                /* ces 2015
                 if (in_def_node != null)
                 {
                     String def = in_def_node;
@@ -238,6 +239,7 @@ class MdsWaveInterface
 
                     dp.SetEnvironment("__default_node = " + def);
                 }
+                */
             }
             else
             {
@@ -347,7 +349,6 @@ Fix bug : shot expression must be always evaluated.
     public MdsWaveInterface(MdsWaveInterface wi)
     {
         previous_shot = wi.previous_shot;
-        full_flag = wi.full_flag;
         cache_enabled = wi.cache_enabled;
         provider = wi.provider;
         num_waves = wi.num_waves;
@@ -642,7 +643,7 @@ Fix bug : shot expression must be always evaluated.
         previous_shot = "";
     }
 
-    public synchronized void refresh()
+    public synchronized void refresh() throws Exception
     {
         try
         {
@@ -864,6 +865,10 @@ Fix bug : shot expression must be always evaluated.
             WaveInterface.WriteLine(out, prompt + "time_min: ", cin_timemin);
             WaveInterface.WriteLine(out, prompt + "time_max: ", cin_timemax);
         }
+        //GAB 2014
+        WaveInterface.WriteLine(out, prompt + "continuous_update: ", isContinuousUpdate?"1":"0");
+        /////////
+        
         WaveInterface.WriteLine(out, prompt + "title: ", cin_title);
         WaveInterface.WriteLine(out, prompt + "global_defaults: ",
                                 "" + defaults);
@@ -1006,6 +1011,12 @@ Fix bug : shot expression must be always evaluated.
             cin_def_node = pr.getProperty(prompt + ".default_node");
 
             cin_upd_event = pr.getProperty(prompt + ".event");
+            
+            String continuousUpdateStr = pr.getProperty(prompt + ".continuous_update");
+            if(continuousUpdateStr != null && continuousUpdateStr.trim().equals("1"))
+                isContinuousUpdate = true;
+            else
+                isContinuousUpdate = false;
 
             prop = pr.getProperty(prompt + ".x_log");
             if (prop != null)
@@ -1252,7 +1263,7 @@ Fix bug : shot expression must be always evaluated.
                         in_up_err[expr_idx + j] = prop;
                 }
 
-                prop = pr.getProperty(prompt + ".in_low_err" + idx);
+                prop = pr.getProperty(prompt + ".in_low_err_" + idx);
                 if (prop != null)
                 {
                     expr_idx = (idx - 1) * num_shot;
@@ -1349,6 +1360,14 @@ Fix bug : shot expression must be always evaluated.
         }
         catch (Exception e)
         {}
+    }
+    
+    public void setExperiment(String experiment)
+    {
+        super.setExperiment(experiment);
+        cexperiment = experiment;
+        //Remove default
+        defaults &= ~(1 << MdsWaveInterface.B_exp);
     }
 
 }

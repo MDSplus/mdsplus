@@ -26,9 +26,8 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 
 	Description:
 
-
 ------------------------------------------------------------------------------*/
-#include "treeshrp.h" /* must be first or off_t wrong */
+#include "treeshrp.h"		/* must be first or off_t wrong */
 #include <STATICdef.h>
 #include <fcntl.h>
 #include <STATICdef.h>
@@ -46,32 +45,24 @@ extern char *TranslateLogical(char *);
 extern void TranslateLogicalFree(char *);
 extern char *MaskReplace();
 
-STATIC_CONSTANT char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void **TreeCtx();
-STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot);
+STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot);
 
-#if defined(_WIN32)
-#include <windows.h>
-#else
-STATIC_ROUTINE int DeleteFile(char *src);
-#endif
-
-int       TreeDeletePulseFile(int shotid, int allfiles)
+int TreeDeletePulseFile(int shotid, int allfiles)
 {
   return _TreeDeletePulseFile(*TreeCtx(), shotid, allfiles);
 }
 
-int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
+int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
 {
-  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
-  int       status = 1;
-  int       retstatus = 1;
-  int       num;
-  int       nids[256];
-  int       j;
-  int       shot;
-  void      *dbid_tmp = 0;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  int status = 1;
+  int retstatus = 1;
+  int num;
+  int nids[256];
+  int j;
+  int shot;
+  void *dbid_tmp = 0;
 
 /* Make sure tree is open */
 
@@ -79,29 +70,28 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
     return status;
 
   status = _TreeOpen(&dbid_tmp, dblist->experiment, shotid, 0);
-  if (status & 1)
-  {
-    void       *ctx = 0;
-    shot = ((PINO_DATABASE *)dbid_tmp)->shotid;
-    for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++)
-    {
+  if (status & 1) {
+    void *ctx = 0;
+    shot = ((PINO_DATABASE *) dbid_tmp)->shotid;
+    for (num = 0; num < 256 && _TreeFindTagWild(dbid_tmp, "TOP", &nids[num], &ctx); num++) {
       char name[13];
-      if (nids[num])
-      {
-        NCI_ITM itmlst[] = {{sizeof(name)-1, NciNODE_NAME, 0, 0}, {0, NciEND_OF_LIST, 0, 0}};
-        itmlst[0].pointer = name;
-        status = _TreeGetNci(dbid_tmp, nids[num], itmlst);
-        name[12] = 0;
-        for (j=11;j>0;j--) if (name[j] == 0x20) name[j] = '\0';
-      }
-      else
-      {
-        strcpy(name,dblist->experiment);
+      if (nids[num]) {
+	NCI_ITM itmlst[] = { {sizeof(name) - 1, NciNODE_NAME, 0, 0}
+	, {0, NciEND_OF_LIST, 0, 0}
+	};
+	itmlst[0].pointer = name;
+	status = _TreeGetNci(dbid_tmp, nids[num], itmlst);
+	name[12] = 0;
+	for (j = 11; j > 0; j--)
+	  if (name[j] == 0x20)
+	    name[j] = '\0';
+      } else {
+	strcpy(name, dblist->experiment);
       }
       if (status & 1)
-        status = TreeDeleteTreeFiles(name, shot);
+	status = TreeDeleteTreeFiles(name, shot);
       if (!(status & 1))
-        retstatus = status;
+	retstatus = status;
     }
     _TreeClose(&dbid_tmp, dblist->experiment, shotid);
     free(dbid_tmp);
@@ -110,7 +100,7 @@ int       _TreeDeletePulseFile(void *dbid, int shotid, int allfiles)
   return retstatus;
 }
 
-STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot)
+STATIC_ROUTINE int TreeDeleteTreeFiles(char *tree, int shot)
 {
   size_t len = strlen(tree);
   char tree_lower[13];
@@ -123,79 +113,59 @@ STATIC_ROUTINE int  TreeDeleteTreeFiles(char *tree, int shot)
   int status = 1;
   int retstatus = 1;
   int itype;
-  char *types[] = {".tree",".characteristics",".datafile"};
-  for (i=0;i<len && i < 12;i++)
+  char *types[] = { ".tree", ".characteristics", ".datafile" };
+  for (i = 0; i < len && i < 12; i++)
     tree_lower[i] = tolower(tree[i]);
-  tree_lower[i]=0;
-  strcpy(pathname,tree_lower);
-  strcat(pathname,TREE_PATH_SUFFIX);
-#if defined(__VMS)
-  pathin = strcpy(malloc(strlen(pathname)+1,pathname);
-#else
+  tree_lower[i] = 0;
+  strcpy(pathname, tree_lower);
+  strcat(pathname, TREE_PATH_SUFFIX);
   pathin = TranslateLogical(pathname);
-#endif
-  if (pathin)
-  {
+  if (pathin) {
     pathlen = strlen(pathin);
-    path = malloc(pathlen+1);
-    for (itype=0;itype<3 && (status & 1);itype++)
-    {
+    path = malloc(pathlen + 1);
+    for (itype = 0; itype < 3 && (status & 1); itype++) {
       char *sfile = 0;
       char *dfile = 0;
       char *type = types[itype];
       char *part;
-      strcpy(path,pathin);
+      strcpy(path, pathin);
       if (shot < 0)
-        sprintf(name,"%s_model",tree_lower);
+	sprintf(name, "%s_model", tree_lower);
       else if (shot < 1000)
-        sprintf(name,"%s_%03d",tree_lower,shot);
+	sprintf(name, "%s_%03d", tree_lower, shot);
       else
-        sprintf(name,"%s_%d",tree_lower,shot);
-      for (i=0,part=path;i<pathlen+1;i++)
-      {
-        if (*part == ' ') 
-          part++;
-        else if ((path[i] == ';' || path[i] == 0) && strlen(part))
-        {
+	sprintf(name, "%s_%d", tree_lower, shot);
+      for (i = 0, part = path; i < pathlen + 1; i++) {
+	if (*part == ' ')
+	  part++;
+	else if ((path[i] == ';' || path[i] == 0) && strlen(part)) {
 	  int fd;
 	  path[i] = 0;
-          sfile = strcpy(malloc(strlen(part)+strlen(name)+strlen(type)+2),part);
-	  if (strcmp(sfile+strlen(sfile)-1,TREE_PATH_DELIM))
-	  strcat(sfile,TREE_PATH_DELIM);
-	  strcat(sfile,name);
-	  strcat(sfile,type);
-	  dfile = MaskReplace(sfile,tree_lower,shot);
-          free(sfile);
-	  fd = MDS_IO_OPEN(dfile,O_RDWR,0);
-          if (fd != -1) {
+	  sfile = strcpy(malloc(strlen(part) + strlen(name) + strlen(type) + 2), part);
+	  if (strcmp(sfile + strlen(sfile) - 1, TREE_PATH_DELIM))
+	    strcat(sfile, TREE_PATH_DELIM);
+	  strcat(sfile, name);
+	  strcat(sfile, type);
+	  dfile = MaskReplace(sfile, tree_lower, shot);
+	  free(sfile);
+	  fd = MDS_IO_OPEN(dfile, O_RDWR, 0);
+	  if (fd != -1) {
 	    MDS_IO_CLOSE(fd);
-            break;
+	    break;
+	  } else {
+	    free(dfile);
+	    dfile = 0;
+	    part = &path[i + 1];
 	  }
-          else
-	  {
-            free(dfile);
-            dfile = 0;
-	    part = &path[i+1];
-          }
-        }
+	}
       }
-      if (dfile)
-      {
-        retstatus = MDS_IO_REMOVE(dfile)==0;
-        free(dfile);
+      if (dfile) {
+	retstatus = MDS_IO_REMOVE(dfile) == 0;
+	free(dfile);
       }
     }
     free(path);
-	TranslateLogicalFree(pathin);
+    TranslateLogicalFree(pathin);
   }
   return retstatus ? status : 0;
 }
-
-#if !defined(_WIN32)
-STATIC_ROUTINE int DeleteFile(char *src)
-{
-  int status = remove(src);
-  return status == 0;
-}
-#endif
-

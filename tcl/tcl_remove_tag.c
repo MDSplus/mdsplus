@@ -1,4 +1,5 @@
 #include        "tclsysdef.h"
+#include <string.h>
 
 /**********************************************************************
 * TCL_REMOVE_TAG.C --
@@ -10,21 +11,24 @@
 *
 ************************************************************************/
 
-
 	/***************************************************************
 	 * TclRemoveTag:
 	 *  Remove a tag name
 	 ***************************************************************/
-int TclRemoveTag()
-   {
-    int   sts;
-    static DYNAMIC_DESCRIPTOR(dsc_tagnam);
+int TclRemoveTag(void *ctx, char **error, char **output)
+{
+  int sts;
+  char *tagnam = 0;
 
-    cli_get_value("TAGNAME",&dsc_tagnam);
-    l2u(dsc_tagnam.dscA_pointer,0);
-    sts = TreeRemoveTag(dsc_tagnam.dscA_pointer);
-    if (~sts & 1)
-        sts = MdsMsg(sts,"Failed to remove tag '%s'",
-                dsc_tagnam.dscA_pointer);
-    return sts;
-   }
+  cli_get_value(ctx, "TAGNAME", &tagnam);
+  sts = TreeRemoveTag(tagnam);
+  if (~sts & 1) {
+    char *msg = MdsGetMsg(sts);
+    *error = malloc(strlen(msg)+strlen(tagnam)+100);
+    sprintf(*error,"Error: Failed to remove tag '%s'\n"
+	    "Error message was: %s\n",tagnam,msg);
+  }
+  if (tagnam)
+    free(tagnam);
+  return sts;
+}

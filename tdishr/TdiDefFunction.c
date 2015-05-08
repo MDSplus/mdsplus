@@ -6,17 +6,13 @@
         Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
-#ifdef HAVE_VXWORKS_H
-#include <stdio.h>
-#endif
 #include <mds_stdarg.h>
 #include <libroutines.h>
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <mdsdescrip.h>
 #define COM
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 extern int TdiIntrinsic();
 #define MdsEND_ARG_64 (void *)-1
@@ -31,7 +27,7 @@ extern int TdiIntrinsic();
                narg++,arg=va_arg(incrmtr, struct descriptor *)); \
 } else narg=0
 
-#endif                          /* va_count */
+#endif				/* va_count */
 
 #define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) \
 int Tdi##name ( struct descriptor *first, ... ) \

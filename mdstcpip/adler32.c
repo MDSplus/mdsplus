@@ -7,7 +7,7 @@
 
 #include "zlib.h"
 
-#define BASE 65521L /* largest prime smaller than 65536 */
+#define BASE 65521L		/* largest prime smaller than 65536 */
 #define NMAX 5552
 /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
 
@@ -19,30 +19,32 @@
 
 /* ========================================================================= */
 uLong ZEXPORT adler32(adler, buf, len)
-    uLong adler;
-    const Bytef *buf;
-    uInt len;
+uLong adler;
+const Bytef *buf;
+uInt len;
 {
-    unsigned long s1 = adler & 0xffff;
-    unsigned long s2 = (adler >> 16) & 0xffff;
-    int k;
+  unsigned long s1 = adler & 0xffff;
+  unsigned long s2 = (adler >> 16) & 0xffff;
+  int k;
 
-    if (buf == Z_NULL) return 1L;
+  if (buf == Z_NULL)
+    return 1L;
 
-    while (len > 0) {
-        k = len < NMAX ? len : NMAX;
-        len -= k;
-        while (k >= 16) {
-            DO16(buf);
-	    buf += 16;
-            k -= 16;
-        }
-        if (k != 0) do {
-            s1 += *buf++;
-	    s2 += s1;
-        } while (--k);
-        s1 %= BASE;
-        s2 %= BASE;
+  while (len > 0) {
+    k = len < NMAX ? len : NMAX;
+    len -= k;
+    while (k >= 16) {
+      DO16(buf);
+      buf += 16;
+      k -= 16;
     }
-    return (s2 << 16) | s1;
+    if (k != 0)
+      do {
+	s1 += *buf++;
+	s2 += s1;
+      } while (--k);
+    s1 %= BASE;
+    s2 %= BASE;
+  }
+  return (s2 << 16) | s1;
 }

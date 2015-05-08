@@ -3,11 +3,10 @@
         Ken Klare, LANL P-4     (c)1989,1990,1992
 */
 
-#include <tdimessages.h>
+#include <tdishr_messages.h>
 #include <STATICdef.h>
 
-STATIC_CONSTANT char *cvsrev =
-    "@(#)$RCSfile$ $Revision$ $Date$";
+
 
 int TdiON_ERROR = 0;
 

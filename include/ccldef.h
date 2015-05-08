@@ -14,17 +14,15 @@
 #endif
 #endif
 
-#include        "mdsdcldef.h"
-#include        "clisysdef.h"
 
 #define CCL_STS(N)    (CCL_FACILITY<<16)+N
 
 #define CCL_STS_SUCCESS     CCL_STS(1)
 
-#endif		/* __CCLDEF_H	*/
+#endif				/* __CCLDEF_H   */
 
 #ifdef CREATE_STS_TEXT
-static struct stsText  ccl_stsText[] = {
-        STS_TEXT(CCL_STS_SUCCESS,"Success")
-       };
+static struct stsText ccl_stsText[] = {
+  STS_TEXT(CCL_STS_SUCCESS, "Success")
+};
 #endif
