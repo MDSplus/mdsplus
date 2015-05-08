@@ -1,0 +1,162 @@
+# Copyright (C) 2004 Oren Ben-Kiki
+# This file is distributed under the same terms as the Automake macro files.
+
+# Generate automatic documentation using Doxygen. Goals and variables values
+# are controlled by the various DX_COND_??? conditionals set by autoconf.
+#
+# The provided goals are:
+# doxygen-doc: Generate all doxygen documentation.
+# doxygen-run: Run doxygen, which will generate some of the documentation
+#              (HTML, CHM, CHI, MAN, RTF, XML) but will not do the post
+#              processing required for the rest of it (PS, PDF, and some MAN).
+# doxygen-man: Rename some doxygen generated man pages.
+# doxygen-ps: Generate doxygen PostScript documentation.
+# doxygen-pdf: Generate doxygen PDF documentation.
+#
+# Note that by default these are not integrated into the automake goals. If
+# doxygen is used to generate man pages, you can achieve this integration by
+# setting man3_MANS to the list of man pages generated and then adding the
+# dependency:
+#
+#   $(man3_MANS): doxygen-doc
+#
+# This will cause make to run doxygen and generate all the documentation.
+#
+# The following variable is intended for use in Makefile.am:
+#
+# DX_CLEANFILES = everything to clean.
+#
+# This is usually added to MOSTLYCLEANFILES.
+
+## --------------------------------- ##
+## Format-independent Doxygen rules. ##
+## --------------------------------- ##
+
+if DX_COND_doc
+
+## ------------------------------- ##
+## Rules specific for HTML output. ##
+## ------------------------------- ##
+
+if DX_COND_html
+
+DX_CLEAN_HTML = ${DX_DOCDIR}/html
+
+endif DX_COND_html
+
+## ------------------------------ ##
+## Rules specific for MAN output. ##
+## ------------------------------ ##
+
+if DX_COND_man
+
+DX_CLEAN_MAN = ${DX_DOCDIR}/man
+
+endif DX_COND_man
+
+
+## ------------------------------ ##
+## Rules specific for PDF output. ##
+## ------------------------------ ##
+
+if DX_COND_pdf
+
+DX_CLEAN_PDF = ${DX_DOCDIR}/${DX_PACKAGE_NAME}.pdf
+
+DX_PDF_GOAL = doxygen-pdf
+
+doxygen-pdf: ${DX_DOCDIR}/${DX_PACKAGE_NAME}.pdf
+
+${DX_DOCDIR}/${DX_PACKAGE_NAME}.pdf: ${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag
+	cd ${DX_DOCDIR}/latex; \
+	rm -f *.aux *.toc *.idx *.ind *.ilg *.log *.out; \
+	$(DX_PDFLATEX) refman.tex; \
+	$(DX_MAKEINDEX) refman.idx; \
+	$(DX_PDFLATEX) refman.tex; \
+	countdown=5; \
+	while $(DX_EGREP) 'Rerun (LaTeX|to get cross-references right)' \
+	                  refman.log > /dev/null 2>&1 \
+	   && test $$countdown -gt 0; do \
+	    $(DX_PDFLATEX) refman.tex; \
+	    countdown=`expr $$countdown - 1`; \
+	done; \
+	mv refman.pdf ../${DX_PACKAGE_NAME}.pdf
+
+endif DX_COND_pdf
+
+## ------------------------------------------------- ##
+## Rules specific for LaTeX (shared for PS and PDF). ##
+## ------------------------------------------------- ##
+
+if DX_COND_latex
+
+DX_CLEAN_LATEX = ${DX_DOCDIR}/latex
+
+endif DX_COND_latex
+
+
+## ------------------------------------------ ##
+## GENERAL ENV To be passed into config file  ##
+## ------------------------------------------ ##
+
+DX_ENVCOMMON = \
+               DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
+               DX_PAGES='${DX_PAGES}' \
+               DX_EXCLUDE_PAGES='${DX_EXCLUDE_PAGES}' \
+               DX_TAGFILES='${DX_TAGFILES}' \
+               DX_TITLE='${DX_TITLE}' \
+               DX_BRIEF='${DX_BRIEF}'
+
+
+DX_LOCENV = ${DX_ENV} \
+            ${DX_ENVCOMMON} \
+            DX_DESTDIR='$(srcdir)'
+
+DX_DESTENV = ${DX_ENV} \
+             ${DX_ENVCOMMON} \
+             DX_DESTDIR='${DX_DESTDIR}'
+
+
+
+
+### TARGETS: ###################################################################
+
+
+.PHONY: doxygen-run doxygen-doc $(DX_PS_GOAL) $(DX_PDF_GOAL)
+
+.INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+
+doxygen-run: ${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag
+
+doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
+
+${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
+	rm -rf $@
+	$(DX_LOCENV) $(DX_DOXYGEN) $(DX_CONFIG)
+
+${DX_DESTDIR}/${DX_PACKAGE_NAME}.tag: $(DX_CONFIG) $(pkginclude_HEADERS) ${DX_PAGES}
+	rm -rf $@
+	$(MKDIR_P) ${DX_DESTDIR}
+	$(DX_DESTENV) $(DX_DOXYGEN) $(DX_CONFIG)
+
+
+install-html: ${DX_DESTDIR}/${DX_PACKAGE_NAME}.tag
+
+install-pdf: pdf
+	$(INSTALL_DATA) ${DX_PACKAGE_NAME}.pdf ${DX_DESTDIR}
+	
+
+DX_CLEANFILES = \
+    ${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag \
+    -r \
+    $(DX_CLEAN_HTML) \
+    $(DX_CLEAN_CHM) \
+    $(DX_CLEAN_CHI) \
+    $(DX_CLEAN_MAN) \
+    $(DX_CLEAN_RTF) \
+    $(DX_CLEAN_XML) \
+    $(DX_CLEAN_PS) \
+    $(DX_CLEAN_PDF) \
+    $(DX_CLEAN_LATEX)
+
+endif DX_COND_doc

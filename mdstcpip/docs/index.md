@@ -1,6 +1,5 @@
+\anchor mdsip_manual
 
-Overview {#mainpage}
-========
 
 MDSip (MDSplus remote data acess protocol)
 ==========================================
@@ -50,6 +49,13 @@ the following transports were supported:
   * http://hostname[:port]/MDSplusWsgi/mdsip - Uses http to connect to remote server
 
 
-\page plugins Protocol plugins
-\page clients Clients connection
-\page bindings Objects oriented bindings
+\note For a general description of the overall MDSplus framework please refer to 
+\ref mdsplus_manual
+
+
+
+
+
+\page mdsip_plugins  Protocol plugins
+\page mdsip_clients  Clients connection
+\page mdsip_bindings Objects oriented bindings

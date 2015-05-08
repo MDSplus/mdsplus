@@ -1,4 +1,4 @@
-Clients connection {#clients}
+Clients connection {#mdsip_clients}
 ==================
 
 Several data access libraries are available in MDSplus. 
@@ -83,10 +83,10 @@ same memory organization of the server.
 
 The client memory organization is always recorded inside the client_type field of the
 \ref Message structures passing through the connection, this value is then tested to match
-the client type using ClientType() function.
+the client type using \ref ClientType() function.
 As the tree data stored to the server is organized in its own memory architecture
 the client must convert each descriptor trasaction.
-The conversion of the message is handled using the FlipHeader() and FlipData() 
+The conversion of the message is handled using the \ref FlipHeader() and \ref FlipData() 
 functions each time a client starts to get or put data to the server.
 
 
@@ -94,30 +94,30 @@ The main functions used within a mdsip session are provided by mdsip_connections
 where the core of mdsip functionalities are declared. They are:
 
 
-- NewConnection() Creates the new connection structure and appends it to the client
-                  connection list. This also loads the proper protocols routines finding
-                  the protocol library requested.
+- \ref NewConnection() Creates the new connection structure and appends it to the client
+                       connection list. This also loads the proper protocols routines finding
+                       the protocol library requested.
 
-- ConnectToMds()  This function creates a \ref Connection structure, sets the clinet
-                  compression value and perfoms the login session to the server.
+- \ref ConnectToMds()  This function creates a \ref Connection structure, sets the clinet
+                       compression value and perfoms the login session to the server.
                  
-- SendMdsMsg()    This is the main function that actually sends all data through
-                  the connection protocol using send routine of the loaded protocol.
+- \ref SendMdsMsg()    This is the main function that actually sends all data through
+                       the connection protocol using send routine of the loaded protocol.
 
-- GetMdsMsg()     This is the conunterpart of the latter holding the process while a message
-                  is not received from the connection using the recv routine of the loaded
-                  protocol.
+- \ref GetMdsMsg()     This is the conunterpart of the latter holding the process while a message
+                       is not received from the connection using the recv routine of the loaded
+                       protocol.
 
-- SendArg()       The remote expression evaluations usually needs some arguments to be
-                  tranferred through the channel. SendArgs is a wrapper around the SendMdsMsg
-                  function to handle this arguments passing. A \ref Message structure is built
-                  carring in the argument as a descriptor.
+- \ref SendArg()       The remote expression evaluations usually needs some arguments to be
+                       tranferred through the channel. SendArgs is a wrapper around the SendMdsMsg
+                       function to handle this arguments passing. A \ref Message structure is built
+                       carring in the argument as a descriptor.
 
-- GetAnswerInfo() and GetAnswerInfoTS() wait for the server message response of an expression
-                  evaluation.
+- \ref GetAnswerInfo() and GetAnswerInfoTS() wait for the server message response of an expression
+                       evaluation.
 
-- MdsValue()      This is the remoted version of the usual mdslib function to execute a TDI
-                  expression. The remote execution exit status code is retured back to client.
+- \ref MdsValue()      This is the remoted version of the usual mdslib function to execute a TDI
+                       expression. The remote execution exit status code is retured back to client.
 
  
 
@@ -135,11 +135,11 @@ particular focus on the use of the mentioned MDSip functions.
  \image latex  img/mdsip_login.pdf "Mdsip login message sequence"
  
 
- The link is requested using ConnectToMds() function passing the remote server 
+ The link is requested using \ref ConnectToMds() function passing the remote server 
  address formatted as in protocol description (see \ref plugins).
  This function creates a new \ref Connection instance at the server side, filled
  with parameters that it has beed parsed by address string and calling 
- NewConnection() with selected protocol name.
+ \ref NewConnection() with selected protocol name.
  
  At the server side a listening socket has been initialized by the running mdsip 
  process, with proper protocol and port. The way that the actual connection is 
@@ -166,15 +166,15 @@ particular focus on the use of the mentioned MDSip functions.
  connection handling, attempting to reduce the connection time in high latency 
  connections.
  
- Once the soket has been opened the server enters the AcceptConnection() procedure
+ Once the soket has been opened the server enters the \ref AcceptConnection() procedure
  that actually instances the client \ref Connection structure. Then it puts itself
- in a loop waiting for data, calling GetMdsMsg() function that triggers recv() 
- IoRoutine method. 
- The client steps into the DoLogin() function that sends a \ref Message (label M1
+ in a loop waiting for data, calling \ref GetMdsMsg() function that triggers recv() 
+ \ref IoRoutine method. 
+ The client steps into the \ref DoLogin() function that sends a \ref Message (label M1
  in figure) to the server holding the username string and the client compression 
  level in the status field.
  User is authorised at the server side using authorize() plugin routine, and the
- answer collected by AcceptConnection is sent back to the client by a new Message
+ answer collected by \ref AcceptConnection() is sent back to the client by a new Message
  structure only filled in the status field.
  Here the status has a special formatting that carries the actual authorization 
  result in the first bit and the server value of accepted connection compression
@@ -190,14 +190,14 @@ particular focus on the use of the mentioned MDSip functions.
  
  As the connection has been established, and all structures valorized with proper
  settings, the listen() routine enters a loop that asks the socket for new incoming 
- messages. When a new message arrives the funcion DoMessage() handles it.
+ messages. When a new message arrives the funcion \ref DoMessage() handles it.
  The messages attended by the server are of two kinds: TDI expressions that have 
  to be evaluated, and special io commands identified by MDS_IO_xxxx macros inside 
  the code. The former is the method of almost all thin client transactions, the 
  latter is a set of tools that are used within the distributed client access and
  will be presented later.
  
- The tree opening comes through the internal funcion MdsOpen() that recursively 
+ The tree opening comes through the internal funcion \ref MdsOpen() that recursively 
  executes the TDI function `Open($,$)` via MdsValue() call at the client side.
  
  \image html img/tc_open.png "Mdsip open remote tree sequence"
@@ -205,10 +205,10 @@ particular focus on the use of the mentioned MDSip functions.
  
 
  All the low level communication that unregoes the TDI remote evaluation is provided
- by the SendArg() and GetAnswerInfo() functions for the client.
- On the server side DoMessage() calls an intenal library function called ProcessMessage(),
+ by the \ref SendArg() and \ref GetAnswerInfo() functions for the client.
+ On the server side \ref DoMessage() calls an intenal library function called \ref ProcessMessage(),
  this collects the function string and all the arguments needed, converts values
- to the server memory mapping and finally calls the tdishr execution (see ExecuteMessage()).
+ to the server memory mapping and finally calls the tdishr execution (see \ref ExecuteMessage()).
  
  
  
@@ -232,7 +232,7 @@ particular focus on the use of the mentioned MDSip functions.
 
  ### 4) Close tree
  
- As in the MdsOpen the Close action is sent by the client via the MdsValue() function
+ As in the MdsOpen the Close action is sent by the client via the \ref MdsValue() function
  executing the `TreeClose()` TDI command. The tree path is not specified in the args
  as it has already been set within the active context in the opening procedure.
 

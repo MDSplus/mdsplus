@@ -1,4 +1,4 @@
-Protocol plugins {#plugins}
+Protocol plugins {#mdsip_plugins}
 ----------------
 
 When a user connects to a remote server using MDSplus MDSip, the connection string
@@ -34,8 +34,8 @@ The shared library needs to export only one entry point, the "Io" function.
 
     IoRoutines *Io()
 
-This routine take no arguments and simply returns a pointer to a IoRoutines structure
-defined in the mdsip_connections.h include file. This structure contains pointers to
+This routine take no arguments and simply returns a pointer to a \ref IoRoutines structure
+defined in the \ref mdsip_connections.h include file. This structure contains pointers to
 the I/O functions used to implement the protocol.
 
     typedef struct _io_routines {
@@ -49,7 +49,7 @@ the I/O functions used to implement the protocol.
       int (*disconnect) (int conid);
     } IoRoutines;
 
-Usually the `Io` function returns a static precompiled instance of IoRoutines defined
+Usually the `Io` function returns a static precompiled instance of \ref IoRoutines defined
 inside library.
 
 

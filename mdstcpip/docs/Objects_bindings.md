@@ -1,4 +1,4 @@
-Object oriented bindings {#bindings}
+Object oriented bindings {#mdsip_bindings}
 ------------------------
 
 C++ Thin Client
@@ -27,7 +27,7 @@ class that exposes the following methods:
  All further operations on the server are executed via TDI expressions.
  
  ### openTree
- openTree() calls MdsOpen() function that executes the TDI "OpenTree($,$)" with the
+ \ref openTree() calls \ref MdsOpen() function that executes the TDI "OpenTree($,$)" with the
  tree name and shot args. The tree opened session is held within the server connection
  context.
  

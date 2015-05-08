@@ -391,6 +391,7 @@ static void SetSocketOptions(SOCKET s, int reuse)
       fprintf(stderr, "Got a recvbuf of %d\n", recvbuf);
       getsockopt(s, SOL_SOCKET, SO_SNDBUF, (void *)&sendbuf, &len);
       fprintf(stderr, "Got a sendbuf of %d\n", sendbuf);
+      fprintf(stderr, "Compression level: %d\n", GetCompressionLevel() );
     }
   setsockopt(s, IPPROTO_TCP, TCP_NODELAY, (void *)&one, sizeof(one));
   setsockopt(s, SOL_SOCKET, SO_KEEPALIVE, (void *)&one, sizeof(one));
