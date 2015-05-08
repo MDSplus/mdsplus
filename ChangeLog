@@ -1,4 +1,29 @@
-commit 2166145217469dd9aaee73a89ce96fa2ace90876 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2edb1fed8e7c6a5b5a60161f315437651f8fff4b (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 13:47:32 2015 -0400
+
+    Fix typo in release.py code
+
+commit 8d0b1aa81e66ee6056de8b3f4a5cdf82d6118d7a
+Merge: 13fb9ac 74bf5a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 12:42:11 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 13fb9ac7a2f46106bc3a1c0bb7cc8746d8e673c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 12:41:56 2015 -0400
+
+    Support for m-n-0 releases
+
+commit 74bf5a4afebb6a73717b8d59658fea40f8d9921f (tag: refs/tags/alpha_release-7-0-54)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 8 13:04:42 2015 +0000
+
+    New ChangeLog
+
+commit 2166145217469dd9aaee73a89ce96fa2ace90876
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 8 08:51:42 2015 -0400
 
