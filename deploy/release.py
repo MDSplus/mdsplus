@@ -44,7 +44,7 @@ def getLatestRelease(flavor):
 ##### a new release of m-n-0. I.e. to release
 ##### 7.0.0, tag the last 6.n release with
 ##### stable_release-7-0-X.
-    if v[2].isdigit()
+    if v[2].isdigit():
       info['release']=int(v[2])
     else:
       info['release']=-1
