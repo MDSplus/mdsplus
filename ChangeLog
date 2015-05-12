@@ -1,4 +1,16 @@
-commit b6b669d77532063ca8c8cd2191cceb8b24c969ea (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 94c4486da95e641818da62ab30df820e9aef2dff (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 14:16:12 2015 -0400
+
+    Do not include repo rpm's in repo
+
+commit 7e7609d1b9efff90723d439591d6688ed2f39661 (tag: refs/tags/alpha_release-7-0-57)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 12 17:27:11 2015 +0000
+
+    New ChangeLog
+
+commit b6b669d77532063ca8c8cd2191cceb8b24c969ea
 Merge: 019400d 4f32200
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue May 12 13:08:10 2015 -0400
