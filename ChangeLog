@@ -1,4 +1,42 @@
-commit 2edb1fed8e7c6a5b5a60161f315437651f8fff4b (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 806779dc054757374f0e940a04b9a5fa084f7ff3 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 0d3961e a070ba8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 12:04:42 2015 -0400
+
+    Use special node usage and nids for subtree linkage
+
+commit 0d3961e1036ea118e458fd5ae7841c8319327030
+Merge: 95ee91d 2492745
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 11:39:55 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 95ee91d81b50087ea742e7712439dedfc7056298
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 11:39:36 2015 -0400
+
+    Indenting
+
+commit a070ba842d057d3894df14799a7ee0c59f65f472 (refs/remotes/origin/feature_new_subtree_linkage)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 11:39:03 2015 -0400
+
+    Indenting
+
+commit 24927453f6596ad3702fad8dd987e182e45eb79d
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue May 12 15:56:45 2015 +0200
+
+    Removed dangerour #pragma pack
+
+commit c161d41deb7d6782f1b87f4992774e59a7de4ad1 (tag: refs/tags/alpha_release-7-0-55)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 8 22:22:41 2015 +0000
+
+    New ChangeLog
+
+commit 2edb1fed8e7c6a5b5a60161f315437651f8fff4b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 8 13:47:32 2015 -0400
 
@@ -172,6 +210,12 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Apr 30 16:56:25 2015 +0200
 
     Remove dangerous delete in exception catchers
+
+commit f1122c7e570918bd15dd1f7308eeb74c75d5d695
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 29 16:38:30 2015 -0400
+
+    Fix child_of and brother_of functions when they pass over subtree reference nodes
 
 commit c3e88997c86264ea9b1f419a33705ae8d09e6f75 (tag: refs/tags/alpha_release-7-0-48)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
