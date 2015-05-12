@@ -1,7 +1,4 @@
 #include "treeshrp.h"		/* must be first or off_t wrong */
-#ifdef _WIN32
-#include <io.h>
-#endif
 #include <string.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -12,12 +9,6 @@
 #include <mdsshr_messages.h>
 #include <errno.h>
 #include <fcntl.h>
-#ifndef O_BINARY
-#define O_BINARY 0
-#endif
-#ifndef O_RANDOM
-#define O_RANDOM 0
-#endif
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
@@ -167,7 +158,7 @@ int TreeOpenDatafileR(TREE_INFO * info)
     char *filename = strncpy(malloc(len + 9), info->filespec, len);
     filename[len] = '\0';
     strcat(filename, "datafile");
-    df_ptr->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
+    df_ptr->get = MDS_IO_OPEN(filename, O_RDONLY, 0);
     free(filename);
     status = (df_ptr->get == -1) ? TreeFOPENR : TreeNORMAL;
     if (df_ptr->get == -1)

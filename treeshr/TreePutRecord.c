@@ -258,7 +258,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 
   NODE *node_ptr;
   int status;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   switch (node_ptr->usage) {
