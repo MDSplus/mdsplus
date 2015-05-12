@@ -322,7 +322,9 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
     def deploy(self):
         """Deploy release to /mdsplus/dist"""
         if subprocess.Popen("""
+set -e
 rsync -a /tmp/%(flavor)s/RPMS /mdsplus/dist/%(dist)s/%(flavor)s/
+createrepo -q /mdsplus/dist/%(dist)s/%(flavor)s/RPMS
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to /mdsplus/dist" % self.info)
         if subprocess.Popen("""
