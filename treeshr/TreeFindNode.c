@@ -11,7 +11,7 @@ extern void **TreeCtx();
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-STATIC_ROUTINE int IsMember(PINO_DATABASE *db, NODE * node);
+STATIC_ROUTINE int IsMember(PINO_DATABASE * db, NODE * node);
 STATIC_ROUTINE int Compare(char *string, int len, char *matchstring, int mlen);
 STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mlen);
 STATIC_ROUTINE NODE *Pop(SEARCH_CONTEXT * search);
@@ -217,8 +217,8 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE * db, SEARCH_CONTEXT * ctx, int idx,
     }
   case BROTHER_TYPE:
     {
-      for (node = search->node ? brother_of(db, node) : child_of(db, node); node && !compare_wild(node);
-	   node = brother_of(db, node)) ;
+      for (node = search->node ? brother_of(db, node) : child_of(db, node);
+	   node && !compare_wild(node); node = brother_of(db, node)) ;
       break;
     }
   case MEMBER_TYPE_NOWILD:
@@ -232,8 +232,8 @@ STATIC_ROUTINE int TreeSearch(PINO_DATABASE * db, SEARCH_CONTEXT * ctx, int idx,
     }
   case MEMBER_TYPE:
     {
-      for (node = search->node ? brother_of(db, node) : member_of(node); node && !compare_wild(node);
-	   node = brother_of(db, node)) ;
+      for (node = search->node ? brother_of(db, node) : member_of(node);
+	   node && !compare_wild(node); node = brother_of(db, node)) ;
       break;
     }
   case SON_MEMBER_TYPE_NOWILD:
@@ -409,7 +409,7 @@ STATIC_ROUTINE int CompareWild(char *string, int len, char *matchstring, int mle
   return match && j == slen;
 }
 
-STATIC_ROUTINE int IsMember(PINO_DATABASE *db, NODE * node)
+STATIC_ROUTINE int IsMember(PINO_DATABASE * db, NODE * node)
 {
   NODE *n = 0;
   if (parent_of(db, node))

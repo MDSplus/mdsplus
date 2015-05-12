@@ -189,7 +189,7 @@ int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort)
   child_ptr->parent = node_offset(parent_ptr, child_ptr);	/* fill in the parent pointer */
   child_ptr->brother = 0;	/* Assume it will be only child */
   if (parent_ptr->child == 0) {	/* If first child */
-    parent_ptr->child = node_offset( child_ptr, parent_ptr );
+    parent_ptr->child = node_offset(child_ptr, parent_ptr);
   } else {			/* else */
 
     if (sort) {
@@ -197,22 +197,22 @@ int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort)
 	   tmp_ptr && (strncmp((const char *)tmp_ptr->name, (const char *)child_ptr->name, 12) < 0);
 	   pre_ptr = tmp_ptr, tmp_ptr = brother_of(0, tmp_ptr)) ;
       if (pre_ptr == 0) {	/*   if this will be first child */
-	child_ptr->brother = node_offset( child_of(0, parent_ptr), child_ptr); /*     make bro old first child */
-	parent_ptr->child = node_offset( child_ptr, parent_ptr); /*     make it first child  */
+	child_ptr->brother = node_offset(child_of(0, parent_ptr), child_ptr);	/*     make bro old first child */
+	parent_ptr->child = node_offset(child_ptr, parent_ptr);	/*     make it first child  */
       } else {			/*   else */
 
 	if (pre_ptr->brother == 0)	/*     if it will be last child */
 	  child_ptr->brother = 0;	/*       it has no brother */
 	else {			/*     else */
 
-	  child_ptr->brother = node_offset( brother_of(0, pre_ptr), child_ptr);	/*       its bro is the previous's bro */
+	  child_ptr->brother = node_offset(brother_of(0, pre_ptr), child_ptr);	/*       its bro is the previous's bro */
 	}
 	pre_ptr->brother = node_offset(child_ptr, pre_ptr);	/*     the previous's bro is this one */
       }
     } else {
       for (tmp_ptr = child_of(0, parent_ptr); tmp_ptr->brother;	/*    Find last child */
 	   tmp_ptr = brother_of(0, tmp_ptr)) ;
-      tmp_ptr->brother = node_offset( child_ptr, tmp_ptr);	/*   make this child its brother */
+      tmp_ptr->brother = node_offset(child_ptr, tmp_ptr);	/*   make this child its brother */
     }
   }
   return status;		/* return the status */
@@ -735,7 +735,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	(*dblist)->modified = 0;
 	status = TreeFCREATE;
       }
-    error_exit:
+ error_exit:
       if (nfilenam)
 	free(nfilenam);
     }
@@ -771,7 +771,7 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr)
 	NODE *p = parent_of(0, node_ptr);
 	NODE *c = child_of(0, node_ptr);
 	if (p) {
-	  p->child = node_offset( c, p);
+	  p->child = node_offset(c, p);
 	}
 	if (c) {
 	  c->parent = node_offset(p, c);

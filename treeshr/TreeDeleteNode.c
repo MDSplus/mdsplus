@@ -193,7 +193,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
     if (child_of(0, parent) == node) {
       found = 1;
       if (node->brother) {
-	parent->child = node_offset( brother_of(0, node), parent);
+	parent->child = node_offset(brother_of(0, node), parent);
       } else
 	parent->child = 0;
     } else if (parent->child) {
@@ -211,7 +211,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
     if (!found) {
       if (member_of(parent) == node) {
 	if (node->brother) {
-	  parent->member = node_offset( brother_of(0, node), parent);
+	  parent->member = node_offset(brother_of(0, node), parent);
 	} else
 	  parent->member = 0;
       } else if (parent->member) {
@@ -246,7 +246,7 @@ extern void _TreeDeleteNodeExecute(void *dbid)
       node->child = swapint((char *)&tmp);
     } else {
       int tmp;
-      tmp = node_offset( node, dblist->tree_info->node);
+      tmp = node_offset(node, dblist->tree_info->node);
       dblist->tree_info->header->free = swapint((char *)&tmp);
       node->child = 0;
     }

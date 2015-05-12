@@ -202,7 +202,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       set_retlen(sizeof(NID));
       if (parent_of(dblist, node)) {
 	node_to_nid(dblist, parent_of(dblist, node), &out_nid);
-	*(NID *)itm->pointer = out_nid;
+	*(NID *) itm->pointer = out_nid;
       } else
 	retlen = 0;
       break;
@@ -236,7 +236,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
     case NciPARENT_RELATIONSHIP:
       break_on_no_node;
       set_retlen(4);
-      *(unsigned int *)itm->pointer = (TreeIsChild(dblist, node) & 1) ? NciK_IS_CHILD : NciK_IS_MEMBER;
+      *(unsigned int *)itm->pointer =
+	  (TreeIsChild(dblist, node) & 1) ? NciK_IS_CHILD : NciK_IS_MEMBER;
       break;
     case NciCONGLOMERATE_NIDS:
       break_on_no_node;
@@ -260,7 +261,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       set_retlen(sizeof(count));
       count = 0;
       if (child_of(dblist, node))
-	for (node = child_of(dblist, node); node; count++, node = brother_of(dblist, node) ? brother_of(dblist, node) : 0) ;
+	for (node = child_of(dblist, node); node;
+	     count++, node = brother_of(dblist, node) ? brother_of(dblist, node) : 0) ;
       *(int *)(itm->pointer) = count;
       break;
     case NciNUMBER_OF_MEMBERS:
@@ -305,7 +307,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
     case NciUSAGE:
       break_on_no_node;
       set_retlen(sizeof(node->usage));
-      *(unsigned char *)itm->pointer = ((node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : node->usage);
+      *(unsigned char *)itm->pointer =
+	  ((node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : node->usage);
       break;
     case NciNODE_NAME:
       if (node_exists) {
@@ -389,7 +392,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	  part[0] = 0;
 	  for (hyphens = 0; parent_of(dblist, default_node);
 	       default_node = parent_of(dblist, default_node), hyphens++)
-	    for (ancestor = parent_of(dblist, node); parent_of(dblist, ancestor); ancestor = parent_of(dblist, ancestor))
+	    for (ancestor = parent_of(dblist, node); parent_of(dblist, ancestor);
+		 ancestor = parent_of(dblist, ancestor))
 	      if (ancestor == default_node)
 		goto found_it;
  found_it:
@@ -566,11 +570,11 @@ static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs)
   return string;
 }
 
-int TreeIsChild(PINO_DATABASE *dblist, NODE * node)
+int TreeIsChild(PINO_DATABASE * dblist, NODE * node)
 {
   NODE *n = 0;
   if (parent_of(dblist, node))
-    for (n = child_of(dblist,parent_of(dblist, node)); n && n != node; n = brother_of(dblist, n)) ;
+    for (n = child_of(dblist, parent_of(dblist, node)); n && n != node; n = brother_of(dblist, n)) ;
   return n == node;
 }
 

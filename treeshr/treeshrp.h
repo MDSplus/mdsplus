@@ -244,7 +244,6 @@ static inline int node_offset(NODE * a, NODE * b)
   return ans;
 }
 
-
 /********************************************
    TAG_INFO
 
@@ -608,7 +607,6 @@ static inline int node_to_nid(PINO_DATABASE * dbid, NODE * node, NID * nid_out)
     *nid_out = nid;
   return *(int *)&nid;
 }
-
 
 /******************************************
 Another useful macro based on nid:

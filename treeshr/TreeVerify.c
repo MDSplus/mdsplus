@@ -36,8 +36,8 @@ int TreeVerify( )
 
 static int maxnodes;
 static int nodecount;
-static int countnodes(PINO_DATABASE *dblist, NODE * node);
-static int countfree(PINO_DATABASE *dblist, NODE * node);
+static int countnodes(PINO_DATABASE * dblist, NODE * node);
+static int countfree(PINO_DATABASE * dblist, NODE * node);
 
 extern void **TreeCtx();
 
@@ -72,7 +72,7 @@ int _TreeVerify(void *dbid)
   return status;
 }
 
-static int countnodes(PINO_DATABASE *dblist, NODE * node)
+static int countnodes(PINO_DATABASE * dblist, NODE * node)
 {
   if (node) {
     nodecount++;
@@ -81,8 +81,10 @@ static int countnodes(PINO_DATABASE *dblist, NODE * node)
       return 0;
     }
     switch (node->usage) {
-    case TreeUSAGE_SUBTREE_REF: break;
-    case TreeUSAGE_SUBTREE_TOP: break;
+    case TreeUSAGE_SUBTREE_REF:
+      break;
+    case TreeUSAGE_SUBTREE_TOP:
+      break;
     default:
       if (member_of(node)) {
 	if (parent_of(dblist, member_of(node)) != node)
@@ -104,7 +106,7 @@ static int countnodes(PINO_DATABASE *dblist, NODE * node)
   return 1;
 }
 
-static int countfree(PINO_DATABASE *dblist, NODE * node)
+static int countfree(PINO_DATABASE * dblist, NODE * node)
 {
   NODE *lnode;
   for (lnode = node; lnode; lnode = parent_of(dblist, lnode)) {

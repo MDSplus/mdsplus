@@ -289,7 +289,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook)
   if (dblist) {
     if (dblist->remote) {
       status = CloseTreeRemote(dblist, call_hook);
-      if (status == TreeNOT_OPEN)	       /**** Remote server might have already opened the tree ****/
+      if (status == TreeNOT_OPEN)		   /**** Remote server might have already opened the tree ****/
 	status = TreeNORMAL;
     } else if (local_info) {
 
@@ -1047,7 +1047,7 @@ static int GetVmForTree(TREE_INFO * info, int nomap)
 
 static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * subtreetop)
 {
-  NID child_nid, parent_nid, brother_nid={0,0};
+  NID child_nid, parent_nid, brother_nid = { 0, 0 };
   NODE *brother = brother_of(dblist, parent);
   parent->usage = TreeUSAGE_SUBTREE_REF;
   subtreetop->usage = TreeUSAGE_SUBTREE_TOP;
@@ -1055,10 +1055,10 @@ static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * sub
   node_to_nid(dblist, parent_of(dblist, parent), &parent_nid);
   if (brother)
     node_to_nid(dblist, brother_of(dblist, parent), &brother_nid);
-  parent->child = *(int*)&child_nid;
-  subtreetop->parent = *(int*)&parent_nid;
-  subtreetop->brother = *(int*)&brother_nid;
-  memcpy(subtreetop->name,parent->name,sizeof(subtreetop->name));
+  parent->child = *(int *)&child_nid;
+  subtreetop->parent = *(int *)&parent_nid;
+  subtreetop->brother = *(int *)&brother_nid;
+  memcpy(subtreetop->name, parent->name, sizeof(subtreetop->name));
   return;
 }
 
