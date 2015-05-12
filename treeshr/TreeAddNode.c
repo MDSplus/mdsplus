@@ -737,7 +737,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	(*dblist)->modified = 0;
 	status = TreeFCREATE;
       }
-    error_exit:
+ error_exit:
       if (nfilenam)
 	free(nfilenam);
     }

@@ -1433,7 +1433,7 @@ if (FDS[fd - 1].socket == SRB_SOCKET) {
     ssize_t ans = -1;
     if (count == 0) {
       if (deleted)
-	*deleted=0;
+	*deleted = 0;
       return 0;
     }
     LOCKFDS if (fd > 0 && fd <= ALLOCATED_FDS && FDS[fd - 1].in_use) {
@@ -1525,10 +1525,12 @@ int MDS_IO_LOCK(int fd, off_t offset, size_t size, int mode_in, int *deleted)
 	  flags |= LOCKFILE_FAIL_IMMEDIATELY;
 	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
 	status =
-	  LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+	    LockFileEx(h, flags, 0, (DWORD) size, 0,
+		       &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       } else {
 	HANDLE h = (HANDLE) _get_osfhandle(FDS[fd - 1].fd);
-	status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+	status =
+	    UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
       }
 #else
       struct flock flock_info;
