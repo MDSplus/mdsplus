@@ -99,7 +99,6 @@ endif DX_COND_latex
 ## GENERAL ENV To be passed into config file  ##
 ## ------------------------------------------ ##
 
-
 DX_INSTALLDIR = $(abs_top_builddir)
 DX_DESTDIR    = ${DX_INSTALLDIR}/${DX_DOCDIR}
 DX_TAGDIR     = ${DX_INSTALLDIR}/docs/dtags
@@ -118,7 +117,9 @@ DX_DESTENV = ${DX_ENV} \
              ${DX_ENVCOMMON} \
              DX_DESTDIR='${DX_DESTDIR}'
 
-
+DX_STYLE_FILES = ${top_srcdir}/docs/config/style/header.html \
+                 ${top_srcdir}/docs/config/style/footer.html \
+                 ${top_srcdir}/docs/config/style/mds_style.css
 
 ### TARGETS: ###################################################################
 
@@ -133,7 +134,7 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	$(MKDIR_P) ${DX_DESTDIR}
 	${MKDIR_P} ${DX_TAGDIR}
 	export $(DX_DESTENV)	
-	export GENERATE_HTML="NO"
+	export GENERATE_HTML="YES"
 	export GENERATE_LATEX="NO"
 	export DX_DESTTAG="${DX_DESTTAG}"
 	export DX_TAGFILES=
@@ -156,8 +157,11 @@ ${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG}
 	
 build_tag: ${DX_TAGDIR}/taglist.txt
 
+install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
+install_tag: ${DX_TAGDIR}/taglist.txt
 
-${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt
+
+${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
 	$(MKDIR_P) ${DX_DESTDIR}
 	export $(DX_DESTENV)
 	
@@ -188,20 +192,12 @@ doxygen-run: build_tag ${DX_DESTDIR}/doxygen.stamp
 
 
 doxygen-doc: DX_INSTALLDIR = $(abs_top_builddir)
-doxygen-doc: doxygen-run
-
-# $(DX_PS_GOAL) $(DX_PDF_GOAL)
+doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 
 doxygen-install: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
-doxygen-install: doxygen-run install-pdf
+doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 
-# $(DX_PS_GOAL) $(DX_PDF_GOAL)
 
-install-data-local: doxygen-install
-
-install-pdf: pdf
-#	$(INSTALL_DATA) ${DX_PACKAGE_NAME}.pdf ${DX_DESTDIR}
-	
 
 DX_CLEANFILES = \
     ${DX_DESTDIR}/doxygen.stamp \

@@ -17,7 +17,7 @@ DX_PAGES = .. \
 
 DX_EXCLUDE_PAGES = 
                    
-DX_TAGFILES = 
+DX_TAGFILES = docs.tag
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
 
@@ -26,6 +26,7 @@ MOSTLYCLEANFILES = $(DX_CLEANFILES)
 
 all: html
 
-html: doxygen-doc
+html: doxygen-run
 pdf:  doxygen-pdf
 
+install-data-local: doxygen-install

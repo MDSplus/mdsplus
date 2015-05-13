@@ -22,8 +22,6 @@ for data acquisition and analysis.
 
 
 
-
-
 Transport "Plugins"
 -------------------
 
@@ -50,7 +48,7 @@ the following transports were supported:
 
 
 \note For a general description of the overall MDSplus framework please refer to 
-\ref mdsplus_manual
+      \subpage mdsplus_manual "MDSplus manual"
 
 
 

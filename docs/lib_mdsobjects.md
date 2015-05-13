@@ -14,6 +14,6 @@ of the languages supported.
 C++ Interface
 -------------
 
-Breaf description goes here
+Brief description goes here
 
 For further details see reference manual \ref mdsobjects_cpp_manual

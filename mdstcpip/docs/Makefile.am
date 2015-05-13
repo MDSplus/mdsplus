@@ -46,6 +46,7 @@ MOSTLYCLEANFILES = $(DX_CLEANFILES)
 
 all: html
 
-html: doxygen-doc
+html: doxygen-run
 pdf:  doxygen-pdf
 
+install-data-local: doxygen-install

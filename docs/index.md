@@ -11,15 +11,16 @@ Developed jointly by the Massachusetts Institute of Technology, the Fusion Resea
 The MDSplus developers hope that MDSplus may prove to be a valuable tool for research at your site. 
 
 
-| sub libraries            | online code documentation      |
-|:-------------------------|--------------------------------|
-| \ref lib_mdsip           | \subpage mdsip_manual          |
-| \ref lib_mdsobjects C++  | \subpage mdsobjects_cpp_manual |
+| sub libraries            | online code documentation                              |
+|:-------------------------|--------------------------------------------------------|
+| \ref lib_mdsip           | \subpage mdsip_manual "Mdsip manual"                   |
+| \ref lib_mdsobjects C++  | \subpage mdsobjects_cpp_manual "Mdsobjects C++ manual" |
 
 
  
 \page lib_mdsip Mdsip remote data access library
 \page lib_mdsobjects MdsPlus object oriented interface
+\page use_docs Learn how to build self generating docs
 
 
 

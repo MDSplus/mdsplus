@@ -20,4 +20,4 @@ It has become a very important capability of MDSplus ever since, providing
 access to data and providing an infrastructure for distributed computing for 
 data acquisition and analysis.
 
-For further details please refer to \ref mdsip_manual
+For further details please refer to \subpage mdsip_manual
