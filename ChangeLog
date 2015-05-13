@@ -1,8 +1,70 @@
-commit fab50ce770eadc3902c953f1f4d165f547cead03 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit d0c6683894ba810136a17226ace35ebf33c6034c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 16:32:17 2015 -0400
+
+    Requires needs dist string when using =
+
+commit cbaf53fdd3cb20fdbfbda6e1bb4a02fcefa453a9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 15:10:42 2015 -0400
+
+    prevent indent from adding spaces after the colon in node names
+
+commit fa2189a5b2c232144e0c648e63681c355d940b35
+Merge: 83698ad 71e826c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 14:23:17 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 71e826c3418fef3e09428fe34b64219b3fdc967f (tag: refs/tags/alpha_release-7-0-59)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 13 18:02:03 2015 +0000
+
+    New ChangeLog
+
+commit 83698ad88bb131ba5df00f9f829f49a419dd18bf
+Merge: 31ce156 fab50ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 13:49:45 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit fab50ce770eadc3902c953f1f4d165f547cead03
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 13 13:44:31 2015 -0400
 
     Fix damage done by indent breaking macro usage
+
+commit 31ce156107a7d4b30f51c92bbf5c27e058485a90
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 11:51:42 2015 -0400
+
+    Add more to full clean
+
+commit 5c22d4f2d2ae42f59b5831709619699e8a0b05cc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 11:38:19 2015 -0400
+
+    Remove obsolete files
+
+commit 431c606d9c16f6ace83ad74511f479f98856dbdd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 11:22:00 2015 -0400
+
+    Obsolete tests now in deploy scripts
+
+commit d7b7616151dcfe430a7a70475368e33d4494873b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 08:40:29 2015 -0400
+
+    Fix debian testing
+
+commit 751aea59fee707bc07db61f5fbe719ff1e16d407
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 15:49:59 2015 -0400
+
+    Require matching version of other MDSplus packages
 
 commit c53a06abc9b28a3ae8a0d3991424d8afc2ebee1a (tag: refs/tags/alpha_release-7-0-58)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
