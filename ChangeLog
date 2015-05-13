@@ -1,4 +1,110 @@
-commit 2166145217469dd9aaee73a89ce96fa2ace90876 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit fab50ce770eadc3902c953f1f4d165f547cead03 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 13:44:31 2015 -0400
+
+    Fix damage done by indent breaking macro usage
+
+commit c53a06abc9b28a3ae8a0d3991424d8afc2ebee1a (tag: refs/tags/alpha_release-7-0-58)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 12 18:34:01 2015 +0000
+
+    New ChangeLog
+
+commit 94c4486da95e641818da62ab30df820e9aef2dff
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 14:16:12 2015 -0400
+
+    Do not include repo rpm's in repo
+
+commit 7e7609d1b9efff90723d439591d6688ed2f39661 (tag: refs/tags/alpha_release-7-0-57)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 12 17:27:11 2015 +0000
+
+    New ChangeLog
+
+commit b6b669d77532063ca8c8cd2191cceb8b24c969ea
+Merge: 019400d 4f32200
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 13:08:10 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 019400da9c60a19427d37b34b37514e70975c875
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 13:08:04 2015 -0400
+
+    include previous versions in repo
+
+commit 4f322001f647a3418b77509b0d51ffaec0397bf6 (tag: refs/tags/alpha_release-7-0-56)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 12 16:45:22 2015 +0000
+
+    New ChangeLog
+
+commit 806779dc054757374f0e940a04b9a5fa084f7ff3
+Merge: 0d3961e a070ba8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 12:04:42 2015 -0400
+
+    Use special node usage and nids for subtree linkage
+
+commit 0d3961e1036ea118e458fd5ae7841c8319327030
+Merge: 95ee91d 2492745
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 11:39:55 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 95ee91d81b50087ea742e7712439dedfc7056298
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 11:39:36 2015 -0400
+
+    Indenting
+
+commit a070ba842d057d3894df14799a7ee0c59f65f472 (refs/remotes/origin/feature_new_subtree_linkage)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 12 11:39:03 2015 -0400
+
+    Indenting
+
+commit 24927453f6596ad3702fad8dd987e182e45eb79d
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue May 12 15:56:45 2015 +0200
+
+    Removed dangerour #pragma pack
+
+commit c161d41deb7d6782f1b87f4992774e59a7de4ad1 (tag: refs/tags/alpha_release-7-0-55)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 8 22:22:41 2015 +0000
+
+    New ChangeLog
+
+commit 2edb1fed8e7c6a5b5a60161f315437651f8fff4b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 13:47:32 2015 -0400
+
+    Fix typo in release.py code
+
+commit 8d0b1aa81e66ee6056de8b3f4a5cdf82d6118d7a
+Merge: 13fb9ac 74bf5a4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 12:42:11 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 13fb9ac7a2f46106bc3a1c0bb7cc8746d8e673c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 8 12:41:56 2015 -0400
+
+    Support for m-n-0 releases
+
+commit 74bf5a4afebb6a73717b8d59658fea40f8d9921f (tag: refs/tags/alpha_release-7-0-54)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 8 13:04:42 2015 +0000
+
+    New ChangeLog
+
+commit 2166145217469dd9aaee73a89ce96fa2ace90876
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 8 08:51:42 2015 -0400
 
@@ -147,6 +253,12 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu Apr 30 16:56:25 2015 +0200
 
     Remove dangerous delete in exception catchers
+
+commit f1122c7e570918bd15dd1f7308eeb74c75d5d695
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Apr 29 16:38:30 2015 -0400
+
+    Fix child_of and brother_of functions when they pass over subtree reference nodes
 
 commit c3e88997c86264ea9b1f419a33705ae8d09e6f75 (tag: refs/tags/alpha_release-7-0-48)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>

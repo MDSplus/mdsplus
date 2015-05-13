@@ -38,43 +38,43 @@ int mit_encoder__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_p
  ADD_NODE(:CHANNEL_1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_1:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:CHANNEL_1:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_2, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_2:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:CHANNEL_2:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_3, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_3:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:CHANNEL_3:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_4, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_4:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:CHANNEL_4:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_5, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_5:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:CHANNEL_5:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_6, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_6:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:CHANNEL_6:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:SOFT_CHANNEL, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: SOFT_CHANNEL:EVENT, TreeUSAGE_TEXT)
+ ADD_NODE(:SOFT_CHANNEL:EVENT, TreeUSAGE_TEXT)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
@@ -105,31 +105,31 @@ int mit_encoder__part_name(struct descriptor *nid_d_ptr, struct descriptor *meth
   case (MIT_ENCODER_N_CHANNEL_1 + 1):
  COPY_PART_NAME(:CHANNEL_1) break;
   case (MIT_ENCODER_N_CHANNEL_1_EVENT + 1):
- COPY_PART_NAME(: CHANNEL_1:EVENT) break;
+ COPY_PART_NAME(:CHANNEL_1:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_2 + 1):
  COPY_PART_NAME(:CHANNEL_2) break;
   case (MIT_ENCODER_N_CHANNEL_2_EVENT + 1):
- COPY_PART_NAME(: CHANNEL_2:EVENT) break;
+ COPY_PART_NAME(:CHANNEL_2:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_3 + 1):
  COPY_PART_NAME(:CHANNEL_3) break;
   case (MIT_ENCODER_N_CHANNEL_3_EVENT + 1):
- COPY_PART_NAME(: CHANNEL_3:EVENT) break;
+ COPY_PART_NAME(:CHANNEL_3:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_4 + 1):
  COPY_PART_NAME(:CHANNEL_4) break;
   case (MIT_ENCODER_N_CHANNEL_4_EVENT + 1):
- COPY_PART_NAME(: CHANNEL_4:EVENT) break;
+ COPY_PART_NAME(:CHANNEL_4:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_5 + 1):
  COPY_PART_NAME(:CHANNEL_5) break;
   case (MIT_ENCODER_N_CHANNEL_5_EVENT + 1):
- COPY_PART_NAME(: CHANNEL_5:EVENT) break;
+ COPY_PART_NAME(:CHANNEL_5:EVENT) break;
   case (MIT_ENCODER_N_CHANNEL_6 + 1):
  COPY_PART_NAME(:CHANNEL_6) break;
   case (MIT_ENCODER_N_CHANNEL_6_EVENT + 1):
- COPY_PART_NAME(: CHANNEL_6:EVENT) break;
+ COPY_PART_NAME(:CHANNEL_6:EVENT) break;
   case (MIT_ENCODER_N_SOFT_CHANNEL + 1):
  COPY_PART_NAME(:SOFT_CHANNEL) break;
   case (MIT_ENCODER_N_SOFT_CHANNEL_EVENT + 1):
- COPY_PART_NAME(: SOFT_CHANNEL:EVENT) break;
+ COPY_PART_NAME(:SOFT_CHANNEL:EVENT) break;
   default:
     status = TreeILLEGAL_ITEM;
   }
