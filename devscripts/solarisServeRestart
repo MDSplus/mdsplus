@@ -1,3 +1,0 @@
-#!/bin/bash
-sudo /usr/sbin/svcadm restart pkg/server:mdsplus-repo-x86_64
-sudo /usr/sbin/svcadm restart pkg/server:mdsplus-repo-i686
