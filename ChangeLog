@@ -1,4 +1,16 @@
-commit 94c4486da95e641818da62ab30df820e9aef2dff (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit fab50ce770eadc3902c953f1f4d165f547cead03 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 13:44:31 2015 -0400
+
+    Fix damage done by indent breaking macro usage
+
+commit c53a06abc9b28a3ae8a0d3991424d8afc2ebee1a (tag: refs/tags/alpha_release-7-0-58)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 12 18:34:01 2015 +0000
+
+    New ChangeLog
+
+commit 94c4486da95e641818da62ab30df820e9aef2dff
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue May 12 14:16:12 2015 -0400
 
