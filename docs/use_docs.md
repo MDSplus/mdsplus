@@ -192,6 +192,13 @@ sublib would be added:
                   sublib.tag
     # ^^^^^^^^ adds sublib.tag file so main docs can refs to new library symbols
     
+In this way the main documentation can brawse all sub libraries symbols and can
+access pages and anchors .. usually in the main index.md there is a link to the
+sublibrary MainPage ( \subpage sublib_manual in this case ).
+
+
+
+
 
 Launch the document generation
 ------------------------------

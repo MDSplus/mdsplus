@@ -1,7 +1,8 @@
 MDSip (MDSplus remote data acess protocol) {#lib_mdsip}
 ==========================================
 
-
+ \image html img/planet_mdsplus.png 
+ \image latex img/planet_mdsplus.png
 
 MDSplus provides a very simple but powerful protocol for connecting to remote 
 servers to perform tasks such as retrieving or writing data and performing 

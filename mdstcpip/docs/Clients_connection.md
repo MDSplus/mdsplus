@@ -247,28 +247,6 @@ particular focus on the use of the mentioned MDSip functions.
 
 
 
- ### Server step by step:
  
- 1. ParseStdArgs()  - finds options and sets static variables.
- 2. LoadIo()        - loads protocol Io Routine 
- 3. io->listen()    - calls protocol listen()     
- 4. SetPort  - finds `(p) port` and `(S) sockethandle` options
- 5. IF (multi or server)   
-   51. *Multi* 
-      * bind(socket)
-      * listen(socket)
-      * select(fd)
-      * accept(socket)
-      * SetSocketOptions()
-      * AcceptConnection()
-   52. *Single*
-      * AcceptConnection()
- 6. DoMessage()
-   61. ProcessMessage()
-      * ExecuteMessage()
-      * directly do MDS_IO_xxx actions
-      * BuildAnswer()
-   65. send ans
-
 
 
