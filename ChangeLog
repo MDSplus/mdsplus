@@ -1,4 +1,16 @@
-commit 3fa9cc76ada4990c43d935ef58c6895f0fbb6ce2 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 3f9750198be7f1cf6ddbb70b1ecd29d2ffe2ae09 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 13 13:55:05 2015 -0400
+
+    Fix problem caused by indent and colons in node names
+
+commit 94521b4c2bd58fa9236d6ade88cbdf867b8586e7 (tag: refs/tags/stable_release-7-0-0)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 8 14:24:02 2015 -0400
+
+    New ChangeLog
+
+commit 3fa9cc76ada4990c43d935ef58c6895f0fbb6ce2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 8 13:43:51 2015 -0400
 
