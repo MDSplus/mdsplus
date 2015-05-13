@@ -5,13 +5,11 @@ include ../../docs/config/doxygen.am
 
 # //////////////////////////////////////////////////////////////////////////// #
 # DOXYGEN CONFIG #
-
-DX_DOCDIR = ${srcdir}
-DX_CONFIG = ${top_srcdir}/docs/config/doxygen.cfg
+DX_CONFIG = "${top_srcdir}/docs/config/doxygen.cfg"
+DX_DOCDIR = mdstcpip/docs
 DX_PACKAGE_NAME = mdsip
 DX_TITLE = MDSip
 DX_BRIEF = "MDSplus remote data access library"
-DX_DESTDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@/${DX_PACKAGE_NAME}
 
 
 DX_PAGES = .. \
@@ -38,23 +36,16 @@ DX_EXCLUDE_PAGES = \
                    mdsipshr.c \
                    mdsip_service.c
                    
-DX_TAGFILES = 
-#../../docs/docs.tag=../../docs/html
+DX_TAGFILES = docs.tag
+
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES)
 
 # //////////////////////////////////////////////////////////////////////////// #
 # TARGETS #
 
-html: doxygen-run
-
-pdf:  doxygen-pdf
-
-install-data-local: install-html install-pdf
-
-uninstall-local:
-	rm -rf $(DX_DESTDIR)
-	
 all: html
 
+html: doxygen-doc
+pdf:  doxygen-pdf
 

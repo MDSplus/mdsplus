@@ -40,7 +40,7 @@ if DX_COND_doc
 
 if DX_COND_html
 
-DX_CLEAN_HTML = ${DX_DOCDIR}/html
+DX_CLEAN_HTML = ${DX_DESTDIR}/html
 
 endif DX_COND_html
 
@@ -50,7 +50,7 @@ endif DX_COND_html
 
 if DX_COND_man
 
-DX_CLEAN_MAN = ${DX_DOCDIR}/man
+DX_CLEAN_MAN = ${DX_DESTDIR}/man
 
 endif DX_COND_man
 
@@ -61,14 +61,14 @@ endif DX_COND_man
 
 if DX_COND_pdf
 
-DX_CLEAN_PDF = ${DX_DOCDIR}/${DX_PACKAGE_NAME}.pdf
+DX_CLEAN_PDF = ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
 
 DX_PDF_GOAL = doxygen-pdf
 
-doxygen-pdf: ${DX_DOCDIR}/${DX_PACKAGE_NAME}.pdf
+doxygen-pdf: ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
 
-${DX_DOCDIR}/${DX_PACKAGE_NAME}.pdf: ${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag
-	cd ${DX_DOCDIR}/latex; \
+${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf: ${DX_DESTTAG}
+	cd ${DX_DESTDIR}/latex; \
 	rm -f *.aux *.toc *.idx *.ind *.ilg *.log *.out; \
 	$(DX_PDFLATEX) refman.tex; \
 	$(DX_MAKEINDEX) refman.idx; \
@@ -90,7 +90,7 @@ endif DX_COND_pdf
 
 if DX_COND_latex
 
-DX_CLEAN_LATEX = ${DX_DOCDIR}/latex
+DX_CLEAN_LATEX = ${DX_DESTDIR}/latex
 
 endif DX_COND_latex
 
@@ -99,18 +99,20 @@ endif DX_COND_latex
 ## GENERAL ENV To be passed into config file  ##
 ## ------------------------------------------ ##
 
+
+DX_INSTALLDIR = $(abs_top_builddir)
+DX_DESTDIR    = ${DX_INSTALLDIR}/${DX_DOCDIR}
+DX_TAGDIR     = ${DX_INSTALLDIR}/docs/dtags
+DX_DESTTAG    = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
+
+
 DX_ENVCOMMON = \
                DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
                DX_PAGES='${DX_PAGES}' \
                DX_EXCLUDE_PAGES='${DX_EXCLUDE_PAGES}' \
-               DX_TAGFILES='${DX_TAGFILES}' \
                DX_TITLE='${DX_TITLE}' \
                DX_BRIEF='${DX_BRIEF}'
 
-
-DX_LOCENV = ${DX_ENV} \
-            ${DX_ENVCOMMON} \
-            DX_DESTDIR='$(srcdir)'
 
 DX_DESTENV = ${DX_ENV} \
              ${DX_ENVCOMMON} \
@@ -118,36 +120,92 @@ DX_DESTENV = ${DX_ENV} \
 
 
 
-
 ### TARGETS: ###################################################################
 
 
 .PHONY: doxygen-run doxygen-doc $(DX_PS_GOAL) $(DX_PDF_GOAL)
-
 .INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 
-doxygen-run: ${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag
 
-doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 
-${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag: $(DX_CONFIG) $(pkginclude_HEADERS)
-	rm -rf $@
-	$(DX_LOCENV) $(DX_DOXYGEN) $(DX_CONFIG)
-
-${DX_DESTDIR}/${DX_PACKAGE_NAME}.tag: $(DX_CONFIG) $(pkginclude_HEADERS) ${DX_PAGES}
-	rm -rf $@
+.ONESHELL:
+${DX_DESTTAG}: ${DX_PAGES}
 	$(MKDIR_P) ${DX_DESTDIR}
-	$(DX_DESTENV) $(DX_DOXYGEN) $(DX_CONFIG)
+	${MKDIR_P} ${DX_TAGDIR}
+	export $(DX_DESTENV)	
+	export GENERATE_HTML="NO"
+	export GENERATE_LATEX="NO"
+	export DX_DESTTAG="${DX_DESTTAG}"
+	export DX_TAGFILES=
+	
+	##
+	## Start Doxygen generation
+	##
+	$(DX_DOXYGEN) $(DX_CONFIG);
 
 
-install-html: ${DX_DESTDIR}/${DX_PACKAGE_NAME}.tag
+${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
+	touch $@
+	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
+	echo "Name Found list not updated ..."; \
+	else \
+	echo "Adding tag to list ... "; \
+	echo "${DX_DESTTAG}=${DX_DESTDIR}/html" \
+	>> ${DX_TAGDIR}/taglist.txt; \
+	fi;	
+	
+build_tag: ${DX_TAGDIR}/taglist.txt
+
+
+${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt
+	$(MKDIR_P) ${DX_DESTDIR}
+	export $(DX_DESTENV)
+	
+	##
+	## Getting tags from generated taglist 
+	##
+	if test '${DX_TAGFILES}'; then \
+	 for i in ${DX_TAGFILES}; do \
+	  t=`grep $${i} ${DX_TAGDIR}/taglist.txt`; \
+	  tag="$${tag} $${t}"; \
+	 done \
+	else \
+	 echo "No tag list found!"; \
+	fi;
+	echo "Adding selected tag entries: $${tag}"
+	export DX_TAGFILES="$${tag}"
+	export DX_DESTTAG=
+	
+	##
+	## Start Doxygen generation
+	##
+	$(DX_DOXYGEN) $(DX_CONFIG);
+	touch $@
+
+
+doxygen-run: build_tag ${DX_DESTDIR}/doxygen.stamp
+
+
+
+doxygen-doc: DX_INSTALLDIR = $(abs_top_builddir)
+doxygen-doc: doxygen-run
+
+# $(DX_PS_GOAL) $(DX_PDF_GOAL)
+
+doxygen-install: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
+doxygen-install: doxygen-run install-pdf
+
+# $(DX_PS_GOAL) $(DX_PDF_GOAL)
+
+install-data-local: doxygen-install
 
 install-pdf: pdf
-	$(INSTALL_DATA) ${DX_PACKAGE_NAME}.pdf ${DX_DESTDIR}
+#	$(INSTALL_DATA) ${DX_PACKAGE_NAME}.pdf ${DX_DESTDIR}
 	
 
 DX_CLEANFILES = \
-    ${DX_DOCDIR}/${DX_PACKAGE_NAME}.tag \
+    ${DX_DESTDIR}/doxygen.stamp \
+    ${DX_DESTTAG} \
     -r \
     $(DX_CLEAN_HTML) \
     $(DX_CLEAN_CHM) \
