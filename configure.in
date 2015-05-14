@@ -912,18 +912,40 @@ then
 fi
 
 
-## DOXYGEN ##
 
-dnl AC_CHECK_PROGS([DOXYGEN], [doxygen])
-dnl if test -z "$DOXYGEN";
-dnl   then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
-dnl fi
-# AM_CONDITIONAL([HAVE_DOXYGEN],
-# [test -n "$DOXYGEN"])AM_COND_IF([HAVE_DOXYGEN], [AC_CONFIG_FILES([docs/Doxyfile])])
 
-# AC_CHECK_HEADER(stdio.h, [],
-#                [AC_MSG_WARN(missing required header file <stdio.h>)])
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  DOXYGEN  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+## minimum requred doxygen for cute documentation rendering
+DOXYGEN_VERSION_REQUIRED="1.8"
+
+## versioning check script for sh usign sort builtin command
+## check if $2 is a version higher than $1
+function _ver_higher {
+        ver=`echo -ne "$1\n$2" |sort -Vr |head -n1`
+        if [[ "$2" == "$1" ]]; then return 1
+        elif [[ "$2" == "$ver" ]]; then return 0
+        else return 1
+        fi
+}
+
+## checking for doxygen bin in path (see also m4 macro below)
+AC_CHECK_PROGS([DOXYGEN], [doxygen])
+if test -z "$DOXYGEN";
+  then AC_MSG_WARN([Doxygen not found - continuing without Doxygen support])
+  AM_CONDITIONAL([HAVE_CUTE_DOXYGEN], [false])
+else  
+  AM_CONDITIONAL([HAVE_CUTE_DOXYGEN], 
+    [_ver_higher $DOXYGEN_VERSION_REQUIRED `$DOXYGEN --version`])
+  AM_COND_IF([HAVE_CUTE_DOXYGEN], 
+    [ echo "Doxygen version is cute!" ], 
+    [ AC_MSG_WARN(["Doxygen version outdated, very limited documentation support"]) ])
+fi
+
+## DEFAULT ACTIVE FEATURES 
 DX_HTML_FEATURE(ON)
 DX_CHM_FEATURE(OFF)
 DX_CHI_FEATURE(OFF)
@@ -932,7 +954,11 @@ DX_RTF_FEATURE(OFF)
 DX_XML_FEATURE(OFF)
 DX_PDF_FEATURE(ON)
 DX_PS_FEATURE(OFF)
+
+## refers to ax_prog_doxygen.m4 macro expansion 
 DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
+
+
 
 
 

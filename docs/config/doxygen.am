@@ -105,21 +105,34 @@ DX_TAGDIR     = ${DX_INSTALLDIR}/docs/dtags
 DX_DESTTAG    = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
 
 
+if HAVE_CUTE_DOXYGEN
+ DX_HTML_HEADER     = ${top_srcdir}/docs/config/style/header.html
+ DX_HTML_FOOTER     = ${top_srcdir}/docs/config/style/footer.html
+ DX_HTML_STYLESHEET = ${top_srcdir}/docs/config/style/mds_style.css
+endif HAVE_CUTE_DOXYGEN
+
+DX_STYLE_FILES = ${DX_HTML_HEADER} \
+                 ${DX_HTML_FOOTER} \
+                 ${DX_HTML_STYLESHEET}
+
+
+
 DX_ENVCOMMON = \
                DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
                DX_PAGES='${DX_PAGES}' \
                DX_EXCLUDE_PAGES='${DX_EXCLUDE_PAGES}' \
                DX_TITLE='${DX_TITLE}' \
-               DX_BRIEF='${DX_BRIEF}'
+               DX_BRIEF='${DX_BRIEF}' \
+               DX_HTML_HEADER='${DX_HTML_HEADER}' \
+               DX_HTML_FOOTER='${DX_HTML_FOOTER}' \
+               DX_HTML_STYLESHEET='${DX_HTML_STYLESHEET}'
 
 
 DX_DESTENV = ${DX_ENV} \
              ${DX_ENVCOMMON} \
              DX_DESTDIR='${DX_DESTDIR}'
 
-DX_STYLE_FILES = ${top_srcdir}/docs/config/style/header.html \
-                 ${top_srcdir}/docs/config/style/footer.html \
-                 ${top_srcdir}/docs/config/style/mds_style.css
+
 
 ### TARGETS: ###################################################################
 
@@ -140,7 +153,7 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	GENERATE_HTML="YES" \
 	GENERATE_LATEX="NO" \
 	DX_DESTTAG="${DX_DESTTAG}" \
-	DX_TAGFILES= \	
+	DX_TAGFILES= \
 	$(DX_DOXYGEN) $(DX_CONFIG);
 
 
