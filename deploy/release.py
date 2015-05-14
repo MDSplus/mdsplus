@@ -19,8 +19,13 @@ def doInGitDir(flavor,cmd,stdout=None):
   try:
     os.stat(dir)
   except:
-    os.mkdir("/mdsplus/git/%s" % dist)
-    subprocess.Popen("git clone -b %s git@github.com:/MDSplus/mdsplus %s" % (flavor,dir),shell=True,executable="/bin/bash")
+    try:
+      os.mkdir("/mdsplus/git/%s" % dist)
+    except:
+      pass
+    s=subprocess.Popen("git clone -b %s git@github.com:/MDSplus/mdsplus %s" % (flavor,dir),shell=True,executable="/bin/bash").wait()
+    if s != 0:
+      raise Exception("Cannot clone repository")
   flushPrint("Using git directory: %s" % dir) 
   return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
                           cwd=dir)
