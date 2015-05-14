@@ -1,4 +1,23 @@
-commit d0c6683894ba810136a17226ace35ebf33c6034c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c550e4db6436ba185a82ccb5a8de3719d8451056 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 5b2cca8 1cb8c7b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 09:24:09 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 5b2cca88306d2c7f095b9e88ddc2bf12190efb4f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 09:22:48 2015 -0400
+
+    Removed left over free() call which was only supposed to happen on vms
+
+commit 1cb8c7b0c202db43f3a4bcce8be4596d25b5181f (tag: refs/tags/alpha_release-7-0-60)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 13 18:40:46 2015 -0400
+
+    New ChangeLog
+
+commit d0c6683894ba810136a17226ace35ebf33c6034c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 13 16:32:17 2015 -0400
 
