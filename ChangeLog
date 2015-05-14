@@ -1,4 +1,34 @@
-commit dfacc879e111cb438c862cb3b30950d50e811269 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 388054db832610b124f7a8a65934bf07460d0e15 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 13:24:53 2015 -0400
+
+    Use /mdsplus filesystem for git repositories
+
+commit d444cf011f7bb63da0356b513b5741d04a69529e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 13:22:36 2015 -0400
+
+    Use /mdsplus filesystem for git repositories
+
+commit e847f519bf657586f84a86c9298f591897656458
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 13:18:33 2015 -0400
+
+    Use /mdsplus filesystem for git repositories
+
+commit 840947152f42cddc7b72a92ca0dba7eb3a7d263e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 12:02:33 2015 -0400
+
+    do not abort doing final commits
+
+commit 522cde9fab930779b4d042dd6832c55532ef26a8 (tag: refs/tags/alpha_release-7-0-63)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 14 11:56:34 2015 -0400
+
+    New ChangeLog
+
+commit dfacc879e111cb438c862cb3b30950d50e811269
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 14 11:32:10 2015 -0400
 
