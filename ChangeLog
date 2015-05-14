@@ -1,4 +1,28 @@
-commit d484e04a09ecf2d43ec4032dbdab71b924b5acee (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit dfacc879e111cb438c862cb3b30950d50e811269 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 11:32:10 2015 -0400
+
+    Use private git clone directories
+
+commit 5dbfb22f8a3fc7d7e793ccf6dc08c34c82339617
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 11:30:12 2015 -0400
+
+    Use private git clone directories
+
+commit f3051ed769dc45b8069b804c1ccc00d6efa7bd02
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 11:28:07 2015 -0400
+
+    Use private git clone directories
+
+commit b9f72cd7447cb7ff72a130d237dc1eac34b72880 (tag: refs/tags/alpha_release-7-0-62)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 14 15:10:48 2015 +0000
+
+    New ChangeLog
+
+commit d484e04a09ecf2d43ec4032dbdab71b924b5acee
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Thu May 14 16:26:04 2015 +0200
 
@@ -2053,7 +2077,7 @@ Date:   Wed Feb 25 09:02:02 2015 +0100
 
     removed unnecessary lock
 
-commit 33e4279c2eb1bbd391ae4447f5704d7577d90b6b (refs/heads/mdsdcl)
+commit 33e4279c2eb1bbd391ae4447f5704d7577d90b6b
 Merge: cd74d7a a64b1c0
 Author: root <root@mdsplus-builder.psfc.mit.edu>
 Date:   Mon Feb 23 19:38:09 2015 +0000
@@ -2257,7 +2281,7 @@ Date:   Wed Feb 18 14:57:30 2015 -0500
 
     No install for xml here
 
-commit 7c24a29f004ed0cb511d9362e0d60a3a48c3d339 (tag: refs/tags/mdsdcl_release-7-0-0, tag: refs/tags/feature-replace-mdsdcl_release-7-0-0, refs/remotes/origin/feature-replace-mdsdcl, refs/heads/feature-replace-mdsdcl)
+commit 7c24a29f004ed0cb511d9362e0d60a3a48c3d339 (tag: refs/tags/mdsdcl_release-7-0-0, tag: refs/tags/feature-replace-mdsdcl_release-7-0-0, refs/remotes/origin/feature-replace-mdsdcl)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Feb 18 13:39:18 2015 -0500
 
@@ -3793,7 +3817,7 @@ Date:   Fri Oct 31 07:49:32 2014 -0400
 
     Create README.md
 
-commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master, refs/heads/master)
+commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master)
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 29 20:29:04 2014 +0000
 
