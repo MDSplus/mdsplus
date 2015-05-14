@@ -1,4 +1,22 @@
-commit 927cc7e5d71ee87872acb028abbf51ff656be8ec (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 5e11f2bf56132199025952b19b5a9d8e5680655b (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 12:03:16 2015 -0400
+
+    do not abort doing final commits
+
+commit 7e39dd8277734bd5134290c0f2e335b2b521d7ec
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 11:45:04 2015 -0400
+
+    Use private git clone directories
+
+commit d52875eb12dbae656b1a705e4d0246642d279fd9 (tag: refs/tags/stable_release-7-0-2)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 14 14:39:18 2015 +0000
+
+    New ChangeLog
+
+commit 927cc7e5d71ee87872acb028abbf51ff656be8ec
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 14 10:04:11 2015 -0400
 
