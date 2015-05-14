@@ -19,6 +19,7 @@ def doInGitDir(flavor,cmd,stdout=None):
     dir = "/root/mdsplus-%s" % flavor
   except:
     dir = "/mdsplus/git/mdsplus"
+  flushPrint("Using git directory: %s" % dir) 
   return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
                           cwd=dir)
 
