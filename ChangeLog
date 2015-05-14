@@ -1,4 +1,29 @@
-commit c550e4db6436ba185a82ccb5a8de3719d8451056 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit d484e04a09ecf2d43ec4032dbdab71b924b5acee (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu May 14 16:26:04 2015 +0200
+
+    Remove useless DataProvider methods
+
+commit 4d9383bbedd8c286965b7ba05f667ececb84d3be
+Merge: a3c92aa 8c19f41
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 10:03:36 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit a3c92aa8a4ee6e2295710689c08badcd279176da
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 10:03:29 2015 -0400
+
+    Remove all mdsplus packages prior to tests
+
+commit 8c19f4109f72069f98a12b602b8f501934bc4ccc (tag: refs/tags/alpha_release-7-0-61)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 14 13:48:42 2015 +0000
+
+    New ChangeLog
+
+commit c550e4db6436ba185a82ccb5a8de3719d8451056
 Merge: 5b2cca8 1cb8c7b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 14 09:24:09 2015 -0400
