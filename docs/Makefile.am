@@ -50,7 +50,7 @@ build_all:
 
 
 install_all:
-	list='$(SUBDIRS)'
+	list='$(SUBDIRS)' \
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) install_tag) \
 	done;
