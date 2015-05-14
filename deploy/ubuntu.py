@@ -166,6 +166,7 @@ reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
         print("Preparing test repository")
         sys.stdout.flush()
         if subprocess.Popen("""
+apt-get autoremove -y 'mdsplus*' >/dev/null 2>&1
 set -e
 apt-key add mdsplus.gpg.key
 echo "deb file:/tmp/%(flavor)s/REPO/ MDSplus %(flavor)s" > /etc/apt/sources.list.d/mdsplus.list
