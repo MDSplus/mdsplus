@@ -14,11 +14,13 @@ def flushPrint(text):
   sys.stdout.flush()
 
 def doInGitDir(flavor,cmd,stdout=None):
+  dist = os.environ['DIST']
+  dir = "/mdsplus/git/%s/mdsplus-%s" % (dist,flavor)
   try:
-    os.stat("/root/mdsplus-%s" % flavor)
-    dir = "/root/mdsplus-%s" % flavor
+    os.stat(dir)
   except:
-    dir = "/mdsplus/git/mdsplus"
+    os.mkdir("/mdsplus/git/%s" % dist)
+    subprocess.Popen("git clone -b %s %s" % (flavor,dir),shell=True,executable="/bin/bash")
   flushPrint("Using git directory: %s" % dir) 
   return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
                           cwd=dir)
