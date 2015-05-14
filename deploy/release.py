@@ -13,17 +13,22 @@ def flushPrint(text):
   print(text)
   sys.stdout.flush()
 
-def doInGitDir(cmd,stdout=None):
+def doInGitDir(flavor,cmd,stdout=None):
+  try:
+    os.stat("/root/mdsplus-%s" % flavor)
+    dir = "/root/mdsplus-%s" % flavor
+  except:
+    dir = "/mdsplus/git/mdsplus"
+  flushPrint("Using git directory: %s" % dir) 
   return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
-                          cwd="/mdsplus/git/mdsplus")
+                          cwd=dir)
 
 def getLatestRelease(flavor):
   """Get latest releases for specified branch"""
   info=dict()
   info['flavor']=flavor
-  p=doInGitDir(
+  p=doInGitDir(flavor,
     """
-
 (git checkout -f %(flavor)s && git pull) > /dev/null && git describe --tags --abbrev=0 --match "%(flavor)s_release*"
 
     """ % info, stdout=subprocess.PIPE) 
@@ -58,12 +63,12 @@ def processChanges(flavor):
   """Check if any changes were made since latest releases and create new release"""
 #    See if anything has changed
   info=getLatestRelease(flavor)
-  p=doInGitDir("git log --oneline %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
+  p=doInGitDir(flavor, "git log --oneline %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
   changes=p.stdout.readlines()
   info['numchanges']=len(changes)
   p.wait()
   if info['numchanges'] > 0:
-    p=doInGitDir("git log --decorate=full --source  %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
+    p=doInGitDir(flavor,"git log --decorate=full --source  %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
     changes=p.stdout.readlines()
     p.wait()
     flushPrint("There were %(numchanges)d changes to the %(branch)s branch since release %(tag)s" % info)
@@ -72,7 +77,7 @@ def processChanges(flavor):
     info['release']=info['release']+1
     info['tag'] = "%(flavor)s_release-%(major)d-%(minor)d-%(release)d" % info
     flushPrint("Making new release %(tag)s" % info)
-    doInGitDir("git log --decorate=full > ChangeLog").wait()
+    doInGitDir(flavor,"git log --decorate=full > ChangeLog").wait()
     info['newrelease']=True
   else:
     info['newrelease']=False
@@ -88,7 +93,7 @@ if __name__ == "__main__":
   errors=""
   for flavor in flavors:
     info = processChanges(flavor)
-    if doInGitDir(
+    if doInGitDir(flavor,
         """
 
 set -e
