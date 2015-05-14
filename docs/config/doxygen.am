@@ -124,12 +124,11 @@ DX_STYLE_FILES = ${top_srcdir}/docs/config/style/header.html \
 ### TARGETS: ###################################################################
 
 
-.PHONY: doxygen-run doxygen-doc $(DX_PS_GOAL) $(DX_PDF_GOAL)
+.PHONY: doxygen-run doxygen-doc build_tag install_tag $(DX_PS_GOAL) $(DX_PDF_GOAL)
 .INTERMEDIATE: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
-
-
-
 .ONESHELL:
+
+
 ${DX_DESTTAG}: ${DX_PAGES}
 	$(MKDIR_P) ${DX_DESTDIR}
 	${MKDIR_P} ${DX_TAGDIR}
@@ -159,6 +158,8 @@ build_tag: ${DX_TAGDIR}/taglist.txt
 
 install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
 install_tag: ${DX_TAGDIR}/taglist.txt
+	echo " --------> ${DX_TAGDIR}/taglist.txt"
+	echo " --------> ${DX_INSTALLDIR}"
 
 
 ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}

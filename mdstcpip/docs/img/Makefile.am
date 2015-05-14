@@ -2,7 +2,6 @@ SUBDIRS = .
 
 CLEANFILES = *.log *.idx *.out *.toc *.aux
 
-all: images
 
 
 SUFFIXES = .pdf .png
@@ -30,6 +29,11 @@ IMAGES = \
 
 PHONY: images
 images: ${IMAGES}
+
+
+if DX_COND_pdf
+all: images
+endif DX_COND_pdf
 
 
 # //////////////////////////////////////////////////////////////////////////// #

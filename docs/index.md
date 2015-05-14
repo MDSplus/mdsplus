@@ -1,6 +1,7 @@
 \anchor mdsplus_manual
 
 
+
 Indroduction
 ------------
 
@@ -10,6 +11,13 @@ The MDSplus programming interface contains only a few basic commands, simplifyng
 Developed jointly by the Massachusetts Institute of Technology, the Fusion Research Group in Padua, Italy (Istituto Gas Ionizzati and Consorzio RFX), and the Los Alamos National Lab, MDSplus is the most widely used system for data management in the magnetic fusion energy program. It is currently installed at over 30 sites spread over 4 continents.
 The MDSplus developers hope that MDSplus may prove to be a valuable tool for research at your site. 
 
+\image html img/search_tips.png 
+
+
+
+
+Documented components
+---------------------
 
 | sub libraries            | online code documentation                              |
 |:-------------------------|--------------------------------------------------------|
@@ -17,10 +25,10 @@ The MDSplus developers hope that MDSplus may prove to be a valuable tool for res
 | \ref lib_mdsobjects C++  | \subpage mdsobjects_cpp_manual "Mdsobjects C++ manual" |
 
 
+
+
  
 \page lib_mdsip Mdsip remote data access library
 \page lib_mdsobjects MdsPlus object oriented interface
 \page use_docs Learn how to build self generating docs
-
-
 
