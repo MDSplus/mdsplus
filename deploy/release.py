@@ -76,7 +76,7 @@ def processChanges(flavor):
     info['release']=info['release']+1
     info['tag'] = "%(flavor)s_release-%(major)d-%(minor)d-%(release)d" % info
     flushPrint("Making new release %(tag)s" % info)
-    doInGitDir(flacor,"git log --decorate=full > ChangeLog").wait()
+    doInGitDir(flavor,"git log --decorate=full > ChangeLog").wait()
     info['newrelease']=True
   else:
     info['newrelease']=False
