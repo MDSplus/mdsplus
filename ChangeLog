@@ -1,4 +1,35 @@
-commit b5c39d9b4c7e7271146690562a2b0d99db951ed7 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 927cc7e5d71ee87872acb028abbf51ff656be8ec (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 10:04:11 2015 -0400
+
+    Remove all mdsplus packages prior to tests
+
+commit edc0dffd8e9a432482d001986f8b9a7e4ed54c89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 09:29:19 2015 -0400
+
+    improvements to build process
+
+commit c5380bd9ff042a185e8acbfaea2aa9305b481396
+Merge: 7c1078b e081522
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 09:23:46 2015 -0400
+
+    Merge branch 'stable' of github.com:MDSplus/mdsplus into stable
+
+commit 7c1078b36f5972e266f9ea8713197b8abeda416c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 14 09:23:41 2015 -0400
+
+    Removed left over free() call which was only supposed to happen on vms
+
+commit e081522916bf6b02c39eb4300b28a6e378d6febc (tag: refs/tags/stable_release-7-0-1)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 13 18:19:03 2015 +0000
+
+    New ChangeLog
+
+commit b5c39d9b4c7e7271146690562a2b0d99db951ed7
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 13 18:12:45 2015 +0000
 
