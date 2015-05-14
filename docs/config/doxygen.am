@@ -132,15 +132,15 @@ DX_STYLE_FILES = ${top_srcdir}/docs/config/style/header.html \
 ${DX_DESTTAG}: ${DX_PAGES}
 	$(MKDIR_P) ${DX_DESTDIR}
 	${MKDIR_P} ${DX_TAGDIR}
-	export $(DX_DESTENV)	
-	export GENERATE_HTML="YES"
-	export GENERATE_LATEX="NO"
-	export DX_DESTTAG="${DX_DESTTAG}"
-	export DX_TAGFILES=
 	
 	##
 	## Start Doxygen generation
 	##
+	$(DX_DESTENV) \
+	GENERATE_HTML="YES" \
+	GENERATE_LATEX="NO" \
+	DX_DESTTAG="${DX_DESTTAG}" \
+	DX_TAGFILES= \	
 	$(DX_DOXYGEN) $(DX_CONFIG);
 
 
@@ -158,13 +158,10 @@ build_tag: ${DX_TAGDIR}/taglist.txt
 
 install_tag: DX_INSTALLDIR = ${DESTDIR}${datadir}/doc/@PACKAGE@
 install_tag: ${DX_TAGDIR}/taglist.txt
-	echo " --------> ${DX_TAGDIR}/taglist.txt"
-	echo " --------> ${DX_INSTALLDIR}"
 
 
 ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
 	$(MKDIR_P) ${DX_DESTDIR}
-	export $(DX_DESTENV)
 	
 	##
 	## Getting tags from generated taglist 
@@ -177,13 +174,14 @@ ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FIL
 	else \
 	 echo "No tag list found!"; \
 	fi;
-	echo "Adding selected tag entries: $${tag}"
-	export DX_TAGFILES="$${tag}"
-	export DX_DESTTAG=
+	echo "Adding selected tag entries: $${tag}"	
 	
 	##
 	## Start Doxygen generation
 	##
+	$(DX_DESTENV) \
+	DX_TAGFILES="$${tag}" \
+	DX_DESTTAG= \
 	$(DX_DOXYGEN) $(DX_CONFIG);
 	touch $@
 
