@@ -47,7 +47,8 @@ build_all:
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) doxygen-doc) \
 	done;
-	
+
+
 install_all:
 	list='$(SUBDIRS)'
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
