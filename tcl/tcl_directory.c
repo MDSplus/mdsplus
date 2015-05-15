@@ -1,9 +1,7 @@
-#include 	<config.h>
-#include        "tclsysdef.h"
-#include        <ncidef.h>
-#include        <usagedef.h>
-#include        <string.h>
-#include        <dcl.h>
+#include <config.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -16,6 +14,14 @@
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
+#include <ncidef.h>
+#include <usagedef.h>
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <mdsdescrip.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_DIRECTORY.C --
@@ -75,7 +81,6 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
     )
 {
   int flags = 0;
-  int sts;
   short len;
   static char datime[24];
   static DESCRIPTOR(dsc_datime, datime);
@@ -83,7 +88,7 @@ static char *MdsDatime(		/* Return: ptr to date+time string      */
   if (time[0]==0 && time[1]== 0)
     return "                       ";
 
-  sts = LibSysAscTim(&len, &dsc_datime, time, flags);
+  LibSysAscTim(&len, &dsc_datime, time, flags);
   datime[len] = '\0';
   return (datime);
 }
@@ -116,7 +121,6 @@ int TclDirectory(void *ctx, char **error, char **output)
   int first_tag;
   int full;
   int nodnamLen;
-  int retlen;
   int last_parent_nid = -1;
   int version;
   int parent_nid;
@@ -354,7 +358,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       if (partlen) {
 	pathnam = TreeGetPath(head_nid);
 	partC[partlen] = 0;
-	sprintf(msg, "      Original element name: %s%s", pathnam, partC);
+	sprintf(msg, "      Original element name: %s%s\n", pathnam, partC);
 	tclAppend(output, msg);
 	free(pathnam);
       }

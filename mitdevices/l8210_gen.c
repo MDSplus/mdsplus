@@ -55,13 +55,13 @@ int l8210__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:USETIMES, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:USETIMES, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_2, TreeUSAGE_SIGNAL)
@@ -69,13 +69,13 @@ int l8210__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:USETIMES, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:USETIMES, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_3, TreeUSAGE_SIGNAL)
@@ -83,13 +83,13 @@ int l8210__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:USETIMES, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:USETIMES, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_4, TreeUSAGE_SIGNAL)
@@ -97,13 +97,13 @@ int l8210__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:USETIMES, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:USETIMES, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
@@ -144,35 +144,35 @@ int l8210__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (L8210_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (L8210_N_INPUT_1_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_1:STARTIDX) break;
+ COPY_PART_NAME(INPUT_1:STARTIDX) break;
   case (L8210_N_INPUT_1_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_1:ENDIDX) break;
+ COPY_PART_NAME(INPUT_1:ENDIDX) break;
   case (L8210_N_INPUT_1_USETIMES + 1):
- COPY_PART_NAME(:INPUT_1:USETIMES) break;
+ COPY_PART_NAME(INPUT_1:USETIMES) break;
   case (L8210_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (L8210_N_INPUT_2_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_2:STARTIDX) break;
+ COPY_PART_NAME(INPUT_2:STARTIDX) break;
   case (L8210_N_INPUT_2_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_2:ENDIDX) break;
+ COPY_PART_NAME(INPUT_2:ENDIDX) break;
   case (L8210_N_INPUT_2_USETIMES + 1):
- COPY_PART_NAME(:INPUT_2:USETIMES) break;
+ COPY_PART_NAME(INPUT_2:USETIMES) break;
   case (L8210_N_INPUT_3 + 1):
  COPY_PART_NAME(:INPUT_3) break;
   case (L8210_N_INPUT_3_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_3:STARTIDX) break;
+ COPY_PART_NAME(INPUT_3:STARTIDX) break;
   case (L8210_N_INPUT_3_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_3:ENDIDX) break;
+ COPY_PART_NAME(INPUT_3:ENDIDX) break;
   case (L8210_N_INPUT_3_USETIMES + 1):
- COPY_PART_NAME(:INPUT_3:USETIMES) break;
+ COPY_PART_NAME(INPUT_3:USETIMES) break;
   case (L8210_N_INPUT_4 + 1):
  COPY_PART_NAME(:INPUT_4) break;
   case (L8210_N_INPUT_4_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_4:STARTIDX) break;
+ COPY_PART_NAME(INPUT_4:STARTIDX) break;
   case (L8210_N_INPUT_4_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_4:ENDIDX) break;
+ COPY_PART_NAME(INPUT_4:ENDIDX) break;
   case (L8210_N_INPUT_4_USETIMES + 1):
- COPY_PART_NAME(:INPUT_4:USETIMES) break;
+ COPY_PART_NAME(INPUT_4:USETIMES) break;
   case (L8210_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (L8210_N_STORE_ACTION + 1):

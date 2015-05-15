@@ -1,8 +1,13 @@
-#include        "tclsysdef.h"
-#include        <ctype.h>
-#include        <ncidef.h>
-#include        <usagedef.h>
-#include        <string.h>
+#include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ncidef.h>
+#include <usagedef.h>
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_DELETE_NODE.C --

@@ -1,14 +1,20 @@
-#include	<config.h>
-#include        "tclsysdef.h"
-#include        <ncidef.h>
-#include        <usagedef.h>
-#include 	<stdlib.h>
-#ifdef HAVE_ALLOCA_H
-#include        <alloca.h>
-#endif
-#include <dcl.h>
+#include <config.h>
+#include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+#include <dcl.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <ncidef.h>
+#include <usagedef.h>
 #include <strroutines.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_SET_NODE.C --
@@ -95,7 +101,6 @@ int TclSetNode(void *ctx, char **error, char **output)
       int set_flags;
       int clear_flags;
       struct descriptor dsc_path = { 0, DTYPE_T, CLASS_D, 0 };
-      NCI_ITM get_itmlst[] = { {0, NciPATH, (unsigned char *)&dsc_path, 0}, {0, NciEND_OF_LIST} };
       NCI_ITM set_itmlst[] =
 	  { {0, NciSET_FLAGS, (unsigned char *)&set_flags, 0}, {0, NciEND_OF_LIST} };
       NCI_ITM clear_itmlst[] =
@@ -188,13 +193,13 @@ int TclSetNode(void *ctx, char **error, char **output)
 	    *output = malloc(strlen(*output) + dsc_path.length + 100);
 	    nout = *output;
 	  }
-	  sprintf(*output, "Node: %.#s modified\n", dsc_path.length, dsc_path.pointer);
+	  sprintf(nout, "Node: %.*s modified\n", dsc_path.length, dsc_path.pointer);
 	}
 	StrFree1Dx(&dsc_path);
       } else {
 	char *msg = MdsGetMsg(status);
 	*error = malloc(strlen(msg) + dsc_path.length + 100);
-	sprintf(*output, "Error problem modifying node %.#s\n"
+	sprintf(*output, "Error problem modifying node %.*s\n"
 		"Error message was: %s\n", dsc_path.length, dsc_path.pointer, msg);
 	StrFree1Dx(&dsc_path);
 	goto error;

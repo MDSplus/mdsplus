@@ -2034,15 +2034,6 @@ public class MdsDataProvider
         return true;
     }
 
-    public boolean SupportsContinuous()
-    {
-        return false;
-    }
-
-    public boolean DataPending()
-    {
-        return false;
-    }
 
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {

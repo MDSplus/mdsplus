@@ -10,7 +10,7 @@ static int error;
 
 %}
 
-%option noyywrap outfile="mdsdclDeltatimeToSeconds.c"
+%option noyywrap nounput noinput outfile="mdsdclDeltatimeToSeconds.c"
 %x has_day
 number [[:digit:]]+
 

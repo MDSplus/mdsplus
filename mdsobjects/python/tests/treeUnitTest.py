@@ -215,6 +215,8 @@ class treeTests(TestCase):
         self.pytree.deletePulse(self.shot)
 
     def runTest(self):
+        from time import sleep
+        sleep(20)
         self.editTrees()
         self.openTrees()
         self.getNode()

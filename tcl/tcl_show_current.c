@@ -1,6 +1,9 @@
-#include        "tclsysdef.h"
-#include        <mdsshr.h>
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
 
 /**********************************************************************
 * TCL_SHOW_CURRENT.C --
@@ -18,7 +21,6 @@
 int TclShowCurrent(void *ctx, char **error, char **output)
 {
   int shot;
-  char text[80];
   char *experiment = 0;
 
   cli_get_value(ctx, "EXPERIMENT", &experiment);

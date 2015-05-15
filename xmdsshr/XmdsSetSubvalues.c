@@ -37,8 +37,6 @@ int XmdsSetSubvalues(XtPointer record, XtResourceList resources, Cardinal num_re
 
 #include <Xm/Xm.h>
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 int XmdsSetSubvalues(XtPointer record, XtResourceList resources, Cardinal num_resources,
 		     ArgList args, Cardinal argcount)
 {

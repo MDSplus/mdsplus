@@ -170,7 +170,6 @@ static void str2upcase(char *str);
 //-----------------------------------------------------------
 // function prototypes -- not necessarily local
 //-----------------------------------------------------------
-static void Blank(UserParams * user);
 static int JorwayTranslateIosb(int reqbytcnt, SenseData * sense, char senseretlen,
 			       unsigned int bytcnt, int scsi_status);
 static int Jorway73ATranslateIosb(int datacmd, int reqbytcnt, J73ASenseData * sense,
@@ -578,15 +577,14 @@ static int JorwayDoIo(CamKey Key,
 {
   char dev_name[7];
   int IsDataCommand, scsiDevice;
-  int xfer_data_length;
   int status;
   unsigned char *cmd;
   unsigned char cmdlen;
   int direction;
-  unsigned int bytcnt;
+  int bytcnt;
   int reqbytcnt = 0;
   SenseData sense;
-  char sensretlen;
+  unsigned char sensretlen;
   int online;
   int enhanced;
   CDBCamacDataCommand(DATAcommand);
@@ -662,7 +660,7 @@ static int JorwayDoIo(CamKey Key,
   sensretlen = 0;
   bytcnt = 0;
   scsi_lock(scsiDevice, 1);
-  status = scsi_io(scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
+  status = scsi_io(scsiDevice, direction, cmd, cmdlen, (char *)Data, reqbytcnt, (unsigned char *)&sense,
 		   sizeof(sense), &sensretlen, &bytcnt);
   scsi_lock(scsiDevice, 0);
   status = JorwayTranslateIosb(reqbytcnt, &sense, sensretlen, bytcnt, status);
@@ -691,15 +689,14 @@ static int Jorway73ADoIo(CamKey Key,
 {
   char dev_name[7];
   int IsDataCommand, scsiDevice;
-  int xfer_data_length;
   int status;
   unsigned char *cmd;
   unsigned char cmdlen;
   int direction;
-  unsigned int bytcnt;
+  int bytcnt;
   int reqbytcnt = 0;
   J73ASenseData sense;
-  char sensretlen;
+  unsigned char sensretlen;
   int online;
   int enhanced;
 
@@ -792,7 +789,7 @@ static int Jorway73ADoIo(CamKey Key,
     reqbytcnt = transfer_len.l = Count * ((Mem == 24) ? 4 : 2);
     direction = (F < 8) ? 1 : 2;
     if (reqbytcnt < 256) {
-      cmd = (char *)&ShortDATAcommand;
+      cmd = (unsigned char *)&ShortDATAcommand;
       cmdlen = sizeof(ShortDATAcommand);
       ShortDATAcommand.f = F;
       ShortDATAcommand.bs = Mem == 24;
@@ -801,7 +798,7 @@ static int Jorway73ADoIo(CamKey Key,
       ShortDATAcommand.a = A;
       ShortDATAcommand.transfer_len = transfer_len.l;
     } else {
-      cmd = (char *)&LongDATAcommand;
+      cmd = (unsigned char *)&LongDATAcommand;
       cmdlen = sizeof(LongDATAcommand);
       LongDATAcommand.f = F;
       LongDATAcommand.bs = Mem == 24;
@@ -822,7 +819,7 @@ static int Jorway73ADoIo(CamKey Key,
     direction = 0;
   }
   scsi_lock(scsiDevice, 1);
-  status = scsi_io(scsiDevice, direction, cmd, cmdlen, Data, reqbytcnt, (unsigned char *)&sense,
+  status = scsi_io(scsiDevice, direction, cmd, cmdlen, (char *)Data, reqbytcnt, (unsigned char *)&sense,
 		   sizeof(sense), &sensretlen, &bytcnt);
   scsi_lock(scsiDevice, 0);
   status = Jorway73ATranslateIosb(IsDataCommand, reqbytcnt, &sense, status);
@@ -1158,11 +1155,6 @@ static int Jorway73ATranslateIosb(int isdatacmd, int reqbytcnt, J73ASenseData * 
 #include "KsT.c"
 
 //-----------------------------------------------------------
-void Blank(UserParams * user)
-{
-  if (MSGLVL(FUNCTION_NAME))
-    printf("Blank()\n");
-}
 
 //-----------------------------------------------------------
 static void str2upcase(char *str)

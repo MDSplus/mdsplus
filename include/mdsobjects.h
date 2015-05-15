@@ -591,6 +591,15 @@ class Empty: public Data {
 			res[length] = 0;
 			return res;
 		}
+		char **getStringArray(int *numElements)
+		{
+			char **res = new char*[1];
+			res[0] = new char[length + 1];
+			std::copy(&ptr[0], &ptr[length + 1], res[0]);
+			res[0][length] = 0;
+			*numElements = 1;
+			return res;
+		}
 
 		bool equals(Data *data);
 

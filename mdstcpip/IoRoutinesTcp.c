@@ -101,7 +101,7 @@ static int getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : -1;
 }
 
@@ -171,9 +171,9 @@ static int tcp_authorize(int conid, char *username)
   socklen_t n = sizeof(sin);
   int ans = 0;
   struct hostent *hp = 0;
+  int num = 1;
   if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
     char *matchString[2] = { 0, 0 };
-    int num = 1;
     char *iphost = inet_ntoa(sin.sin_addr);
     timestr[strlen(timestr) - 1] = 0;
     hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
@@ -251,7 +251,6 @@ static int tcp_disconnect(int conid)
       if (FD_ISSET(s, &fdactive)) {
 	FD_CLR(s, &fdactive);
 	if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-	  int num = 1;
 	  char *iphost = inet_ntoa(sin.sin_addr);
 	  timestr[strlen(timestr) - 1] = 0;
 	  hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
@@ -534,7 +533,7 @@ static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -576,7 +575,6 @@ static int tcp_listen(int argc, char **argv)
     int tablesize = FD_SETSIZE;
     int error_count = 0;
     fd_set readfds;
-    int one = 1;
     int status;
     FD_ZERO(&fdactive);
     CheckClient(0, 1, matchString);

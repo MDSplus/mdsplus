@@ -1,14 +1,19 @@
 #include <config.h>
-#include        "tclsysdef.h"
-#include        <mds_stdarg.h>
-#include        <mdsshr.h>
-#include        <usagedef.h>
-#include 	<stdlib.h>
 #ifdef HAVE_ALLOCA_H
-#include        <alloca.h>
+#include <alloca.h>
 #endif
-#include        <stdio.h>
-#include        <string.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+
+#include <dcl.h>
+#include <mds_stdarg.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <usagedef.h>
+
+#include "tcl_p.h"
+
 extern int TdiDecompile();
 
 /**********************************************************************
@@ -54,7 +59,7 @@ static int CvtIdentT(struct descriptor *in_dsc_ptr, int depth, char **error, cha
   char *ident = MdsDescrToCstring(in_dsc_ptr);
   char *dtype = TclDtypeString(in_dsc_ptr->dtype);
   char *out_str = alloca(strlen(ident) + strlen(dtype) + depth + 10);
-  sprintf(out_str, "%*s%s\n", depth + strlen(dtype), dtype, ident);
+  sprintf(out_str, "%*s%s\n", (int)(depth + strlen(dtype)), dtype, ident);
   tclAppend(output, out_str);
   free(dtype);
   free(ident);
@@ -72,14 +77,14 @@ static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error, char 
 
   if (nid == 0) {
     char *out_str = alloca(strlen(dstr) + strlen("$VALUE") + depth + 10);
-    sprintf(out_str, "%*s$VALUE\n", strlen(dstr) + depth, dstr);
+    sprintf(out_str, "%*s$VALUE\n", (int)(strlen(dstr) + depth), dstr);
     tclAppend(output, out_str);
   } else {
     char *pathname = 0;
     if ((pathname = TreeGetPath(nid))) {
       struct descriptor_xd lxd = { 0, 0, CLASS_XD, 0, 0 };
       char *out_str = alloca(strlen(dstr) + strlen(pathname) + depth + 10);
-      sprintf(out_str, "%*s%s\n", strlen(dstr) + depth, dstr, pathname);
+      sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr, pathname);
       TreeFree(pathname);
       tclAppend(output, out_str);
       sts = TreeGetRecord(nid, &lxd);
@@ -89,8 +94,8 @@ static int CvtNidT(struct descriptor *in_dsc_ptr, int depth, char **error, char 
       } else
 	sts = 1;
     } else {
-      char *out_str = alloca(strlen("***** Bad Nid Reference ********") + depth + 10);
-      sprintf(out_str, "%*s%s***** Bad Nid Reference ********\n", strlen(dstr) + depth, dstr);
+      char *out_str = alloca(strlen("***** Bad Nid Reference ********") + depth + strlen(dstr) + 10);
+      sprintf(out_str, "%*s***** Bad Nid Reference ********\n", (int)(strlen(dstr) + depth), dstr);
       tclAppend(output, out_str);
     }
   }
@@ -119,13 +124,13 @@ static int CvtNumericT(struct descriptor *in_dsc_ptr, int depth, char **error, c
       else
 	break;
     }
-    sprintf(out_str, "%*s%s\n", strlen(dstr) + depth, dstr, str_chars);
+    sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr, str_chars);
     tclAppend(output, out_str);
   } else {
     char *out_str =
 	alloca(strlen(dstr) + strlen("There is no primative display for this datatype") + depth +
 	       10);
-    sprintf(out_str, "%*s%s\n", strlen(dstr) + depth, dstr,
+    sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr,
 	    "There is no primative display for this datatype");
     tclAppend(output, out_str);
   }
@@ -144,7 +149,7 @@ static int CvtPathT(struct descriptor *in_dsc_ptr, int depth, char **error, char
   struct descriptor_xd xd = { 0, 0, CLASS_XD, 0, 0 };
   char *ident = MdsDescrToCstring(in_dsc_ptr);
   char *out_str = alloca(strlen(dstr) + strlen(ident) + depth + 10);
-  sprintf(out_str, "%*s%s\n", strlen(dstr) + depth, dstr, ident);
+  sprintf(out_str, "%*s%s\n", (int)(strlen(dstr) + depth), dstr, ident);
   tclAppend(output, out_str);
   sts = TreeFindNode(ident, &nid);
   free(ident);
@@ -155,13 +160,13 @@ static int CvtPathT(struct descriptor *in_dsc_ptr, int depth, char **error, char
       MdsFree1Dx(&xd, NULL);
     } else {
       char *out_str = alloca(strlen("Error reading data record") + depth + 10);
-      sprintf(out_str, "%*s\n", strlen("Error reading data record") + depth + 4,
+      sprintf(out_str, "%*s\n", (int)(strlen("Error reading data record") + depth + 4),
 	      "Error reading data record");
       tclAppend(output, out_str);
     }
   } else {
     char *out_str = alloca(strlen("Record not found") + depth + 10);
-    sprintf(out_str, "%*s\n", strlen("Record not found") + depth + 4, "Record not found");
+    sprintf(out_str, "%*s\n", (int)(strlen("Record not found") + depth + 4), "Record not found");
     tclAppend(output, out_str);
   }
   free(dstr);
@@ -184,7 +189,7 @@ static int CvtDdscT(struct descriptor *in_dsc_ptr, int depth, char **error, char
 
   case DTYPE_T:
     out_str = alloca(strlen(dstr) + in_dsc_ptr->length + depth + 10);
-    sprintf(out_str, "%*s%.*s\n", strlen(dstr) + depth, dstr, in_dsc_ptr->length,
+    sprintf(out_str, "%*s%.*s\n", (int)(strlen(dstr) + depth), dstr, in_dsc_ptr->length,
 	    in_dsc_ptr->pointer);
     tclAppend(output, out_str);
     sts = 1;
@@ -224,7 +229,7 @@ static int CvtGenericRT(struct descriptor_r *in_dsc_ptr, int depth, char **error
       sts = CvtDxT(in_dsc_ptr->dscptrs[i], depth + 4, error, output);
     } else {
       char *out_str = alloca(strlen("*** EMPTY ****") + depth + 10);
-      sprintf(out_str, "%*s\n", strlen("*** EMPTY ****") + depth + 4, "*** EMPTY ****");
+      sprintf(out_str, "%*s\n", (int)(strlen("*** EMPTY ****") + depth + 4), "*** EMPTY ****");
       tclAppend(output, out_str);
       sts = 1;
     }
@@ -246,7 +251,7 @@ static int CvtFunctionT(struct descriptor *in_dsc_ptr, int depth, char **error, 
   sts = TdiOpcodeString(&opcode_dsc, &ostr MDS_END_ARG);
   if (sts & 1) {
     char *out_str = alloca(strlen(dstr) + depth + ostr.pointer->length + 10);
-    sprintf(out_str, "%*s%.*s\n", strlen(dstr) + depth, dstr, ostr.pointer->length,
+    sprintf(out_str, "%*s%.*s\n", (int)(strlen(dstr) + depth), dstr, ostr.pointer->length,
 	    ostr.pointer->pointer);
     tclAppend(output, out_str);
     sts = CvtGenericRT((struct descriptor_r *)in_dsc_ptr, depth, error, output);
@@ -267,7 +272,7 @@ static int CvtRdscT(struct descriptor *in_dsc_ptr, int depth, char **error, char
     sts = CvtFunctionT(in_dsc_ptr, depth, error, output);
   else {
     char *out_str = alloca(strlen(dstr) + depth + 10);
-    sprintf(out_str, "%*s\n", strlen(dstr) + depth, dstr);
+    sprintf(out_str, "%*s\n", (int)(strlen(dstr) + depth), dstr);
     tclAppend(output, out_str);
     sts = CvtGenericRT((struct descriptor_r *)in_dsc_ptr, depth, error, output);
   }
@@ -288,7 +293,7 @@ static int CvtAdscT(struct descriptor_a *in_dsc_ptr, int depth, char **error, ch
 #define BOUNDS_LENGTH 32	/* formerly 16  */
   char bchars[BOUNDS_LENGTH];
   char *out_str = malloc(strlen(dstr) + depth + 20);
-  sprintf(out_str, "%*s Array [ ", strlen(dstr) + depth, dstr);
+  sprintf(out_str, "%*s Array [ ", (int)(strlen(dstr) + depth), dstr);
   if (in_dsc_ptr->aflags.bounds) {
     bptr = (int *)((char *)in_dsc_ptr + sizeof(struct descriptor_a) +
 		   sizeof(void *) + (in_dsc_ptr->dimct) * sizeof(int));
@@ -334,7 +339,7 @@ static int CvtDxT(struct descriptor *in_dsc_ptr, int depth, char **error, char *
       else {
 	const char *errormsg = "Invalid Dtype for XD or XS must be DSC\n";
 	char *out_str = alloca(strlen(errormsg) + depth + 10);
-	sprintf(out_str, "%*s\n", strlen(errormsg) + depth, errormsg);
+	sprintf(out_str, "%*s\n", (int)(strlen(errormsg) + depth), errormsg);
 	tclAppend(output, out_str);
       }
     }

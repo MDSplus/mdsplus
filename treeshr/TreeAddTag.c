@@ -99,7 +99,7 @@ the tag name specified does not already exist.
       return TreeINVTAG;
   }
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
 
 /************************************************
  We must determine where to insert the new tag

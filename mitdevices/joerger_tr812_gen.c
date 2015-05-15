@@ -55,13 +55,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_1:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_1:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_2, TreeUSAGE_SIGNAL)
@@ -69,13 +69,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_2:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_2:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_2:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_2:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_2:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_2:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_3, TreeUSAGE_SIGNAL)
@@ -83,13 +83,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_3:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_3:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_3:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_3:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_3:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_3:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_4, TreeUSAGE_SIGNAL)
@@ -97,13 +97,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_4:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_4:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_4:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_4:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_4:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_4:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_5, TreeUSAGE_SIGNAL)
@@ -111,13 +111,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_5:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_5:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_5:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_5:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_5:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_5:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_6, TreeUSAGE_SIGNAL)
@@ -125,13 +125,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_6:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_6:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_6:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_6:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_6:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_6:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_7, TreeUSAGE_SIGNAL)
@@ -139,13 +139,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_7:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_7:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_7:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_7:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_7:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_7:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:CHANNEL_8, TreeUSAGE_SIGNAL)
@@ -153,13 +153,13 @@ int joerger_tr812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_8:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_8:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: CHANNEL_8:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(CHANNEL_8:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE_INTEGER(: CHANNEL_8:GAIN, 1, TreeUSAGE_NUMERIC)
+ ADD_NODE_INTEGER(CHANNEL_8:GAIN, 1, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
@@ -200,67 +200,67 @@ int joerger_tr812__part_name(struct descriptor *nid_d_ptr, struct descriptor *me
   case (JOERGER_TR812_N_CHANNEL_1 + 1):
  COPY_PART_NAME(:CHANNEL_1) break;
   case (JOERGER_TR812_N_CHANNEL_1_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_1:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_1:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_1_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_1:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_1:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_1_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_1:GAIN) break;
+ COPY_PART_NAME(CHANNEL_1:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_2 + 1):
  COPY_PART_NAME(:CHANNEL_2) break;
   case (JOERGER_TR812_N_CHANNEL_2_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_2:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_2:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_2_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_2:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_2:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_2_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_2:GAIN) break;
+ COPY_PART_NAME(CHANNEL_2:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_3 + 1):
  COPY_PART_NAME(:CHANNEL_3) break;
   case (JOERGER_TR812_N_CHANNEL_3_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_3:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_3:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_3_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_3:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_3:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_3_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_3:GAIN) break;
+ COPY_PART_NAME(CHANNEL_3:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_4 + 1):
  COPY_PART_NAME(:CHANNEL_4) break;
   case (JOERGER_TR812_N_CHANNEL_4_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_4:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_4:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_4_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_4:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_4:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_4_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_4:GAIN) break;
+ COPY_PART_NAME(CHANNEL_4:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_5 + 1):
  COPY_PART_NAME(:CHANNEL_5) break;
   case (JOERGER_TR812_N_CHANNEL_5_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_5:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_5:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_5_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_5:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_5:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_5_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_5:GAIN) break;
+ COPY_PART_NAME(CHANNEL_5:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_6 + 1):
  COPY_PART_NAME(:CHANNEL_6) break;
   case (JOERGER_TR812_N_CHANNEL_6_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_6:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_6:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_6_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_6:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_6:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_6_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_6:GAIN) break;
+ COPY_PART_NAME(CHANNEL_6:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_7 + 1):
  COPY_PART_NAME(:CHANNEL_7) break;
   case (JOERGER_TR812_N_CHANNEL_7_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_7:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_7:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_7_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_7:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_7:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_7_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_7:GAIN) break;
+ COPY_PART_NAME(CHANNEL_7:GAIN) break;
   case (JOERGER_TR812_N_CHANNEL_8 + 1):
  COPY_PART_NAME(:CHANNEL_8) break;
   case (JOERGER_TR812_N_CHANNEL_8_STARTIDX + 1):
- COPY_PART_NAME(: CHANNEL_8:STARTIDX) break;
+ COPY_PART_NAME(CHANNEL_8:STARTIDX) break;
   case (JOERGER_TR812_N_CHANNEL_8_ENDIDX + 1):
- COPY_PART_NAME(: CHANNEL_8:ENDIDX) break;
+ COPY_PART_NAME(CHANNEL_8:ENDIDX) break;
   case (JOERGER_TR812_N_CHANNEL_8_GAIN + 1):
- COPY_PART_NAME(: CHANNEL_8:GAIN) break;
+ COPY_PART_NAME(CHANNEL_8:GAIN) break;
   case (JOERGER_TR812_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (JOERGER_TR812_N_STORE_ACTION + 1):

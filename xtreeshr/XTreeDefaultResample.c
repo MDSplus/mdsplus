@@ -11,8 +11,9 @@
 #define CLOSEST_SAMPLE 2
 #define PREVIOUS_SAMPLE 3
 
-static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char *less);
-static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd);
+//static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char *less);
+//static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd);
+extern int TdiDecompile();
 extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
@@ -24,6 +25,7 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 				    struct descriptor *endD, struct descriptor *deltaD, char mode,
 				    struct descriptor_xd *outSignalXd);
 
+/*
 static void printDecompiled(struct descriptor *inD)
 {
   int status;
@@ -43,7 +45,7 @@ static void printDecompiled(struct descriptor *inD)
   free(buf);
   MdsFree1Dx(&out_xd, 0);
 }
-
+*/
 //64 bit time-based resampling function. It is assumed here that the 54 bit representation of time is the count
 //of a given, fixed amount of time, starting from a given time in the past
 //The closest point is selected as representative for a given time
@@ -287,6 +289,7 @@ static uint64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int
 
 //Handle resampling in when dimension is specified as a range
 typedef ARRAY_COEFF(char, 256) Array_coeff_type;
+/*
 static int rangeResample(struct descriptor *startD, struct descriptor *endD,
 			 struct descriptor *deltaD, struct descriptor *dataD_in,
 			 struct descriptor_range *rangeD, char dataType, char mode,
@@ -302,7 +305,7 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD,
   double currSample, prevSample, nextSample;
   uint64_t prevTime64, nextTime64;
   int numDataItems;
-  int previousClosest = 1;
+  //int previousClosest = 1;
 
   char *currDataPtr, *outDataPtr, *currOutDataPtr;
   DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0);
@@ -508,13 +511,15 @@ static int rangeResample(struct descriptor *startD, struct descriptor *endD,
   return status;
 }
 
+*/
+
 EXPORT struct descriptor_xd *XTreeResampleClosest(struct descriptor_signal *inSignalD,
 						  struct descriptor *startD,
 						  struct descriptor *endD,
 						  struct descriptor *deltaD)
 {
   static EMPTYXD(retXd);
-  int status = XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST_SAMPLE, &retXd);
+  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST_SAMPLE, &retXd);
   return &retXd;
 }
 
@@ -524,7 +529,7 @@ EXPORT struct descriptor_xd *XTreeResamplePrevious(struct descriptor_signal *inS
 						   struct descriptor *deltaD)
 {
   static EMPTYXD(retXd);
-  int status = XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS_SAMPLE, &retXd);
+  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS_SAMPLE, &retXd);
   return &retXd;
 }
 
@@ -539,8 +544,8 @@ static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct 
 				    struct descriptor *endD, struct descriptor *inDeltaD, char mode,
 				    struct descriptor_xd *outSignalXd)
 {
-  char resampleExpr[64];
-  struct descriptor resampleExprD = { 0, DTYPE_T, CLASS_S, resampleExpr };
+  //char resampleExpr[64];
+  //struct descriptor resampleExprD = { 0, DTYPE_T, CLASS_S, resampleExpr };
   struct descriptor_a *arrayD;
   char *shapeExpr = "SHAPE(DATA($1))";
   struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };

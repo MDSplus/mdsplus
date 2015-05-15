@@ -131,7 +131,7 @@ static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double
 			      double *gain);
 Filter *Invariant(double fp, double fs, double ap, double as, double fc, int *out_n,
 		  Complex * (*FindPoles) ());
-
+/*
 static int ConvertCoord(float x, float y, float *out_r, float *out_theta)
 {
   float r, th;
@@ -153,6 +153,7 @@ static int ConvertCoord(float x, float y, float *out_r, float *out_theta)
   *out_theta = th;
   return 1;
 }
+*/
 
 double BessJ0(double x)
 {

@@ -120,7 +120,7 @@ int _TreeGetSegmentTimes(void *dbid, int nid, int *nsegs, uint64_t ** times)
   *times = NULL;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   if (dblist->remote) {
@@ -262,7 +262,7 @@ static int __TreeBeginSegment(void *dbid, int nid, struct descriptor *start, str
   if (dblist->open_readonly)
     return TreeREADONLY;
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -524,7 +524,7 @@ int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start, struct des
   if (dblist->open_readonly)
     return TreeREADONLY;
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -669,7 +669,7 @@ int _TreePutSegment(void *dbid, int nid, int startIdx, struct descriptor_a *data
   if (dblist->open_readonly)
     return TreeREADONLY;
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -850,7 +850,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num)
   *num = 0;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   *num = 0;
   if (!node_ptr)
     return TreeNNF;
@@ -1022,7 +1022,7 @@ int _TreeGetSegment(void *dbid, int nid, int idx, struct descriptor_xd *segment,
   NODE *node_ptr;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   if (dblist->remote) {
@@ -1155,7 +1155,7 @@ int _TreeGetSegmentLimits(void *dbid, int nid, int idx, struct descriptor_xd *re
   NODE *node_ptr;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   if (dblist->remote) {
@@ -1233,7 +1233,7 @@ int _TreeSetXNci(void *dbid, int nid, char *xnciname, struct descriptor *value)
     return TreeREADONLY;
   if (!xnciname || strlen(xnciname) < 1 || strlen(xnciname) > NAMED_ATTRIBUTE_NAME_SIZE)
     return TreeFAILURE;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -1455,7 +1455,7 @@ int _TreeGetXNci(void *dbid, int nid, char *xnciname, struct descriptor_xd *valu
     return TreeFAILURE;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -2124,7 +2124,7 @@ static int __TreeBeginTimestampedSegment(void *dbid, int nid, int64_t * timestam
   if (dblist->open_readonly)
     return TreeREADONLY;
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -2390,7 +2390,7 @@ int _TreePutTimestampedSegment(void *dbid, int nid, int64_t * timestamp, struct 
   if (dblist->open_readonly)
     return TreeREADONLY;
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   //  if (node_ptr->usage != TreeUSAGE_SIGNAL)
@@ -2882,7 +2882,7 @@ int _TreeGetSegmentInfo(void *dbid, int nid, int idx, char *dtype, char *dimct, 
   NODE *node_ptr;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   if (dblist->remote) {
@@ -3027,7 +3027,7 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
   NODE *node_ptr;
   if (!(IS_OPEN(dblist)))
     return TreeNOT_OPEN;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   if (dblist->remote) {
