@@ -1,4 +1,22 @@
-commit 388054db832610b124f7a8a65934bf07460d0e15 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6bd9d653a087e41876472ec3dc1f0e9f405f503d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 15 08:53:08 2015 -0400
+
+    Just return dimension 0 in TreeNode.getSegmentDim
+
+commit 12d6fadf7fbfdffb9348f123d42e2444089b60d8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 15 08:46:37 2015 -0400
+
+    Fix TreeNode.getSegmentDim method
+
+commit ccae7ce3fbdbdb024553b88ce307eaac7b5a6d9e (tag: refs/tags/alpha_release-7-0-64)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 14 17:41:36 2015 +0000
+
+    New ChangeLog
+
+commit 388054db832610b124f7a8a65934bf07460d0e15
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 14 13:24:53 2015 -0400
 
