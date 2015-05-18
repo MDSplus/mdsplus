@@ -14,7 +14,7 @@
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include "udtc.h"
 typedef int socklen_t;
 #define snprintf _snprintf
@@ -79,7 +79,7 @@ EXPORT IoRoutines *Io()
 
 static void InitializeSockets()
 {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   static int initialized = 0;
   if (!initialized) {
       WSADATA wsaData;
@@ -96,7 +96,7 @@ static UDTSOCKET getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "udt") == 0) ? (UDTSOCKET) readfd : (UDTSOCKET) - 1;
 }
 
@@ -164,32 +164,29 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
   struct sockaddr_in sin;
   socklen_t n = sizeof(sin);
   if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-      struct hostent *hp = 0;
-      char *matchString[2] = { 0, 0 };
-      char *hoststr = 0;
-      int num = 1;
-      char *iphost = inet_ntoa(sin.sin_addr);
-      hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-      if (hp && hp->h_name) {
-          ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 10);
-          sprintf(ans, "%s [%s]", hp->h_name, iphost);
-        } else {
-          ans = (char *)malloc(strlen(iphost) + 1);
-          strcpy(ans, iphost);
-        }
-      if (iphostptr) {
-          *iphostptr = (char *)malloc(strlen(iphost) + 1);
-          strcpy(*iphostptr, iphost);
-        }
-      if (hostnameptr) {
-          if (hp && hp->h_name) {
-              *hostnameptr = (char *)malloc(strlen(hp->h_name) + 1);
-              strcpy(*hostnameptr, hp->h_name);
-            } else {
-              *hostnameptr = 0;
-            }
-        }
+    struct hostent *hp = 0;
+    char *iphost = inet_ntoa(sin.sin_addr);
+    hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+    if (hp && hp->h_name) {
+      ans = (char *)malloc(strlen(iphost) + strlen(hp->h_name) + 10);
+      sprintf(ans, "%s [%s]", hp->h_name, iphost);
+    } else {
+      ans = (char *)malloc(strlen(iphost) + 1);
+      strcpy(ans, iphost);
     }
+    if (iphostptr) {
+      *iphostptr = (char *)malloc(strlen(iphost) + 1);
+      strcpy(*iphostptr, iphost);
+    }
+    if (hostnameptr) {
+      if (hp && hp->h_name) {
+	*hostnameptr = (char *)malloc(strlen(hp->h_name) + 1);
+	strcpy(*hostnameptr, hp->h_name);
+      } else {
+	*hostnameptr = 0;
+      }
+    }
+  }
   return ans;
 }
 
@@ -250,16 +247,16 @@ static ssize_t UDT_recv(int conid, void *bptr, size_t num)
   UDTSOCKET s = getSocket(conid);
   ssize_t recved = -1;
   if (s != -1) {
-      struct sockaddr sin;
-      socklen_t n = sizeof(sin);
-      PushSocket(s);
-      signal(SIGABRT, ABORT);
-      if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0)
-        recved = udt_recv(s, bptr, num, MSG_NOSIGNAL);
-      else
-        perror("Error getting connection information from socket\n");
-      PopSocket(s);
-    }
+    struct sockaddr sin;
+    int n = sizeof(sin);
+    PushSocket(s);
+    signal(SIGABRT, ABORT);
+    if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0)
+      recved = udt_recv(s, bptr, num, MSG_NOSIGNAL);
+    else
+      perror("Error getting connection information from socket\n");
+    PopSocket(s);
+  }
   return recved;
 }
 
@@ -269,25 +266,22 @@ static int UDT_disconnect(int conid)
   int status = 0;
   time_t tim = time(0);
   char *timestr = ctime(&tim);
-  struct sockaddr_in sin;
-  socklen_t n = sizeof(sin);
-  struct hostent *hp = 0;
   if (s != -1) {
-      Client *c, **p;
-      for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
-      if (c) {
-          *p = c->next;
-          if (server_epoll != -1) {
-              udt_epoll_remove_usock(server_epoll, s);
-              timestr[strlen(timestr) - 1] = 0;
-              printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, s, getpid(),
-                     c->username, c->host);
-            }
-          free(c->username);
-          free(c);
-        }
-      status = udt_close(s);
+    Client *c, **p;
+    for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
+    if (c) {
+      *p = c->next;
+      if (server_epoll != -1) {
+	udt_epoll_remove_usock(server_epoll, s);
+	timestr[strlen(timestr) - 1] = 0;
+	printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, s, getpid(),
+	       c->username, c->host);
+      }
+      free(c->username);
+      free(c);
     }
+    status = udt_close(s);
+  }
   fflush(stdout);
   fflush(stderr);
   return status;
@@ -299,26 +293,26 @@ static int UDT_flush(int conid)
   return 0;
   if (sock != -1) {
 #if !defined(__sparc__)
-      int status;
-      int tries = 0;
-      UDTSOCKET readfds[1024];
-      int readfds_num = 1024;
-      int epoll = udt_epoll_create();
-      int timeout = 1000;
-      int events = UDT_UDT_EPOLL_IN;
-      udt_epoll_add_usock(epoll, sock, &events);
-      while ((((status = udt_epoll_wait2(epoll, readfds, &readfds_num,
-                                         NULL, NULL, timeout, NULL, NULL, NULL, NULL)) == 0) &&
-              sock == readfds[0]) || (status < 0) && tries < 10) {
-          char buff[32768];
-          int nbytes = udt_recv(sock, buff, 32768, 0);
-          tries++;
-          if (nbytes > 0)
-            tries = 0;
-          readfds_num = 1024;
-        }
-      udt_epoll_release(epoll);
+    int status;
+    int tries = 0;
+    UDTSOCKET readfds[1024];
+    int readfds_num = 1024;
+    int epoll = udt_epoll_create();
+    int timeout = 1000;
+    int events = UDT_UDT_EPOLL_IN;
+    udt_epoll_add_usock(epoll, sock, &events);
+    while (((((status = udt_epoll_wait2(epoll, readfds, &readfds_num,
+				       NULL, NULL, timeout, NULL, NULL, NULL, NULL)) == 0) &&
+	     sock == readfds[0]) || (status < 0)) && (tries < 10)) {
+      char buff[32768];
+      int nbytes = udt_recv(sock, buff, 32768, 0);
+      tries++;
+      if (nbytes > 0)
+	tries = 0;
+      readfds_num = 1024;
     }
+    udt_epoll_release(epoll);
+  }
 #endif
   return 0;
 }
@@ -415,33 +409,32 @@ static int UDT_connect(int conid, char *protocol, char *host)
   int status = getHostAndPort(host, &sin);
   int sinlen = sizeof(sin);
   if (status == 1) {
-      struct timeval connectTimer = { 0, 0 };
-      InitializeSockets();
-      s = udt_socket(AF_INET, SOCK_STREAM, 0);
-      if (!s) {
-          perror("Error in connect");
-          return -1;
-        }
-      status = udt_connect(s, (struct sockaddr *)&sin, sinlen);
-      if (status != 0) {
-          fprintf(stderr, "Error in connect to service: %s\n", udt_getlasterror_desc());
-          fflush(stderr);
-          return -1;
-        }
-      SetConnectionInfo(conid, "udt", s, NULL, 0);
-      return 0;
-    } else if (status == 0) {
-      fprintf(stderr, "Connect failed, unknown host\n");
-      fflush(stderr);
+    InitializeSockets();
+    s = udt_socket(AF_INET, SOCK_STREAM, 0);
+    if (!s) {
+      perror("Error in connect");
       return -1;
-    } else {
-      fprintf(stderr, "Connect failed, unknown service\n");
+    }
+    status = udt_connect(s, (struct sockaddr *)&sin, sinlen);
+    if (status != 0) {
+      fprintf(stderr, "Error in connect to service: %s\n", udt_getlasterror_desc());
       fflush(stderr);
       return -1;
     }
+    SetConnectionInfo(conid, "udt", s, NULL, 0);
+    return 0;
+  } else if (status == 0) {
+    fprintf(stderr, "Connect failed, unknown host\n");
+    fflush(stderr);
+    return -1;
+  } else {
+    fprintf(stderr, "Connect failed, unknown service\n");
+    fflush(stderr);
+    return -1;
+  }
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 VOID CALLBACK ShutdownEvent(PVOID arg, BOOLEAN fired)
 {
   fprintf(stderr, "Service shut down\n");
@@ -481,7 +474,7 @@ static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -501,12 +494,12 @@ static void ChildSignalHandler(int num)
 static int UDT_listen(int argc, char **argv)
 {
   Options options[] = { {"p", "port", 1, 0, 0},
-                      #ifdef HAVE_WINDOWS_H
-                        {"S", "sockethandle", 1, 0, 0},
-                      #endif
-                        {0, 0, 0, 0, 0}
-                      };
-#ifndef HAVE_WINDOWS_H
+#ifdef _WIN32
+  {"S", "sockethandle", 1, 0, 0},
+#endif
+  {0, 0, 0, 0, 0}
+  };
+#ifndef _WIN32
   signal(SIGCHLD, ChildSignalHandler);
 #endif
   ParseCommand(argc, argv, options, 0, 0, 0);
@@ -518,80 +511,69 @@ static int UDT_listen(int argc, char **argv)
   server_epoll = udt_epoll_create();
   
   if (GetMulti()) {
-      //////////////////////////////////////////////////////////////////////////
-      // MULTIPLE CONNECTION MODE              /////////////////////////////////
-      // multiple connections with own context /////////////////////////////////
-      
-      unsigned short port = GetPort(GetPortname());
-      char *matchString[] = { "multi" };
-      UDTSOCKET s;
-      struct sockaddr_in sin;
-      int addrlen = sizeof(sin);
-      int error_count = 0;
-      UDTSOCKET readfds[1024];
-      UDTSOCKET writefds[1024];
-      int one = 1;
-      int status;
-      int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
-      CheckClient(0, 1, matchString);
-      s = udt_socket(AF_INET, SOCK_STREAM, 0);
-      //    printf("listen sock=%d\n",s);
-      if (s == -1) {
-          printf("Error getting Connection Socket\n");
-          exit(1);
-        }
-      udt_epoll_add_usock(server_epoll, s, &events);
-      memset(&sin, 0, sizeof(sin));
-      sin.sin_port = port;
-      sin.sin_family = AF_INET;
-      sin.sin_addr.s_addr = INADDR_ANY;
-      status = udt_bind(s, (struct sockaddr *)&sin, addrlen);
-      if (status < 0) {
-          fprintf(stderr, "Error binding to service: %s\n", udt_getlasterror_desc());
-          exit(1);
-        }
-      status = udt_listen(s, 128);
-      if (status < 0) {
-          fprintf(stderr, "Error return by udt_listen: %s\n", udt_getlasterror_desc());
-          exit(1);
-        }
-      // LISTEN LOOP ///////////////////////////////////////////////////////////
-      while (1) {
-          int i;
-          int readfds_num = 1024;
-          status =
-              udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000, NULL, NULL, NULL,
-                              NULL);
-          //      printf("status=%d, readfds_num=%d, writefds_num=%d\n",status,readfds_num,writefds_num);
-          if (status != 0) {
-              Client *c;
-              LockAsts();
-              while (1) {
-                  for (c = ClientList; c; c = c->next) {
-                      struct sockaddr sin;
-                      socklen_t n = sizeof(sin);
-                      
-                      int c_epoll = udt_epoll_create();
-                      UDTSOCKET readfds[1];
-                      UDTSOCKET writefds[1];
-                      int readnum = 1;
-                      int writenum = 1;
-                      udt_epoll_add_usock(c_epoll, c->sock, NULL);
-                      status =
-                          udt_epoll_wait2(c_epoll, readfds, &readnum, writefds, &writenum, 0, NULL, NULL,
-                                          NULL, NULL);
-                      udt_epoll_release(c_epoll);
-                      if (status != 0) {
-                          CloseConnection(c->id);
-                          goto next;
-                          break;
-                        }
-                    }
-                  break;
-next:
-		  continue;
-		}
-	      /*         
+    unsigned short port = GetPort(GetPortname());
+    char *matchString[] = { "multi" };
+    UDTSOCKET s;
+    struct sockaddr_in sin;
+    int addrlen = sizeof(sin);
+    UDTSOCKET readfds[1024];
+    int status;
+    int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
+    CheckClient(0, 1, matchString);
+    s = udt_socket(AF_INET, SOCK_STREAM, 0);
+    //    printf("listen sock=%d\n",s);
+    if (s == -1) {
+      printf("Error getting Connection Socket\n");
+      exit(1);
+    }
+    udt_epoll_add_usock(server_epoll, s, &events);
+    memset(&sin, 0, sizeof(sin));
+    sin.sin_port = port;
+    sin.sin_family = AF_INET;
+    sin.sin_addr.s_addr = INADDR_ANY;
+    status = udt_bind(s, (struct sockaddr *)&sin, addrlen);
+    if (status < 0) {
+      fprintf(stderr, "Error binding to service: %s\n", udt_getlasterror_desc());
+      exit(1);
+    }
+    status = udt_listen(s, 128);
+    if (status < 0) {
+      fprintf(stderr, "Error return by udt_listen: %s\n", udt_getlasterror_desc());
+      exit(1);
+    }
+    while (1) {
+      int i;
+      int readfds_num = 1024;
+      status =
+	  udt_epoll_wait2(server_epoll, readfds, &readfds_num, NULL, NULL, 5000, NULL, NULL, NULL,
+			  NULL);
+      //      printf("status=%d, readfds_num=%d, writefds_num=%d\n",status,readfds_num,writefds_num);
+      if (status != 0) {
+	Client *c;
+	LockAsts();
+	while (1) {
+	  for (c = ClientList; c; c = c->next) {
+	    int c_epoll = udt_epoll_create();
+	    UDTSOCKET readfds[1];
+	    UDTSOCKET writefds[1];
+	    int readnum = 1;
+	    int writenum = 1;
+	    udt_epoll_add_usock(c_epoll, c->sock, NULL);
+	    status =
+		udt_epoll_wait2(c_epoll, readfds, &readnum, writefds, &writenum, 0, NULL, NULL,
+				NULL, NULL);
+	    udt_epoll_release(c_epoll);
+	    if (status != 0) {
+	      CloseConnection(c->id);
+	      goto next;
+	      break;
+	    }
+	  }
+	  break;
+ next:
+	  continue;
+	}
+	/*         
 	   if ((c->sock == writefds[i]) && udt_getpeername(c->sock, (struct sockaddr *)&sin, &n)) {
 	   fprintf(stderr,"Removed disconnected client\n");
 	   fflush(stderr);
@@ -600,89 +582,87 @@ next:
 	   }
 	   }
 	 */
-	      UnlockAsts();
-	    } else {
-	      error_count = 0;
-	      for (i = 0; readfds_num != 1024 && i < readfds_num; i++) {
-		  if (readfds[i] == s) {
-		      int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
-		      socklen_t len = sizeof(sin);
-		      int id = -1;
-		      int status;
-		      char *username;
-		      UDTSOCKET sock = udt_accept(s, (struct sockaddr *)&sin, &len);
-		      status = AcceptConnection("udt", "udt", sock, NULL, 0, &id, &username);
-		      if (status & 1) {
-			  Client * client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
-			  client->id = id;
-			  client->sock = sock;
-			  client->next = ClientList;
-			  client->username = username;
-			  client->addr = *(int *)&sin.sin_addr;
-			  client->host = getHostInfo(sock, NULL, NULL);
-			  ClientList = client;
-			  udt_epoll_add_usock(server_epoll, sock, &events);
-			}
-		    } else {
-		      Client *c;
-		      for (c = ClientList; c;) {
-			  if (c->sock == readfds[i]) {
-			      Client *c_chk;
-			      int c_epoll = udt_epoll_create();
-			      UDTSOCKET readfds[1];
-			      UDTSOCKET writefds[1];
-			      int readnum = 1;
-			      int writenum = 1;
-			      udt_epoll_add_usock(c_epoll, c->sock, NULL);
-			      status =
-				  udt_epoll_wait2(c_epoll, readfds, &readnum, writefds, &writenum, 0, NULL, NULL,
-						  NULL, NULL);
-			      udt_epoll_release(c_epoll);
-			      if (status != 0) {
-				  CloseConnection(c->id);
-				  break;
-				}
-			      MdsSetClientAddr(c->addr);
-			      // DO MESSAGE //
-			      DoMessage(c->id);
-			      for (c_chk = ClientList; c_chk && c_chk != c; c_chk = c_chk->next) ;
-			      c = c_chk ? c->next : ClientList;
-			    } else
-			    c = c->next;
-			}
-		    }
-		}
+	UnlockAsts();
+      } else {
+	for (i = 0; readfds_num != 1024 && i < readfds_num; i++) {
+	  if (readfds[i] == s) {
+	    int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
+	    int len = sizeof(sin);
+	    int id = -1;
+	    int status;
+	    char *username;
+	    UDTSOCKET sock = udt_accept(s, (struct sockaddr *)&sin, &len);
+	    status = AcceptConnection("udt", "udt", sock, NULL, 0, &id, &username);
+	    if (status & 1) {
+	      Client *new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+	      new->id = id;
+	      new->sock = sock;
+	      new->next = ClientList;
+	      new->username = username;
+	      new->addr = *(int *)&sin.sin_addr;
+	      new->host = getHostInfo(sock, NULL, NULL);
+	      ClientList = new;
+	      udt_epoll_add_usock(server_epoll, sock, &events);
 	    }
+	  } else {
+	    Client *c;
+	    for (c = ClientList; c;) {
+	      if (c->sock == readfds[i]) {
+		Client *c_chk;
+		int c_epoll = udt_epoll_create();
+		UDTSOCKET readfds[1];
+		UDTSOCKET writefds[1];
+		int readnum = 1;
+		int writenum = 1;
+		udt_epoll_add_usock(c_epoll, c->sock, NULL);
+		status =
+		    udt_epoll_wait2(c_epoll, readfds, &readnum, writefds, &writenum, 0, NULL, NULL,
+				    NULL, NULL);
+		udt_epoll_release(c_epoll);
+		if (status != 0) {
+		  CloseConnection(c->id);
+		  break;
+		}
+		MdsSetClientAddr(c->addr);
+		DoMessage(c->id);
+		for (c_chk = ClientList; c_chk && c_chk != c; c_chk = c_chk->next) ;
+		c = c_chk ? c->next : ClientList;
+	      } else
+		c = c->next;
+	    }
+	  }
 	}
-    } else {
+      }
+    }
+  } else {
+
       //////////////////////////////////////////////////////////////////////////
       // SERVER MODE                                ////////////////////////////
       // multiple connections with the same context ////////////////////////////
 
-#ifdef HAVE_WINDOWS_H
-      int sock = getSocketHandle(options[1].value);
+#ifdef _WIN32
+    int sock = getSocketHandle(options[1].value);
 #else
-      UDTSOCKET sock = 0;
+    UDTSOCKET sock = 0;
 #endif
-      int id;
-      char *username;
-      int status;
-      status = AcceptConnection("udt", "udt", sock, NULL, 0, &id, &username);
-      if (status & 1) {
-          struct sockaddr_in sin;
-          socklen_t n = sizeof(sin);
-          Client * client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
-          if (udt_getpeername(sock, (struct sockaddr *)&sin, &n) == 0)
-            MdsSetClientAddr(*(int *)&sin.sin_addr);
-          client->id = id;
-          client->sock = sock;
-          client->next = ClientList;
-          client->username = username;
-          ClientList = client;
-        }
-      while (status & 1)
-        // DO MESSAGE //
-        status = DoMessage(id);
+    int id;
+    char *username;
+    int status;
+    status = AcceptConnection("udt", "udt", sock, NULL, 0, &id, &username);
+    if (status & 1) {
+      struct sockaddr_in sin;
+      int n = sizeof(sin);
+      Client *new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+      if (udt_getpeername(sock, (struct sockaddr *)&sin, &n) == 0)
+	MdsSetClientAddr(*(int *)&sin.sin_addr);
+      new->id = id;
+      new->sock = sock;
+      new->next = ClientList;
+      new->username = username;
+      ClientList = new;
     }
+    while (status & 1)
+      status = DoMessage(id);
+  }
   return 1;
 }

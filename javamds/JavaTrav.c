@@ -14,7 +14,7 @@
 #include <libroutines.h>
 #include <strroutines.h>
 #include <usagedef.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define putenv _putenv
 #define snprintf _snprintf
 #endif
@@ -26,12 +26,14 @@ extern int TdiData();
 extern int TdiCompile();
 extern int TdiDecompile();
 
+/*
 static void report(char *msg)
 {
   FILE *f = fopen("/usr/users/manduchi/web.log", "a");
   fprintf(f, "%s\n", msg);
   fclose(f);
 }
+*/
 
 struct descriptor_xd *getDeviceFields(char *deviceName)
 {
@@ -96,13 +98,13 @@ static void RaiseException(JNIEnv * env, char *msg, int status)
 
 JNIEXPORT jint JNICALL Java_Database_create(JNIEnv * env, jobject obj, jint shot) {
   int status;
-  jfieldID name_fid;
-  jclass cls = (*env)->GetObjectClass(env, obj);
-  const char *name;
-  jobject jname;
-  name_fid = (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
-  jname = (*env)->GetObjectField(env, obj, name_fid);
-  name = (*env)->GetStringUTFChars(env, jname, 0);
+  //jfieldID name_fid;
+  //jclass cls = (*env)->GetObjectClass(env, obj);
+  //const char *name;
+  //jobject jname;
+  //name_fid = (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
+  //jname = (*env)->GetObjectField(env, obj, name_fid);
+  //name = (*env)->GetStringUTFChars(env, jname, 0);
 
   status = TreeCreatePulseFile(shot, 0, NULL);
   if (!(status & 1))
@@ -117,7 +119,7 @@ JNIEXPORT jint JNICALL Java_Database_open(JNIEnv * env, jobject obj) {
   const char *name;
   jobject jname;
   int is_editable, is_readonly, shot;
-  static char buf[1000];
+  //static char buf[1000];
 //printf(Start Open \n");
   cls = (*env)->GetObjectClass(env, obj);
   name_fid = (*env)->GetFieldID(env, cls, "name", "Ljava/lang/String;");
@@ -155,7 +157,7 @@ JNIEXPORT jint JNICALL Java_Database_openNew(JNIEnv * env, jobject obj) {
   const char *name;
   jobject jname;
   int shot;
-  static char buf[1000];
+  //static char buf[1000];
 
 /* //printf("Parte Open\n");*/
 
@@ -244,7 +246,7 @@ JNIEXPORT jobject JNICALL Java_Database_getData
   jfieldID nid_fid;
   jclass cls;
   EMPTYXD(xd);
-  EMPTYXD(out_xd);
+  //EMPTYXD(out_xd);
   jobject ris;
 
   cls = (*env)->GetObjectClass(env, jnid);
@@ -292,7 +294,7 @@ JNIEXPORT jobject JNICALL Java_Database_evaluateData
   jfieldID nid_fid;
   jclass cls;
   EMPTYXD(xd);
-  EMPTYXD(out_xd);
+  //EMPTYXD(out_xd);
   jobject ris;
   cls = (*env)->GetObjectClass(env, jnid);
 
@@ -411,10 +413,10 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   jvalue args[22];
   static int nci_flags, nci_flags_len, time_inserted[2], time_len, conglomerate_nids_len,
       conglomerate_nids, owner_id, owner_len, dtype_len, class_len, length, length_len, usage_len,
-      name_len, fullpath_len, minpath_len, original_part_name_len, conglomerate_elt,
+      name_len, fullpath_len, minpath_len, conglomerate_elt,
       conglomerate_elt_len, path_len;
   static char dtype, class, time_str[256], usage, name[16], fullpath[512], minpath[512],
-      original_part_name[512], path[512];
+       path[512];
   unsigned short asctime_len;
   struct descriptor time_dsc = { 256, DTYPE_T, CLASS_S, time_str };
 
@@ -980,7 +982,7 @@ int doAction(int nid)
       status = TdiEvaluate(&xd1, &xd1 MDS_END_ARG);
 
     if (status & 1) {
-      struct descriptor *out = xd1.pointer;
+      //struct descriptor *out = xd1.pointer;
 //      printf("type   = %d\n", out->dtype);
 //      printf("value = %d error %d \n", *(int *)out->pointer, errno);
 
@@ -1071,7 +1073,7 @@ int doAction(int nid)
 
     if (status & 1) {
 
-      struct descriptor *out = xd1.pointer;
+      //struct descriptor *out = xd1.pointer;
 //      printf("type   = %d\n", out->dtype);
 //      printf("value = %d\n", *(int *)out->pointer);
 
@@ -1270,7 +1272,7 @@ JNIEXPORT jlong JNICALL Java_Database_saveContext(JNIEnv * env, jobject obj) {
 }
 
 JNIEXPORT void JNICALL Java_Database_restoreContext(JNIEnv * env, jobject obj, void *context) {
-  char **ctx = (char **)context;
+  //char **ctx = (char **)context;
 
   if (context == 0)
     return;

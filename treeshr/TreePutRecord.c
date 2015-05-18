@@ -44,7 +44,12 @@
 #include <strroutines.h>
 #include <libroutines.h>
 #include <fcntl.h>
-#ifdef HAVE_WINDOWS_H
+
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
+
+#ifdef _WIN32
 #include <windows.h>
 #include <io.h>
 #else
@@ -98,7 +103,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
   int unlock_nci_needed = 0;
-#if !defined(HAVE_WINDOWS_H)
+#if !defined(_WIN32)
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
 #endif
@@ -165,8 +170,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  bitassign(1, nci->flags, NciM_VERSIONS);
 	if (!utility_update) {
 	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK
-			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.
-	      DATA_LOCATION.record_length;
+			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.DATA_LOCATION.
+	      record_length;
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
 	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
@@ -253,7 +258,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 
   NODE *node_ptr;
   int status;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   switch (node_ptr->usage) {

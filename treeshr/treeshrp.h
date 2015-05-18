@@ -11,6 +11,7 @@
 #include <mdstypes.h>
 #include <treeshr_hooks.h>
 #include <ncidef.h>
+#include <usagedef.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -194,75 +195,6 @@ typedef struct nid {
 
 #define MAX_SUBTREES 256	/* since there are only 8 bits of tree number in a nid */
 
-/******************************************
-Two macros are provided for converting from
-a NID to a node address or from a node
-address to a NID:
-
-   nid_to_node(pino, nid, node)
-   node_to_nid(pino, node, nid)
-
-******************************************/
-
-#define nid_to_node(pino,nid,saved_node) \
-     {\
-     TREE_INFO *nid_to_node__info;\
-     unsigned int nid_to_node__i;\
-     for (nid_to_node__info = pino->tree_info,nid_to_node__i = 0; \
-          nid_to_node__i < nid->tree; nid_to_node__i++)\
-             nid_to_node__info = nid_to_node__info ? nid_to_node__info->next_info : 0;\
-     saved_node = nid_to_node__info && (nid_to_node__info->header->nodes >= (int)nid->node)\
-                      ? nid_to_node__info->node + (int)nid->node : 0;\
-     }
-
-#define node_to_nid(pino,node_in,nid) \
-     {\
-     TREE_INFO *node_to_nid__info;\
-     nid->tree = 0;\
-     for (node_to_nid__info = pino->tree_info; node_to_nid__info != NULL;) \
-       if ( (node_in >= node_to_nid__info->node) && \
-            (node_in <= (node_to_nid__info->node + \
-             node_to_nid__info->header->nodes))) \
-       { \
-         nid->node = (int)(node_in - node_to_nid__info->node); \
-         node_to_nid__info = 0; \
-       } \
-       else \
-       { \
-         nid->tree++; \
-         node_to_nid__info =  node_to_nid__info->next_info; \
-       }\
-     }
-/******************************************
-Another useful macro based on nid:
-
-nid_to_tree_nidx(pino, nid, info, nidx)
-*******************************************/
-
-#define nid_to_tree_nidx(pino, nid, info, nidx) \
-    {\
-      unsigned int nid_to_tree_nidx__i;\
-      info = pino->tree_info;\
-      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
-               info = info->next_info; \
-      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
-      nidx = info ? nid->node : 0; \
-    }
-/******************************************
-Another useful macro based on nid:
-
-nid_to_tree(pino, nid, info)
-*******************************************/
-
-#define nid_to_tree(pino, nid, info) \
-    {\
-      unsigned int nid_to_tree_nidx__i;\
-      info = pino->tree_info;\
-      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
-               info = info->next_info; \
-      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
-    }
-
 /********************************************
    NODE
 
@@ -272,7 +204,7 @@ nid_to_tree(pino, nid, info)
 
 typedef char NODE_NAME[12];
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #pragma pack(push,1)
 #else
 PACK_START
@@ -288,16 +220,9 @@ PACK_START
     typedef struct node {
   NODE_NAME name;
   int parent;
-  union {
-    struct {
-      int member;
-      int brother;
-      int child;
-    } TREE_INFO;
-    struct {
-      struct big_node_linkage *big_linkage PACK_ATTR;
-    } LINK_INFO;
-  } INFO;
+  int member;
+  int brother;
+  int child;
   unsigned char usage;
   unsigned short conglomerate_elt PACK_ATTR;
   char fill;
@@ -308,85 +233,16 @@ PACK_START
 static NODE empty_node = { {'e', 'm', 'p', 't', 'y', ' ', 'n', 'o', 'd', 'e', ' ', ' '} };
 #endif
 
-/********************************************
-   BIG_NODE_LINKAGE
-
-Nodes generally contain byte offsets to the set 
-of adjacent nodes (child, member, brother, parent).
-When a subtree is mapped, there is a chance that 
-it will be placed in memory at an adress that is 
-too far away to be represented by a 32 bit offset.
-if this is the case, the the parent pointer of the 
-node is set to -1, it is followed in the node 
-structure by a pointer to an array of these 
-BIG_NODE_LINAGEs which contain the addresses 
-(NOT OFFSETS) of the related nodes.To dereference a 
-node, if its parent is -1, we search through this 
-table to find the corresponding entry 
-(there will not be many of them), and use the 
-pointer instead of the offset.
-*********************************************/
-typedef struct big_node_linkage {
-  NODE *node;
-  NODE *parent;
-  NODE *child;
-  NODE *member;
-  NODE *brother;
-} BIG_NODE_LINKAGE;
-
-/*****************************************************
- Macros to perform integer arithmetic of node pointers
- and linkages and end up with node pointers
- *****************************************************/
-
-/* if pointers are more than 32 bits then node offsets can be 
-   more than 32 bits */
-#if __SIZEOF_POINTER__ == 8
-#define parent_of(a)\
-  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->parent : (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0))
-#define member_of(a)\
-  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->member : (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0))
-#define child_of(a)\
-  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->child : (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0))
-#define brother_of(a)\
-  (((a)->parent == -1) ? (a)->INFO.LINK_INFO.big_linkage->brother : (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0))
-#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0) ? (char *)(a) - (char *)(b) : 0); out=swapint((char *)&out)
-#define link_it2(dblist,nodeptr,field,a,b)  \
-  {\
-    int i; \
-    if (nodeptr->parent != -1) {\
-      for (i=0;  (i<(2*MAX_SUBTREES-1)) && (dblist->big_node_linkage[i].node !=0); i++);\
-      dblist->big_node_linkage[i].node = nodeptr;\
-      dblist->big_node_linkage[i].parent = parent_of(nodeptr);\
-      dblist->big_node_linkage[i].child = child_of(nodeptr);\
-      dblist->big_node_linkage[i].member = member_of(nodeptr);\
-      dblist->big_node_linkage[i].brother = brother_of(nodeptr);\
-      nodeptr->parent = -1;\
-      nodeptr->INFO.LINK_INFO.big_linkage=dblist->big_node_linkage+i;\
-    }\
-    nodeptr->INFO.LINK_INFO.big_linkage->field=(a);\
+static inline int node_offset(NODE * a, NODE * b)
+{
+  /* Returns byte offset of two nodes if both pointers are not NULL otherwise 0 */
+  int ans = 0;
+  if ((a != 0) && (b != 0)) {
+    ans = (char *)a - (char *)b;
+    ans = swapint((char *)&ans);
   }
-#define link_parent(dblist,nodeptr, a, b) \
-  link_it2(dblist,nodeptr,parent, a,b)
-
-#else
-#define parent_of(a)  (NODE *)((a)->parent  ? (char *)(a) + swapint((char *)&((a)->parent))  : 0)
-
-#define member_of(a)  (NODE *)((a)->INFO.TREE_INFO.member  ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.member))  : 0)
-
-#define child_of(a)   (NODE *)((a)->INFO.TREE_INFO.child   ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.child))   : 0)
-
-#define brother_of(a) (NODE *)((a)->INFO.TREE_INFO.brother ? (char *)(a) + swapint((char *)&((a)->INFO.TREE_INFO.brother)) : 0)
-
-#define link_it(out,a,b)  out = (int)(((a) != 0) && ((b) != 0) ? (char *)(a) - (char *)(b) : 0); out = swapint((char *)&out)
-
-#define link_it2(dblist,node,field,a,b)  \
-node->INFO.TREE_INFO.field = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->INFO.TREE_INFO.field = swapint((char *)&node->INFO.TREE_INFO.field)
-
-#define link_parent(dblist,node,a,b)  \
-node->parent = (int)(((a) != 0) && ((b) != 0)) ? (char *)(a) - (char *)(b) : 0; node->parent = swapint((char *)&node->parent)
-
-#endif
+  return ans;
+}
 
 /********************************************
    TAG_INFO
@@ -463,7 +319,7 @@ typedef struct record_header {
   RFA rfa;
 } RECORD_HEADER;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #pragma pack(pop)
 #else
 PACK_STOP
@@ -647,16 +503,140 @@ typedef struct pino_database {
   struct pino_database *next;	/* Link to next database in open list */
 
   int stack_size;
-  BIG_NODE_LINKAGE big_node_linkage[2 * MAX_SUBTREES];	/* We need at most 2 of these
-							   per subtree.  The subtree is 
-							   either a first child in which
-							   case we need to fix up its parent
-							   and the node itself's brother offsets,
-							   or it is a middle (or end) child and 
-							   we need to fix up its previous sibling 
-							   and the node itself's parent, and brother
-							   pointers. */
 } PINO_DATABASE;
+
+static inline NODE *nid_to_node(PINO_DATABASE * dbid, NID * nid)
+{
+  TREE_INFO *info;
+  unsigned int i;
+  for (info = dbid->tree_info, i = 0;
+       (i < nid->tree) && (info != NULL); info = info->next_info, i++) ;
+  return info && (info->header->nodes >= (int)nid->node) ? info->node + (int)nid->node : (NODE *) 0;
+}
+
+static inline NODE *parent_of(PINO_DATABASE * dbid, NODE * a)
+{
+  NODE *ans = 0;
+  if (a) {
+    if (a->usage == TreeUSAGE_SUBTREE_TOP) {
+      ans = nid_to_node(dbid, (NID *) & a->parent);
+    } else if (a->parent) {
+      ans = (NODE *) ((char *)a + swapint((char *)&a->parent));
+    }
+  }
+  return ans;
+}
+
+static inline NODE *member_of(NODE * a)
+{
+  NODE *ans = 0;
+  if (a && a->member) {
+    ans = (NODE *) ((char *)a + swapint((char *)&a->member));
+  }
+  return ans;
+}
+
+static inline NODE *child_of(PINO_DATABASE * dbid, NODE * a)
+{
+  NODE *ans = 0;
+  if (a && a->child) {
+    if (a->usage == TreeUSAGE_SUBTREE_REF) {
+      ans = nid_to_node(dbid, (NID *) & a->child);
+    } else {
+      ans = (NODE *) ((char *)a + swapint((char *)&a->child));
+    }
+  }
+  if (ans && ans->usage == TreeUSAGE_SUBTREE_REF)
+    ans = nid_to_node(dbid, (NID *) & ans->child);
+  return ans;
+}
+
+static inline NODE *brother_of(PINO_DATABASE * dbid, NODE * a)
+{
+  NODE *ans = 0;
+  if (a && a->brother) {
+    if (a->usage == TreeUSAGE_SUBTREE_TOP) {
+      ans = nid_to_node(dbid, (NID *) & a->brother);
+    } else {
+      ans = (NODE *) ((char *)a + swapint((char *)&a->brother));
+      if (ans->usage == TreeUSAGE_SUBTREE_REF)
+	ans = nid_to_node(dbid, (NID *) & ans->child);
+    }
+  }
+  if (ans && ans->usage == TreeUSAGE_SUBTREE_REF)
+    ans = nid_to_node(dbid, (NID *) & ans->child);
+  return ans;
+}
+
+/******************************************
+Two macros are provided for converting from
+a NID to a node address or from a node
+address to a NID:
+
+   nid_to_node(pino, nid, node)
+   node_to_nid(pino, node, nid)
+
+******************************************/
+
+/*
+#define nid_to_node(pino,nid,saved_node) \
+     {\
+     TREE_INFO *nid_to_node__info;\
+     unsigned int nid_to_node__i;\
+     for (nid_to_node__info = pino->tree_info,nid_to_node__i = 0; \
+          nid_to_node__i < nid->tree; nid_to_node__i++)\
+             nid_to_node__info = nid_to_node__info ? nid_to_node__info->next_info : 0;\
+     saved_node = nid_to_node__info && (nid_to_node__info->header->nodes >= (int)nid->node)\
+                      ? nid_to_node__info->node + (int)nid->node : 0;\
+     }
+*/
+
+static inline int node_to_nid(PINO_DATABASE * dbid, NODE * node, NID * nid_out)
+{
+  TREE_INFO *info;
+  NID nid = { 0, 0 };
+  for (info = dbid->tree_info, nid.tree = 0; info != NULL; info = info->next_info, nid.tree++) {
+    if ((node >= info->node) && (node <= (info->node + info->header->nodes)))
+      break;
+  }
+  if (info)
+    nid.node = (int)(node - info->node);
+  else
+    nid.tree = 0;
+  if (nid_out)
+    *nid_out = nid;
+  return *(int *)&nid;
+}
+
+/******************************************
+Another useful macro based on nid:
+
+nid_to_tree_nidx(pino, nid, info, nidx)
+*******************************************/
+
+#define nid_to_tree_nidx(pino, nid, info, nidx) \
+    {\
+      unsigned int nid_to_tree_nidx__i;\
+      info = pino->tree_info;\
+      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
+               info = info->next_info; \
+      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
+      nidx = info ? nid->node : 0; \
+    }
+/******************************************
+Another useful macro based on nid:
+
+nid_to_tree(pino, nid, info)
+*******************************************/
+
+#define nid_to_tree(pino, nid, info) \
+    {\
+      unsigned int nid_to_tree_nidx__i;\
+      info = pino->tree_info;\
+      for (nid_to_tree_nidx__i=0; info ? nid_to_tree_nidx__i < nid->tree : 0; nid_to_tree_nidx__i++) \
+               info = info->next_info; \
+      info = info ? (info->header->nodes >= (int)nid->node ? info : 0) : 0; \
+    }
 
 /****************************
 Macro's for checking access
@@ -670,8 +650,7 @@ to databases
 #define TREE_PATH_DELIM  "/"
 
 /************* Prototypes for internal functions *************/
-extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *,
-			     int status);
+extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *);
 extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
 
 extern int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook);
@@ -698,7 +677,7 @@ extern char *AbsPathRemote(PINO_DATABASE * dblist, char const *inpath);
 extern int SetDefaultNidRemote(PINO_DATABASE * dblist, int nid);
 
 extern int GetDefaultNidRemote(PINO_DATABASE * dblist, int *nid);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #endif
 extern int64_t RfaToSeek(unsigned char *rfa);
@@ -715,7 +694,7 @@ extern int TreeGetNciLw(TREE_INFO * info, int node_number, NCI * nci);
 extern int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort);
 extern int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort);
 extern int TreePutNci(TREE_INFO * info, int node_number, NCI * nci, int flush);
-extern int TreeIsChild(NODE * node);
+extern int TreeIsChild(PINO_DATABASE * db, NODE * node);
 extern struct descriptor *TreeSectionName(TREE_INFO * info);
 /* extern int TreeFindTag(PINO_DATABASE *db, NODE *node, const char *treename, char **search_string, NODE **node_in_out); */
 extern int TreeFindTag(const char *tagnam, const char *treename, int *tagidx);
@@ -752,7 +731,7 @@ extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int MDS_IO_SOCKET(int fd);
 extern int MDS_IO_FD(int fd);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef HAVE_PTHREAD_H
 #define ssize_t int64_t
 typedef int mode_t;

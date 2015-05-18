@@ -27,6 +27,7 @@
 #include <sys/sem.h>
 #include <sys/mman.h>
 #include <errno.h>
+#include <strroutines.h>
 
 #include "common.h"
 #include "module.h"
@@ -86,7 +87,6 @@ int find_crate(char *wild, char **crate, void **ctx)
     int numEntries;
     int next;
   } *context;
-  int i;
   int status = 0;
   if (wild[wild_d.length-1]==':')
     wild_d.length--;

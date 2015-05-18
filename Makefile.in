@@ -31,7 +31,6 @@ PARTS = \
         @MDSTCPIP@ \
         mdslibidl \
         mdsdcl  \
-	@GEN_DEVICE@ \
 	@CAMSHR@ \
         @REMCAM@ \
         ccl \
@@ -78,12 +77,12 @@ $(clean_DIRS):
 
 .PHONY: full_clean
 full_clean: ./devscripts/rm_if clean
-	@ $< bin
+	@ $< bin bin64 bin32 bin_x86 bin_x86_64
 	@ $< etc
-	@ $< lib
+	@ $< lib lib64 lib32
 	@ $< java/classes
 	@ $< java
-	@ $< uid
+	@ $< uid uid64 uid32
 	@ $< config.cache
 	@ $< config.log
 	@ $< `find . -name '*.in' | \
@@ -118,7 +117,6 @@ camshr: mdsdcl
 ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
-gen_device: tdishr
 javadevices: javatraverser
 javadispatcher: javascope javatraverser
 javamds: mdstcpip 
@@ -131,7 +129,7 @@ mdsmisc: tdishr
 mdsobjects/cpp: mdstcpip 
 mdsobjects/java: javascope
 mdstcpip: tdishr
-mitdevices: gen_device mdsshr tdishr treeshr xmdsshr
+mitdevices: mdsshr tdishr treeshr xmdsshr
 remcam: mdstcpip
 servershr: mdsdcl tdishr treeshr mdsshr mdstcpip
 setevent: mdsshr

@@ -1,7 +1,7 @@
 #include "mdsip_connections.h"
 #include <mdstypes.h>
 #include "cvtdef.h"
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <io.h>
 #define read _read
 #define write _write
@@ -55,7 +55,7 @@ extern int TdiData();
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 #define MakeDesc(name) memcpy(malloc(sizeof(name)),&name,sizeof(name))
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define lseek _lseeki64
 #endif
 
@@ -133,7 +133,7 @@ ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
       int j, k;
       for (j = 0; j < 2; j++)
 	for (k = 0; k < 4; k++)
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	  cray_f[j * 4 + k] = ptr[j * 4 + 3 - k];
 #else
 	  cray_f[(1 - j) * 4 + k] = ptr[j * 4 + 3 - k];
@@ -141,7 +141,7 @@ ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
       ptr = cray_f;
     }
     CvtConvertFloat(ptr, in_type, out_p, out_type, 0);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
     if (out_type == CvtCRAY) {
       int j, k;
       ptr = out_p;
@@ -169,7 +169,6 @@ static Message *BuildResponse(int client_type, unsigned char message_id,
 			      int status, struct descriptor *d)
 {
   Message *m = 0;
-  int flag = 0;
   int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *) d)->arsize;
   int num = nbytes / ((d->length < 1) ? 1 : d->length);
   short length = d->length;
@@ -527,7 +526,6 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
 {
   int conid = e->conid;
   Connection *c = FindConnection(e->conid, 0);
-  int status = 1;
   int i;
   char client_type = c->client_type;
   Message *m;
@@ -742,8 +740,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
     connection->client_type = message->h.client_type;
 
     // d -> reference to curent idx argument desctriptor  //
-    int idx = message->h.descriptor_idx;
-    struct descriptor *d = connection->descrip[idx];    
+    struct descriptor *d = connection->descrip[message->h.descriptor_idx];    
     
     if (!d) {
       // instance the connection descriptor field //
@@ -951,12 +948,11 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	  if (retry_open)
 	    fd = open(filename, fopts | O_BINARY | O_RANDOM, mode);
 	}
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 	if ((fd != -1) && ((fopts & O_CREAT) != 0)) {
-	  int stat;
 	  char *cmd = (char *)malloc(64 + strlen(filename));
 	  sprintf(cmd, "SetMdsplusFileProtection %s 2> /dev/null", filename);
-	  stat = system(cmd);
+	  system(cmd);
 	  free(cmd);
 	}
 #endif
@@ -982,7 +978,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	int whence = message->h.dims[4];
 	int64_t ans_o;
 	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	int tmp;
 	tmp = message->h.dims[2];
 	message->h.dims[2] = message->h.dims[3];
@@ -1052,7 +1048,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	int nowait = mode_in & 0x8;
 	int deleted;
 	DESCRIPTOR_LONG(ans_d, 0);
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	offset = ((int64_t) message->h.dims[2]) << 32 | message->h.dims[3];
 #else
 	offset = ((int64_t) message->h.dims[3]) << 32 | message->h.dims[2];
@@ -1103,9 +1099,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	void *buf = malloc(message->h.dims[4]);
 	size_t num = (size_t) message->h.dims[4];
 	ssize_t nbytes;
-	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
 	int deleted;
-#ifdef _big_endian
+#ifdef WORDS_BIGENDIAN
 	int tmp;
 	tmp = message->h.dims[2];
 	message->h.dims[2] = message->h.dims[3];

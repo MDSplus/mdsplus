@@ -7,6 +7,7 @@
 #include <mdsshr.h>
 #include <xtreeshr.h>
 
+/*
 static void printDecompiled(struct descriptor *inD)
 {
   int status;
@@ -27,13 +28,14 @@ static void printDecompiled(struct descriptor *inD)
   free(buf);
   MdsFree1Dx(&out_xd, 0);
 }
+*/
 
 EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd, struct descriptor *startD,
 			      struct descriptor *endD, struct descriptor *minDeltaD,
 			      struct descriptor_xd *outXd)
 {
   EMPTYXD(emptyXd);
-  EMPTYXD(shapeExprXd);
+  //EMPTYXD(shapeExprXd);
   EMPTYXD(setRangeExprXd);
   struct descriptor_signal *currSignalD;
   struct descriptor_xd *shapesXd;

@@ -422,9 +422,16 @@ class descriptor(_C.Structure):
                 elif (ans.ndesc == 3):
                    return _compound.Range(d_contents(ans.dscptrs[0]),d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]))
                 else:
-                    raise Exception("Range has must have two or three fields, this range has %d fields" % ans.ndesc)
+                    raise Exception("Range must have two or three fields, this range has %d fields" % ans.ndesc)
             if self.dtype == _dtypes.DTYPE_SLOPE:
-                return _compound.Range(d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]),d_contents(ans.dscptrs[0]))
+                if ans.ndesc == 0:
+                  raise Exception("Slope must have at least one field.")
+                if ans.ndesc == 1:
+                  return _compound.Range(None, None, d_contents(ans.dscptrs[0]))
+                elif ans.ndesc == 2:
+                  return _compound.Range(d_contents(ans._dscptrs[1]),None, d_contents(ans.dscptrs[0]))
+                else:
+                  return _compound.Range(d_contents(ans.dscptrs[1]),d_contents(ans.dscptrs[2]),d_contents(ans.dscptrs[0]))
             if self.dtype in  (_dtypes.DTYPE_FUNCTION,_dtypes.DTYPE_CALL,_dtypes.DTYPE_DEPENDENCY):
                 if ans.length==0:
                     opcode=None

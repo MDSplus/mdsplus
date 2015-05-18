@@ -271,17 +271,15 @@ class jDispatcherIp
             treeName = args[0];
         else
             treeName = "RFX";
+
+		Properties properties = MdsHelper.initialization(treeName);
+		if( properties == null )
+		  System.exit(0);
+
         Balancer balancer = new Balancer();
         jDispatcher dispatcher = new jDispatcher(balancer);
 		dispatcher.addServer(new InfoServer());
-        Properties properties = new Properties();
-        try {
-            properties.load(new FileInputStream("jDispatcher.properties"));
-        }
-        catch (Exception exc) {
-            System.out.println("Cannot open properties file");
-            System.exit(0);
-        }
+
         int port = 0;
         try {
             port = Integer.parseInt(properties.getProperty("jDispatcher.port"));

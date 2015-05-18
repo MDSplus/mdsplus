@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <signal.h>
 #endif
 static void *(*PyGILState_Ensure) () = 0;
@@ -23,7 +23,7 @@ static void (*PyGILState_Release) (void *) = 0;
 
 int PyCall(char *cmd, int lock)
 {
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   void (*old_handler) (int);
 #endif
   void *GIL;
@@ -45,7 +45,7 @@ int PyCall(char *cmd, int lock)
       strcat(lib, ".so");
     }
     /*** See if python routines are already available ***/
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     handle = dlopen(0, RTLD_NOLOAD);
 #endif
     loadrtn(PyGILState_Ensure, 0);
@@ -71,11 +71,11 @@ int PyCall(char *cmd, int lock)
   }
   if (lock)
     GIL = (*PyGILState_Ensure) ();
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   old_handler = signal(SIGCHLD, SIG_DFL);
 #endif
   (*PyRun_SimpleString) (cmd);
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGCHLD, old_handler);
 #endif
   if (lock)

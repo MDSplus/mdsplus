@@ -91,7 +91,7 @@ int FlushConnection(int id)
     return -1;
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static void exitHandler(void)
 {
 }
@@ -182,7 +182,6 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     char *user = 0;
     char *user_p = 0;
     int status;
-    int m_status;
     
     // SET INFO //
     SetConnectionInfo(*id, info_name, readfd, info, info_len);
@@ -209,9 +208,7 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
     } else
       *usr = 0;
-    m_status = m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;    
-    
-    // client type //
+    m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
     
     if (m_user)

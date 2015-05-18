@@ -78,8 +78,6 @@ $ Run SYS$SYSTEM:DWPad
 #include <DXm/DECspecific.h>
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void XmdsDestroyWidgetCallback();
 extern void XmdsManageChildCallback();
 extern void XmdsRegisterWidgetCallback();
@@ -302,6 +300,7 @@ int main(int argc, char **argv)
   RestoreDatabase(defaultfile);
   XtAddEventHandler(MainWidget, ButtonPressMask, False, (XtEventHandler) Setup, 0);
   XtAppMainLoop(app_ctx);
+  return 0;
 }
 
 static void LabelSetString(Widget w, String string)
@@ -360,7 +359,6 @@ static void ApplyCustomizeWindow(Widget w, int *tag, XtPointer callback_data)
 
 static void ResetCustomizeWindow(Widget w, int *tag, XtPointer callback_data)
 {
-  int i;
   char number[12];
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "window_title"), PadTitle);
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "icon_name"), PadIcon);
@@ -649,8 +647,6 @@ static void MakeWaves(int cols, int rows)
 static void ResetWindow(String geometry, String title, String icon, int cols, int rows,
 			Boolean bigfont, int btnwidth)
 {
-  int c;
-  int r;
   int x;
   int y;
   unsigned int width;
@@ -818,7 +814,6 @@ static void WriteDatabase(String dbname)
 	WaveInfo *info;
 	char prefix[36];
 	int ctx = 0;
-	int height;
 	String text;
 	fprintf(file, "\n");
 	sprintf(prefix, "Pad.pad_%d_%d", r + 1, c + 1);

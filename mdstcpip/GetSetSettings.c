@@ -1,6 +1,6 @@
 #include "mdsip_connections.h"
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define DEFAULT_HOSTFILE "C:\\MDSIP.HOSTS"
 #else
 #define DEFAULT_HOSTFILE "/etc/mdsip.hosts"

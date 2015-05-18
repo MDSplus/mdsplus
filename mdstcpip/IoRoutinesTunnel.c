@@ -9,7 +9,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <process.h>
 #include <winuser.h>
 #else
@@ -29,7 +29,7 @@ EXPORT IoRoutines *Io()
   return &tunnel_routines;
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 struct TUNNEL_PIPES {
   HANDLE stdin_pipe;
   HANDLE stdout_pipe;
@@ -51,7 +51,7 @@ static struct TUNNEL_PIPES *getTunnelPipes(id)
 	  && len == sizeof(struct TUNNEL_PIPES)) ? p : 0;
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int tunnel_disconnect(int id)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
@@ -76,7 +76,7 @@ static int tunnel_disconnect(int id)
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
@@ -91,7 +91,7 @@ static ssize_t tunnel_send(int id, const void *buffer, size_t buflen, int nowait
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 {
   struct TUNNEL_PIPES *p = getTunnelPipes(id);
@@ -106,12 +106,12 @@ static ssize_t tunnel_recv(int id, void *buffer, size_t buflen)
 }
 #endif
 
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -140,7 +140,7 @@ static void ChildSignalHandler(int num)
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int tunnel_connect(int id, char *protocol, char *host)
 {
   SECURITY_ATTRIBUTES saAttr;
@@ -209,8 +209,7 @@ static int tunnel_connect(int id, char *protocol, char *host)
 #else
 static int tunnel_connect(int id, char *protocol, char *host)
 {
-  pid_t pid, xpid;
-  int sts = 0;
+  pid_t pid;
   int pipe_fd1[2], pipe_fd2[2];
   pipe(pipe_fd1);
   pipe(pipe_fd2);
@@ -221,8 +220,6 @@ static int tunnel_connect(int id, char *protocol, char *host)
     char *remotecmd =
 	strcpy((char *)malloc(strlen(protocol) + strlen("mdsip-server-") + 1), "mdsip-server-");
     char *arglist[] = { localcmd, host, remotecmd, 0 };
-    char *p;
-    int i = 0;
     strcat(localcmd, protocol);
     strcat(remotecmd, protocol);
     signal(SIGCHLD, SIG_IGN);
@@ -230,7 +227,7 @@ static int tunnel_connect(int id, char *protocol, char *host)
     close(pipe_fd2[0]);
     dup2(pipe_fd1[1], 1);
     close(pipe_fd1[1]);
-    sts = execvp(arglist[0], arglist);
+    execvp(arglist[0], arglist);
     exit(1);
   } else if (pid == -1) {
     fprintf(stderr, "Error %d from fork()\n", errno);
@@ -253,7 +250,7 @@ static int tunnel_connect(int id, char *protocol, char *host)
 }
 #endif
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int tunnel_listen(int argc, char **argv)
 {
   return 0;
@@ -264,13 +261,12 @@ static int tunnel_listen(int argc, char **argv)
   struct TUNNEL_PIPES p = { 1, 0, 0 };
   int id;
   char *username;
-  int status;
   p.stdin_pipe = dup2(1, 10);
   p.stdout_pipe = dup2(0, 11);
   close(0);
   close(1);
   dup2(2, 1);
-  status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
+  AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
   if (username)
     free(username);
   while (DoMessage(id) != 0) ;

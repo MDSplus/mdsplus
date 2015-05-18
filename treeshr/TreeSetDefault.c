@@ -35,7 +35,7 @@ int _TreeSetDefaultNid(void *dbid, int nid_in)
     NODE *node_ptr;
     if (dblist->remote)
       return SetDefaultNidRemote(dblist, nid_in);
-    nid_to_node(dblist, nid, node_ptr);
+    node_ptr = nid_to_node(dblist, nid);
     if (node_ptr) {
       dblist->default_node = node_ptr;
       return TreeNORMAL;

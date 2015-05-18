@@ -14,7 +14,7 @@
 #ifdef HAVE_SYS_FILIO_H
 #include <sys/filio.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define ioctl ioctlsocket
 #define FIONREAD_TYPE u_long
 typedef int socklen_t;
@@ -96,7 +96,7 @@ EXPORT IoRoutines *Io()
 
 static void InitializeSockets()
 {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   static int initialized = 0;
   if (!initialized) {
       WSADATA wsaData;
@@ -113,7 +113,7 @@ static int getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : -1;
 }
 
@@ -180,35 +180,35 @@ static int tcp_authorize(int conid, char *username)
   socklen_t n = sizeof(sin);
   int ans = 0;
   struct hostent *hp = 0;
+  int num = 1;
   if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-      char *matchString[2] = { 0, 0 };
-      int num = 1;
-      char *iphost = inet_ntoa(sin.sin_addr);
-      timestr[strlen(timestr) - 1] = 0;
-      hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-      if (hp && hp->h_name)
-        printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr, s, getpid(),
-               username, hp->h_name, iphost);
-      else
-        printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, s, getpid(), username,
-               iphost);
-      matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
-      strcat(matchString[0], "@");
-      strcat(matchString[0], iphost);
-      if (hp && hp->h_name) {
-          matchString[1] = strcpy(malloc(strlen(username) + strlen(hp->h_name) + 3), username);
-          strcat(matchString[1], "@");
-          strcat(matchString[1], hp->h_name);
-          num = 2;
-        }
-      ans = CheckClient(username, num, matchString);
-      if (matchString[0])
-        free(matchString[0]);
-      if (matchString[1])
-        free(matchString[1]);
-    } else {
-      perror("Error determining connection info from socket\n");
+    char *matchString[2] = { 0, 0 };
+    char *iphost = inet_ntoa(sin.sin_addr);
+    timestr[strlen(timestr) - 1] = 0;
+    hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+    if (hp && hp->h_name)
+      printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n", timestr, s, getpid(),
+	     username, hp->h_name, iphost);
+    else
+      printf("%s (%d) (pid %d) Connection received from %s@%s\r\n", timestr, s, getpid(), username,
+	     iphost);
+    matchString[0] = strcpy(malloc(strlen(username) + strlen(iphost) + 3), username);
+    strcat(matchString[0], "@");
+    strcat(matchString[0], iphost);
+    if (hp && hp->h_name) {
+      matchString[1] = strcpy(malloc(strlen(username) + strlen(hp->h_name) + 3), username);
+      strcat(matchString[1], "@");
+      strcat(matchString[1], hp->h_name);
+      num = 2;
     }
+    ans = CheckClient(username, num, matchString);
+    if (matchString[0])
+      free(matchString[0]);
+    if (matchString[1])
+      free(matchString[1]);
+  } else {
+    perror("Error determining connection info from socket\n");
+  }
   fflush(stdout);
   fflush(stderr);
   return ans;
@@ -279,31 +279,30 @@ static int tcp_disconnect(int conid)
   socklen_t n = sizeof(sin);
   struct hostent *hp = 0;
   if (s != -1) {
-      Client *c, **p;
-      for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
-      if (c) {
-          *p = c->next;
-          if (FD_ISSET(s, &fdactive)) {
-              FD_CLR(s, &fdactive);
-              if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
-                  int num = 1;
-                  char *iphost = inet_ntoa(sin.sin_addr);
-                  timestr[strlen(timestr) - 1] = 0;
-                  hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
-                  if (hp)
-                    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, s,
-                           getpid(), c->username, hp->h_name, iphost);
-                  else
-                    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, s, getpid(),
-                           c->username, iphost);
-                }
-            }
-          free(c->username);
-          free(c);
-        }
-      status = close(s);
-      status = shutdown(s, 2);
+    Client *c, **p;
+    for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
+    if (c) {
+      *p = c->next;
+      if (FD_ISSET(s, &fdactive)) {
+	FD_CLR(s, &fdactive);
+	if (getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
+	  char *iphost = inet_ntoa(sin.sin_addr);
+	  timestr[strlen(timestr) - 1] = 0;
+	  hp = gethostbyaddr((char *)&sin.sin_addr, sizeof(sin.sin_addr), AF_INET);
+	  if (hp)
+	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n", timestr, s,
+		   getpid(), c->username, hp->h_name, iphost);
+	  else
+	    printf("%s (%d) (pid %d) Connection disconnected from %s@%s\r\n", timestr, s, getpid(),
+		   c->username, iphost);
+	}
+      }
+      free(c->username);
+      free(c);
     }
+    status = close(s);
+    status = shutdown(s, 2);
+  }
   fflush(stdout);
   fflush(stderr);
   return status;
@@ -381,7 +380,7 @@ static void SetSocketOptions(SOCKET s, int reuse)
       debug_winsize = (getenv("DEBUG_WINDOW_SIZE") != 0);
       init = 0;
     }
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   fcntl(s, F_SETFD, FD_CLOEXEC);
 #endif
   setsockopt(s, SOL_SOCKET, SO_RCVBUF, (char *)&recvbuf, sizeof(int));
@@ -513,7 +512,7 @@ static int tcp_connect(int conid, char *protocol, char *host)
           return -1;
         }
       connectTimer.tv_sec = GetMdsConnectTimeout();
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
       if (connectTimer.tv_sec) {
           status = fcntl(s, F_SETFL, O_NONBLOCK);
           status = connect(s, (struct sockaddr *)&sin, sizeof(sin));
@@ -574,7 +573,7 @@ static int tcp_connect(int conid, char *protocol, char *host)
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 VOID CALLBACK ShutdownEvent(PVOID arg, BOOLEAN fired)
 {
   fprintf(stderr, "Service shut down\n");
@@ -614,7 +613,7 @@ static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -635,14 +634,13 @@ static void ChildSignalHandler(int num)
 
 static int tcp_listen(int argc, char **argv)
 {
-  Options options[] = {
-    {"p", "port", 1, 0, 0},
-  #ifdef HAVE_WINDOWS_H
-    {"S", "sockethandle", 1, 0, 0},
-  #endif
-    {0, 0, 0, 0, 0}
+  Options options[] = { {"p", "port", 1, 0, 0},
+#ifdef _WIN32
+  {"S", "sockethandle", 1, 0, 0},
+#endif
+  {0, 0, 0, 0, 0}
   };
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGCHLD, ChildSignalHandler);
 #endif
   ParseCommand(argc, argv, options, 0, 0, 0);
@@ -775,7 +773,7 @@ static int tcp_listen(int argc, char **argv)
       // SERVER MODE                                ////////////////////////////
       // multiple connections with the same context ////////////////////////////
       
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
       int sock = getSocketHandle(options[1].value);
 #else
       int sock = 0;

@@ -41,7 +41,7 @@ int ServerSendMessage();
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #include <stdio.h>
-#if defined(HAVE_WINDOWS_H)
+#if defined(_WIN32)
 #include <windows.h>
 #define random rand
 #define close closesocket
@@ -131,7 +131,7 @@ static int getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "tcp") == 0) ? readfd : -1;
 }
 
@@ -374,7 +374,7 @@ static int CreatePort(short starting_port, short *port_out)
   int one = 1;
   s = socket(AF_INET, SOCK_STREAM, 0);
   if (s == INVALID_SOCKET) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int error = WSAGetLastError();
     if (error == WSANOTINITIALISED) {
       WSADATA wsaData;
@@ -432,7 +432,7 @@ static int StartReceiver(short *port_out)
       return (0);
   }
   if (!ThreadRunning) {
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     size_t ssize;
     pthread_attr_t attr;
     pthread_attr_init(&attr);
@@ -445,7 +445,7 @@ static int StartReceiver(short *port_out)
       pthread_cond_init(&worker_condition, pthread_condattr_default);
       worker_cond_init = 0;
     }
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
     status = pthread_create(&thread, &attr, Worker, (void *)&sock);
     pthread_attr_destroy(&attr);
 #else
@@ -457,17 +457,12 @@ static int StartReceiver(short *port_out)
     } else {
       while ((ThreadRunning == 0) && (pthread_mutex_lock(&worker_mutex) == 0)) {
 	if (!ThreadRunning)
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 	  pthread_cond_timedwait(&worker_condition, &worker_mutex, 1000);
 #else
 	{
-	  struct timespec one_sec = { 1, 0 };
 	  struct timespec abstime;
 	  struct timeval tmval;
-	  /*
-	     pthread_get_expiration_np(&one_sec,&abstime);
-	   */
-
 	  gettimeofday(&tmval, 0);
 	  abstime.tv_sec = tmval.tv_sec + 1;
 	  abstime.tv_nsec = tmval.tv_usec * 1000;
@@ -609,7 +604,6 @@ int ServerDisconnect(char *server_in)
   int status = 0;
   char *srv = TranslateLogical(server_in);
   char *server = srv ? srv : server_in;
-  int found = 0;
   unsigned int addr;
   char hostpart[256] = { 0 };
   char portpart[256] = { 0 };

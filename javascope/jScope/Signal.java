@@ -480,7 +480,7 @@ public class Signal implements WaveDataListener
             {
                 if(lastReg.upperBound > newReg.lowerBound)
                 {
-                    System.err.println("Wrning: INTERNAL ERROR IN APPEND: NEW.LOWERBOUND < LAST.UPPERBOUND");
+                    //System.err.println("Warning: INTERNAL ERROR IN APPEND: NEW.LOWERBOUND < LAST.UPPERBOUND");
                     newReg.lowerBound = lastReg.upperBound;
                 }
                 lowResRegions.addElement(newReg);
@@ -667,7 +667,7 @@ public class Signal implements WaveDataListener
         setAxis();
         //Here xmin and xmax have been passed, so override values computed by setAxis()
         ymin = saved_ymin;
-        ymax = saved_xmax;
+        ymax = saved_ymax;
         
         saved_xmin = curr_xmin = xmin;
         saved_xmax = curr_xmax = xmax;
@@ -2924,15 +2924,10 @@ public class Signal implements WaveDataListener
     {
         if(regX == null || regX.length == 0) return;
         if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
-        if(freezed && regX[ regX.length - 1] < saved_xmax) //If zooming in some inner part of the sugnal
+        if(freezed) //If zooming in some inner part of the sugnal
         {
              pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true, regX[0], regX[regX.length - 1]));
             return;
-        }
-        if(freezed && regX[ regX.length - 1 ] >= saved_xmax) //If zooming the end of the signal do the update keeing the width of the zoomed region
-        {
-            double delta = regX[regX.length - 1] - regX[0];
-            setXLimits(xmin + delta, xmax + delta, Signal.DO_NOT_UPDATE);  
         }
         int samplesBefore, samplesAfter;
         if(regX.length == 0) return;
@@ -2977,7 +2972,7 @@ public class Signal implements WaveDataListener
     {
        if(regX == null || regX.length == 0) return;
         if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
-        if(freezed && regX[0] > xmax) //If zooming in some inner part of the sugnal
+        if(freezed && regX[0] > xmax) //If zooming in some inner part of the signal
         {
             pendingUpdatesV.addElement(new XYData(regX, regY, resolution, true));
             return;

@@ -154,13 +154,10 @@ int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
 {
   DispatchTable **table_ptr = (DispatchTable **) table;
   void *ctx = 0;
-  static int nid;
   int i;
   static char *allnodes = "***";
   static DESCRIPTOR(varnames, "_ACTION_*");
   static struct descriptor varnames_d = { 0, DTYPE_T, CLASS_D, 0 };
-  static int relcount;
-  static DESCRIPTOR_LONG(relcount_d, &relcount);
   char *nodespec = wildcard ? wildcard : allnodes;
   int mask = 1 << TreeUSAGE_ACTION;
   int status = 1;
@@ -196,8 +193,6 @@ int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **table)
     num_actions++;
   TreeFindNodeEnd(&ctx);
   if (num_actions) {
-    static struct descriptor node = { 0, DTYPE_T, CLASS_D, 0 };
-    static struct descriptor object = { 0, DTYPE_T, CLASS_D, 0 };
     static int zero = 0;
     int table_size = sizeof(DispatchTable) + (num_actions - 1) * sizeof(ActionInfo);
     *table_ptr = (DispatchTable *) malloc(table_size);

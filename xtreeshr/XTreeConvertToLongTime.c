@@ -5,7 +5,7 @@
 #include <mds_stdarg.h>
 #include <mdsshr.h>
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
 

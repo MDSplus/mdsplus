@@ -15,19 +15,20 @@ extern unsigned short OpcExtFunction;
 //#define TreeGetSegmentLimits RTreeGetSegmentLimits
 //#define TreeGetSegment RTreeGetSegment
 
-static int timedAccessFlag = 0;
+//static int timedAccessFlag = 0;
 
 #define MAX_DIMENSION_SIGNAL 16
 #define MAX_FUN_NAMELEN 512
 extern int TdiData(), TdiEvaluate();
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #endif
 
 extern int TdiDecompile();
 extern int TdiExecute();
 
+/*
 static void printDecompiled(struct descriptor *inD)
 {
   int status;
@@ -47,6 +48,7 @@ static void printDecompiled(struct descriptor *inD)
   free(buf);
   MdsFree1Dx(&out_xd, 0);
 }
+*/
 
 static int checkGreater(struct descriptor *time1Dsc, struct descriptor *time2Dsc, char *answ)
 {

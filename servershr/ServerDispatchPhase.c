@@ -48,7 +48,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <tdishr_messages.h>
 #include <errno.h>
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 extern int pthread_cond_signal();
 extern int pthread_mutex_lock();
 extern int pthread_mutex_unlock();
@@ -79,7 +79,6 @@ STATIC_ROUTINE void DoSendMonitor(int mode, int idx);
 STATIC_ROUTINE void ActionDone(int idx);
 STATIC_ROUTINE void DoActionDone(int idx);
 STATIC_ROUTINE void Before(int idx);
-STATIC_ROUTINE int AbortHandler(unsigned sig_args[], unsigned mech_args[]);
 STATIC_ROUTINE void SetActionRanges(int phase, int *first_c, int *last_c);
 STATIC_ROUTINE void AbortRange(int s, int e);
 STATIC_ROUTINE void SetGroup(int sync, int first_g, int *last_g);
@@ -88,9 +87,6 @@ STATIC_ROUTINE void RecordStatus(int s, int e);
 STATIC_ROUTINE void Dispatch(int i);
 STATIC_ROUTINE void WaitForActions(int conditionals, int first_g, int last_g, int first_c,
 				   int last_c);
-STATIC_ROUTINE void lock_dispatch();
-STATIC_ROUTINE void unlock_dispatch();
-
 STATIC_CONSTANT const int zero = 0;
 
 typedef struct _complete {
@@ -179,7 +175,7 @@ STATIC_ROUTINE char *now(char *buf)
 {
   time_t tim = time(0);
   tim = time(0);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   return ctime(&tim);
 #else
   ctime_r(&tim, buf);
@@ -256,7 +252,6 @@ STATIC_ROUTINE void Before(int idx)
   if (Output) {
     char server[33];
     char buf[30];
-    STATIC_CONSTANT DESCRIPTOR(fao_s, "!%T !AS is beginning action !AS");
     sprintf(logmsg, "%s, %s is beginning action %s", now(buf), Server(server, actions[idx].server),
 	    actions[idx].path);
     (*Output) (logmsg);
@@ -361,16 +356,12 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
 	      : (AbortInProgress ? 1 : NoOutstandingActions(first_g, last_g)))) {
     ProgLoc = 600;
     pthread_mutex_lock(&JobWaitMutex);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
 #else
     {
-      struct timespec one_sec = { 1, 0 };
       struct timespec abstime;
       struct timeval tmval;
-      /*
-         pthread_get_expiration_np(&one_sec,&abstime);
-       */
 
       gettimeofday(&tmval, 0);
       abstime.tv_sec = tmval.tv_sec + 1;
@@ -595,17 +586,12 @@ STATIC_ROUTINE void WakeCompletedActionQueue()
 STATIC_ROUTINE void WaitForActionDoneQueue()
 {
   pthread_mutex_lock(&wake_completed_mutex);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   pthread_cond_timedwait(&wake_completed_cond, &wake_completed_mutex, 1000);
 #else
   {
-    struct timespec one_sec = { 1, 0 };
     struct timespec abstime;
     struct timeval tmval;
-    /*
-       pthread_get_expiration_np(&one_sec,&abstime);
-     */
-
     gettimeofday(&tmval, 0);
     abstime.tv_sec = tmval.tv_sec + 1;
     abstime.tv_nsec = tmval.tv_usec * 1000;
@@ -670,8 +656,7 @@ STATIC_ROUTINE void ProcessActionDone()
 STATIC_ROUTINE void StartActionDoneThread()
 {
   pthread_t thread;
-#ifndef HAVE_WINDOWS_H
-  size_t ssize;
+#ifndef _WIN32
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
@@ -702,16 +687,12 @@ STATIC_ROUTINE void WakeSendMonitorQueue()
 STATIC_ROUTINE void WaitForSendMonitorQueue()
 {
   pthread_mutex_lock(&wake_send_monitor_mutex);
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   pthread_cond_timedwait(&wake_send_monitor_cond, &wake_send_monitor_mutex, 1000);
 #else
   {
-    struct timespec one_sec = { 1, 0 };
     struct timespec abstime;
     struct timeval tmval;
-    /*
-       pthread_get_expiration_np(&one_sec,&abstime);
-     */
 
     gettimeofday(&tmval, 0);
     abstime.tv_sec = tmval.tv_sec + 1;
@@ -782,8 +763,7 @@ STATIC_ROUTINE void SendMonitorThread()
 STATIC_ROUTINE void StartSendMonitorThread()
 {
   pthread_t thread;
-#ifndef HAVE_WINDOWS_H
-  size_t ssize;
+#ifndef _WIN32
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);

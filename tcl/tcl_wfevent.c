@@ -1,5 +1,9 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
+
 /**********************************************************************
 * TCL_WFEVENT.C --
 *

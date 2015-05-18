@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <mds_stdarg.h>
 #include <libroutines.h>
+#include <config.h>
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 extern int TdiExecute();
 extern int TdiData();
@@ -14,12 +18,9 @@ extern int TdiCvt();
 extern int TdiCompile();
 extern int TdiDebug();
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
-#ifdef WIN32
+#ifdef _WIN32
 #define BlockSig(a)
 #define UnBlockSig(a)
-#define alloca _alloca
 #define SIGALRM 0
 #else
 static int BlockSig(int sig_number)
@@ -93,7 +94,7 @@ typedef struct {
 
 static int ShortStrings(char *b)
 {
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   extern char *__progname;
   int isGdl = strcmp(__progname, "gdl") == 0;
 #else

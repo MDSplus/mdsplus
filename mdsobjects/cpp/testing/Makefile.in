@@ -87,15 +87,19 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+target_triplet = @target@
 @HAVE_CHECK_TRUE@TESTS = buildtest$(EXEEXT) MdsExceptionTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest_NumericConversion$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest_NumericLimits$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest_ScalarCast$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsScalarTest_NumericConversion$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.in
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
+	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -106,37 +110,55 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_CHECK_TRUE@am__EXEEXT_1 = buildtest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsExceptionTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsDataTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest_NumericConversion$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest_NumericLimits$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsDataTest_ScalarCast$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsScalarTest_NumericConversion$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT)
+MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
+MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
+MdsCompoundTest_LDADD = $(LDADD)
+am__DEPENDENCIES_1 =
+MdsCompoundTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 MdsDataTest_SOURCES = MdsDataTest.cpp
 MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
 MdsDataTest_LDADD = $(LDADD)
-am__DEPENDENCIES_1 =
-MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1)
-MdsDataTest_NumericConversion_SOURCES =  \
-	MdsDataTest_NumericConversion.cpp
-MdsDataTest_NumericConversion_OBJECTS =  \
-	MdsDataTest_NumericConversion.$(OBJEXT)
-MdsDataTest_NumericConversion_LDADD = $(LDADD)
-MdsDataTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_1)
-MdsDataTest_NumericLimits_SOURCES = MdsDataTest_NumericLimits.cpp
-MdsDataTest_NumericLimits_OBJECTS =  \
-	MdsDataTest_NumericLimits.$(OBJEXT)
-MdsDataTest_NumericLimits_LDADD = $(LDADD)
-MdsDataTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_1)
-MdsDataTest_ScalarCast_SOURCES = MdsDataTest_ScalarCast.cpp
-MdsDataTest_ScalarCast_OBJECTS = MdsDataTest_ScalarCast.$(OBJEXT)
-MdsDataTest_ScalarCast_LDADD = $(LDADD)
-MdsDataTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_1)
+MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
-MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1)
+MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsScalarTest_NumericConversion_SOURCES =  \
+	MdsScalarTest_NumericConversion.cpp
+MdsScalarTest_NumericConversion_OBJECTS =  \
+	MdsScalarTest_NumericConversion.$(OBJEXT)
+MdsScalarTest_NumericConversion_LDADD = $(LDADD)
+MdsScalarTest_NumericConversion_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsScalarTest_NumericLimits_SOURCES = MdsScalarTest_NumericLimits.cpp
+MdsScalarTest_NumericLimits_OBJECTS =  \
+	MdsScalarTest_NumericLimits.$(OBJEXT)
+MdsScalarTest_NumericLimits_LDADD = $(LDADD)
+MdsScalarTest_NumericLimits_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsScalarTest_ScalarCast_SOURCES = MdsScalarTest_ScalarCast.cpp
+MdsScalarTest_ScalarCast_OBJECTS = MdsScalarTest_ScalarCast.$(OBJEXT)
+MdsScalarTest_ScalarCast_LDADD = $(LDADD)
+MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsStringTest_SOURCES = MdsStringTest.cpp
+MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
+MdsStringTest_LDADD = $(LDADD)
+MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
 buildtest_LDADD = $(LDADD)
-buildtest_DEPENDENCIES = $(am__DEPENDENCIES_1)
+buildtest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 AM_V_P = $(am__v_P_@AM_V@)
 am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
 am__v_P_0 = false
@@ -166,12 +188,14 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = MdsDataTest.cpp MdsDataTest_NumericConversion.cpp \
-	MdsDataTest_NumericLimits.cpp MdsDataTest_ScalarCast.cpp \
-	MdsExceptionTest.cpp buildtest.cpp
-DIST_SOURCES = MdsDataTest.cpp MdsDataTest_NumericConversion.cpp \
-	MdsDataTest_NumericLimits.cpp MdsDataTest_ScalarCast.cpp \
-	MdsExceptionTest.cpp buildtest.cpp
+SOURCES = MdsCompoundTest.cpp MdsDataTest.cpp MdsExceptionTest.cpp \
+	MdsScalarTest_NumericConversion.cpp \
+	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
+	MdsStringTest.cpp buildtest.cpp
+DIST_SOURCES = MdsCompoundTest.cpp MdsDataTest.cpp \
+	MdsExceptionTest.cpp MdsScalarTest_NumericConversion.cpp \
+	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
+	MdsStringTest.cpp buildtest.cpp
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -472,6 +496,31 @@ DC1394_SUPPORT2 = @DC1394_SUPPORT2@
 DEFS = @DEFS@
 DEPDIR = @DEPDIR@
 DNET_STUB = @DNET_STUB@
+DOXYGEN = @DOXYGEN@
+DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
+DX_CONFIG = @DX_CONFIG@
+DX_DOCDIR = @DX_DOCDIR@
+DX_DOT = @DX_DOT@
+DX_DOXYGEN = @DX_DOXYGEN@
+DX_DVIPS = @DX_DVIPS@
+DX_EGREP = @DX_EGREP@
+DX_ENV = @DX_ENV@
+DX_FLAG_chi = @DX_FLAG_chi@
+DX_FLAG_chm = @DX_FLAG_chm@
+DX_FLAG_doc = @DX_FLAG_doc@
+DX_FLAG_dot = @DX_FLAG_dot@
+DX_FLAG_html = @DX_FLAG_html@
+DX_FLAG_man = @DX_FLAG_man@
+DX_FLAG_pdf = @DX_FLAG_pdf@
+DX_FLAG_ps = @DX_FLAG_ps@
+DX_FLAG_rtf = @DX_FLAG_rtf@
+DX_FLAG_xml = @DX_FLAG_xml@
+DX_HHC = @DX_HHC@
+DX_LATEX = @DX_LATEX@
+DX_MAKEINDEX = @DX_MAKEINDEX@
+DX_PDFLATEX = @DX_PDFLATEX@
+DX_PERL = @DX_PERL@
+DX_PROJECT = @DX_PROJECT@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
@@ -539,7 +588,6 @@ LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
 MACOSX = @MACOSX@
-MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
 MAKEINFO = @MAKEINFO@
@@ -656,7 +704,11 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 srcdir = @srcdir@
 sysconfdir = @sysconfdir@
+target = @target@
 target_alias = @target_alias@
+target_cpu = @target_cpu@
+target_os = @target_os@
+target_vendor = @target_vendor@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
@@ -666,7 +718,7 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
 AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
-LDADD = $(AM_LIBS)
+LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
@@ -675,7 +727,7 @@ all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .cpp .log .o .obj .test .test$(EXEEXT) .trs
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -699,34 +751,42 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
+$(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
+$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 
 clean-checkPROGRAMS:
 	-test -z "$(check_PROGRAMS)" || rm -f $(check_PROGRAMS)
 
+MdsCompoundTest$(EXEEXT): $(MdsCompoundTest_OBJECTS) $(MdsCompoundTest_DEPENDENCIES) $(EXTRA_MdsCompoundTest_DEPENDENCIES) 
+	@rm -f MdsCompoundTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsCompoundTest_OBJECTS) $(MdsCompoundTest_LDADD) $(LIBS)
+
 MdsDataTest$(EXEEXT): $(MdsDataTest_OBJECTS) $(MdsDataTest_DEPENDENCIES) $(EXTRA_MdsDataTest_DEPENDENCIES) 
 	@rm -f MdsDataTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_OBJECTS) $(MdsDataTest_LDADD) $(LIBS)
 
-MdsDataTest_NumericConversion$(EXEEXT): $(MdsDataTest_NumericConversion_OBJECTS) $(MdsDataTest_NumericConversion_DEPENDENCIES) $(EXTRA_MdsDataTest_NumericConversion_DEPENDENCIES) 
-	@rm -f MdsDataTest_NumericConversion$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_NumericConversion_OBJECTS) $(MdsDataTest_NumericConversion_LDADD) $(LIBS)
-
-MdsDataTest_NumericLimits$(EXEEXT): $(MdsDataTest_NumericLimits_OBJECTS) $(MdsDataTest_NumericLimits_DEPENDENCIES) $(EXTRA_MdsDataTest_NumericLimits_DEPENDENCIES) 
-	@rm -f MdsDataTest_NumericLimits$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_NumericLimits_OBJECTS) $(MdsDataTest_NumericLimits_LDADD) $(LIBS)
-
-MdsDataTest_ScalarCast$(EXEEXT): $(MdsDataTest_ScalarCast_OBJECTS) $(MdsDataTest_ScalarCast_DEPENDENCIES) $(EXTRA_MdsDataTest_ScalarCast_DEPENDENCIES) 
-	@rm -f MdsDataTest_ScalarCast$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_ScalarCast_OBJECTS) $(MdsDataTest_ScalarCast_LDADD) $(LIBS)
-
 MdsExceptionTest$(EXEEXT): $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_DEPENDENCIES) $(EXTRA_MdsExceptionTest_DEPENDENCIES) 
 	@rm -f MdsExceptionTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_LDADD) $(LIBS)
+
+MdsScalarTest_NumericConversion$(EXEEXT): $(MdsScalarTest_NumericConversion_OBJECTS) $(MdsScalarTest_NumericConversion_DEPENDENCIES) $(EXTRA_MdsScalarTest_NumericConversion_DEPENDENCIES) 
+	@rm -f MdsScalarTest_NumericConversion$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_NumericConversion_OBJECTS) $(MdsScalarTest_NumericConversion_LDADD) $(LIBS)
+
+MdsScalarTest_NumericLimits$(EXEEXT): $(MdsScalarTest_NumericLimits_OBJECTS) $(MdsScalarTest_NumericLimits_DEPENDENCIES) $(EXTRA_MdsScalarTest_NumericLimits_DEPENDENCIES) 
+	@rm -f MdsScalarTest_NumericLimits$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_NumericLimits_OBJECTS) $(MdsScalarTest_NumericLimits_LDADD) $(LIBS)
+
+MdsScalarTest_ScalarCast$(EXEEXT): $(MdsScalarTest_ScalarCast_OBJECTS) $(MdsScalarTest_ScalarCast_DEPENDENCIES) $(EXTRA_MdsScalarTest_ScalarCast_DEPENDENCIES) 
+	@rm -f MdsScalarTest_ScalarCast$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_ScalarCast_OBJECTS) $(MdsScalarTest_ScalarCast_LDADD) $(LIBS)
+
+MdsStringTest$(EXEEXT): $(MdsStringTest_OBJECTS) $(MdsStringTest_DEPENDENCIES) $(EXTRA_MdsStringTest_DEPENDENCIES) 
+	@rm -f MdsStringTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsStringTest_OBJECTS) $(MdsStringTest_LDADD) $(LIBS)
 
 buildtest$(EXEEXT): $(buildtest_OBJECTS) $(buildtest_DEPENDENCIES) $(EXTRA_buildtest_DEPENDENCIES) 
 	@rm -f buildtest$(EXEEXT)
@@ -738,11 +798,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCompoundTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest_NumericConversion.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest_NumericLimits.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest_ScalarCast.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExceptionTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericConversion.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericLimits.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_ScalarCast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsStringTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildtest.Po@am__quote@
 
 .cpp.o:
@@ -1022,23 +1084,37 @@ MdsDataTest.log: MdsDataTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsDataTest_NumericConversion.log: MdsDataTest_NumericConversion$(EXEEXT)
-	@p='MdsDataTest_NumericConversion$(EXEEXT)'; \
-	b='MdsDataTest_NumericConversion'; \
+MdsScalarTest_NumericConversion.log: MdsScalarTest_NumericConversion$(EXEEXT)
+	@p='MdsScalarTest_NumericConversion$(EXEEXT)'; \
+	b='MdsScalarTest_NumericConversion'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsDataTest_NumericLimits.log: MdsDataTest_NumericLimits$(EXEEXT)
-	@p='MdsDataTest_NumericLimits$(EXEEXT)'; \
-	b='MdsDataTest_NumericLimits'; \
+MdsScalarTest_NumericLimits.log: MdsScalarTest_NumericLimits$(EXEEXT)
+	@p='MdsScalarTest_NumericLimits$(EXEEXT)'; \
+	b='MdsScalarTest_NumericLimits'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsDataTest_ScalarCast.log: MdsDataTest_ScalarCast$(EXEEXT)
-	@p='MdsDataTest_ScalarCast$(EXEEXT)'; \
-	b='MdsDataTest_ScalarCast'; \
+MdsScalarTest_ScalarCast.log: MdsScalarTest_ScalarCast$(EXEEXT)
+	@p='MdsScalarTest_ScalarCast$(EXEEXT)'; \
+	b='MdsScalarTest_ScalarCast'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsStringTest.log: MdsStringTest$(EXEEXT)
+	@p='MdsStringTest$(EXEEXT)'; \
+	b='MdsStringTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsCompoundTest.log: MdsCompoundTest$(EXEEXT)
+	@p='MdsCompoundTest$(EXEEXT)'; \
+	b='MdsCompoundTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

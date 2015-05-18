@@ -88,7 +88,7 @@ static int strncmp_nocase(const char *s, const char *t, int n)
   int i;
 
   if (MSGLVL(11))
-    printf("string sizes: *s(%d)  *t(%d)  n(%d)\n", strlen(s), strlen(t), n);
+    printf("string sizes: *s(%d)  *t(%d)  n(%d)\n", (int)strlen(s),(int)strlen(t), n);
 
   for (; n; n--, s++, t++) {
     if (MSGLVL(11))

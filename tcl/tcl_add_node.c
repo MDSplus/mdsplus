@@ -1,9 +1,13 @@
-#include "tclsysdef.h"
 #include <ncidef.h>
 #include <usagedef.h>
 #include <string.h>
 #include <dcl.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include "tcl_p.h"
+
 /**********************************************************************
 * TCL_ADD_NODE.C --
 *
@@ -21,7 +25,7 @@
 	 * Add a node
 	 *****************************************************************/
 
-char tclUsageToNumber(char *usage, char **error)
+char tclUsageToNumber(const char *usage, char **error)
 {
   struct usageMap {
     char *name;
@@ -53,7 +57,6 @@ char tclUsageToNumber(char *usage, char **error)
 
 int TclAddNode(void *ctx, char **error, char **output)
 {				/* Return: status                 */
-  int k;
   int nid;
   int sts;
   char usage = 0;

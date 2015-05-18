@@ -1,6 +1,26 @@
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <config.h>
+#include <sys/time.h>
+#include <time.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <dlfcn.h>
+#include <dirent.h>
+#include <unistd.h>
+#include <dirent.h>
+#include <errno.h>
+#include <signal.h>
+
+#ifdef _WIN32
+#include <windows.h>
+#include <process.h>
+#else
+#include <sys/wait.h>
+#endif
+
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <libroutines.h>
@@ -8,125 +28,174 @@
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
-#ifdef _WIN32
-#include <windows.h>
-#endif
-#if defined(__sparc__)
-#include "/usr/include/sys/types.h"
-#elif !defined(_WIN32)
-#include <strings.h>
-#ifdef HAVE_GETTIMEOFDAY
-#include <sys/types.h>
-#include <sys/time.h>
-#include <strings.h>
-#endif
-#endif
-
-#include <sys/time.h>
-#include <time.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
 #include <STATICdef.h>
 #include <ctype.h>
 #include "mdsshrthreadsafe.h"
+#include <release.h>
 
-int LibTimeToVMSTime(time_t * time_in, int64_t * time_out);
-STATIC_CONSTANT int64_t addin = LONG_LONG_CONSTANT(0x7c95674beb4000);
+STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 
-extern int MdsCopyDxXd();
-/*
-STATIC_ROUTINE char *GetTdiLogical(char *name);
-*/
 
-char *MdsDescrToCstring(struct descriptor *in);
-int StrFree1Dx(struct descriptor *out);
-int StrGet1Dx(unsigned short *len, struct descriptor *out);
-int StrCopyDx(struct descriptor *out, struct descriptor *in);
-int StrAppend(struct descriptor *out, struct descriptor *tail);
-void TranslateLogicalFree(char *value);
-
-#ifdef HAVE_WINDOWS_H
-#include <windows.h>
-#include <process.h>
-//#define putenv _putenv
-//#define tzset _tzset
-
-#define RTLD_LAZY 0
-
-STATIC_ROUTINE void *dlopen(char *filename, int flags)
+int LibWait(float *secs)
 {
-  return (void *)LoadLibrary(filename);
+  struct timespec ts;
+  ts.tv_sec = (unsigned int)*secs;
+  ts.tv_nsec = (unsigned int)((*secs - (unsigned int)*secs) * 1E9);
+  nanosleep(&ts, 0);
+
+  return 1;
 }
 
-STATIC_ROUTINE void *dlsym(void *handle, char *name)
-{
-  return (void *)GetProcAddress((HINSTANCE) handle, name);
-}
 
-STATIC_ROUTINE char *dlerror()
+void *LibCallg(void **arglist, void *(*routine) ())
 {
-  static LPTSTR error_string = 0;	/* windows NEED TO MAKE THREADSAFE */
-  if (error_string) {
-    LocalFree((HLOCAL) error_string);
-    error_string = 0;
+  switch (*(long *)arglist & 0xff) {
+  case 0:
+    return (*routine) ();
+  case 1:
+    return (*routine) (arglist[1]);
+  case 2:
+    return (*routine) (arglist[1], arglist[2]);
+  case 3:
+    return (*routine) (arglist[1], arglist[2], arglist[3]);
+  case 4:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4]);
+  case 5:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5]);
+  case 6:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6]);
+  case 7:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7]);
+  case 8:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8]);
+  case 9:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9]);
+  case 10:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10]);
+  case 11:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11]);
+  case 12:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12]);
+  case 13:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13]);
+  case 14:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14]);
+  case 15:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15]);
+  case 16:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16]);
+  case 17:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17]);
+  case 18:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17],
+		       arglist[18]);
+  case 19:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19]);
+  case 20:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20]);
+  case 21:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21]);
+  case 22:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22]);
+  case 23:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23]);
+  case 24:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23],
+		       arglist[24]);
+  case 25:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25]);
+  case 26:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26]);
+  case 27:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26], arglist[27]);
+  case 28:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26], arglist[27], arglist[28]);
+  case 29:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29]);
+  case 30:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29],
+		       arglist[30]);
+  case 31:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
+		       arglist[31]);
+  case 32:
+    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
+		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
+		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
+		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
+		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
+		       arglist[31], arglist[32]);
+  default:
+    printf("Error - currently no more than 32 arguments supported on external calls\n");
   }
-  FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, GetLastError(), 0,	// Default language
-		(LPTSTR) & error_string, 0, NULL);
-  return error_string == NULL ? "" : error_string;
+  return 0;
 }
 
-typedef struct _dir {
-  char *path;
-  HANDLE handle;
-} DIR;
-
-struct dirent {
-  char *d_name;
-};
-
-STATIC_ROUTINE DIR *opendir(char *path)
-{
-  DIR *dir = 0;
-  int info = GetFileAttributes(path);
-  if ((info != 0xFFFFFFFF) && ((info & FILE_ATTRIBUTE_DIRECTORY) != 0)) {
-    dir = (DIR *) malloc(sizeof(DIR) + strlen(path) + 3);
-    dir->path = ((char *)dir) + sizeof(DIR);
-    strcpy(dir->path, path);
-    strcat(dir->path, (dir->path[strlen(dir->path) - 1] == '\\') ? "*" : "\\*");
-    dir->handle = 0;
-  }
-  return dir;
-}
-
-STATIC_ROUTINE void closedir(DIR * dir)
-{
-  if (dir)
-    free(dir);
-}
-
-struct dirent *readdir(DIR * dir)
-{
-  static struct dirent ans;	/* windows NEED TO MAKE THREADSAFE */
-  static WIN32_FIND_DATA fdata;	/* windows NEED TO MAKE THREADSAFE */
-  if (dir->handle == 0) {
-
-    dir->handle = FindFirstFile(dir->path, &fdata);
-    if (dir->handle == INVALID_HANDLE_VALUE)
-      dir->handle = 0;
-  } else {
-    if (!FindNextFile(dir->handle, &fdata)) {
-      FindClose(dir->handle);
-      dir->handle = 0;
-    }
-  }
-  if (dir->handle != 0) {
-    ans.d_name = fdata.cFileName;
-    return &ans;
-  } else
-    return 0;
-}
+#ifdef _WIN32
 
 STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
 {
@@ -145,315 +214,36 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, char *pathname)
   return (char *)path;
 }
 
-char *TranslateLogical(char *pathname)
-{
-  char *path = NULL;
-  char *tpath = getenv(pathname);
-  if (tpath)
-    path = strcpy((char *)malloc(strlen(tpath) + 1), tpath);
-  if (!path)
-    path = GetRegistry(HKEY_CURRENT_USER, pathname);
-  if (!path)
-    path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
-  /*  if (!path)
-     path = GetTdiLogical(pathname);
-   */
-  return path;
-}
 
 int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag)
 {
 
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
-  char *arglist[255];
+  void *arglist[255];
   char *tok;
+  int numargs = 6;
   tok = strtok(cmd_c, " ");
-  arglist[0] = (char *)6;
-  arglist[1] = (char *)(NULL + (waitFlag ? _P_WAIT : _P_NOWAIT));
+  arglist[0] = numargs+NULL;
+  arglist[1] = (void *)(NULL + (waitFlag ? _P_WAIT : _P_NOWAIT));
   arglist[2] = "cmd";
   arglist[3] = arglist[2];
-  arglist[4] = "/C";
-  arglist[5] = tok;
+  arglist[4] = (void *)"/C";
+  arglist[5] = (void *)tok;
   while ((tok = strtok(0, " ")) != 0) {
-
-    if (strlen(tok) > 0)
-      arglist[(arglist[0]++) - (char *)NULL] = tok;
+    if (strlen(tok) > 0) {
+      arglist[numargs++] = (void *)tok;
+      arglist[0] = numargs+NULL;
+    }
   }
-  arglist[((int64_t)arglist[0])] = NULL;
-  status = (char *)LibCallg(arglist, _spawnlp) - (char *)0;
-  /*if (status != 0) perror("Error doing spawn"); */
+  arglist[numargs]=(void *)NULL;
+  status = (char *)LibCallg(arglist, (void *)_spawnlp) - (char *)NULL;
   free(cmd_c);
-
   return status;
-
-}
-
-int LibWait(float *secs)
-{
-  int msec = (int)(*secs * 1000.);
-  Sleep(msec);
-  return 1;
-}
-
-void *LibCallg(void **arglist, void *(*routine) ())
-{
-  switch (*(long *)arglist & 0xff) {
-  case 0:
-    return (*routine) ();
-  case 1:
-    return (*routine) (arglist[1]);
-  case 2:
-    return (*routine) (arglist[1], arglist[2]);
-  case 3:
-    return (*routine) (arglist[1], arglist[2], arglist[3]);
-  case 4:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4]);
-  case 5:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5]);
-  case 6:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6]);
-  case 7:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7]);
-  case 8:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8]);
-  case 9:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9]);
-  case 10:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10]);
-  case 11:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11]);
-  case 12:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12]);
-  case 13:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13]);
-  case 14:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14]);
-  case 15:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15]);
-  case 16:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16]);
-  case 17:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17]);
-  case 18:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17],
-		       arglist[18]);
-  case 19:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19]);
-  case 20:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20]);
-  case 21:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21]);
-  case 22:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22]);
-  case 23:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23]);
-  case 24:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23],
-		       arglist[24]);
-  case 25:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25]);
-  case 26:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26]);
-  case 27:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27]);
-  case 28:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28]);
-  case 29:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29]);
-  case 30:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29],
-		       arglist[30]);
-  case 31:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31]);
-  case 32:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31], arglist[32]);
-  default:
-    printf("Error - currently no more than 32 arguments supported on external calls\n");
-  }
-  return 0;
 }
 
 #else				/* WIN32 */
 
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif				/*HAVE_INISTD_H */
-#include <dirent.h>
-#include <errno.h>
-#include <signal.h>
-#include <sys/wait.h>
-
-#ifdef _AIX
-#define pthread_mutexattr_default NULL
-#endif /*_AIX*/
-
-#ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
-#include <inttypes.h>
-#include <pthread.h>
-STATIC_THREADSAFE pthread_mutex_t GlobalMutex;
-STATIC_THREADSAFE int Initialized = 0;
-#ifdef ___DEBUG_IT
-STATIC_THREADSAFE int LockCount = 0;
-STATIC_THREADSAFE pthread_t current_locked_thread = 0;
-#endif
-#if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
-#define pthread_attr_default NULL
-#define pthread_mutexattr_default NULL
-#define pthread_condattr_default NULL
-#else /*DECTHREADS*/
-#undef select
-#endif /*DECTHREADS*/
-void pthread_lock_global_np()
-{
-#ifdef ___DEBUG_IT
-  pthread_t thread = pthread_self();
-#endif
-  if (!Initialized) {
-#if !defined(PTHREAD_MUTEX_RECURSIVE)
-#define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
-#endif				/*PTHREAD_MUTEX_RECURSIVE */
-
-    pthread_mutexattr_t m_attr;
-    pthread_mutexattr_init(&m_attr);
-#ifndef __sun
-    pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-#endif /*__sub*/
-    pthread_mutex_init(&GlobalMutex, &m_attr);
-    Initialized = 1;
-  }
-#ifdef ___DEBUG_IT
-  if (current_locked_thread)
-    printf("global currently locked by thread %d\n", current_locked_thread);
-
-  printf("Thread %d is about to lock global\n", thread);
-#endif /*DEBUG*/
-      pthread_mutex_lock(&GlobalMutex);
-#ifdef ___DEBUG_IT
-  printf("Global locked - %d\n", ++LockCount);
-  current_locked_thread = thread;
-#endif /*DEBUG*/
-}
-
-void pthread_unlock_global_np()
-{
-  if (!Initialized) {
-#ifndef __sun
-#if defined(PTHREAD_MUTEX_RECURSIVE)
-    pthread_mutexattr_t m_attr;
-    pthread_mutexattr_init(&m_attr);
-    pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&GlobalMutex, &m_attr);
-#else /*RECURSIVE*/
-	pthread_mutex_init(&GlobalMutex, pthread_mutexattr_default);
-#endif /*RECURSIVE*/
-#endif /*__sub*/
-	Initialized = 1;
-  }
-#ifdef ___DEBUG_IT
-  printf("Thread %d is about to unlock global - %d\n", pthread_self(), LockCount--);
-#endif				/* DEBUG */
-  pthread_mutex_unlock(&GlobalMutex);
-#ifdef ___DEBUG_IT
-  printf("Unlocked global - %d\n", LockCount);
-  if (LockCount == 0)
-    current_locked_thread = 0;
-#endif				/* DEBUG */
-}
-#endif				/* pthread_unlock_global_np */
-
-#ifdef HAVE_DL_H
-#include <dl.h>
-#define RTLD_LAZY BIND_DEFERRED | BIND_NOSTART | DYNAMIC_PATH
-
-STATIC_ROUTINE void *dlopen(char *filename, int flags)
-{
-  return (void *)shl_load(filename, flags, 0);
-}
-
-void *dlsym(void *handle, char *name)
-{
-  void *symbol = NULL;
-  int s = shl_findsym((shl_t *) & handle, name, 0, &symbol);
-  return symbol;
-}
-
-#elif HAVE_DLFCN_H
-#include <dlfcn.h>
-
-#else				/* HAVE_DL_H */
-#error "No supported dynamic library API"
-#endif				/* HAVE_DL_H */
 
 STATIC_ROUTINE char *nonblank(char *p)
 {
@@ -463,179 +253,8 @@ STATIC_ROUTINE char *nonblank(char *p)
   return (*p ? p : 0);
 }
 
-/*
-STATIC_ROUTINE char *blank(char *p)
-{
-  if (!p)
-    return (0);
-  for (; *p && !isspace(*p); p++) ;
-  return (*p ? p : 0);
-}
-*/
 
-char *TranslateLogical(char *name)
-{
-  char *env = getenv(name);
-  env = env ? strcpy(malloc(strlen(env) + 1), env) : 0;
-
-/*
-        if (!env)
-          env = GetTdiLogical(name);
-*/
-  return env;
-}
-
-void *LibCallg(void **arglist, void *(*routine) ())
-{
-  switch (*(long *)arglist & 0xff) {
-  case 0:
-    return (*routine) ();
-  case 1:
-    return (*routine) (arglist[1]);
-  case 2:
-    return (*routine) (arglist[1], arglist[2]);
-  case 3:
-    return (*routine) (arglist[1], arglist[2], arglist[3]);
-  case 4:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4]);
-  case 5:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5]);
-  case 6:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6]);
-  case 7:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7]);
-  case 8:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8]);
-  case 9:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9]);
-  case 10:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10]);
-  case 11:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11]);
-  case 12:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12]);
-  case 13:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13]);
-  case 14:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14]);
-  case 15:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15]);
-  case 16:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16]);
-  case 17:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17]);
-  case 18:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17],
-		       arglist[18]);
-  case 19:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19]);
-  case 20:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20]);
-  case 21:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21]);
-  case 22:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22]);
-  case 23:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23]);
-  case 24:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23],
-		       arglist[24]);
-  case 25:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25]);
-  case 26:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26]);
-  case 27:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27]);
-  case 28:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28]);
-  case 29:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29]);
-  case 30:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29],
-		       arglist[30]);
-  case 31:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31]);
-  case 32:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31], arglist[32]);
-  default:
-    printf("Error - currently no more than 32 arguments supported on external calls\n");
-  }
-  return 0;
-}
-
-STATIC_ROUTINE void child_done(	/* Return: meaningless sts              */
-				int sig	/* <r> signal number                    */
-    )
+STATIC_ROUTINE void child_done(int sig   )
 {
   if (sig == SIGCHLD)
     fprintf(stdout, "--> Process completed\n");
@@ -709,17 +328,23 @@ int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
   return sts >> 8;
 }
 
-int LibWait(float *secs)
-{
-  struct timespec ts;
-  ts.tv_sec = (unsigned int)*secs;
-  ts.tv_nsec = (unsigned int)((*secs - (unsigned int)*secs) * 1E9);
-  nanosleep(&ts, 0);
-
-  return 1;
-}
 
 #endif
+
+char *TranslateLogical(char *pathname)
+{
+  char *path = NULL;
+  char *tpath = getenv(pathname);
+  if (tpath)
+    path = strcpy((char *)malloc(strlen(tpath) + 1), tpath);
+#ifdef _WIN32
+  if (!path)
+    path = GetRegistry(HKEY_CURRENT_USER, pathname);
+  if (!path)
+    path = GetRegistry(HKEY_LOCAL_MACHINE, pathname);
+#endif
+  return path;
+}
 
 #ifndef va_count
 #define  va_count(narg) va_start(incrmtr, first); \
@@ -782,22 +407,14 @@ char *LibFindImageSymbolErrString()
 }
 
 STATIC_THREADSAFE int dlopen_mutex_initialized = 0;
-#ifndef HAVE_WINDOWS_H
 STATIC_THREADSAFE pthread_mutex_t dlopen_mutex;
-#else
-STATIC_THREADSAFE HANDLE dlopen_mutex;
-#endif
 
 STATIC_ROUTINE void dlopen_lock()
 {
 
   if (!dlopen_mutex_initialized) {
     dlopen_mutex_initialized = 1;
-#ifdef HAVE_WINDOWS_H
     pthread_mutex_init(&dlopen_mutex, NULL);
-#else
-    pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
-#endif
   }
 
   pthread_mutex_lock(&dlopen_mutex);
@@ -808,17 +425,13 @@ STATIC_ROUTINE void dlopen_unlock()
 
   if (!dlopen_mutex_initialized) {
     dlopen_mutex_initialized = 1;
-#ifdef HAVE_WINDOWS_H
     pthread_mutex_init(&dlopen_mutex, NULL);
-#else
-    pthread_mutex_init(&dlopen_mutex, pthread_mutexattr_default);
-#endif
   }
 
   pthread_mutex_unlock(&dlopen_mutex);
 }
 
-int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
+int LibFindImageSymbol_C(const char *filename, const char *symbol, void **symbol_value)
 {
   char *full_filename = malloc(strlen(filename) + 10);
   void *handle;
@@ -830,7 +443,7 @@ int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
 
   *symbol_value = NULL;
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   strcpy(full_filename, filename);
   lib_offset = 0;
 #else
@@ -845,9 +458,7 @@ int LibFindImageSymbol_C(char *filename, char *symbol, void **symbol_value)
     strcat(full_filename, SHARELIB_TYPE);
   dlopen_lock();
   old_fis_error = FIS_Error;
-#ifdef linux
   dlopen_mode = RTLD_NOW /* | RTLD_GLOBAL */ ;
-#endif
   handle = dlopen(full_filename, dlopen_mode);
   if (handle == NULL) {
     tmp_error1 = dlerror();
@@ -1076,11 +687,7 @@ int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *star
   return StrFree1Dx(&tmp);
 }
 
-#ifndef HAVE_WINDOWS_H
 STATIC_THREADSAFE pthread_mutex_t VmMutex;
-#else
-STATIC_THREADSAFE HANDLE VmMutex;
-#endif
 
 int VmMutex_initialized = 0;
 
@@ -1207,12 +814,7 @@ int LibEstablish()
 }
 
 #define SEC_PER_DAY (60*60*24)
-/*
-STATIC_ROUTINE time_t parsedate(char *asctim, void *dummy)
-{
-  return time(0);
-}
-*/
+
 STATIC_ROUTINE int mds_strcasecmp(char *in1, char *in2)
 {
   int ans = -1;
@@ -1285,8 +887,7 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
 
     {
       struct tm tm = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-      //      char *tmp;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
       unsigned int day, year, hour, minute, second;
       char month[4];
       char *months[] =
@@ -1308,64 +909,39 @@ int LibConvertDateString(char *asc_time, int64_t * qtime)
       tm.tm_hour = hour;
       tm.tm_min = minute;
       tm.tm_sec = second;
-      //      tmp = asc_time;
 #else
-      //      tmp = strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
+      strptime(asc_time, "%d-%b-%Y %H:%M:%S", &tm);
 #endif
       tm.tm_isdst = -1;
       tim = mktime(&tm);
       if ((int)tim == -1)
 	return 0;
-#if defined(HAVE_WINDOWS_Hxxxxx)
-      _tzset();
-      tim -= _timezone;
-#endif
     }
   }
-  if (tim > 0) {
+  if (tim > 0)
     LibTimeToVMSTime(&tim, qtime);
-    return tim > 0;
-    *qtime = ((int64_t) tim + daylight * 3600) * 10000000 + addin;
-  } else
+  else
     *qtime = 0;
   return tim > 0;
 }
 
 int LibTimeToVMSTime(time_t * time_in, int64_t * time_out)
 {
-  time_t t;
-#ifdef HAVE_GETTIMEOFDAY
-  struct timeval tm;
-#ifdef HAVE_WINDOWS_H
-  typedef long long suseconds_t;
-#endif
-  suseconds_t microseconds = 0;
-  if (time_in == NULL) {
-    gettimeofday(&tm, 0);
-    t = tm.tv_sec;
-    microseconds = tm.tv_usec;
-  } else
-    t = *time_in;
+  time_t time_to_use = time_in ? *time_in : time(NULL);
+  struct tm *tmval = localtime(&time_to_use);
+  time_t tz_offset;
+  struct timeval tv;
+  if (time_in)
+    tv.tv_usec = 0;
+  else
+    gettimeofday(&tv,0);
+  
+#ifdef USE_TM_GMTOFF
+  tz_offset = tmval->tm_gmtoff;
 #else
-  int microseconds = 0;
-  t = (time_in == NULL) ? t = time(0) : *time_in;
+  tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
-#if defined(USE_TM_GMTOFF)
-  /* this is a suggestion to change all code 
-     for this as timezone is depricated unix
-     annother alternative is to use gettimeofday */
-  {
-    struct tm *tm;
-    tm = localtime(&t);
-    *time_out =
-	(int64_t) ((unsigned int)t + tm->tm_gmtoff) * (int64_t) 10000000 + addin +
-	microseconds * 10;
-  }
-#else
-  tzset();
-  *time_out =
-      (int64_t) (t - timezone + daylight * 3600) * (int64_t) 10000000 + addin + microseconds * 10;
-#endif
+  *time_out = (int64_t) (time_to_use + tz_offset) * (int64_t) 10000000 + tv.tv_usec * 10 + VMS_TIME_OFFSET;
   return 1;
 }
 
@@ -1377,21 +953,21 @@ time_t LibCvtTim(int *time_in, double *t)
     int64_t time_local;
     double time_d;
     struct tm *tmval;
-    //    time_t dummy = 0;
+    time_t tz_offset;
     memcpy(&time_local, time_in, sizeof(time_local));
-    time_local = (*(int64_t *) time_in - addin);
+    time_local = (*(int64_t *) time_in - VMS_TIME_OFFSET);
     if (time_local < 0)
       time_local = 0;
     bintim = time_local / LONG_LONG_CONSTANT(10000000);
     time_d = (double)bintim + (double)(time_local % LONG_LONG_CONSTANT(10000000)) * 1E-7;
     tmval = localtime(&bintim);
 #ifdef USE_TM_GMTOFF
-    t_out = (time_d > 0 ? time_d : 0) - tmval->tm_gmtoff;	// - (tmval->tm_isdst ? 3600 : 0);
-    bintim -= tmval->tm_gmtoff;
+    tz_offset = tmval->tm_gmtoff;
 #else
-    t_out = (time_d > 0 ? time_d : 0) + timezone - daylight * (tmval->tm_isdst ? 3600 : 0);
+    tz_offset = - timezone + daylight * (tmval->tm_isdst ? 3600 : 0);
 #endif
-    //    bintim = (long)t_out;
+    t_out = (time_d > 0 ? time_d : 0) - tz_offset;
+    bintim -= tz_offset;
   } else
     bintim = (long)(t_out = (double)time(0));
   if (t != 0)
@@ -1399,29 +975,13 @@ time_t LibCvtTim(int *time_in, double *t)
   return (bintim);
 }
 
-#ifndef HAVE_WINDOWS_H
-#include <sys/time.h>
-#endif
 int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
 {
   char *time_str;
   char time_out[23];
   unsigned short slen = sizeof(time_out);
   time_t bintim = LibCvtTim(time_in, 0);
-  int64_t chunks = 0;
-  int64_t *time_q = (int64_t *) time_in;
-  tzset();
-  if (time_in != NULL) {
-#ifdef HAVE_GETTIMEOFDAY
-    int64_t tmp;
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv, &tz);
-    tmp = (*time_q - 0x7c95674beb4000ULL) / 10000000 + tz.tz_minuteswest * 60 - (daylight * 3600);
-    bintim = (tmp < 0) ? (time_t) 0 : (time_t) tmp;
-#endif
-    chunks = *time_q % 10000000;
-  }
+  int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
   time_str = ctime(&bintim);
   if (time_str) {
     time_out[0] = time_str[8];
@@ -2191,64 +1751,16 @@ int libffs(int *position, int *size, char *base, int *find_position)
   }
   return status;
 }
-STATIC_THREADSAFE char RELEASE[512] = { 0 };
-STATIC_THREADSAFE struct descriptor RELEASE_D = { 0, DTYPE_T, CLASS_S, RELEASE };
 
-char *MdsRelease()
+const char *MdsRelease()
 {
-#include <release.h>
-  STATIC_CONSTANT const char *tag = MDSPLUS_RELEASE;
-  if (RELEASE[0] == 0) {
-    int major = 0;
-    int minor = 0;
-    int sub = 0;
-    int status = sscanf(&tag[1], "Name: release-%d-%d-%d", &major, &minor, &sub);
-    if (status == 0)
-      strcpy(RELEASE, "MDSplus, beta version");
-    else if (status == 1)
-      sprintf(RELEASE, "MDSplus, Version %d", major);
-    else if (status == 2)
-      sprintf(RELEASE, "MDSplus, Version %d.%d", major, minor);
-    else if (status == 3)
-      sprintf(RELEASE, "MDSplus, Version %d.%d-%d", major, minor, sub);
-    RELEASE_D.length = strlen(RELEASE);
-  }
   return RELEASE;
 }
 
 struct descriptor *MdsReleaseDsc()
 {
-  MdsRelease();
+  static struct descriptor RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
+  RELEASE_D.length = (int)strlen(RELEASE);
+  RELEASE_D.pointer = (char *)RELEASE;
   return &RELEASE_D;
 }
-
-/*
-STATIC_ROUTINE char *GetTdiLogical(char *name)
-{
-  int status;
-  char *ans = 0;
-  STATIC_THREADSAFE int (*TdiExecute) () = 0;
-  STATIC_CONSTANT DESCRIPTOR(exp, "data(ENV($))");
-  struct descriptor name_d = { 0, DTYPE_T, CLASS_S, 0 };
-  struct descriptor ans_d = { 0, DTYPE_T, CLASS_D, 0 };
-  STATIC_CONSTANT DESCRIPTOR(image, "TdiShr");
-  STATIC_CONSTANT DESCRIPTOR(routine, "TdiExecute");
-  if (TdiExecute == 0) {
-    status =
-	LibFindImageSymbol((struct descriptor *)&image, (struct descriptor *)&routine,
-			   (void **)&TdiExecute);
-    if (!(status & 1))
-      return 0;
-  }
-  name_d.length = strlen(name);
-  name_d.pointer = name;
-  status = (TdiExecute) (&exp, &name_d, &ans_d MDS_END_ARG);
-  if (status & 1) {
-    ans = strncpy(malloc(ans_d.length + 1), ans_d.pointer, ans_d.length);
-    ans[ans_d.length] = 0;
-    MdsFree1Dx((struct descriptor_xd *)&ans_d, NULL);
-  } else
-    ans = 0;
-  return ans;
-}
-*/

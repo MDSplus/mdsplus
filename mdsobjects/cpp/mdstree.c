@@ -7,10 +7,10 @@
 #include <libroutines.h>
 #include <mdstypes.h>
 
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <mdstypes.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define EXPORT __declspec(dllexport)
 #else
 #define EXPORT

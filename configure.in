@@ -297,7 +297,6 @@ SHARETYPE=".so"
 
 THREAD="-pthread"
 AC_SUBST([THREAD])
-GEN_DEVICE=gen_device
 ICONS=""
 MITDEVICESIO_TARGETS=""
 case "$host" in
@@ -356,7 +355,6 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        AC_PROG_F77
        ICONS=icons
        IDLMDSEVENT=""
-       GEN_DEVICE=""
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
@@ -1075,7 +1073,6 @@ AC_OUTPUT(Makefile.inc
           ccl/Makefile 
           d3dshr/Makefile 
           dwscope/Makefile 
-          gen_device/Makefile
           hdf5/Makefile
           idlmdsevent/Makefile
           idlmdswidgets/Makefile

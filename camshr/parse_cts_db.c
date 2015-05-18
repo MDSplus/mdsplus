@@ -55,7 +55,7 @@ void parse_cts_db(struct MODULE *in, struct Module_ *out)
   if (MSGLVL(FUNCTION_NAME))
     printf("parse_cts_db()\n");
 
-  sprintf(fmt, "%%.%ds", MODULE_ENTRY - 1);	// create format string
+  sprintf(fmt, "%%.%ds", (int)(MODULE_ENTRY - 1));	// create format string
   memset(line, ' ', MODULE_ENTRY + 1);	// 2002.02.06
   sprintf(line, fmt, (char *)in);	// extract first (single) line
 

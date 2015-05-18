@@ -2,7 +2,7 @@
 #define __SERVERSHR
 
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #else
@@ -46,5 +46,6 @@ extern int ServerSetLogging(char *server, char logging_mode);
 extern int ServerStartServer(char *server);
 extern int ServerStopServer(char *server);
 extern void ServerWait(int id);
-
+extern int ServerFreeDispatchTable(void *vtable);
+extern char *ServerGetInfo(int full, char *server);
 #endif

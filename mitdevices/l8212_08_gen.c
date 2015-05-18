@@ -71,10 +71,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_01:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_01:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_01:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_01:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_02, TreeUSAGE_SIGNAL)
@@ -82,10 +82,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_02:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_02:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_02:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_02:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_03, TreeUSAGE_SIGNAL)
@@ -93,10 +93,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_03:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_03:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_03:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_03:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_04, TreeUSAGE_SIGNAL)
@@ -104,10 +104,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_04:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_04:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_04:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_04:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_05, TreeUSAGE_SIGNAL)
@@ -115,10 +115,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_05:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_05:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_05:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_05:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_06, TreeUSAGE_SIGNAL)
@@ -126,10 +126,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_06:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_06:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_06:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_06:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_07, TreeUSAGE_SIGNAL)
@@ -137,10 +137,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_07:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_07:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_07:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_07:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_08, TreeUSAGE_SIGNAL)
@@ -148,10 +148,10 @@ int l8212_08__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr,
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_08:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_08:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_08:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_08:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
@@ -200,51 +200,51 @@ int l8212_08__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_
   case (L8212_08_N_INPUT_01 + 1):
  COPY_PART_NAME(:INPUT_01) break;
   case (L8212_08_N_INPUT_01_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_01:STARTIDX) break;
+ COPY_PART_NAME(INPUT_01:STARTIDX) break;
   case (L8212_08_N_INPUT_01_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_01:ENDIDX) break;
+ COPY_PART_NAME(INPUT_01:ENDIDX) break;
   case (L8212_08_N_INPUT_02 + 1):
  COPY_PART_NAME(:INPUT_02) break;
   case (L8212_08_N_INPUT_02_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_02:STARTIDX) break;
+ COPY_PART_NAME(INPUT_02:STARTIDX) break;
   case (L8212_08_N_INPUT_02_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_02:ENDIDX) break;
+ COPY_PART_NAME(INPUT_02:ENDIDX) break;
   case (L8212_08_N_INPUT_03 + 1):
  COPY_PART_NAME(:INPUT_03) break;
   case (L8212_08_N_INPUT_03_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_03:STARTIDX) break;
+ COPY_PART_NAME(INPUT_03:STARTIDX) break;
   case (L8212_08_N_INPUT_03_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_03:ENDIDX) break;
+ COPY_PART_NAME(INPUT_03:ENDIDX) break;
   case (L8212_08_N_INPUT_04 + 1):
  COPY_PART_NAME(:INPUT_04) break;
   case (L8212_08_N_INPUT_04_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_04:STARTIDX) break;
+ COPY_PART_NAME(INPUT_04:STARTIDX) break;
   case (L8212_08_N_INPUT_04_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_04:ENDIDX) break;
+ COPY_PART_NAME(INPUT_04:ENDIDX) break;
   case (L8212_08_N_INPUT_05 + 1):
  COPY_PART_NAME(:INPUT_05) break;
   case (L8212_08_N_INPUT_05_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_05:STARTIDX) break;
+ COPY_PART_NAME(INPUT_05:STARTIDX) break;
   case (L8212_08_N_INPUT_05_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_05:ENDIDX) break;
+ COPY_PART_NAME(INPUT_05:ENDIDX) break;
   case (L8212_08_N_INPUT_06 + 1):
  COPY_PART_NAME(:INPUT_06) break;
   case (L8212_08_N_INPUT_06_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_06:STARTIDX) break;
+ COPY_PART_NAME(INPUT_06:STARTIDX) break;
   case (L8212_08_N_INPUT_06_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_06:ENDIDX) break;
+ COPY_PART_NAME(INPUT_06:ENDIDX) break;
   case (L8212_08_N_INPUT_07 + 1):
  COPY_PART_NAME(:INPUT_07) break;
   case (L8212_08_N_INPUT_07_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_07:STARTIDX) break;
+ COPY_PART_NAME(INPUT_07:STARTIDX) break;
   case (L8212_08_N_INPUT_07_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_07:ENDIDX) break;
+ COPY_PART_NAME(INPUT_07:ENDIDX) break;
   case (L8212_08_N_INPUT_08 + 1):
  COPY_PART_NAME(:INPUT_08) break;
   case (L8212_08_N_INPUT_08_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_08:STARTIDX) break;
+ COPY_PART_NAME(INPUT_08:STARTIDX) break;
   case (L8212_08_N_INPUT_08_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_08:ENDIDX) break;
+ COPY_PART_NAME(INPUT_08:ENDIDX) break;
   default:
     status = TreeILLEGAL_ITEM;
   }

@@ -99,7 +99,7 @@ the tag name specified does not already exist.
       return TreeINVTAG;
   }
 
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
 
 /************************************************
  We must determine where to insert the new tag
@@ -149,7 +149,7 @@ the tag name specified does not already exist.
 
     new_tags_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
     if (!(new_tags_ptr)) {
-      return TreeFAILURE;
+      return TreeMEMERR;
     }
     memcpy(new_tags_ptr, old_tags_ptr, newtag_idx * sizeof(int));
     memcpy(new_tags_ptr + newtag_idx + 1, old_tags_ptr + newtag_idx,
@@ -208,7 +208,7 @@ the tag name specified does not already exist.
     pages_needed = pages_needed + 31;
     new_tag_info_ptr = memset(malloc(pages_needed * 512), 0, pages_needed * 512);
     if (!new_tag_info_ptr)
-      return TreeFAILURE;
+      return TreeMEMERR;
 
     memcpy(new_tag_info_ptr, dblist->tree_info->tag_info, tags * sizeof(TAG_INFO));
     *(new_tag_info_ptr + tags) = tag_info;	/* Load new */

@@ -46,7 +46,7 @@ static void printDecompiled(struct descriptor *dsc)
   EMPTYXD(out_xd);
   static char decompiled[1024];
 
-  int status = TdiDecompile(dsc, &out_xd MDS_END_ARG);
+  TdiDecompile(dsc, &out_xd MDS_END_ARG);
   if (!out_xd.pointer)
     printf("NULL\n");
   memcpy(decompiled, out_xd.pointer->pointer, out_xd.pointer->length);
@@ -96,7 +96,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
   struct descriptor_a *array_d;
   struct descriptor_r *record_d;
   char *buf;
-  EMPTYXD(float_xd);
+  //EMPTYXD(float_xd);
   EMPTYXD(ca_xd);
   int is_ca = 0;
 
@@ -1129,7 +1129,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_deserialize
   jclass exc;
   char *errorMsg;
   jobject retObj;
-  int dim = (*env)->GetArrayLength(env, jserialized);
+  //int dim = (*env)->GetArrayLength(env, jserialized);
   char *serialized = (char *)(*env)->GetByteArrayElements(env, jserialized, JNI_FALSE);
   int status = MdsSerializeDscIn(serialized, &xd);
   if (!(status & 1)) {
@@ -1366,10 +1366,13 @@ static void throwMdsException(JNIEnv * env, int status)
 
 static unsigned int getCtx1(void *ctx)
 {
+  return (unsigned int)(((char *)ctx) - (char *)NULL);
+  /*
   if (sizeof(void *) == 8)
     return (unsigned int)((unsigned long)ctx & 0x00000000ffffffffLL);
   else
     return (unsigned int)ctx;
+  */
 }
 
 static unsigned int getCtx2(void *ctx)
@@ -1404,7 +1407,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree(JNIEnv * env, jclass c
   jclass treeCls;
   jmethodID constr;
   jvalue args[2];
-  void *ctx;
+  //void *ctx;
 
   DBI_ITM dbiItems[] = {
     {1024, DbiNAME, name, &retNameLen},
@@ -1471,8 +1474,8 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_closeTree
   int status;
   const char *name;
   void *ctx = 0;
-  jfieldID ctx1Fid, ctx2Fid;
-  jclass cls;
+  //jfieldID ctx1Fid, ctx2Fid;
+  //jclass cls;
 
   name = (*env)->GetStringUTFChars(env, jname, 0);
   ctx = getCtx(ctx1, ctx2);
@@ -1918,7 +1921,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_removeTreeTag
  */
 JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
     (JNIEnv * env, jclass cls, jint ctx1, jint ctx2) {
-  int status;
+  //int status;
   int64_t size;
   void *ctx = getCtx(ctx1, ctx2);
 
@@ -2379,10 +2382,10 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
   struct descriptor *dataD;
   int status;
   void *ctx = getCtx(ctx1, ctx2);
-  int numTimes;
+  //int numTimes;
   int64_t *times;
 
-  numTimes = (*env)->GetArrayLength(env, jtimes);
+  (*env)->GetArrayLength(env, jtimes);
   times = (int64_t *) (*env)->GetLongArrayElements(env, jtimes, NULL);
   dataD = ObjectToDescrip(env, jdata);
 
@@ -2757,12 +2760,12 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   (*env)->ReleaseByteArrayElements(env, jbuf, (jbyte *) buf, 0);
   releaseJNIEnv();
 }
-
+/*
 static void handleREvent(char *evName, char *buf, int dim, void *objPtr)
 {
   handleEvent(objPtr, dim, buf);
 }
-
+*/
 //Record eventObj instances retrieved by NewGlobalref. They will be released then the event is disposed
 //(indexed by eventId)
 struct EventDescr {
@@ -2770,7 +2773,7 @@ struct EventDescr {
   int64_t eventId;
   struct EventDescr *nxt;
 };
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static unsigned long *eventMutex;
 static int eventMutex_initialized = 0;
 #else
@@ -2874,7 +2877,7 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_convertToDate(JNIEnv * env, jclass c
   jstring jdate;
   char *date;
 
-  int status = LibSysAscTim(&len, &dateDsc, (int *)&time);
+  LibSysAscTim(&len, &dateDsc, (int *)&time);
   date = malloc(dateDsc.length + 1);
   memcpy(date, dateDsc.pointer, dateDsc.length);
   date[dateDsc.length] = 0;
@@ -2961,8 +2964,8 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_closeTree(JNIEnv * env, jobject o
 JNIEXPORT void JNICALL Java_MDSplus_Connection_setDefault
     (JNIEnv * env, jobject obj, jint sockId, jstring jpath) {
   const char *path = (*env)->GetStringUTFChars(env, jpath, 0);
-  jobject exc;
-  int status = MdsSetDefault(sockId, (char *)path);
+  //jobject exc;
+  MdsSetDefault(sockId, (char *)path);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
 }
 
@@ -3196,7 +3199,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
   const char *expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   const char *inPath = (*env)->GetStringUTFChars(env, jPath, 0);
   char *path, *putExpr;
-  jobject exc, currArg, retObj;
+  jobject exc, currArg;
   int nArgs, i, status;
   struct descriptor **dscs;
   char dtype, nDims;

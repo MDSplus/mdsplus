@@ -19,12 +19,12 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE * Data, BYTE Mem, Transla
 {
   char dev_name[5];
   BYTE Command[COMMAND_SIZE(OpCodeSingleCAMAC)];
-  int rc, scsiDevice;
+  int scsiDevice;
   int status = SUCCESS;		// optimistic -- function status, eg SUCCESS(=1) or FAILURE(=0)
   int direction;
   RequestSenseData sense;
   unsigned char sb_out_len;
-  unsigned int transfer_len;
+  int transfer_len;
   int enhanced;
   int online;
   int dummy;
@@ -34,7 +34,7 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE * Data, BYTE Mem, Transla
 
   // find the scsi device number (ie '/dev/sg#')
   // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address); 
-  sprintf(dev_name, "GK%c%d%0.2d", Key.scsi_port, Key.scsi_address, Key.crate);
+  sprintf(dev_name, "GK%c%d%.2d", Key.scsi_port, Key.scsi_address, Key.crate);
 
   if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
     if (MSGLVL(IMPORTANT))
@@ -65,8 +65,8 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE * Data, BYTE Mem, Transla
   // talk to the physical device
   scsi_lock(scsiDevice, 1);
   status = scsi_io(scsiDevice, direction, Command, sizeof(Command),
-		   Data, direction ? ((Mem == 16) ? 2 : 4) : 0,
-		   (char *)&sense, sizeof(sense), &sb_out_len, &transfer_len);
+		   (char *)Data, direction ? ((Mem == 16) ? 2 : 4) : 0,
+		   (unsigned char *)&sense, sizeof(sense), &sb_out_len, &transfer_len);
   Command[0] = OpCodeRegisterAccess;
   Command[1] = 0;
   Command[2] = 0x01;

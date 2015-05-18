@@ -1,59 +1,49 @@
 #include <config.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <ws2tcpip.h>
-#include <stdio.h>
 #else
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <arpa/inet.h>
-#include <sys/types.h>
 #include <netinet/tcp.h>
+#endif
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
 #include <errno.h>
 #include <unistd.h>
 
-#endif
 #include <mdsshr.h>
-#include "libroutines.h"
+#include <libroutines.h>
 #include "mdsshrthreadsafe.h"
+extern int UdpEventGetPort(unsigned short *port);
+extern int UdpEventGetAddress(const char **addr_format, unsigned char *arange);
+extern int UdpEventGetTtl(unsigned char *ttl);
+extern int UdpEventGetLoop(unsigned char *loop);
+extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
 static int releaseEventInfo(void *ptr);
 
-//int MDSEventAst(char *eventnam, void (*astadr)(), void *astprm, int *eventid) {}
-//int MDSEventCan(void *eventid) {}
-//int MDSEvent(char *evname){}
-
-#define MULTICAST_EVENT_PORT 4000
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
 
 static int sendSocket = 0;
-static int udpPort = -1;
-static int getPortMutex_initialized = 0;
 static int eventTopIdx = 0;
 static void *eventInfos[MAX_EVENTS];
 
-#ifndef HAVE_PTHREAD_H
-static unsigned long *eventIdMutex;
-static int eventIdMutex_initialized = 0;
-static unsigned long *sendEventMutex;
-static int sendEventMutex_initialized = 0;
-static unsigned long *getSocketMutex;
-static int getSocketMutex_initialized = 0;
-static unsigned long *getPortMutex;
-#else
 static pthread_mutex_t eventIdMutex;
 static int eventIdMutex_initialized = 0;
 static pthread_mutex_t sendEventMutex;
 static int sendEventMutex_initialized = 0;
 static pthread_mutex_t getSocketMutex;
 static int getSocketMutex_initialized = 0;
-static pthread_mutex_t getPortMutex;
-#endif
+static pthread_mutex_t initializeMutex;
+static int initializeMutex_initialized = 0;
+
+extern void InitializeEventSettings();
 
 struct EventInfo {
   int socket;
@@ -73,11 +63,6 @@ struct EventInfo {
 
 ***********************/
 
-#ifndef HAVE_PTHREAD_H
-extern int pthread_create(pthread_t * thread, void *dummy, void (*rtn) (void *), void *rtn_param);
-extern void pthread_detach(HANDLE * thread);
-#endif
-
 static void *handleMessage(void *arg)
 {
   int recBytes;
@@ -92,7 +77,7 @@ static void *handleMessage(void *arg)
   struct EventInfo *eventInfo = (struct EventInfo *)arg;
   thisNameLen = strlen(eventInfo->eventName);
   while (1) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     if ((recBytes = recvfrom(eventInfo->socket, (char *)recBuf, MAX_MSG_LEN, 0,
 			     (struct sockaddr *)&clientAddr, &addrSize)) < 0) {
       int error = WSAGetLastError();
@@ -132,18 +117,22 @@ static void *handleMessage(void *arg)
 
 static void initialize()
 {
-#ifdef HAVE_WINDOWS_H
   static int initialized = 0;
-
-  WSADATA wsaData;
-  WORD wVersionRequested;
-  wVersionRequested = MAKEWORD(1, 1);
-
   if (!initialized) {
-    initialized = 1;
+
+#ifdef _WIN32
+
+    WSADATA wsaData;
+    WORD wVersionRequested;
+    wVersionRequested = MAKEWORD(1, 1);
+
     WSAStartup(wVersionRequested, &wsaData);
-  }
 #endif
+  }
+  LockMdsShrMutex(&initializeMutex, &initializeMutex_initialized);
+  InitializeEventSettings();
+  UnlockMdsShrMutex(&initializeMutex);
+  initialized = 1;
 }
 
 static int releaseEventInfo(void *ptr)
@@ -199,7 +188,7 @@ static int getSocket()
   LockMdsShrMutex(&getSocketMutex, &getSocketMutex_initialized);
   if (!sendSocket) {
     if ((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
       int error = WSAGetLastError();
       fprintf(stderr, "Error creating socket - errcode=%d\n", error);
 #else
@@ -212,79 +201,28 @@ static int getSocket()
   return sendSocket;
 }
 
-static int getPort()
-{
-  char *portStr;
-  struct servent *serverInfo;
-  LockMdsShrMutex(&getPortMutex, &getPortMutex_initialized);
-  if (udpPort == -1) {
-    portStr = getenv("mdsevent_port");
-    if (portStr) {
-      sscanf(portStr, "%d", &udpPort);
-    } else {
-      serverInfo = getservbyname("mdsplus_event", "udp");
-      if (serverInfo)
-	udpPort = serverInfo->s_port;
-      else
-	udpPort = MULTICAST_EVENT_PORT;
-    }
-  }
-  UnlockMdsShrMutex(&getPortMutex);
-  return udpPort;
-}
-
-static char *getMulticastAddressFormat(unsigned char *arange)
-{
-  char *addrStr = getenv("mdsevent_address");
-  char *ans = (char *)malloc(50);
-  unsigned int num, p1 = 256, p2 = 256, p3 = 256, p4 = 256, p5 = 9999;
-  arange[0] = 0;
-  arange[1] = 255;
-  if (addrStr) {
-    if (strcmp(addrStr, "compat") == 0) {
-      strcpy(ans, "225.0.0.%d");
-    } else if (((num = sscanf(addrStr, "%d.%d.%d.%d-%d", &p1, &p2, &p3, &p4, &p5)) > 3)
-	       && (p1 < 256) && (p2 < 256) && (p3 < 256) && (p4 < 256) && (p5 >= p4)) {
-      sprintf(ans, "%d.%d.%d.", p1, p2, p3);
-      strcat(ans, "%d");
-      arange[0] = p4;
-      arange[1] = p5;
-    } else {
-      fprintf(stderr,
-	      "Invalid address format specified. Specify either n.n.n.n or n.n.n.n-n format.\nDefaulting to 225.0.0.0");
-      strcpy(ans, "255.0.0.%d");
-    }
-  } else {
-    //strcpy(ans,"255.0.0.%d");
-    strcpy(ans, "224.0.0.%d");
-    arange[0] = 175;
-    arange[1] = 175;
-  }
-  return ans;
-}
 
 static void getMulticastAddr(char const *eventName, char *retIp)
 {
-  static char *multicast_address_format = 0;
+  const char *addr_format;
   int i;
   int len = strlen(eventName);
-  static unsigned char arange[2];
+  unsigned char arange[2];
   unsigned int hash = 0, hashnew;
-  if (multicast_address_format == 0)
-    multicast_address_format = getMulticastAddressFormat(arange);
+  UdpEventGetAddress(&addr_format,arange);
   for (i = 0; i < len; i++)
     hash += eventName[i];
   hashnew =
       (unsigned int)((float)arange[0] +
 		     ((float)(hash % 256) / 256.) * ((float)arange[1] - (float)arange[0] + 1.));
-  sprintf(retIp, multicast_address_format, hashnew);
+  sprintf(retIp, addr_format, hashnew);
 }
 
 int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), void *astprm,
 		   int *eventid)
 {
   struct sockaddr_in serverAddr;
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   char flag = 1;
 #else
   int flag = 1;
@@ -294,12 +232,13 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   char ipAddress[64];
   struct ip_mreq ipMreq;
   struct EventInfo *currInfo;
+  unsigned short port;
   memset(&ipMreq, 0, sizeof(ipMreq));
 
   initialize();
 
   if ((udpSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int error = WSAGetLastError();
     fprintf(stderr, "Error creating socket - errcode=%d\n", error);
 #else
@@ -309,13 +248,14 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   }
   //    serverAddr.sin_len = sizeof(serverAddr);
   serverAddr.sin_family = AF_INET;
-  serverAddr.sin_port = htons(getPort());
+  UdpEventGetPort(&port);
+  serverAddr.sin_port = htons(port);
   serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   // Allow multiple connections
   if (setsockopt(udpSocket, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag)) == SOCKET_ERROR) {
     printf("Cannot set REUSEADDR option\n");
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     switch (WSAGetLastError()) {
     case WSANOTINITIALISED:
       printf("WSAENETDOWN\n");
@@ -355,7 +295,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
 #endif
     return 0;
   }
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
   if (bind(udpSocket, (SOCKADDR *) & serverAddr, sizeof(serverAddr)) != 0)
 #else
   if (bind(udpSocket, (struct sockaddr *)&serverAddr, sizeof(struct sockaddr_in)) != 0)
@@ -369,7 +309,7 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   ipMreq.imr_multiaddr.s_addr = inet_addr(ipAddress);
   ipMreq.imr_interface.s_addr = INADDR_ANY;
   if (setsockopt(udpSocket, IPPROTO_IP, IP_ADD_MEMBERSHIP, (char *)&ipMreq, sizeof(ipMreq)) < 0) {
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     int error = WSAGetLastError();
     char *errorstr = 0;
     switch (error) {
@@ -439,8 +379,8 @@ int MDSUdpEventCan(int eventid)
 {
   struct EventInfo *currInfo = getEventInfo(eventid);
   if (currInfo) {
-#ifndef HAVE_WINDOWS_H
     pthread_cancel(currInfo->thread);
+#ifndef _WIN32
     close(currInfo->socket);
 #else
     shutdown(currInfo->socket, 2);
@@ -457,10 +397,13 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   char multiIp[64];
   int udpSocket;
   struct sockaddr_in sin;
-  char *msg, *currPtr;
+  char *msg=0, *currPtr;
   int msgLen, nameLen, actBufLen;
   int status;
   struct hostent *hp = (struct hostent *)NULL;
+  unsigned short port;
+  unsigned char ttl,loop;
+  struct in_addr *interface_addr=0;
 
   initialize();
   getMulticastAddr(eventName, multiIp);
@@ -476,7 +419,8 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   }
   if (hp != NULL)
     memcpy(&sin.sin_addr, hp->h_addr_list[0], hp->h_length);
-  sin.sin_port = htons(getPort());
+  UdpEventGetPort(&port);
+  sin.sin_port = htons(port);
   nameLen = strlen(eventName);
   if (bufLen < MAX_MSG_LEN - (4 + 4 + nameLen))
     actBufLen = bufLen;
@@ -495,9 +439,17 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
   memcpy(currPtr, buf, bufLen);
 
   LockMdsShrMutex(&sendEventMutex, &sendEventMutex_initialized);
+  if (UdpEventGetTtl(&ttl))
+    setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_TTL, &ttl, sizeof(ttl));
+  if (UdpEventGetLoop(&loop))
+    setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_LOOP, &loop, sizeof(loop));
+  if (UdpEventGetInterface(&interface_addr)) {
+    status = setsockopt(udpSocket, IPPROTO_IP, IP_MULTICAST_IF, interface_addr, sizeof(*interface_addr));
+    free(interface_addr);
+  } 
   if (sendto(udpSocket, msg, msgLen, 0, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
     perror("Error sending UDP message!\n");
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
     switch (WSAGetLastError()) {
     case WSANOTINITIALISED:
       printf("WSAENETDOWN\n");
@@ -530,12 +482,14 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
       printf("WSAEFAULT\n");
       break;
     default:
-      printf("BOH\n");
+      printf("Unknown error occurred while sending event msg.\n");
     }
 #endif
     status = 0;
   } else
     status = 1;
+  if (msg)
+    free(msg);
   UnlockMdsShrMutex(&sendEventMutex);
   return status;
 }
@@ -550,17 +504,3 @@ int MDSUdpEvent(char const *eventName, int bufLen, char const *buf)
 
 ***********************/
 
-/*
-
-unsigned int UDPNetworkManager::fromNative(unsigned int n)
-{
-	return htonl(n);
-}
-
-unsigned int UDPNetworkManager::toNative(unsigned int n)
-{
-	return ntohl(n);
-}
-
-
-*/

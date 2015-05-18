@@ -252,8 +252,6 @@ void TestArray2D()
 
 int main(int argc, char *argv[])
 {
-  int i;
-  long s;
   if (argc > 1) {
     SOCKET socket;
     printf("*** Connecting to: %s", argv[1]);

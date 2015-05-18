@@ -1,7 +1,7 @@
 #ifndef UNNAMEDSEMAPHORE_H_
 #define UNNAMEDSEMAPHORE_H_
 #include "SystemSpecific.h"
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include "WindowsUnnamedSemaphore.h"
 #else
 #include <sys/types.h>

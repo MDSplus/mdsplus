@@ -6,7 +6,7 @@
 #define pthread_once_t int
 #define PTHREAD_ONCE_INIT 0
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef NO_WINDOWS_H
 #include <windows.h>
 #endif

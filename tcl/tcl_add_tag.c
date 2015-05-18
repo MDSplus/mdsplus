@@ -1,6 +1,8 @@
 #include <mdsshr.h>
 #include <string.h>
 #include <stdlib.h>
+#include <dcl.h>
+#include <treeshr.h>
 
 /**********************************************************************
 * TCL_ADD_TAG.C --

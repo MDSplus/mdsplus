@@ -10,6 +10,9 @@
 #include <fcntl.h>
 #include "../mdstcpip/mdsip_connections.h"
 #include "mdsshrthreadsafe.h"
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#endif
 
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <sys/types.h>
@@ -44,7 +47,7 @@ int MDSSetEventTimeout(int seconds)
 static int ConnectToMds_(char *host)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (host);
   }
@@ -55,7 +58,7 @@ static int ConnectToMds_(char *host)
 static int DisconnectFromMds_(int id)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (id);
   }
@@ -66,7 +69,7 @@ static int DisconnectFromMds_(int id)
 static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t * len)
 {
   STATIC_THREADSAFE void *(*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetConnectionInfo", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetConnectionInfo", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (id, name, readfd, len);
   }
@@ -76,7 +79,7 @@ static void *GetConnectionInfo_(int id, char **name, int *readfd, size_t * len)
 static int MdsEventAst_(int sock, char *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (sock, eventnam, astadr, astprm, eventid);
   }
@@ -87,7 +90,7 @@ static int MdsEventAst_(int sock, char *eventnam, void (*astadr) (), void *astpr
 static Message *GetMdsMsg_(int id, int *stat)
 {
   STATIC_THREADSAFE Message *(*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsg", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsg", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (id, stat);
   }
@@ -99,7 +102,7 @@ static Message *GetMdsMsg_(int id, int *stat)
 static Message *GetMdsMsgOOB_(int id, int *stat)
 {
   STATIC_THREADSAFE Message *(*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsgOOB", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsgOOB", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (id, stat);
   }
@@ -110,7 +113,7 @@ static Message *GetMdsMsgOOB_(int id, int *stat)
 static int MdsEventCan_(int id, int eid)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventCan", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventCan", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (id, eid);
   }
@@ -120,7 +123,7 @@ static int MdsEventCan_(int id, int eid)
 static int MdsValue_(int id, char *exp, struct descrip *d1, struct descrip *d2, struct descrip *d3)
 {
   STATIC_THREADSAFE int (*rtn) () = 0;
-  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", &rtn) : 1;
+  int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&rtn) : 1;
   if (status & 1) {
     return (*rtn) (id, exp, d1, d2, d3);
   }
@@ -133,7 +136,7 @@ static int RegisterRead_(int sock)
   int status = 1;
   STATIC_THREADSAFE int (*rtn) (int) = 0;
   if (rtn == 0)
-    status = LibFindImageSymbol_C("MdsIpShr", "RegisterRead", &rtn);
+    status = LibFindImageSymbol_C("MdsIpShr", "RegisterRead", (void **)&rtn);
   if (!(status & 1)) {
     printf("%s\n", MdsGetMsg(status));
     return status;

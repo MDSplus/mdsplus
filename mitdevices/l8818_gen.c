@@ -56,14 +56,14 @@ int l8818__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr "128BU	"
- ADD_NODE_EXPR(: INPUT:OFFSET, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT:OFFSET, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
@@ -105,11 +105,11 @@ int l8818__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (L8818_N_INPUT + 1):
  COPY_PART_NAME(:INPUT) break;
   case (L8818_N_INPUT_STARTIDX + 1):
- COPY_PART_NAME(: INPUT:STARTIDX) break;
+ COPY_PART_NAME(INPUT:STARTIDX) break;
   case (L8818_N_INPUT_ENDIDX + 1):
- COPY_PART_NAME(: INPUT:ENDIDX) break;
+ COPY_PART_NAME(INPUT:ENDIDX) break;
   case (L8818_N_INPUT_OFFSET + 1):
- COPY_PART_NAME(: INPUT:OFFSET) break;
+ COPY_PART_NAME(INPUT:OFFSET) break;
   case (L8818_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (L8818_N_STORE_ACTION + 1):

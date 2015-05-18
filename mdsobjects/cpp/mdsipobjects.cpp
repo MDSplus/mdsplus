@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include <sys/types.h>

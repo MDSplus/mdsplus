@@ -473,7 +473,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_GetFloatArrayNative(
 										jstring in)
 {
   jfloatArray jarr;
-  float zero = 0.;
+  //float zero = 0.;
   const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
   int dim;
   float *out_ptr;
@@ -494,7 +494,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNativ
 										  jstring in)
 {
   jdoubleArray jarr;
-  float zero = 0.;
+  //float zero = 0.;
   const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
   int dim;
   double *out_ptr;
@@ -517,7 +517,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
 										jstring in)
 {
   jlongArray jarr;
-  float zero = 0.;
+  //float zero = 0.;
   const char *in_char = (*env)->GetStringUTFChars(env, in, 0);
   int dim;
   int64_t *out_ptr;
@@ -537,7 +537,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv * e
 								      jstring in)
 {
   jintArray jarr;
-  float zero = 0.;
+  //float zero = 0.;
   const char *in_char;
   int dim;
   int *out_ptr;
@@ -560,7 +560,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *
 									jstring in)
 {
   jbyteArray jarr;
-  float zero = 0.;
+  //float zero = 0.;
   const char *in_char;
   int dim;
   int *out_ptr;
@@ -655,11 +655,11 @@ static int needSwap()
 JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getSegment
     (JNIEnv * env, jclass cls, jstring jNodeName, jint segmentIdx, jint segmentOffset) {
   int status, nid, i, nSamples;
-  int numSegments;
+  //int numSegments;
   jbyteArray jarr;
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   EMPTYXD(segXd);
-  EMPTYXD(decXd);
+  //EMPTYXD(decXd);
   EMPTYXD(dimXd);
   ARRAY_COEFF(char, 3) * arrPtr;
   int frameSize;
@@ -769,7 +769,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
 
   frameSize = arrPtr->m[0] * arrPtr->m[1] * arrPtr->length;
   if (needSwap()) {
-    buf = arrPtr->pointer;
+    buf = (char *)arrPtr->pointer;
     nSamples = arrPtr->arsize / arrPtr->length;
     switch (arrPtr->length) {
     case 2:
@@ -876,7 +876,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getInfo
 static int getStartEndIdx(int nid, float startTime, float endTime, int *retStartIdx, int *retEndIdx)
 {
   int status, nSegments, startIdx, endIdx;
-  float currStart, currEnd;
+  float currEnd;
   EMPTYXD(startXd);
   EMPTYXD(endXd);
 
@@ -962,11 +962,11 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
   const char *nodeName = (*env)->GetStringUTFChars(env, jNodeName, 0);
   EMPTYXD(startXd);
   EMPTYXD(endXd);
-  EMPTYXD(dimXd);
+  //EMPTYXD(dimXd);
   EMPTYXD(segXd);
   EMPTYXD(emptyXd);
-  int status, nid, nSegments, startIdx, endIdx, idx, nTimes, actSegments, currIdx;
-  float currStart, currEnd;
+  int status, nid, startIdx, endIdx, idx, nTimes, actSegments, currIdx;
+  //float currStart, currEnd;
   struct descriptor_xd *timesXds;
   struct descriptor_a *arrPtr;
   jfloatArray jarr;
@@ -1210,7 +1210,7 @@ JNIEXPORT void JNICALL Java_jScope_LocalDataProvider_unregisterEvent
 
 /* CompositeWaveDisplay management routines for using
 jScope panels outside java application */
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #define PATH_SEPARATOR ';'
 #else
 #define PATH_SEPARATOR ':'

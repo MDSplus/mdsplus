@@ -30,7 +30,7 @@ public class MdsDataProvider
     String tunnel_provider = "127.0.0.1:8000";
     SshTunneling ssh_tunneling;
     static final long RESAMPLE_TRESHOLD = 1000000000;
-    static final int MAX_PIXELS = 4000;
+    static final int MAX_PIXELS = 20000;
 
     
     
@@ -631,6 +631,7 @@ public class MdsDataProvider
         {
              String xExpr, yExpr;
              XYData res = null;
+             double maxX = 0;
              
              if (!CheckOpen(this.wd_experiment, this.wd_shot))
                 return null;
@@ -751,7 +752,6 @@ public class MdsDataProvider
                     {
                         y[i] = dis.readFloat();
                     }
-                    double maxX;
                     if(type == 1) //Long X (i.e. absolute times
                     {
                         long []longX = new long[nSamples];
@@ -823,7 +823,7 @@ public class MdsDataProvider
                 {
                     long refreshPeriod = jScopeFacade.getRefreshPeriod();
                     if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
-                    updateWorker.updateInfo(xmin, Double.MAX_VALUE, 2000,
+                    updateWorker.updateInfo(/*xmin*/maxX, Double.MAX_VALUE, 2000,
                         waveDataListenersV, this, isLong, refreshPeriod);
                 }
                 return res;
@@ -2034,15 +2034,6 @@ public class MdsDataProvider
         return true;
     }
 
-    public boolean SupportsContinuous()
-    {
-        return false;
-    }
-
-    public boolean DataPending()
-    {
-        return false;
-    }
 
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {

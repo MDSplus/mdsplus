@@ -6,9 +6,9 @@
 #ifndef __CVTDEF_LOADED
 #define __CVTDEF_LOADED 1
 
-#ifndef _MSC_VER
-#pragma nostandard
-#endif
+//#ifndef _MSC_VER
+//#pragma nostandard
+//#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,8 +43,8 @@ extern unsigned long CvtConvertFloat(void *input_v, unsigned long input_t,
 }
 #endif
 
-#ifndef _MSC_VER
-#pragma standard
-#endif
+//#ifndef _MSC_VER
+//#pragma standard
+//#endif
 
 #endif				/* __CVTDEF_LOADED */

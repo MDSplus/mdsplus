@@ -7,6 +7,10 @@
 #include <stdlib.h>
 #include <../tdishr/opcopcodes.h>
 #define MAX_LIMIT 1E10
+
+extern int TdiData();
+extern int TdiCompile();
+
 static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, long xMin, long xMax, int *retPoints, float *retResolution);
 
 static void swap4(char *buf)
@@ -68,8 +72,8 @@ static double toDouble(void *ptr, int type)
 //the type of X array is unknown, element size is passed in xSize
 static void compressData(float *y, char *x, int xSize, int xType, int nSamples, int reqPoints, float xMin, float xMax, int *retPoints, float *retResolution)
 {
-    int deltaSamples, actSamples, currSamples;
-    int i, j, outIdx, startIdx, endIdx;
+    int deltaSamples, currSamples;
+    int i, outIdx, startIdx, endIdx;
     float minY, maxY;
     if(nSamples < 10 * reqPoints)
     {
@@ -202,7 +206,7 @@ static char *recGetHelp(struct descriptor *dsc)
 	    rDsc = (struct descriptor_r *)dsc;
 	    for(i = 0; i < rDsc->ndesc; i++)
 	    {
-		if(help = recGetHelp(rDsc->dscptrs[i]))
+	      if((help = recGetHelp(rDsc->dscptrs[i])))
 		    return help;
 	    }
 	    return NULL;
@@ -474,14 +478,13 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
     int retSize;
     int idx, i, status;
     char *retArr;
-    float currFloat;
+    // float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
     float xMin = *inXMin;
     float xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
@@ -640,7 +643,7 @@ struct descriptor_xd *GetXYSignal(char *inY, char *inX, float *inXMin, float *in
     }
     for(i = 0; i < retSamples; i++)
     {
-	currFloat = 0;
+      //currFloat = 0;
 	switch(xArrD->dtype) {
 	    case DTYPE_B:
 	    case DTYPE_BU:
@@ -771,14 +774,14 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
     int retSize;
     int idx, i, status;
     char *retArr;
-    float currFloat;
+    //float currFloat;
     float retResolution;
     DESCRIPTOR_A(retArrD, 1, DTYPE_B, 0, 0); 
     long xMin = *inXMin;
     long xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
+    //float retInterval;
     double maxX, minX, currX;
     char *title, *xLabel, *yLabel;
 
@@ -885,7 +888,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
 	    }
 	}
     }
-    compressDataLongX(y, xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
+    compressDataLongX(y, (long *)xArrD->pointer, nSamples, *reqNSamples, *inXMin, *inXMax, &retSamples, &retResolution);
 
 /*Assemble result. Format:
 -retResolution(float)
@@ -936,7 +939,7 @@ struct descriptor_xd *GetXYSignalLongTimes(char *inY, char *inX, long *inXMin, l
     }
     for(i = 0; i < retSamples; i++)
     {
-	currFloat = 0;
+      //currFloat = 0;
 	switch(xArrD->dtype) {
 	    case DTYPE_B:
 	    case DTYPE_BU:
@@ -1063,11 +1066,11 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
     struct descriptor xMaxD = {sizeof(float), DTYPE_FLOAT, CLASS_S, (char *)inXMax};
     char *err;
     int nSamples, retSamples;
-    int xSampleSize;
-    int retSize;
-    int idx, i, status;
-    char *retArr;
-    float currFloat;
+    //int xSampleSize;
+    //int retSize;
+    int i, status;
+    //char *retArr;
+    //float currFloat;
     float retResolution;
     DESCRIPTOR_A(retDataD, sizeof(float), DTYPE_FLOAT, 0, 0);
     DESCRIPTOR_A(retDimD, 0, 0, 0, 0);
@@ -1076,9 +1079,9 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
     float xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
-    double maxX, minX, currX;
-    char *title, *xLabel, *yLabel;
+    //float retInterval;
+    //double maxX, minX, currX;
+    //char *title, *xLabel, *yLabel;
 
 //printf("GetXYWave(%s, %f, %f, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 
@@ -1200,8 +1203,8 @@ struct descriptor_xd *GetXYWave(char *sigName, float *inXMin, float *inXMax, int
 //the type of X array is unknown, element size is passed in xSize
 static void compressDataLongX(float *y, long *x, int nSamples, int reqPoints, long xMin, long xMax, int *retPoints, float *retResolution)
 {
-    int deltaSamples, actSamples, currSamples;
-    int i, j, outIdx, startIdx, endIdx;
+    int deltaSamples, currSamples;
+    int i, outIdx, startIdx, endIdx;
     float minY, maxY;
     if(nSamples < 10 * reqPoints)
     {
@@ -1276,22 +1279,22 @@ struct descriptor_xd *GetXYWaveLongTimes(char *sigName, long *inXMin, long *inXM
     struct descriptor xMaxD = {sizeof(long), DTYPE_Q, CLASS_S, (char *)inXMax};
     char *err;
     int nSamples, retSamples;
-    int xSampleSize;
-    int retSize;
-    int idx, i, status;
-    char *retArr;
-    float currFloat;
+    //int xSampleSize;
+    //int retSize;
+    int i, status;
+    //char *retArr;
+    //float currFloat;
     float retResolution;
     DESCRIPTOR_A(retDataD, sizeof(float), DTYPE_FLOAT, 0, 0);
     DESCRIPTOR_A(retDimD, 0, 0, 0, 0);
     DESCRIPTOR_SIGNAL_1(retSignalD, &retDataD, 0, &retDimD);
-    long xMin = *inXMin;
-    long xMax = *inXMax; 
+    //long xMin = *inXMin;
+    //long xMax = *inXMax; 
     struct descriptor_a *xArrD, *yArrD;
     float *y;
-    float retInterval;
-    double maxX, minX, currX;
-    char *title, *xLabel, *yLabel;
+    //float retInterval;
+    //double maxX, minX, currX;
+    //char *title, *xLabel, *yLabel;
 
 //printf("GetXYWave(%s, %d, %d, %d)\n", sigName, *inXMin, *inXMax, *reqNSamples); 
 

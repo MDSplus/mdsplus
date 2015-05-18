@@ -36,14 +36,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_1:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_1:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_2, TreeUSAGE_SIGNAL)
@@ -52,14 +52,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_2:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_2:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_3, TreeUSAGE_SIGNAL)
@@ -68,14 +68,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_3:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_3:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_4, TreeUSAGE_SIGNAL)
@@ -84,14 +84,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_4:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_4:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_5, TreeUSAGE_SIGNAL)
@@ -100,14 +100,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_5:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_5:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_6, TreeUSAGE_SIGNAL)
@@ -116,14 +116,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_6:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_6:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_7, TreeUSAGE_SIGNAL)
@@ -132,14 +132,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_7:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_7:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_7:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_7:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_7:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_7:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_8, TreeUSAGE_SIGNAL)
@@ -148,14 +148,14 @@ int t2812__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, in
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
 #define expr " [2048.,.00244141] "
- ADD_NODE_EXPR(: INPUT_8:CALIBRATION, TreeUSAGE_NUMERIC)
+ ADD_NODE_EXPR(INPUT_8:CALIBRATION, TreeUSAGE_NUMERIC)
 #undef expr
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_8:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_8:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(: INPUT_8:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_8:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
   status = TreeEndConglomerate();
@@ -180,67 +180,67 @@ int t2812__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_p
   case (T2812_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (T2812_N_INPUT_1_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_1:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_1:CALIBRATION) break;
   case (T2812_N_INPUT_1_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_1:STARTIDX) break;
+ COPY_PART_NAME(INPUT_1:STARTIDX) break;
   case (T2812_N_INPUT_1_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_1:ENDIDX) break;
+ COPY_PART_NAME(INPUT_1:ENDIDX) break;
   case (T2812_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (T2812_N_INPUT_2_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_2:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_2:CALIBRATION) break;
   case (T2812_N_INPUT_2_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_2:STARTIDX) break;
+ COPY_PART_NAME(INPUT_2:STARTIDX) break;
   case (T2812_N_INPUT_2_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_2:ENDIDX) break;
+ COPY_PART_NAME(INPUT_2:ENDIDX) break;
   case (T2812_N_INPUT_3 + 1):
  COPY_PART_NAME(:INPUT_3) break;
   case (T2812_N_INPUT_3_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_3:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_3:CALIBRATION) break;
   case (T2812_N_INPUT_3_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_3:STARTIDX) break;
+ COPY_PART_NAME(INPUT_3:STARTIDX) break;
   case (T2812_N_INPUT_3_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_3:ENDIDX) break;
+ COPY_PART_NAME(INPUT_3:ENDIDX) break;
   case (T2812_N_INPUT_4 + 1):
  COPY_PART_NAME(:INPUT_4) break;
   case (T2812_N_INPUT_4_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_4:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_4:CALIBRATION) break;
   case (T2812_N_INPUT_4_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_4:STARTIDX) break;
+ COPY_PART_NAME(INPUT_4:STARTIDX) break;
   case (T2812_N_INPUT_4_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_4:ENDIDX) break;
+ COPY_PART_NAME(INPUT_4:ENDIDX) break;
   case (T2812_N_INPUT_5 + 1):
  COPY_PART_NAME(:INPUT_5) break;
   case (T2812_N_INPUT_5_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_5:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_5:CALIBRATION) break;
   case (T2812_N_INPUT_5_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_5:STARTIDX) break;
+ COPY_PART_NAME(INPUT_5:STARTIDX) break;
   case (T2812_N_INPUT_5_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_5:ENDIDX) break;
+ COPY_PART_NAME(INPUT_5:ENDIDX) break;
   case (T2812_N_INPUT_6 + 1):
  COPY_PART_NAME(:INPUT_6) break;
   case (T2812_N_INPUT_6_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_6:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_6:CALIBRATION) break;
   case (T2812_N_INPUT_6_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_6:STARTIDX) break;
+ COPY_PART_NAME(INPUT_6:STARTIDX) break;
   case (T2812_N_INPUT_6_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_6:ENDIDX) break;
+ COPY_PART_NAME(INPUT_6:ENDIDX) break;
   case (T2812_N_INPUT_7 + 1):
  COPY_PART_NAME(:INPUT_7) break;
   case (T2812_N_INPUT_7_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_7:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_7:CALIBRATION) break;
   case (T2812_N_INPUT_7_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_7:STARTIDX) break;
+ COPY_PART_NAME(INPUT_7:STARTIDX) break;
   case (T2812_N_INPUT_7_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_7:ENDIDX) break;
+ COPY_PART_NAME(INPUT_7:ENDIDX) break;
   case (T2812_N_INPUT_8 + 1):
  COPY_PART_NAME(:INPUT_8) break;
   case (T2812_N_INPUT_8_CALIBRATION + 1):
- COPY_PART_NAME(: INPUT_8:CALIBRATION) break;
+ COPY_PART_NAME(INPUT_8:CALIBRATION) break;
   case (T2812_N_INPUT_8_STARTIDX + 1):
- COPY_PART_NAME(: INPUT_8:STARTIDX) break;
+ COPY_PART_NAME(INPUT_8:STARTIDX) break;
   case (T2812_N_INPUT_8_ENDIDX + 1):
- COPY_PART_NAME(: INPUT_8:ENDIDX) break;
+ COPY_PART_NAME(INPUT_8:ENDIDX) break;
   default:
     status = TreeILLEGAL_ITEM;
   }

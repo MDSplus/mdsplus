@@ -4,7 +4,7 @@
 #define _GNU_SOURCE		/* glibc2 needs this */
 #include <config.h>
 #include <mdsdescrip.h>
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #ifndef __SIZE_TYPE__
 typedef int ssize_t;
 #endif

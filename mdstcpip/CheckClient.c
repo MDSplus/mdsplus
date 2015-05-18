@@ -11,13 +11,12 @@
 #include <signal.h>
 #include <config.h>
 #include <signal.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <ctype.h>
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
 #include <sys/types.h>
 #include <pwd.h>
+#include <grp.h>
 #include <sys/wait.h>
 #endif
 
@@ -34,32 +33,12 @@ static void CompressString(struct descriptor *in, int upcase)
     StrRight(in, in, &two);
 }
 
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
   return 1;
 }
 #else
-
-static void ChildSignalHandler(int num)
-{
-  sigset_t set, oldset;
-  pid_t pid;
-  int status, exitstatus;
-  /* block other incoming SIGCHLD signals */
-  sigemptyset(&set);
-  sigaddset(&set, SIGCHLD);
-  sigprocmask(SIG_BLOCK, &set, &oldset);
-  /* wait for child */
-  while ((pid = waitpid((pid_t) - 1, &status, WNOHANG)) > 0) {
-    /* re-install the signal handler (some systems need this) */
-    signal(SIGCHLD, ChildSignalHandler);
-    /* and unblock it */
-    sigemptyset(&set);
-    sigaddset(&set, SIGCHLD);
-    sigprocmask(SIG_UNBLOCK, &set, &oldset);
-  }
-}
 
 static int BecomeUser(char *remuser, struct descriptor *local_user)
 {
@@ -85,11 +64,8 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
       pwd = getpwnam(user);
     }
     if (pwd) {
-      int pid = 0;
       int homelen = strlen(pwd->pw_dir);
       char *cmd = strcpy(malloc(homelen + 10), "HOME=");
-      char *mds_path = getenv("MDS_PATH");
-      pid = getpid();
       initgroups(pwd->pw_name, pwd->pw_gid);
       status = setgid(pwd->pw_gid);
       status = setuid(pwd->pw_uid);
@@ -116,8 +92,6 @@ int CheckClient(char *username, int num, char **matchString)
     static int zero = 0, one = 1, two = 2;
     if (f) {
       static char line_c[1024];
-      static char match_c1[1024];
-      static char match_c2[1024];
       static struct descriptor line_d = { 0, DTYPE_T, CLASS_S, line_c };
       static struct descriptor local_user = { 0, DTYPE_T, CLASS_D, 0 };
       static struct descriptor access_id = { 0, DTYPE_T, CLASS_D, 0 };

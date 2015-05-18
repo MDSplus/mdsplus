@@ -16,7 +16,6 @@ static char *DefName;
 static int A = 0;
 static int F = 0;
 static int Mem = 24;
-static int DefMem = 24;
 static void *D = 0;
 static int Count;
 static IOSB iosb;
@@ -78,7 +77,6 @@ multi_io(ccl_stop, CamStopw)
 
 static int ParseQualifiers(void *ctx, char **error, char **output)
 {
-  int memsize;
   int *d32;
   short *d16;
   int binary, hex, octal;
@@ -104,7 +102,7 @@ static int ParseQualifiers(void *ctx, char **error, char **output)
   if (cli_get_value(ctx,"address", &value) & 1) {
     char *endptr;
     A = strtol(value, &endptr, 0);
-    if (*endptr != '\0' || (A < 0) || (A > 0)) {
+    if (*endptr != '\0' || (A < 0) || (A > 15)) {
       *error = malloc(strlen(value)+100);
       sprintf(*error, "Error: invalid /ADDRESS value specified '%s'. Use a number from 0 to 15\n",value);
       free(value);
@@ -128,7 +126,7 @@ static int ParseQualifiers(void *ctx, char **error, char **output)
   if (cli_get_value(ctx,"count", &value) & 1) {
     char *endptr;
     Count = strtol(value, &endptr, 0);
-    if (*endptr != '\0' || (Count < 0)) {
+    if (*endptr != '\0' && (Count < 0)) {
       *error = malloc(strlen(value)+100);
       sprintf(*error, "Error: invalid /COUNT value specified '%s'. Use a number > 0.\n",value);
       free(value);
@@ -216,9 +214,11 @@ static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
 	*output = strdup("CAMNOQ: got Q=0, expecting Q=1\n");
     }
   } else {
-    char *msg = MdsGetMsg(status);
-    *error = malloc(strlen(msg)+100);
-    sprintf(*error, "Error detected in CAMAC call, %s\n", msg);
+    if (*error == NULL) {
+      char *msg = MdsGetMsg(status);
+      *error = malloc(strlen(msg)+100);
+      sprintf(*error, "Error detected in CAMAC call, %s\n", msg);
+    }
   }
   return status;
 }

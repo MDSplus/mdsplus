@@ -1,4 +1,0 @@
-#!/bin/sh
-#
-cd ${CLIENT_BASEDIR}/usr/local/mdsplus/mdsobjects/python
-easy_install $(ls *.egg)

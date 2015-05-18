@@ -72,8 +72,6 @@ extern int TdiDecompile();
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 typedef struct _DisplayPart {
   int nid;
   int nid_offset;
@@ -134,7 +132,7 @@ Boolean XmdsIsDisplay(Widget w)
 {
   XtPointer user_data = 0;
   XtVaGetValues(w, XmNuserData, &user_data, NULL);
-  if (user_data && ((int)user_data == DisplayUserData))
+  if (user_data && (user_data == (XtPointer)DisplayUserData))
     return 1;
   else
     return 0;

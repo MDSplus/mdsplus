@@ -1,5 +1,9 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <dcl.h>
 
 /**********************************************************************
 * TCL_DELETE_PULSE.C --

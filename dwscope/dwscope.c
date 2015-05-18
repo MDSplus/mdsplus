@@ -58,8 +58,6 @@ $ dwcope [-default setup]
 #include <DXm/DECspecific.h>
 #endif
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 extern void XmdsInitialize();
 extern void XmdsDestroyWidgetCallback();
 extern void XmdsManageChildCallback();
@@ -230,7 +228,6 @@ static WaveInfo Wave[MaxCols][MaxRows];
 static WaveInfo *CurrentWave;
 static WaveInfo *PendingWave;
 static WaveInfo *SelectedWave = 0;
-static WaveInfo *PasteWave = 0;
 static WaveInfo GlobalWave;
 static Boolean CloseDataSourcesEventReceived = 0;
 static Boolean ScopePrintEventReceived = 0;
@@ -348,7 +345,6 @@ int main(int argc, String * argv)
   int r;
   int c;
   void *cds_id = 0;
-  XmString deffile;
   MrmHierarchy drm_hierarchy;
   char *printers = GetPrinterList();
 
@@ -395,14 +391,12 @@ int main(int argc, String * argv)
     Widget printers_pulldown = XtNameToWidget(MainWidget, "*printer_select_pulldown");
     Arg arglist[] = { {XmNlabelString, 0}
     };
-    Widget b;
     int num;
-    int i;
     Widget *children;
     char *printer;
     for (printer = strtok(printers, "\n"); printer; printer = strtok(0, "\n")) {
       arglist[0].value = (long)XmStringCreateSimple(printer);
-      b = XmCreatePushButtonGadget(printers_pulldown, printer, arglist, XtNumber(arglist));
+      XmCreatePushButtonGadget(printers_pulldown, printer, arglist, XtNumber(arglist));
     }
     XtVaGetValues(printers_pulldown, XmNnumChildren, &num, XmNchildren, &children, NULL);
     XtManageChildren(children, num);
@@ -430,6 +424,7 @@ int main(int argc, String * argv)
   SetupEvent("DWSCOPE_CLOSE_FILES", &CloseDataSourcesEventReceived, &cds_id);
   XmProcessTraversal(XtNameToWidget(MainWidget, "*override_shot"), XmTRAVERSE_CURRENT);
   XtAppMainLoop(AppContext);
+  return 0;
 }
 
 #include <errno.h>
@@ -438,9 +433,8 @@ int main(int argc, String * argv)
 static void DoPrint(char *filename)
 {
   char cmd[512];
-  int status;
   sprintf(cmd, "dwscopePrint %s %s", filename, ScopePrinter);
-  status = system(cmd);
+  system(cmd);
 }
 
 static char *GetPrinterList()
@@ -666,8 +660,6 @@ static void /*XtCallbackProc */ GridStyle(Widget w, XtPointer client_data, XmAny
       XtVaSetValues(Wave[c][r].w, XmdsNgridStyle,
 		    lines ? XmdsGRID_STYLE_LINES : XmdsGRID_STYLE_TICKS, NULL);
 }
-
-static int scope_height, scope_width, scope_x, scope_y;
 
 static void /*XtCallbackProc */ Ok(Widget w, XtPointer client_data,
 				   XmAnyCallbackStruct * callback_data)
@@ -1358,7 +1350,6 @@ static void /*XtCallbackProc */ ApplyDataSetup(Widget w, int *mode, XtPointer ca
   int change_mask;
   if (CurrentWave != &GlobalWave) {
     if (*mode) {
-      String event;
       WaveInfo info;
       CopyWave(CurrentWave, &info);
       GetDataSetup(DataSetupWidget, &info, &change_mask);
@@ -1977,12 +1968,7 @@ static void RestoreDatabase(String dbname, Widget w)
   override_shot = GetResource(scopedb, "Scope.override_shot", NULL);
   if (override_shot)
     XmTextFieldSetString(XtNameToWidget(TopWidget, "*override_shot"), override_shot);
-#ifdef __VMS
-  ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "sys$login:dwscope.ps"),
-		0);
-#else
   ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "dwscope.ps"), 0);
-#endif
   ScopePrintPortrait = atoi(GetResource(scopedb, "Scope.print_portrait", "0"));
   ScopePrintWindowTitle = atoi(GetResource(scopedb, "Scope.print_window_title", "0"));
   default_printer = getenv("PRINTER");

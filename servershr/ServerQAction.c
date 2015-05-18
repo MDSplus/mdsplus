@@ -10,23 +10,19 @@
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <pthread.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
-#ifdef HAVE_PTHREAD_H
-#include <pthread.h>
-#else
-extern int pthread_cond_timedwait();
-#endif
 #else
 typedef int SOCKET;
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <netinet/in.h>
 #include <signal.h>
 #endif
+#include <sys/time.h>
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
 #define pthread_attr_default NULL
@@ -74,7 +70,6 @@ static int QJob(SrvJob * job);
 static void FreeJob(SrvJob * job);
 static void SetCurrentJob(SrvJob * job);
 static SrvJob *GetCurrentJob();
-static SrvJob *LastJob();
 static char *Now();
 static int RemoveLast();
 
@@ -269,22 +264,6 @@ static int QJob(SrvJob * job)
   return StartThread();
 }
 
-static SrvJob *LastJob()
-{
-  SrvJob *job;
-  LockQueue();
-  job = LastQueueEntry;
-  if (job) {
-    LastQueueEntry = job->h.previous;
-    if (LastQueueEntry)
-      LastQueueEntry->h.next = 0;
-    else
-      FirstQueueEntry = 0;
-  }
-  UnlockQueue();
-  return job;
-}
-
 static int RemoveLast()
 {
   SrvJob *job;
@@ -470,7 +449,6 @@ static int DoSrvAction(SrvJob * job_in)
     DESCRIPTOR(fullpath_d, "FULLPATH");
     DESCRIPTOR(nullstr, "\0");
     DESCRIPTOR_NID(niddsc, 0);
-    struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
     niddsc.pointer = (char *)&job->nid;
     doingNid = job->nid;
     status = TdiGetNci(&niddsc, &fullpath_d, &fullpath MDS_END_ARG);
@@ -588,8 +566,6 @@ static void SendToMonitor(MonitorList * m, MonitorList * prev, SrvJob * job_in)
   DESCRIPTOR(fullpath_d, "FULLPATH");
   DESCRIPTOR(nullstr, "\0");
   DESCRIPTOR_NID(niddsc, 0);
-  struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
-  struct descriptor phasenum_d = { sizeof(int), DTYPE_L, CLASS_S, 0 };
   char *status_text = MdsGetMsg(job->status);
 
   status = TreeOpen(job->tree, job->shot, 0);
@@ -713,22 +689,13 @@ static void UnlockQueue()
 
 static void WaitForJob()
 {
-  int status;
   ProgLoc = 11;
   pthread_mutex_lock(&JobWaitMutex);
   ProgLoc = 12;
-#ifdef HAVE_WINDOWS_H
-  status = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, 1000);
-#else
   {
-    struct timespec one_sec = { 1, 0 };
     struct timespec abstime;
     struct timeval tmval;
     ProgLoc = 12;
-    /*
-       pthread_get_expiration_np(&one_sec,&abstime);
-     */
-
     gettimeofday(&tmval, 0);
     abstime.tv_sec = tmval.tv_sec + 1;
     abstime.tv_nsec = tmval.tv_usec * 1000;
@@ -736,10 +703,6 @@ static void WaitForJob()
     CondWStat = pthread_cond_timedwait(&JobWaitCondition, &JobWaitMutex, &abstime);
     ProgLoc = 13;
   }
-#endif
-  /*
-     pthread_cond_wait( &JobWaitCondition, &JobWaitMutex);
-   */
   ProgLoc = 14;
   pthread_mutex_unlock(&JobWaitMutex);
   ProgLoc = 15;
@@ -749,6 +712,7 @@ static int StartThread()
 {
   static int JobWaitInitialized = 0;
   int status;
+  pthread_attr_t att;
   if (JobWaitInitialized == 0) {
     status = pthread_mutex_init(&JobWaitMutex, pthread_mutexattr_default);
     if (status) {
@@ -763,22 +727,11 @@ static int StartThread()
     JobWaitInitialized = 1;
   }
   if (WorkerThreadRunning == 0) {
-#ifdef HAVE_WINDOWS_H
-    WorkerThreadRunning = 1;
-    status = pthread_create(&WorkerThread, 0, Worker, 0);
-#else
-    pthread_attr_t att;
     pthread_attr_init(&att);
     pthread_attr_setstacksize(&att, 0xffffff);
     WorkerThreadRunning = 1;
-#ifdef __hpux
-    status = pthread_create(&WorkerThread, att, Worker, 0);
-    pthread_detach(&WorkerThread);
-#else
     pthread_attr_setdetachstate(&att, PTHREAD_CREATE_DETACHED);
     status = pthread_create(&WorkerThread, &att, Worker, 0);
-#endif
-#endif
     if (status) {
       perror("Error creating pthread");
       exit(status);
@@ -853,7 +806,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
 {
   int status = 0;
   SOCKET sock;
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
 #endif
   sock = AttachPort(job->h.addr, (short)job->h.port);
@@ -861,7 +814,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
     char reply[60];
     int bytes;
     memset(reply, 0, 60);
-    sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? strlen(msg) : 0);
+    sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
     bytes = send(sock, reply, 60, 0);
     if (bytes == 60) {
       if (length) {
@@ -874,7 +827,7 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
     if (!(status & 1))
       RemoveClient(job);
   }
-#ifndef HAVE_WINDOWS_H
+#ifndef _WIN32
   signal(SIGPIPE, SIG_DFL);
 #endif
   return status;
