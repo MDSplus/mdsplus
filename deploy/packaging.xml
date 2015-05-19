@@ -712,23 +712,11 @@ Description: MDSplus packages
 SignWith: MDSplus
 EOF
 
-if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
-then
-  bits=64
-  host=arm-linux-gnueabihf
-  export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin:$PATH
-else
-  bit2=32
-  export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:$PATH
-  host=arm-linux-gnueabihf
-fi
+export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x86/bin:$PATH
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
-            --with-labview=$LABVIEW_DIR \
             --with-jdk=$JDK_DIR \
-            --with-idl=$IDL_DIR \
-            --with-gsi=/usr:gcc${bits} \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=$host
 make clean &gt;/dev/null
