@@ -1,4 +1,23 @@
-commit 6bd9d653a087e41876472ec3dc1f0e9f405f503d (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit c1ec137379b781334b63be9f7af53f67c7cf13d8 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: e558cb4 7934969
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 19 12:53:14 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit e558cb45c7e90403b6ea5dd6f31d613f2cf8a429
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 19 12:46:32 2015 -0400
+
+    Add raspberrypi support
+
+commit 7934969b7701bb8b2ed4c37a695d51cd9d1997ba (tag: refs/tags/alpha_release-7-0-65)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 15 22:20:44 2015 +0000
+
+    New ChangeLog
+
+commit 6bd9d653a087e41876472ec3dc1f0e9f405f503d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 15 08:53:08 2015 -0400
 
