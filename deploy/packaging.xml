@@ -707,7 +707,7 @@ Label: MDSplus
 Codename: MDSplus
 Version: %(major)d.%(minor)d.%(release)d
 Architectures: armhf source
-Components: alpha stable feature-raspberrypi
+Components: alpha stable feature_raspberrypi
 Description: MDSplus packages
 SignWith: MDSplus
 EOF

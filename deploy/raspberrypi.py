@@ -144,65 +144,7 @@ reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
         self.buildDebs()
 
     def test(self):
-        errors=list()
-        self.info['apt-get']="apt-get -o Dir::State=/tmp/%(flavor)s/apt/var/lib/apt/ -o Dir::Etc=/tmp/%(flavor)s/apt/etc/apt" % self.info
-        print("Preparing test repository")
-        sys.stdout.flush()
-        if subprocess.Popen("""
-sudo %(apt-get)s autoremove -y 'mdsplus*' >/dev/null 2>&1
-set -e
-sudo rm -Rf /tmp/%(flavor)s/apt
-mkdir -v -p /tmp/%(flavor)s/apt/etc
-mkdir -v -p /tmp/%(flavor)s/apt/var/lib/apt
-#mkdir -v -p /tmp/%(flavor)s/apt/{etc,var/lib/apt}
-sudo rsync -a /etc/apt /tmp/%(flavor)s/apt/etc/
-sudo apt-key add mdsplus.gpg.key
-echo "deb file:/tmp/%(flavor)s/REPO/ MDSplus %(flavor)s" > mdsplus.list
-sudo rsync -a mdsplus.list /tmp/%(flavor)s/apt/etc/apt/sources.list.d/
-sudo %(apt-get)s update >/dev/null 2>&1
-""" % self.info,shell=True).wait() != 0:
-            errors.append("Failed to create test apt configuration files")
-        if len(errors) == 0:
-            print("Testing package installation")
-            sys.stdout.flush()
-            tree=ET.parse('packaging.xml')
-            root=tree.getroot()
-            for package in root.getiterator('package'):
-                pkg=package.attrib['name'].replace('_','-')
-                if pkg != 'repo':
-                    if pkg=='MDSplus':
-                        pkg=""
-                    else:
-                        pkg="-"+pkg
-                    self.info['package']=pkg
-                    if subprocess.Popen("""
-set -e
-sudo %(apt-get)s install -y mdsplus%(rflavor)s%(package)s
-sudo %(apt-get)s autoremove -y 'mdsplus%(rflavor)s%(package)s'""" % self.info,shell=True).wait() != 0:
-                        errors.append("Error installing package mdsplus%(rflavor)s%(package)s" % self.info)
-        if len(errors) == 0:
-            if subprocess.Popen("""
-set -e
-sudo %(apt-get)s install -y mdsplus%(rflavor)s-mitdevices
-. /etc/profile.d/mdsplus.sh
-python <<EOF
-import sys,os
-import MDSplus
-sys.path.append(os.path.dirname(MDSplus.__file__))
-from tests import test_all
-from unittest import TextTestRunner
-result=TextTestRunner().run(test_all())
-if not result.wasSuccessful():
-  sys.exit(1)
-EOF""" % self.info,shell=True).wait() != 0:
-                errors.append("Error running regression tests")
-        subprocess.Popen("""
-sudo %(apt-get)s autoremove -y 'mdsplus*'
-sudo rm -Rf /tmp/%(flavor)s/apt
-""" % self.info,shell=True).wait()
-        if len(errors) > 0:
-            errors.insert(0,"Testing failed")
-            raise Exception('\n'.join(errors))
+        pass
 
     def deploy(self):
         """Deploy release to /mdsplus/dist"""
