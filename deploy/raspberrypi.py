@@ -5,10 +5,8 @@ class InstallationPackage(object):
     """Provides exists,build,test and deploy methods"""
     def __init__(self,info):
         self.info=info
-        if 'ARCH' in os.environ:
-          self.info['arch']=os.environ['ARCH']
-        else:
-          self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
+        self.info['arch']='armhf'
+        self.info['rflavor']=self.info['rflavor'].replace('_','-')
         self.info['DIST']=os.environ['DIST']
 
     def exists(self):
