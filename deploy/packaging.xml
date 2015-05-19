@@ -656,7 +656,7 @@ Label: MDSplus
 Codename: MDSplus
 Version: %(major)d.%(minor)d.%(release)d
 Architectures: i386 amd64 source
-Components: alpha beta stable
+Components: alpha stable
 Description: MDSplus packages
 SignWith: MDSplus
 EOF
@@ -706,8 +706,8 @@ Origin: MDSplus Development Team
 Label: MDSplus
 Codename: MDSplus
 Version: %(major)d.%(minor)d.%(release)d
-Architectures: i386 amd64 source
-Components: alpha stable
+Architectures: armhf source
+Components: alpha stable feature-rasberrypi
 Description: MDSplus packages
 SignWith: MDSplus
 EOF
