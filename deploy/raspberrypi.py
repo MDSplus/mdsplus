@@ -127,7 +127,7 @@ Description: %(description)s
                         f.close()
                         os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % self.info,0775)
                 self.info['debfile']="/tmp/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % self.info
-                print info
+                print self.info
                 if subprocess.Popen("""
 set -e
 mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
