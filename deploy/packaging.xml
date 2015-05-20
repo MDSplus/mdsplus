@@ -693,6 +693,7 @@ make clean &gt;/dev/null
 
    </install_script>
  </ubuntu>
+ <raspberrypi>
    <install_script>#!/bin/bash
 set -e
 if [ ! -r ~/.gnupg ]
