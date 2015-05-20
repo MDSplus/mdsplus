@@ -1,4 +1,22 @@
-commit c0faa73c1fe8f4fd040dc4d47ee263e798a9a609 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit bdac6f9daacf4bc604e0ffe2831626db2d8d345c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed May 20 16:34:52 2015 +0200
+
+    Fix usage in getNodeWild
+
+commit 0f51e015f79ff0cb3909f53a02e71a953c011b26
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 20 10:11:47 2015 -0400
+
+    raspberrypi work
+
+commit 6ab5ffbd95a5c592ebd6cb35ec07c2567eb7de6f (tag: refs/tags/alpha_release-7-0-67)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 20 13:51:46 2015 +0000
+
+    New ChangeLog
+
+commit c0faa73c1fe8f4fd040dc4d47ee263e798a9a609
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 20 09:45:16 2015 -0400
 
@@ -3914,7 +3932,7 @@ Date:   Fri Oct 31 07:49:32 2014 -0400
 
     Create README.md
 
-commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994 (refs/remotes/origin/master)
+commit ca7f90d4971e4f4d6b79f8f351c2fe7eddeee994
 Author: Thomas W. Fredian <twf@psfc.mit.edu>
 Date:   Wed Oct 29 20:29:04 2014 +0000
 
