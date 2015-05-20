@@ -716,7 +716,7 @@ Description: MDSplus packages
 SignWith: MDSplus
 EOF
 
-export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x86/bin:$PATH
+export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin:$PATH
 host=arm-linux-gnueabihf
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
