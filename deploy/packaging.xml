@@ -719,7 +719,7 @@ cd ..
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
             --with-jdk=$JDK_DIR \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
-            --host=$host
+            --host=$host CFLAGS="-g -O2 -L /mdsplus/extras/raspberrypi/lib -L /mdsplus/extras/raspberrypi/usr/lib"
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
