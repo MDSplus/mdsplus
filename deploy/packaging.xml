@@ -693,6 +693,43 @@ make clean &gt;/dev/null
 
    </install_script>
  </ubuntu>
+   <install_script>#!/bin/bash
+set -e
+if [ ! -r ~/.gnupg ]
+then
+  tar zxfC /mdsplus/certs/rpm-signing-keys.tgz ~/
+fi
+sudo rm -Rf /tmp/%(flavor)s/apt
+rm -Rf /tmp/%(flavor)s
+export BUILDROOT="/tmp/%(flavor)s/BUILDROOT"
+mkdir -p /tmp/%(flavor)s/{BUILDROOT,REPO,DEBS}
+mkdir -p /tmp/%(flavor)s/REPO/{conf,pool,dists,db}
+cat - &lt;&lt;EOF &gt; /tmp/%(flavor)s/REPO/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: %(major)d.%(minor)d.%(release)d
+Architectures: armhf source
+Components: alpha stable feature_raspberrypi
+Description: MDSplus packages
+SignWith: MDSplus
+EOF
+
+export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x86/bin:$PATH
+host=arm-linux-gnueabihf
+cd ..
+./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
+            --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
+            --with-jdk=$JDK_DIR \
+	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
+            --host=$host CFLAGS="-g -O2 -L /mdsplus/extras/raspberrypi/lib -L /mdsplus/extras/raspberrypi/usr/lib"
+make clean &gt;/dev/null
+env LANG=en_US.UTF-8 make
+env MDSPLUS_VERSION=%(mdsplus_version)s make install
+make clean &gt;/dev/null
+
+   </install_script>
+ </raspberrypi>
  <external_packages platforms="rhel,fc">
    <python-devel/>
    <setuptools package="python-setuptools"/>
