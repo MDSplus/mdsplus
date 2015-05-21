@@ -9,6 +9,23 @@ class InstallationPackage(object):
         self.info['rflavor']=self.info['rflavor'].replace('_','-')
         self.info['DIST']=os.environ['DIST']
 
+    def externalPackage(self, root, package):
+        matchlen=0
+        ans = None
+        for extpackages in root.getiterator('external_packages'):
+            platforms=extpackages.attrib['platforms']
+            for platform in platforms.split(','):
+                if self.info['dist'].lower().startswith(platform):
+                    if len(platform) > matchlen:
+                        matchlen = len(platform)
+                        pkg = extpackages.find(package)
+                        if pkg is not None:
+                            if 'package' in pkg.attrib:
+                                ans = pkg.attrib['package']
+                            else:
+                                ans = package
+        return ans
+
     def exists(self):
         """Check to see if rpms for this release already exist."""
         tree=ET.parse('packaging.xml')
@@ -99,7 +116,12 @@ cp -av /tmp/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
                 for require in package.getiterator("requires"):
                     if require.attrib['package'] == "motif":
                         continue
-                    depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package'].replace('_','-')))
+                    if 'external' in require.attrib:
+                        pkg=self.externalPackage(root,require.attrib['package'])
+                        if pkg is not None:
+                            depends.append(pkg)
+                    else:
+                        depends.append("mdsplus%s-%s" % (self.info['rflavor'],require.attrib['package'].replace('_','-')))
                 if len(depends)==0:
                     self.info['depends']=''
                 else:
