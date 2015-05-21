@@ -717,15 +717,14 @@ SignWith: MDSplus
 EOF
 
 export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian-x64/bin:$PATH
-host=arm-linux-gnueabihf
-export LIBS="-L /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf"
-export CFLAGS="-g -O2 -Wl,--allow-shlib-undefined"
 cd ..
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
             --with-jdk=$JDK_DIR \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
-            --host=$host CFLAGS="-g -O2 -L /mdsplus/extras/raspberrypi/lib -L /mdsplus/extras/raspberrypi/usr/lib"
+            --host=arm-linux-gnueabihf \
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
+             LIBS="-L /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf"
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
