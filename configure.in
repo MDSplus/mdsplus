@@ -620,7 +620,9 @@ AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocke
 AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID))
 AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
+OLDLIB="$LIBS"
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
+LIBS="$OLDLIBS"
 if test "$ac_cv_search_clock_gettime" = "no"
 then
   CLOCK_GETTIME_LIB=""
