@@ -8034,7 +8034,7 @@ else
   DNET_STUB=""
 fi
 
-OLDLIB="$LIBS"
+OLDLIBS="$LIBS"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing clock_gettime" >&5
 $as_echo_n "checking for library containing clock_gettime... " >&6; }
 if ${ac_cv_search_clock_gettime+:} false; then :
