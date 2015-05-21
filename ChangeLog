@@ -1,4 +1,16 @@
-commit f49e9c2c9e59142533ea28eb0c08c28a699e1b64 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6073b7c7dca77d92cf5e2adbe97b962fef5b3c6e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 10:45:30 2015 -0400
+
+    raspberrypi work
+
+commit 20b821b5f1adb44bd3ea962f414bd765922dcd1e (tag: refs/tags/alpha_release-7-0-69)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 21 14:17:48 2015 +0000
+
+    New ChangeLog
+
+commit f49e9c2c9e59142533ea28eb0c08c28a699e1b64
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 21 10:10:35 2015 -0400
 
