@@ -1,4 +1,52 @@
-commit bdac6f9daacf4bc604e0ffe2831626db2d8d345c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f49e9c2c9e59142533ea28eb0c08c28a699e1b64 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 10:10:35 2015 -0400
+
+    raspberrypi work
+
+commit 63010ba5c21bb903ddb0cba6e49e24268e0fbc04
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 10:08:33 2015 -0400
+
+    raspberrypi work
+
+commit 461297c303e236e6eae17fccc46410837870f984
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 10:05:12 2015 -0400
+
+    raspberrypi work
+
+commit e8e94ef48bfe977905d6a0fb021ab02a13cc6d4a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 09:14:34 2015 -0400
+
+    raspberrypi work
+
+commit 2879ac1e7aa81afd9880bed9240e6cec9534e692
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 09:04:28 2015 -0400
+
+    raspberrypi work
+
+commit 254347f0f5bc46b8998a14544844c979f4619fbd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 08:58:06 2015 -0400
+
+    raspberrypi work
+
+commit e69a5e660c9d0c0e0da4fad382cd97632e866f26
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 08:06:19 2015 -0400
+
+    Move home based config directory to not conflict with setup scripts which now reference ~/.mdsplus
+
+commit 53343e2f322016a0f74334862d17e7019a6e99e9 (tag: refs/tags/alpha_release-7-0-68)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 20 22:20:06 2015 +0000
+
+    New ChangeLog
+
+commit bdac6f9daacf4bc604e0ffe2831626db2d8d345c
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed May 20 16:34:52 2015 +0200
 
