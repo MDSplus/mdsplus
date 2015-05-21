@@ -725,7 +725,7 @@ ln -sf /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf/* lib/
             --with-jdk=$JDK_DIR \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=arm-linux-gnueabihf \
-             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined" -I/mdsplus/extras/raspberrypi/include\
              FFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
              LIBS="-L /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf"
 make clean &gt;/dev/null
