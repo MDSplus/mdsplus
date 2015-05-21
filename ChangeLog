@@ -1,4 +1,40 @@
-commit fdb868edc304ffc8adb0e123ab962eb6af3f7c06 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 80ae7aa49dfa620b7776881fae85a39653bb4e08 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 16:46:08 2015 -0400
+
+    no need for including /usr/include
+
+commit a3385fa85fb54fe05a9588f0980052511a3f3bf3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 16:10:47 2015 -0400
+
+    raspberrypi work
+
+commit 1dac410c013898ae752445a0e615b9b44ddcf686
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 14:01:51 2015 -0400
+
+    raspberrypi work
+
+commit ea8eab0ac6b3275e42555a6471acbf08a4f91438
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 11:53:06 2015 -0400
+
+    raspberrypi work
+
+commit ce0b8b4e486fb3fd6021c165609a51ff09daf980
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 21 08:08:40 2015 -0400
+
+    Move home based config directory to not conflict with setup scripts which now reference ~/.mdsplus
+
+commit 1f3086e5702ff9a520f39ed732efe3ae73a47181 (tag: refs/tags/stable_release-7-0-5)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 20 22:35:57 2015 +0000
+
+    New ChangeLog
+
+commit fdb868edc304ffc8adb0e123ab962eb6af3f7c06
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed May 20 17:31:22 2015 +0200
 
