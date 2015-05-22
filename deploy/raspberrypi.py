@@ -78,7 +78,7 @@ class InstallationPackage(object):
             pkg = package.attrib['name']
 #            if pkg in excludePackages:
 #                continue
-            elif pkg=='MDSplus':
+            if pkg=='MDSplus':
                 self.info['packagename']=""
             else:
                 self.info['packagename']="-%s" % pkg
