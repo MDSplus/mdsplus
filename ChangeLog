@@ -1,4 +1,53 @@
-commit 62a269e9460cd5a4ee7642b9a82493b81a0ac278 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 38bbe1e55c7d4c23316d80e60854b4ba80b66a49 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:58:31 2015 -0400
+
+    raspberrypi work
+
+commit 7711cf075513effeea7f36476218f6f0e50fe142
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:53:45 2015 -0400
+
+    raspberrypi work
+
+commit 9a3ba8876721db7992670881a9f3c6bbe43800a5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:52:09 2015 -0400
+
+    raspberrypi work
+
+commit 14fb358200c2322b366a5ef78e87282928b1b589
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:44:35 2015 -0400
+
+    raspberrypi work
+
+commit 33b10799d919ca3264cc573f90da87387104f2c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:39:56 2015 -0400
+
+    raspberrypi work
+
+commit 30292fc8a888731304c290c817da82287b47501c
+Merge: 91e9356 4ff94c3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:33:50 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 91e93565a485f927baddc39ecd30efb5f6d83a6b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:33:35 2015 -0400
+
+    raspberrypi work
+
+commit 4ff94c3201992f2bac6393c3ce99ceb0c455c06f (tag: refs/tags/stable_release-7-0-7)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 22 13:28:43 2015 +0000
+
+    New ChangeLog
+
+commit 62a269e9460cd5a4ee7642b9a82493b81a0ac278
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 22 09:12:34 2015 -0400
 
