@@ -2,7 +2,7 @@ include @top_srcdir@/Makefile.inc
 
 CFLAGS += $(THREAD) @GLOBUS_CFLAGS@ -I/usr/include/libxml2
 LDFLAGS += $(THREAD)
-LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@ -lxml2
+LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@ @CLOCK_GETTIME_LIB@ -lxml2
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
 @MINGW_TRUE@ DEF=MdsShr.def
 
