@@ -733,9 +733,9 @@ cd ..
             --with-gsi=/usr:gcc${bits} \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=arm-linux-gnueabihf \
-             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I$(RFS)/usr/include"\
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${RFS}/usr/include"\
              FFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
-             LIBS="-L $(RFS)/usr/lib/arm-linux-gnueabihf -L $(RFS)/lib/arm-linux-gnueabihf"
+             LIBS="-L ${RFS}/usr/lib/arm-linux-gnueabihf -L ${RFS}/lib/arm-linux-gnueabihf"
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install
