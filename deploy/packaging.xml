@@ -716,7 +716,8 @@ Description: MDSplus packages
 SignWith: MDSplus
 EOF
 
-export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:$PATH
+export CROSSBUILDER=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian
+export PATH=${CROSSBUILDER}/bin:$PATH
 export EXTRAS=/mdsplus/extras
 export RFS=$EXTRAS/raspberrypi/rootfs
 export LABVIEW_DIR=$EXTRAS/LabView-x86
@@ -733,7 +734,7 @@ cd ..
             --with-gsi=/usr:gcc${bits} \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=arm-linux-gnueabihf \
-             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${RFS}/usr/include"\
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${CROSSBUILDER}/arm-linux-gnueabihf/libc/usr/include -I${RFS}/usr/include"\
              FFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
              LIBS="-L ${RFS}/usr/lib/arm-linux-gnueabihf -L ${RFS}/lib/arm-linux-gnueabihf"
 make clean &gt;/dev/null
