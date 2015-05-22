@@ -716,18 +716,28 @@ Description: MDSplus packages
 SignWith: MDSplus
 EOF
 
-export PATH=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian/bin:$PATH
+export CROSSBUILDER=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm-linux-gnueabihf-raspbian
+export PATH=${CROSSBUILDER}/bin:$PATH
+export EXTRAS=/mdsplus/extras
+export RFS=$EXTRAS/raspberrypi/rootfs
+export LABVIEW_DIR=$EXTRAS/Labview-x86
+export IDL_DIR=$EXTRAS/idl-x86
+export PYTHON_INCLUDE_DIR=${RFS}/usr/include/python2.7
 cd ..
-mkdir -p lib
-ln -sf /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf/* lib/
+#mkdir -p lib
+#ln -sf /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf/* lib/
 ./configure --prefix=${BUILDROOT}/usr/local/mdsplus \
             --exec_prefix=${BUILDROOT}/usr/local/mdsplus \
             --with-jdk=$JDK_DIR \
+            --with-labview=$LABVIEW_DIR \
+            --with-jdk=$JDK_DIR \
+            --with-idl=$IDL_DIR \
+            --with-gsi=/usr:gcc${bits} \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=arm-linux-gnueabihf \
-             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I/mdsplus/extras/raspberrypi/include"\
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${EXTRAS}/raspberrypi/include"\
              FFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
-             LIBS="-L /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf -L /mdsplus/extras/raspberrypi/rootfs/lib/arm-linux-gnueabihf"
+             LIBS="-L ${RFS}/usr/lib/arm-linux-gnueabihf -L ${RFS}/lib/arm-linux-gnueabihf"
 make clean &gt;/dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=%(mdsplus_version)s make install

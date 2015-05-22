@@ -6,13 +6,13 @@ AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm
 if RPATHLINK
 AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@
 endif
-LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
+LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(LIBS) $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
 #MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 
 #FIXME: Remove this when LIBS is cleaned up in configure
-LIBS=
+#LIBS=
 
 # Static data installed to lib
 datadir = $(libdir)

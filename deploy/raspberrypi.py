@@ -76,9 +76,9 @@ class InstallationPackage(object):
         root=tree.getroot()
         for package in root.getiterator('package'):
             pkg = package.attrib['name']
-            if pkg in excludePackages:
-                continue
-            elif pkg=='MDSplus':
+#            if pkg in excludePackages:
+#                continue
+            if pkg=='MDSplus':
                 self.info['packagename']=""
             else:
                 self.info['packagename']="-%s" % pkg
