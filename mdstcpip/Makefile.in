@@ -219,15 +219,16 @@ $(MdsIpSSH) $(MdsIpHTTP):
 $(bin_SCRIPTS): @MAKEBINDIR@%: %
 	cp $< $@
 
-#makefile-header:  
-#	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-header
 
 ifdef MdsIpGSI
+
+#makefile-header:  
+#	GLOBUS_LOCATION=@GLOBUS_LOCATION@; $$GLOBUS_LOCATION/bin/globus-makefile-header --flavor=@GLOBUS_FLAVOR@pthr globus_xio globus_xio_gsi_driver > makefile-eader
 
 #include makefile-header
 
 $(MdsIpGSI):  IoRoutinesGsi.c
-	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LINK_MDSIPSHR)
+	$(LINK.c) $(OUTPUT_OPTION) $^ $$(pkg-config --cflags globus-xio) @LINKSHARED@ $(LIBS) $(LINK_MDSIPSHR) $$(pkg-config --libs globus-xio globus-xio-gsi-driver globus-gssapi-gsi globus-gss-assist)
 
 @MAKEBINDIR@mdsipsd : mdsipsd
 	cp $< $@
