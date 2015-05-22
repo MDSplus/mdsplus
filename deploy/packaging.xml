@@ -720,7 +720,7 @@ export CROSSBUILDER=/mdsplus/extras/raspberrypi/tools/arm-bcm2708/gcc-linaro-arm
 export PATH=${CROSSBUILDER}/bin:$PATH
 export EXTRAS=/mdsplus/extras
 export RFS=$EXTRAS/raspberrypi/rootfs
-export LABVIEW_DIR=$EXTRAS/LabView-x86
+export LABVIEW_DIR=$EXTRAS/Labview-x86
 export IDL_DIR=$EXTRAS/idl-x86
 export PYTHON_INCLUDE_DIR=${RFS}/usr/include/python2.7
 cd ..
