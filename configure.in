@@ -623,11 +623,13 @@ AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
 OLDLIBS="$LIBS"
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
 LIBS="$OLDLIBS"
-if test "$ac_cv_search_clock_gettime" = "no"
+CLOCK_GETTIME_LIB=""
+if test "$ac_cv_search_clock_gettime" != "no"
 then
-  CLOCK_GETTIME_LIB=""
-else
-  CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+  if test "$ac_cv_search_clock_gettime" != "none required"
+  then
+    CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+  fi
   AC_DEFINE(HAVE_CLOCK_GETTIME)
 fi
 OLDLIBS="$LIBS"
