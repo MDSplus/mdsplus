@@ -791,7 +791,7 @@ AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(sched_setscheduler)
 
 dnl Check for Sybase
-if test "$host_cpu" = "arm"
+if test "$host_cpu" = "arm" -a "$(echo $host | grep arm-xilinx)" != ""
 then
    SYBASE_INC=""
    SYBASE_LIB=""
