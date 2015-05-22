@@ -1,4 +1,22 @@
-commit 80ae7aa49dfa620b7776881fae85a39653bb4e08 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 62a269e9460cd5a4ee7642b9a82493b81a0ac278 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 09:12:34 2015 -0400
+
+    raspberrypi work
+
+commit f8d9881ecd84d719f64f83db21d3b7bb62f0473c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 08:28:48 2015 -0400
+
+    raspberrypi work
+
+commit d8af33cc1cfa1fc940a07628cfba691ac35a17f2 (tag: refs/tags/stable_release-7-0-6)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu May 21 20:54:23 2015 +0000
+
+    New ChangeLog
+
+commit 80ae7aa49dfa620b7776881fae85a39653bb4e08
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu May 21 16:46:08 2015 -0400
 
