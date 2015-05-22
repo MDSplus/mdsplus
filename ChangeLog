@@ -1,4 +1,131 @@
-commit c63e4367f082947414065b08477600e381202b64 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 748051f5a27c6b8b22b8bce5b8e62e64b5a8bbe5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:14:07 2015 -0400
+
+    raspberrypi work
+
+commit ad5a59a48682e93193e5c6be50ce36d2837c3fd8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:09:52 2015 -0400
+
+    raspberrypi work
+
+commit f0aa34d7f1e20567dc6eb1a00f4f01b71323df9f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 15:05:11 2015 -0400
+
+    raspberrypi work
+
+commit a080f93216c3891834a870dd452af52cc44c79d9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:41:55 2015 -0400
+
+    raspberrypi work
+
+commit cda4bbcd195a72edca23b346551c413685c27c7a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:40:02 2015 -0400
+
+    raspberrypi work
+
+commit ee62ad0559ed24ab174748fcd4d2b60142fd90ab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:35:48 2015 -0400
+
+    raspberrypi work
+
+commit 1517803efd265dc74dc558bc77b564acaae958d7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:32:42 2015 -0400
+
+    raspberrypi work
+
+commit cacb133e64b68f1ef405bfa878c6f0b86b60961f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:29:57 2015 -0400
+
+    raspberrypi work
+
+commit a792337480dcfb5baf53f536e81152abc70b82ca
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:16:34 2015 -0400
+
+    raspberrypi work
+
+commit d1c3306d0ce9c771fc9b56ad6451e6d620f8c1d1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 14:04:18 2015 -0400
+
+    raspberrypi work
+
+commit b9a09af590f5808aa06a9d65e532cd82d98a0e6d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 13:56:21 2015 -0400
+
+    raspberrypi work
+
+commit 20c934153a10cd44082c4b530d761db656088bfc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 13:51:38 2015 -0400
+
+    raspberrypi work
+
+commit c4cd5ef60616b8800348e0e99e61f92a37904a89
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 13:36:44 2015 -0400
+
+    raspberrypi work
+
+commit 9fb00b95553e922e6c5dd896cfca498634cf9ea6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 13:19:09 2015 -0400
+
+    raspberrypi work
+
+commit bf68b5cd9215dd426c30af4e3acae728027e0024
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 12:22:00 2015 -0400
+
+    raspberrypi work
+
+commit e52f5d5fd58d32639b94d5cf959a8080edeaf853
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 10:48:13 2015 -0400
+
+    raspberrypi work
+
+commit de84afeca1cc179acac535729ffae170e714b8ae
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 10:18:43 2015 -0400
+
+    raspberrypi work
+
+commit 660bfc48de37f7dc255fb34c54d4e0ef99de0571
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 10:13:39 2015 -0400
+
+    raspberrypi work
+
+commit a39a9f3f50f412759e4cf8f2d1e0842a1afee062
+Merge: 162b535 e4f7734
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 10:11:37 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 162b5352451e807537bc54ffd0217a037a391031
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 22 10:11:28 2015 -0400
+
+    raspberrypi work
+
+commit e4f7734e830794ec7490c65bf31da6ac5076a37b (tag: refs/tags/alpha_release-7-0-71)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 22 12:43:49 2015 +0000
+
+    New ChangeLog
+
+commit c63e4367f082947414065b08477600e381202b64
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 22 08:26:31 2015 -0400
 
