@@ -791,13 +791,13 @@ AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(sched_setscheduler)
 
 dnl Check for Sybase
-#if test "$host_cpu" = "arm"
-#then
-#  SYBASE_INC=""
-#  SYBASE_LIB=""
-#  SYBASE=""
-#  AC_MSG_RESULT(no sybase open/client because it is arm)
-if ( echo $host | grep "mingw" >/dev/null )
+if test "$host_cpu" = "arm" -a "$(echo $host | grep arm-xilinx)" != ""
+then
+   SYBASE_INC=""
+   SYBASE_LIB=""
+   SYBASE=""
+   AC_MSG_RESULT(no sybase open/client)
+elif ( echo $host | grep "mingw" >/dev/null )
 then
     SYBASE_INC="-DSYBASE"
     SYBASE_LIB="-L. -lntwdblib${SQL_ARCH}"
