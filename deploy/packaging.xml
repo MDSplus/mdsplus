@@ -722,6 +722,7 @@ export EXTRAS=/mdsplus/extras
 export RFS=$EXTRAS/raspberrypi/rootfs
 export LABVIEW_DIR=$EXTRAS/LabView-x86
 export IDL_DIR=$EXTRAS/idl-x86
+export PYTHON_INCLUDE_DIR=${RFS}/usr/include/python2.7
 cd ..
 #mkdir -p lib
 #ln -sf /mdsplus/extras/raspberrypi/rootfs/usr/lib/arm-linux-gnueabihf/* lib/
@@ -734,7 +735,7 @@ cd ..
             --with-gsi=/usr:gcc${bits} \
 	    --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar \
             --host=arm-linux-gnueabihf \
-             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${CROSSBUILDER}/arm-linux-gnueabihf/libc/usr/include -I${RFS}/usr/include"\
+             CFLAGS="-g -O2 -Wl,--allow-shlib-undefined -I${EXTRAS}/raspberrypi/include"\
              FFLAGS="-g -O2 -Wl,--allow-shlib-undefined" \
              LIBS="-L ${RFS}/usr/lib/arm-linux-gnueabihf -L ${RFS}/lib/arm-linux-gnueabihf"
 make clean &gt;/dev/null
