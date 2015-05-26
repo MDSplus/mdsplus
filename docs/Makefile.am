@@ -29,7 +29,9 @@ DX_TAGFILES = mdsip.tag \
               mdsobjects/cpp/docs
 
 
-MOSTLYCLEANFILES = $(DX_CLEANFILES) ${DX_TAGDIR}/taglist.txt
+MOSTLYCLEANFILES = $(DX_CLEANFILES) \
+                   ${DX_TAGDIR}/taglist.txt \
+                   ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html
 
 # //////////////////////////////////////////////////////////////////////////// #
 # TARGETS #
@@ -37,6 +39,7 @@ MOSTLYCLEANFILES = $(DX_CLEANFILES) ${DX_TAGDIR}/taglist.txt
 
 html: doxygen-run
 pdf:  doxygen-pdf
+
 
 	
 build_all:
@@ -56,10 +59,16 @@ install_all:
 	done;
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) doxygen-install) \
-	done;
-	
+	done;	
+
+
+${DESTDIR}${datadir}/doc/@PACKAGE@/index.html:
+	touch $@;
+	echo " <html> <head> <meta http-equiv=\"refresh\" content=\"0; url=/docs/html/index.html\"> </head> </html> " > $@;
+
+main_index: ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html
 
 
 all: build_all
 
-install-data-local: install_all
+install-data-local: install_all main_index
