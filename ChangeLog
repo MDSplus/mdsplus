@@ -1,4 +1,10 @@
-commit a58737e15a34a412ec08ab456387938c9cc5e431 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 434834f1cf23c498fcc3663b6e9dc7c391a6cc63 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 23:15:12 2015 +0000
+
+    New ChangeLog
+
+commit a58737e15a34a412ec08ab456387938c9cc5e431
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 18:50:34 2015 -0400
 
