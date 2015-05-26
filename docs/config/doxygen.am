@@ -120,6 +120,7 @@ DX_STYLE_FILES = ${DX_HTML_HEADER} \
 DX_ENVCOMMON = \
                DX_PACKAGE_NAME='${DX_PACKAGE_NAME}'\
                DX_PAGES='${DX_PAGES}' \
+               DX_INSTALLDIR='${DX_INSTALLDIR}' \
                DX_EXCLUDE_PAGES='${DX_EXCLUDE_PAGES}' \
                DX_TITLE='${DX_TITLE}' \
                DX_BRIEF='${DX_BRIEF}' \
@@ -135,6 +136,10 @@ DX_DESTENV = ${DX_ENV} \
 
 
 ### TARGETS: ###################################################################
+
+
+
+
 
 
 .PHONY: doxygen-run doxygen-doc build_tag install_tag $(DX_PS_GOAL) $(DX_PDF_GOAL)
@@ -163,7 +168,7 @@ ${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG}
 	echo "Name Found list not updated ..."; \
 	else \
 	echo "Adding tag to list ... "; \
-	echo "${DX_DESTTAG}=${DX_DESTDIR}/html" \
+	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" \
 	>> ${DX_TAGDIR}/taglist.txt; \
 	fi;	
 	
@@ -179,29 +184,30 @@ ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FIL
 	##
 	## Getting tags from generated taglist 
 	##
-	if test '${DX_TAGFILES}'; then \
-	 for i in ${DX_TAGFILES}; do \
-	  t=`grep $${i} ${DX_TAGDIR}/taglist.txt`; \
-	  tag="$${tag} $${t}"; \
-	 done \
-	else \
-	 echo "No tag list found!"; \
+	if test '${DX_TAGFILES}'; then
+	 for i in ${DX_TAGFILES}; do
+	  ##
+	  ## extract correct html target relative path 
+	  ##
+	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`;	  
+	  tags="$${tags} $${line}";
+	 done
+	else
+	 echo "No tag list found!";
 	fi;
-	echo "Adding selected tag entries: $${tag}"	
+	echo "Adding selected tag entries: $${tags}"	
 	
 	##
 	## Start Doxygen generation
 	##
 	$(DX_DESTENV) \
-	DX_TAGFILES="$${tag}" \
+	DX_TAGFILES="$${tags}" \
 	DX_DESTTAG= \
 	$(DX_DOXYGEN) $(DX_CONFIG);
 	touch $@
 
 
 doxygen-run: build_tag ${DX_DESTDIR}/doxygen.stamp
-
-
 
 doxygen-doc: DX_INSTALLDIR = $(abs_top_builddir)
 doxygen-doc: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
