@@ -1,6 +1,6 @@
 include @top_srcdir@/Makefile.inc
 
-#X_CFLAGS=@X_CFLAGS@
+X_CFLAGS=@X_CFLAGS@
 CFLAGS=@CFLAGS@ $(X_CFLAGS)
 UIL=@UIL@
 X_LIBS=@X_LIBS@
