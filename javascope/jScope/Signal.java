@@ -903,6 +903,8 @@ public class Signal implements WaveDataListener
     public int[] getNaNs(){return nans;}
     public double getX(int idx)
     {
+ 
+        System.out.println("getX " + idx);
         if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
             return sliceX[idx];
        try {
@@ -1955,6 +1957,7 @@ public class Signal implements WaveDataListener
             if(x == null)//Only if data not present 
             {
                 XYData xyData = data.getData(xMin, xMax, NUM_POINTS);
+                if(xyData == null) return; //empty signal
                 x = xyData.x;
                 y = xyData.y;
                 adjustArraySizes();
@@ -2556,6 +2559,7 @@ public class Signal implements WaveDataListener
         //resolutionManager.resetRegions();
         try {
             XYData xyData = data.getData(NUM_POINTS);
+            if(xyData == null) return;
             x = xyData.x;
             y = xyData.y;
             adjustArraySizes();
@@ -2583,7 +2587,7 @@ public class Signal implements WaveDataListener
             curr_xmax = xmax;
         }catch(Exception exc)
         {
-            System.out.println("Set Axis Excetpion: "+exc);
+            System.out.println("Set Axis Exception: "+exc);
         }
     }
 
@@ -2920,8 +2924,10 @@ public class Signal implements WaveDataListener
     
     
     
-    public void dataRegionUpdated(double []regX, float []regY, double resolution)
+    public synchronized void dataRegionUpdated(double []regX, float []regY, double resolution)
     {
+        
+        
         if(regX == null || regX.length == 0) return;
         if(debug) System.out.println("dataRegionUpdated "+ resolutionManager.lowResRegions.size());
         if(freezed) //If zooming in some inner part of the sugnal
@@ -2931,6 +2937,11 @@ public class Signal implements WaveDataListener
         }
         int samplesBefore, samplesAfter;
         if(regX.length == 0) return;
+        
+        if(x == null) x = new double[0];
+        if(y == null) y = new float[0];
+        
+        
         for(samplesBefore = 0; samplesBefore < x.length && x[samplesBefore] < regX[0]; samplesBefore++);
         if(samplesBefore > 0 && samplesBefore < x.length && x[samplesBefore] > regX[0]) samplesBefore--;
         for(samplesAfter = 0; samplesAfter < x.length - 1 && 
@@ -2952,10 +2963,11 @@ public class Signal implements WaveDataListener
             newX[newX.length - i - 1] = x[x.length - i - 1];
             newY[newX.length - i - 1] = y[x.length - i - 1];
         }
-        if(regX[0] >= x[x.length - 1]) //Data are being appended
+        if(x.length == 0 || regX[0] >= x[x.length - 1]) //Data are being appended
         {
             resolutionManager.appendRegion(new RegionDescriptor(regX[0], regX[regX.length - 1], resolution));
-            xmax = newX[newX.length - 1];
+            if(xmax < newX[newX.length - 1])
+                xmax = newX[newX.length - 1];
             x = newX;
             y = newY;
             fireSignalUpdated(true);
