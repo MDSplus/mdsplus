@@ -1,4 +1,40 @@
-commit 748051f5a27c6b8b22b8bce5b8e62e64b5a8bbe5 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 7418be0a270424c7639485a08f0eaf4565dccb91 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue May 26 16:15:53 2015 -0400
+
+    Put X_CFLAGS back in for macosx
+
+commit 44c37ba915ceb2ca8cb1a9dac445d58cda8fc446
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue May 26 15:25:20 2015 +0200
+
+    Added classes
+
+commit 9061e5707ac02458d928ecd731dc1fa767037229
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue May 26 15:18:03 2015 +0200
+
+    New class for asynchronous display of MDSplus data
+
+commit e54f0774cc59556e38339d71ffa28215623009ae
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue May 26 15:09:41 2015 +0200
+
+    New class added
+
+commit 035277480fcae853f6a4cc7f740ba6f20793d4a6
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue May 26 15:06:54 2015 +0200
+
+    dded Asynchronous extension of MdsDataProvider
+
+commit 0391b0a57a30e4902fef006525909686c84aa075 (tag: refs/tags/alpha_release-7-0-72)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 22 19:24:25 2015 +0000
+
+    New ChangeLog
+
+commit 748051f5a27c6b8b22b8bce5b8e62e64b5a8bbe5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 22 15:14:07 2015 -0400
 
