@@ -1,4 +1,35 @@
-commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f1af043a060479cf8a9cd66117069117f552c983 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 3609c1a 7cd7309
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 10:09:00 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 3609c1a2bef4db3a0c85a586d322cb40159a5c1a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 10:08:53 2015 -0400
+
+    fix for raspberrypi
+
+commit 3563f1a9da123779d8e1d01d7355e27e9af17f8f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:15:59 2015 -0400
+
+    include external dependencies for raspberrypi
+
+commit d8537b7d16e0815e9a5d998f11882e10e5689f31
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:12:14 2015 -0400
+
+    Python3 fix
+
+commit 7cd73097f5cf24f84f9a2832aef109e8ef1a8a9c (tag: refs/tags/alpha_release-7-0-74)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 12:29:29 2015 +0000
+
+    New ChangeLog
+
+commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:20:00 2015 -0400
 
