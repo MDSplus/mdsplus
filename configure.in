@@ -865,6 +865,7 @@ AC_PATH_XTRA
 AS_CASE([$host],
         [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include"
                              X_LIBS+=" -L/usr/OpenMotif/lib"])
+AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
 if test $UILCMD = uil32
