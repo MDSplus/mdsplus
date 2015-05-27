@@ -26,12 +26,12 @@ def qc_talk (ser, msg) :
 class QC9200 (MDSplus.Device) :
 	"""Limited control for the Quantum Composers Sapphire 9200 Series Pulse Generator.  Single-shot mode only."""
 
-	parts=[{'path': ':PORT',        'type': 'TEXT',    'value': 'COM3'}, # likely /dev/ttyACM0 on Linux
-	       {'path': ':TRIG_LEVEL',  'type': 'NUMERIC', 'value': 2.5},
-	       {'path': ':TRIG_EDGE',   'type': 'TEXT',    'value': 'RISING'}, # or FALLING
-	       {'path': ':INIT_ACTION', 'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'INIT',  1, None), Method(None, 'init',   head))"},
-	       {'path': ':OFF_ACTION',  'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'OFF',   1, None), Method(None, 'disarm', head))"},
-	       {'path': ':INIT_CONFIG', 'type': 'TEXT'}] # includes "plus" status, *IDN?, list of channels
+	parts=[{'path': ':PORT',         'type': 'TEXT',    'value': 'COM3'}, # likely /dev/ttyACM0 on Linux
+	       {'path': ':TRIG_LEVEL',   'type': 'NUMERIC', 'value': 2.5},
+	       {'path': ':TRIG_EDGE',    'type': 'TEXT',    'value': 'RISING'}, # or FALLING
+	       {'path': ':INIT_ACTION',  'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'INIT',   1, None), Method(None, 'init',   head))"},
+	       {'path': ':DEINI_ACTION', 'type': 'ACTION',  'valueExpr': "Action(Dispatch('DAQ_SERVER', 'DEINIT', 1, None), Method(None, 'disarm', head))"},
+	       {'path': ':INIT_CONFIG',  'type': 'TEXT'}] # includes "plus" status, *IDN?, list of channels
 
 	for ch in ('A', 'B', 'C', 'D') :
 		parts.append({'path': ':ENABLE_'   + ch, 'type': 'NUMERIC', 'value': 1})        # on/off
