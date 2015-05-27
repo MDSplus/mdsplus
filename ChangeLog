@@ -1,4 +1,32 @@
-commit f1af043a060479cf8a9cd66117069117f552c983 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 442dcf213641cbf218492a5546c9b665aeeb3d63 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 3b98d95 d7bddab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 12:46:27 2015 -0400
+
+    Merge pull request #4 from bstandley/feature-w7x-devices
+    
+    Feature w7x devices
+
+commit d7bddab88ba45f5f6f4965bce2f878ec122122aa
+Merge: 6a2cd9a 3b98d95
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Wed May 27 17:13:33 2015 +0200
+
+    Merge branch 'alpha' into feature-w7x-devices
+
+commit 6a2cd9ad05502b8ead9d47390ced73236486f773
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Wed May 27 17:07:42 2015 +0200
+
+    Change name of action nodes
+
+commit 3b98d9527539323424fe9987738be79dd6a2103c (tag: refs/tags/alpha_release-7-0-75)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 14:26:02 2015 +0000
+
+    New ChangeLog
+
+commit f1af043a060479cf8a9cd66117069117f552c983
 Merge: 3609c1a 7cd7309
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 27 10:09:00 2015 -0400
@@ -59,7 +87,7 @@ Date:   Tue May 26 20:31:36 2015 -0400
 
     New ChangeLog
 
-commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22 (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:54:27 2015 +0000
 
@@ -83,7 +111,20 @@ Date:   Tue May 26 18:50:34 2015 -0400
 
     New ChangeLog
 
-commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d (tag: refs/tags/alpha_release-7-0-73)
+commit 28f24fb284bff98d4a475aac0f34d10646ee0c3a
+Merge: 4d013e9 24ddfac
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Wed May 27 00:32:39 2015 +0200
+
+    Merge branch 'alpha' into feature-w7x-devices
+
+commit 4d013e99a659f7d5d514324ef40e312c04d08eab
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Wed May 27 00:26:11 2015 +0200
+
+    Add support for two W7-X devices
+
+commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 22:21:53 2015 +0000
 
