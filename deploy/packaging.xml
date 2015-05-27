@@ -302,6 +302,7 @@ fi
     <include file="/usr/local/mdsplus/pixmaps/traverser.png"/>
     <exclude dir="/usr/local/mdsplus/tdi/MitDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/RfxDevices"/>
+    <exclude dir="/usr/local/mdsplus/tdi/W7xDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
     <exclude dir="/usr/local/mdsplus/tdi/camac"/>
     <exclude dir="/usr/local/mdsplus/tdi/d3d"/>
@@ -509,6 +510,29 @@ popd
 if [ "$1" == "0" ]
 then
   rm -Rf %{python_sitearch}/RfxDevices*
+fi
+
+    </prerm>
+
+  </package>
+  <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
+    <requires package="python"/>
+    <include dir="/usr/local/mdsplus/tdi/W7xDevices"/>
+    <postinst>
+
+pushd __INSTALL_PREFIX__/mdsplus/tdi/W7xDevices
+rm -Rf %{python_sitelib}/W7xDevices*
+rm -Rf build dist
+python setup.py -q install
+rm -Rf build dist W7xDevices.egg-info
+popd
+
+    </postinst>
+    <prerm>
+
+if [ "$1" == "0" ]
+then
+  rm -Rf %{python_sitearch}/W7xDevices*
 fi
 
     </prerm>
