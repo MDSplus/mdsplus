@@ -752,7 +752,7 @@ make clean &gt;/dev/null
    <xinetd/>
    <java/>
  </external_packages>
- <external_packages platforms="ubuntu,debian">
+ <external_packages platforms="ubuntu,debian,rasp">
    <python-devel package="python-dev"/>
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>
