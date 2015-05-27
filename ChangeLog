@@ -1,4 +1,34 @@
-commit 38bbe1e55c7d4c23316d80e60854b4ba80b66a49 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit a04a614faa5cba9c4cf69c6aa13a4ee9d678c562 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 10:09:33 2015 -0400
+
+    fix for raspberrypi
+
+commit b9000301ec099693f46de0da78c6e2ab04a3b9dd
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:15:19 2015 -0400
+
+    put back X_CFLAGS
+
+commit 9caeae71f132d5582aea105a7057d5eeaa52c2bf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:14:35 2015 -0400
+
+    include external dependencies for raspberrypi
+
+commit e2d4b0b53d79cd9d9606226ced8bc2bb01b30e57
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:12:58 2015 -0400
+
+    Python3 fix
+
+commit 86d391506bcec6f98dd2172f57d2e2fc56e1d5b3 (tag: refs/tags/stable_release-7-0-8)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 22 20:10:01 2015 +0000
+
+    New ChangeLog
+
+commit 38bbe1e55c7d4c23316d80e60854b4ba80b66a49
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 22 15:58:31 2015 -0400
 
