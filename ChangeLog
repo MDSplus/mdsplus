@@ -1,4 +1,95 @@
-commit 7418be0a270424c7639485a08f0eaf4565dccb91 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit f1af043a060479cf8a9cd66117069117f552c983 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 3609c1a 7cd7309
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 10:09:00 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 3609c1a2bef4db3a0c85a586d322cb40159a5c1a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 10:08:53 2015 -0400
+
+    fix for raspberrypi
+
+commit 3563f1a9da123779d8e1d01d7355e27e9af17f8f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:15:59 2015 -0400
+
+    include external dependencies for raspberrypi
+
+commit d8537b7d16e0815e9a5d998f11882e10e5689f31
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 09:12:14 2015 -0400
+
+    Python3 fix
+
+commit 7cd73097f5cf24f84f9a2832aef109e8ef1a8a9c (tag: refs/tags/alpha_release-7-0-74)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 12:29:29 2015 +0000
+
+    New ChangeLog
+
+commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 23:20:00 2015 -0400
+
+    New ChangeLog
+
+commit 6b183ac812fd784e6a5f2f0e85daca3884fd4907
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 02:09:00 2015 +0000
+
+    New ChangeLog
+
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 01:34:39 2015 +0000
+
+    New ChangeLog
+
+commit c2edc2e8fad0ece4e73077118dc465af14e716a4
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 00:59:18 2015 +0000
+
+    New ChangeLog
+
+commit baa5c4d1aea8af98765a72b5704142580f312c75
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 20:31:36 2015 -0400
+
+    New ChangeLog
+
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 23:54:27 2015 +0000
+
+    New ChangeLog
+
+commit b223eb8b20b0f1e392af273962c87ff24d9ab98b
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 23:36:43 2015 +0000
+
+    New ChangeLog
+
+commit 434834f1cf23c498fcc3663b6e9dc7c391a6cc63
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 23:15:12 2015 +0000
+
+    New ChangeLog
+
+commit a58737e15a34a412ec08ab456387938c9cc5e431
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 18:50:34 2015 -0400
+
+    New ChangeLog
+
+commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d (tag: refs/tags/alpha_release-7-0-73)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue May 26 22:21:53 2015 +0000
+
+    New ChangeLog
+
+commit 7418be0a270424c7639485a08f0eaf4565dccb91
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue May 26 16:15:53 2015 -0400
 
