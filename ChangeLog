@@ -1,4 +1,23 @@
-commit 442dcf213641cbf218492a5546c9b665aeeb3d63 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit b187b3603c63e4f1e8a73eb5337849f7066685f0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 3cd0913 ee5c386
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 16:26:02 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 3cd09133e5e78b3aed390860ad83baf295dd95fa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed May 27 16:25:49 2015 -0400
+
+    Add W7xDevices package
+
+commit ee5c3866e45ad28c47887f268e03f0ec65a2682e (tag: refs/tags/alpha_release-7-0-76)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 17:07:43 2015 +0000
+
+    New ChangeLog
+
+commit 442dcf213641cbf218492a5546c9b665aeeb3d63
 Merge: 3b98d95 d7bddab
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 27 12:46:27 2015 -0400
@@ -69,7 +88,7 @@ Date:   Wed May 27 02:09:00 2015 +0000
 
     New ChangeLog
 
-commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0 (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 27 01:34:39 2015 +0000
 
@@ -87,7 +106,7 @@ Date:   Tue May 26 20:31:36 2015 -0400
 
     New ChangeLog
 
-commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22 (tag: refs/tags/alpha_release-7-0-73)
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:54:27 2015 +0000
 
