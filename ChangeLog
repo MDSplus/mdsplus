@@ -1,4 +1,29 @@
-commit b187b3603c63e4f1e8a73eb5337849f7066685f0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2e5524e221815433eaaa3416878123e3e0faebbd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu May 28 16:40:02 2015 -0400
+
+    adding Bob Grantez's mdstcl.m function
+
+commit 5d1f8e41280f6e86cc1429e1cc0e8c2b4f173d90
+Merge: c2856fd d9d1c9f
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu May 28 16:37:49 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit d9d1c9f4e4aa937565429cc6fd17662dcfeefe43
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 28 10:02:11 2015 -0400
+
+    Add git reset on build git copy
+
+commit 4851e4a5ae28644d0917a65b5fa13397be0553ee (tag: refs/tags/alpha_release-7-0-77)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 20:50:44 2015 +0000
+
+    New ChangeLog
+
+commit b187b3603c63e4f1e8a73eb5337849f7066685f0
 Merge: 3cd0913 ee5c386
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 27 16:26:02 2015 -0400
@@ -88,7 +113,7 @@ Date:   Wed May 27 02:09:00 2015 +0000
 
     New ChangeLog
 
-commit b11ef6d7aaeda854a161e6b15bff485b56a671f0 (tag: refs/tags/alpha_release-7-0-73)
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 27 01:34:39 2015 +0000
 
@@ -143,7 +168,7 @@ Date:   Wed May 27 00:26:11 2015 +0200
 
     Add support for two W7-X devices
 
-commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d
+commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 22:21:53 2015 +0000
 
@@ -592,6 +617,13 @@ Date:   Wed May 13 14:23:17 2015 -0400
 
     Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
+commit c2856fd8c647555ba0102348962cabc13fc43801
+Merge: bca47f5 71e826c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed May 13 14:11:02 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
 commit 71e826c3418fef3e09428fe34b64219b3fdc967f (tag: refs/tags/alpha_release-7-0-59)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 13 18:02:03 2015 +0000
@@ -715,6 +747,19 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri May 8 22:22:41 2015 +0000
 
     New ChangeLog
+
+commit bca47f5d3b064cb560bf1614eac32fe1e6380ddf
+Merge: 0ba370f 2edb1fe
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri May 8 16:31:59 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 0ba370f82952a2796d5d43f753bf494e0a65f8c0
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri May 8 16:31:35 2015 -0400
+
+    add legacy behavior flag that returns doubles for most types, fix string arrays
 
 commit 2edb1fed8e7c6a5b5a60161f315437651f8fff4b
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -1177,6 +1222,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Apr 13 13:00:49 2015 -0400
 
     Fix for ealier gcc compiler without __SIZEOF_POINTER__ predefined macro
+
+commit edeb0a0d37d332b014e4fe004ccccf1ea061d684
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Apr 10 11:07:07 2015 -0400
+
+    Store resulting 2MHz clock if the module is set up for oversampling
 
 commit 7f5f9859a7a9d0a9e6f7798bebd7a34b1669d2ce (tag: refs/tags/alpha_release-7-0-38)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
