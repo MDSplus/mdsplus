@@ -13,19 +13,34 @@ def flushPrint(text):
   print(text)
   sys.stdout.flush()
 
-def doInGitDir(cmd,stdout=None):
+def doInGitDir(flavor,cmd,stdout=None):
+  dist = os.environ['DIST']
+  dir = "/mdsplus/git/%s/mdsplus-%s" % (dist,flavor)
+  try:
+    os.stat(dir)
+  except:
+    try:
+      os.mkdir("/mdsplus/git/%s" % dist)
+    except:
+      pass
+    s=subprocess.Popen("git clone -b %s git@github.com:/MDSplus/mdsplus %s" % (flavor,dir),shell=True,executable="/bin/bash").wait()
+    if s != 0:
+      raise Exception("Cannot clone repository")
+  flushPrint("Using git directory: %s" % dir) 
   return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
-                          cwd="/mdsplus/git/mdsplus")
+                          cwd=dir)
 
 def getLatestRelease(flavor):
   """Get latest releases for specified branch"""
   info=dict()
   info['flavor']=flavor
-  p=doInGitDir(
+  p=doInGitDir(flavor,
     """
-
-(git checkout -f %(flavor)s && git pull) > /dev/null && git describe --tags --abbrev=0 --match "%(flavor)s_release*"
-
+set -e
+git checkout -f %(flavor)s >&2
+git reset --hard origin/alpha >&2
+git pull >&2
+git describe --tags --abbrev=0 --match "%(flavor)s_release*"
     """ % info, stdout=subprocess.PIPE) 
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:
@@ -58,12 +73,12 @@ def processChanges(flavor):
   """Check if any changes were made since latest releases and create new release"""
 #    See if anything has changed
   info=getLatestRelease(flavor)
-  p=doInGitDir("git log --oneline %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
+  p=doInGitDir(flavor, "git log --oneline %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
   changes=p.stdout.readlines()
   info['numchanges']=len(changes)
   p.wait()
   if info['numchanges'] > 0:
-    p=doInGitDir("git log --decorate=full --source  %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
+    p=doInGitDir(flavor,"git log --decorate=full --source  %(tag)s..%(flavor)s" % info,stdout=subprocess.PIPE)
     changes=p.stdout.readlines()
     p.wait()
     flushPrint("There were %(numchanges)d changes to the %(branch)s branch since release %(tag)s" % info)
@@ -72,7 +87,7 @@ def processChanges(flavor):
     info['release']=info['release']+1
     info['tag'] = "%(flavor)s_release-%(major)d-%(minor)d-%(release)d" % info
     flushPrint("Making new release %(tag)s" % info)
-    doInGitDir("git log --decorate=full > ChangeLog").wait()
+    doInGitDir(flavor,"git log --decorate=full > ChangeLog").wait()
     info['newrelease']=True
   else:
     info['newrelease']=False
@@ -88,7 +103,7 @@ if __name__ == "__main__":
   errors=""
   for flavor in flavors:
     info = processChanges(flavor)
-    if doInGitDir(
+    if doInGitDir(flavor,
         """
 
 set -e
@@ -100,6 +115,7 @@ pushd /tmp/%(tag)s/deploy
 popd
 if [ "%(newrelease)d" == "1" ]; 
 then
+  set +e
   git config --global user.email "MDSplusBuilder@psfc.mit.edu"
   git config --global user.name "MDSplusBuilder"
   git commit -m "New ChangeLog" ChangeLog

@@ -620,12 +620,16 @@ AC_CHECK_LIB(c,socket,LIBSOCKET="",AC_CHECK_LIB(socket,socket,LIBSOCKET="-lsocke
 AC_CHECK_LIB(c,getgrgid,AC_DEFINE(HAVE_GETGRGID))
 AC_CHECK_LIB(c,getpwuid,AC_DEFINE(HAVE_GETPWUID))
 AC_CHECK_LIB(dnet_stub,gethostbyname,DNET_STUB="-ldnet_stub",DNET_STUB="")
+OLDLIBS="$LIBS"
 AC_SEARCH_LIBS([clock_gettime],[rt],,,)
-if test "$ac_cv_search_clock_gettime" = "no"
+LIBS="$OLDLIBS"
+CLOCK_GETTIME_LIB=""
+if test "$ac_cv_search_clock_gettime" != "no"
 then
-  CLOCK_GETTIME_LIB=""
-else
-  CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+  if test "$ac_cv_search_clock_gettime" != "none required"
+  then
+    CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+  fi
   AC_DEFINE(HAVE_CLOCK_GETTIME)
 fi
 OLDLIBS="$LIBS"
@@ -789,7 +793,7 @@ AC_CHECK_FUNC(malloc)
 AC_CHECK_FUNC(sched_setscheduler)
 
 dnl Check for Sybase
-if test "$host_cpu" = "arm"
+if test "$host_cpu" = "arm" -a "$(echo $host | grep arm-xilinx)" != ""
 then
    SYBASE_INC=""
    SYBASE_LIB=""
@@ -861,6 +865,7 @@ AC_PATH_XTRA
 AS_CASE([$host],
         [*darwin*|*apple*], [X_CFLAGS+=" -I/usr/OpenMotif/include"
                              X_LIBS+=" -L/usr/OpenMotif/lib"])
+AS_CASE([$host],[arm*gnueabihf],[X_CFLAGS=""])
 #FIXME: Change the above to AS_VAR_APPEND with a new autoconf version (2.64+?)
 
 if test $UILCMD = uil32

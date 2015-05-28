@@ -29,7 +29,7 @@ class InstallationPackage(object):
                 os.write(out,"Requires: %s\n" % pkg)
         else:
             self.info['reqpkg']=require.attrib['package']
-            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % self.info)
 
 
     def exists(self):

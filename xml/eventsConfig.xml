@@ -69,7 +69,7 @@ mdsevent_interface
 If one or more of these environment variables are not set, it looks for values to the remaining settings in
 two xml configuration files. It first looks for:
 
-$HOME/.mdsplus/eventsConfig.xml
+$HOME/.mdsplus.conf/eventsConfig.xml
 
 and if there are still any settings not defined it will look for settings in:
 

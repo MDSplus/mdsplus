@@ -1401,7 +1401,6 @@ static int ___MdsClose(char *tree, int *shot)
 
     status = MdsValue(expression, &d1, &d2, &d3, &null, &length);
 
-    free(tree);
     if ((status & 1)) {
       return *(int *)&answer;
     } else

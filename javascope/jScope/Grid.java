@@ -195,9 +195,9 @@ public class Grid
     {
 
 
-        if (ymax < ymin)
+        if (ymax <= ymin)
             ymax = ymin + 1E-10;
-        if (xmax < xmin)
+        if (xmax <= xmin)
             xmax = xmin + 1E-10;
         
         double step, curr, curr_max, curr_min,

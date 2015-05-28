@@ -77,12 +77,12 @@ $(clean_DIRS):
 
 .PHONY: full_clean
 full_clean: ./devscripts/rm_if clean
-	@ $< bin
+	@ $< bin bin64 bin32 bin_x86 bin_x86_64
 	@ $< etc
-	@ $< lib
+	@ $< lib lib64 lib32
 	@ $< java/classes
 	@ $< java
-	@ $< uid
+	@ $< uid uid64 uid32
 	@ $< config.cache
 	@ $< config.log
 	@ $< `find . -name '*.in' | \

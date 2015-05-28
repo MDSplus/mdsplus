@@ -596,7 +596,8 @@ public class WaveformMetrics
                     }
                 }
             }catch(Exception exc){
-                System.out.println("Waveform Metrics exception: " + exc);
+                //Exception is generated when signal is emty
+                //System.out.println("Waveform Metrics exception: " + exc);
             }
         }
 

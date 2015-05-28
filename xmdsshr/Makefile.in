@@ -87,7 +87,7 @@ install: $(libdir) @uiddir@
 	$(UIL) -o $@ XmdsXdBox.uil
 
 @MAKESHLIBDIR@libXmdsShr@SHARETYPE@: $(OBJECTS)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBM)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lTreeShr $(LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBM)
 
 @MAKELIBDIR@libXmdsShr.a : $(OBJECTS)
 	$(AR) -cr $@ $^
@@ -96,7 +96,7 @@ install: $(libdir) @uiddir@
 @MAKELIBDIR@xmdsuil.wmd : $(WMD_RULE)
 
 @MAKEBINDIR@wmdcreate: wmldbcreate-xmdsshr.c UilConst.h
-	$(LINK.c) $(OUTPUT_OPTION) $< -DMDS_EXTENSION $(MOTIF_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) $< -DMDS_EXTENSION $(LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS)
 
 UilConst.h : xmdsuil.wml 
 	$(WML) 

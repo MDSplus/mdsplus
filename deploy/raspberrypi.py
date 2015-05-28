@@ -5,10 +5,8 @@ class InstallationPackage(object):
     """Provides exists,build,test and deploy methods"""
     def __init__(self,info):
         self.info=info
-        if 'ARCH' in os.environ:
-          self.info['arch']=os.environ['ARCH']
-        else:
-          self.info['arch']={"x86_64":"amd64","i686":"i386"}[os.uname()[-1]]
+        self.info['arch']='armhf'
+        self.info['rflavor']=self.info['rflavor'].replace('_','-')
         self.info['DIST']=os.environ['DIST']
 
     def externalPackage(self, root, package):
@@ -57,7 +55,7 @@ class InstallationPackage(object):
             self.info['mdsplus_version']="%(flavor)s-%(mdsplus_version)s" % self.info
         tree=ET.parse('packaging.xml')
         root=tree.getroot()
-        install_script=root.find('ubuntu').find('install_script').text
+        install_script=root.find('raspberrypi').find('install_script').text
         install_script=install_script[install_script.find('#'):]
         fd,filename=tempfile.mkstemp()
         os.write(fd,install_script % self.info)
@@ -72,10 +70,14 @@ class InstallationPackage(object):
         return fname
 
     def buildDebs(self):
+        excludePackages=("camac","camac_bin","d3d","epics","gsi","gis_bin","idl","idl_bin","kbsidevices","labview",
+                         "labview_bin","matlab","mitdevices","mitdevices_bin","motif","motif_bin","rfxdevices")
         tree=ET.parse('packaging.xml')
         root=tree.getroot()
         for package in root.getiterator('package'):
             pkg = package.attrib['name']
+#            if pkg in excludePackages:
+#                continue
             if pkg=='MDSplus':
                 self.info['packagename']=""
             else:
@@ -112,6 +114,8 @@ cp -av /tmp/%(flavor)s/BUILDROOT%(file)s "%(tmpdir)s/${dn}/"
                         raise Exception("Error building deb")
                 depends=list()
                 for require in package.getiterator("requires"):
+                    if require.attrib['package'] == "motif":
+                        continue
                     if 'external' in require.attrib:
                         pkg=self.externalPackage(root,require.attrib['package'])
                         if pkg is not None:
@@ -143,10 +147,10 @@ Description: %(description)s
                         f.close()
                         os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % self.info,0775)
                 self.info['debfile']="/tmp/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % self.info
+                print self.info
                 if subprocess.Popen("""
 set -e
 mkdir -p /tmp/%(flavor)s/DEBS/%(arch)s
-cat %(tmpdir)s/DEBIAN/control
 dpkg-deb --build %(tmpdir)s %(debfile)s
 reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
 """ % self.info,shell=True).wait() != 0:
@@ -162,57 +166,7 @@ reprepro -V -b /tmp/%(flavor)s/REPO -C %(flavor)s includedeb MDSplus %(debfile)s
         self.buildDebs()
 
     def test(self):
-        errors=list()
-        print("Preparing test repository")
-        sys.stdout.flush()
-        if subprocess.Popen("""
-apt-get autoremove -y 'mdsplus*' >/dev/null 2>&1
-set -e
-apt-key add mdsplus.gpg.key
-echo "deb file:/tmp/%(flavor)s/REPO/ MDSplus %(flavor)s" > /etc/apt/sources.list.d/mdsplus.list
-
-apt-get update
-""" % self.info,shell=True).wait() != 0:
-            errors.append("Failed to create test apt configuration files")
-        if len(errors) == 0:
-            print("Testing package installation")
-            sys.stdout.flush()
-            tree=ET.parse('packaging.xml')
-            root=tree.getroot()
-            for package in root.getiterator('package'):
-                pkg=package.attrib['name'].replace('_','-')
-                if pkg != 'repo':
-                    if pkg=='MDSplus':
-                        pkg=""
-                    else:
-                        pkg="-"+pkg
-                    self.info['package']=pkg
-                    if subprocess.Popen("""
-set -e
-apt-get install -y mdsplus%(rflavor)s%(package)s
-apt-get autoremove -y 'mdsplus%(rflavor)s%(package)s'""" % self.info,shell=True).wait() != 0:
-                        errors.append("Error installing package mdsplus%(rflavor)s%(package)s" % self.info)
-        if len(errors) == 0:
-            if subprocess.Popen("""
-set -e
-apt-get install -y mdsplus%(rflavor)s-mitdevices
-. /etc/profile.d/mdsplus.sh
-python <<EOF
-import sys,os
-import MDSplus
-sys.path.append(os.path.dirname(MDSplus.__file__))
-from tests import test_all
-from unittest import TextTestRunner
-result=TextTestRunner().run(test_all())
-if not result.wasSuccessful():
-  sys.exit(1)
-EOF""" % self.info,shell=True).wait() != 0:
-                errors.append("Error running regression tests")
-        subprocess.Popen("""
-""" % self.info,shell=True).wait()
-        if len(errors) > 0:
-            errors.insert(0,"Testing failed")
-            raise Exception('\n'.join(errors))
+        pass
 
     def deploy(self):
         """Deploy release to /mdsplus/dist"""
