@@ -36,8 +36,11 @@ def getLatestRelease(flavor):
   info['flavor']=flavor
   p=doInGitDir(flavor,
     """
-(git checkout -f %(flavor)s && git pull) > /dev/null && git describe --tags --abbrev=0 --match "%(flavor)s_release*"
-
+set -e
+git checkout -f %(flavor)s >&2
+git reset --hard origin/alpha >&2
+git pull >&2
+git describe --tags --abbrev=0 --match "%(flavor)s_release*"
     """ % info, stdout=subprocess.PIPE) 
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:
