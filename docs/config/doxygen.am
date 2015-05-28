@@ -103,6 +103,7 @@ DX_INSTALLDIR = $(abs_top_builddir)
 DX_DESTDIR    = ${DX_INSTALLDIR}/${DX_DOCDIR}
 DX_TAGDIR     = ${DX_INSTALLDIR}/docs/dtags
 DX_DESTTAG    = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.tag
+DX_SEARCHFILE = ${DX_TAGDIR}/${DX_PACKAGE_NAME}.xml
 
 
 if HAVE_CUTE_DOXYGEN
@@ -158,6 +159,7 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	GENERATE_HTML="YES" \
 	GENERATE_LATEX="NO" \
 	DX_DESTTAG="${DX_DESTTAG}" \
+	DX_SEARCHFILE="${DX_SEARCHFILE}" \
 	DX_TAGFILES= \
 	$(DX_DOXYGEN) $(DX_CONFIG);
 
@@ -203,6 +205,7 @@ ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FIL
 	$(DX_DESTENV) \
 	DX_TAGFILES="$${tags}" \
 	DX_DESTTAG= \
+	DX_SEARCHFILE= \
 	$(DX_DOXYGEN) $(DX_CONFIG);
 	touch $@
 
@@ -220,6 +223,7 @@ doxygen-install: doxygen-run $(DX_PS_GOAL) $(DX_PDF_GOAL)
 DX_CLEANFILES = \
     ${DX_DESTDIR}/doxygen.stamp \
     ${DX_DESTTAG} \
+    ${DX_SEARCHFILE} \
     -r \
     $(DX_CLEAN_HTML) \
     $(DX_CLEAN_CHM) \
