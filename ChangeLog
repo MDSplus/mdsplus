@@ -1,4 +1,10 @@
-commit aecb1aea699abf2db9ef13e0654df173fcc7b62c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit a8de5fc1d935cc30435e4ddc712d4a6e75b159ac (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 29 16:42:25 2015 +0000
+
+    New ChangeLog
+
+commit aecb1aea699abf2db9ef13e0654df173fcc7b62c
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri May 29 16:16:41 2015 +0000
 
@@ -23,7 +29,7 @@ Date:   Fri May 29 16:40:23 2015 +0200
 
     adds Makefile.in
 
-commit 0b8626b2c6b4106cf9ce1b0980ddee804e4cb4f9
+commit 0b8626b2c6b4106cf9ce1b0980ddee804e4cb4f9 (tag: refs/tags/alpha_release-7-0-79)
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Fri May 29 10:22:04 2015 -0400
 
@@ -173,7 +179,7 @@ Date:   Tue May 26 20:31:36 2015 -0400
 
     New ChangeLog
 
-commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22 (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:54:27 2015 +0000
 
@@ -210,7 +216,7 @@ Date:   Wed May 27 00:26:11 2015 +0200
 
     Add support for two W7-X devices
 
-commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d (tag: refs/tags/alpha_release-7-0-73)
+commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 22:21:53 2015 +0000
 
