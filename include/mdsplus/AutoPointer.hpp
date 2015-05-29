@@ -32,6 +32,9 @@ struct AutoPointerBase {
 		return *ptr;
 	}
 
+    operator T *() { return ptr; }
+    operator const T *() const { return ptr; }
+
 	T * ptr;
 };
 

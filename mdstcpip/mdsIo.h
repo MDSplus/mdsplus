@@ -1,3 +1,6 @@
+
+#ifndef DOXYGEN // hide this part from documentation
+
 #define MDS_IO_OPEN_K   1
 #define MDS_IO_CLOSE_K  2
 #define MDS_IO_LSEEK_K  3
@@ -33,3 +36,5 @@
 #ifndef O_RANDOM
 #define O_RANDOM 0
 #endif
+
+#endif // DOXYGEN end of hidden code

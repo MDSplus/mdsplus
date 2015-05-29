@@ -5,6 +5,14 @@
 #include <ctype.h>
 #include <libroutines.h>
 
+
+///
+/// This is the dynamic protocol loader. The mdsshr lib routines are used to seek
+/// Io symbol inside a library that must be reachable and named as "{protocol}MdsIp"
+/// See \ref IoRoutines to get the list of declared funcion pointers.
+///
+/// \return pointer to the IoRoutines static instance compiled inside the protocol library.
+///
 IoRoutines *LoadIo(char *protocol_in)
 {
   DESCRIPTOR(symbol_dsc, "Io");
@@ -32,3 +40,5 @@ IoRoutines *LoadIo(char *protocol_in)
     return 0;
   }
 }
+
+

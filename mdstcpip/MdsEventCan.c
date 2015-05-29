@@ -2,6 +2,13 @@
 #include "mdsip_connections.h"
 #include <stdlib.h>
 
+///
+/// 
+/// 
+/// \param id
+/// \param eventid
+/// \return 
+///
 int MdsEventCan(int id, int eventid)
 {
   struct descrip eventarg;

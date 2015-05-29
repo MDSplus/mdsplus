@@ -29,6 +29,7 @@ extern "C" int MdsSetDefault(int sock, char *node);
 extern "C" int MdsClose(int sock);
 extern "C" int ConnectToMds(char *host);
 extern "C" int ConnectToMdsEvents(char *host);
+extern "C" int SetCompressionLevel(int level);
 extern "C" void DisconnectFromMds(int sockId);
 extern "C" void FreeMessage(void *m);
 
@@ -150,10 +151,11 @@ void *putManyObj(char *serializedIn)
 
 Mutex Connection::globalMutex;
 
-Connection::Connection(char *mdsipAddr) //mdsipAddr of the form <IP addr>[:<port>]
+Connection::Connection(char *mdsipAddr, int clevel) //mdsipAddr of the form <IP addr>[:<port>]
 {
     lockGlobal();
-	sockId = ConnectToMds(mdsipAddr);
+    SetCompressionLevel(clevel);
+    sockId = ConnectToMds(mdsipAddr);
     unlockGlobal();
 	if(sockId <= 0) {
 		std::string msg("Cannot connect to ");
@@ -232,9 +234,8 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 			throw MdsException(status);
 		}
 	}
-    //	unlockGlobal();
-	
-    	status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
+    //	unlockGlobal();	
+    status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, retDims, &numBytes, &ptr, &mem);
 	unlockLocal();
 	if(!(status & 1))
 		throw MdsException(status);
@@ -332,7 +333,7 @@ void Connection::put(const char *inPath, char *expr, Data **args, int nArgs)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		if(!ptr)
-			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
+			throw MdsException("Invalid argument passed to Connection::put(). Can only be Scalar or Array");
 	}
 
 	//Double backslashes!!
