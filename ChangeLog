@@ -1,4 +1,22 @@
-commit b187b3603c63e4f1e8a73eb5337849f7066685f0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 600dcd5b51ed4858bf25b6ec7e7386db697eb543 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 29 08:48:27 2015 -0400
+
+    Fix branch for reset
+
+commit d9d1c9f4e4aa937565429cc6fd17662dcfeefe43
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu May 28 10:02:11 2015 -0400
+
+    Add git reset on build git copy
+
+commit 4851e4a5ae28644d0917a65b5fa13397be0553ee (tag: refs/tags/alpha_release-7-0-77)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 20:50:44 2015 +0000
+
+    New ChangeLog
+
+commit b187b3603c63e4f1e8a73eb5337849f7066685f0
 Merge: 3cd0913 ee5c386
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 27 16:26:02 2015 -0400
@@ -88,7 +106,7 @@ Date:   Wed May 27 02:09:00 2015 +0000
 
     New ChangeLog
 
-commit b11ef6d7aaeda854a161e6b15bff485b56a671f0 (tag: refs/tags/alpha_release-7-0-73)
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 27 01:34:39 2015 +0000
 
@@ -143,7 +161,7 @@ Date:   Wed May 27 00:26:11 2015 +0200
 
     Add support for two W7-X devices
 
-commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d
+commit 24ddfac9dbb0ea17144ea8b5339ab211a2d3015d (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 22:21:53 2015 +0000
 
