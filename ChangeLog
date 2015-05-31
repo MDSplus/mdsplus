@@ -1,4 +1,22 @@
-commit a8de5fc1d935cc30435e4ddc712d4a6e75b159ac (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit aa2ab16f3fe3c0fc5166c91a7e655682ee45bf62 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 29 16:32:07 2015 -0400
+
+    Fix after bootstep
+
+commit 0ce74aebf9317fbd410dd2ff195dcc7bfa6f1a3a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri May 29 16:22:50 2015 -0400
+
+    Put AM_MAINTAINER_MODE back
+
+commit e5c75eccfb60fdfc7953b96013673232a82252ae (tag: refs/tags/alpha_release-7-0-80)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 29 17:06:39 2015 +0000
+
+    New ChangeLog
+
+commit a8de5fc1d935cc30435e4ddc712d4a6e75b159ac
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri May 29 16:42:25 2015 +0000
 
@@ -179,7 +197,7 @@ Date:   Tue May 26 20:31:36 2015 -0400
 
     New ChangeLog
 
-commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22 (tag: refs/tags/alpha_release-7-0-73)
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:54:27 2015 +0000
 
@@ -197,7 +215,7 @@ Date:   Tue May 26 23:15:12 2015 +0000
 
     New ChangeLog
 
-commit a58737e15a34a412ec08ab456387938c9cc5e431
+commit a58737e15a34a412ec08ab456387938c9cc5e431 (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 18:50:34 2015 -0400
 
