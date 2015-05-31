@@ -1,4 +1,23 @@
-commit aa2ab16f3fe3c0fc5166c91a7e655682ee45bf62 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit e26179f9d382814e7d7a58dafb2e1ef6b9354f21 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 15afb61 c43ddc8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun May 31 09:09:17 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 15afb616db5a71c74604edab4889d9f9bfcc0904
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun May 31 09:09:10 2015 -0400
+
+    Re-automake after setting AM_MAINTAINER_MODE
+
+commit c43ddc8c90290042a9130e622a22d3df95cc3ccb (tag: refs/tags/alpha_release-7-0-81)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri May 29 18:30:50 2015 -0400
+
+    New ChangeLog
+
+commit aa2ab16f3fe3c0fc5166c91a7e655682ee45bf62
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 29 16:32:07 2015 -0400
 
@@ -179,7 +198,7 @@ Date:   Wed May 27 02:09:00 2015 +0000
 
     New ChangeLog
 
-commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0 (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 27 01:34:39 2015 +0000
 
@@ -215,7 +234,7 @@ Date:   Tue May 26 23:15:12 2015 +0000
 
     New ChangeLog
 
-commit a58737e15a34a412ec08ab456387938c9cc5e431 (tag: refs/tags/alpha_release-7-0-73)
+commit a58737e15a34a412ec08ab456387938c9cc5e431
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 18:50:34 2015 -0400
 
