@@ -213,6 +213,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	//Check whether arguments are compatible (Scalars or Arrays)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
+		delete [] dims;
 		if(!ptr)
 			throw MdsException("Invalid argument passed to Connection::get(). Can only be Scalar or Array");
 	}
@@ -228,6 +229,7 @@ Data *Connection::get(const char *expr, Data **args, int nArgs)
 	for(std::size_t argIdx = 0; argIdx < nArgs; ++argIdx) {
 		args[argIdx]->getInfo(&clazz, &dtype, &length, &nDims, &dims, &ptr);
 		status = SendArg(sockId, argIdx + 1, convertType(dtype), nArgs+1, length, nDims, dims, (char *)ptr);
+		delete [] dims;
 		if(!(status & 1))
 		{
 			unlockLocal();
@@ -384,25 +386,31 @@ void Connection::setDefault(char *path)
 
 void GetMany::insert(int idx, char *name, char *expr, Data **args, int nArgs)
 {
-	AutoData<String> fieldName(new String("name"));
+//They are freed by the List descructor
+/*	AutoData<String> fieldName(new String("name"));
 	AutoData<String> nameStr(new String(name));
 	AutoData<String> fieldExp(new String("exp"));
 	AutoData<String> exprStr(new String(expr));
+*/
+	String *fieldName = new String("name");
+	String *nameStr = new String(name);
+	String *fieldExp = new String("exp");
+	String *exprStr = new String(expr);
 
-	AutoData<Dictionary> dict(new Dictionary());
-	dict->setItem(fieldName.get(), nameStr.get());
-	dict->setItem(fieldExp.get(), exprStr.get());
+	Dictionary *dict = new Dictionary();
+	dict->setItem(fieldName, nameStr);
+	dict->setItem(fieldExp, exprStr);
 
-	AutoData<String> argStr(new String("args"));
-	AutoData<List> list(new List());
+	String *argStr = new String("args");
+	List *list = new List();
 	for(int i = 0; i < nArgs; i++)
 		list->append(args[i]);
-	dict->setItem(argStr.get(), list.get());
+	dict->setItem(argStr, list);
 
 	if(idx >= len())
-		List::append(dict.get());
+		List::append(dict);
 	else
-		List::insert(idx, dict.get());
+		List::insert(idx, dict);
 }
 
 void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
