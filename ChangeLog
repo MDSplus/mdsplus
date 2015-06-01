@@ -1,4 +1,22 @@
-commit 534b9dc5ec36270717ff4059f9aa42e32dde07cd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 2c59acddc5c14bc64b7b7c0d3a98e6fa7bc3c016 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 15:40:31 2015 -0400
+
+    raspberryPi work
+
+commit bbd307504ed74ead8d9bc225e7482f6026a4b4f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 15:32:33 2015 -0400
+
+    Fix for raspberryPi
+
+commit 6f99f9aced49a450e8d8286b928324d4716d1b32 (tag: refs/tags/alpha_release-7-0-84)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 14:01:56 2015 +0000
+
+    New ChangeLog
+
+commit 534b9dc5ec36270717ff4059f9aa42e32dde07cd
 Merge: 3abab40 da3b26c
 Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Jun 1 15:23:32 2015 +0200
@@ -261,7 +279,7 @@ Date:   Tue May 26 20:31:36 2015 -0400
 
     New ChangeLog
 
-commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22 (tag: refs/tags/alpha_release-7-0-73)
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:54:27 2015 +0000
 
