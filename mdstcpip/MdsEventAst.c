@@ -2,17 +2,12 @@
 #include "mdsip_connections.h"
 #include <stdlib.h>
 
-///
-/// Send an AST (Asyncronous System Trap) request to the server through a special
-/// TDI call defined as \ref EVENTASTREQUEST macro.
-/// 
-/// \param id the connection id to be used
-/// \param eventnam name of the event request
-/// \param astadr address of the AST handler
-/// \param astprm 
-/// \param eventid
-/// \return 
-///
+
+////////////////////////////////////////////////////////////////////////////////
+//  MdsEventAst  ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 int MdsEventAst(int id, char *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
 

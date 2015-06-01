@@ -7,7 +7,6 @@
 //#define CRAY_IEEE_CLIENT 7
 //#define CRAY_CLIENT      8
 
-
 /// 
 /// Gets the id of this client machine using internal test function.
 /// The client types discovered by this function are the followings:
