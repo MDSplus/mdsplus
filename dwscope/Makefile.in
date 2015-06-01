@@ -124,8 +124,7 @@ am_dwpad_OBJECTS = dwpad.$(OBJEXT) dwscopesubs.$(OBJEXT)
 dwpad_OBJECTS = $(am_dwpad_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
-	$(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 dwpad_DEPENDENCIES = $(am__DEPENDENCIES_2) libXmdsWC.a
 am_dwscope_OBJECTS = dwscope-dwscope.$(OBJEXT) \
 	dwscope-dwscopesubs.$(OBJEXT) dwscope-evaluate.$(OBJEXT)
@@ -292,6 +291,7 @@ FFLAGS = @FFLAGS@
 FORLD = @FORLD@
 FOR_LDFLAGS = @FOR_LDFLAGS@
 FOR_LINKSHARED = @FOR_LINKSHARED@
+GEN_DEVICE = @GEN_DEVICE@
 GLOBUS_CFLAGS = @GLOBUS_CFLAGS@
 GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
@@ -334,7 +334,9 @@ LIBPATH = @LIBPATH@
 LIBPRE = @LIBPRE@
 LIBREADLINE = @LIBREADLINE@
 LIBRESOLV = @LIBRESOLV@
-LIBS = @LIBS@
+
+#FIXME: Remove this when LIBS is cleaned up in configure
+LIBS = 
 LIBSOCKET = @LIBSOCKET@
 LIBXEXT = @LIBXEXT@
 LIBXP = @LIBXP@
@@ -346,6 +348,7 @@ LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
 MACOSX = @MACOSX@
+MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
 MAKEINFO = @MAKEINFO@
@@ -434,9 +437,6 @@ build_os = @build_os@
 build_vendor = @build_vendor@
 builddir = @builddir@
 
-#FIXME: Remove this when LIBS is cleaned up in configure
-#LIBS=
-
 # Static data installed to lib
 datadir = $(libdir)
 datarootdir = @datarootdir@
@@ -485,7 +485,7 @@ AM_CFLAGS = $(TARGET_ARCH)
 #AC_PATH_XTRA puts CPPFLAGS in a CFLAGS variable. Adjust here.
 AM_CPPFLAGS = $(X_CFLAGS) -D_NO_DXm
 @RPATHLINK_TRUE@AM_LDFLAGS = $(RPATHLINK)=@MAKESHLIBDIR@
-LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(LIBS) $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
+LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXTRA_LIBS)
 
 #MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
@@ -510,7 +510,7 @@ all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .o .obj
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -534,9 +534,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 

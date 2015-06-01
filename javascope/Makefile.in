@@ -279,6 +279,7 @@ LTLIBOBJS = @LTLIBOBJS@
 LV = @LV@
 LV_CINTOOLS = @LV_CINTOOLS@
 MACOSX = @MACOSX@
+MAINT = @MAINT@
 MAKEBINDIR = @MAKEBINDIR@
 MAKEETCDIR = @MAKEETCDIR@
 MAKEINFO = @MAKEINFO@
@@ -456,7 +457,6 @@ SUBDOCS = jScope.html jScope.jpg popup.jpg \
 
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
-	jScope/AsynchDataSource.java \
 	jScope/Base64.java                    jScope/ColorDialog.java             jScope/ColorMapDialog.java        \
 	jScope/ColorMap.java                  jScope/ConnectionEvent.java         jScope/ConnectionListener.java    \
 	jScope/ContourSignal.java             jScope/DataAccess.java              jScope/DataAccessURL.java         \
@@ -472,8 +472,7 @@ COMMON_SRC = \
 	jScope/JiVarImpl.java                 jScope/JiVar.java                   jScope/jScopeBrowseSignals.java   \
 	jScope/jScopeBrowseUrl.java           jScope/jScopeDefaultValues.java     jScope/jScopeFacade.java          \
 	jScope/jScopeMultiWave.java           jScope/jScopeProperties.java        jScope/jScopeWaveContainer.java   \
-	jScope/jScopeWavePopup.java           jScope/MdsAccess.java               jScope/MdsAsynchDataProvider.java \
-	jScope/MdsConnection.java         \
+	jScope/jScopeWavePopup.java           jScope/MdsAccess.java               jScope/MdsConnection.java         \
 	jScope/MdsDataProvider.java           jScope/MdsMessage.java              jScope/MdsplusParser.java         \
 	jScope/MdsWaveInterface.java          jScope/MultiWaveform.java           jScope/MultiWavePopup.java        \
 	jScope/NotConnectedDataProvider.java  jScope/ProfileDialog.java           jScope/PropertiesEditor.java      \
@@ -511,7 +510,7 @@ EXTRA_CLASS = \
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in:  $(srcdir)/Makefile.am $(srcdir)/Makefile.common $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/Makefile.common $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -536,9 +535,9 @@ $(srcdir)/Makefile.common $(am__empty):
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 
-$(top_srcdir)/configure:  $(am__configure_deps)
+$(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-$(ACLOCAL_M4):  $(am__aclocal_m4_deps)
+$(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
 install-binSCRIPTS: $(bin_SCRIPTS)
