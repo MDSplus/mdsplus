@@ -1,4 +1,28 @@
-commit e26179f9d382814e7d7a58dafb2e1ef6b9354f21 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit ebaf697bd47f1e4a47c36d835fff247f3720a384 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 08:08:03 2015 -0400
+
+    Add AsyncDataSource
+
+commit a9c32a8631dc9eeba840972c65893136b5848ee3
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 11:17:06 2015 +0200
+
+    Fix wrong emmory management
+
+commit f87ca2b21e46399e0e3a6baeea304a20086fbca0
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 09:17:25 2015 +0200
+
+    Added missing file
+
+commit 1a4c57451d7aaa95163bd7523736c1a43df6c022 (tag: refs/tags/alpha_release-7-0-82)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun May 31 14:15:01 2015 +0000
+
+    New ChangeLog
+
+commit e26179f9d382814e7d7a58dafb2e1ef6b9354f21
 Merge: 15afb61 c43ddc8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun May 31 09:09:17 2015 -0400
@@ -60,7 +84,7 @@ Date:   Fri May 29 12:14:01 2015 -0400
 
     Merge in feature-doxygen-docs branch to add documentation generation infrastructure
 
-commit 6d727e4257b228632e809c710d02d860ab472fc6 (refs/remotes/origin/feature-doxygen-docs)
+commit 6d727e4257b228632e809c710d02d860ab472fc6
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Fri May 29 16:40:23 2015 +0200
 
@@ -198,7 +222,7 @@ Date:   Wed May 27 02:09:00 2015 +0000
 
     New ChangeLog
 
-commit b11ef6d7aaeda854a161e6b15bff485b56a671f0 (tag: refs/tags/alpha_release-7-0-73)
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 27 01:34:39 2015 +0000
 
