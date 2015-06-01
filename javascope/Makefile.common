@@ -29,6 +29,7 @@ SUBDOCS = jScope.html jScope.jpg popup.jpg \
 
 COMMON_SRC = \
 	jScope/AboutWindow.java               jScope/ASCIIDataProvider.java       jScope/AsdexDataProvider.java     \
+	jScope/AsynchDataSource.java \
 	jScope/Base64.java                    jScope/ColorDialog.java             jScope/ColorMapDialog.java        \
 	jScope/ColorMap.java                  jScope/ConnectionEvent.java         jScope/ConnectionListener.java    \
 	jScope/ContourSignal.java             jScope/DataAccess.java              jScope/DataAccessURL.java         \
