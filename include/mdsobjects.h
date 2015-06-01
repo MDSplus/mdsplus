@@ -2477,8 +2477,6 @@ protected:
     bool getFlag(int flagOfs);
     void setFlag(int flagOfs, bool val);
 
-    /// Set the associated Tree instance
-    void setTree(Tree *tree) {this->tree = tree;}
 public:
     virtual Data *data();
 
@@ -2496,6 +2494,8 @@ public:
     /// Get the associated tree instance
     Tree *getTree() { return tree; }
 
+    /// Set the associated Tree instance
+    void setTree(Tree *tree) {this->tree = tree;}
 
     /// Get the path name for this node
     char *getPath();
