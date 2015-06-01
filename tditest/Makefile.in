@@ -9,8 +9,8 @@ all : @MAKEBINDIR@ @MAKEBINDIR@tditest$(EXE)
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(bindir)
-	$(INSTALL) -m 755  @MAKEBINDIR@tditest$(EXE) $(bindir)
+install: $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755  @MAKEBINDIR@tditest$(EXE) $(DESTDIR)$(bindir)
 
 clean :
 	@ $(RM) @MAKEBINDIR@tditest$(EXE)

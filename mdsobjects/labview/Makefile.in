@@ -32,14 +32,14 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(MKDIR_P) $(exec_prefix)/LabView
-	tar cf - MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
-	tar cf - MDSplus_LV2012 | (cd ${exec_prefix}/LabView; tar xf -)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @libdir@
-@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr @libdir@
-@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@
-@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(MKDIR_P) $(DESTDIR)$(exec_prefix)/LabView
+	tar cf - MDSplus | (cd $(DESTDIR)${exec_prefix}/LabView; tar xf -)
+	tar cf - MDSplus_LV2012 | (cd $(DESTDIR)${exec_prefix}/LabView; tar xf -)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ $(DESTDIR)@libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr $(DESTDIR)@libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr $(DESTDIR)@libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@ $(DESTDIR)@libdir@
 
 @MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@: $(COBJECTS) @EXPORTS_FILE@
 	$(LD) -o $@ $(CFLAGS) @LINKSHARED@ $(COBJECTS) $(CLIBS) $(LIBS) $(CXXFLAGS)

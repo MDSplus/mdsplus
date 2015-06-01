@@ -43,8 +43,8 @@ clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) $(libs)
 
-install: $(libdir)
-	$(INSTALL) -m 755 $(libs) $(libdir)
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755 $(libs) $(DESTDIR)$(libdir)
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
 @MAKELIBDIR@%.dll @MAKELIBDIR@%.dll.a: $(OBJECTS) $(DEF)

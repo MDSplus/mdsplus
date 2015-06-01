@@ -68,12 +68,12 @@ clean:
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install: $(libdir) $(bindir)
+install: $(DESTDIR)$(libdir) $(DESTDIR)$(bindir)
 	$(INSTALL) -m 755 @MAKEBINDIR@mdscts $(bindir)
-	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@ $(libdir)
-	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(libdir)
-	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $(libdir)/$(SHLIB).$(MAJOR)
-	ln -sf $(SHLIB).$(MAJOR) $(libdir)/$(SHLIB)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@cts_commands@SHARETYPE@ $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755 $(SHLIB_BUILD).$(MAJOR).$(MINOR) $(DESTDIR)$(libdir)
+	ln -sf $(SHLIB).$(MAJOR).$(MINOR) $(DESTDIR)$(libdir)/$(SHLIB).$(MAJOR)
+	ln -sf $(SHLIB).$(MAJOR) $(DESTDIR)$(libdir)/$(SHLIB)
 
 @MAKEBINDIR@mdscts: cts
 	cp $< $@

@@ -26,13 +26,13 @@ clean :
 	@ $(RM) @MAKEBINDIR@hdf5ToMds
 	@ $(RM) @MAKEBINDIR@MDSplus2HDF5
 
-install: $(libdir) $(bindir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ $(DESTDIR)@libdir@
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libhdf5tdi.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libhdf5tdi.a $(DESTDIR)@libdir@; \
 	fi;
-	$(INSTALL) -m 755  @MAKEBINDIR@hdf5ToMds @bindir@
-	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 @bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@hdf5ToMds $(DESTDIR)@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 $(DESTDIR)@bindir@
 
 @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o @EXPORTS_FILE@
 	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS) $(LD_FLAGS)

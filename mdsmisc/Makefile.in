@@ -36,10 +36,10 @@ clean :
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsMisc.a 
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ 
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ $(DESTDIR)@libdir@
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsMisc.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsMisc.a $(DESTDIR)@libdir@; \
 	fi;
 
 @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@

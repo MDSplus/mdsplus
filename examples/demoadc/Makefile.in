@@ -24,13 +24,13 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	if [ ! -d @libdir@ ] ; then \
-                mkdir @libdir@; \
-                chmod 755 @libdir@; \
+	if [ ! -d $(DESTDIR)@libdir@ ] ; then \
+                mkdir $(DESTDIR)@libdir@; \
+                chmod 755 $(DESTDIR)@libdir@; \
         fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libDemoAdcShr@SHARETYPE@ @libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libDemoAdcShr@SHARETYPE@ $(DESTDIR)@libdir@
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libDemoAdcShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libDemoAdcShr.a $(DESTDIR)@libdir@; \
 	fi;
 
 

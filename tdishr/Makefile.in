@@ -99,10 +99,10 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@TdiShr.a
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB) $(DESTDIR)@libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a $(DESTDIR)@libdir@; \
 	fi;
 
 ifneq "@PYTHON_INCLUDE_DIR@" ""

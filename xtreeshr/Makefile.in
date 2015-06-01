@@ -24,10 +24,10 @@ clean:
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(IMPLIB) $(libdir)
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(IMPLIB) $(DESTDIR)$(libdir)
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644 @MAKELIBDIR@@LIBPRE@XTreeShr.a $(libdir); \
+		$(INSTALL) -m 644 @MAKELIBDIR@@LIBPRE@XTreeShr.a $(DESTDIR)$(libdir); \
 	fi;
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)

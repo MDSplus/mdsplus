@@ -27,11 +27,11 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(libdir)
-	@VS_TRUE@ $(INSTALL) -m 755 @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKESHLIBDIR@*.lib $(libdir)
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(DESTDIR)$(libdir)
+	@VS_TRUE@ $(INSTALL) -m 755 @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKESHLIBDIR@*.lib $(DESTDIR)$(libdir)
 	if test @SHARETYPE@ != .a ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(libdir); \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(DESTDIR)$(libdir); \
 	fi;
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)

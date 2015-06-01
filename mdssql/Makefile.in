@@ -25,9 +25,9 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsSql.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsSql.a $(DESTDIR)@libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@ $(DESTDIR)@libdir@
 
 @MAKELIBDIR@@LIBPRE@MdsSql@SHARETYPE@ : $(OBJECTS) $(DEF)
 	$(LINK.c) -o $@ @LINKSHARED@ $(OBJECTS) $(DEF) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS)

@@ -26,9 +26,9 @@ clean:
 depend: 
 	 @makedepend -- $(CFLAGS) -- $(SOURCES) mdsdcl.c ocldToXml.c
 
-install: $(libdir) $(bindir)
-	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl$(EXE) $(bindir)
-	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) $(libdir)
+install: $(DESTDIR)$(libdir) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 @MAKEBINDIR@mdsdcl$(EXE) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) $(DESTDIR)$(libdir)
 
 @MAKELIBDIR@@LIBPRE@Mdsdcl.a: $(OBJECTS)
 		$(AR) -cr $@ $^

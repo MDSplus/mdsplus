@@ -64,14 +64,14 @@ clean :
 	@ $(RM) @MAKEUIDDIR@XmdsXdBox.uid
 
 
-install: $(libdir) @uiddir@
-	$(INSTALL) -m 644  @MAKEUIDDIR@xmds_usage_icons.uid @uiddir@
-	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsDigChans.uid @uiddir@
-	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsInput.uid @uiddir@
-	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsXdBox.uid @uiddir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libXmdsShr@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir) $(DESTDIR)@uiddir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@xmds_usage_icons.uid $(DESTDIR)@uiddir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsDigChans.uid $(DESTDIR)@uiddir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsInput.uid $(DESTDIR)@uiddir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@XmdsXdBox.uid $(DESTDIR)@uiddir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libXmdsShr@SHARETYPE@ $(DESTDIR)@libdir@
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a $(DESTDIR)@libdir@; \
 	fi;
 
 @MAKEUIDDIR@xmds_usage_icons.uid: xmds_usage_icons.uil

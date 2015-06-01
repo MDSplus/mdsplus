@@ -30,10 +30,10 @@ clean:
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client)
 	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
 
-install: $(libdir)
-	$(MKDIR_P) $(libdir)
-	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client) $(libdir)
+install: $(DESTDIR)$(libdir)
+	$(MKDIR_P) $(DESTDIR)$(libdir)
+	$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client) $(DESTDIR)$(libdir)
 
 MdsLib = @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)
 

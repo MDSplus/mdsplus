@@ -19,10 +19,10 @@ clean :
 	@ $(RM) @MAKELIBDIR@libMdsVme.a
 	@ $(RM) @MAKESHLIBDIR@libMdsVme@SHARETYPE@
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsVme@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMdsVme@SHARETYPE@ $(DESTDIR)@libdir@
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libMdsVme.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@libMdsVme.a $(DESTDIR)@libdir@; \
 	fi;
 
 @MAKESHLIBDIR@libMdsVme@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
