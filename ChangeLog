@@ -1,4 +1,10 @@
-commit bfe88ca51d8518d3137cdfe3cda3a69648735879 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 5c09be887b2eac0aaf4029a053cda8bb4c6df6da (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 23:11:55 2015 +0000
+
+    New ChangeLog
+
+commit bfe88ca51d8518d3137cdfe3cda3a69648735879
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 1 18:46:48 2015 -0400
 
@@ -303,13 +309,13 @@ Date:   Tue May 26 23:54:27 2015 +0000
 
     New ChangeLog
 
-commit b223eb8b20b0f1e392af273962c87ff24d9ab98b
+commit b223eb8b20b0f1e392af273962c87ff24d9ab98b (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:36:43 2015 +0000
 
     New ChangeLog
 
-commit 434834f1cf23c498fcc3663b6e9dc7c391a6cc63 (tag: refs/tags/alpha_release-7-0-73)
+commit 434834f1cf23c498fcc3663b6e9dc7c391a6cc63
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:15:12 2015 +0000
 
