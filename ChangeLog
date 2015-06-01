@@ -1,4 +1,19 @@
-commit ebaf697bd47f1e4a47c36d835fff247f3720a384 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 534b9dc5ec36270717ff4059f9aa42e32dde07cd (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: 3abab40 da3b26c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 15:23:32 2015 +0200
+
+    Merge pull request #5 from bstandley/feature-minor-fixes
+    
+    Minor fixes here and there
+
+commit 3abab4005f04f5ab1423eb8128d7d7f89a4c0ea5 (tag: refs/tags/alpha_release-7-0-83)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 12:26:38 2015 +0000
+
+    New ChangeLog
+
+commit ebaf697bd47f1e4a47c36d835fff247f3720a384
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 1 08:08:03 2015 -0400
 
@@ -52,6 +67,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 29 16:22:50 2015 -0400
 
     Put AM_MAINTAINER_MODE back
+
+commit da3b26c0964a7632aaeda14a69abcafc82455632
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Fri May 29 21:51:10 2015 +0200
+
+    Minor fixes here and there
 
 commit e5c75eccfb60fdfc7953b96013673232a82252ae (tag: refs/tags/alpha_release-7-0-80)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -240,7 +261,7 @@ Date:   Tue May 26 20:31:36 2015 -0400
 
     New ChangeLog
 
-commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22
+commit 4a7e160a4e2f0b69823f15ace2176b10110f6c22 (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:54:27 2015 +0000
 
