@@ -878,13 +878,13 @@ uninstall-am:
 @DX_COND_doc_TRUE@${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
 @DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR}
 
-@DX_COND_doc_TRUE@	if test '${DX_TAGFILES}'; then
-@DX_COND_doc_TRUE@	 for i in ${DX_TAGFILES}; do
-@DX_COND_doc_TRUE@	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`;	  
-@DX_COND_doc_TRUE@	  tags="$${tags} $${line}";
-@DX_COND_doc_TRUE@	 done
-@DX_COND_doc_TRUE@	else
-@DX_COND_doc_TRUE@	 echo "No tag list found!";
+@DX_COND_doc_TRUE@	if test '${DX_TAGFILES}'; then \
+@DX_COND_doc_TRUE@	 for i in ${DX_TAGFILES}; do \
+@DX_COND_doc_TRUE@	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`; \
+@DX_COND_doc_TRUE@	  tags="$${tags} $${line}"; \
+@DX_COND_doc_TRUE@	 done \
+@DX_COND_doc_TRUE@	else \
+@DX_COND_doc_TRUE@	 echo "No tag list found!"; \
 @DX_COND_doc_TRUE@	fi;
 @DX_COND_doc_TRUE@	echo "Adding selected tag entries: $${tags}"	
 

@@ -186,16 +186,16 @@ ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FIL
 	##
 	## Getting tags from generated taglist 
 	##
-	if test '${DX_TAGFILES}'; then
-	 for i in ${DX_TAGFILES}; do
+	if test '${DX_TAGFILES}'; then \
+	 for i in ${DX_TAGFILES}; do \
 	  ##
 	  ## extract correct html target relative path 
 	  ##
-	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`;	  
-	  tags="$${tags} $${line}";
-	 done
-	else
-	 echo "No tag list found!";
+	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`; \
+	  tags="$${tags} $${line}"; \
+	 done \
+	else \
+	 echo "No tag list found!"; \
 	fi;
 	echo "Adding selected tag entries: $${tags}"	
 	
