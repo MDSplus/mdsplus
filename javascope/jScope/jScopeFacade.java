@@ -3351,9 +3351,8 @@ class ServerDialog
         "AsdexDataProvider",
         "ASCIIDataProvider",
         "T2DataProvider",
-        "MdsContinuousDataProvider",
         "LocalDataProvider",
-        "LocalRealtimeDataProvider"};
+        "MdsAsynchDataProvider"};
 
     ServerDialog(JFrame _dw, String title)
     {
@@ -3557,7 +3556,7 @@ class ServerDialog
         connect_b.addActionListener(this);
         p.add(connect_b);
 
-        exit_b = new JButton("Exit");
+        exit_b = new JButton("Close");
         exit_b.addActionListener(this);
         p.add(exit_b);
 

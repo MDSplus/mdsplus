@@ -8575,6 +8575,7 @@ else
   DNET_STUB=""
 fi
 
+OLDLIBS="$LIBS"
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing clock_gettime" >&5
 $as_echo_n "checking for library containing clock_gettime... " >&6; }
 if ${ac_cv_search_clock_gettime+:} false; then :
@@ -8631,11 +8632,14 @@ if test "$ac_res" != no; then :
 
 fi
 
-if test "$ac_cv_search_clock_gettime" = "no"
+LIBS="$OLDLIBS"
+CLOCK_GETTIME_LIB=""
+if test "$ac_cv_search_clock_gettime" != "no"
 then
-  CLOCK_GETTIME_LIB=""
-else
-  CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+  if test "$ac_cv_search_clock_gettime" != "none required"
+  then
+    CLOCK_GETTIME_LIB="$ac_cv_search_clock_gettime"
+  fi
   $as_echo "#define HAVE_CLOCK_GETTIME 1" >>confdefs.h
 
 fi
@@ -9687,7 +9691,7 @@ if test "x$ac_cv_func_sched_setscheduler" = xyes; then :
 fi
 
 
-if test "$host_cpu" = "arm"
+if test "$host_cpu" = "arm" -a "$(echo $host | grep arm-xilinx)" != ""
 then
    SYBASE_INC=""
    SYBASE_LIB=""
@@ -10735,6 +10739,12 @@ case $host in #(
   *darwin*|*apple*) :
     X_CFLAGS+=" -I/usr/OpenMotif/include"
                              X_LIBS+=" -L/usr/OpenMotif/lib" ;; #(
+  *) :
+     ;;
+esac
+case $host in #(
+  arm*gnueabihf) :
+    X_CFLAGS="" ;; #(
   *) :
      ;;
 esac
