@@ -108,7 +108,7 @@ template < typename Target, typename Source, typename EnableIf = void >
 struct numeric_cast_nan_rule {
     typedef numeric_cast_trait<Target,Source> trait;
     static inline void apply(Source value) {
-        if( isnan(value) ) throw(std::range_error("Trying to convert Nan to an Integer type"));
+        if( std::isnan(value) ) throw(std::range_error("Trying to convert Nan to an Integer type"));
     }
 };
 
