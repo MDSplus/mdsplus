@@ -1,4 +1,16 @@
-commit a1a4fecc4e2cb9079a316c4859503adece580eae (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 08f34105d602c86dc9c15e79057acffc01c05877 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 2 12:01:14 2015 -0400
+
+    Fix isnan usage
+
+commit 94744de44963c611cb0c6f7741d254392733179b (tag: refs/tags/alpha_release-7-0-86)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 2 12:25:22 2015 +0000
+
+    New ChangeLog
+
+commit a1a4fecc4e2cb9079a316c4859503adece580eae
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 2 02:17:13 2015 +0000
 
@@ -58,7 +70,7 @@ Date:   Mon Jun 1 18:46:48 2015 -0400
 
     New ChangeLog
 
-commit e7f4f36fe5dca07b0106ecefe33654bf392c2365 (tag: refs/tags/alpha_release-7-0-85)
+commit e7f4f36fe5dca07b0106ecefe33654bf392c2365
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 1 22:21:09 2015 +0000
 
@@ -321,7 +333,7 @@ Date:   Wed May 27 12:29:29 2015 +0000
 
     New ChangeLog
 
-commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf
+commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:20:00 2015 -0400
 
