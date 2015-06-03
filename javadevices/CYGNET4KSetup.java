@@ -45,7 +45,7 @@ public class CYGNET4KSetup extends DeviceSetup {
         deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("localhost");
-        setDeviceTitle("Gygnet4K sCMOS Camera");
+        setDeviceTitle("Cygnet4K sCMOS Camera");
         setDeviceType("CYGNET4K");
         setHeight(300);
         setWidth(600);

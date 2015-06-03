@@ -1,4 +1,145 @@
-commit e26179f9d382814e7d7a58dafb2e1ef6b9354f21 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 08f34105d602c86dc9c15e79057acffc01c05877 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 2 12:01:14 2015 -0400
+
+    Fix isnan usage
+
+commit 94744de44963c611cb0c6f7741d254392733179b (tag: refs/tags/alpha_release-7-0-86)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 2 12:25:22 2015 +0000
+
+    New ChangeLog
+
+commit a1a4fecc4e2cb9079a316c4859503adece580eae
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 2 02:17:13 2015 +0000
+
+    New ChangeLog
+
+commit 7d07380cc0e54497539fe045bf4f0e58a2891111
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 2 01:39:24 2015 +0000
+
+    New ChangeLog
+
+commit ce6e3792e81358ce0570bcb76aab114db1af37ac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 2 01:25:14 2015 +0000
+
+    New ChangeLog
+
+commit 6f529ab3be0c31bb560da2449bc7cb191857c9bb
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 21:07:36 2015 -0400
+
+    New ChangeLog
+
+commit ad042eb5366fd28ebba13c8747285ebd6a6939b6
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 20:34:00 2015 -0400
+
+    New ChangeLog
+
+commit 1d140316a5e1e4d14945876ce466671dd4969e1c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 23:54:03 2015 +0000
+
+    New ChangeLog
+
+commit 5a67cd6350e26c0764a98df394da30b21e3c07d6
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 23:52:56 2015 +0000
+
+    New ChangeLog
+
+commit 2f7ec20f4d00cc78d29972b60315c7ae0608215f
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 23:31:15 2015 +0000
+
+    New ChangeLog
+
+commit 5c09be887b2eac0aaf4029a053cda8bb4c6df6da
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 23:11:55 2015 +0000
+
+    New ChangeLog
+
+commit bfe88ca51d8518d3137cdfe3cda3a69648735879
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 18:46:48 2015 -0400
+
+    New ChangeLog
+
+commit e7f4f36fe5dca07b0106ecefe33654bf392c2365
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 22:21:09 2015 +0000
+
+    New ChangeLog
+
+commit 9ed55da52b8c92480a85b4f51e8750694bc8cd2e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 15:45:59 2015 -0400
+
+    Fix for windows
+
+commit 2c59acddc5c14bc64b7b7c0d3a98e6fa7bc3c016
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 15:40:31 2015 -0400
+
+    raspberryPi work
+
+commit bbd307504ed74ead8d9bc225e7482f6026a4b4f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 15:32:33 2015 -0400
+
+    Fix for raspberryPi
+
+commit 6f99f9aced49a450e8d8286b928324d4716d1b32 (tag: refs/tags/alpha_release-7-0-84)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 14:01:56 2015 +0000
+
+    New ChangeLog
+
+commit 534b9dc5ec36270717ff4059f9aa42e32dde07cd
+Merge: 3abab40 da3b26c
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 15:23:32 2015 +0200
+
+    Merge pull request #5 from bstandley/feature-minor-fixes
+    
+    Minor fixes here and there
+
+commit 3abab4005f04f5ab1423eb8128d7d7f89a4c0ea5 (tag: refs/tags/alpha_release-7-0-83)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 1 12:26:38 2015 +0000
+
+    New ChangeLog
+
+commit ebaf697bd47f1e4a47c36d835fff247f3720a384
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 1 08:08:03 2015 -0400
+
+    Add AsyncDataSource
+
+commit a9c32a8631dc9eeba840972c65893136b5848ee3
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 11:17:06 2015 +0200
+
+    Fix wrong emmory management
+
+commit f87ca2b21e46399e0e3a6baeea304a20086fbca0
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 09:17:25 2015 +0200
+
+    Added missing file
+
+commit 1a4c57451d7aaa95163bd7523736c1a43df6c022 (tag: refs/tags/alpha_release-7-0-82)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun May 31 14:15:01 2015 +0000
+
+    New ChangeLog
+
+commit e26179f9d382814e7d7a58dafb2e1ef6b9354f21
 Merge: 15afb61 c43ddc8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun May 31 09:09:17 2015 -0400
@@ -28,6 +169,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri May 29 16:22:50 2015 -0400
 
     Put AM_MAINTAINER_MODE back
+
+commit da3b26c0964a7632aaeda14a69abcafc82455632
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Fri May 29 21:51:10 2015 +0200
+
+    Minor fixes here and there
 
 commit e5c75eccfb60fdfc7953b96013673232a82252ae (tag: refs/tags/alpha_release-7-0-80)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -60,7 +207,7 @@ Date:   Fri May 29 12:14:01 2015 -0400
 
     Merge in feature-doxygen-docs branch to add documentation generation infrastructure
 
-commit 6d727e4257b228632e809c710d02d860ab472fc6 (refs/remotes/origin/feature-doxygen-docs)
+commit 6d727e4257b228632e809c710d02d860ab472fc6
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Fri May 29 16:40:23 2015 +0200
 
@@ -186,7 +333,7 @@ Date:   Wed May 27 12:29:29 2015 +0000
 
     New ChangeLog
 
-commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf
+commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf (tag: refs/tags/alpha_release-7-0-73)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:20:00 2015 -0400
 
@@ -198,7 +345,7 @@ Date:   Wed May 27 02:09:00 2015 +0000
 
     New ChangeLog
 
-commit b11ef6d7aaeda854a161e6b15bff485b56a671f0 (tag: refs/tags/alpha_release-7-0-73)
+commit b11ef6d7aaeda854a161e6b15bff485b56a671f0
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed May 27 01:34:39 2015 +0000
 
