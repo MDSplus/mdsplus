@@ -364,7 +364,7 @@ static int tcp_flush(int conid)
 ///
 static void SetSocketOptions(SOCKET s, int reuse)
 {
-  fprintf(stderr,"Set socket OPTIONS on socket: %i //// \n",s);
+//  fprintf(stderr,"Set socket OPTIONS on socket: %i //// \n",s);
   
   STATIC_CONSTANT int sendbuf = SEND_BUF_SIZE, recvbuf = RECV_BUF_SIZE;
   int one = 1;
