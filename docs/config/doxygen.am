@@ -165,7 +165,10 @@ ${DX_DESTTAG}: ${DX_PAGES}
 
 
 ${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
-	touch $@
+	##
+	## generate taglist to keep track of geenerated symbols.
+	##
+	touch $@ \
 	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
 	echo "Name Found list not updated ..."; \
 	else \
@@ -181,7 +184,7 @@ install_tag: ${DX_TAGDIR}/taglist.txt
 
 
 ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
-	$(MKDIR_P) ${DX_DESTDIR}
+	$(MKDIR_P) ${DX_DESTDIR} 
 	
 	##
 	## Getting tags from generated taglist 
