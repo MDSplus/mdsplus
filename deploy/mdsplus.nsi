@@ -306,6 +306,8 @@ delete ChangeLog.rtf
 delete MDSplus-License.rtf
 delete mdsplus.ico
 delete uninstall.exe
+Exec '"$SYSDIR\mdsip_service.exe" "-r -p 8100"'
+Exec '"$SYSDIR\mdsip_service.exe" "-r -p 8000"'
 RMDir /r "$INSTDIR\tdi"
 RMDIR /r "$INSTDIR\xml"
 RMDir /r "$INSTDIR\include"
