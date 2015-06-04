@@ -3,6 +3,14 @@
 #include <stdlib.h>
 #include "mdsip_connections.h"
 
+
+///
+/// Executes the TDI expression "TreeClose()" on the server throug the connection
+/// identified by id.
+/// 
+/// \param id the id of the connection to be used
+/// \return the status of the TDI expression evaluation
+///
 int MdsClose(int id)
 {
   struct descrip ansarg;

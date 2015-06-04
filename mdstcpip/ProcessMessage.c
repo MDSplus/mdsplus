@@ -68,13 +68,15 @@ static int lock_file(int fd, int64_t offset, int size, int mode_in, int *deleted
   OVERLAPPED overlapped;
   int flags;
   *deleted = 0;
-  offset = ((offset >= 0) && (nowait == 0)) ? offset : (lseek(fd, 0, SEEK_END));
+  offset = ((offset >= 0)
+	    && (nowait == 0)) ? offset : (lseek(fd, 0, SEEK_END));
   overlapped.Offset = (int)(offset & 0xffffffff);
   overlapped.OffsetHigh = (int)(offset >> 32);
   overlapped.hEvent = 0;
   if (mode > 0) {
     HANDLE h = (HANDLE) _get_osfhandle(fd);
-    flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
+    flags = ((mode == MDS_IO_LOCK_RD)
+	     && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
     if (nowait)
       flags |= LOCKFILE_FAIL_IMMEDIATELY;
     status = UnlockFileEx(h, 0, size, 0, &overlapped);
@@ -100,8 +102,9 @@ static int lock_file(int fd, int64_t offset, int size, int mode_in, int *deleted
   return status;
 }
 
-static void ConvertBinary(int num, int sign_extend, short in_length, char *in_ptr, short out_length,
-			  char *out_ptr)
+static void
+ConvertBinary(int num, int sign_extend, short in_length, char *in_ptr,
+	      short out_length, char *out_ptr)
 {
   int i;
   int j;
@@ -116,8 +119,9 @@ static void ConvertBinary(int num, int sign_extend, short in_length, char *in_pt
   }
 }
 
-static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int out_type,
-			 char out_length, char *out_ptr)
+static void
+ConvertFloat(int num, int in_type, char in_length, char *in_ptr,
+	     int out_type, char out_length, char *out_ptr)
 {
   int i;
   char *in_p;
@@ -151,8 +155,18 @@ static void ConvertFloat(int num, int in_type, char in_length, char *in_ptr, int
   }
 }
 
-static Message *BuildResponse(int client_type, unsigned char message_id, int status,
-			      struct descriptor *d)
+
+
+///
+/// 
+/// \param client_type
+/// \param message_id
+/// \param status
+/// \param d
+/// \return 
+///
+static Message *BuildResponse(int client_type, unsigned char message_id,
+			      int status, struct descriptor *d)
 {
   Message *m = 0;
   int nbytes = (d->class == CLASS_S) ? d->length : ((ARRAY_7 *) d)->arsize;
@@ -227,8 +241,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FC:
-      ConvertFloat(num * 2, CvtVAX_F, (char)(d->length / 2), d->pointer,
-		   CvtIEEE_S, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_F, (char)(d->length / 2),
+		   d->pointer, CvtIEEE_S, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FS:
@@ -245,8 +259,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_DC:
-      ConvertFloat(num * 2, CvtVAX_D, (char)(d->length / 2), d->pointer,
-		   CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_D, (char)(d->length / 2),
+		   d->pointer, CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
@@ -255,8 +269,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_GC:
-      ConvertFloat(num * 2, CvtVAX_G, (char)(d->length / 2), d->pointer,
-		   CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_G, (char)(d->length / 2),
+		   d->pointer, CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FT:
@@ -283,20 +297,20 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       ConvertBinary(num, 1, (char)d->length, d->pointer, (char)m->h.length, m->bytes);
       break;
     case DTYPE_F:
-      ConvertFloat(num, CvtVAX_F, (char)d->length, d->pointer, CvtCRAY, (char)m->h.length,
-		   m->bytes);
+      ConvertFloat(num, CvtVAX_F, (char)d->length, d->pointer,
+		   CvtCRAY, (char)m->h.length, m->bytes);
       break;
     case DTYPE_FS:
-      ConvertFloat(num, CvtIEEE_S, (char)d->length, d->pointer, CvtCRAY, (char)m->h.length,
-		   m->bytes);
+      ConvertFloat(num, CvtIEEE_S, (char)d->length,
+		   d->pointer, CvtCRAY, (char)m->h.length, m->bytes);
       break;
     case DTYPE_FC:
-      ConvertFloat(num * 2, CvtVAX_F, (char)(d->length / 2), d->pointer, CvtCRAY,
-		   (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_F, (char)(d->length / 2),
+		   d->pointer, CvtCRAY, (char)(m->h.length / 2), m->bytes);
       break;
     case DTYPE_FSC:
-      ConvertFloat(num * 2, CvtIEEE_S, (char)(d->length / 2), d->pointer, CvtCRAY,
-		   (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtIEEE_S, (char)(d->length / 2),
+		   d->pointer, CvtCRAY, (char)(m->h.length / 2), m->bytes);
       break;
     case DTYPE_D:
       ConvertFloat(num, CvtVAX_D, sizeof(double), d->pointer, CvtCRAY, (char)m->h.length, m->bytes);
@@ -305,8 +319,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       ConvertFloat(num, CvtVAX_G, sizeof(double), d->pointer, CvtCRAY, (char)m->h.length, m->bytes);
       break;
     case DTYPE_FT:
-      ConvertFloat(num, CvtIEEE_T, sizeof(double), d->pointer, CvtCRAY, (char)m->h.length,
-		   m->bytes);
+      ConvertFloat(num, CvtIEEE_T, sizeof(double), d->pointer,
+		   CvtCRAY, (char)m->h.length, m->bytes);
       break;
     default:
       memcpy(m->bytes, d->pointer, nbytes);
@@ -329,8 +343,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FC:
-      ConvertFloat(num * 2, CvtVAX_F, (char)(d->length / 2), d->pointer,
-		   CvtIEEE_S, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_F, (char)(d->length / 2),
+		   d->pointer, CvtIEEE_S, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FS:
@@ -347,8 +361,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_DC:
-      ConvertFloat(num * 2, CvtVAX_D, (char)(d->length / 2), d->pointer,
-		   CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_D, (char)(d->length / 2),
+		   d->pointer, CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
@@ -357,8 +371,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_GC:
-      ConvertFloat(num * 2, CvtVAX_G, (char)(d->length / 2), d->pointer,
-		   CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_G, (char)(d->length / 2),
+		   d->pointer, CvtIEEE_T, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FT:
@@ -390,8 +404,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_DC:
-      ConvertFloat(num * 2, CvtVAX_D, (char)(d->length / 2), d->pointer,
-		   CvtVAX_G, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_D, (char)(d->length / 2),
+		   d->pointer, CvtVAX_G, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_G:
@@ -408,8 +422,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FSC:
-      ConvertFloat(num * 2, CvtIEEE_S, sizeof(float), d->pointer,
-		   CvtVAX_F, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtIEEE_S, sizeof(float),
+		   d->pointer, CvtVAX_F, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FT:
@@ -418,8 +432,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_FTC:
-      ConvertFloat(num * 2, CvtIEEE_T, sizeof(double), d->pointer,
-		   CvtVAX_G, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtIEEE_T, sizeof(double),
+		   d->pointer, CvtVAX_G, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     default:
@@ -451,8 +465,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_GC:
-      ConvertFloat(num * 2, CvtVAX_G, sizeof(double), d->pointer,
-		   CvtVAX_D, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtVAX_G, sizeof(double),
+		   d->pointer, CvtVAX_D, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     case DTYPE_FS:
@@ -461,8 +475,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_FLOAT;
       break;
     case DTYPE_FSC:
-      ConvertFloat(num * 2, CvtIEEE_S, sizeof(float), d->pointer,
-		   CvtVAX_F, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtIEEE_S, sizeof(float),
+		   d->pointer, CvtVAX_F, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX;
       break;
     case DTYPE_FT:
@@ -471,8 +485,8 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
       m->h.dtype = DTYPE_DOUBLE;
       break;
     case DTYPE_FTC:
-      ConvertFloat(num * 2, CvtIEEE_T, sizeof(double), d->pointer,
-		   CvtVAX_D, (char)(m->h.length / 2), m->bytes);
+      ConvertFloat(num * 2, CvtIEEE_T, sizeof(double),
+		   d->pointer, CvtVAX_D, (char)(m->h.length / 2), m->bytes);
       m->h.dtype = DTYPE_COMPLEX_DOUBLE;
       break;
     default:
@@ -548,36 +562,58 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   UnlockAsts();
 }
 
-static Message *ExecuteMessage(Connection * c)
+///
+/// Executes TDI expression held by a connecion instance. This first searches if
+/// connection message corresponds to AST or CAN requests, if no asyncronous ops
+/// are requested the TDI actual expression is parsed through tdishr library.
+/// In this case the current TDI context and tree is switched to the connection 
+/// ones stored in the connection context field.
+/// 
+/// ### AST and CAN
+/// AST and CAN stands for "Asynchronous System Trap" and "CANcel event request".
+/// This is an asyncronous message mechanism taken from the OpenVMS system. 
+/// The event handler is passed inside the message arguments and executed by the 
+/// MDSEventAst() function from mdslib.
+/// 
+/// \param connection the Connection instance filled with proper descriptor arguments
+/// \return the execute message answer built using BuildAnswer()
+///
+static Message *ExecuteMessage(Connection * connection)
 {
-  Message *ans = 0;
-  int status = 1;
+  Message *ans = 0;		// return message instance //
+  int status = 1;		// return status           //
+
   static EMPTYXD(emptyxd);
   struct descriptor_xd *xd;
   char *evname;
-  static DESCRIPTOR(eventastreq, EVENTASTREQUEST);
-  static DESCRIPTOR(eventcanreq, EVENTCANREQUEST);
-  int client_type = c->client_type;
+  static DESCRIPTOR(eventastreq, EVENTASTREQUEST);	// AST request descriptor //
+  static DESCRIPTOR(eventcanreq, EVENTCANREQUEST);	// Can request descriptor //
+
+  int client_type = connection->client_type;
   int java = CType(client_type) == JAVA_CLIENT;
-  int message_id = c->message_id;
-  if (StrCompare(c->descrip[0], &eventastreq) == 0) {
+  int message_id = connection->message_id;
+
+  // AST REQUEST //
+  if (StrCompare(connection->descrip[0], &eventastreq) == 0) {
     static int eventid = -1;
     static DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *newe = (MdsEventList *) malloc(sizeof(MdsEventList));
-    struct descriptor_a *info = (struct descriptor_a *)c->descrip[2];
-    newe->conid = c->id;
+    struct descriptor_a *info = (struct descriptor_a *)connection->descrip[2];
+    newe->conid = connection->id;
 
-     /**/ evname = malloc(c->descrip[1]->length + 1);
-    memcpy(evname, c->descrip[1]->pointer, c->descrip[1]->length);
-    evname[c->descrip[1]->length] = 0;
+    evname = malloc(connection->descrip[1]->length + 1);
+    memcpy(evname, connection->descrip[1]->pointer, connection->descrip[1]->length);
+    evname[connection->descrip[1]->length] = 0;
 
-    status =
-	MDSEventAst(evname, (void (*)(void *, int, char *))ClientEventAst, newe, &newe->eventid);
+    // Manage AST Event //
+    status = MDSEventAst(evname,
+			 (void (*)(void *, int, char *))ClientEventAst, newe, &newe->eventid);
+
     free(evname);
-     /**/ if (java) {
+    if (java) {
       newe->info = 0;
       newe->info_len = 0;
-      newe->jeventid = *c->descrip[2]->pointer;
+      newe->jeventid = *connection->descrip[2]->pointer;
     } else {
       newe->info = (struct _eventinfo *)memcpy(malloc(info->arsize), info->pointer, info->arsize);
       newe->info_len = info->arsize;
@@ -591,25 +627,28 @@ static Message *ExecuteMessage(Connection * c)
     } else {
       MdsEventList *e;
       eventiddsc.pointer = (void *)&newe->eventid;
-      if (c->event) {
-	for (e = c->event; e->next; e = e->next) ;
+      if (connection->event) {
+	for (e = connection->event; e->next; e = e->next) ;
 	e->next = newe;
       } else
-	c->event = newe;
+	connection->event = newe;
     }
     if (!java)
       ans = BuildResponse(client_type, message_id, status, &eventiddsc);
-  } else if (StrCompare(c->descrip[0], &eventcanreq) == 0) {
+  }
+  // CAN REQUEST //
+  else if (StrCompare(connection->descrip[0], &eventcanreq) == 0) {
     static int eventid;
     static DESCRIPTOR_LONG(eventiddsc, &eventid);
     MdsEventList *e;
     MdsEventList **p;
     if (!java)
-      eventid = *(int *)c->descrip[1]->pointer;
+      eventid = *(int *)connection->descrip[1]->pointer;
     else
-      eventid = (int)*c->descrip[1]->pointer;
-    if (c->event) {
-      for (p = &c->event, e = c->event; e && (e->eventid != eventid); p = &e->next, e = e->next) ;
+      eventid = (int)*connection->descrip[1]->pointer;
+    if (connection->event) {
+      for (p = &connection->event, e = connection->event; e && (e->eventid != eventid);
+	   p = &e->next, e = e->next) ;
       if (e) {
 	 /**/ MDSEventCan(e->eventid);
 	 /**/ *p = e->next;
@@ -618,66 +657,93 @@ static Message *ExecuteMessage(Connection * c)
     }
     if (!java)
       ans = BuildResponse(client_type, message_id, status, &eventiddsc);
-  } else {
+  }
+  // NORMAL TDI COMMAND //
+  else {
     void *old_context;
     void *tdi_context[6];
     EMPTYXD(ans_xd);
     if (GetContextSwitching()) {
-      old_context = TreeSwitchDbid(c->context.tree);
+      old_context = TreeSwitchDbid(connection->context.tree);
       TdiSaveContext(tdi_context);
-      TdiRestoreContext(c->tdicontext);
+      TdiRestoreContext(connection->tdicontext);
     }
-    c->descrip[c->nargs++] = (struct descriptor *)(xd =
-						   (struct descriptor_xd *)
-						   memcpy(malloc(sizeof(emptyxd)), &emptyxd,
-							  sizeof(emptyxd)));
-    c->descrip[c->nargs++] = MdsEND_ARG;
+    connection->descrip[connection->nargs++] = (struct descriptor *)(xd = (struct descriptor_xd *)
+								     memcpy(malloc
+									    (sizeof
+									     (emptyxd)), &emptyxd,
+									    sizeof(emptyxd)));
+    connection->descrip[connection->nargs++] = MdsEND_ARG;
     ResetErrors();
-    SetCompressionLevel(c->compression_level);
-    status = (char *)LibCallg(&c->nargs, TdiExecute) - (char *)0;
+    SetCompressionLevel(connection->compression_level);
+    status = (char *)LibCallg(&connection->nargs, TdiExecute) - (char *)0;
     if (status & 1)
       status = TdiData(xd, &ans_xd MDS_END_ARG);
     if (!(status & 1))
       GetErrorText(status, &ans_xd);
-    else if (GetCompressionLevel() != c->compression_level) {
-      c->compression_level = GetCompressionLevel();
-      if (c->compression_level > GetMaxCompressionLevel())
-	c->compression_level = GetMaxCompressionLevel();
-      SetCompressionLevel(c->compression_level);
+    else if (GetCompressionLevel() != connection->compression_level) {
+      connection->compression_level = GetCompressionLevel();
+      if (connection->compression_level > GetMaxCompressionLevel())
+	connection->compression_level = GetMaxCompressionLevel();
+      SetCompressionLevel(connection->compression_level);
     }
-    ans = BuildResponse(c->client_type, c->message_id, status, ans_xd.pointer);
+    ans = BuildResponse(connection->client_type, connection->message_id, status, ans_xd.pointer);
     MdsFree1Dx(xd, NULL);
     MdsFree1Dx(&ans_xd, NULL);
     if (GetContextSwitching()) {
-      TdiSaveContext(c->tdicontext);
+      TdiSaveContext(connection->tdicontext);
       TdiRestoreContext(tdi_context);
-      c->context.tree = TreeSwitchDbid(old_context);
+      connection->context.tree = TreeSwitchDbid(old_context);
     }
   }
-  FreeDescriptors(c);
+  FreeDescriptors(connection);
   return ans;
 }
 
-Message *ProcessMessage(Connection * c, Message * message)
+///
+/// Handle message from server listen routine. A new descriptor instance is created
+/// with the message buffer size and the message memory is copyed inside. A proper
+/// conversion of memory structure is applied if neede for the type of client
+/// connected.
+/// 
+/// \param connection the connection instance to handle
+/// \param message the message to process
+/// \return message answer
+///
+Message *ProcessMessage(Connection * connection, Message * message)
 {
+
   Message *ans = 0;
-  if (c->message_id != message->h.message_id) {
-    FreeDescriptors(c);
+
+  // COMING NEW MESSAGE  //
+  // reset connection id //
+  if (connection->message_id != message->h.message_id) {      
+    FreeDescriptors(connection);
     if (message->h.nargs < MAX_ARGS - 1) {
-      c->message_id = message->h.message_id;
-      c->nargs = message->h.nargs;
+      connection->message_id = message->h.message_id;
+      connection->nargs = message->h.nargs;
     } else {
       DESCRIPTOR_LONG(status_d, 0);
       int status = 0;
       status_d.pointer = (char *)&status;
-      ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&status_d);
+      ans = BuildResponse(connection->client_type,
+			  connection->message_id, 1, (struct descriptor *)&status_d);
       return ans;
     }
   }
-  if (message->h.descriptor_idx < c->nargs) {
-    struct descriptor *d = c->descrip[message->h.descriptor_idx];
-    c->client_type = message->h.client_type;
+
+  // STANADARD COMMANDS ////////////////////////////////////////////////////////
+  // idx < nargs        ////////////////////////////////////////////////////////
+  if (message->h.descriptor_idx < connection->nargs) {
+
+    // set connection to the message client_type  //
+    connection->client_type = message->h.client_type;
+
+    // d -> reference to curent idx argument desctriptor  //
+    struct descriptor *d = connection->descrip[message->h.descriptor_idx];    
+    
     if (!d) {
+      // instance the connection descriptor field //
       static short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
       switch (message->h.ndims) {
 	static struct descriptor scalar = { 0, 0, CLASS_S, 0 };
@@ -729,12 +795,17 @@ Message *ProcessMessage(Connection * c, Message * message)
 	a->pointer = a->a0 = malloc(a->arsize);
       } else
 	d->pointer = d->length ? malloc(d->length) : 0;
-      c->descrip[message->h.descriptor_idx] = d;
+      // set new instance //
+      connection->descrip[message->h.descriptor_idx] = d;
     }
     if (d) {
+        // have valid connection descriptor instance     //
+        // copy the message buffer into the descriptor   //
+        
       int dbytes = d->class == CLASS_S ? (int)d->length : (int)((ARRAY_7 *) d)->arsize;
       int num = dbytes / max(1, d->length);
-      switch (CType(c->client_type)) {
+
+      switch (CType(connection->client_type)) {
       case IEEE_CLIENT:
       case JAVA_CLIENT:
 	memcpy(d->pointer, message->bytes, dbytes);
@@ -766,16 +837,19 @@ Message *ProcessMessage(Connection * c, Message * message)
 	  ConvertBinary(num, 1, message->h.length, message->bytes, d->length, d->pointer);
 	  break;
 	case DTYPE_FLOAT:
-	  ConvertFloat(num, CvtCRAY, (char)message->h.length, message->bytes,
-		       CvtIEEE_S, (char)d->length, d->pointer);
+	  ConvertFloat(num, CvtCRAY,
+		       (char)message->h.length,
+		       message->bytes, CvtIEEE_S, (char)d->length, d->pointer);
 	  break;
 	case DTYPE_COMPLEX:
-	  ConvertFloat(num * 2, CvtCRAY, (char)(message->h.length / 2), message->bytes,
-		       CvtIEEE_S, (char)(d->length / 2), d->pointer);
+	  ConvertFloat(num * 2, CvtCRAY,
+		       (char)(message->h.length /
+			      2), message->bytes, CvtIEEE_S, (char)(d->length / 2), d->pointer);
 	  break;
 	case DTYPE_DOUBLE:
-	  ConvertFloat(num, CvtCRAY, (char)message->h.length, message->bytes,
-		       CvtIEEE_T, sizeof(double), d->pointer);
+	  ConvertFloat(num, CvtCRAY,
+		       (char)message->h.length,
+		       message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
 	  break;
 	default:
 	  memcpy(d->pointer, message->bytes, dbytes);
@@ -785,29 +859,35 @@ Message *ProcessMessage(Connection * c, Message * message)
       default:
 	switch (d->dtype) {
 	case DTYPE_FLOAT:
-	  ConvertFloat(num, CvtVAX_F, (char)message->h.length, message->bytes,
-		       CvtIEEE_S, sizeof(float), d->pointer);
+	  ConvertFloat(num, CvtVAX_F,
+		       (char)message->h.length,
+		       message->bytes, CvtIEEE_S, sizeof(float), d->pointer);
 	  break;
 	case DTYPE_COMPLEX:
-	  ConvertFloat(num * 2, CvtVAX_F, (char)message->h.length, message->bytes,
-		       CvtIEEE_S, sizeof(float), d->pointer);
+	  ConvertFloat(num * 2, CvtVAX_F,
+		       (char)message->h.length,
+		       message->bytes, CvtIEEE_S, sizeof(float), d->pointer);
 	  break;
 	case DTYPE_DOUBLE:
-	  if (CType(c->client_type) == VMSG_CLIENT)
-	    ConvertFloat(num, CvtVAX_G, (char)message->h.length, message->bytes,
-			 CvtIEEE_T, sizeof(double), d->pointer);
+	  if (CType(connection->client_type) == VMSG_CLIENT)
+	    ConvertFloat(num, CvtVAX_G,
+			 (char)message->h.length,
+			 message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
 	  else
-	    ConvertFloat(num, CvtVAX_D, (char)message->h.length, message->bytes,
-			 CvtIEEE_T, sizeof(double), d->pointer);
+	    ConvertFloat(num, CvtVAX_D,
+			 (char)message->h.length,
+			 message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
 	  break;
 
 	case DTYPE_COMPLEX_DOUBLE:
-	  if (CType(c->client_type) == VMSG_CLIENT)
-	    ConvertFloat(num * 2, CvtVAX_G, (char)(message->h.length / 2), message->bytes,
-			 CvtIEEE_T, sizeof(double), d->pointer);
+	  if (CType(connection->client_type) == VMSG_CLIENT)
+	    ConvertFloat(num * 2, CvtVAX_G,
+			 (char)(message->h.length / 2),
+			 message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
 	  else
-	    ConvertFloat(num * 2, CvtVAX_D, (char)(message->h.length / 2), message->bytes,
-			 CvtIEEE_T, sizeof(double), d->pointer);
+	    ConvertFloat(num * 2, CvtVAX_D,
+			 (char)(message->h.length / 2),
+			 message->bytes, CvtIEEE_T, sizeof(double), d->pointer);
 	  break;
 	default:
 	  memcpy(d->pointer, message->bytes, dbytes);
@@ -828,14 +908,22 @@ Message *ProcessMessage(Connection * c, Message * message)
 	d->dtype = DTYPE_FTC;
 	break;
       }
+
+      // CALL EXECUTE MESSAGE //
       if (message->h.descriptor_idx == (message->h.nargs - 1)) {
-	ans = ExecuteMessage(c);
+	ans = ExecuteMessage(connection);
       }
     }
-  } else {
-    c->client_type = message->h.client_type;
+  }
+
+  // SPECIAL I/O MESSAGES //////////////////////////////////////////////////////
+  // idx >= nargs         ////////////////////////////////////////////////////// 
+  else {
+      
+    connection->client_type = message->h.client_type;
     switch (message->h.descriptor_idx) {
-    case MDS_IO_OPEN_K:{
+    case MDS_IO_OPEN_K:
+      {
 	int fd;
 	char *filename = (char *)message->bytes;
 	char *ptr;
@@ -844,7 +932,8 @@ Message *ProcessMessage(Connection * c, Message * message)
 	mode_t mode = message->h.dims[2];
 	DESCRIPTOR_LONG(fd_d, 0);
 	fd_d.pointer = (char *)&fd;
-	fopts = (options & MDS_IO_O_CREAT ? O_CREAT : 0) |
+	fopts =
+	    (options & MDS_IO_O_CREAT ? O_CREAT : 0) |
 	    (options & MDS_IO_O_TRUNC ? O_TRUNC : 0) |
 	    (options & MDS_IO_O_EXCL ? O_EXCL : 0) |
 	    (options & MDS_IO_O_WRONLY ? O_WRONLY : 0) |
@@ -867,7 +956,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	  free(cmd);
 	}
 #endif
-	ans = BuildResponse(c->client_type, c->message_id, 3, (struct descriptor *)&fd_d);
+	ans =
+	    BuildResponse(connection->client_type,
+			  connection->message_id, 3, (struct descriptor *)&fd_d);
 	break;
       }
     case MDS_IO_CLOSE_K:
@@ -875,7 +966,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	int stat = close(message->h.dims[1]);
 	DESCRIPTOR_LONG(stat_d, 0);
 	stat_d.pointer = (char *)&stat;
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&stat_d);
+	ans =
+	    BuildResponse(connection->client_type,
+			  connection->message_id, 1, (struct descriptor *)&stat_d);
 	break;
       }
     case MDS_IO_LSEEK_K:
@@ -894,7 +987,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	offset = (off_t) * (int64_t *) & message->h.dims[2];
 	ans_o = lseek(fd, offset, whence);
 	ans_d.pointer = (char *)&ans_o;
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&ans_d);
+	ans =
+	    BuildResponse(connection->client_type,
+			  connection->message_id, 1, (struct descriptor *)&ans_d);
 	break;
       }
     case MDS_IO_READ_K:
@@ -912,17 +1007,24 @@ Message *ProcessMessage(Connection * c, Message * message)
 	    perror("READ_K wrong byte count");
 	  ans_d.pointer = buf;
 	  ans_d.arsize = nbytes;
-	  ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&ans_d);
+	  ans =
+	      BuildResponse
+	      (connection->client_type, connection->message_id, 1, (struct descriptor *)
+	       &ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
-	  ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&ans_d);
+	  ans =
+	      BuildResponse
+	      (connection->client_type, connection->message_id, 1, (struct descriptor *)
+	       &ans_d);
 	}
 	free(buf);
 	break;
       }
     case MDS_IO_WRITE_K:
       {
-	ssize_t nbytes = write(message->h.dims[1], message->bytes, (size_t) message->h.dims[0]);
+	ssize_t nbytes = write(message->h.dims[1], message->bytes,
+			       (size_t) message->h.dims[0]);
 	DESCRIPTOR_LONG(ans_d, 0);
 #ifdef USE_PERF
 	TreePerfWrite(nbytes);
@@ -930,7 +1032,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	ans_d.pointer = (char *)&nbytes;
 	if (nbytes != (size_t) message->h.dims[0])
 	  perror("WRITE_K wrong byte count");
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&ans_d);
+	ans =
+	    BuildResponse(connection->client_type,
+			  connection->message_id, 1, (struct descriptor *)&ans_d);
 	break;
       }
     case MDS_IO_LOCK_K:
@@ -952,8 +1056,8 @@ Message *ProcessMessage(Connection * c, Message * message)
 	status = lock_file(fd, offset, size, mode | nowait, &deleted);
 	ans_d.pointer = (char *)&status;
 	ans =
-	    BuildResponse(c->client_type, c->message_id, deleted ? 3 : 1,
-			  (struct descriptor *)&ans_d);
+	    BuildResponse(connection->client_type,
+			  connection->message_id, deleted ? 3 : 1, (struct descriptor *)&ans_d);
 	break;
       }
     case MDS_IO_EXISTS_K:
@@ -962,7 +1066,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	int status = (stat(message->bytes, &statbuf) == 0);
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&status_d);
+	ans =
+	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
+			  &status_d);
 	break;
       }
     case MDS_IO_REMOVE_K:
@@ -970,15 +1076,20 @@ Message *ProcessMessage(Connection * c, Message * message)
 	int status = remove(message->bytes);
 	DESCRIPTOR_LONG(status_d, 0);
 	status_d.pointer = (char *)&status;
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&status_d);
+	ans =
+	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
+			  &status_d);
 	break;
       }
     case MDS_IO_RENAME_K:
       {
 	DESCRIPTOR_LONG(status_d, 0);
-	int status = rename(message->bytes, message->bytes + strlen(message->bytes) + 1);
+	int status = rename(message->bytes,
+			    message->bytes + strlen(message->bytes) + 1);
 	status_d.pointer = (char *)&status;
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&status_d);
+	ans =
+	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
+			  &status_d);
 	break;
       }
     case MDS_IO_READ_X_K:
@@ -1011,13 +1122,17 @@ Message *ProcessMessage(Connection * c, Message * message)
 	  ans_d.pointer = buf;
 	  ans_d.arsize = nbytes;
 	  ans =
-	      BuildResponse(c->client_type, c->message_id, deleted ? 3 : 1,
-			    (struct descriptor *)&ans_d);
+	      BuildResponse
+	      (connection->client_type,
+	       connection->message_id, deleted ? 3 : 1, (struct descriptor *)
+	       &ans_d);
 	} else {
 	  DESCRIPTOR(ans_d, "");
 	  ans =
-	      BuildResponse(c->client_type, c->message_id, deleted ? 3 : 1,
-			    (struct descriptor *)&ans_d);
+	      BuildResponse
+	      (connection->client_type,
+	       connection->message_id, deleted ? 3 : 1, (struct descriptor *)
+	       &ans_d);
 	}
 	free(buf);
 	break;
@@ -1026,7 +1141,9 @@ Message *ProcessMessage(Connection * c, Message * message)
 	DESCRIPTOR_LONG(status_d, 0);
 	int status = 0;
 	status_d.pointer = (char *)&status;
-	ans = BuildResponse(c->client_type, c->message_id, 1, (struct descriptor *)&status_d);
+	ans =
+	    BuildResponse(connection->client_type, connection->message_id, 1, (struct descriptor *)
+			  &status_d);
 	break;
       }
     }

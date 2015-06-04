@@ -9,9 +9,6 @@ LDADD = -L@MAKESHLIBDIR@ -lXmdsShr -lTreeShr -lTdiShr -lMdsShr $(X_PRE_LIBS) $(X
 
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 
-#FIXME: Remove this when LIBS is cleaned up in configure
-LIBS=
-
 bin_PROGRAMS = actions actmon
 
 actions_SOURCES = actions.c

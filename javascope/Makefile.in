@@ -426,8 +426,7 @@ COMMON_SRC = \
 	jScope/JiVarImpl.java                 jScope/JiVar.java                   jScope/jScopeBrowseSignals.java   \
 	jScope/jScopeBrowseUrl.java           jScope/jScopeDefaultValues.java     jScope/jScopeFacade.java          \
 	jScope/jScopeMultiWave.java           jScope/jScopeProperties.java        jScope/jScopeWaveContainer.java   \
-	jScope/jScopeWavePopup.java           jScope/MdsAccess.java               jScope/MdsAsynchDataProvider.java \
-	jScope/MdsConnection.java         \
+	jScope/jScopeWavePopup.java           jScope/MdsAccess.java               jScope/MdsConnection.java         \
 	jScope/MdsDataProvider.java           jScope/MdsMessage.java              jScope/MdsplusParser.java         \
 	jScope/MdsWaveInterface.java          jScope/MultiWaveform.java           jScope/MultiWavePopup.java        \
 	jScope/NotConnectedDataProvider.java  jScope/ProfileDialog.java           jScope/PropertiesEditor.java      \

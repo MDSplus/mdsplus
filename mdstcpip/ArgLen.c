@@ -1,7 +1,12 @@
-
-#include "mdsip_connections.h"
 #include <string.h>
 
+#include "mdsip_connections.h"
+
+
+
+///
+/// Calculate the length of a descriptor data from the instance dtype value.
+/// 
 short ArgLen(struct descrip *d)
 {
   short len;
