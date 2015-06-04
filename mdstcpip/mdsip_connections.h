@@ -210,8 +210,8 @@ typedef void *pthread_mutex_t;
 /// \param readfd input file descriptor i.e. the socket id
 /// \param info
 /// \param info_len
-/// \param id
-/// \param usr
+/// \param conid
+/// \param user
 /// \return
 ///
 EXPORT int AcceptConnection(char *protocol, char *info_name, int readfd,
@@ -562,7 +562,9 @@ EXPORT int MdsPut(int id, char *node, char *exp, ...);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// Sets the compression level option for the given connection.
+/// Sets the compression level on the client side and the server through the
+/// connection id calling the remote execution of MdsSetCompression TDI
+/// internal function
 ///
 /// \return the old set value of this connection.
 ///

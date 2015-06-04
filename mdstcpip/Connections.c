@@ -128,6 +128,7 @@ int NewConnection(char *protocol)
     return -1;
 }
 
+
 ///
 /// Authorize client by username calling protocol IoRoutine.
 /// 
@@ -140,6 +141,13 @@ static int AuthorizeClient(int id, char *username)
   Connection *c = FindConnection(id, 0);
   return c && c->io ? (c->io->authorize ? c->io->authorize(id, username) : 1) : 0;
 }
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  AcceptConnection  //////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len,
 		     int *id, char **usr)

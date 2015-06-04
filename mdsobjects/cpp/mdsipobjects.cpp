@@ -30,6 +30,7 @@ extern "C" int MdsClose(int sock);
 extern "C" int ConnectToMds(char *host);
 extern "C" int ConnectToMdsEvents(char *host);
 extern "C" int SetCompressionLevel(int level);
+extern "C" int MdsSetCompression(int id, int level);
 extern "C" void DisconnectFromMds(int sockId);
 extern "C" void FreeMessage(void *m);
 
