@@ -1,4 +1,16 @@
-commit 08f34105d602c86dc9c15e79057acffc01c05877 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 6b966d50bf967afe841dc0e26405a3a640b69ed7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jun 3 09:03:46 2015 -0400
+
+    Remove debug printout
+
+commit 67224fd8991a271b3f6e0648616506e31b4debd5 (tag: refs/tags/alpha_release-7-0-87)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 2 12:41:13 2015 -0400
+
+    New ChangeLog
+
+commit 08f34105d602c86dc9c15e79057acffc01c05877
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 2 12:01:14 2015 -0400
 
@@ -70,7 +82,7 @@ Date:   Mon Jun 1 18:46:48 2015 -0400
 
     New ChangeLog
 
-commit e7f4f36fe5dca07b0106ecefe33654bf392c2365
+commit e7f4f36fe5dca07b0106ecefe33654bf392c2365 (tag: refs/tags/alpha_release-7-0-85)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 1 22:21:09 2015 +0000
 
@@ -333,7 +345,7 @@ Date:   Wed May 27 12:29:29 2015 +0000
 
     New ChangeLog
 
-commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf (tag: refs/tags/alpha_release-7-0-73)
+commit 1d1f36590f3c07f095cbc6d137f00b714c0ffebf
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue May 26 23:20:00 2015 -0400
 
@@ -720,7 +732,7 @@ Date:   Tue May 19 12:46:32 2015 -0400
 
     Add raspberrypi support
 
-commit 530a8f475586c2384970cdfe8189467e147fa19e (refs/remotes/origin/feature-mdsobjects-testing)
+commit 530a8f475586c2384970cdfe8189467e147fa19e
 Merge: b0d614a 7934969
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Mon May 18 15:14:04 2015 +0200
