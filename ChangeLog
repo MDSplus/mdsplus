@@ -1,4 +1,22 @@
-commit 674540d4c61a4099db77bc9f0ef7c5e71c36f061 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 0aabaeeaee40f996199de8a886765b7c7754da3a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 5 18:45:29 2015 +0200
+
+    adds libxml2 test during configure
+
+commit 0576c5233a8e47232274db2ff0106bfb54dc91c8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jun 5 12:43:58 2015 -0400
+
+    allocate memory for TranslateLogical results even if they come from the registry
+
+commit 2599ebeae44d14b5436155fa74a178ba13a1fbf1 (tag: refs/tags/alpha_release-7-0-89)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 4 22:20:56 2015 +0000
+
+    New ChangeLog
+
+commit 674540d4c61a4099db77bc9f0ef7c5e71c36f061
 Merge: 5b75387 33727ab
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Jun 4 09:28:36 2015 -0400
