@@ -1,4 +1,16 @@
-commit a04a614faa5cba9c4cf69c6aa13a4ee9d678c562 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 920a225994202c3c8ebc7ee8dc1485cdd42723a3 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jun 5 12:49:07 2015 -0400
+
+    allocate memory for output of TranslateLogical on windows even if the value comes out of the registry
+
+commit 2bbaa94f578ade4a9fd6c3bc1fb84136ffaa0189 (tag: refs/tags/stable_release-7-0-9)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed May 27 14:40:49 2015 +0000
+
+    New ChangeLog
+
+commit a04a614faa5cba9c4cf69c6aa13a4ee9d678c562
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed May 27 10:09:33 2015 -0400
 
