@@ -1,4 +1,10 @@
-commit af38cc6bc13b3f1d3894c748345d455e026e0743 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit d6f82121ae0da5c721e3b0a1ed8d146a39d0c3c6 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Jun 7 18:13:51 2015 -0400
+
+    New ChangeLog
+
+commit af38cc6bc13b3f1d3894c748345d455e026e0743
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Sun Jun 7 18:12:34 2015 -0400
 
