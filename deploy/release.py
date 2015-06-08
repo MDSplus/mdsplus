@@ -14,11 +14,18 @@ def flushPrint(text):
   sys.stdout.flush()
 
 def doInGitDir(flavor,cmd,stdout=None):
+  dist = os.environ['DIST']
+  dir = "/mdsplus/git/%s/mdsplus-%s" % (dist,flavor)
   try:
-    os.stat("/root/mdsplus-%s" % flavor)
-    dir = "/root/mdsplus-%s" % flavor
+    os.stat(dir)
   except:
-    dir = "/mdsplus/git/mdsplus"
+    try:
+      os.mkdir("/mdsplus/git/%s" % dist)
+    except:
+      pass
+    s=subprocess.Popen("git clone -b %s git@github.com:/MDSplus/mdsplus %s" % (flavor,dir),shell=True,executable="/bin/bash").wait()
+    if s != 0:
+      raise Exception("Cannot clone repository")
   flushPrint("Using git directory: %s" % dir) 
   return subprocess.Popen(cmd,stdout=stdout,shell=True,executable="/bin/bash",
                           cwd=dir)
@@ -29,8 +36,11 @@ def getLatestRelease(flavor):
   info['flavor']=flavor
   p=doInGitDir(flavor,
     """
-(git checkout -f %(flavor)s && git pull) > /dev/null && git describe --tags --abbrev=0 --match "%(flavor)s_release*"
-
+set -e
+git checkout -f %(flavor)s >&2
+git reset --hard origin/%(flavor)s >&2
+git pull >&2
+git describe --tags --abbrev=0 --match "%(flavor)s_release*"
     """ % info, stdout=subprocess.PIPE) 
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:
