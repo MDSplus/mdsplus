@@ -1,4 +1,16 @@
-commit 2e6ff35c162ad6e391b5197f9867987d0f9f0afe (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 351c10b1011f76b94ba68363dca372fc1f2cf3c7 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 8 09:03:28 2015 -0400
+
+    Fix release tag checking
+
+commit 4da428f9d2d19dca49a662657ab53f909861a1ac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Jun 7 23:06:19 2015 -0400
+
+    New ChangeLog
+
+commit 2e6ff35c162ad6e391b5197f9867987d0f9f0afe
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Sun Jun 7 22:40:03 2015 +0000
 
