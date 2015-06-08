@@ -1,4 +1,54 @@
-commit 6b966d50bf967afe841dc0e26405a3a640b69ed7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 0aabaeeaee40f996199de8a886765b7c7754da3a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 5 18:45:29 2015 +0200
+
+    adds libxml2 test during configure
+
+commit 0576c5233a8e47232274db2ff0106bfb54dc91c8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Jun 5 12:43:58 2015 -0400
+
+    allocate memory for TranslateLogical results even if they come from the registry
+
+commit 2599ebeae44d14b5436155fa74a178ba13a1fbf1 (tag: refs/tags/alpha_release-7-0-89)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 4 22:20:56 2015 +0000
+
+    New ChangeLog
+
+commit 674540d4c61a4099db77bc9f0ef7c5e71c36f061
+Merge: 5b75387 33727ab
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jun 4 09:28:36 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 5b7538777e118f91815ca0e707d202b08ca22177
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jun 4 09:20:39 2015 -0400
+
+    remove the services when uninstalling
+
+commit 33727ab0b28567f025c3b7ad8c518543ad875761
+Merge: 4b4979d 30dc711
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jun 4 11:52:32 2015 +0200
+
+    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus into alpha
+
+commit 4b4979d3108a98069ad287c4ff17a46cafee8263
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jun 4 11:52:09 2015 +0200
+
+    restore no compression as default Compression value
+
+commit 30dc711555c754424361f3c26e7ac93f4167d106 (tag: refs/tags/alpha_release-7-0-88)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 3 22:22:30 2015 +0000
+
+    New ChangeLog
+
+commit 6b966d50bf967afe841dc0e26405a3a640b69ed7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jun 3 09:03:46 2015 -0400
 

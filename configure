@@ -775,6 +775,12 @@ X_LIBS
 X_PRE_LIBS
 X_CFLAGS
 XMKMF
+XML_FALSE
+XML_TRUE
+XML_CFLAGS
+XML_LIBS
+XML_CPPFLAGS
+XML2_CONFIG
 MAKEETCDIR
 SED
 RANLIB
@@ -932,6 +938,9 @@ with_labview
 enable_gcc_profiling
 with_idl
 enable_d3d
+with_xml_prefix
+with_xml_exec_prefix
+enable_xmltest
 with_x
 enable_doxygen_doc
 enable_doxygen_dot
@@ -963,6 +972,8 @@ PKG_CONFIG_PATH
 PKG_CONFIG_LIBDIR
 CHECK_CFLAGS
 CHECK_LIBS
+XML_CFLAGS
+XML_LIBS
 XMKMF
 DOXYGEN_PAPER_SIZE'
 
@@ -1603,6 +1614,7 @@ Optional Features:
   --enable-valgrind       Use valgrind when running unit tests
   --enable-gcc_profiling  enable gcc profiling
   --enable-d3d            build d3d ptdata access library
+  --disable-xmltest       Do not try to compile and run a test LIBXML program
   --disable-doxygen-doc   don't generate any doxygen documentation
   --enable-doxygen-dot    generate graphics for doxygen documentation
   --enable-doxygen-man    generate doxygen manual pages
@@ -1637,6 +1649,8 @@ Optional Packages:
                           specify location of labview such as
                           /usr/local/natinst/Labview
   --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
+  --with-xml-prefix=PFX   Prefix where libxml is installed (optional)
+  --with-xml-exec-prefix=PFX Exec prefix where libxml is installed (optional)
   --with-x                use the X Window System
 
 Some influential environment variables:
@@ -1660,6 +1674,8 @@ Some influential environment variables:
   CHECK_CFLAGS
               C compiler flags for CHECK, overriding pkg-config
   CHECK_LIBS  linker flags for CHECK, overriding pkg-config
+  XML_CFLAGS  C compiler flags for XML, overriding pkg-config
+  XML_LIBS    linker flags for XML, overriding pkg-config
   XMKMF       Path to xmkmf, Makefile generator for X Window System
   DOXYGEN_PAPER_SIZE
               a4wide (default), a4, letter, legal or executive
@@ -8982,6 +8998,385 @@ $as_echo "libd3.a or libd3$SHARETYPE not found in $D3DLIB_PATH" >&6; }
 fi
 
 
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LIBXML  ////////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+
+
+# Check whether --with-xml-prefix was given.
+if test "${with_xml_prefix+set}" = set; then :
+  withval=$with_xml_prefix; xml_config_prefix="$withval"
+else
+  xml_config_prefix=""
+fi
+
+
+# Check whether --with-xml-exec-prefix was given.
+if test "${with_xml_exec_prefix+set}" = set; then :
+  withval=$with_xml_exec_prefix; xml_config_exec_prefix="$withval"
+else
+  xml_config_exec_prefix=""
+fi
+
+# Check whether --enable-xmltest was given.
+if test "${enable_xmltest+set}" = set; then :
+  enableval=$enable_xmltest;
+else
+  enable_xmltest=yes
+fi
+
+
+  if test x$xml_config_exec_prefix != x ; then
+     xml_config_args="$xml_config_args"
+     if test x${XML2_CONFIG+set} != xset ; then
+        XML2_CONFIG=$xml_config_exec_prefix/bin/xml2-config
+     fi
+  fi
+  if test x$xml_config_prefix != x ; then
+     xml_config_args="$xml_config_args --prefix=$xml_config_prefix"
+     if test x${XML2_CONFIG+set} != xset ; then
+        XML2_CONFIG=$xml_config_prefix/bin/xml2-config
+     fi
+  fi
+
+  # Extract the first word of "xml2-config", so it can be a program name with args.
+set dummy xml2-config; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_XML2_CONFIG+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $XML2_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_XML2_CONFIG="$XML2_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_XML2_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_path_XML2_CONFIG" && ac_cv_path_XML2_CONFIG="no"
+  ;;
+esac
+fi
+XML2_CONFIG=$ac_cv_path_XML2_CONFIG
+if test -n "$XML2_CONFIG"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $XML2_CONFIG" >&5
+$as_echo "$XML2_CONFIG" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  min_xml_version='2.0.0'
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libxml - version >= $min_xml_version" >&5
+$as_echo_n "checking for libxml - version >= $min_xml_version... " >&6; }
+  no_xml=""
+  if test "$XML2_CONFIG" = "no" ; then
+    no_xml=yes
+  else
+    XML_CPPFLAGS=`$XML2_CONFIG $xml_config_args --cflags`
+    XML_LIBS=`$XML2_CONFIG $xml_config_args --libs`
+    xml_config_major_version=`$XML2_CONFIG $xml_config_args --version | \
+           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\1/'`
+    xml_config_minor_version=`$XML2_CONFIG $xml_config_args --version | \
+           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\2/'`
+    xml_config_micro_version=`$XML2_CONFIG $xml_config_args --version | \
+           sed 's/\([0-9]*\).\([0-9]*\).\([0-9]*\)/\3/'`
+    if test "x$enable_xmltest" = "xyes" ; then
+      ac_save_CPPFLAGS="$CPPFLAGS"
+      ac_save_LIBS="$LIBS"
+      CPPFLAGS="$CPPFLAGS $XML_CPPFLAGS"
+      LIBS="$XML_LIBS $LIBS"
+      rm -f conf.xmltest
+      if test "$cross_compiling" = yes; then :
+  echo $ac_n "cross compiling; assumed OK... $ac_c"
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <libxml/xmlversion.h>
+
+int
+main()
+{
+  int xml_major_version, xml_minor_version, xml_micro_version;
+  int major, minor, micro;
+  char *tmp_version;
+
+  system("touch conf.xmltest");
+
+  /* Capture xml2-config output via autoconf/configure variables */
+  /* HP/UX 9 (%@#!) writes to sscanf strings */
+  tmp_version = (char *)strdup("$min_xml_version");
+  if (sscanf(tmp_version, "%d.%d.%d", &major, &minor, &micro) != 3) {
+     printf("%s, bad version string from xml2-config\n", "$min_xml_version");
+     exit(1);
+   }
+   free(tmp_version);
+
+   /* Capture the version information from the header files */
+   tmp_version = (char *)strdup(LIBXML_DOTTED_VERSION);
+   if (sscanf(tmp_version, "%d.%d.%d", &xml_major_version, &xml_minor_version, &xml_micro_version) != 3) {
+     printf("%s, bad version string from libxml includes\n", "LIBXML_DOTTED_VERSION");
+     exit(1);
+   }
+   free(tmp_version);
+
+ /* Compare xml2-config output to the libxml headers */
+  if ((xml_major_version != $xml_config_major_version) ||
+      (xml_minor_version != $xml_config_minor_version) ||
+      (xml_micro_version != $xml_config_micro_version))
+    {
+      printf("*** libxml header files (version %d.%d.%d) do not match\n",
+         xml_major_version, xml_minor_version, xml_micro_version);
+      printf("*** xml2-config (version %d.%d.%d)\n",
+         $xml_config_major_version, $xml_config_minor_version, $xml_config_micro_version);
+      return 1;
+    }
+/* Compare the headers to the library to make sure we match */
+  /* Less than ideal -- doesn't provide us with return value feedback,
+   * only exits if there's a serious mismatch between header and library.
+   */
+    LIBXML_TEST_VERSION;
+
+    /* Test that the library is greater than our minimum version */
+    if ((xml_major_version > major) ||
+        ((xml_major_version == major) && (xml_minor_version > minor)) ||
+        ((xml_major_version == major) && (xml_minor_version == minor) &&
+        (xml_micro_version >= micro)))
+      {
+        return 0;
+       }
+     else
+      {
+        printf("\n*** An old version of libxml (%d.%d.%d) was found.\n",
+               xml_major_version, xml_minor_version, xml_micro_version);
+        printf("*** You need a version of libxml newer than %d.%d.%d. The latest version of\n",
+           major, minor, micro);
+        printf("*** libxml is always available from ftp://ftp.xmlsoft.org.\n");
+        printf("***\n");
+        printf("*** If you have already installed a sufficiently new version, this error\n");
+        printf("*** probably means that the wrong copy of the xml2-config shell script is\n");
+        printf("*** being found. The easiest way to fix this is to remove the old version\n");
+        printf("*** of LIBXML, but you can also set the XML2_CONFIG environment to point to the\n");
+        printf("*** correct copy of xml2-config. (In this case, you will have to\n");
+        printf("*** modify your LD_LIBRARY_PATH enviroment variable, or edit /etc/ld.so.conf\n");
+        printf("*** so that the correct libraries are found at run-time))\n");
+    }
+  return 1;
+}
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+
+else
+  no_xml=yes
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+       CPPFLAGS="$ac_save_CPPFLAGS"
+       LIBS="$ac_save_LIBS"
+     fi
+  fi
+
+  if test "x$no_xml" = x ; then
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes (version $xml_config_major_version.$xml_config_minor_version.$xml_config_micro_version)" >&5
+$as_echo "yes (version $xml_config_major_version.$xml_config_minor_version.$xml_config_micro_version)" >&6; }
+     have_xml=yes
+  else
+     { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+     if test "$XML2_CONFIG" = "no" ; then
+       echo "*** The xml2-config script installed by LIBXML could not be found"
+       echo "*** If libxml was installed in PREFIX, make sure PREFIX/bin is in"
+       echo "*** your path, or set the XML2_CONFIG environment variable to the"
+       echo "*** full path to xml2-config."
+     else
+       if test -f conf.xmltest ; then
+        :
+       else
+          echo "*** Could not run libxml test program, checking why..."
+          CPPFLAGS="$CPPFLAGS $XML_CPPFLAGS"
+          LIBS="$LIBS $XML_LIBS"
+          cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <libxml/xmlversion.h>
+#include <stdio.h>
+
+int
+main ()
+{
+ LIBXML_TEST_VERSION; return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+   echo "*** The test program compiled, but did not run. This usually means"
+          echo "*** that the run-time linker is not finding LIBXML or finding the wrong"
+          echo "*** version of LIBXML. If it is not finding LIBXML, you'll need to set your"
+          echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
+          echo "*** to the installed location  Also, make sure you have run ldconfig if that"
+          echo "*** is required on your system"
+          echo "***"
+          echo "*** If you have an old version installed, it is best to remove it, although"
+          echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"
+else
+   echo "*** The test program failed to compile or link. See the file config.log for the"
+          echo "*** exact error that occured. This usually means LIBXML was incorrectly installed"
+          echo "*** or that you have moved LIBXML since it was installed. In the latter case, you"
+          echo "*** may want to edit the xml2-config script: $XML2_CONFIG"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+          CPPFLAGS="$ac_save_CPPFLAGS"
+          LIBS="$ac_save_LIBS"
+       fi
+     fi
+
+     XML_CPPFLAGS=""
+     XML_LIBS=""
+     have_xml=no
+  fi
+
+
+  rm -f conf.xmltest
+
+if test "x$have_xml" != "xyes"; then
+ { $as_echo "$as_me:${as_lineno-$LINENO}: libxml not found using xml2-confg, reverting to pkg-config query" >&5
+$as_echo "$as_me: libxml not found using xml2-confg, reverting to pkg-config query" >&6;}
+
+pkg_failed=no
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for XML" >&5
+$as_echo_n "checking for XML... " >&6; }
+
+if test -n "$XML_CFLAGS"; then
+    pkg_cv_XML_CFLAGS="$XML_CFLAGS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libxml-2.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libxml-2.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_XML_CFLAGS=`$PKG_CONFIG --cflags "libxml-2.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+if test -n "$XML_LIBS"; then
+    pkg_cv_XML_LIBS="$XML_LIBS"
+ elif test -n "$PKG_CONFIG"; then
+    if test -n "$PKG_CONFIG" && \
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: \$PKG_CONFIG --exists --print-errors \"libxml-2.0\""; } >&5
+  ($PKG_CONFIG --exists --print-errors "libxml-2.0") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }; then
+  pkg_cv_XML_LIBS=`$PKG_CONFIG --libs "libxml-2.0" 2>/dev/null`
+		      test "x$?" != "x0" && pkg_failed=yes
+else
+  pkg_failed=yes
+fi
+ else
+    pkg_failed=untried
+fi
+
+
+
+if test $pkg_failed = yes; then
+   	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+
+if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
+        _pkg_short_errors_supported=yes
+else
+        _pkg_short_errors_supported=no
+fi
+        if test $_pkg_short_errors_supported = yes; then
+	        XML_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libxml-2.0" 2>&1`
+        else
+	        XML_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libxml-2.0" 2>&1`
+        fi
+	# Put the nasty error message in config.log where it belongs
+	echo "$XML_PKG_ERRORS" >&5
+
+	have_xml=no
+elif test $pkg_failed = untried; then
+     	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+	have_xml=no
+else
+	XML_CFLAGS=$pkg_cv_XML_CFLAGS
+	XML_LIBS=$pkg_cv_XML_LIBS
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+	have_xml=yes
+fi
+ XML_CPPFLAGS="$XML_CFLAGS"
+fi
+
+
+
+ if test x"$have_xml" = "xyes"; then
+  XML_TRUE=
+  XML_FALSE='#'
+else
+  XML_TRUE='#'
+  XML_FALSE=
+fi
+
+
+if test "x$have_xml" = "xyes"; then
+  CPPFLAGS_save="$CPPFLAGS"
+ CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS"
+ for ac_header in libxml/tree.h libxml/parser.h libxml/xpath.h libxml/xpathInternals.h
+
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+else
+  as_fn_error $? "libxml2 development files was not found and must be installed." "$LINENO" 5
+fi
+
+done
+
+ CPPFLAGS="$CPPFLAGS_save"
+else
+ as_fn_error $? "libxml2 was not found and must be installed." "$LINENO" 5
+fi
+
+
+
 for ac_header in stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
@@ -8995,7 +9390,7 @@ fi
 
 done
 
-for ac_header in dlfcn.h dl.h vxWorks.h windows.h sys/resource.h readline/readline.h
+for ac_header in dlfcn.h dl.h vxWorks.h windows.h sys/resource.h
 do :
   as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
@@ -9020,6 +9415,21 @@ _ACEOF
 fi
 
 done
+
+for ac_header in readline/readline.h readline/history.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+fi
+
+done
+
+
 
 
 REMCAM="remcam"
@@ -13195,6 +13605,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
   as_fn_error $? "conditional \"MINGW\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${XML_TRUE}" && test -z "${XML_FALSE}"; then
+  as_fn_error $? "conditional \"XML\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
