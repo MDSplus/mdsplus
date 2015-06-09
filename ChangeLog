@@ -1,4 +1,10 @@
-commit ba841079768f6ef5dd5dddfb6e48b0a03e7739a8 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 8d0ed1d7a44a2735a39e70b82d7585ef31752031 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 15:51:03 2015 +0000
+
+    New ChangeLog
+
+commit ba841079768f6ef5dd5dddfb6e48b0a03e7739a8
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Tue Jun 9 09:55:59 2015 -0400
 
