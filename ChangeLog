@@ -1,4 +1,16 @@
-commit 0aabaeeaee40f996199de8a886765b7c7754da3a (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 10e47d369721268772703724a8d49f318425e43e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 9 15:16:41 2015 -0400
+
+    Use arch in labview.lib reference
+
+commit 40ebed476dbe0c19437f07f6c7840ae1cfd9c441 (tag: refs/tags/alpha_release-7-0-90)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jun 5 22:21:21 2015 +0000
+
+    New ChangeLog
+
+commit 0aabaeeaee40f996199de8a886765b7c7754da3a
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Fri Jun 5 18:45:29 2015 +0200
 
