@@ -1,4 +1,18 @@
-commit fe0ec002effaf840608829d29345cb473a0ae2b1 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit ba841079768f6ef5dd5dddfb6e48b0a03e7739a8 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jun 9 09:55:59 2015 -0400
+
+    add -mno-ms-bitfields to mingw  so that tree structures that live in files allign correctly
+    add  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64  to all compiles ane remove them from treeshr/treeshrp.h
+         this fixex the problem that off_t type is defined wrong if treeshrp.h is not included 1st
+
+commit 8e9576b350629f108ef40a0a3941c0e84a0a0321
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 23:06:22 2015 -0400
+
+    New ChangeLog
+
+commit fe0ec002effaf840608829d29345cb473a0ae2b1
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 8 22:42:50 2015 +0000
 
