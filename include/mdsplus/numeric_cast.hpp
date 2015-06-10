@@ -112,6 +112,15 @@ struct numeric_cast_nan_rule {
     }
 };
 
+template < typename Target, typename Source, typename EnableIf = void >
+struct numeric_cast_inf_rule {
+    typedef numeric_cast_trait<Target,Source> trait;
+    static inline void apply(Source value) {
+        if( std::isinf(value) ) throw(std::range_error("Trying to convert Inf to an Integer type"));
+    }
+};
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  NumericCastImpl  ///////////////////////////////////////////////////////////
@@ -197,9 +206,10 @@ struct NumericCastImpl < Target, Source,
         ::type >
 {
     static Target numeric_cast(Source value ) {
+        numeric_cast_nan_rule<Target,Source>::apply(value);
+        numeric_cast_inf_rule<Target,Source>::apply(value);        
         numeric_cast_min_rule<Target,Source>::apply(value);
         numeric_cast_max_rule<Target,Source>::apply(value);
-        numeric_cast_nan_rule<Target,Source>::apply(value);
         numeric_cast_precision_rule<Target,Source>::apply(value);
         return static_cast<Target>(value);
 

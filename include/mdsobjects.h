@@ -235,7 +235,7 @@ public:
         validation(nullptr)
     {
     }
-
+    
     virtual ~Data();
 
 //    void *operator new(size_t sz);
@@ -256,6 +256,10 @@ public:
     virtual void setValidation(Data *in);
 
 private:
+
+    /// Protect the use of copy constructor not permitted for Data objects, use
+    /// \ref clone() function instead.    
+    Data (const Data &) {}
 
     ///@{
     /// Friendship declaration for TDI expression compilation
@@ -383,7 +387,7 @@ public:
     friend EXPORT std::ostream & operator << (std::ostream &outStream, MDSplus::Data *data);
 
 protected:
-
+    
     /// readonly access
     virtual bool isImmutable() { return true; }
 
@@ -434,11 +438,11 @@ private:
 /// (descriptor class CLASS_S).
 class EXPORT Scalar: public Data
 {    
-    friend class Array;
+    friend class Array;    
 protected:
-
+    
     int length;
-    char *ptr;
+    char *ptr;        
 
 public:
     Scalar(): length(0), ptr(0) { clazz = CLASS_S; }
@@ -1422,12 +1426,11 @@ public:
 ///
 /// \brief The Compound class object description of DTYPE_R
 ///
-/// Compound is the common supreclass for all CLASS_R types.
-/// Its fields contain all the required information (Descriptor array, keyword).
-/// Its getter/setter methods allow to read/replace descriptors, based on their
-/// index.
-/// Derived classes will only define methods with appropriate names for
-/// reading/writing descriptors (i.e. Data objects).
+/// Compound is the common supreclass for all CLASS_R types. Its fields contain
+/// all the required information (Descriptor array, keyword). Its getter/setter
+/// methods allow to read/replace descriptors, based on their index. Derived
+/// classes will only define methods with appropriate names for reading/writing
+/// descriptors (i.e. Data objects).
 
 class EXPORT Compound: public Data {
 public:
@@ -1462,8 +1465,8 @@ public:
         clazz = CLASS_R;
         this->dtype = dtype;
         setAccessory(units, error, help, validation);
-    }
-
+    }    
+    
     virtual void propagateDeletion() {
         for(std::size_t i = 0; i < descs.size(); ++i)
             if (descs[i])
@@ -1493,8 +1496,10 @@ protected:
 
     /// set Data at idx element of contained descriptors
     void assignDescAt(Data *data, int idx) {
-        if (descs.at(idx))
+        if (descs.at(idx)) {
+            descs.at(idx)->decRefCount();
             deleteData(descs[idx]);
+        }
 
         descs.at(idx) = data;
         if (data)
@@ -1518,18 +1523,40 @@ protected:
 
 ///
 /// \brief The Signal class object description of DTYPE_SIGNAL
-///
+/// 
+/// MDSplus provides a signal data type which combines dimension descriptions
+/// with the data. While it was initially designed to be used for efficient
+/// storage of data acquired from measurement devices attached to an experiment
+/// it has been found to be a very useful way of storing additional information
+/// such as results from data analysis or modeling data. A signal is a
+/// structure of three or more fields. The first field is the "value" field of
+/// the signal. This is followed by an optional raw data field (explained
+/// later). These two fields can be followed by one or more dimension
+/// descriptions. The number of dimension descriptions in general should match
+/// the dimensionality of the value. MDSplus stores data from a transient
+/// recorder which is a device which measures voltage as a function of time.
+/// Typically a transient recorder uses a analog to digital converter and
+/// records the data as a series of integer values. A linear conversion can be
+/// done to convert these integer values into input voltages being measured.
+/// When MDSplus stores the data for such a device it uses a signal datatype to
+/// record the data. The signal structure is constructed by putting an
+/// expression for converting the integer data to volts in the "value" portion,
+/// the integer data in the raw data portion, and a representation of the
+/// timebase in the single dimension portion.
+/// 
 /// \note This class represents a data descriptor of a signal intended as an
 /// ordered sequence of data. Nothing in common with software objects
 /// signalling systems.
 
 class Signal: public Compound {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
         Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
 
     Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
@@ -1594,18 +1621,78 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 //  DIMENSION COMPOUND  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
 ///
-/// \brief The Dimension class object description of DTYPE_DIMENSION
+/// \brief The Dimension class object description of \ref DTYPE_DIMENSION
 ///
+/// MDSplus provides a dimension data type which provides a compact mechanism
+/// for expressing signal dimensions (See: \ref DTYPE_SIGNAL). The dimension
+/// data type was implemented as a way to represent data such as the timebase
+/// for signals recorded by data acquisition equipment such as transient
+/// recorders.
+///
+/// A dimension data type is a structure which has two parts, a window and an
+/// axis. The axis part is a representation of a series of values (i.e. time
+/// stamps) and is generally represented by a \ref DTYPE_RANGE data item. If
+/// this was a single speed clock, for example, the axis would be represented
+/// by a range consisting or an optional start time, an optional end time and a
+/// single delta time value. This range could represent a series of clock
+/// pulses which began some time infinitely in the past and continuing to some
+/// time infinitely in the future. The window portion of the dimention is used
+/// to select a set of these infinite stream of clock pulses that represent
+/// those clock pulses which match the samples that were recorded in the
+/// digitizers internal memory. The window portion is usually represented by a
+/// \ref DTYPE_WINDOW data item. A window consists of a start index, and end
+/// index and a value at index 0. For a transient digitizer, the samples in the
+/// memory were recorded at a known number of clock pulses before the trigger
+/// (the start index) and continuing a known number of clock pulses after the
+/// trigger. The time the module was triggered is the value at index 0 part of
+/// the window.
+///
+/// If we label the trigger time in this example as time 0.0 and for purposes
+/// of illustration say the digitizer can record ten samples, we can represent
+/// the time base using:
+///
+///     _CLOCK = * : * : 1.0
+///     _TRIGGER = 0.0
+///     BUILD_DIM(BUILD_WINDOW(-9,0,_TRIGGER), _CLOCK)
+/// 
+/// The clock pulses occurring close to the time the module was triggered would
+/// be be times such as ...,-19,-18,-17,-16,...,-4,-3,-2,-1,0,1,2,3,... an so
+/// on. Since the device was told to stop recording approximately at the time
+/// 0.0, the ten samples that have been recorded in the digitizers memory would
+/// have occurred at -9,-8,-7,-6,-5,-4,-3,-2,-1,0. These are the values that
+/// MDSplus would return if the above dimension was evaluated.
+///
+/// The trigger time and the clock representation does not need to be known
+/// when the dimension item is stored. They can be simply node references to
+/// pieces of information which is stored by other devices that are responsible
+/// for generating the trigger and clocks. The implementation of a transient
+/// digitizer in MDSplus can be done independently of trigger devices and clock
+/// devices. It knows only the number of pre-trigger and post-trigger samples
+/// it takes and therefore can store a dimension item with a window indicating
+/// the start index and end index and simply use node references for the
+/// trigger and clock.
+/// 
+/// The dimension data type can obviously be used for more than just
+/// representing time stamps of data recorded by transient digitizers. This
+/// compact representation can be used for storing dimension information of
+/// almost any kind of signals. The axis portion of the dimension does not have
+/// to be a regular continuous range. It can be an unbounded or bounded range,
+/// an simple array of values or an expression returning a range or array of
+/// values. 
+/// 
 
 class Dimension: public Compound
 {
 public:
-    Dimension(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+#ifndef DOXYGEN // hide this part from documentation
+    Dimension(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) :
+        Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+    
     Dimension(Data *window, Data *axis, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_DIMENSION;
@@ -1614,18 +1701,21 @@ public:
         incrementRefCounts();
         setAccessory(units, error, help, validation);
     }
+    
+    /// Get the dimension window 
     Data *getWindow(){
         return getDescAt(0);
     }
 
+    /// Get the dimension axis 
     Data *getAxis(){
         return getDescAt(1);
     }
 
-    /// Set window as compound data at position 0
+    /// Set the dimension window 
     void setWindow(Data *window) { assignDescAt(window, 0); }
 
-    /// Set axis as compound data at position 1
+    /// Set the dimension axis 
     void setAxis(Data *axis){ assignDescAt(axis, 1); }
 };
 
@@ -1637,14 +1727,46 @@ public:
 ///
 /// \brief The Window class object description of DTYPE_WINDOW
 ///
+/// MDSplus provides a window data type which is used exclusively in
+/// conjunction with a dimension data item (\ref Dimension). The window
+/// provides a means for bracketing a potentially infinite vector of values
+/// generated by a range data item (\ref Range). A window data type is a
+/// structure containing three fields: the start index, the end index and the
+/// value at index 0. The window brackets the axis portion of a dimension item
+/// by finding the nearest element in the axis to the "value at index 0" value.
+/// The subset of the axis elements are selected using the start index and end
+/// index using this starting element as the index 0. For example if the window
+/// was BUILD_WINDOW(-5,10,42.), MDSplus would find the element in the axis
+/// portion of the dimension closest to a value of 42 (assuming the axis is
+/// always increasing) and call that element, element number 0. The subset
+/// would be this element and the 5 elements before it and the 10 elements
+/// after it. For a more detailed explanation see the description of the
+/// dimension data type.
+///
+/// The following table lists some of the TDI functions available for creating
+/// or accessing windows:
+/// 
+/// | Function     |	Description                               |
+/// |--------------|----------------------------------------------|
+/// | BEGIN_OF 	   | Return begin portion of a window             |
+/// | BUILD_WINDOW | Build a window structure                     |
+/// | END_OF 	   | Return the end portion of a window structure |
+/// | MAKE_WINDOW  | Make a window structure                      |
+/// 
+/// 
 
 class Window: public Compound
 {
 public:
-    Window(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+    
+#   ifndef DOXYGEN // hide this part from documentation
+    Window(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) : 
+        Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#   endif // DOXYGEN end of hidden code
+    
     Window(Data *startidx, Data *endidx, Data *value_at_idx0, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_WINDOW;
@@ -1680,14 +1802,38 @@ public:
 ///
 /// \brief The Function class object description of DTYPE_FUNCTION
 ///
+/// MDSplus provides a function data type used for describing references to
+/// built in native TDI functions. When you specify an expression such as "a +
+/// b", MDSplus will compile this into a \ref DTYPE_FUNCTION data item. The
+/// function data type consists of a opcode and a list of operands. The opcode
+/// is stored as a 16 bit code and the operands can be any MDSplus data type.
+///
+///     a + b
+/// 
+/// will be compiled into the same function structure as if you had specified:
+/// 
+///     BUILD_FUNCTION(BUILDIN_OPCODE('ADD'),a,b)
+///
+/// 
+/// The following table lists some of the TDI functions available for creating
+/// and accessing dtype function:
+/// 
+/// | Function  |	Description                                 |
+/// |-----------|-----------------------------------------------|
+/// | BUILD_FUNCTION |	Construct a internal function reference |
+/// | MAKE_FUNCTION  |	Construct a internal function reference |
+///  
 
 class Function: public Compound
 {
 public:
-    Function(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
-    {
-        setAccessory(units, error, help, validation);
-    }
+    
+#   ifndef DOXYGEN // hide this part from documentation
+    Function(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) :
+        Compound(dtype, length, ptr, nDescs, descs)
+    { setAccessory(units, error, help, validation); }
+#   endif // DOXYGEN end of hidden code
+    
     Function(short opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_FUNCTION;
@@ -1731,6 +1877,7 @@ public:
     {
         setAccessory(units, error, help, validation);
     }
+    
     Conglom(Data *image, Data *model, Data *name, Data *qualifiers, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_CONGLOM;
@@ -1781,6 +1928,7 @@ public:
     {
         setAccessory(units, error, help, validation);
     }
+    
     Range(Data *begin, Data *ending, Data *deltaval, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_RANGE;

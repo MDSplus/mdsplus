@@ -94,11 +94,16 @@ target_triplet = @target@
 @HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsSignalTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsDimensionTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsWindowTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_prog_doxygen.m4 \
+	$(top_srcdir)/m4/libxml.m4 $(top_srcdir)/m4/pkg.m4 \
 	$(top_srcdir)/configure.in
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
@@ -114,7 +119,11 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_CHECK_TRUE@	MdsScalarTest_NumericLimits$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsScalarTest_ScalarCast$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsStringTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsCompoundTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsSignalTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsDimensionTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsWindowTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT)
 MdsCompoundTest_SOURCES = MdsCompoundTest.cpp
 MdsCompoundTest_OBJECTS = MdsCompoundTest.$(OBJEXT)
 MdsCompoundTest_LDADD = $(LDADD)
@@ -126,10 +135,20 @@ MdsDataTest_OBJECTS = MdsDataTest.$(OBJEXT)
 MdsDataTest_LDADD = $(LDADD)
 MdsDataTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
+MdsDimensionTest_SOURCES = MdsDimensionTest.cpp
+MdsDimensionTest_OBJECTS = MdsDimensionTest.$(OBJEXT)
+MdsDimensionTest_LDADD = $(LDADD)
+MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
 MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsFunctionTest_SOURCES = MdsFunctionTest.cpp
+MdsFunctionTest_OBJECTS = MdsFunctionTest.$(OBJEXT)
+MdsFunctionTest_LDADD = $(LDADD)
+MdsFunctionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
 MdsScalarTest_NumericConversion_SOURCES =  \
 	MdsScalarTest_NumericConversion.cpp
@@ -149,10 +168,20 @@ MdsScalarTest_ScalarCast_OBJECTS = MdsScalarTest_ScalarCast.$(OBJEXT)
 MdsScalarTest_ScalarCast_LDADD = $(LDADD)
 MdsScalarTest_ScalarCast_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
+MdsSignalTest_SOURCES = MdsSignalTest.cpp
+MdsSignalTest_OBJECTS = MdsSignalTest.$(OBJEXT)
+MdsSignalTest_LDADD = $(LDADD)
+MdsSignalTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 MdsStringTest_SOURCES = MdsStringTest.cpp
 MdsStringTest_OBJECTS = MdsStringTest.$(OBJEXT)
 MdsStringTest_LDADD = $(LDADD)
 MdsStringTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsWindowTest_SOURCES = MdsWindowTest.cpp
+MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
+MdsWindowTest_LDADD = $(LDADD)
+MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
@@ -188,14 +217,18 @@ AM_V_CXXLD = $(am__v_CXXLD_@AM_V@)
 am__v_CXXLD_ = $(am__v_CXXLD_@AM_DEFAULT_V@)
 am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
-SOURCES = MdsCompoundTest.cpp MdsDataTest.cpp MdsExceptionTest.cpp \
+SOURCES = MdsCompoundTest.cpp MdsDataTest.cpp MdsDimensionTest.cpp \
+	MdsExceptionTest.cpp MdsFunctionTest.cpp \
 	MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
-	MdsStringTest.cpp buildtest.cpp
+	MdsSignalTest.cpp MdsStringTest.cpp MdsWindowTest.cpp \
+	buildtest.cpp
 DIST_SOURCES = MdsCompoundTest.cpp MdsDataTest.cpp \
-	MdsExceptionTest.cpp MdsScalarTest_NumericConversion.cpp \
+	MdsDimensionTest.cpp MdsExceptionTest.cpp MdsFunctionTest.cpp \
+	MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
-	MdsStringTest.cpp buildtest.cpp
+	MdsSignalTest.cpp MdsStringTest.cpp MdsWindowTest.cpp \
+	buildtest.cpp
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -652,6 +685,10 @@ VS_ARCH = @VS_ARCH@
 VS_DIR = @VS_DIR@
 WINDRES = @WINDRES@
 XMKMF = @XMKMF@
+XML2_CONFIG = @XML2_CONFIG@
+XML_CFLAGS = @XML_CFLAGS@
+XML_CPPFLAGS = @XML_CPPFLAGS@
+XML_LIBS = @XML_LIBS@
 XM_LIBS = @XM_LIBS@
 X_CFLAGS = @X_CFLAGS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
@@ -769,9 +806,17 @@ MdsDataTest$(EXEEXT): $(MdsDataTest_OBJECTS) $(MdsDataTest_DEPENDENCIES) $(EXTRA
 	@rm -f MdsDataTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsDataTest_OBJECTS) $(MdsDataTest_LDADD) $(LIBS)
 
+MdsDimensionTest$(EXEEXT): $(MdsDimensionTest_OBJECTS) $(MdsDimensionTest_DEPENDENCIES) $(EXTRA_MdsDimensionTest_DEPENDENCIES) 
+	@rm -f MdsDimensionTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsDimensionTest_OBJECTS) $(MdsDimensionTest_LDADD) $(LIBS)
+
 MdsExceptionTest$(EXEEXT): $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_DEPENDENCIES) $(EXTRA_MdsExceptionTest_DEPENDENCIES) 
 	@rm -f MdsExceptionTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_LDADD) $(LIBS)
+
+MdsFunctionTest$(EXEEXT): $(MdsFunctionTest_OBJECTS) $(MdsFunctionTest_DEPENDENCIES) $(EXTRA_MdsFunctionTest_DEPENDENCIES) 
+	@rm -f MdsFunctionTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsFunctionTest_OBJECTS) $(MdsFunctionTest_LDADD) $(LIBS)
 
 MdsScalarTest_NumericConversion$(EXEEXT): $(MdsScalarTest_NumericConversion_OBJECTS) $(MdsScalarTest_NumericConversion_DEPENDENCIES) $(EXTRA_MdsScalarTest_NumericConversion_DEPENDENCIES) 
 	@rm -f MdsScalarTest_NumericConversion$(EXEEXT)
@@ -785,9 +830,17 @@ MdsScalarTest_ScalarCast$(EXEEXT): $(MdsScalarTest_ScalarCast_OBJECTS) $(MdsScal
 	@rm -f MdsScalarTest_ScalarCast$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsScalarTest_ScalarCast_OBJECTS) $(MdsScalarTest_ScalarCast_LDADD) $(LIBS)
 
+MdsSignalTest$(EXEEXT): $(MdsSignalTest_OBJECTS) $(MdsSignalTest_DEPENDENCIES) $(EXTRA_MdsSignalTest_DEPENDENCIES) 
+	@rm -f MdsSignalTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsSignalTest_OBJECTS) $(MdsSignalTest_LDADD) $(LIBS)
+
 MdsStringTest$(EXEEXT): $(MdsStringTest_OBJECTS) $(MdsStringTest_DEPENDENCIES) $(EXTRA_MdsStringTest_DEPENDENCIES) 
 	@rm -f MdsStringTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsStringTest_OBJECTS) $(MdsStringTest_LDADD) $(LIBS)
+
+MdsWindowTest$(EXEEXT): $(MdsWindowTest_OBJECTS) $(MdsWindowTest_DEPENDENCIES) $(EXTRA_MdsWindowTest_DEPENDENCIES) 
+	@rm -f MdsWindowTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsWindowTest_OBJECTS) $(MdsWindowTest_LDADD) $(LIBS)
 
 buildtest$(EXEEXT): $(buildtest_OBJECTS) $(buildtest_DEPENDENCIES) $(EXTRA_buildtest_DEPENDENCIES) 
 	@rm -f buildtest$(EXEEXT)
@@ -801,11 +854,15 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsCompoundTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDimensionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExceptionTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsFunctionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericConversion.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericLimits.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_ScalarCast.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsSignalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsStringTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsWindowTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildtest.Po@am__quote@
 
 .cpp.o:
@@ -1116,6 +1173,34 @@ MdsStringTest.log: MdsStringTest$(EXEEXT)
 MdsCompoundTest.log: MdsCompoundTest$(EXEEXT)
 	@p='MdsCompoundTest$(EXEEXT)'; \
 	b='MdsCompoundTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsSignalTest.log: MdsSignalTest$(EXEEXT)
+	@p='MdsSignalTest$(EXEEXT)'; \
+	b='MdsSignalTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsDimensionTest.log: MdsDimensionTest$(EXEEXT)
+	@p='MdsDimensionTest$(EXEEXT)'; \
+	b='MdsDimensionTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsWindowTest.log: MdsWindowTest$(EXEEXT)
+	@p='MdsWindowTest$(EXEEXT)'; \
+	b='MdsWindowTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsFunctionTest.log: MdsFunctionTest$(EXEEXT)
+	@p='MdsFunctionTest$(EXEEXT)'; \
+	b='MdsFunctionTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

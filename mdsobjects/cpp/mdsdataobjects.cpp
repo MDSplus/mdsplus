@@ -173,6 +173,7 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
+
 Data::~Data() {
 //	decRefCount();
 }
@@ -844,9 +845,15 @@ void * Data::completeConversionToDsc(void *dsc) {
 ///@}
 
 
-
-
-
+void Data::plot()
+{
+		Data *dim = getDimensionAt(0);
+		Scope *scope = new Scope("");
+		scope->plot(this, dim);
+		scope->show();
+		delete scope;
+        deleteData(dim);
+}
 
 
 
@@ -915,15 +922,6 @@ Array *Array::getSubArray(int startDim, int nSamples)
 
 
 
-void Data::plot()
-{
-		Data *dim = getDimensionAt(0);
-		Scope *scope = new Scope("");
-		scope->plot(this, dim);
-		scope->show();
-		delete scope;
-		deleteData(dim);
-}
 
 void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 {

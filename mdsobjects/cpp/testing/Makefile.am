@@ -19,7 +19,11 @@ TESTS = \
         MdsScalarTest_NumericLimits \
         MdsScalarTest_ScalarCast \
         MdsStringTest \
-        MdsCompoundTest
+        MdsCompoundTest \
+        MdsSignalTest \
+        MdsDimensionTest \
+        MdsWindowTest \
+        MdsFunctionTest
 else
 TESTS =
 endif

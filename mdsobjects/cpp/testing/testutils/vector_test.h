@@ -38,6 +38,7 @@ operator >> (istream &is, vector<T> &v) {
 //  { return (__x.size() == __y.size()
 //        && std::equal(__x.begin(), __x.end(), __y.begin())); }
 
+// std implementation for different types //
 template < typename _T1, typename _T2, typename _Alloc1, typename _Alloc2 >
 inline bool
 operator == (const std::vector<_T1,_Alloc1> &v1, const std::vector<_T2,_Alloc2> &v2) {
