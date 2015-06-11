@@ -394,7 +394,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$F77";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null ) 
@@ -452,7 +452,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
          FOR_LDFLAGS="-lg2c"
