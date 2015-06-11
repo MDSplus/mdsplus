@@ -7292,9 +7292,14 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        SHARETYPE=".dll"
-       jni_inc_dir="$with_jdk/include";
-       jni_md_inc_dir="$with_jdk/include/linux";;
-
+       if  -d /mdsplus/extras/windows-jdk/include
+       then
+         jni_inc_dir=/mdsplus/extras/windows-jdk/include
+         jni_md_inc_dir="/mdsplus/extras/windows-jdk/include/win32
+       else
+         jni_inc_dir="$with_jdk/include";
+         jni_md_inc_dir="$with_jdk/include/linux"
+       fi ;;
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$F77";
