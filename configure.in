@@ -368,12 +368,12 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SHARETYPE=".dll"
        if [[ -d /mdsplus/extras/windows-jdk/include ]]
        then
-         jni_inc_dir=/mdsplus/extras/windows-jdk/include
-         jni_md_inc_dir="/mdsplus/extras/windows-jdk/include/win32
+         jni_inc_dir="/mdsplus/extras/windows-jdk/include"
+         jni_md_inc_dir="/mdsplus/extras/windows-jdk/include/win32"
        else
          jni_inc_dir="$with_jdk/include";
          jni_md_inc_dir="$with_jdk/include/linux"
-       fi ;;
+       fi;;
 *86*linux*)
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$F77";
