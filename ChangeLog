@@ -1,4 +1,34 @@
-commit 93e07b4a1fd9f97d3cf9e9f17ce9e68890c3ade6 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit c982a07cb33896c46dbae5f2893f67474ddbc039 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 16:52:20 2015 -0400
+
+    Use windows jdk includes
+
+commit 46d3b5689f378870f7a9e690d01ba14c480f49e7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 16:46:55 2015 -0400
+
+    Use windows jdk includes
+
+commit 3c98f6de611ceecfcfb5d4a9911070812981c729
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 16:43:16 2015 -0400
+
+    Use windows jdk includes
+
+commit c57a552b44ab01e35cad6592778c40270d32b42e (tag: refs/tags/stable_release-7-0-11)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 14:18:18 2015 -0400
+
+    add -fsigned-char to CFLAGS to ensure char types are signed
+
+commit 844d4e141557a51fb12b4694f11b9ef7ddfd335a
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 11 17:26:03 2015 +0000
+
+    New ChangeLog
+
+commit 93e07b4a1fd9f97d3cf9e9f17ce9e68890c3ade6
 Merge: b0ce54b 7e114d0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 11 13:25:18 2015 -0400
