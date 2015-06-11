@@ -366,7 +366,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        SHARETYPE=".dll"
-       if [ -d /mdsplus/extras/windows-jdk/include ]
+       if [[ -d /mdsplus/extras/windows-jdk/include ]]
        then
          jni_inc_dir=/mdsplus/extras/windows-jdk/include
          jni_md_inc_dir="/mdsplus/extras/windows-jdk/include/win32
