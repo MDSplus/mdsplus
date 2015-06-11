@@ -1869,14 +1869,56 @@ public:
 ///
 /// \brief The Conglom class object description of DTYPE_CONGLOM
 ///
+/// MDSplus provides a conglomerate data type used for describing data
+/// acquisition or analysis devices. A device in MDSplus is implemented as a
+/// collection of adjacent tree nodes (or a conglomerate). The first node
+/// (located at the top of the node structure of this collection) contains a
+/// conglomerate data type. The conglomerate data type is a structure
+/// containing an image part, a model part, a name part and a qualifiers part.
+/// MDSplus implements device support by providing a mechanism for performing
+/// "methods" on devices. When a device method is performed on a device in a
+/// MDSplus tree either through an action or using the TCL command DO/METHOD,
+/// MDSplus invokes a procedure determined by the information in the head node
+/// of the device which contains a conglomerate data type. If there is an image
+/// part of the conglomerate structure, MDSplus will attempt to call a routine
+/// called "model-part"__"method" in the shared library specified by the image
+/// part. If the routine can not be found, MDSplus will try to invoke the TDI
+/// function called "model-part"__"method". Normally, the conglomerate data is
+/// loaded into the head node of a device automatically when you add it to the
+/// tree so you may not need to access this data type directly.
+/// 
+/// The name part of the device is often a reference to a sub node of the
+/// device which contains the data acquisition module identification such as
+/// the CAMAC module name. This portion of the device is not used during method
+/// invokation and was simply added as a convenience in building tools for
+/// gathering information about device definitions in a tree. The qualifiers
+/// part of the structure could be used by device support for making variant
+/// device implementations. This field along with the name field are generally
+/// not used any longer.
+/// 
+/// The following table lists some of the TDI functions available for creating
+/// and accessing conglomerate data types:
+/// 
+/// | TDI Function  | Description                                    |
+/// |---------------|------------------------------------------------|
+/// | BUILD_CONGLOM | 	Build a conglomerate structure               |
+/// | IMAGE_OF      | 	Return the image part of a conglomerate      |
+/// | MAKE_CONGLOM  | 	Make a conglomerate structure                |
+/// | MODEL_OF      |   Return the model part of a conglomerate      |
+/// | NAME_OF 	    |   Return the name part of a conglomerate       |
+/// | QUALIFIERS_OF | 	Return the qualifiers part of a conglomerate |
+/// 
+/// 
 
 class Conglom: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Conglom(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
     
     Conglom(Data *image, Data *model, Data *name, Data *qualifiers, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {

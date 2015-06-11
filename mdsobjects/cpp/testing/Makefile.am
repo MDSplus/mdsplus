@@ -23,7 +23,8 @@ TESTS = \
         MdsSignalTest \
         MdsDimensionTest \
         MdsWindowTest \
-        MdsFunctionTest
+        MdsFunctionTest \
+        MdsConglomTest
 else
 TESTS =
 endif
