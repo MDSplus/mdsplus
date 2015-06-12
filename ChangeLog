@@ -1,4 +1,16 @@
-commit 10e47d369721268772703724a8d49f318425e43e (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 8d86a19f2dd9f8474952eb2710f1a7df3e5e73ab (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 12:13:40 2015 -0400
+
+    Add -fsigned-char to ensure char's are treated as signed types
+
+commit f75947c049d3fdc9fb7d9bd53a727e51478562d9 (tag: refs/tags/alpha_release-7-0-91)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 22:22:19 2015 +0000
+
+    New ChangeLog
+
+commit 10e47d369721268772703724a8d49f318425e43e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 9 15:16:41 2015 -0400
 
@@ -144,7 +156,7 @@ Date:   Mon Jun 1 18:46:48 2015 -0400
 
     New ChangeLog
 
-commit e7f4f36fe5dca07b0106ecefe33654bf392c2365 (tag: refs/tags/alpha_release-7-0-85)
+commit e7f4f36fe5dca07b0106ecefe33654bf392c2365
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 1 22:21:09 2015 +0000
 

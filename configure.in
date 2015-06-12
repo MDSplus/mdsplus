@@ -15,6 +15,7 @@ AM_MAINTAINER_MODE
 #AC_CANONICAL_TARGET
 #AC_CANONICAL_HOST
 AC_CHECK_SIZEOF(int *)
+AC_SYS_LARGEFILE
 AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
 AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 dnl See if we need to use native compilers
@@ -273,7 +274,8 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF"
+CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+
 CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
@@ -362,7 +364,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
        FORLD="$F77"
@@ -398,7 +400,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$F77";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null ) 
@@ -456,7 +458,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
          FOR_LDFLAGS="-lg2c"
@@ -485,7 +487,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FFLAGS="$FFLAGS -fno-range-check";
        FORLD="$F77"
        FOR_LDFLAGS="-lg2c"
