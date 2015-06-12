@@ -1,4 +1,74 @@
-commit 8d86a19f2dd9f8474952eb2710f1a7df3e5e73ab (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit a69bd1af011114f022e98fa2f5b7dae65a929f00 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 12 15:39:24 2015 +0200
+
+    comments in m4 readline function
+
+commit 305603c609b30562c2ce7e8c5089b7aa2877768c
+Merge: 7c621fe 60117e7
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 12 15:29:35 2015 +0200
+
+    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus into alpha
+
+commit 7c621fe0ee2aa2cd9fbe12f1110a78aaee4c68e3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 12 15:29:15 2015 +0200
+
+    adds readline check in configure.in and --with-readline option
+
+commit 60117e782f0cd228f51a39fcba973b627c642f35
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jun 12 08:23:57 2015 -0400
+
+    add signed char option to *linux* host builds
+
+commit 086c6b30b0d722354371645cddb45f5e78c3d44a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jun 12 08:06:54 2015 -0400
+
+    Fix configure after bootstrap
+
+commit 451b7755ebd0c04140e84fecf0cb0c235aac476b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 21:34:11 2015 -0400
+
+    Another git change to get latest release
+
+commit df89264dd8d319ff31698ec4b58573a967ec86b1
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jun 11 13:39:42 2015 -0400
+
+    not sure why I had to git rm this previously
+
+commit 75f798d617f630cb7a7f550c699e7840480c9e6f
+Merge: 2d84726 302c873
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Thu Jun 11 13:33:30 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 2d8472673e0f7454b001856f88048296842f6c8c
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jun 9 09:55:59 2015 -0400
+
+    add -mno-ms-bitfields to mingw  so that tree structures that live in files allign correctly
+    add  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64  to all compiles ane remove them from treeshr/treeshrp.h
+         this fixex the problem that off_t type is defined wrong if treeshrp.h is not included 1st
+
+commit 302c873c2cb1679543fe40ca65b0f8fab3511c25
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 13:22:57 2015 -0400
+
+    Pull all tags
+
+commit 848572576b34f040edb81a6659eeb1fc09ffc866 (tag: refs/tags/alpha_release-7-0-92)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 11 16:27:40 2015 +0000
+
+    New ChangeLog
+
+commit 8d86a19f2dd9f8474952eb2710f1a7df3e5e73ab
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 11 12:13:40 2015 -0400
 
