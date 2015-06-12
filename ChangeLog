@@ -1,4 +1,16 @@
-commit 3fda1f18b44929b97eef26f01887fe4d246098eb (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit ce6c261c8f8b86a4962d0ac47f46cbf5f106eb72 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jun 12 18:34:30 2015 +0200
+
+    Handle dual speed clocks
+
+commit af8868d75a31103355d34ddd401e781aa3cb9cd8
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jun 12 15:00:44 2015 +0000
+
+    New ChangeLog
+
+commit 3fda1f18b44929b97eef26f01887fe4d246098eb
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 12 14:30:57 2015 +0000
 
