@@ -1,4 +1,10 @@
-commit ce6c261c8f8b86a4962d0ac47f46cbf5f106eb72 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 4206719f1aca871b2d9cd334c981fdaed9caa336 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jun 12 22:27:07 2015 +0000
+
+    New ChangeLog
+
+commit ce6c261c8f8b86a4962d0ac47f46cbf5f106eb72
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Jun 12 18:34:30 2015 +0200
 
