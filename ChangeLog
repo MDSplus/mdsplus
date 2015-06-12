@@ -1,4 +1,16 @@
-commit a69bd1af011114f022e98fa2f5b7dae65a929f00 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 977c11d937563a58b2121472cd4495c1da42d6e2 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jun 12 10:29:34 2015 -0400
+
+    fetch tags
+
+commit f62323c2ab60c1d96e750c2b1cf31b9a42ca02d2
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jun 12 14:23:13 2015 +0000
+
+    New ChangeLog
+
+commit a69bd1af011114f022e98fa2f5b7dae65a929f00
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
 Date:   Fri Jun 12 15:39:24 2015 +0200
 
