@@ -1,4 +1,23 @@
-commit c982a07cb33896c46dbae5f2893f67474ddbc039 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 133b98e2d4b74380f1e64c9a3dc965e10c617fdd (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Merge: eb8f10f 5e89900
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 21:35:52 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit eb8f10f7cb770e04dcb8c228a0205a22d0d31435
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 21:35:30 2015 -0400
+
+    Another git change to get latest release
+
+commit 5e89900df1402d5abe1e614bb7fabe7e8c86ea24 (tag: refs/tags/stable_release-7-0-12)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 11 21:07:37 2015 +0000
+
+    New ChangeLog
+
+commit c982a07cb33896c46dbae5f2893f67474ddbc039
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 11 16:52:20 2015 -0400
 
