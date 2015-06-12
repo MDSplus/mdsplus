@@ -1,8 +1,13 @@
 dnl // Search macro for libreadline //
 dnl 
-dnl usage:
+dnl usage: 
 dnl    AC_SEARCH_READLINE([RL])
 dnl    AM_CONDITIONAL(RL, test x"$have_readline" = x"yes")
+dnl 
+dnl The --with-readline option is added in configure that scans also for the
+dnl presence of READLINE_DIR environment variable.
+dnl This defines the following variables to be added in compilation lines:
+dnl    RL_CPPFLAGS, RL_LDFLAGS, RL_LIBS
 dnl 
 
 

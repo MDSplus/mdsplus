@@ -2929,7 +2929,7 @@ test -n "$target_alias" &&
 
 
 
-am__api_version='1.14'
+am__api_version='1.15'
 
 # Find a good install program.  We prefer a C program (faster),
 # so one script is as good as another.  But avoid the broken or
@@ -3101,8 +3101,8 @@ test "$program_suffix" != NONE &&
 ac_script='s/[\\$]/&&/g;s/;s,x,x,$//'
 program_transform_name=`$as_echo "$program_transform_name" | sed "$ac_script"`
 
-# expand $ac_aux_dir to an absolute path
-am_aux_dir=`cd $ac_aux_dir && pwd`
+# Expand $ac_aux_dir to an absolute path.
+am_aux_dir=`cd "$ac_aux_dir" && pwd`
 
 if test x"${MISSING+set}" != xset; then
   case $am_aux_dir in
@@ -3121,7 +3121,7 @@ else
 $as_echo "$as_me: WARNING: 'missing' script is too old or missing" >&2;}
 fi
 
-if test x"${install_sh}" != xset; then
+if test x"${install_sh+set}" != xset; then
   case $am_aux_dir in
   *\ * | *\	*)
     install_sh="\${SHELL} '$am_aux_dir/install-sh'" ;;
@@ -3449,8 +3449,8 @@ MAKEINFO=${MAKEINFO-"${am_missing_run}makeinfo"}
 # <http://lists.gnu.org/archive/html/automake/2012-07/msg00014.html>
 mkdir_p='$(MKDIR_P)'
 
-# We need awk for the "check" target.  The system "awk" is bad on
-# some platforms.
+# We need awk for the "check" target (and possibly the TAP driver).  The
+# system "awk" is bad on some platforms.
 # Always define AMTAR for backward compatibility.  Yes, it's still used
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
@@ -3507,6 +3507,7 @@ END
     as_fn_error $? "Your 'rm' program is bad, sorry." "$LINENO" 5
   fi
 fi
+
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable maintainer-specific portions of Makefiles" >&5
 $as_echo_n "checking whether to enable maintainer-specific portions of Makefiles... " >&6; }
@@ -9113,8 +9114,7 @@ fi
         _readline_ldflags="-L${with_readline}/lib"
      fi
 
-
-     for _termcap in "" "-ltermcap" "-lcurses" "-lncurses" ; do
+          for _termcap in "" "-ltermcap" "-lcurses" "-lncurses" ; do
         _combo="readline${_termcap:+ $_termcap}"
 
         LIBS_save=$LIBS
@@ -9128,45 +9128,7 @@ fi
         { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether readline via \"$_combo\" is present and sane" >&5
 $as_echo_n "checking whether readline via \"$_combo\" is present and sane... " >&6; }
                         	if test "$cross_compiling" = yes; then :
-                       _cross_compiling=yes
-
-else
-  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////
-#include <stdio.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-int main(int argc, char **argv)
-{
-  int fd;
-  char *line;
-  close(0);
-  close(1);
-  fd = open("/dev/null", 2);
-  dup(fd);
-  line = readline("giveittome> ");
-  printf("got <%s>\n", line);
-  return 0;
- }
-////////////////////////////////////////////////////////////////////////////////
-
-_ACEOF
-if ac_fn_c_try_run "$LINENO"; then :
-                       have_readline=yes
-else
-                       have_readline=no
-fi
-rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
-  conftest.$ac_objext conftest.beam conftest.$ac_ext
-fi
-
-                if test x"$_cross_compiling" = x"yes" ; then
-          { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing readline" >&5
+                                            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing readline" >&5
 $as_echo_n "checking for library containing readline... " >&6; }
 if ${ac_cv_search_readline+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -9224,7 +9186,41 @@ else
   have_readline=no
 fi
 
-        fi
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+#include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+int main(int argc, char **argv)
+{
+  int fd;
+  char *line;
+  close(0);
+  close(1);
+  fd = open("/dev/null", 2);
+  dup(fd);
+  line = readline("giveittome> ");
+  printf("got <%s>\n", line);
+  return 0;
+ }
+////////////////////////////////////////////////////////////////////////////////
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+                       have_readline=yes
+else
+                       have_readline=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
 
         { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_readline" >&5
 $as_echo "$have_readline" >&6; }
