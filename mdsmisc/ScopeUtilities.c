@@ -71,6 +71,7 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
     int deltaSamples, actSamples, currSamples;
     int i, j, outIdx, startIdx, endIdx;
     float minY, maxY;
+	double deltaTime, startXDouble, currXDouble;
     if(nSamples < 10 * reqPoints)
     {
 //Does not perform any compression 
@@ -87,9 +88,11 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
     if((endIdx - startIdx) < 10 * reqPoints)
 	deltaSamples = 1;
     else
-
+	{
 //Adjust to a number of samples close to 2 * reqPoints
     	deltaSamples = (endIdx - startIdx + 1) / reqPoints;
+		deltaTime = (xMax - xMin)/(double)reqPoints;
+	}
     currSamples = 0;
     outIdx = 0;
     if(deltaSamples == 1)
@@ -113,16 +116,22 @@ static void compressData(float *y, char *x, int xSize, int xType, int nSamples, 
 	else
 	{
 	    minY = maxY = y[currSamples];
+		startXDouble = toDouble(&x[currSamples * xSize], xType);
+		actSamples = 0;
 	    for(i = currSamples; i < nSamples && i < currSamples + deltaSamples; i++)
 	    {
+			currXDouble = toDouble(&x[i * xSize], xType);
+			if((currXDouble - startXDouble) > deltaTime) break; //Handle dual speed clocks
 	    	if(y[i] < minY) minY = y[i];
 	    	if(y[i] > maxY) maxY = y[i];
+			actSamples++;
 	    }
 	    y[outIdx] = minY;
 	    y[outIdx+1] = maxY;
 	    memcpy(&x[outIdx * xSize], &x[currSamples * xSize], xSize);
 	    memcpy(&x[(outIdx+1) * xSize], &x[currSamples * xSize], xSize);
-	    currSamples += deltaSamples;
+//	    currSamples += deltaSamples;
+	    currSamples += actSamples;
 	    outIdx += 2;
 	}
     }
