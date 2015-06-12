@@ -1,4 +1,355 @@
-commit 2e6ff35c162ad6e391b5197f9867987d0f9f0afe (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit c982a07cb33896c46dbae5f2893f67474ddbc039 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 16:52:20 2015 -0400
+
+    Use windows jdk includes
+
+commit 46d3b5689f378870f7a9e690d01ba14c480f49e7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 16:46:55 2015 -0400
+
+    Use windows jdk includes
+
+commit 3c98f6de611ceecfcfb5d4a9911070812981c729
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 16:43:16 2015 -0400
+
+    Use windows jdk includes
+
+commit c57a552b44ab01e35cad6592778c40270d32b42e (tag: refs/tags/stable_release-7-0-11)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 14:18:18 2015 -0400
+
+    add -fsigned-char to CFLAGS to ensure char types are signed
+
+commit 844d4e141557a51fb12b4694f11b9ef7ddfd335a
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 11 17:26:03 2015 +0000
+
+    New ChangeLog
+
+commit 93e07b4a1fd9f97d3cf9e9f17ce9e68890c3ade6
+Merge: b0ce54b 7e114d0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 13:25:18 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit b0ce54bec4c27ac5ace61f8e9ae18c7a43f5fa29
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 11 13:25:03 2015 -0400
+
+    Pull all tags
+
+commit 7e114d041fe382bef6a735a9ac595b856ac70f91
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 11 17:23:48 2015 +0000
+
+    New ChangeLog
+
+commit 4bafdac3582d2e511498d54f6797ead1a628573c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 11 17:05:04 2015 +0000
+
+    New ChangeLog
+
+commit 0c61544aa414ee4b67355b99e7a82e67cd1835c3
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 23:06:30 2015 -0400
+
+    New ChangeLog
+
+commit 20cca6e049d1535907e236e6b9b4a3843eb37eb9
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:39:51 2015 +0000
+
+    New ChangeLog
+
+commit 08e4b094cbc45bc718362359131cdfc458d12162
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:32:58 2015 +0000
+
+    New ChangeLog
+
+commit 0d9dc94f7dc078d9735058ba867231396e9e80ce
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:31:44 2015 +0000
+
+    New ChangeLog
+
+commit 2fa9b5889326c118551c1ed3cc32d4173aba1b0b
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:17:10 2015 +0000
+
+    New ChangeLog
+
+commit 9b57b813a71c4da0e2002b26028fb835e00895ac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:16:12 2015 +0000
+
+    New ChangeLog
+
+commit dbbc6cedca9177eb1b6fd114bcc8795761d043b3
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:14:49 2015 +0000
+
+    New ChangeLog
+
+commit 6fa845be43deeffa55c743b9841c559c951e6cf5
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 18:13:39 2015 -0400
+
+    New ChangeLog
+
+commit afa9c11740ffdcf626b9407765e372fe6e2e47f9
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 18:12:32 2015 -0400
+
+    New ChangeLog
+
+commit cf940586b6fae61f63bf2f97959d4f8ba4713723
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:11:23 2015 +0000
+
+    New ChangeLog
+
+commit 4528e5f8b6938f9c51c5019cdbe1278f4db03774
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:10:08 2015 +0000
+
+    New ChangeLog
+
+commit af917ab5fa629807c7102d6dde47f8734b3b7625
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:09:08 2015 +0000
+
+    New ChangeLog
+
+commit 5e728ee1cc1e71950364c0fdd9812ef686b4afb2
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:08:08 2015 +0000
+
+    New ChangeLog
+
+commit b2477d1af4b327c1aff50e7ef926de469d645349
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 18:06:57 2015 -0400
+
+    New ChangeLog
+
+commit 41d9ff0cbf15704a6befb51cab7e488dde4e1bc6
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 22:05:51 2015 +0000
+
+    New ChangeLog
+
+commit 565ecf2c983143e70d4a34e6f52e845d3b25c3a3
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 23:19:19 2015 -0400
+
+    New ChangeLog
+
+commit 3585c3116e4f24c517cb9e351aabe9f126720a70
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 02:59:30 2015 +0000
+
+    New ChangeLog
+
+commit 19d2852f5b056d3bb19c76058f0ba9c577a6cb65
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 02:52:17 2015 +0000
+
+    New ChangeLog
+
+commit 91ba281e3f4633b758d647cfad33e605084a4687
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 02:30:12 2015 +0000
+
+    New ChangeLog
+
+commit c61402ae2dc9d04f311234a2ce4823f2eb076d96
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 02:15:13 2015 +0000
+
+    New ChangeLog
+
+commit 07aa6884637ec293c2793ec1f0e34aadf7cd9119
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 01:55:20 2015 +0000
+
+    New ChangeLog
+
+commit a486680dc8a520cc91e75e02f5f29660439d5b6e
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 01:41:15 2015 +0000
+
+    New ChangeLog
+
+commit b010f21964f517705dccc26dc3fdc343b8da73f7
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 21:23:43 2015 -0400
+
+    New ChangeLog
+
+commit 33ad0fc48e6c6dd54841fdce2a4fd47d757f649c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 20:49:32 2015 -0400
+
+    New ChangeLog
+
+commit 675ce2b073f95047c6603a20c2b8bcfafa11bcd0
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 10 00:08:23 2015 +0000
+
+    New ChangeLog
+
+commit 48404e4fa518b89340bd2405e9f01112567483b7
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 23:55:06 2015 +0000
+
+    New ChangeLog
+
+commit 31410590d2b581be944136d541cc7451d4329e05
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 23:36:23 2015 +0000
+
+    New ChangeLog
+
+commit d095dd6558020bc3b8f9fa586669657195df0f8d
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 23:15:54 2015 +0000
+
+    New ChangeLog
+
+commit f7309510cac2ace3a30da462aecbe488ac348087
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 18:49:15 2015 -0400
+
+    New ChangeLog
+
+commit 5beb70c67bd6218379b66e600f2e7788813b0af0
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 22:22:39 2015 +0000
+
+    New ChangeLog
+
+commit 8d0ed1d7a44a2735a39e70b82d7585ef31752031
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 9 15:51:03 2015 +0000
+
+    New ChangeLog
+
+commit ba841079768f6ef5dd5dddfb6e48b0a03e7739a8
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Tue Jun 9 09:55:59 2015 -0400
+
+    add -mno-ms-bitfields to mingw  so that tree structures that live in files allign correctly
+    add  -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64  to all compiles ane remove them from treeshr/treeshrp.h
+         this fixex the problem that off_t type is defined wrong if treeshrp.h is not included 1st
+
+commit 8e9576b350629f108ef40a0a3941c0e84a0a0321
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 23:06:22 2015 -0400
+
+    New ChangeLog
+
+commit fe0ec002effaf840608829d29345cb473a0ae2b1
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:42:50 2015 +0000
+
+    New ChangeLog
+
+commit 994920d7254216600d26a09ebe46a88ae35a5b1c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:36:15 2015 +0000
+
+    New ChangeLog
+
+commit 9cb9f1ba72fac25cb85cf77d13c9e56cba78dce1
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:34:54 2015 +0000
+
+    New ChangeLog
+
+commit ce06b8a2b5c6503acb7d2cdb74066dcd5ff2b70f
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:19:42 2015 +0000
+
+    New ChangeLog
+
+commit 57ba66e1324dbb5480397f1316f9a8f08399617c
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:18:34 2015 +0000
+
+    New ChangeLog
+
+commit 52290f638cbdb3813c6b0e30be1aef73ef9204d0
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:16:27 2015 +0000
+
+    New ChangeLog
+
+commit 6832c5992003852ed00fee67a015a1a15112e0f5
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 18:14:44 2015 -0400
+
+    New ChangeLog
+
+commit 56bec70ee08c7ca3c644d0182195856118321af9
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 18:13:21 2015 -0400
+
+    New ChangeLog
+
+commit d27bf0ebefbbca5d9b2ebc1303c8c2afab5392af
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:11:56 2015 +0000
+
+    New ChangeLog
+
+commit d136702548deb83bc5234ce5687ce2491ed11cda
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:10:26 2015 +0000
+
+    New ChangeLog
+
+commit 89589cc8a69c9212d1c66aba1b30114c64540396
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:09:04 2015 +0000
+
+    New ChangeLog
+
+commit 7683e587a0871755dc59b10a6b67d07110b9ea11
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:07:49 2015 +0000
+
+    New ChangeLog
+
+commit 22acb525b7595b7ce1a185bbd3544f0be49d74c3
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 18:06:42 2015 -0400
+
+    New ChangeLog
+
+commit d46b3fbac92d59536b8a6cc8f63925b15c9ef1fd
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 8 22:05:34 2015 +0000
+
+    New ChangeLog
+
+commit 351c10b1011f76b94ba68363dca372fc1f2cf3c7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 8 09:03:28 2015 -0400
+
+    Fix release tag checking
+
+commit 4da428f9d2d19dca49a662657ab53f909861a1ac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Jun 7 23:06:19 2015 -0400
+
+    New ChangeLog
+
+commit 2e6ff35c162ad6e391b5197f9867987d0f9f0afe
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Sun Jun 7 22:40:03 2015 +0000
 
