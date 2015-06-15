@@ -164,18 +164,17 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	$(DX_DOXYGEN) $(DX_CONFIG);
 
 
-${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
+${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
 	##
 	## generate taglist to keep track of geenerated symbols.
 	##
-	touch $@ \
+	touch ${DX_TAGDIR}/taglist.txt
 	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
 	echo "Name Found list not updated ..."; \
 	else \
 	echo "Adding tag to list ... "; \
-	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" \
-	>> ${DX_TAGDIR}/taglist.txt; \
-	fi;	
+	echo "${DX_DESTTAG}=${DX_DOCDIR}/ html" >> ${DX_TAGDIR}/taglist.txt; \
+	fi;
 	
 build_tag: ${DX_TAGDIR}/taglist.txt
 
