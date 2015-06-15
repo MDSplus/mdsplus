@@ -876,15 +876,14 @@ uninstall-am:
 @DX_COND_doc_TRUE@	DX_TAGFILES= \
 @DX_COND_doc_TRUE@	$(DX_DOXYGEN) $(DX_CONFIG);
 
-@DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
-@DX_COND_doc_TRUE@	touch $@
+@DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
+@DX_COND_doc_TRUE@	touch ${DX_TAGDIR}/taglist.txt
 @DX_COND_doc_TRUE@	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
 @DX_COND_doc_TRUE@	echo "Name Found list not updated ..."; \
 @DX_COND_doc_TRUE@	else \
 @DX_COND_doc_TRUE@	echo "Adding tag to list ... "; \
-@DX_COND_doc_TRUE@	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" \
-@DX_COND_doc_TRUE@	>> ${DX_TAGDIR}/taglist.txt; \
-@DX_COND_doc_TRUE@	fi;	
+@DX_COND_doc_TRUE@	echo "${DX_DESTTAG}=${DX_DOCDIR}/ html" >> ${DX_TAGDIR}/taglist.txt; \
+@DX_COND_doc_TRUE@	fi;
 
 @DX_COND_doc_TRUE@build_tag: ${DX_TAGDIR}/taglist.txt
 
@@ -892,7 +891,7 @@ uninstall-am:
 @DX_COND_doc_TRUE@install_tag: ${DX_TAGDIR}/taglist.txt
 
 @DX_COND_doc_TRUE@${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
-@DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR}
+@DX_COND_doc_TRUE@	$(MKDIR_P) ${DX_DESTDIR} 
 
 @DX_COND_doc_TRUE@	if test '${DX_TAGFILES}'; then \
 @DX_COND_doc_TRUE@	 for i in ${DX_TAGFILES}; do \
