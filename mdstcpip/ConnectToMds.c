@@ -1,4 +1,3 @@
-#include "mdsip_connections.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -8,6 +7,12 @@
 #ifndef _WIN32
 #include <pwd.h>
 #endif
+
+#include "mdsip_connections.h"
+
+////////////////////////////////////////////////////////////////////////////////
+//  Parse Host  ////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 static void ParseHost(char *hostin, char **protocol, char **host)
 {
@@ -31,6 +36,17 @@ static void ParseHost(char *hostin, char **protocol, char **host)
   }
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//  Do Login  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// Execute login inside server using given connection
+/// 
+/// \param id of connection (on client) to be used
+/// \return status o login into server 1 if success, -1 if not authorized or error
+/// occurred
+///
 static int DoLogin(int id)
 {
   int status;
@@ -90,6 +106,7 @@ static int DoLogin(int id)
 	free(m);
 	return -1;
       }
+      // SET CLIENT COMPRESSION FROM SERVER //
       SetConnectionCompression(id, (m->h.status & 0x1e) >> 1);
     }
     if (m)
@@ -101,6 +118,14 @@ static int DoLogin(int id)
   return status;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+//  Reuse Check  ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// Trigger reuse check funcion for IoRoutines on host.
+/// 
 int ReuseCheck(char *hostin, char *unique, size_t buflen)
 {
   int status;
@@ -126,6 +151,30 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
     free(host);
   return status;
 }
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  ConnectToMds  //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief Remote mdsip server connection.
+///
+/// The \em hostin input argument are parsed to find host name protocol and port to connect to.
+/// Then a connection structure with the above properties is instaced and added to the connection
+/// list calling \ref NewConnection().
+/// Once the connection is established the \em connect function from protocol IoRoutines is called.
+/// To log into the remote sever the system login user and passwd is used.
+/// The compression level of the new connection is set to the client value ( not the server one )
+/// as the client may have to make tuning.
+///
+/// The connection address follows this syntax: \em host:8000::/mydir/mysubdir/myfile.dat
+/// see ParseHost() for further details
+///
+/// \return The id of the new connection instanced if success or -1 otherwise.
+///
 
 int ConnectToMds(char *hostin)
 {

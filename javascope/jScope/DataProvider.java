@@ -192,43 +192,6 @@ public interface DataProvider
          */
         public FrameData  GetFrameData(String in_frame, String in_times, float start_time, float end_time) throws IOException;
 
-        /**
-         * If SupportsContinuous returns true, jScope is prepared to handle a signal changing over time.
-         * An example is the display of a trend recording showing a waveform which is updated each time
-         * a new set of samples has been acquired. More generally, an arbitrarily evolving signal
-         * can be diaplayed this way.
-         * If a DataProvider implentation returns true, a separate thread calls repeadetly methods
-         * GetWaveData() and DataPending() until the second method returns false. In this case
-         * GetWaveData() will wait until a new set of samples is ready and has to be dispalyed by jScope,
-         * while method DataPending() notifies to jScope whether new data has to be displayed for
-         * the signal, i.e. whether the signal has not yet finished to be produced.
-         * <br>
-         * If SupportsContinuous returns false, method GetWaveData (or GetResampledWaveData) is called
-         * only once to retrieve the whole signal.
-         * <br>
-         * NOTE in the current implementation, update frequencies up to few Hz can be handled by jScope
-         * with a limited CPU usage.
-         *
-         * @return The indication whether support for evolving signals is provided.
-         */
-        public boolean SupportsContinuous();
-
-        /**
-         * Method DataPending is called by jScope to verify whether the current signal has been fully
-         * displayed. It DataPending returns false, method GetWaveData is called again to retrieve a new
-         * version (usually with some more samples) of the signal.
-         * <br>
-         * If method SupportsContinuous() returned false, DataPending is never called by jScope, and
-         * can therefore be empty.
-         *
-         * @return Indicates whether the current signal is complete.
-         */
-        public boolean DataPending();
-
-        /**
-         * Method enableAsyncUpdate enables or disables possible asynchronous activity of the data provider.
-         * Asynchronous activity is disabled when data are first retrieved, enabled afterwards
-         * **/
         public void enableAsyncUpdate(boolean enable);
         
         /**

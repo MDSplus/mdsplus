@@ -26,7 +26,7 @@ extern int TdiData(), TdiEvaluate();
 #endif
 
 extern int TdiDecompile();
-
+/*
 static void printDecompiled(struct descriptor *inD)
 {
   int status;
@@ -47,6 +47,7 @@ static void printDecompiled(struct descriptor *inD)
   free(buf);
   MdsFree1Dx(&out_xd, 0);
 }
+*/
 
 EXPORT void XTreeResetTimedAccessFlag()
 {

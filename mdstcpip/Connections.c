@@ -1,14 +1,20 @@
 #include <stdlib.h>
-#include <string.h>
-#include <treeshr.h>
-#include "mdsip_connections.h"
 #include <stdio.h>
+#include <string.h>
+
+#include <treeshr.h>
 #include <mdsshr.h>
+
+#include "mdsip_connections.h"
 
 static Connection *ConnectionList = 0;
 static int connection_mutex_initialized = 0;
 static pthread_mutex_t connection_mutex;
 
+///
+/// Locks the connection list for safe multithreading access to ConnectionList
+/// static variable.
+///
 static void lock_connection_list()
 {
   if (!connection_mutex_initialized) {
@@ -18,6 +24,9 @@ static void lock_connection_list()
   pthread_mutex_lock(&connection_mutex);
 }
 
+///
+/// Unlocks the connection list for safe multithreading access to ConnectionList
+/// static variable.
 static void unlock_connection_list()
 {
 
@@ -29,6 +38,14 @@ static void unlock_connection_list()
   pthread_mutex_unlock(&connection_mutex);
 }
 
+///
+/// Finds a Connection structure inside the static defined list ConnectionList.
+/// \note The connection list is locked during operation.
+///
+/// \param id the Connection id to be searched for
+/// \param prev if prev is set the Connection found is copied inside prev instance
+/// \return the Connection intance identified by id or NULL pointer of not found.
+///
 Connection *FindConnection(int id, Connection ** prev)
 {
   Connection *c = 0, *p;
@@ -39,6 +56,7 @@ Connection *FindConnection(int id, Connection ** prev)
   unlock_connection_list();
   return c;
 }
+
 
 int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len)
 {
@@ -89,36 +107,70 @@ static void exitHandler(void)
 }
 #endif
 
+/// Creates new Connection instance, the proper ioRoutines is loaded selecting the protocol
+/// from input argument. The created Connection is added to the static ConnectionList using
+/// a thread safe lock.
+/// The new Connection is initialized with the next connection id and the assigned protocol.
+///
+/// \param protocol the protocol to be used for this Connection
+/// \return The new instanced connection id or -1 if error occurred.
+///
 int NewConnection(char *protocol)
 {
-  Connection *oldhead, *new;
+  Connection *oldhead, *connection;
   IoRoutines *io = LoadIo(protocol);
   static int id = 1;
   static int registerExitHandler = 1;
   if (io) {
     registerExitHandler = registerExitHandler ? atexit(exitHandler) : 0;
-    new = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
-    new->io = io;
-    new->readfd = -1;
+    connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
+    connection->io = io;
+    connection->readfd = -1;
     lock_connection_list();
     oldhead = ConnectionList;
-    ConnectionList = new;
-    new->id = id++;
-    new->message_id = -1;
-    new->next = oldhead;
-    new->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    ConnectionList = connection;
+    connection->id = id++;
+    connection->message_id = -1;
+    connection->next = oldhead;
+    connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
     unlock_connection_list();
-    return new->id;
+    return connection->id;
   } else
     return -1;
 }
 
+///
+/// Authorize client by username calling protocol IoRoutine.
+/// 
+/// \param id of the connection to use
+/// \param username of the user to be authorized for access
+/// \return true if authorized user found, false otherwise
+///
 static int AuthorizeClient(int id, char *username)
 {
   Connection *c = FindConnection(id, 0);
   return c && c->io ? (c->io->authorize ? c->io->authorize(id, username) : 1) : 0;
 }
 
+///
+/// Creates a new connection instance using given protocol, if a valid 
+/// connection is instanced. 
+/// 
+/// Executes:
+/// 1. SetConnectionInfo()
+/// 2. AuthorizeClient()
+/// 3. SetConnectionCompression()
+///
+///
+/// \param protocol the protocol name identifier
+/// \param info_name info name passed to SetConnectionInfo()
+/// \param readfd input file descriptor i.e. the socket id
+/// \param info 
+/// \param info_len
+/// \param id
+/// \param usr
+/// \return
+///
 int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len,
 		     int *id, char **usr)
 {
@@ -130,7 +182,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     char *user = 0;
     char *user_p = 0;
     int status;
-    int m_status;
+    
+    // SET INFO //
     SetConnectionInfo(*id, info_name, readfd, info, info_len);
     m_user = GetMdsMsg(*id, &status);
     if (m_user == 0 || !(status & 1)) {
@@ -139,6 +192,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       return 0;
     }
     m.h.msglen = sizeof(MsgHdr);
+    
+    // AUTHORIZE //
     if ((status & 1) && (m_user) && (m_user->h.dtype == DTYPE_CSTRING)) {
       user = malloc(m_user->h.length + 1);
       memcpy(user, m_user->bytes, m_user->h.length);
@@ -146,16 +201,22 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     }
     user_p = user ? user : "?";
     ok = AuthorizeClient(*id, user_p);
+    
+    // SET COMPRESSION //
     if (ok & 1) {
       SetConnectionCompression(*id, m_user->h.status & 0xf);
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
     } else
       *usr = 0;
-    m_status = m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
+    m.h.status = (ok & 1) ? (1 | (GetConnectionCompression(*id) << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
+    
     if (m_user)
       MdsIpFree(m_user);
+    
+    // reply to client //
     SendMdsMsg(*id, &m, 0);
+    
     if (!(ok & 1)) {
       fprintf(stderr, "Access denied\n");
       DisconnectConnection(*id);
@@ -166,6 +227,10 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
   return ok;
 }
 
+///
+/// Free all desctriptors held by the Connection structure in argument.
+/// \param c the connection to be freed
+///
 void FreeDescriptors(Connection * c)
 {
   int i;
@@ -183,6 +248,12 @@ void FreeDescriptors(Connection * c)
   }
 }
 
+///
+/// Disconnect the connection identified by id.
+///
+/// \param conid the id of connection to be disconnected
+/// \return true if the connection was correctly freed or false otherwise.
+///
 int DisconnectConnection(int conid)
 {
   int status = 0;
@@ -209,6 +280,14 @@ int DisconnectConnection(int conid)
   return status;
 }
 
+///
+/// \brief GetConnectionIo
+/// finds the Connection structure in ConnectionList and
+/// returns the ioRoutines structure associated to a given Connection identified by id.
+///
+/// \param conid id of the connection that holds the ioRoutines
+/// \return ioRoutines structure in the io field of Connection element found.
+///
 IoRoutines *GetConnectionIo(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -231,6 +310,17 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len)
   return ans;
 }
 
+///
+/// Sets connection info to a \ref Connection structure identified by id.
+/// For example the TCP routine "tcp_connect" of ioRoutinesTcp.c uses this
+/// function as the following: SetConnectionInfo(conid, "tcp", soket_id, 0, 0);
+///
+/// \param conid the connection id to set the info to.
+/// \param info_name the name associated to the info structure inside \ref Connection
+/// \param readfd the file descriptor associated to the Connection
+/// \param info accessory info descriptor
+/// \param len length of accessory info descriptor
+///
 void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len)
 {
   Connection *c = FindConnection(conid, 0);
@@ -247,6 +337,15 @@ void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_
   }
 }
 
+
+///
+/// Finds the Connection intance held in the list of connections by id and
+/// sets the compression level indicated in arguments.
+/// Compression level spans from 0 (no compression) to \ref GetMaxCompressionLevel (maximum compression level usually the integer value 9)
+///
+/// \param conid id of the Connection to set the compression
+/// \param compression the compression level to set
+///
 void SetConnectionCompression(int conid, int compression)
 {
   Connection *c = FindConnection(conid, 0);
@@ -255,6 +354,14 @@ void SetConnectionCompression(int conid, int compression)
   }
 }
 
+///
+/// Finds the Connection intance held in the list of connections by id and
+/// get the value of compression level stored inside.
+/// Compression level spans from 0 (no compression) to \ref GetMaxCompressionLevel (maximum compression level usually the integer value 9)
+///
+/// \param conid the Connection structure id to query.
+/// \return the compression level value found or 0 (no compression) if Connection was not found
+///
 int GetConnectionCompression(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -264,6 +371,14 @@ int GetConnectionCompression(int conid)
     return 0;
 }
 
+
+///
+/// Finds the Connection intance held in the list of connections by id and
+/// increments the connection message id.
+///
+/// \param conid id of the connection
+/// \return the incremented connection message id or 0 if connection was not found.
+///
 unsigned char IncrementConnectionMessageId(int conid)
 {
   unsigned char ans = 0;
@@ -277,6 +392,12 @@ unsigned char IncrementConnectionMessageId(int conid)
   return ans;
 }
 
+///
+/// Finds connection by id and returns its the message id
+///
+/// \param conid the connection id
+/// \return message_id field of selected connection or 0 as no connection found
+///
 unsigned char GetConnectionMessageId(int conid)
 {
   Connection *c = FindConnection(conid, 0);
@@ -286,6 +407,13 @@ unsigned char GetConnectionMessageId(int conid)
     return 0;
 }
 
+///
+/// Finds connection by id and sets the client_type field of the connection structure.
+/// \note see ClientType() function.
+///
+/// \param conid the connection id
+/// \param client_type the type of connection to be set
+///
 void SetConnectionClientType(int conid, int client_type)
 {
   Connection *c = FindConnection(conid, 0);
@@ -294,6 +422,13 @@ void SetConnectionClientType(int conid, int client_type)
   }
 }
 
+///
+/// Finds connection by id and gets the client_type field of the connection structure
+/// \note see ClientType() function.
+///
+/// \param conid the connection id
+/// \return client_type value stored in connection structure
+///
 int GetConnectionClientType(int conid)
 {
   Connection *c = FindConnection(conid, 0);

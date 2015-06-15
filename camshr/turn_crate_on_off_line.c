@@ -48,7 +48,7 @@ int turn_crate_on_off_line(char *crate_name, int state)
 
   // convert to all UPPER CASE
   for (i = 0; i < strlen(crate_name); ++i)
-    toupper(*crate_name);
+    crate_name[i]=toupper(crate_name[i]);
 
   // create full crate controller designation
   // NB! all crate controllers reside in slot 30

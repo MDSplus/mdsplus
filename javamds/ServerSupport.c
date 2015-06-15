@@ -221,13 +221,13 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
 
 /*************OLD VERSION **********************/
 
+/*
 static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd *y_xdptr,
 						 struct descriptor_xd *x_xdptr, float *in_xmin,
 						 float *in_xmax)
 {
   static struct descriptor_xd template_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   struct descriptor_xd *xd;
-  int i;
 
   DESCRIPTOR_SIGNAL_1(sig_d, 0, 0, 0);
   DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0, 0);
@@ -295,7 +295,7 @@ static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd *y_xdptr,
       out_array[out_idx] = y[curr_idx];
     }
     out_points = out_idx;
-  } else {			/*Resample */
+  } else {		      
 
     delta = (xmax - xmin) / (MAX_POINTS - 1);
     curr = x[start_idx] + delta;
@@ -330,6 +330,7 @@ static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd *y_xdptr,
   MdsFree1Dx(&y_xd, NULL);
   return xd;
 }
+*/
 
 #define QUITE_SIMILAR(x,y) ((x)>(y)*(1-1E-10)&&(x)<(y)*(1+1E-10))
 
@@ -337,8 +338,8 @@ struct descriptor_xd *JavaDim(float *x, int *in_xsamples, float *in_xmin, float 
 {
   static struct descriptor_xd xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
   DESCRIPTOR_A(a_d, sizeof(float), DTYPE_FLOAT, 0, 0);
-  int x_points, act_points, i, j, start_idx, end_idx, curr_idx, out_idx;
-  float out_array[3 * MAX_POINTS + 1], xmin, xmax, delta, curr;
+  int x_points, act_points, start_idx, end_idx, curr_idx, out_idx;
+  float out_array[3 * MAX_POINTS + 1], xmin, xmax, delta;
 
   xd.length = 0;
   xd.pointer = 0;
@@ -520,7 +521,7 @@ static int traverseNodeMinMax(int nid, float *xMin, float *xMax)
   EMPTYXD(xd);
   EMPTYXD(startXd);
   EMPTYXD(endXd);
-  int numSegments, i, status;
+  int numSegments, status;
 
   status = TreeGetNumSegments(nid, &numSegments);
   if (!(status & 1))

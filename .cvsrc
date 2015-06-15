@@ -1,6 +1,0 @@
-add -kkv 
-co -kkv 
-checkout -kkv 
-diff -kk 
-rdiff -kk 
-update -kkv

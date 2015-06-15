@@ -54,9 +54,9 @@ static void *CURSEShandle = NULL;
 char *bfgets(char *s, int size, FILE * stream, char *prompt);	/* fgets replacement */
 #define PROMPT "TDI> "
 #define MDSPATH "MDS_PATH"
-
+/*
 static void tdiputs(char *line);
-
+*/
 /* Lookup up entry point in shareable */
 void *dlsymget(void *handle, char *sym)
 {
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
   }
   return (1);
 }
-
+/*
 static void tdiputs(char *line)
 {
   static EMPTYXD(ans);
@@ -326,7 +326,7 @@ static void tdiputs(char *line)
     line_d.length--;
   BTdiExecute(&write_it, &line_d, &ans MDS_END_ARG);
 }
-
+*/
 #ifndef HAVE_READLINE_READLINE_H
 /* Routine to replace fgets using readline on stdin */
 static char *Breadline(char *prompt)
@@ -344,7 +344,6 @@ static void Badd_history(char *string)
 char *bfgets(char *s, int size, FILE * stream, char *prompt)
 {
   char *rep;
-  int n;
 /* if not stdin, read from file */
   if (stream == stdin) {
     rep = Breadline(prompt);

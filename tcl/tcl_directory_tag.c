@@ -1,6 +1,14 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
 #include <ncidef.h>
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
+#include "tcl_p.h"
+
 
 /**********************************************************************
 * TCL_DIRECTORY_TAG.C --
@@ -43,8 +51,8 @@ int TclDirectoryTag(void *ctx, char **error, char **output)
 	TreeGetNci(nid, itmlist);
 	if (itmlist[0].pointer) {
 	  char *info = malloc(strlen(nodename) + strlen(itmlist[0].pointer) + 100);
-	  sprintf(info, "%s%.*s = %s\n", nodename, 40 - strlen(nodename),
-		  "                                               ", itmlist[0].pointer);
+sprintf(info, "%s%.*s = %s\n", nodename, (int)(40 - strlen(nodename)),
+	  "                                               ", (char *)itmlist[0].pointer);
 	  tclAppend(output, info);
 	  free(info);
 	  free(itmlist[0].pointer);

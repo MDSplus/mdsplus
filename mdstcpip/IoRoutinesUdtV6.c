@@ -98,7 +98,7 @@ static UDTSOCKET getSocket(int conid)
   size_t len;
   char *info_name;
   int readfd;
-  void *info = GetConnectionInfo(conid, &info_name, &readfd, &len);
+  GetConnectionInfo(conid, &info_name, &readfd, &len);
   return (info_name && strcmp(info_name, "udtv6") == 0) ? (UDTSOCKET) readfd : (UDTSOCKET) - 1;
 }
 
@@ -164,12 +164,9 @@ static char *getHostInfo(UDTSOCKET s, char **iphostptr, char **hostnameptr)
 {
   char *ans = NULL;
   struct sockaddr_in6 sin;
-  socklen_t n = sizeof(sin);
+  int n = sizeof(sin);
   if (udt_getpeername(s, (struct sockaddr *)&sin, &n) == 0) {
     struct hostent *hp = 0;
-    char *matchString[2] = { 0, 0 };
-    char *hoststr = 0;
-    int num = 1;
     char straddr[INET6_ADDRSTRLEN];
     const char *iphost = inet_ntop(AF_INET6, &sin.sin6_addr, straddr, sizeof(straddr));
 
@@ -255,7 +252,7 @@ static ssize_t UDTV6_recv(int conid, void *bptr, size_t num)
   ssize_t recved = -1;
   if (s != -1) {
     struct sockaddr sin;
-    socklen_t n = sizeof(sin);
+    int n = sizeof(sin);
     int status;
     PushSocket(s);
     signal(SIGABRT, ABORT);
@@ -275,9 +272,6 @@ static int UDTV6_disconnect(int conid)
   int status = 0;
   time_t tim = time(0);
   char *timestr = ctime(&tim);
-  struct sockaddr_in6 sin;
-  socklen_t n = sizeof(sin);
-  struct hostent *hp = 0;
   if (s != -1) {
     Client *c, **p;
     for (p = &ClientList, c = ClientList; c && c->id != conid; p = &c->next, c = c->next) ;
@@ -313,9 +307,9 @@ static int UDTV6_flush(int conid)
     int timeout = 1000;
     int events = UDT_UDT_EPOLL_IN;
     udt_epoll_add_usock(epoll, sock, &events);
-    while ((((status = udt_epoll_wait2(epoll, readfds, &readfds_num,
+    while (((((status = udt_epoll_wait2(epoll, readfds, &readfds_num,
 				       NULL, NULL, timeout, NULL, NULL, NULL, NULL)) == 0) &&
-	    sock == readfds[0]) || (status < 0) && tries < 10) {
+	     sock == readfds[0]) || (status < 0)) && (tries < 10)) {
       char buff[32768];
       int nbytes = udt_recv(sock, buff, 32768, 0);
       tries++;
@@ -327,22 +321,6 @@ static int UDTV6_flush(int conid)
   }
 #endif
   return 0;
-}
-
-static short GetPort(char *name)
-{
-  short port;
-  struct servent *sp;
-  port = htons((short)atoi(name));
-  if (port == 0) {
-    sp = getservbyname(name, "tcp");
-    if (sp == NULL) {
-      fprintf(stderr, "unknown service: %s/tcp\n\n", name);
-      exit(0);
-    }
-    port = sp->s_port;
-  }
-  return port;
 }
 
 static int getHostAndPort(char *hostin, struct sockaddr_in6 *sin)
@@ -399,7 +377,6 @@ static int UDTV6_connect(int conid, char *protocol, char *host)
   int status = getHostAndPort(host, &sin);
   int sinlen = sizeof(sin);
   if (status == 1) {
-    struct timeval connectTimer = { 0, 0 };
     InitializeSockets();
     s = udt_socket(AF_INET6, SOCK_STREAM, 0);
     if (!s) {
@@ -465,7 +442,7 @@ static void ChildSignalHandler(int num)
 {
   sigset_t set, oldset;
   pid_t pid;
-  int status, exitstatus;
+  int status;
   /* block other incoming SIGCHLD signals */
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
@@ -503,16 +480,10 @@ static int UDTV6_listen(int argc, char **argv)
   if (GetMulti()) {
     struct addrinfo hints;
     struct addrinfo *result, *rp;
-    struct sockaddr_storage peer_addr;
-    socklen_t peer_addr_len;
     char *matchString[] = { "multi" };
     UDTSOCKET s;
     struct sockaddr_in6 sin;
-    int addrlen = sizeof(sin);
-    int error_count = 0;
     UDTSOCKET readfds[1024];
-    UDTSOCKET writefds[1024];
-    int one = 1;
     int status;
     int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
     int gai_stat;
@@ -553,9 +524,6 @@ static int UDTV6_listen(int argc, char **argv)
 	LockAsts();
 	while (1) {
 	  for (c = ClientList; c; c = c->next) {
-	    struct sockaddr sin;
-	    socklen_t n = sizeof(sin);
-	    //      printf("client->sock=%d\n",c->sock);
 	    int c_epoll = udt_epoll_create();
 	    UDTSOCKET readfds[1];
 	    UDTSOCKET writefds[1];
@@ -587,11 +555,10 @@ static int UDTV6_listen(int argc, char **argv)
 	 */
 	UnlockAsts();
       } else {
-	error_count = 0;
 	for (i = 0; readfds_num != 1024 && i < readfds_num; i++) {
 	  if (readfds[i] == s) {
 	    int events = UDT_UDT_EPOLL_IN | UDT_UDT_EPOLL_ERR;
-	    socklen_t len = sizeof(sin);
+	    int len = sizeof(sin);
 	    int id = -1;
 	    int status;
 	    char *username;
@@ -650,7 +617,7 @@ static int UDTV6_listen(int argc, char **argv)
     status = AcceptConnection("udtv6", "udtv6", sock, NULL, 0, &id, &username);
     if (status & 1) {
       struct sockaddr_in6 sin;
-      socklen_t n = sizeof(sin);
+      int n = sizeof(sin);
       Client *new = memset(malloc(sizeof(Client)), 0, sizeof(Client));
       if (udt_getpeername(sock, (struct sockaddr *)&sin, &n) == 0)
 	MdsSetClientAddr(*(int *)&sin.sin6_addr);

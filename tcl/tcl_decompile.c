@@ -1,13 +1,13 @@
 #include 	<config.h>
-#include        "tclsysdef.h"
-#include        <mds_stdarg.h>
-#include        <mdsshr.h>
 #include 	<stdlib.h>
 #ifdef HAVE_ALLOCA_H
 #include        <alloca.h>
 #endif
 #include        <string.h>
 #include        <dcl.h>
+#include        <mds_stdarg.h>
+#include        <mdsshr.h>
+#include        <treeshr.h>
 
 /***********************************************************************
 * TCL_DECOMPILE.C --
@@ -20,10 +20,6 @@
 
 extern int TdiDecompile();
 
-#ifdef vms
-#define TdiDecompile  tdi$decompile
-extern int tdi$decompile();
-#endif
 
 extern int StrFree1Dx();
 

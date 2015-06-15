@@ -31,7 +31,6 @@ public class MdsDataProvider
     SshTunneling ssh_tunneling;
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
-
     
     
     class SegmentedFrameData
@@ -395,13 +394,22 @@ public class MdsDataProvider
         boolean continuousUpdate = false;
         String wd_experiment;
         long wd_shot;
-        
+        AsynchDataSource asynchSource = null;
+    
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
             this.wd_experiment = experiment;
             this.wd_shot = shot;
-            this.in_y = in_y;
+            if(checkForAsynchRequest(in_y))
+            {
+                this.in_y = "[]";
+                this.in_x = "[]";
+            }
+            else
+            {
+                this.in_y = in_y;
+            }
             v_idx = var_idx;
             var_idx+=2;
             if(segmentMode == SEGMENTED_UNKNOWN)
@@ -425,9 +433,17 @@ public class MdsDataProvider
         {
             this.wd_experiment = experiment;
             this.wd_shot = shot;
-            this.in_y = in_y;
-            this.in_x = in_x;
-            v_idx = var_idx;
+            if(checkForAsynchRequest(in_y))
+            {
+                this.in_y = "[]";
+                this.in_x = "[]";
+            }
+            else
+            {
+                this.in_y = in_y;
+                this.in_x = in_x;
+            }
+           v_idx = var_idx;
             var_idx += 2;
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
@@ -445,6 +461,23 @@ public class MdsDataProvider
             }
         }
 
+        //Check if the passed Y expression specifies also an asynchronous part (separated by the patern &&&)
+        //in case get an implemenation of AsynchDataSource
+        boolean checkForAsynchRequest(String expression)
+        {
+            if(expression.startsWith("ASYNCH::"))
+            {
+                 asynchSource = getAsynchSource();
+                if(asynchSource != null)
+                     asynchSource.startGeneration(expression.substring("ASYNCH::".length()));
+                return true;
+             }
+            return false;
+        }
+        
+        
+        
+        
         public void setContinuousUpdate(boolean continuousUpdate)
         {
             this.continuousUpdate = continuousUpdate;
@@ -927,6 +960,8 @@ public class MdsDataProvider
         public void addWaveDataListener(WaveDataListener listener)
         {
             waveDataListenersV.addElement(listener);
+            if(asynchSource != null)
+                asynchSource.addDataListener(listener);
         }
         public void getDataAsync(double lowerBound, double upperBound, int numPoints)
         {
@@ -1112,6 +1147,11 @@ public class MdsDataProvider
             mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
         if (connected)
             status = mds.DisconnectFromMds();
+    }
+        //To be overridden by any DataProvider implementation with added dynamic generation
+    AsynchDataSource getAsynchSource()
+    {
+        return null;
     }
 
     public void SetArgument(String arg) throws IOException
@@ -2034,15 +2074,6 @@ public class MdsDataProvider
         return true;
     }
 
-    public boolean SupportsContinuous()
-    {
-        return false;
-    }
-
-    public boolean DataPending()
-    {
-        return false;
-    }
 
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {

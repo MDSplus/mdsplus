@@ -29,7 +29,7 @@ class InstallationPackage(object):
                 os.write(out,"Requires: %s\n" % pkg)
         else:
             self.info['reqpkg']=require.attrib['package']
-            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s >= %(major)d.%(minor)d-%(release)d\n" % self.info)
+            os.write(out,"Requires: mdsplus%(rflavor)s-%(reqpkg)s = %(major)d.%(minor)d-%(release)d.%(dist)s\n" % self.info)
 
 
     def exists(self):
@@ -322,7 +322,9 @@ sudo yum remove -y 'mdsplus*'""" % self.info,shell=True).wait()
     def deploy(self):
         """Deploy release to /mdsplus/dist"""
         if subprocess.Popen("""
+set -e
 rsync -a /tmp/%(flavor)s/RPMS /mdsplus/dist/%(dist)s/%(flavor)s/
+createrepo -q -x '*repo*' /mdsplus/dist/%(dist)s/%(flavor)s/RPMS
 """ % self.info,shell=True).wait() != 0:
             raise Exception("Error deploying %(flavor)s release to /mdsplus/dist" % self.info)
         if subprocess.Popen("""

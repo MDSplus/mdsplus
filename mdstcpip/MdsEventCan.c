@@ -2,10 +2,17 @@
 #include "mdsip_connections.h"
 #include <stdlib.h>
 
+///
+/// 
+/// 
+/// \param id
+/// \param eventid
+/// \return 
+///
 int MdsEventCan(int id, int eventid)
 {
   struct descrip eventarg;
-  struct descrip ansarg = { 0, 0, 0, 0 };
+  struct descrip ansarg = { 0 };
   int status =
       MdsValue(id, EVENTCANREQUEST,
 	       MakeDescrip((struct descrip *)&eventarg, DTYPE_LONG, 0, 0, &eventid),

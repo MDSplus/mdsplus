@@ -214,10 +214,10 @@ if __name__ == "__main__":
     info['rflavor']="-"+info['flavor']
   if os.environ['DIST'].startswith('el') or os.environ['DIST'].startswith('fc'):
     module=__import__('rpms',globals())
-  elif os.environ['DIST'].startswith('Ubuntu'):
+  elif os.environ['DIST'].startswith('Ubuntu') or os.environ['DIST'].startswith('Debian'):
     module=__import__('ubuntu',globals())
-  elif os.environ['DIST'].startswith('Debian'):
-    module=__import__('ubuntu',globals())    
+  elif os.environ['DIST'].startswith('raspberrypi'):
+    module=__import__('raspberrypi',globals())
   elif os.environ['DIST'].startswith('solaris'):
     module=__import__('solaris',globals())
   elif os.environ['DIST'].startswith('win'):

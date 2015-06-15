@@ -192,18 +192,6 @@ int XmdsCreateWavedraw( parent, name, args, argcount )
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
-#ifdef __VMS
-#ifdef __ALPHA
-#define HandleMissing lib$establish(lib$sig_to_ret)
-#else
-extern int FixupMissing();
-#define HandleMissing lib$establish(FixupMissing);
-#endif
-#else /*__VMS*/
-#define HandleMissing
-#endif
 
 static void Refresh(XmdsWavedrawWidget w);
 static void SetPointerMode();
@@ -856,7 +844,6 @@ static void Move(XmdsWavedrawWidget w, XButtonEvent * event)
 	Round(((float)XtHeight(w) - event->y) * (*yMax(w) - *yMin(w)) / XtHeight(w) + *yMin(w),
 	      yResolution(w));
   }
-  HandleMissing;
   if (waveformPointerMode(w) == XmdsPOINTER_MODE_SLIDE_STRETCH)
     SlideStretch(w, idx, &x, &y, &x, &y, 1, (XEvent *) event, event->state & ControlMask);
   else
@@ -1052,7 +1039,6 @@ static int SelectedPoint(XmdsWavedrawWidget w, XButtonEvent * event, Boolean any
   int i;
   int selection = -1;
   unsigned int min_distance = 2000000000;
-  HandleMissing;
   for (i = 0; i < waveformCount(w); i++) {
     unsigned int distance = Distance(event->x - xPixValue(w, i), event->y - yPixValue(w, i));
     if ((anypoint || !waveformSelections(w) || (waveformSelections(w) && waveformSelections(w)[i]))
@@ -1194,26 +1180,6 @@ Boolean XmdsWavedrawAddPoint(Widget w, int idx, float *newx, float *newy, Boolea
   XmdsWavedrawWidget wdw = (XmdsWavedrawWidget) w;
   return (((XmdsWavedrawWidgetClass) wdw->core.widget_class)->wavedraw_class.add_point_proc)
       (wdw, idx, newx, newy, callcallbacks, motion);
-}
-
-static void SwapPoints(XmdsWavedrawWidget w, int idx1, int idx2)
-{
-  float xsave = xValue(w)[idx1];
-  float ysave = yValue(w)[idx1];
-  xValue(w)[idx1] = xValue(w)[idx2];
-  yValue(w)[idx1] = yValue(w)[idx2];
-  xValue(w)[idx2] = xsave;
-  yValue(w)[idx2] = ysave;
-  if (waveformSelections(w)) {
-    Boolean save = waveformSelections(w)[idx1];
-    waveformSelections(w)[idx1] = waveformSelections(w)[idx2];
-    waveformSelections(w)[idx2] = save;
-  }
-  if (waveformPenDown(w)) {
-    Boolean save = waveformPenDown(w)[idx1];
-    waveformPenDown(w)[idx1] = waveformPenDown(w)[idx2];
-    waveformPenDown(w)[idx2] = save;
-  }
 }
 
 static Boolean AddPoint(XmdsWavedrawWidget w, int idx, float *newx, float *newy,

@@ -161,7 +161,6 @@ static int GetDefaultNid(XmdsExprWidget ew);
 static void SetEnclosures(XmdsExprWidget w, struct descriptor *dsc);
 static Boolean SetValues(Widget old, Widget req, Widget new, ArgList args, Cardinal * arg_count);
 static void Resize(Widget w);
-static void MoveChildren(XmdsExprWidget w);
 /*------------------------------------------------------------------------------
 
  Subroutines referenced:                                                      */
@@ -177,7 +176,6 @@ static void MoveChildren(XmdsExprWidget w);
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static struct descriptor_xd const empty_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
 
 /*------------------------------------------------------------------------------
@@ -211,13 +209,6 @@ static XtResource resources[] = {
    XtOffset(XmdsExprWidget, expr.put_on_apply), XtRImmediate, (XtPointer) True}
 };
 
-static CompositeClassExtensionRec composite_extension = {
-  /* next extension          */ NULL,
-  /* record type             */ NULLQUARK,
-  /* version                 */ XtCompositeExtensionVersion,
-  /* record_size             */ sizeof(CompositeClassExtensionRec),
-  /* accepts objects         */ TRUE
-};
 
 XmdsExprClassRec xmdsExprClassRec = {
   {				/* core_class */
@@ -509,13 +500,6 @@ static void Initialize(Widget req, Widget new, ArgList args, Cardinal * num_args
       { {(XtCallbackProc) ChangeQuotes, (XtPointer) 0}, {0, 0} };
   Arg text_args[] = { {XmNnavigationType, XmTAB_GROUP} };
   ArgList new_args = XtMergeArgLists(args, *num_args, text_args, XtNumber(text_args));
-  static Arg quote_args[] = {
-    {XmNlabelString, 0},
-    {XmNx, 0},
-    {XmNheight, 20},
-    {XmNactivateCallback, (XtArgVal) change_quotes_callback_list},
-    {XmNtraversalOn, FALSE}
-  };
   int nid;
   change_quotes_callback_list[0].closure = (XtPointer) w;
   w->manager.navigation_type = XmTAB_GROUP;

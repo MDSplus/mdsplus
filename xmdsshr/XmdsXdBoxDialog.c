@@ -35,7 +35,6 @@
 
 #include <Xm/DialogS.h>
 #include <Xmds/XmdsXdBoxP.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 static void LoadDialog(Widget shell, Widget xdbw);
 extern void XmdsXdBoxLoad();
 /****************************************************

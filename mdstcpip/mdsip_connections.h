@@ -22,8 +22,8 @@ typedef int ssize_t;
 #define NULL (void *)0
 #endif
 
-#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
-#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
+//#define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
+//#define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
 
 #define VMS_CLIENT       1
 #define IEEE_CLIENT      2
@@ -77,7 +77,7 @@ typedef struct _connection {
   unsigned char message_id;
   int client_type;
   int nargs;
-  struct descriptor *descrip[MAX_ARGS];
+  struct descriptor *descrip[MAX_ARGS]; ///< list of descriptors for the message arguments
   struct _eventlist *event;
   void *tdicontext[6];
   int addr;
@@ -97,6 +97,10 @@ int errno = 0;
 #define bits16
 #endif
 
+
+///
+/// \brief Header of Message structure.
+/// 
 typedef struct _msghdr {
   int msglen bits32;
   int status bits32;
@@ -115,11 +119,28 @@ typedef struct _msghdr {
 #endif
 } MsgHdr;
 
+///
+/// \brief Message structure for passing data through connections
+/// 
 typedef struct _mds_message {
   MsgHdr h;
   char bytes[1];
 } Message, *MsgPtr;
 
+///
+/// \brief Structure for Protocol plugin anchor function
+/// 
+/// | function ptr | description                     |
+/// |:--------|--------------------------------------|
+/// | connect | connects client using connectString  |
+/// | send    | send buffer throug connection        |
+/// | recv    | receive buffer from cocnection       |
+/// | flush   | flush pending connection messages    |
+/// | listen  | listen for new incoming  connections |
+/// | authorize  | authorize client with username    |
+/// | reuseCheck |                                   |
+/// | disconnect | clear connection instance         |
+///
 typedef struct _io_routines {
   int (*connect) (int conid, char *protocol, char *connectString);
   ssize_t(*send) (int conid, const void *buffer, size_t buflen, int nowait);
@@ -130,6 +151,7 @@ typedef struct _io_routines {
   int (*reuseCheck) (char *connectString, char *uniqueString, size_t buflen);
   int (*disconnect) (int conid);
 } IoRoutines;
+
 
 #define EVENTASTREQUEST     "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST     "---EVENTCAN---REQUEST---"
@@ -241,7 +263,7 @@ EXPORT void PrintHelp(char *);
 EXPORT int ReuseCheck(char *hostin, char *unique, size_t buflen);
 EXPORT int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, short length,
 		   char ndims, int *dims, char *bytes);
-EXPORT int SendMdsMsg(int id, Message * m, int nowait);
+EXPORT int SendMdsMsg(int id, Message * m, int msg_options);
 void SetConnectionCompression(int conid, int compression);
 EXPORT void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len);
 EXPORT int SetCompressionLevel(int setting);
@@ -268,7 +290,7 @@ EXPORT char *MdsGetServerPortname();
 
 /* MdsIpSrvShr routines */
 
-EXPORT Message *ProcessMessage(Connection *, Message * message);
+EXPORT Message *ProcessMessage(Connection *connection, Message * message);
 EXPORT int RemoveConnection(int id);
 
 #endif

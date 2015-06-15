@@ -80,7 +80,13 @@ typedef struct dclDocList {
 extern dclDocListPtr mdsdcl_getdocs();
 extern char *mdsdclGetPrompt();
 extern char *mdsdclGetHistoryFile();
-extern int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **output, char **error, char *(*getline)(), void *getlineinfo);
-extern int mdsdclAddCommands(char *name_in, char **error);
+extern void mdsdclSetPrompt(const char *prompt);
+extern void mdsdclSetDefFile(const char *deffile);
+extern int mdsdclVerify();
+extern int mdsdclAddCommands(const char *name_in, char **error);
+extern int mdsdcl_do_help(const char *command, char **error, char **output);
+extern int mdsdclDeltatimeToSeconds(const char *deltatime);
+extern int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
+		      char **output_out, char *(*getline) (), void *getlineinfo);
 
 #endif

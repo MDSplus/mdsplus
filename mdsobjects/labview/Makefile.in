@@ -4,7 +4,7 @@ LD=@CXX@
 CFLAGS=@CFLAGS@ -I@LV_CINTOOLS@ -fPIC @TARGET_ARCH@
 CXXFLAGS=-Wno-deprecated -fPIC @CFLAGS@ -I@LV_CINTOOLS@ @TARGET_ARCH@ @CXXFLAGS@
 CLIBS=-L@MAKESHLIBDIR@ -lMdsShr @LIBS@
-@MINGW_TRUE@ LV_LIB="@LV_CINTOOLS@/labview.lib"
+@MINGW_TRUE@ LV_LIB="@LV_CINTOOLS@/labview-$(host_cpu).lib"
 @MINGW_FALSE@ LV_LIB=-lLV
 CXXLIBS=-L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr $(LV_LIB) @LIBS@ 
 @MINGW_FALSE@ LV_SHR=@MAKESHLIBDIR@@LIBPRE@LV@SHARETYPE@  @MAKELIBDIR@@LIBPRE@LV.a @MAKESHLIBDIR@MDSobjectsLVShr @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr
@@ -34,7 +34,8 @@ depend:
 
 install: $(libdir)
 	$(MKDIR_P) $(exec_prefix)/LabView
-	tar cf - --exclude="CVS" MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
+	tar cf - MDSplus | (cd ${exec_prefix}/LabView; tar xf -)
+	tar cf - MDSplus_LV2012 | (cd ${exec_prefix}/LabView; tar xf -)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr@SHARETYPE@ @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MDSobjectsLVShr @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755  @MAKESHLIBDIR@MDSobjectsLVShr @libdir@

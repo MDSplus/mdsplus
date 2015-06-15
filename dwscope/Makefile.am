@@ -11,9 +11,6 @@ LDADD = -L@MAKESHLIBDIR@ -lXmdsShr $(X_PRE_LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_EXT
 #MOTIF_LIBS = @MOTIF_LDSHARE@ @LIBXP@ @LIBXEXT@
 MOTIF_LIBS = -lMrm -lXm -lXt -lX11
 
-#FIXME: Remove this when LIBS is cleaned up in configure
-LIBS=
-
 # Static data installed to lib
 datadir = $(libdir)
 data_DATA = dwscope_setup.ps

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!--
+This is a sample configuration file for configuring UDP based MDSplus events. There are currently
+five settings which can be used to alter the behavior of UDP events:
+
+PORT              - The port number used for sending and receiving multicast event packages
+ADDRESS           - The IP address used for the broadcasting of MDSplus events
+IP_MULTICAST_TTL  - The "time to live" setting for sending multicast packets
+IP_MULTICAST_LOOP - Setting to control whether multicast event packets will be seen by processes
+                    running on this system.
+IP_MULTICAST_IF   - Network interface to use when sending events.
+
+Details:
+
+Port:
+
+You can specify a numeric port or a named port to use for MDSplus events. The default setting
+is 4000.
+
+ADDRESS:
+
+The address is the ip address used when sending multicast event messages. A single address can be used
+or a range of ports (last part of ipv4 address) can be specified using a format such as n1.n2.n3.n4-n5.
+For example, specifying 224.0.0.1-255 will use 255 addresses between 224.0.0.1 and 224.0.0.255 for
+sending event messages. The actual ip address used will be determined by a hash value computed from
+the event name being issued. The default address is 224.0.0.175.
+
+IP_MULTICAST_TTL:
+
+The multicast time to live setting is used by network routers and switches to determine whether or not
+to transmit the multicast packets to external networks. The default setting is 1 which will contain the
+MDSplus event packets to the local area network. If your network is configured with VLAN's you may need to
+increase this setting to ensure systems on these VLAN's will receive the event messages.
+
+IP_MULTICAST_LOOP:
+
+This setting accepts a value of 0 or 1. If set to 0, events issued on this system will only be seen
+by applications running on other systems. Processes running locally on this system will not receive
+MDSplus events. The default value is 1 and it is unlikely that you would want to change this value.
+
+IP_MULTICAST_IF:
+
+This setting can specify which network interface you want to use for sending MDSplus event messages.
+This setting is only available on linux systems. Normally systems are configured with a default network
+interface to use so you would not likely need to set this.
+
+Considerations:
+
+You should only need to configure these settings if you are having difficulty getting events to work on
+your network with the default settings. There are standard multicast address ranges which you can find
+at http://www.iana.org/assignments/multicast-addresses/multicast-addresses.xhtml. Use of some reserved
+addresses may result in event packages not be forwarded by some switches and routers. If you change the
+address and/or port values you must be sure to do so also on other systems where you want applications
+to send and receive MDSplus events. If you have multiple experiments running on the same LAN you might
+assign different ports for MDSplus events on the set of computers used by that experiment to avoid
+conflicts.
+
+Configuration:
+
+When MDSplus events are issued or waited for, the software searches for these settings. If first looks for
+the following environment variables:
+
+mdsevent_port
+mdsevent_address
+mdsevent_ttl
+mdsevent_loop
+mdsevent_interface
+
+If one or more of these environment variables are not set, it looks for values to the remaining settings in
+two xml configuration files. It first looks for:
+
+$HOME/.mdsplus.conf/eventsConfig.xml
+
+and if there are still any settings not defined it will look for settings in:
+
+$MDSPLUS_DIR/local/eventsConfig.xml
+
+If any settings are still not defined it will use the default settings:
+
+port: 4000
+address: 224.0.0.178
+ttl: operating system default, usually 1
+loop: operating system default, usually 1
+interface: operating system default
+
+Therefore if you need to change any of these settings you can do so by either using environment
+variables or by copying this template to ~/.mdsplus/ or $MDSPLUS_DIR/local/ and change the settings
+you need. If you want to use the default for any setting you can either delete the property or
+rename it by simply adding an x to the beginning of the property name, i.e. xPORT="nnn".
+		    
+-->
+<UdpEvents IP_MULTICAST_TTL="1"
+	   IP_MULTICAST_LOOP="1"
+	   IP_MULTICAST_IF=""
+	   PORT="4000"
+	   ADDRESS="224.0.0.175"/>
+

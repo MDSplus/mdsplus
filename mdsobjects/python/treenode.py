@@ -706,7 +706,7 @@ class TreeNode(_data.Data):
         """
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            return self.getSegment(idx).getDimension(0)
+            return self.getSegment(idx).getDimensionAt(0)
         else:
             return None
 
@@ -1299,7 +1299,7 @@ class TreeNodeArray(_data.Data):
                 ans = _data.Data.execute('getnci($,$)',self.nids,name)
             except Exception:
                 e=sys.exc_info()[1]
-                if 'TdiBAD_INDEX' in str(e):
+                if 'BAD_INDEX' in str(e):
                     raise AttributeError('Attribute %s is not defined' % (name,))
                 else:
                     raise

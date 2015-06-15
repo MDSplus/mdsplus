@@ -170,8 +170,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  bitassign(1, nci->flags, NciM_VERSIONS);
 	if (!utility_update) {
 	  old_record_length = (nci->flags2 & NciM_DATA_IN_ATT_BLOCK
-			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.
-	      DATA_LOCATION.record_length;
+			       || (nci->flags & NciM_VERSIONS)) ? 0 : nci->DATA_INFO.DATA_LOCATION.
+	      record_length;
 	  if ((nci->flags & NciM_WRITE_ONCE) && nci->length)
 	    status = TreeNOOVERWRITE;
 	  if ((status & 1) && (shot_open && (nci->flags & NciM_NO_WRITE_SHOT)))
@@ -258,7 +258,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 
   NODE *node_ptr;
   int status;
-  nid_to_node(dblist, nid_ptr, node_ptr);
+  node_ptr = nid_to_node(dblist, nid_ptr);
   if (!node_ptr)
     return TreeNNF;
   switch (node_ptr->usage) {

@@ -3,6 +3,9 @@
 
 #include <config.h>
 
+/// @{
+/// defined in MdsShr.so
+
 EXPORT extern int LibAddx();
 EXPORT extern void *LibCallg();
 EXPORT extern int LibConvertDateString();
@@ -35,5 +38,8 @@ EXPORT extern int LibTraverseTree();
 EXPORT extern int LibWait();
 EXPORT extern int LibTimeToVMSTime();
 EXPORT extern int libffs(int *position, int *size, char *base, int *find_position);
+EXPORT extern int LibFindImageSymbol_C(const char *image, const char *routine, void **rtn);
+
+/// @}
 
 #endif

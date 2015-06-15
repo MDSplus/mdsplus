@@ -72,8 +72,6 @@ static Pixmap *gray_icons;
 
  Local variables:                                                             */
 
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
-
 /*------------------------------------------------------------------------------
 
  Executable:                                                                  */

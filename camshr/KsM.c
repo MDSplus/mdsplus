@@ -37,18 +37,16 @@ static int KsMultiIo(CamKey Key,	// module info
   int direction;
   RequestSenseData sense;
   unsigned char sb_out_len;
-  unsigned int transfer_len;
+  int transfer_len;
   int enhanced;
   int online;
   int dummy;
-  int i;
-  unsigned char b;
   int wc;
   if (MSGLVL(FUNCTION_NAME))
     printf("%s()\n", KM_ROUTINE_NAME);
 
   // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address); 
-  sprintf(dev_name, "GK%c%d%0.2d", Key.scsi_port, Key.scsi_address, Key.crate);
+  sprintf(dev_name, "GK%c%d%.2d", Key.scsi_port, Key.scsi_address, Key.crate);
 
   if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
     if (MSGLVL(IMPORTANT))
@@ -83,7 +81,7 @@ static int KsMultiIo(CamKey Key,	// module info
   // talk to the physical device
   scsi_lock(scsiDevice, 1);
   status = scsi_io(scsiDevice, direction, Command, sizeof(Command),
-		   Data, xfer_len.l, (char *)&sense, sizeof(sense), &sb_out_len, &transfer_len);
+		   (char *)Data, xfer_len.l, (unsigned char *)&sense, sizeof(sense), &sb_out_len, &transfer_len);
 
 #ifdef DEBUG
   if (Verbose) {

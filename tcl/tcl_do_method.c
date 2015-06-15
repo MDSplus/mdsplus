@@ -1,9 +1,13 @@
-#include        "tclsysdef.h"
-#include        <libroutines.h>
-#include        <mds_stdarg.h>
-#include        <mdsshr.h>
-#include        <usagedef.h>
-#include        <string.h>
+#include <string.h>
+#include <stdlib.h>
+
+#include <libroutines.h>
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <usagedef.h>
+#include <dcl.h>
+#include <treeshr.h>
 
 /**********************************************************************
 * TCL_DO_METHOD.C --

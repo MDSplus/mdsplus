@@ -1,5 +1,11 @@
-#include        "tclsysdef.h"
 #include <string.h>
+#include <stdlib.h>
+
+#include <dcl.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+
+#include "tcl_p.h"
 
 /**********************************************************************
 * TCL_CLOSE.C --
@@ -18,8 +24,6 @@
 int TclClose(void *ctx, char **error, char **output)
 {
   int sts;
-  static const char promptWritefirst[] =
-      "This tree has been modified, write it before closing? [Y]: ";
   char *exp = 0;
   char *shotidstr = 0;
   int shotid;

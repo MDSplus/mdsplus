@@ -73,10 +73,10 @@ int incaa6__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_1:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_2, TreeUSAGE_SIGNAL)
@@ -84,10 +84,10 @@ int incaa6__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_2:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_3, TreeUSAGE_SIGNAL)
@@ -95,10 +95,10 @@ int incaa6__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_3:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_4, TreeUSAGE_SIGNAL)
@@ -106,10 +106,10 @@ int incaa6__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_4:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_5, TreeUSAGE_SIGNAL)
@@ -117,10 +117,10 @@ int incaa6__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_5:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE(:INPUT_6, TreeUSAGE_SIGNAL)
@@ -128,10 +128,10 @@ int incaa6__add(struct descriptor *name_d_ptr, struct descriptor *dummy_d_ptr, i
   flags |= NciM_COMPRESS_ON_PUT;
   flags |= NciM_NO_WRITE_MODEL;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:STARTIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
- ADD_NODE(:INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
+ ADD_NODE(INPUT_6:ENDIDX, TreeUSAGE_NUMERIC)
       flags |= NciM_NO_WRITE_SHOT;
   status = TreeSetNci(curr_nid, flag_itm);
  ADD_NODE_ACTION(:INIT_ACTION, INIT, INIT, 50, 0, 0, CAMAC_SERVER, 0)
@@ -180,39 +180,39 @@ int incaa6__part_name(struct descriptor *nid_d_ptr, struct descriptor *method_d_
   case (INCAA6_N_INPUT_1 + 1):
  COPY_PART_NAME(:INPUT_1) break;
   case (INCAA6_N_INPUT_1_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_1:STARTIDX) break;
+ COPY_PART_NAME(INPUT_1:STARTIDX) break;
   case (INCAA6_N_INPUT_1_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_1:ENDIDX) break;
+ COPY_PART_NAME(INPUT_1:ENDIDX) break;
   case (INCAA6_N_INPUT_2 + 1):
  COPY_PART_NAME(:INPUT_2) break;
   case (INCAA6_N_INPUT_2_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_2:STARTIDX) break;
+ COPY_PART_NAME(INPUT_2:STARTIDX) break;
   case (INCAA6_N_INPUT_2_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_2:ENDIDX) break;
+ COPY_PART_NAME(INPUT_2:ENDIDX) break;
   case (INCAA6_N_INPUT_3 + 1):
  COPY_PART_NAME(:INPUT_3) break;
   case (INCAA6_N_INPUT_3_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_3:STARTIDX) break;
+ COPY_PART_NAME(INPUT_3:STARTIDX) break;
   case (INCAA6_N_INPUT_3_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_3:ENDIDX) break;
+ COPY_PART_NAME(INPUT_3:ENDIDX) break;
   case (INCAA6_N_INPUT_4 + 1):
  COPY_PART_NAME(:INPUT_4) break;
   case (INCAA6_N_INPUT_4_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_4:STARTIDX) break;
+ COPY_PART_NAME(INPUT_4:STARTIDX) break;
   case (INCAA6_N_INPUT_4_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_4:ENDIDX) break;
+ COPY_PART_NAME(INPUT_4:ENDIDX) break;
   case (INCAA6_N_INPUT_5 + 1):
  COPY_PART_NAME(:INPUT_5) break;
   case (INCAA6_N_INPUT_5_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_5:STARTIDX) break;
+ COPY_PART_NAME(INPUT_5:STARTIDX) break;
   case (INCAA6_N_INPUT_5_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_5:ENDIDX) break;
+ COPY_PART_NAME(INPUT_5:ENDIDX) break;
   case (INCAA6_N_INPUT_6 + 1):
  COPY_PART_NAME(:INPUT_6) break;
   case (INCAA6_N_INPUT_6_STARTIDX + 1):
- COPY_PART_NAME(:INPUT_6:STARTIDX) break;
+ COPY_PART_NAME(INPUT_6:STARTIDX) break;
   case (INCAA6_N_INPUT_6_ENDIDX + 1):
- COPY_PART_NAME(:INPUT_6:ENDIDX) break;
+ COPY_PART_NAME(INPUT_6:ENDIDX) break;
   case (INCAA6_N_INIT_ACTION + 1):
  COPY_PART_NAME(:INIT_ACTION) break;
   case (INCAA6_N_STORE_ACTION + 1):

@@ -1,8 +1,13 @@
-#include        "tclsysdef.h"
-#include <STATICdef.h>
-#include <string.h>
 #include <sys/time.h>
 #include <pthread.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <mdsshr.h>
+#include <STATICdef.h>
+
+#include "tcl_p.h"
 
 
 /*--------------------------------------------------------------------------
@@ -59,32 +64,6 @@ void TclSetCallbacks(		/* Returns: void                        */
   NodeTouched = node_touched;
 }
 
-	/*****************************************************************
-	 * Tcl_ErrorOut:
-	 *****************************************************************/
-static void Tcl_ErrorOut(	/* Returns: void                        */
-			  int status	/* <r> status value to display          */
-    )
-{
-  if (ErrorOut)
-    (*ErrorOut) (status);
-}
-
-	/****************************************************************
-	 * Tcl_TextOut:
-	 ****************************************************************/
-static void Tcl_TextOut(	/* Returns: void                        */
-			 char *text	/* <r> text for display                 */
-    )
-{
-
-  if (TextOut)
-    (*TextOut) (text);
-  else {
-    printf("%s\n", text ? text : "");
-    fflush(stdout);
-  }
-}
 
 	/*****************************************************************
 	 * TclNodeTouched:

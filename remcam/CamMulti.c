@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-static char *cvsrev = "@(#)$RCSfile$ $Revision$ $Date$";
 
 #ifndef min
 #define min(a,b) ((a) < (b)) ? (a) : (b)
