@@ -1,4 +1,10 @@
-commit 1b76e4144728da657820c4d68bca5cbadf712ed0 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 13f9a111a7901cdc7ce2285ae50d510d7c394b59 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 22:11:00 2015 +0000
+
+    New ChangeLog
+
+commit 1b76e4144728da657820c4d68bca5cbadf712ed0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 15 17:12:28 2015 -0400
 
