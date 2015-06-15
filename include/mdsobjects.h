@@ -1962,14 +1962,40 @@ public:
 ///
 /// \brief The Range class, object description of DTYPE_RANGE
 ///
+/// MDSplus provides a range data type which provides a compact mechanism for
+/// expressing series of values with fixed intervals. The range data type is a
+/// structure consisting of three parts; begin, end, and delta. This data type
+/// is used often in MDSplus for representing data such as the output of clock
+/// devices used in data acquisition. The following example shows three simple
+/// instances of ranges: 
+/// 
+///     // _tdi_range1 = 1 : 10
+///     Data *range1 = new Range(new Int32(1),new Int32(10),NULL); 
+///     
+///     // _tdi_range2 = 1 : 10 : .5
+///     Data *range2 = new Range(new Float32(1),new Float32(10),new Float32(0.5));
+/// 
+///     // _range = * : * : 1E-6
+///     Data *range3 = new Range(NULL,NULL,new Float32(1E-6)); 
+/// 
+/// 
+/// In the above examples, we show two formats for creating ranges. The MDSplus
+/// TDI expression evaluator has a built in syntax for specifying ranges which
+/// is one of the following: 
+/// 
+///     begin : end [: delta]
+///     _range = build_range(begin,end,delta)
+
 
 class Range: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Range(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
     
     Range(Data *begin, Data *ending, Data *deltaval, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
