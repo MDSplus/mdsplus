@@ -366,7 +366,7 @@ int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     strncpy(filename, info->filespec, len);
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
-    df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
+    df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
     if (df_ptr->get == -1)
       df_ptr->get = old_get;
