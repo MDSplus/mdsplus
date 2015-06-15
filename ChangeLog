@@ -1,4 +1,16 @@
-commit 133b98e2d4b74380f1e64c9a3dc965e10c617fdd (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 225314ccc87b613178fc28947908b28217e97319 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 11:53:38 2015 -0400
+
+    fix memory handling of Monitor server name storage
+
+commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jun 12 01:54:43 2015 +0000
+
+    New ChangeLog
+
+commit 133b98e2d4b74380f1e64c9a3dc965e10c617fdd
 Merge: eb8f10f 5e89900
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 11 21:35:52 2015 -0400
