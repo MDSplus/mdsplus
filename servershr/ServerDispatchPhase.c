@@ -110,8 +110,8 @@ STATIC_THREADSAFE DispatchTable *table;
 STATIC_THREADSAFE int noact;
 STATIC_THREADSAFE int AbortInProgress;
 STATIC_THREADSAFE void (*Output) ();
-STATIC_THREADSAFE int MonitorOn;
-STATIC_THREADSAFE char *Monitor;
+STATIC_THREADSAFE int MonitorOn = 0;
+STATIC_THREADSAFE char *Monitor = 0;
 STATIC_THREADSAFE int first_s;
 STATIC_THREADSAFE int last_s;
 
@@ -471,9 +471,15 @@ int ServerDispatchPhase(int *id, void *vtable, char *phasenam, char noact_in,
   if (status & 1 && (phase > 0)) {
     if (monitor) {
       MonitorOn = 1;
-      Monitor = monitor;
-    } else
+      if (Monitor)
+	free(Monitor);
+      Monitor = strdup(monitor);
+    } else {
+      if (Monitor)
+	free(Monitor);
+      Monitor = 0;
       MonitorOn = 0;
+    }
     ProgLoc = 6007;
     SetActionRanges(phase, &first_c, &last_c);
     ProgLoc = 6008;
