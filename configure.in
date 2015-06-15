@@ -15,6 +15,7 @@ AM_MAINTAINER_MODE
 #AC_CANONICAL_TARGET
 #AC_CANONICAL_HOST
 AC_CHECK_SIZEOF(int *)
+AC_SYS_LARGEFILE
 AC_CHECK_LIB(socket,socket,SOCKETLIB="-l socket",SOCKELIB="")
 AC_CHECK_LIB(nsl,inet_addr,NSLLIB="-l nsl",NSLLIB="")
 dnl See if we need to use native compilers
@@ -78,6 +79,10 @@ AC_ARG_ENABLE([java],
               [],
               [AS_VAR_SET([enable_java], [yes])])
 
+
+dnl ////////////////////////////////////////////////////////////////////////////
+dnl ///  TEST TOOLS  ///////////////////////////////////////////////////////////
+dnl ////////////////////////////////////////////////////////////////////////////
 
 PKG_CHECK_MODULES([CHECK], [check], [have_check=yes], [have_check=no])
 AM_CONDITIONAL(HAVE_CHECK, test x"$have_check" = "xyes")
@@ -269,7 +274,8 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF"
+CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+
 CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
@@ -358,7 +364,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
        FORLD="$F77"
@@ -394,7 +400,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$F77";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null ) 
@@ -452,7 +458,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
          FOR_LDFLAGS="-lg2c"
@@ -481,7 +487,7 @@ mips*) CFLAGS="$CFLAGS -signed -D_BSD_SIGNALS -KPIC";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FFLAGS="$FFLAGS -fno-range-check";
        FORLD="$F77"
        FOR_LDFLAGS="-lg2c"
@@ -658,19 +664,10 @@ then
   fi
   AC_DEFINE(HAVE_CLOCK_GETTIME)
 fi
-OLDLIBS="$LIBS"
-AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
-LIBS="$OLDLIBS"
-if test "$ac_cv_search_readline" = "no"
-then
-  AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
-  TDIC=""
-  LIBREADLINE=""
-else
-  LIBREADLINE="$ac_cv_search_readline"
-  TDIC="tdic"
-fi
-AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS))
+
+
+
+
 AC_CHECK_LIB(c,gettimeofday,AC_DEFINE(HAVE_GETTIMEOFDAY))
 AC_CHECK_LIB(c,getaddrinfo,AC_DEFINE(HAVE_GETADDRINFO))
 AC_CHECK_LIB(c,strsep,AC_DEFINE(HAVE_STRSEP))
@@ -692,20 +689,60 @@ AC_ARG_ENABLE(d3d,
         fi)
 
 
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  READLINE  //////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+
+AC_SEARCH_READLINE([READLINE])
+AM_CONDITIONAL(READLINE, test x"$have_readline" = x"yes")
+
+dnl sets for retro compatibility
+if test x"$have_readline" = x"yes"; then
+  LIBREADLINE="${READLINE_LIBS}"
+  TDIC="tdic"
+
+  CPPFLAGS_save="${CPPFLAGS}"
+  CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
+  AC_CHECK_HEADERS(readline/readline.h readline/history.h
+     ,,AC_MSG_ERROR("libreadline headers was not found"))
+  CPPFLAGS=$CPPFLAGS_save
+else
+  AC_MSG_ERROR(readline library was not found and must be installed.)
+fi
+
+dnl //// discontinued implementation ////
+dnl LIBS_save="$LIBS"
+dnl   AC_SEARCH_LIBS([readline],[readline 'readline -lcurses'])
+dnl LIBS="$LIBS_save"
+dnl if test "$ac_cv_search_readline" = "no"
+dnl then
+dnl   AC_MSG_RESULT("libreadline is not available so the build of tdic will be skipped") 
+dnl   TDIC=""
+dnl   LIBREADLINE=""
+dnl else
+dnl   LIBREADLINE="$ac_cv_search_readline"
+dnl   TDIC="tdic"
+dnl fi
+dnl AC_SEARCH_LIBS([rl_set_signals],[readline 'readline -lcurses'],AC_DEFINE(HAVE_RL_SET_SIGNALS))
+dnl AC_CHECK_HEADERS(readline/readline.h readline/history.h)
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
 
 AM_PATH_XML2('2.0.0', [have_xml=yes], [have_xml=no])
 if test "x$have_xml" != "xyes"; then
- AC_MSG_NOTICE([libxml not found using xml2-confg, reverting to pkg-config query])
+ AC_MSG_NOTICE([libxml not found using xml2-config, reverting to pkg-config query])
  PKG_CHECK_MODULES([XML], [libxml-2.0], [have_xml=yes], [have_xml=no])
  XML_CPPFLAGS="$XML_CFLAGS"
 fi
 AC_SUBST(XML_CFLAGS)
 AC_SUBST(XML_CPPFLAGS)
 AC_SUBST(XML_LIBS)
-AM_CONDITIONAL(XML, test x"$have_xml" = "xyes")
+AM_CONDITIONAL(XML, test x"$have_xml" = x"yes")
 
 if test "x$have_xml" = "xyes"; then
  dnl test also for headers usability required by mdsdcl
@@ -719,12 +756,15 @@ else
 fi
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  HEADERS  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h)
 AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
 AC_CHECK_HEADERS(malloc.h pthread.h alloca.h)
-AC_CHECK_HEADERS(readline/readline.h readline/history.h)
+
 
 
 

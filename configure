@@ -781,6 +781,11 @@ XML_CFLAGS
 XML_LIBS
 XML_CPPFLAGS
 XML2_CONFIG
+READLINE_FALSE
+READLINE_TRUE
+READLINE_LIBS
+READLINE_LDFLAGS
+READLINE_CPPFLAGS
 MAKEETCDIR
 SED
 RANLIB
@@ -923,6 +928,7 @@ enable_option_checking
 enable_silent_rules
 enable_maintainer_mode
 enable_dependency_tracking
+enable_largefile
 enable_shared
 enable_perf
 enable_java
@@ -938,6 +944,7 @@ with_labview
 enable_gcc_profiling
 with_idl
 enable_d3d
+with_readline
 with_xml_prefix
 with_xml_exec_prefix
 enable_xmltest
@@ -1608,6 +1615,7 @@ Optional Features:
                           do not reject slow dependency extractors
   --disable-dependency-tracking
                           speeds up one-time build
+  --disable-largefile     omit support for large files
   --disable-shared        Prevent building shared libraries
   --enable-perf           enable MDSplus I/O statistics
   --disable-java          Do not build java libraries and applications
@@ -1649,6 +1657,8 @@ Optional Packages:
                           specify location of labview such as
                           /usr/local/natinst/Labview
   --with-idl=idl-top-dir  specify location of idl such as /usr/local/itt/idl
+  --with-readline=READLINE_DIR
+                          look for the readline library in READLINE_DIR
   --with-xml-prefix=PFX   Prefix where libxml is installed (optional)
   --with-xml-exec-prefix=PFX Exec prefix where libxml is installed (optional)
   --with-x                use the X Window System
@@ -4995,6 +5005,206 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 
+# Check whether --enable-largefile was given.
+if test "${enable_largefile+set}" = set; then :
+  enableval=$enable_largefile;
+fi
+
+if test "$enable_largefile" != no; then
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for special C compiler options needed for large files" >&5
+$as_echo_n "checking for special C compiler options needed for large files... " >&6; }
+if ${ac_cv_sys_largefile_CC+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_cv_sys_largefile_CC=no
+     if test "$GCC" != yes; then
+       ac_save_CC=$CC
+       while :; do
+	 # IRIX 6.2 and later do not support large files by default,
+	 # so use the C compiler's -n32 option if that helps.
+	 cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+	 if ac_fn_c_try_compile "$LINENO"; then :
+  break
+fi
+rm -f core conftest.err conftest.$ac_objext
+	 CC="$CC -n32"
+	 if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_largefile_CC=' -n32'; break
+fi
+rm -f core conftest.err conftest.$ac_objext
+	 break
+       done
+       CC=$ac_save_CC
+       rm -f conftest.$ac_ext
+    fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_largefile_CC" >&5
+$as_echo "$ac_cv_sys_largefile_CC" >&6; }
+  if test "$ac_cv_sys_largefile_CC" != no; then
+    CC=$CC$ac_cv_sys_largefile_CC
+  fi
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _FILE_OFFSET_BITS value needed for large files" >&5
+$as_echo_n "checking for _FILE_OFFSET_BITS value needed for large files... " >&6; }
+if ${ac_cv_sys_file_offset_bits+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  while :; do
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_file_offset_bits=no; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define _FILE_OFFSET_BITS 64
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_file_offset_bits=64; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_file_offset_bits=unknown
+  break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_file_offset_bits" >&5
+$as_echo "$ac_cv_sys_file_offset_bits" >&6; }
+case $ac_cv_sys_file_offset_bits in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _FILE_OFFSET_BITS $ac_cv_sys_file_offset_bits
+_ACEOF
+;;
+esac
+rm -rf conftest*
+  if test $ac_cv_sys_file_offset_bits = unknown; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for _LARGE_FILES value needed for large files" >&5
+$as_echo_n "checking for _LARGE_FILES value needed for large files... " >&6; }
+if ${ac_cv_sys_large_files+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  while :; do
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_large_files=no; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#define _LARGE_FILES 1
+#include <sys/types.h>
+ /* Check that off_t can represent 2**63 - 1 correctly.
+    We can't simply define LARGE_OFF_T to be 9223372036854775807,
+    since some C++ compilers masquerading as C compilers
+    incorrectly reject 9223372036854775807.  */
+#define LARGE_OFF_T (((off_t) 1 << 62) - 1 + ((off_t) 1 << 62))
+  int off_t_is_large[(LARGE_OFF_T % 2147483629 == 721
+		       && LARGE_OFF_T % 2147483647 == 1)
+		      ? 1 : -1];
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_compile "$LINENO"; then :
+  ac_cv_sys_large_files=1; break
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+  ac_cv_sys_large_files=unknown
+  break
+done
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_sys_large_files" >&5
+$as_echo "$ac_cv_sys_large_files" >&6; }
+case $ac_cv_sys_large_files in #(
+  no | unknown) ;;
+  *)
+cat >>confdefs.h <<_ACEOF
+#define _LARGE_FILES $ac_cv_sys_large_files
+_ACEOF
+;;
+esac
+rm -rf conftest*
+  fi
+
+
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for socket in -lsocket" >&5
 $as_echo_n "checking for socket in -lsocket... " >&6; }
 if ${ac_cv_lib_socket_socket+:} false; then :
@@ -6531,6 +6741,7 @@ fi
 
 
 
+
 if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
 	if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
@@ -7185,7 +7396,8 @@ LD_LDSHARE=""
 IDL_LD=""
 LIBPRE="lib"
 
-CFLAGS="$CFLAGS $GCCPROF"
+CFLAGS="$CFLAGS $GCCPROF -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64"
+
 CPPFLAGS="-I\$(top_srcdir)/include $CPPFLAGS"
 
 if test "$exec_prefix" = "NONE" -a "$prefix" = "NONE"
@@ -7484,7 +7696,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        MINGW="yes"
        LIBPRE=""
        SOCKETLIB="-lws2_32"
-       CFLAGS="$CFLAGS -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields";
        LD="$CXX -static-libgcc"
        FFLAGS="$FFLAGS -fno-range-check"
        FORLD="$F77"
@@ -7520,7 +7732,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        jni_md_inc_dir="$with_jdk/include/linux";;
 
 *86*linux*)
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        FORLD="$F77";
        LD="gcc"
        if ( uname -m | grep 64 > /dev/null )
@@ -7578,7 +7790,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        SIZEOF_LONG=4;
        SIZEOF_LONG_LONG=8;
        D64="";
-       CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+       CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing";
        if (test "$F77" = "g77"); then
          FFLAGS="$FFLAGS -Wno-globals"
          FOR_LDFLAGS="-lg2c"
@@ -7607,7 +7819,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
-*linux*) CFLAGS="$CFLAGS -fpic -shared-libgcc -fno-strict-aliasing";
+*linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FFLAGS="$FFLAGS -fno-range-check";
        FORLD="$F77"
        FOR_LDFLAGS="-lg2c"
@@ -8688,130 +8900,9 @@ then
   $as_echo "#define HAVE_CLOCK_GETTIME 1" >>confdefs.h
 
 fi
-OLDLIBS="$LIBS"
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing readline" >&5
-$as_echo_n "checking for library containing readline... " >&6; }
-if ${ac_cv_search_readline+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
 
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char readline ();
-int
-main ()
-{
-return readline ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' readline 'readline -lcurses'; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_readline=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_readline+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_readline+:} false; then :
 
-else
-  ac_cv_search_readline=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_readline" >&5
-$as_echo "$ac_cv_search_readline" >&6; }
-ac_res=$ac_cv_search_readline
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
-fi
-
-LIBS="$OLDLIBS"
-if test "$ac_cv_search_readline" = "no"
-then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"libreadline is not available so the build of tdic will be skipped\"" >&5
-$as_echo "\"libreadline is not available so the build of tdic will be skipped\"" >&6; }
-  TDIC=""
-  LIBREADLINE=""
-else
-  LIBREADLINE="$ac_cv_search_readline"
-  TDIC="tdic"
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing rl_set_signals" >&5
-$as_echo_n "checking for library containing rl_set_signals... " >&6; }
-if ${ac_cv_search_rl_set_signals+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_func_search_save_LIBS=$LIBS
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char rl_set_signals ();
-int
-main ()
-{
-return rl_set_signals ();
-  ;
-  return 0;
-}
-_ACEOF
-for ac_lib in '' readline 'readline -lcurses'; do
-  if test -z "$ac_lib"; then
-    ac_res="none required"
-  else
-    ac_res=-l$ac_lib
-    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
-  fi
-  if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_search_rl_set_signals=$ac_res
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext
-  if ${ac_cv_search_rl_set_signals+:} false; then :
-  break
-fi
-done
-if ${ac_cv_search_rl_set_signals+:} false; then :
-
-else
-  ac_cv_search_rl_set_signals=no
-fi
-rm conftest.$ac_ext
-LIBS=$ac_func_search_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_rl_set_signals" >&5
-$as_echo "$ac_cv_search_rl_set_signals" >&6; }
-ac_res=$ac_cv_search_rl_set_signals
-if test "$ac_res" != no; then :
-  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  $as_echo "#define HAVE_RL_SET_SIGNALS 1" >>confdefs.h
-
-fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for gettimeofday in -lc" >&5
 $as_echo_n "checking for gettimeofday in -lc... " >&6; }
@@ -8999,6 +9090,201 @@ fi
 
 
 
+
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  READLINE  //////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+
+
+
+# Check whether --with-readline was given.
+if test "${with_readline+set}" = set; then :
+  withval=$with_readline;
+else
+  if ${READLINE_DIR+:} false; then :
+  with_readline=$READLINE_DIR
+fi
+fi
+
+
+  if test x"$with_readline" != x"no" ; then
+     if test -d "${with_readline}" ; then
+        _readline_cppflags="-I${with_readline}/include"
+        _readline_ldflags="-L${with_readline}/lib"
+     fi
+
+          for _termcap in "" "-ltermcap" "-lcurses" "-lncurses" ; do
+        _combo="readline${_termcap:+ $_termcap}"
+
+        LIBS_save=$LIBS
+        CPPFLAGS_save=$CPPFLAGS
+        LDFLAGS_save=$LDFLAGS
+
+                LIBS="-l$_combo $LIBS"
+        CPPFLAGS="${_readline_cppflags} $CPPFLAGS"
+        LDFLAGS="${_readline_ldflags} $LDFLAGS"
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether readline via \"$_combo\" is present and sane" >&5
+$as_echo_n "checking whether readline via \"$_combo\" is present and sane... " >&6; }
+                        	if test "$cross_compiling" = yes; then :
+                                            { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing readline" >&5
+$as_echo_n "checking for library containing readline... " >&6; }
+if ${ac_cv_search_readline+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char readline ();
+int
+main ()
+{
+return readline ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' $_combo; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_search_readline=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_readline+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_readline+:} false; then :
+
+else
+  ac_cv_search_readline=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_readline" >&5
+$as_echo "$ac_cv_search_readline" >&6; }
+ac_res=$ac_cv_search_readline
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  have_readline=yes
+else
+  have_readline=no
+fi
+
+
+else
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+#include <stdio.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+int main(int argc, char **argv)
+{
+  int fd;
+  char *line;
+  close(0);
+  close(1);
+  fd = open("/dev/null", 2);
+  dup(fd);
+  line = readline("giveittome> ");
+  printf("got <%s>\n", line);
+  return 0;
+ }
+////////////////////////////////////////////////////////////////////////////////
+
+_ACEOF
+if ac_fn_c_try_run "$LINENO"; then :
+                       have_readline=yes
+else
+                       have_readline=no
+fi
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext \
+  conftest.$ac_objext conftest.beam conftest.$ac_ext
+fi
+
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $have_readline" >&5
+$as_echo "$have_readline" >&6; }
+
+                LIBS=$LIBS_save
+        CPPFLAGS=$CPPFLAGS_save
+        LDFLAGS=$LDFLAGS_save
+
+        if test $have_readline = yes ; then
+          READLINE_CPPFLAGS="$_readline_cppflags"
+
+          READLINE_LDFLAGS="$_readline_ldflags"
+
+          READLINE_LIBS="-l$_combo"
+
+          break
+        fi
+     done
+
+     unset _termcap
+     unset LIBS_save
+     unset CPPFLAGS_save
+     unset LDFLAGS_save
+     unset _combo
+  fi
+
+ if test x"$have_readline" = x"yes"; then
+  READLINE_TRUE=
+  READLINE_FALSE='#'
+else
+  READLINE_TRUE='#'
+  READLINE_FALSE=
+fi
+
+
+if test x"$have_readline" = x"yes"; then
+  LIBREADLINE="${READLINE_LIBS}"
+  TDIC="tdic"
+
+  CPPFLAGS_save="${CPPFLAGS}"
+  CPPFLAGS="${READLINE_CPPFLAGS} ${CPPFLAGS}"
+  for ac_header in readline/readline.h readline/history.h
+
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+
+else
+  as_fn_error $? "\"libreadline headers was not found\"" "$LINENO" 5
+fi
+
+done
+
+  CPPFLAGS=$CPPFLAGS_save
+else
+  as_fn_error $? "readline library was not found and must be installed." "$LINENO" 5
+fi
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -9100,7 +9386,7 @@ $as_echo_n "checking for libxml - version >= $min_xml_version... " >&6; }
     if test "x$enable_xmltest" = "xyes" ; then
       ac_save_CPPFLAGS="$CPPFLAGS"
       ac_save_LIBS="$LIBS"
-      CPPFLAGS="$CPPFLAGS $XML_CPPFLAGS"
+      CPPFLAGS="$XML_CPPFLAGS $CPPFLAGS"
       LIBS="$XML_LIBS $LIBS"
       rm -f conf.xmltest
       if test "$cross_compiling" = yes; then :
@@ -9264,8 +9550,8 @@ rm -f core conftest.err conftest.$ac_objext \
   rm -f conf.xmltest
 
 if test "x$have_xml" != "xyes"; then
- { $as_echo "$as_me:${as_lineno-$LINENO}: libxml not found using xml2-confg, reverting to pkg-config query" >&5
-$as_echo "$as_me: libxml not found using xml2-confg, reverting to pkg-config query" >&6;}
+ { $as_echo "$as_me:${as_lineno-$LINENO}: libxml not found using xml2-config, reverting to pkg-config query" >&5
+$as_echo "$as_me: libxml not found using xml2-config, reverting to pkg-config query" >&6;}
 
 pkg_failed=no
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for XML" >&5
@@ -9342,7 +9628,7 @@ fi
 
 
 
- if test x"$have_xml" = "xyes"; then
+ if test x"$have_xml" = x"yes"; then
   XML_TRUE=
   XML_FALSE='#'
 else
@@ -9376,6 +9662,9 @@ else
 fi
 
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  HEADERS  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
 
 for ac_header in stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h
 do :
@@ -9416,18 +9705,6 @@ fi
 
 done
 
-for ac_header in readline/readline.h readline/history.h
-do :
-  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
-ac_fn_c_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
-  cat >>confdefs.h <<_ACEOF
-#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
-_ACEOF
-
-fi
-
-done
 
 
 
@@ -13605,6 +13882,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
   as_fn_error $? "conditional \"MINGW\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${READLINE_TRUE}" && test -z "${READLINE_FALSE}"; then
+  as_fn_error $? "conditional \"READLINE\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${XML_TRUE}" && test -z "${XML_FALSE}"; then
