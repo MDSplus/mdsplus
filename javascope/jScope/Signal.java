@@ -1853,6 +1853,7 @@ public class Signal implements WaveDataListener
             currX = sliceX;
         else
             currX = x;
+        if(x == null || x.length == 0) return;
         xmin = xmax = currX[0];
         for(int i = 0; i < currX.length; i++)
         {
@@ -1899,9 +1900,13 @@ public class Signal implements WaveDataListener
             currY = sliceY;
         else
             currY = y;
-        ymin = ymax = y[0];
-        for(int i = 0; i < currY.length; i++)
+         int startIdx;
+         //Check for initial NaN Y values
+        for(startIdx = 0; startIdx < currY.length && new Float(y[startIdx]).isNaN(); startIdx++);
+        ymin = ymax = y[startIdx];
+        for(int i = startIdx; i < currY.length; i++)
         {
+            if (new Float(y[startIdx]).isNaN()) continue;
             if(currY[i] < ymin)
                 ymin = currY[i];
             if(currY[i] > ymax)
@@ -1926,6 +1931,8 @@ public class Signal implements WaveDataListener
             return;
         }
 
+        if(x == null || y == null) return;
+        
         int len = (x.length < y.length)?x.length:y.length;
         for(int i = 0; i < len; i++)
         {
