@@ -1,4 +1,10 @@
-commit 3d2a1a4554db39acb6e034828541537582cf9a93 (HEAD, refs/heads/alpha)
+commit 64fc18b618be66d86c0d209011abe046e1858f0a (HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 07:55:17 2015 +0000
+
+    New ChangeLog
+
+commit 3d2a1a4554db39acb6e034828541537582cf9a93
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 16 03:01:34 2015 -0400
 
