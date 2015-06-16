@@ -1,4 +1,10 @@
-commit 64fc18b618be66d86c0d209011abe046e1858f0a (HEAD, refs/heads/alpha)
+commit 7857eb7422e534a5017b79069da38f90ca84c974 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 08:27:07 2015 +0000
+
+    New ChangeLog
+
+commit 64fc18b618be66d86c0d209011abe046e1858f0a
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 16 07:55:17 2015 +0000
 
@@ -239,7 +245,7 @@ Date:   Fri Jun 12 08:06:54 2015 -0400
 
     Fix configure after bootstrap
 
-commit 451b7755ebd0c04140e84fecf0cb0c235aac476b (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 451b7755ebd0c04140e84fecf0cb0c235aac476b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 11 21:34:11 2015 -0400
 
