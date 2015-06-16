@@ -1,4 +1,22 @@
-commit 99489ea6141d732937cd3f89b83541e25d6bc907 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 9b6020e411da87dbd472ee8d49a7343153f1122c (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 22:48:48 2015 -0400
+
+    pull after reseting local checkout. put output on stderr so release info can be processed correctly.
+
+commit 6c586140799348686fb14aaea23e9fbc0d4f427e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 22:44:09 2015 -0400
+
+    pull after reseting local checkout
+
+commit cebba9dcef4e82624337c1b27a8939e9b328d2d8 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 23:47:58 2015 +0000
+
+    New ChangeLog
+
+commit 99489ea6141d732937cd3f89b83541e25d6bc907
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 15 23:27:43 2015 +0000
 
