@@ -1,4 +1,10 @@
-commit 8dabd098ed0f6ae3e8ed04be30b0a8201c8e5ea5 (HEAD, tag: refs/tags/stable_release-7-0-14, refs/heads/stable)
+commit 839ce37b20c2c45e1fafd49a3c66fc09c0b99822 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 13:22:31 2015 +0000
+
+    New ChangeLog
+
+commit 8dabd098ed0f6ae3e8ed04be30b0a8201c8e5ea5 (tag: refs/tags/stable_release-7-0-14)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 15 22:29:35 2015 +0000
 
@@ -10,7 +16,7 @@ Date:   Mon Jun 15 11:53:38 2015 -0400
 
     fix memory handling of Monitor server name storage
 
-commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13, refs/remotes/origin/stable)
+commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 12 01:54:43 2015 +0000
 
@@ -1191,7 +1197,7 @@ Date:   Wed Apr 22 13:51:58 2015 -0400
 
     Add line feed to original part line
 
-commit b1e400d46324160c70cbd132ff68361f533308de (tag: refs/tags/stable_release-7-0-X, tag: refs/tags/stable_release-6-1-84)
+commit b1e400d46324160c70cbd132ff68361f533308de (tag: refs/tags/stable_release-6-1-84)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Apr 21 22:33:56 2015 +0000
 
