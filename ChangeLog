@@ -1,8 +1,27 @@
-commit 75bef9e72f31a75de02fabef0a2e21cb4fe2f39f (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit a006fb74c71f7add520b936d1a3322bc860b33d7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Merge: d769969 ea4b0e7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 08:48:21 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit ea4b0e732d677eee52dc3d9bcbf3b73c8b741963
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 12:43:54 2015 +0000
+
+    New ChangeLog
+
+commit 75bef9e72f31a75de02fabef0a2e21cb4fe2f39f
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 16 12:41:06 2015 +0000
 
     New ChangeLog
+
+commit d76996972cd6e6731cd610444549047319235202
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 08:39:55 2015 -0400
+
+    Fix method for finding latest release tag. git describe does not seem to work as expected
 
 commit e89c6bc49dee847e81fa2ce43c4d6d3dd23f9883
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
