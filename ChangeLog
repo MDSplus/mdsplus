@@ -1,4 +1,10 @@
-commit bd7fcfe7b35076c4949bff425a9ce9b5a42ca2a2 (HEAD, refs/heads/alpha)
+commit e3d96e9165a02954d0c86c21d71ab311dc4076e2 (HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 23:26:11 2015 -0400
+
+    New ChangeLog
+
+commit bd7fcfe7b35076c4949bff425a9ce9b5a42ca2a2
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 16 03:08:42 2015 +0000
 
@@ -191,13 +197,13 @@ Date:   Fri Jun 12 08:23:57 2015 -0400
 
     add signed char option to *linux* host builds
 
-commit 086c6b30b0d722354371645cddb45f5e78c3d44a (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 086c6b30b0d722354371645cddb45f5e78c3d44a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jun 12 08:06:54 2015 -0400
 
     Fix configure after bootstrap
 
-commit 451b7755ebd0c04140e84fecf0cb0c235aac476b
+commit 451b7755ebd0c04140e84fecf0cb0c235aac476b (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 11 21:34:11 2015 -0400
 
