@@ -1,4 +1,10 @@
-commit 9b6020e411da87dbd472ee8d49a7343153f1122c (HEAD, refs/heads/alpha)
+commit bd7fcfe7b35076c4949bff425a9ce9b5a42ca2a2 (HEAD, refs/heads/alpha)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 03:08:42 2015 +0000
+
+    New ChangeLog
+
+commit 9b6020e411da87dbd472ee8d49a7343153f1122c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 15 22:48:48 2015 -0400
 
@@ -10,7 +16,7 @@ Date:   Mon Jun 15 22:44:09 2015 -0400
 
     pull after reseting local checkout
 
-commit cebba9dcef4e82624337c1b27a8939e9b328d2d8 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit cebba9dcef4e82624337c1b27a8939e9b328d2d8
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 15 23:47:58 2015 +0000
 
@@ -185,7 +191,7 @@ Date:   Fri Jun 12 08:23:57 2015 -0400
 
     add signed char option to *linux* host builds
 
-commit 086c6b30b0d722354371645cddb45f5e78c3d44a
+commit 086c6b30b0d722354371645cddb45f5e78c3d44a (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jun 12 08:06:54 2015 -0400
 
