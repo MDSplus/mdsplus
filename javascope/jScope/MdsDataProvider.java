@@ -829,11 +829,13 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+//                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
-            RealArray xReal = GetRealArray(xExpr);
+//            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
+            float y[] = GetFloatArray("("+yExpr+")");
+            //RealArray xReal = GetRealArray(xExpr);
+            RealArray xReal = GetRealArray("("+xExpr+";)");
             if(xReal.isLong())
             {
                 isXLong = true;
