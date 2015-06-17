@@ -63,8 +63,8 @@ install_all:
 
 
 ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html:
-	touch $@;
-	echo " <html> <head> <meta http-equiv=\"refresh\" content=\"0; url=/docs/html/index.html\"> </head> </html> " > $@;
+	touch $@; \
+	echo " <html> <head> <meta http-equiv=\"refresh\" content=\"0; url=./docs/html/index.html\"> </head> </html> " > $@;
 
 main_index: ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html
 
