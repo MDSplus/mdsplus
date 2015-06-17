@@ -708,7 +708,7 @@ public class MdsDataProvider
                     xExpr = in_x;
                 }
             }
-             try   {
+//             try   {
                  
                 String setTimeContext;
                 if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
@@ -845,13 +845,13 @@ public class MdsDataProvider
                     titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
                     if(type == 1)
                         isLong = true;
-                }
+/*                }
                 catch(Exception exc)
                 {
                     System.out.println("Error Reading data: "+exc);
                     nSamples = 0;
                 }
-                //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
+ */               //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
                 if(segmentMode == SEGMENTED_YES && continuousUpdate)
                 {
                     long refreshPeriod = jScopeFacade.getRefreshPeriod();

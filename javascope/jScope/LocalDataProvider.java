@@ -315,7 +315,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         return frameData;
     }
 
-    protected synchronized boolean  CheckOpen() {return true; }
+    protected synchronized boolean  CheckOpen(String experiment, long shot) {return true; }
     public boolean SupportsCompression(){return false;}
     public void SetCompression(boolean state){}
     public boolean SupportsContinuous() {return false; }

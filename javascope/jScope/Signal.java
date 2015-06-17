@@ -904,7 +904,7 @@ public class Signal implements WaveDataListener
     public double getX(int idx)
     {
  
-        System.out.println("getX " + idx);
+        //System.out.println("getX " + idx);
         if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
             return sliceX[idx];
        try {
