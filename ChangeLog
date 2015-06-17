@@ -1,4 +1,40 @@
-commit a006fb74c71f7add520b936d1a3322bc860b33d7 (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit 205ef78e1c6dcaac85041b2574fd4739d8b44c0b (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 23:30:14 2015 -0400
+
+    Fix automake generation of Makefile.in
+
+commit 4884707177984eb33a607d1f630b423c420899b5 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 13:37:48 2015 -0400
+
+    Add the compression objects to the MdsIpShr static library to prevent undefined references
+
+commit 8c8658f0bb2eb12897eccd73087a4958b19f6fbb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 13:34:17 2015 -0400
+
+    Add the compression objects to the static library to prevent undefined references
+
+commit 82384a83a93558f01e46e7a4ccb06eacdaf9d7a5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 11:52:11 2015 -0400
+
+    Use MKDIR_P macro instead of mkdir for the docs directory
+
+commit 9b2446a1437e65903b3f720dc6fdacc7603158c6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 11:49:05 2015 -0400
+
+    Use MKDIR_P macro instead of mkdir for the docs directory
+
+commit a0c26d0aa5ec2e366b9ce0ee921294050adee53c (tag: refs/tags/alpha_release-7-0-94)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 13:22:07 2015 +0000
+
+    New ChangeLog
+
+commit a006fb74c71f7add520b936d1a3322bc860b33d7
 Merge: d769969 ea4b0e7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 16 08:48:21 2015 -0400
