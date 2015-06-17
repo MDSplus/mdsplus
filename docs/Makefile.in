@@ -876,12 +876,12 @@ uninstall-am:
 @DX_COND_doc_TRUE@	$(DX_DOXYGEN) $(DX_CONFIG);
 
 @DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
-@DX_COND_doc_TRUE@	touch ${DX_TAGDIR}/taglist.txt
+@DX_COND_doc_TRUE@	touch $@; \
 @DX_COND_doc_TRUE@	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
 @DX_COND_doc_TRUE@	echo "Name Found list not updated ..."; \
 @DX_COND_doc_TRUE@	else \
 @DX_COND_doc_TRUE@	echo "Adding tag to list ... "; \
-@DX_COND_doc_TRUE@	echo "${DX_DESTTAG}=${DX_DOCDIR}/ html" >> ${DX_TAGDIR}/taglist.txt; \
+@DX_COND_doc_TRUE@	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" >> ${DX_TAGDIR}/taglist.txt; \
 @DX_COND_doc_TRUE@	fi;
 
 @DX_COND_doc_TRUE@build_tag: ${DX_TAGDIR}/taglist.txt
@@ -942,8 +942,8 @@ install_all:
 	done;	
 
 ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html:
-	touch $@;
-	echo " <html> <head> <meta http-equiv=\"refresh\" content=\"0; url=/docs/html/index.html\"> </head> </html> " > $@;
+	touch $@; \
+	echo " <html> <head> <meta http-equiv=\"refresh\" content=\"0; url=./docs/html/index.html\"> </head> </html> " > $@;
 
 main_index: ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html
 
