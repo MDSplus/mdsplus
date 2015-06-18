@@ -1,4 +1,22 @@
-commit 717ccd7bef12501ef5a30af64215e09aaf52133d (HEAD, refs/heads/alpha)
+commit 86ddc9b4ed4a30cb2cb35184323a3d0887d00057 (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 18 14:08:35 2015 -0400
+
+    Use static libxml2 and libz libraries on mingw builds to prevent incompatibilities with the zlib1.dll that ships with MATLAB. Also correct the jni includes used on mingw builds.
+
+commit 69e0c273677b7f1536968519881dc363fc46f6f1
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Thu Jun 18 09:23:56 2015 +0200
+
+    Signal 2D 64bit time-base management added
+
+commit 17a4648e211ba79c1666e03dc0c5c148d61d5fbc (tag: refs/tags/alpha_release-7-0-96, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 17 22:23:17 2015 +0000
+
+    New ChangeLog
+
+commit 717ccd7bef12501ef5a30af64215e09aaf52133d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jun 17 08:50:25 2015 -0400
 
@@ -16,7 +34,7 @@ Date:   Wed Jun 17 10:58:14 2015 +0200
 
     Fix LocalDataProvider
 
-commit 186115dddae883c45d0ea291a1095567d47c0684 (tag: refs/tags/alpha_release-7-0-95, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 186115dddae883c45d0ea291a1095567d47c0684 (tag: refs/tags/alpha_release-7-0-95)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jun 17 03:48:57 2015 +0000
 
