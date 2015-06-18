@@ -24,7 +24,9 @@ TESTS = \
         MdsDimensionTest \
         MdsWindowTest \
         MdsFunctionTest \
-        MdsConglomTest
+        MdsConglomTest \
+        MdsRangeTest \
+        MdsCallTest 
 else
 TESTS =
 endif

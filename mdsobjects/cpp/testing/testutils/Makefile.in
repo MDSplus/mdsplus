@@ -476,11 +476,11 @@ _SOURCES = \
 
 # sadly libtool is not to be included
 
-#noinst_LTLIBRARIES = libMdsTestUtils.la
-#libMdsTestUtils_la_SOURCES = ${_SOURCES}
-#libMdsTestUtils_la_LIBADD = $(AM_LIBS)
+# noinst_LTLIBRARIES = libMdsTestUtils.la
+# libMdsTestUtils_la_SOURCES = ${_SOURCES}
+# libMdsTestUtils_la_LIBADD = $(AM_LIBS)
 noinst_LIBRARIES = libMdsTestUtils.a
-libMdsTestUtils_a_SOURCES = ${_SOURCES}
+libMdsTestUtils_a_SOURCES = $(_SOURCES)
 all: all-am
 
 .SUFFIXES:
@@ -652,7 +652,7 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LIBRARIES) $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(HEADERS) all-local
 installdirs:
 	for dir in "$(DESTDIR)$(library_includedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
@@ -758,23 +758,28 @@ uninstall-am: uninstall-library_includeHEADERS
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-noinstLIBRARIES cscopelist-am ctags ctags-am distclean \
-	distclean-compile distclean-generic distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-library_includeHEADERS \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic pdf pdf-am \
-	ps ps-am tags tags-am uninstall uninstall-am \
-	uninstall-library_includeHEADERS
+.PHONY: CTAGS GTAGS TAGS all all-am all-local check check-am clean \
+	clean-generic clean-noinstLIBRARIES cscopelist-am ctags \
+	ctags-am distclean distclean-compile distclean-generic \
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am \
+	install-library_includeHEADERS install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
+	uninstall-am uninstall-library_includeHEADERS
 
 .PRECIOUS: Makefile
 
 include ${top_srcdir}/Makefile.inc
+
+libMdsTestUtils.so: $(_SOURCES)
+	$(CC) $(CFLAGS) -shared -o $@ $^
+
+all-local: libMdsTestUtils.so
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

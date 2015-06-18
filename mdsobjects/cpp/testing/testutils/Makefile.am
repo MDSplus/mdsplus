@@ -24,10 +24,18 @@ _SOURCES = \
 
 # sadly libtool is not to be included
 
-#noinst_LTLIBRARIES = libMdsTestUtils.la
-#libMdsTestUtils_la_SOURCES = ${_SOURCES}
-#libMdsTestUtils_la_LIBADD = $(AM_LIBS)
+# noinst_LTLIBRARIES = libMdsTestUtils.la
+# libMdsTestUtils_la_SOURCES = ${_SOURCES}
+# libMdsTestUtils_la_LIBADD = $(AM_LIBS)
 
 
 noinst_LIBRARIES = libMdsTestUtils.a
-libMdsTestUtils_a_SOURCES = ${_SOURCES}
+libMdsTestUtils_a_SOURCES = $(_SOURCES)
+
+
+
+libMdsTestUtils.so: $(_SOURCES)
+	$(CC) $(CFLAGS) -shared -o $@ $^
+	
+
+all-local: libMdsTestUtils.so
