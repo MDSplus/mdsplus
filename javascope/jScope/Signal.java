@@ -249,7 +249,7 @@ public class Signal implements WaveDataListener
 
     protected int mode1D;
 
-    protected float curr_x_yz_plot = Float.NaN;
+    protected double curr_x_yz_plot = Double.NaN;
     protected float curr_y_xz_plot = Float.NaN;
 
     private int curr_y_xz_idx = -1;
@@ -258,16 +258,17 @@ public class Signal implements WaveDataListener
     /*
      * X and Y arrays when mode is MODE_XZ or MODE_YZ
      */
-    private double[]sliceX;
-    private float[] sliceY;
+    private double[] sliceX;
+    private long[]   sliceXLong;
+    private float[]  sliceY;
     
     
-    protected float z2D_max;
-    protected float z2D_min;
-    protected float y2D_max;
-    protected float y2D_min;
-    protected float x2D_max;
-    protected float x2D_min;
+    protected double z2D_max;
+    protected double z2D_min;
+    protected double y2D_max;
+    protected double y2D_min;
+    protected double x2D_max;
+    protected double x2D_min;
     protected double curr_xmax;
     protected double curr_xmin;
 
@@ -282,7 +283,7 @@ public class Signal implements WaveDataListener
 
 
     ContourSignal cs;
-    private float contourLevels[];
+    private double contourLevels[];
     Vector<Vector> contourSignals = new Vector<Vector>();
     Vector<Float> contourLevelValues = new Vector<Float>();
 
@@ -293,12 +294,13 @@ public class Signal implements WaveDataListener
  * 
  */
     //2D management
-    float x2D[];
-    long  x2DLong[];
+    double x2D[];
+    long   x2DLong[];
     float y2D[];
     float z[];
     
-    float xY2D[];
+    double xY2D[];
+    long   xY2DLong[];
     float yY2D[];
     float zY2D[];
     
@@ -798,7 +800,7 @@ public class Signal implements WaveDataListener
         x_data = s.x_data;
         if(s.x2D != null )
         {
-            x2D = new float[s.x2D.length];
+            x2D = new double[s.x2D.length];
             System.arraycopy(s.x2D, 0, x2D, 0, x2D.length);
         }
 
@@ -822,7 +824,7 @@ public class Signal implements WaveDataListener
 
         if(s.xY2D != null )
         {
-            xY2D = new float[s.xY2D.length];
+            xY2D = new double[s.xY2D.length];
             System.arraycopy(s.xY2D, 0, xY2D, 0, xY2D.length);
         }
 
@@ -947,7 +949,7 @@ public class Signal implements WaveDataListener
         return z;
     }
     
-    public float[] getX2D() 
+    public double[] getX2D() 
     {
         if(x2D == null)
             x2D = data.getX2D();
@@ -978,7 +980,7 @@ public class Signal implements WaveDataListener
 
     static String toStringTime(long time)
     {
-        DateFormat df = new SimpleDateFormat("HH:mm:ss");
+        DateFormat df = new SimpleDateFormat("HH:mm:sss");
         Date date = new Date();
         date.setTime(time);
         return df.format(date).toString();
@@ -992,7 +994,7 @@ public class Signal implements WaveDataListener
             return ""+curr_x_yz_plot;
     }
 
-    public float getXinYZplot()
+    public double getXinYZplot()
     {
         return curr_x_yz_plot;
     }
@@ -1025,9 +1027,9 @@ public class Signal implements WaveDataListener
         this.curr_y_xz_plot = curr_y_xz_plot;
     }
 
-    private float z_value = Float.NaN;
+    private double z_value = Double.NaN;
 
-    public float getZValue()
+    public double getZValue()
     {
         if (this.type == Signal.TYPE_2D)
         {
@@ -1048,7 +1050,7 @@ public class Signal implements WaveDataListener
         return Float.NaN;
     }
 
-     private int getArrayIndex(float arr[], float d)
+     private int getArrayIndex(double arr[], double d)
     {
         int i = -1;
 
@@ -1078,7 +1080,7 @@ public class Signal implements WaveDataListener
     }
 
     
-    public void showYZ(float t)
+    public void showYZ(double t)
     {
         if (curr_x_yz_plot == t && mode2D == MODE_YZ)
             return;
@@ -1090,7 +1092,7 @@ public class Signal implements WaveDataListener
     public void showYZ(int idx)
     {
         float[] y2d = y2D;
-        float[] x2d = x2D;
+        double[] x2d = x2D;
         
         if ( (idx >= x2d.length || idx == curr_x_yz_idx) &&
             mode2D == MODE_YZ)
@@ -1119,6 +1121,7 @@ public class Signal implements WaveDataListener
         
         sliceX = new double[y2d.length];
         sliceY = new float[y2d.length];
+        
         int zLen = z.length;
         float sliceMin, sliceMax;
         sliceMin = sliceMax = z[idx];
@@ -1138,11 +1141,11 @@ public class Signal implements WaveDataListener
         error = asym_error = false;
         mode2D = Signal.MODE_YZ;
         if(!fix_xmin)
-            //saved_xmin = curr_xmin = xmin = y2D_min;
-            saved_xmin = curr_xmin = ymin;
+            saved_xmin = curr_xmin = xmin = y2D_min;
+            //saved_xmin = curr_xmin = ymin;
         if(!fix_xmax)
-            //saved_xmax = curr_xmax = xmax = y2D_max;
-            saved_xmin = curr_xmin = ymin;
+            saved_xmax = curr_xmax = xmax = y2D_max;
+            //saved_xmax = curr_xmax = ymax;
         if(!fix_ymin)
             saved_ymin = ymin = sliceMin;
         if(!fix_ymax)
@@ -1231,7 +1234,7 @@ public class Signal implements WaveDataListener
         }
     }
 
-    public void showXZ(float xd)
+    public void showXZ(double xd)
     {
         if (curr_y_xz_plot == xd)
             return;
@@ -1242,7 +1245,7 @@ public class Signal implements WaveDataListener
     public void showXZ(int idx)
     {
         float[] y2d = y2D;
-        float[] x2d = x2D;
+        double[] x2d = x2D;
         
                       
         //if ( (idx >= x2d.length || idx == curr_y_xz_idx) &&
@@ -1259,7 +1262,7 @@ public class Signal implements WaveDataListener
 
         if(zY2D != null)
         {
-            x2d = new float[x2D.length];
+            x2d = new double[x2D.length];
             curr_xmin =  curr_xmax = zY2D[x2D.length * idx];
             for (int j = 0; j < x2D.length; j++)
             {
@@ -1292,11 +1295,11 @@ public class Signal implements WaveDataListener
         error = asym_error = false;
         mode2D = Signal.MODE_XZ;
         if(!fix_xmin)
-            //saved_xmin = curr_xmin = xmin = x2D_min;
-            saved_xmin = curr_xmin;
+            saved_xmin = curr_xmin = xmin = x2D_min;
+            //saved_xmin = curr_xmin;
         if(!fix_xmax)
-            //saved_xmax = curr_xmax = xmax = x2D_max;
-            saved_xmax = curr_xmax;
+            saved_xmax = curr_xmax = xmax = x2D_max;
+            //saved_xmax = curr_xmax;
         if(!fix_ymin)
             saved_ymin = ymin = sliceMin;
         if(!fix_ymax)
@@ -1340,7 +1343,7 @@ public class Signal implements WaveDataListener
                 break;
             case MODE_YZ:
                 double v = x2D[0];
-                if (!Float.isNaN(curr_x_yz_plot))
+                if (!Double.isNaN(curr_x_yz_plot))
                     v = curr_x_yz_plot;
                 setMode2D(mode, v);
                 break;
@@ -1431,8 +1434,8 @@ public class Signal implements WaveDataListener
 
       if (contourLevels == null || contourLevels.length == 0)
       {
-        contourLevels = new float[DEFAULT_CONTOUR_LEVEL];
-        float dz = (z2D_max - z2D_min) / (DEFAULT_CONTOUR_LEVEL + 1);
+        contourLevels = new double[DEFAULT_CONTOUR_LEVEL];
+        double dz = (z2D_max - z2D_min) / (DEFAULT_CONTOUR_LEVEL + 1);
 
         for (int i = 0; i < contourLevels.length; i++)
         {
@@ -1446,7 +1449,7 @@ public class Signal implements WaveDataListener
       }
     }
 
-    public Vector addContourLevel(float level)
+    public Vector addContourLevel(double level)
     {
       Vector v;
 
@@ -1726,7 +1729,7 @@ public class Signal implements WaveDataListener
     void checkIncreasingX2D()
     {
         increasing_x = true;
-        float x[] = x2D;
+        double x[] = x2D;
         for (int i = 1; i < x.length; i++)
         {
            if (x[i] < x[i - 1])
@@ -1931,8 +1934,42 @@ public class Signal implements WaveDataListener
             return;
         }
 
-        if(x == null || y == null) return;
+        float currY[];
+        double currX[];
+        if(type == this.TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
+        {
+            currY = sliceY;
+            currX = sliceX;
+        }
+        else
+        {
+            currY = y;
+            currX = x;
+        }
         
+        if(currX == null || currY == null) return;
+
+        int len = (currX.length < currY.length)? currX.length: currY.length;
+        for(int i = 0; i < len; i++)
+        {
+            if(currX[i] >= min && currX[i] <= xmax)
+            {
+                ymin = ymax = currY[i];
+                break;
+            }
+        }
+        for(int i = 0; i < len; i++)
+        {
+            if(currX[i] >= min && currX[i] <= max)
+            {
+                if(currY[i] < ymin)
+                    ymin = currY[i];
+                if(currY[i] > ymax)
+                    ymax = currY[i];
+            }
+        }
+        
+/******************************************************************        
         int len = (x.length < y.length)?x.length:y.length;
         for(int i = 0; i < len; i++)
         {
@@ -1952,6 +1989,7 @@ public class Signal implements WaveDataListener
                     ymax = y[i];
             }
         }
+********************************************************************/ 
     }
 
     
@@ -2017,7 +2055,12 @@ public class Signal implements WaveDataListener
             type = TYPE_2D;
             x2D = data.getX2D();
             if(x2D == null && data.isXLong())
+            {
                x2DLong = data.getX2DLong();
+               x2D = new double[x2DLong.length];
+               for( int i = 0; i < x2DLong.length; i++)
+                   x2D[i] = (double) x2DLong[i];
+            }
             y2D = data.getY2D();
             z = data.getZ();
             
@@ -2037,12 +2080,8 @@ public class Signal implements WaveDataListener
                 }
             }
             
-            float x2DVal[];
-            if(zY2D != null)
-              //x2DVal = zY2D;
-              x2DVal = x2D;
-            else
-              x2DVal = x2D;
+            double x2DVal[];
+            x2DVal = x2D;
               
             x2D_min = x2D_max = x2DVal[0];
             for(int i = 0; i < x2D.length; i++)
@@ -2124,6 +2163,16 @@ public class Signal implements WaveDataListener
 
     private int FindIndex(float d[], double v, int pIdx)
     {
+        double[] o = new double[d.length];
+        for (int i = 0; i < d.length; i++)
+        {
+            o[i] = d[i];
+        }
+        return FindIndex(  o,  v,  pIdx) ;
+    }
+      
+    private int FindIndex(double d[], double v, int pIdx)
+    {
         int i;
 
         if (v > d[pIdx])
@@ -2177,7 +2226,7 @@ public class Signal implements WaveDataListener
                 currX = sliceX;
             else
             {
-                float xf[] = x2D;
+                double xf[] = x2D;
                 currX = new double[xf.length];
                 for(int idx = 0; idx < xf.length; idx++)
                     currX[idx] = xf[idx];
@@ -2346,6 +2395,19 @@ public class Signal implements WaveDataListener
             return false;
     }
 
+    
+    public boolean isLongXForLabel()
+    {
+        if(type == TYPE_1D || type == TYPE_2D && ( mode2D == Signal.MODE_XZ ||
+                                                   mode2D == Signal.MODE_YZ ||
+                                                   mode2D == Signal.MODE_IMAGE ) )
+            return data.isXLong();
+        else
+            return false;
+        
+    }
+        
+    
     public final static int SIMPLE      = 0;
     public final static int AT_CREATION = 1;
     public final static int FIXED_LIMIT = 2;
@@ -2459,23 +2521,23 @@ public class Signal implements WaveDataListener
     public double getYmax() {return ymax;}
 
 
-    public float getX2Dmin()
+    public double getX2Dmin()
     {
       return x2D_min;
     }
 
-    public float getX2Dmax()
+    public double getX2Dmax()
     {
       return x2D_max;
     }
 
 
-    public float getY2Dmin()
+    public double getY2Dmin()
     {
       return y2D_min;
     }
 
-    public float getY2Dmax()
+    public double getY2Dmax()
     {
       return y2D_max;
     }
@@ -2497,18 +2559,18 @@ public class Signal implements WaveDataListener
       return zOut;
     }
 
-    public float getZ2Dmin()
+    public double getZ2Dmin()
     {
       return z2D_min;
     }
 
-    public float getZ2Dmax()
+    public double getZ2Dmax()
     {
       return z2D_max;
     }
 
     
-    void setAxis(float x2D[], float z2D[], float y2D[])
+    void setAxis(double x2D[], float z2D[], float y2D[])
     {
         x2D_max = x2D_min = x2D[0];
         z2D_max = z2D_min = z2D[0];
@@ -2516,7 +2578,7 @@ public class Signal implements WaveDataListener
         setAxis(x2D, z2D, y2D, 0, 0, 0);
     }
 
-    void setAxis(float x2D[], float z2D[], float y2D[], int xIdx, int zIdx, int yIdx)
+    void setAxis(double x2D[], float z2D[], float y2D[], int xIdx, int zIdx, int yIdx)
     {
         int i;
         for (i = xIdx; i < x2D.length; i++)
@@ -2600,10 +2662,10 @@ public class Signal implements WaveDataListener
 
     
     
-    public float surfaceValue(double x0, double y0)
+    public double surfaceValue(double x0, double y0)
     {
-      float zOut = 0;
-      float []z2D = z;
+      double zOut = 0;
+      float z2D[] = z;
 
       try
       {
@@ -2612,11 +2674,11 @@ public class Signal implements WaveDataListener
         {
           img_yprev = findIndex(y2D, y0, img_yprev);
           img_xprev = findIndex(x2D, x0, img_xprev);
-          float xn, yn;
-          float x1 = 0, y1 = 0, z1 = 0;
-          float x2 = 0, y2 = 0, z2 = 0;
-          float x3 = 0, y3 = 0, z3 = 0;
-          float x4 = 0, y4 = 0, z4 = 0;
+          double xn, yn;
+          double x1 = 0, y1 = 0, z1 = 0;
+          double x2 = 0, y2 = 0, z2 = 0;
+          double x3 = 0, y3 = 0, z3 = 0;
+          double x4 = 0, y4 = 0, z4 = 0;
 
           xn = x2D[img_xprev];
           yn = y2D[img_yprev];
@@ -2705,7 +2767,7 @@ public class Signal implements WaveDataListener
             }
           }
 
-          float yc = ( (float) x0 - x1) * (y4 - y1) / (x4 - x1) + y1;
+          double yc = ( (float) x0 - x1) * (y4 - y1) / (x4 - x1) + y1;
 
           if (yc > y0)
           {
@@ -2739,6 +2801,16 @@ public class Signal implements WaveDataListener
     }
 
     private int findIndex(float d[], double v, int pIdx)
+    {
+        double[] o = new double[d.length];
+        for (int i = 0; i < d.length; i++)
+        {
+            o[i] = d[i];
+        }
+        return findIndex(  o,  v,  pIdx) ;
+    }
+        
+    private int findIndex(double d[], double v, int pIdx)
     {
       int i;
 
@@ -2826,12 +2898,28 @@ public class Signal implements WaveDataListener
        }
     }
 
-    private float[] appendArray(double arr1[], int sizeUsed, float arr2[], int incSize)
+    private double[] appendArray(double arr1[], int sizeUsed, double arr2[], int incSize)
     {
+        /*
         float arr[] = new float[arr1.length];
         for(int i = 0; i < arr1.length; i++)
             arr[i] = (float)arr1[i];
         return appendArray(arr, sizeUsed, arr2, incSize);
+                */
+        if(arr1 == null) return (double [])arr2.clone();
+        if(arr2 == null) return (double [])arr1.clone();
+
+        double val[];
+        if(arr1.length < sizeUsed + arr2.length)
+        {
+            val = new double[arr1.length + arr2.length + incSize];
+            System.arraycopy(arr1, 0, val, 0, sizeUsed);
+        }
+        else
+            val = arr1;
+        System.arraycopy(arr2, 0, val, sizeUsed, arr2.length);
+        return val;
+
     }
 
 
@@ -2856,7 +2944,7 @@ public class Signal implements WaveDataListener
     private int y2D_points = 0;
     private int z2D_points = 0;
 
-    public void appendValues(float x[], float y[], int numPoints[], float time[])
+    public void appendValues(double x[], float y[], int numPoints[], float time[])
     {
         if(type != TYPE_2D || x.length != y.length || time == null || numPoints == null) return;
 
@@ -2864,7 +2952,7 @@ public class Signal implements WaveDataListener
 
         int xIdx, zIdx, yIdx;
 
-        float x2D[] = data.getX2D();
+        double x2D[] = data.getX2D();
         float y2D[] = data.getY2D();
         float z2D[] = data.getZ();
         

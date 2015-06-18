@@ -246,13 +246,20 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
             case WaveformEvent.MEASURE_UPDATE:
                 if(w.GetMode() == Waveform.MODE_POINT)
                 {
+                    Double tf = new Double(e.time_value);
+                    Double nan_d = new Double(Double.NaN);
+                    
                     double x = e.point_x;
                     double y = e.point_y;
                     if(w.IsImage())
                         x = e.delta_x;
-		            else
-			            if(e.is_mb2)
-			                AllSameXScaleAutoY(w);
+		    else
+			if(e.is_mb2)
+			    AllSameXScaleAutoY(w);
+                    //Set x to time_value allows pannels synchronization from 2D 
+                    //signal viewed in MODE_YX  
+                    if( ! tf.equals(nan_d))
+                        x = e.time_value;
                     UpdatePoints(x, y, (Waveform)e.getSource());
                 }
                 /*

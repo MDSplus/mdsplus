@@ -497,7 +497,7 @@ public class MdsDataProvider
                 else
                 {
                     _jscope_set = true;
-                    expr = "( _jscope_" + v_idx + " = (" + in_y +"), shape(_jscope_" + v_idx + "))";
+                    expr = "( _jscope_" + v_idx + " = (" + in_y +";), shape(_jscope_" + v_idx + "))";
                 }
             }
             error = null;
@@ -894,7 +894,7 @@ public class MdsDataProvider
         }
         
         private long x2DLong[];
-        public float[] getX2D()
+        public double[] getX2D()
         {
             String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0)";
             try {
@@ -908,7 +908,7 @@ public class MdsDataProvider
                 else
                 {
                     x2DLong = null;
-                    return realArray.getFloatArray();
+                    return realArray.getDoubleArray();
                 }
                 //return GetFloatArray(in);
             } catch(Exception exc){return null;}
@@ -1704,6 +1704,15 @@ public class MdsDataProvider
                 float[] outF = new float[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
                     outF[i] = (float) desc.int_data[i];
+                out = new RealArray(outF);
+            }
+            break;
+            case Descriptor.DTYPE_SHORT:
+            case Descriptor.DTYPE_USHORT:
+            {
+                float[] outF = new float[desc.short_data.length];
+                for (int i = 0; i < desc.short_data.length; i++)
+                    outF[i] = (float) desc.short_data[i];
                 out = new RealArray(outF);
             }
             break;
