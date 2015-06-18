@@ -2,9 +2,12 @@ include @top_srcdir@/Makefile.inc
 
 CFLAGS += $(THREAD) @GLOBUS_CFLAGS@ -I/usr/include/libxml2
 LDFLAGS += $(THREAD)
-LIBS=@LIBS@ @LIBDL@ @SOCKETLIB@ @NSLLIB@ @CLOCK_GETTIME_LIB@ -lxml2
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
 @MINGW_TRUE@ DEF=MdsShr.def
+@MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv -ldl
+@MINGW_FALSE@ XML_LIBS=@XML_LIBS@
+LIBS=@LIBS@ $(XML_LIBS) @LIBDL@ @SOCKETLIB@ @NSLLIB@ @CLOCK_GETTIME_LIB@ $(XML_LIBS)
+
 
 lib_LIBRARIES = MdsShr
 libStatic = $(addsuffix .a, $(addprefix @MAKELIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
