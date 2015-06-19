@@ -1,4 +1,16 @@
-commit 857fe651a00cc88a23a52222566f1ededdf80d4f (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 774b1f819200ced946d3f8e83d6e82552eeab830 (HEAD, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jun 19 16:23:29 2015 -0400
+
+    Stable does not have XML_LIBS yet.
+
+commit 78b9391090a165d155d9fbcfe8f5451eb5dbb7f2 (tag: refs/tags/stable_release-7-0-17)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 18 18:35:55 2015 +0000
+
+    New ChangeLog
+
+commit 857fe651a00cc88a23a52222566f1ededdf80d4f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jun 18 14:12:32 2015 -0400
 
@@ -23,7 +35,7 @@ Date:   Wed Jun 17 10:58:14 2015 +0200
 
     removed debug message
 
-commit 25e378c78dabbe1d90fae14c3c9795d5739b7b71 (tag: refs/tags/stable_release-7-0-16)
+commit 25e378c78dabbe1d90fae14c3c9795d5739b7b71 (tag: refs/tags/stable_release-7-0-16, refs/remotes/origin/stable)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jun 17 22:39:55 2015 +0000
 
