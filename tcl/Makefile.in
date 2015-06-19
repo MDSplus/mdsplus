@@ -56,9 +56,9 @@ clean:
 	@ $(RM) @MAKEBINDIR@$(MDSTCL)
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@
 
-install: $(libdir) $(bindir)
-	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@ $(libdir)
-	$(INSTALL) -m 755 @MAKEBINDIR@$(MDSTCL) $(bindir)
+install: $(DESTDIR)$(libdir) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755 @MAKESHLIBDIR@@LIBPRE@tcl_commands@SHARETYPE@ $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755 @MAKEBINDIR@$(MDSTCL) $(DESTDIR)$(bindir)
 
 @MAKEBINDIR@$(MDSTCL): $(MDSTCL)
 	$(INSTALL) -m 755 $< $@

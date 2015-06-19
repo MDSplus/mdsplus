@@ -17,10 +17,10 @@ clean:
 depend:
 	 - @makedepend -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
-install: $(libdir) $(bindir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@ $(libdir)
-	@MINGW_FALSE@ $(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(bindir)
-	@MINGW_TRUE@ $(INSTALL) -m 755 @MAKEBINDIR@mdsccl.bat $(bindir)
+install: $(DESTDIR)$(libdir) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@ccl_commands@SHARETYPE@ $(DESTDIR)$(libdir)
+	@MINGW_FALSE@ $(INSTALL) -m 755  @MAKEBINDIR@mdsccl $(DESTDIR)$(bindir)
+	@MINGW_TRUE@ $(INSTALL) -m 755 @MAKEBINDIR@mdsccl.bat $(DESTDIR)$(bindir)
 
 cdudir = $(top_builddir)/cdu
 CDU = $(cdudir)/cdu

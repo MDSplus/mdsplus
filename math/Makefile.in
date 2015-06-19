@@ -73,8 +73,8 @@ $(LIBRARIES): $(OBJECTS)  $(DEF)
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(INSTALL) -m 755 $(@LIBPRE@MdsMath) $(libdir)
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755 $(@LIBPRE@MdsMath) $(DESTDIR)$(libdir)
 
 clean:
 	$(RM) $(OBJECTS) $(OBJECTS_i386)

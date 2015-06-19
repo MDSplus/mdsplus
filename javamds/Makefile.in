@@ -17,8 +17,8 @@ clean:
 	@ $(RM) $(OBJECTS)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ $(DESTDIR)@libdir@
 
 @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ : $(OBJECTS) $(DEF)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKJNI@ $(THREAD) $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr $(LIBS)

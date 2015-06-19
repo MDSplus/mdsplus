@@ -152,24 +152,24 @@ clean :
 	@ $(RM) $(MDSIPSD)
         endif
 
-install: $(bindir) $(libdir) $(sysconfdir)
-	$(INSTALL) -m 755 $(PROGRAMS) @bindir@
-	$(INSTALL) -m 755 $(MdsIpShr) @libdir@
+install: $(DESTDIR)$(bindir) $(DESTDIR)$(libdir) $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m 755 $(PROGRAMS) $(DESTDIR)@bindir@
+	$(INSTALL) -m 755 $(MdsIpShr) $(DESTDIR)@libdir@
         ifdef modules
-		$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ @libdir@
+		$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPEMOD@ $(DESTDIR)@libdir@
         endif
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpShr.a @libdir@; \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpShr.a $(DESTDIR)@libdir@; \
 	fi;
-	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(sysconfdir)
-	$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
-	$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
-	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
-@MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
-	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
-	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
+	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(DESTDIR)$(sysconfdir)
+	$(INSTALL) -m 755 $(MdsIpSrvShr) $(DESTDIR)@libdir@
+	$(INSTALL) -m 755 $(MdsIpTunnel) $(DESTDIR)@libdir@
+	$(INSTALL) -m 755 $(MdsIpTCP) $(DESTDIR)@libdir@
+@MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) $(DESTDIR)@libdir@
+	$(INSTALL) -m 755 $(MdsIpSSH) $(DESTDIR)@libdir@
+	$(INSTALL) -m 755 $(MdsIpHTTP) $(DESTDIR)@libdir@
         ifdef MdsIpGSI
-		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
+		$(INSTALL) -m 755 $(MdsIpGSI) $(DESTDIR)@libdir@
         endif
 
 .PHONY: docs

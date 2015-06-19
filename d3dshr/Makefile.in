@@ -15,8 +15,8 @@ clean :
 	@ $(RM) $(OBJECTS)
 	@ $(RM) @MAKELIBDIR@libMdsD3D@SHARETYPE@
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKELIBDIR@libMdsD3D@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKELIBDIR@libMdsD3D@SHARETYPE@ $(DESTDIR)@libdir@
 
 @MAKELIBDIR@libMdsD3D@SHARETYPE@ : $(OBJECTS) 
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS)  $(D3DLIB) -ld3 $(LIBS) @FOR_LDFLAGS@ 

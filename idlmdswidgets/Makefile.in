@@ -31,9 +31,9 @@ depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
 install:
-	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsWidgets.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ @libdir@
-	$(INSTALL) -m 644 @MAKEUIDDIR@cw_wvedit.uid @uiddir@
+	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsWidgets.a $(DESTDIR)@libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ $(DESTDIR)@libdir@
+	$(INSTALL) -m 644 @MAKEUIDDIR@cw_wvedit.uid $(DESTDIR)@uiddir@
 
 @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ : $(OBJECTS) 
 	$(LINK.c) -o $@ @LINKMODULE@ $(OBJECTS) -L@MAKELIBDIR@ $(LDFLAGS)  $(LIBS) $(X_LIBS) $(MOTIF_LIBS) $(LIBS) -lXmdsShr

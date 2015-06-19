@@ -17,5 +17,5 @@ clean :
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsLibIdl@SHARETYPEMOD@ $(libdir)
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsLibIdl@SHARETYPEMOD@ $(DESTDIR)$(libdir)

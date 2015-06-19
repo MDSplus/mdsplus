@@ -36,16 +36,16 @@ clean:
 	@ $(RM) @MAKEBINDIR@roam_check_access
 
 
-install: $(bindir) $(libdir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ $(libdir)
-	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ $(libdir)/libRoam@SHARETYPE@
-	chmod 755 $(libdir)/libRoam@SHARETYPE@
-	$(INSTALL) -m 755  @MAKEBINDIR@roam_check_access $(bindir)
+install: $(DESTDIR)$(bindir) $(DESTDIR)$(libdir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ $(DESTDIR)$(libdir)
+	ln -sf libRoam_@GLOBUS_FLAVOR@@SHARETYPE@ $(DESTDIR)$(libdir)/libRoam@SHARETYPE@
+	chmod 755 $(DESTDIR)$(libdir)/libRoam@SHARETYPE@
+	$(INSTALL) -m 755  @MAKEBINDIR@roam_check_access $(DESTDIR)$(bindir)
         ifdef modules
-		$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ $(libdir)
+		$(INSTALL) -m 755  @MAKESHLIBDIR@libRoam_@GLOBUS_FLAVOR@@SHARETYPEMOD@ $(DESTDIR)$(libdir)
         endif
 	if test "@SHARETYPE@" != ".a" ; then \
-		$(INSTALL) -m 644  @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a $(libdir); \
+		$(INSTALL) -m 644  @MAKELIBDIR@libRoam_@GLOBUS_FLAVOR@.a $(DESTDIR)$(libdir); \
 	fi;
 
 

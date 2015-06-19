@@ -34,9 +34,9 @@ clean :
 	@ $(RM) @MAKEUIDDIR@traverser.uid
 
 
-install: $(bindir) @uiddir@
-	$(INSTALL) -m 644  @MAKEUIDDIR@traverser.uid @uiddir@
-	$(INSTALL) -m 755  @MAKEBINDIR@traverser @bindir@
+install: $(DESTDIR)$(bindir) $(DESTDIR)@uiddir@
+	$(INSTALL) -m 644  @MAKEUIDDIR@traverser.uid $(DESTDIR)@uiddir@
+	$(INSTALL) -m 755  @MAKEBINDIR@traverser $(DESTDIR)@bindir@
 
 
 @MAKEBINDIR@traverser : $(OBJECTS)

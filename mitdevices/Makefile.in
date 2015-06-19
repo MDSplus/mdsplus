@@ -239,26 +239,26 @@ clean:
 	@ $(RM) @DC1394_SUPPORT@ @DC1394_SUPPORT2@
 
 
-install: $(bindir) $(libdir)
-	$(INSTALL) -m 644 $(UIDS) @uiddir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevices@SHARETYPE@ @libdir@
+install: $(DESTDIR)$(bindir) $(DESTDIR)$(libdir)
+	$(INSTALL) -m 644 $(UIDS) $(DESTDIR)@uiddir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevices@SHARETYPE@ $(DESTDIR)@libdir@
 	if [ -x @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ ] ; then \
-		$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ @libdir@ ;\
+		$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesIO@SHARETYPE@ $(DESTDIR)@libdir@ ;\
 	fi;
-	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ @libdir@
-	ln -sf libMitDevices@SHARETYPE@ @libdir@/libMIT\$$DEVICES@SHARETYPE@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@libMitDevicesMsg@SHARETYPE@ $(DESTDIR)@libdir@
+	ln -sf libMitDevices@SHARETYPE@ $(DESTDIR)@libdir@/libMIT\$$DEVICES@SHARETYPE@
 	if (test @SHARETYPE@ != .a) then \
-	  $(INSTALL) -m 644  @MAKELIBDIR@libMitDevices.a @libdir@; \
+	  $(INSTALL) -m 644  @MAKELIBDIR@libMitDevices.a $(DESTDIR)@libdir@; \
 	fi;
-	$(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite @bindir@
-	$(INSTALL) -m 755  @MAKEBINDIR@dtaq_update_board.sh @bindir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz @libdir@
-	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs @libdir@
+	$(INSTALL) -m 755  @MAKEBINDIR@reboot_dtaq_satelite $(DESTDIR)@bindir@
+	$(INSTALL) -m 755  @MAKEBINDIR@dtaq_update_board.sh $(DESTDIR)@bindir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz $(DESTDIR)@libdir@
+	$(INSTALL) -m 755  @MAKESHLIBDIR@acq_root_filesystem.tgz_ffs $(DESTDIR)@libdir@
 ifneq "@DC1394_SUPPORT@" ""
-	$(INSTALL) -m 755 @DC1394_SUPPORT@ @libdir@
+	$(INSTALL) -m 755 @DC1394_SUPPORT@ $(DESTDIR)@libdir@
 endif
 ifneq "@DC1394_SUPPORT2@" ""
-	$(INSTALL) -m 755 @DC1394_SUPPORT2@ @libdir@
+	$(INSTALL) -m 755 @DC1394_SUPPORT2@ $(DESTDIR)@libdir@
 endif
 
 l8590_mem.c: l8590_sclr_gen.c

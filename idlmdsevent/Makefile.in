@@ -28,9 +28,9 @@ clean:
 depend:
 	 @makedepend -- $(CFLAGS) -- $(SOURCES)
 
-install: $(libdir)
-	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsEvent.a @libdir@
-	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsEvent@SHARETYPEMOD@ @libdir@
+install: $(DESTDIR)$(libdir)
+	$(INSTALL) -m 644  @MAKELIBDIR@libIdlMdsEvent.a $(DESTDIR)@libdir@
+	$(INSTALL) -m 755  @MAKELIBDIR@libIdlMdsEvent@SHARETYPEMOD@ $(DESTDIR)@libdir@
 
 @MAKELIBDIR@libIdlMdsEvent@SHARETYPEMOD@ : $(OBJECTS) $(DEF)
 	$(LINK.c) -o $@ @LINKMODULE@ $(OBJECTS) $(DEF) -L@MAKELIBDIR@ $(LDFLAGS) $(LIBS)

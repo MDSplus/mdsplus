@@ -23,12 +23,12 @@ clean :
 	@ $(RM) @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@
 	@ $(RM) @MAKEBINDIR@tdic
 
-install: $(libdir) $(bindir)
-	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ $(libdir)
+install: $(DESTDIR)$(libdir) $(DESTDIR)$(bindir)
+	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ $(DESTDIR)$(libdir)
 	if (test @SHARETYPE@ != .a) then \
-		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShrExt.a $(libdir); \
+		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShrExt.a $(DESTDIR)$(libdir); \
 	fi;
-	$(INSTALL) -m 755  @MAKEBINDIR@tdic$(EXE) $(bindir)
+	$(INSTALL) -m 755  @MAKEBINDIR@tdic$(EXE) $(DESTDIR)$(bindir)
 
 @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS)
