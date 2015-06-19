@@ -4,8 +4,8 @@ include @top_srcdir@/Makefile.inc
 @MINGW_TRUE@ EXE=.exe
 @MINGW_TRUE@ DEF=mdsdclshr.def
 @MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz -Wl,-Bdynamic -liconv  @LIBDL@ @SOCKETLIB@ 
-@MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
-
+#@MINGW_FALSE@ XML_LIBS=@XML_LIBS@ 
+@MINGW_FALSE@ XML_LIBS=-lxml2
 SOURCES = 		\
 cmdExecute.c         	\
 cmdHelp.c               \
