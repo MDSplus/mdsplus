@@ -1,4 +1,35 @@
-commit a2f817e12e78c02714d8ed90fe0f4371d4602cc3 (HEAD, refs/heads/alpha)
+commit 31c1c2ee73a1a57e2fcd798e43cb594316ad7cf0 (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 23 14:37:03 2015 -0400
+
+    Add VS2013 build for VS import libs and MdsObjectsCppShr.so
+
+commit ed098fd777dbebcd2e340556c2bd7ba2cdd02e59
+Merge: 556aea7 5b0baa1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 23 14:19:36 2015 -0400
+
+    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus
+
+commit 556aea71a3114573660ca1e10aeaa485f76bd9fa
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 23 14:18:13 2015 -0400
+
+    Add Visual Studio 2013 project to build VS import libraries and build MdsObjectsCppShr-VS.dll
+
+commit 5b0baa142c021d8fc4fdc78d3b796a17be06d398
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 23 17:36:50 2015 +0200
+
+    Fix search for properties file
+
+commit ae59ad087878fd60740d6152fc61fe9578d67066 (tag: refs/tags/alpha_release-7-0-98, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jun 19 22:22:42 2015 +0000
+
+    New ChangeLog
+
+commit a2f817e12e78c02714d8ed90fe0f4371d4602cc3
 Merge: b901ed7 cf57227
 Author: Brian Standley <brian@brianstandley.com>
 Date:   Fri Jun 19 14:28:38 2015 +0200
@@ -7,7 +38,7 @@ Date:   Fri Jun 19 14:28:38 2015 +0200
     
     Fixes to CYGNET4K support based on testing at W7-X
 
-commit b901ed72ef51076180528d1d8ffcc6b9dd9f6bdf (tag: refs/tags/alpha_release-7-0-97, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit b901ed72ef51076180528d1d8ffcc6b9dd9f6bdf (tag: refs/tags/alpha_release-7-0-97)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Jun 18 22:34:35 2015 +0000
 
