@@ -8,7 +8,7 @@ AC_CANONICAL_TARGET
 AC_CANONICAL_HOST
 
 
-AM_INIT_AUTOMAKE([1.11.1 foreign subdir-objects])
+AM_INIT_AUTOMAKE([1.13.1 foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 #AC_CONFIG_HEADER(include/config.h)
@@ -804,6 +804,8 @@ fi
 
 dnl Check for jdk files
 OLD_CPPFLAGS=$CPPFLAGS
+AS_VAR_SET_IF([JNI_INCLUDE_DIR],[jni_inc_dir="$JNI_INCLUDE_DIR"])
+AS_VAR_SET_IF([JNI_MD_INCLUDE_DIR],[jni_md_inc_dir="$JNI_MD_INCLUDE_DIR"])
 CPPFLAGS="$CPPFLAGS -I$jni_inc_dir -I$jni_md_inc_dir"
 AC_CHECK_HEADER(jni.h,JDK_CFLAGS="-I$jni_inc_dir")
 AC_CHECK_HEADER(jni_md.h,JDK_CFLAGS="$JDK_CFLAGS -I$jni_md_inc_dir")

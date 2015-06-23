@@ -105,7 +105,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
 
 
     public synchronized void updateProfiles(String name,
-                                            int x_pixel, int y_pixel, float time,
+                                            int x_pixel, int y_pixel, double time,
                                             int pixels_x[], int start_pixel_x,
                                             int pixels_y[], int start_pixel_y)
                                             //int pixels_signal[], float frames_time[])
@@ -159,7 +159,7 @@ public class ProfileDialog extends JDialog implements WaveformListener
 
 
     public synchronized void updateProfiles(String name,
-                                            int x_pixel, int y_pixel, float time,
+                                            int x_pixel, int y_pixel, double time,
                                             float values_x[], int start_pixel_x,
                                             float values_y[], int start_pixel_y)
                                            // float values_signal[], float frames_time[])

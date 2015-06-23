@@ -497,7 +497,7 @@ public class MdsDataProvider
                 else
                 {
                     _jscope_set = true;
-                    expr = "( _jscope_" + v_idx + " = (" + in_y +"), shape(_jscope_" + v_idx + "))";
+                    expr = "( _jscope_" + v_idx + " = (" + in_y +";), shape(_jscope_" + v_idx + "))";
                 }
             }
             error = null;
@@ -708,7 +708,7 @@ public class MdsDataProvider
                     xExpr = in_x;
                 }
             }
-             try   {
+//             try   {
                  
                 String setTimeContext;
                 if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
@@ -845,13 +845,13 @@ public class MdsDataProvider
                     titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
                     if(type == 1)
                         isLong = true;
-                }
+/*                }
                 catch(Exception exc)
                 {
                     System.out.println("Error Reading data: "+exc);
                     nSamples = 0;
                 }
-                //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
+ */               //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
                 if(segmentMode == SEGMENTED_YES && continuousUpdate)
                 {
                     long refreshPeriod = jScopeFacade.getRefreshPeriod();
@@ -862,11 +862,13 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+//                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
-            RealArray xReal = GetRealArray(xExpr);
+//            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
+            float y[] = GetFloatArray("("+yExpr+")");
+            //RealArray xReal = GetRealArray(xExpr);
+            RealArray xReal = GetRealArray("("+xExpr+";)");
             if(xReal.isLong())
             {
                 isXLong = true;
@@ -892,7 +894,7 @@ public class MdsDataProvider
         }
         
         private long x2DLong[];
-        public float[] getX2D()
+        public double[] getX2D()
         {
             String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0)";
             try {
@@ -906,7 +908,7 @@ public class MdsDataProvider
                 else
                 {
                     x2DLong = null;
-                    return realArray.getFloatArray();
+                    return realArray.getDoubleArray();
                 }
                 //return GetFloatArray(in);
             } catch(Exception exc){return null;}
@@ -1702,6 +1704,15 @@ public class MdsDataProvider
                 float[] outF = new float[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
                     outF[i] = (float) desc.int_data[i];
+                out = new RealArray(outF);
+            }
+            break;
+            case Descriptor.DTYPE_SHORT:
+            case Descriptor.DTYPE_USHORT:
+            {
+                float[] outF = new float[desc.short_data.length];
+                for (int i = 0; i < desc.short_data.length; i++)
+                    outF[i] = (float) desc.short_data[i];
                 out = new RealArray(outF);
             }
             break;

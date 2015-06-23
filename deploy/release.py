@@ -40,7 +40,8 @@ set -e
 git checkout -f %(flavor)s >&2
 git fetch origin --tags
 git reset --hard origin/%(flavor)s >&2
-git describe --tags --abbrev=0 --match "%(flavor)s_release*"
+git pull origin %(flavor)s >&2
+git tag -l '%(flavor)s_release*' | sort -V -r
     """ % info, stdout=subprocess.PIPE) 
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:

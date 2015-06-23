@@ -45,8 +45,8 @@ public class WaveformEvent
     float values_line[] = null;
     float frames_time[];
     float x_value = Float.NaN;
-    float time_value = Float.NaN;
-    float data_value = Float.NaN;
+    double time_value = Float.NaN;
+    double data_value = Float.NaN;
     boolean is_mb2 = false;
 
     private long dateValue;
@@ -175,12 +175,12 @@ public class WaveformEvent
         this.x_value = x_value;
     }
 
-    public void setTimeValue(float time_value)
+    public void setTimeValue(double time_value)
     {
         this.time_value = time_value;
     }
 
-    public void setDataValue(float data_value)
+    public void setDataValue(double data_value)
     {
         this.data_value = data_value;
     }
@@ -246,14 +246,14 @@ public class WaveformEvent
                     Date date1 = new Date();
                     date1.setTime((long)delta_x);
                     */
-                    s = SetStrSize("[" +  getFormattedDate( dateValue + (long)point_x , "d-MMM-yyyy HH:mm:ss" ) + //format.format(date).toString() +
+                    s = SetStrSize("[" +  getFormattedDate( dateValue + (long)point_x , "d-MMM-yyyy HH:mm:ss.SSS" ) + //format.format(date).toString() +
                                     ", "
                                     + Waveform.ConvertToString(point_y, false) +
                                     "; dx "
-                                    + getFormattedDate( (long)delta_x , "HHH:mm:ss" ) + //format1.format(date1).toString() +
+                                    + getFormattedDate( (long)delta_x , "HHH:mm:ss.SSS" ) + //format1.format(date1).toString() +
                                     "; dy "
                                     + Waveform.ConvertToString(delta_y, false) +
-                                    "]", 80);
+                                    "]", 90);
 
                 }
                 else
@@ -267,7 +267,7 @@ public class WaveformEvent
                                    + Waveform.ConvertToString(delta_y, false) +
                                    "; 1/dx "
                                    + Waveform.ConvertToString(1. / dx_f, false) +
-                                   "]", 80);
+                                   "]", 90);
                 }
 
             case WaveformEvent.POINT_UPDATE:
@@ -295,7 +295,7 @@ public class WaveformEvent
                                 date.setTime(dateValue + (long)time_value);
                                  * 
                                  */
-                                xt_string = ", T = " + getFormattedDate( /*dateValue*/ + (long)time_value , "d-MMM-yyyy HH:mm:ss" );// format.format(date).toString();
+                                xt_string = ", T = " + getFormattedDate( /*dateValue*/ + (long)time_value , "d-MMM-yyyy HH:mm:ss.SSS" );// format.format(date).toString();
                                 showXasDate = false;
                             }
                             else
@@ -307,7 +307,7 @@ public class WaveformEvent
 
 
                         String x_string = null;
-                        int string_size = 30;
+                        int string_size = 40;
                         if(showXasDate)
                         {
                             /*
@@ -317,8 +317,8 @@ public class WaveformEvent
                             date.setTime(dateValue + (long)point_x);
                             //x_string = format.format(date).toString();
                              */
-                            x_string = getFormattedDate( /*dateValue*/ + (long)point_x , "d-MMM-yyyy HH:mm:ss" );
-                            string_size = 35;
+                            x_string = getFormattedDate( /*dateValue*/ + (long)point_x , "d-MMM-yyyy HH:mm:ss.SSS" );
+                            string_size = 45;
                         }
                         else
                            x_string = ""+new Float(point_x);
@@ -329,7 +329,7 @@ public class WaveformEvent
                         else
                             s = SetStrSize("[" + x_string + ", "
                                            + new Float(point_y) + xt_string +
-                                           "]", string_size + 20);
+                                           "]", string_size + 40);
                     }
                     else
                     if (frame_type == FrameData.BITMAP_IMAGE_32 ||

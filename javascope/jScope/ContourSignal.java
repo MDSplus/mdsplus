@@ -3,7 +3,7 @@ package jScope;
 import java.io.*;
 import java.awt.*;
 import java.awt.geom.*;
-import java.awt.geom.Point2D.Float;
+import java.awt.geom.Point2D.Double;
 import java.text.*;
 import java.util.*;
 import javax.swing.*;
@@ -67,13 +67,13 @@ public class ContourSignal
       {
       CASE_B, CASE_D, CASE_C};
 
-  float x[];
+  double x[];
   float y[];
   float z[][];
 
-  float xmin = -1, xmax = 1;
-  float ymin = -1, ymax = 1;
-  float zmin = -1, zmax = 1;
+  double xmin = -1, xmax = 1;
+  double ymin = -1, ymax = 1;
+  double zmin = -1, zmax = 1;
 
   boolean automaticLimits = true;
 
@@ -95,7 +95,7 @@ public class ContourSignal
 	}
   }
 
-  ContourSignal(float x[], float y[], float z[][])
+  ContourSignal(double x[], float y[], float z[][])
   {
 
     if (x.length != z.length || y.length != z[0].length)
@@ -109,7 +109,7 @@ public class ContourSignal
     computeMinMax();
   }
 
-  private final boolean checkIntersection(float level, float z1, float z2)
+  private final boolean checkIntersection(double level, double z1, double z2)
   {
     boolean out;
 
@@ -120,14 +120,14 @@ public class ContourSignal
     return out;
   }
 
-  public Vector<Vector> contour(float level)
+  public Vector<Vector> contour(double level)
   {
     Vector<Vector> contours = new Vector<Vector>();
-    Vector<Point2D.Float> contour = new Vector<Point2D.Float>();
+    Vector<Point2D.Double> contour = new Vector<Point2D.Double>();
 
-    float x1, y1, z1;
-    float x2, y2, z2;
-    float xc, yc, c1;
+    double x1, y1, z1;
+    double x2, y2, z2;
+    double xc, yc, c1;
 
 
 //System.out.println("Livello " + level);
@@ -140,8 +140,8 @@ public class ContourSignal
     Point firstPoint = new Point();
     Point currPoint  = new Point();
 
-    Point2D.Float firstCPoint = new Point2D.Float();
-    Point2D.Float currCPoint = new Point2D.Float();
+    Point2D.Double firstCPoint = new Point2D.Double();
+    Point2D.Double currCPoint = new Point2D.Double();
 
     xflag = new boolean[x.length][y.length];
 
@@ -176,7 +176,7 @@ public class ContourSignal
           c1 = (level - z1) / (z2 - z1);
           xc = x1 + (x2 - x1) * c1;
           yc = y1 + (y2 - y1) * c1;
-          contour.addElement( ( firstCPoint = new Point2D.Float(xc, yc) ) );
+          contour.addElement( ( firstCPoint = new Point2D.Double(xc, yc) ) );
           edgeCase = CASE_A;
           ri = i;
           rj = j;
@@ -274,7 +274,7 @@ public class ContourSignal
                   c1 = (level - z1) / (z2 - z1);
                   xc = x1 + (x2 - x1) * c1;
                   yc = y1 + (y2 - y1) * c1;
-                  contour.addElement(( currCPoint = new Point2D.Float(xc, yc) ) );
+                  contour.addElement(( currCPoint = new Point2D.Double(xc, yc) ) );
                   ri += xNear[rPoint[l]];
                   rj += yNear[rPoint[l]];
                   currPoint = new Point(ri, rj);
@@ -454,7 +454,7 @@ public class ContourSignal
                 if (contour.size() >= 2)
                 {
                   contours.addElement(contour);
-                  contour = new Vector<Point2D.Float>();
+                  contour = new Vector<Point2D.Double>();
                 }
                 else
                 {
@@ -464,7 +464,7 @@ public class ContourSignal
                 c1 = (level - z1) / (z2 - z1);
                 xc = x1 + (x2 - x1) * c1;
                 yc = y1 + (y2 - y1) * c1;
-                contour.addElement( ( currCPoint = new Point2D.Float(xc, yc) ) );
+                contour.addElement( ( currCPoint = new Point2D.Double(xc, yc) ) );
                 currPoint = new Point(ri, rj);
 
                 if(!found && border == 4)
@@ -494,7 +494,7 @@ public class ContourSignal
           if (contour.size() >= 2)
           {
             contours.addElement(contour);
-            contour = new Vector<Point2D.Float>();
+            contour = new Vector<Point2D.Double>();
           }
           else
           {
@@ -519,19 +519,19 @@ public class ContourSignal
     setMinMaxZ(zmin, zmax);
   }
 
-  public void setMinMaxX(float xmin, float xmax)
+  public void setMinMaxX(double xmin, double xmax)
   {
     this.xmin = xmin;
     this.xmax = xmax;
   }
 
-  public void setMinMaxY(float ymin, float ymax)
+  public void setMinMaxY(double ymin, double ymax)
   {
     this.ymin = ymin;
     this.ymax = ymax;
   }
 
-  public void setMinMaxZ(float zmin, float zmax)
+  public void setMinMaxZ(double zmin, double zmax)
   {
     this.zmin = zmin;
     this.zmax = zmax;

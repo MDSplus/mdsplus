@@ -1,4 +1,272 @@
-commit 938969e5568f94c89c85431c37b165d83376498c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+commit a2f817e12e78c02714d8ed90fe0f4371d4602cc3 (HEAD, refs/heads/alpha)
+Merge: b901ed7 cf57227
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Fri Jun 19 14:28:38 2015 +0200
+
+    Merge pull request #9 from bstandley/feature-cygnet4k-fixes
+    
+    Fixes to CYGNET4K support based on testing at W7-X
+
+commit b901ed72ef51076180528d1d8ffcc6b9dd9f6bdf (tag: refs/tags/alpha_release-7-0-97, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 18 22:34:35 2015 +0000
+
+    New ChangeLog
+
+commit 86ddc9b4ed4a30cb2cb35184323a3d0887d00057
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 18 14:08:35 2015 -0400
+
+    Use static libxml2 and libz libraries on mingw builds to prevent incompatibilities with the zlib1.dll that ships with MATLAB. Also correct the jni includes used on mingw builds.
+
+commit cf572277a8a2ac68e4ccdcfbb2589fc43bc9e244
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Jun 18 17:51:59 2015 +0200
+
+    Fixes to CYGNET4K support based on testing at W7-X
+
+commit 69e0c273677b7f1536968519881dc363fc46f6f1
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Thu Jun 18 09:23:56 2015 +0200
+
+    Signal 2D 64bit time-base management added
+
+commit 17a4648e211ba79c1666e03dc0c5c148d61d5fbc (tag: refs/tags/alpha_release-7-0-96)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 17 22:23:17 2015 +0000
+
+    New ChangeLog
+
+commit 717ccd7bef12501ef5a30af64215e09aaf52133d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jun 17 08:50:25 2015 -0400
+
+    Require higher version of automake. Older versions didn't support the java stamp
+
+commit 6eb35c0a6398414933b1119629167454d498de28
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 17 11:26:24 2015 +0200
+
+    More fixes on LocalDataProvider
+
+commit 9b256b67498f3245877baa402a1ebc773278e0bb
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 17 10:58:14 2015 +0200
+
+    Fix LocalDataProvider
+
+commit 186115dddae883c45d0ea291a1095567d47c0684 (tag: refs/tags/alpha_release-7-0-95)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 17 03:48:57 2015 +0000
+
+    New ChangeLog
+
+commit 205ef78e1c6dcaac85041b2574fd4739d8b44c0b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 23:30:14 2015 -0400
+
+    Fix automake generation of Makefile.in
+
+commit 4884707177984eb33a607d1f630b423c420899b5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 13:37:48 2015 -0400
+
+    Add the compression objects to the MdsIpShr static library to prevent undefined references
+
+commit 8c8658f0bb2eb12897eccd73087a4958b19f6fbb
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 13:34:17 2015 -0400
+
+    Add the compression objects to the static library to prevent undefined references
+
+commit 82384a83a93558f01e46e7a4ccb06eacdaf9d7a5
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 11:52:11 2015 -0400
+
+    Use MKDIR_P macro instead of mkdir for the docs directory
+
+commit 9b2446a1437e65903b3f720dc6fdacc7603158c6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 11:49:05 2015 -0400
+
+    Use MKDIR_P macro instead of mkdir for the docs directory
+
+commit a0c26d0aa5ec2e366b9ce0ee921294050adee53c (tag: refs/tags/alpha_release-7-0-94)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 13:22:07 2015 +0000
+
+    New ChangeLog
+
+commit a006fb74c71f7add520b936d1a3322bc860b33d7
+Merge: d769969 ea4b0e7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 08:48:21 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit ea4b0e732d677eee52dc3d9bcbf3b73c8b741963
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 12:43:54 2015 +0000
+
+    New ChangeLog
+
+commit 75bef9e72f31a75de02fabef0a2e21cb4fe2f39f
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 12:41:06 2015 +0000
+
+    New ChangeLog
+
+commit d76996972cd6e6731cd610444549047319235202
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 16 08:39:55 2015 -0400
+
+    Fix method for finding latest release tag. git describe does not seem to work as expected
+
+commit e89c6bc49dee847e81fa2ce43c4d6d3dd23f9883
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 09:28:08 2015 +0000
+
+    New ChangeLog
+
+commit 6ffadf9f0356c7d88607a12b7df6362e97eebcac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 09:20:09 2015 +0000
+
+    New ChangeLog
+
+commit a69df052f33a3a98f5518bda0b4e8b7fb742b190
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 09:18:56 2015 +0000
+
+    New ChangeLog
+
+commit ffc7ae9795a5d0fbc98efed54fa5b19bbe015539
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 09:00:22 2015 +0000
+
+    New ChangeLog
+
+commit 7857eb7422e534a5017b79069da38f90ca84c974
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 08:27:07 2015 +0000
+
+    New ChangeLog
+
+commit 64fc18b618be66d86c0d209011abe046e1858f0a
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 07:55:17 2015 +0000
+
+    New ChangeLog
+
+commit 3d2a1a4554db39acb6e034828541537582cf9a93
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 03:01:34 2015 -0400
+
+    New ChangeLog
+
+commit 48b3361f1725d06a8b8f6e3e4dc5ba80094cccd7
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 05:39:31 2015 +0000
+
+    New ChangeLog
+
+commit 26b2eddfffe04e9f5ec6ec46608a5cbde0a86658
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 05:18:41 2015 +0000
+
+    New ChangeLog
+
+commit 7417a86b4aa7f98abcd0341007d871205057fbc3
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 05:17:21 2015 +0000
+
+    New ChangeLog
+
+commit e9e62456facf358ad128cc3968a009bc6a8d5a94
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 04:38:40 2015 +0000
+
+    New ChangeLog
+
+commit e3d96e9165a02954d0c86c21d71ab311dc4076e2
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 23:26:11 2015 -0400
+
+    New ChangeLog
+
+commit bd7fcfe7b35076c4949bff425a9ce9b5a42ca2a2
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 16 03:08:42 2015 +0000
+
+    New ChangeLog
+
+commit 9b6020e411da87dbd472ee8d49a7343153f1122c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 22:48:48 2015 -0400
+
+    pull after reseting local checkout. put output on stderr so release info can be processed correctly.
+
+commit 6c586140799348686fb14aaea23e9fbc0d4f427e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 22:44:09 2015 -0400
+
+    pull after reseting local checkout
+
+commit cebba9dcef4e82624337c1b27a8939e9b328d2d8
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 23:47:58 2015 +0000
+
+    New ChangeLog
+
+commit 99489ea6141d732937cd3f89b83541e25d6bc907
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 23:27:43 2015 +0000
+
+    New ChangeLog
+
+commit 7319bf87732c204df796a3384374864cf493f0ff
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 22:49:19 2015 +0000
+
+    New ChangeLog
+
+commit 7c0c6e56fa29d3206a66e8dd93d495c7e2d77544
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 22:30:59 2015 +0000
+
+    New ChangeLog
+
+commit 13f9a111a7901cdc7ce2285ae50d510d7c394b59
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 15 22:11:00 2015 +0000
+
+    New ChangeLog
+
+commit 1b76e4144728da657820c4d68bca5cbadf712ed0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 17:12:28 2015 -0400
+
+    Do not permit multiple processes to attempt compress or clean on the same tree
+
+commit 7466ff6bdc557c809694f3028d4d0ef457d3925e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 15 11:53:38 2015 -0400
+
+    fix memory handling of Monitor server name storage
+
+commit 3639ee825e17dc545247a8f7213bbb9002582765
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 15 09:48:38 2015 +0200
+
+    Fix NaN management
+
+commit 2c321c771dee754b06467ee977af2964cbd5ba21
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Sun Jun 14 22:45:28 2015 +0000
+
+    New ChangeLog
+
+commit 938969e5568f94c89c85431c37b165d83376498c
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Sun Jun 14 22:11:03 2015 +0000
 
