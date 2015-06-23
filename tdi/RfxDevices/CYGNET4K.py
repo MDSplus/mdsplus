@@ -4,6 +4,8 @@ from threading import *
 from ctypes import *
 import datetime
 import time
+import tempfile
+import os
 
 class CYGNET4K(Device):
     print 'Cygnet4K'
@@ -13,14 +15,14 @@ class CYGNET4K(Device):
       {'path':':CONF_FILE', 'type':'text'},
       {'path':':COMMENT', 'type':'text'},
       {'path':':ID', 'type':'numeric', 'value':1},
-      {'path':':EXP_TIME', 'type':'numeric', 'value':20E-3},
+      {'path':':EXP_TIME', 'type':'numeric', 'value':1.}, # msec
       {'path':':BINNING', 'type':'text', 'value':'1x1'},
       {'path':':ROI_X', 'type':'numeric', 'value':0},
       {'path':':ROI_Y', 'type':'numeric', 'value':0},
       {'path':':ROI_WIDTH', 'type':'numeric', 'value':2048},
       {'path':':ROI_HEIGHT', 'type':'numeric', 'value':2048},
-      {'path':':FRAME_SYNC', 'type':'text', 'value':'EXTERNAL'},
-      {'path':':FRAME_FREQ', 'type':'numeric', 'value':10.},
+      {'path':':FRAME_SYNC', 'type':'text', 'value':'EXTERNAL RISING'},
+      {'path':':FRAME_FREQ', 'type':'numeric', 'value':10.}, # Hz
       {'path':':FRAME_CLOCK', 'type':'numeric'},
       {'path':':TRIG_TIME', 'type':'numeric', 'value':0.},
       {'path':':DURATION', 'type':'numeric', 'value':1.},
@@ -100,7 +102,7 @@ class CYGNET4K(Device):
         self.mdsLib.camStartSave(byref(listPtr))
 
 
-        currTime = c_float(0)
+        currTime = 0.0
         frameIdx = c_int(0)
         baseTicks = c_int(-1)
         timeoutMs = c_int(500)
@@ -113,11 +115,14 @@ class CYGNET4K(Device):
         stopped = False
 
         self.raptorLib.epixStartVideoCapture(c_int(self.id))
+#        print('  capture started')
+#        ts = time.time()
         while not self.stopReq:
           if(self.duration <= 0 or currDuration < self.duration):
             self.raptorLib.epixCaptureFrame(c_int(self.id), frameIdx, bufIdx, baseTicks, c_int(self.xPixels), c_int(self.yPixels), c_int(framesNid), c_int(timebaseNid), treePtr, listPtr, timeoutMs, byref(frameIdx), byref(bufIdx), byref(baseTicks), byref(currDuration))
-            currTime = self.device.trig_time.data() + currDuration
+            currTime = self.device.trig_time.data() + currDuration.value
             if currTime > prevTime:
+#              print('  %0.3f since start of capture' % (time.time() - ts))
               measuredTimes.append(currTime)
               prevTime = currTime
               if(self.duration > 0 and currDuration >= self.duration):
@@ -125,7 +130,7 @@ class CYGNET4K(Device):
                 self.device.frame_clock.putData(Float32Array(measuredTimes))
                 stopped = True
             else: 
-              time.sleep(0.5)  #do nothing , only wait stop
+              time.sleep(0.005) # I think it should be a relatively short sleep so we do not miss any frames. --Brian
 
 #Finished storing frames, stop camera integration and store measured frame times
         if (not stopped):
@@ -220,17 +225,41 @@ class CYGNET4K(Device):
         mdsLib
       except:
         mdsLib = CDLL("libcammdsutils.so")
- 
+
+##Adjust config file
+    def genconf(self):
+      confPath = self.conf_file.data()
+      exposure = self.exp_time.data()
+      if exposure < 0     : exposure = 0.0     # must avoid negative numbers
+      if exposure > 13000 : exposure = 13000.0 # tested with a (80 MHz) config file specifiying 10s exposures at 0.1Hz, so this is a safe limit at 60MHz
+      exp_clks = '%08X' % int(exposure * 60e3)
+      byte_str = [exp_clks[0:2], exp_clks[2:4], exp_clks[4:6], exp_clks[6:8]]
+      print(byte_str)
+      line0 = '    0x124F0450,     0x53060D50,     0x06D402E0,     0xE0530650,     0x5000ED02,     0x02E05306,     0x0650' + byte_str[0] + 'EE,     0xEF02E053,     \n'
+      line1 = '    0x530650' + byte_str[1] + ',     0x' + byte_str[2] + 'F002E0,     0xE0530650,     0x50' + byte_str[3] + 'F102,     0x02E05306,     0x06502FDD,     0xDE02E053,     0x530650AF,     \n'
+
+      fh, abs_path = tempfile.mkstemp()
+      with open(abs_path, 'w') as adjusted:
+        with open(confPath) as original:
+          for line in original:
+            if   line.startswith('    0x124F04') : adjusted.write(line0)
+            elif line.startswith('    0x530650') : adjusted.write(line1)
+            else                                 : adjusted.write(line)
+      os.close(fh)
+      return abs_path
+
 ##########init############################################################################    
     def init(self,arg):
       global raptorLib
       global mdsLib
       self.frames.setCompressOnPut(False)	
       self.checkLibraries()
-      confPath = self.conf_file.data()
+      tmpPath = self.genconf()
       xPixels = c_int(0)
       yPixels = c_int(0)
-      raptorLib.epixOpen(c_char_p(confPath), byref(xPixels), byref(yPixels))
+      raptorLib.epixClose() # as config file is dynamically generated we want to force a re-open
+      raptorLib.epixOpen(c_char_p(tmpPath), byref(xPixels), byref(yPixels))
+#      os.remove(tmpPath) # should uncomment this line at some point --Brian
       idx = self.id.data();
       if idx <= 0:
         print 'Wrong value of Device Id, must be greater than 0'
@@ -247,7 +276,7 @@ class CYGNET4K(Device):
         codedTrigMode = 0x0C
       if(trigMode == 'FIXED FRAME RATE'): 
         codedTrigMode = 0x0E
-    
+
       raptorLib.epixSetConfiguration(c_int(idx), c_float(frameRate), c_float(exposure), c_int(codedTrigMode))
       PCBTemperature = c_float(0)
       CMOSTemperature = c_float(0)
@@ -256,10 +285,8 @@ class CYGNET4K(Device):
       roiXOffset = c_int(0)
       roiYSize = c_int(0)
       roiYOffset = c_int(0)
-      
+
       raptorLib.epixGetConfiguration(c_int(idx), byref(PCBTemperature), byref(CMOSTemperature), byref(binning), byref(roiXSize), byref(roiXOffset), byref(roiYSize), byref(roiYOffset))
-
-
       if(binning == 0x00):
         self.binning.putData('1x1')
       if(binning == 0x11):
@@ -312,14 +339,3 @@ class CYGNET4K(Device):
       self.restoreTempWorker()
       self.tempWorker.stop()
       return 1
-
-
-
-
-
-
-
-
-
-   
- 

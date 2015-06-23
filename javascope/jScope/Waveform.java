@@ -1442,7 +1442,7 @@ public class Waveform
         we.setIsMB2(is_mb2);
         
         
-        if(s.isLongX())
+        if(s.isLongXForLabel())
             we.setDateValue(0);
         
 

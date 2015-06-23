@@ -261,7 +261,7 @@ public class WaveformMetrics
         g2.setColor(Color.white);
         g2.fillRect(0, 0, d.width - 1, d.height - 1);
 
-        float[] x2D = s.getX2D();
+        double[] x2D = s.getX2D();
         float[] y2D = s.getY2D();
         float[] z2D = s.getZ();
         float z2D_min, z2D_max;

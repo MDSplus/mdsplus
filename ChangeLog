@@ -1,10 +1,73 @@
-commit 205ef78e1c6dcaac85041b2574fd4739d8b44c0b (HEAD, refs/heads/alpha)
+commit a2f817e12e78c02714d8ed90fe0f4371d4602cc3 (HEAD, refs/heads/alpha)
+Merge: b901ed7 cf57227
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Fri Jun 19 14:28:38 2015 +0200
+
+    Merge pull request #9 from bstandley/feature-cygnet4k-fixes
+    
+    Fixes to CYGNET4K support based on testing at W7-X
+
+commit b901ed72ef51076180528d1d8ffcc6b9dd9f6bdf (tag: refs/tags/alpha_release-7-0-97, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 18 22:34:35 2015 +0000
+
+    New ChangeLog
+
+commit 86ddc9b4ed4a30cb2cb35184323a3d0887d00057
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jun 18 14:08:35 2015 -0400
+
+    Use static libxml2 and libz libraries on mingw builds to prevent incompatibilities with the zlib1.dll that ships with MATLAB. Also correct the jni includes used on mingw builds.
+
+commit cf572277a8a2ac68e4ccdcfbb2589fc43bc9e244
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Jun 18 17:51:59 2015 +0200
+
+    Fixes to CYGNET4K support based on testing at W7-X
+
+commit 69e0c273677b7f1536968519881dc363fc46f6f1
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Thu Jun 18 09:23:56 2015 +0200
+
+    Signal 2D 64bit time-base management added
+
+commit 17a4648e211ba79c1666e03dc0c5c148d61d5fbc (tag: refs/tags/alpha_release-7-0-96)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 17 22:23:17 2015 +0000
+
+    New ChangeLog
+
+commit 717ccd7bef12501ef5a30af64215e09aaf52133d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jun 17 08:50:25 2015 -0400
+
+    Require higher version of automake. Older versions didn't support the java stamp
+
+commit 6eb35c0a6398414933b1119629167454d498de28
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 17 11:26:24 2015 +0200
+
+    More fixes on LocalDataProvider
+
+commit 9b256b67498f3245877baa402a1ebc773278e0bb
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 17 10:58:14 2015 +0200
+
+    Fix LocalDataProvider
+
+commit 186115dddae883c45d0ea291a1095567d47c0684 (tag: refs/tags/alpha_release-7-0-95)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 17 03:48:57 2015 +0000
+
+    New ChangeLog
+
+commit 205ef78e1c6dcaac85041b2574fd4739d8b44c0b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 16 23:30:14 2015 -0400
 
     Fix automake generation of Makefile.in
 
-commit 4884707177984eb33a607d1f630b423c420899b5 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 4884707177984eb33a607d1f630b423c420899b5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 16 13:37:48 2015 -0400
 
