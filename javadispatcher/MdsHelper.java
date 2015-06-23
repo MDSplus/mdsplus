@@ -15,35 +15,56 @@ class MdsHelper
         Properties properties = new Properties();
         try {
 
-			String propFileName; 
-			String path;
+            String propFileName; 
+            String path;
 
-			path = System.getenv("MDSPLUS_DIR");
-			if( path == null )
-				path = "";
-			else
-				path = path+"/local/";
+            path = System.getenv("MDSPLUS_DIR");
+            if( path == null )
+                    path = "";
+            else
+                    path = path+"/local/";
 
-			if(experiment != null)
-				propFileName = path+"jDispatcher_"+experiment.toLowerCase()+".properties";
-			else
-				propFileName = path+"jDispatcher.properties";
+            if(experiment != null)
+                    propFileName = path+"jDispatcher_"+experiment.toLowerCase()+".properties";
+            else
+                    propFileName = path+"jDispatcher.properties";
+
+
+	    //System.out.println("Configuration file " + propFileName);
 	
-
-	    	System.out.println("Configuration file " + propFileName);
-	
-			try
-			{
+            try
+            {
             	properties.load(new FileInputStream(propFileName));
             }
+            catch (Exception exc) 
+            {
+                                //System.out.println("Cannot open properties file : "+ propFileName);
+		propFileName = null; 
+            }
+            if( propFileName == null )
+            {
+                try {
+                        propFileName =  path+"jDispatcher.properties";
+                        properties.load(new FileInputStream(propFileName));
+                }
+		catch (Exception exc) 
+		{
+                                //System.out.println("Cannot open properties file : "+ propFileName);
+                    propFileName = null; 
+                }
+                if( propFileName == null )
+                {
+                    try {
+                            propFileName =  "jDispatcher.properties";
+                            properties.load(new FileInputStream(propFileName));
+                        }
 			catch (Exception exc) 
 			{
-				propFileName = null; 
-            	System.out.println("Cannot open properties file : "+ propFileName);
-	    	}
-	    	if( propFileName == null )
-            	properties.load(new FileInputStream( path+"jDispatcher.properties" ));
-
+                            System.out.println("Cannot open properties file : "+ propFileName);
+                            propFileName = null; 
+                        }
+                }
+            }
             int i = 1;
             while(true)
             {
