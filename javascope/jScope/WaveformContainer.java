@@ -381,7 +381,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
         show_measure = state;
     }
 
-    synchronized public void UpdatePoints(double x, Waveform curr_w)
+    /*synchronized */public void UpdatePoints(double x, Waveform curr_w)
     {
         UpdatePoints(x, Double.NaN, curr_w);
     }
@@ -394,7 +394,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
      * @see Waveform
      * @see MultiWaveform
      */
-    synchronized public void UpdatePoints(double x, double y, Waveform curr_w)
+    /*synchronized */public void UpdatePoints(double x, double y, Waveform curr_w)
     {
         Waveform w;
 
