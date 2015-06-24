@@ -1443,11 +1443,23 @@ public class MultiWaveform
 
     }
 
+    public void SetXScale(Waveform w) 
+    {
+        if (waveform_signal == null) {
+            return;
+    }
+    waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+    for (int i = 0; i < signals.size(); i++)
+    {
+        Signal s = (Signal) signals.elementAt(i);
+        if(s != null)
+            s.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+    }
+    ReportChanges();
+  }
     private boolean asinchAutoscale = false;
     public void SetXScaleAutoY(Waveform w)
     {
-        double xmin, xmax;
-
         if (waveform_signal == null)
             return;
 
@@ -1463,6 +1475,12 @@ public class MultiWaveform
 
         }
         waveform_signal.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+        for (int i = 0; i < signals.size(); i++)
+        {
+            Signal s = (Signal) signals.elementAt(i);
+            if(s != null)
+                s.setXLimits(w.waveform_signal.getXmin(), w.waveform_signal.getXmax(), Signal.SIMPLE);
+        }
         AutoscaleY();
 
         update_timestamp++;
