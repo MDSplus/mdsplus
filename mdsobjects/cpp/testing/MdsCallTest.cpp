@@ -24,9 +24,14 @@ int main(int,char **argv) {
         char dummy_op_code = 0;
         unique_ptr<Call> ctr = new Call(0,sizeof(dummy_op_code),&dummy_op_code,200,(char**)raw);
     }
-        
-    setenv("LD_LIBRARY_PATH","./testutils/",true);
-    unique_ptr<Call> call = new Call(new String("MdsTestUtils"),new String("get_ghostbusters_phone"),0,NULL);        
+       
+    { 
+        // Only check if the it finds libm.a from system libraries //
+        unique_ptr<Call> call_std = new Call(new String("m"), new String("sin"),0,NULL );
+    }
+    
+    
+    unique_ptr<Call> call = new Call(new String("./testutils/libMdsTestUtils.so"),new String("get_ghostbusters_phone"),0,NULL);        
     TEST1( unique_ptr<Data>(call->data())->getInt() == 5552368 );
     
     {  
@@ -45,7 +50,7 @@ int main(int,char **argv) {
     {   
         // unary //
         Data *args[1] = { new Int32(5552367) };
-        unique_ptr<Call> call1 = new Call(new String("MdsTestUtils"),new String("test_nextint"),1,(Data**)args);
+        unique_ptr<Call> call1 = new Call(new String("./testutils/libMdsTestUtils.so"),new String("test_nextint"),1,(Data**)args);
         TEST1( unique_ptr<Data>(call1->data())->getInt() == 5552368 );
         deleteData(args[0]);
     }
@@ -53,16 +58,17 @@ int main(int,char **argv) {
     {   
         // binary //                
         Data *args[2] = { new Int32(5552367), new Int32(1) };        
-        unique_ptr<Call> call2 = new Call(new String("MdsTestUtils"),new String("test_addint"),2,(Data**)args);
+        unique_ptr<Call> call2 = new Call(new String("./testutils/libMdsTestUtils.so"),new String("test_addint"),2,(Data**)args);
         TEST1( unique_ptr<Data>(call2->data())->getInt() == 5552368 );        
         deleteData(args[0]);
         deleteData(args[1]);
     }
-            
+    
     {   
         // TDI compile //
-        std::stringstream ss; ss << (Call*)call;      
-        TEST1(ss.str() == std::string("MdsTestUtils->get_ghostbusters_phone:L()"));
+        std::stringstream ss; ss << (Call*)call;
+        //        std::cout << ss.str();
+        TEST1(ss.str() == std::string("./testutils/libMdsTestUtils.so->get_ghostbusters_phone:L()"));
     }
     
     

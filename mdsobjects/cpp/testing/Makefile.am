@@ -6,7 +6,8 @@ AM_DEFAULT_SOURCE_EXT = .cpp
 
 AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
+# AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
+AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
 #@LIBS@ @SRBLIB@
 
 
@@ -26,7 +27,11 @@ TESTS = \
         MdsFunctionTest \
         MdsConglomTest \
         MdsRangeTest \
-        MdsCallTest 
+        MdsCallTest \
+        MdsActionTest \
+        MdsApdTest \
+        MdsTreeTest
+
 else
 TESTS =
 endif
