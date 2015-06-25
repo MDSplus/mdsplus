@@ -1,14 +1,71 @@
-commit 84a1e13cddd94f1f32c2d801ee5b0e33d98505c7 (HEAD, refs/heads/alpha)
+commit df30aed88d9cd8d40b65d64e42941999be193acf (HEAD, refs/heads/alpha)
+Author: Brian Standley <brian@brianstandley.com>
+Date:   Thu Jun 25 17:08:11 2015 +0200
+
+    Add PON and DEINIT to default phase table
+
+commit d8cb6ff244ad8f01bdb080389ea1e9fa366fa23b
+Merge: a2ed128 c780a82
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jun 25 16:50:22 2015 +0200
+
+    Merge pull request #11 from zack-vii/alpha
+    
+    command line for -edit and -readonly flag
+
+commit a2ed1283492e6670b1796be58ad0977d5ea41c9d
+Author: Gruppo Controlli <gabriele.manuchi@igi.cnr.it>
+Date:   Thu Jun 25 15:30:36 2015 +0200
+
+    Initial development of RedPytaia
+
+commit a40ef58f2a6e09571eb5a8a786b5737210f7c6c0
+Merge: 79ed4f6 b7f84e9
+Author: Gruppo Controlli <gabriele.manuchi@igi.cnr.it>
+Date:   Thu Jun 25 15:29:50 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit c780a82dc5c4d47370b9a2cf83847da39e17d47e
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jun 25 14:58:18 2015 +0200
+
+    command line for -edit and -readonly flag
+    
+    added the ability to pass a third command line argument for setting the
+    -edit or -readonly flag for javatraverser
+
+commit b7f84e9762c370d0bbc13c6ed012af911cb1c468 (tag: refs/tags/alpha_release-7-0-100, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jun 24 22:22:31 2015 +0000
+
+    New ChangeLog
+
+commit 84a1e13cddd94f1f32c2d801ee5b0e33d98505c7
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Jun 24 15:22:00 2015 +0200
 
     Remove experimental Continuous Update option
+
+commit 79ed4f669e1e80c0a55957689bdfda31e709ed78
+Merge: fd5e1e1 af6fd5e
+Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
+Date:   Wed Jun 24 12:08:38 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
 commit af6fd5e919a7de4d5e73c0ba07053732dbdb437b
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Jun 24 12:08:06 2015 +0200
 
     Propagate zoom notification to ALL signals
+
+commit fd5e1e1bcb67b95425e20927a4f1045ee37589d1
+Merge: 57cfb6e c63f1cc
+Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
+Date:   Wed Jun 24 11:36:01 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
 commit c63f1cccb38952779b30867f1395a8dfa8929c6c
 Merge: 0888225 1a5de43
@@ -23,7 +80,7 @@ Date:   Wed Jun 24 11:34:32 2015 +0200
 
     Remove deadlock
 
-commit 1a5de434b0ba511df21fa8fd2ac554bf88735473 (tag: refs/tags/alpha_release-7-0-99, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 1a5de434b0ba511df21fa8fd2ac554bf88735473 (tag: refs/tags/alpha_release-7-0-99)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 23 22:25:29 2015 +0000
 
@@ -48,11 +105,25 @@ Date:   Tue Jun 23 14:18:13 2015 -0400
 
     Add Visual Studio 2013 project to build VS import libraries and build MdsObjectsCppShr-VS.dll
 
+commit 57cfb6e7b92877025e9cf2de10337a351afc8c76
+Merge: 234a980 5b0baa1
+Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
+Date:   Tue Jun 23 17:37:54 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
 commit 5b0baa142c021d8fc4fdc78d3b796a17be06d398
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jun 23 17:36:50 2015 +0200
 
     Fix search for properties file
+
+commit 234a9803235340231b828021fc1cce9008c61b37
+Merge: 1cc280a ae59ad0
+Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
+Date:   Tue Jun 23 16:40:04 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
 commit ae59ad087878fd60740d6152fc61fe9578d67066 (tag: refs/tags/alpha_release-7-0-98)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -316,6 +387,13 @@ Date:   Mon Jun 15 11:53:38 2015 -0400
 
     fix memory handling of Monitor server name storage
 
+commit 1cc280a427fc4240d2642123268f06c8adfd83bf
+Merge: 53d9351 3639ee8
+Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
+Date:   Mon Jun 15 09:53:45 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
 commit 3639ee825e17dc545247a8f7213bbb9002582765
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Jun 15 09:48:38 2015 +0200
@@ -399,6 +477,12 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Jun 12 18:34:30 2015 +0200
 
     Handle dual speed clocks
+
+commit 53d935101a51d3c0a3101db267e4512656c2d025
+Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
+Date:   Fri Jun 12 18:31:55 2015 +0200
+
+    Handle dual speed clock
 
 commit af8868d75a31103355d34ddd401e781aa3cb9cd8
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
