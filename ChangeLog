@@ -1,4 +1,35 @@
-commit 31c1c2ee73a1a57e2fcd798e43cb594316ad7cf0 (HEAD, refs/heads/alpha)
+commit 84a1e13cddd94f1f32c2d801ee5b0e33d98505c7 (HEAD, refs/heads/alpha)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 24 15:22:00 2015 +0200
+
+    Remove experimental Continuous Update option
+
+commit af6fd5e919a7de4d5e73c0ba07053732dbdb437b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 24 12:08:06 2015 +0200
+
+    Propagate zoom notification to ALL signals
+
+commit c63f1cccb38952779b30867f1395a8dfa8929c6c
+Merge: 0888225 1a5de43
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 24 11:34:59 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 0888225841b031796724bcbfb3e3c6b4ffcedca2
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jun 24 11:34:32 2015 +0200
+
+    Remove deadlock
+
+commit 1a5de434b0ba511df21fa8fd2ac554bf88735473 (tag: refs/tags/alpha_release-7-0-99, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 23 22:25:29 2015 +0000
+
+    New ChangeLog
+
+commit 31c1c2ee73a1a57e2fcd798e43cb594316ad7cf0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 23 14:37:03 2015 -0400
 
@@ -23,7 +54,7 @@ Date:   Tue Jun 23 17:36:50 2015 +0200
 
     Fix search for properties file
 
-commit ae59ad087878fd60740d6152fc61fe9578d67066 (tag: refs/tags/alpha_release-7-0-98, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit ae59ad087878fd60740d6152fc61fe9578d67066 (tag: refs/tags/alpha_release-7-0-98)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 19 22:22:42 2015 +0000
 
