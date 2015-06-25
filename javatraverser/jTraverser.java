@@ -37,20 +37,29 @@ public class jTraverser extends JFrame implements ActionListener
 	    UIManager.put("Button.font", new FontUIResource(new Font("LuciduxSans", Font.BOLD, 11)));
     }
 
-	if(args.length >= 2)
-	    FrameRepository.frame = new jTraverser(args[0], args[1]);
-	else if(args.length == 1)
-      FrameRepository.frame = new jTraverser(args[0], null);
+    if(args.length >= 3)
+		FrameRepository.frame = new jTraverser(args[0], args[1], args[2]);
+    else if(args.length == 2)
+		FrameRepository.frame = new jTraverser(args[0], args[1], null);
+    else if(args.length == 1)
+      	FrameRepository.frame = new jTraverser(args[0], null, null);
     else
-	    FrameRepository.frame = new jTraverser(null, null);
+	    FrameRepository.frame = new jTraverser(null, null, null);
 
     }
 
 
-    public jTraverser(String exp_name, String shot_name)
+    public jTraverser(String exp_name, String shot_name, String access)
     {
 	this.exp_name = exp_name;
 	this.shot_name = shot_name;
+	Boolean edit = false;
+	Boolean readonly = false;
+	if (access != null)
+	{
+		edit     = (new String(access).equals("-edit"));
+		readonly = (new String(access).equals("-readonly"));
+	}
 	JMenuBar menu_bar = new JMenuBar();
 	setJMenuBar(menu_bar);
 	JMenu curr_menu = new JMenu("File");
@@ -133,7 +142,7 @@ public class jTraverser extends JFrame implements ActionListener
 
 	tree = new Tree(this);
 	if(exp_name != null)
-	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), false, false, false);
+	    tree.open(exp_name.toUpperCase(), (shot_name == null)?-1:Integer.parseInt(shot_name), edit, readonly, false);
 	else
 	    setTitle("jTraverser - no tree open");
 	getContentPane().add(tree);
