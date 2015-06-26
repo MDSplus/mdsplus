@@ -798,9 +798,13 @@ AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
 # AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
 AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
+AM_TESTS_ENVIRONMENT = \
+      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
+
 LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+@USE_VALGRIND_TRUE@               --suppressions=valgrind-dlerr.supp \
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
 all: all-recursive

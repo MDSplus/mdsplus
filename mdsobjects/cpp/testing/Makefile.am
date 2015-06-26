@@ -36,12 +36,15 @@ else
 TESTS =
 endif
 
-
+AM_TESTS_ENVIRONMENT = \
+      export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
+      
 LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 
 if USE_VALGRIND
 LOG_COMPILER = valgrind
 AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
+               --suppressions=valgrind-dlerr.supp \
                --dsymutil=yes --leak-check=yes
 endif
 

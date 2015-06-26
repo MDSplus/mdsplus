@@ -1,0 +1,8 @@
+{
+   suppression for dlerror
+   Memcheck:Addr4
+   fun:LibFindImageSymbol_C
+   fun:LibFindImageSymbol
+   fun:TreeCallHook
+}
+
