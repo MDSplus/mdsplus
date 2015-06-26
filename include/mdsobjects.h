@@ -36,6 +36,7 @@
 #include <mdsplus/ConditionVar.hpp>
 #include <mdsplus/Mutex.hpp>
 #include <mdsplus/numeric_cast.hpp>
+#include <mdsplus/AutoPointer.hpp>
 
 ///@{
 ///
@@ -2065,7 +2066,6 @@ public:
 /// completion_message and performance.
 ///
 
-
 class Action: public Compound
 {
 public:
@@ -3215,12 +3215,49 @@ public:
 };
 
 
-////////////////Class Tree/////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Tree  //////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/// MDSplus provides a data storage mechanism for recording a wide variety of
+/// information pertaining to experiments or simulations including, but not
+/// limited to, data acquisition settings, comments, physical measurements,
+/// data acquisition and analysis task information and analysis results.
+/// Keeping all this information organized can be difficult especially with
+/// large experiments or codes where there may be many thousands of data items.
+/// MDSplus provides a hierarchical tree structure in its data storage so that
+/// users can organize their data much like one would organize files in a file
+/// system with directories and subdirectories.
+/// 
+/// A tree is a collection of nodes which describe something. All data in
+/// MDSplus are stored in trees. There are two different kinds of nodes in the
+/// MDSplus tree structure called members and children. One could consider
+/// members to be similar to files in a file system while children are similar
+/// to directories. Members normally contain data, (i.e. a measurement, a
+/// calibration coefficient, a comment) while a child node, used for structure
+/// only, cannot contain data. However, unlike a file system, both members and
+/// children nodes can have subnodes of either members or children.
+///
+///  Tree shots
+///  ----------
+///
+/// The trees which contain the data pertaining to an experiment or simulation
+/// are stored on an MDSplus server as files. Each tree consists of a model
+/// (shot # -1) and one or more pulse files with positive shot numbers. Special
+/// shot numbers:
+///
+///     -1 - model
+///      0 - current shot
+///     >1 - pulse files 
+///
+
 class EXPORT Tree
 {
     friend void setActiveTree(Tree *tree);
     friend Tree *getActiveTree();
-    Tree(void *dbid, char const * name, int shot);
+    
 protected:
     Tree(){}
     
@@ -3229,28 +3266,85 @@ protected:
     void *ctx;
 
 public:
-    Tree(char const * name, int shot);
-    Tree(char const * name, int shot, char const * mode);
-    ~Tree();
-    void *operator new(size_t sz);
-    void operator delete(void *p);
     
-    static void lock();
-    static void unlock();
-    static void setCurrent(char const * treeName, int shot);
-    static int getCurrent(char const * treeName);
-    static Tree *create(char const * name, int shot);
+    /// Builds a new Tree object instance creating or attaching to the named
+    /// tree. The tree name has to match the path envoronment variable
+    /// xxx_path, and the shot is the shot number the Tree instance will point
+    /// to.
+    /// 
+    Tree(char const * name, int shot);
+    
 
+    /// Builds a new Tree object instance creating or attaching to the named
+    /// tree. The tree name has to match the path envoronment variable
+    /// xxx_path, and the shot is the shot number the Tree instance will point
+    /// to. Four opening mode are availabe:
+    /// 
+    /// | opening mode | description                                                     |
+    /// |--------------|-----------------------------------------------------------------|
+    /// | NEW          | create new tree with target parse files if not present          |
+    /// | EDIT         | open tree in edit mode to access the tree structure for writing |
+    /// | READONLY     | open tree in read only mode                                     |
+    /// | NORMAL       | set the tree for normal operations reading and writing data     |
+    /// 
+    Tree(char const * name, int shot, char const * mode);
+    
+    ~Tree();
+    
+    /// Set current shot number (see \ref SetCurrentShotId)
+    static void setCurrent(char const * treeName, int shot);
+    
+    /// Get current shot number (see \ref TreeGetCurrentShotId)
+    static int getCurrent(char const * treeName);
+    
+    /// return current tree context (see treeshr library)
     void *getCtx() {return ctx;}
+    
+    /// reopen target tree in edit mode 
     void edit();
+    
+    /// writes tree changes to the target storage
     void write();
+    
+    /// exits the tree target without writing current changes
     void quit();
+    
+    /// access treenode by path using const char string
     TreeNode *getNode(char const *path);
+    
+    /// access treenode by path using a \ref TreePath mdsplus object
     TreeNode *getNode(TreePath *path);
+
+    /// access treenode by path using a \ref String mdsplus object
     TreeNode *getNode(String *path);
-    TreeNode *addNode(char const * name, char *usage);
-    TreeNode *addDevice(char const * name, char *type);
+    
+    /// Adds a node by path and usage. To each node we assign here a USAGE.
+    /// This node characteristic defines and limits how a particular node can
+    /// be used. Usage must be a strig matching one of the following:
+    /// 
+    /// | usage    |   description                                             |
+    /// |----------|-----------------------------------------------------------|
+    /// | ACTION   | node that describes an \ref Action object                 |
+    /// | ANY      | node scope not defined and it left here set for any use   |
+    /// | AXIS     | node represent an axis object                             |
+    /// | COMPOUND_DATA | node represents a \ref Compound object               |
+    /// | DEVICE        | node is a device composite data used for acquisition |
+    /// | DISPATCH      | node is a dispach of an action                       |
+    /// | STRUCTURE     | used for tree structure - a "child" node definition  |
+    /// | NUMERIC       | node contains simple numbers or arrays               |
+    /// | SIGNAL        | node is a signal object                              |
+    /// | SUBTREE       | node links to another tree                           |
+    /// | TASK          | node represents a Task of a \ref Action              |
+    /// | TEXT          | node will contain a text string                      |
+    /// | WINDOW        | node is a window definition                          |
+    /// 
+    TreeNode *addNode(char const * name, char const * usage);
+
+    /// add device node to tree with name and device type
+    TreeNode *addDevice(char const * name, char const * type);
+    
     void remove(char const *name);
+    
     TreeNodeArray *getNodeWild(char const *path, int usageMask);
     TreeNodeArray *getNodeWild(char const *path);
     void setDefault(TreeNode *treeNode);
@@ -3296,6 +3390,8 @@ public:
 };
 /////////////////End CachedTree/////////
 #endif
+
+
 /////////////Class Event///////////
 class EXPORT Event {
 public:
