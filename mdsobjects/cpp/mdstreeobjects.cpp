@@ -120,9 +120,6 @@ Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
 	//setActiveTree(this);
 }
 
-Tree::Tree(void *dbid, char const *name, int shot): name(name), shot(shot), ctx(dbid)
-{
-}
 
 Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr)
 {
@@ -152,15 +149,17 @@ Tree::~Tree()
     	TreeFreeDbid(ctx);
 }
 
-EXPORT void *Tree::operator new(size_t sz)
-{
-	return ::operator new(sz);
-}
+// WINDOWS only commented out //
 
-EXPORT void Tree::operator delete(void *p)
-{
-	::operator delete(p);
-}
+//EXPORT void *Tree::operator new(size_t sz)
+//{
+//	return ::operator new(sz);
+//}
+
+//EXPORT void Tree::operator delete(void *p)
+//{
+//	::operator delete(p);
+//}
 
 void Tree::edit()
 {
@@ -169,14 +168,6 @@ void Tree::edit()
 		throw MdsException(status);
 }
 
-Tree *Tree::create(char const * name, int shot)
-{
-	void *dbid;
-	int status = _TreeOpenNew(&dbid, name, shot);
-	if(!(status & 1))
-		throw MdsException(status);
-	return new Tree(dbid, name, shot);
-}
 
 void Tree::write()
 {
@@ -192,7 +183,7 @@ void Tree::quit()
 		throw MdsException(status);
 }
 
-TreeNode *Tree::addNode(char const * name, char *usage)
+TreeNode *Tree::addNode(char const * name, char const * usage)
 {
 	int newNid;
 	int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
@@ -201,7 +192,7 @@ TreeNode *Tree::addNode(char const * name, char *usage)
 	return new TreeNode(newNid, this);
 }
 
-TreeNode *Tree::addDevice(char const * name, char *type)
+TreeNode *Tree::addDevice(char const * name, char const * type)
 {
 	int newNid;
 	int status = _TreeAddConglom(ctx, name, type, &newNid);
@@ -446,7 +437,7 @@ Data *TreeNode::data()
 
 template<class T>
 static T getNci(void * ctx, int nid, short int code) {
-	T value;
+	T value = 0;
 	int len;
 	struct nci_itm nciList[] =  {
 			{ sizeof(T), code, &value, &len},
