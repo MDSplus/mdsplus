@@ -38,10 +38,11 @@ def getLatestRelease(flavor):
     """
 set -e
 git checkout -f %(flavor)s >&2
-git fetch origin
+git fetch origin --tags
 git reset --hard origin/%(flavor)s >&2
-git pull --tags >&2
-git describe --tags --abbrev=0 --match "%(flavor)s_release*"
+git pull origin %(flavor)s >&2
+ git log --tags="alpha_release*" --oneline -n 1 --date-order -- ChangeLog | \
+awk '{system("git tag -l --contains "$1);}'git tag -l '
     """ % info, stdout=subprocess.PIPE) 
   tag=p.stdout.readlines()[0][:-1]
   if p.wait() == 0:
