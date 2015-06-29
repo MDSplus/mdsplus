@@ -41,7 +41,7 @@ git checkout -f %(flavor)s >&2
 git fetch origin --tags
 git reset --hard origin/%(flavor)s >&2
 git pull origin %(flavor)s >&2
-git log --tags="alpha_release*" --oneline -n 1 --date-order -- ChangeLog | \
+git log --tags="%(flavor)s_release*" --oneline -n 1 --date-order -- ChangeLog | \
 awk '{system("git tag -l --contains "$1);}'
     """ % info, stdout=subprocess.PIPE) 
   tag=p.stdout.readlines()[0][:-1]
