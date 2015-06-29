@@ -1,4 +1,16 @@
-commit 840e82f86955443de396b560cf014b63b2c57406 (HEAD, refs/heads/stable)
+commit 41bbfa495169226aa9fb3c54cf95b49f86b21978 (HEAD, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 29 11:58:45 2015 -0400
+
+    fix. Remove alpha reference in releases
+
+commit 9d8439609b66ca03151e51bab0f75a1d5895b930 (tag: refs/tags/stable_release-7-0-102, refs/remotes/origin/stable)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 29 11:25:50 2015 -0400
+
+    New ChangeLog
+
+commit 840e82f86955443de396b560cf014b63b2c57406
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 10:51:10 2015 -0400
 
@@ -89,7 +101,7 @@ Date:   Mon Jun 15 11:53:38 2015 -0400
 
     fix memory handling of Monitor server name storage
 
-commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13, refs/remotes/origin/stable)
+commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 12 01:54:43 2015 +0000
 
