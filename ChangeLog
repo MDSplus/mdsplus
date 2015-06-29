@@ -1,4 +1,28 @@
-commit df30aed88d9cd8d40b65d64e42941999be193acf (HEAD, refs/heads/alpha)
+commit 96919fe0848578634c3ea23e9c9205314dce1258 (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 29 12:04:20 2015 -0400
+
+    Fix release handling again
+
+commit 1397b13dd8d3f018aa7fbb1c1f5a7d0e1b1ee78e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 29 10:52:10 2015 -0400
+
+    Use different mechanism to find latest release tag
+
+commit 1db4ae58797f31d43abe641bf9387c4479a0d10d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jun 29 10:42:30 2015 -0400
+
+    Use different mechanism to find latest release tag
+
+commit e895d08e49a94d2db36f1194d8be3e87eabfdffe (tag: refs/tags/alpha_release-7-0-101)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jun 25 22:24:08 2015 +0000
+
+    New ChangeLog
+
+commit df30aed88d9cd8d40b65d64e42941999be193acf
 Author: Brian Standley <brian@brianstandley.com>
 Date:   Thu Jun 25 17:08:11 2015 +0200
 
@@ -35,7 +59,7 @@ Date:   Thu Jun 25 14:58:18 2015 +0200
     added the ability to pass a third command line argument for setting the
     -edit or -readonly flag for javatraverser
 
-commit b7f84e9762c370d0bbc13c6ed012af911cb1c468 (tag: refs/tags/alpha_release-7-0-100, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit b7f84e9762c370d0bbc13c6ed012af911cb1c468 (tag: refs/tags/alpha_release-7-0-100)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jun 24 22:22:31 2015 +0000
 
@@ -321,7 +345,7 @@ Date:   Tue Jun 16 04:38:40 2015 +0000
 
     New ChangeLog
 
-commit e3d96e9165a02954d0c86c21d71ab311dc4076e2
+commit e3d96e9165a02954d0c86c21d71ab311dc4076e2 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 15 23:26:11 2015 -0400
 
