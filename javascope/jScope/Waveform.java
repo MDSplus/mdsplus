@@ -2392,20 +2392,22 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
       for (int i = 0; i < sig.getNumPoints(); i++)
       {
-        up = wm.YPixel(up_error[i] + sig.getY(i), d);
-        if (!sig.hasAsymError())
-        {
-          low = wm.YPixel(sig.getY(i) - up_error[i], d);
-        }
-        else
-        {
-          low = wm.YPixel(sig.getY(i) - low_error[i], d);
-        }
-        x = wm.XPixel(sig.getX(i), d);
+        try {
+            up = wm.YPixel(up_error[i] + sig.getY(i), d);
+            if (!sig.hasAsymError())
+            {
+              low = wm.YPixel(sig.getY(i) - up_error[i], d);
+            }
+            else
+            {
+              low = wm.YPixel(sig.getY(i) - low_error[i], d);
+            }
+            x = wm.XPixel(sig.getX(i), d);
 
-        g.drawLine(x, up, x, low);
-        g.drawLine(x - 2, up, x + 2, up);
-        g.drawLine(x - 2, low, x + 2, low);
+            g.drawLine(x, up, x, low);
+            g.drawLine(x - 2, up, x + 2, up);
+            g.drawLine(x - 2, low, x + 2, low);
+        }catch(Exception exc){}
       }
     }
 
