@@ -45,7 +45,7 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
         <Property name="columns" type="int" value="1"/>
-        <Property name="rows" type="int" value="3"/>
+        <Property name="rows" type="int" value="4"/>
       </Layout>
       <SubComponents>
         <Container class="javax.swing.JPanel" name="jPanel2">
@@ -61,7 +61,21 @@
                 <Property name="textOnly" type="boolean" value="true"/>
               </Properties>
             </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel5">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
             <Component class="DeviceDispatch" name="deviceDispatch1">
+            </Component>
+            <Component class="DeviceField" name="deviceField5">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="IP Address:"/>
+                <Property name="numCols" type="int" value="20"/>
+                <Property name="offsetNid" type="int" value="1"/>
+              </Properties>
             </Component>
           </SubComponents>
         </Container>
@@ -79,9 +93,10 @@
             <Component class="DeviceChoice" name="deviceChoice1">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="2">
-                    <StringItem index="0" value="INTERNAL"/>
-                    <StringItem index="1" value="EXTERNAL"/>
+                  <StringArray count="3">
+                    <StringItem index="0" value="CHAN_A"/>
+                    <StringItem index="1" value="CHAN_B"/>
+                    <StringItem index="2" value="EXTERNAL"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>

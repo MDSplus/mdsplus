@@ -30,7 +30,9 @@ public class REDPYTADCSetup extends DeviceSetup {
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
+        jPanel5 = new javax.swing.JPanel();
         deviceDispatch1 = new DeviceDispatch();
+        deviceField5 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
@@ -46,7 +48,7 @@ public class REDPYTADCSetup extends DeviceSetup {
         setWidth(700);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
-        jPanel1.setLayout(new java.awt.GridLayout(3, 1));
+        jPanel1.setLayout(new java.awt.GridLayout(4, 1));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Comment:");
@@ -54,16 +56,25 @@ public class REDPYTADCSetup extends DeviceSetup {
         deviceField1.setOffsetNid(2);
         deviceField1.setTextOnly(true);
         jPanel2.add(deviceField1);
-        jPanel2.add(deviceDispatch1);
 
         jPanel1.add(jPanel2);
+
+        jPanel5.add(deviceDispatch1);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("IP Address:");
+        deviceField5.setNumCols(20);
+        deviceField5.setOffsetNid(1);
+        jPanel5.add(deviceField5);
+
+        jPanel1.add(jPanel5);
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Acq. Duration (ms):");
         deviceField2.setOffsetNid(3);
         jPanel3.add(deviceField2);
 
-        deviceChoice1.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+        deviceChoice1.setChoiceItems(new String[] {"CHAN_A", "CHAN_B", "EXTERNAL"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Trig Mode: ");
         deviceChoice1.setOffsetNid(4);
@@ -107,9 +118,11 @@ public class REDPYTADCSetup extends DeviceSetup {
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
+    private DeviceField deviceField5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     // End of variables declaration//GEN-END:variables
 }
