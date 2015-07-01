@@ -1,10 +1,22 @@
-commit 41bbfa495169226aa9fb3c54cf95b49f86b21978 (HEAD, refs/heads/stable)
+commit f99582048a8d35e5624488a571fbc00d7ea23dd8 (HEAD, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 30 16:51:39 2015 -0400
+
+    Do not include the directory-spec in mdsip.exe invocation
+
+commit a9d5cb574fbb8507116d24a933f754c830990346 (refs/remotes/origin/stable)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 29 13:04:43 2015 -0400
+
+    New ChangeLog
+
+commit 41bbfa495169226aa9fb3c54cf95b49f86b21978
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 11:58:45 2015 -0400
 
     fix. Remove alpha reference in releases
 
-commit 9d8439609b66ca03151e51bab0f75a1d5895b930 (tag: refs/tags/stable_release-7-0-102, refs/remotes/origin/stable)
+commit 9d8439609b66ca03151e51bab0f75a1d5895b930
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 29 11:25:50 2015 -0400
 
