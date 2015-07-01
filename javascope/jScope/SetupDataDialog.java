@@ -1584,7 +1584,8 @@ import javax.swing.event.*;
 		pix_x_min.setVisible(false);
 		x_max_b.setVisible(true);
 		x_min_b.setVisible(true);
-                continuous_update_b.setVisible(true);
+//Contunius update is experimental and therefore not shown in production interface
+                continuous_update_b.setVisible(false);
 
 		pix_y_max.setVisible(false);
 		pix_y_min.setVisible(false);
@@ -1701,7 +1702,7 @@ import javax.swing.event.*;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
         //GAB 2014
-        if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
+        //if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
 
         return false;
     }
@@ -1755,8 +1756,8 @@ import javax.swing.event.*;
 	    wi.cin_ylabel    = y_label.getText();
       
       //GAB 2014
-      wi.isContinuousUpdate = continuous_update_b.isSelected();
-
+      //wi.isContinuousUpdate = continuous_update_b.isSelected();
+      wi.isContinuousUpdate = false;
    }
 
    private int updateWI()
@@ -1847,7 +1848,8 @@ import javax.swing.event.*;
       wi.mode2D       = new int[num_signal];
       wi.mode1D       = new int[num_signal];
       //GAB 2014
-      wi.isContinuousUpdate = continuous_update_b.isSelected();
+      //wi.isContinuousUpdate = continuous_update_b.isSelected();
+      wi.isContinuousUpdate = false;
 
       if(s[0].shot != UNDEF_SHOT)
         wi.shots        = new long[num_signal];

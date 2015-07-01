@@ -27,10 +27,12 @@ FUN	PUBLIC PHASE_TABLE() {
                      'INITIALIZATION',              '5',
 		     'INIT',			    '5',
                      'PULSE_ON',                    '6',
+                     'PON',                         '6',
                      'BULK_DATA_ACQUISITION',       '9',
                      'STORE',                       '9',
                      'SECONDARY_DATA_ACQUISITION', '10',
                      'ANALYSIS',                   '10',
+                     'DEINIT',                     '90',
 		     'FINISH_SHOT',                '99'
                   ]);
 }

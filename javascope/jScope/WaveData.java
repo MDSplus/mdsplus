@@ -33,7 +33,7 @@ interface WaveData
     XYData getData(int numPoints) throws Exception;
  
     float[] getZ();
-    float[] getX2D();
+    double[] getX2D();
     float[] getY2D();
     long[]  getX2DLong();
 

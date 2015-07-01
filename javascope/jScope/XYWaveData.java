@@ -17,7 +17,7 @@ public class XYWaveData implements WaveData
     boolean increasingX = true;
     double x[];
     float y[];
-    float x2D[];
+    double x2D[];
     long x2DLong[];
     float y2D[];
     float z[];
@@ -92,7 +92,7 @@ public class XYWaveData implements WaveData
     XYWaveData(float x[], float y[], float z[])
     {
        type = Signal.TYPE_2D;
-        this.x2D = new float[x.length];
+        this.x2D = new double[x.length];
         this.y2D = new float[y.length];
         this.z = new float[z.length];
         for(int i = 0; i < x.length; i++)
@@ -108,7 +108,7 @@ public class XYWaveData implements WaveData
     XYWaveData(double x[], float y[], float z[])
     {
        type = Signal.TYPE_2D;
-        this.x2D = new float[x.length];
+        this.x2D = new double[x.length];
         this.y2D = new float[y.length];
         this.z = new float[z.length];
         for(int i = 0; i < x.length; i++)
@@ -260,7 +260,7 @@ public class XYWaveData implements WaveData
         System.out.println("INTERNAL ERROR SimpleWave.getZ for 1D signal");
         return null;
     }
-    public float[] getX2D() 
+    public double[] getX2D() 
     {
         if(type == Signal.TYPE_2D)
             return x2D;

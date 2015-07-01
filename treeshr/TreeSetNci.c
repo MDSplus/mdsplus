@@ -334,7 +334,7 @@ int TreeOpenNciW(TREE_INFO * info, int tmpfile)
       strcat(filename, tmpfile ? "characteristics#" : "characteristics");
       memset(info->nci_file, 0, sizeof(NCI_FILE));
       info->nci_file->get =
-	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDONLY, 0664);
+	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY, 0664);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
       if (info->nci_file->get == -1)
 	info->nci_file->get = 0;

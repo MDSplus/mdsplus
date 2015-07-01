@@ -1,6 +1,6 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-
+#define NOMINMAX
 # ifdef _WIN32
 #  define EXPORT __declspec(dllexport)
 # else

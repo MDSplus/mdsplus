@@ -38,5 +38,6 @@ fun public MdsDevices() {
     'MARTE_XRAY\0', 'RfxDevices\0',
     'CYGNET4K\0', 'RfxDevices\0',
     'BNC845\0', 'W7xDevices\0',
-    'QC9200\0', 'W7xDevices\0']);
+    'QC9200\0', 'W7xDevices\0',
+    'REDPYTADC\0', 'RfxDevices\0']);
 }

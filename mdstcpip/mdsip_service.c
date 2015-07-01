@@ -35,10 +35,17 @@ static int SpawnWorker(SOCKET sock)
   sc_atts.nLength = sizeof(sc_atts);
   sc_atts.bInheritHandle = TRUE;
   sc_atts.lpSecurityDescriptor = NULL;
+  // sprintf(cmd,
+  //	  "%s\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",
+  //	  getenv("MDSPLUS_DIR"), dirname, GetPortname(), GetHostfile(), GetMaxCompressionLevel(),
+  //	  _getpid(), sock);
   sprintf(cmd,
-	  "%s\\%s\\mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",
-	  getenv("MDSPLUS_DIR"), dirname, GetPortname(), GetHostfile(), GetMaxCompressionLevel(),
-	  _getpid(), sock);
+	  "mdsip.exe --port=%s --hostfile=\"%s\" --compression=%d --sockethandle=%d:%d",
+	  GetPortname(),
+	  GetHostfile(),
+	  GetMaxCompressionLevel(),
+	  _getpid(),
+	  sock);
   memset(&startupinfo, 0, sizeof(startupinfo));
   startupinfo.cb = sizeof(startupinfo);
   status = CreateProcess(NULL, TEXT(cmd), NULL, NULL, FALSE, 0, NULL, NULL, &startupinfo, &pinfo);
