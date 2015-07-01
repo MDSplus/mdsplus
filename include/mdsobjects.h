@@ -3343,23 +3343,124 @@ public:
     /// add device node to tree with name and device type
     TreeNode *addDevice(char const * name, char const * type);
     
+    /// remove tree node by path 
     void remove(char const *name);
     
-    TreeNodeArray *getNodeWild(char const *path, int usageMask);
+    /// Get a new array of nodes in this tree or subtrees mathing the path name
+    /// and usages given as arguments. Asterisk is available as a wildcard to
+    /// set the search pattern while usages are found as a ordered bitmask.
+    /// 
+    /// the usage codes are listed in \ref usagedef.h and the mask has to be 
+    /// compiled activating the related bit. For example to set all numeric and
+    /// signals nodes in a tree:
+    /// 
+    ///     AutoPointer<TreeNodeArray> nodes = tree->getNodeWild("***",     
+    ///                                                  1<<TreeUSAGE_NUMERIC & 
+    ///                                                  1<<TreeUSAGE_SIGNAL );
+    /// 
+    TreeNodeArray *getNodeWild(char const *path, int usageMask);        
+
+    /// Get a new array of nodes in this tree or subtrees mathing the path
+    /// name. Asterisk is available as a wildcard to set the search pattern.
+    /// 
     TreeNodeArray *getNodeWild(char const *path);
+    
+    /// Set the node that will be the default base for all the relative paths 
+    /// specified after this function is called. As a new tree is open the fist
+    /// set default node is TOP (i.e the root of the tree).
+    /// 
     void setDefault(TreeNode *treeNode);
+        
+    /// Get the node that is the default base for all the relative paths
+    /// specified using \ref SetDefault function. As a new tree is open the
+    /// fist set default node is TOP (i.e the root of the tree).
+    /// 
     TreeNode *getDefault();
-    bool versionsInModelEnabled();
-    bool versionsInPulseEnabled();
+    
+    /// This function returns true if the tree has been modified from the
+    /// version written in the pulse file. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiMODIFIED.
+    /// 
     bool isModified();
+    
+    /// This function returns true if the tree has been opened in edit mode.
+    /// See treeshr function \ref TreeGetDbi() called with code
+    /// DbiOPEN_FOR_EDIT.
+    /// 
     bool isOpenForEdit();
+        
+    /// This function returns true if the tree has been opened for read only.
+    /// See treeshr function \ref TreeGetDbi() called with code
+    /// DbiOPEN_READONLY.
+    /// 
     bool isReadOnly();
+    
+    /// This function returns true if the tree has been created to keep stored
+    /// data versioning. See treeshr function \ref TreeGetDbi() called with
+    /// code DbiVERSIONS_IN_MODEL. \note This versioning feature will be not
+    /// avaiable for segmented data.
+    /// 
+    bool versionsInModelEnabled();
+    
+    /// This function returns true if the tree has been created to keep stored
+    /// data versioning in the current pulse file. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiVERSIONS_IN_PULSE. \note The
+    /// Versioning feature is not avaiable for segmented data.
+    ///     
+    bool versionsInPulseEnabled();
+    
+    /// Activates the versioning feature in the tree model so each pulse that
+    /// is created will have the versioning active. \note The Versioning
+    /// feature is not avaiable for segmented data.
+    /// 
     void setVersionsInModel(bool enable);
+        
+    /// Activates the versioning feature for the current pulse so all data that
+    /// is stored over the preexisting ones will be always accessible trhough a
+    /// growing version id. \note This versioning feature will be not avaiable
+    /// for segmented data.
+    /// 
     void setVersionsInPulse(bool enable);
+    
+    /// View data stored in tree from given start date when version control is 
+    /// enabled.
+    /// 
     void setViewDate(char *date);
+        
+    
     void setTimeContext(Data *start, Data *end, Data *delta);
+    
+    /// Create pulse makes a copy of the tree model file into a new pulse file
+    /// ready to be filled with new acquired data. When this function is called
+    /// MDSplus asks that the model file is not opened for edit so do not
+    /// create pulses if you opened the tree in EDIT mode. For example a
+    /// correct usage would be:
+    ///     
+    ///     Tree * tree = new Tree("test_tree",-1);
+    ///     tree->createPulse(1);
+    ///     delete tree;
+    ///     tree = new Tree("test_tree",1);
+    /// 
+    /// Please note that as the createPulse makes a copy of the model file a
+    /// plenty tree with all model nodes is written into the new shot. Another
+    /// correct method to create a pulse file would be also to call constructor
+    /// using "NEW" mode:
+    /// 
+    ///     Tree * tree = new Tree("test_tree",1,"NEW");
+    /// 
+    /// but in this case an empty tree will be written to file without any
+    /// node defined form model.
+    /// 
     void createPulse(int shot);
+    
+    /// Delete pulse file identified by shot id. After this function is called
+    /// all tree instance opened with delete shot number are no more valid and
+    /// will throw exception for any content access. Note that the model file
+    /// can not be deleted.
+    ///
     void deletePulse(int shot);
+    
+    
     StringArray *findTags(char *wild);
     void removeTag(char const * tagName);
     int64_t getDatafileSize();

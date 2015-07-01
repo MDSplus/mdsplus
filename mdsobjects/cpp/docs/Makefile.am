@@ -13,6 +13,7 @@ DX_BRIEF = "MDSplus object oriented interface"
 
 DX_PAGES = .. \
            ${top_srcdir}/include/mdsobjects.h \
+           ${top_srcdir}/include/usagedef.h \
            index.md           
 
 DX_EXCLUDE_PAGES = 
