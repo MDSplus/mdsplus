@@ -1,4 +1,65 @@
-commit 96919fe0848578634c3ea23e9c9205314dce1258 (HEAD, refs/heads/alpha)
+commit f8883d3a36a4e1cd41b1246395cba85dc8daf3ce (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 30 16:51:39 2015 -0400
+
+    Do not include the directory-spec in mdsip.exe invocation
+
+commit fdd3b97a99fe7daf8cc1899ee49a78ea291d4704
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 30 15:11:36 2015 -0400
+
+    Add check for existing installer
+
+commit 7b6b710e8546fc3467c8b2dbbee1248055fed240
+Merge: 1887bda c98148d
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 30 14:01:50 2015 -0400
+
+    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus into alpha
+
+commit 1887bda6cf899384c42b20c753ee51cf2fe0ebac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 30 14:00:09 2015 -0400
+
+    add winbld.bat, a command script for using Visual Studio compiler with MdsObjectsCppShr-VS.dll
+
+commit c98148d55032ae79e8ec96a58f4ee18864364fa6
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 17:41:51 2015 +0200
+
+    Refine fields
+
+commit f0816ad6614c1ce0f142ac8fb36801de3eb57eea
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 17:41:24 2015 +0200
+
+    Fix null error bars
+
+commit 91d6b7f06dd23a43dd08715617e425e0b453e2bf
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 15:59:35 2015 +0200
+
+    Add forgotten field
+
+commit 46c585f33ef8d229455bb8d0f4ac45cc960204e5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 15:49:18 2015 +0200
+
+    Added DwSetup for REDPYTADC
+
+commit f68116f24c44ff0a44526afc4f2346746b531076
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 12:12:16 2015 +0200
+
+    Handle null pointer in getClosestIdx()
+
+commit 5101d37e52160f2d046df33280ef01396380f348 (tag: refs/tags/alpha_release-7-0-102, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 29 12:36:07 2015 -0400
+
+    New ChangeLog
+
+commit 96919fe0848578634c3ea23e9c9205314dce1258
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 12:04:20 2015 -0400
 
@@ -345,7 +406,7 @@ Date:   Tue Jun 16 04:38:40 2015 +0000
 
     New ChangeLog
 
-commit e3d96e9165a02954d0c86c21d71ab311dc4076e2 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit e3d96e9165a02954d0c86c21d71ab311dc4076e2
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 15 23:26:11 2015 -0400
 
