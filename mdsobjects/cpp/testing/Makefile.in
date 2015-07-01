@@ -101,7 +101,8 @@ target_triplet = @target@
 @HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) MdsTreeTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) MdsTreeTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	TestTreeWrite$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -129,7 +130,8 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) MdsTreeTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) MdsTreeTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	TestTreeWrite$(EXEEXT)
 MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
@@ -219,6 +221,11 @@ MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
 MdsWindowTest_LDADD = $(LDADD)
 MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
+TestTreeWrite_SOURCES = TestTreeWrite.cpp
+TestTreeWrite_OBJECTS = TestTreeWrite.$(OBJEXT)
+TestTreeWrite_LDADD = $(LDADD)
+TestTreeWrite_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
 buildtest_LDADD = $(LDADD)
@@ -259,14 +266,14 @@ SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeTest.cpp \
-	MdsWindowTest.cpp buildtest.cpp
+	MdsWindowTest.cpp TestTreeWrite.cpp buildtest.cpp
 DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsCompoundTest.cpp MdsConglomTest.cpp MdsDataTest.cpp \
 	MdsDimensionTest.cpp MdsExceptionTest.cpp MdsFunctionTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeTest.cpp \
-	MdsWindowTest.cpp buildtest.cpp
+	MdsWindowTest.cpp TestTreeWrite.cpp buildtest.cpp
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
 	install-data-recursive install-dvi-recursive \
@@ -912,6 +919,10 @@ MdsWindowTest$(EXEEXT): $(MdsWindowTest_OBJECTS) $(MdsWindowTest_DEPENDENCIES) $
 	@rm -f MdsWindowTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsWindowTest_OBJECTS) $(MdsWindowTest_LDADD) $(LIBS)
 
+TestTreeWrite$(EXEEXT): $(TestTreeWrite_OBJECTS) $(TestTreeWrite_DEPENDENCIES) $(EXTRA_TestTreeWrite_DEPENDENCIES) 
+	@rm -f TestTreeWrite$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(TestTreeWrite_OBJECTS) $(TestTreeWrite_LDADD) $(LIBS)
+
 buildtest$(EXEEXT): $(buildtest_OBJECTS) $(buildtest_DEPENDENCIES) $(EXTRA_buildtest_DEPENDENCIES) 
 	@rm -f buildtest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(buildtest_OBJECTS) $(buildtest_LDADD) $(LIBS)
@@ -939,6 +950,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsStringTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsWindowTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestTreeWrite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildtest.Po@am__quote@
 
 .cpp.o:
@@ -1319,6 +1331,13 @@ MdsApdTest.log: MdsApdTest$(EXEEXT)
 MdsTreeTest.log: MdsTreeTest$(EXEEXT)
 	@p='MdsTreeTest$(EXEEXT)'; \
 	b='MdsTreeTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+TestTreeWrite.log: TestTreeWrite$(EXEEXT)
+	@p='TestTreeWrite$(EXEEXT)'; \
+	b='TestTreeWrite'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

@@ -30,7 +30,8 @@ TESTS = \
         MdsCallTest \
         MdsActionTest \
         MdsApdTest \
-        MdsTreeTest
+        MdsTreeTest \
+        TestTreeWrite
 
 else
 TESTS =
