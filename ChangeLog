@@ -1,4 +1,16 @@
-commit f8883d3a36a4e1cd41b1246395cba85dc8daf3ce (HEAD, refs/heads/alpha)
+commit 5a629fe2f720293684328ada1fcff3d46bb4450c (HEAD, refs/remotes/origin/alpha, refs/remotes/origin/HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 10:53:21 2015 -0400
+
+    Move location of service image on Windows
+
+commit 2e22212f0e12138b078412c0c8a03877feb9bf76 (tag: refs/tags/alpha_release-7-0-103)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jul 1 10:45:26 2015 -0400
+
+    New ChangeLog
+
+commit f8883d3a36a4e1cd41b1246395cba85dc8daf3ce
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 30 16:51:39 2015 -0400
 
@@ -53,7 +65,7 @@ Date:   Tue Jun 30 12:12:16 2015 +0200
 
     Handle null pointer in getClosestIdx()
 
-commit 5101d37e52160f2d046df33280ef01396380f348 (tag: refs/tags/alpha_release-7-0-102, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit 5101d37e52160f2d046df33280ef01396380f348 (tag: refs/tags/alpha_release-7-0-102)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 29 12:36:07 2015 -0400
 
@@ -65,7 +77,7 @@ Date:   Mon Jun 29 12:04:20 2015 -0400
 
     Fix release handling again
 
-commit 1397b13dd8d3f018aa7fbb1c1f5a7d0e1b1ee78e
+commit 1397b13dd8d3f018aa7fbb1c1f5a7d0e1b1ee78e (refs/remotes/origin/feature_new_rel_processing)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 10:52:10 2015 -0400
 
