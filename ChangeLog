@@ -1,4 +1,16 @@
-commit 18d1b970d8a204a759ff4eb4efe04becb6f88ed0 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 6f01d7e3839f7ee6f2b5011abcde6afbe7f5c25b (HEAD, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 13:24:38 2015 -0400
+
+    Add windows build script
+
+commit bc112ac4f832b3e9afca1611ddcfe9fa38a5c9ac (tag: refs/tags/stable_release-7-0-21)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jul 2 16:51:22 2015 +0000
+
+    New ChangeLog
+
+commit 18d1b970d8a204a759ff4eb4efe04becb6f88ed0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 2 12:07:41 2015 -0400
 
@@ -156,7 +168,7 @@ Date:   Mon Jun 15 11:53:38 2015 -0400
 
     fix memory handling of Monitor server name storage
 
-commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13)
+commit 13ffe4f6dd38e3ae46292b04266d85494cfe75d0 (tag: refs/tags/stable_release-7-0-13, refs/remotes/origin/stable)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 12 01:54:43 2015 +0000
 
