@@ -1,4 +1,29 @@
-commit 6e81a000783ad35830a04357a8b74e6719faf5da (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit 18d1b970d8a204a759ff4eb4efe04becb6f88ed0 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 12:07:41 2015 -0400
+
+    Add Visual Studio build script
+
+commit 7b31d168d7de0fbedbf1fd8c9e47009dba17bda6
+Merge: 6b07000 dabeea0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 11:43:00 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 6b07000e90052655d231eca84e531804a762d482
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 11:42:02 2015 -0400
+
+    Add Visual Studio project for MdsObjectsCppShr-VS.dll
+
+commit dabeea0c0d3205ca9ee1abeb8ac5b8d6a95ce643 (tag: refs/tags/stable_release-7-0-20)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jul 2 15:19:17 2015 +0000
+
+    New ChangeLog
+
+commit 6e81a000783ad35830a04357a8b74e6719faf5da
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 2 10:53:21 2015 -0400
 
