@@ -1,41 +1,10 @@
 #!/bin/bash
+set -o verbose
 cleanup() {
     rm -Rf /winbld/${tmpdir}
 }
 
 set -e
-echo BRANCH is currently set to $BRANCH
-if [ "$BRANCH" = "local" ]
-then
-    cd /buildsrc
-    trap "" EXIT
-    export BRANCH=$(git branch --list 2>/dev/null | grep '*' | awk '{print $2}')
-    echo BRANCH is now set to $BRANCH
-    if [ -z "$BRANCH" ]; then export BRANCH="local"; fi
-    tag=$(git show-ref refs/heads/${BRANCH} 2>/dev/null | awk '{system("git tag -l --contains "$1" \"'${BRANCH}'_release*\"");}')
-    if [ -z "$tag" ]; then tag="local-0-0-0"; fi
-    export $(echo $tag | awk -F- '{print "MAJOR="$2" MINOR="$3" RELEASE="$4;}')
-    trap - EXIT
-fi
-if [ -d /installer ]
-then
-    if [ "${BRANCH}" = "stable" ]
-    then
-	BNAME=""
-    else
-	BNAME="-${BRANCH}"
-    fi
-    INSTALLER="/installer/MDSplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}.exe"
-    echo Check for existing installer: $INSTALLER
-    if [ -r  "$INSTALLER" ]
-    then
-	echo "$INSTALLER already exists. Nothing to do."
-	exit 0
-    else
-        echo "Building $INSTALLER"
-    fi
-fi
-set -o verbose
 wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
 export JNI_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk
 export JNI_MD_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk/win32
