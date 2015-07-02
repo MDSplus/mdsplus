@@ -1,10 +1,28 @@
-commit f99582048a8d35e5624488a571fbc00d7ea23dd8 (HEAD, refs/heads/stable)
+commit 6e81a000783ad35830a04357a8b74e6719faf5da (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 10:53:21 2015 -0400
+
+    Move location of service image on Windows
+
+commit 7a02fd46fbf05acf1f95cb57fa67c8443d9b69f8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 08:56:30 2015 -0400
+
+    Fix for windows build of labview shared library
+
+commit 034ad68e4a5111f588bad2c7acea529f7648aea2 (tag: refs/tags/stable_release-7-0-19)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jul 1 11:12:31 2015 -0400
+
+    New ChangeLog
+
+commit f99582048a8d35e5624488a571fbc00d7ea23dd8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 30 16:51:39 2015 -0400
 
     Do not include the directory-spec in mdsip.exe invocation
 
-commit a9d5cb574fbb8507116d24a933f754c830990346 (refs/remotes/origin/stable)
+commit a9d5cb574fbb8507116d24a933f754c830990346
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 29 13:04:43 2015 -0400
 
