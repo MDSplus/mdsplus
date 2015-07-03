@@ -31,7 +31,8 @@ TESTS = \
         MdsActionTest \
         MdsApdTest \
         MdsTreeTest \
-        TestTreeWrite
+        TestTreeWrite \
+        MdsTreeNodeTest
 
 else
 TESTS =

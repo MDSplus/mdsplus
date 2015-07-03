@@ -35,14 +35,18 @@ using namespace testing;
 //    void edit();
 //    void write();
 //    void quit();
+
 //    TreeNode *getNode(char const *path);
 //    TreeNode *getNode(TreePath *path);
 //    TreeNode *getNode(String *path);
 //    TreeNode *addNode(char const * name, char *usage);
 //    TreeNode *addDevice(char const * name, char *type);
+
 //    void remove(char const *name);
+
 //    TreeNodeArray *getNodeWild(char const *path, int usageMask);
 //    TreeNodeArray *getNodeWild(char const *path);
+
 //    void setDefault(TreeNode *treeNode);
 //    TreeNode *getDefault();
 //    bool versionsInModelEnabled();
@@ -62,41 +66,6 @@ using namespace testing;
 //};
 ///////////////////End Class Tree /////////////////////
 
-//static int convertUsage(std::string const & usage)
-//{
-//	if (usage == "ACTION")
-//		return TreeUSAGE_ACTION;
-//	else if (usage == "ANY")
-//		return TreeUSAGE_ANY;
-//	else if (usage == "AXIS")
-//		return TreeUSAGE_AXIS;
-//	else if (usage == "COMPOUND_DATA")
-//		return TreeUSAGE_COMPOUND_DATA;
-//	else if (usage == "DEVICE")
-//		return TreeUSAGE_DEVICE;
-//	else if (usage == "DISPATCH")
-//		return TreeUSAGE_DISPATCH;
-//	else if (usage == "STRUCTURE")
-//		return TreeUSAGE_STRUCTURE;
-//	else if (usage == "NUMERIC")
-//		return TreeUSAGE_NUMERIC;
-//	else if (usage == "SIGNAL")
-//		return TreeUSAGE_SIGNAL;
-//	else if (usage == "SUBTREE")
-//		return TreeUSAGE_SUBTREE;
-//	else if (usage == "TASK")
-//		return TreeUSAGE_TASK;
-//	else if (usage == "TEXT")
-//		return TreeUSAGE_TEXT;
-//	else if (usage == "WINDOW")
-//		return TreeUSAGE_WINDOW;
-//	else
-//		return TreeUSAGE_ANY;
-//}
-
-
-//#ifndef USAGEDEF_H
-
 //#define TreeUSAGE_ANY       0
 //#define TreeUSAGE_NONE      1 /******* USAGE_NONE is now USAGE_STRUCTURE *******/
 //#define TreeUSAGE_STRUCTURE 1
@@ -115,9 +84,6 @@ using namespace testing;
 //#define TreeUSAGE_SUBTREE_REF 14 /* Runtime only special usage */
 //#define TreeUSAGE_SUBTREE_TOP 15 /* Runtime only special usage */
 
-//#endif
-
-
 
 
 int main(int argc, char *argv[])
@@ -127,19 +93,35 @@ int main(int argc, char *argv[])
     setenv("test_tree_path",".",true);
     setenv("test_tree2_path",".",true);
     
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Constructors  //////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
         
     { // CTR
         Tree *tree;        
         tree = new Tree("test_tree",-1,"NEW");    delete tree;
         tree = new Tree("test_tree",-1,"NORMAL"); delete tree;
-        tree = new Tree("test_tree",-1,"READONLY"); delete tree;
-        tree = new Tree("test_tree",-1,"EDIT");     delete tree;
+        
+        tree = new Tree("test_tree",-1,"READONLY"); 
+        TEST1( tree->isReadOnly() ) delete tree;        
+        
+        tree = new Tree("test_tree",-1,"EDIT");
+        TEST1( tree->isOpenForEdit() ) delete tree;
+        
         tree = new Tree("test_tree",-1);          delete tree;
         
         TEST_MDS_EXCEPTION ( new Tree("test_tree",-1,"dumy error"),
-                             "Invalid Open mode" );                                
+                             "Invalid Open mode" );
     }
         
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Node Usages  ///////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    
     { // write to parse file node usages //
         Tree *tree = new Tree("test_tree",-1,"NEW");
         
@@ -152,8 +134,8 @@ int main(int argc, char *argv[])
         tree->edit();
         
         AutoData<TreeNode> node = tree->addNode("test_usage","STRUCTURE");
-        tree->write();                        
-       
+        tree->write(); 
+               
         // fill all kinds of nodes into the test_usage structure //
         AutoData<TreeNode>(tree->addNode("\\test_tree::top.test_usage:ANY","ANY"));
         AutoData<TreeNode>(tree->addNode("\\test_tree::top.test_usage:STRUCTURE","STRUCTURE"));
@@ -193,6 +175,7 @@ int main(int argc, char *argv[])
         
         // set a default sub node //
         tree->setDefault( AutoData<TreeNode>(tree->getNode("test_usage")) );
+        TEST1(AutoData<TreeNode>(tree->getDefault())->getNodeNameStr() == "TEST_USAGE");
         
         // test if absolute path is always available //
         TEST1( AutoData<TreeNode>(tree->getNode("\\top.test_usage:ANY")).get() != NULL );
@@ -259,35 +242,159 @@ int main(int argc, char *argv[])
         TEST1(array->operator [](0)->getNodeNameStr() == "WINDOW");                                
     }
     
-    { // test quit
-        unique_ptr<Tree> tree = new Tree("test_tree",-1,"EDIT");
-        tree->addNode("save_me_not","ANY");
-        tree->quit();
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Edit open  /////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    
+    { // test write
+        unique_ptr<Tree> tree = new Tree("test_tree",-1,"READONLY");
+        TEST_EXCEPTION( tree->edit(), MdsException ); 
         
-        // we hould not be able to write tree as it should has been closed
-        TEST_EXCEPTION(tree->write(), MdsException );
+        tree = new Tree("test_tree",-1,"NORMAL");
+                
+        // reopen in normal mode //
+        tree->edit(false);
+        TEST_EXCEPTION ( unique_ptr<TreeNode>( tree->addNode("save_me_not","ANY")), MdsException );        
+                
+        // reopen in edit mode //
+        tree->edit();
+        TEST0( tree->isModified() );
+        unique_ptr<TreeNode>( tree->addNode("save_me_not","ANY"));
+        
+        // isModified()
+        TEST1( tree->isModified() );
+        tree->write();
+        TEST0( tree->isModified() );
+        
+        // remove() node        
+        tree->remove("save_me_not");
+        TEST1( tree->isModified() );
+        tree->write();        
+        TEST0( tree->isModified() );
+        
+        unique_ptr<TreeNode>(tree->addNode("save_me_not","ANY"));                
+        // it does not writes here //
         
         // tests that the node has not been written
         tree = new Tree("test_tree",-1,"NORMAL");
-        TEST_EXCEPTION(tree->getNode("save_me_not"), MdsException );
+        TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("save_me_not")), MdsException );
     }    
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Devices  ///////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
     
      // add device
     {
         unique_ptr<Tree> tree = new Tree("test_tree",-1,"EDIT");
-        tree->addDevice("device","DIO2");
+        unique_ptr<TreeNode>(tree->addDevice("device","DIO2"));
         tree->write();
-    }
-    {
-        unique_ptr<Tree> tree = new Tree("test_tree",-1,"EDIT");
-        unique_ptr<TreeNode> node = tree->getNode("device");
-        std::cout << node->getUsage() << "\n";
+        
+        unique_ptr<TreeNode> node = tree->getNode("device");        
         TEST1( std::string(node->getUsage()) == "DEVICE" );
         
         tree->remove("device");
-        TEST_EXCEPTION( tree->getNode("device"), MdsException );
-    }        
+        tree->write(); // tree open in edit mode so must call write to avoid memory leak //
+        TEST_EXCEPTION( tree->getNode("device"), MdsException );        
+    }                    
     
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Pulses  ////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////    
+    
+    {   // create and delete 
+        unique_ptr<Tree> tree = new Tree("test_tree",-1);
+        tree->createPulse(1);
+        tree = new Tree("test_tree",1);
+        unique_ptr<TreeNode> node = tree->getNode("test_usage:ANY");
+        
+        // test that node has been filled in //
+        TEST1( (bool)node );
+        
+        // test that the returned instance is the actual node requested //
+        TEST1( node->getNodeNameStr() == "ANY" );
+        
+        tree->createPulse(2);
+        tree = new Tree("test_tree",2);
+                
+        tree->deletePulse(2);                     
+        
+        // try to write data into removed pulse //
+        // WARNING: this creates a conditional jump into the tree structure so this test has been removed //        
+        // TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("test_usage:NUMERIC"))->putData(new Int32(5552368)), MdsException );
+        
+        // create a pulse without copying from model structure //
+        tree = new Tree("test_tree",2,"NEW");
+        
+        // test that the new pulse has not the model nodes //
+        TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("test_usage:ANY")), MdsException );        
+        
+        tree->deletePulse(2);
+    }
+    
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Versioning  ////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    
+    {   //  VERSIONS  IN PULSE //
+        unique_ptr<Tree> tree = new Tree("test_tree",-1,"EDIT");
+        tree->setVersionsInModel(false);
+        tree->write(); // tree open in edit mode so must call write to avoid memory leak //
+        
+        tree = new Tree("test_tree",1,"EDIT");
+        unique_ptr<TreeNode> node = tree->addNode("versioned", "NUMERIC");        
+        tree->setVersionsInPulse(true);
+        tree->write();
+        
+        tree = new Tree("test_tree",1);
+        
+        // first version
+        node = tree->getNode("versioned");                        
+        node->putData(AutoPointer<Int32>(new Int32(5552368)));                
+        
+        // after first put node does not contain any further version //
+        TEST0( node->containsVersions() );
+        
+        // second version
+        node = tree->getNode("versioned");
+        node->putData(unique_ptr<Float64>(new Float64(555.2368)));
+        
+        
+        // third version
+        node = tree->getNode("versioned");
+        node->putData(unique_ptr<Int16>(new Int16(555)));
+        
+        TEST1( node->containsVersions() );                                                
+        
+        // TODO: version in model
+    }
+        
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    //  Tags  //////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    {   // TAGS //
+        Tree * tree = new Tree("test_tree",1,"EDIT");
+        unique_ptr<TreeNode> node = tree->getNode("test_usage:TEXT");
+        node->addTag("test_tag");
+        
+        node = tree->getNode("\\test_tag");
+        node = tree->getNode("\\test_tree::test_tag");
+        tree->removeTag("test_tag");
+        
+        TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("\\test_tag")), MdsException );
+        TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("\\test_tree::test_tag")), MdsException );
+        
+        tree->write(); // tree open in edit mode so must call write to avoid memory leak //
+        delete tree;
+    }
     
     
     

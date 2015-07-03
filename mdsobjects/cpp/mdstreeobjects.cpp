@@ -130,7 +130,7 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 	if(upMode == "NORMAL")
 		status = _TreeOpen(&ctx, name, shot, 0);
 	else if(upMode == "READONLY")
-		status = _TreeOpen(&ctx, name, shot, 0);
+		status = _TreeOpen(&ctx, name, shot, 1);
 	else if(upMode == "NEW")
 		status = _TreeOpenNew(&ctx, name, shot);
 	else if(upMode == "EDIT")
@@ -143,27 +143,37 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 }
 
 Tree::~Tree()
-{
-    int status = _TreeClose(&ctx, name.c_str(), shot);
-    if(status & 1)
-    	TreeFreeDbid(ctx);
+{    
+    if( isModified() ) {
+        int status = _TreeQuitTree(&ctx, name.c_str(), shot);
+        if(!(status & 1))
+            throw MdsException(status); 
+    } else {
+        int status = _TreeClose(&ctx, name.c_str(), shot);
+        if(!(status & 1))
+            throw MdsException(status);
+    }
+    TreeFreeDbid(ctx);    
 }
 
-// WINDOWS only commented out //
+// WINDOWS dll force export new and delete //
 
-//EXPORT void *Tree::operator new(size_t sz)
-//{
-//	return ::operator new(sz);
-//}
-
-//EXPORT void Tree::operator delete(void *p)
-//{
-//	::operator delete(p);
-//}
-
-void Tree::edit()
+EXPORT void *Tree::operator new(size_t sz)
 {
-	int status = _TreeOpenEdit(&ctx, name.c_str(), shot);
+	return ::operator new(sz);
+}
+
+EXPORT void Tree::operator delete(void *p)
+{
+	::operator delete(p);
+}
+
+void Tree::edit(const bool st)
+{
+    if( isReadOnly() )
+        throw MdsException("Tree is read only");
+    int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot) :
+                      _TreeOpen(&ctx, name.c_str(), shot,0);     
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -176,12 +186,12 @@ void Tree::write()
 		throw MdsException(status);
 }
 
-void Tree::quit()
-{
-	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
-	if(!(status & 1))
-		throw MdsException(status);
-}
+//void Tree::quit()
+//{
+//	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
+//	if(!(status & 1))
+//		throw MdsException(status);
+//}
 
 TreeNode *Tree::addNode(char const * name, char const * usage)
 {
@@ -502,11 +512,11 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 
 EXPORT void *TreeNode::operator new(size_t sz)
 {
-	return ::operator new(sz);
+    return ::operator new(sz);    
 }
 EXPORT void TreeNode::operator delete(void *p)
 {
-	::operator delete(p);
+    ::operator delete(p);
 }
 
 char *TreeNode::getPath()
@@ -521,8 +531,8 @@ char *TreeNode::getPath()
 
 std::string TreeNode::getPathStr()
 {
-	resolveNid();
-	return AutoString(_TreeGetPath(tree->getCtx(), nid)).string;
+	resolveNid();    
+    return AutoString(getPath()).string;
 }
 
 char *TreeNode::getMinPath() {
@@ -534,7 +544,7 @@ char *TreeNode::getMinPath() {
 }
 
 std::string TreeNode::getMinPathStr() {
-	return AutoString(getMinPath()).string;
+	return AutoString(getMinPath()).string;    
 }
 
 char *TreeNode::getFullPath() {

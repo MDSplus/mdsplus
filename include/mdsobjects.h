@@ -26,7 +26,7 @@
 //#include <semaphore.h>
 #endif
 
-#include <config.h>
+#include <config.h> // should be removed from here //
 #include <dbidef.h>
 #include <ncidef.h>
 #include <mdstypes.h>
@@ -2893,7 +2893,7 @@ public:
     //Force new and delete in dll for windows
     void *operator new(size_t sz);
     void operator delete(void *p);
-
+    
     /// Get the associated tree instance
     Tree *getTree() { return tree; }
 
@@ -3030,7 +3030,7 @@ public:
     /// Ref to \ref getNci with codes NciNUMBER_OF_MEMBERS and NciNUMBER_OF_MEMBERS
     int getNumDescendants();
 
-    // NOTE: [andrea] java implementation discrepance (java uses TreeNodeArray instance)
+    // NOTE: [andrea] java implementation discrepancy (java uses TreeNodeArray instance)
     /// Get all che child nodes for this node.
     TreeNode **getChildren(int *numChildren);
 
@@ -3291,6 +3291,9 @@ public:
     
     ~Tree();
     
+    void *operator new(size_t sz);
+    void operator delete(void *p);    
+    
     /// Set current shot number (see \ref SetCurrentShotId)
     static void setCurrent(char const * treeName, int shot);
     
@@ -3301,13 +3304,13 @@ public:
     void *getCtx() {return ctx;}
     
     /// reopen target tree in edit mode 
-    void edit();
+    void edit(const bool st = true);
     
     /// writes tree changes to the target storage
     void write();
     
-    /// exits the tree target without writing current changes
-    void quit();
+    // /// exits the tree target without writing current changes
+    // void quit();
     
     /// access treenode by path using const char string
     TreeNode *getNode(char const *path);
