@@ -1,4 +1,16 @@
-commit 85e8a5389da1aa6da252ba51842d23ebb5717283 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+commit da7de2ef6a094ceac39096126e8723447573b935 (HEAD, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 6 14:32:47 2015 -0400
+
+    Fix MDSPLUS_VERSION environment variable
+
+commit 6579fb632a567acf2c20a5ab660c182f73083ac1 (tag: refs/tags/stable_release-7-0-23)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Fri Jul 3 23:22:09 2015 -0400
+
+    New ChangeLog
+
+commit 85e8a5389da1aa6da252ba51842d23ebb5717283
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 3 22:55:03 2015 -0400
 
@@ -101,7 +113,7 @@ Date:   Mon Jun 29 10:44:20 2015 -0400
 
     Use different mechanism to find latest release tag
 
-commit da7a261ddf3539135d788b7ba48f8ec6d88237bc (tag: refs/tags/stable_release-7-0-18)
+commit da7a261ddf3539135d788b7ba48f8ec6d88237bc (tag: refs/tags/stable_release-7-0-18, refs/remotes/origin/stable)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 19 22:38:49 2015 +0000
 
