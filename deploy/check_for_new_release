@@ -1,0 +1,31 @@
+#!/bin/bash
+set -e
+git checkout ${GIT_BRANCH}
+git pull
+release_tag=$(wget -O - -q https://github.com/MDSplus/mdsplus/releases | grep ${GIT_BRANCH}_release| awk '{print $0; exit;}' | awk -F/ '{print $NF}' | awk -F\" '{print $1}')
+if [ $(git log --oneline ${release_tag}..${GIT_BRANCH} | wc -l) == 0 ]
+then
+  exit 0
+fi
+set +e
+status=1
+for test_build in "$@"
+do
+  if ( docker run --rm -v $(pwd):/source mdsplus/docker:${test_build} build > /dev/null 2>&1 )
+  then
+    echo ${test_build} succeeded so creating new release.
+    status=0
+    break
+  fi
+done
+set -e
+if [ "$status" = 0 ]
+then
+  release_tag=$(echo $release_tag | awk -F- '{print $1"-"$2"-"$3"-"($4+1);}'
+  git log --decorate=full > ChangeLog
+  git commit -m "New release ---- $release_tag" ChangeLog
+  git tag ${release_tag}
+  git push origin ${release_tag}
+  git push origin ${GIT_BRANCH}
+  echo "Created new release --- $release_Tag"
+fi 
