@@ -1,4 +1,16 @@
-commit da7de2ef6a094ceac39096126e8723447573b935 (HEAD, refs/heads/stable)
+commit ccaa4ef93e295b42e0c35803dc23be4b1d6b4022 (HEAD, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 08:52:33 2015 -0400
+
+    Change source url in rpm's
+
+commit 70e7deff0c9b138e1acced85e478747e01c5df59 (tag: refs/tags/stable_release-7-0-24, refs/remotes/origin/stable)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jul 6 22:43:42 2015 +0000
+
+    New ChangeLog
+
+commit da7de2ef6a094ceac39096126e8723447573b935
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 6 14:32:47 2015 -0400
 
@@ -113,7 +125,7 @@ Date:   Mon Jun 29 10:44:20 2015 -0400
 
     Use different mechanism to find latest release tag
 
-commit da7a261ddf3539135d788b7ba48f8ec6d88237bc (tag: refs/tags/stable_release-7-0-18, refs/remotes/origin/stable)
+commit da7a261ddf3539135d788b7ba48f8ec6d88237bc (tag: refs/tags/stable_release-7-0-18)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Fri Jun 19 22:38:49 2015 +0000
 
