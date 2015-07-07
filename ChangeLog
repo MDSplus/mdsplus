@@ -1,10 +1,34 @@
-commit 30c3025d3323331971042fff20506cbe15d411a0 (HEAD, refs/heads/alpha)
+commit a2cbd2666756a8b83080cf891e8ac2e9685eb1cf (HEAD, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 16:51:01 2015 -0400
+
+    Add new release checker
+
+commit c337cf7b23cce3d6cb3f36ce629be731f42b3c90
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 08:50:36 2015 -0400
+
+    Change source url in rpm's
+
+commit 765e1d9986bec30e07df80b41774addaf505a8d1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 08:39:03 2015 -0400
+
+    Make script executable
+
+commit 2cd43709b781a67f7845e3ae0ac2b2097ec3d1eb (tag: refs/tags/alpha_release-7-0-106, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jul 6 22:27:03 2015 +0000
+
+    New ChangeLog
+
+commit 30c3025d3323331971042fff20506cbe15d411a0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 6 14:31:00 2015 -0400
 
     Fix MDSPLUS_VERSION environment variable
 
-commit ad9776794f0f1762cee6482eb5628bbb7580b808 (tag: refs/tags/alpha_release-7-0-105, refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit ad9776794f0f1762cee6482eb5628bbb7580b808 (tag: refs/tags/alpha_release-7-0-105)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Jul 2 22:27:59 2015 +0000
 
