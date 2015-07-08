@@ -5,27 +5,35 @@ git pull
 release_tag=$(wget -O - -q https://github.com/MDSplus/mdsplus/releases | grep ${GIT_BRANCH}_release| awk '{print $0; exit;}' | awk -F/ '{print $NF}' | awk -F\" '{print $1}')
 if [ $(git log --oneline ${release_tag}..${GIT_BRANCH} | wc -l) == 0 ]
 then
+  echo "The $release_tag is up to date. No new release necessary."
   exit 0
 fi
 set +e
-status=1
+let succeeded=0
+let must_succeed=1
 for test_build in "$@"
 do
   if ( docker run --rm -v $(pwd):/source mdsplus/docker:${test_build} build > /dev/null 2>&1 )
   then
-    echo ${test_build} succeeded so creating new release.
-    status=0
-    break
+    echo "${test_build} succeeded."
+    let succeeded=$succeeded+1
+    if [ "$succeeded" = "$must_succeed"
+    then
+      break
+    fi
+  else
+    echo "${test_build} failed."
   fi
 done
 set -e
-if [ "$status" = 0 ]
+if [ "$succeeded" = "$must_succeed" ]
 then
-  release_tag=$(echo $release_tag | awk -F- '{print $1"-"$2"-"$3"-"($4+1);}'
+  release_tag=$(echo $release_tag | awk -F- '{print $1"-"$2"-"$3"-"($4+1);}')
   git log --decorate=full > ChangeLog
   git commit -m "New release ---- $release_tag" ChangeLog
   git tag ${release_tag}
   git push origin ${release_tag}
   git push origin ${GIT_BRANCH}
   echo "Created new release --- $release_Tag"
+else
 fi 
