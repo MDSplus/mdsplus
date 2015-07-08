@@ -3117,6 +3117,9 @@ int _TreeGetSegments(void *dbid, int nid, struct descriptor *start, struct descr
 	  free(apd.pointer[idx]);
 	}
       }
+      if (apd.pointer) {
+	free(apd.pointer);
+      }
     }
   }
   return status;
