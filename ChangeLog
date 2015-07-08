@@ -1,10 +1,46 @@
-commit ccaa4ef93e295b42e0c35803dc23be4b1d6b4022 (HEAD, refs/heads/stable)
+commit 7c396785d51123216306eeda9c9c61bfb52f4001 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 13:36:25 2015 -0400
+
+    Fix TreePutTimestampedSegment array size check
+
+commit 7f0fbe559aefb5059ff95df2a7790c5bf9758f09
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 13:26:15 2015 -0400
+
+    Fix memory leak
+
+commit a847d1d3ecaa1151623aaf899bd9261f070acde2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:32:14 2015 -0400
+
+    Fix new release message
+
+commit b6b84c22dc170afd71176b8099c8a91cde37cd1c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:27:46 2015 -0400
+
+    Add redhat build scripts
+
+commit dc8f154136fa4c086db9bf7c5e44e6100a3fb260
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:06:08 2015 -0400
+
+    Add new release checker
+
+commit bd841087feff0d280b430daa644e8121efabe66a (tag: refs/tags/stable_release-7-0-25)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jul 7 22:46:32 2015 +0000
+
+    New ChangeLog
+
+commit ccaa4ef93e295b42e0c35803dc23be4b1d6b4022
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 7 08:52:33 2015 -0400
 
     Change source url in rpm's
 
-commit 70e7deff0c9b138e1acced85e478747e01c5df59 (tag: refs/tags/stable_release-7-0-24, refs/remotes/origin/stable)
+commit 70e7deff0c9b138e1acced85e478747e01c5df59 (tag: refs/tags/stable_release-7-0-24)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jul 6 22:43:42 2015 +0000
 
