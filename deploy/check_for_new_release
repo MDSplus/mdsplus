@@ -44,7 +44,7 @@ then
   git tag ${release_tag}
   git push origin ${release_tag}
   git push origin ${GIT_BRANCH}
-  echo "Created new release --- $release_Tag"
+  echo "Created new release --- $release_tag"
 else
   echo "Insufficient number of successful builds so no release tag created."
 fi 
