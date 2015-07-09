@@ -15,6 +15,13 @@ class Tree(object):
 
     _lock=RLock()
     _activeTree=None
+
+	# support for the with-structure
+    def __enter__(self):
+    	return self
+    def __exit__(self, type, value, traceback):
+    	return self.quit()
+
     def __del__(self):
         """Delete Tree instance
         @rtype: None
