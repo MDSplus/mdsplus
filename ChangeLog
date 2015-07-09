@@ -1,4 +1,39 @@
-commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd (HEAD, tag: refs/tags/hudson-alpha-release-12, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 96c366aa7c317cf76cc9d8432efd1422505f1252 (HEAD, tag: refs/tags/hudson-alpha-release-13, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 11:12:13 2015 -0400
+
+    Close tree in 'with Tree() as tree' statement and support it for all types of Tree opens. If open for edit and no exceptions raised, write the tree changes before closing.
+
+commit fdbc55ebbaa02cd0fdb29f94352c47b27c5612e7
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 9 02:18:21 2015 +0200
+
+    added support methods for the with-structure
+    
+    allows for:
+    with Tree('mytree',-1, 'edit') as tree:
+    tree.add...
+    instead of try: ... except: tree.quit()
+
+commit 554f72962b0a9b9278ea58c1c91c39483d7e2f6c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 08:16:16 2015 -0400
+
+    Fix source url
+
+commit 08682e112f13e1285a86867daf654ebb216fc7d7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 08:16:06 2015 -0400
+
+    Fix rpm signing mechanism
+
+commit ce4085452da945d716d97613f52eff053b6e7946 (tag: refs/tags/alpha_release-7-0-109)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 16:18:30 2015 -0400
+
+    New release ---- alpha_release-7-0-109
+
+commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd (tag: refs/tags/hudson-alpha-release-12)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 13:35:56 2015 -0400
 
