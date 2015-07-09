@@ -20,7 +20,13 @@ class Tree(object):
     def __enter__(self):
     	return self
     def __exit__(self, type, value, traceback):
-    	return self.quit()
+        """ Cleanup for with statement. If tree is open for edit and no errors then write tree. """
+        if self.open_for_edit:
+	    if type is not None:
+    	        self.quit()
+            else:
+                self.write()	
+        self.__del__()
 
     def __del__(self):
         """Delete Tree instance
@@ -434,11 +440,12 @@ class Tree(object):
         """Close edit session discarding node structure and tag changes.
         @rtype: None
         """
-        try:
-            Tree.lock()
-            _mimport('_treeshr',1).TreeQuitTree(self)
-        finally:
-            Tree.unlock()
+        if self.open_for_edit:
+            try:
+                Tree.lock()
+                _mimport('_treeshr',1).TreeQuitTree(self)
+            finally:
+                Tree.unlock()
 
     def removeTag(self,tag):
         """Remove a tagname from the tree
