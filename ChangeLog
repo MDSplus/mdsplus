@@ -1,4 +1,22 @@
-commit 96c366aa7c317cf76cc9d8432efd1422505f1252 (HEAD, tag: refs/tags/hudson-alpha-release-13, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b (HEAD, tag: refs/tags/hudson-alpha-release-14, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 14:03:34 2015 -0400
+
+    output signing dialog to stdout
+
+commit e73cac3dd1454bda2f0371dbc1a63a1bc11fa758
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 13:20:43 2015 -0400
+
+    Fix source url AGAIN!
+
+commit 575297a4327c4217b592fe05af400068da66a4ae (tag: refs/tags/alpha_release-7-0-110)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 12:16:21 2015 -0400
+
+    New release ---- alpha_release-7-0-110
+
+commit 96c366aa7c317cf76cc9d8432efd1422505f1252 (tag: refs/tags/hudson-alpha-release-13)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 11:12:13 2015 -0400
 
