@@ -1,4 +1,16 @@
-commit 4cbdbfabb931107f022aa52fc756f378505e165d (HEAD, tag: refs/tags/hudson-stable-release-5, refs/remotes/origin/stable, refs/heads/stable)
+commit beb3dba4e14db6e66cac6f71a4c87b3f6f48a152 (HEAD, tag: refs/tags/hudson-stable-release-6, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 08:17:54 2015 -0400
+
+    Add BRANCH and BNAME members to info
+
+commit 414bae94b80249b90a37fd40e984ade5ba0ee159 (tag: refs/tags/stable_release-7-0-27)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 18:20:55 2015 -0400
+
+    New release ---- stable_release-7-0-27
+
+commit 4cbdbfabb931107f022aa52fc756f378505e165d (tag: refs/tags/hudson-stable-release-5)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 13:34:31 2015 -0400
 
