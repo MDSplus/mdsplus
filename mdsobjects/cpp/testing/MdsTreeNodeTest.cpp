@@ -6,6 +6,7 @@
 
 #include "testing.h"
 #include "testutils/unique_ptr.h"
+#include "testutils/string.h"
 #include "mdsplus/AutoPointer.hpp"
 
 using namespace MDSplus;
@@ -23,7 +24,47 @@ public:
     using TreeNode::getFlag;
     using TreeNode::setFlag;
 };
-}
+} // testing
+
+
+
+namespace testing {
+struct TestNode {
+    TreeNode *node;
+    std::string name,usage,parent,tree;
+    
+    friend std::ostream &
+    operator << (std::ostream &o, const TestNode &n) {
+        o << " -- test node -- \n"
+          << "name:   " << n.node->getNodeNameStr() << " vs " << toupper(n.name) << "\n"
+          << "usage:  " << n.node->getUsage() << " vs " << toupper(n.usage) << "\n"
+          << "parent: " << unique_ptr<TreeNode>(n.node->getParent())->getNodeNameStr() << " vs " << toupper(n.parent) << "\n"
+          << "tree:   " << n.node->getTree()->getName() << " vs " << n.tree << "\n";
+        return o;
+    }
+    
+    void operator()() {
+        TEST1( node->getNodeNameStr() == toupper(name) );
+        TEST1( std::string(node->getUsage()) == toupper(usage) );
+        TEST1( unique_ptr<TreeNode>(node->getParent())->getNodeNameStr() == toupper(parent) );
+        TEST1( node->getTree()->getName() == tree );
+    }
+};
+
+void print_segment_info(TreeNode *node, int segment = -1)
+{
+    char dtype,dimct;
+    int dims[8], next;
+    std::cout << "info> " << node->getPathStr() << "  ";
+    node->getSegmentInfo(segment,&dtype, &dimct, dims, &next);
+    std::cout << "dtype: " << (int)dtype << " ";
+    std::cout << "dims:" << AutoString(unique_ptr<Array>(new Int32Array(dims,dimct))->decompile()).string;
+    if(next == dims[dimct-1]) std::cout << " fullfilled\n";
+    else std::cout << " next empty element: " << next << "\n";
+} 
+} // testing
+
+
 
 int main(int argc, char *argv[])
 {
@@ -252,33 +293,41 @@ int main(int argc, char *argv[])
         
         int num_children;
         // FIX: delete array
-        unique_ptr<TreeNodeArray> children = ( new TreeNodeArray(parent->getChildren(&num_children), num_children) );
+        TreeNode **children = parent->getChildren(&num_children);
         TEST1( num_children == 3 );
-        TEST1( children->getNumNodes() == 3 );
                         
         // nodes are alphabetically ordered //
-        TEST1( children->operator [](0)->getNodeNameStr() == "BROTHER" );
-        TEST1( children->operator [](1)->getNodeNameStr() == "BROTHER2" );
-        TEST1( children->operator [](2)->getNodeNameStr() == "CHILD" );
+        TEST1( children[0]->getNodeNameStr() == "BROTHER" );
+        TEST1( children[1]->getNodeNameStr() == "BROTHER2" );
+        TEST1( children[2]->getNodeNameStr() == "CHILD" );
+        for(int i=0; i< num_children; ++i) {
+            deleteData(children[i]);
+        }
+        delete [] children;
         
         int num_members;
         // FIX: delete array
-        unique_ptr<TreeNodeArray> members = ( new TreeNodeArray(parent->getMembers(&num_members), num_members) );
-        TEST1( num_members = 2 );
-        TEST1( members->getNumNodes() == 2 );        
+        TreeNode **members = parent->getMembers(&num_members);        
+        TEST1( num_members = 2 );        
                         
         // nodes are alphabetically ordered //
-        TEST1( members->operator [](0)->getNodeNameStr() == "MEM1" );
-        TEST1( members->operator [](1)->getNodeNameStr() == "MEM2" );
+        TEST1( members[0]->getNodeNameStr() == "MEM1" );
+        TEST1( members[1]->getNodeNameStr() == "MEM2" );
+        for(int i=0; i< num_members; ++i) {
+            deleteData(members[i]);
+        }
+        delete [] members;
         
         int num_desc;
         // FIX: delete array
-        unique_ptr<TreeNodeArray> desc = ( new TreeNodeArray( parent->getDescendants(&num_desc), num_desc) );
-        TEST1( num_desc == 5 );
-        TEST1( desc->getNumNodes() == 5 );
-                
+        TreeNode **desc = parent->getDescendants(&num_desc);
+        TEST1( num_desc == 5 );                        
         parmem1->putData( unique_ptr<Data>(new Int32(5552368)) );
         parmem2->putData( unique_ptr<Data>(new String("lorem ipsum")) );
+        for(int i=0; i< num_desc; ++i) {
+            deleteData(desc[i]);
+        }
+        delete [] desc;
         
         TEST_EXCEPTION( child->putData( unique_ptr<Data>(new Int32(5552368)) ), MdsException );
         
@@ -323,7 +372,7 @@ int main(int argc, char *argv[])
         
         // COMPRESS ON PUT /////////////////////////////////////////////////////
         
-        // comression is enabled by default //
+        // compression is enabled by default //
         TEST1 ( node->isCompressOnPut() );
         
         node->setCompressOnPut(false);
@@ -452,7 +501,7 @@ int main(int argc, char *argv[])
         unique_ptr<TreeNode>(tree->addNode("test_seg","STRUCTURE"));
         unique_ptr<TreeNode> node = tree->addNode("test_seg:any","ANY");
         
-        int array[] = {1,1,2,4,8,12,20,32,52,84};
+        int array[] = {1,1,2,3,5,8,13,21,34,55};
         
         unique_ptr<Int32Array> array_data = new Int32Array(array,10);
         unique_ptr<Range> array_time = new Range(new Int32(0), new Int32(9), new Int32(1));
@@ -483,6 +532,239 @@ int main(int argc, char *argv[])
         node->makeSegment( unique_ptr<Data>(array_data->getElementAt(0)), unique_ptr<Data>(array_data->getElementAt(9)), array_time, array_data );
         
         
+        TEST1 ( node->getNumSegments() == 2 );
+        
+        // updateSegment .. moves last segment forward of 10s
+        node->updateSegment(unique_ptr<Data>(new Int32(10)), 
+                            unique_ptr<Data>(new Int32(19)), 
+                            unique_ptr<Range>(new Range(new Int32(10), new Int32(19), new Int32(1))) );
+        
+        
+        // updateSegment .. moves first segment backward of 10s
+        node->updateSegment(0,
+                            unique_ptr<Data>(new Int32(-19)), 
+                            unique_ptr<Data>(new Int32(0)), 
+                            unique_ptr<Range>(new Range(new Int32(-19), new Int32(0), new Int32(1))) );
+        
+        { // getSegmentLimits
+            Data *start = NULL; // new Float32(0.);
+            Data *end = NULL; // new Float32(0.);
+            node->getSegmentLimits(0, &start, &end);
+            TEST1( start->getInt() == -19 );
+            TEST1( end->getInt() == 0 );
+            deleteData(start);
+            deleteData(end);
+            
+            node->getSegmentLimits(1, &start, &end);
+            TEST1( start->getInt() == 10 );
+            TEST1( end->getInt() == 19 );
+            deleteData(start);
+            deleteData(end);
+        }
+        
+        { // getSegment
+            unique_ptr<Array> data = node->getSegment(0);
+            int num_elements;
+            AutoArray<int> elements(data->getIntArray(&num_elements));
+            TEST1( num_elements == 10 );
+            for(int i=0; i<10; ++i)
+                TEST1( elements[i] == array[i] );
+        }
+        
+        { // getSegmentdimension
+            unique_ptr<Data> dim = node->getSegmentDim(0);
+            TEST1( std::string( AutoString(dim->decompile()) ) == "-19 : 0 : 1" );
+            dim = node->getSegmentDim(1);
+            TEST1( std::string( AutoString(dim->decompile()) ) == "10 : 19 : 1" );            
+        }
+        
+        { // getSegmentAndDimension
+            unique_ptr<Array> segment;
+            unique_ptr<Data> dimension;
+            node->getSegmentAndDimension(0,segment.base(),dimension.base());            
+        }
+        
+        
+        { // timestamped            
+            unique_ptr<TreeNode> ts_node = tree->addNode("test_seg:ts","SIGNAL");
+            
+            array_data = new Int32Array(array,10);
+            ts_node->beginTimestampedSegment( array_data );
+            TEST1( ts_node->getNumSegments() == 1 );
+            int64_t times[10];                                    
+            for(int i=0; i<10; ++i) {
+                times[i] = (int64_t)array[i];
+            }
+            
+            // putTimestampedSegment of size 1
+            ts_node->putTimestampedSegment( unique_ptr<Array>(new Int32Array(array,1)), times);
+
+            // putTimestampedSegment of size 2
+            ts_node->putTimestampedSegment( unique_ptr<Array>(new Int32Array(array,2)), times);
+
+            // putrow puts single element into segment
+            ts_node->putRow( unique_ptr<Array>(new Int32Array(array,1)), times );
+
+            // putrow puts two elements into segment
+            ts_node->putRow( unique_ptr<Array>(new Int32Array(array,2)), times );
+
+            // Now putRow does not throw exception !
+            //            TEST_EXCEPTION(
+            //                        ts_node->putRow(unique_ptr<Array>(new Int32Array(array,2)), times),
+            //                        MdsException );
+                                    
+            // makeTimestampedSegment
+            ts_node->makeTimestampedSegment( array_data, times );
+            TEST1( ts_node->getNumSegments() == 2 );
+            TEST1( AutoString(unique_ptr<Data>(ts_node->getSegmentDim(1))->decompile()).string 
+                   == "[0X1Q,0X1Q,0X2Q,0X3Q,0X5Q,0X8Q,0XdQ,0X15Q,0X22Q,0X37Q]" );                                                                      
+            
+        }
+        
+        {   // IMAGES in segments //
+            unique_ptr<TreeNode> n2 = tree->addNode("test_seg:image","SIGNAL");
+            
+            unsigned char array[] = {
+                0,0,0,0,9,9,0,0,0,
+                0,0,0,9,9,9,0,0,0,
+                0,0,0,9,9,9,0,0,0,
+                1,1,1,1,9,9,1,1,1,
+                1,1,1,1,9,9,1,1,1,
+                0,0,9,9,9,9,9,0,0,
+                0,0,9,9,9,9,9,0,0 
+                ,
+                0,0,0,9,9,9,0,0,0,
+                0,0,9,9,9,9,9,0,0,
+                0,0,9,9,0,9,9,0,0,
+                1,1,1,1,9,9,9,1,1,
+                1,1,1,9,9,1,1,1,1,
+                0,0,9,9,9,9,9,0,0,
+                0,0,9,9,9,9,9,0,0 
+                ,
+                0,0,9,9,9,9,9,0,0,
+                0,0,9,9,9,9,9,0,0,
+                0,0,0,0,9,9,0,0,0,
+                1,1,1,9,9,9,1,1,1,
+                1,1,1,1,1,9,9,1,1,
+                0,0,9,9,9,9,9,0,0,
+                0,0,9,9,9,9,0,0,0 
+                ,
+                0,0,0,0,9,9,9,0,0,
+                0,0,0,9,9,9,0,0,0,
+                0,0,9,9,9,0,0,0,0,
+                1,1,9,9,9,9,9,1,1,
+                1,1,9,9,9,9,9,1,1,
+                0,0,0,0,0,9,9,0,0,
+                0,0,0,0,0,9,9,0,0                                 
+            };
+            
+            // we will cover 10 frames with the following time data //
+            float time[] = { 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };            
+            
+            // four frames in one segment
+            int dims[] = {4,7,9};   // { FRAMES, HEIGHT, WIDTH } //
+            
+            n2->makeSegment(unique_ptr<Data>(new Float32(0)),
+                            unique_ptr<Data>(new Float32(0.35)),
+                            unique_ptr<Data>(new Float32Array(time,4)),
+                            unique_ptr<Array>(new Uint8Array(array,3,dims)) );
+            TEST1( n2->getNumSegments() == 1 );
+            std::cout << AutoString(unique_ptr<Data>(n2->getSegmentDim(0))->decompile()).string << "\n";
+            
+            print_segment_info(n2);                        
+            {
+                char dtype,dimct;                
+                int next;
+                int dims_test[8];
+                n2->getSegmentInfo(-1,&dtype,&dimct,dims_test,&next);
+                TEST1( dtype == 2 );
+                TEST1( dimct == 3 );
+                TEST1( next == 4 );
+                TEST1( dims_test[0] == dims[2] );
+                TEST1( dims_test[1] == dims[1] );
+                TEST1( dims_test[2] == dims[0] );
+            }
+            
+            // add three frames in one segment            
+            dims[0] = 3; // 3 FRAMES //
+            n2->makeSegment(unique_ptr<Data>(new Float32(0.4)),
+                            unique_ptr<Data>(new Float32(0.65)),
+                            unique_ptr<Data>(new Float32Array(&time[4],3)),
+                            unique_ptr<Array>(new Uint8Array(array,3,dims)) );
+            TEST1( n2->getNumSegments() == 2 );
+            std::cout << AutoString(unique_ptr<Data>(n2->getSegmentDim(1))->decompile()).string << "\n";
+            print_segment_info(n2);
+            
+
+            
+            // put remaining segments ... //
+            n2->beginSegment(unique_ptr<Data>(new Float32(0.7)),
+                             unique_ptr<Data>(new Float32(0.9)),
+                             unique_ptr<Data>(new Float32Array(&time[7],3)),
+                             unique_ptr<Array>(new Uint8Array(array,3,dims)) );            
+            TEST1( n2->getNumSegments() == 3 );
+            std::cout << AutoString(unique_ptr<Data>(n2->getSegmentDim(2))->decompile()).string << "\n";
+            
+            dims[0] = 1; // 1 FRAME //
+            n2->putSegment( unique_ptr<Array>(new Uint8Array(array,3,dims)),0 );
+            print_segment_info(n2);                        
+            {
+                char dtype,dimct;                
+                int next;
+                int dims_test[8];
+                n2->getSegmentInfo(-1,&dtype,&dimct,dims_test,&next);
+                TEST1( dtype == 2 );
+                TEST1( dimct == 3 );
+                TEST1( next == 1 );
+                TEST1( dims_test[0] == dims[2] );
+                TEST1( dims_test[1] == dims[1] );
+                TEST1( dims_test[2] == 3 );
+            }
+                        
+            dims[0] = 2; // 2 FRAMES //
+            n2->putSegment( unique_ptr<Array>(new Uint8Array(array,3,dims)),1 );
+            print_segment_info(n2);
+            TEST1( n2->getNumSegments() == 3 );
+         
+            { // TEST ALL DATA WRITTEN IN SIGNAL //
+                std::vector<unsigned char> test_array = unique_ptr<Data>(n2->getData())->getByteUnsignedArray();
+                // 1 2 3 4 //
+                int shift = 0;
+                int len = 4 * 7 * 9;
+                for(int i=0; i<len; ++i)                    
+                    TEST1( array[i] == test_array[i+shift] );
+                // 1 2 3 //
+                shift += len;
+                len = 3 * 7 * 9;
+                for(int i=0; i<len; ++i)                    
+                    TEST1( array[i] == test_array[i+shift] );
+                // 1 //
+                shift += len;
+                len = 1 * 7 * 9;
+                for(int i=0; i<len; ++i)                    
+                    TEST1( array[i] == test_array[i+shift] );
+                // 1 2 //
+                shift += len;
+                len = 2 * 7 * 9;
+                for(int i=0; i<len; ++i)                    
+                    TEST1( array[i] == test_array[i+shift] );                                
+            }
+            
+            
+        }
+        
+        
+        
+//        if(0) // CAPIRE BENE !! //
+//        { // get info //
+//            char dtype,dimct;
+//            int dims[10], next[10];            
+//            node->getSegmentInfo(1, &dtype, &dimct, dims, next);
+            
+//            std::cout << dtype;
+//        }
+        
+        
         tree->write();
         
         
@@ -493,6 +775,31 @@ int main(int argc, char *argv[])
     ////////////////////////////////////////////////////////////////////////////////
     
     {
+        
+        unique_ptr<TreeNode>(tree->addNode("test_edit","STRUCTURE"));
+        unique_ptr<TreeNode> n1 = tree->addNode("test_edit:n1","ANY");
+        
+        // addNode with relative path //
+        unique_ptr<TreeNode> n2 = n1->addNode("n2","ANY");
+        TestNode test = { n2, "n2", "ANY", "n1", "test_tree" };        
+        test();
+        
+        // addNode with absolute path //
+        unique_ptr<TreeNode> n3 = n1->addNode("\\top.test_edit:n3","ANY");
+        test.node = n3;
+        test.name = "n3";
+        test.parent = "test_edit";
+        test();
+        
+        // remove relative path //
+        n1->remove("n2");
+        
+        // cannot remove a node that reside in the parent node //
+        TEST_EXCEPTION( n1->remove("n3") , MdsException );
+        
+        // remove switching to parent node //
+        unique_ptr<TreeNode>(n1->getParent())->remove("n3");
+        
         
     }
     

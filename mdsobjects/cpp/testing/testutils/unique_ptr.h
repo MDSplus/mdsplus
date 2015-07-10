@@ -58,11 +58,14 @@ public:
     operator T *() { return ptr; }
     operator const T *() const { return ptr; }
 
+//    operator T *&() { return ptr; }
+//    operator const T *&() const { return ptr; }
+
     T * operator ->() { return ptr; }
     const T * operator ->() const { return ptr; }
 
-    T * base() { return ptr; }
-    const T * base() const { return ptr; }
+    T *& base() { return ptr; }
+    const T *& base() const { return ptr; }
 };
 
 

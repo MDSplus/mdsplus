@@ -427,7 +427,12 @@ int64_t Tree::getDatafileSize()
 		throw MdsException("Cannot retrieve datafile size");
 	return size;
 }
-//////////////////////TreeNode Methods/////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  TreeNode  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 void *TreeNode::convertToDsc()
 {
@@ -1065,7 +1070,13 @@ Data *TreeNode::getSegmentDim(int segIdx)
 	Data *retDim = (Data *)convertFromDsc(timeDsc);
 	freeDsc(dataDsc);
 	freeDsc(timeDsc);
-	return retDim;
+    return retDim;
+}
+
+void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension)
+{
+    segment = getSegment(segIdx);
+    dimension = getSegmentDim(segIdx);
 }
 
 void TreeNode::beginTimestampedSegment(Array *initData)
@@ -1112,22 +1123,7 @@ void TreeNode::putRow(Data *data, int64_t *time, int size)
 		throw MdsException(status);
 }
 
-void TreeNode::acceptSegment(Array *data, Data *start, Data *end, Data *times)
-{
-	resolveNid();
-	int status = beginTreeSegment(tree->getCtx(), getNid(), data->convertToDsc(), start->convertToDsc(), 
-		end->convertToDsc(), times->convertToDsc());
-	if(!(status & 1))
-		throw MdsException(status);
-}
 
-void TreeNode::acceptRow(Data *data, int64_t time, bool isLast)
-{
-	resolveNid();
-	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, 1024);
-	if(!(status & 1))
-		throw MdsException(status);
-}
 
 TreeNode *TreeNode::getNode(char const * relPath)
 {
@@ -1272,7 +1268,11 @@ StringArray *TreeNode::findTags()
 }
 
 
-//////////////////TreePath Methods//////////////////
+////////////////////////////////////////////////////////////////////////////////
+//  TreePath  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 TreePath::TreePath(std::string const & path, Tree *tree, Data *units, Data *error, Data *help, Data *validation):
 		TreeNode(0, tree, units, error, help, validation),
@@ -1299,7 +1299,12 @@ void TreePath::resolveNid()
 		nid = -1;
 }
 
-///////////////TreeNode methods
+
+////////////////////////////////////////////////////////////////////////////////
+//  TreeNodeArray  /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 EXPORT TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
 {

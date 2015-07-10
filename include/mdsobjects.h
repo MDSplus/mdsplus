@@ -3074,8 +3074,8 @@ public:
     /// Return true if the node contains versions (Nci flags)
     bool containsVersions();
 
-
-
+    // SEGMENTS //
+    
     // NOTE: [andrea] there are missed members ( vs java impl )
     /// Begin a new data segment
     void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
@@ -3084,7 +3084,7 @@ public:
     /// Write (part of) data segment
     void putSegment(Array *data, int ofs);
 
-    /// Update start, end time and dimension for the specified segment
+    /// Update start, end time and dimension for the last segment
     void updateSegment(Data *start, Data *end, Data *time);
 
     /// Update start, end time and dimension for the specified segment
@@ -3103,7 +3103,7 @@ public:
     Data *getSegmentDim(int segIdx);
 
     /// Get both segment and segment dimension
-    void getSegmentAndDimension(int segIdx, Array *segment, Data *dimension);
+    void getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension);
 
     /// Begin a timestamted segment
     void beginTimestampedSegment(Array *initData);
@@ -3111,32 +3111,70 @@ public:
     /// Make a timestamped segment
     void makeTimestampedSegment(Array *data, int64_t *times);
 
-    /// Write (part of)data in a timestamped segment
+    /// Write (part of) data in a timestamped segment
     void putTimestampedSegment(Array *data, int64_t *times);
 
     /// Writre a single row of timestamped data
     void putRow(Data *data, int64_t *time, int size = 1024);
 
-    /// Get segment info
+    /// Get info for the node identified by sefIdx, or the last node if -1 is
+    /// passed as segIdx argument. The function returns dtype of the contained
+    /// data and the row dimensions. The function provides: In dimct the number
+    /// of dimensions is stored, in dims the array of dimensions, in nextRow
+    /// the position of the next free row. The dims always reflects the segment
+    /// dimension passed by beginSegment while the next will get the current
+    /// position reached in this segment by the putSegment function.
+    /// 
+    /// \note dtype, dimct and nextRow are pointer of size 1 array, while the
+    /// dims dimension must be allocated array of size 8 integers! Furthermore,
+    /// at the time of writing the returned dims are actually written int
+    /// reverse order for a mismatch in the row/column order within the treeshr
+    /// library
+    /// 
     void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
-
-
-    void acceptSegment(Array *data, Data *start, Data *end, Data *times);
-    void acceptRow(Data *data, int64_t time, bool isLast);
 
     /// Retrieve node tags as array of strings
     StringArray *findTags();
-
-
-    //////////Edit methods////////////////
+    
+    // EDIT METHODS //
+    
+    /// This method adds a new node to the tree that this instance belongs to.
+    /// The name specifies the relative or the full path of the new node and
+    /// the usage is a string that defines the type of the new node. See \ref
+    /// Tree::addNode for reference. If the relative path is chosen the new
+    /// node will be set as child/member of the current.
+    ///
     TreeNode *addNode(char const * name, char const * usage);
+
+    /// This removes a node indentified by its path from the tree that holds the
+    /// current node instance. See \ref Tree::remove() for reference.
+    /// 
     void remove(char const * name);
+    
+    /// Rename current node instance in tree.
     void rename(std::string const & newName);
+    
+    /// Move the node setting a new parent and changing the node name
     void move(TreeNode *parent, std::string const & newName);
+    
+    /// Move the node setting a new parent.
     void move(TreeNode *parent);
+    
+    /// Add a device to the tree that holds current node instance. The argument
+    /// name will be the name of the new created device and the type will be 
+    /// serched within the device library. See \ref Tree::addDevice for details.
+    /// 
     TreeNode *addDevice(char const * name, char const * type);
+    
+    /// Add a tag to the current tree that hold this instance pointing to this 
+    /// node. See \ref Tree::addTag for reference.
+    /// 
     void addTag(std::string const & tagName);
+    
+    /// Removes a tag added to the current tree and indentified by tagName.
     void removeTag(std::string const & tagName);
+    
+    /// Set this node to be a subtree of the tree that holds it.
     void setSubtree(bool isSubtree);
 };
 
@@ -3300,26 +3338,31 @@ public:
     /// Get current shot number (see \ref TreeGetCurrentShotId)
     static int getCurrent(char const * treeName);
     
-    /// return current tree context (see treeshr library)
+    /// Return current tree context (see treeshr library)
     void *getCtx() {return ctx;}
     
-    /// reopen target tree in edit mode 
+    /// Reopen target tree in edit mode or in normal mode according to the
+    /// value passed as argument. The default behavior is to reopen for edit.
+    /// 
     void edit(const bool st = true);
     
     /// writes tree changes to the target storage
     void write();
-    
-    // /// exits the tree target without writing current changes
-    // void quit();
-    
-    /// access treenode by path using const char string
+        
+    /// Access treenode by path using const char string
     TreeNode *getNode(char const *path);
     
-    /// access treenode by path using a \ref TreePath mdsplus object
+    /// Access treenode by path using a \ref TreePath mdsplus object
     TreeNode *getNode(TreePath *path);
 
-    /// access treenode by path using a \ref String mdsplus object
+    /// Access treenode by path using a \ref String mdsplus object
     TreeNode *getNode(String *path);
+    
+    /// Get the name of the tree as c string
+    const char *getName() const { return name.c_str(); }
+    
+    /// Get the name of this tree as a std::string
+    std::string getNameStr() const { return name; }
     
     /// Adds a node by path and usage. To each node we assign here a USAGE.
     /// This node characteristic defines and limits how a particular node can
