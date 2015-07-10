@@ -1,16 +1,244 @@
-commit 96919fe0848578634c3ea23e9c9205314dce1258 (HEAD, refs/heads/alpha)
+commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b (HEAD, tag: refs/tags/hudson-alpha-release-14, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 14:03:34 2015 -0400
+
+    output signing dialog to stdout
+
+commit e73cac3dd1454bda2f0371dbc1a63a1bc11fa758
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 13:20:43 2015 -0400
+
+    Fix source url AGAIN!
+
+commit 575297a4327c4217b592fe05af400068da66a4ae (tag: refs/tags/alpha_release-7-0-110)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 12:16:21 2015 -0400
+
+    New release ---- alpha_release-7-0-110
+
+commit 96c366aa7c317cf76cc9d8432efd1422505f1252 (tag: refs/tags/hudson-alpha-release-13)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 11:12:13 2015 -0400
+
+    Close tree in 'with Tree() as tree' statement and support it for all types of Tree opens. If open for edit and no exceptions raised, write the tree changes before closing.
+
+commit fdbc55ebbaa02cd0fdb29f94352c47b27c5612e7
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 9 02:18:21 2015 +0200
+
+    added support methods for the with-structure
+    
+    allows for:
+    with Tree('mytree',-1, 'edit') as tree:
+    tree.add...
+    instead of try: ... except: tree.quit()
+
+commit 554f72962b0a9b9278ea58c1c91c39483d7e2f6c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 08:16:16 2015 -0400
+
+    Fix source url
+
+commit 08682e112f13e1285a86867daf654ebb216fc7d7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 08:16:06 2015 -0400
+
+    Fix rpm signing mechanism
+
+commit ce4085452da945d716d97613f52eff053b6e7946 (tag: refs/tags/alpha_release-7-0-109)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 16:18:30 2015 -0400
+
+    New release ---- alpha_release-7-0-109
+
+commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd (tag: refs/tags/hudson-alpha-release-12)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 13:35:56 2015 -0400
+
+    Fix TreePutTimestampedSegment array size check
+
+commit 277784933e6b23c7722a6471918b1bd64c0e8354
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 13:32:31 2015 -0400
+
+    Fix memory leak
+
+commit c55e93180793e9fe2b724705c0efd7c31e9f6571
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:31:48 2015 -0400
+
+    Fix new release message
+
+commit c854538583f9c6252ad6d2868e437330ddd64f17
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:27:20 2015 -0400
+
+    Add redhat build scripts
+
+commit a36383861e001082864d0ec52ccd6d2c6ae0275f (tag: refs/tags/alpha_release-7-0-108)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:21:55 2015 -0400
+
+    New release ---- alpha_release-7-0-108
+
+commit 2baa7704941273d17fe0279f74e84796de26ed1f (tag: refs/tags/hudson-alpha-release-11, tag: refs/tags/hudson-alpha-release-10)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 09:02:13 2015 -0400
+
+    Add new release checker
+
+commit f290d299d057fb201ec0eaa102c0035eb2a445ab (tag: refs/tags/hudson-alpha-release-9, tag: refs/tags/hudson-alpha-release-8)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 8 08:24:01 2015 -0400
+
+    Add new release checker
+
+commit dec30556b89104832efb90d13762f0621bc56bd8 (tag: refs/tags/hudson-alpha-release-7, tag: refs/tags/alpha_release-7-0-107)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jul 7 22:30:39 2015 +0000
+
+    New ChangeLog
+
+commit a2cbd2666756a8b83080cf891e8ac2e9685eb1cf (tag: refs/tags/hudson-alpha-release-6)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 16:51:01 2015 -0400
+
+    Add new release checker
+
+commit c337cf7b23cce3d6cb3f36ce629be731f42b3c90 (tag: refs/tags/hudson-alpha-release-5, tag: refs/tags/hudson-alpha-release-4, tag: refs/tags/hudson-alpha-release-3, tag: refs/tags/hudson-alpha-release-2)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 08:50:36 2015 -0400
+
+    Change source url in rpm's
+
+commit 765e1d9986bec30e07df80b41774addaf505a8d1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 7 08:39:03 2015 -0400
+
+    Make script executable
+
+commit 2cd43709b781a67f7845e3ae0ac2b2097ec3d1eb (tag: refs/tags/alpha_release-7-0-106)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jul 6 22:27:03 2015 +0000
+
+    New ChangeLog
+
+commit 30c3025d3323331971042fff20506cbe15d411a0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 6 14:31:00 2015 -0400
+
+    Fix MDSPLUS_VERSION environment variable
+
+commit ad9776794f0f1762cee6482eb5628bbb7580b808 (tag: refs/tags/alpha_release-7-0-105)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jul 2 22:27:59 2015 +0000
+
+    New ChangeLog
+
+commit 0c56a7fc530503e73d28ac7c61edf663f52b2e43
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 15:11:07 2015 -0400
+
+    turn off error checking when doing yum makecache because problem with fc18
+
+commit b0186c0320f726078bce16bf9d1d100214ae947d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 11:22:18 2015 -0400
+
+    New release logic
+
+commit 13be61bee974f06ed704d9753dbd1a981e30d467 (tag: refs/tags/alpha_release-7-0-104)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Thu Jul 2 15:08:01 2015 +0000
+
+    New ChangeLog
+
+commit 5a629fe2f720293684328ada1fcff3d46bb4450c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 2 10:53:21 2015 -0400
+
+    Move location of service image on Windows
+
+commit 2e22212f0e12138b078412c0c8a03877feb9bf76 (tag: refs/tags/alpha_release-7-0-103)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Wed Jul 1 10:45:26 2015 -0400
+
+    New ChangeLog
+
+commit f8883d3a36a4e1cd41b1246395cba85dc8daf3ce
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jun 30 16:51:39 2015 -0400
+
+    Do not include the directory-spec in mdsip.exe invocation
+
+commit fdd3b97a99fe7daf8cc1899ee49a78ea291d4704
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 30 15:11:36 2015 -0400
+
+    Add check for existing installer
+
+commit 7b6b710e8546fc3467c8b2dbbee1248055fed240
+Merge: 1887bda c98148d
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 30 14:01:50 2015 -0400
+
+    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus into alpha
+
+commit 1887bda6cf899384c42b20c753ee51cf2fe0ebac
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Tue Jun 30 14:00:09 2015 -0400
+
+    add winbld.bat, a command script for using Visual Studio compiler with MdsObjectsCppShr-VS.dll
+
+commit c98148d55032ae79e8ec96a58f4ee18864364fa6
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 17:41:51 2015 +0200
+
+    Refine fields
+
+commit f0816ad6614c1ce0f142ac8fb36801de3eb57eea
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 17:41:24 2015 +0200
+
+    Fix null error bars
+
+commit 91d6b7f06dd23a43dd08715617e425e0b453e2bf
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 15:59:35 2015 +0200
+
+    Add forgotten field
+
+commit 46c585f33ef8d229455bb8d0f4ac45cc960204e5
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 15:49:18 2015 +0200
+
+    Added DwSetup for REDPYTADC
+
+commit f68116f24c44ff0a44526afc4f2346746b531076
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 12:12:16 2015 +0200
+
+    Handle null pointer in getClosestIdx()
+
+commit 5101d37e52160f2d046df33280ef01396380f348 (tag: refs/tags/alpha_release-7-0-102)
+Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
+Date:   Mon Jun 29 12:36:07 2015 -0400
+
+    New ChangeLog
+
+commit 96919fe0848578634c3ea23e9c9205314dce1258
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 12:04:20 2015 -0400
 
     Fix release handling again
 
-commit 1397b13dd8d3f018aa7fbb1c1f5a7d0e1b1ee78e
+commit 1397b13dd8d3f018aa7fbb1c1f5a7d0e1b1ee78e (refs/remotes/origin/feature_new_rel_processing)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 10:52:10 2015 -0400
 
     Use different mechanism to find latest release tag
 
-commit 1db4ae58797f31d43abe641bf9387c4479a0d10d
+commit 1db4ae58797f31d43abe641bf9387c4479a0d10d (tag: refs/tags/hudson-alpha-release-1)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 10:42:30 2015 -0400
 
@@ -345,7 +573,7 @@ Date:   Tue Jun 16 04:38:40 2015 +0000
 
     New ChangeLog
 
-commit e3d96e9165a02954d0c86c21d71ab311dc4076e2 (refs/remotes/origin/alpha, refs/remotes/origin/HEAD)
+commit e3d96e9165a02954d0c86c21d71ab311dc4076e2
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 15 23:26:11 2015 -0400
 
