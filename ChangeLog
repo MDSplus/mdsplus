@@ -1,4 +1,72 @@
-commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b (HEAD, tag: refs/tags/hudson-alpha-release-14, refs/remotes/origin/alpha, refs/heads/alpha)
+commit fca005fdc66493580f4cf15833c86d0ffa61cc90 (HEAD, tag: refs/tags/hudson-alpha-release-17, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 0027d66 0e053ee
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 15:55:55 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 0027d66db3cb8ab3c0645448cbaf157b47aa51cf
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 15:55:23 2015 +0200
+
+    Support for density control
+
+commit 68834e064d8fabb7813629990f1ad68556800fae
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 15:52:29 2015 +0200
+
+    New Device support for Density control
+
+commit 0e053ee553a7777af30377d4fda69d624b3d8643
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 08:18:42 2015 -0400
+
+    Add BRANCH and BNAME members to info
+
+commit 1ee928a9ae23612e4e80111c0efe2b26442cffa0
+Merge: 121f016 70708dc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 08:18:11 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 70708dcf9fe236d5307f515f103966193b3aed07
+Merge: 149ae11 ca099f0
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 11:53:37 2015 +0200
+
+    Merge pull request #13 from zack-vii/jdk_win
+    
+    added batch files for windows JDK
+
+commit ca099f066328731e39cfead8cc9400125a145f5d
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 9 23:49:56 2015 +0200
+
+    added batch files for windows JDK
+    
+    scripts for compiling the jScope and the jTraverser
+
+commit 121f0166486890f194cdc1e692bcfcf86410b529
+Merge: 2e5171d 149ae11
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 15:43:53 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 2e5171dc984fbeec49a9e1fa23f261edac1700ea
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 15:43:43 2015 -0400
+
+    Remove check for new releases in old script
+
+commit 149ae11c44548cf041f931adfcae637d2d58f54b (tag: refs/tags/hudson-alpha-release-16, tag: refs/tags/hudson-alpha-release-15, tag: refs/tags/alpha_release-7-0-111)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 14:17:03 2015 -0400
+
+    New release ---- alpha_release-7-0-111
+
+commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b (tag: refs/tags/hudson-alpha-release-14)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 14:03:34 2015 -0400
 
