@@ -35,6 +35,7 @@ fun public MdsDevices() {
     'RFX_PROTECTIONS\0', 'RfxDevices\0',
     'DIO2_ENCDEC\0', 'RfxDevices\0',
     'MARTE_DEVICE\0', 'RfxDevices\0',
+    'MARTE_NE\0', 'RfxDevices\0',
     'MARTE_XRAY\0', 'RfxDevices\0',
     'CYGNET4K\0', 'RfxDevices\0',
     'BNC845\0', 'W7xDevices\0',

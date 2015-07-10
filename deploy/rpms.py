@@ -275,7 +275,6 @@ skip_if_unavailable=1
         f.close()
         if subprocess.Popen("""
 sudo yum remove -y 'mdsplus*'
-set -e
 sudo yum-config-manager --add-repo test-mdsplus%(rflavor)s.repo
 sudo yum-config-manager --enable test-mdsplus%(rflavor)s >/dev/null
 sudo yum clean metadata

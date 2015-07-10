@@ -655,7 +655,7 @@ Name: mdsplus%(rflavor)s%(packagename)s
 Version: %(major)d.%(minor)d
 Release: %(release)s.%(dist)s
 License: BSD Open Source - Copyright (c) 2010, Massachusetts Institute of Technology All rights reserved.
-Source: http://www.mdsplus.org/dist/SOURCES/mdsplus%(rflavor)s-%(major)d.%(minor)d-%(release)s.tgz
+Source: https://github.com/MDSplus/mdsplus/archive/%(BRANCH)s_release-%(major)d-%(minor)d-%(release)d.tar.gz
 URL: http://www.mdsplus.org
 Vendor: Massachusetts Institute of Technology
 Packager: Plasma Science and Fusion Center &lt;mdsplus@www.mdsplus.org&gt;
