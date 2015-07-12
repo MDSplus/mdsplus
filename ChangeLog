@@ -1,4 +1,16 @@
-commit fca005fdc66493580f4cf15833c86d0ffa61cc90 (HEAD, tag: refs/tags/hudson-alpha-release-17, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 111047cd49c445b205edd7e8c0046eb1713f6869 (HEAD, tag: refs/tags/hudson-alpha-release-19, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Jul 12 11:31:04 2015 -0400
+
+    use z option unpacking source tar
+
+commit c699bca56d465809870e358dfbef9af123cfe76c (tag: refs/tags/hudson-alpha-release-18, tag: refs/tags/alpha_release-7-0-112)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 18:24:45 2015 -0400
+
+    New release ---- alpha_release-7-0-112
+
+commit fca005fdc66493580f4cf15833c86d0ffa61cc90 (tag: refs/tags/hudson-alpha-release-17)
 Merge: 0027d66 0e053ee
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Jul 10 15:55:55 2015 +0200
