@@ -740,7 +740,7 @@ int Tdi1Isql(int opcode, int narg, struct descriptor *list[], struct descriptor_
   if (status & 1)
     status = TdiData(list[0], &dtext MDS_END_ARG);
   if (status & 1) {
-    USERSQL_SET(gets, printf, printf, printf, width, head);
+    USERSQL_SET(getline, printf, printf, printf, width, head);
     status = SQL_DYNAMIC(USERSQL_GETS,	/*routine to fill markers       */
 			 USERSQL_PUTS,	/*routine to store selections   */
 			 &dtext,	/*text string descriptor        */
