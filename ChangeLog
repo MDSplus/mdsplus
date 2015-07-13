@@ -1,16 +1,58 @@
-commit 111047cd49c445b205edd7e8c0046eb1713f6869 (HEAD, tag: refs/tags/hudson-alpha-release-19, refs/remotes/origin/alpha, refs/heads/alpha)
+commit c9e1818556d33437b2630886ae6a829963ebe04f (HEAD, tag: refs/tags/hudson-aaa-release-alpha-21, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 14:06:12 2015 -0400
+
+    Obsolete docker files
+
+commit eee310114c08fb37d9897438eee757efe63da559
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 12:58:21 2015 -0400
+
+    Use getline instead of gets
+
+commit 5191f09a7de95e67153346591460692022f6ea85
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:23:02 2015 -0400
+
+    Fix build directory
+
+commit 32ab9e5cbb9591addba410fc818815b49b25111e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:21:20 2015 -0400
+
+    debug needed
+
+commit 6d6e5495466cbaca35ea73016497e322b6348351
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:19:53 2015 -0400
+
+    add z to tar extraction again
+
+commit 0143bdaa66268e606e4d5fba9546515d205130b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:18:17 2015 -0400
+
+    no need to pushd
+
+commit 9e4e0b600616dc6b200bb977eb8f9455accbe2fd (tag: refs/tags/alpha_release-7-0-113)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Jul 12 11:53:53 2015 -0400
+
+    New release ---- alpha_release-7-0-113
+
+commit 111047cd49c445b205edd7e8c0046eb1713f6869
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Jul 12 11:31:04 2015 -0400
 
     use z option unpacking source tar
 
-commit c699bca56d465809870e358dfbef9af123cfe76c (tag: refs/tags/hudson-alpha-release-18, tag: refs/tags/alpha_release-7-0-112)
+commit c699bca56d465809870e358dfbef9af123cfe76c (tag: refs/tags/alpha_release-7-0-112)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 10 18:24:45 2015 -0400
 
     New release ---- alpha_release-7-0-112
 
-commit fca005fdc66493580f4cf15833c86d0ffa61cc90 (tag: refs/tags/hudson-alpha-release-17)
+commit fca005fdc66493580f4cf15833c86d0ffa61cc90
 Merge: 0027d66 0e053ee
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Fri Jul 10 15:55:55 2015 +0200
@@ -72,13 +114,13 @@ Date:   Thu Jul 9 15:43:43 2015 -0400
 
     Remove check for new releases in old script
 
-commit 149ae11c44548cf041f931adfcae637d2d58f54b (tag: refs/tags/hudson-alpha-release-16, tag: refs/tags/hudson-alpha-release-15, tag: refs/tags/alpha_release-7-0-111)
+commit 149ae11c44548cf041f931adfcae637d2d58f54b (tag: refs/tags/alpha_release-7-0-111)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 14:17:03 2015 -0400
 
     New release ---- alpha_release-7-0-111
 
-commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b (tag: refs/tags/hudson-alpha-release-14)
+commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 14:03:34 2015 -0400
 
@@ -96,7 +138,7 @@ Date:   Thu Jul 9 12:16:21 2015 -0400
 
     New release ---- alpha_release-7-0-110
 
-commit 96c366aa7c317cf76cc9d8432efd1422505f1252 (tag: refs/tags/hudson-alpha-release-13)
+commit 96c366aa7c317cf76cc9d8432efd1422505f1252
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 11:12:13 2015 -0400
 
@@ -131,7 +173,7 @@ Date:   Wed Jul 8 16:18:30 2015 -0400
 
     New release ---- alpha_release-7-0-109
 
-commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd (tag: refs/tags/hudson-alpha-release-12)
+commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 13:35:56 2015 -0400
 
@@ -161,31 +203,31 @@ Date:   Wed Jul 8 09:21:55 2015 -0400
 
     New release ---- alpha_release-7-0-108
 
-commit 2baa7704941273d17fe0279f74e84796de26ed1f (tag: refs/tags/hudson-alpha-release-11, tag: refs/tags/hudson-alpha-release-10)
+commit 2baa7704941273d17fe0279f74e84796de26ed1f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 09:02:13 2015 -0400
 
     Add new release checker
 
-commit f290d299d057fb201ec0eaa102c0035eb2a445ab (tag: refs/tags/hudson-alpha-release-9, tag: refs/tags/hudson-alpha-release-8)
+commit f290d299d057fb201ec0eaa102c0035eb2a445ab
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 08:24:01 2015 -0400
 
     Add new release checker
 
-commit dec30556b89104832efb90d13762f0621bc56bd8 (tag: refs/tags/hudson-alpha-release-7, tag: refs/tags/alpha_release-7-0-107)
+commit dec30556b89104832efb90d13762f0621bc56bd8 (tag: refs/tags/alpha_release-7-0-107)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jul 7 22:30:39 2015 +0000
 
     New ChangeLog
 
-commit a2cbd2666756a8b83080cf891e8ac2e9685eb1cf (tag: refs/tags/hudson-alpha-release-6)
+commit a2cbd2666756a8b83080cf891e8ac2e9685eb1cf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 7 16:51:01 2015 -0400
 
     Add new release checker
 
-commit c337cf7b23cce3d6cb3f36ce629be731f42b3c90 (tag: refs/tags/hudson-alpha-release-5, tag: refs/tags/hudson-alpha-release-4, tag: refs/tags/hudson-alpha-release-3, tag: refs/tags/hudson-alpha-release-2)
+commit c337cf7b23cce3d6cb3f36ce629be731f42b3c90
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 7 08:50:36 2015 -0400
 
@@ -318,7 +360,7 @@ Date:   Mon Jun 29 10:52:10 2015 -0400
 
     Use different mechanism to find latest release tag
 
-commit 1db4ae58797f31d43abe641bf9387c4479a0d10d (tag: refs/tags/hudson-alpha-release-1)
+commit 1db4ae58797f31d43abe641bf9387c4479a0d10d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 10:42:30 2015 -0400
 
