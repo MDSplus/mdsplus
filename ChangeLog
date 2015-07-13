@@ -1,4 +1,16 @@
-commit beb3dba4e14db6e66cac6f71a4c87b3f6f48a152 (HEAD, tag: refs/tags/hudson-stable-release-6, refs/remotes/origin/stable, refs/heads/stable)
+commit d00e7d4dabe1d9cdd1185f06f0c39041e96bab10 (HEAD, tag: refs/tags/hudson-aaa-release-stable-10, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 12:58:21 2015 -0400
+
+    Use getline instead of gets
+
+commit ff18c6d94bc40ecf1ade3e1d929ec2ce76c4269b (tag: refs/tags/stable_release-7-0-28)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 18:10:56 2015 -0400
+
+    New release ---- stable_release-7-0-28
+
+commit beb3dba4e14db6e66cac6f71a4c87b3f6f48a152
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 10 08:17:54 2015 -0400
 
@@ -10,7 +22,7 @@ Date:   Thu Jul 9 18:20:55 2015 -0400
 
     New release ---- stable_release-7-0-27
 
-commit 4cbdbfabb931107f022aa52fc756f378505e165d (tag: refs/tags/hudson-stable-release-5)
+commit 4cbdbfabb931107f022aa52fc756f378505e165d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 13:34:31 2015 -0400
 
@@ -22,7 +34,7 @@ Date:   Thu Jul 9 13:33:11 2015 -0400
 
     Fix source url AGAIN!
 
-commit cc9ceeded58c0d11e9f144f8f17d8c9f00b5da03 (tag: refs/tags/stable_release-7-0-26, tag: refs/tags/hudson-stable-release-4, tag: refs/tags/hudson-stable-release-3, tag: refs/tags/hudson-stable-release-2)
+commit cc9ceeded58c0d11e9f144f8f17d8c9f00b5da03 (tag: refs/tags/stable_release-7-0-26)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jul 8 16:54:54 2015 -0400
 
@@ -173,7 +185,7 @@ Date:   Mon Jun 29 11:58:45 2015 -0400
 
     fix. Remove alpha reference in releases
 
-commit 9d8439609b66ca03151e51bab0f75a1d5895b930 (tag: refs/tags/stable_release-7-0-102, tag: refs/tags/hudson-stable-release-1)
+commit 9d8439609b66ca03151e51bab0f75a1d5895b930
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Mon Jun 29 11:25:50 2015 -0400
 
