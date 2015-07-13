@@ -54,8 +54,8 @@ if __name__ == "__main__":
         """
 
 set -e
-wget -q -O - https://github.com/MDSplus/mdsplus/archive/%(tag)s.tar.gz | (cd /tmp/ && tar xvzf -)
-cd /tmp/%(tag)s/deploy
+wget -q -O - https://github.com/MDSplus/mdsplus/archive/%(tag)s.tar.gz | (cd /tmp/ && tar xzf -)
+cd /tmp/mdsplus-%(tag)s/deploy
 %(executable)s  deploy.py %(flavor)s %(major)s %(minor)d %(release)d
 
         """ % info, shell=True).wait() != 0:
