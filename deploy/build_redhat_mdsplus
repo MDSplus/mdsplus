@@ -48,4 +48,5 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
     build_rpms_mdsplus
+    touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
 fi
