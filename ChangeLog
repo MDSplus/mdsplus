@@ -1,4 +1,16 @@
-commit c9e1818556d33437b2630886ae6a829963ebe04f (HEAD, tag: refs/tags/hudson-aaa-release-alpha-21, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 89678626595f41bf80f52085d3c78bef0377d5cf (HEAD, tag: refs/tags/hudson-aaa-release-alpha-23, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 21:05:35 2015 -0400
+
+    TdiIsql obsolete
+
+commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/hudson-aaa-release-alpha-22, tag: refs/tags/alpha_release-7-0-114)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 18:28:25 2015 -0400
+
+    New release ---- alpha_release-7-0-114
+
+commit c9e1818556d33437b2630886ae6a829963ebe04f (tag: refs/tags/hudson-aaa-release-alpha-21)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 14:06:12 2015 -0400
 
