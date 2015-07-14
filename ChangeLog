@@ -1,4 +1,16 @@
-commit d00e7d4dabe1d9cdd1185f06f0c39041e96bab10 (HEAD, tag: refs/tags/hudson-aaa-release-stable-10, refs/remotes/origin/stable, refs/heads/stable)
+commit a3bd32cfdaf439cf47a48946586d52a22bf0d48b (HEAD, tag: refs/tags/hudson-aaa-release-stable-11, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 21:08:31 2015 -0400
+
+    TdiIsql obsolete
+
+commit 600a2363483a30da57da0361a96a08e65463d47b (tag: refs/tags/stable_release-7-0-29)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 18:11:57 2015 -0400
+
+    New release ---- stable_release-7-0-29
+
+commit d00e7d4dabe1d9cdd1185f06f0c39041e96bab10 (tag: refs/tags/hudson-aaa-release-stable-10)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 12:58:21 2015 -0400
 
