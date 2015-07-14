@@ -1,4 +1,16 @@
-commit 4b0c0ca5766077d0a517daaf8d96409dd8a13179 (HEAD, tag: refs/tags/hudson-aaa-release-stable-14, refs/remotes/origin/stable, refs/heads/stable)
+commit 0d557ee61d9629d20a23ce815e5aab5a90d2dfb2 (HEAD, tag: refs/tags/hudson-aaa-release-stable-15, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 17:00:15 2015 -0400
+
+    Add different release indicator file
+
+commit 7a71a6f4d8be86a9b96da29cb058f8dcfed6f2ab (tag: refs/tags/stable_release-7-0-32)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 16:47:58 2015 -0400
+
+    New release ---- stable_release-7-0-32
+
+commit 4b0c0ca5766077d0a517daaf8d96409dd8a13179 (tag: refs/tags/hudson-aaa-release-stable-14)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 15:42:00 2015 -0400
 
