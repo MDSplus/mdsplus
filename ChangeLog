@@ -1,4 +1,16 @@
-commit dd98fe1298bc448623f7e50604e3dce96ebc38ef (HEAD, tag: refs/tags/hudson-aaa-release-stable-13, refs/remotes/origin/stable, refs/heads/stable)
+commit 4b0c0ca5766077d0a517daaf8d96409dd8a13179 (HEAD, tag: refs/tags/hudson-aaa-release-stable-14, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 15:42:00 2015 -0400
+
+    Ensure Python includes work
+
+commit 2152f197bd1ca84ca60006f6a8aa4b8e7a573410 (tag: refs/tags/stable_release-7-0-31)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 11:21:00 2015 -0400
+
+    New release ---- stable_release-7-0-31
+
+commit dd98fe1298bc448623f7e50604e3dce96ebc38ef (tag: refs/tags/hudson-aaa-release-stable-13)
 Merge: f20e3c4 faea71d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 11:10:27 2015 -0400
