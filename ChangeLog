@@ -1,4 +1,23 @@
-commit a3bd32cfdaf439cf47a48946586d52a22bf0d48b (HEAD, tag: refs/tags/hudson-aaa-release-stable-11, refs/remotes/origin/stable, refs/heads/stable)
+commit dd98fe1298bc448623f7e50604e3dce96ebc38ef (HEAD, tag: refs/tags/hudson-aaa-release-stable-13, refs/remotes/origin/stable, refs/heads/stable)
+Merge: f20e3c4 faea71d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 11:10:27 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit f20e3c4dff547a5e1b5adcb260790e8c9d2ea2ab
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 11:10:13 2015 -0400
+
+    Get error output
+
+commit faea71d0d5988e6ed4f1a77c789ea3d667444be4 (tag: refs/tags/stable_release-7-0-30, tag: refs/tags/hudson-aaa-release-stable-12)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 08:07:31 2015 -0400
+
+    New release ---- stable_release-7-0-30
+
+commit a3bd32cfdaf439cf47a48946586d52a22bf0d48b (tag: refs/tags/hudson-aaa-release-stable-11)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 21:08:31 2015 -0400
 
