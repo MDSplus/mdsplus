@@ -482,7 +482,7 @@ library_include_HEADERS = \
            unique_ptr.h \
            vector_test.h \
            threads.h \
-           mdsipmain.h
+           MdsIpInstancer.h
 
 _SOURCES = \
            testutils.cpp \
@@ -808,10 +808,10 @@ uninstall-am: uninstall-library_includeHEADERS
 
 include ${top_srcdir}/Makefile.inc
 
-libMdsTestUtils.so: testutils.cpp
+libMdsTestDummy.so: testutils.cpp
 	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
-all-local: libMdsTestUtils.so
+all-local: libMdsTestDummy.so
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

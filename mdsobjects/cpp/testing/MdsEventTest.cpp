@@ -14,15 +14,13 @@ using namespace testing;
 class NullEvent : public Event {
 public:
     NullEvent(const char *name) : Event((char*)name) {}
-    
-    ~NullEvent() { std::cout << "calling destructor\n"; }
-    
+        
     void run()
     {
         size_t bufSize;
-        char *name = getName();                                 //Get the name of the event
-        char *date = unique_ptr<Uint64>(getTime())->getDate();  //Get the event reception date 
-        std::cout << "RECEIVED EVENT " << name << " AT " << date << "\n";
+        char *name = getName();                                     //Get the name of the event
+        AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
+        std::cout << "RECEIVED EVENT " << name << " AT " << date.string << "\n";
     }    
 };
 
@@ -39,10 +37,10 @@ public:
     void run()
     {
         size_t bufSize;
-        char *name = getName();                                 //Get the name of the event
-        char *date = unique_ptr<Uint64>(getTime())->getDate();  //Get the event reception date 
-        const char *str = getRaw(&bufSize);                     //Get raw data
-        std::cout << "RECEIVED EVENT " << name << " AT " << date << " WITH DATA  " << str << "\n";
+        char *name = getName();                                     //Get the name of the event
+        AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
+        const char *str = getRaw(&bufSize);                         //Get raw data
+        std::cout << "RECEIVED EVENT " << name << " AT " << date.string << " WITH RAW  " << str << "\n";
         TEST1( std::string(str) == test_str );        
     }
 };
@@ -58,12 +56,11 @@ public:
     {}
     
     void run()
-    {
-        size_t bufSize;
+    {        
         char *name = getName();                                 //Get the name of the event
-        char *date = unique_ptr<Uint64>(getTime())->getDate();  //Get the event reception date 
+        AutoString date(unique_ptr<Uint64>(getTime())->getDate());  //Get the event reception date 
         unique_ptr<Data> data = getData();                      //Get data
-        std::cout << "RECEIVED EVENT " << name << " AT " << date 
+        std::cout << "RECEIVED EVENT " << name << " AT " << date.string 
                   << " WITH DATA  " << AutoString(data->getString()).string 
                   << "\n";
         TEST1( AutoString(test_data->getString()).string == AutoString(data->getString()).string );
@@ -83,8 +80,8 @@ int main(int argc, char *argv[])
             NullEvent ev((char *)"test_event");
             ev.wait();
         } 
-        else {
-            usleep(10);
+        else {            
+            sleep(1);
             NullEvent::setEvent((char*)"test_event");
             exit(0);
         }            
@@ -92,8 +89,7 @@ int main(int argc, char *argv[])
     
     
     {
-        std::string str = "test string to be compared";
-        std::cout << "RAW\n";
+        std::string str("test string to be compared");
         
         if(fork()) {
             RawEvent ev((char *)"test_event",str.c_str());
@@ -102,7 +98,7 @@ int main(int argc, char *argv[])
             TEST1( std::string(str) == std::string(buf) );
         }
         else {            
-            usleep(10);
+            sleep(1);            
             NullEvent::setEventRaw((char*)"test_event",str.size(),(char*)str.c_str());
             exit(0);
         }
@@ -117,8 +113,8 @@ int main(int argc, char *argv[])
             unique_ptr<Data> data = ev.waitData();
             TEST1( AutoString(data->getString()).string == AutoString(str->getString()).string );            
         }
-        else {            
-            usleep(10);
+        else {                        
+            sleep(1);            
             NullEvent::setEvent((char*)"test_event",str);
         }
     }    

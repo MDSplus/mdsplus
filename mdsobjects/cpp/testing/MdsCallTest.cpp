@@ -13,7 +13,7 @@ using namespace testing;
 ////////////////////////////////////////////////////////////////////////////////
 
 /// This test refers to three C functions compiled into a shared library that 
-/// should be present in ./testutils/libMdsTestUtils.so
+/// should be present in ./testutils/libMdsTestDummy.so
 
 int main(int,char **argv) {
     BEGIN_TESTING(Call);
@@ -31,7 +31,7 @@ int main(int,char **argv) {
     }
     
     
-    unique_ptr<Call> call = new Call(new String("./testutils/libMdsTestUtils.so"),new String("get_ghostbusters_phone"),0,NULL);        
+    unique_ptr<Call> call = new Call(new String("./testutils/libMdsTestDummy.so"),new String("get_ghostbusters_phone"),0,NULL);        
     TEST1( unique_ptr<Data>(call->data())->getInt() == 5552368 );
     
     {  
@@ -50,7 +50,7 @@ int main(int,char **argv) {
     {   
         // unary //
         Data *args[1] = { new Int32(5552367) };
-        unique_ptr<Call> call1 = new Call(new String("./testutils/libMdsTestUtils.so"),new String("test_nextint"),1,(Data**)args);
+        unique_ptr<Call> call1 = new Call(new String("./testutils/libMdsTestDummy.so"),new String("test_nextint"),1,(Data**)args);
         TEST1( unique_ptr<Data>(call1->data())->getInt() == 5552368 );
         deleteData(args[0]);
     }
@@ -58,7 +58,7 @@ int main(int,char **argv) {
     {   
         // binary //                
         Data *args[2] = { new Int32(5552367), new Int32(1) };        
-        unique_ptr<Call> call2 = new Call(new String("./testutils/libMdsTestUtils.so"),new String("test_addint"),2,(Data**)args);
+        unique_ptr<Call> call2 = new Call(new String("./testutils/libMdsTestDummy.so"),new String("test_addint"),2,(Data**)args);
         TEST1( unique_ptr<Data>(call2->data())->getInt() == 5552368 );        
         deleteData(args[0]);
         deleteData(args[1]);
@@ -68,7 +68,7 @@ int main(int,char **argv) {
         // TDI compile //
         std::stringstream ss; ss << (Call*)call;
         //        std::cout << ss.str();
-        TEST1(ss.str() == std::string("./testutils/libMdsTestUtils.so->get_ghostbusters_phone:L()"));
+        TEST1(ss.str() == std::string("./testutils/libMdsTestDummy.so->get_ghostbusters_phone:L()"));
     }
     
     

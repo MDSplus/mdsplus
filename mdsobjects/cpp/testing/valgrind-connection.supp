@@ -1,0 +1,57 @@
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Addr1
+   fun:strlen
+   fun:length
+}
+
+{
+   Unix socket sendmessage
+   Memcheck:Param
+   sendmsg(msg.msg_name)
+   obj:/usr/lib/libc-2.21.so
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:_ZN10CUDTUnited9newSocketEii
+   fun:_ZN4CUDT6socketEiii
+   fun:_ZN3UDT6socketEiii
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:pthread_create@@GLIBC_2.2.5
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:_Znam
+   fun:_ZN10CUnitQueue4initEiii
+   fun:_ZN9CRcvQueue4initEiiiiP8CChannelP6CTimer
+   fun:_ZN10CUDTUnited9updateMuxEP10CUDTSocketPK8sockaddrPKi
+   fun:_ZN10CUDTUnited7connectEiPK8sockaddri
+   fun:_ZN4CUDT7connectEiPK8sockaddri
+   fun:_ZN3UDT7connectEiPK8sockaddri
+}
+
+{
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:xmalloc
+   fun:set_default_locale
+}
+

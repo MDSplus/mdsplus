@@ -76,13 +76,14 @@ public:
         }
         
         // child //
-        if(m_pid == 0) {              
-            std::stringstream port_ss; port_ss << m_port;
+        if(m_pid == 0) {                          
+            char port_str[20];
+            sprintf(port_str,"%i",m_port);            
             int _argc = 8;
             char *_argv[] = {(char *)"mdsip",
                              (char *)"-m",
                              (char *)"-P",(char *)m_protocol.c_str(),
-                             (char *)"-p",(char *)port_ss.str().c_str(),
+                             (char *)"-p",(char *)port_str,
                              (char *)"-h",(char *)m_host_file->name() };
             int status = mdsip_main(_argc,_argv);
             exit(1);
@@ -102,10 +103,10 @@ public:
     
     int getPort() const { return m_port; }
     
-    const char * getAddress() const {
+    std::string getAddress() const {
         std::stringstream ss;
         ss << m_protocol << "://" << "localhost" << ":" << m_port;
-        return ss.str().c_str();
+        return ss.str();
     }
     
 private:

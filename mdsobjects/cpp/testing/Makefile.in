@@ -101,9 +101,10 @@ target_triplet = @target@
 @HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) MdsTreeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	TestTreeWrite$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeNodeTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsTreeSuppression$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
@@ -133,9 +134,10 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_CHECK_TRUE@	MdsFunctionTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsConglomTest$(EXEEXT) MdsRangeTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsCallTest$(EXEEXT) MdsActionTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) MdsTreeTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	TestTreeWrite$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsTreeNodeTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsApdTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsTreeSuppression$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT)
 MdsActionTest_SOURCES = MdsActionTest.cpp
@@ -178,6 +180,11 @@ MdsDimensionTest_SOURCES = MdsDimensionTest.cpp
 MdsDimensionTest_OBJECTS = MdsDimensionTest.$(OBJEXT)
 MdsDimensionTest_LDADD = $(LDADD)
 MdsDimensionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsEventSuppression_SOURCES = MdsEventSuppression.cpp
+MdsEventSuppression_OBJECTS = MdsEventSuppression.$(OBJEXT)
+MdsEventSuppression_LDADD = $(LDADD)
+MdsEventSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
 MdsEventTest_SOURCES = MdsEventTest.cpp
 MdsEventTest_OBJECTS = MdsEventTest.$(OBJEXT)
@@ -232,6 +239,11 @@ MdsTreeNodeTest_OBJECTS = MdsTreeNodeTest.$(OBJEXT)
 MdsTreeNodeTest_LDADD = $(LDADD)
 MdsTreeNodeTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
+MdsTreeSuppression_SOURCES = MdsTreeSuppression.cpp
+MdsTreeSuppression_OBJECTS = MdsTreeSuppression.$(OBJEXT)
+MdsTreeSuppression_LDADD = $(LDADD)
+MdsTreeSuppression_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
 MdsTreeTest_SOURCES = MdsTreeTest.cpp
 MdsTreeTest_OBJECTS = MdsTreeTest.$(OBJEXT)
 MdsTreeTest_LDADD = $(LDADD)
@@ -241,11 +253,6 @@ MdsWindowTest_SOURCES = MdsWindowTest.cpp
 MdsWindowTest_OBJECTS = MdsWindowTest.$(OBJEXT)
 MdsWindowTest_LDADD = $(LDADD)
 MdsWindowTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
-	testutils/libMdsTestUtils.a
-TestTreeWrite_SOURCES = TestTreeWrite.cpp
-TestTreeWrite_OBJECTS = TestTreeWrite.$(OBJEXT)
-TestTreeWrite_LDADD = $(LDADD)
-TestTreeWrite_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
 buildtest_SOURCES = buildtest.cpp
 buildtest_OBJECTS = buildtest.$(OBJEXT)
@@ -283,21 +290,21 @@ am__v_CXXLD_0 = @echo "  CXXLD   " $@;
 am__v_CXXLD_1 = 
 SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
-	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventTest.cpp \
-	MdsExceptionTest.cpp MdsFunctionTest.cpp MdsRangeTest.cpp \
-	MdsScalarTest_NumericConversion.cpp \
+	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
+	MdsEventTest.cpp MdsExceptionTest.cpp MdsFunctionTest.cpp \
+	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
-	MdsTreeTest.cpp MdsWindowTest.cpp TestTreeWrite.cpp \
+	MdsTreeSuppression.cpp MdsTreeTest.cpp MdsWindowTest.cpp \
 	buildtest.cpp
 DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
-	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventTest.cpp \
-	MdsExceptionTest.cpp MdsFunctionTest.cpp MdsRangeTest.cpp \
-	MdsScalarTest_NumericConversion.cpp \
+	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
+	MdsEventTest.cpp MdsExceptionTest.cpp MdsFunctionTest.cpp \
+	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
-	MdsTreeTest.cpp MdsWindowTest.cpp TestTreeWrite.cpp \
+	MdsTreeSuppression.cpp MdsTreeTest.cpp MdsWindowTest.cpp \
 	buildtest.cpp
 RECURSIVE_TARGETS = all-recursive check-recursive cscopelist-recursive \
 	ctags-recursive dvi-recursive html-recursive info-recursive \
@@ -836,7 +843,10 @@ AM_TESTS_ENVIRONMENT = \
 LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
-@USE_VALGRIND_TRUE@               --suppressions=valgrind-dlerr.supp \
+@USE_VALGRIND_TRUE@               --suppressions=valgrind-stdlib.supp      \
+@USE_VALGRIND_TRUE@               --suppressions=valgrind-dlerr.supp       \
+@USE_VALGRIND_TRUE@               --suppressions=valgrind-connection.supp  \
+@USE_VALGRIND_TRUE@               --suppressions=valgrind-treenode.supp    \
 @USE_VALGRIND_TRUE@               --dsymutil=yes --leak-check=yes
 
 all: all-recursive
@@ -908,6 +918,10 @@ MdsDimensionTest$(EXEEXT): $(MdsDimensionTest_OBJECTS) $(MdsDimensionTest_DEPEND
 	@rm -f MdsDimensionTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsDimensionTest_OBJECTS) $(MdsDimensionTest_LDADD) $(LIBS)
 
+MdsEventSuppression$(EXEEXT): $(MdsEventSuppression_OBJECTS) $(MdsEventSuppression_DEPENDENCIES) $(EXTRA_MdsEventSuppression_DEPENDENCIES) 
+	@rm -f MdsEventSuppression$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsEventSuppression_OBJECTS) $(MdsEventSuppression_LDADD) $(LIBS)
+
 MdsEventTest$(EXEEXT): $(MdsEventTest_OBJECTS) $(MdsEventTest_DEPENDENCIES) $(EXTRA_MdsEventTest_DEPENDENCIES) 
 	@rm -f MdsEventTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsEventTest_OBJECTS) $(MdsEventTest_LDADD) $(LIBS)
@@ -948,6 +962,10 @@ MdsTreeNodeTest$(EXEEXT): $(MdsTreeNodeTest_OBJECTS) $(MdsTreeNodeTest_DEPENDENC
 	@rm -f MdsTreeNodeTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeNodeTest_OBJECTS) $(MdsTreeNodeTest_LDADD) $(LIBS)
 
+MdsTreeSuppression$(EXEEXT): $(MdsTreeSuppression_OBJECTS) $(MdsTreeSuppression_DEPENDENCIES) $(EXTRA_MdsTreeSuppression_DEPENDENCIES) 
+	@rm -f MdsTreeSuppression$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeSuppression_OBJECTS) $(MdsTreeSuppression_LDADD) $(LIBS)
+
 MdsTreeTest$(EXEEXT): $(MdsTreeTest_OBJECTS) $(MdsTreeTest_DEPENDENCIES) $(EXTRA_MdsTreeTest_DEPENDENCIES) 
 	@rm -f MdsTreeTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsTreeTest_OBJECTS) $(MdsTreeTest_LDADD) $(LIBS)
@@ -955,10 +973,6 @@ MdsTreeTest$(EXEEXT): $(MdsTreeTest_OBJECTS) $(MdsTreeTest_DEPENDENCIES) $(EXTRA
 MdsWindowTest$(EXEEXT): $(MdsWindowTest_OBJECTS) $(MdsWindowTest_DEPENDENCIES) $(EXTRA_MdsWindowTest_DEPENDENCIES) 
 	@rm -f MdsWindowTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsWindowTest_OBJECTS) $(MdsWindowTest_LDADD) $(LIBS)
-
-TestTreeWrite$(EXEEXT): $(TestTreeWrite_OBJECTS) $(TestTreeWrite_DEPENDENCIES) $(EXTRA_TestTreeWrite_DEPENDENCIES) 
-	@rm -f TestTreeWrite$(EXEEXT)
-	$(AM_V_CXXLD)$(CXXLINK) $(TestTreeWrite_OBJECTS) $(TestTreeWrite_LDADD) $(LIBS)
 
 buildtest$(EXEEXT): $(buildtest_OBJECTS) $(buildtest_DEPENDENCIES) $(EXTRA_buildtest_DEPENDENCIES) 
 	@rm -f buildtest$(EXEEXT)
@@ -978,6 +992,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsConnectionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDataTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsDimensionTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsEventSuppression.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsEventTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExceptionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsFunctionTest.Po@am__quote@
@@ -988,9 +1003,9 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsSignalTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsStringTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeNodeTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeSuppression.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsTreeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsWindowTest.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TestTreeWrite.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/buildtest.Po@am__quote@
 
 .cpp.o:
@@ -1368,6 +1383,13 @@ MdsApdTest.log: MdsApdTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsTreeSuppression.log: MdsTreeSuppression$(EXEEXT)
+	@p='MdsTreeSuppression$(EXEEXT)'; \
+	b='MdsTreeSuppression'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
 MdsTreeTest.log: MdsTreeTest$(EXEEXT)
 	@p='MdsTreeTest$(EXEEXT)'; \
 	b='MdsTreeTest'; \
@@ -1375,16 +1397,16 @@ MdsTreeTest.log: MdsTreeTest$(EXEEXT)
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-TestTreeWrite.log: TestTreeWrite$(EXEEXT)
-	@p='TestTreeWrite$(EXEEXT)'; \
-	b='TestTreeWrite'; \
+MdsTreeNodeTest.log: MdsTreeNodeTest$(EXEEXT)
+	@p='MdsTreeNodeTest$(EXEEXT)'; \
+	b='MdsTreeNodeTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
 	"$$tst" $(AM_TESTS_FD_REDIRECT)
-MdsTreeNodeTest.log: MdsTreeNodeTest$(EXEEXT)
-	@p='MdsTreeNodeTest$(EXEEXT)'; \
-	b='MdsTreeNodeTest'; \
+MdsEventSuppression.log: MdsEventSuppression$(EXEEXT)
+	@p='MdsEventSuppression$(EXEEXT)'; \
+	b='MdsEventSuppression'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1477,7 +1499,7 @@ check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) $(check_PROGRAMS)
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-recursive
-all-am: Makefile
+all-am: Makefile all-local
 installdirs: installdirs-recursive
 installdirs-am:
 install: install-recursive
@@ -1584,26 +1606,29 @@ uninstall-am:
 
 .MAKE: $(am__recursive_targets) check-am install-am install-strip
 
-.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am check \
-	check-TESTS check-am clean clean-checkPROGRAMS clean-generic \
-	cscopelist-am ctags ctags-am distclean distclean-compile \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am recheck tags tags-am \
-	uninstall uninstall-am
+.PHONY: $(am__recursive_targets) CTAGS GTAGS TAGS all all-am all-local \
+	check check-TESTS check-am clean clean-checkPROGRAMS \
+	clean-generic cscopelist-am ctags ctags-am distclean \
+	distclean-compile distclean-generic distclean-tags distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man install-pdf \
+	install-pdf-am install-ps install-ps-am install-strip \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	recheck tags tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
 include ${top_srcdir}/Makefile.inc
 
+.PHONY: tests
 tests: $(TESTS)
+
+all-local: tests
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

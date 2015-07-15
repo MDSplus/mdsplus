@@ -2,9 +2,13 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+
 #include "mdstcpip/mdsip_connections.h"
 
-
+// NOTE:
+// This function is a mere copy of the mdsip server main and it is compiled
+// here to provide the main anchor to tests programs that want to launch a
+// server instance. (obviously MdsIpShr.so must be linked too..)
 
 int mdsip_main(int argc, char **argv)
 {

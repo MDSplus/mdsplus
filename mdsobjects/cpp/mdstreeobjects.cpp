@@ -517,7 +517,7 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 
 EXPORT void *TreeNode::operator new(size_t sz)
 {
-    return ::operator new(sz);    
+    return ::operator new(sz);
 }
 EXPORT void TreeNode::operator delete(void *p)
 {
