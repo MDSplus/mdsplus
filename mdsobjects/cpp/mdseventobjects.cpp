@@ -83,6 +83,7 @@ void Event::setEvent(char *evName, Data *evData)
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
 	setEventRaw(evName, bufLen, buf);
+    delete[] buf;
 }
 
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
