@@ -28,28 +28,40 @@ public:
 
 
 
+
 namespace testing {
-struct TestNode {
+class TestNode {
+public:    
     TreeNode *node;
-    std::string name,usage,parent,tree;
-    
+
+    TestNode(TreeNode *node) :
+        node(node)
+    {}
+            
     friend std::ostream &
     operator << (std::ostream &o, const TestNode &n) {
         o << " -- test node -- \n"
-          << "name:   " << n.node->getNodeNameStr() << " vs " << toupper(n.name) << "\n"
-          << "usage:  " << n.node->getUsage() << " vs " << toupper(n.usage) << "\n"
-          << "parent: " << unique_ptr<TreeNode>(n.node->getParent())->getNodeNameStr() << " vs " << toupper(n.parent) << "\n"
-          << "tree:   " << n.node->getTree()->getName() << " vs " << n.tree << "\n";
+          << "name:   " << n.node->getNodeNameStr() << "\n"
+          << "usage:  " << n.node->getUsage() << "\n"
+          << "parent: " << unique_ptr<TreeNode>(n.node->getParent())->getNodeNameStr() << "\n"
+          << "tree:   " << n.node->getTree()->getName() << "\n";
         return o;
     }
     
-    void operator()() {
+    bool operator == (const TestNode &other) {
+        return this->node->getNid() == other.node->getNid();
+    }
+    
+    void operator()(std::string name, std::string usage, std::string parent, std::string tree) {
         TEST1( node->getNodeNameStr() == toupper(name) );
         TEST1( std::string(node->getUsage()) == toupper(usage) );
         TEST1( unique_ptr<TreeNode>(node->getParent())->getNodeNameStr() == toupper(parent) );
         TEST1( node->getTree()->getName() == tree );
     }
 };
+
+
+
 
 void print_segment_info(TreeNode *node, int segment = -1)
 {
@@ -63,6 +75,8 @@ void print_segment_info(TreeNode *node, int segment = -1)
     else std::cout << " next empty element: " << next << "\n";
 } 
 } // testing
+
+
 
 
 
@@ -445,22 +459,17 @@ int main(int argc, char *argv[])
         
         // IS INCLUDED IN PULSE //
 
-        // TODO: capire ... 
-        
-        TEST0( node->isIncludedInPulse() );
-        
+        // TODO: capire ...         
+        TEST0( node->isIncludedInPulse() );        
         shot->edit();
         node = shot->addNode("onlypulse","ANY");        
         
         //        tree->write();
         //        tree->edit(false);
         //        tree->createPulse(2);
-        //        tree->edit(true);
-        
-        //        shot = new Tree("test_tree",2);
-        
-        //        TEST1( node->isIncludedInPulse() );        
-        
+        //        tree->edit(true);        
+        //        shot = new Tree("test_tree",2);        
+        //        TEST1( node->isIncludedInPulse() );                
         //        TEST_EXCEPTION( unique_ptr<Data>(unique_ptr<TreeNode>(shot->getNode("no_in_pulse"))->getData()), MdsException );
         
         node->setIncludedInPulse(true);
@@ -748,26 +757,8 @@ int main(int argc, char *argv[])
                 len = 2 * 7 * 9;
                 for(int i=0; i<len; ++i)                    
                     TEST1( array[i] == test_array[i+shift] );                                
-            }
-            
-            
-        }
-        
-        
-        
-//        if(0) // CAPIRE BENE !! //
-//        { // get info //
-//            char dtype,dimct;
-//            int dims[10], next[10];            
-//            node->getSegmentInfo(1, &dtype, &dimct, dims, next);
-            
-//            std::cout << dtype;
-//        }
-        
-        
-        tree->write();
-        
-        
+            }                        
+        }                       
     }
     
     ////////////////////////////////////////////////////////////////////////////////
@@ -776,20 +767,17 @@ int main(int argc, char *argv[])
     
     {
         
-        unique_ptr<TreeNode>(tree->addNode("test_edit","STRUCTURE"));
+        unique_ptr<TreeNode> root = (tree->addNode("test_edit","STRUCTURE"));
         unique_ptr<TreeNode> n1 = tree->addNode("test_edit:n1","ANY");
         
         // addNode with relative path //
         unique_ptr<TreeNode> n2 = n1->addNode("n2","ANY");
-        TestNode test = { n2, "n2", "ANY", "n1", "test_tree" };        
-        test();
+        TestNode(n2.base())("n2", "ANY", "n1", "test_tree");
+        
         
         // addNode with absolute path //
         unique_ptr<TreeNode> n3 = n1->addNode("\\top.test_edit:n3","ANY");
-        test.node = n3;
-        test.name = "n3";
-        test.parent = "test_edit";
-        test();
+        TestNode(n3.base())("n3", "ANY", "test_edit", "test_tree");
         
         // remove relative path //
         n1->remove("n2");
@@ -800,6 +788,31 @@ int main(int argc, char *argv[])
         // remove switching to parent node //
         unique_ptr<TreeNode>(n1->getParent())->remove("n3");
         
+        n1->rename("\\top:test_rename");              
+        TEST1(unique_ptr<TreeNode>(n1->getParent())->getNodeNameStr() == "TOP");        
+                        
+        n1->rename("\\top.test_edit:parent");                
+        TestNode(n1.base())( "parent", "ANY", "test_edit", "test_tree");
+        
+        n2 = n1->addNode("subnode","ANY");
+        n3 = n2->addNode("child","ANY");
+        
+        n3->move(n1);
+        TEST1(unique_ptr<TreeNode>(n3->getParent())->getNodeNameStr() == "PARENT");
+        
+        n3->move(root,"new_parent");        
+        TEST1(unique_ptr<TreeNode>(n1->getParent())->getNodeNameStr() == "TEST_EDIT");
+        
+        n2->addTag("n2");
+        
+        n3->addTag("n3");
+        n3 = tree->getNode("\\n3");
+        
+        n3->removeTag("n3");                       
+        TEST_EXCEPTION( unique_ptr<TreeNode>(tree->getNode("\\n3")), MdsException );
+
+        
+        n1->addDevice("device","DIO2");                
         
     }
     

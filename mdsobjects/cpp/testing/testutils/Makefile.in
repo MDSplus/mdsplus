@@ -112,7 +112,7 @@ am__v_AR_0 = @echo "  AR      " $@;
 am__v_AR_1 = 
 libMdsTestUtils_a_AR = $(AR) $(ARFLAGS)
 libMdsTestUtils_a_LIBADD =
-am__objects_1 = testutils.$(OBJEXT)
+am__objects_1 = testutils.$(OBJEXT) mdsipmain.$(OBJEXT)
 am_libMdsTestUtils_a_OBJECTS = $(am__objects_1)
 libMdsTestUtils_a_OBJECTS = $(am_libMdsTestUtils_a_OBJECTS)
 AM_V_P = $(am__v_P_@AM_V@)
@@ -131,6 +131,18 @@ DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/conf/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
+COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
+	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
+AM_V_CC = $(am__v_CC_@AM_V@)
+am__v_CC_ = $(am__v_CC_@AM_DEFAULT_V@)
+am__v_CC_0 = @echo "  CC      " $@;
+am__v_CC_1 = 
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+AM_V_CCLD = $(am__v_CCLD_@AM_V@)
+am__v_CCLD_ = $(am__v_CCLD_@AM_DEFAULT_V@)
+am__v_CCLD_0 = @echo "  CCLD    " $@;
+am__v_CCLD_1 = 
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 AM_V_CXX = $(am__v_CXX_@AM_V@)
@@ -455,8 +467,8 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 AM_DEFAULT_SOURCE_EXT = .cpp
-AM_CFLAGS = @SRBINCLUDE@
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
+AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}
+AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}
 AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
 
 # LDADD = $(AM_LIBS)
@@ -468,10 +480,13 @@ library_include_HEADERS = \
            testutils.h \
            type_traits.h \
            unique_ptr.h \
-           vector_test.h
+           vector_test.h \
+           threads.h \
+           mdsipmain.h
 
 _SOURCES = \
-           testutils.cpp
+           testutils.cpp \
+           mdsipmain.c
 
 
 # sadly libtool is not to be included
@@ -484,7 +499,7 @@ libMdsTestUtils_a_SOURCES = $(_SOURCES)
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .cpp .o .obj
+.SUFFIXES: .c .cpp .o .obj
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
@@ -529,7 +544,24 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mdsipmain.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/testutils.Po@am__quote@
+
+.c.o:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ $< &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ $<
+
+.c.obj:
+@am__fastdepCC_TRUE@	$(AM_V_CC)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.obj$$||'`;\
+@am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $$depbase.Tpo -c -o $@ `$(CYGPATH_W) '$<'` &&\
+@am__fastdepCC_TRUE@	$(am__mv) $$depbase.Tpo $$depbase.Po
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(AM_V_CC)source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(AM_V_CC@am__nodep@)$(COMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`;\
@@ -776,8 +808,8 @@ uninstall-am: uninstall-library_includeHEADERS
 
 include ${top_srcdir}/Makefile.inc
 
-libMdsTestUtils.so: $(_SOURCES)
-	$(CC) $(CFLAGS) -shared -o $@ $^
+libMdsTestUtils.so: testutils.cpp
+	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 
 all-local: libMdsTestUtils.so
 

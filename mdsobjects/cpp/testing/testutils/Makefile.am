@@ -2,8 +2,8 @@ include ${top_srcdir}/Makefile.inc
 
 AM_DEFAULT_SOURCE_EXT = .cpp
 
-AM_CFLAGS = @SRBINCLUDE@
-AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
+AM_CFLAGS = @SRBINCLUDE@ -I${top_srcdir}
+AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@ -I${top_srcdir}
 AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
 
 # LDADD = $(AM_LIBS)
@@ -16,10 +16,13 @@ library_include_HEADERS = \
            testutils.h \
            type_traits.h \
            unique_ptr.h \
-           vector_test.h
+           vector_test.h \
+           threads.h \
+           mdsipmain.h
 
 _SOURCES = \
-           testutils.cpp
+           testutils.cpp \
+           mdsipmain.c
 
 
 # sadly libtool is not to be included
@@ -34,8 +37,8 @@ libMdsTestUtils_a_SOURCES = $(_SOURCES)
 
 
 
-libMdsTestUtils.so: $(_SOURCES)
-	$(CC) $(CFLAGS) -shared -o $@ $^
+libMdsTestUtils.so: testutils.cpp
+	$(CC) $(CFLAGS) $(AM_CXXFLAGS) -shared -o $@ $^
 	
 
 all-local: libMdsTestUtils.so

@@ -32,7 +32,8 @@ extern "C" void eventAst(void *arg, int len, char *buf)
 	Event *ev = (Event *)arg;
 	ev->eventBuf.assign(buf, len);
 	ev->eventTime = convertAsciiToTime("now");
-	ev->run();
+	ev->run(); 
+    ev->notify();
 }
 
 extern "C" void reventAst(char *evname, char *buf, int len, void *arg)

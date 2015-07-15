@@ -32,7 +32,9 @@ TESTS = \
         MdsApdTest \
         MdsTreeTest \
         TestTreeWrite \
-        MdsTreeNodeTest
+        MdsTreeNodeTest \
+        MdsEventTest \
+        MdsConnectionTest
 
 else
 TESTS =
