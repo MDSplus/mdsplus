@@ -36,7 +36,7 @@ def makeScalar(value):
             return Int64(value)
     if isinstance(value,float):
         return Float32(value)
-    if isinstance(value,str):
+    if isinstance(value,basestring):
         return String(value)
     if isinstance(value,bytes):
         return String(value.decode())
@@ -226,7 +226,11 @@ class String(Scalar):
         """String: x.__str__() <==> str(x)
         @rtype: String"""
         if len(self._value) > 0:
-            return str(self.value.tostring().decode())
+            valstr = self.value.tostring()
+            try:
+                return valstr.decode()
+            except:
+                return valstr
         else:
             return ''
     def __len__(self):
