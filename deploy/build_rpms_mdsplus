@@ -132,7 +132,8 @@ def buildRpms():
             sys.stdout.flush()
             subprocess.Popen("/bin/cat %(specfilename)s" % info,shell=True).wait();
             p = subprocess.Popen("""
-            rpmbuild -bb --define '_topdir /installer' --buildroot=/buildroot --target=%(target)s %(specfilename)s 2>&1
+mkdir -p /installer/BUILD /installer/BUILDROOT /installer/RPMS /installer/SOURCES /installer/SPECS installer/SRPMS
+rpmbuild -bb --define '_topdir /installer' --buildroot=/buildroot --target=%(target)s %(specfilename)s 2>&1
 """ % info,stdout=subprocess.PIPE,shell=True)
             messages=p.stdout.readlines()
             status=p.wait()
