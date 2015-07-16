@@ -1,4 +1,22 @@
-commit 0d557ee61d9629d20a23ce815e5aab5a90d2dfb2 (HEAD, tag: refs/tags/hudson-aaa-release-stable-15, refs/remotes/origin/stable, refs/heads/stable)
+commit ec08b39d3e89104fa78f4506795c831521aad692 (HEAD, tag: refs/tags/hudson-aaa-release-stable-17, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 16:06:04 2015 -0400
+
+    Make rpm auxilliary directories
+
+commit 68b6683f4b5cb93f8747cca4e72ca795583936f1
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 15:49:33 2015 -0400
+
+    Make it fail if no successful builds of new release
+
+commit 9303ca180a053b66794ea72ed2381d9915256202 (tag: refs/tags/stable_release-7-0-33, tag: refs/tags/hudson-aaa-release-stable-16)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 18:29:44 2015 -0400
+
+    New release ---- stable_release-7-0-33
+
+commit 0d557ee61d9629d20a23ce815e5aab5a90d2dfb2 (tag: refs/tags/hudson-aaa-release-stable-15)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 17:00:15 2015 -0400
 
