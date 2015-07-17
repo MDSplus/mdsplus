@@ -1,4 +1,22 @@
-commit ea04b3d4fda86985f1f235c6faa2545435cd6fbc (HEAD, tag: refs/tags/hudson-aaa-release-alpha-notrigger-1, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 77e20b24c255ec6741dfc4d58605277aa71df066 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-notrigger-2, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:19:46 2015 -0400
+
+    Create rpmbuild directories
+
+commit 5c699297c988f05407964efefd5f13552a894661
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:19:27 2015 -0400
+
+    Support python2.4
+
+commit 669dec29b43d65376a1d24790417e84ee08fc1a7 (tag: refs/tags/alpha_release-7-0-118)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 11:23:55 2015 -0400
+
+    New release ---- alpha_release-7-0-118
+
+commit ea04b3d4fda86985f1f235c6faa2545435cd6fbc (tag: refs/tags/hudson-aaa-release-alpha-notrigger-1)
 Merge: 46f6ebf fa2eee8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 09:18:41 2015 -0400
