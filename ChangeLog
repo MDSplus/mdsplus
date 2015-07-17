@@ -1,4 +1,22 @@
-commit ec08b39d3e89104fa78f4506795c831521aad692 (HEAD, tag: refs/tags/hudson-aaa-release-stable-17, refs/remotes/origin/stable, refs/heads/stable)
+commit ebb2af1000653b20ee0b8f0f1d060905f5f336ac (HEAD, tag: refs/tags/hudson-aaa-release-stable-19, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:19:46 2015 -0400
+
+    Create rpmbuild directories
+
+commit 24d444358b3cd5713f64b668d1eb840d9dc978ac
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:19:27 2015 -0400
+
+    Support python2.4
+
+commit 240a9b4eed5c428e5f8560d4627284f4bade2885 (tag: refs/tags/stable_release-7-0-34, tag: refs/tags/hudson-aaa-release-stable-18)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 16:17:23 2015 -0400
+
+    New release ---- stable_release-7-0-34
+
+commit ec08b39d3e89104fa78f4506795c831521aad692 (tag: refs/tags/hudson-aaa-release-stable-17)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:06:04 2015 -0400
 
