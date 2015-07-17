@@ -1,16 +1,35 @@
-commit 32c341e082db9a088d389b35c2628996779a41d7 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-30, refs/remotes/origin/alpha, refs/heads/alpha)
+commit ea04b3d4fda86985f1f235c6faa2545435cd6fbc (HEAD, tag: refs/tags/hudson-aaa-release-alpha-notrigger-1, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 46f6ebf fa2eee8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 09:18:41 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 46f6ebfe346d1763b7df4160535fad33f353bdd0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 09:18:31 2015 -0400
+
+    Add more failure exception info
+
+commit fa2eee81617213a38f2899a395d7f825171f00ff (tag: refs/tags/alpha_release-7-0-117)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 08:43:51 2015 -0400
+
+    New release ---- alpha_release-7-0-117
+
+commit 32c341e082db9a088d389b35c2628996779a41d7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 08:34:02 2015 -0400
 
     Handle descriptor(unicode instances) correctly
 
-commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/hudson-aaa-release-alpha-29, tag: refs/tags/alpha_release-7-0-116)
+commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/alpha_release-7-0-116)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:35:59 2015 -0400
 
     New release ---- alpha_release-7-0-116
 
-commit 42fbdafadb7d951123a02810ae02d89c0e710d05 (tag: refs/tags/hudson-aaa-release-alpha-28)
+commit 42fbdafadb7d951123a02810ae02d89c0e710d05
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:06:04 2015 -0400
 
@@ -22,7 +41,7 @@ Date:   Thu Jul 16 15:49:33 2015 -0400
 
     Make it fail if no successful builds of new release
 
-commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596 (tag: refs/tags/hudson-aaa-release-alpha-27)
+commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596
 Merge: 81900c4 051603d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 15 08:43:56 2015 -0400
@@ -42,7 +61,7 @@ Date:   Wed Jul 15 01:54:19 2015 +0200
     try..except structure.
     Occurred when an TEXT node contained non-ansii chars (e.g. äöü..)
 
-commit 81900c42e18cde7bfff13b29c363faca39b50787 (tag: refs/tags/hudson-aaa-release-alpha-26, tag: refs/tags/hudson-aaa-release-alpha-25)
+commit 81900c42e18cde7bfff13b29c363faca39b50787
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 15:40:41 2015 -0400
 
@@ -54,25 +73,25 @@ Date:   Tue Jul 14 14:43:49 2015 -0400
 
     Output release indicator after successful build
 
-commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/hudson-aaa-release-alpha-24, tag: refs/tags/alpha_release-7-0-115)
+commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/alpha_release-7-0-115)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 09:36:25 2015 -0400
 
     New release ---- alpha_release-7-0-115
 
-commit 89678626595f41bf80f52085d3c78bef0377d5cf (tag: refs/tags/hudson-aaa-release-alpha-23)
+commit 89678626595f41bf80f52085d3c78bef0377d5cf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 21:05:35 2015 -0400
 
     TdiIsql obsolete
 
-commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/hudson-aaa-release-alpha-22, tag: refs/tags/alpha_release-7-0-114)
+commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/alpha_release-7-0-114)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 18:28:25 2015 -0400
 
     New release ---- alpha_release-7-0-114
 
-commit c9e1818556d33437b2630886ae6a829963ebe04f (tag: refs/tags/hudson-aaa-release-alpha-21)
+commit c9e1818556d33437b2630886ae6a829963ebe04f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 14:06:12 2015 -0400
 
