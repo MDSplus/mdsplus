@@ -36,15 +36,17 @@ int main(int argc, char *argv[])
     BEGIN_TESTING(String);
 
     {
-        Data * string1 = new String("string");
+        String * string1 = new String("string");
         Data * string2 = string1->clone();
         Data * string3 = new String("string3",6);
 
         TEST0( strcmp(AutoArray<char>(string1->getString()),"string") );
         TEST0( strcmp(AutoArray<char>(string2->getString()),"string") );
         TEST1( string1->equals(string2) );
-        TEST0( strcmp(AutoArray<char>(string2->getString()),"string") );
-
+        TEST0( strcmp(AutoArray<char>(string2->getString()),"string") );        
+        
+        AutoString c_str(string1->getString());
+        
         deleteData(string1);
         deleteData(string2);
         deleteData(string3);

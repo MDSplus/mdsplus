@@ -13,11 +13,9 @@ int main(int argc, char *argv[])
 {
     BEGIN_TESTING(Apd);
     
-    // NOTE: Apd does not increment reference counting !! //        
-    
+    // NOTE: Apd does not increment reference counting !! //            
     // TO BE CONTINUED ... //
-    
-    
+        
     END_TESTING;
 }
 

@@ -1,5 +1,5 @@
-\anchor mdsplus_manual
 
+\anchor mdsplus_manual
 
 
 Indroduction
@@ -15,7 +15,6 @@ The MDSplus developers hope that MDSplus may prove to be a valuable tool for res
 
 
 
-
 Documented components
 ---------------------
 
@@ -27,8 +26,14 @@ Documented components
 
 
 
- 
-\page lib_mdsip Mdsip remote data access library
-\page lib_mdsobjects MdsPlus object oriented interface
+<!-- ---------------------------------- -->
+<!-- This keeps the related pages order -->
+<!-- ---------------------------------- -->
+
+\page mdsplus_components MDSplus Components
+\page data_types Data Types
 \page use_docs Learn how to build self generating docs
+
+
+   
 

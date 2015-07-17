@@ -28,8 +28,7 @@ int main(int,char **argv) {
     { 
         // Only check if the it finds libm.a from system libraries //
         unique_ptr<Call> call_std = new Call(new String("m"), new String("sin"),0,NULL );
-    }
-    
+    }    
     
     unique_ptr<Call> call = new Call(new String("./testutils/libMdsTestDummy.so"),new String("get_ghostbusters_phone"),0,NULL);        
     TEST1( unique_ptr<Data>(call->data())->getInt() == 5552368 );

@@ -210,6 +210,11 @@ protected:
 
 
 class Data;
+
+/// Decrements the data reference counter and if last ref is reached deletes
+/// the data instance and free the allocated memory. This function must be
+/// called each time the code is responsible for the object deletion.
+///
 EXPORT void deleteData(Data *);
 
 ///
@@ -226,21 +231,21 @@ class EXPORT Data
 {
 public:
 
-    /// Default constructor
-    /// reference counting is set to 1 and the data to "changed" state
+    /// Default constructor,s reference counting is set to 1 and the data to
+    /// "changed" state.
+    /// 
     Data():
         refCount(1),
         units(nullptr),
         error(nullptr),
         help(nullptr),
         validation(nullptr)
-    {
-    }
+    {}
     
     virtual ~Data();
-
-//    void *operator new(size_t sz);
-//    void operator delete(void *p);
+    
+    //    void *operator new(size_t sz);
+    //    void operator delete(void *p);
 
     static void incRefCount(Data * d);
     static void decRefCount(Data * d);
@@ -332,11 +337,13 @@ public:
     /// \param size set to serialized data length
     /// \return c string representing serialized data
     char *	serialize(int *size);
-
-    ///@{
-    /// Access data as native type using getData() conversion function.
-    /// This function might be overloaded by derived data classes to improve
+    
+    ///@{ \ingroup NativeTypes 
+    /// 
+    /// Access data as native type using getData() conversion function. This
+    /// function might be overloaded by derived data classes to improve
     /// conversion.
+    ///     
     virtual char getByte();
     virtual short getShort();
     virtual int getInt();
@@ -1978,6 +1985,7 @@ public:
 /// devices used in data acquisition. The following example shows three simple
 /// instances of ranges: 
 /// 
+/// \code{.cpp}
 ///     // _tdi_range1 = 1 : 10
 ///     Data *range1 = new Range(new Int32(1),new Int32(10),NULL); 
 ///     
@@ -1986,15 +1994,17 @@ public:
 /// 
 ///     // _range = * : * : 1E-6
 ///     Data *range3 = new Range(NULL,NULL,new Float32(1E-6)); 
-/// 
+/// \endcode
 /// 
 /// In the above examples, we show two formats for creating ranges. The MDSplus
 /// TDI expression evaluator has a built in syntax for specifying ranges which
 /// is one of the following: 
 /// 
+/// \code{.cpp}
 ///     begin : end [: delta]
 ///     _range = build_range(begin,end,delta)
-
+/// \endcode
+/// 
 
 class Range: public Compound
 {
@@ -2559,62 +2569,72 @@ public:
 /// this data type as will as builtin functions for constructing them. The call
 /// to the external function occurs when the expression containing a call item
 /// is evaluated. The following example shows an example of calling an external
-/// function:
+/// function in TDI:
 /// 
 ///     mysharedlib->myfunction(42)
 /// 
 /// The code above is the most common form of the function reference. When
 /// evaluated, the function called "myfunction" found in the library
 /// "mysharedlib" will be called with one argument, 42. The return value of the
-/// function is assumed to be a 32-bit signed integer.
-///
-///     build_call(kind(1),"mysharedlib","myfunction",42)
-///
-/// The above code creates the same function as the previous example but uses 
-/// the build_call function to construct the call item. The behavior would be 
-/// identical to the previous example.
+/// function is assumed to be a 32-bit signed integer. The code following shows
+/// how to instance a binary call, the actual function call is done when the
+/// evaluation of the expression is triggered by the data() member.
 /// 
+/// \code{.cpp}
+/// #include <mdsobjects.h>
+/// using namespace MDSplus;
+/// {   
+///     // test for binary function call //                
+///     Data *args[2] = { new Int32(5552367), new Int32(1) };        
+///     AutoData<Call> call2 = new Call(new String("./testutils/libMdsTestDummy.so"),
+///                                     new String("test_addint"),
+///                                     2, (Data**)args);
+///     TEST1( AutoData<Data>(call2->data())->getInt() == 5552368 );        
+///     deleteData(args[0]);
+///     deleteData(args[1]);
+/// }
+/// \endcode
 /// 
-///     _x=zero(100)
-///     build_call(kind(1e6),"/home/twf/mylibraries/libmysharedlib",
-///                          "myfunction2",val(42),ref(_x))
-/// 
-///
-/// This example builds a similar call but in this case the function return is
-/// handled as a floating point value and the "myfunction2" function is called
-/// with two arguments, 42 passed by value and a TDI variable passed by
-/// reference. This example uses the full file specification (without the file
-/// type).
-///
-/// 
-/// MDSplus uses operating system specific rules to locate shared libraries
-/// when the full file specification of the library is not given. On OpenVMS,
-/// the system would first look for a logical name matching the name of the
-/// library and if one is found it would activate the image defined by the
-/// logical name. If their is no such logical name, the system would then look
-/// in the directory search path defined by SYS$SHARE for the library. The file
-/// type for shared libraries on OpenVMS is ".EXE". On Unix systems the system
-/// looks for a library path environment variable such as LD_LIBRARY_PATH or
-/// SHLIB_PATH and looks in these directories. If there is no such environment
-/// variable, the system looks in system library directories (usually /usr/lib
-/// or /usr/local/lib) for the shared library. The file type for shared
-/// libraries on Unix is generally ".so",".sl" or sometimes ".a". On Windows
-/// systems, the system looks for shared libraries in the directory where the
-/// application was run or in the directory list specified by the "PATH"
-/// environment variable. The file type of shared libraries on Windows is
-/// ".dll".
+/// \note MDSplus uses operating system specific rules to locate shared
+/// libraries when the full file specification of the library is not given. On
+/// OpenVMS, the system would first look for a logical name matching the name
+/// of the library and if one is found it would activate the image defined by
+/// the logical name. If their is no such logical name, the system would then
+/// look in the directory search path defined by SYS$SHARE for the library. The
+/// file type for shared libraries on OpenVMS is ".EXE". On Unix systems the
+/// system looks for a library path environment variable such as
+/// LD_LIBRARY_PATH or SHLIB_PATH and looks in these directories. If there is
+/// no such environment variable, the system looks in system library
+/// directories (usually /usr/lib or /usr/local/lib) for the shared library.
+/// The file type for shared libraries on Unix is generally ".so",".sl" or
+/// sometimes ".a". On Windows systems, the system looks for shared libraries
+/// in the directory where the application was run or in the directory list
+/// specified by the "PATH" environment variable. The file type of shared
+/// libraries on Windows is ".dll".
 ///
 
 class Call: public Compound {
 public:
-#ifndef DOXYGEN // hide this part from documentation
-    Call(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+
+#   ifndef DOXYGEN // hide this part from documentation
+    Call(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) :
+        Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
-#endif // DOXYGEN end of hidden code
+#   endif // DOXYGEN end of hidden code
 
-    Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+    /// Build a call object secifying the image and routine entries, together
+    /// with the routine data arguments and return type. If no return type is
+    /// specified the DTYPE_L is assumed as default.
+    /// 
+    /// \param image A new \ref String containing the routine to be called
+    /// \param routine A new \ref String of the called image symbol routine.
+    /// \param nargs The number of arguments that will be the routine input arguments.
+    /// \param args The array of the data arguments of the routine.
+    /// \param retType The data type (DTYPE_xxx) that the Call will return.
+    ///
+    Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)   
     {
         dtype = DTYPE_CALL;
         opcode = retType;
@@ -2623,30 +2643,65 @@ public:
         for(int i = 0; i < nargs; i++)
             descs.push_back(args[i]);
         incrementRefCounts();
+        setAccessory(units, error, help, validation);
     }
 
+    /// Get the code associated to the Call return type. This is the data type
+    /// that will be associated to the returned data descriptor. If no return
+    /// type was specified in the instance construction the DTYPE_L is assumed
+    /// as default.
+    /// 
     char getRetType() {
         return opcode;
     }
 
+    /// Set the return type code as one of the DTYPE_xx codes defined. If no
+    /// return type was specified in the instance construction the DTYPE_L is
+    /// assumed as default.
+    /// 
     void setRetType(char retType) {
         opcode = retType;
     }
 
+    /// Get the Call image as Data object. The image is usually a string that
+    /// specifies the current path to find the library that contains the symbol
+    /// to be called.
+    ///
     Data *getImage() {
         return getDescAt(0);
     }
 
+    /// Get the routine that the Call instance will look for in the image. This
+    /// is usually a string containing the symbol within the image library.
+    /// \note MDSplus does not manages the symbol mangling used by compilers to
+    /// identify class member functions, so that only C compiled function will
+    /// be reached by Call.
+    /// 
     Data *getRoutine(){
         return getDescAt(1);
     }
 
+    /// Get the idx argument of the routine input argument list.
+    /// 
     Data *getArgumentAt(int idx) {
         return getDescAt(idx + 2);
     }
 
+    /// Set the call image. The image is usually a string that specifies the
+    /// current path to find the library that contains the symbol to be called.
+    ///
     void setImage(Data *image) { assignDescAt(image, 0); }
+    
+    /// Set the routine that the Call instance will look for in the image. This
+    /// is usually a string containing the symbol within the image library.
+    /// \note MDSplus does not manages the symbol mangling used by compilers to
+    /// identify class member functions, so that only C compiled function will
+    /// be reached by Call.
+    ///
     void setRoutine(Data *routine) { assignDescAt(routine, 1); }
+
+    /// Set the idx argument of the routine input argument list.
+    ///
     void setArgumentAt(Data *argument, int idx) { assignDescAt(argument, 2 + idx); }
 };
 
@@ -3333,10 +3388,10 @@ public:
     void *operator new(size_t sz);
     void operator delete(void *p);    
     
-    /// Set current shot number (see \ref SetCurrentShotId)
+    /// Set current shot number (see \ref TreeSetCurrentShotId() )
     static void setCurrent(char const * treeName, int shot);
     
-    /// Get current shot number (see \ref TreeGetCurrentShotId)
+    /// Get current shot number (see \ref TreeGetCurrentShotId() )
     static int getCurrent(char const * treeName);
     
     /// Return current tree context (see treeshr library)

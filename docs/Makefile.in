@@ -523,10 +523,17 @@ SUBDIRS = \
 DX_PACKAGE_NAME = docs
 DX_TITLE = MDSplus
 DX_BRIEF = "online code documentation"
-DX_PAGES = index.md \
+DX_PAGES = \
+           index.md \
+           mdsplus_components.md \
            lib_mdsip.md \
            lib_mdsobjects.md \
-           use_docs.md
+           use_docs.md \
+           data_types.md \
+           dt_integer.md \
+           dt_float.md \
+           dt_string.md \
+           dt_action.md
 
 DX_EXCLUDE_PAGES = 
 DX_TAGFILES = mdsip.tag \
