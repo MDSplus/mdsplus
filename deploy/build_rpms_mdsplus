@@ -26,13 +26,13 @@ def fixFilename(info,filename):
         if info['arch']=='noarch':
             filename=filename.replace("/lib/","/lib??/") 
             filename=filename.replace("/bin/","/bin??/")
-            if filename.endswith(('/lib','/bin')):
+            if filename[len(filename)-4:] in ('/lib','/bin'):
                 filename=filename+"??"
         else:
             filename=filename.replace("/lib/","/lib%(bits)d/") 
             filename=filename.replace("/bin/","/bin%(bits)d/")
             filename=filename.replace("/uid/","/uid%(bits)d/")
-            if filename.endswith(('/lib','/bin','/uid')):
+            if filename[len(filename)-4:] in ('/lib','/bin','/uid'):
                 filename=filename+"%(bits)d"
         ans=filename % info
     except:
