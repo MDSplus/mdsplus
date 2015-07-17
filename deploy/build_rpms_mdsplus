@@ -35,8 +35,8 @@ def fixFilename(info,filename):
             if filename.endswith(('/lib','/bin','/uid')):
                 filename=filename+"%(bits)d"
         ans=filename % info
-    except:
-        raise Exception("Error fixing filename "+filename)
+    except Exception,e:
+        raise Exception("Error fixing filename %s: %s" % (filename,e))
     return ans
 
 def doRequire(info, out, root, require):
