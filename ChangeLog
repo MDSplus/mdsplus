@@ -1,4 +1,16 @@
-commit 42fbdafadb7d951123a02810ae02d89c0e710d05 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-28, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 32c341e082db9a088d389b35c2628996779a41d7 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-30, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 08:34:02 2015 -0400
+
+    Handle descriptor(unicode instances) correctly
+
+commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/hudson-aaa-release-alpha-29, tag: refs/tags/alpha_release-7-0-116)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 16:35:59 2015 -0400
+
+    New release ---- alpha_release-7-0-116
+
+commit 42fbdafadb7d951123a02810ae02d89c0e710d05 (tag: refs/tags/hudson-aaa-release-alpha-28)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:06:04 2015 -0400
 
