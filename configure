@@ -7039,6 +7039,17 @@ fi
 fi
 
 PYTHON_INCLUDE_DIR=$with_python_include
+OLD_CPPFLAGS="$CPPFLAGS"
+CPPFLAGS="-I $PYTHON_INCLUDE_DIR"
+ac_fn_c_check_header_mongrel "$LINENO" "Python.h" "ac_cv_header_Python_h" "$ac_includes_default"
+if test "x$ac_cv_header_Python_h" = xyes; then :
+
+else
+  PYTHON_INCLUDE_DIR=""
+fi
+
+
+CPPFLAGS="$OLD_CPPFLAGS"
 
 
 # Check whether --with-java_target was given.

@@ -1,4 +1,237 @@
-commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b (HEAD, tag: refs/tags/hudson-alpha-release-14, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 77e20b24c255ec6741dfc4d58605277aa71df066 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-notrigger-2, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:19:46 2015 -0400
+
+    Create rpmbuild directories
+
+commit 5c699297c988f05407964efefd5f13552a894661
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:19:27 2015 -0400
+
+    Support python2.4
+
+commit 669dec29b43d65376a1d24790417e84ee08fc1a7 (tag: refs/tags/alpha_release-7-0-118)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 11:23:55 2015 -0400
+
+    New release ---- alpha_release-7-0-118
+
+commit ea04b3d4fda86985f1f235c6faa2545435cd6fbc (tag: refs/tags/hudson-aaa-release-alpha-notrigger-1)
+Merge: 46f6ebf fa2eee8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 09:18:41 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 46f6ebfe346d1763b7df4160535fad33f353bdd0
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 09:18:31 2015 -0400
+
+    Add more failure exception info
+
+commit fa2eee81617213a38f2899a395d7f825171f00ff (tag: refs/tags/alpha_release-7-0-117)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 08:43:51 2015 -0400
+
+    New release ---- alpha_release-7-0-117
+
+commit 32c341e082db9a088d389b35c2628996779a41d7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 08:34:02 2015 -0400
+
+    Handle descriptor(unicode instances) correctly
+
+commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/alpha_release-7-0-116)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 16:35:59 2015 -0400
+
+    New release ---- alpha_release-7-0-116
+
+commit 42fbdafadb7d951123a02810ae02d89c0e710d05
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 16:06:04 2015 -0400
+
+    Make rpm auxilliary directories
+
+commit 3fcd80941d6e8fb7fc6d0d7f8c71109ba1137a68
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 16 15:49:33 2015 -0400
+
+    Make it fail if no successful builds of new release
+
+commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596
+Merge: 81900c4 051603d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 15 08:43:56 2015 -0400
+
+    Merge pull request #15 from zack-vii/alpha
+    
+    support for non-ansii TEXT data in python (2.7)
+
+commit 051603d9cc281f30239bc6d6e22e4dce5cceac7d
+Author: zack-vii <zack.vii@live.com>
+Date:   Wed Jul 15 01:54:19 2015 +0200
+
+    support for non-ansii TEXT data in python (2.7)
+    
+    enclose decode() in try..except and return un-decoded value if fails.
+    before it returned EmptyData when the error is caught be the outer
+    try..except structure.
+    Occurred when an TEXT node contained non-ansii chars (e.g. äöü..)
+
+commit 81900c42e18cde7bfff13b29c363faca39b50787
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 15:40:41 2015 -0400
+
+    Ensure Python includes work
+
+commit b0f6648228f5f5924a1023665d8d7d2c03d31161
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 14:43:49 2015 -0400
+
+    Output release indicator after successful build
+
+commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/alpha_release-7-0-115)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 14 09:36:25 2015 -0400
+
+    New release ---- alpha_release-7-0-115
+
+commit 89678626595f41bf80f52085d3c78bef0377d5cf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 21:05:35 2015 -0400
+
+    TdiIsql obsolete
+
+commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/alpha_release-7-0-114)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 18:28:25 2015 -0400
+
+    New release ---- alpha_release-7-0-114
+
+commit c9e1818556d33437b2630886ae6a829963ebe04f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 14:06:12 2015 -0400
+
+    Obsolete docker files
+
+commit eee310114c08fb37d9897438eee757efe63da559
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 12:58:21 2015 -0400
+
+    Use getline instead of gets
+
+commit 5191f09a7de95e67153346591460692022f6ea85
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:23:02 2015 -0400
+
+    Fix build directory
+
+commit 32ab9e5cbb9591addba410fc818815b49b25111e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:21:20 2015 -0400
+
+    debug needed
+
+commit 6d6e5495466cbaca35ea73016497e322b6348351
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:19:53 2015 -0400
+
+    add z to tar extraction again
+
+commit 0143bdaa66268e606e4d5fba9546515d205130b8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 13 08:18:17 2015 -0400
+
+    no need to pushd
+
+commit 9e4e0b600616dc6b200bb977eb8f9455accbe2fd (tag: refs/tags/alpha_release-7-0-113)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Jul 12 11:53:53 2015 -0400
+
+    New release ---- alpha_release-7-0-113
+
+commit 111047cd49c445b205edd7e8c0046eb1713f6869
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Jul 12 11:31:04 2015 -0400
+
+    use z option unpacking source tar
+
+commit c699bca56d465809870e358dfbef9af123cfe76c (tag: refs/tags/alpha_release-7-0-112)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 18:24:45 2015 -0400
+
+    New release ---- alpha_release-7-0-112
+
+commit fca005fdc66493580f4cf15833c86d0ffa61cc90
+Merge: 0027d66 0e053ee
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 15:55:55 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 0027d66db3cb8ab3c0645448cbaf157b47aa51cf
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 15:55:23 2015 +0200
+
+    Support for density control
+
+commit 68834e064d8fabb7813629990f1ad68556800fae
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 15:52:29 2015 +0200
+
+    New Device support for Density control
+
+commit 0e053ee553a7777af30377d4fda69d624b3d8643
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 08:18:42 2015 -0400
+
+    Add BRANCH and BNAME members to info
+
+commit 1ee928a9ae23612e4e80111c0efe2b26442cffa0
+Merge: 121f016 70708dc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 10 08:18:11 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 70708dcf9fe236d5307f515f103966193b3aed07
+Merge: 149ae11 ca099f0
+Author: GabrieleManduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 11:53:37 2015 +0200
+
+    Merge pull request #13 from zack-vii/jdk_win
+    
+    added batch files for windows JDK
+
+commit ca099f066328731e39cfead8cc9400125a145f5d
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Jul 9 23:49:56 2015 +0200
+
+    added batch files for windows JDK
+    
+    scripts for compiling the jScope and the jTraverser
+
+commit 121f0166486890f194cdc1e692bcfcf86410b529
+Merge: 2e5171d 149ae11
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 15:43:53 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 2e5171dc984fbeec49a9e1fa23f261edac1700ea
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 15:43:43 2015 -0400
+
+    Remove check for new releases in old script
+
+commit 149ae11c44548cf041f931adfcae637d2d58f54b (tag: refs/tags/alpha_release-7-0-111)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 9 14:17:03 2015 -0400
+
+    New release ---- alpha_release-7-0-111
+
+commit 1d22fc8549cb10204b5b04ed459fb6ad4571e13b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 14:03:34 2015 -0400
 
@@ -16,7 +249,7 @@ Date:   Thu Jul 9 12:16:21 2015 -0400
 
     New release ---- alpha_release-7-0-110
 
-commit 96c366aa7c317cf76cc9d8432efd1422505f1252 (tag: refs/tags/hudson-alpha-release-13)
+commit 96c366aa7c317cf76cc9d8432efd1422505f1252
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 9 11:12:13 2015 -0400
 
@@ -51,7 +284,7 @@ Date:   Wed Jul 8 16:18:30 2015 -0400
 
     New release ---- alpha_release-7-0-109
 
-commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd (tag: refs/tags/hudson-alpha-release-12)
+commit 44816f2e10fbc5cd8e1cbeb5194d00fab5fcefbd
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 13:35:56 2015 -0400
 
@@ -81,31 +314,31 @@ Date:   Wed Jul 8 09:21:55 2015 -0400
 
     New release ---- alpha_release-7-0-108
 
-commit 2baa7704941273d17fe0279f74e84796de26ed1f (tag: refs/tags/hudson-alpha-release-11, tag: refs/tags/hudson-alpha-release-10)
+commit 2baa7704941273d17fe0279f74e84796de26ed1f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 09:02:13 2015 -0400
 
     Add new release checker
 
-commit f290d299d057fb201ec0eaa102c0035eb2a445ab (tag: refs/tags/hudson-alpha-release-9, tag: refs/tags/hudson-alpha-release-8)
+commit f290d299d057fb201ec0eaa102c0035eb2a445ab
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 8 08:24:01 2015 -0400
 
     Add new release checker
 
-commit dec30556b89104832efb90d13762f0621bc56bd8 (tag: refs/tags/hudson-alpha-release-7, tag: refs/tags/alpha_release-7-0-107)
+commit dec30556b89104832efb90d13762f0621bc56bd8 (tag: refs/tags/alpha_release-7-0-107)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jul 7 22:30:39 2015 +0000
 
     New ChangeLog
 
-commit a2cbd2666756a8b83080cf891e8ac2e9685eb1cf (tag: refs/tags/hudson-alpha-release-6)
+commit a2cbd2666756a8b83080cf891e8ac2e9685eb1cf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 7 16:51:01 2015 -0400
 
     Add new release checker
 
-commit c337cf7b23cce3d6cb3f36ce629be731f42b3c90 (tag: refs/tags/hudson-alpha-release-5, tag: refs/tags/hudson-alpha-release-4, tag: refs/tags/hudson-alpha-release-3, tag: refs/tags/hudson-alpha-release-2)
+commit c337cf7b23cce3d6cb3f36ce629be731f42b3c90
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 7 08:50:36 2015 -0400
 
@@ -238,7 +471,7 @@ Date:   Mon Jun 29 10:52:10 2015 -0400
 
     Use different mechanism to find latest release tag
 
-commit 1db4ae58797f31d43abe641bf9387c4479a0d10d (tag: refs/tags/hudson-alpha-release-1)
+commit 1db4ae58797f31d43abe641bf9387c4479a0d10d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jun 29 10:42:30 2015 -0400
 

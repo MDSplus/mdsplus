@@ -718,10 +718,10 @@ def TreeGetDbi(tree,itemname):
     if not (status & 1):
         raise TreeException(_mdsshr.MdsGetMsg(status))
     if item[1]==str:
-        if isinstance(ans.value,str):
-          return ans.value
-        else:
+        try:
           return ans.value.decode()
+        except:
+          return ans.value
     else:
         return item[1](ans.value)
 
