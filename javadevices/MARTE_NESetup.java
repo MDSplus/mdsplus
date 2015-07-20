@@ -56,13 +56,20 @@ public class MARTE_NESetup extends DeviceSetup {
         deviceField15 = new DeviceField();
         deviceField16 = new DeviceField();
         deviceField17 = new DeviceField();
+        jPanel10 = new javax.swing.JPanel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel11 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        deviceField18 = new DeviceField();
+        jPanel13 = new javax.swing.JPanel();
+        deviceField19 = new DeviceField();
 
         setDeviceProvider("localhost");
         setDeviceTitle("MARTe Density Control");
         setDeviceType("MARTE_NE");
-        setHeight(500);
+        setHeight(550);
         setWidth(700);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
         jPanel1.setLayout(new java.awt.GridLayout(8, 0));
 
@@ -88,7 +95,7 @@ public class MARTE_NESetup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
-        deviceChoice1.setChoiceItems(new String[] {"NE_CONTROL"});
+        deviceChoice1.setChoiceItems(new String[] {"NEControl"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Control: ");
         deviceChoice1.setOffsetNid(12);
@@ -200,7 +207,33 @@ public class MARTE_NESetup extends DeviceSetup {
 
         jPanel1.add(jPanel9);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
+
+        jPanel10.setLayout(new java.awt.BorderLayout());
+
+        jPanel11.setLayout(new java.awt.GridLayout(2, 0));
+
+        deviceField18.setIdentifier("");
+        deviceField18.setLabelString("X: ");
+        deviceField18.setNumCols(40);
+        deviceField18.setOffsetNid(1411);
+        jPanel12.add(deviceField18);
+
+        jPanel11.add(jPanel12);
+
+        deviceField19.setIdentifier("");
+        deviceField19.setLabelString("Y: ");
+        deviceField19.setNumCols(40);
+        deviceField19.setOffsetNid(1412);
+        jPanel13.add(deviceField19);
+
+        jPanel11.add(jPanel13);
+
+        jTabbedPane1.addTab("NE Reference", jPanel11);
+
+        jPanel10.add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+
+        getContentPane().add(jPanel10, java.awt.BorderLayout.CENTER);
 
         getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
@@ -220,6 +253,8 @@ public class MARTE_NESetup extends DeviceSetup {
     private DeviceField deviceField15;
     private DeviceField deviceField16;
     private DeviceField deviceField17;
+    private DeviceField deviceField18;
+    private DeviceField deviceField19;
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
@@ -229,6 +264,10 @@ public class MARTE_NESetup extends DeviceSetup {
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -237,5 +276,6 @@ public class MARTE_NESetup extends DeviceSetup {
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
+    private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
