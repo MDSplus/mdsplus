@@ -80,10 +80,10 @@ Four checks are selected by traits to be performed on values:
  - numeric_cast_precision_rule (disabled at the moment) 
  - numeric_cast_nan_rule
  
-The cheks are performed according to the diagram below:
+The checks are performed according to the diagram below:
  
  \image html img/numeric_cast.jpg
- \image latex img/numeric_cast.jpg
+ \image latex img/numeric_cast.jpg width=8cm 
  
  
  The possible exception that the function throws are:

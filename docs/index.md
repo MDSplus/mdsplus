@@ -2,8 +2,9 @@
 \anchor mdsplus_manual
 
 
+
 Indroduction
-------------
+============
 
 MDSplus is a set of software tools for data acquisition and storage and a methodology for management of complex scientific data.
 MDSplus allows all data from an experiment or simulation code to be stored into a single, self-descriptive, hierarchical structure. The system was designed to enable users to easily construct complete and coherent data sets.
@@ -18,7 +19,7 @@ The MDSplus developers hope that MDSplus may prove to be a valuable tool for res
 Documented components
 ---------------------
 
-| sub libraries            | online code documentation                              |
+| Brief description        | Link to component reference manual                     |
 |:-------------------------|--------------------------------------------------------|
 | \ref lib_mdsip           | \subpage mdsip_manual "Mdsip manual"                   |
 | \ref lib_mdsobjects C++  | \subpage mdsobjects_cpp_manual "Mdsobjects C++ manual" |

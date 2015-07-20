@@ -641,14 +641,15 @@ Data * Data::getDimensionAt(int dimIdx) {
 
 
 ///
-/// \brief MDSplus::compile
-/// \param expr  TDI expression to evaluate
 /// \return new instanced Data representing compiled script
-/// ref to MDSplus::compileWithArgs
+/// 
+/// ref to \ref MDSplus::compileWithArgs
 Data * MDSplus::compile(const char *expr) {
 	return compileWithArgs(expr, 0);
 }
-		
+
+///
+///
 Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	struct Lambda {
 		std::vector<void *> args;

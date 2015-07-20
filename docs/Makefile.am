@@ -1,10 +1,4 @@
 
-SUBDIRS = \
-          ../mdstcpip/docs/ \
-          ../mdsobjects/cpp/docs/ \
-          .
-
-
 include config/doxygen.am
 
 
@@ -44,9 +38,6 @@ DX_PAGES = \
            dt_with_units.md
            
            
-
-
-
 DX_EXCLUDE_PAGES = 
 
 DX_TAGFILES = mdsip.tag \
@@ -58,16 +49,26 @@ MOSTLYCLEANFILES = $(DX_CLEANFILES) \
                    ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html
 
 # //////////////////////////////////////////////////////////////////////////// #
-# TARGETS #
+# LOCAL TARGETS #
 
 
 html: doxygen-run
 pdf:  doxygen-pdf
 
 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# RECURSIVE SUBDIRECTORIES DOCUMENT GENERATION #
+
+# Add here all subdirectories that contain a doxygen documentation Makefile
+# 
+DX_SUBDIRS = \
+          ../mdstcpip/docs/ \
+          ../mdsobjects/cpp/docs/ \
+          .
 	
 build_all:
-	list='$(SUBDIRS)'
+	list='$(DX_SUBDIRS)'
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) build_tag) \
 	done;
@@ -77,15 +78,18 @@ build_all:
 
 
 install_all:
-	list='$(SUBDIRS)'
+	list='$(DX_SUBDIRS)'
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) install_tag) \
-	done;
+	done; \
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \
 	($(am__cd) $$subdir && $(MAKE) $(AM_MAKEFLAGS) doxygen-install) \
 	done;	
 
 
+# This is a html main page that resides into the root directory of the web
+# server and provides a redirection to the docs directory
+#
 ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html:
 	touch $@; \
 	echo " <html> <head> <meta http-equiv=\"refresh\" content=\"0; url=./docs/html/index.html\"> </head> </html> " > $@;
@@ -93,6 +97,9 @@ ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html:
 main_index: ${DESTDIR}${datadir}/doc/@PACKAGE@/index.html
 
 
+# The default behavior from here is to build all docs for MDSplus
+# subdirectories.
+#
 all: build_all
 
 install-data-local: install_all main_index

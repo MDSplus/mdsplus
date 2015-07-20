@@ -17,7 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace MDSplus {
-namespace detail {
+#ifndef DOXYGEN // hide this part from documentation
 
 /// Numeric Limits for Integer types
 template < typename T, typename EnableIf = void >
@@ -44,7 +44,7 @@ public:
     static inline T lowest() { return -BaseClass::max(); }
 };
 
-} // detail
+#endif // DOXYGEN end of hidden code
 } // MDSplus
 
 

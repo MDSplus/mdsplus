@@ -209,7 +209,7 @@ typedef void *pthread_mutex_t;
 /// \param info_name info name passed to SetConnectionInfo()
 /// \param readfd input file descriptor i.e. the socket id
 /// \param info
-/// \param info_len
+/// \param infolen
 /// \param conid
 /// \param user
 /// \return
@@ -266,7 +266,7 @@ EXPORT int ConnectToMds(char *connection_string);
 ///
 /// Disconnect the connection identified by id.
 ///
-/// \param conid the id of connection to be disconnected
+/// \param id the id of connection to be disconnected
 /// \return true if the connection was correctly freed or false otherwise.
 ///
 EXPORT int DisconnectConnection(int id);
@@ -312,7 +312,7 @@ extern int FlushConnection(int id);
 /// Free all desctriptors held by the Connection structure in argument.
 /// \param c the connection to be freed
 ///
-EXPORT void FreeDescriptors(Connection *);
+EXPORT void FreeDescriptors(Connection *c);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -359,7 +359,7 @@ EXPORT int GetAnswerInfo(int id, char *dtype, short *length, char *ndims,
 /// \param dims pointer to store the descriptor dimensions
 /// \param numbytes pointer to store the descriptor total number of bytes
 /// \param dptr pointer to store the descriptor data
-/// \param mout a pointer to the Message structure to store the incoming message
+/// \param m a pointer to the Message structure to store the incoming message
 /// \return the function returns the status held by the answered descriptor
 ///
 EXPORT int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims,
@@ -382,7 +382,7 @@ EXPORT void *GetConnectionInfo(int id, char **info_name, int *readfd,
 /// returns the ioRoutines structure associated to a given Connection
 /// identified by id.
 ///
-/// \param conid id of the connection that holds the ioRoutines
+/// \param id id of the connection that holds the ioRoutines
 /// \return ioRoutines structure in the io field of Connection element found.
 ///
 EXPORT IoRoutines *GetConnectionIo(int id);
@@ -399,10 +399,10 @@ EXPORT int GetMaxCompressionLevel();
 ///
 /// Finds connection by id and returns its the message id
 ///
-/// \param conid the connection id
+/// \param id the connection id
 /// \return message_id field of selected connection or 0 as no connection found
 ///
-EXPORT unsigned char GetConnectionMessageId(int);
+EXPORT unsigned char GetConnectionMessageId(int id);
 
 EXPORT int GetMdsConnectTimeout();
 
@@ -458,11 +458,11 @@ EXPORT int GetWorker();
 /// Finds the Connection intance held in the list of connections by id and
 /// increments the connection message id.
 ///
-/// \param conid id of the connection
+/// \param id id of the connection
 /// \return the incremented connection message id or 0 if connection was not
 ///         found.
 ///
-EXPORT unsigned char IncrementConnectionMessageId(int);
+EXPORT unsigned char IncrementConnectionMessageId(int id);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
@@ -554,7 +554,7 @@ EXPORT int MdsOpen(int id, char *tree, int shot);
 ///
 /// \param id the id of the used connection in connection list.
 /// \param node the node path of the remote target tree.
-/// \param expression the TDI expression to execute on server.
+/// \param exp the TDI expression to execute on server.
 /// \return the exit status of the remote command converted to int or the status
 ///         of SendArg() function if it fails.
 ///
@@ -590,7 +590,7 @@ EXPORT int MdsSetDefault(int id, char *node);
 /// argument to the expression.
 ///
 /// \param id the id of the connection to use
-/// \param expression the TDI expression c string to be avaluated.
+/// \param exp the TDI expression c string to be avaluated.
 /// \return the evaluation exit status of the expression.
 ///
 EXPORT int MdsValue(int id, char *exp, ...);

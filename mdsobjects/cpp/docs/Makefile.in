@@ -837,7 +837,7 @@ uninstall-am:
 .PRECIOUS: Makefile
 
 
-@DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@doxygen-pdf: ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
+@DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@doxygen-pdf: doxygen-run ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
 
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf: ${DX_DESTTAG}
 @DX_COND_doc_TRUE@@DX_COND_pdf_TRUE@	cd ${DX_DESTDIR}/latex; \
@@ -870,7 +870,7 @@ uninstall-am:
 @DX_COND_doc_TRUE@	DX_DESTTAG="${DX_DESTTAG}" \
 @DX_COND_doc_TRUE@	DX_SEARCHFILE="${DX_SEARCHFILE}" \
 @DX_COND_doc_TRUE@	DX_TAGFILES= \
-@DX_COND_doc_TRUE@	$(DX_DOXYGEN) $(DX_CONFIG);
+@DX_COND_doc_TRUE@	$(DX_DOXYGEN) $(DX_CONFIG) 2>&1 > /dev/null;
 
 @DX_COND_doc_TRUE@${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
 @DX_COND_doc_TRUE@	touch $@; \

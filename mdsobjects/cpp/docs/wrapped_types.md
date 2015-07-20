@@ -47,18 +47,18 @@ values or regular arrays with one to seven dimensions. The following is a table
 of the integer scalars defined in MDSplus with a link to the proper C++ object
 definition.
 
-| **Id**            | **Description**             | **Object**               |
-|-------------------|-----------------------------|--------------------------|
-| \ref DTYPE\_B     | Byte (8-bit)                | \ref MDSplus::Int8       |
-| \ref DTYPE\_BU    | Unsigned Byte (8-bit)       | \ref MDSplus::Uint8      |
-| \ref DTYPE\_W     | Word (16-bit)               | \ref MDSplus::Int16      |
-| \ref DTYPE\_WU    | Unsigned Word (16-bit)      | \ref MDSplus::Uint16     |
-| \ref DTYPE\_L     | Long (32-bit)               | \ref MDSplus::Int32      |
-| \ref DTYPE\_LU    | Unsigned Long (32-bit)      | \ref MDSplus::Uint32     |
-| \ref DTYPE\_Q     | Quadword (64-bit)           | \ref MDSplus::Int64      |
-| \ref DTYPE\_QU    | Unsigned Quadword (64-bit)  | \ref MDSplus::Uint64     |
-| \ref DTYPE\_O     | Octaword (128-bit)          | ( still missing in c++ ) |
-| \ref DTYPE\_OU    | Unsigned Octaword (128-bit) | ( still missing in c++ ) |
+| **Id**       | **Description**             | **Object**               |
+|--------------|-----------------------------|--------------------------|
+| DTYPE\_B     | Byte (8-bit)                | \ref MDSplus::Int8       |
+| DTYPE\_BU    | Unsigned Byte (8-bit)       | \ref MDSplus::Uint8      |
+| DTYPE\_W     | Word (16-bit)               | \ref MDSplus::Int16      |
+| DTYPE\_WU    | Unsigned Word (16-bit)      | \ref MDSplus::Uint16     |
+| DTYPE\_L     | Long (32-bit)               | \ref MDSplus::Int32      |
+| DTYPE\_LU    | Unsigned Long (32-bit)      | \ref MDSplus::Uint32     |
+| DTYPE\_Q     | Quadword (64-bit)           | \ref MDSplus::Int64      |
+| DTYPE\_QU    | Unsigned Quadword (64-bit)  | \ref MDSplus::Uint64     |
+| DTYPE\_O     | Octaword (128-bit)          | ( still missing in c++ ) |
+| DTYPE\_OU    | Unsigned Octaword (128-bit) | ( still missing in c++ ) |
 
 
 
@@ -87,12 +87,12 @@ half of its original size.
 The following is a table of the float scalars defined in MDSplus with a link to
 the proper c++ object definition.
 
-| **Id**             | **Description**           | **Scalar object**         |
-|--------------------|---------------------------|---------------------------|
-| \ref DTYPE\_FLOAT  | 32-bit IEEE Float         | \ref MDSplus::Float32     |
-| \ref DTYPE\_DOUBLE | 64-bit IEEE Double        | \ref MDSplus::Float64     |
-| \ref DTYPE\_FSC    | 32-bit IEEE Float complex | \ref MDSplus::Complex32   |
-| \ref DTYPE\_FTC    | 64-bit IEEE Float complex | \ref MDSplus::Complex64   |
+| **Id**        | **Description**           | **Scalar object**         |
+|---------------|---------------------------|---------------------------|
+| DTYPE\_FLOAT  | 32-bit IEEE Float         | \ref MDSplus::Float32     |
+| DTYPE\_DOUBLE | 64-bit IEEE Double        | \ref MDSplus::Float64     |
+| DTYPE\_FSC    | 32-bit IEEE Float complex | \ref MDSplus::Complex32   |
+| DTYPE\_FTC    | 64-bit IEEE Float complex | \ref MDSplus::Complex64   |
 
 
 
@@ -104,7 +104,7 @@ the proper c++ object definition.
 The Text data in MDSplus derives from the \ref MDSplus::Scalar base class.
 MDSplus supports scalars or arrays of text strings. Text strings are limited to
 lengths of 64K characters. The MDSplus c++ string object that implements the
-\ref DTYPE_T is \ref MDSplus::String.
+DTYPE_T is \ref MDSplus::String.
 
 ### example:
 
@@ -124,9 +124,9 @@ using namespace MDSplus;
 }
 \endcode
 
-| **Id**             | **Description**           | **Scalar object**         |
-|--------------------|---------------------------|---------------------------|
-| \ref DTYPE\_T      | Text string               | \ref MDSplus::String      |
+| **Id**        | **Description**           | **Scalar object**         |
+|---------------|---------------------------|---------------------------|
+| DTYPE\_T      | Text string               | \ref MDSplus::String      |
 
 
 
@@ -153,9 +153,9 @@ of a signal. This is done when MDSplus stores signals during data acquisition
 so an application can find out the units of the various parts of the signal.
 
 
-| **Id**             | **Description**           | **Scalar object**         |
-|--------------------|---------------------------|---------------------------|
-| \ref DTYPE\_SIGNAL | Signal                    | \ref MDSplus::Signal      |
+| **Id**        | **Description**           | **Scalar object**         |
+|---------------|---------------------------|---------------------------|
+| DTYPE\_SIGNAL | Signal                    | \ref MDSplus::Signal      |
 
 
 

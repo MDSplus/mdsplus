@@ -1638,27 +1638,26 @@ private:
 //  DIMENSION COMPOUND  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ///
-/// \brief The Dimension class object description of \ref DTYPE_DIMENSION
+/// \brief The Dimension class object description of DTYPE_DIMENSION
 ///
 /// MDSplus provides a dimension data type which provides a compact mechanism
-/// for expressing signal dimensions (See: \ref DTYPE_SIGNAL). The dimension
-/// data type was implemented as a way to represent data such as the timebase
-/// for signals recorded by data acquisition equipment such as transient
-/// recorders.
+/// for expressing signal dimensions (See: DTYPE_SIGNAL). The dimension data
+/// type was implemented as a way to represent data such as the timebase for
+/// signals recorded by data acquisition equipment such as transient recorders.
 ///
 /// A dimension data type is a structure which has two parts, a window and an
 /// axis. The axis part is a representation of a series of values (i.e. time
-/// stamps) and is generally represented by a \ref DTYPE_RANGE data item. If
-/// this was a single speed clock, for example, the axis would be represented
-/// by a range consisting or an optional start time, an optional end time and a
+/// stamps) and is generally represented by a DTYPE_RANGE data item. If this
+/// was a single speed clock, for example, the axis would be represented by a
+/// range consisting or an optional start time, an optional end time and a
 /// single delta time value. This range could represent a series of clock
 /// pulses which began some time infinitely in the past and continuing to some
 /// time infinitely in the future. The window portion of the dimention is used
 /// to select a set of these infinite stream of clock pulses that represent
 /// those clock pulses which match the samples that were recorded in the
 /// digitizers internal memory. The window portion is usually represented by a
-/// \ref DTYPE_WINDOW data item. A window consists of a start index, and end
-/// index and a value at index 0. For a transient digitizer, the samples in the
+/// DTYPE_WINDOW data item. A window consists of a start index, and end index
+/// and a value at index 0. For a transient digitizer, the samples in the
 /// memory were recorded at a known number of clock pulses before the trigger
 /// (the start index) and continuing a known number of clock pulses after the
 /// trigger. The time the module was triggered is the value at index 0 part of
@@ -1784,9 +1783,9 @@ public:
 ///
 /// MDSplus provides a function data type used for describing references to
 /// built in native TDI functions. When you specify an expression such as "a +
-/// b", MDSplus will compile this into a \ref DTYPE_FUNCTION data item. The
-/// function data type consists of a opcode and a list of operands. The opcode
-/// is stored as a 16 bit code and the operands can be any MDSplus data type.
+/// b", MDSplus will compile this into a DTYPE_FUNCTION data item. The function
+/// data type consists of a opcode and a list of operands. The opcode is stored
+/// as a 16 bit code and the operands can be any MDSplus data type.
 ///
 /// >
 /// > See \ref dt_function for further details.
@@ -3184,7 +3183,7 @@ public:
     TreeNode *addDevice(char const * name, char const * type);
     
     /// Add a tag to the current tree that hold this instance pointing to this 
-    /// node. See \ref Tree::addTag for reference.
+    /// node. See \ref Tree::addTag() for reference.
     /// 
     void addTag(std::string const & tagName);
     
@@ -3349,10 +3348,10 @@ public:
     void *operator new(size_t sz);
     void operator delete(void *p);    
     
-    /// Set current shot number (see \ref TreeSetCurrentShotId() )
+    /// Set current shot number 
     static void setCurrent(char const * treeName, int shot);
     
-    /// Get current shot number (see \ref TreeGetCurrentShotId() )
+    /// Get current shot number 
     static int getCurrent(char const * treeName);
     
     /// Return current tree context (see treeshr library)
@@ -3592,7 +3591,7 @@ public:
 /// 
 /// The following example code shows how to define a new Event class called
 /// MyEvent whose action is to print the content of the received buffer (it is
-/// possible to test the programs using the command: setevent <event> <string>).
+/// possible to test the programs using the command: setevent event string).
 /// 
 /// \code{.cpp}
 /// class MyEvent : public Event
@@ -3618,9 +3617,9 @@ public:
 /// 
 /// 
 /// \note There are also two MDSplus executables which can be called from a
-/// console: <tt> wfevent <Event_name> </tt> and <tt> setevent <event_name>
-/// <string> </tt>. The former suspends until an event with that name has been
-/// received; the latter generates such an event.
+/// console: <tt> wfevent Event_name </tt> and <tt> setevent event_name string
+/// </tt>. The former suspends until an event with that name has been received;
+/// the latter generates such an event.
 /// 
 
 class EXPORT Event {

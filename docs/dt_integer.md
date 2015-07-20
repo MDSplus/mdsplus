@@ -111,7 +111,7 @@ integer datatypes:**
 | NOT (!)                 | Negate a logical                                         |
 | OCTAWORD                | Convert to 128-bit value                                 |
 | OCTAWORD\_UNSIGNED      | Convert to 128-bit unsigned value                        |
-| OR (<nowiki>            | </nowiki>)                                               |
+| OR (\|\|)               | Logical union                                            |
 | OR\_NOT                 | Logical union with negation of second                    |
 | PACK                    | Pack and array under control of mask                     |
 | PRODUCT                 | Product of all elements of an array                      |

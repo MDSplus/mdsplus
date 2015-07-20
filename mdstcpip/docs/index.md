@@ -47,10 +47,11 @@ the following transports were supported:
   * http://hostname[:port]/MDSplusWsgi/mdsip - Uses http to connect to remote server
 
 
-\note For a general description of the overall MDSplus framework please refer to 
-      \subpage mdsplus_manual "MDSplus manual"
-
-
+>
+>  For a general description of the overall MDSplus framework please refer to:
+>  * \ref mdsplus_manual "The Reference manual"
+>  * [The MDSplus site](http://www.mdsplus.org/index.php)
+>
 
 
 

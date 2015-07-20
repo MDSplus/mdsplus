@@ -136,7 +136,7 @@ particular focus on the use of the mentioned MDSip functions.
  
 
  The link is requested using \ref ConnectToMds() function passing the remote server 
- address formatted as in protocol description (see \ref plugins).
+ address formatted as in protocol description (see \ref mdsip_plugins).
  This function creates a new \ref Connection instance at the server side, filled
  with parameters that it has beed parsed by address string and calling 
  \ref NewConnection() with selected protocol name.
@@ -169,7 +169,7 @@ particular focus on the use of the mentioned MDSip functions.
  Once the soket has been opened the server enters the \ref AcceptConnection() procedure
  that actually instances the client \ref Connection structure. Then it puts itself
  in a loop waiting for data, calling \ref GetMdsMsg() function that triggers recv() 
- \ref IoRoutine method. 
+ IoRoutine method. 
  The client steps into the \ref DoLogin() function that sends a \ref Message (label M1
  in figure) to the server holding the username string and the client compression 
  level in the status field.

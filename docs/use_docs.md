@@ -198,7 +198,7 @@ sublib would be added:
     
 In this way the main documentation can brawse all sub libraries symbols and can
 access pages and anchors .. usually in the main index.md there is a link to the
-sublibrary MainPage ( \subpage sublib_manual in this case ).
+sublibrary MainPage ( \\subpage sublib_manual in this case ).
 
 
 

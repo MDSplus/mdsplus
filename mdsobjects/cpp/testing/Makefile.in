@@ -835,12 +835,17 @@ SUBDIRS = testutils .
 AM_DEFAULT_SOURCE_EXT = .cpp
 AM_CFLAGS = @SRBINCLUDE@
 AM_CXXFLAGS = -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-# AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@
 AM_LIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr -lMdsObjectsCppShr
 AM_TESTS_ENVIRONMENT = \
       export LD_LIBRARY_PATH=@MAKESHLIBDIR@;
 
 LDADD = $(AM_LIBS) testutils/libMdsTestUtils.a
+
+#
+# VALGRIND: If valgrind was enabled by configuration entry the execution of
+# tests will be performed using the valgrind command below. Insert suppressions
+# files there.
+#
 @USE_VALGRIND_TRUE@LOG_COMPILER = valgrind
 @USE_VALGRIND_TRUE@AM_LOG_FLAGS = --quiet --trace-children=yes --error-exitcode=1 \
 @USE_VALGRIND_TRUE@               --suppressions=valgrind-stdlib.supp      \
