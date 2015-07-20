@@ -347,7 +347,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    int i;
 	    Node top_node = null;
 	    JTree prev_tree = curr_tree;
-
+            topExperiment = exp;
     //first we need to check if the tree is already open
 	    RemoteTree loop_exp = null;
 	    for(i = 0; i < trees.size(); i++)
