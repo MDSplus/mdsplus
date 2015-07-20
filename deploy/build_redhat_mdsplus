@@ -36,6 +36,7 @@ then
     echo "Building rpms"
     mkdir -p /buildroot/etc/yum.repos.d
     mkdir -p /buildroot/etc/pki/rpm-gpg/
+    mkdir -p /installer/BUILD /installer/BUILDROOT /installer/SPECS /installer/RPMS /installer/SRPMS
     cp deploy/RPM-GPG-KEY-MDSplus /buildroot/etc/pki/rpm-gpg/
     outfile=/buildroot/etc/yum.repos.d/mdsplus${BNAME}.repo
     echo [MDSplus${BNAME}] > $outfile
@@ -48,4 +49,5 @@ gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-MDSplus
 metadata_expire=300
 EOF
     build_rpms_mdsplus
+    touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
 fi
