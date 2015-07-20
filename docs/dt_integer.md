@@ -1,5 +1,6 @@
-Data Types for Integers Numbers {#dt_integer}
-===============================
+
+Integers Numbers {#dt_integer}
+================
 
 MDSplus supports several formats of integers including 8-bit, 16-bit, 32-bit,
 64-bit and 128-bit signed and unsigned integers. The data is stored in 2's

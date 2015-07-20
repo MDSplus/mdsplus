@@ -1,6 +1,6 @@
 
-Data Types for Floating Point Numbers {#dt_float}
-=====================================
+Floating Point Numbers {#dt_float}
+======================
 
 
 MDSplus supports several formats of floating point values including

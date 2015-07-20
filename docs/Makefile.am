@@ -28,7 +28,24 @@ DX_PAGES = \
            dt_integer.md \
            dt_float.md \
            dt_string.md \
-           dt_action.md
+           dt_action.md \
+           dt_call.md \
+           dt_dimension.md \
+           dt_conglom.md \
+           dt_dispatch.md \
+           dt_function.md \
+           dt_ident.md \
+           dt_method.md \
+           dt_range.md \
+           dt_routine.md \
+           dt_signal.md \
+           dt_window.md \
+           dt_with_error.md \
+           dt_with_units.md
+           
+           
+
+
 
 DX_EXCLUDE_PAGES = 
 

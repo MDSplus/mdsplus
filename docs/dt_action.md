@@ -1,6 +1,6 @@
 
-Data Type for Actions {#dt_action}
-=====================
+Actions {#dt_action}
+=======
 
 MDSplus provides an action data type used for describing actions to be
 dispatched to action servers during a normal experiment cycle. An action
@@ -22,6 +22,14 @@ files) this feature was never used. This unused parts are called
 completion\_message and performance.
 
 
+    _MYACTION = BUILD_ACTION(
+             BUILD_DISPATCH(2,"CAMAC_SERVER","STORE",50,"A12_42_DONE"),
+             BUILD_METHOD(*,"STORE",A12_42)
+            )
+    _DISPATCH = DISPATCH_OF(_MYACTION)
+    _TASK = TASK_OF(_MYACTION)
+
+
 The above example builds an action item consisting of a dispatch item and a
 metho item. The dispatch item is specifying that this action should be run on
 the action server called “CAMAC\_SERVER” during the “STORE” phase using
@@ -35,4 +43,19 @@ Normally actions are defined using tools such as the “traverser” and “acti
 applications and the contents of actions are referenced by action dispatchers
 so you rarely need to build or access the parts of actions, dispatch and method
 items by hand.
+
+
+The following table lists some of the TDI functions available for creating and
+accessing actions:
+
+| **Function**            | **Description**                          |
+|-------------------------|------------------------------------------|
+| BUILD\_ACTION           | Build an action structure                |
+| ERRORLOGS\_OF           | Return the errorlogs part of an action   |
+| COMPLETION\_MESSAGE\_OF | Return the completion part of an action  |
+| DISPATCH\_OF            | Return the dispatch part of an action    |
+| MAKE\_ACTION            | Make an action structure                 |
+| PERFORMANCE\_OF         | Return the performance part of an action |
+| TASK\_OF                | Return the task part of an action        |
+
 

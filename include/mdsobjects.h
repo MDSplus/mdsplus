@@ -1663,39 +1663,10 @@ private:
 /// (the start index) and continuing a known number of clock pulses after the
 /// trigger. The time the module was triggered is the value at index 0 part of
 /// the window.
-///
-/// If we label the trigger time in this example as time 0.0 and for purposes
-/// of illustration say the digitizer can record ten samples, we can represent
-/// the time base using:
-///
-///     _CLOCK = * : * : 1.0
-///     _TRIGGER = 0.0
-///     BUILD_DIM(BUILD_WINDOW(-9,0,_TRIGGER), _CLOCK)
 /// 
-/// The clock pulses occurring close to the time the module was triggered would
-/// be be times such as ...,-19,-18,-17,-16,...,-4,-3,-2,-1,0,1,2,3,... an so
-/// on. Since the device was told to stop recording approximately at the time
-/// 0.0, the ten samples that have been recorded in the digitizers memory would
-/// have occurred at -9,-8,-7,-6,-5,-4,-3,-2,-1,0. These are the values that
-/// MDSplus would return if the above dimension was evaluated.
-///
-/// The trigger time and the clock representation does not need to be known
-/// when the dimension item is stored. They can be simply node references to
-/// pieces of information which is stored by other devices that are responsible
-/// for generating the trigger and clocks. The implementation of a transient
-/// digitizer in MDSplus can be done independently of trigger devices and clock
-/// devices. It knows only the number of pre-trigger and post-trigger samples
-/// it takes and therefore can store a dimension item with a window indicating
-/// the start index and end index and simply use node references for the
-/// trigger and clock.
-/// 
-/// The dimension data type can obviously be used for more than just
-/// representing time stamps of data recorded by transient digitizers. This
-/// compact representation can be used for storing dimension information of
-/// almost any kind of signals. The axis portion of the dimension does not have
-/// to be a regular continuous range. It can be an unbounded or bounded range,
-/// an simple array of values or an expression returning a range or array of
-/// values. 
+/// >
+/// > See \ref dt_dimension for further details.
+/// >
 /// 
 
 class Dimension: public Compound
@@ -1759,16 +1730,9 @@ public:
 /// after it. For a more detailed explanation see the description of the
 /// dimension data type.
 ///
-/// The following table lists some of the TDI functions available for creating
-/// or accessing windows:
-/// 
-/// | Function     |	Description                               |
-/// |--------------|----------------------------------------------|
-/// | BEGIN_OF 	   | Return begin portion of a window             |
-/// | BUILD_WINDOW | Build a window structure                     |
-/// | END_OF 	   | Return the end portion of a window structure |
-/// | MAKE_WINDOW  | Make a window structure                      |
-/// 
+/// >
+/// > See \ref dt_window for further details.
+/// >
 /// 
 
 class Window: public Compound
@@ -1824,21 +1788,10 @@ public:
 /// function data type consists of a opcode and a list of operands. The opcode
 /// is stored as a 16 bit code and the operands can be any MDSplus data type.
 ///
-///     a + b
+/// >
+/// > See \ref dt_function for further details.
+/// >
 /// 
-/// will be compiled into the same function structure as if you had specified:
-/// 
-///     BUILD_FUNCTION(BUILDIN_OPCODE('ADD'),a,b)
-///
-/// 
-/// The following table lists some of the TDI functions available for creating
-/// and accessing dtype function:
-/// 
-/// | Function  |	Description                                 |
-/// |-----------|-----------------------------------------------|
-/// | BUILD_FUNCTION |	Construct a internal function reference |
-/// | MAKE_FUNCTION  |	Construct a internal function reference |
-///  
 
 class Function: public Compound
 {
@@ -1912,18 +1865,9 @@ public:
 /// device implementations. This field along with the name field are generally
 /// not used any longer.
 /// 
-/// The following table lists some of the TDI functions available for creating
-/// and accessing conglomerate data types:
-/// 
-/// | TDI Function  | Description                                    |
-/// |---------------|------------------------------------------------|
-/// | BUILD_CONGLOM | 	Build a conglomerate structure               |
-/// | IMAGE_OF      | 	Return the image part of a conglomerate      |
-/// | MAKE_CONGLOM  | 	Make a conglomerate structure                |
-/// | MODEL_OF      |   Return the model part of a conglomerate      |
-/// | NAME_OF 	    |   Return the name part of a conglomerate       |
-/// | QUALIFIERS_OF | 	Return the qualifiers part of a conglomerate |
-/// 
+/// >
+/// > See \ref dt_conglom for further details.
+/// >
 /// 
 
 class Conglom: public Compound
@@ -2005,6 +1949,10 @@ public:
 ///     _range = build_range(begin,end,delta)
 /// \endcode
 /// 
+/// >
+/// > See \ref dt_range for further details.
+/// >
+/// 
 
 class Range: public Compound
 {
@@ -2075,6 +2023,10 @@ public:
 /// this feature was never used. This unused parts are called
 /// completion_message and performance.
 ///
+/// >
+/// > See \ref dt_action for further details.
+/// > 
+/// 
 
 class Action: public Compound
 {
@@ -2191,6 +2143,11 @@ public:
 /// to be declared upon completion of this action. These events are often used
 /// to trigger updates on visualization tools such as dwscope when this action
 /// completes indicating availability of the data.
+/// 
+/// >
+/// > See \ref dt_dispatch for further details.
+/// >
+/// 
 
 class Dispatch: public Compound
 {
@@ -2419,6 +2376,10 @@ public:
 /// be interpretted by the implementation of the method. These fields are
 /// specific to the implementation of the various methods.
 ///
+/// >
+/// > See \ref dt_method for further details.
+/// > 
+/// 
  
 class Method: public Compound
 {

@@ -1,5 +1,6 @@
-Data Types for Strings {#dt_string}
-======================
+
+Strings {#dt_string}
+=======
 
 MDSplus supports scalars or arrays of text strings. Text strings are limited to
 lengths of 64K characters. 
