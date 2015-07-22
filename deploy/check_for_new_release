@@ -47,4 +47,5 @@ then
   echo "Created new release --- $release_tag"
 else
   echo "Insufficient number of successful builds so no release tag created."
+  exit 1
 fi 
