@@ -1,4 +1,54 @@
-commit 82ae2fe365c5f61e7302541ce91f2e6b5927f3ee (HEAD, tag: refs/tags/hudson-aaa-release-alpha-36, refs/remotes/origin/alpha, refs/heads/alpha)
+commit d023e30ffb499acb04dd4666920f0a11fc693e63 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-37, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 22 15:40:16 2015 -0400
+
+    Allow use of special  in expressions retrieved from a tree node. The  ident will be replaced with a DTYPE_NID descriptor with the nid of the node where the record was retrieved. For examples: TCL> PUT mynode somefunc()
+
+commit 296bf3de4a83ad4c9f265c2aafea0bf0a3545f5f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 22 14:27:52 2015 -0400
+
+    Use current tree when converting nid to treenode
+
+commit 015ea66c1518d5a2e3269093bb6243ff5648899e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 22 13:48:59 2015 -0400
+
+    Fix status test for edit
+
+commit 7d4ccab8adce515dedc4c8950e72442859ea8cbe
+Merge: 8f8bcc5 5a3567a
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jul 22 11:51:01 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 8f8bcc5a2f58142d7567f93baf748fdd73c69b3b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jul 22 11:50:32 2015 +0200
+
+    Code cleaned
+
+commit 5a3567af72f0c2c135ed3591185ba480b7bf7629
+Merge: 8eeb4dd d947a1d
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jul 22 11:40:49 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 8eeb4dd9c5a6588bac592c46cff8347a042339e6
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jul 22 11:40:41 2015 +0200
+
+    Latest version
+
+commit d947a1d20ccd0b16eb18ab2b47abb2c953203439 (tag: refs/tags/alpha_release-7-0-121)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 21 18:13:11 2015 -0400
+
+    New release ---- alpha_release-7-0-121
+
+commit 82ae2fe365c5f61e7302541ce91f2e6b5927f3ee (tag: refs/tags/hudson-aaa-release-alpha-36)
 Merge: 8b7b776 2789019
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jul 21 15:04:02 2015 +0200
