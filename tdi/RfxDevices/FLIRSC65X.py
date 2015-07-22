@@ -92,7 +92,7 @@ class FLIRSC65X(Device):
           flirLib.getLastError(self.device.handle, self.device.error)
           Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot start frames acquisition : ' + self.device.error.raw )
 
-        print "End acquisition thread"  		
+        print "Fine acquisition thread"  		
 
         status = self.flirLib.flirClose(self.device.handle)  #close device and remove from info
         if status < 0:
@@ -180,21 +180,27 @@ class FLIRSC65X(Device):
         except:
            libName = "libflirsc65x.so"
            flirLib = CDLL(libName)
+           print flirLib
         try:
            mdsLib
         except:
            libName = "libcammdsutils.so"
            mdsLib = CDLL(libName)
+           print mdsLib
         try:
            streamLib
         except:
            libName = "libcamstreamutils.so"
            streamLib = CDLL(libName)
+           print streamLib
+        """
         try:
            flirUtilsLib
         except:
            libName = "libflirutils.so"
            flirUtilsLib = CDLL(libName)
+           print flirUtilsLib
+        """
       except:
            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load library : ' + libName )
            return 0
@@ -209,13 +215,17 @@ class FLIRSC65X(Device):
         except:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Missing device name' )
           return 0
+
+        print "Opening"
             
         self.handle = c_int(-1)
         status = flirLib.flirOpen(c_char_p(name), byref(self.handle))
 
+        print "Opened ", status
+
         if status < 0:
           flirLib.getLastError(self.handle, self.error)
-          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name +'\n'+self.error.raw )
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ name +'('+self.error.raw+')')
           return 0
                     
       return 1
@@ -236,11 +246,17 @@ class FLIRSC65X(Device):
     def init(self,arg):
       global flirLib
       global mdsLib
+
+      print "OK0"
       
       if self.restoreInfo() == 0:
           return 0      
 
+      print "OK0"
+
       self.saveInfo()
+
+      print "OK1"
 
       try:
         self.frames.setCompressOnPut(False)    
@@ -253,6 +269,8 @@ class FLIRSC65X(Device):
       except:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot disable automatic compresson on put for frames_metad node')
         return 0
+
+      print "OK2"
 
 
 ###Object Parameters
@@ -298,12 +316,16 @@ class FLIRSC65X(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid value for object atmosfere trasmission')
         return 0
 
+      print "OK3"
+
        
       status = flirLib.setObjectParameters(self.handle, o_refl_temp, o_atm_temp, o_distance, o_emissivity, o_atm_hum , o_optic_temp, o_optic_trans, o_atm_trans )
       if status < 0:
         flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Object Parameters : ' + self.error.raw)
         return 0
+
+      print "OK3"
 
 ###Frame Rate
       try:
@@ -318,6 +340,7 @@ class FLIRSC65X(Device):
         return 0
 
 ###Frame Area
+      print "OK"
       x=c_int(0)
       y=c_int(0)
       width=c_int(0)
@@ -399,20 +422,21 @@ class FLIRSC65X(Device):
         else:
            trigSource = array([0.])
         
+      print("OK " + triggerMode )
       if triggerMode == 'EXTERNAL':   #0=internal  1=external trigger
         trigModeCode=c_int(1)
       else:
         trigSource = array([0.])
         trigModeCode=c_int(0) 
  
-      numTrigger = trigSource.size - 1
-      #print "OK - NUM TRIGGER ", numTrigger
-      #print "OK - Trigger Source ", trigSource
+      numTrigger = trigSource.size
+      print "OK - NUM TRIGGER ", numTrigger
+      print "OK - Trigger Source ", trigSource
 
 
       timeBase = Data.compile(" $ : $ + $ :(zero( size( $ ), 0.) + 1.) * 1./$", trigSource, trigSource, burstDuration, trigSource, frameRate)
 
-      #print "Data = " + Data.decompile(timeBase)  
+      print "Data = " + Data.decompile(timeBase)  
  
       self.timing_time_base.putData(timeBase)          
       status = flirLib.setTriggerMode(self.handle, trigModeCode, c_double(burstDuration), numTrigger)
@@ -429,17 +453,16 @@ class FLIRSC65X(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid auto calibration setup')
         return 0
 
-      calibModeCode = c_int(0) 	
+      calibModeCode = c_int(1) 	
       if calibAuto == 'NO':        
         try:
            calibTime = self.cam_setup_calib_time.data()
-           calibModeCode = c_int(1) 	
+           calibModeCode = c_int(0) 	
         except:
            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid calibration duration value')
            return 0
         if numTrigger > 1 and (burstDuration + calibTime) > (trigSource[1] - trigSource[0]) :
-           print 'numTrigger = ', numTrigger , " delta " , (trigSource[1] - trigSource[0])
-           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Setup: Calibration will be performed during acquisition ( calib + burst duration = ' + str(burstDuration + calibTime) + " Trigger period  = " + str(trigSource[1] - trigSource[0]) +' )' )
+           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Calibration executed during acquisition')
            return 0
       
       status = flirLib.setCalibMode(self.handle, calibModeCode)
@@ -506,14 +529,13 @@ class FLIRSC65X(Device):
           streamingPort = c_int(8888)
           lowLim = c_int(0)
           highLim = c_int(36)
-          streamingServer = 'localhost'
+          streamingServer = "localhost"
 
-      #print "lowLim ", lowLim
-      #print "highLim ", highLim
-      #print "frameTempUnitCode ", frameTempUnitCode
-      #print "streamingPort ", streamingPort
+      print "lowLim ", lowLim
+      print "highLim ", highLim
+      print "frameTempUnitCode ", frameTempUnitCode
+      print "streamingPort ", streamingPort
       print "streamingServer ", streamingServer
-
 
                     
       status = flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim);
@@ -575,14 +597,13 @@ class FLIRSC65X(Device):
       if self.restoreInfo() == 0:
           return 0  
 
-      self.saveInfo()
-
       status = flirLib.executeAutoCalib(self.handle)
       if status < 0:
         flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Calibration '+ self.error.raw)
         return 0
 
+      #self.saveInfo()
       return 1
 
 
@@ -593,14 +614,13 @@ class FLIRSC65X(Device):
       if self.restoreInfo() == 0:
           return 0  
 
-      self.saveInfo()
-
       status = flirLib.executeAutoFocus(self.handle)
       if status < 0:
         flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Execute Auto Focus : ' + self.error.raw)
         return 0
 
+      self.saveInfo()
       return 1
 
         
@@ -611,17 +631,16 @@ class FLIRSC65X(Device):
       if self.restoreInfo() == 0:
           return 0  
 
-      self.saveInfo()
-
-      focPos=c_int(0)
-      status = flirLib.getFocusAbsPosition(self.handle, byref(focPos))
+      focPos=0
+      status = flirLib.getFocusAbsPosition(self.handle, byref(c_int(focPos)))
       if status < 0:
         flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Read Focus Position : '+ self.error.raw)
         return 0 
    
-      self.cam_setup_focus_pos.putData(focPos.value)   #write data in mdsplus
+      self.focus_pos.putData(focPos)   #write data in mdsplus
 
+      self.saveInfo()
       return 1        
         
         
@@ -632,14 +651,13 @@ class FLIRSC65X(Device):
       if self.restoreInfo() == 0:
           return 0  
 
-      self.saveInfo()
-
-      status = flirLib.setFocusAbsPosition(self.handle, c_int(self.cam_setup_focus_pos.data()))
+      status = flirLib.setFocusAbsPosition(self.handle, c_int(self.focus_pos.data()))
       if status < 0:
         flirLib.getLastError(self.handle, self.error)
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Write Focus Position : ' + self.error.raw)
         return 0 
 
+      self.saveInfo()
       return 1
             
             
