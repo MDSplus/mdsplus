@@ -41,6 +41,8 @@ are to be passed.
 The following table lists some of the TDI functions available for creating and
 accessing routines:
 
+\latexonly { \tiny \endlatexonly
+
 | **Function**   | **Description**                         |
 |----------------|-----------------------------------------|
 | BUILD\_ROUTINE | Build a routine structure               |
@@ -50,3 +52,4 @@ accessing routines:
 | TIME\_OUT\_OF  | Return the timeout part of a routine    |
 
 
+\latexonly } \endlatexonly

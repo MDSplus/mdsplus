@@ -130,6 +130,7 @@ using dimension items for the dimensions.
 The following table lists some of the TDI functions available for creating or
 accessing dimensions:
 
+\latexonly { \tiny \endlatexonly
 
 | **Function**  | **Description**                                                      |
 |---------------|----------------------------------------------------------------------|
@@ -142,6 +143,7 @@ accessing dimensions:
 | MAKE\_DIM     | Make a dimension structure                                           |
 | WINDOW\_OF    | Return the window field of a dimension structure                     |
 
+\latexonly } \endlatexonly
 
 
 

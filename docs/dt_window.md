@@ -22,6 +22,8 @@ more detailed explanation see the description of the dimension data type.
 The following table lists some of the TDI functions available for creating or
 accessing windows:
 
+\latexonly { \tiny \endlatexonly
+
 | **Function**  | **Description**                              |
 |---------------|----------------------------------------------|
 | BEGIN\_OF     | Return begin portion of a window             |
@@ -29,5 +31,6 @@ accessing windows:
 | END\_OF       | Return the end portion of a window structure |
 | MAKE\_WINDOW  | Make a window structure                      |
 
+\latexonly } \endlatexonly
 
 

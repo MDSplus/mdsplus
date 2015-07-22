@@ -39,6 +39,8 @@ Expression evaluator (TDI) operations used on Floating Point Data Types
 
 **The following table lists some of the more common operations performed
 on floating point datatypes:**
+
+\latexonly { \tiny \endlatexonly
   
 
 | **Function**               | **Description**                                                   |
@@ -178,3 +180,4 @@ on floating point datatypes:**
 | WORD\_UNSIGNED     | Convert to 16-bit unsigned integer        |
 | ZERO               | Create array initialized to zero          |
 
+\latexonly } \endlatexonly

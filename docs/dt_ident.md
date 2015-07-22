@@ -37,6 +37,8 @@ that are Identifiers with the contents of that identifier.
 The following table lists some of the functions used to create or access the
 ident datatype:
 
+\latexonly { \tiny \endlatexonly
+
 
 | **Function**      | **Description**                          |
 |-------------------|------------------------------------------|
@@ -67,3 +69,5 @@ ident datatype:
 | SHOW\_PRIVATE     | List private variables and functions     |
 | SHOW\_PUBLIC      | List public variables and functions      |
 | VAR               | Define or reference variable             |
+
+\latexonly } \endlatexonly

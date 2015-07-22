@@ -19,6 +19,8 @@ functions. For example:
 The following table lists some of the TDI functions available for creating or
 accessing with units items:
 
+\latexonly { \tiny \endlatexonly
+
 | **Function**       | **Description**                                                                        |
 |--------------------|----------------------------------------------------------------------------------------|
 | BUILD\_WITH\_UNITS | Build a with units structure                                                           |
@@ -28,4 +30,5 @@ accessing with units items:
 | UNITS\_OF          | Return the units field of with units structure                                         |
 | VALUE\_OF          | Return the value field of with units structure                                         |
 
+\latexonly } \endlatexonly
 

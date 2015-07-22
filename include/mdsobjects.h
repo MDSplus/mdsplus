@@ -3362,6 +3362,12 @@ public:
     /// 
     void edit(const bool st = true);
     
+    /// \note This function has been discontinued and the TreeQuit is now
+    /// handled by destructor only. Anyway the declaration is maintained here
+    /// to keep the labview compatibility.
+    /// 
+    void quit() {}
+    
     /// writes tree changes to the target storage
     void write();
         

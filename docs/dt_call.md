@@ -53,6 +53,8 @@ libraries on Windows is ".dll".
 The following table lists some of the TDI functions available for creating and
 accessing the call function:
 
+\latexonly { \tiny \endlatexonly
+
 | **Function** | **Description**                                   |
 |--------------|---------------------------------------------------|
 | BUILD\_CALL  | Build a call structure                            |
@@ -60,4 +62,5 @@ accessing the call function:
 | ROUTINE\_OF  | Return the routine part of a call                 |
 | MAKE\_CALL   | Make a call structure                             |
 
+\latexonly } \endlatexonly
   

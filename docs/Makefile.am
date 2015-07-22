@@ -15,6 +15,9 @@ DX_BRIEF = "online code documentation"
 DX_PAGES = \
            index.md \
            mdsplus_components.md \
+           lib_treeshr.md \
+           lib_mdsshr.md \
+           lib_tdishr.md \
            lib_mdsip.md \
            lib_mdsobjects.md \
            use_docs.md \
@@ -41,7 +44,9 @@ DX_PAGES = \
 DX_EXCLUDE_PAGES = 
 
 DX_TAGFILES = mdsip.tag \
-              mdsobjects/cpp/docs
+              mdsobjects/cpp/docs \
+              mdsobjects/python/docs \
+              mdsobjects/java/docs
 
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES) \
@@ -65,6 +70,8 @@ pdf:  doxygen-pdf
 DX_SUBDIRS = \
           ../mdstcpip/docs/ \
           ../mdsobjects/cpp/docs/ \
+          ../mdsobjects/python/docs/ \
+          ../mdsobjects/java/docs/ \
           .
 	
 build_all:

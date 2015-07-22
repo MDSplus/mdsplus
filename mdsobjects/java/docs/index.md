@@ -1,4 +1,4 @@
-\anchor mdsobjects_cpp_manual
+\anchor mdsobjects_java_manual
 
 >
 > This is the user manual of a specific MDSplus software component, For a
@@ -8,8 +8,8 @@
 >  * [The MDSplus site](http://www.mdsplus.org/index.php)
 >
 
-The C++ Inteface
-================
+The Java Inteface
+===================
 
 MDSplus provides API's (application programming interface) to several object 
 oriented languages. A common set of classes and methods are provided in all of 
@@ -17,11 +17,4 @@ these API's.
 
 
 
-
-<!-- ---------------------------------- -->
-<!-- This keeps the related pages order -->
-<!-- ---------------------------------- -->
-
-\page wrapped_types Implemented Data Types 
-\page native_types  Native Types Conversion
 

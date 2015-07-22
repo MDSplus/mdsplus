@@ -48,6 +48,8 @@ items by hand.
 The following table lists some of the TDI functions available for creating and
 accessing actions:
 
+\latexonly { \tiny \endlatexonly
+
 | **Function**            | **Description**                          |
 |-------------------------|------------------------------------------|
 | BUILD\_ACTION           | Build an action structure                |
@@ -58,4 +60,5 @@ accessing actions:
 | PERFORMANCE\_OF         | Return the performance part of an action |
 | TASK\_OF                | Return the task part of an action        |
 
+\latexonly } \endlatexonly
 

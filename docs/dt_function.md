@@ -18,11 +18,13 @@ will be compiled into the same function structure as if you had specified:
 The following table lists some of the TDI functions available for creating and
 accessing dtype function:
 
+\latexonly { \tiny \endlatexonly
 
 | **Function**    | **Description**                         |
 |-----------------|-----------------------------------------|
 | BUILD\_FUNCTION | Construct a internal function reference |
 | MAKE\_FUNCTION  | Construct a internal function reference |
 
+\latexonly } \endlatexonly
 
 

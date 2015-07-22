@@ -1,5 +1,5 @@
-Using self generated documentation  {#use_docs}
-==================================
+Generate doxygen documentation  {#use_docs}
+==============================
 
 
 This explains how to make MDSplus self generating documentation.

@@ -57,6 +57,8 @@ two range segments: * : 0. : 1E-3 and 0. : * : 1E-6.
 The following table lists some of the TDI functions available for creating or
 accessing ranges:
 
+\latexonly { \tiny \endlatexonly
+
 | **Function** | **Description**                             |
 |--------------|---------------------------------------------|
 | BEGIN\_OF    | Return begin portion of a range             |
@@ -65,3 +67,4 @@ accessing ranges:
 | MAKE\_RANGE  | Make a range structure                      |
 | SLOPE\_OF    | Return the delta field of a range structure |
 
+\latexonly } \endlatexonly

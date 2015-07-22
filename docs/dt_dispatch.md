@@ -79,6 +79,8 @@ items by hand.
 The following table lists some of the TDI functions available for creating and
 accessing actions:
 
+\latexonly { \tiny \endlatexonly
+
 
 | **Function**    | **Description**                                       |
 |-----------------|-------------------------------------------------------|
@@ -90,4 +92,5 @@ accessing actions:
 | WHEN\_OF        | Return the when part of a dispatch item               |
 
 
+\latexonly } \endlatexonly
 

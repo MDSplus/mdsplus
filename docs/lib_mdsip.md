@@ -1,8 +1,8 @@
-MDSip (MDSplus remote data acess protocol) {#lib_mdsip}
-==========================================
+"mdstcpip" The remote data acess {#lib_mdsip}
+================================
 
-\image html img/planet_mdsplus.png 
-\image latex img/planet_mdsplus.jpg width=8cm
+\image html img/planet_mdsplus.png "MDSplus is broadly adopted framework in the fusion community"
+\image latex img/planet_mdsplus.png "MDSplus is broadly adopted framework in the fusion community" height=6cm
  
 
 MDSplus provides a very simple but powerful protocol for connecting to remote 

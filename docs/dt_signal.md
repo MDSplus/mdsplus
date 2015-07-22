@@ -139,6 +139,9 @@ below:
 The following table lists some of the TDI functions available for creating or
 accessing signals:
 
+\latexonly { \tiny \endlatexonly
+
+
 | **Function**      | **Description**                                                               |
 |-------------------|-------------------------------------------------------------------------------|
 | BUILD\_SIGNAL     | Build a signal structure                                                      |
@@ -148,6 +151,7 @@ accessing signals:
 | MAKE\_SIGNAL      | Make a signal structure                                                       |
 | RAW\_OF           | Return the raw data field of signal                                           |
 
+\latexonly } \endlatexonly
 
 
 

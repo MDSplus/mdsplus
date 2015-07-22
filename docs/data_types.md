@@ -3,28 +3,30 @@
 
 The followings are the MDSplus generic types
 
-* @subpage dt_integer
-* @subpage dt_float
-* @subpage dt_string
-* @subpage dt_call
-* @subpage dt_dimension
-* @subpage dt_conglom
-* @subpage dt_action
-* @subpage dt_dispatch
-* @subpage dt_function
-* @subpage dt_ident
-* @subpage dt_method
-* @subpage dt_range
-* @subpage dt_routine
-* @subpage dt_signal
-* @subpage dt_window
-* @subpage dt_with_error
-* @subpage dt_with_units
+  @subpage dt_integer
+, @subpage dt_float
+, @subpage dt_string
+, @subpage dt_call
+, @subpage dt_dimension
+, @subpage dt_conglom
+, @subpage dt_action
+, @subpage dt_dispatch
+, @subpage dt_function
+, @subpage dt_ident
+, @subpage dt_method
+, @subpage dt_range
+, @subpage dt_routine
+, @subpage dt_signal
+, @subpage dt_window
+, @subpage dt_with_error
+, @subpage dt_with_units
 
 
 Any data types used in MDSplus framework are identified by a type id ...
 
 ## Data Types for Numbers
+
+\latexonly { \footnotesize \endlatexonly
 
 | **Name**                      | **Description**          |
 |-------------------------------|--------------------------|
@@ -49,8 +51,15 @@ Any data types used in MDSplus framework are identified by a type id ...
 | \ref dt_float "DTYPE_FSC" | 32-bit IEEE Float complex    | 
 | \ref dt_float "DTYPE_FTC" | 64-bit IEEE Float complex    |
 
+\latexonly } \endlatexonly
+
+
+
+
 
 ## Data Types for other MDSplus descriptors
+
+\latexonly { \footnotesize \endlatexonly
 
 | **Name**                                | **Description**                   |
 |-----------------------------------------|-----------------------------------|
@@ -72,3 +81,5 @@ Any data types used in MDSplus framework are identified by a type id ...
 | \ref dt_window "DTYPE_WINDOW"           | Window                            |
 | \ref dt_with_error "DTYPE_WITH_ERROR"   | Attach error to value             |
 | \ref dt_with_units "DTYPE_WITH_UNITS"   | Attach units to value             |
+
+\latexonly } \endlatexonly

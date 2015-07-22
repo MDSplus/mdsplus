@@ -16,6 +16,7 @@ functions. For example:
 The following table lists some of the TDI functions available for creating or
 accessing with error items:
 
+\latexonly { \tiny \endlatexonly
 
 | **Function**       | **Description**                                                                        |
 |--------------------|----------------------------------------------------------------------------------------|
@@ -26,4 +27,5 @@ accessing with error items:
 | VALUE\_OF          | Return the value field of with error structure                                         |
 
 
+\latexonly } \endlatexonly
 

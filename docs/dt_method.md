@@ -59,6 +59,8 @@ The following table lists some of the TDI functions available for creating and
 accessing method:
 
 
+\latexonly { \tiny \endlatexonly
+
 | **Function**  | **Description**                         |
 |---------------|-----------------------------------------|
 | BUILD\_METHOD | Build a method structure                |
@@ -67,3 +69,4 @@ accessing method:
 | OBJECT\_OF    | Return the object part of a method      |
 | TIME\_OUT\_OF | Return the timeout part of a method     |
 
+\latexonly } \endlatexonly

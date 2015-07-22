@@ -12,6 +12,8 @@ Expression evaluator (TDI) operations used on Text Data Type
 **The following table lists some of the more common operations performed on the
 text datatype:**
 
+\latexonly { \tiny \endlatexonly
+
 
 | **Function**       | **Description**                                |
 |--------------------|------------------------------------------------|
@@ -54,3 +56,6 @@ text datatype:**
 | UNITS\_OF          | Get the units                                  |
 | UPCASE             | Convert to uppercase                           |
 | VERIFY             | Verify that a set of characters in string      |
+
+
+\latexonly } \endlatexonly

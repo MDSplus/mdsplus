@@ -32,3 +32,26 @@ For further details see reference manual for the MDSplus C++ Object component:
 |   GO TO THE COMPONENT MANUAL  |
 |-------------------------------|
 | \ref mdsobjects_cpp_manual    |
+
+
+
+Python Interface
+----------------
+
+The python interface to MDSplus objects.
+
+
+|   GO TO THE COMPONENT MANUAL  |
+|-------------------------------|
+| \ref mdsobjects_py_manual     |
+
+
+Java Interface
+---------------
+
+The Java interface to MDSplus objects.
+
+
+|   GO TO THE COMPONENT MANUAL  |
+|-------------------------------|
+| \ref mdsobjects_java_manual   |

@@ -61,6 +61,7 @@ a14__store tdi function with the same arguments.
 The following table lists some of the TDI functions available for creating and
 accessing conglomerate data types:
 
+\latexonly { \tiny \endlatexonly
 
 | **Function**   | **Description**                              |
 |----------------|----------------------------------------------|
@@ -71,3 +72,4 @@ accessing conglomerate data types:
 | NAME\_OF       | Return the name part of a conglomerate       |
 | QUALIFIERS\_OF | Return the qualifiers part of a conglomerate |
 
+\latexonly } \endlatexonly
