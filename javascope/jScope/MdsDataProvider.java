@@ -709,7 +709,7 @@ public class MdsDataProvider
                 }
             }
 //             try   {
-                 
+/*                 
                 String setTimeContext;
                 if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
                     setTimeContext = "SetTimeContext(*,*,*);";
@@ -734,7 +734,7 @@ public class MdsDataProvider
                     else
                          setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
                }
-                 
+ */                
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
                 args.addElement(new Descriptor(null, xExpr));
@@ -753,9 +753,11 @@ public class MdsDataProvider
                 int nSamples;
                 try {
                     if(isLong)
-                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+//                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+                        retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
                     else
-                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+//                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                        retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -1608,48 +1610,6 @@ public class MdsDataProvider
         return 0;
     }
 
-    private float[] ExpandTimes(float codedTime[])
-    {
-        float[] expandedTime = null;
-
-        if (codedTime[0] > 0)
-        { //JavaDim decided to apply coding
-            int max_len = 0;
-            int num_blocks = (codedTime.length - 1) / 3;
-            //each block codes start, end, delta
-            int out_idx, in_idx, curr_block = 0;
-            float curr_time;
-
-            for (curr_block = 0; curr_block < num_blocks; curr_block++)
-                max_len +=
-                    (int) ( (codedTime[curr_block * 3 + 2] -
-                             codedTime[curr_block * 3 + 1]) /
-                           codedTime[curr_block * 3 + 3] + 0.5);
-
-            expandedTime = new float[max_len];
-
-            for (curr_block = 0, out_idx = 0;
-                 out_idx < max_len && curr_block < num_blocks;
-                 curr_block++)
-            {
-                for (in_idx = 0; out_idx < max_len; in_idx++)
-                {
-                    curr_time = codedTime[curr_block * 3 + 1] +
-                        in_idx * codedTime[curr_block * 3 + 3];
-                    if (curr_time > codedTime[curr_block * 3 + 2])
-                        break;
-                    expandedTime[out_idx++] = curr_time;
-                }
-            }
-        }
-        else
-        { //JavaDim did not apply coding
-            expandedTime = new float[codedTime.length - 1];
-            System.arraycopy(codedTime, 1, expandedTime, 0, expandedTime.length);
-        }
-        return expandedTime;
-    }
-
     public WaveData GetWaveData(String in)
     {
         return new SimpleWaveData(in, experiment, shot);
@@ -1754,11 +1714,7 @@ public class MdsDataProvider
 
             return GetLongArray(in);
         }
- /*       catch (Exception exc)
-        {
-            return null;
-        }
-*/    }
+    }
 
     public int[] GetIntArray(String in) throws IOException
     {
@@ -1805,53 +1761,6 @@ public class MdsDataProvider
         }
         throw new IOException(error);
      }
-
-
-    boolean setResampleLimits(double min, double max, String inY)
-    {
-        String limitsExpr;
-        boolean useResample;
-//November 2011
-        if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)
-        {
-            long maxSpecific = jScopeFacade.convertToSpecificTime((long)max);
-            long minSpecific = jScopeFacade.convertToSpecificTime((long)min);
-
-            long dt = ((long)maxSpecific - (long)minSpecific)/MAX_PIXELS;
-            limitsExpr = "JavaSetResampleLimits("+minSpecific+"UQ,"+maxSpecific+"UQ,"+dt+"UQ)";
-            useResample = true;
-        }
-        else
-        {
-            double dt = (max - min) / MAX_PIXELS;
-            String numPointsExpr;
-            if(inY.startsWith("\\"))
-                numPointsExpr = "JavaGetNumPoints(\"\\"+inY+"\","+min+","+max+","+MAX_PIXELS+")";
-            else
-                numPointsExpr = "JavaGetNumPoints(\""+inY+"\","+min+","+max+","+MAX_PIXELS+")";
-            int numPoints[];
-            try {
-                numPoints = GetIntArray(numPointsExpr);
-            }catch(Exception exc){numPoints = new int[0];}
-            if(numPoints.length > 0 && numPoints[0] < MAX_PIXELS)
-            {
-               limitsExpr = "JavaSetResampleLimits("+min + "," +max+",0Q)";
-               useResample = false;
-            }
-            else
-            {
-               limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
-               useResample = true;
-            }
-        }
-        mds.MdsValue(limitsExpr);
-        return useResample;
-    }
-    void resetResampleLimits()
-    {
-       //mds.MdsValue("TreeShr->TreeResetTimeContext()");
-       mds.MdsValue("JavaSetResampleLimits(0,0,0)");
-    }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException
     {

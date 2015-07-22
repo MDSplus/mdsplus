@@ -61,119 +61,6 @@ public class MdsConnection
             }
         }
 
-/*
-        public class ProcessUdpEvent extends Thread
-        {
-            static final int DEFAULT_UDP_EVENT_PORT = 4000;
-            static final int DATAGRAM_BUFFER = 100;
-
-            MulticastSocket mSocket;
-            int addrUsed[] = new int[256];
-
-
-            public ProcessUdpEvent()
-            {
-
-		//System.out.println("START ProcessUdpEvent " + provider);
-
-                String portStr = System.getenv("mdsevent_port");
-                if( portStr != null )
-                {
-                    port = Integer.parseInt(portStr);
-                }
-                else
-                {
-                    port = DEFAULT_UDP_EVENT_PORT;
-                }
-
-                try {
-                    mSocket = new MulticastSocket(port);
-                } catch (IOException ex) {
-                    Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            private String getEventFromDatagram( DatagramPacket p )
-            {
-                 byte buf[] = p.getData();
-                 int nameLen = (buf[0]<<24 | (buf[1]&0xff)<<16 | (buf[2]&0xff)<<8 | (buf[3]&0xff) );
-                 return new String( buf, 4, nameLen  );
-            }
-
-            private String getMessageFromDatagram( DatagramPacket p )
-            {
-                 byte buf[] = p.getData();
-                 int nameLen = (buf[0]<<24 | (buf[1]&0xff)<<16 | (buf[2]&0xff)<<8 | (buf[3]&0xff) );
-                 int size = 4 + nameLen;
-                 int msgLen = (buf[size+0]<<24 | (buf[size+1]&0xff)<<16 | (buf[size+2]&0xff)<<8 | (buf[size+3]&0xff) );
-                 return new String( buf, size+4, msgLen  );
-            }
-
-            public void run()
-            {
-                byte buf[] = new byte[DATAGRAM_BUFFER];
-                DatagramPacket p = new DatagramPacket(buf, DATAGRAM_BUFFER);
-
-                while( true )
-                {
-                    try {
-			if(mSocket != null)
-			{
-                        	mSocket.receive(p);
-                        	String event =  getEventFromDatagram(p);
-                        	PMET PMdsEvent = new PMET();
-                        	PMdsEvent.SetEventName( event );
-                        	PMdsEvent.start();
-			} else {
-				System.out.println("START ProcessUdpEvent");
-			}
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                        Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-
-            private int eventHashCode ( String event )
-            {
-                int i;
-                int hash = 0;
-                for(i = 0; i < event.length(); i++)
-                        hash += event.charAt(i);
-                return  hash%256;
-            }
-
-            public void addEvent( String event )
-            {
-                int hash =  eventHashCode ( event );
-                addrUsed[hash]++;
-                String mAddr = "225.0.0." + hash;
-                try {
-                    mSocket.joinGroup(InetAddress.getByName(mAddr));
-                } catch (IOException ex) {
-                    Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-
-            public void removeEvent( String event )
-            {
-                int hash =  eventHashCode ( event );
-                if(addrUsed[hash] > 0)
-                {
-                    addrUsed[hash]--;
-                    if(addrUsed[hash] == 0)
-                    {
-                        String mAddr = "225.0.0." + hash;
-                        try {
-                            mSocket.leaveGroup(InetAddress.getByName(mAddr));
-                        } catch (IOException ex) {
-                            Logger.getLogger(MdsConnection.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
-                }
-            }
-        }
-*/
 
 
         class PMET extends Thread //Process Mds Event Thread
@@ -396,24 +283,12 @@ public class MdsConnection
 		        break;
 	            case Descriptor.DTYPE_USHORT:
 	            case Descriptor.DTYPE_SHORT:
-                      /* ???? 26/04/2004
-		            short data[] = message.ToShortArray();
-		            out.int_data = new int[data.length];
-		            for(i = 0; i < data.length; i++)
-		                out.int_data[i] = (int)data[i];
-		            out.dtype = Descriptor.DTYPE_LONG;
-                      */
                            out.short_data = message.ToShortArray();
                        break;
 	            case Descriptor.DTYPE_LONG:
                     case Descriptor.DTYPE_ULONG:
 		            out.int_data = message.ToIntArray();
 		        break;
-                        /*
-	            case Descriptor.DTYPE_ULONG:
-		            out.long_data = message.ToUIntArray();
-		        break;
-              */
                     case Descriptor.DTYPE_ULONGLONG:
 	            case Descriptor.DTYPE_LONGLONG:
 		            out.long_data = message.ToLongArray();
@@ -590,14 +465,6 @@ public class MdsConnection
                     error = "Could not get IO for : Host " + host +" Port "+ port + " User " + user;
                     return 0;
                 }
-/*
-		if( processUdpEvent == null )
-		{
-		    processUdpEvent = new ProcessUdpEvent();
-		}
-		if( !processUdpEvent.isAlive() )
-			processUdpEvent.start();
-*/
                 connected = true;
             } else {
                 error = "Data provider host:port is <null>";
@@ -710,14 +577,6 @@ public class MdsConnection
          int eventid;
          if((eventid = AddEvent(l, event)) == -1)
               return;
-         
-        
-/*         
-           if( processUdpEvent != null )
-           {
-               processUdpEvent.addEvent(event);
-           }
-*/
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)3, null,
@@ -740,12 +599,6 @@ public class MdsConnection
            int eventid;
            if((eventid = RemoveEvent(l, event)) == -1)
                 return;
-/*
-           if( processUdpEvent != null )
-           {
-               processUdpEvent.removeEvent(event);
-           }
-*/
 	   try {
             sendArg((byte)0, Descriptor.DTYPE_CSTRING,
                         (byte)2, null,
