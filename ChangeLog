@@ -1,4 +1,69 @@
-commit 77e20b24c255ec6741dfc4d58605277aa71df066 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-notrigger-2, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 82ae2fe365c5f61e7302541ce91f2e6b5927f3ee (HEAD, tag: refs/tags/hudson-aaa-release-alpha-36, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 8b7b776 2789019
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jul 21 15:04:02 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 8b7b7769c625884f873ef41085a70b2bd6060cfb
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jul 21 15:03:51 2015 +0200
+
+    Version up-to-date
+
+commit 2789019395038145b700149d9168d99d4878a316 (tag: refs/tags/alpha_release-7-0-120)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Jul 20 18:13:55 2015 -0400
+
+    New release ---- alpha_release-7-0-120
+
+commit 108209275e21c77d20aa508c1fb4165821ad8003
+Merge: 6b89d0e 172cc49
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jul 20 18:24:21 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit 172cc4921ed6e6899f1799f128113e6264dcd0b0 (tag: refs/tags/hudson-aaa-release-alpha-35)
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jul 20 18:16:02 2015 +0200
+
+    Added reference waveform
+
+commit 6b89d0ef221a4fc66a9e70a052b9cc30588f4237
+Merge: 5ce4f9a c65eceb
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jul 20 14:34:31 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit c65eceb908637c36f744ba76974d6c5b1bc68a5d
+Merge: 2943385 ea71494
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jul 20 14:11:56 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 29433855b7d9c76581cc4c30a7cffe9b02b60d2b
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jul 20 14:10:56 2015 +0200
+
+    Fix experiment name in drag&drop
+
+commit 5ce4f9a2a45089581600b27e78c637cf334157c6
+Merge: a9c1886 ea71494
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jul 20 12:21:32 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit ea71494d974599cb60affda0d4b6e56cc9b9b239 (tag: refs/tags/hudson-aaa-release-alpha-34, tag: refs/tags/hudson-aaa-release-alpha-33, tag: refs/tags/hudson-aaa-release-alpha-32, tag: refs/tags/hudson-aaa-release-alpha-31, tag: refs/tags/alpha_release-7-0-119)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 15:31:53 2015 -0400
+
+    New release ---- alpha_release-7-0-119
+
+commit 77e20b24c255ec6741dfc4d58605277aa71df066
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 15:19:46 2015 -0400
 
@@ -16,7 +81,7 @@ Date:   Fri Jul 17 11:23:55 2015 -0400
 
     New release ---- alpha_release-7-0-118
 
-commit ea04b3d4fda86985f1f235c6faa2545435cd6fbc (tag: refs/tags/hudson-aaa-release-alpha-notrigger-1)
+commit ea04b3d4fda86985f1f235c6faa2545435cd6fbc
 Merge: 46f6ebf fa2eee8
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 09:18:41 2015 -0400
@@ -35,19 +100,19 @@ Date:   Fri Jul 17 08:43:51 2015 -0400
 
     New release ---- alpha_release-7-0-117
 
-commit 32c341e082db9a088d389b35c2628996779a41d7
+commit 32c341e082db9a088d389b35c2628996779a41d7 (tag: refs/tags/hudson-aaa-release-alpha-30)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 08:34:02 2015 -0400
 
     Handle descriptor(unicode instances) correctly
 
-commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/alpha_release-7-0-116)
+commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/hudson-aaa-release-alpha-29, tag: refs/tags/alpha_release-7-0-116)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:35:59 2015 -0400
 
     New release ---- alpha_release-7-0-116
 
-commit 42fbdafadb7d951123a02810ae02d89c0e710d05
+commit 42fbdafadb7d951123a02810ae02d89c0e710d05 (tag: refs/tags/hudson-aaa-release-alpha-28)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:06:04 2015 -0400
 
@@ -59,7 +124,19 @@ Date:   Thu Jul 16 15:49:33 2015 -0400
 
     Make it fail if no successful builds of new release
 
-commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596
+commit a9c1886d7f9459114787d01f263c14021f3ffc3f
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jul 16 10:55:19 2015 +0200
+
+    Functions to close/list active connections to OPC server
+
+commit b13cbe920dd34aa7cebe0de6919ae617a7a357d3
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Thu Jul 16 10:54:54 2015 +0200
+
+    Functions to close/list active connections to OPC server
+
+commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596 (tag: refs/tags/hudson-aaa-release-alpha-27)
 Merge: 81900c4 051603d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 15 08:43:56 2015 -0400
@@ -67,6 +144,12 @@ Date:   Wed Jul 15 08:43:56 2015 -0400
     Merge pull request #15 from zack-vii/alpha
     
     support for non-ansii TEXT data in python (2.7)
+
+commit 00fa44c9b8a28e69bb39bcf4a70ea381cdd0b4d8
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Wed Jul 15 12:37:16 2015 +0200
+
+    Add Ne and Ar gas type
 
 commit 051603d9cc281f30239bc6d6e22e4dce5cceac7d
 Author: zack-vii <zack.vii@live.com>
@@ -79,7 +162,7 @@ Date:   Wed Jul 15 01:54:19 2015 +0200
     try..except structure.
     Occurred when an TEXT node contained non-ansii chars (e.g. äöü..)
 
-commit 81900c42e18cde7bfff13b29c363faca39b50787
+commit 81900c42e18cde7bfff13b29c363faca39b50787 (tag: refs/tags/hudson-aaa-release-alpha-26, tag: refs/tags/hudson-aaa-release-alpha-25)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 15:40:41 2015 -0400
 
@@ -91,25 +174,25 @@ Date:   Tue Jul 14 14:43:49 2015 -0400
 
     Output release indicator after successful build
 
-commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/alpha_release-7-0-115)
+commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/hudson-aaa-release-alpha-24, tag: refs/tags/alpha_release-7-0-115)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 09:36:25 2015 -0400
 
     New release ---- alpha_release-7-0-115
 
-commit 89678626595f41bf80f52085d3c78bef0377d5cf
+commit 89678626595f41bf80f52085d3c78bef0377d5cf (tag: refs/tags/hudson-aaa-release-alpha-23)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 21:05:35 2015 -0400
 
     TdiIsql obsolete
 
-commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/alpha_release-7-0-114)
+commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/hudson-aaa-release-alpha-22, tag: refs/tags/alpha_release-7-0-114)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 18:28:25 2015 -0400
 
     New release ---- alpha_release-7-0-114
 
-commit c9e1818556d33437b2630886ae6a829963ebe04f
+commit c9e1818556d33437b2630886ae6a829963ebe04f (tag: refs/tags/hudson-aaa-release-alpha-21)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 14:06:12 2015 -0400
 
@@ -162,6 +245,13 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 10 18:24:45 2015 -0400
 
     New release ---- alpha_release-7-0-112
+
+commit a1d2159994692ee5404889cdd1e6aee78ca7e4e3
+Merge: 85d26b7 fca005f
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 10 16:01:54 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
 commit fca005fdc66493580f4cf15833c86d0ffa61cc90
 Merge: 0027d66 0e053ee
@@ -423,6 +513,13 @@ Date:   Tue Jun 30 14:00:09 2015 -0400
 
     add winbld.bat, a command script for using Visual Studio compiler with MdsObjectsCppShr-VS.dll
 
+commit 85d26b7e3dddeb6878d9162c985c57d43c8558b1
+Merge: 9dc60c2 c98148d
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 17:42:41 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
 commit c98148d55032ae79e8ec96a58f4ee18864364fa6
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jun 30 17:41:51 2015 +0200
@@ -434,6 +531,19 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jun 30 17:41:24 2015 +0200
 
     Fix null error bars
+
+commit 9dc60c20417fc2bcb9e988b03c81931ceb2e2e8d
+Merge: 49b6808 91d6b7f
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 16:02:21 2015 +0200
+
+    Proceede with device definition
+
+commit 49b6808ffa438a2489e0cacb4d0bc64d80033b81
+Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Jun 30 16:01:35 2015 +0200
+
+    Proceede with device definition
 
 commit 91d6b7f06dd23a43dd08715617e425e0b453e2bf
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
