@@ -416,7 +416,7 @@ EXPORT int GetMdsConnectTimeout();
 ///
 /// \param id id of the connection to be used
 /// \param status writes out the exit status to the pointed instace
-/// \return returns a \ref Message structure filled by conent of the responce
+/// \return returns a \ref Message structure filled by content of the response
 ///
 EXPORT Message *GetMdsMsg(int id, int *status);
 
@@ -430,7 +430,7 @@ EXPORT Message *GetMdsMsg(int id, int *status);
 ///
 /// \param id id of the connection to be used
 /// \param status writes out the exit status to the pointed instace
-/// \return returns a \ref Message structure filled by conent of the responce
+/// \return returns a \ref Message structure filled by content of the response
 ///
 EXPORT Message *GetMdsMsgOOB(int id, int *status);
 
