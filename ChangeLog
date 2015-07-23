@@ -1,4 +1,16 @@
-commit ebb2af1000653b20ee0b8f0f1d060905f5f336ac (HEAD, tag: refs/tags/hudson-aaa-release-stable-19, refs/remotes/origin/stable, refs/heads/stable)
+commit a76bb3effc2fc27f795e44cfb966340b50708182 (HEAD, tag: refs/tags/hudson-aaa-release-stable-26, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 23 15:45:07 2015 -0400
+
+    Add new debian build support scripts
+
+commit 480c0d3b14c047b589049296976c6857471c3c1c (tag: refs/tags/stable_release-7-0-35, tag: refs/tags/hudson-aaa-release-stable-25, tag: refs/tags/hudson-aaa-release-stable-24, tag: refs/tags/hudson-aaa-release-stable-23, tag: refs/tags/hudson-aaa-release-stable-22, tag: refs/tags/hudson-aaa-release-stable-21, tag: refs/tags/hudson-aaa-release-stable-20)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 17 18:11:23 2015 -0400
+
+    New release ---- stable_release-7-0-35
+
+commit ebb2af1000653b20ee0b8f0f1d060905f5f336ac (tag: refs/tags/hudson-aaa-release-stable-19)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 15:19:46 2015 -0400
 
