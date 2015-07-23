@@ -520,7 +520,7 @@ SUBDIRS = .
 @DX_COND_doc_TRUE@    $(DX_CLEAN_LATEX)
 
 DX_PACKAGE_NAME = mdsobjects_cpp
-DX_TITLE = MDS Objects C++
+DX_TITLE = MDSplus C++ interface
 DX_BRIEF = "MDSplus object oriented interface"
 DX_PAGES = .. \
            ${top_srcdir}/include/mdsobjects.h \

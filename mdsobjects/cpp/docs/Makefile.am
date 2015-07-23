@@ -8,7 +8,7 @@ include ../../../docs/config/doxygen.am
 DX_CONFIG = ${top_srcdir}/docs/config/doxygen_cpp.cfg
 DX_DOCDIR = mdsobjects/cpp/docs
 DX_PACKAGE_NAME = mdsobjects_cpp
-DX_TITLE = MDS Objects C++
+DX_TITLE = MDSplus C++ interface
 DX_BRIEF = "MDSplus object oriented interface"
 
 DX_PAGES = .. \

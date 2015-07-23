@@ -6,6 +6,12 @@ The MDSplus source documentation is in beta stage, for a complete general
 description of MDSplus please refer to the [Mdsplus
 site](http://www.mdsplus.org).
 
+\htmlonly 
+<blockquote class="doxtable">
+<p>A pdf version of this manual is available here: <a href="../docs.pdf">MDSplus manual</a></p>
+</blockquote> 
+\endhtmlonly
+
 
 Indroduction
 ============
@@ -26,9 +32,6 @@ the most widely used system for data management in the magnetic fusion energy
 program. It is currently installed at over 30 sites spread over 4 continents.
 The MDSplus developers hope that MDSplus may prove to be a valuable tool for
 research at your site.
-
-<!-- \image html img/search_tips.png -->
-
 
 
 Index of MDSplus manuals

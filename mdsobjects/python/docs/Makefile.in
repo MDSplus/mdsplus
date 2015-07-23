@@ -518,7 +518,7 @@ SUBDIRS = .
 @DX_COND_doc_TRUE@    $(DX_CLEAN_LATEX)
 
 DX_PACKAGE_NAME = mdsobjects_py
-DX_TITLE = MDS Objects Python
+DX_TITLE = MDSplus Python interface
 DX_BRIEF = "MDSplus object oriented interface"
 DX_PAGES = .. \
            index.md
