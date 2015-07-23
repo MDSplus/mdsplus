@@ -8,6 +8,12 @@
 >  * [The MDSplus site](http://www.mdsplus.org/index.php)
 >
 
+\htmlonly 
+<blockquote class="doxtable">
+<p>A pdf version of this manual is available here: <a href="../mdsip.pdf">MDSip manual</a></p>
+</blockquote> 
+\endhtmlonly
+
 
 MDSip (MDSplus remote data acess protocol)
 ==========================================

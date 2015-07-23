@@ -518,7 +518,7 @@ SUBDIRS = .
 @DX_COND_doc_TRUE@    $(DX_CLEAN_LATEX)
 
 DX_PACKAGE_NAME = mdsobjects_java
-DX_TITLE = MDS Objects Java
+DX_TITLE = MDSplus Java interface
 DX_BRIEF = "MDSplus object oriented interface"
 DX_PAGES = ../MDSplus \
            index.md
