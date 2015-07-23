@@ -1,4 +1,16 @@
-commit d023e30ffb499acb04dd4666920f0a11fc693e63 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-37, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 6f2708f9aba70595994256eb003a0645d4fb0160 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-38, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 23 15:43:27 2015 -0400
+
+    Add new debian build support scripts
+
+commit d1d3c4218f285494c810a34015e72b00e2df051f (tag: refs/tags/alpha_release-7-0-122)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 22 18:12:44 2015 -0400
+
+    New release ---- alpha_release-7-0-122
+
+commit d023e30ffb499acb04dd4666920f0a11fc693e63 (tag: refs/tags/hudson-aaa-release-alpha-37)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 22 15:40:16 2015 -0400
 
