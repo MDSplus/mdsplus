@@ -70,7 +70,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    frame = _frame;
 	    trees = new java.util.Stack();
 	    experiments = new java.util.Stack();
-	    setPreferredSize(new Dimension(300,400));
+	    setPreferredSize(new Dimension(320,480));
 	    setBackground(Color.white);
 	    curr_tree = null;
 	    curr_experiment = null;
@@ -256,13 +256,11 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    jp1.setLayout(new GridLayout(3,1));
 	    jp1.add(new JLabel("Tree: "));
 	    jp1.add(new JLabel("Shot: "));
-        open_edit = new JCheckBox("edit");
-        jp1.add(open_edit);
+        jp1.add(open_edit = new JCheckBox("edit"));
 	    mjp.add(jp1, "West");
 	    jp1 = new JPanel();
 	    jp1.setLayout(new GridLayout(3,1));
-	    open_exp = new JTextField(20);
-	    jp1.add(open_exp);
+	    jp1.add(open_exp = new JTextField(20));
 	    jp1.add(open_shot = new JTextField(10));
 	    jp1.add(open_readonly = new JCheckBox("readonly"));
 	    mjp.add(jp1, "East");
@@ -284,12 +282,15 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_exp.addKeyListener(this);
 	    open_dialog.pack();
 	    open_dialog.setLocation(curr_origin);
-	    open_dialog.setVisible(true);
+	    if (curr_experiment != null)
+	        try {
+		       open_exp.setText(curr_experiment.getName());
+	           open_shot.setText(new Integer(curr_experiment.getShot()).toString());
+	        }catch(Exception exc){}
+    	open_dialog.setVisible(true);
 	}
 	else
 	{
-	    open_exp.setText("");
-	    open_shot.setText("");
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
         open_edit.setSelected(false);
@@ -455,7 +456,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
             curr_tree.setTransferHandler(new FromTransferHandler());
             curr_tree.setDragEnabled(true);
 /////////////////////////////            
-            
+
         ToolTipManager.sharedInstance().registerComponent(curr_tree);
 
 
@@ -681,7 +682,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 			            if(idx < node_methods.length)
 			            {
 				            try {
-				                node_methods[idx].getMethod().invoke(curr_node, null);
+				                node_methods[idx].getMethod().invoke(curr_node);
 				            }catch(Exception exc) {System.out.println("Error executing " + exc); }
 				            curr_tree.expandPath(new TreePath(curr_tree_node.getPath()));
 				            curr_tree.treeDidChange();
@@ -1327,6 +1328,6 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
         }    
             
     }
-    
+
     
 }
