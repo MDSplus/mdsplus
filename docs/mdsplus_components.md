@@ -26,10 +26,10 @@ source tree we shall refer to the following scheme:
 
 \dot "MDSplus source directory structure for component localization" height=8cm
 digraph example {
-    splines=ortho;
+#    splines=ortho;
     ranksep=0.05;    
 
-    node[shape=recod, fontname=Serif, fontsize=9, color=lightgray, style=filled];
+    node[shape=record, fontname=Serif, fontsize=9, color=lightgray, style=filled];
     mdsshr[label="mdsshr" URL="\ref lib_mdsshr"];
     treeshr[label="treeshr" URL="\ref lib_treeshr"];
     tdishr[label="tdishr" URL="\ref lib_tdishr"];
