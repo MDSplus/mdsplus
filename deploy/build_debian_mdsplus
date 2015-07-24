@@ -50,5 +50,8 @@ EOF
       echo "SignWith: MDSplus" >> /tmp/repo/conf/distributions
     fi
     build_debs_mdsplus
-    touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+    if [ -z "$NOT_DONE" ]
+    then
+      touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+    fi
 fi
