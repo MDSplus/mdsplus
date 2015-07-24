@@ -23,7 +23,8 @@ public class MdsConnection
         protected String host;
         protected int    port;
         protected Socket sock;
-        protected DataInputStream dis;
+//        protected DataInputStream dis;
+        protected InputStream dis;
         protected DataOutputStream dos;
         public String error;
         MRT receiveThread;
@@ -88,7 +89,7 @@ public class MdsConnection
 
             public void SetEventName(String name)
             {
-                    System.out.println("Received Event Name " + name);
+//                    System.out.println("Received Event Name " + name);
                     eventId = -1;
                     eventName = name;
             }
@@ -110,6 +111,7 @@ public class MdsConnection
 	            {
          	        curr_message = new MdsMessage("", MdsConnection.this.connection_listener);
 	                curr_message.Receive(dis);
+
 	                if(curr_message.dtype == Descriptor.DTYPE_EVENT)
 	                {
                             PMET PMdsEvent = new PMET();
@@ -406,7 +408,7 @@ public class MdsConnection
 	    try {
             if(connection_listener.size() > 0)
                 connection_listener.removeAllElements();
-	        dos.close();
+	    dos.close();
             dis.close();
 
             receiveThread.waitExited();
@@ -444,7 +446,8 @@ public class MdsConnection
         port = getProviderPort();
         user = getProviderUser();
         sock = new Socket(host,port);
-        dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
+        dis = new BufferedInputStream(sock.getInputStream());
+ //       dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
         dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
     }        
     
@@ -460,8 +463,9 @@ public class MdsConnection
 	            message.useCompression(use_compression);
 	            message.Send(dos);
 	            message.Receive(dis);
-
-	            if((message.status & 1) != 0)
+//NOTE Removed check, unsuccessful in UDT
+	            //if((message.status & 1) != 0)
+	            if(true)
 	            {
 	                receiveThread = new MRT();
 	                receiveThread.start();

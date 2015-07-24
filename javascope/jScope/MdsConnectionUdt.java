@@ -30,7 +30,9 @@ public class MdsConnectionUdt extends MdsConnection
             user = getProviderUser();
 
             MdsIpProtocolWrapper mipw = new MdsIpProtocolWrapper("udt://"+host+":"+port);
-            dis = new DataInputStream(mipw.getInputStream());
+//            MdsIpProtocolWrapper mipw = new MdsIpProtocolWrapper("tcp://"+host+":"+port);
+//            dis = new DataInputStream(new BufferedInputStream(mipw.getInputStream()));
+            dis = mipw.getInputStream();
             dos = new DataOutputStream(mipw.getOutputStream());
         }
     }

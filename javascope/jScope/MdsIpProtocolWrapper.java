@@ -28,6 +28,23 @@ public class MdsIpProtocolWrapper
             if(readBuf == null) throw new IOException("Cannot Read Data");
             return readBuf[0];
         }
+        public int read(byte buf[]) throws IOException
+        {
+            if(connectionIdx == -1)  throw new IOException("Not Connected");
+            byte [] readBuf = recv(connectionIdx, buf.length);
+            if(readBuf == null) throw new IOException("Cannot Read Data");
+	    System.arraycopy(readBuf, 0, buf, 0, buf.length);
+            return buf.length;
+        }
+        public int read(byte buf[], int offset, int len) throws IOException
+        {
+            if(connectionIdx == -1)  throw new IOException("Not Connected");
+            byte [] readBuf = recv(connectionIdx, len);
+            if(readBuf == null || readBuf.length == 0) throw new IOException("Cannot Read Data");
+	    System.arraycopy(readBuf, 0, buf, offset, readBuf.length);
+            return readBuf.length;
+        }
+
     }
     
     InputStream getInputStream()
@@ -49,12 +66,14 @@ public class MdsIpProtocolWrapper
             int numSent = send(connectionIdx, b, false);
             if(numSent == b.length) throw new IOException("Incomplete write");
         }
-        public void flush() throws IOException
+/*        public void flush() throws IOException
         {
+System.out.println("FLUSH..");
             if(connectionIdx == -1)  throw new IOException("Not Connected");
             MdsIpProtocolWrapper.this.flush(connectionIdx);
+System.out.println("FLUSH FATTO");
         }
-        public synchronized void close() throws IOException
+*/        public  void close() throws IOException
         {
             if(connectionIdx != -1)
             {
