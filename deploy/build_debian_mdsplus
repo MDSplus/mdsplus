@@ -17,7 +17,7 @@ fi
             --with-labview=/3rd-party-apis-master/labview \
             --with-jdk=$JDK_DIR \
             --with-idl=/3rd-party-apis-master/idl \
-            --with-gsi=/usr:gcc$(bits) \
+            --with-gsi=/usr:gcc${bits} \
             --bindir=/buildroot/usr/local/mdsplus/bin${bits} \
             --libdir=/buildroot/usr/local/mdsplus/lib${bits} \
             --host=$host \
