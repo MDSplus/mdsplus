@@ -13,7 +13,7 @@ site](http://www.mdsplus.org).
 \endhtmlonly
 
 
-Indroduction
+Introduction
 ============
 
 Welcome to MDSplus software manual. MDSplus is a set of software tools for data
