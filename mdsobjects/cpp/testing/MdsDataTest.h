@@ -8,7 +8,14 @@
 #include "testutils/type_traits.h"
 #include "testing.h"
 
-using namespace MDSplus;
+
+// NOTE:
+// This class is intended as a specialized helper to inspect numeric data
+// conversion handled by the Data derived numeric types. 
+
+
+//using namespace MDSplus;
+namespace mds = MDSplus;
 
 namespace testing {
 
@@ -17,13 +24,13 @@ namespace testing {
 ////////////////////////////////////////////////////////////////////////////////
 
 
-inline void print_type_encoded(Data *data) {
+inline void print_type_encoded(mds::Data *data) {
     char * str = data->getString();
     std::cout << "data in tdi string: " << str << "\n";
     delete [] str;
 }
 
-inline std::string mdsdata_to_string(Data *data) {
+inline std::string mdsdata_to_string(mds::Data *data) {
     char * str = data->getString();
     std::string out(str);
     delete [] str;
@@ -31,10 +38,8 @@ inline std::string mdsdata_to_string(Data *data) {
 }
 
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
-//  NUMERIC CONVERSION  ////////////////////////////////////////////////////////
+//  MDS DATA TEST CLASS  ///////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
 // we assume vector std allocator to be contiguous //
@@ -50,43 +55,44 @@ class MdsDataTest {
     };
 
     template < typename Fn >
-    static typename ArrayFnptr<Fn>::VectorType get_vector(Data *data, Fn fn);
+    static typename ArrayFnptr<Fn>::VectorType get_vector(mds::Data *data, Fn fn);
 
     template < typename Fn, typename T >
-    static void test_numeric_cast_function(Data *data, Fn fn, const T value);
-
+    static void test_numeric_cast_function(mds::Data *data, Fn fn, const T value);
+    
 public:
     template < typename T >
-    static void test_data_numerics(Data *data, const T value);
+    static void test_data_numerics(mds::Data *data, const T value);
 
     template < typename T >
-    static void test_data_numerics(Data *data, const std::complex<T> value);
+    static void test_data_numerics(mds::Data *data, const std::complex<T> value);
 
     template <typename T >
-    static void test_data_numerics(Data *data, const std::vector<T> &array);
+    static void test_data_numerics(mds::Data *data, const std::vector<T> &array);
 
     template <typename T >
-    static void test_data_numerics(Data *data, const std::vector<std::complex<T> > &array);
+    static void test_data_numerics(mds::Data *data, const std::vector<std::complex<T> > &array);
 
-    static void test_data_string(Data *data, const char *str) {
+    static void test_data_string(mds::Data *data, const char *str) {
         char * data_str = data->getString();
         int data_getString_differs_from_test = strcmp(data_str,str);
         TEST0( data_getString_differs_from_test );
-        if(data_getString_differs_from_test) std::cout << "tdi decompile: " << data_str << "\n"
-                                            << "test string:   " << str << "\n";
+        if(data_getString_differs_from_test) 
+            std::cout << "tdi decompile: " << data_str << "\n"
+                      << "test string:   " << str << "\n";
         delete[] data_str;
     }    
-
+    
 };
 
 
 ///
-/// Takes a Data object and a getter of Array and returns a vector of the obtained
-/// elements.
+/// Takes a Data object and a getter of Array and returns a vector of the
+/// obtained elements.
 ///
 template < typename Fn >
 inline typename MdsDataTest::ArrayFnptr<Fn>::VectorType
-MdsDataTest::get_vector(Data *data, Fn fn)
+MdsDataTest::get_vector(mds::Data *data, Fn fn)
 {
     typedef typename ArrayFnptr<Fn>::type R;
 
@@ -101,17 +107,17 @@ MdsDataTest::get_vector(Data *data, Fn fn)
 
 
 ///
-/// If the numeric_cast throws an exception this chatch and compare with the
+/// If the numeric_cast throws an exception this catch and compare with the
 /// getter method of the Data object. Otherwise the casted values are checked.
 ///
 template < typename Fn, typename T >
-inline void MdsDataTest::test_numeric_cast_function(Data *data, Fn fn, const T value)
+inline void MdsDataTest::test_numeric_cast_function(mds::Data *data, Fn fn, const T value)
 {
     typedef typename detail::FunctionTypes<Fn>::ReturnType R;
-    try { numeric_cast<T>(value); }
+    try { mds::numeric_cast<T>(value); }
     catch ( std::exception &e ) { TEST_STD_EXCEPTION((data->*fn)(), e.what()); }
     try {
-        R casted_val = numeric_cast<R>(value);
+        R casted_val = mds::numeric_cast<R>(value);
         TEST1( casted_val == (data->*fn)() );
     } catch(...) {} // do not throw //
 }
@@ -119,25 +125,31 @@ inline void MdsDataTest::test_numeric_cast_function(Data *data, Fn fn, const T v
 
 
 #define MDS_GETARRAY_FUNCPT(type,name) \
-    ((type *(Data::*)(int*))&Data::name)
+    ((type *(mds::Data::*)(int*))&mds::Data::name)
 
 #define MDS_GETNUMERIC_FUNCPT(type,name) \
-    ((type (Data::*)())&Data::name)
+    ((type (mds::Data::*)())&mds::Data::name)
 
+
+///
+/// All numeric conversion implemented for MDS numeric types are tested. 
+/// 
+/// The actual conversion is now handled by the templated
+/// test_numeric_cast_function to account the possible exception throw if the
+/// conversion is forbidden.
+///
 template < typename T >
-inline void MdsDataTest::test_data_numerics(Data *data, const T value) {
+inline void MdsDataTest::test_data_numerics(mds::Data *data, const T value) {
     TEST1( data->getSize() == 1 );
 
     //    TEST1( data->getByte() == numeric_cast<char>(value) );
     //    TEST1( data->getShort() == numeric_cast<short>(value) );
     //    TEST1( data->getInt() == numeric_cast<int>(value) );
     //    TEST1( data->getLong() == numeric_cast<int64_t>(value) );
-
     //    TEST1( data->getByteUnsigned() == numeric_cast<unsigned char>(value) );
     //    TEST1( data->getShortUnsigned() == numeric_cast<unsigned short>(value) );
     //    TEST1( data->getIntUnsigned() == numeric_cast<unsigned int>(value) );
     //    TEST1( data->getLongUnsigned() == numeric_cast<uint64_t>(value) );
-
     //    TEST1( data->getFloat() == numeric_cast<float>(value) );
     //    TEST1( data->getDouble() == numeric_cast<double>(value) );
 
@@ -154,25 +166,29 @@ inline void MdsDataTest::test_data_numerics(Data *data, const T value) {
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(float, getFloat), value);
     test_numeric_cast_function(data, MDS_GETNUMERIC_FUNCPT(double, getDouble), value);
 
-    try { data->getComplex(); } catch (MdsException &e) {
+    try { data->getComplex(); } catch (mds::MdsException &e) {
         TEST0( strcmp(e.what(),"getComplex() not supported for non Complex data types") );
     }
 }
 
+
+/// 
+/// Overload for all complex value conversions .. that in the case of a scalar
+/// value is implemented to NOT throwing an exception but converting to the real
+/// part.
+///
 template < typename T >
-inline void MdsDataTest::test_data_numerics(Data *data, const std::complex<T> value) {
+inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::complex<T> value) {
     TEST1( data->getSize() == 1 );
 
     //    TEST1( data->getByte() == numeric_cast<char>(value.real()) );
     //    TEST1( data->getShort() == numeric_cast<short>(value.real()) );
     //    TEST1( data->getInt() == numeric_cast<int>(value.real()) );
     //    TEST1( data->getLong() == numeric_cast<int64_t>(value.real()) );
-
     //    TEST1( data->getByteUnsigned() == numeric_cast<unsigned char>(value.real()) );
     //    TEST1( data->getShortUnsigned() == numeric_cast<unsigned short>(value.real()) );
     //    TEST1( data->getIntUnsigned() == numeric_cast<unsigned int>(value.real()) );
     //    TEST1( data->getLongUnsigned() == numeric_cast<uint64_t>(value.real()) );
-
     //    TEST1( data->getFloat() == numeric_cast<float>(value.real()) );
     //    TEST1( data->getDouble() == numeric_cast<double>(value.real()) );
 
@@ -194,10 +210,17 @@ inline void MdsDataTest::test_data_numerics(Data *data, const std::complex<T> va
 }
 
 
-template <typename T >
-inline void MdsDataTest::test_data_numerics(Data *data, const std::vector<T> &array) {
-    TEST1( data->getSize() == array.size() );
 
+///
+/// Test data numeric conversion for Array data. This function overload treats
+/// all data numeric types but the complex that should produce an exception.
+/// The first function tests the size of the produced array, than all the
+/// vector conversions and the array conversions.
+///
+template <typename T >
+inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<T> &array) {
+    TEST1( data->getSize() == array.size() );
+        
     TEST1( data->getByteArray() == array );
     TEST1( data->getShortArray() == array );
     TEST1( data->getIntArray() == array );
@@ -225,13 +248,17 @@ inline void MdsDataTest::test_data_numerics(Data *data, const std::vector<T> &ar
     TEST1( MdsDataTest::get_vector(data, MDS_GETARRAY_FUNCPT(double,getDoubleArray)) == array );
 
     // see complex specialization below //
-    try { data->getComplexArray(); } catch (MdsException &e) {
+    try { data->getComplexArray(); } catch (mds::MdsException &e) {
         TEST0( strcmp(e.what(),"getComplexArray() not supported for non Complex data types") );
     }
 }
 
+///
+/// All complex array are hadled by this overload that should produce an
+/// exception when a conversionn to standard numeric type are performed.
+///
 template <typename T >
-inline void MdsDataTest::test_data_numerics(Data *data, const std::vector<std::complex<T> > &array) {
+inline void MdsDataTest::test_data_numerics(mds::Data *data, const std::vector<std::complex<T> > &array) {
     TEST1 ( data->getSize() == array.size() );
 
     TEST_MDS_EXCEPTION( data->getByteArray(), "getByteArray() not supported for Complex data type" );

@@ -3,14 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-///
-/// Executes a TDI expression inside the server through the selected connection.
-/// Variadic arguments must be descriptors and are passed as argument to the expression.
-/// 
-/// \param id the id of the connection to use
-/// \param expression the TDI expression c string to be avaluated.
-/// \return the evaluation exit status of the expression.
-///
+////////////////////////////////////////////////////////////////////////////////
+//  MdsValue  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 int MdsValue(int id, char *expression, ...)
 {
 /**** NOTE: NULL terminated argument list expected ****/

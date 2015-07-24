@@ -65,7 +65,7 @@ DX_CLEAN_PDF = ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
 
 DX_PDF_GOAL = doxygen-pdf
 
-doxygen-pdf: ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
+doxygen-pdf: doxygen-run ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf
 
 ${DX_DESTDIR}/${DX_PACKAGE_NAME}.pdf: ${DX_DESTTAG}
 	cd ${DX_DESTDIR}/latex; \
@@ -161,18 +161,20 @@ ${DX_DESTTAG}: ${DX_PAGES}
 	DX_DESTTAG="${DX_DESTTAG}" \
 	DX_SEARCHFILE="${DX_SEARCHFILE}" \
 	DX_TAGFILES= \
-	$(DX_DOXYGEN) $(DX_CONFIG);
+	$(DX_DOXYGEN) $(DX_CONFIG) 2>&1 > /dev/null;
 
 
-${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 
-	touch $@
+${DX_TAGDIR}/taglist.txt: ${DX_DESTTAG} 	
+	##
+	## generate taglist to keep track of geenerated symbols.
+	##
+	touch $@; \
 	if grep -q ${DX_DESTTAG} ${DX_TAGDIR}/taglist.txt; then \
 	echo "Name Found list not updated ..."; \
 	else \
 	echo "Adding tag to list ... "; \
-	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" \
-	>> ${DX_TAGDIR}/taglist.txt; \
-	fi;	
+	echo "${DX_DESTTAG}=${DX_DOCDIR}/html" >> ${DX_TAGDIR}/taglist.txt; \
+	fi;
 	
 build_tag: ${DX_TAGDIR}/taglist.txt
 
@@ -181,21 +183,21 @@ install_tag: ${DX_TAGDIR}/taglist.txt
 
 
 ${DX_DESTDIR}/doxygen.stamp: ${DX_PAGES} ${DX_TAGDIR}/taglist.txt ${DX_STYLE_FILES}
-	$(MKDIR_P) ${DX_DESTDIR}
+	$(MKDIR_P) ${DX_DESTDIR} 
 	
 	##
 	## Getting tags from generated taglist 
 	##
-	if test '${DX_TAGFILES}'; then
-	 for i in ${DX_TAGFILES}; do
+	if test '${DX_TAGFILES}'; then \
+	 for i in ${DX_TAGFILES}; do \
 	  ##
 	  ## extract correct html target relative path 
 	  ##
-	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`;	  
-	  tags="$${tags} $${line}";
-	 done
-	else
-	 echo "No tag list found!";
+	  line=`grep $${i} ${DX_TAGDIR}/taglist.txt | sed 's|=|=${top_builddir}/../|'`; \
+	  tags="$${tags} $${line}"; \
+	 done \
+	else \
+	 echo "No tag list found!"; \
 	fi;
 	echo "Adding selected tag entries: $${tags}"	
 	

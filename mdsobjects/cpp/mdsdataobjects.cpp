@@ -173,6 +173,7 @@ extern "C" void *createDictionaryData(int nData, char **dataPtrs, Data *unitsDat
 MdsException::MdsException(int status): msg(MdsGetMsg(status)) { }
 
 ///////////////////Data methods implementation////////////////////////
+
 Data::~Data() {
 //	decRefCount();
 }
@@ -640,14 +641,15 @@ Data * Data::getDimensionAt(int dimIdx) {
 
 
 ///
-/// \brief MDSplus::compile
-/// \param expr  TDI expression to evaluate
 /// \return new instanced Data representing compiled script
-/// ref to MDSplus::compileWithArgs
+/// 
+/// ref to \ref MDSplus::compileWithArgs
 Data * MDSplus::compile(const char *expr) {
 	return compileWithArgs(expr, 0);
 }
-		
+
+///
+///
 Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	struct Lambda {
 		std::vector<void *> args;
@@ -844,9 +846,15 @@ void * Data::completeConversionToDsc(void *dsc) {
 ///@}
 
 
-
-
-
+void Data::plot()
+{
+		Data *dim = getDimensionAt(0);
+		Scope *scope = new Scope("");
+		scope->plot(this, dim);
+		scope->show();
+		delete scope;
+        deleteData(dim);
+}
 
 
 
@@ -915,15 +923,6 @@ Array *Array::getSubArray(int startDim, int nSamples)
 
 
 
-void Data::plot()
-{
-		Data *dim = getDimensionAt(0);
-		Scope *scope = new Scope("");
-		scope->plot(this, dim);
-		scope->show();
-		delete scope;
-		deleteData(dim);
-}
 
 void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 {

@@ -20,7 +20,7 @@ namespace testing {
 /// \brief The TestLimits class
 ///
 /// This tests numeric conversion of Data object with numerical limits ..
-/// it may trigger an exception where overflow should be thrown by numeric_cast
+
 ///
 class TestLimits {
 public:
@@ -124,12 +124,18 @@ public:
 
 
 
-#define MDS_TEST_PRINT_TESTLINE(type) \
-    testing::TestLimits::print_type_conversion_test<type>(#type);
 
 ////////////////////////////////////////////////////////////////////////////////
 //  MAIN  //////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
+
+///
+/// This is a simple print of the test line to automatically compute type
+/// limits if the print argument is passed to the test execution.
+/// 
+#define MDS_TEST_PRINT_TESTLINE(type) \
+    testing::TestLimits::print_type_conversion_test<type>(#type);
+
 
 
 int main(int argc, char *argv[])

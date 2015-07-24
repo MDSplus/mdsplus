@@ -26,7 +26,7 @@
 //#include <semaphore.h>
 #endif
 
-#include <config.h>
+#include <config.h> // should be removed from here //
 #include <dbidef.h>
 #include <ncidef.h>
 #include <mdstypes.h>
@@ -36,6 +36,7 @@
 #include <mdsplus/ConditionVar.hpp>
 #include <mdsplus/Mutex.hpp>
 #include <mdsplus/numeric_cast.hpp>
+#include <mdsplus/AutoPointer.hpp>
 
 ///@{
 ///
@@ -209,6 +210,11 @@ protected:
 
 
 class Data;
+
+/// Decrements the data reference counter and if last ref is reached deletes
+/// the data instance and free the allocated memory. This function must be
+/// called each time the code is responsible for the object deletion.
+///
 EXPORT void deleteData(Data *);
 
 ///
@@ -225,21 +231,21 @@ class EXPORT Data
 {
 public:
 
-    /// Default constructor
-    /// reference counting is set to 1 and the data to "changed" state
+    /// Default constructor,s reference counting is set to 1 and the data to
+    /// "changed" state.
+    /// 
     Data():
         refCount(1),
         units(nullptr),
         error(nullptr),
         help(nullptr),
         validation(nullptr)
-    {
-    }
-
+    {}
+    
     virtual ~Data();
-
-//    void *operator new(size_t sz);
-//    void operator delete(void *p);
+    
+    //    void *operator new(size_t sz);
+    //    void operator delete(void *p);
 
     static void incRefCount(Data * d);
     static void decRefCount(Data * d);
@@ -256,6 +262,10 @@ public:
     virtual void setValidation(Data *in);
 
 private:
+
+    /// Protect the use of copy constructor not permitted for Data objects, use
+    /// \ref clone() function instead.    
+    Data (const Data &) {}
 
     ///@{
     /// Friendship declaration for TDI expression compilation
@@ -327,11 +337,13 @@ public:
     /// \param size set to serialized data length
     /// \return c string representing serialized data
     char *	serialize(int *size);
-
-    ///@{
-    /// Access data as native type using getData() conversion function.
-    /// This function might be overloaded by derived data classes to improve
+    
+    ///@{ \ingroup NativeTypes 
+    /// 
+    /// Access data as native type using getData() conversion function. This
+    /// function might be overloaded by derived data classes to improve
     /// conversion.
+    ///     
     virtual char getByte();
     virtual short getShort();
     virtual int getInt();
@@ -383,7 +395,7 @@ public:
     friend EXPORT std::ostream & operator << (std::ostream &outStream, MDSplus::Data *data);
 
 protected:
-
+    
     /// readonly access
     virtual bool isImmutable() { return true; }
 
@@ -434,11 +446,11 @@ private:
 /// (descriptor class CLASS_S).
 class EXPORT Scalar: public Data
 {    
-    friend class Array;
+    friend class Array;    
 protected:
-
+    
     int length;
-    char *ptr;
+    char *ptr;        
 
 public:
     Scalar(): length(0), ptr(0) { clazz = CLASS_S; }
@@ -1422,12 +1434,11 @@ public:
 ///
 /// \brief The Compound class object description of DTYPE_R
 ///
-/// Compound is the common supreclass for all CLASS_R types.
-/// Its fields contain all the required information (Descriptor array, keyword).
-/// Its getter/setter methods allow to read/replace descriptors, based on their
-/// index.
-/// Derived classes will only define methods with appropriate names for
-/// reading/writing descriptors (i.e. Data objects).
+/// Compound is the common supreclass for all CLASS_R types. Its fields contain
+/// all the required information (Descriptor array, keyword). Its getter/setter
+/// methods allow to read/replace descriptors, based on their index. Derived
+/// classes will only define methods with appropriate names for reading/writing
+/// descriptors (i.e. Data objects).
 
 class EXPORT Compound: public Data {
 public:
@@ -1462,8 +1473,8 @@ public:
         clazz = CLASS_R;
         this->dtype = dtype;
         setAccessory(units, error, help, validation);
-    }
-
+    }    
+    
     virtual void propagateDeletion() {
         for(std::size_t i = 0; i < descs.size(); ++i)
             if (descs[i])
@@ -1493,16 +1504,26 @@ protected:
 
     /// set Data at idx element of contained descriptors
     void assignDescAt(Data *data, int idx) {
-        if (descs.at(idx))
+        if ( idx < 0 || idx >= descs.size() ) {
+            if(data) deleteData(data);            
+            throw (MdsException("Index out of bounds accessing arguments"));
+        }
+        
+        if (descs.at(idx)) {
+            descs.at(idx)->decRefCount();
             deleteData(descs[idx]);
-
+        }
+        
         descs.at(idx) = data;
-        if (data)
-            data->refCount++;
+        if (data) data->refCount++;
     }
 
     /// retrieve Data at the idx position of contained descriptors
     Data * getDescAt(std::size_t idx) {
+        if ( idx < 0 || idx >= descs.size() ) {
+            throw (MdsException("Index out of bounds accessing arguments"));
+        }
+
         if (descs.at(idx))
             descs[idx]->incRefCount();
         return descs[idx];
@@ -1518,18 +1539,40 @@ protected:
 
 ///
 /// \brief The Signal class object description of DTYPE_SIGNAL
-///
+/// 
+/// MDSplus provides a signal data type which combines dimension descriptions
+/// with the data. While it was initially designed to be used for efficient
+/// storage of data acquired from measurement devices attached to an experiment
+/// it has been found to be a very useful way of storing additional information
+/// such as results from data analysis or modeling data. A signal is a
+/// structure of three or more fields. The first field is the "value" field of
+/// the signal. This is followed by an optional raw data field (explained
+/// later). These two fields can be followed by one or more dimension
+/// descriptions. The number of dimension descriptions in general should match
+/// the dimensionality of the value. MDSplus stores data from a transient
+/// recorder which is a device which measures voltage as a function of time.
+/// Typically a transient recorder uses a analog to digital converter and
+/// records the data as a series of integer values. A linear conversion can be
+/// done to convert these integer values into input voltages being measured.
+/// When MDSplus stores the data for such a device it uses a signal datatype to
+/// record the data. The signal structure is constructed by putting an
+/// expression for converting the integer data to volts in the "value" portion,
+/// the integer data in the raw data portion, and a representation of the
+/// timebase in the single dimension portion.
+/// 
 /// \note This class represents a data descriptor of a signal intended as an
 /// ordered sequence of data. Nothing in common with software objects
 /// signalling systems.
 
 class Signal: public Compound {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
         Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
 
     Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
@@ -1594,18 +1637,48 @@ private:
 ////////////////////////////////////////////////////////////////////////////////
 //  DIMENSION COMPOUND  ////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-
 ///
 /// \brief The Dimension class object description of DTYPE_DIMENSION
 ///
+/// MDSplus provides a dimension data type which provides a compact mechanism
+/// for expressing signal dimensions (See: DTYPE_SIGNAL). The dimension data
+/// type was implemented as a way to represent data such as the timebase for
+/// signals recorded by data acquisition equipment such as transient recorders.
+///
+/// A dimension data type is a structure which has two parts, a window and an
+/// axis. The axis part is a representation of a series of values (i.e. time
+/// stamps) and is generally represented by a DTYPE_RANGE data item. If this
+/// was a single speed clock, for example, the axis would be represented by a
+/// range consisting or an optional start time, an optional end time and a
+/// single delta time value. This range could represent a series of clock
+/// pulses which began some time infinitely in the past and continuing to some
+/// time infinitely in the future. The window portion of the dimention is used
+/// to select a set of these infinite stream of clock pulses that represent
+/// those clock pulses which match the samples that were recorded in the
+/// digitizers internal memory. The window portion is usually represented by a
+/// DTYPE_WINDOW data item. A window consists of a start index, and end index
+/// and a value at index 0. For a transient digitizer, the samples in the
+/// memory were recorded at a known number of clock pulses before the trigger
+/// (the start index) and continuing a known number of clock pulses after the
+/// trigger. The time the module was triggered is the value at index 0 part of
+/// the window.
+/// 
+/// >
+/// > See \ref dt_dimension for further details.
+/// >
+/// 
 
 class Dimension: public Compound
 {
 public:
-    Dimension(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+#ifndef DOXYGEN // hide this part from documentation
+    Dimension(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) :
+        Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+    
     Dimension(Data *window, Data *axis, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_DIMENSION;
@@ -1614,18 +1687,21 @@ public:
         incrementRefCounts();
         setAccessory(units, error, help, validation);
     }
+    
+    /// Get the dimension window 
     Data *getWindow(){
         return getDescAt(0);
     }
 
+    /// Get the dimension axis 
     Data *getAxis(){
         return getDescAt(1);
     }
 
-    /// Set window as compound data at position 0
+    /// Set the dimension window 
     void setWindow(Data *window) { assignDescAt(window, 0); }
 
-    /// Set axis as compound data at position 1
+    /// Set the dimension axis 
     void setAxis(Data *axis){ assignDescAt(axis, 1); }
 };
 
@@ -1637,14 +1713,39 @@ public:
 ///
 /// \brief The Window class object description of DTYPE_WINDOW
 ///
+/// MDSplus provides a window data type which is used exclusively in
+/// conjunction with a dimension data item (\ref Dimension). The window
+/// provides a means for bracketing a potentially infinite vector of values
+/// generated by a range data item (\ref Range). A window data type is a
+/// structure containing three fields: the start index, the end index and the
+/// value at index 0. The window brackets the axis portion of a dimension item
+/// by finding the nearest element in the axis to the "value at index 0" value.
+/// The subset of the axis elements are selected using the start index and end
+/// index using this starting element as the index 0. For example if the window
+/// was BUILD_WINDOW(-5,10,42.), MDSplus would find the element in the axis
+/// portion of the dimension closest to a value of 42 (assuming the axis is
+/// always increasing) and call that element, element number 0. The subset
+/// would be this element and the 5 elements before it and the 10 elements
+/// after it. For a more detailed explanation see the description of the
+/// dimension data type.
+///
+/// >
+/// > See \ref dt_window for further details.
+/// >
+/// 
 
 class Window: public Compound
 {
 public:
-    Window(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+    
+#   ifndef DOXYGEN // hide this part from documentation
+    Window(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) : 
+        Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#   endif // DOXYGEN end of hidden code
+    
     Window(Data *startidx, Data *endidx, Data *value_at_idx0, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_WINDOW;
@@ -1680,14 +1781,27 @@ public:
 ///
 /// \brief The Function class object description of DTYPE_FUNCTION
 ///
+/// MDSplus provides a function data type used for describing references to
+/// built in native TDI functions. When you specify an expression such as "a +
+/// b", MDSplus will compile this into a DTYPE_FUNCTION data item. The function
+/// data type consists of a opcode and a list of operands. The opcode is stored
+/// as a 16 bit code and the operands can be any MDSplus data type.
+///
+/// >
+/// > See \ref dt_function for further details.
+/// >
+/// 
 
 class Function: public Compound
 {
 public:
-    Function(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
-    {
-        setAccessory(units, error, help, validation);
-    }
+    
+#   ifndef DOXYGEN // hide this part from documentation
+    Function(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) :
+        Compound(dtype, length, ptr, nDescs, descs)
+    { setAccessory(units, error, help, validation); }
+#   endif // DOXYGEN end of hidden code
+    
     Function(short opcode, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_FUNCTION;
@@ -1723,14 +1837,48 @@ public:
 ///
 /// \brief The Conglom class object description of DTYPE_CONGLOM
 ///
+/// MDSplus provides a conglomerate data type used for describing data
+/// acquisition or analysis devices. A device in MDSplus is implemented as a
+/// collection of adjacent tree nodes (or a conglomerate). The first node
+/// (located at the top of the node structure of this collection) contains a
+/// conglomerate data type. The conglomerate data type is a structure
+/// containing an image part, a model part, a name part and a qualifiers part.
+/// MDSplus implements device support by providing a mechanism for performing
+/// "methods" on devices. When a device method is performed on a device in a
+/// MDSplus tree either through an action or using the TCL command DO/METHOD,
+/// MDSplus invokes a procedure determined by the information in the head node
+/// of the device which contains a conglomerate data type. If there is an image
+/// part of the conglomerate structure, MDSplus will attempt to call a routine
+/// called "model-part"__"method" in the shared library specified by the image
+/// part. If the routine can not be found, MDSplus will try to invoke the TDI
+/// function called "model-part"__"method". Normally, the conglomerate data is
+/// loaded into the head node of a device automatically when you add it to the
+/// tree so you may not need to access this data type directly.
+/// 
+/// The name part of the device is often a reference to a sub node of the
+/// device which contains the data acquisition module identification such as
+/// the CAMAC module name. This portion of the device is not used during method
+/// invokation and was simply added as a convenience in building tools for
+/// gathering information about device definitions in a tree. The qualifiers
+/// part of the structure could be used by device support for making variant
+/// device implementations. This field along with the name field are generally
+/// not used any longer.
+/// 
+/// >
+/// > See \ref dt_conglom for further details.
+/// >
+/// 
 
 class Conglom: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Conglom(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+    
     Conglom(Data *image, Data *model, Data *name, Data *qualifiers, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_CONGLOM;
@@ -1773,14 +1921,48 @@ public:
 ///
 /// \brief The Range class, object description of DTYPE_RANGE
 ///
+/// MDSplus provides a range data type which provides a compact mechanism for
+/// expressing series of values with fixed intervals. The range data type is a
+/// structure consisting of three parts; begin, end, and delta. This data type
+/// is used often in MDSplus for representing data such as the output of clock
+/// devices used in data acquisition. The following example shows three simple
+/// instances of ranges: 
+/// 
+/// \code{.cpp}
+///     // _tdi_range1 = 1 : 10
+///     Data *range1 = new Range(new Int32(1),new Int32(10),NULL); 
+///     
+///     // _tdi_range2 = 1 : 10 : .5
+///     Data *range2 = new Range(new Float32(1),new Float32(10),new Float32(0.5));
+/// 
+///     // _range = * : * : 1E-6
+///     Data *range3 = new Range(NULL,NULL,new Float32(1E-6)); 
+/// \endcode
+/// 
+/// In the above examples, we show two formats for creating ranges. The MDSplus
+/// TDI expression evaluator has a built in syntax for specifying ranges which
+/// is one of the following: 
+/// 
+/// \code{.cpp}
+///     begin : end [: delta]
+///     _range = build_range(begin,end,delta)
+/// \endcode
+/// 
+/// >
+/// > See \ref dt_range for further details.
+/// >
+/// 
 
 class Range: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Range(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+    
     Range(Data *begin, Data *ending, Data *deltaval, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_RANGE;
@@ -1820,13 +2002,41 @@ public:
 /// \brief The Action class, object description of type DTYPE_ACTION
 ///
 
+/// MDSplus provides an action data type used for describing actions to be
+/// dispatched to action servers during a normal experiment cycle. An action
+/// consists of 5 parts but the current implementations of action dispatching
+/// only refernce the first three parts, a dispatch part, a task part and an
+/// errorlogs part (OpenVMS only). The dispatch part (See: DTYPE_DISPATCH)
+/// includes information such as which server should perform the task, when
+/// during the course of the shot cycle it should be executed, what MDSplus
+/// event should be issued when the task completes. The task part describes
+/// what is to be done when the action is executed. There are a couple
+/// different types of task types currently support (See: DTYPE_METHOD and
+/// DTYPE_ROUTINE). The errorlogs part is implemented only on OpenVMS. If this
+/// part contains a string consisting of a comma delimited list of user
+/// accounts, each user on the list will receive a OpenVMS cluster-wide
+/// broadcast message if this action fails during execution. The remaining
+/// parts were originally defined to hold statistics from the execution of the
+/// action but since this would require rewriting the action data (which is
+/// usually considered setup information and not writable in the pulse files)
+/// this feature was never used. This unused parts are called
+/// completion_message and performance.
+///
+/// >
+/// > See \ref dt_action for further details.
+/// > 
+/// 
+
 class Action: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Action(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+
     Action(Data *dispatch, Data *task, Data *errorlogs, Data *completion_message, Data *performance, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_ACTION;
@@ -1874,13 +2084,80 @@ public:
 ///
 /// \brief The Dispatch class, object description of DTYPE_DISPATCH
 ///
+/// MDSplus provides a dispatch data type used for specifying the dispatching
+/// information of an action. This determines where and when an automatic
+/// action should be executed during the course of a experiment cycle.
+/// 
+/// A dispatch item is a structure consisting of 5 parts; dispatch type,
+/// server, phase, when, and completion. The dispatch type part specifies the
+/// type of scheduling to be done. Currently only one type of dispatching is
+/// supported in MDSplus and that is sequential scheduling (value=2). This
+/// field should contain an integer value of 2.
+///
+/// Server 
+/// ------
+/// The server part specifies the server that should execute the action. For
+/// tcpip based action servers this field should contain a string such as
+/// host:port where host is the tcpip hostname of the computer where the action
+/// server is running and the port is the port number on which the action
+/// server is listening for actions to perform. For DECNET based action servers
+/// (OpenVMS only), this should be a string such as host::object where the host
+/// is the DECNET node name and the object is the DECNET object name of the
+/// action server.
+///
+/// Phase
+/// -----
+/// The phase part of a dispatch item is either the name or number
+/// corresponding to the phase of the experiment cycle. These would normally be
+/// phases such as "store", "init","analysis" etc. but the names and numbers of
+/// the phases can be customized by the MDSplus system administrator by
+/// modifying the TDI function phase_table().
+///
+/// When
+/// ----
+/// The when part normally contains either an integer value or an expression
+/// which evaluates to an integer value representing a sequence number. When
+/// the dispatcher (implemented by a set of mdstcl dispatch commands) builds a
+/// dispatching table, it finds all the actions defined in a tree and then
+/// sorts these actions first by phase and then by sequence number. Actions are
+/// then dispatched to servers during a phase in order of their sequence
+/// numbers (except for actions with sequence numbers less than or equal to
+/// zero which are not dispatched). There is a special case for the when part
+/// which enables you to set up dependencies on other actions. If instead of
+/// specifying a sequence number for the when part, you specify an expression
+/// which references other action nodes in the tree, this action will not be
+/// dispatched until all action nodes referenced in the expression have
+/// completed. When all the actions referenced in the expression have
+/// completed, the expression is then evaluated substituting the completion
+/// status of the referenced actions instead of the action node itself. If the
+/// result of the evaluation yields an odd number (low bit set) then this
+/// action will be dispatched. If the result is an even value then this action
+/// is not dispatched but instead assigned a failure completion status in case
+/// other actions have when expressions refering to it. Using this mechanism
+/// you can configure fairly complex conditional dispatching.
+///
+/// Completion
+/// ----------
+/// The completion part can hold a string defining the name of an MDSplus event
+/// to be declared upon completion of this action. These events are often used
+/// to trigger updates on visualization tools such as dwscope when this action
+/// completes indicating availability of the data.
+/// 
+/// >
+/// > See \ref dt_dispatch for further details.
+/// >
+/// 
+
 class Dispatch: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Dispatch(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+
     Dispatch(Data *ident, Data *phase, Data *when, Data *completion, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_DISPATCH;
@@ -2066,14 +2343,53 @@ public:
 ///
 /// \brief The Method class object description of DTYPE_METHOD
 ///
-
+/// MDSplus provides a method data type for describing an operation to be
+/// performed on an MDSplus device to be used as the task portion of an action
+/// data item. MDSplus devices support various "methods" which can be performed
+/// on the device. For example, transient digitizer device may support an
+/// "INIT" method to prepare the device to acquire data and a "STORE" method
+/// which would retrieve the data from the physical device and store it into
+/// the device nodes in the MDSplus tree.
+///
+/// The method data type is a structure consisting of three fields followed by
+/// optional arguments to the method being performed.
+///
+/// The first field is a timeout value specified in seconds. When the method is
+/// being performed on the device and a timeout is specified, a timer is
+/// started when the operation is started and if the operation is not completed
+/// before the specified timeout, the operation will be aborted abruptly. This
+/// field can either be omitted or should contain a value or expression which
+/// when evaluated will result in a scalar numeric value.
+///
+/// The next field in the method data type is the name of the method to be
+/// performed. This should contain a value or expression which when evaluated
+/// will result in a scalar text value representing a supported method for the
+/// device being operated on (i.e. "INIT", "STORE","EXECUTE"). The set of
+/// available methods is device specific.
+///
+/// The next field is the object on which this operation is to be performed.
+/// This should be a node reference to one of the nodes which make up the
+/// device, usually the top node in the device node structure.
+///
+/// These first three fields can be followed by optional parameters which will
+/// be interpretted by the implementation of the method. These fields are
+/// specific to the implementation of the various methods.
+///
+/// >
+/// > See \ref dt_method for further details.
+/// > 
+/// 
+ 
 class Method: public Compound
 {
 public:
+#ifndef DOXYGEN // hide this part from documentation
     Method(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
+#endif // DOXYGEN end of hidden code
+
     Method(Data *timeout, Data *method, Data *object, int nargs, Data **args, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
     {
         dtype = DTYPE_METHOD;
@@ -2162,7 +2478,7 @@ public:
 
 ///
 /// \brief The Condition class object description of DTYPE_CONDITION
-///
+/// 
 
 class Condition: public Compound
 {
@@ -2203,14 +2519,82 @@ public:
 ///
 /// \brief The Call class object description of DTYPE_CALL
 ///
+/// MDSplus provides a call data type used for describing references to
+/// external functions. The MDSplus expression evaluator has the ability to
+/// call external functions in shared libararies or DLL's. The call datatype
+/// describes the type of the return value of the function, the name of the
+/// library or DLL where the function can be found, the name of the function
+/// and the list of arguments to present to the function when calling it. The
+/// expression evaluator in MDSplus has syntax for easily building instances of
+/// this data type as will as builtin functions for constructing them. The call
+/// to the external function occurs when the expression containing a call item
+/// is evaluated. The following example shows an example of calling an external
+/// function in TDI:
+/// 
+///     mysharedlib->myfunction(42)
+/// 
+/// The code above is the most common form of the function reference. When
+/// evaluated, the function called "myfunction" found in the library
+/// "mysharedlib" will be called with one argument, 42. The return value of the
+/// function is assumed to be a 32-bit signed integer. The code following shows
+/// how to instance a binary call, the actual function call is done when the
+/// evaluation of the expression is triggered by the data() member.
+/// 
+/// \code{.cpp}
+/// #include <mdsobjects.h>
+/// using namespace MDSplus;
+/// {   
+///     // test for binary function call //                
+///     Data *args[2] = { new Int32(5552367), new Int32(1) };        
+///     AutoData<Call> call2 = new Call(new String("./testutils/libMdsTestDummy.so"),
+///                                     new String("test_addint"),
+///                                     2, (Data**)args);
+///     TEST1( AutoData<Data>(call2->data())->getInt() == 5552368 );        
+///     deleteData(args[0]);
+///     deleteData(args[1]);
+/// }
+/// \endcode
+/// 
+/// \note MDSplus uses operating system specific rules to locate shared
+/// libraries when the full file specification of the library is not given. On
+/// OpenVMS, the system would first look for a logical name matching the name
+/// of the library and if one is found it would activate the image defined by
+/// the logical name. If their is no such logical name, the system would then
+/// look in the directory search path defined by SYS$SHARE for the library. The
+/// file type for shared libraries on OpenVMS is ".EXE". On Unix systems the
+/// system looks for a library path environment variable such as
+/// LD_LIBRARY_PATH or SHLIB_PATH and looks in these directories. If there is
+/// no such environment variable, the system looks in system library
+/// directories (usually /usr/lib or /usr/local/lib) for the shared library.
+/// The file type for shared libraries on Unix is generally ".so",".sl" or
+/// sometimes ".a". On Windows systems, the system looks for shared libraries
+/// in the directory where the application was run or in the directory list
+/// specified by the "PATH" environment variable. The file type of shared
+/// libraries on Windows is ".dll".
+///
 
 class Call: public Compound {
 public:
-    Call(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):Compound(dtype, length, ptr, nDescs, descs)
+
+#   ifndef DOXYGEN // hide this part from documentation
+    Call(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) :
+        Compound(dtype, length, ptr, nDescs, descs)
     {
         setAccessory(units, error, help, validation);
     }
-    Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
+#   endif // DOXYGEN end of hidden code
+
+    /// Build a call object secifying the image and routine entries, together
+    /// with the routine data arguments and return type. If no return type is
+    /// specified the DTYPE_L is assumed as default.
+    /// 
+    /// \param image A new \ref String containing the routine to be called
+    /// \param routine A new \ref String of the called image symbol routine.
+    /// \param nargs The number of arguments that will be the routine input arguments.
+    /// \param args The array of the data arguments of the routine.
+    /// \param retType The data type (DTYPE_xxx) that the Call will return.
+    ///
+    Call(Data *image, Data *routine, int nargs, Data **args, char retType = DTYPE_L, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)   
     {
         dtype = DTYPE_CALL;
         opcode = retType;
@@ -2219,31 +2603,66 @@ public:
         for(int i = 0; i < nargs; i++)
             descs.push_back(args[i]);
         incrementRefCounts();
+        setAccessory(units, error, help, validation);
     }
 
+    /// Get the code associated to the Call return type. This is the data type
+    /// that will be associated to the returned data descriptor. If no return
+    /// type was specified in the instance construction the DTYPE_L is assumed
+    /// as default.
+    /// 
     char getRetType() {
         return opcode;
     }
 
+    /// Set the return type code as one of the DTYPE_xx codes defined. If no
+    /// return type was specified in the instance construction the DTYPE_L is
+    /// assumed as default.
+    /// 
     void setRetType(char retType) {
         opcode = retType;
     }
 
+    /// Get the Call image as Data object. The image is usually a string that
+    /// specifies the current path to find the library that contains the symbol
+    /// to be called.
+    ///
     Data *getImage() {
         return getDescAt(0);
     }
 
+    /// Get the routine that the Call instance will look for in the image. This
+    /// is usually a string containing the symbol within the image library.
+    /// \note MDSplus does not manages the symbol mangling used by compilers to
+    /// identify class member functions, so that only C compiled function will
+    /// be reached by Call.
+    /// 
     Data *getRoutine(){
         return getDescAt(1);
     }
 
+    /// Get the idx argument of the routine input argument list.
+    /// 
     Data *getArgumentAt(int idx) {
         return getDescAt(idx + 2);
     }
 
-    void setImage(Data *image){assignDescAt(image, 0);}
-    void setRoutine(Data *routine) {assignDescAt(routine, 1);}
-    void setArgumentAt(Data *argument, int idx) {assignDescAt(argument, 2 + idx);}
+    /// Set the call image. The image is usually a string that specifies the
+    /// current path to find the library that contains the symbol to be called.
+    ///
+    void setImage(Data *image) { assignDescAt(image, 0); }
+    
+    /// Set the routine that the Call instance will look for in the image. This
+    /// is usually a string containing the symbol within the image library.
+    /// \note MDSplus does not manages the symbol mangling used by compilers to
+    /// identify class member functions, so that only C compiled function will
+    /// be reached by Call.
+    ///
+    void setRoutine(Data *routine) { assignDescAt(routine, 1); }
+
+    /// Set the idx argument of the routine input argument list.
+    ///
+    void setArgumentAt(Data *argument, int idx) { assignDescAt(argument, 2 + idx); }
 };
 
 
@@ -2288,7 +2707,6 @@ public:
         }
     }
 
-
     virtual ~Apd() {
         propagateDeletion();
     }
@@ -2298,7 +2716,6 @@ public:
     }
 
     Data ** getDscs() {
-        // FIXME: This doesn't increment refCounts.
         return &descs[0];
     }
 
@@ -2328,7 +2745,7 @@ public:
         else
             //INSERT AND BEGIN() WORK ONLY IF VECTOR NON EMPTY!!
             descs.insert(descs.begin() + i, data);
-        //data->incRefCount();
+            //data->incRefCount();
     }
     void appendDesc(Data * data)
     {
@@ -2491,7 +2908,7 @@ public:
     //Force new and delete in dll for windows
     void *operator new(size_t sz);
     void operator delete(void *p);
-
+    
     /// Get the associated tree instance
     Tree *getTree() { return tree; }
 
@@ -2628,7 +3045,7 @@ public:
     /// Ref to \ref getNci with codes NciNUMBER_OF_MEMBERS and NciNUMBER_OF_MEMBERS
     int getNumDescendants();
 
-    // NOTE: [andrea] java implementation discrepance (java uses TreeNodeArray instance)
+    // NOTE: [andrea] java implementation discrepancy (java uses TreeNodeArray instance)
     /// Get all che child nodes for this node.
     TreeNode **getChildren(int *numChildren);
 
@@ -2672,8 +3089,8 @@ public:
     /// Return true if the node contains versions (Nci flags)
     bool containsVersions();
 
-
-
+    // SEGMENTS //
+    
     // NOTE: [andrea] there are missed members ( vs java impl )
     /// Begin a new data segment
     void beginSegment(Data *start, Data *end, Data *time, Array *initialData);
@@ -2682,7 +3099,7 @@ public:
     /// Write (part of) data segment
     void putSegment(Array *data, int ofs);
 
-    /// Update start, end time and dimension for the specified segment
+    /// Update start, end time and dimension for the last segment
     void updateSegment(Data *start, Data *end, Data *time);
 
     /// Update start, end time and dimension for the specified segment
@@ -2701,7 +3118,7 @@ public:
     Data *getSegmentDim(int segIdx);
 
     /// Get both segment and segment dimension
-    void getSegmentAndDimension(int segIdx, Array *segment, Data *dimension);
+    void getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension);
 
     /// Begin a timestamted segment
     void beginTimestampedSegment(Array *initData);
@@ -2709,32 +3126,71 @@ public:
     /// Make a timestamped segment
     void makeTimestampedSegment(Array *data, int64_t *times);
 
-    /// Write (part of)data in a timestamped segment
+    /// Write (part of) data in a timestamped segment
     void putTimestampedSegment(Array *data, int64_t *times);
 
     /// Writre a single row of timestamped data
     void putRow(Data *data, int64_t *time, int size = 1024);
 
-    /// Get segment info
+    /// Get info for the node identified by sefIdx, or the last node if -1 is
+    /// passed as segIdx argument. The function returns dtype of the contained
+    /// data and the row dimensions. The function provides: In dimct the number
+    /// of dimensions is stored, in dims the array of dimensions, in nextRow
+    /// the position of the next free row. The dims always reflects the segment
+    /// dimension passed by beginSegment while the next will get the current
+    /// position reached in this segment by the putSegment function.
+    /// 
+    /// \note dtype, dimct and nextRow are pointer of size 1 array, while the
+    /// dims dimension must be allocated array of size 8 integers! Furthermore,
+    /// at the time of writing the returned dims are actually written int
+    /// reverse order for a mismatch in the row/column order within the treeshr
+    /// library
+    /// 
     void getSegmentInfo(int segIdx, char *dtype, char *dimct, int *dims, int *nextRow);
-
-
-    void acceptSegment(Array *data, Data *start, Data *end, Data *times);
-    void acceptRow(Data *data, int64_t time, bool isLast);
 
     /// Retrieve node tags as array of strings
     StringArray *findTags();
-
-
-    //////////Edit methods////////////////
+    
+    // EDIT METHODS //
+    
+    /// This method adds a new node to the tree that this instance belongs to.
+    /// The name specifies the relative or the full path of the new node and
+    /// the usage is a string that defines the type of the new node. See \ref
+    /// Tree::addNode for reference. If the relative path is chosen the new
+    /// node will be set as child/member of the current.
+    ///
     TreeNode *addNode(char const * name, char const * usage);
+
+    /// This removes a node indentified by its path from the tree that holds the
+    /// current node instance. See \ref Tree::remove() for reference.
+    /// 
     void remove(char const * name);
+    
+    /// Rename current node instance in tree setting a new path indentified by
+    /// the newName argument that must be in form of an absolute path string.
     void rename(std::string const & newName);
+    
+    /// Move the node setting a new parent and changing the node name
     void move(TreeNode *parent, std::string const & newName);
+    
+    /// Move the node setting a new parent.
     void move(TreeNode *parent);
+    
+    /// Add a device to the tree that holds current node instance. The argument
+    /// name will be the name of the new created device and the type will be 
+    /// serched within the device library. See \ref Tree::addDevice for details.
+    /// 
     TreeNode *addDevice(char const * name, char const * type);
+    
+    /// Add a tag to the current tree that hold this instance pointing to this 
+    /// node. See \ref Tree::addTag() for reference.
+    /// 
     void addTag(std::string const & tagName);
+    
+    /// Removes a tag added to the current tree and indentified by tagName.
     void removeTag(std::string const & tagName);
+    
+    /// Set this node to be a subtree of the tree that holds it.
     void setSubtree(bool isSubtree);
 };
 
@@ -2813,55 +3269,266 @@ public:
 };
 
 
-////////////////Class Tree/////////////////////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Tree  //////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+/// MDSplus provides a data storage mechanism for recording a wide variety of
+/// information pertaining to experiments or simulations including, but not
+/// limited to, data acquisition settings, comments, physical measurements,
+/// data acquisition and analysis task information and analysis results.
+/// Keeping all this information organized can be difficult especially with
+/// large experiments or codes where there may be many thousands of data items.
+/// MDSplus provides a hierarchical tree structure in its data storage so that
+/// users can organize their data much like one would organize files in a file
+/// system with directories and subdirectories.
+/// 
+/// A tree is a collection of nodes which describe something. All data in
+/// MDSplus are stored in trees. There are two different kinds of nodes in the
+/// MDSplus tree structure called members and children. One could consider
+/// members to be similar to files in a file system while children are similar
+/// to directories. Members normally contain data, (i.e. a measurement, a
+/// calibration coefficient, a comment) while a child node, used for structure
+/// only, cannot contain data. However, unlike a file system, both members and
+/// children nodes can have subnodes of either members or children.
+///
+///  Tree shots
+///  ----------
+///
+/// The trees which contain the data pertaining to an experiment or simulation
+/// are stored on an MDSplus server as files. Each tree consists of a model
+/// (shot # -1) and one or more pulse files with positive shot numbers. Special
+/// shot numbers:
+///
+///     -1 - model
+///      0 - current shot
+///     >1 - pulse files 
+///
+
 class EXPORT Tree
 {
     friend void setActiveTree(Tree *tree);
     friend Tree *getActiveTree();
-    Tree(void *dbid, char const * name, int shot);
+    
 protected:
     Tree(){}
+    
     std::string name;
     int shot;
     void *ctx;
 
 public:
+    
+    /// Builds a new Tree object instance creating or attaching to the named
+    /// tree. The tree name has to match the path envoronment variable
+    /// xxx_path, and the shot is the shot number the Tree instance will point
+    /// to.
+    /// 
     Tree(char const * name, int shot);
-    Tree(char const * name, int shot, char const * mode);
-    ~Tree();
-    void *operator new(size_t sz);
-    void operator delete(void *p);
-    static void lock();
-    static void unlock();
-    static void setCurrent(char const * treeName, int shot);
-    static int getCurrent(char const * treeName);
-    static Tree *create(char const * name, int shot);
+    
 
+    /// Builds a new Tree object instance creating or attaching to the named
+    /// tree. The tree name has to match the path envoronment variable
+    /// xxx_path, and the shot is the shot number the Tree instance will point
+    /// to. Four opening mode are availabe:
+    /// 
+    /// | opening mode | description                                                     |
+    /// |--------------|-----------------------------------------------------------------|
+    /// | NEW          | create new tree with target parse files if not present          |
+    /// | EDIT         | open tree in edit mode to access the tree structure for writing |
+    /// | READONLY     | open tree in read only mode                                     |
+    /// | NORMAL       | set the tree for normal operations reading and writing data     |
+    /// 
+    Tree(char const * name, int shot, char const * mode);
+    
+    ~Tree();
+    
+    void *operator new(size_t sz);
+    void operator delete(void *p);    
+    
+    /// Set current shot number 
+    static void setCurrent(char const * treeName, int shot);
+    
+    /// Get current shot number 
+    static int getCurrent(char const * treeName);
+    
+    /// Return current tree context (see treeshr library)
     void *getCtx() {return ctx;}
-    void edit();
+    
+    /// Reopen target tree in edit mode or in normal mode according to the
+    /// value passed as argument. The default behavior is to reopen for edit.
+    /// 
+    void edit(const bool st = true);
+    
+    /// \note This function has been discontinued and the TreeQuit is now
+    /// handled by destructor only. Anyway the declaration is maintained here
+    /// to keep the labview compatibility.
+    /// 
+    void quit() {}
+    
+    /// writes tree changes to the target storage
     void write();
-    void quit();
+        
+    /// Access treenode by path using const char string
     TreeNode *getNode(char const *path);
+    
+    /// Access treenode by path using a \ref TreePath mdsplus object
     TreeNode *getNode(TreePath *path);
+
+    /// Access treenode by path using a \ref String mdsplus object
     TreeNode *getNode(String *path);
-    TreeNode *addNode(char const * name, char *usage);
-    TreeNode *addDevice(char const * name, char *type);
+    
+    /// Get the name of the tree as c string
+    const char *getName() const { return name.c_str(); }
+    
+    /// Get the name of this tree as a std::string
+    std::string getNameStr() const { return name; }
+    
+    /// Adds a node by path and usage. To each node we assign here a USAGE.
+    /// This node characteristic defines and limits how a particular node can
+    /// be used. Usage must be a strig matching one of the following:
+    /// 
+    /// | usage    |   description                                             |
+    /// |----------|-----------------------------------------------------------|
+    /// | ACTION   | node that describes an \ref Action object                 |
+    /// | ANY      | node scope not defined and it left here set for any use   |
+    /// | AXIS     | node represent an axis object                             |
+    /// | COMPOUND_DATA | node represents a \ref Compound object               |
+    /// | DEVICE        | node is a device composite data used for acquisition |
+    /// | DISPATCH      | node is a dispach of an action                       |
+    /// | STRUCTURE     | used for tree structure - a "child" node definition  |
+    /// | NUMERIC       | node contains simple numbers or arrays               |
+    /// | SIGNAL        | node is a signal object                              |
+    /// | SUBTREE       | node links to another tree                           |
+    /// | TASK          | node represents a Task of a \ref Action              |
+    /// | TEXT          | node will contain a text string                      |
+    /// | WINDOW        | node is a window definition                          |
+    /// 
+    TreeNode *addNode(char const * name, char const * usage);
+
+    /// add device node to tree with name and device type
+    TreeNode *addDevice(char const * name, char const * type);
+    
+    /// remove tree node by path 
     void remove(char const *name);
-    TreeNodeArray *getNodeWild(char const *path, int usageMask);
+    
+    /// Get a new array of nodes in this tree or subtrees mathing the path name
+    /// and usages given as arguments. Asterisk is available as a wildcard to
+    /// set the search pattern while usages are found as a ordered bitmask.
+    /// 
+    /// the usage codes are listed in \ref usagedef.h and the mask has to be 
+    /// compiled activating the related bit. For example to set all numeric and
+    /// signals nodes in a tree:
+    /// 
+    ///     AutoPointer<TreeNodeArray> nodes = tree->getNodeWild("***",     
+    ///                                                  1<<TreeUSAGE_NUMERIC & 
+    ///                                                  1<<TreeUSAGE_SIGNAL );
+    /// 
+    TreeNodeArray *getNodeWild(char const *path, int usageMask);        
+
+    /// Get a new array of nodes in this tree or subtrees mathing the path
+    /// name. Asterisk is available as a wildcard to set the search pattern.
+    /// 
     TreeNodeArray *getNodeWild(char const *path);
+    
+    /// Set the node that will be the default base for all the relative paths 
+    /// specified after this function is called. As a new tree is open the fist
+    /// set default node is TOP (i.e the root of the tree).
+    /// 
     void setDefault(TreeNode *treeNode);
+        
+    /// Get the node that is the default base for all the relative paths
+    /// specified using \ref SetDefault function. As a new tree is open the
+    /// fist set default node is TOP (i.e the root of the tree).
+    /// 
     TreeNode *getDefault();
-    bool versionsInModelEnabled();
-    bool versionsInPulseEnabled();
+    
+    /// This function returns true if the tree has been modified from the
+    /// version written in the pulse file. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiMODIFIED.
+    /// 
     bool isModified();
+    
+    /// This function returns true if the tree has been opened in edit mode.
+    /// See treeshr function \ref TreeGetDbi() called with code
+    /// DbiOPEN_FOR_EDIT.
+    /// 
     bool isOpenForEdit();
+        
+    /// This function returns true if the tree has been opened for read only.
+    /// See treeshr function \ref TreeGetDbi() called with code
+    /// DbiOPEN_READONLY.
+    /// 
     bool isReadOnly();
+    
+    /// This function returns true if the tree has been created to keep stored
+    /// data versioning. See treeshr function \ref TreeGetDbi() called with
+    /// code DbiVERSIONS_IN_MODEL. \note This versioning feature will be not
+    /// avaiable for segmented data.
+    /// 
+    bool versionsInModelEnabled();
+    
+    /// This function returns true if the tree has been created to keep stored
+    /// data versioning in the current pulse file. See treeshr function \ref
+    /// TreeGetDbi() called with code DbiVERSIONS_IN_PULSE. \note The
+    /// Versioning feature is not avaiable for segmented data.
+    ///     
+    bool versionsInPulseEnabled();
+    
+    /// Activates the versioning feature in the tree model so each pulse that
+    /// is created will have the versioning active. \note The Versioning
+    /// feature is not avaiable for segmented data.
+    /// 
     void setVersionsInModel(bool enable);
+        
+    /// Activates the versioning feature for the current pulse so all data that
+    /// is stored over the preexisting ones will be always accessible trhough a
+    /// growing version id. \note This versioning feature will be not avaiable
+    /// for segmented data.
+    /// 
     void setVersionsInPulse(bool enable);
+    
+    /// View data stored in tree from given start date when version control is 
+    /// enabled.
+    /// 
     void setViewDate(char *date);
+        
+    
     void setTimeContext(Data *start, Data *end, Data *delta);
+    
+    /// Create pulse makes a copy of the tree model file into a new pulse file
+    /// ready to be filled with new acquired data. When this function is called
+    /// MDSplus asks that the model file is not opened for edit so do not
+    /// create pulses if you opened the tree in EDIT mode. For example a
+    /// correct usage would be:
+    ///     
+    ///     Tree * tree = new Tree("test_tree",-1);
+    ///     tree->createPulse(1);
+    ///     delete tree;
+    ///     tree = new Tree("test_tree",1);
+    /// 
+    /// Please note that as the createPulse makes a copy of the model file a
+    /// plenty tree with all model nodes is written into the new shot. Another
+    /// correct method to create a pulse file would be also to call constructor
+    /// using "NEW" mode:
+    /// 
+    ///     Tree * tree = new Tree("test_tree",1,"NEW");
+    /// 
+    /// but in this case an empty tree will be written to file without any
+    /// node defined form model.
+    /// 
     void createPulse(int shot);
+    
+    /// Delete pulse file identified by shot id. After this function is called
+    /// all tree instance opened with delete shot number are no more valid and
+    /// will throw exception for any content access. Note that the model file
+    /// can not be deleted.
+    ///
     void deletePulse(int shot);
+    
+    
     StringArray *findTags(char *wild);
     void removeTag(char const * tagName);
     int64_t getDatafileSize();
@@ -2892,7 +3559,75 @@ public:
 };
 /////////////////End CachedTree/////////
 #endif
-/////////////Class Event///////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  Event  /////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+///  Asynchronous events in MDSplus
+///  ------------------------------
+/// In MDSplus it is possible to generate asynchronous events as well as
+/// waiting for them. Events are often used to synchronize data visualization
+/// (for instance an update event name can be defined in the jScope Setup Data
+/// pop-up window, forcing an update of the displayed signal whenever such an
+/// event is received). Data acquisition events in this case are generated by
+/// the data acquisition routines (usually the methods of the devices involved
+/// in data acquisition).
+/// 
+/// MDSplus defines this Event class, for event generation and reception. In
+/// addition to notification, MDSplus events can bring data, either raw or
+/// "packed" into Data instances. The event issuer can then optionally
+/// associate data top the event, which will be received by every listener for
+/// that event. Events can be generated by the following methods:
+///
+/// * setevent(name) to generate an event with no associated data
+/// 
+/// * seteventRaw(name, buffer) to generate an event carrying a buffer of bytes
+/// 
+/// * setevent(name, Data) to generate an event carrying a Data instance
+/// 
+/// To handle event reception it is necessary to extend Event class by
+/// associating the actions to be executed upon event reception. Class Event in
+/// fact defines the virtual function \ref run(), which is called after the
+/// class instantiation whenever the event with the specified name has been
+/// received. The overriden run() method can then retrieve received data by
+/// calling superclass \ref getData() or \ref getRaw() methods.
+/// 
+/// The following example code shows how to define a new Event class called
+/// MyEvent whose action is to print the content of the received buffer (it is
+/// possible to test the programs using the command: setevent event string).
+/// 
+/// \code{.cpp}
+/// class MyEvent : public Event
+/// {
+/// public:
+///   MyEvent(char *name) : Event(name) {}
+/// 
+///   void run()
+///   {
+///     size_t bufSize;
+///     char *name = getName();              //Get the name of the event
+///     char *date = getTime()->getDate();   //Get the event reception time
+///     const char *buf =  getRaw(&bufSize); //Get raw data
+///     char *str = new char[bufSize+1];     //Make it a string
+///     memcpy(str, buf, bufSize);
+///     str[bufSize] = 0;
+///     std::cout << "RECEIVED EVENT " << name 
+///               << " AT " << date 
+///               << " WITH DATA  " << str << "\n";
+///   }
+/// };
+/// \endcode
+/// 
+/// 
+/// \note There are also two MDSplus executables which can be called from a
+/// console: <tt> wfevent Event_name </tt> and <tt> setevent event_name string
+/// </tt>. The former suspends until an event with that name has been received;
+/// the latter generates such an event.
+/// 
+
 class EXPORT Event {
 public:
     char *eventName;
@@ -2900,8 +3635,9 @@ public:
     int eventId;
     bool waitingEvent;
     int64_t eventTime;
-    Event() {}
+    
     Event(char *evName);
+    
     virtual ~Event();
 
     char const * getRaw(std::size_t * size) {
@@ -2947,7 +3683,11 @@ public:
     }
 
     virtual void run() {
-        condition.notify();
+        notify();
+    }
+    
+    void notify() {
+        condition.notify();        
     }
 
     static void setEvent(char *evName) {setEventRaw(evName, 0, NULL); }
@@ -2959,12 +3699,18 @@ public:
     static void setevent(char *evName, Data *evData);
 
 protected:
+    
     virtual void connectToEvents();
     virtual void disconnectFromEvents();
 
 private:
+    Event() {}
     ConditionVar condition;
 };
+
+
+
+
 
 ///////////////remote data access classes ////////////////
 class Connection;

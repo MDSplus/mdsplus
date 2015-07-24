@@ -4,8 +4,8 @@ Object oriented bindings {#mdsip_bindings}
 C++ Thin Client
 ---------------
 
-The thin client connection of C++ interface in mdsobjects relies in the Connection 
-class that exposes the following methods:
+The thin client connection of C++ interface in mdsobjects relies in the
+MDSplus::Connection class that exposes the following methods:
 
     Connection(char *mdsipAddr);                                            
     void openTree(char *tree, int shot);                                    
@@ -21,28 +21,36 @@ class that exposes the following methods:
 
 
  ### Constructor
- The connection constructor creates the socket using \ref ConnectToMds().
- This has the effect to instatiate a connection structure inside the available 
- connections list and performs the necessary login actions and compression settings.
- All further operations on the server are executed via TDI expressions.
  
- ### openTree
- \ref openTree() calls \ref MdsOpen() function that executes the TDI "OpenTree($,$)" with the
- tree name and shot args. The tree opened session is held within the server connection
- context.
+ The connection constructor creates the socket using \ref ConnectToMds(). This
+ has the effect to instatiate a connection structure inside the available
+ connections list and performs the necessary login actions and compression
+ settings. All further operations on the server are executed via TDI
+ expressions.
+ 
+ ### openTree 
+ 
+ openTree() calls \ref MdsOpen() function that executes the TDI "OpenTree($,$)"
+ with the tree name and shot args. The tree opened session is held within the
+ server connection context.
  
  ### closeTree and closeAllTree
- Both colose the remote opened tree and subtrees inside server calling MdsClose().
+ 
+ Both colose the remote opened tree and subtrees inside server calling
+ MdsClose().
 
  ### setDefault
- Sets the base node for relative path computation. The TDI "TreeSetDefault($)" expression
- is executed in MdsSetDefault().
+ 
+ Sets the base node for relative path computation. The TDI "TreeSetDefault($)"
+ expression is executed in MdsSetDefault().
  
  ### get and put
- The get and put functions has the purpouse of performing generic expression evaluation and
- sending the result through the connection. If the client calls a get of a TDI command, the
- expression is sent to the server and so remote evaluated. The result is therefore transmitted 
- back to the client. On the contrary the put function asks the server to execute the "TreePut($,$)" 
+ 
+ The get and put functions has the purpouse of performing generic expression
+ evaluation and sending the result through the connection. If the client calls
+ a get of a TDI command, the expression is sent to the server and so remote
+ evaluated. The result is therefore transmitted back to the client. On the
+ contrary the put function asks the server to execute the "TreePut($,$)"
  command to store the values passed as arguments.
 
 

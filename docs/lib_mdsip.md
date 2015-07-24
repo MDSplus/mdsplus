@@ -1,8 +1,9 @@
-MDSip (MDSplus remote data acess protocol) {#lib_mdsip}
-==========================================
+"mdstcpip" The remote data acess {#lib_mdsip}
+================================
 
- \image html img/planet_mdsplus.png 
- \image latex img/planet_mdsplus.png
+\image html img/planet_mdsplus.png "MDSplus is broadly adopted framework in the fusion community"
+\image latex img/planet_mdsplus.png "MDSplus is broadly adopted framework in the fusion community" height=6cm
+ 
 
 MDSplus provides a very simple but powerful protocol for connecting to remote 
 servers to perform tasks such as retrieving or writing data and performing 
@@ -21,4 +22,9 @@ It has become a very important capability of MDSplus ever since, providing
 access to data and providing an infrastructure for distributed computing for 
 data acquisition and analysis.
 
-For further details please refer to \subpage mdsip_manual
+For further details please refer to the MdsIp component manual
+
+|   GO TO THE COMPONENT MANUAL  |
+|-------------------------------|
+| \ref mdsip_manual             |
+

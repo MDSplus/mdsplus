@@ -3,24 +3,10 @@
 #include <stdlib.h>
 
 
-///
-/// Waits for the server reply as \ref Message holding a descriptor.
-/// Then it fills the descriptor info such as dtype, length, ndims and numbytes passed
-/// as a reference to the arguments. Usually this function is called by client that
-/// waits for the answer of an expression evaluation passed using SendArg()
-/// 
-/// \note The output message is kept statically inside function so this code is 
-/// **NOT thread safe**.
-/// 
-/// \param id the id of the connection to use
-/// \param dtype pointer to store the descriptor dtype info
-/// \param length pointer to store the descriptor length
-/// \param ndims pointer to store the descriptor dimensions number
-/// \param dims pointer to store the descriptor dimensions
-/// \param numbytes pointer to store the descriptor total number of bytes
-/// \param dptr pointer to store the descriptor data
-/// \return the function returns the status held by the answered descriptor.
-///
+////////////////////////////////////////////////////////////////////////////////
+//  GetAnswerInfo  /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
 		  void * *dptr)
 {
@@ -33,23 +19,10 @@ int GetAnswerInfo(int id, char *dtype, short *length, char *ndims, int *dims, in
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  GetAnswerInfoTS  ///////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-/// Thread Safe version of GetAnswerInfo(),
-/// waits for the server reply as \ref Message holding a descriptor.
-/// Then it fills the descriptor info such as dtype, length, ndims and numbytes passed
-/// as a reference to the arguments. Usually this function is called by client that
-/// waits for the answer of an expression evaluation passed using SendArg()
-/// 
-/// \param id the id of the connection to use
-/// \param dtype pointer to store the descriptor dtype info
-/// \param length pointer to store the descriptor length
-/// \param ndims pointer to store the descriptor dimensions number
-/// \param dims pointer to store the descriptor dimensions
-/// \param numbytes pointer to store the descriptor total number of bytes
-/// \param dptr pointer to store the descriptor data
-/// \param mout a pointer to the Message structure to store the incoming message.
-/// \return the function returns the status held by the answered descriptor.
-///
 int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
 		    void * *dptr, void **mout)
 {
