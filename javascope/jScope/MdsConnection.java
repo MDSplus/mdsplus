@@ -438,20 +438,24 @@ public class MdsConnection
 
     }
 
+    public void connectToServer() throws IOException
+    {
+        host = getProviderHost();
+        port = getProviderPort();
+        user = getProviderUser();
+        sock = new Socket(host,port);
+        dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
+        dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
+    }        
+    
+    
     public synchronized int ConnectToMds(boolean use_compression)
     {
 	    try
 	    {
 	        if(provider != null)
 	        {
-	            host = getProviderHost();
-	            port = getProviderPort();
-	            user = getProviderUser();
-
-	            sock = new Socket(host,port);
-
-	            dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
-	            dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
+                    connectToServer();
 	            MdsMessage message = new MdsMessage(user);
 	            message.useCompression(use_compression);
 	            message.Send(dos);

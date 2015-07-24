@@ -259,19 +259,6 @@ public class MdsMessage extends Object
         dtype = header_b[idx++];
         c_type = header_b[idx++];
         ndims = header_b[idx++];
-
-/*
-        System.out.println("msglen " + msglen);
-        System.out.println("status " + status);
-        System.out.println("length " + length);
-        System.out.println("nargs " + nargs);
-        System.out.println("descr_idx " + descr_idx);
-        System.out.println("message_id " + message_id);
-        System.out.println("dtype " + dtype);
-        System.out.println("c_type " + c_type);
-        System.out.println("ndims " + ndims);
-*/
-
         if(swap)
         {
             for(int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)

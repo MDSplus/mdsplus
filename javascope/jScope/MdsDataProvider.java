@@ -1114,12 +1114,18 @@ public class MdsDataProvider
         experiment = null;
         shot = 0;
         open = connected = false;
-        mds = new MdsConnection();
+        mds = getConnection();
         error = null;
         updateWorker = new UpdateWorker();
         updateWorker.start();
     }
 
+    protected MdsConnection getConnection() 
+    {
+        return new MdsConnection();
+    }
+    
+    
     public MdsDataProvider(String provider)
     {
         setProvider(provider);
