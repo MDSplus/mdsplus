@@ -15,7 +15,7 @@
 \endhtmlonly
 
 
-The Java Inteface
+The Java Interface
 ===================
 
 MDSplus provides API's (application programming interface) to several object 
