@@ -523,7 +523,7 @@ static void CommandLineOpen(Display * display, Widget tree)
     if (options.tree != NULL) {
       if (options.edit) {
 	status = TreeOpenEdit(options.tree, options.shot);
-	if (status == TreeFILE_NOT_FOUND) {
+	if (status == TreeFILE_NOT_FOUND || status == TreeFOPENW) {
 	  printf("Tree /%s/ shot /%d/ does not exist.  Create?(Y/N) ", options.tree, options.shot);
 	  scanf("%s", chars);
 	  if ((chars[0] == 'y') || (chars[0] == 'Y')) {

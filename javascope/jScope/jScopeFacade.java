@@ -3343,6 +3343,7 @@ class ServerDialog
     private static String know_provider[] =
         {
         "MdsDataProvider",
+        "MdsDataProviderUdt",
         "JetMdsDataProvider",
         "TwuDataProvider",
         "JetDataProvider",
