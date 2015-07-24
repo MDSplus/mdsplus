@@ -300,8 +300,8 @@ static int tcp_disconnect(int conid)
       free(c->username);
       free(c);
     }
-    status = close(s);
     status = shutdown(s, 2);
+    status = close(s);
   }
   fflush(stdout);
   fflush(stderr);
