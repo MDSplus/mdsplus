@@ -1579,7 +1579,8 @@ JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_flush
 JNIEXPORT void JNICALL Java_jScope_MdsIpProtocolWrapper_disconnect
   (JNIEnv *env, jobject jobj, jint connectionId)
 {
-    IoRoutines *ior = GetConnectionIo(connectionId);
-    ior->disconnect(connectionId);
+    DisconnectConnection(connectionId);
+    //IoRoutines *ior = GetConnectionIo(connectionId);
+    //ior->disconnect(connectionId);
 }
 
