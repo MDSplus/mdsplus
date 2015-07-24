@@ -1,4 +1,22 @@
-commit a76bb3effc2fc27f795e44cfb966340b50708182 (HEAD, tag: refs/tags/hudson-aaa-release-stable-26, refs/remotes/origin/stable, refs/heads/stable)
+commit 7f19970bc17b38dff8eef53097daf7b59d2b704b (HEAD, tag: refs/tags/hudson-aaa-release-stable-27, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 24 16:09:04 2015 -0400
+
+    Fix symbol substitution
+
+commit 253ab5689a45b65bc1d91fb3f3963792175a632c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 24 10:47:28 2015 -0400
+
+    Add NOT_DONE env so second build (64-bit) will be done after 32-bit build
+
+commit 4494c94498ce383721d18a33331552a2e1449fdc (tag: refs/tags/stable_release-7-0-36)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 23 18:11:38 2015 -0400
+
+    New release ---- stable_release-7-0-36
+
+commit a76bb3effc2fc27f795e44cfb966340b50708182 (tag: refs/tags/hudson-aaa-release-stable-26)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 23 15:45:07 2015 -0400
 
