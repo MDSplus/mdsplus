@@ -1,8 +1,124 @@
-commit 6f2708f9aba70595994256eb003a0645d4fb0160 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-38, refs/remotes/origin/alpha, refs/heads/alpha)
+commit b2fbfe35d6cd069fa790e03f2ffdb83b04743985 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-40, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 4b7d3e1 e24a93c
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Sat Jul 25 09:50:39 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 4b7d3e1b596bfd30e1983b975a3fbef605b4128d
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Sat Jul 25 09:50:21 2015 +0200
+
+    adds missing header for UDT support
+
+commit e24a93c2ab3c9171ad6bea3e909a1d347b548ff0 (tag: refs/tags/hudson-aaa-release-alpha-39)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 24 16:09:55 2015 -0400
+
+    Fix symbol substitution
+
+commit f96112a135af3c307885906abc3bb0cf5400dc93
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 24 10:47:28 2015 -0400
+
+    Add NOT_DONE env so second build (64-bit) will be done after 32-bit build
+
+commit b13c6ec9ed7ca67bb01198ec1381dd8f7fa04bad
+Merge: 90c977a 5711790
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 14:35:13 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 90c977a13cafaff215f8f3679d4743ae88b85244
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 14:35:03 2015 +0200
+
+    Proper socket shtdown
+
+commit 571179054d9c44c239748e96a020684dbb40ed94
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 14:27:22 2015 +0200
+
+    Typo
+
+commit f410d407601225607600bf440a6fccaff0e35d53
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 13:56:18 2015 +0200
+
+    Added UDT support to jScope
+
+commit 2c055ec0b61750a1905b78f5913bcd6a204b9760
+Merge: d6aa63f 35c2551
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 13:45:26 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit d6aa63f5e3808774c4176bce69976b94c4afc2e3
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 13:43:08 2015 +0200
+
+    Added UDT support to jScope
+
+commit 35c25514efe92065ef034c786b1f9b9df435e9f1
+Merge: b1f0dde b49ee84
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 24 10:04:58 2015 +0200
+
+    Merge branch 'alpha' into feature-doxygen-docs
+
+commit b49ee8438a5f5828f6e761f4cc8d59f8b05a1444
+Merge: bff0d50 60d5a48
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 09:12:53 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit bff0d50af9888a0e375e45db1928e6deb57e566f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Fri Jul 24 09:12:22 2015 +0200
+
+    Added UDT Data Access
+
+commit 60d5a48939c6c6248438ad7b96f132c0edfd85d1 (tag: refs/tags/alpha_release-7-0-123)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 23 18:26:36 2015 -0400
+
+    New release ---- alpha_release-7-0-123
+
+commit 6f2708f9aba70595994256eb003a0645d4fb0160 (tag: refs/tags/hudson-aaa-release-alpha-38)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 23 15:43:27 2015 -0400
 
     Add new debian build support scripts
+
+commit b1f0dde27e85194a2173e534dbde76e3afc33915
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jul 23 15:03:03 2015 +0200
+
+    doxy typos
+
+commit ceb494b08e499f1d74e744232549948f4ef9c0cf
+Merge: f6a9c67 465eacd
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jul 23 14:16:30 2015 +0200
+
+    Merge branch 'feature-mdsobjects-testing' into feature-doxygen-docs
+
+commit 465eacdffab97d7298e0647186caf866de731b9d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jul 23 14:12:48 2015 +0200
+
+    Fix objects libraries names
+    Adds pdf refs to index
+
+commit 7c82abb7d991d2181b6e0b281ed1c211bda83031 (refs/remotes/origin/feature-mdsobjects-testing)
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jul 23 12:15:44 2015 +0200
+
+    - fixed problem in dot generation
+    - fixed mdsip doxygen file exclusion
 
 commit d1d3c4218f285494c810a34015e72b00e2df051f (tag: refs/tags/alpha_release-7-0-122)
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -27,6 +143,20 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 22 13:48:59 2015 -0400
 
     Fix status test for edit
+
+commit f6a9c679604f8ba754da4a49954a3fd0632baf93
+Merge: 4e6a769 82ae2fe
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 22 16:24:15 2015 +0200
+
+    Merge branch 'alpha' into feature-doxygen-docs
+
+commit 4e6a76968cdd8b1e89aa5af936e2ee745c90f6a1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 22 16:17:34 2015 +0200
+
+    - Adds python and java docs
+    - Adds mdsplus directory tree
 
 commit 7d4ccab8adce515dedc4c8950e72442859ea8cbe
 Merge: 8f8bcc5 5a3567a
@@ -92,6 +222,12 @@ Date:   Mon Jul 20 18:16:02 2015 +0200
 
     Added reference waveform
 
+commit 835fe374a8db23ff13fcd95986caff39c3123742
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jul 20 17:23:46 2015 +0200
+
+    fix in numeric_limits and some doxygen warnings
+
 commit 6b89d0ef221a4fc66a9e70a052b9cc30588f4237
 Merge: 5ce4f9a c65eceb
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
@@ -119,6 +255,12 @@ Date:   Mon Jul 20 12:21:32 2015 +0200
 
     Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
+commit 9ef0bfa9ccf9fc12a6fa2a3836e0405525758b6a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jul 20 10:57:19 2015 +0200
+
+    data types documentation
+
 commit ea71494d974599cb60affda0d4b6e56cc9b9b239 (tag: refs/tags/hudson-aaa-release-alpha-34, tag: refs/tags/hudson-aaa-release-alpha-33, tag: refs/tags/hudson-aaa-release-alpha-32, tag: refs/tags/hudson-aaa-release-alpha-31, tag: refs/tags/alpha_release-7-0-119)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 15:31:53 2015 -0400
@@ -136,6 +278,12 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 15:19:27 2015 -0400
 
     Support python2.4
+
+commit 554e7c1a010d1f3900e68d994714e1417880b40a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 17 19:06:23 2015 +0200
+
+    more docs
 
 commit 669dec29b43d65376a1d24790417e84ee08fc1a7 (tag: refs/tags/alpha_release-7-0-118)
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -198,6 +346,19 @@ Date:   Thu Jul 16 10:54:54 2015 +0200
 
     Functions to close/list active connections to OPC server
 
+commit 408eebe5302d3780ce1950884fe2426519eb4803
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 15 16:37:24 2015 +0200
+
+    fix leak in the set event function
+
+commit 1d848625a56f6932414de65b953bc4df286454e6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 15 16:36:49 2015 +0200
+
+    - fix some valgrind false positives
+    - organize files names
+
 commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596 (tag: refs/tags/hudson-aaa-release-alpha-27)
 Merge: 81900c4 051603d
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -212,6 +373,18 @@ Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Wed Jul 15 12:37:16 2015 +0200
 
     Add Ne and Ar gas type
+
+commit c78c5fb30a384dc208d15600c477b3f7267c39be
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 15 08:28:53 2015 +0200
+
+    fix leak for Events
+
+commit f586af80cd17ad2b2098c2bf5dba88f5b93c211d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 15 08:28:24 2015 +0200
+
+    adds tests and docs in mdsobjects/cpp
 
 commit 051603d9cc281f30239bc6d6e22e4dce5cceac7d
 Author: zack-vii <zack.vii@live.com>
@@ -355,6 +528,25 @@ Date:   Fri Jul 10 11:53:37 2015 +0200
     Merge pull request #13 from zack-vii/jdk_win
     
     added batch files for windows JDK
+
+commit 497df81e3528aec0bec6dff56232834798abddf1
+Merge: 376f917 149ae11
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 10 09:25:57 2015 +0200
+
+    Merge branch 'alpha' into feature-mdsobjects-testing
+
+commit 376f91753c8eb7cd3db38a29630f440724d84884
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 10 09:24:36 2015 +0200
+
+    fix to enable putting multiple segments by time stamp in TreePutTimestampedSegment
+
+commit dc038886807d6bbc4c04c0f27e46066f2cab1f6d
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 10 09:19:10 2015 +0200
+
+    more test on treenode and documentation
 
 commit ca099f066328731e39cfead8cc9400125a145f5d
 Author: zack-vii <zack.vii@live.com>
@@ -514,6 +706,14 @@ Date:   Mon Jul 6 14:31:00 2015 -0400
 
     Fix MDSPLUS_VERSION environment variable
 
+commit bebf762b405f178101df6f51e4d86e6cbb36112f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jul 3 17:32:04 2015 +0200
+
+    - fixed leak in Tree destructor
+    - modified Tree::edit
+    - added more tests to Nodes (not finished)
+
 commit ad9776794f0f1762cee6482eb5628bbb7580b808 (tag: refs/tags/alpha_release-7-0-105)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Jul 2 22:27:59 2015 +0000
@@ -549,6 +749,28 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jul 1 10:45:26 2015 -0400
 
     New ChangeLog
+
+commit bf9eb9cd868103e23ee5520e9b7d539b22a0b18e
+Merge: aac3d4e f8883d3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 1 12:32:22 2015 +0200
+
+    Merge branch 'alpha' into feature-mdsobjects-testing
+    
+    # Conflicts:
+    #	javascope/Makefile.in
+
+commit aac3d4ecc0bbfbb8a4e7d31e9e5da09308cee206
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 1 09:52:00 2015 +0200
+
+    test rises a leak in treeshr
+
+commit 6d53fc77061954d65c868f53282f344c0253f5cd
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jul 1 09:50:33 2015 +0200
+
+    documentation for Tree object
 
 commit f8883d3a36a4e1cd41b1246395cba85dc8daf3ce
 Author: Tom Fredian <twf@psfc.mit.edu>
@@ -649,6 +871,24 @@ Date:   Mon Jun 29 10:42:30 2015 -0400
 
     Use different mechanism to find latest release tag
 
+commit 0e0a0c8efef47dee0d62d837dfdd19f0c33a9845
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 26 15:06:31 2015 +0200
+
+    adds more test for Tree
+
+commit feee833dcbf195fd1d2fb1a6a891d53d5cbcd9d6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 26 15:06:05 2015 +0200
+
+    bug fix in TreeNode::getUsage
+
+commit 51e44b1aee3f7a081575480a92a02acbfa19c63b
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Fri Jun 26 15:05:09 2015 +0200
+
+    add vagrind suppression for dlerror
+
 commit e895d08e49a94d2db36f1194d8be3e87eabfdffe (tag: refs/tags/alpha_release-7-0-101)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Thu Jun 25 22:24:08 2015 +0000
@@ -697,6 +937,12 @@ Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jun 24 22:22:31 2015 +0000
 
     New ChangeLog
+
+commit 0942af4588bc4af41f7479dd51839f2959fef391
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 24 16:51:53 2015 +0200
+
+    new tests .. MdsTreeTest started
 
 commit 84a1e13cddd94f1f32c2d801ee5b0e33d98505c7
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -815,6 +1061,12 @@ Date:   Thu Jun 18 17:51:59 2015 +0200
 
     Fixes to CYGNET4K support based on testing at W7-X
 
+commit d1777b1ea196129a5a16d38e0b3e6c2d79985f20
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jun 18 16:52:31 2015 +0200
+
+    adds MdsCall Test
+
 commit 69e0c273677b7f1536968519881dc363fc46f6f1
 Author: taliercio <cesare.taliercio@igi.cnr.it>
 Date:   Thu Jun 18 09:23:56 2015 +0200
@@ -832,6 +1084,25 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jun 17 08:50:25 2015 -0400
 
     Require higher version of automake. Older versions didn't support the java stamp
+
+commit 2e5bd2aa9019e2e77f02dc861598e90fc8a50da1
+Merge: 5cf8874 60df419
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 17 11:34:36 2015 +0200
+
+    Merge branch 'feature-mdsobjects-testing' of https://github.com/MDSplus/mdsplus into feature-mdsobjects-testing
+
+commit 5cf8874455d5fcc83fda9524eb4093194f0570d3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 17 11:34:09 2015 +0200
+
+    fix some doxygen generation bugs
+
+commit 60df4192dbec419bf37b895e57bb2b3f2cab77d9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 17 11:32:33 2015 +0200
+
+    fix some doxygen generation bugs
 
 commit 6eb35c0a6398414933b1119629167454d498de28
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
@@ -1044,6 +1315,31 @@ Date:   Mon Jun 15 11:53:38 2015 -0400
 
     fix memory handling of Monitor server name storage
 
+commit e6682f863b92f4579fae6cb9a7d0413e9a0fcad2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 15 11:45:41 2015 +0200
+
+    fix docs automake
+
+commit 3dda52d1f5d25790b9e6b1a47edbf5ea24c212f1
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 15 10:59:38 2015 +0200
+
+    automake update
+
+commit cadace6a66bfa71a58e9b5360f982bb6b82c9ca0
+Merge: 66a10ee 8d4f8a9
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 15 10:54:38 2015 +0200
+
+    Merge branch 'feature-doxygen-docs' into feature-mdsobjects-testing
+
+commit 8d4f8a95622945d884b6a3e88bed916a1091677f
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 15 10:44:35 2015 +0200
+
+    fix error on building
+
 commit 1cc280a427fc4240d2642123268f06c8adfd83bf
 Merge: 53d9351 3639ee8
 Author: Gruppo Controlli <mdsplus@roserver.igi.cnr.it>
@@ -1056,6 +1352,13 @@ Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Jun 15 09:48:38 2015 +0200
 
     Fix NaN management
+
+commit 66a10eea48e7f755b33b1a80cdc208f05a294b96
+Merge: 637ceee a69bd1a
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 15 09:13:47 2015 +0200
+
+    Merge branch 'alpha' into feature-mdsobjects-testing
 
 commit 2c321c771dee754b06467ee977af2964cbd5ba21
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -1241,6 +1544,18 @@ Date:   Thu Jun 11 12:13:40 2015 -0400
 
     Add -fsigned-char to ensure char's are treated as signed types
 
+commit 637ceee87f3dd5824b3c4a377c8d68e2aa02623e
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jun 11 12:14:03 2015 +0200
+
+    add more tests
+
+commit 8690b2c9ea8ea35acf5bfc6a621fa0ce1cf19ff5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 10 18:50:28 2015 +0200
+
+    Add more tests
+
 commit f75947c049d3fdc9fb7d9bd53a727e51478562d9 (tag: refs/tags/alpha_release-7-0-91)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Tue Jun 9 22:22:19 2015 +0000
@@ -1252,6 +1567,13 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jun 9 15:16:41 2015 -0400
 
     Use arch in labview.lib reference
+
+commit aa6cf19ec117caaf4e8678ef21ee6d325ee29eec
+Merge: 7e65493 40ebed4
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 8 09:50:42 2015 +0200
+
+    Merge branch 'alpha' into feature-mdsobjects-testing
 
 commit 40ebed476dbe0c19437f07f6c7840ae1cfd9c441 (tag: refs/tags/alpha_release-7-0-90)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -1290,6 +1612,13 @@ Date:   Thu Jun 4 09:20:39 2015 -0400
 
     remove the services when uninstalling
 
+commit 7e654938bb518b4c78861fd3c22a2b0d2ceff098
+Merge: d4a3331 33727ab
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jun 4 11:54:13 2015 +0200
+
+    Merge branch 'alpha' into feature-mdsobjects-testing
+
 commit 33727ab0b28567f025c3b7ad8c518543ad875761
 Merge: 4b4979d 30dc711
 Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
@@ -1303,17 +1632,36 @@ Date:   Thu Jun 4 11:52:09 2015 +0200
 
     restore no compression as default Compression value
 
+commit d4a3331767926e2eb0b0929e45147bca531c3c75
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Thu Jun 4 11:50:49 2015 +0200
+
+    fix default compression to 0
+
 commit 30dc711555c754424361f3c26e7ac93f4167d106 (tag: refs/tags/alpha_release-7-0-88)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
 Date:   Wed Jun 3 22:22:30 2015 +0000
 
     New ChangeLog
 
+commit 8c045fd63f9e7b40c13868c1d7945e257dd869c8
+Merge: 2dbcaa0 6b966d5
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 3 16:49:17 2015 +0200
+
+    Merge branch 'alpha' into feature-doxygen-docs
+
 commit 6b966d50bf967afe841dc0e26405a3a640b69ed7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jun 3 09:03:46 2015 -0400
 
     Remove debug printout
+
+commit 2dbcaa0f46e72bf2d4c8c387dd957ec8c7f0fae2
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Wed Jun 3 08:52:12 2015 +0200
+
+    avoid @ in script first line
 
 commit 67224fd8991a271b3f6e0648616506e31b4debd5 (tag: refs/tags/alpha_release-7-0-87)
 Author: MDSplusBuilder <MDSplusBuilder@psfc.mit.edu>
@@ -1444,11 +1792,72 @@ Date:   Mon Jun 1 08:08:03 2015 -0400
 
     Add AsyncDataSource
 
+commit decdd525f7d6f03090eba49a5d0ed892db6d8346
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 13:38:58 2015 +0200
+
+    move comments into header mdsip_connections.h
+
+commit 3c75cbda571eefb02e90d89b94b1e59ae8234a12
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 13:37:57 2015 +0200
+
+    fix tag target script to a single line command
+
+commit b0f02387e91973980a008cea6d58f20dfd827d4a
+Merge: c486db9 a9c32a8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 11:29:53 2015 +0200
+
+    Merge branch 'alpha' into feature-doxygen-docs
+    
+    # Conflicts:
+    #	configure
+    #	mdsobjects/cpp/testing/Makefile.in
+
 commit a9c32a8631dc9eeba840972c65893136b5848ee3
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Jun 1 11:17:06 2015 +0200
 
     Fix wrong emmory management
+
+commit c486db9c05b2743119fe047073f6681550e3cf1e
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Jun 1 10:36:05 2015 +0200
+
+    Added file
+
+commit f652c8f29f90c7c7ce94db254dc9c2169e7a469f
+Merge: 34cbe2d fc1b5b6
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 10:20:37 2015 +0200
+
+    Merge branch 'feature-doxygen-docs' of https://github.com/MDSplus/mdsplus into feature-doxygen-docs
+
+commit 34cbe2dd27978e96d058392e5213b1527c838eff
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 10:19:38 2015 +0200
+
+    propagate MAINTEAINER_MODE true to .in files
+
+commit fc1b5b6f7384a099a43eaafc49f1d4c46656f250
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 10:16:22 2015 +0200
+
+    propagate MAINTEAINER_MODE to wfevent
+
+commit f05aacbc6f4e13928e6aca5591feaa394a637b17
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 10:02:52 2015 +0200
+
+    uncommented AM_MAINTAINER_MODE
+
+commit 91ffb2c55d919d87ba6fc8a5ded304e6ac49a9be
+Merge: 6d727e4 e43d7e8
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Jun 1 10:01:05 2015 +0200
+
+    Merge branch 'alpha' into feature-doxygen-docs
 
 commit f87ca2b21e46399e0e3a6baeea304a20086fbca0
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
