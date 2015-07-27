@@ -268,48 +268,45 @@ public class MdsConnection
 
         MdsMessage message = receiveThread.GetMessage();
 
-        if(message == null || message.length == 0)
-        {
+	            out.error = "Null response from server" ;
+	            return out;
+	        }
+	        out.status = message.status;
+	        switch ((out.dtype = message.dtype))
+	        {
+                    case Descriptor.DTYPE_UBYTE:
+	            case Descriptor.DTYPE_BYTE:
+		            out.byte_data = message.body;
+		        break;
+	            case Descriptor.DTYPE_USHORT:
+		            out.int_data = message.ToUShortArray();
+		            out.dtype = Descriptor.DTYPE_LONG;                      
+                        break;
+	            case Descriptor.DTYPE_SHORT:
+                           out.short_data = message.ToShortArray();
+                       break;
+	            case Descriptor.DTYPE_LONG:
+                    case Descriptor.DTYPE_ULONG:
+		            out.int_data = message.ToIntArray();
+		        break;
+                    case Descriptor.DTYPE_ULONGLONG:
+	            case Descriptor.DTYPE_LONGLONG:
+		            out.long_data = message.ToLongArray();
+		        break;
 
-            out.error = "Null response from server" ;
-            return out;
-        }
-        out.status = message.status;
-        switch ((out.dtype = message.dtype))
-        {
-            case Descriptor.DTYPE_UBYTE:
-            case Descriptor.DTYPE_BYTE:
-                    out.byte_data = message.body;
-                break;
-            case Descriptor.DTYPE_USHORT:
-                    out.int_data = message.ToUShortArray();
-                    out.dtype = Descriptor.DTYPE_LONG;                      
-                break;
-            case Descriptor.DTYPE_SHORT:
-                   out.short_data = message.ToShortArray();
-               break;
-            case Descriptor.DTYPE_LONG:
-            case Descriptor.DTYPE_ULONG:
-                    out.int_data = message.ToIntArray();
-                break;
-            case Descriptor.DTYPE_ULONGLONG:
-            case Descriptor.DTYPE_LONGLONG:
-                    out.long_data = message.ToLongArray();
-                break;
-
-            case Descriptor.DTYPE_CSTRING:
-                if((message.status & 1) == 1)
-                    out.strdata = new String(message.body);
-                else
-                    out.error = new String(message.body);
-                break;
-            case Descriptor.DTYPE_FLOAT:
-                    out.float_data = message.ToFloatArray();
-                break;
-            case Descriptor.DTYPE_DOUBLE:
-                    out.double_data = message.ToDoubleArray();
-                break;
-        }
+	            case Descriptor.DTYPE_CSTRING:
+	                if((message.status & 1) == 1)
+	                    out.strdata = new String(message.body);
+	                else
+                            out.error = new String(message.body);
+		        break;
+	            case Descriptor.DTYPE_FLOAT:
+		            out.float_data = message.ToFloatArray();
+		        break;
+	            case Descriptor.DTYPE_DOUBLE:
+		            out.double_data = message.ToDoubleArray();
+		        break;
+	    }
         return out;
     }
 
