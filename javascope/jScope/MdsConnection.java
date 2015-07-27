@@ -284,6 +284,9 @@ public class MdsConnection
 		            out.byte_data = message.body;
 		        break;
 	            case Descriptor.DTYPE_USHORT:
+		            out.int_data = message.ToUShortArray();
+		            out.dtype = Descriptor.DTYPE_LONG;                      
+                        break;
 	            case Descriptor.DTYPE_SHORT:
                            out.short_data = message.ToShortArray();
                        break;
