@@ -455,6 +455,26 @@ public class MdsMessage extends Object
         return out;
     }
 
+        public int[] ToUShortArray() throws IOException
+    {
+        int ch1, ch2;
+        int out[] = new int[body.length / 2];
+        if(swap)
+            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
+            {
+                ch1 = (int)((body[j+1] & 0xff) << 8);
+                ch2 = (int)((body[j+0] & 0xff) << 0);
+                out[i] = (int)((ch1) + (ch2));
+            }
+	    else
+            for(int i = 0, j = 0; i < body.length / 2; i++, j+=2)
+            {
+                ch1 = (int)((body[j+0] & 0xff) << 8);
+                ch2 = (int)((body[j+1] & 0xff) << 0);
+                out[i] = (int)((ch1) + (ch2));
+            }
+        return out;
+    }
 
     public float[] ToFloatArray() throws IOException
     {

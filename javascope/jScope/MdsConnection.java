@@ -395,25 +395,16 @@ public class MdsConnection
 		            out.byte_data = message.body;
 		        break;
 	            case Descriptor.DTYPE_USHORT:
+		            out.int_data = message.ToUShortArray();
+		            out.dtype = Descriptor.DTYPE_LONG;                      
+                        break;
 	            case Descriptor.DTYPE_SHORT:
-                      /* ???? 26/04/2004
-		            short data[] = message.ToShortArray();
-		            out.int_data = new int[data.length];
-		            for(i = 0; i < data.length; i++)
-		                out.int_data[i] = (int)data[i];
-		            out.dtype = Descriptor.DTYPE_LONG;
-                      */
                            out.short_data = message.ToShortArray();
                        break;
 	            case Descriptor.DTYPE_LONG:
                     case Descriptor.DTYPE_ULONG:
 		            out.int_data = message.ToIntArray();
 		        break;
-                        /*
-	            case Descriptor.DTYPE_ULONG:
-		            out.long_data = message.ToUIntArray();
-		        break;
-              */
                     case Descriptor.DTYPE_ULONGLONG:
 	            case Descriptor.DTYPE_LONGLONG:
 		            out.long_data = message.ToLongArray();

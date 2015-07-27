@@ -1700,6 +1700,7 @@ public class MdsDataProvider
                 out = new RealArray(desc.double_data);
                 break;
             case Descriptor.DTYPE_LONG:
+            case Descriptor.DTYPE_USHORT:
             {
                 float[] outF = new float[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
@@ -1708,7 +1709,6 @@ public class MdsDataProvider
             }
             break;
             case Descriptor.DTYPE_SHORT:
-            case Descriptor.DTYPE_USHORT:
             {
                 float[] outF = new float[desc.short_data.length];
                 for (int i = 0; i < desc.short_data.length; i++)
