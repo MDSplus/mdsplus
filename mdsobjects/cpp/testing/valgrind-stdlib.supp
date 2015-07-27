@@ -1,0 +1,13 @@
+{
+   string suppression
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:_Znwm
+   fun:allocate
+   fun:_ZNSs4_Rep9_S_createEmmRKSaIcE
+   fun:_ZNSs12_S_constructIPKcEEPcT_S3_RKSaIcESt20forward_iterator_tag.part.29
+   fun:_S_construct_aux<char const*>
+   fun:_S_construct<char const*>
+   fun:_ZNSsC1EPKcRKSaIcE
+}
+

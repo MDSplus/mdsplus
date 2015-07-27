@@ -36,16 +36,11 @@ static int GetBytes(int id, void *buffer, size_t bytes_to_recv)
 }
 
 
-///
-/// Wait for an incoming message from the server using the connection id.
-/// This recursively calls the proper protocol recv function reserving a message
-/// fuffer for the result. A message structure is configured and returned to the
-/// user while a status of the receive operation is written inside status instance.
-/// 
-/// \param id id of the connection to be used
-/// \param status writes out the exit status to the pointed instace
-/// \return returns a \ref Message structure filled by conent of the responce
-///
+////////////////////////////////////////////////////////////////////////////////
+//  GetMdsMsg  /////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 Message *GetMdsMsg(int id, int *status)
 {
   MsgHdr header;
@@ -102,6 +97,9 @@ Message *GetMdsMsg(int id, int *status)
 }
 
 
+////////////////////////////////////////////////////////////////////////////////
+//  GetMdsMsgOOB  //////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
 Message *GetMdsMsgOOB(int id, int *status)
 {

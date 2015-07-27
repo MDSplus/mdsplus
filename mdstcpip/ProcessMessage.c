@@ -59,6 +59,10 @@ extern int TdiData();
 #define lseek _lseeki64
 #endif
 
+
+typedef ARRAY_COEFF(char, 7) ARRAY_7;
+
+
 static int lock_file(int fd, int64_t offset, int size, int mode_in, int *deleted)
 {
   int status;
@@ -719,7 +723,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
   // reset connection id //
   if (connection->message_id != message->h.message_id) {      
     FreeDescriptors(connection);
-    if (message->h.nargs < MAX_ARGS - 1) {
+    if (message->h.nargs < MDSIP_MAX_ARGS - 1) {
       connection->message_id = message->h.message_id;
       connection->nargs = message->h.nargs;
     } else {

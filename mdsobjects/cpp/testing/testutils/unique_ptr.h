@@ -42,11 +42,13 @@ public:
     unique_ptr & operator = (T * ref) {
         _delete();
         ptr = ref;
+        return *this;
     }
 
     unique_ptr & operator = (unique_ptr other) {
         ptr = other.ptr;
         other.ptr = NULL;
+        return *this;
     }
 
     void _delete() { if(ptr) D::_delete(ptr); ptr=NULL; }
@@ -56,11 +58,14 @@ public:
     operator T *() { return ptr; }
     operator const T *() const { return ptr; }
 
+//    operator T *&() { return ptr; }
+//    operator const T *&() const { return ptr; }
+
     T * operator ->() { return ptr; }
     const T * operator ->() const { return ptr; }
 
-    T * base() { return ptr; }
-    const T * base() const { return ptr; }
+    T *& base() { return ptr; }
+    const T *& base() const { return ptr; }
 };
 
 

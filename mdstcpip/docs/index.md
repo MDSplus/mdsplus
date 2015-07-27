@@ -1,5 +1,19 @@
 \anchor mdsip_manual
 
+>
+> This is the user manual of a specific MDSplus software component, For a
+> general description of the overall MDSplus framework please refer to:
+>
+>  * \ref mdsplus_manual "The Reference manual"
+>  * [The MDSplus site](http://www.mdsplus.org/index.php)
+>
+
+\htmlonly 
+<blockquote class="doxtable">
+<p>A pdf version of this manual is available here: <a href="../mdsip.pdf">MDSip manual</a></p>
+</blockquote> 
+\endhtmlonly
+
 
 MDSip (MDSplus remote data acess protocol)
 ==========================================
@@ -46,9 +60,6 @@ the following transports were supported:
   * ssh://[username@]hostname - Uses ssh authentication to connect to remote server.
   * http://hostname[:port]/MDSplusWsgi/mdsip - Uses http to connect to remote server
 
-
-\note For a general description of the overall MDSplus framework please refer to 
-      \subpage mdsplus_manual "MDSplus manual"
 
 
 

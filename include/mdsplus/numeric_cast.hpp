@@ -17,6 +17,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace MDSplus {
+#ifndef DOXYGEN // hide this part from documentation
 
 /// Numeric Limits for Integer types
 template < typename T, typename EnableIf = void >
@@ -43,7 +44,7 @@ public:
     static inline T lowest() { return -BaseClass::max(); }
 };
 
-
+#endif // DOXYGEN end of hidden code
 } // MDSplus
 
 
@@ -111,6 +112,15 @@ struct numeric_cast_nan_rule {
         if( std::isnan(value) ) throw(std::range_error("Trying to convert Nan to an Integer type"));
     }
 };
+
+template < typename Target, typename Source, typename EnableIf = void >
+struct numeric_cast_inf_rule {
+    typedef numeric_cast_trait<Target,Source> trait;
+    static inline void apply(Source value) {
+        if( std::isinf(value) ) throw(std::range_error("Trying to convert Inf to an Integer type"));
+    }
+};
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,9 +207,10 @@ struct NumericCastImpl < Target, Source,
         ::type >
 {
     static Target numeric_cast(Source value ) {
+        numeric_cast_nan_rule<Target,Source>::apply(value);
+        numeric_cast_inf_rule<Target,Source>::apply(value);        
         numeric_cast_min_rule<Target,Source>::apply(value);
         numeric_cast_max_rule<Target,Source>::apply(value);
-        numeric_cast_nan_rule<Target,Source>::apply(value);
         numeric_cast_precision_rule<Target,Source>::apply(value);
         return static_cast<Target>(value);
 
@@ -247,6 +258,35 @@ struct NumericCastImpl < Target, Source,
 //  numeric_cast  //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+/// For each possible scalar conversion, from one native type to another one, a
+/// specific cast function was implemented to check if the conversion is not
+/// meaningless. If no accepted conversion was found the library throws an
+/// exception identifying the error status. For instance a Int8 n = -1 casted
+/// to Uint32 will throw a std::underflow_error. 
+/// 
+/// All conversion checks is managed by a template specialization of the
+/// MDSplus::numeric_cast() function. This function uses the
+/// std::numeric_limits to get boundaries for the source and target numeric
+/// domains of the specific cast, so at the end the test is done using the
+/// standard template library numeric traits. The implementation was done using
+/// very few type traits and the standard std::numeric_limits class.
+/// 
+/// Four checks are selected by traits to be performed on values:
+/// 
+/// - numeric_cast_max_rule 
+/// - numeric_cast_min_rule
+/// - numeric_cast_precision_rule (disabled at the moment) 
+/// - numeric_cast_nan_rule
+/// 
+/// The possible exception that the function can throw are:
+/// 
+/// | Exception             | Description                              |
+/// |-----------------------|------------------------------------------|
+/// | std::overflow_error   | exceeded the upper limitof target domain |
+/// | std::underflow_error  | exceeded the lower limitof target domain |
+/// | std::range_error      | nan or inf converted to integer domain   |
+/// | std::range_error      | loss of precision (disabled)             |
+/// 
 
 template <typename Target, typename Source>
 inline Target numeric_cast(Source value) {

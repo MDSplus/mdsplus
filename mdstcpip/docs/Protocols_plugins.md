@@ -34,9 +34,10 @@ The shared library needs to export only one entry point, the "Io" function.
 
     IoRoutines *Io()
 
-This routine take no arguments and simply returns a pointer to a \ref IoRoutines structure
-defined in the \ref mdsip_connections.h include file. This structure contains pointers to
-the I/O functions used to implement the protocol.
+This routine take no arguments and simply returns a pointer to a \ref
+_io_routines structure defined in the \ref mdsip_connections.h include file.
+This structure contains pointers to the I/O functions used to implement the
+protocol.
 
     typedef struct _io_routines {
       int (*connect) (int conid, char *protocol, char *connectString);
@@ -49,8 +50,8 @@ the I/O functions used to implement the protocol.
       int (*disconnect) (int conid);
     } IoRoutines;
 
-Usually the `Io` function returns a static precompiled instance of \ref IoRoutines defined
-inside library.
+Usually the `Io` function returns a static precompiled instance of IoRoutines
+defined inside library.
 
 
 

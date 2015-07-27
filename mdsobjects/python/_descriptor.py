@@ -11,6 +11,7 @@ _dtypes=_mimport('_mdsdtypes',1)
 _mdsclasses=_mimport('_mdsclasses',1)
 _data=_mimport('mdsdata',1)
 _treenode=_mimport('treenode',1)
+_tree=_mimport('tree',-1)
 _ident=_mimport('ident',1)
 _apd=_mimport('apd',1)
 _compound=_mimport('compound',1)
@@ -112,7 +113,21 @@ class descriptor(_C.Structure):
                 self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
                 self.addToCache(value)
                 return
-        if isinstance(value,str) or ('unicode' in dir(__builtins__) and isinstance(value,unicode)):
+
+        try:
+            if isinstance(value,unicode):
+                value=str(value)
+                str_d=descriptor_string(value)
+                d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
+                self.length=d.length
+                self.dtype=d.dtype
+                self.pointer=d.pointer
+                self.addToCache(value)
+                return
+        except:
+            pass
+
+        if isinstance(value,str):
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
             self.length=d.length
@@ -120,6 +135,7 @@ class descriptor(_C.Structure):
             self.pointer=d.pointer
             self.addToCache(value)
             return
+
         if isinstance(value,float):
             self.length=8
             self.dtype=_dtypes.DTYPE_NATIVE_DOUBLE
@@ -354,7 +370,7 @@ class descriptor(_C.Structure):
                 if self.length == 0:
                     return _scalar.makeScalar('')
                 else:
-                    return(_scalar.makeScalar(str(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring().decode())))
+                    return(_scalar.makeScalar(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring()))
             if (self.dtype == _dtypes.DTYPE_FSC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
                 return _scalar.makeScalar(_N.complex64(complex(ans[0],ans[1])))
@@ -393,9 +409,16 @@ class descriptor(_C.Structure):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
-                    return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
+                    if descriptor.tree is None:
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
+                    else:
+
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
-                    return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                    if descriptor.tree is None:
+                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                    else:
+                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):

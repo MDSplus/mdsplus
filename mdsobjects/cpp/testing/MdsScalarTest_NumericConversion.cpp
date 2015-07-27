@@ -9,6 +9,13 @@
 
 #include "MdsDataTest.h"
 
+
+// NOTE: This test is actually not very usefull as it does not stress the
+// numeric conversion to its limits, so it should not thows particular
+// exceptions. Nevertheless it comes in help to see how the numeric conversion
+// is tested and to easily access to possible errors on conversion or leaks.
+
+
 using namespace MDSplus;
 using namespace testing;
 
@@ -341,6 +348,6 @@ int main(int argc, char *argv[])
         std::cout << " SUCCESS !! \n";
     else
         std::cout << " SOME FAILS OCCURRED !! \n";
-
+    
     END_TESTING;
 }

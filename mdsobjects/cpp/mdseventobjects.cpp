@@ -32,7 +32,8 @@ extern "C" void eventAst(void *arg, int len, char *buf)
 	Event *ev = (Event *)arg;
 	ev->eventBuf.assign(buf, len);
 	ev->eventTime = convertAsciiToTime("now");
-	ev->run();
+	ev->run(); 
+    ev->notify();
 }
 
 extern "C" void reventAst(char *evname, char *buf, int len, void *arg)
@@ -82,6 +83,7 @@ void Event::setEvent(char *evName, Data *evData)
 	int bufLen;
 	char *buf = evData->serialize(&bufLen);
 	setEventRaw(evName, bufLen, buf);
+    delete[] buf;
 }
 
 void Event::setEventRaw(char *evName, int bufLen, char *buf)
