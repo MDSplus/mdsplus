@@ -2488,13 +2488,12 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       frames.Resize();
     }
     else {
-
       if (waveform_signal == null) {
         return;
       }
       waveform_signal.Autoscale();
+      waveform_signal.unfreeze();
     }
-    waveform_signal.unfreeze();
     ReportChanges();
   }
 
