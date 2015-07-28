@@ -1,4 +1,23 @@
-commit 7f19970bc17b38dff8eef53097daf7b59d2b704b (HEAD, tag: refs/tags/hudson-aaa-release-stable-27, refs/remotes/origin/stable, refs/heads/stable)
+commit e9452db0820e40b13753c7be02e1d8072f34b20d (HEAD, tag: refs/tags/hudson-aaa-release-stable-31, refs/remotes/origin/stable, refs/heads/stable)
+Merge: 5820dae dc8c754
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 14:32:11 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 5820daecbe1d761d9785fcd2513c766c2e23d6e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 14:31:54 2015 -0400
+
+    Fix buffer overrun in Windows
+
+commit dc8c7546cd1579a45c869f413e6d64b629b5187c (tag: refs/tags/stable_release-7-0-37, tag: refs/tags/hudson-aaa-release-stable-30, tag: refs/tags/hudson-aaa-release-stable-29, tag: refs/tags/hudson-aaa-release-stable-28)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Jul 24 18:11:44 2015 -0400
+
+    New release ---- stable_release-7-0-37
+
+commit 7f19970bc17b38dff8eef53097daf7b59d2b704b (tag: refs/tags/hudson-aaa-release-stable-27)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 16:09:04 2015 -0400
 
