@@ -1,4 +1,60 @@
-commit b2fbfe35d6cd069fa790e03f2ffdb83b04743985 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-40, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 4827dbf8e7f39361bfc9cbf4520e6f4be9b90584 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-43, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 14:33:33 2015 -0400
+
+    Fix buffer overrun in Windows
+
+commit c092d53e92b4853e43d8b4c8a1368cb250ce2f49
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Jul 28 15:18:08 2015 +0200
+
+    Fix null pointer exception in Autoscale method.
+
+commit 08df2a1698b6d079b2d442b228b0d5e2a13a3253
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Jul 28 15:15:59 2015 +0200
+
+    Fix InitializeFrames method when data frames are null.
+
+commit fc084e0c6dd5545f5e0de0aa31b981547f60f4b9
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Jul 28 15:09:39 2015 +0200
+
+    Fix null pointer exception in GetSignal method.
+
+commit 8b7711bfc27a9dbef33bb80711442a8abd8efe2d
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Jul 28 15:02:04 2015 +0200
+
+    Move UpdateWorker activation from constructor to CheckConnction and CheckOpen method.
+    Add method to stop UpdateWorker Thread.
+
+commit c93e860428e8b4c4ac509f5a9322b2a5f16fb31c
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Tue Jul 28 14:50:35 2015 +0200
+
+    data_provider_list ComboBox listener change from ActionListener to ItemListener
+
+commit 626c8d385210ac0bc0055ccab77a2607ba6718be
+Merge: 336140a 7a23dec
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Mon Jul 27 12:32:20 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit 336140a524f21b7e628d147e9e401171f2d707bc
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Mon Jul 27 12:31:46 2015 +0200
+
+    Unsigned short data type management added
+
+commit 7a23dec4503e208e02d4e505c63d21ce6dc4c063 (tag: refs/tags/hudson-aaa-release-alpha-42, tag: refs/tags/hudson-aaa-release-alpha-41, tag: refs/tags/alpha_release-7-0-124)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sat Jul 25 18:13:55 2015 -0400
+
+    New release ---- alpha_release-7-0-124
+
+commit b2fbfe35d6cd069fa790e03f2ffdb83b04743985 (tag: refs/tags/hudson-aaa-release-alpha-40)
 Merge: 4b7d3e1 e24a93c
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Sat Jul 25 09:50:39 2015 +0200
