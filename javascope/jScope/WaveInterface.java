@@ -1118,6 +1118,7 @@ public class WaveInterface
             }
             else
             {
+                frames = null;
                 curr_error = dp.ErrorString();
                 evaluated[0] = false;
             }
