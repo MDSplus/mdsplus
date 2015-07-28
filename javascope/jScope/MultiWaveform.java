@@ -1200,7 +1200,11 @@ public class MultiWaveform
 
     public Signal GetSignal()
     {
-        return (Signal) signals.elementAt(curr_point_sig_idx);
+        if( signals != null && signals.size() > 0 )
+            return (Signal) signals.elementAt(curr_point_sig_idx);
+        else
+            return null;
+                 
     }
 
 
