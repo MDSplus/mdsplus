@@ -10,6 +10,8 @@ import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
 import javax.swing.*;
 import java.text.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MdsDataProvider
     implements DataProvider
@@ -1038,14 +1040,28 @@ public class MdsDataProvider
             if(enabled)
                 notify();
         }
+        
+        boolean stopWorker = false;
+        
+        synchronized void stopUpdateWorker()
+        {
+            stopWorker = true;
+            notify();
+        }
+        
         public void run()
         {
+            
+            this.setName("UpdateWorker");
+            
             while(true)
             {
                 synchronized(this)
                 {
                     try {
                         wait();
+                        if(stopWorker)
+                           return;
                     }                           
                     catch(InterruptedException exc) {}
                 }
@@ -1116,8 +1132,8 @@ public class MdsDataProvider
         open = connected = false;
         mds = getConnection();
         error = null;
-        updateWorker = new UpdateWorker();
-        updateWorker.start();
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
     }
 
     protected MdsConnection getConnection() 
@@ -1134,8 +1150,8 @@ public class MdsDataProvider
         open = connected = false;
         mds = new MdsConnection(this.provider);
         error = null;
-        updateWorker = new UpdateWorker();
-        updateWorker.start();
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
     }
 
     public MdsDataProvider(String exp, int s)
@@ -1145,8 +1161,8 @@ public class MdsDataProvider
         open = connected = false;
         mds = new MdsConnection();
         error = null;
-        updateWorker = new UpdateWorker();
-        updateWorker.start();
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
     }
 
     protected void finalize()
@@ -1158,7 +1174,7 @@ public class MdsDataProvider
         if (connected)
             status = mds.DisconnectFromMds();
     }
-        //To be overridden by any DataProvider implementation with added dynamic generation
+    //To be overridden by any DataProvider implementation with added dynamic generation
     AsynchDataSource getAsynchSource()
     {
         return null;
@@ -1500,6 +1516,7 @@ public class MdsDataProvider
     public void enableAsyncUpdate(boolean enable)
     {
         updateWorker.enableAsyncUpdate(enable);
+                  
     }
 
     
@@ -1819,6 +1836,11 @@ public class MdsDataProvider
                 provider);
             mds.dispatchConnectionEvent(ce);
         }
+       
+        if( updateWorker != null && updateWorker.isAlive() )
+        {
+            updateWorker.stopUpdateWorker();
+        }
     }
 
     protected synchronized void CheckConnection() throws IOException
@@ -1833,7 +1855,11 @@ public class MdsDataProvider
                     throw new IOException("Could not get IO for " + provider);
             }
             else
+            {
                 connected = true;
+                updateWorker = new UpdateWorker();
+                updateWorker.start();
+            }
         }
     }
 
@@ -1858,6 +1884,9 @@ public class MdsDataProvider
                 return false;
             }
             connected = true;
+            updateWorker = new UpdateWorker();
+            updateWorker.start();
+
         }
         if (!open && experiment != null || this.shot != shot || experiment != null && !experiment.equalsIgnoreCase(this.experiment) )
         {
