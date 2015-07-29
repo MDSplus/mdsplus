@@ -106,6 +106,7 @@ install: $(libdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a @libdir@; \
 	fi;
 
+OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TdiShr.exports
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
