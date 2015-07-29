@@ -1,4 +1,42 @@
-commit e9452db0820e40b13753c7be02e1d8072f34b20d (HEAD, tag: refs/tags/hudson-aaa-release-stable-31, refs/remotes/origin/stable, refs/heads/stable)
+commit 3055956fbc02843c16215ff9efb0e3856896860d (HEAD, tag: refs/tags/hudson-aaa-release-stable-32, refs/remotes/origin/stable, refs/heads/stable)
+Merge: 3ed1408 d21e48c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 29 09:19:57 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+    Add new python interface without need of python headers
+
+commit 3ed1408ba216fd31334de181ee6b3bf5e5227191 (refs/remotes/origin/feature-no-header-python-interface)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 29 08:14:15 2015 -0400
+
+    Add test python functin
+
+commit 080abb304896509260fb5418bf2187ec78d56e5d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 29 07:59:07 2015 -0400
+
+    Put back objects definition
+
+commit d21e48ccfd5779e146bcaf814ef5d19b046a40e0 (tag: refs/tags/stable_release-7-0-38)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 18:12:34 2015 -0400
+
+    New release ---- stable_release-7-0-38
+
+commit 4e7c1eab3a39cb0e635d914d6a69004f928dcfa3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 16:58:53 2015 -0400
+
+    No need for python includes
+
+commit 78a17a9a60dbcd9905757ce4075f58d10335647a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 16:53:33 2015 -0400
+
+    New python interface without needing python dev headers
+
+commit e9452db0820e40b13753c7be02e1d8072f34b20d (tag: refs/tags/hudson-aaa-release-stable-31)
 Merge: 5820dae dc8c754
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 14:32:11 2015 -0400
