@@ -1,4 +1,28 @@
-commit 4827dbf8e7f39361bfc9cbf4520e6f4be9b90584 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-43, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 671b4004046d6dabbc0bb58c4fe29078e26ad44f (HEAD, tag: refs/tags/hudson-aaa-release-alpha-44, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 29 07:59:07 2015 -0400
+
+    Put back objects definition
+
+commit c74ead100f650cc28835e52201f2d2a18dd0fb0c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 16:58:53 2015 -0400
+
+    No need for python includes
+
+commit 8018a0d12c11bc555f111e3e92b38ac720a233cf
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 16:53:33 2015 -0400
+
+    New python interface without needing python dev headers
+
+commit 2a3e4c50b87665dce9fd12846e5ab58dddf79e7f (tag: refs/tags/alpha_release-7-0-125)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Jul 28 18:28:02 2015 -0400
+
+    New release ---- alpha_release-7-0-125
+
+commit 4827dbf8e7f39361bfc9cbf4520e6f4be9b90584 (tag: refs/tags/hudson-aaa-release-alpha-43)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 14:33:33 2015 -0400
 
