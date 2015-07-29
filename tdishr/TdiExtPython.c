@@ -89,7 +89,7 @@ static int Initialize()
       return 0;
     }
 #ifdef _WIN32
-    lib = strcpy((char *)malloc(strlen(envsym) + 4), envsym);
+    lib = strcpy((char *)malloc(strlen(envsym) + 5), envsym);
     strcat(lib, ".dll");
 #else
     if (envsym[0] == '/' || strncmp(envsym, "lib", 3) == 0) {
