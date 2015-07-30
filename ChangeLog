@@ -1,4 +1,16 @@
-commit 3055956fbc02843c16215ff9efb0e3856896860d (HEAD, tag: refs/tags/hudson-aaa-release-stable-32, refs/remotes/origin/stable, refs/heads/stable)
+commit 0c28c2eaec316b8e522509302e0621add896a9b2 (HEAD, tag: refs/tags/hudson-aaa-release-stable-34, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 30 11:07:44 2015 -0400
+
+    Allow host to be overriden by environment variables
+
+commit 9b718ae87313a2aba6780b61e98848486bc7d93c (tag: refs/tags/stable_release-7-0-39, tag: refs/tags/hudson-aaa-release-stable-33)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Jul 29 09:31:26 2015 -0400
+
+    New release ---- stable_release-7-0-39
+
+commit 3055956fbc02843c16215ff9efb0e3856896860d (tag: refs/tags/hudson-aaa-release-stable-32)
 Merge: 3ed1408 d21e48c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 09:19:57 2015 -0400
