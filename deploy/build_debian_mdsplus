@@ -6,11 +6,17 @@ mkdir -p /buildroot
 cd /buildsrc
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
-  bits=64
-  host=x86_64-linux
+    bits=64
+    if [ -z "$host" ]
+    then
+	host=x86_64-linux
+    fi
 else
-  bits=32
-  host=i686-linux
+    bits=32
+    if [ -z "$host" ]
+    then
+	host=i686-linux
+    fi
 fi
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \
