@@ -26,10 +26,14 @@ fi
             --with-gsi=/usr:gcc${bits} \
             --host=$host \
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
-make clean > /dev/null
+make clean
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE} make install
-make clean >/dev/null;
+if [ "$bits" = "32" ]
+then
+    mv /buildroot/usr/local/mdsplus/uid32 /buildroot/usr/local/mdsplus/uid
+fi
+    
 if [ -d /installer ]
 then
     echo "Building debian packages"
