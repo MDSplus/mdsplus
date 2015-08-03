@@ -38,7 +38,8 @@ TESTS = \
         MdsTreeNodeTest \
         MdsEventSuppression \
         MdsEventTest \
-        MdsConnectionTest
+        MdsConnectionTest \
+        MdsExpressionCompileTest
 
 #    this code must be launched with mdsip server active ..
 #    MdsConnectionSuppression
