@@ -1,16 +1,59 @@
-commit 5a18ee184b5432fead27c3904aa14a7f92cd489d (HEAD, tag: refs/tags/hudson-aaa-release-alpha-46, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 48ecce2bcfe8f573ae1b42e423abe8866b4ae32f (HEAD, tag: refs/tags/hudson-aaa-release-alpha-52, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 15:46:29 2015 -0400
+
+    Fix uils for 32-bit
+
+commit 16a945fe5fbecfa0c9ad7d2513ab1481e743f348
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 15:42:43 2015 -0400
+
+    Fix uils for 32-bit
+
+commit 3a24c92741c566e49f4d80f679cb3ad543dc7d62
+Merge: a06b0f0 4a1e0bc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 14:50:17 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit a06b0f0c4aa3dfe91be79b9c5ff9ec6d1393beb4
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 14:48:28 2015 -0400
+
+    Fix debian configure for builds
+
+commit 4a1e0bccb86cbcf21c0fc926cf341a5053fc13e3
+Author: AndreaRigoni <andrea.rigoni@pd.infn.it>
+Date:   Mon Aug 3 16:12:53 2015 +0200
+
+    Fix null tree in MDSplus::compile()
+
+commit 48d64fee52ac8c047c1687d4fc556a81840b503f
+Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Mon Aug 3 14:10:43 2015 +0200
+
+    Make geDescAt(int) public, add public getNumDescs()
+
+commit 6eaa5459a4846e02be0be763aca5c0daae13d59d (tag: refs/tags/hudson-aaa-release-alpha-51, tag: refs/tags/hudson-aaa-release-alpha-50, tag: refs/tags/hudson-aaa-release-alpha-49, tag: refs/tags/alpha_release-7-0-127)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 30 11:46:11 2015 -0400
+
+    New release ---- alpha_release-7-0-127
+
+commit 5a18ee184b5432fead27c3904aa14a7f92cd489d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 30 11:07:44 2015 -0400
 
     Allow host to be overriden by environment variables
 
-commit b7ebb9521f95514d64770069e376f3345ab6a858 (tag: refs/tags/hudson-aaa-release-alpha-45, tag: refs/tags/alpha_release-7-0-126)
+commit b7ebb9521f95514d64770069e376f3345ab6a858 (tag: refs/tags/alpha_release-7-0-126)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 09:50:01 2015 -0400
 
     New release ---- alpha_release-7-0-126
 
-commit 671b4004046d6dabbc0bb58c4fe29078e26ad44f (tag: refs/tags/hudson-aaa-release-alpha-44)
+commit 671b4004046d6dabbc0bb58c4fe29078e26ad44f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 07:59:07 2015 -0400
 
@@ -34,7 +77,7 @@ Date:   Tue Jul 28 18:28:02 2015 -0400
 
     New release ---- alpha_release-7-0-125
 
-commit 4827dbf8e7f39361bfc9cbf4520e6f4be9b90584 (tag: refs/tags/hudson-aaa-release-alpha-43)
+commit 4827dbf8e7f39361bfc9cbf4520e6f4be9b90584
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 14:33:33 2015 -0400
 
@@ -84,13 +127,13 @@ Date:   Mon Jul 27 12:31:46 2015 +0200
 
     Unsigned short data type management added
 
-commit 7a23dec4503e208e02d4e505c63d21ce6dc4c063 (tag: refs/tags/hudson-aaa-release-alpha-42, tag: refs/tags/hudson-aaa-release-alpha-41, tag: refs/tags/alpha_release-7-0-124)
+commit 7a23dec4503e208e02d4e505c63d21ce6dc4c063 (tag: refs/tags/alpha_release-7-0-124)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sat Jul 25 18:13:55 2015 -0400
 
     New release ---- alpha_release-7-0-124
 
-commit b2fbfe35d6cd069fa790e03f2ffdb83b04743985 (tag: refs/tags/hudson-aaa-release-alpha-40)
+commit b2fbfe35d6cd069fa790e03f2ffdb83b04743985
 Merge: 4b7d3e1 e24a93c
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Sat Jul 25 09:50:39 2015 +0200
@@ -103,7 +146,7 @@ Date:   Sat Jul 25 09:50:21 2015 +0200
 
     adds missing header for UDT support
 
-commit e24a93c2ab3c9171ad6bea3e909a1d347b548ff0 (tag: refs/tags/hudson-aaa-release-alpha-39)
+commit e24a93c2ab3c9171ad6bea3e909a1d347b548ff0
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 16:09:55 2015 -0400
 
@@ -179,7 +222,7 @@ Date:   Thu Jul 23 18:26:36 2015 -0400
 
     New release ---- alpha_release-7-0-123
 
-commit 6f2708f9aba70595994256eb003a0645d4fb0160 (tag: refs/tags/hudson-aaa-release-alpha-38)
+commit 6f2708f9aba70595994256eb003a0645d4fb0160
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 23 15:43:27 2015 -0400
 
@@ -218,7 +261,7 @@ Date:   Wed Jul 22 18:12:44 2015 -0400
 
     New release ---- alpha_release-7-0-122
 
-commit d023e30ffb499acb04dd4666920f0a11fc693e63 (tag: refs/tags/hudson-aaa-release-alpha-37)
+commit d023e30ffb499acb04dd4666920f0a11fc693e63
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 22 15:40:16 2015 -0400
 
@@ -282,7 +325,7 @@ Date:   Tue Jul 21 18:13:11 2015 -0400
 
     New release ---- alpha_release-7-0-121
 
-commit 82ae2fe365c5f61e7302541ce91f2e6b5927f3ee (tag: refs/tags/hudson-aaa-release-alpha-36)
+commit 82ae2fe365c5f61e7302541ce91f2e6b5927f3ee
 Merge: 8b7b776 2789019
 Author: Gruppo Controlli <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Jul 21 15:04:02 2015 +0200
@@ -308,7 +351,7 @@ Date:   Mon Jul 20 18:24:21 2015 +0200
 
     Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
 
-commit 172cc4921ed6e6899f1799f128113e6264dcd0b0 (tag: refs/tags/hudson-aaa-release-alpha-35)
+commit 172cc4921ed6e6899f1799f128113e6264dcd0b0
 Author: Gabriele Manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Mon Jul 20 18:16:02 2015 +0200
 
@@ -353,7 +396,7 @@ Date:   Mon Jul 20 10:57:19 2015 +0200
 
     data types documentation
 
-commit ea71494d974599cb60affda0d4b6e56cc9b9b239 (tag: refs/tags/hudson-aaa-release-alpha-34, tag: refs/tags/hudson-aaa-release-alpha-33, tag: refs/tags/hudson-aaa-release-alpha-32, tag: refs/tags/hudson-aaa-release-alpha-31, tag: refs/tags/alpha_release-7-0-119)
+commit ea71494d974599cb60affda0d4b6e56cc9b9b239 (tag: refs/tags/alpha_release-7-0-119)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 15:31:53 2015 -0400
 
@@ -402,19 +445,19 @@ Date:   Fri Jul 17 08:43:51 2015 -0400
 
     New release ---- alpha_release-7-0-117
 
-commit 32c341e082db9a088d389b35c2628996779a41d7 (tag: refs/tags/hudson-aaa-release-alpha-30)
+commit 32c341e082db9a088d389b35c2628996779a41d7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 08:34:02 2015 -0400
 
     Handle descriptor(unicode instances) correctly
 
-commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/hudson-aaa-release-alpha-29, tag: refs/tags/alpha_release-7-0-116)
+commit 2575215fbd1da67d3eb491c440c3b8b2feb4cd60 (tag: refs/tags/alpha_release-7-0-116)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:35:59 2015 -0400
 
     New release ---- alpha_release-7-0-116
 
-commit 42fbdafadb7d951123a02810ae02d89c0e710d05 (tag: refs/tags/hudson-aaa-release-alpha-28)
+commit 42fbdafadb7d951123a02810ae02d89c0e710d05
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:06:04 2015 -0400
 
@@ -451,7 +494,7 @@ Date:   Wed Jul 15 16:36:49 2015 +0200
     - fix some valgrind false positives
     - organize files names
 
-commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596 (tag: refs/tags/hudson-aaa-release-alpha-27)
+commit ac316421f854cd86e1ef047a4ec2d40bf0e9d596
 Merge: 81900c4 051603d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 15 08:43:56 2015 -0400
@@ -489,7 +532,7 @@ Date:   Wed Jul 15 01:54:19 2015 +0200
     try..except structure.
     Occurred when an TEXT node contained non-ansii chars (e.g. äöü..)
 
-commit 81900c42e18cde7bfff13b29c363faca39b50787 (tag: refs/tags/hudson-aaa-release-alpha-26, tag: refs/tags/hudson-aaa-release-alpha-25)
+commit 81900c42e18cde7bfff13b29c363faca39b50787
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 15:40:41 2015 -0400
 
@@ -501,25 +544,25 @@ Date:   Tue Jul 14 14:43:49 2015 -0400
 
     Output release indicator after successful build
 
-commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/hudson-aaa-release-alpha-24, tag: refs/tags/alpha_release-7-0-115)
+commit 0e5e444193144c4dd27f456aee28d0b987618533 (tag: refs/tags/alpha_release-7-0-115)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 09:36:25 2015 -0400
 
     New release ---- alpha_release-7-0-115
 
-commit 89678626595f41bf80f52085d3c78bef0377d5cf (tag: refs/tags/hudson-aaa-release-alpha-23)
+commit 89678626595f41bf80f52085d3c78bef0377d5cf
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 21:05:35 2015 -0400
 
     TdiIsql obsolete
 
-commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/hudson-aaa-release-alpha-22, tag: refs/tags/alpha_release-7-0-114)
+commit 9dd354507f9c149991979d201a2f12a17b6dcbcc (tag: refs/tags/alpha_release-7-0-114)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 18:28:25 2015 -0400
 
     New release ---- alpha_release-7-0-114
 
-commit c9e1818556d33437b2630886ae6a829963ebe04f (tag: refs/tags/hudson-aaa-release-alpha-21)
+commit c9e1818556d33437b2630886ae6a829963ebe04f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 14:06:12 2015 -0400
 
