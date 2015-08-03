@@ -1,16 +1,40 @@
-commit 0c28c2eaec316b8e522509302e0621add896a9b2 (HEAD, tag: refs/tags/hudson-aaa-release-stable-34, refs/remotes/origin/stable, refs/heads/stable)
+commit 4e0b34711e349d68b9ff71630adfef47312c3665 (HEAD, tag: refs/tags/hudson-aaa-release-stable-42, tag: refs/tags/hudson-aaa-release-stable-41, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 15:46:12 2015 -0400
+
+    Fix uils for 32-bit
+
+commit ad76da64a9815fed5ee0dc89f7e6afb8c99e6924 (tag: refs/tags/hudson-aaa-release-stable-40)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 15:43:10 2015 -0400
+
+    Fix uils for 32-bit
+
+commit 1c1e65e8d2b7b164f6058328bff69be5e57c173e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 14:49:50 2015 -0400
+
+    Fix debian configure for builds
+
+commit d96f9e9d3607135c3400ea6494583c5783d247f6 (tag: refs/tags/stable_release-7-0-40, tag: refs/tags/hudson-aaa-release-stable-39, tag: refs/tags/hudson-aaa-release-stable-38, tag: refs/tags/hudson-aaa-release-stable-37)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Jul 30 11:29:03 2015 -0400
+
+    New release ---- stable_release-7-0-40
+
+commit 0c28c2eaec316b8e522509302e0621add896a9b2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 30 11:07:44 2015 -0400
 
     Allow host to be overriden by environment variables
 
-commit 9b718ae87313a2aba6780b61e98848486bc7d93c (tag: refs/tags/stable_release-7-0-39, tag: refs/tags/hudson-aaa-release-stable-33)
+commit 9b718ae87313a2aba6780b61e98848486bc7d93c (tag: refs/tags/stable_release-7-0-39)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 09:31:26 2015 -0400
 
     New release ---- stable_release-7-0-39
 
-commit 3055956fbc02843c16215ff9efb0e3856896860d (tag: refs/tags/hudson-aaa-release-stable-32)
+commit 3055956fbc02843c16215ff9efb0e3856896860d
 Merge: 3ed1408 d21e48c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Jul 29 09:19:57 2015 -0400
@@ -48,7 +72,7 @@ Date:   Tue Jul 28 16:53:33 2015 -0400
 
     New python interface without needing python dev headers
 
-commit e9452db0820e40b13753c7be02e1d8072f34b20d (tag: refs/tags/hudson-aaa-release-stable-31)
+commit e9452db0820e40b13753c7be02e1d8072f34b20d
 Merge: 5820dae dc8c754
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 28 14:32:11 2015 -0400
@@ -61,13 +85,13 @@ Date:   Tue Jul 28 14:31:54 2015 -0400
 
     Fix buffer overrun in Windows
 
-commit dc8c7546cd1579a45c869f413e6d64b629b5187c (tag: refs/tags/stable_release-7-0-37, tag: refs/tags/hudson-aaa-release-stable-30, tag: refs/tags/hudson-aaa-release-stable-29, tag: refs/tags/hudson-aaa-release-stable-28)
+commit dc8c7546cd1579a45c869f413e6d64b629b5187c (tag: refs/tags/stable_release-7-0-37)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 18:11:44 2015 -0400
 
     New release ---- stable_release-7-0-37
 
-commit 7f19970bc17b38dff8eef53097daf7b59d2b704b (tag: refs/tags/hudson-aaa-release-stable-27)
+commit 7f19970bc17b38dff8eef53097daf7b59d2b704b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 24 16:09:04 2015 -0400
 
@@ -85,19 +109,19 @@ Date:   Thu Jul 23 18:11:38 2015 -0400
 
     New release ---- stable_release-7-0-36
 
-commit a76bb3effc2fc27f795e44cfb966340b50708182 (tag: refs/tags/hudson-aaa-release-stable-26)
+commit a76bb3effc2fc27f795e44cfb966340b50708182
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 23 15:45:07 2015 -0400
 
     Add new debian build support scripts
 
-commit 480c0d3b14c047b589049296976c6857471c3c1c (tag: refs/tags/stable_release-7-0-35, tag: refs/tags/hudson-aaa-release-stable-25, tag: refs/tags/hudson-aaa-release-stable-24, tag: refs/tags/hudson-aaa-release-stable-23, tag: refs/tags/hudson-aaa-release-stable-22, tag: refs/tags/hudson-aaa-release-stable-21, tag: refs/tags/hudson-aaa-release-stable-20)
+commit 480c0d3b14c047b589049296976c6857471c3c1c (tag: refs/tags/stable_release-7-0-35)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 18:11:23 2015 -0400
 
     New release ---- stable_release-7-0-35
 
-commit ebb2af1000653b20ee0b8f0f1d060905f5f336ac (tag: refs/tags/hudson-aaa-release-stable-19)
+commit ebb2af1000653b20ee0b8f0f1d060905f5f336ac
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Jul 17 15:19:46 2015 -0400
 
@@ -109,13 +133,13 @@ Date:   Fri Jul 17 15:19:27 2015 -0400
 
     Support python2.4
 
-commit 240a9b4eed5c428e5f8560d4627284f4bade2885 (tag: refs/tags/stable_release-7-0-34, tag: refs/tags/hudson-aaa-release-stable-18)
+commit 240a9b4eed5c428e5f8560d4627284f4bade2885 (tag: refs/tags/stable_release-7-0-34)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:17:23 2015 -0400
 
     New release ---- stable_release-7-0-34
 
-commit ec08b39d3e89104fa78f4506795c831521aad692 (tag: refs/tags/hudson-aaa-release-stable-17)
+commit ec08b39d3e89104fa78f4506795c831521aad692
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 16 16:06:04 2015 -0400
 
@@ -127,13 +151,13 @@ Date:   Thu Jul 16 15:49:33 2015 -0400
 
     Make it fail if no successful builds of new release
 
-commit 9303ca180a053b66794ea72ed2381d9915256202 (tag: refs/tags/stable_release-7-0-33, tag: refs/tags/hudson-aaa-release-stable-16)
+commit 9303ca180a053b66794ea72ed2381d9915256202 (tag: refs/tags/stable_release-7-0-33)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 18:29:44 2015 -0400
 
     New release ---- stable_release-7-0-33
 
-commit 0d557ee61d9629d20a23ce815e5aab5a90d2dfb2 (tag: refs/tags/hudson-aaa-release-stable-15)
+commit 0d557ee61d9629d20a23ce815e5aab5a90d2dfb2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 17:00:15 2015 -0400
 
@@ -145,7 +169,7 @@ Date:   Tue Jul 14 16:47:58 2015 -0400
 
     New release ---- stable_release-7-0-32
 
-commit 4b0c0ca5766077d0a517daaf8d96409dd8a13179 (tag: refs/tags/hudson-aaa-release-stable-14)
+commit 4b0c0ca5766077d0a517daaf8d96409dd8a13179
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 15:42:00 2015 -0400
 
@@ -157,7 +181,7 @@ Date:   Tue Jul 14 11:21:00 2015 -0400
 
     New release ---- stable_release-7-0-31
 
-commit dd98fe1298bc448623f7e50604e3dce96ebc38ef (tag: refs/tags/hudson-aaa-release-stable-13)
+commit dd98fe1298bc448623f7e50604e3dce96ebc38ef
 Merge: f20e3c4 faea71d
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 11:10:27 2015 -0400
@@ -170,13 +194,13 @@ Date:   Tue Jul 14 11:10:13 2015 -0400
 
     Get error output
 
-commit faea71d0d5988e6ed4f1a77c789ea3d667444be4 (tag: refs/tags/stable_release-7-0-30, tag: refs/tags/hudson-aaa-release-stable-12)
+commit faea71d0d5988e6ed4f1a77c789ea3d667444be4 (tag: refs/tags/stable_release-7-0-30)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Jul 14 08:07:31 2015 -0400
 
     New release ---- stable_release-7-0-30
 
-commit a3bd32cfdaf439cf47a48946586d52a22bf0d48b (tag: refs/tags/hudson-aaa-release-stable-11)
+commit a3bd32cfdaf439cf47a48946586d52a22bf0d48b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 21:08:31 2015 -0400
 
@@ -188,7 +212,7 @@ Date:   Mon Jul 13 18:11:57 2015 -0400
 
     New release ---- stable_release-7-0-29
 
-commit d00e7d4dabe1d9cdd1185f06f0c39041e96bab10 (tag: refs/tags/hudson-aaa-release-stable-10)
+commit d00e7d4dabe1d9cdd1185f06f0c39041e96bab10
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Jul 13 12:58:21 2015 -0400
 
