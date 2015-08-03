@@ -1,4 +1,16 @@
-commit 4e0b34711e349d68b9ff71630adfef47312c3665 (HEAD, tag: refs/tags/hudson-aaa-release-stable-42, tag: refs/tags/hudson-aaa-release-stable-41, refs/remotes/origin/stable, refs/heads/stable)
+commit 57da4854f14419ac3570838dc1f8f8922b1d581a (HEAD, tag: refs/tags/hudson-aaa-release-stable-43, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Mon Aug 3 16:44:13 2015 -0400
+
+    Rename uid32 directory fix
+
+commit 4a4e33ab65b765dcf5092bb85a3b272bda7b58d8 (tag: refs/tags/stable_release-7-0-41)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Aug 3 16:11:18 2015 -0400
+
+    New release ---- stable_release-7-0-41
+
+commit 4e0b34711e349d68b9ff71630adfef47312c3665 (tag: refs/tags/hudson-aaa-release-stable-42, tag: refs/tags/hudson-aaa-release-stable-41)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 15:46:12 2015 -0400
 
