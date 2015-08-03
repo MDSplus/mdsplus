@@ -29,7 +29,7 @@ fi
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE} make install
-if [ "$bits" = "32" ]
+if [ -d /buildroot/usr/local/mdsplus/uid32 ]
 then
     mv /buildroot/usr/local/mdsplus/uid32 /buildroot/usr/local/mdsplus/uid
 fi
