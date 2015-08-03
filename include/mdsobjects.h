@@ -1517,7 +1517,7 @@ protected:
         descs.at(idx) = data;
         if (data) data->refCount++;
     }
-
+public:
     /// retrieve Data at the idx position of contained descriptors
     Data * getDescAt(std::size_t idx) {
         if ( idx < 0 || idx >= descs.size() ) {
@@ -1527,6 +1527,10 @@ protected:
         if (descs.at(idx))
             descs[idx]->incRefCount();
         return descs[idx];
+    }
+    int getNumDescs()
+    {
+	return descs.size();
     }
 
 };
