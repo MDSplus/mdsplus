@@ -1,4 +1,32 @@
-commit 5d211ed45c443793f4480577b511e3b83cf829f7 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-53, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 2c456696dbfd31dc13db4ed2b5c806a1fb5b63c0 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-56, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Aug 5 14:26:32 2015 -0400
+
+    TreeGetRecord.c
+      In OpenDataFileR handle the allocation of the data_file struct separately from the lun.
+      Do not assume that if I have the datastructure, I the file is open
+    
+    TreeSetNci.c
+      In TreeOpenNciW  do not free the nci_file struct if the open for write fails.
+      This was leaving open read luns on the NCI file
+    
+    These changes also fix the reopen behavior when the trees have been opened for write
+    and are then moved.  This code was broken in the current alpha and stable.
+
+commit db5cd14ac4a4bf65a709234695e394480ee5c275
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Wed Aug 5 11:55:52 2015 +0200
+
+    Fix vertical and horizontal flip operation on image.
+    Remove info print mssages.
+
+commit 39eb34be8cffdf36a4fc2a40e512ec90ad158457 (tag: refs/tags/hudson-aaa-release-alpha-55, tag: refs/tags/hudson-aaa-release-alpha-54, tag: refs/tags/alpha_release-7-0-129)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Aug 3 18:29:15 2015 -0400
+
+    New release ---- alpha_release-7-0-129
+
+commit 5d211ed45c443793f4480577b511e3b83cf829f7 (tag: refs/tags/hudson-aaa-release-alpha-53)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 16:43:19 2015 -0400
 
