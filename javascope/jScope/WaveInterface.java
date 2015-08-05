@@ -1106,8 +1106,10 @@ public class WaveInterface
             if (fd != null)
             {
                 CreateNewFramesClass(fd.GetFrameType());
+                /*
                 frames.setHorizontalFlip(horizontal_flip);
                 frames.setVerticalFlip(vertical_flip);
+                */
                 frames.SetFrameData(fd);
                 if (in_label != null && in_label[0] != null &&
                     in_label[0].length() != 0)
