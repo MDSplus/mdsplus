@@ -148,23 +148,21 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 int TreeOpenDatafileR(TREE_INFO * info)
 {
   int status;
-  DATA_FILE *df_ptr = info->data_file;
-  if (df_ptr)
-    return 1;
-  df_ptr = TreeGetVmDatafile(info);
-  if (df_ptr != NULL) {
-
-    size_t len = strlen(info->filespec) - 4;
-    char *filename = strncpy(malloc(len + 9), info->filespec, len);
-    filename[len] = '\0';
-    strcat(filename, "datafile");
-    df_ptr->get = MDS_IO_OPEN(filename, O_RDONLY, 0);
-    free(filename);
-    status = (df_ptr->get == -1) ? TreeFOPENR : TreeNORMAL;
-    if (df_ptr->get == -1)
-      df_ptr->get = 0;
+  if (info->data_file == NULL)
+    info->data_file = TreeGetVmDatafile(info);
+  if (info->data_file != NULL) {
+    if (info->data_file->get == 0) {
+      size_t len = strlen(info->filespec) - 4;
+      char *filename = strncpy(malloc(len + 9), info->filespec, len);
+      int lun = -1;
+      filename[len] = '\0';
+      strcat(filename, "datafile");
+      lun = MDS_IO_OPEN(filename, O_RDONLY, 0);
+      free(filename);
+      status = (lun == -1) ? TreeFOPENR : TreeNORMAL;
+      info->data_file->get = (lun != -1) ? lun : 0;
+    }
   }
-  info->data_file = df_ptr;
   return status;
 }
 
