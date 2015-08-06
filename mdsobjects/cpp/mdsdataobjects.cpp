@@ -84,6 +84,7 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 		case DTYPE_T: return new String(ptr, length, unitsData, errorData, helpData, validationData);
 		case DTYPE_NID: return new TreeNode(*(int *)ptr, tree, unitsData, errorData, helpData, validationData);
 		case DTYPE_PATH: return new TreePath(ptr, length, tree, unitsData, errorData, helpData, validationData);
+		case DTYPE_IDENT: return new Ident(ptr, length, unitsData, errorData, helpData, validationData);
 	}
 	return 0;
 }
