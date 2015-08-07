@@ -41,6 +41,7 @@ TdiEvaluate.c \
 TdiExponent.c \
 TdiExpt.c \
 TdiExtFunction.c \
+TdiExtPython.c \
 TdiFaultHandler.c \
 TdiGetArgs.c \
 TdiGetData.c \
@@ -105,21 +106,11 @@ install: $(libdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@TdiShr.a @libdir@; \
 	fi;
 
-ifneq "@PYTHON_INCLUDE_DIR@" ""
-TdiExtPython = TdiExtPython.o
-
-TdiExtPython.o : TdiExtPython.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $< -I @PYTHON_INCLUDE_DIR@
-
-TdiVar.o : TdiVar.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $< -DPYTHON
-endif
-
-OBJECTS = $(SOURCES:.c=.o) $(TdiExtPython)
+OBJECTS = $(SOURCES:.c=.o)
 EXPORTS = TdiShr.exports
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(TdiExtPython) $(DEF) @EXPORTS_FILE@
+@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF) @EXPORTS_FILE@
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)

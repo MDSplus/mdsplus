@@ -84,6 +84,7 @@ extern "C" void *createScalarData(int dtype, int length, char *ptr, Data *unitsD
 		case DTYPE_T: return new String(ptr, length, unitsData, errorData, helpData, validationData);
 		case DTYPE_NID: return new TreeNode(*(int *)ptr, tree, unitsData, errorData, helpData, validationData);
 		case DTYPE_PATH: return new TreePath(ptr, length, tree, unitsData, errorData, helpData, validationData);
+		case DTYPE_IDENT: return new Ident(ptr, length, unitsData, errorData, helpData, validationData);
 	}
 	return 0;
 }
@@ -666,8 +667,15 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	va_end(v);
 
 	int status;
-	AutoPointer<Tree> actTree(getActiveTree());
-	Data * res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+    Data * res;
+    try {
+        AutoPointer<Tree> actTree(getActiveTree());
+        res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+    } catch(MdsException &exc)
+    {
+        res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], 0, &status);
+    }
+
 	if(!(status & 1))
 		throw MdsException(status);
 	return res;
@@ -701,7 +709,8 @@ Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 			Data *currArg = va_arg(v, Data *);
 			args[i] = currArg->convertToDsc();
 		}
-		setActiveTree(tree);
+        if(tree)
+            setActiveTree(tree);
 		int status;
 		Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, &status);
 		for(i = 0; i < nArgs; i++)

@@ -975,13 +975,42 @@ public:
     bool equals(Data *data);
 
 private:
-    void init(char const * val, int len, Data * units, Data * error, Data * help, Data * validation) {
+    virtual void init(char const * val, int len, Data * units, Data * error, Data * help, Data * validation) {
         dtype = DTYPE_T;
         length = len;
         ptr = new char[length+1];
         std::copy(&val[0], &val[length], ptr);
         ptr[length] = 0;
         setAccessory(units, error, help, validation);
+    }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// IDENT SCALAR ///////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+///
+/// \brief The Ident class is the object description of DTYPE_IDENT and is used to describe TDI variables
+///
+class  EXPORT Ident : public String
+{
+public:
+    Ident(const char *val, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):String(val,units,error,help, validation) {
+	dtype = DTYPE_IDENT;
+    }
+
+    Ident(unsigned char *uval, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):String(uval,len, units,error,help, validation) {
+	dtype = DTYPE_IDENT;
+    }
+
+    //GAB  definition in order to avoid breaking LabVIEW
+    Ident(unsigned char *uval, int numDims, int *dims, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):String(uval, numDims, dims,units,error,help, validation) 
+    {
+	dtype = DTYPE_IDENT;
+    }
+
+    Ident(const char *val, int len, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):String(val,len, units,error,help, validation) {
+	dtype = DTYPE_IDENT;
     }
 };
 
@@ -1517,7 +1546,7 @@ protected:
         descs.at(idx) = data;
         if (data) data->refCount++;
     }
-
+public:
     /// retrieve Data at the idx position of contained descriptors
     Data * getDescAt(std::size_t idx) {
         if ( idx < 0 || idx >= descs.size() ) {
@@ -1527,6 +1556,10 @@ protected:
         if (descs.at(idx))
             descs[idx]->incRefCount();
         return descs[idx];
+    }
+    int getNumDescs()
+    {
+	return descs.size();
     }
 
 };

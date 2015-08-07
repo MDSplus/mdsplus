@@ -11,7 +11,6 @@ _dtypes=_mimport('_mdsdtypes',1)
 _mdsclasses=_mimport('_mdsclasses',1)
 _data=_mimport('mdsdata',1)
 _treenode=_mimport('treenode',1)
-_tree=_mimport('tree',-1)
 _ident=_mimport('ident',1)
 _apd=_mimport('apd',1)
 _compound=_mimport('compound',1)
@@ -20,6 +19,7 @@ _tdi=_mimport('tdibuiltins',1)
 
 
 import numpy as _N
+import struct as _struct
 
 import ctypes as _C
 import os as _os,sys as _sys
@@ -37,6 +37,7 @@ def pointerToObject(pointer):
         d.length=100000
         d.pointer=_C.cast(pointer,type(d.pointer))
         return d.value
+
 
 class descriptor(_C.Structure):
     __cached_values={}
@@ -113,21 +114,7 @@ class descriptor(_C.Structure):
                 self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
                 self.addToCache(value)
                 return
-
-        try:
-            if isinstance(value,unicode):
-                value=str(value)
-                str_d=descriptor_string(value)
-                d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
-                self.length=d.length
-                self.dtype=d.dtype
-                self.pointer=d.pointer
-                self.addToCache(value)
-                return
-        except:
-            pass
-
-        if isinstance(value,str):
+        if isinstance(value,str) or ('unicode' in dir(__builtins__) and isinstance(value,unicode)):
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
             self.length=d.length
@@ -135,7 +122,6 @@ class descriptor(_C.Structure):
             self.pointer=d.pointer
             self.addToCache(value)
             return
-
         if isinstance(value,float):
             self.length=8
             self.dtype=_dtypes.DTYPE_NATIVE_DOUBLE
@@ -370,7 +356,7 @@ class descriptor(_C.Structure):
                 if self.length == 0:
                     return _scalar.makeScalar('')
                 else:
-                    return(_scalar.makeScalar(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring()))
+                    return(_scalar.makeScalar(str(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring().decode())))
             if (self.dtype == _dtypes.DTYPE_FSC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
                 return _scalar.makeScalar(_N.complex64(complex(ans[0],ans[1])))
@@ -409,16 +395,9 @@ class descriptor(_C.Structure):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
-                    if descriptor.tree is None:
-                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
-                    else:
-
-                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
+                    return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
-                    if descriptor.tree is None:
-                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
-                    else:
-                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                    return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):
@@ -597,8 +576,8 @@ class descriptor_xd(_C.Structure):
           pass
         
 class descriptor_r(_C.Structure):
-    if _os.name=='nt':
-        _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*4),("dscptrs",_C.POINTER(descriptor)*256)]
+    if _os.name=='nt' and _struct.calcsize("P")==8:
+        _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*6),("dscptrs",_C.POINTER(descriptor)*256)]
     else:
         _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*3),("dscptrs",_C.POINTER(descriptor)*256)]
 
@@ -638,6 +617,8 @@ class descriptor_string(_C.Structure):
 
 class descriptor_apd(_C.Structure):
     if _os.name=='nt':
+        if _struct.calcsize("P")==4:
+            _pack_=1
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
@@ -694,6 +675,8 @@ class descriptor_apd(_C.Structure):
     
 class descriptor_a(_C.Structure):
     if _os.name=='nt':
+        if _struct.calcsize("P")==4:
+            _pack_=1
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.c_void_p),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int32 * 24)]
     else:

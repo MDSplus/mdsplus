@@ -106,7 +106,8 @@ target_triplet = @target@
 @HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsExpressionCompileTest$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = mdsobjects/cpp/testing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -139,7 +140,8 @@ CONFIG_CLEAN_VPATH_FILES =
 @HAVE_CHECK_TRUE@	MdsTreeTest$(EXEEXT) MdsTreeNodeTest$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsEventSuppression$(EXEEXT) \
 @HAVE_CHECK_TRUE@	MdsEventTest$(EXEEXT) \
-@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT)
+@HAVE_CHECK_TRUE@	MdsConnectionTest$(EXEEXT) \
+@HAVE_CHECK_TRUE@	MdsExpressionCompileTest$(EXEEXT)
 MdsActionTest_SOURCES = MdsActionTest.cpp
 MdsActionTest_OBJECTS = MdsActionTest.$(OBJEXT)
 MdsActionTest_LDADD = $(LDADD)
@@ -195,6 +197,11 @@ MdsExceptionTest_SOURCES = MdsExceptionTest.cpp
 MdsExceptionTest_OBJECTS = MdsExceptionTest.$(OBJEXT)
 MdsExceptionTest_LDADD = $(LDADD)
 MdsExceptionTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
+	testutils/libMdsTestUtils.a
+MdsExpressionCompileTest_SOURCES = MdsExpressionCompileTest.cpp
+MdsExpressionCompileTest_OBJECTS = MdsExpressionCompileTest.$(OBJEXT)
+MdsExpressionCompileTest_LDADD = $(LDADD)
+MdsExpressionCompileTest_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	testutils/libMdsTestUtils.a
 MdsFunctionTest_SOURCES = MdsFunctionTest.cpp
 MdsFunctionTest_OBJECTS = MdsFunctionTest.$(OBJEXT)
@@ -291,7 +298,8 @@ am__v_CXXLD_1 =
 SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
 	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
-	MdsEventTest.cpp MdsExceptionTest.cpp MdsFunctionTest.cpp \
+	MdsEventTest.cpp MdsExceptionTest.cpp \
+	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
@@ -300,7 +308,8 @@ SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 DIST_SOURCES = MdsActionTest.cpp MdsApdTest.cpp MdsCallTest.cpp \
 	MdsCompoundTest.cpp MdsConglomTest.cpp MdsConnectionTest.cpp \
 	MdsDataTest.cpp MdsDimensionTest.cpp MdsEventSuppression.cpp \
-	MdsEventTest.cpp MdsExceptionTest.cpp MdsFunctionTest.cpp \
+	MdsEventTest.cpp MdsExceptionTest.cpp \
+	MdsExpressionCompileTest.cpp MdsFunctionTest.cpp \
 	MdsRangeTest.cpp MdsScalarTest_NumericConversion.cpp \
 	MdsScalarTest_NumericLimits.cpp MdsScalarTest_ScalarCast.cpp \
 	MdsSignalTest.cpp MdsStringTest.cpp MdsTreeNodeTest.cpp \
@@ -935,6 +944,10 @@ MdsExceptionTest$(EXEEXT): $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_DEPEND
 	@rm -f MdsExceptionTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsExceptionTest_OBJECTS) $(MdsExceptionTest_LDADD) $(LIBS)
 
+MdsExpressionCompileTest$(EXEEXT): $(MdsExpressionCompileTest_OBJECTS) $(MdsExpressionCompileTest_DEPENDENCIES) $(EXTRA_MdsExpressionCompileTest_DEPENDENCIES) 
+	@rm -f MdsExpressionCompileTest$(EXEEXT)
+	$(AM_V_CXXLD)$(CXXLINK) $(MdsExpressionCompileTest_OBJECTS) $(MdsExpressionCompileTest_LDADD) $(LIBS)
+
 MdsFunctionTest$(EXEEXT): $(MdsFunctionTest_OBJECTS) $(MdsFunctionTest_DEPENDENCIES) $(EXTRA_MdsFunctionTest_DEPENDENCIES) 
 	@rm -f MdsFunctionTest$(EXEEXT)
 	$(AM_V_CXXLD)$(CXXLINK) $(MdsFunctionTest_OBJECTS) $(MdsFunctionTest_LDADD) $(LIBS)
@@ -1000,6 +1013,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsEventSuppression.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsEventTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExceptionTest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsExpressionCompileTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsFunctionTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsRangeTest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MdsScalarTest_NumericConversion.Po@am__quote@
@@ -1426,6 +1440,13 @@ MdsEventTest.log: MdsEventTest$(EXEEXT)
 MdsConnectionTest.log: MdsConnectionTest$(EXEEXT)
 	@p='MdsConnectionTest$(EXEEXT)'; \
 	b='MdsConnectionTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MdsExpressionCompileTest.log: MdsExpressionCompileTest$(EXEEXT)
+	@p='MdsExpressionCompileTest$(EXEEXT)'; \
+	b='MdsExpressionCompileTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \

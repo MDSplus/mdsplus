@@ -6,11 +6,17 @@ mkdir -p /buildroot
 cd /buildsrc
 if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
 then
-  bits=64
-  host=x86_64-linux
+    bits=64
+    if [ -z "$host" ]
+    then
+	host=x86_64-linux
+    fi
 else
-  bits=32
-  host=i686-linux
+    bits=32
+    if [ -z "$host" ]
+    then
+	host=i686-linux
+    fi
 fi
 ./configure --prefix=/buildroot/usr/local/mdsplus \
             --exec_prefix=/buildroot/usr/local/mdsplus \
@@ -18,14 +24,16 @@ fi
             --with-jdk=$JDK_DIR \
             --with-idl=/3rd-party-apis-master/idl \
             --with-gsi=/usr:gcc${bits} \
-            --bindir=/buildroot/usr/local/mdsplus/bin${bits} \
-            --libdir=/buildroot/usr/local/mdsplus/lib${bits} \
             --host=$host \
-            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar;
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
 env MDSPLUS_VERSION=mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE} make install
-make clean >/dev/null;
+if [ -d /buildroot/usr/local/mdsplus/uid32 ]
+then
+    mv /buildroot/usr/local/mdsplus/uid32 /buildroot/usr/local/mdsplus/uid
+fi
+    
 if [ -d /installer ]
 then
     echo "Building debian packages"
