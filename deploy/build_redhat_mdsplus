@@ -51,3 +51,9 @@ EOF
     build_rpms_mdsplus
     touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
 fi
+if [ -d /EGGS ]
+then
+    build_eggs
+fi
+
+    
