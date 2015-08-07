@@ -9,6 +9,18 @@ function  result = NATIVEvalue( mdsthing )
 %    answer = NATIVEvalue(mdsnode.getData)
 %
 import MDSplus.*;
+global MDSplus_legacy_behavior
+if ~strcmp(class(MDSplus_legacy_behavior), 'logical')
+    l = getenv('MDSplus_legacy_behavior')
+    if strcmp(l,'yes')
+        MDSplus_legacy_behavior = true
+    else
+	MDSplus_legacy_behavior = false
+    end
+end
+
+
+ 
 if  isa(mdsthing, 'MDSplus.Data') == 0
     result = mdsthing;
 else
@@ -42,7 +54,7 @@ else
             case 'MDSplus.Float32Array'
                 result = double(reshape(mdsthing.getFloatArray,  shape));
             case 'MDSplus.StringArray'
-                result = char(mdsthing.getStringArray);
+		result = reshape(cellstr(char(mdsthing.getStringArray)),shape);
             otherwise
                 throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
         end
@@ -75,7 +87,11 @@ else
         end
         
     else
-        throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
-        
+        throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));        
     end
+    if MDSplus_legacy_behavior
+        if ~strcmp(class(result),'char')
+            result = double(result)
+        end
+    end 
 end
