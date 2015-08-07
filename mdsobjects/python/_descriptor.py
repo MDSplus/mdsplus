@@ -19,6 +19,7 @@ _tdi=_mimport('tdibuiltins',1)
 
 
 import numpy as _N
+import struct as _struct
 
 import ctypes as _C
 import os as _os,sys as _sys
@@ -36,6 +37,7 @@ def pointerToObject(pointer):
         d.length=100000
         d.pointer=_C.cast(pointer,type(d.pointer))
         return d.value
+
 
 class descriptor(_C.Structure):
     __cached_values={}
@@ -574,8 +576,8 @@ class descriptor_xd(_C.Structure):
           pass
         
 class descriptor_r(_C.Structure):
-    if _os.name=='nt':
-        _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*4),("dscptrs",_C.POINTER(descriptor)*256)]
+    if _os.name=='nt' and _struct.calcsize("P")==8:
+        _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*6),("dscptrs",_C.POINTER(descriptor)*256)]
     else:
         _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*3),("dscptrs",_C.POINTER(descriptor)*256)]
 
@@ -615,6 +617,8 @@ class descriptor_string(_C.Structure):
 
 class descriptor_apd(_C.Structure):
     if _os.name=='nt':
+        if _struct.calcsize("P")==4:
+            _pack_=1
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
@@ -671,6 +675,8 @@ class descriptor_apd(_C.Structure):
     
 class descriptor_a(_C.Structure):
     if _os.name=='nt':
+        if _struct.calcsize("P")==4:
+            _pack_=1
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.c_void_p),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
