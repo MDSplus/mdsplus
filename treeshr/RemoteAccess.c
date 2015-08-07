@@ -734,6 +734,9 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
     case NciUSAGE:
       getnci_str = "getnci(%d,'usage')";
       break;
+    case NciUSAGE_STR:
+      getnci_str = "getnci(%d,'usage_str')";
+      break;
     case NciNODE_NAME:
       getnci_str = "getnci(%d,'NODE_NAME')";
       break;
