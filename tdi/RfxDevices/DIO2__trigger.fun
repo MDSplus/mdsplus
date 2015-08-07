@@ -62,7 +62,7 @@ write(*, _c);
 
 	if(_remote)
 	{
-		_cmd = 'MdsConnect("'//_ip_addr//'")';
+		_cmd = 'MdsConnect("'//_ip_addr//',1")';
 		execute(_cmd);
 	       _status = MdsValue('DIO2HWTrigger(0, $1, $2)', _board_id, _channel_mask);
 		MdsDisconnect();

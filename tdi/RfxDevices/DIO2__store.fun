@@ -57,7 +57,7 @@ public fun DIO2__store(as_is _nid, optional _method)
 
 	if(_remote != 0)
 	{
-	    _cmd = 'MdsConnect("'//_ip_addr//'")';
+	    _cmd = 'MdsConnect("'//_ip_addr//'",1)';
 	    execute(_cmd);
 	    _rec_events = MdsValue('DIO2HWGetRecEvents(0, $1)',_board_id);
 	    _rec_times =  MdsValue('_DIO2_rec_times');
@@ -88,7 +88,7 @@ public fun DIO2__store(as_is _nid, optional _method)
 			{
 				if(_remote != 0)
 				{
-					_cmd = 'MdsConnect("'//_ip_addr//'")';
+					_cmd = 'MdsConnect("'//_ip_addr//',1")';
 					execute(_cmd);
 					_phases_count = MdsValue('DIO2HWGetPhaseCount(0, $1, $2)', _board_id, _c);
 					MdsDisconnect();
