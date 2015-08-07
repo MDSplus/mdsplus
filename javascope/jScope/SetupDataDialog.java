@@ -24,9 +24,9 @@ import javax.swing.event.*;
    private jScopeFacade	    main_scope;
    private ExpandExp        expand_expr;
    private SList	    signalList;
-   private jScopeMultiWave    wave;
-   public  MdsWaveInterface   wi;
-   private Point        wave_coord;
+   private jScopeMultiWave  wave;
+   public  MdsWaveInterface wi;
+   private Point            wave_coord;
 
     JCheckBox title_b = new JCheckBox("Title");
     JTextField title = new JTextField(50);
@@ -1248,8 +1248,10 @@ import javax.swing.event.*;
     {
       wave_coord = new Point(row, col);
       wave = (jScopeMultiWave)w;
-//      wave.addWaveformListener(this);
-//      wi = (MdsWaveInterface)wave.wi;
+      
+//    wave.addWaveformListener(this);
+      wi = (MdsWaveInterface)wave.wi;
+
       
       wi = new MdsWaveInterface(wave,
                                 ((MdsWaveInterface)wave.wi).dp,
@@ -1257,6 +1259,7 @@ import javax.swing.event.*;
                                 wave.wi.cache_enabled);
 
       wi.defaults = ((MdsWaveInterface)wave.wi).defaults;
+      
       putWindowSetup((MdsWaveInterface)wave.wi);
       updateDataSetup();
       setLocationRelativeTo(w.getParent());
@@ -1496,6 +1499,12 @@ import javax.swing.event.*;
        this.wi.legend_y = wi.legend_y;
        this.wi.show_legend = wi.show_legend;
        this.wi.reversed = wi.reversed;
+       
+       this.wi.is_image = wi.is_image;
+       this.wi.keep_ratio = wi.keep_ratio;
+       this.wi.horizontal_flip = wi.horizontal_flip;
+       this.wi.vertical_flip = wi.vertical_flip;
+
        image_b.setSelected(wi.is_image);
        keep_ratio_b.setSelected(wi.keep_ratio);
        horizontal_flip_b.setSelected(wi.horizontal_flip);
@@ -1689,11 +1698,10 @@ import javax.swing.event.*;
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))     return true;
 	if(getDefaultFlags() != wave_wi.defaults)				                  return true;
 	if(image_b.isSelected() != wave_wi.is_image)				                  return true;
-	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;
-/*        
+	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;        
 	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;
 	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				  return true;
-*/
+        
         for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
@@ -1782,8 +1790,11 @@ import javax.swing.event.*;
           wi.horizontal_flip = horizontal_flip_b.isSelected();
           wi.vertical_flip = vertical_flip_b.isSelected();
 
+          
+          
           if(!wi.getModified())
           {
+/*
                 if(wi.is_image)
                 {
                     if( wave.frames != null )
@@ -1793,7 +1804,7 @@ import javax.swing.event.*;
                     }
                     return 0;
                 }
-                
+*/              
                 for(int i = 0; i < wave.wi.num_waves; i++)
                 {
                     wave.wi.markers[i]      = s[i].marker;
