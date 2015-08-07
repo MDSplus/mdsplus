@@ -1,4 +1,48 @@
-commit ceccc85afc08f3d27ca3d611ae84c87ec12736d5 (HEAD, tag: refs/tags/hudson-aaa-release-stable-47, refs/remotes/origin/stable, refs/heads/stable)
+commit 9b0d320b1b31014daefdb231030a1ae975b8b328 (HEAD, tag: refs/tags/hudson-aaa-release-stable-48, refs/remotes/origin/stable, refs/heads/stable)
+Merge: dfb9dfb ecea45e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 16:36:18 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit dfb9dfb04e0b380cac3e4d140dffcbd87c5e0677
+Merge: 8ac96a1 25bced2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 16:31:58 2015 -0400
+
+    Merge branch 'stable' of github.com:/MDSplus/mdsplus into stable
+
+commit 8ac96a171066ef0f868650260f21967d1ab0f588
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 16:31:50 2015 -0400
+
+    Add support for building python eggs for easy_install
+
+commit ecea45ea88d5001b8b62655c2d08b3cc553c5874
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 14:45:57 2015 -0400
+
+    Add getnci(node,usage_str) to thich client
+
+commit 25bced2f1b58f1a904f98b5ab7a1986fb34eab22
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Fri Aug 7 14:47:43 2015 -0400
+
+    String arrays, legacy double returns and mdstcl
+
+commit a34faba724ffe5d499d082e3ee79fe408cba9930
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 11:36:57 2015 -0400
+
+    Fix 32-bit python interface on windows because of different packing of the structures
+
+commit b953951522f9a6676bda57ecd5ee14004c8f2a16 (tag: refs/tags/stable_release-7-0-43)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Aug 6 18:10:42 2015 -0400
+
+    New release ---- stable_release-7-0-43
+
+commit ceccc85afc08f3d27ca3d611ae84c87ec12736d5 (tag: refs/tags/hudson-aaa-release-stable-47)
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Aug 6 14:52:58 2015 -0400
 
