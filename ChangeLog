@@ -1,4 +1,73 @@
-commit 0439b63ec4c83a4425d580350a2263f3dec6e8e6 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-57, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 20b0b1a9c8a3263800522d14dc7ab6acd15bf6d2 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-58, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 16:38:21 2015 -0400
+
+    Add support for building python eggs for easy_install
+
+commit 48c407887afed2c153ef03de0321c4299de06e1c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 16:38:06 2015 -0400
+
+    Add support for building python eggs for easy_install
+
+commit 96bb101802de53af04f953e1d24608c9ea99a6e2
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 14:56:42 2015 -0400
+
+    Add option to Abort on failure to MdsConnect and use it in Devices that use MdsConnect to avoid local execution following the failed MdsConnect
+
+commit a6ba3f89cd4033af433eb4a6db44251966b1d68d
+Merge: a8ae986 e824b60
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 14:50:45 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit a8ae986c970403a7ba808088dc073447ae1d491c
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 14:45:57 2015 -0400
+
+    Add getnci(node,usage_str) to thich client
+
+commit e824b601faab58786e759568927e76ce2f792c34
+Merge: e9e4a7b bffb9ac
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Fri Aug 7 18:08:25 2015 +0200
+
+    Merge branch 'alpha' of github.com:MDSplus/MDSplus into alpha
+
+commit e9e4a7b137bda279cec19516601cbd9a2bb1e475
+Author: taliercio <cesare.taliercio@igi.cnr.it>
+Date:   Fri Aug 7 18:06:18 2015 +0200
+
+    Set NoTcpDelay flag on socket.
+
+commit bffb9ac3569aa0a6f933903e7bc1b8bd3c5000e4
+Merge: 69fc184 be40125
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 12:04:43 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 69fc18437579a45e94179233c18c258e8010f1e8
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 12:04:20 2015 -0400
+
+    Fix tab indentation for python3
+
+commit 0cba8ee17f94e46b87a8253240755abe3241c40b
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 7 12:03:54 2015 -0400
+
+    Fix 32-bit python interface for windows due to different structure alignment
+
+commit be401256eb513826dffe28a04318bcaec12ab389 (tag: refs/tags/alpha_release-7-0-131)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Aug 6 18:21:03 2015 -0400
+
+    New release ---- alpha_release-7-0-131
+
+commit 0439b63ec4c83a4425d580350a2263f3dec6e8e6 (tag: refs/tags/hudson-aaa-release-alpha-57)
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Aug 6 14:49:36 2015 -0400
 
