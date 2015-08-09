@@ -362,6 +362,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   nodes = EXTEND_NODES * 10 + header_ptr->nodes;
   ncis = nodes - edit_ptr->first_in_mem;
   ncis = ncis > 0 ? ncis : 0;
+  ncis = ncis + EXTEND_NODES * 10;
   vm_bytes = nodes * sizeof(NODE) + ncis * sizeof(NCI);
   if (vm_bytes > edit_ptr->node_vm_size) {
     ptr = (NODE *) malloc(vm_bytes);
