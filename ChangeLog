@@ -1,4 +1,22 @@
-commit 9b0d320b1b31014daefdb231030a1ae975b8b328 (HEAD, tag: refs/tags/hudson-aaa-release-stable-48, refs/remotes/origin/stable, refs/heads/stable)
+commit 93ed96f3674e0db6d687ada612e4f6c3ecc68c2b (HEAD, tag: refs/tags/hudson-aaa-release-stable-50, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 9 13:44:40 2015 -0400
+
+    build in /buildroot to get versioning correct
+
+commit eb0953981930d2d65053fd7dafb7e45cd58c1773
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 9 12:21:30 2015 -0400
+
+    Fix TreeExpandNodes. Was not allocating sufficient memory for ncis
+
+commit b6bbe3b70ec078d6ef7f9ac46f39a3e734322da8 (tag: refs/tags/stable_release-7-0-44, tag: refs/tags/hudson-aaa-release-stable-49)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Aug 7 18:11:01 2015 -0400
+
+    New release ---- stable_release-7-0-44
+
+commit 9b0d320b1b31014daefdb231030a1ae975b8b328 (tag: refs/tags/hudson-aaa-release-stable-48)
 Merge: dfb9dfb ecea45e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 16:36:18 2015 -0400
