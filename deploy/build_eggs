@@ -5,7 +5,7 @@
 
 set -o verbose
 
-cd mdsobjects/python
+cd /buildroot/usr/local/mdsplus/mdsobjects/python
 python setup.py bdist_egg --dist-dir=/EGGS
 if [ -r /usr/bin/python3 ]
 then
