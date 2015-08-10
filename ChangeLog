@@ -1,4 +1,16 @@
-commit 5a401f0e92fd5f4f7ed5697b0e0d10f40398baf5 (HEAD, tag: refs/tags/hudson-aaa-release-alpha-60, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 6d76dca643e0db290a54e2a5a1669aa38a994d5c (HEAD, tag: refs/tags/hudson-aaa-release-alpha-62, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Sun Aug 9 20:38:07 2015 -0400
+
+    Fix python version specification MDSplus module
+
+commit d88cae0a1f3202fbe1d57ad6c732742e2832c948 (tag: refs/tags/hudson-aaa-release-alpha-61, tag: refs/tags/alpha_release-7-0-133)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Sun Aug 9 14:06:46 2015 -0400
+
+    New release ---- alpha_release-7-0-133
+
+commit 5a401f0e92fd5f4f7ed5697b0e0d10f40398baf5 (tag: refs/tags/hudson-aaa-release-alpha-60)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 13:44:00 2015 -0400
 
