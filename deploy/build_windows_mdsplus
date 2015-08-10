@@ -34,7 +34,13 @@ make clean >/dev/null;
 	    --with-python_include=/3rd-party-apis-master/windows-python27 \
             --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar
 env LANG=en_US.UTF-8 make
-env MDSPLUS_VERSION=mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE} make install
+if [ -z "$BNAME" ]
+then
+  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+else
+  export MDSPLUS_VERSION=${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}
+fi
+make install
 make clean >/dev/null
 if [   ! -z "$WINBLD_USER" -a \
        ! -z "$WINBLD_HOST" -a \
