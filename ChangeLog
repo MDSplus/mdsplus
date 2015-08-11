@@ -1,4 +1,10 @@
-commit f4356e2928d8682a14c0f8935827f3b0318b4782 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit c166507b31c6b67f6a40474055d2edcd18cc686b (HEAD, tag: refs/tags/alpha_release-7-0-135, refs/remotes/origin/alpha, refs/heads/stable)
+Author: Jenkins Continuous Build server <jenkins@mdsplus-jenkins.psfc.mit.edu>
+Date:   Tue Aug 11 14:49:21 2015 -0400
+
+    New release ---- alpha_release-7-0-135
+
+commit f4356e2928d8682a14c0f8935827f3b0318b4782
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Tue Aug 11 14:38:20 2015 -0400
 
