@@ -9,7 +9,14 @@
 # Each listed build will be run until at least num-successful-required builds succeed.
 #
 set -e
-git checkout ${GIT_BRANCH}
+export GIT_BRANCH="$1"
+switch
+if ( ! git branch | grep $GIT_BRANCH > /dev/null )
+then
+    git checkout -b ${GIT_BRANCH} --track origin/alpha
+else
+    git checkout ${GIT_BRANCH}
+fi
 git pull
 release_tag=$(wget -O - -q https://github.com/MDSplus/mdsplus/releases | grep ${GIT_BRANCH}_release| awk '{print $0; exit;}' | awk -F/ '{print $NF}' | awk -F\" '{print $1}')
 if [ $(git log --oneline ${release_tag}..${GIT_BRANCH} | wc -l) == 0 ]
