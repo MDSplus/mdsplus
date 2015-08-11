@@ -292,8 +292,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	}
 	else
 	{
-	    open_exp.setText("");
-	    open_shot.setText("");
+//	    open_exp.setText("");
+//	    open_shot.setText("");
 	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
