@@ -11,6 +11,7 @@ _dtypes=_mimport('_mdsdtypes',1)
 _mdsclasses=_mimport('_mdsclasses',1)
 _data=_mimport('mdsdata',1)
 _treenode=_mimport('treenode',1)
+_tree=_mimport('tree',-1)
 _ident=_mimport('ident',1)
 _apd=_mimport('apd',1)
 _compound=_mimport('compound',1)
@@ -241,11 +242,10 @@ class descriptor(_C.Structure):
             else:
                 c_d.length=2
                 try:
-                    x=_C.c_ushort(value.opcode)
+                    _C_value=_C.c_ushort(value.opcode)
                 except:
                     print("Wrong opcode! ",type(value.opcode),value.opcode)
-                c_d.pointer=_C.cast(_C.pointer(_C.c_ushort(value.opcode)),type(c_d.pointer))
-            arglist=list()
+                c_d.pointer=_C.cast(_C.pointer(_C_value),type(c_d.pointer))
             for i in range(len(value.args)):
                 if value.args[i] is None:
                     c_d.dscptrs[i]=_C.cast(_C.c_void_p(0),type(c_d.dscptrs[i]))
@@ -406,7 +406,10 @@ class descriptor(_C.Structure):
                     raise Exception("_dtypes.DTYPE_DC is not yet supported")
                     return None
                 if (self.dtype == _dtypes.DTYPE_NID):
-                    return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
+                    if descriptor.tree is None:
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
+                    else:
+                      return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
