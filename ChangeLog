@@ -1,16 +1,92 @@
-commit 6d76dca643e0db290a54e2a5a1669aa38a994d5c (HEAD, tag: refs/tags/hudson-aaa-release-alpha-62, refs/remotes/origin/alpha, refs/heads/alpha)
+commit f4356e2928d8682a14c0f8935827f3b0318b4782 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 14:38:20 2015 -0400
+
+    Change for migration to Jenkins
+
+commit b260ff79aa365dd7de985eeaf93a6364facfe7bc
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 14:34:46 2015 -0400
+
+    Change for migration to Jenkins
+
+commit 0375ac9ea3b8a54b716b996b35483b202d80dd33
+Merge: b74c427 91f2a20
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 14:33:24 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit b74c427455997e33a326ac9c8b4a43d5f2e68693
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 14:33:14 2015 -0400
+
+    Change for migration to Jenkins
+
+commit 91f2a2098359fa38d9220b284614c7aaef585ec2
+Merge: 030f6c5 da5aad6
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 12:32:40 2015 -0400
+
+    Merge pull request #22 from zack-vii/alpha
+    
+    set Tree to current tree if not assigned
+
+commit 030f6c56bbae9d6b5252b2160706452b306fb123
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 12:26:17 2015 -0400
+
+    Fix test for unicode
+
+commit da5aad6de66a7d2808a1ae6c67e9bcb8339df742
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Aug 11 17:53:58 2015 +0200
+
+    set Tree to current tree if not assigned
+    
+    If current tree is <NoneType> set tree attribute to current tree.
+    (restored functionality)
+    also clean up of code:
+    arglist is never used
+    x / _C_value can be reused in expression
+
+commit 06cbe5d3a0156816ed9c3bfd18b0215daa2893ab
+Merge: 92e6ce4 97e43c3
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 07:51:32 2015 -0400
+
+    Merge pull request #21 from zack-vii/putData_lock
+    
+    fixed RuntimeError: cannot release un-acquired lock
+
+commit 97e43c3b9c3458995d36ad446a9f1f20e23af80e
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Aug 11 10:50:52 2015 +0200
+
+    fixed RuntimeError: cannot release un-acquired lock
+    
+    lock tree before try-finally-structure so unlock will always have
+    something to unlock, even is the first statement throws an error.
+
+commit 92e6ce4d8009fa5d3fb03dbc894a310029db077c (tag: refs/tags/alpha_release-7-0-134)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Aug 10 18:38:54 2015 -0400
+
+    New release ---- alpha_release-7-0-134
+
+commit 6d76dca643e0db290a54e2a5a1669aa38a994d5c
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 20:38:07 2015 -0400
 
     Fix python version specification MDSplus module
 
-commit d88cae0a1f3202fbe1d57ad6c732742e2832c948 (tag: refs/tags/hudson-aaa-release-alpha-61, tag: refs/tags/alpha_release-7-0-133)
+commit d88cae0a1f3202fbe1d57ad6c732742e2832c948 (tag: refs/tags/alpha_release-7-0-133)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Sun Aug 9 14:06:46 2015 -0400
 
     New release ---- alpha_release-7-0-133
 
-commit 5a401f0e92fd5f4f7ed5697b0e0d10f40398baf5 (tag: refs/tags/hudson-aaa-release-alpha-60)
+commit 5a401f0e92fd5f4f7ed5697b0e0d10f40398baf5
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 13:44:00 2015 -0400
 
@@ -22,13 +98,13 @@ Date:   Sun Aug 9 12:21:49 2015 -0400
 
     Fix TreeExpandNodes. Was not allocating sufficient memory for ncis
 
-commit 8b04db3f9c19e21e12c8854065c9e3bbc6999756 (tag: refs/tags/hudson-aaa-release-alpha-59, tag: refs/tags/alpha_release-7-0-132)
+commit 8b04db3f9c19e21e12c8854065c9e3bbc6999756 (tag: refs/tags/alpha_release-7-0-132)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Aug 7 18:21:39 2015 -0400
 
     New release ---- alpha_release-7-0-132
 
-commit 20b0b1a9c8a3263800522d14dc7ab6acd15bf6d2 (tag: refs/tags/hudson-aaa-release-alpha-58)
+commit 20b0b1a9c8a3263800522d14dc7ab6acd15bf6d2
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 16:38:21 2015 -0400
 
@@ -97,7 +173,7 @@ Date:   Thu Aug 6 18:21:03 2015 -0400
 
     New release ---- alpha_release-7-0-131
 
-commit 0439b63ec4c83a4425d580350a2263f3dec6e8e6 (tag: refs/tags/hudson-aaa-release-alpha-57)
+commit 0439b63ec4c83a4425d580350a2263f3dec6e8e6
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Aug 6 14:49:36 2015 -0400
 
@@ -122,7 +198,7 @@ Date:   Wed Aug 5 18:11:08 2015 -0400
 
     New release ---- alpha_release-7-0-130
 
-commit 2c456696dbfd31dc13db4ed2b5c806a1fb5b63c0 (tag: refs/tags/hudson-aaa-release-alpha-56)
+commit 2c456696dbfd31dc13db4ed2b5c806a1fb5b63c0
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Wed Aug 5 14:26:32 2015 -0400
 
@@ -144,13 +220,13 @@ Date:   Wed Aug 5 11:55:52 2015 +0200
     Fix vertical and horizontal flip operation on image.
     Remove info print mssages.
 
-commit 39eb34be8cffdf36a4fc2a40e512ec90ad158457 (tag: refs/tags/hudson-aaa-release-alpha-55, tag: refs/tags/hudson-aaa-release-alpha-54, tag: refs/tags/alpha_release-7-0-129)
+commit 39eb34be8cffdf36a4fc2a40e512ec90ad158457 (tag: refs/tags/alpha_release-7-0-129)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Aug 3 18:29:15 2015 -0400
 
     New release ---- alpha_release-7-0-129
 
-commit 5d211ed45c443793f4480577b511e3b83cf829f7 (tag: refs/tags/hudson-aaa-release-alpha-53)
+commit 5d211ed45c443793f4480577b511e3b83cf829f7
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 16:43:19 2015 -0400
 
@@ -162,7 +238,7 @@ Date:   Mon Aug 3 16:23:53 2015 -0400
 
     New release ---- alpha_release-7-0-128
 
-commit 48ecce2bcfe8f573ae1b42e423abe8866b4ae32f (tag: refs/tags/hudson-aaa-release-alpha-52)
+commit 48ecce2bcfe8f573ae1b42e423abe8866b4ae32f
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 15:46:29 2015 -0400
 
@@ -199,7 +275,7 @@ Date:   Mon Aug 3 14:10:43 2015 +0200
 
     Make geDescAt(int) public, add public getNumDescs()
 
-commit 6eaa5459a4846e02be0be763aca5c0daae13d59d (tag: refs/tags/hudson-aaa-release-alpha-51, tag: refs/tags/hudson-aaa-release-alpha-50, tag: refs/tags/hudson-aaa-release-alpha-49, tag: refs/tags/alpha_release-7-0-127)
+commit 6eaa5459a4846e02be0be763aca5c0daae13d59d (tag: refs/tags/alpha_release-7-0-127)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 30 11:46:11 2015 -0400
 
