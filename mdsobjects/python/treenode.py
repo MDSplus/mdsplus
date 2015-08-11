@@ -908,10 +908,10 @@ class TreeNode(_data.Data):
         @type data: Data
         @rtype: None
         """
+        _tree.Tree.lock()
         try:
             if isinstance(data,_data.Data) and data.__hasBadTreeReferences__(self.tree):
                 data=data.__fixTreeReferences__(self.tree)
-            _tree.Tree.lock()
             _mimport('_treeshr',1).TreePutRecord(self,data)
         finally:
             _tree.Tree.unlock()
