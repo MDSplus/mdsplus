@@ -10,7 +10,7 @@
 #
 set -e
 export GIT_BRANCH="$1"
-switch
+shift
 if ( ! git branch | grep $GIT_BRANCH > /dev/null )
 then
     git checkout -b ${GIT_BRANCH} --track origin/alpha
