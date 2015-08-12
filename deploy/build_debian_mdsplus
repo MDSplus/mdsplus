@@ -32,7 +32,7 @@ if [ -z "$BNAME" ]
 then
   export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
 else
-  export MDSPLUS_VERSION=${BRANCH}.${MAJOR}.${MINOR}.${RELEASE}
+  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
 fi
 make install
 if [ -d /buildroot/usr/local/mdsplus/uid32 ]
