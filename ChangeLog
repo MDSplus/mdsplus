@@ -1,4 +1,10 @@
-commit 5e146f7b6c5b52e06247bbee41a0d2296413a534 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 7dbec189f53dafbeb665bdb3c6b7df1b21d45b61 (HEAD, tag: refs/tags/alpha_release-7-0-137, refs/remotes/origin/alpha, refs/heads/stable)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Aug 12 17:17:44 2015 -0400
+
+    New release ---- alpha_release-7-0-137
+
+commit 5e146f7b6c5b52e06247bbee41a0d2296413a534
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 16:38:59 2015 -0400
 
