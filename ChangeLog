@@ -1,4 +1,22 @@
-commit 3c7f129e34952513ebd29ca734bfc39b5ca34514 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 5e146f7b6c5b52e06247bbee41a0d2296413a534 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 16:38:59 2015 -0400
+
+    Fix git tracking
+
+commit 799e378d68bee7749c95661c512541fb7310ad36
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 13:48:11 2015 -0400
+
+    Fix python package versions again
+
+commit 51b68fe98e3ee1b5932b3b781e737050cf31d691 (tag: refs/tags/alpha_release-7-0-136)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Aug 12 12:18:56 2015 -0400
+
+    New release ---- alpha_release-7-0-136
+
+commit 3c7f129e34952513ebd29ca734bfc39b5ca34514
 Merge: 7397e9f c166507
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 09:11:10 2015 -0400
