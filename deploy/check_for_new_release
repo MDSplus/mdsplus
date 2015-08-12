@@ -13,7 +13,7 @@ export GIT_BRANCH="$1"
 shift
 if ( ! git branch | grep $GIT_BRANCH > /dev/null )
 then
-    git checkout -b ${GIT_BRANCH} --track origin/alpha
+    git checkout -b ${GIT_BRANCH} --track origin/${GIT_BRANCH}
 else
     git checkout ${GIT_BRANCH}
 fi
