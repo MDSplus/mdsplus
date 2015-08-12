@@ -1,4 +1,30 @@
-commit c166507b31c6b67f6a40474055d2edcd18cc686b (HEAD, tag: refs/tags/alpha_release-7-0-135, refs/remotes/origin/alpha, refs/heads/stable)
+commit 0fda8efb533423ca18ec047a080a50be1346e62e (HEAD, refs/heads/stable)
+Merge: 481f684 3c7f129
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Aug 12 11:16:30 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into stable
+
+commit 3c7f129e34952513ebd29ca734bfc39b5ca34514 (refs/remotes/origin/alpha)
+Merge: 7397e9f c166507
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 09:11:10 2015 -0400
+
+    Merge branch 'alpha' of github.com:/MDSplus/mdsplus into alpha
+
+commit 7397e9f78b1d3b0788073db1767dac003c57fd0f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 09:10:59 2015 -0400
+
+    Fix import level on tree
+
+commit 481f684dbad8e88c3372137921e631db22033177 (tag: refs/tags/stable_release-7-0-47)
+Author: Jenkins Continuous Build server <jenkins@mdsplus-jenkins.psfc.mit.edu>
+Date:   Tue Aug 11 15:09:01 2015 -0400
+
+    New release ---- stable_release-7-0-47
+
+commit c166507b31c6b67f6a40474055d2edcd18cc686b (tag: refs/tags/alpha_release-7-0-135)
 Author: Jenkins Continuous Build server <jenkins@mdsplus-jenkins.psfc.mit.edu>
 Date:   Tue Aug 11 14:49:21 2015 -0400
 
