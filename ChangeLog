@@ -1,16 +1,46 @@
-commit 87bf9e1e97cd3e2435a8dbf762139e5158d86c94 (HEAD, tag: refs/tags/hudson-aaa-release-stable-52, refs/remotes/origin/stable, refs/heads/stable)
+commit ebbc8612b03a302e7ad041818a4783048c6b23d4 (HEAD, refs/remotes/origin/stable, refs/heads/stable)
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 16:38:59 2015 -0400
+
+    Fix git tracking
+
+commit 546852e982bcd2b64c78ab4dacfb545c7c0abb6f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 13:48:11 2015 -0400
+
+    Fix python package versions again
+
+commit d8c0c3f1827edfaf047eb644ecd8524ddc93c410
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Wed Aug 12 11:19:22 2015 -0400
+
+    Remove old dockerfile
+
+commit 008e47d5517f63361d0d86c82f8e4584bc7fd1e7
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Tue Aug 11 14:47:56 2015 -0400
+
+    Change for migration to Jenkins
+
+commit d3109a44a940265fbbcb4a1498de8cdeab8868fc (tag: refs/tags/stable_release-7-0-46)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Mon Aug 10 18:11:02 2015 -0400
+
+    New release ---- stable_release-7-0-46
+
+commit 87bf9e1e97cd3e2435a8dbf762139e5158d86c94
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 20:38:07 2015 -0400
 
     Fix python version specification MDSplus module
 
-commit 6f99d0ca42851bbc15b748aaa15a0bdfcc71de78 (tag: refs/tags/stable_release-7-0-45, tag: refs/tags/hudson-aaa-release-stable-51)
+commit 6f99d0ca42851bbc15b748aaa15a0bdfcc71de78 (tag: refs/tags/stable_release-7-0-45)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Sun Aug 9 13:56:21 2015 -0400
 
     New release ---- stable_release-7-0-45
 
-commit 93ed96f3674e0db6d687ada612e4f6c3ecc68c2b (tag: refs/tags/hudson-aaa-release-stable-50)
+commit 93ed96f3674e0db6d687ada612e4f6c3ecc68c2b
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Sun Aug 9 13:44:40 2015 -0400
 
@@ -22,13 +52,13 @@ Date:   Sun Aug 9 12:21:30 2015 -0400
 
     Fix TreeExpandNodes. Was not allocating sufficient memory for ncis
 
-commit b6bbe3b70ec078d6ef7f9ac46f39a3e734322da8 (tag: refs/tags/stable_release-7-0-44, tag: refs/tags/hudson-aaa-release-stable-49)
+commit b6bbe3b70ec078d6ef7f9ac46f39a3e734322da8 (tag: refs/tags/stable_release-7-0-44)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Fri Aug 7 18:11:01 2015 -0400
 
     New release ---- stable_release-7-0-44
 
-commit 9b0d320b1b31014daefdb231030a1ae975b8b328 (tag: refs/tags/hudson-aaa-release-stable-48)
+commit 9b0d320b1b31014daefdb231030a1ae975b8b328
 Merge: dfb9dfb ecea45e
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 7 16:36:18 2015 -0400
@@ -72,19 +102,19 @@ Date:   Thu Aug 6 18:10:42 2015 -0400
 
     New release ---- stable_release-7-0-43
 
-commit ceccc85afc08f3d27ca3d611ae84c87ec12736d5 (tag: refs/tags/hudson-aaa-release-stable-47)
+commit ceccc85afc08f3d27ca3d611ae84c87ec12736d5
 Author: Josh Stillerman <jas@psfc.mit.edu>
 Date:   Thu Aug 6 14:52:58 2015 -0400
 
     fix external clock input routing.  Fix saved dt for decimated/filtered sampling.
 
-commit 9579404dece313d8565b1021355dd6ff94d6ddde (tag: refs/tags/stable_release-7-0-42, tag: refs/tags/hudson-aaa-release-stable-46, tag: refs/tags/hudson-aaa-release-stable-45, tag: refs/tags/hudson-aaa-release-stable-44)
+commit 9579404dece313d8565b1021355dd6ff94d6ddde (tag: refs/tags/stable_release-7-0-42)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
 Date:   Mon Aug 3 18:16:03 2015 -0400
 
     New release ---- stable_release-7-0-42
 
-commit 57da4854f14419ac3570838dc1f8f8922b1d581a (tag: refs/tags/hudson-aaa-release-stable-43)
+commit 57da4854f14419ac3570838dc1f8f8922b1d581a
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 16:44:13 2015 -0400
 
@@ -96,13 +126,13 @@ Date:   Mon Aug 3 16:11:18 2015 -0400
 
     New release ---- stable_release-7-0-41
 
-commit 4e0b34711e349d68b9ff71630adfef47312c3665 (tag: refs/tags/hudson-aaa-release-stable-42, tag: refs/tags/hudson-aaa-release-stable-41)
+commit 4e0b34711e349d68b9ff71630adfef47312c3665
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 15:46:12 2015 -0400
 
     Fix uils for 32-bit
 
-commit ad76da64a9815fed5ee0dc89f7e6afb8c99e6924 (tag: refs/tags/hudson-aaa-release-stable-40)
+commit ad76da64a9815fed5ee0dc89f7e6afb8c99e6924
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Mon Aug 3 15:43:10 2015 -0400
 
@@ -114,7 +144,7 @@ Date:   Mon Aug 3 14:49:50 2015 -0400
 
     Fix debian configure for builds
 
-commit d96f9e9d3607135c3400ea6494583c5783d247f6 (tag: refs/tags/stable_release-7-0-40, tag: refs/tags/hudson-aaa-release-stable-39, tag: refs/tags/hudson-aaa-release-stable-38, tag: refs/tags/hudson-aaa-release-stable-37)
+commit d96f9e9d3607135c3400ea6494583c5783d247f6 (tag: refs/tags/stable_release-7-0-40)
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Jul 30 11:29:03 2015 -0400
 
