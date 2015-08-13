@@ -11,7 +11,6 @@ _scalar=_mimport('mdsscalar',1)
 _array=_mimport('mdsarray',1)
 _tree=_mimport('tree',1)
 _compound=_mimport('compound',1)
-import threading
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
@@ -184,7 +183,7 @@ class TreeNode(_data.Data):
             try:
                 self.tree=_tree.Tree.getActiveTree()
             except:
-                self.tree=Tree()
+                self.tree=_tree.Tree()
         else:
             self.tree=tree
     
@@ -1306,84 +1305,3 @@ class TreeNodeArray(_data.Data):
         finally:
             _tree.Tree.unlock()
         return ans
-
-
-    
-
-class CachedTreeNode(TreeNode):
-    """Node belonging to a cached tree"""
-
-    def getData(self):
-        """Return data"""
-        return _mimport('_treeshr',1).RTreeGetRecord(self)
-
-    def getNumSegments(self):
-        """return number of segments contained in this node"""
-        return _data.makeData(_mimport('_treeshr',1).RTreeGetNumSegments(self))
-
-    def getCachePolicy(self):
-        """return cache policy for this node"""
-        try:
-            return self.cachePolicy
-        except:
-            return 0
-
-    def setCachePolicy(self,policy):
-        """set cache policy for this node"""
-        self.cachePolicy=policy
-
-    def flush(self):
-        _mimport('_treeshr',1).RTreeFlushNode(self.tree.ctx,self.nid)
-
-    def putData(self,value):
-        return _mimport('_treeshr',1).RTreePutRecord(self,value,self)
-
-    def beginSegment(self,start,end,dimension,initialValueArray,idx=-1):
-        return _mimport('_treeshr',1).RTreeBeginSegment(self,start,end,dimension,initialValueArray,idx)
-
-    def putSegment(self,data,idx):
-        return _mimport('_treeshr',1).RTreePutSegment(self,data,idx)
-
-    def putRow(self,bufsize,array,timestamp):
-        return _mimport('_treeshr',1).RTreePutRow(self,bufsize,array,timestamp)
-    
-    def putLastRow(self,bufsize,array,timestamp):
-        try:
-            if self.cachePolicy == 3:
-                self.cachePolicy = 4
-            status = _mimport('_treeshr',1).RTreePutRow(self,bufsize,array,timestamp)
-        finally:
-            if self.cachePolicy == 4:
-                self.cachePolicy = 3
-        return status
-    
-    def updateSegment(self,start,end,dim,idx):
-        """Update a segment"""
-        return _mimport('_treeshr',1).RTreeUpdateSegment(self,start,end,dim,idx)
-
-    def getNumSegments(self):
-        """Get number of segments"""
-        return _mimport('_treeshr',1).RTreeGetNumSegments(self)
-    
-    def putTimestampedSegment(self,array,timestampArray):
-        """Put timestamped segment"""
-        return _mimport(_treeshr,1).RTreePutTimestampedSegment(self,array,timestampArray)
-
-    def getSegmentStart(self,idx):
-        """return start of segment"""
-        num=self.getNumSegments()
-        if num > 0 and idx < num:
-            l=R_mimport('_treeshr',1).TreeGetSegmentStart(self,idx)
-            return l[0]
-        else:
-            return None
-
-    def getSegmentEnd(self,idx):
-        """return end of segment"""
-        num=self.getNumSegments()
-        if num > 0 and idx < num:
-            l=_mimport('_treeshr',1).TreeGetSegmentEnd(self,idx)
-            return l[1]
-        else:
-            return None
-
