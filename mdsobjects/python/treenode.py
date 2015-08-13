@@ -11,7 +11,7 @@ _scalar=_mimport('mdsscalar',1)
 _array=_mimport('mdsarray',1)
 _tree=_mimport('tree',1)
 _compound=_mimport('compound',1)
-import threading
+#import threading
 nciAttributes = ('BROTHER','CACHED','CHILD','CHILDREN_NIDS','MCLASS','CLASS_STR',
                      'COMPRESSIBLE','COMPRESS_ON_PUT','CONGLOMERATE_ELT','CONGLOMERATE_NIDS',
                      'DATA_IN_NCI','DEPTH','DISABLED','DO_NOT_COMPRESS','DTYPE','DTYPE_STR',
@@ -184,7 +184,7 @@ class TreeNode(_data.Data):
             try:
                 self.tree=_tree.Tree.getActiveTree()
             except:
-                self.tree=Tree()
+                self.tree=_tree.Tree()
         else:
             self.tree=tree
     
@@ -1317,9 +1317,6 @@ class CachedTreeNode(TreeNode):
         """Return data"""
         return _mimport('_treeshr',1).RTreeGetRecord(self)
 
-    def getNumSegments(self):
-        """return number of segments contained in this node"""
-        return _data.makeData(_mimport('_treeshr',1).RTreeGetNumSegments(self))
 
     def getCachePolicy(self):
         """return cache policy for this node"""
@@ -1361,19 +1358,23 @@ class CachedTreeNode(TreeNode):
         """Update a segment"""
         return _mimport('_treeshr',1).RTreeUpdateSegment(self,start,end,dim,idx)
 
+#    def getNumSegments(self):
+#        """return number of segments contained in this node"""
+#        return _data.makeData(_mimport('_treeshr',1).RTreeGetNumSegments(self))
+        
     def getNumSegments(self):
         """Get number of segments"""
         return _mimport('_treeshr',1).RTreeGetNumSegments(self)
     
     def putTimestampedSegment(self,array,timestampArray):
         """Put timestamped segment"""
-        return _mimport(_treeshr,1).RTreePutTimestampedSegment(self,array,timestampArray)
+        return _mimport('_treeshr',1).RTreePutTimestampedSegment(self,array,timestampArray)
 
     def getSegmentStart(self,idx):
         """return start of segment"""
         num=self.getNumSegments()
         if num > 0 and idx < num:
-            l=R_mimport('_treeshr',1).TreeGetSegmentStart(self,idx)
+            l=_mimport('_treeshr',1).TreeGetSegmentStart(self,idx)
             return l[0]
         else:
             return None
