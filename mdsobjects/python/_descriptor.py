@@ -116,7 +116,10 @@ class descriptor(_C.Structure):
                 self.addToCache(value)
                 return
         try:
-          if isinstance(value,unicode):
+            isunicode = isinstance(value,unicode)
+        except:
+            isunicode = False
+        if isunicode:
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
             self.length=d.length
@@ -124,8 +127,7 @@ class descriptor(_C.Structure):
             self.pointer=d.pointer
             self.addToCache(value)
             return
-        except:
-          pass
+      
         if isinstance(value,str):
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
