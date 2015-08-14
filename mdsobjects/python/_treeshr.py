@@ -735,7 +735,6 @@ def TreeSetDbi(tree,itemname,value):
         retlen=_C.c_int32(0)
         itmlst=DBI_ITM_CHAR(item[0],len(str(value)),_C.c_char_p(str(value)),retlen)
     else:
-        ans=_C.c_int32(0)
         itmlst=DBI_ITM_INT(item[0],_C.c_int32(int(value)))
     try:
         tree.lock()
