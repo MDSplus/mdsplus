@@ -1,4 +1,54 @@
-commit 5e146f7b6c5b52e06247bbee41a0d2296413a534 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 8bddcae469f58548679b49236103aaa868ca742c (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: b6f82bf 923f9c9
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Aug 13 21:33:22 2015 -0400
+
+    Merge pull request #28 from zack-vii/alpha__descriptor_unicode
+    
+    _descriptor: fix unicode and tree attribute
+
+commit 923f9c9b7153fb30733e7aae2cf3254a18daf3b2
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Aug 14 02:05:24 2015 +0200
+
+    _descriptor: fix unicode and tree attribute
+    
+    -fixed tree attribute for DTYPE_PATH treenode (same as for DTYPE_NID)
+    -decode raised an error if non ascii chars (see comit
+    051603d)
+    -merged str and unicode
+
+commit b6f82bf4e049f0fc3c2944a560b77082e5bf0699
+Merge: 73857ab 7fc656f
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Aug 13 14:42:29 2015 -0400
+
+    Merge pull request #27 from zack-vii/alpha__descriptor_unicode
+    
+    new treat for unicode
+
+commit 7fc656f2e5dca80e2df5fcb164f8f3748daa4d5c
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Aug 13 20:34:51 2015 +0200
+
+    new treat for unicode
+    
+    does not fail on isinstance(value,unicode) as enclosed by try-except
+    but will throw errors within the block
+
+commit 73857abbd633c42ac8c722fd1ef35e0f24ea189e
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Thu Aug 13 14:30:04 2015 -0400
+
+    Remove CachedTreeNode class, threading import and fixed the Tree() constructor
+
+commit 7dbec189f53dafbeb665bdb3c6b7df1b21d45b61 (tag: refs/tags/alpha_release-7-0-137)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Wed Aug 12 17:17:44 2015 -0400
+
+    New release ---- alpha_release-7-0-137
+
+commit 5e146f7b6c5b52e06247bbee41a0d2296413a534
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Wed Aug 12 16:38:59 2015 -0400
 
