@@ -119,16 +119,7 @@ class descriptor(_C.Structure):
             isunicode = isinstance(value,unicode)
         except:
             isunicode = False
-        if isunicode:
-            str_d=descriptor_string(value)
-            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
-            self.length=d.length
-            self.dtype=d.dtype
-            self.pointer=d.pointer
-            self.addToCache(value)
-            return
-      
-        if isinstance(value,str):
+        if isunicode or isinstance(value,str):
             str_d=descriptor_string(value)
             d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
             self.length=d.length
@@ -369,7 +360,7 @@ class descriptor(_C.Structure):
                 if self.length == 0:
                     return _scalar.makeScalar('')
                 else:
-                    return(_scalar.makeScalar(str(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring().decode())))
+                    return(_scalar.makeScalar(_N.array(_C.cast(self.pointer,_C.POINTER((_C.c_byte*self.length))).contents[:],dtype=_N.uint8).tostring()))
             if (self.dtype == _dtypes.DTYPE_FSC):
                 ans=_C.cast(self.pointer,_C.POINTER((_C.c_float*2))).contents
                 return _scalar.makeScalar(_N.complex64(complex(ans[0],ans[1])))
@@ -413,7 +404,10 @@ class descriptor(_C.Structure):
                     else:
                       return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
-                    return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
+                    if descriptor.tree is None:
+                      return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,_tree.Tree())
+                    else:
+                       return _treenode.TreePath(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_IDENT):
                     return _ident.Ident(_C.cast(self.pointer,_C.POINTER(_C.c_char*self.length)).contents.value)
                 if (self.dtype == _dtypes.DTYPE_Z):
