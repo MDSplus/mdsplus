@@ -66,14 +66,13 @@ class descriptor(_C.Structure):
             self.pointer=value.pointer
             return
 
+        self.dclass=_mdsclasses.CLASS_S
         if isinstance(value,descriptor_a):
             self.dtype=_dtypes.DTYPE_DSC
-            self.dclass=_mdsclasses.CLASS_S
             self.length=100000
             self.pointer=_C.cast(_C.pointer(value),type(self.pointer))
             return
         
-        self.dclass=_mdsclasses.CLASS_S
         if value is None or isinstance(value,_data.EmptyData):
             self.length=0
             self.dtype=_dtypes.DTYPE_DSC
@@ -93,51 +92,6 @@ class descriptor(_C.Structure):
             self.length=value.nbytes
             self.pointer=_C.cast(_C.c_void_p(a.ctypes.data),type(self.pointer))
             self.addToCache(a)
-            return
-        try:
-            if isinstance(value,long):
-                self.length=8
-                self.dtype=_dtypes.DTYPE_Q
-                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-
-            if isinstance(value,int):
-                self.length=4
-                self.dtype=_dtypes.DTYPE_L
-                self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-        except:
-            if isinstance(value,int):
-                self.length=8
-                self.dtype=_dtypes.DTYPE_Q
-                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-        try:
-            isunicode = isinstance(value,unicode)
-        except:
-            isunicode = False
-        if isunicode or isinstance(value,str):
-            str_d=descriptor_string(value)
-            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
-            self.length=d.length
-            self.dtype=d.dtype
-            self.pointer=d.pointer
-            self.addToCache(value)
-            return
-        if isinstance(value,float):
-            self.length=8
-            self.dtype=_dtypes.DTYPE_NATIVE_DOUBLE
-            self.pointer=_C.cast(_C.pointer(_C.c_double(value)),type(self.pointer))
-            self.addToCache(value)
-            return
-        if isinstance(value,complex):
-            self.length=8
-            self.dtype=_dtypes.DTYPE_FLOAT_COMPLEX
-            self.pointer=_C.cast(_C.pointer((_C.c_float*2)(value.real,value.imag)),type(self.pointer))
-            self.addToCache(value)
             return
         
         if isinstance(value,dict) or isinstance(value,list) or isinstance(value,tuple):
@@ -320,6 +274,53 @@ class descriptor(_C.Structure):
             self.addToCache(apd_a)
             self.addToCache(apd)
             return
+
+        try:
+            if isinstance(value,long):
+                self.length=8
+                self.dtype=_dtypes.DTYPE_Q
+                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
+                self.addToCache(value)
+                return
+
+            if isinstance(value,int):
+                self.length=4
+                self.dtype=_dtypes.DTYPE_L
+                self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),type(self.pointer))
+                self.addToCache(value)
+                return
+        except:
+            if isinstance(value,int):
+                self.length=8
+                self.dtype=_dtypes.DTYPE_Q
+                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
+                self.addToCache(value)
+                return
+        try:
+            isunicode = isinstance(value,unicode)
+        except:
+            isunicode = False
+        if isunicode or isinstance(value,str):
+            str_d=descriptor_string(value)
+            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
+            self.length=d.length
+            self.dtype=d.dtype
+            self.pointer=d.pointer
+            self.addToCache(value)
+            return
+        if isinstance(value,float):
+            self.length=8
+            self.dtype=_dtypes.DTYPE_NATIVE_DOUBLE
+            self.pointer=_C.cast(_C.pointer(_C.c_double(value)),type(self.pointer))
+            self.addToCache(value)
+            return
+        if isinstance(value,complex):
+            self.length=8
+            self.dtype=_dtypes.DTYPE_FLOAT_COMPLEX
+            self.pointer=_C.cast(_C.pointer((_C.c_float*2)(value.real,value.imag)),type(self.pointer))
+            self.addToCache(value)
+            return
+
         raise TypeError('Cannot make descriptor of '+str(type(value)))
         return
 
