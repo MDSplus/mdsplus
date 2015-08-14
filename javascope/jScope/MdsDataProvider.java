@@ -38,8 +38,8 @@ public class MdsDataProvider
     class SegmentedFrameData
         implements FrameData
     {
-        String inX, inY;
-        float timeMax, timeMin;
+        String in_x, in_y;
+        float time_max, time_min;
         int framesPerSegment;
         int numSegments;
         int startSegment, endSegment, actSegments;
@@ -48,22 +48,23 @@ public class MdsDataProvider
         float times[];
         int bytesPerPixel;
 
-        public SegmentedFrameData(String inY, String inX, float timeMin, float timeMax, int numSegments) throws IOException
+        public SegmentedFrameData(String in_y, String in_x, float time_min, float time_max, int numSegments) throws IOException
         {
+//System.out.println("SegmentedFrameData("+in_y+", "+in_x+", "+time_min+", "+time_max+", "+numSegments+")");
             //Find out frames per segment and frame min and max based on time min and time max
-            this.inX = inX;
-            this.inY = inY;
-            this.timeMin = timeMin;
-            this.timeMax = timeMax;
+            this.in_x = in_x;
+            this.in_y = in_y;
+            this.time_min = time_min;
+            this.time_max = time_max;
             this.numSegments = numSegments;
             startSegment = -1;
             float startTimes[] = new float[numSegments];
  //Get segment window corresponding to the passed time window
             for(int i = 0; i < numSegments; i++)
             {
-                float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+i+")");
+                float limits[] = GetFloatArray("GetSegmentLimits("+in_y+","+i+")");
                 startTimes[i] = limits[0];
-                if(limits[1] > timeMin)
+                if(limits[1] > time_min)
                 {
                     startSegment = i;
                     break;
@@ -72,16 +73,16 @@ public class MdsDataProvider
             if(startSegment == -1)
                 throw new IOException("Frames outside defined time window");
 //Check first if endTime is greated than the end of the last segment, to avoid rolling over all segments
-            float endLimits[] = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
+            float endLimits[] = GetFloatArray("GetSegmentLimits("+in_y+","+(numSegments - 1)+")");
 //Throw away spurious frames at the end
             while(endLimits == null || endLimits.length != 2)
             {
                 numSegments--;
                 if(numSegments == 0)
                     break;
-                endLimits = GetFloatArray("GetSegmentLimits("+inY+","+(numSegments - 1)+")");
+                endLimits = GetFloatArray("GetSegmentLimits("+in_y+","+(numSegments - 1)+")");
             }
-            if(numSegments > 100 && endLimits[0] < timeMax)
+            if(numSegments > 100 && endLimits[0] < time_max)
             {
                 endSegment = numSegments - 1;
                 for(int i = startSegment; i < numSegments; i++)
@@ -92,9 +93,9 @@ public class MdsDataProvider
                 for(endSegment = startSegment; endSegment < numSegments; endSegment++)
                 {
                     try {
-                        float limits[] = GetFloatArray("GetSegmentLimits("+inY+","+endSegment+")");
+                        float limits[] = GetFloatArray("GetSegmentLimits("+in_y+","+endSegment+")");
                         startTimes[endSegment] = limits[0];
-                        if(limits[0] > timeMax)
+                        if(limits[0] > time_max)
                             break;
                     }catch(Exception exc){break;}
                 }
@@ -102,13 +103,13 @@ public class MdsDataProvider
 
             actSegments = endSegment - startSegment;
 //Get Frame Dimension and frames per segment
-            int dims[] = GetIntArray("shape(GetSegment("+inY+", 0))");
+            int dims[] = GetIntArray("shape(GetSegment("+in_y+", 0))");
             if(dims.length != 3)
                 throw new IOException("Invalid number of segment dimensions: "+ dims.length);
             dim = new Dimension(dims[0], dims[1]);
             framesPerSegment = dims[2];
 //Get Frame element length in bytes
-            int len[] = GetIntArray("len(GetSegment("+inY+", 0))");
+            int len[] = GetIntArray("len(GetSegment("+in_y+", 0))");
             bytesPerPixel = len[0];
             switch (len[0])
             {
@@ -136,7 +137,7 @@ public class MdsDataProvider
                 times = new float[actSegments * framesPerSegment];
                 for(int i = 0; i < actSegments; i++)
                 {
-                    float segTimes [] = GetFloatArray("dim_of(GetSegment("+inY+","+i+"))");
+                    float segTimes [] = GetFloatArray("dim_of(GetSegment("+in_y+","+i+"))");
                     if(segTimes.length != framesPerSegment)
                         throw new IOException("Inconsistent definition of time in frame + "+i+": read "+ segTimes.length+
                                 " times, expected "+ framesPerSegment );
@@ -169,7 +170,7 @@ public class MdsDataProvider
             //System.out.println("GET FRAME AT " + idx);
             int segmentIdx = startSegment + idx / framesPerSegment;
             int segmentOffset = (idx % framesPerSegment) * dim.width * dim.height * bytesPerPixel;
-            byte[] segment = GetByteArray("GetSegment("+ inY+","+segmentIdx+")");
+            byte[] segment = GetByteArray("GetSegment("+ in_y+","+segmentIdx+")");
             if(framesPerSegment == 1)
                 return segment;
             byte []outFrame = new byte[dim.width * dim.height * bytesPerPixel];
@@ -199,6 +200,7 @@ public class MdsDataProvider
         public SimpleFrameData(String in_y, String in_x, float time_min,
                                float time_max) throws Exception
         {
+//System.out.println("SimpleFrameData("+in_y+", "+in_x+", "+time_min+", "+time_max+")");
             int i;
             float t;
             float all_times[] = null;
@@ -208,6 +210,7 @@ public class MdsDataProvider
             this.in_x = in_x;
             this.time_min = time_min;
             this.time_max = time_max;
+//System.out.println("GetAllFrames(in_y), "+in_y);
             buf = GetAllFrames(in_y);
             if (buf != null)
             {
@@ -232,6 +235,7 @@ public class MdsDataProvider
                 }
                 else
                 {
+//System.out.println("GetWaveData(in_x), "+in_x);
                   //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
                     all_times = MdsDataProvider.this.GetWaveData(in_x).getData(MAX_PIXELS).y;
                 }
@@ -402,6 +406,7 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
         {
+//System.out.println("SimpleWaveData("+in_y+", "+in_x+", "+experiment+", "+shot+")");
             this.wd_experiment = experiment;
             this.wd_shot = shot;
             v_y = "_jscope_"+(var_idx  );
@@ -638,6 +643,7 @@ public class MdsDataProvider
                 byte[] retData;
                 int nSamples;
                 try {
+//System.out.println("getData->GetXYSignalTimes");
                     if(isLong)
 //                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
                         retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
@@ -778,7 +784,7 @@ public class MdsDataProvider
         public float[] getZ()
         {
             try {
-                return GetFloatArray(in_y);
+                return GetFloatArray(v_y);
             }catch(Exception exc){return null;}
         }
         
