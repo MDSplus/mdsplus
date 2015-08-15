@@ -641,7 +641,7 @@ public class MdsDataProvider implements DataProvider
             if (DEGUB.ON){System.out.println("traditional method");}
             float y[] = GetFloatArray(setTimeContext+"("+v_y+")");
             RealArray xReal = GetRealArray("("+v_x+")");
-            if(xReal.isLong())
+            if(xReal.isLong)
             {
               isXLong = true;
               return new XYData(xReal.getLongArray(), y, 1E12);
@@ -842,7 +842,7 @@ public class MdsDataProvider implements DataProvider
             if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getX2D()");}
             try {
                 RealArray realArray = GetRealArray("DIM_OF("+v_y+", 0)");
-                if( realArray.isLong() )
+                if( realArray.isLong )
                 {
                     this.isXLong = true;
                     x2DLong = realArray.getLongArray();
@@ -2050,16 +2050,6 @@ public class MdsDataProvider implements DataProvider
             
             isDouble = false;
             isLong = true;
-        }
-
-        boolean isDouble()
-        {
-            return isDouble;
-        }
-
-        boolean isLong()
-        {
-            return isLong;
         }
 
         float[] getFloatArray()
