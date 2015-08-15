@@ -1,11 +1,11 @@
-@echo off
-echo preparing
+@ECHO OFF
+ECHO preparing
 call ..\setJDK_DIR
 if not defined JDK_DIR (
-echo . . .
-echo You need to set the JDK_DIR environment variable.
-echo Run setJDK_DIR.bat and restart your cmd.
-echo . . .
+ECHO . . .
+ECHO You need to set the JDK_DIR environment variable.
+ECHO Run setJDK_DIR.bat and restart your cmd.
+ECHO . . .
 pause
 goto end
 )
@@ -98,23 +98,39 @@ SET JAR="%JDK_DIR%\bin\jar.exe"
 SET JARDIR=..\java\classes
 mkdir %JARDIR%\docs
 
-echo compiling *.java to *.class . . .
+ECHO compiling *.java to *.class . . .
 %JAVAC% -d %JARDIR% %CLASSPATH% %COMMON_SRC% %JSCOPE_SRC% %WAVEDISPLAY_SRC%
+SET /A ERROR=%ERRORLEVEL%
+IF %ERROR% NEQ 0 GOTO:cleanup
 
-echo gathering data
-copy /Y jScope.properties %JARDIR%\ >nul
-copy /Y colors1.tbl %JARDIR%\ >nul
-for %%I in (%DOCS%) do (copy /Y %%I %JARDIR%\docs >nul)
+:gather
+ECHO gathering data
+copy /Y jScope.properties %JARDIR%\>nul
+copy /Y colors1.tbl %JARDIR%\>nul
+for %%I in (%DOCS%) do (copy /Y %%I %JARDIR%\docs>nul)
 
-echo creating jar packages
+:packjar
+ECHO creating jar packages
 PUSHD %JARDIR%
 %JAR% -cf "jScope.jar" jScope.class colors1.tbl jScope docs
 %JAR% -cf "WaveDisplay.jar" %COMMON_SRC:.java=.class%
-
-echo cleaning up
-rmdir /S /Q docs
-del colors1.tbl *.class
-rmdir /S /Q jScope
 POPD
+
+:cleanup
+ECHO cleaning up
+PUSHD %JARDIR%
+rmdir /S /Q docs>nul
+del colors1.tbl *.class>nul
+rmdir /S /Q jScope>nul
+POPD
+
+:jscope
+IF %ERROR% NEQ 0 GOTO:end
+ECHO start jScope?
+PAUSE
+CLS
+java -cp "%JARDIR%\jScope.jar" -Xmx128M  jScope
+
 :end
-pause
+PAUSE
+EXIT /B ERROR
