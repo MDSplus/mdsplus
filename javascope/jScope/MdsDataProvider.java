@@ -13,9 +13,13 @@ import java.text.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MdsDataProvider
-    implements DataProvider
+public class MdsDataProvider implements DataProvider
 {
+    public final class DEGUB {
+    //set to false to allow compiler to identify and eliminate
+    //unreachable code
+        public static final boolean ON = false;
+    }
     String provider;
     String experiment;
     String default_node;
@@ -33,10 +37,45 @@ public class MdsDataProvider
     SshTunneling ssh_tunneling;
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
-    
-    
-    class SegmentedFrameData
-        implements FrameData
+
+    public MdsDataProvider()
+    {
+        if (DEGUB.ON){System.out.println("MdsDataProvider()");}
+        experiment = null;
+        shot = 0;
+        open = connected = false;
+        mds = getConnection();
+        error = null;
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
+    }
+
+    public MdsDataProvider(String provider)
+    {
+        if (DEGUB.ON){System.out.println("MdsDataProvider(\""+provider+"\")");}
+        setProvider(provider);
+        experiment = null;
+        shot = 0;
+        open = connected = false;
+        mds = new MdsConnection(this.provider);
+        error = null;
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
+    }
+
+    public MdsDataProvider(String exp, int s)
+    {
+        if (DEGUB.ON){System.out.println("MdsDataProvider(\""+exp+"\", "+s+")");}
+        experiment = exp;
+        shot = 0; //what's about s
+        open = connected = false;
+        mds = new MdsConnection();
+        error = null;
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
+    }
+
+    class SegmentedFrameData implements FrameData
     {
         String in_x, in_y;
         float time_max, time_min;
@@ -50,7 +89,7 @@ public class MdsDataProvider
 
         public SegmentedFrameData(String in_y, String in_x, float time_min, float time_max, int numSegments) throws IOException
         {
-//System.out.println("SegmentedFrameData("+in_y+", "+in_x+", "+time_min+", "+time_max+", "+numSegments+")");
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SegmentedFrameData("+in_y+", "+in_x+", "+time_min+", "+time_max+", "+numSegments+")");}
             //Find out frames per segment and frame min and max based on time min and time max
             this.in_x = in_x;
             this.in_y = in_y;
@@ -200,7 +239,7 @@ public class MdsDataProvider
         public SimpleFrameData(String in_y, String in_x, float time_min,
                                float time_max) throws Exception
         {
-//System.out.println("SimpleFrameData("+in_y+", "+in_x+", "+time_min+", "+time_max+")");
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleFrameData("+in_y+", "+in_x+", time_min, time_max)");}
             int i;
             float t;
             float all_times[] = null;
@@ -210,7 +249,6 @@ public class MdsDataProvider
             this.in_x = in_x;
             this.time_min = time_min;
             this.time_max = time_max;
-//System.out.println("GetAllFrames(in_y), "+in_y);
             buf = GetAllFrames(in_y);
             if (buf != null)
             {
@@ -235,7 +273,7 @@ public class MdsDataProvider
                 }
                 else
                 {
-//System.out.println("GetWaveData(in_x), "+in_x);
+                    if (DEGUB.ON){System.out.println("GetWaveData(in_x), "+in_x);}
                   //all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
                     all_times = MdsDataProvider.this.GetWaveData(in_x).getData(MAX_PIXELS).y;
                 }
@@ -378,8 +416,7 @@ public class MdsDataProvider
     
     ////////////////////////////////////////GAB JULY 2014
      
-    class SimpleWaveData
-        implements WaveData
+    class SimpleWaveData implements WaveData
     {
         String in_x, in_y, v_x, v_y;
         static final int SEGMENTED_YES = 1, SEGMENTED_NO = 2, SEGMENTED_UNKNOWN = 3;
@@ -397,7 +434,6 @@ public class MdsDataProvider
         String wd_experiment;
         long wd_shot;
         AsynchDataSource asynchSource = null;
-    
 
         public SimpleWaveData(String in_y, String experiment, long shot)
         {
@@ -406,7 +442,7 @@ public class MdsDataProvider
 
         public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
         {
-//System.out.println("SimpleWaveData("+in_y+", "+in_x+", "+experiment+", "+shot+")");
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData("+in_y+", "+in_x+", "+experiment+", "+shot+")");}
             this.wd_experiment = experiment;
             this.wd_shot = shot;
             v_y = "_jscope_"+(var_idx  );
@@ -421,23 +457,22 @@ public class MdsDataProvider
             {
                 try
                 {
-//System.out.println(GetString("_jscope_test=\"OK\";"));
+                    if (DEGUB.ON){System.out.println(">> wait y - "+in_y);}
+                    GetString(v_y+"=("+in_y+");\"\"");//we just want mds to execute in_y; returning empty string \"\"
+                    if (DEGUB.ON){System.out.println(">> y done: ("+v_y+"="+in_y+")");}
 
-//System.out.println("wait y");
-                    GetString(v_y+"=("+in_y+");");
-//System.out.println("y done: ("+v_y+"="+in_y+")");
-
-//System.out.println("wait x");
                     if(in_x == null)
                     {
-                        in_x = "DIM_OF("+in_y+")";
-                        GetString(v_x+"=DIM_OF("+v_y+");");
-//System.out.println("x done: ("+v_x+"=DIM_OF("+v_y+"))");
+                        if (DEGUB.ON){System.out.println(">> wait x - null");}
+                        in_x = "DIM_OF("+in_y+");"; //to be save with other code, write the real expression to in_x
+                        GetString(v_x+"=DIM_OF("+v_y+");\"\"");//we just want mds to execute DIM_OF("+v_y+"); returning empty string \"\"
+                        if (DEGUB.ON){System.out.println(">> x done: ("+v_x+"=DIM_OF("+v_y+"))");}
                     }
                     else
                     {
-                        GetString(v_x+"=("+in_x+");");
-//System.out.println("x done: ("+v_x+"="+in_x+")");
+                        if (DEGUB.ON){System.out.println(">> wait x - "+in_x);}
+                        GetString(v_x+"=("+in_x+");\"\"");//we just want mds to execute in_x; returning empty string \"\"
+                        if (DEGUB.ON){System.out.println(">> x done: ("+v_x+"="+in_x+")");}
                     }
 
                 } catch(Exception exc){System.err.println(exc);}
@@ -450,6 +485,7 @@ public class MdsDataProvider
 
         private void SegmentMode()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.SegmentMode()");}
             if(segmentMode == SEGMENTED_UNKNOWN)
             {
                 try {//fast using in_y as NumSegments is a node property
@@ -462,7 +498,7 @@ public class MdsDataProvider
                         segmentMode = SEGMENTED_NO;
                 }catch(Exception exc)
                 {// numSegments==null should not get here anymore
-//System.err.println("SegmentMode ("+v_y+"="+in_y+"): "+exc);
+                    if (DEGUB.ON){System.err.println("SegmentMode:\n"+exc);}
                     error = null;
                     segmentMode = SEGMENTED_UNKNOWN;
                 }
@@ -473,6 +509,7 @@ public class MdsDataProvider
         //in case get an implemenation of AsynchDataSource
         boolean checkForAsynchRequest(String expression)
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.checkForAsynchRequest(\""+expression+"\")");}
             if(expression.startsWith("ASYNCH::"))
             {
                  asynchSource = getAsynchSource();
@@ -483,17 +520,15 @@ public class MdsDataProvider
             return false;
         }
 
-        
-
-        
         public void setContinuousUpdate(boolean continuousUpdate)
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.setContinuousUpdate("+continuousUpdate+")");}
             this.continuousUpdate = continuousUpdate;
         }
 
         public int getNumDimension() throws IOException
         {
-//System.out.println("getNumDimension "+GetString("_jscope_test"));
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getNumDimension()");}
             if(numDimensions != UNKNOWN)
                 return numDimensions;
 
@@ -517,7 +552,7 @@ public class MdsDataProvider
 
         public String GetTitle() throws IOException
         {
-//System.out.println("GetTitle "+GetString("_jscope_test"));
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.GetTitle()");}
             if(!titleEvaluated)
             {
                 titleEvaluated = true;
@@ -528,7 +563,7 @@ public class MdsDataProvider
 
         public String GetXLabel() throws IOException
         {
-//System.out.println("GetXLabel "+GetString("_jscope_test"));
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.GetXLabel()");}
             if(!xLabelEvaluated)
             {
                 xLabelEvaluated = true;
@@ -540,7 +575,7 @@ public class MdsDataProvider
 
         public String GetYLabel() throws IOException
         {
-//System.out.println("GetYLabel "+GetString("_jscope_test"));
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.GetYLabel()");}
             if(!yLabelEvaluated)
             {
                 yLabelEvaluated = true;
@@ -564,7 +599,7 @@ public class MdsDataProvider
 
         public String GetZLabel() throws IOException
         {
-//System.out.println("GetZLabel "+GetString("_jscope_test"));
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.GetZLabel()");}
             return GetStringValue("Units("+v_y+")");
         }
 
@@ -575,214 +610,227 @@ public class MdsDataProvider
         }
         public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
         {
-//System.out.println("XYData "+GetString("_jscope_test"));
-             XYData res = null;
-             double maxX = 0;
-
-             if (!CheckOpen(this.wd_experiment, this.wd_shot))
-                return null;
-
-             if(segmentMode == SEGMENTED_UNKNOWN)
-             {
-                Vector args = new Vector();
-                args.addElement(new Descriptor(null, in_y));
-                try {
-                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
-
-                    if (retData[0] > 0)
-                        segmentMode = SEGMENTED_YES;
-                    else
-                        segmentMode = SEGMENTED_NO;
-                }catch(Exception exc)
-                {// MdsMisc->IsSegmented failed
-                  segmentMode = SEGMENTED_NO;
-                }
-             }
-//             try   {
-/*
-                String setTimeContext;
-                if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
-                    setTimeContext = "SetTimeContext(*,*,*);";
-                else if(xmin == -Double.MAX_VALUE)
-                {
-                    if(isLong)
-                        setTimeContext = "SetTimeContext(*, QUADWORD("+(long)xmax+"Q), *);";
-                    else
-                         setTimeContext = "SetTimeContext(*, "+xmax+", *);";
-               }
-               else if(xmax == Double.MAX_VALUE)
-               {
-                    if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),*, *);";
-                    else
-                         setTimeContext = "SetTimeContext("+xmin+",*, *);";
-               }
-                else
-                {
-                    if(isLong)
-                         setTimeContext = "SetTimeContext(QUADWORD("+(long)xmin+"Q),QUADWORD("+(long)xmax+"Q), *);";
-                    else
-                         setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
-               }
- */             
-                Vector args = new Vector();
-                args.addElement(new Descriptor(null, in_y));
-                args.addElement(new Descriptor(null, in_x));
-
-                if(isLong)
-                {
-                    args.addElement(new Descriptor(null, new long[]{(xmin == -Double.MAX_VALUE)?0:(long)xmin}));
-                    args.addElement(new Descriptor(null, new long[]{(xmax == Double.MAX_VALUE)?0:(long)xmax}));
-                }
-                else
-                {
-                    args.addElement(new Descriptor(null, new float[]{(float)xmin}));
-                    args.addElement(new Descriptor(null, new float[]{(float)xmax}));
-                }
-                args.addElement(new Descriptor(null, new int[]{numPoints}));
-                byte[] retData;
-                int nSamples;
-                try {
-//System.out.println("getData->GetXYSignalTimes");
-                    if(isLong)
-//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
-                        retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
-                    else
-//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
-                        retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
-//System.out.println("MdsMisc->GetXYSignal");
-
-                /*Decode data: Format:
-                       -retResolution(float)
-                       -number of samples (minumum between X and Y)
-                       -type of X xamples (byte: long(1), double(2) or float(3))
-                       -y samples 
-                       -x Samples 
-               */
-                    ByteArrayInputStream bis = new ByteArrayInputStream(retData);
-                    DataInputStream dis = new DataInputStream(bis);
-                    float fRes;
-                    double dRes;
-                    fRes = dis.readFloat();
-                    if(fRes >= 1E10)
-                        dRes = Double.MAX_VALUE;
-                    else
-                        dRes = fRes;
-                    nSamples = dis.readInt();
-                    if( nSamples <= 0 )
-                    {
-                        error = "No Samples returned";
-                        return null;
-                    }
-                    
-                    byte type = dis.readByte();
-                    float y[] = new float[nSamples];
-                    for(int i = 0; i < nSamples; i++)
-                        y[i] = dis.readFloat();
-
-                    if(type == 1) //Long X (i.e. absolute times
-                    {
-                        long []longX = new long[nSamples];
-                        for(int i = 0; i < nSamples; i++)
-                            longX[i] = dis.readLong();
-                        isXLong = true;
-                        res = new XYData(longX, y, dRes);
-                        if(longX.length > 0)
-                            maxX = longX[longX.length - 1];
-                        else 
-                            maxX = 0;
-                   }
-                    else if(type == 2) //double X
-                    {
-                        double []x = new double[nSamples];
-                        for(int i = 0; i < nSamples; i++)
-                            x[i] = dis.readDouble();
-                        res = new XYData(x, y, dRes);
-                        if(x.length > 0)
-                            maxX = x[x.length - 1];
-                        else 
-                            maxX = 0;
-                    }
-                    else //float X
-                    {
-                        double []x = new double[nSamples];
-                        for(int i = 0; i < nSamples; i++)
-                            x[i] = dis.readFloat(); 
-                        res = new XYData(x, y, dRes);
-                        if(x.length > 0)
-                            maxX = x[x.length - 1];
-                        else 
-                            maxX = 0;
-                   }
-                    //Get title, xLabel and yLabel
-                   int titleLen = dis.readInt();
-                    if(titleLen > 0)
-                    {
-                        byte []titleBuf = new byte[titleLen];
-                        dis.readFully(titleBuf);
-                        title = new String(titleBuf);
-                    }
-                    int xLabelLen = dis.readInt();
-                    if(xLabelLen > 0)
-                    {
-                        byte []xLabelBuf = new byte[xLabelLen];
-                        dis.readFully(xLabelBuf);
-                        xLabel = new String(xLabelBuf);
-                    }
-                
-                    int yLabelLen = dis.readInt();
-                    if(yLabelLen > 0)
-                    {
-                        byte []yLabelBuf = new byte[yLabelLen];
-                        dis.readFully(yLabelBuf);
-                        yLabel = new String(yLabelBuf);
-                    }
-                    titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
-                    if(type == 1)
-                        isLong = true;
-/*                }
-                catch(Exception exc)
-                {
-//System.out.println("Error Reading data: "+exc);
-                    nSamples = 0;
-                }
- */               //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
-                if(segmentMode == SEGMENTED_YES && continuousUpdate)
-                {
-                    long refreshPeriod = jScopeFacade.getRefreshPeriod();
-                    if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
-                    updateWorker.updateInfo(/*xmin*/maxX, Double.MAX_VALUE, 2000,
-                        waveDataListenersV, this, isLong, refreshPeriod);
-                }
-                return res;
-             }catch(Exception exc)
-             {
-                 //System.err.println(exc);
-             }
-//If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
-//            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
-//System.out.println("traditional method");
-            float y[] = GetFloatArray("("+v_y+")");
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.XYData("+xmin+", "+xmax+", "+numPoints+", "+isLong+")");}
+            if (!CheckOpen(this.wd_experiment, this.wd_shot))
+              return null;
+            
+            if(segmentMode == SEGMENTED_UNKNOWN)
+            {
+              Vector args = new Vector();
+              args.addElement(new Descriptor(null, in_y));
+              try {
+                  byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
+            
+                  if (retData[0] > 0)
+                      segmentMode = SEGMENTED_YES;
+                  else
+                      segmentMode = SEGMENTED_NO;
+              }catch(Exception exc)
+              {// MdsMisc->IsSegmented failed
+                segmentMode = SEGMENTED_NO;
+              }
+            }
+//            String setTimeContext = getTimeContext(xmin,xmax,isLong);
+            String setTimeContext = "";
+            try{
+                return getXYSignal(xmin, xmax, numPoints, isLong, setTimeContext);
+            }catch(Exception exc)
+            {
+               if (DEGUB.ON){System.err.println("MdsMisc->GetXYSignal() is not available on the server\n:"+exc);}
+            }
+            if (DEGUB.ON){System.out.println("traditional method");}
+            float y[] = GetFloatArray(setTimeContext+"("+v_y+")");
             RealArray xReal = GetRealArray("("+v_x+")");
             if(xReal.isLong())
             {
-                isXLong = true;
-                return new XYData(xReal.getLongArray(), y, 1E12);
+              isXLong = true;
+              return new XYData(xReal.getLongArray(), y, 1E12);
             }
             else
             {
-                isXLong = false;
-                return new XYData(xReal.getDoubleArray(), y, 1E12);
+              isXLong = false;
+              return new XYData(xReal.getDoubleArray(), y, 1E12);
             }
-         
+        }
+        private String getTimeContext(double xmin, double xmax, boolean isLong)throws Exception
+        {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.setTimeContext("+xmin+", "+xmax+", "+isLong+")");}
+            String res;
+            try{
+                if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
+                    res = "SetTimeContext(*,*,*);";
+                else if(xmin == -Double.MAX_VALUE)
+                {
+                    if(isLong)
+                        res = "SetTimeContext(*, QUADWORD("+(long)xmax+"Q), *);";
+                    else
+                        res = "SetTimeContext(*, "+xmax+", *);";
+                }
+                else if(xmax == Double.MAX_VALUE)
+                {
+                    if(isLong)
+                        res = "SetTimeContext(QUADWORD("+(long)xmin+"Q),*, *);";
+                    else
+                        res = "SetTimeContext("+xmin+",*, *);";
+                }
+                else
+                {
+                    if(isLong)
+                        res = "SetTimeContext(QUADWORD("+(long)xmin+"Q),QUADWORD("+(long)xmax+"Q), *);";
+                    else
+                        res = "SetTimeContext("+xmin+","+xmax+", *);";
+                }
+            }
+            catch(Exception exc)
+            {
+                if (DEGUB.ON){System.err.println("setTimeContext:\n:"+exc);}
+                res = "";
+            }
+            return res;
+        }
+        private XYData getXYSignal(double xmin, double xmax, int numPoints, boolean isLong, String setTimeContext)throws Exception
+        {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getXYSignal("+xmin+", "+xmax+", "+numPoints+", "+isLong+", \""+setTimeContext+"\")");}
+            XYData res = null;
+            double maxX = 0;
+            Vector args = new Vector();
+            args.addElement(new Descriptor(null, in_y));
+            args.addElement(new Descriptor(null, in_x));
+
+            if(isLong)
+            {
+                args.addElement(new Descriptor(null, new long[]{(xmin == -Double.MAX_VALUE)?0:(long)xmin}));
+                args.addElement(new Descriptor(null, new long[]{(xmax == Double.MAX_VALUE)?0:(long)xmax}));
+            }
+            else
+            {
+                args.addElement(new Descriptor(null, new float[]{(float)xmin}));
+                args.addElement(new Descriptor(null, new float[]{(float)xmax}));
+            }
+            args.addElement(new Descriptor(null, new int[]{numPoints}));
+            byte[] retData;
+            int nSamples;
+            //all fine if setTimeContext is an empty string
+            //if a space is required between ; and further code setTimeContext sould have it
+            if (DEGUB.ON){System.out.println("MdsMisc->GetXYSignal*Long*Times:DSC");}
+            if(isLong)
+                retData = GetByteArray(setTimeContext+"MdsMisc->GetXYSignalLongTimes:DSC", args);
+            else
+                retData = GetByteArray(setTimeContext+"MdsMisc->GetXYSignal:DSC", args);
+            /*Decode data: Format:
+                   -retResolution(float)
+                   -number of samples (minumum between X and Y)
+                   -type of X xamples (byte: long(1), double(2) or float(3))
+                   -y samples 
+                   -x Samples 
+           */
+            ByteArrayInputStream bis = new ByteArrayInputStream(retData);
+            DataInputStream dis = new DataInputStream(bis);
+            float fRes;
+            double dRes;
+            fRes = dis.readFloat();
+            if(fRes >= 1E10)
+                dRes = Double.MAX_VALUE;
+            else
+                dRes = fRes;
+            nSamples = dis.readInt();
+            if( nSamples <= 0 )
+            {
+                error = "No Samples returned";
+                return null;
+            }
+            
+            byte type = dis.readByte();
+            float y[] = new float[nSamples];
+            for(int i = 0; i < nSamples; i++)
+                y[i] = dis.readFloat();
+            
+            if(type == 1) //Long X (i.e. absolute times
+            {
+                long []longX = new long[nSamples];
+                for(int i = 0; i < nSamples; i++)
+                    longX[i] = dis.readLong();
+                isXLong = true;
+                res = new XYData(longX, y, dRes);
+                if(longX.length > 0)
+                    maxX = longX[longX.length - 1];
+                else 
+                    maxX = 0;
+            }
+            else if(type == 2) //double X
+            {
+                double []x = new double[nSamples];
+                for(int i = 0; i < nSamples; i++)
+                    x[i] = dis.readDouble();
+                res = new XYData(x, y, dRes);
+                if(x.length > 0)
+                    maxX = x[x.length - 1];
+                else 
+                    maxX = 0;
+            }
+            else //float X
+            {
+                double []x = new double[nSamples];
+                for(int i = 0; i < nSamples; i++)
+                    x[i] = dis.readFloat(); 
+                res = new XYData(x, y, dRes);
+                if(x.length > 0)
+                    maxX = x[x.length - 1];
+                else 
+                    maxX = 0;
+            }
+            //Get title, xLabel and yLabel
+            int titleLen = dis.readInt();
+            if(titleLen > 0)
+            {
+                byte []titleBuf = new byte[titleLen];
+                dis.readFully(titleBuf);
+                title = new String(titleBuf);
+            }
+            int xLabelLen = dis.readInt();
+            if(xLabelLen > 0)
+            {
+                byte []xLabelBuf = new byte[xLabelLen];
+                dis.readFully(xLabelBuf);
+                xLabel = new String(xLabelBuf);
+            }
+            
+            int yLabelLen = dis.readInt();
+            if(yLabelLen > 0)
+            {
+                byte []yLabelBuf = new byte[yLabelLen];
+                dis.readFully(yLabelBuf);
+                yLabel = new String(yLabelBuf);
+            }
+            titleEvaluated = xLabelEvaluated = yLabelEvaluated = true;
+            if(type == 1)
+                isLong = true;
+/*          }
+            catch(Exception exc)
+            {
+            if (DEGUB.ON){System.err.println("Error Reading data:\n"+exc);}
+                nSamples = 0;
+            }
+*/          //Got resampled signal, if it is segmented and jScope.refreshPeriod > 0, enqueue a new request
+            if(segmentMode == SEGMENTED_YES && continuousUpdate)
+            {
+                long refreshPeriod = jScopeFacade.getRefreshPeriod();
+                if(refreshPeriod <= 0) refreshPeriod = 1000; //default 1 s refresh
+                updateWorker.updateInfo(/*xmin*/maxX, Double.MAX_VALUE, 2000,
+                    waveDataListenersV, this, isLong, refreshPeriod);
+            }
+            return res;
          }
+
          public XYData getData(int numPoints)throws Exception
          {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getData("+numPoints+")");}
              return getData(-Double.MAX_VALUE, Double.MAX_VALUE, numPoints);
          }
 
         public float[] getZ()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getZ()");}
             try {
                 return GetFloatArray(v_y);
             }catch(Exception exc){return null;}
@@ -791,6 +839,7 @@ public class MdsDataProvider
         private long x2DLong[];
         public double[] getX2D()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getX2D()");}
             try {
                 RealArray realArray = GetRealArray("DIM_OF("+v_y+", 0)");
                 if( realArray.isLong() )
@@ -809,11 +858,13 @@ public class MdsDataProvider
         }
         public long[] getX2DLong()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getX2DLong()");}
             return x2DLong;
         }
           
         public float[] getY2D()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getY2D()");}
             try {
                 return GetFloatArray("DIM_OF("+v_y+", 1)");
             }catch(Exception exc){return null;}
@@ -823,18 +874,21 @@ public class MdsDataProvider
         
         public float[] getX_Z()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getX_Z()");}
             try {
                 return GetFloatArray("("+v_x+")");
             }catch(Exception exc){return null;}
         }
         public float[] getX_X2D()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getX_X2D()");}
             try {
                 return GetFloatArray("DIM_OF("+v_x+", 0)");
             }catch(Exception exc){return null;}
         }
         public float[] getX_Y2D()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getX_Y2D()");}
             try {
                 return GetFloatArray("DIM_OF("+v_x+", 1)");
             }catch(Exception exc){return null;}
@@ -852,13 +906,14 @@ public class MdsDataProvider
 
         public void addWaveDataListener(WaveDataListener listener)
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.addWaveDataListener()");}
             waveDataListenersV.addElement(listener);
             if(asynchSource != null)
                 asynchSource.addDataListener(listener);
         }
         public void getDataAsync(double lowerBound, double upperBound, int numPoints)
         {
- //           System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
+            if (DEGUB.ON){System.out.println("MdsDataProvider.SimpleWaveData.getDataAsync("+lowerBound+", "+upperBound+", "+numPoints+")");}
             updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
         }
     } //END Inner Class SimpleWaveData
@@ -876,7 +931,7 @@ public class MdsDataProvider
             SimpleWaveData simpleWaveData;
             boolean isXLong;
             long updateTime;
-             UpdateDescriptor(double updateLowerBound, double updateUpperBound, int updatePoints,
+            UpdateDescriptor(double updateLowerBound, double updateUpperBound, int updatePoints,
                     Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
             {
                 this.updateLowerBound = updateLowerBound;
@@ -938,7 +993,7 @@ public class MdsDataProvider
         
         public void run()
         {
-
+            if (DEGUB.ON){System.out.println("run()");}
             this.setName("UpdateWorker");
 
             while(true)
@@ -981,7 +1036,7 @@ public class MdsDataProvider
                         }catch(Exception exc)
                         {
                             Date d = new Date();
-//System.out.println(d+" Error in asynchUpdate: "+exc);
+                            if (DEGUB.ON){System.err.println(d+" Error in asynchUpdate:\n"+exc);}
                         }
                     }
                     else
@@ -1011,56 +1066,22 @@ public class MdsDataProvider
 
     UpdateWorker updateWorker;
 
-    
-    public MdsDataProvider()
-    {
-        experiment = null;
-        shot = 0;
-        open = connected = false;
-        mds = getConnection();
-        error = null;
-        //updateWorker = new UpdateWorker();
-        //updateWorker.start();
-    }
-
     protected MdsConnection getConnection() 
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider(\""+provider+"\")");}
         return new MdsConnection();
-    }
-    
-    
-    public MdsDataProvider(String provider)
-    {
-        setProvider(provider);
-        experiment = null;
-        shot = 0;
-        open = connected = false;
-        mds = new MdsConnection(this.provider);
-        error = null;
-        //updateWorker = new UpdateWorker();
-        //updateWorker.start();
-    }
-
-    public MdsDataProvider(String exp, int s)
-    {
-        experiment = exp;
-        shot = 0;
-        open = connected = false;
-        mds = new MdsConnection();
-        error = null;
-        //updateWorker = new UpdateWorker();
-        //updateWorker.start();
     }
 
     protected void finalize()
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.finalize()");}
         int status;
         String err = new String("");
         if (open)
             mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
         if (connected)
             status = mds.DisconnectFromMds();
-//System.out.println("disconnected");
+            if (DEGUB.ON){System.out.println(">> disconnected");}
     }
     //To be overridden by any DataProvider implementation with added dynamic generation
     AsynchDataSource getAsynchSource()
@@ -1070,12 +1091,14 @@ public class MdsDataProvider
 
     public void SetArgument(String arg) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.SetArgument("+arg+")");}
         setProvider(arg);
         mds.setProvider(provider);
     }
 
     private void setProvider(String arg)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.setProvider("+arg+")");}
         if (is_tunneling)
             provider = tunnel_provider;
         else
@@ -1089,6 +1112,7 @@ public class MdsDataProvider
 
     public void SetCompression(boolean state)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.SetCompression("+state+")");}
         if (connected)
             Dispose();
         use_compression = state;
@@ -1096,6 +1120,7 @@ public class MdsDataProvider
 
     protected String GetExperimentName(String in_frame)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetExperimentName(\""+in_frame+"\")");}
         String exp;
 
         if (experiment == null)
@@ -1111,10 +1136,10 @@ public class MdsDataProvider
         return exp;
     }
 
-    public FrameData GetFrameData(String in_y, String in_x, float time_min,
-                                  float time_max) throws IOException
+    public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
-        int[] numSegments = null; 
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetFrameData(\""+in_y+"\", \""+in_x+"\", "+time_min+", "+time_max+")");}
+        int[] numSegments = null;
         try
         {
             numSegments = GetIntArray("GetNumSegments("+in_y+")");
@@ -1132,6 +1157,7 @@ public class MdsDataProvider
 
     public synchronized byte[] GetAllFrames(String in_frame) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetAllFrames("+in_frame+")");}
         byte img_buf[], out[] = null;
         float time[];
         int shape[];
@@ -1206,6 +1232,7 @@ public class MdsDataProvider
 
     public synchronized float[] GetFrameTimes(String in_frame)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetFrameTimes(\""+in_frame+"\")");}
         String exp = GetExperimentName(in_frame);
 
         String in = "JavaGetFrameTimes(\"" + exp + "\",\"" + in_frame + "\"," +
@@ -1235,9 +1262,8 @@ public class MdsDataProvider
 
     public byte[] GetFrameAt(String in_frame, int frame_idx) throws IOException
     {
-
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetFrameAt(\""+in_frame+"\", "+frame_idx+")");}
         String exp = GetExperimentName(in_frame);
-
         String in = "JavaGetFrameAt(\"" + exp + "\",\" " + in_frame + "\"," +
             shot + ", " + frame_idx + " )";
 
@@ -1252,6 +1278,7 @@ public class MdsDataProvider
 
     public  synchronized  byte[] GetByteArray(String in, Vector args) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetByteArray(\""+in+"\", "+args+")");}
         byte out_byte[] = null;
         ByteArrayOutputStream dosb = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(dosb);
@@ -1297,14 +1324,13 @@ public class MdsDataProvider
         return error;
     }
 
-    
     public synchronized void Update(String experiment, long shot)
     {
         Update( experiment,  shot, false);
     }
-    
     public synchronized void Update(String experiment, long shot, boolean resetExperiment)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.Update(\""+experiment+"\", "+shot+", "+resetExperiment+")");}
         this.error = null;
         this.var_idx = 0;
 
@@ -1321,7 +1347,7 @@ public class MdsDataProvider
 
     public synchronized String GetString(String in) throws IOException
     {
-
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetString(\""+in+"\")");}
         if (in == null)
             return null;
 
@@ -1356,12 +1382,10 @@ public class MdsDataProvider
 
     public synchronized void SetEnvironment(String in) throws IOException
     {
-
+        if (DEGUB.ON){System.out.println("MdsDataProvider.SetEnvironment(\""+in+"\")");}
         if (in == null || in.length() == 0)
             return;
 
-        
- 
         Properties pr = new Properties();
         pr.load(new ByteArrayInputStream(in.getBytes()));
         String def_node = ( (String) pr.getProperty("__default_node"));
@@ -1392,7 +1416,7 @@ public class MdsDataProvider
 
     void SetEnvironmentSpecific(String in)
     {
-
+        if (DEGUB.ON){System.out.println("MdsDataProvider.SetEnvironmentSpecific(\""+in+"\")");}
         Descriptor desc = mds.MdsValue(in);
         switch (desc.dtype)
         {
@@ -1401,15 +1425,15 @@ public class MdsDataProvider
                     error = desc.error;
         }
     }
+
     public void enableAsyncUpdate(boolean enable)
     {
         updateWorker.enableAsyncUpdate(enable);
-                  
     }
 
-    
     double GetNow(String in) throws Exception
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetNow(\""+in+"\")");}
         boolean isPlus = true;
         int hours = 0, minutes = 0, seconds = 0;
         String currStr = in.trim().toUpperCase();
@@ -1469,8 +1493,8 @@ public class MdsDataProvider
     
     public synchronized double GetFloat(String in) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetFloat(\""+in+"\")");}
         error = null;
-
         //First check Whether this is a date
         try {
             Calendar cal = Calendar.getInstance();
@@ -1482,14 +1506,12 @@ public class MdsDataProvider
             cal.setTime(date);
             long javaTime = cal.getTime().getTime();
             return javaTime;
-        }catch(Exception exc)
-        { 
+        }catch(Exception exc1) //If exception occurs this is not a date, try NOW condtruction
+        {
             try {
                 return GetNow(in);
-            }catch(Exception exc1){}
-        } //If exception occurs this is not a date, try NOW condtruction
-
-
+            }catch(Exception exc2){if (DEGUB.ON){System.err.println("MdsDataProvider.GetFloat:\n"+exc2);}}
+        }
 
         if (NotYetNumber(in))
         {
@@ -1531,8 +1553,6 @@ public class MdsDataProvider
         return new SimpleWaveData(in_y, in_x, experiment, shot);
     }
 
- 
-
     public float[] GetFloatArray(String in) throws IOException
     {
         RealArray realArray = GetRealArray(in);
@@ -1551,8 +1571,7 @@ public class MdsDataProvider
 
     public synchronized RealArray GetRealArray(String in) throws IOException
     {
-        
-        
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetRealArray(\""+in+"\")");}
         RealArray out;
         ConnectionEvent e = new ConnectionEvent(this, 1, 0);
         DispatchConnectionEvent(e);
@@ -1609,24 +1628,22 @@ public class MdsDataProvider
             default:
                 error = "Data type code : " + desc.dtype + " not yet supported ";
         }
-
         return out;
     }
 
 
     public long[] GetShots(String in) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetShots(\""+in+"\")");}
         //To shot evaluation don't execute check
         //if a pulse file is open
         CheckConnection();
-        //try
-        {
-            return GetLongArray(in);
-        }
+        return GetLongArray(in);
     }
 
     public int[] GetIntArray(String in) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetIntArray(\""+in+"\")");}
         if (!CheckOpen())
             throw new IOException("Tree not open");
         return GetIntegerArray(in);
@@ -1634,6 +1651,7 @@ public class MdsDataProvider
 
     private synchronized long[] GetLongArray(String in) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetLongArray(\""+in+"\")");}
         long out_data[];
 
         Descriptor desc = mds.MdsValue(in);
@@ -1668,10 +1686,11 @@ public class MdsDataProvider
                 error = "Data type code : " + desc.dtype + " not yet supported ";
         }
         throw new IOException(error);
-     }
+    }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetIntegerArray(\""+in+"\")");}
         int out_data[];
 
         Descriptor desc = mds.MdsValue(in);
@@ -1702,21 +1721,22 @@ public class MdsDataProvider
 
     public synchronized void Dispose()
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.Dispose()");}
 
-       if (is_tunneling && ssh_tunneling != null)
+        if (is_tunneling && ssh_tunneling != null)
            ssh_tunneling.Dispose();
-
-       if (connected)
+        
+        if (connected)
         {
             connected = false;
             mds.DisconnectFromMds();
-//System.out.println("disconnected");
+            if (DEGUB.ON){System.out.println(">> disconnected");}
             ConnectionEvent ce = new ConnectionEvent(this,
                 ConnectionEvent.LOST_CONNECTION,
                 "Lost connection from : " + provider);
             mds.dispatchConnectionEvent(ce);
         }
-       
+
         if( updateWorker != null && updateWorker.isAlive() )
         {
             updateWorker.stopUpdateWorker();
@@ -1725,6 +1745,7 @@ public class MdsDataProvider
 
     protected synchronized void CheckConnection() throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.CheckConnection()");}
         if (!connected)
         {
             if (mds.ConnectToMds(use_compression) == 0)
@@ -1736,7 +1757,7 @@ public class MdsDataProvider
             }
             else
             {
-//System.out.println("connected");
+            if (DEGUB.ON){System.out.println("connected");}
                 connected = true;
                 updateWorker = new UpdateWorker();
                 updateWorker.start();
@@ -1751,6 +1772,7 @@ public class MdsDataProvider
     
     protected synchronized boolean CheckOpen(String experiment, long shot) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.CheckOpen(\""+experiment+"\", "+shot+")");}
         int status;
         if (!connected)
         {
@@ -1763,7 +1785,7 @@ public class MdsDataProvider
                     error = "Cannot connect to data server";
                 return false;
             }
-//System.out.println("connected");
+            if (DEGUB.ON){System.out.println(">> connected");}
             connected = true;
             updateWorker = new UpdateWorker();
             updateWorker.start();
@@ -1820,6 +1842,7 @@ public class MdsDataProvider
 
     protected boolean NotYetString(String in)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.NotYetString(\""+in+"\")");}
         int i;
         if (in.charAt(0) == '\"')
         {
@@ -1835,6 +1858,7 @@ public class MdsDataProvider
 
     protected boolean NotYetNumber(String in)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.NotYetNumber(\""+in+"\")");}
         boolean ris;
         ris = false;
         try
@@ -1845,13 +1869,12 @@ public class MdsDataProvider
         {
             ris = true;
         }
-
         return ris;
     }
 
-    public synchronized void AddUpdateEventListener(UpdateEventListener l,
-        String event_name) throws IOException
+    public synchronized void AddUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.AddUpdateEventListener(l,"+event_name+")");}
         int eventid;
         String error;
 
@@ -1861,9 +1884,9 @@ public class MdsDataProvider
         mds.MdsSetEvent(l, event_name);
     }
 
-    public synchronized void RemoveUpdateEventListener(UpdateEventListener l,
-        String event_name) throws IOException
+    public synchronized void RemoveUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.RemoveUpdateEventListener(l,"+event_name+")");}
         int eventid;
         String error;
 
@@ -1875,6 +1898,7 @@ public class MdsDataProvider
 
     public synchronized void AddConnectionListener(ConnectionListener l)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.AddConnectionListener(l)");}
         if (mds == null)
         {
             return;
@@ -1884,6 +1908,7 @@ public class MdsDataProvider
 
     public synchronized void RemoveConnectionListener(ConnectionListener l)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.RemoveConnectionListener(l)");}
         if (mds == null)
         {
             return;
@@ -1893,6 +1918,7 @@ public class MdsDataProvider
 
     protected void DispatchConnectionEvent(ConnectionEvent e)
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.DispatchConnectionEvent(e)");}
         if (mds == null)
         {
             return;
@@ -1908,7 +1934,7 @@ public class MdsDataProvider
 
     public int InquireCredentials(JFrame f, DataServerItem server_item)
     {
-
+        if (DEGUB.ON){System.out.println("MdsDataProvider.InquireCredentials(f,server_item)");}
         mds.setUser(server_item.user);
         is_tunneling = false;
         if (server_item.tunnel_port != null &&
@@ -1949,9 +1975,10 @@ public class MdsDataProvider
         return true;
     }
 
-    protected String GetStringValue(String expr) throws IOException
+    protected String GetStringValue(String expression) throws IOException
     {
-        String out = GetString(expr);
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetStringValue(\""+expression+"\")");}
+        String out = GetString(expression);
         if (out == null || out.length() == 0 || error != null)
         {
             error = null;
@@ -1963,12 +1990,12 @@ public class MdsDataProvider
         return out;
     }
 
-    protected int[] GetNumDimensions(String expr) throws IOException
+    protected int[] GetNumDimensions(String expression) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsDataProvider.GetNumDimensions(\""+expression+"\")");}
         //return GetIntArray(in_y);
         //Gabriele June 2013: reduce dimension if one component is 1
-//System.out.println("GetNumDimension "+expr+" "+GetString("_jscope_test"));
-        int [] fullDims = GetIntArray("shape("+expr+")");
+        int [] fullDims = GetIntArray("shape("+expression+")");
 		if( fullDims == null )
 			return null;
 
@@ -1986,8 +2013,8 @@ public class MdsDataProvider
         {
             if(fullDims[i] != 1)
                 retDims[j++] = fullDims[i];
-         }
-         return retDims;
+        }
+        return retDims;
     }
 
     static class RealArray
@@ -2000,6 +2027,7 @@ public class MdsDataProvider
 
         RealArray(float[] floatArray)
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.RealArray(floatArray)");}
             this.floatArray = floatArray;
             isDouble = false;
             isLong = false;
@@ -2007,20 +2035,22 @@ public class MdsDataProvider
 
         RealArray(double[] doubleArray)
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.RealArray(doubleArray)");}
             this.doubleArray = doubleArray;
             isDouble = true;
             isLong = false;
-       }
+        }
 
-       RealArray(long[] longArray)
-       {
-           this.longArray = longArray;
-           for(int i = 0; i < longArray.length; i++)
-               longArray[i] = jScopeFacade.convertFromSpecificTime(longArray[i]);
-
-           isDouble = false;
-           isLong = true;
-      }
+        RealArray(long[] longArray)
+        {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.RealArray(longArray)");}
+            this.longArray = longArray;
+            for(int i = 0; i < longArray.length; i++)
+                longArray[i] = jScopeFacade.convertFromSpecificTime(longArray[i]);
+            
+            isDouble = false;
+            isLong = true;
+        }
 
         boolean isDouble()
         {
@@ -2034,6 +2064,7 @@ public class MdsDataProvider
 
         float[] getFloatArray()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.RealArray.getFloatArray()");}
             if(isLong) return null;
 
             if (isDouble && floatArray == null && doubleArray != null)
@@ -2047,6 +2078,7 @@ public class MdsDataProvider
 
         double[] getDoubleArray()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.RealArray.getDoubleArray()");}
             if(isLong) return null;
 
             if (!isDouble && floatArray != null && doubleArray == null)
@@ -2060,9 +2092,9 @@ public class MdsDataProvider
 
         long[] getLongArray()
         {
+            if (DEGUB.ON){System.out.println("MdsDataProvider.RealArray.getLongArray()");}
             if(isDouble) return null;
             return longArray;
         }
-
     }
 }
