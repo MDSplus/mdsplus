@@ -1,4 +1,68 @@
-commit 8bddcae469f58548679b49236103aaa868ca742c (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 6bca5dbbe9b5b9e6243113df2ed659ade54c4872 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: ba3a52d b5efa13
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 14 14:58:23 2015 -0400
+
+    Merge pull request #26 from zack-vii/alpha_copy_ans
+    
+    unused stuff
+
+commit ba3a52d35041a86b9f058628c8d98070b423ef10
+Merge: 3da33d8 f52e601
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 14 14:57:19 2015 -0400
+
+    Merge pull request #25 from zack-vii/alpha__mdsshr
+    
+    _mdsshr removed duplicated declaration
+
+commit 3da33d88629991ba6b557b9dedf6239f82024f1c
+Merge: 3aec63d bddcc6d
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 14 09:10:23 2015 -0400
+
+    Merge pull request #31 from zack-vii/alpha__descriptor_unicode
+    
+    Rearraged _descriptors (specific>generic)
+
+commit 3aec63d7243bb25b0098610399fd86d7f438dd4a
+Merge: 290d2a1 9e4cd1a
+Author: Tom Fredian <twf@psfc.mit.edu>
+Date:   Fri Aug 14 09:05:14 2015 -0400
+
+    Merge pull request #30 from zack-vii/alpha__tdishr_avoid_eval
+    
+    replace eval with *argin
+
+commit bddcc6db9a56c937bef18649709c089cab69b4b6
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Aug 14 14:53:01 2015 +0200
+
+    Rearraged _descriptors (specific>generic)
+    
+    The order in _descriptor is important. The more generic types should be
+    checked last as e.g. a Nid is a subclass of int. therefore int should be
+    checked for after Nid in order to preserve the Nid properties.
+
+commit 9e4cd1a0d860849cee49d92d01dc69bcd64ac9ec
+Author: zack-vii <zack.vii@live.com>
+Date:   Fri Aug 14 14:43:27 2015 +0200
+
+    replace eval with *argin
+    
+    I am not 100% this is there since the beginning but *arg is a much
+    better and saver way to parse inputs dynamically. The argument parsing
+    is a helper-function to be used by TdiCompile and TdiExecute. it turns
+    the tuple of arguments into a list of pointers. The *argin expands the
+    list into individual input arguments
+
+commit 290d2a142078bd929b63b7f853c7f12645c6427f (tag: refs/tags/alpha_release-7-0-138)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Thu Aug 13 23:06:58 2015 -0400
+
+    New release ---- alpha_release-7-0-138
+
+commit 8bddcae469f58548679b49236103aaa868ca742c
 Merge: b6f82bf 923f9c9
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Aug 13 21:33:22 2015 -0400
@@ -41,6 +105,24 @@ Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Thu Aug 13 14:30:04 2015 -0400
 
     Remove CachedTreeNode class, threading import and fixed the Tree() constructor
+
+commit b5efa130ed14779f0d66ea0d5db487e05796f460
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Aug 13 20:25:02 2015 +0200
+
+    unused stuff
+    
+    mdsdata,2: copy is never used
+    _tresshr,738:  ans is never used
+
+commit f52e601b4979c2058c02e12d2a02e181aa9daee9
+Author: zack-vii <zack.vii@live.com>
+Date:   Thu Aug 13 20:00:58 2015 +0200
+
+    _mdsshr removed duplicated declaration
+    
+    MdsCompareXd has been declared twice. first one is overwritten by second
+    one
 
 commit 7dbec189f53dafbeb665bdb3c6b7df1b21d45b61 (tag: refs/tags/alpha_release-7-0-137)
 Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
