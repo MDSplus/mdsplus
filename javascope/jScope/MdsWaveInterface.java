@@ -6,9 +6,13 @@ import java.io.*;
 import java.awt.*;
 import java.util.*;
 
-class MdsWaveInterface
-    extends WaveInterface
+class MdsWaveInterface extends WaveInterface
 {
+    public final class DEGUB {
+    //set to false to allow compiler to identify and eliminate
+    //unreachable code
+        public static final boolean ON = true;
+    }
 
     public String in_upd_event, last_upd_event;
 
@@ -31,323 +35,17 @@ class MdsWaveInterface
 
     public String previous_shot = "";
 
-    public MdsWaveInterface(Waveform wave, DataProvider dp,
-                            jScopeDefaultValues def_vals, boolean enable_cache)
+    public MdsWaveInterface(Waveform wave, DataProvider dp, jScopeDefaultValues def_vals, boolean enable_cache)
     {
         super(dp);
+        if (DEGUB.ON){System.out.println("MdsWaveInterface("+wave+", "+dp+", "+def_vals+", "+enable_cache+")");}
         setDefaultsValues(def_vals);
         EnableCache(enable_cache);
         this.wave = wave;
     }
-
-    public void setDefaultsValues(jScopeDefaultValues def_vals)
-    {
-        this.def_vals = def_vals;
-        default_is_update = false;
-        this.def_vals.setIsEvaluated(false);
-    }
-
-    public String GetDefaultValue(int i, boolean def_flag)
-    {
-        String out = null;
-
-        switch (i)
-        {
-            case MdsWaveInterface.B_title:
-                out = def_flag ? def_vals.title_str : cin_title;
-                break;
-            case MdsWaveInterface.B_shot:
-                out = def_flag ? def_vals.shot_str : cin_shot;
-                break;
-            case MdsWaveInterface.B_exp:
-                out = def_flag ? def_vals.experiment_str : cexperiment;
-                break;
-            case MdsWaveInterface.B_x_max:
-                if (is_image)
-                    out = def_flag ? def_vals.xmax : cin_timemax;
-                else
-                    out = def_flag ? def_vals.xmax : cin_xmax;
-                break;
-            case MdsWaveInterface.B_x_min:
-                if (is_image)
-                    out = def_flag ? def_vals.xmin : cin_timemin;
-                else
-                    out = def_flag ? def_vals.xmin : cin_xmin;
-                break;
-            case MdsWaveInterface.B_x_label:
-                out = def_flag ? def_vals.xlabel : cin_xlabel;
-                break;
-            case MdsWaveInterface.B_y_max:
-                out = def_flag ? def_vals.ymax : cin_ymax;
-                break;
-            case MdsWaveInterface.B_y_min:
-                out = def_flag ? def_vals.ymin : cin_ymin;
-                break;
-            case MdsWaveInterface.B_y_label:
-                out = def_flag ? def_vals.ylabel : cin_ylabel;
-                break;
-            case MdsWaveInterface.B_event:
-                out = def_flag ? def_vals.upd_event_str : cin_upd_event;
-                break;
-            case MdsWaveInterface.B_default_node:
-                out = def_flag ? def_vals.def_node_str : cin_def_node;
-                break;
-            case MdsWaveInterface.B_update:
-                out = def_flag ? "" + def_vals.upd_limits : "" + cin_upd_limits;
-                break;
-        }
-        return out;
-    }
-
-    public void UpdateDefault()
-    {
-        boolean def_flag;
-        int bit;
-
-        if (default_is_update)
-            return;
-        default_is_update = true;
-
-        bit = MdsWaveInterface.B_title;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_title = GetDefaultValue(bit, def_flag);
-
-        /*
-        bit = MdsWaveInterface.B_shot;
-        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
-        in_shot       = GetDefaultValue(bit ,  def_flag);
-        */
-
-        bit = MdsWaveInterface.B_exp;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        experiment = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_x_max;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        if (is_image)
-        {
-            in_timemax = GetDefaultValue(bit, def_flag);
-            in_xmax = cin_xmax;
-        }
-        else
-            in_xmax = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_x_min;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        if (is_image)
-        {
-            in_timemin = GetDefaultValue(bit, def_flag);
-            in_xmin = cin_xmin;
-        }
-        else
-            in_xmin = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_x_label;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_xlabel = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_y_max;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_ymax = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_y_min;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_ymin = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_y_label;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_ylabel = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_default_node;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_def_node = GetDefaultValue(bit, def_flag);
-
-        bit = MdsWaveInterface.B_update;
-        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
-        in_upd_limits = (new Boolean(GetDefaultValue(bit, def_flag))).
-        booleanValue();
-
-        /*
-        bit = MdsWaveInterface.B_event;
-        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
-        in_upd_event = GetDefaultValue(bit , def_flag );
-        */
-    }
-
-    /**
-      Check which shot string the wave interface
-      used:
-      0 wave setup defined shot;
-      1 global setting defined shot
-      2 main scope defined shot
-     */
-
-    public int GetShotIdx()
-    {
-        String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
-            getMainShotStr();
-        if (UseDefaultShot())
-        {
-            if (main_shot_str != null && main_shot_str.length() != 0)
-                return 2;
-            else
-                return 1;
-        }
-        else
-            return 0;
-    }
-
-    public String GetUsedShot()
-    {
-        String out = null;
-
-        switch (GetShotIdx())
-        {
-            case 0:
-                out = cin_shot;
-                break;
-            case 1:
-                out = this.def_vals.shot_str;
-                break;
-            case 2:
-                out = ( (jScopeWaveContainer) (wave.getParent())).
-                    getMainShotStr();
-                break;
-        }
-        return out;
-    }
-
-    public String Update() throws IOException
-    {
-
-        int mode = this.wave.GetMode();
-
-        try
-        {
-            this.wave.SetMode(Waveform.MODE_WAIT);
-
-            UpdateShot();
-            if (error == null)
-            {
-                UpdateDefault();
-                /* ces 2015
-                if (in_def_node != null)
-                {
-                    String def = in_def_node;
-                    if (in_def_node.indexOf("\\") == 0)
-                        def = "\\\\\\" + in_def_node;
-
-                    dp.SetEnvironment("__default_node = " + def);
-                }
-                */
-            }
-            else
-            {
-                signals = null;
-            }
-
-            this.wave.SetMode(mode);
-
-        }
-        catch (IOException exc)
-        {
-            this.wave.SetMode(mode);
-            throw (exc);
-        }
-        return error;
-    }
-
-    static public String containMainShot(String in_shot, String m_shot)
-    {
-        int idx;
-        String out = in_shot;
-        if ( (in_shot != null) && (idx = in_shot.indexOf("#")) != -1)
-        {
-            if (m_shot != null)
-                out = "[" + in_shot.substring(0, idx) + m_shot +
-                    in_shot.substring(idx + 1) + "]";
-            else
-                out = "[" + in_shot.substring(0, idx) + "[]" +
-                    in_shot.substring(idx + 1) + "]";
-        }
-        return out;
-    }
-
-    public void UpdateShot() throws IOException
-    {
-        long curr_shots[] = null;
-        
-        
-        String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
-            getMainShotStr();
-        String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
-/* 12-2-2009 
-        if( !getModified() && in_shot != null && c_shot_str != null)
-        {
-        
-            setModified( !in_shot.equals( c_shot_str ) );
-        
-            if(! getModified() )
-                return;
-        }
- */       
-        error = null;
-
-/*
-Fix bug : shot expression must be always evaluated.
-        if (c_shot_str != null)
-        {
-            if (previous_shot.equals(c_shot_str) && !previous_shot.equals("0"))
-                return;
-            previous_shot = new String(c_shot_str);
-        }
-        else
-        {
-            if (previous_shot.equals("not defined"))
-                return;
-            previous_shot = "not defined";
-        }
-*/
-        if (UseDefaultShot())
-        {
-
-            if (main_shot_str != null && main_shot_str.length() != 0)
-            {
-                curr_shots = ( (jScopeWaveContainer) (wave.getParent())).
-                    getMainShots();
-                if (curr_shots == null)
-                    error = "Main Shot evaluation error: " +
-                        ( (jScopeWaveContainer) (wave.getParent())).
-                        getMainShotError(true);
-            }
-            else
-            {
-                if (def_vals.getIsEvaluated() && def_vals.shots != null )
-                    curr_shots = def_vals.shots;
-                else
-                {
-                    curr_shots = GetShotArray(containMainShot(def_vals.shot_str,
-                        main_shot_str));
-                    if (error == null)
-                    {
-                        def_vals.shots = curr_shots;
-                        def_vals.setIsEvaluated(false);
-                    }
-                }
-            }
-        }
-        else
-        {
-            curr_shots = GetShotArray(containMainShot(cin_shot, main_shot_str));
-        }
-
-        in_shot = c_shot_str;
-        if (!UpdateShot(curr_shots))
-            previous_shot = "not defined";
-    }
-
     public MdsWaveInterface(MdsWaveInterface wi)
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface("+wi+")");}
         previous_shot = wi.previous_shot;
         cache_enabled = wi.cache_enabled;
         provider = wi.provider;
@@ -566,13 +264,325 @@ Fix bug : shot expression must be always evaluated.
         //dp = wi.dp;
     }
 
+    public void setDefaultsValues(jScopeDefaultValues def_vals)
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.setDefaultsValues("+def_vals+")");}
+        this.def_vals = def_vals;
+        default_is_update = false;
+        this.def_vals.setIsEvaluated(false);
+    }
+
+    public String GetDefaultValue(int i, boolean def_flag)
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.GetDefaultValue("+i+", "+def_flag+")");}
+        String out = null;
+
+        switch (i)
+        {
+            case MdsWaveInterface.B_title:
+                out = def_flag ? def_vals.title_str : cin_title;
+                break;
+            case MdsWaveInterface.B_shot:
+                out = def_flag ? def_vals.shot_str : cin_shot;
+                break;
+            case MdsWaveInterface.B_exp:
+                out = def_flag ? def_vals.experiment_str : cexperiment;
+                break;
+            case MdsWaveInterface.B_x_max:
+                if (is_image)
+                    out = def_flag ? def_vals.xmax : cin_timemax;
+                else
+                    out = def_flag ? def_vals.xmax : cin_xmax;
+                break;
+            case MdsWaveInterface.B_x_min:
+                if (is_image)
+                    out = def_flag ? def_vals.xmin : cin_timemin;
+                else
+                    out = def_flag ? def_vals.xmin : cin_xmin;
+                break;
+            case MdsWaveInterface.B_x_label:
+                out = def_flag ? def_vals.xlabel : cin_xlabel;
+                break;
+            case MdsWaveInterface.B_y_max:
+                out = def_flag ? def_vals.ymax : cin_ymax;
+                break;
+            case MdsWaveInterface.B_y_min:
+                out = def_flag ? def_vals.ymin : cin_ymin;
+                break;
+            case MdsWaveInterface.B_y_label:
+                out = def_flag ? def_vals.ylabel : cin_ylabel;
+                break;
+            case MdsWaveInterface.B_event:
+                out = def_flag ? def_vals.upd_event_str : cin_upd_event;
+                break;
+            case MdsWaveInterface.B_default_node:
+                out = def_flag ? def_vals.def_node_str : cin_def_node;
+                break;
+            case MdsWaveInterface.B_update:
+                out = def_flag ? "" + def_vals.upd_limits : "" + cin_upd_limits;
+                break;
+        }
+        return out;
+    }
+
+    public void UpdateDefault()
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.UpdateDefault()");}
+        boolean def_flag;
+        int bit;
+
+        if (default_is_update)
+            return;
+        default_is_update = true;
+
+        bit = MdsWaveInterface.B_title;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_title = GetDefaultValue(bit, def_flag);
+
+        /*
+        bit = MdsWaveInterface.B_shot;
+        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+        in_shot       = GetDefaultValue(bit ,  def_flag);
+        */
+
+        bit = MdsWaveInterface.B_exp;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        experiment = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_x_max;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        if (is_image)
+        {
+            in_timemax = GetDefaultValue(bit, def_flag);
+            in_xmax = cin_xmax;
+        }
+        else
+            in_xmax = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_x_min;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        if (is_image)
+        {
+            in_timemin = GetDefaultValue(bit, def_flag);
+            in_xmin = cin_xmin;
+        }
+        else
+            in_xmin = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_x_label;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_xlabel = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_y_max;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_ymax = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_y_min;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_ymin = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_y_label;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_ylabel = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_default_node;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_def_node = GetDefaultValue(bit, def_flag);
+
+        bit = MdsWaveInterface.B_update;
+        def_flag = ( (defaults & (1 << bit)) == 1 << bit);
+        in_upd_limits = (new Boolean(GetDefaultValue(bit, def_flag))).
+        booleanValue();
+
+        /*
+        bit = MdsWaveInterface.B_event;
+        def_flag =    ((defaults & (1<<bit)) == 1<<bit);
+        in_upd_event = GetDefaultValue(bit , def_flag );
+        */
+    }
+
+    /**
+      Check which shot string the wave interface
+      used:
+      0 wave setup defined shot;
+      1 global setting defined shot
+      2 main scope defined shot
+     */
+
+    public int GetShotIdx()
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.GetShotIdx()");}
+        String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
+            getMainShotStr();
+        if (UseDefaultShot())
+        {
+            if (main_shot_str != null && main_shot_str.length() != 0)
+                return 2;
+            else
+                return 1;
+        }
+        else
+            return 0;
+    }
+
+    public String GetUsedShot()
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.GetUsedShot()");}
+        String out = null;
+
+        switch (GetShotIdx())
+        {
+            case 0:
+                out = cin_shot;
+                break;
+            case 1:
+                out = this.def_vals.shot_str;
+                break;
+            case 2:
+                out = ( (jScopeWaveContainer) (wave.getParent())).
+                    getMainShotStr();
+                break;
+        }
+        return out;
+    }
+
+    public String Update() throws IOException
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.Update()");}
+        int mode = this.wave.GetMode();
+
+        try
+        {
+            this.wave.SetMode(Waveform.MODE_WAIT);
+
+            UpdateShot();
+            if (error == null)
+            {
+                UpdateDefault();
+                /* ces 2015
+                if (in_def_node != null)
+                {
+                    String def = in_def_node;
+                    if (in_def_node.indexOf("\\") == 0)
+                        def = "\\\\\\" + in_def_node;
+
+                    dp.SetEnvironment("__default_node = " + def);
+                }
+                */
+            }
+            else
+            {
+                signals = null;
+            }
+
+            this.wave.SetMode(mode);
+
+        }
+        catch (IOException exc)
+        {
+            this.wave.SetMode(mode);
+            throw (exc);
+        }
+        return error;
+    }
+
+    static public String containMainShot(String in_shot, String m_shot)
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.containMainShot(\""+in_shot+"\", \""+m_shot+"\")");}
+        int idx;
+        String out = in_shot;
+        if ( (in_shot != null) && (idx = in_shot.indexOf("#")) != -1)
+        {
+            if (m_shot != null)
+                out = "[" + in_shot.substring(0, idx) + m_shot +
+                    in_shot.substring(idx + 1) + "]";
+            else
+                out = "[" + in_shot.substring(0, idx) + "[]" +
+                    in_shot.substring(idx + 1) + "]";
+        }
+        return out;
+    }
+
+    public void UpdateShot() throws IOException
+    {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.UpdateShot()");}
+        long curr_shots[] = null;
+
+        String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
+            getMainShotStr();
+        String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
+/* 12-2-2009 
+        if( !getModified() && in_shot != null && c_shot_str != null)
+        {
+        
+            setModified( !in_shot.equals( c_shot_str ) );
+        
+            if(! getModified() )
+                return;
+        }
+ */       
+        error = null;
+
+/*
+Fix bug : shot expression must be always evaluated.
+        if (c_shot_str != null)
+        {
+            if (previous_shot.equals(c_shot_str) && !previous_shot.equals("0"))
+                return;
+            previous_shot = new String(c_shot_str);
+        }
+        else
+        {
+            if (previous_shot.equals("not defined"))
+                return;
+            previous_shot = "not defined";
+        }
+*/
+        if (UseDefaultShot())
+        {
+            if (main_shot_str != null && main_shot_str.length() != 0)
+            {
+                curr_shots = ( (jScopeWaveContainer) (wave.getParent())).
+                    getMainShots();
+                if (curr_shots == null)
+                    error = "Main Shot evaluation error: " +
+                        ( (jScopeWaveContainer) (wave.getParent())).
+                        getMainShotError(true);
+            }
+            else
+            {
+                if (def_vals.getIsEvaluated() && def_vals.shots != null )
+                    curr_shots = def_vals.shots;
+                else
+                {
+                    curr_shots = GetShotArray(containMainShot(def_vals.shot_str,
+                        main_shot_str));
+                    if (error == null)
+                    {
+                        def_vals.shots = curr_shots;
+                        def_vals.setIsEvaluated(false);
+                    }
+                }
+            }
+        }
+        else
+        {
+            curr_shots = GetShotArray(containMainShot(cin_shot, main_shot_str));
+        }
+        in_shot = c_shot_str;
+        if (!UpdateShot(curr_shots))
+            previous_shot = "not defined";
+    }
+
     public boolean UseDefaultShot()
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.UseDefaultShot()");}
         return ( (defaults & (1 << B_shot)) != 0);
     }
 
     public String getErrorString() //boolean brief_error)
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.getErrorString()");}
         String full_error = null;
 
         if (w_error == null || w_error.length == 0)
@@ -639,12 +649,14 @@ Fix bug : shot expression must be always evaluated.
     public void SetDataProvider(DataProvider _dp)
     {
         super.SetDataProvider(_dp);
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.SetDataProvider("+_dp+")");}
         default_is_update = false;
         previous_shot = "";
     }
 
     public synchronized void refresh() throws Exception
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.refresh()");}
         try
         {
             error = Update();
@@ -669,6 +681,7 @@ Fix bug : shot expression must be always evaluated.
     public void Erase()
     {
         super.Erase();
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.Erase()");}
         in_def_node = null;
         in_upd_event = null;
         last_upd_event = null;
@@ -694,6 +707,7 @@ Fix bug : shot expression must be always evaluated.
 
     public void CreateVector()
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.CreateVector()");}
         in_label = new String[num_waves];
         shots = new long[num_waves];
         in_y = new String[num_waves];
@@ -720,6 +734,7 @@ Fix bug : shot expression must be always evaluated.
 
     public void AddEvent(UpdateEventListener w) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.AddEvent("+w+")");}
         int bit = MdsWaveInterface.B_event;
         boolean def_flag = ( (defaults & (1 << bit)) == 1 << bit);
         String new_event = GetDefaultValue(bit, def_flag);
@@ -731,6 +746,7 @@ Fix bug : shot expression must be always evaluated.
 
     public void RemoveEvent(UpdateEventListener w) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.RemoveEvent("+w+")");}
         if (in_upd_event != null)
         {
             dp.RemoveUpdateEventListener(w, in_upd_event);
@@ -738,16 +754,15 @@ Fix bug : shot expression must be always evaluated.
         }
     }
 
-    public void RemoveEvent(UpdateEventListener w, String event) throws
-        IOException
+    public void RemoveEvent(UpdateEventListener w, String event) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.RemoveEvent("+w+", \""+event+"\")");}
         dp.RemoveUpdateEventListener(w, event);
     }
 
-    public void AddEvent(UpdateEventListener w, String event) throws
-        IOException
+    public void AddEvent(UpdateEventListener w, String event) throws IOException
     {
-
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.AddEvent("+w+", \""+event+"\")");}
         if (in_upd_event != null && in_upd_event.length() != 0)
         {
             if (event == null || event.length() == 0)
@@ -776,6 +791,7 @@ Fix bug : shot expression must be always evaluated.
 
     public void ToFile(PrintWriter out, String prompt) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.ToFile("+out+", \""+prompt+"\")");}
         int exp, exp_n, sht, sht_n, cnum_shot, eval_shot = 1;
 
         cnum_shot = num_shot;
@@ -925,6 +941,7 @@ Fix bug : shot expression must be always evaluated.
 
     public String mode1DCodeToString(int code)
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.mode1DCodeToString("+code+")");}
         switch (code)
         {
             case Signal.MODE_LINE:
@@ -939,6 +956,7 @@ Fix bug : shot expression must be always evaluated.
 
     public int mode1DStringToCode(String mode)
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.mode1DStringToCode(\""+mode+"\")");}
         if (mode.equals("Line"))
             return Signal.MODE_LINE;
         if (mode.equals("Noline"))
@@ -950,6 +968,7 @@ Fix bug : shot expression must be always evaluated.
 
     public String mode2DCodeToString(int code)
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.mode2DCodeToString("+code+")");}
         switch (code)
         {
             case Signal.MODE_XZ:
@@ -964,6 +983,7 @@ Fix bug : shot expression must be always evaluated.
 
     public int mode2DStringToCode(String mode)
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.mode2DStringToCode(\""+mode+"\")");}
         if (mode.equals("xz(y)"))
             return Signal.MODE_XZ;
         if (mode.equals("yz(x)"))
@@ -975,6 +995,7 @@ Fix bug : shot expression must be always evaluated.
 
     public void FromFile(Properties pr, String prompt, ColorMapDialog cmd) throws IOException
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.mode2DStringToCode("+pr+", \""+prompt+"\", "+cmd+")");}
         String prop = null;
         int len, pos, num_expr = 0;
 
@@ -1349,6 +1370,7 @@ Fix bug : shot expression must be always evaluated.
 
     public void mapColorIndex(int colorMap[])
     {
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.mapColorIndex("+colorMap+")");}
         if (colorMap == null)
             return;
         try
@@ -1365,9 +1387,9 @@ Fix bug : shot expression must be always evaluated.
     public void setExperiment(String experiment)
     {
         super.setExperiment(experiment);
+        if (DEGUB.ON){System.out.println("MdsWaveInterface.setExperiment(\""+experiment+"\")");}
         cexperiment = experiment;
         //Remove default
         defaults &= ~(1 << MdsWaveInterface.B_exp);
     }
-
 }

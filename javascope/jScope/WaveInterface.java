@@ -790,7 +790,7 @@ public class WaveInterface
         if (modified)
             evaluated = null;
 
-        if ( (in_y == null || in_x == null))
+        if (in_y == null || in_x == null)
         {
             error = "Missing Y or X values";
             signals = null;
@@ -846,8 +846,7 @@ public class WaveInterface
             error = dp.ErrorString();
             return 0;
         }
-
-        //Compute title
+        if (DEGUB.ON){System.out.println(">> Compute title");}
         if (in_title != null && (in_title.trim()).length() != 0)
         {
             title = dp.GetString(in_title);
@@ -858,7 +857,7 @@ public class WaveInterface
             }
         }
 
-        //compute limits
+        if (DEGUB.ON){System.out.println(">> Compute limits");}
         if (in_xmin != null &&
             (in_xmin.trim()).length() != 0 &&
             in_upd_limits)
@@ -942,8 +941,7 @@ public class WaveInterface
                 timemin = -Double.MAX_VALUE;
         }
 
-        //Compute x label, y_label
-
+        if (DEGUB.ON){System.out.println(">> Compute x label");}
         if (in_xlabel != null && (in_xlabel.trim()).length() != 0)
         {
             xlabel = dp.GetString(in_xlabel);
@@ -953,6 +951,7 @@ public class WaveInterface
                 return 0;
             }
         }
+        if (DEGUB.ON){System.out.println(">> Compute y label");}
         if (in_ylabel != null && (in_ylabel.trim()).length() != 0)
         {
             ylabel = dp.GetString(in_ylabel);
@@ -1052,8 +1051,7 @@ public class WaveInterface
             {
                 InitializeFrames();
                 if (frames != null)
-                    frames.SetViewRect( (int) xmin, (int) ymin, (int) xmax,
-                                   (int) ymax);
+                    frames.SetViewRect( (int) xmin, (int) ymin, (int) xmax, (int) ymax);
                 error = curr_error;
             }
             return;
@@ -1083,7 +1081,7 @@ public class WaveInterface
                 {
                     sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
                     setLimits(signals[curr_wave]);
-                 }
+                }
             }
         }
         modified = false;
