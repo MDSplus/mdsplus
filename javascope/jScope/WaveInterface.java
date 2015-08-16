@@ -15,6 +15,11 @@ import java.util.Vector;
 
 public class WaveInterface
 {
+    public final class DEGUB {
+    //set to false to allow compiler to identify and eliminate
+    //unreachable code
+        public static final boolean ON = true;
+    }
     static SignalBox sig_box = new SignalBox();
 
     static final int MAX_NUM_SHOT = 30;
@@ -93,34 +98,58 @@ public class WaveInterface
 
     ColorMap colorMap = new ColorMap();
 
-
-
     public WaveInterface()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface()");}
         CreateWaveInterface(null, null);
     }
 
     public WaveInterface(Waveform wave)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface("+wave+")");}
         CreateWaveInterface(wave, null);
     }
 
     public WaveInterface(DataProvider dp)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface("+dp+")");}
         CreateWaveInterface(null, dp);
     }
 
     public WaveInterface(Waveform wave, DataProvider dp)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface("+wave+", "+dp+")");}
         CreateWaveInterface(wave, dp);
+    }
+
+    private void CreateWaveInterface(Waveform wave, DataProvider dp)
+    {
+        if (DEGUB.ON){System.out.println("WaveInterface.CreateWaveInterface("+wave+", "+dp+")");}
+        this.wave = wave;
+        this.dp = dp;
+        if (dp == null)
+        experiment = null;
+        shots = null;
+        in_xmin = in_xmax = in_ymin = in_ymax = in_title = null;
+        in_xlabel = in_ylabel = in_timemax = in_timemin = null;
+        markers = null;
+        interpolates = null;
+        mode2D = null;
+        mode1D = null;
+        x_log = y_log = false;
+        in_upd_limits = true;
+        show_legend = false;
+        reversed = false;
     }
 
     public void setExperiment(String experiment)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.setExperiment(\""+experiment+"\")");}
         this.experiment = experiment;
     }
     public void Erase()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.Erase()");}
         num_waves = 0;
         in_label = null;
         in_x = null;
@@ -168,6 +197,7 @@ public class WaveInterface
 
     public void SetAsImage(boolean is_image)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.SetAsImage("+is_image+")");}
         this.is_image = is_image;
     }
 
@@ -181,6 +211,7 @@ public class WaveInterface
 
     static void WriteLine(PrintWriter out, String prompt, String value)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.WriteLine("+out+", \""+prompt+"\", \""+value+"\")");}
         if (value != null && value.length() != 0)
         {
             out.println(prompt + value);
@@ -189,6 +220,7 @@ public class WaveInterface
 
     static String TrimString(String s)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.TrimString(\""+s+"\")");}
         String s_new = new String();
         int new_pos = 0, old_pos = 0;
         while ( (new_pos = s.indexOf(" ", old_pos)) != -1)
@@ -202,6 +234,7 @@ public class WaveInterface
 
     static String RemoveNewLineCode(String s)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.RemoveNewLineCode(\""+s+"\")");}
         String y_new = new String();
         int new_pos = 0, old_pos = 0;
 
@@ -217,6 +250,7 @@ public class WaveInterface
 
     static String AddNewLineCode(String s)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.AddNewLineCode(\""+s+"\")");}
         String s_new = new String();
         int new_pos = 0, old_pos = 0;
 
@@ -232,29 +266,10 @@ public class WaveInterface
         return s_new;
     }
 
-    private void CreateWaveInterface(Waveform wave, DataProvider dp)
+    public void SetDataProvider(DataProvider dp)
     {
-        this.wave = wave;
-
+        if (DEGUB.ON){System.out.println("WaveInterface.SetDataProvider("+dp+")");}
         this.dp = dp;
-        if (dp == null)
-        experiment = null;
-        shots = null;
-        in_xmin = in_xmax = in_ymin = in_ymax = in_title = null;
-        in_xlabel = in_ylabel = in_timemax = in_timemin = null;
-        markers = null;
-        interpolates = null;
-        mode2D = null;
-        mode1D = null;
-        x_log = y_log = false;
-        in_upd_limits = true;
-        show_legend = false;
-        reversed = false;
-    }
-
-    public void SetDataProvider(DataProvider _dp)
-    {
-        dp = _dp;
         error = null;
         curr_error = null;
         w_error = null;
@@ -275,7 +290,7 @@ public class WaveInterface
 
     public void setSignalState(String name, boolean state)
     {
-
+        if (DEGUB.ON){System.out.println("WaveInterface.setSignalState(\""+name+"\", "+state+")");}
         if (num_waves != 0)
         {
             int ns = (num_shot == 0) ? 1 : num_shot;
@@ -321,6 +336,7 @@ public class WaveInterface
     
     public void SetLegendPosition(double x, double y)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.SetLegendPosition("+x+", "+y+")");}
         legend_x = x;
         legend_y = y;
         show_legend = true;
@@ -328,6 +344,7 @@ public class WaveInterface
 
     private String GetFirstLine(String str)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetFirstLine(\""+str+"\")");}
         int idx = str.indexOf("\n");
         if (idx != -1)
             return str.substring(0, idx);
@@ -337,6 +354,7 @@ public class WaveInterface
 
     public int GetNumEvaluatedSignal()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetNumEvaluatedSignal()");}
         if (signals == null)
             return 0;
         int i, n = 0;
@@ -358,11 +376,13 @@ public class WaveInterface
 
     public String getErrorTitle()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.getErrorTitle()");}
         return getErrorTitle(brief_error);
     }
 
     public String getErrorTitle(boolean brief)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.getErrorTitle("+brief+")");}
         int n_error = 0;
         String er = error;
 
@@ -411,6 +431,7 @@ public class WaveInterface
 
     public boolean GetSignalState(int i)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetSignalsState("+i+")");}
         boolean state = false;
         //int idx = i * (num_shot > 0 ? num_shot : 1);
         if (i < num_waves)
@@ -420,6 +441,7 @@ public class WaveInterface
 
     public boolean[] GetSignalsState()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetSignalsState()");}
         boolean state[] = null;
 
         if (num_waves != 0)
@@ -434,6 +456,7 @@ public class WaveInterface
 
     public String[] GetSignalsName()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetSignalsName()");}
         String name[] = null, s;
 
         if (num_waves != 0)
@@ -450,24 +473,27 @@ public class WaveInterface
         return name;
     }
 
-    
     public Frames getFrames()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.getFrames()");}
         return frames;
     }
     
     public void setFrames(Frames f)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.setFrames("+frames+")");}
         frames = f;
     }
     
     public void AddFrames(String frames)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.AddFrames(\""+frames+"\")");}
         AddFrames(frames, null);
     }
 
     public void AddFrames(String frames, String frames_time)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.AddFrames(\""+frames+"\", \""+frames_time+"\")");}
         SetAsImage(true);
         in_x = new String[1];
         in_y = new String[1];
@@ -477,11 +503,13 @@ public class WaveInterface
 
     public boolean AddSignal(String y_expr)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.AddSignal(\""+y_expr+"\")");}
         return AddSignal("", y_expr);
     }
 
     public boolean AddSignal(String x_expr, String y_expr)
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.AddSignal(\""+x_expr+"\", \""+y_expr+"\")");}
         String x[] = new String[1];
         String y[] = new String[1];
         x[0] = x_expr;
@@ -491,7 +519,7 @@ public class WaveInterface
 
     public boolean AddSignals(String x_expr[], String y_expr[])
     {
-
+        if (DEGUB.ON){System.out.println("WaveInterface.AddSignals(x_expr[], y_expr[])");}
         if (x_expr.length != y_expr.length || x_expr.length == 0)
             return false;
 
@@ -636,6 +664,7 @@ public class WaveInterface
 
     public boolean UpdateShot(long curr_shots[]) throws IOException
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.UpdateShot(curr_shots[])");}
         int l = 0, curr_num_shot;
 
         if (curr_shots == null)
@@ -755,6 +784,7 @@ public class WaveInterface
 
     public synchronized int StartEvaluate() throws IOException
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.StartEvaluate()");}
         error = null;
 
         if (modified)
@@ -932,6 +962,7 @@ public class WaveInterface
                 return 0;
             }
         }
+        if (DEGUB.ON){System.out.println("ymin="+ymin+",ymax="+ymax+",xmin="+xmin+",xmax="+xmax);}
         if (xmin > xmax)
             xmin = xmax;
         if (ymin > ymax)
@@ -942,6 +973,7 @@ public class WaveInterface
 
     public synchronized void EvaluateShot(long shot) throws Exception
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.EvaluateShot("+shot+")");}
         int curr_wave;
 
         if (is_image)
@@ -975,6 +1007,7 @@ public class WaveInterface
 
     public void setLimits()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.setLimits()");}
         try
         {
             for (int i = 0; i < signals.length; i++)
@@ -987,6 +1020,7 @@ public class WaveInterface
 
     public void setLimits(Signal s) throws Exception
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.setLimits(s)");}
         s.setXLimits(xmin, xmax, Signal.AT_CREATION);
         s.setYmin(ymin, Signal.AT_CREATION);
         s.setYmax(ymax, Signal.AT_CREATION);
@@ -994,6 +1028,7 @@ public class WaveInterface
 
     public boolean allEvaluated()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.allEvaluated()");}
         if (evaluated == null)
             return false;
         for (int curr_wave = 0; curr_wave < num_waves; curr_wave++)
@@ -1008,6 +1043,7 @@ public class WaveInterface
 
     public synchronized void EvaluateOthers() throws Exception
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.EvaluateOthers()");}
         int curr_wave;
 
         if (is_image)
@@ -1055,7 +1091,7 @@ public class WaveInterface
 
     private void CreateNewFramesClass(int image_type) throws IOException
     {
-
+        if (DEGUB.ON){System.out.println("WaveInterface.CreateNewFramesClass()");}
         if (image_type == FrameData.JAI_IMAGE)
         {
             try
@@ -1078,6 +1114,7 @@ public class WaveInterface
 
     private void InitializeFrames()
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.InitializeFrames()");}
         float f_time[];
         int j = 0, i = 0;
         curr_error = null;
@@ -1154,7 +1191,7 @@ public class WaveInterface
     
     static String processShotExpression(String shotExpr, String exp)
     {
-        
+        if (DEGUB.ON){System.out.println("WaveInterface.processShotExpression(\""+shotExpr+"\", "+exp+"\")");}
         String outStr = "";
         int idx = 0;
         int prevIdx = 0;
@@ -1185,9 +1222,9 @@ public class WaveInterface
         return outStr;
     }
     
-    static public long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws
-        IOException
+    static public long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws IOException
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetShotArray(\""+in_shots+"\", "+exp+"\", "+dp+")");}
         long shot_list[] = null;
         String error;
 
@@ -1222,9 +1259,9 @@ public class WaveInterface
         return shot_list;
     }
 
-    private Signal GetSignal(int curr_wave, double xmin, double xmax) throws
-        Exception
+    private Signal GetSignal(int curr_wave, double xmin, double xmax) throws Exception
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetSignal("+curr_wave+", "+xmin+", "+xmax+")");}
         Signal out_signal = null;
         int mode = this.wave.GetMode();
 
@@ -1270,15 +1307,14 @@ public class WaveInterface
         catch(IOException exc)
         {
             this.wave.SetMode(mode);
-            // 10-2-2009 throw(exc);
         }
         return out_signal;
     }
 
 
-    private Signal GetSignalFromProvider(int curr_wave, double xmin, double xmax) throws
-        IOException
+    private Signal GetSignalFromProvider(int curr_wave, double xmin, double xmax) throws IOException
     {
+        if (DEGUB.ON){System.out.println("WaveInterface.GetSignalFromProvider("+curr_wave+", "+xmin+", "+xmax+")");}
         WaveData up_err = null, low_err = null;
         WaveData wd = null;
         WaveData xwd = null;
@@ -1333,6 +1369,7 @@ public class WaveInterface
             {
                 xwd = dp.GetWaveData(in_x[curr_wave]);
                 xDimension = xwd.getNumDimension();
+                if (DEGUB.ON){System.out.println("xDimension = "+xDimension);}
            }
             catch (Exception exc)
             {

@@ -9,6 +9,11 @@ import java.util.*;
 
 class Frames extends Canvas
 {
+    public final class DEGUB {
+    //set to false to allow compiler to identify and eliminate
+    //unreachable code
+        public static final boolean ON = true;
+    }
     static final int ROI = 20;
 
     Vector frame_time = new Vector();
@@ -49,6 +54,36 @@ class Frames extends Canvas
             this.updateCount = updateCount;
         }
     }
+
+    Frames()
+    {
+        super();
+        if (DEGUB.ON){System.out.println("Frames()");}
+        img_width = -1;
+        img_height = -1;
+        cache = new FrameCache();
+    }
+
+    Frames(Frames frames)
+    {
+        this();
+        if (DEGUB.ON){System.out.println("Frames("+frames+")");}
+        Image img;
+
+        cache = new FrameCache(frames.cache);
+
+        if(frame_time.size() != 0)
+            frame_time.removeAllElements();
+
+        int num_frame = frames.getNumFrame();
+        float buf_values[] = null;
+        if(frames.zoom_rect != null)
+            zoom_rect = new Rectangle(frames.zoom_rect);
+        if(frames.view_rect != null)
+            view_rect = new Rectangle(frames.view_rect);
+        curr_frame_idx = frames.curr_frame_idx;
+    }
+
     class FrameCache
     {
         FrameData fd;
@@ -68,6 +103,7 @@ class Frames extends Canvas
 
         public FrameCache()
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache()");}
             this.fd = fd;
             recentFrames = new Hashtable();
             bitShift = 0;
@@ -77,6 +113,7 @@ class Frames extends Canvas
         }
         FrameCache(FrameCache fc)
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache("+fc+")");}
             fd = fc.fd;
             bitShift = 0;
             bitClip = false;
@@ -93,6 +130,7 @@ class Frames extends Canvas
         }
         void setFrameData(FrameData fd)
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.setFrameData("+fd+")");}
             this.fd = fd;
             try {
                 numFrames = fd.GetNumFrames();
@@ -100,12 +138,14 @@ class Frames extends Canvas
         }
         public void shiftImagePixel(int bitShift, boolean bitClip)
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.shiftImagePixel("+bitShift+", "+bitClip+")");}
             this.bitShift = bitShift;
             this.bitClip = bitClip;
             updateCount++;
          }
         void loadFrame(int idx) throws Exception
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.loadFrame("+idx+")");}
             frameType = fd.GetFrameType();
             frameDim = fd.GetFrameDimension();
             numFrames = fd.GetNumFrames();
@@ -240,6 +280,7 @@ class Frames extends Canvas
         }
         Image getImageAt(int idx) throws IOException
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.getImageAt("+idx+")");}
             FrameDescriptor fDesc = (FrameDescriptor)recentFrames.get(new Integer(idx));
             if(fDesc == null)
             {
@@ -312,6 +353,7 @@ class Frames extends Canvas
         }
         byte [] getBufferAt(int idx)
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.getBufferAt("+idx+")");}
             FrameDescriptor fDescr = (FrameDescriptor)recentFrames.get(new Integer(idx));
             if(fDescr == null)
             {
@@ -330,6 +372,7 @@ class Frames extends Canvas
         }
         float[] getValuesAt(int idx)
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.getValuesAt("+idx+")");}
             FrameDescriptor fDescr = (FrameDescriptor)recentFrames.get(new Integer(idx));
             if(fDescr == null)
             {
@@ -401,6 +444,7 @@ class Frames extends Canvas
         int getFrameType() {return frameType;}
         void setColorMap(ColorMap colorMap)
         {
+            if (DEGUB.ON){System.out.println("Frames.FrameCache.setColorMap("+colorMap+")");}
             this.colorMap = colorMap;
             updateCount++;
         }
@@ -410,36 +454,6 @@ class Frames extends Canvas
     } //End class FrameCache
     FrameCache cache;
 
-
-
-
-    Frames()
-    {
-        super();
-        img_width = -1;
-        img_height = -1;
-        cache = new FrameCache();
-    }
-
-    Frames(Frames frames)
-    {
-        this();
-        Image img;
-
-        cache = new FrameCache(frames.cache);
-
-        if(frame_time.size() != 0)
-            frame_time.removeAllElements();
-
-        int num_frame = frames.getNumFrame();
-        float buf_values[] = null;
-        if(frames.zoom_rect != null)
-            zoom_rect = new Rectangle(frames.zoom_rect);
-        if(frames.view_rect != null)
-            view_rect = new Rectangle(frames.view_rect);
-        curr_frame_idx = frames.curr_frame_idx;
-    }
-
     public int getFrameType()
     {
         return cache.getFrameType();
@@ -447,6 +461,7 @@ class Frames extends Canvas
 
     static int DecodeImageType(byte buf[])
     {
+        if (DEGUB.ON){System.out.println("Frames.DecodeImageType("+buf+")");}
         String s = new String(buf, 0, 20);
         if(s.indexOf("GIF") == 0)
             return FrameData.AWT_IMAGE;
@@ -458,13 +473,14 @@ class Frames extends Canvas
 
     public void setColorMap(ColorMap colorMap)
     {
-      if(colorMap == null) return;
-      cache.setColorMap(colorMap);
+        if (DEGUB.ON){System.out.println("Frames.setColorMap("+colorMap+")");}
+        if(colorMap == null) return;
+        cache.setColorMap(colorMap);
     }
 
     public ColorMap getColorMap()
     {
-      return cache.getColorMap();
+        return cache.getColorMap();
     }
 
  /*   public int getPixelSize(int idx)
@@ -490,6 +506,7 @@ class Frames extends Canvas
 */
     public void SetFrameData(FrameData fd) throws Exception
     {
+        if (DEGUB.ON){System.out.println("Frames.SetFrameData("+fd+")");}
         cache.setFrameData(fd);
         curr_frame_idx = 0;
         float t[] = fd.GetFrameTimes();
@@ -612,6 +629,7 @@ class Frames extends Canvas
 
     public void applyColorModel(ColorMap colorMap)
     {
+        if (DEGUB.ON){System.out.println("Frames.applyColorModel("+colorMap+")");}
         if(colorMap == null) return;
 
         cache.setColorMap(colorMap);
@@ -679,6 +697,7 @@ class Frames extends Canvas
 */
     public void shiftImagePixel(int bitShift, boolean bitClip)
     {
+        if (DEGUB.ON){System.out.println("Frames.shiftImagePixel("+bitShift+", "+bitClip+")");}
         BufferedImage bi;
         float values[] = null; 
         boolean right = false;
@@ -776,6 +795,7 @@ class Frames extends Canvas
 
     public void FlipFrame(byte buf[], Dimension d, int num_byte_pixel)
     {
+        if (DEGUB.ON){System.out.println("Frames.FlipFrame("+buf+", "+d+", "+num_byte_pixel+")");}
         if(!vertical_flip && !horizontal_flip)
             return;
 
@@ -796,6 +816,7 @@ class Frames extends Canvas
 
     public void flipFrames(byte buf[])
     {
+        if (DEGUB.ON){System.out.println("Frames.flipFrames("+buf+")");}
         if(!vertical_flip && !horizontal_flip)
             return;
 
@@ -832,6 +853,7 @@ class Frames extends Canvas
     }
     protected int[] getPixelArray(int idx, int x, int y, int img_w, int img_h)
     {
+        if (DEGUB.ON){System.out.println("Frames.getPixelArray("+idx+", "+x+", "+y+", "+img_w+", "+img_h+")");}
         Image img;
         try {
             img =  cache.getImageAt(idx);
@@ -854,39 +876,40 @@ class Frames extends Canvas
             System.err.println("Pixel array not completed");
             return null;
        }
-        return pixel_array;
+       return pixel_array;
     }
 
     protected float[] getValueArray(int idx, int x, int y, int img_w, int img_h)
     {
+        if (DEGUB.ON){System.out.println("Frames.getValueArray("+idx+", "+x+", "+y+", "+img_w+", "+img_h+")");}
         float values[];
         Image img;
         try {
             values = cache.getValuesAt(idx);
             img = cache.getImageAt(idx);
         }catch(Exception exc){return null;}
-
+        
         if(img_w == -1 && img_h == -1)
-       {
+        {
             img_width = img_w = img.getWidth(this);
             img_height = img_h = img.getHeight(this);
             return values;
-
-       }
+        }
         float values_array[] = new float[img_w * img_h];
-       int k = 0;
+        int k = 0;
 //       for(int j = y; j < img_h; j++)
 //            for(int i = x; i < img_w; i++)
-      for(int j = y; j < y+img_h; j++)
-            for(int i = x; i < x+img_w; i++)
-                values_array[k++] = values[j * img_width + i];
-
-       return values_array;
+        for(int j = y; j < y+img_h; j++)
+           for(int i = x; i < x+img_w; i++)
+               values_array[k++] = values[j * img_width + i];
+        
+        return values_array;
     }
 
 
     protected void grabFrame()
     {
+        if (DEGUB.ON){System.out.println("Frames.grabFrame()");}
         if(curr_frame_idx != curr_grab_frame || pixel_array == null)
         {
             if( (pixel_array = getPixelArray(curr_frame_idx, 0, 0, -1, -1)) != null)
@@ -899,6 +922,7 @@ class Frames extends Canvas
 
     public boolean isInImage(int idx, int x, int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.isInImage("+idx+", "+x+", "+y+")");}
         Dimension d = this.GetFrameDim(idx);
         Rectangle r = new Rectangle(0,0,d.width,d.height);
         return r.contains(x,y);
@@ -911,6 +935,7 @@ class Frames extends Canvas
 
     private Point getImageBufferPoint( int x, int y )
     {
+        if (DEGUB.ON){System.out.println("Frames.getImageBufferPoint("+x+", "+y+")");}
         Point p = new Point();
 
         p.x = x;
@@ -925,6 +950,7 @@ class Frames extends Canvas
     
     public int getPixel(int idx, int x, int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getPixel("+idx+", "+x+", "+y+")");}
         if(!isInImage(idx, x, y))
             return -1;
         //curr_grab_frame = idx;
@@ -940,6 +966,7 @@ class Frames extends Canvas
 
     public float getPointValue(int idx, int x, int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getPointValue("+idx+", "+x+", "+y+")");}
         if(!isInImage(idx, x, y))
             return -1;
 
@@ -953,22 +980,25 @@ class Frames extends Canvas
 
     public int getStartPixelX()
     {
-       if(zoom_rect != null)
-          return zoom_rect.x;
-       else
-          return 0;
+        if (DEGUB.ON){System.out.println("Frames.getStartPixelX()");}
+        if(zoom_rect != null)
+            return zoom_rect.x;
+        else
+            return 0;
     }
 
     public int getStartPixelY()
     {
-       if(zoom_rect != null)
-          return zoom_rect.y;
-       else
-          return 0;
+        if (DEGUB.ON){System.out.println("Frames.getStartPixelY()");}
+        if(zoom_rect != null)
+            return zoom_rect.y;
+        else
+            return 0;
     }
 
     public int[] getPixelsLine(int st_x, int st_y, int end_x, int end_y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getValueArray("+st_x+", "+st_y+", "+end_x+", "+end_y+")");}
         Point p;
         int n_point = (int) (Math.sqrt( Math.pow((double)(st_x - end_x), 2.0) + Math.pow((double)(st_y - end_y), 2.0)) + 0.5);
         int e_x, s_x, x, y;
@@ -998,6 +1028,7 @@ class Frames extends Canvas
 
     public float[] getValuesLine(int st_x, int st_y, int end_x, int end_y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getValuesLine("+st_x+", "+st_y+", "+end_x+", "+end_y+")");}
         Point p;
         int n_point = (int) (Math.sqrt( Math.pow((double)(st_x - end_x), 2.0) + Math.pow((double)(st_y - end_y), 2.0)) + 0.5);
         int e_x, s_x, x, y;
@@ -1027,6 +1058,7 @@ class Frames extends Canvas
 
     public int[] getPixelsX(int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getPixelsX("+y+")");}
         Point p;
         int pixels_x[] = null;
         int st, end;
@@ -1056,6 +1088,7 @@ class Frames extends Canvas
 
     public float[] getValuesX(int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getValuesX("+y+")");}
         Point p;
         float values_x[] = null;
         int st, end;
@@ -1086,6 +1119,7 @@ class Frames extends Canvas
 
     public int[] getPixelsY(int x)
     {
+        if (DEGUB.ON){System.out.println("Frames.getPixelsY("+x+")");}
         Point p;
         int pixels_y[] = null;
         int st, end;
@@ -1115,6 +1149,7 @@ class Frames extends Canvas
 
     public float[] getValuesY(int x)
     {
+        if (DEGUB.ON){System.out.println("Frames.getValuesY("+x+")");}
         Point p;
         float values_y[] = null;
         int st, end;
@@ -1145,6 +1180,7 @@ class Frames extends Canvas
 
     public int[] getPixelsSignal(int x, int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getPixelsSignal("+x+", "+y+")");}
         int pixels_signal[] = null;
         if(frames_pixel_array == null || !frames_pixel_roi.contains(x, y))
         {
@@ -1184,6 +1220,7 @@ class Frames extends Canvas
 
     public float[] getValuesSignal(int x, int y)
     {
+        if (DEGUB.ON){System.out.println("Frames.getValuesSignal("+x+", "+y+")");}
         float values_signal[] = null;
         if(frames_value_array == null || !frames_pixel_roi.contains(x, y))
         {
@@ -1224,6 +1261,7 @@ class Frames extends Canvas
 
     public float[] getFramesTime()
     {
+        if (DEGUB.ON){System.out.println("Frames.getFramesTime()");}
         if(frame_time == null || frame_time.size() == 0)
             return null;
 
@@ -1241,6 +1279,7 @@ class Frames extends Canvas
 
     public float GetFrameTime()
     {
+        if (DEGUB.ON){System.out.println("Frames.GetFrameTime()");}
         float t_out = 0;
         if(curr_frame_idx != -1 && frame_time.size() != 0)
         {
@@ -1252,6 +1291,7 @@ class Frames extends Canvas
     //return point position in the frame shows
     public Point getImagePoint(Point p, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.getImagePoint()");}
         Point p_out = new Point(0, 0);
 
         if(curr_frame_idx != -1 && cache.getNumFrames() != 0)
@@ -1300,11 +1340,13 @@ class Frames extends Canvas
 
     public void setFramePoint(Point sel_point, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.setFramePoint("+sel_point+", "+d+")");}
         this.sel_point = getFramePoint(new Point(sel_point.x, sel_point.y), d);
     }
 
     public Point getFramePoint(Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.setFramePoint("+d+")");}
         if(sel_point != null)
            return getImagePoint(new Point(sel_point.x, sel_point.y), d);
         else
@@ -1316,6 +1358,7 @@ class Frames extends Canvas
     //Argument point is fit to frame dimension
     public Point getFramePoint(Point p, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.setFramePoint("+p+", "+d+")");}
         Point p_out = new Point(0, 0);
         if(p.x < 0) p.x = 0;
         if(p.y < 0) p.y = 0;
@@ -1360,6 +1403,7 @@ class Frames extends Canvas
 
     public boolean contain(Point p, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.contain("+sel_point+", "+d+")");}
         Dimension fr_dim = getFrameSize(curr_frame_idx, d);
         if(p.x > fr_dim.width || p.y > fr_dim.height)
             return false;
@@ -1369,12 +1413,14 @@ class Frames extends Canvas
 
     public float GetTime(int frame_idx)
     {
+        if (DEGUB.ON){System.out.println("Frames.GetTime("+frame_idx+")");}
         if(frame_idx > cache.getNumFrames() - 1 || frame_idx < 0) return (float)0.0;
         return ((Float)frame_time.elementAt(frame_idx)).floatValue();
     }
 
     public int GetFrameIdxAtTime(float t)
     {
+        if (DEGUB.ON){System.out.println("Frames.GetFrameIdxAtTime("+t+")");}
         int idx = -1;
         float dt;
         int numFrames = cache.getNumFrames();
@@ -1410,7 +1456,9 @@ class Frames extends Canvas
 
     protected Dimension GetFrameDim(int idx)
     {
-        return cache.getFrameDimension();
+        if (DEGUB.ON){System.out.println("Frames.GetFrameDim("+idx+")");}
+//        return cache.getFrameDimension();
+        return new Dimension(21,21);
 /*       return  new Dimension( ((Image)frame.elementAt(idx)).getWidth(this),
                               ((Image)frame.elementAt(idx)).getHeight(this));
 */    }
@@ -1418,6 +1466,7 @@ class Frames extends Canvas
     /*returm frame image pixel dimension*/
     public Dimension getFrameSize(int idx, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.getFrameSize("+idx+", "+d+")");}
         int width, height;
         //Border image pixel
         Dimension dim_b = new Dimension(d.width-1,d.height-1);
@@ -1452,6 +1501,7 @@ class Frames extends Canvas
 
     public void setMeasurePoint(int x_pixel, int y_pixel, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.setMeasurePoint("+x_pixel+", "+y_pixel+", "+d+")");}
         Point mp = getFramePoint(new Point(x_pixel, y_pixel), d);
         x_measure_pixel = mp.x;
         y_measure_pixel = mp.y;
@@ -1459,11 +1509,13 @@ class Frames extends Canvas
 
     public Point getMeasurePoint(Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.setMeasurePoint("+d+")");}
         return getImagePoint(new Point(x_measure_pixel, y_measure_pixel), d);
     }
 
     public void SetZoomRegion(int idx, Dimension d, Rectangle r)
     {
+        if (DEGUB.ON){System.out.println("Frames.setMeasurePoint("+idx+", "+d+", "+r+")");}
         int numFrames = cache.getNumFrames();
         if(idx > numFrames - 1)// || frame.elementAt(idx) == null )
             return;
@@ -1497,11 +1549,13 @@ class Frames extends Canvas
 
     public Rectangle GetZoomRect()
     {
+        if (DEGUB.ON){System.out.println("Frames.GetZoomRect()");}
         return zoom_rect;
     }
 
     public void SetViewRect(int start_x, int start_y, int end_x, int end_y)
     {
+        if (DEGUB.ON){System.out.println("Frames.SetViewRect("+start_x+", "+start_y+", "+end_y+", "+end_y+")");}
         view_rect = null;
         if(start_x == -1 && start_y == -1 && end_x == -1 && end_y == -1)
             return;
@@ -1533,15 +1587,16 @@ class Frames extends Canvas
 
     public int getNextFrameIdx()
     {
+        if (DEGUB.ON){System.out.println("Frames.getNextFrameIdx()");}
         if(curr_frame_idx + 1 == getNumFrame())
             return curr_frame_idx;
         else
             return curr_frame_idx += 1;
-
     }
 
     public int getLastFrameIdx()
     {
+        if (DEGUB.ON){System.out.println("Frames.getLastFrameIdx()");}
         if(curr_frame_idx - 1 < 0)
             return 0;
         else
@@ -1550,18 +1605,19 @@ class Frames extends Canvas
 
     public int GetFrameIdx()
     {
-       return curr_frame_idx;
+        if (DEGUB.ON){System.out.println("Frames.GetFrameIdx()");}
+        return curr_frame_idx;
     }
 
     public Object GetFrame(int idx, Dimension d)
     {
+        if (DEGUB.ON){System.out.println("Frames.GetFrame("+idx+", "+d+")");}
         return GetFrame(idx);
     }
 
     public Object GetFrame(int idx)
     {
-
-
+        if (DEGUB.ON){System.out.println("Frames.GetFrame("+idx+")");}
         if(idx < 0) return null;
         int numFrames = cache.getNumFrames();
         if(idx >= numFrames)
