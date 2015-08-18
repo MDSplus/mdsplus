@@ -46,7 +46,8 @@ DX_EXCLUDE_PAGES =
 DX_TAGFILES = mdsip.tag \
               mdsobjects/cpp/docs \
               mdsobjects/python/docs \
-              mdsobjects/java/docs
+              mdsobjects/java/docs \
+              mdslib/docs
 
 
 MOSTLYCLEANFILES = $(DX_CLEANFILES) \
@@ -72,6 +73,7 @@ DX_SUBDIRS = \
           ../mdsobjects/cpp/docs/ \
           ../mdsobjects/python/docs/ \
           ../mdsobjects/java/docs/ \
+          ../mdslib/docs/ \
           .
 	
 build_all:
