@@ -22,10 +22,10 @@ class Tree(object):
     def __exit__(self, type, value, traceback):
         """ Cleanup for with statement. If tree is open for edit and no errors then write tree. """
         if self.open_for_edit:
-	    if type is not None:
-    	        self.quit()
-            else:
-                self.write()	
+          if type is not None:
+            self.quit()
+          else:
+            self.write()	
         self.__del__()
 
     def __del__(self):

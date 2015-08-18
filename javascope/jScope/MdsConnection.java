@@ -18,12 +18,13 @@ public class MdsConnection
         static public String DEFAULT_USER = "JAVA_USER";
         static final  int    MAX_NUM_EVENTS = 256;
 
+                
         protected String provider;
         protected String user;
         protected String host;
         protected int    port;
         protected Socket sock;
-//        protected DataInputStream dis;
+//      protected DataInputStream dis;
         protected InputStream dis;
         protected DataOutputStream dos;
         public String error;
@@ -93,25 +94,25 @@ public class MdsConnection
                     eventId = -1;
                     eventName = name;
             }
-        }
+        }//end PMET class
 
 
 	class MRT extends Thread // Mds Receive Thread
 	{
-        MdsMessage message;
-        boolean    pending = false;
-        boolean    killed = false;
+            MdsMessage message;
+            boolean    pending = false;
+            boolean    killed = false;
 
 	    public void run()
 	    {
-            setName("Mds Receive Thread");
-    	    MdsMessage curr_message;
+                setName("Mds Receive Thread");
+    	        MdsMessage curr_message;
 	        try {
 	            while(true)
 	            {
          	        curr_message = new MdsMessage("", MdsConnection.this.connection_listener);
 	                curr_message.Receive(dis);
-
+                        
 	                if(curr_message.dtype == Descriptor.DTYPE_EVENT)
 	                {
                             PMET PMdsEvent = new PMET();
@@ -119,7 +120,6 @@ public class MdsConnection
                             PMdsEvent.start();
 	                } else {
 	                    pending_count--;
-
 	                    synchronized (this)
 	                    {
 	                        message = curr_message;
@@ -135,10 +135,9 @@ public class MdsConnection
 	        catch(IOException e)
 	        {
                    synchronized(this)
-                    {
-		    
-		      killed = true;
-                      notifyAll();
+                    {		    
+                        killed = true;
+                        notifyAll();
                     }
 	            if(connected)
 	            {
@@ -151,8 +150,6 @@ public class MdsConnection
 				    ConnectionEvent ce = new ConnectionEvent(MdsConnection.this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider);
 				    dispatchConnectionEvent(ce);}
 				}).start();
-				
-
 	                //MdsConnection.this.dispatchConnectionEvent(ce);
 	                //MdsConnection.this.NotifyMessage();
 	            }
@@ -161,29 +158,30 @@ public class MdsConnection
 
             public synchronized void waitExited()
             {
-
-              while(!killed)
-                try{
-                  wait();
-                }catch(InterruptedException exc){}
+                while(!killed)
+                    try{
+                      wait();
+                    }catch(InterruptedException exc){}
             }
 
 	    public synchronized MdsMessage GetMessage()
 	    {
-	       while(!killed && message == null)
-	        try {
-	                wait();
-	        }catch(InterruptedException exc){}
-	   if(killed) return null;
-           MdsMessage msg = message;
-           message = null;
-	       return msg;
+                //System.out.println("Get Message");
+	        while(!killed && message == null)
+                    try {
+                            wait();
+                    }catch(InterruptedException exc){}
+                if(killed) return null;
+                MdsMessage msg = message;
+                message = null;
+                return msg;
 	    }
-	}
+	} // End MRT class
 
 	private synchronized void NotifyMessage()
 	{
 	    notify();
+            System.out.printf("-- Notify");
 	}
 
     public MdsConnection ()
@@ -263,55 +261,55 @@ public class MdsConnection
 
     public synchronized Descriptor getAnswer() throws IOException
     {
-	    Descriptor out = new Descriptor();
-	    int i;
+        Descriptor out = new Descriptor();
+        int i;
 
-            //wait();//!!!!!!!!!!
-	    
-            MdsMessage message = receiveThread.GetMessage();
+        //wait();//!!!!!!!!!!
 
-	        if(message == null || message.length == 0)
-	        {
+        MdsMessage message = receiveThread.GetMessage();
 
-	            out.error = "Null response from server" ;
-	            return out;
-	        }
-	        out.status = message.status;
-	        switch ((out.dtype = message.dtype))
-	        {
-                    case Descriptor.DTYPE_UBYTE:
-	            case Descriptor.DTYPE_BYTE:
-		            out.byte_data = message.body;
-		        break;
-	            case Descriptor.DTYPE_USHORT:
-		            out.int_data = message.ToUShortArray();
-		            out.dtype = Descriptor.DTYPE_LONG;                      
-                        break;
-	            case Descriptor.DTYPE_SHORT:
-                           out.short_data = message.ToShortArray();
-                       break;
-	            case Descriptor.DTYPE_LONG:
-                    case Descriptor.DTYPE_ULONG:
-		            out.int_data = message.ToIntArray();
-		        break;
-                    case Descriptor.DTYPE_ULONGLONG:
-	            case Descriptor.DTYPE_LONGLONG:
-		            out.long_data = message.ToLongArray();
-		        break;
+        if(message == null || message.length == 0)
+        {
 
-	            case Descriptor.DTYPE_CSTRING:
-	                if((message.status & 1) == 1)
-	                    out.strdata = new String(message.body);
-	                else
-                            out.error = new String(message.body);
-		        break;
-	            case Descriptor.DTYPE_FLOAT:
-		            out.float_data = message.ToFloatArray();
-		        break;
-	            case Descriptor.DTYPE_DOUBLE:
-		            out.double_data = message.ToDoubleArray();
-		        break;
-	    }
+            out.error = "Null response from server" ;
+            return out;
+        }
+        out.status = message.status;
+        switch ((out.dtype = message.dtype))
+        {
+            case Descriptor.DTYPE_UBYTE:
+            case Descriptor.DTYPE_BYTE:
+                    out.byte_data = message.body;
+                break;
+            case Descriptor.DTYPE_USHORT:
+                    out.int_data = message.ToUShortArray();
+                    out.dtype = Descriptor.DTYPE_LONG;                      
+                break;
+            case Descriptor.DTYPE_SHORT:
+                   out.short_data = message.ToShortArray();
+               break;
+            case Descriptor.DTYPE_LONG:
+            case Descriptor.DTYPE_ULONG:
+                    out.int_data = message.ToIntArray();
+                break;
+            case Descriptor.DTYPE_ULONGLONG:
+            case Descriptor.DTYPE_LONGLONG:
+                    out.long_data = message.ToLongArray();
+                break;
+
+            case Descriptor.DTYPE_CSTRING:
+                if((message.status & 1) == 1)
+                    out.strdata = new String(message.body);
+                else
+                    out.error = new String(message.body);
+                break;
+            case Descriptor.DTYPE_FLOAT:
+                    out.float_data = message.ToFloatArray();
+                break;
+            case Descriptor.DTYPE_DOUBLE:
+                    out.double_data = message.ToDoubleArray();
+                break;
+        }
         return out;
     }
 
@@ -332,7 +330,7 @@ public class MdsConnection
         byte idx = 0, totalarg = (byte)(n_args+1);
         Descriptor out;
 
-        //System.out.println("->\n"+expr+"\n<-\n");
+        //System.out.println("With Arg ->\n"+expr+"\n<-\n");
                 
         try
         {
@@ -353,6 +351,8 @@ public class MdsConnection
                 p = (Descriptor) args.elementAt(i);
                 sendArg(idx++, p.dtype, totalarg, p.dims, p.dataToByteArray());
             }
+            
+
             pending_count++;
             if(wait)
 	    {
@@ -374,7 +374,7 @@ public class MdsConnection
     public  void sendArg(byte descr_idx,
                             byte dtype,
                             byte nargs,
-                             int dims[],
+                            int dims[],
                             byte body[]) throws IOException
     {
        MdsMessage msg = new MdsMessage( descr_idx, dtype,
@@ -385,7 +385,7 @@ public class MdsConnection
 
 
     // Read either a string or a float array
-    public synchronized  Descriptor MdsValue(String expr)
+    public synchronized Descriptor MdsValue(String expr)
     {
 	int i, status;
 	Descriptor out;
@@ -449,8 +449,9 @@ public class MdsConnection
         port = getProviderPort();
         user = getProviderUser();
         sock = new Socket(host,port);
+        sock.setTcpNoDelay(true);
         dis = new BufferedInputStream(sock.getInputStream());
- //       dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
+      //dis = new DataInputStream(new BufferedInputStream(sock.getInputStream()));
         dos = new DataOutputStream(new BufferedOutputStream(sock.getOutputStream()));
     }        
     
@@ -466,7 +467,7 @@ public class MdsConnection
 	            message.useCompression(use_compression);
 	            message.Send(dos);
 	            message.Receive(dis);
-//NOTE Removed check, unsuccessful in UDT
+                    //NOTE Removed check, unsuccessful in UDT
 	            //if((message.status & 1) != 0)
 	            if(true)
 	            {

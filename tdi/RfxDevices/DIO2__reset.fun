@@ -40,7 +40,7 @@ public fun DIO2__reset(as_is _nid, optional _method)
 
 	if(_remote)
 	{
-		_cmd = 'MdsConnect("'//_ip_addr//'")';
+		_cmd = 'MdsConnect("'//_ip_addr//'",1)';
 		execute(_cmd);
 	    _status = MdsValue('DIO2HWReset($1)', _board_id);
 		MdsDisconnect();

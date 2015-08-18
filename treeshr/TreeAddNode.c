@@ -360,6 +360,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   nodes = EXTEND_NODES * 10 + header_ptr->nodes;
   ncis = nodes - edit_ptr->first_in_mem;
   ncis = ncis > 0 ? ncis : 0;
+  ncis = ncis + EXTEND_NODES * 10;
   vm_bytes = nodes * sizeof(NODE) + ncis * sizeof(NCI);
   if (vm_bytes > edit_ptr->node_vm_size) {
     ptr = (NODE *) malloc(vm_bytes);
@@ -380,7 +381,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
 	saved_node_numbers[i] = (int)(*fixup_nodes[i] - info_ptr->node);
       saved_node_numbers[i++] = (int)(info_ptr->root - info_ptr->node);
       saved_node_numbers[i++] = (int)(db_ptr->default_node - info_ptr->node);
-      nciptr = (NCI *) (ptr + 10 * EXTEND_NODES + header_ptr->nodes);
+      nciptr = (NCI *) (ptr + (10 * EXTEND_NODES + nodes));
     /***************************************
       copy the nodes and ncis
     ****************************************/

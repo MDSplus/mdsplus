@@ -28,7 +28,13 @@ fi
             --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
 make clean > /dev/null
 env LANG=en_US.UTF-8 make
-env MDSPLUS_VERSION=mdsplus${BNAME}-${MAJOR}-${MINOR}-${RELEASE} make install
+if [ -z "$BNAME" ]
+then
+  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+else
+  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
+fi
+make install
 if [ -d /buildroot/usr/local/mdsplus/uid32 ]
 then
     mv /buildroot/usr/local/mdsplus/uid32 /buildroot/usr/local/mdsplus/uid

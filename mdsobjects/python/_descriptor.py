@@ -11,7 +11,7 @@ _dtypes=_mimport('_mdsdtypes',1)
 _mdsclasses=_mimport('_mdsclasses',1)
 _data=_mimport('mdsdata',1)
 _treenode=_mimport('treenode',1)
-_tree=_mimport('tree',-1)
+_tree=_mimport('tree',1)
 _ident=_mimport('ident',1)
 _apd=_mimport('apd',1)
 _compound=_mimport('compound',1)
@@ -20,6 +20,7 @@ _tdi=_mimport('tdibuiltins',1)
 
 
 import numpy as _N
+import struct as _struct
 
 import ctypes as _C
 import os as _os,sys as _sys
@@ -37,6 +38,7 @@ def pointerToObject(pointer):
         d.length=100000
         d.pointer=_C.cast(pointer,type(d.pointer))
         return d.value
+
 
 class descriptor(_C.Structure):
     __cached_values={}
@@ -64,14 +66,13 @@ class descriptor(_C.Structure):
             self.pointer=value.pointer
             return
 
+        self.dclass=_mdsclasses.CLASS_S
         if isinstance(value,descriptor_a):
             self.dtype=_dtypes.DTYPE_DSC
-            self.dclass=_mdsclasses.CLASS_S
             self.length=100000
             self.pointer=_C.cast(_C.pointer(value),type(self.pointer))
             return
         
-        self.dclass=_mdsclasses.CLASS_S
         if value is None or isinstance(value,_data.EmptyData):
             self.length=0
             self.dtype=_dtypes.DTYPE_DSC
@@ -91,62 +92,6 @@ class descriptor(_C.Structure):
             self.length=value.nbytes
             self.pointer=_C.cast(_C.c_void_p(a.ctypes.data),type(self.pointer))
             self.addToCache(a)
-            return
-        try:
-            if isinstance(value,long):
-                self.length=8
-                self.dtype=_dtypes.DTYPE_Q
-                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-
-            if isinstance(value,int):
-                self.length=4
-                self.dtype=_dtypes.DTYPE_L
-                self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-        except:
-            if isinstance(value,int):
-                self.length=8
-                self.dtype=_dtypes.DTYPE_Q
-                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
-                self.addToCache(value)
-                return
-
-        try:
-            if isinstance(value,unicode):
-                value=str(value)
-                str_d=descriptor_string(value)
-                d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
-                self.length=d.length
-                self.dtype=d.dtype
-                self.pointer=d.pointer
-                self.addToCache(value)
-                return
-        except:
-            pass
-
-        if isinstance(value,str):
-            str_d=descriptor_string(value)
-            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
-            self.length=d.length
-            self.dtype=d.dtype
-            self.pointer=d.pointer
-            self.addToCache(value)
-            return
-
-        if isinstance(value,float):
-            self.length=8
-            self.dtype=_dtypes.DTYPE_NATIVE_DOUBLE
-            self.pointer=_C.cast(_C.pointer(_C.c_double(value)),type(self.pointer))
-            self.addToCache(value)
-            return
-        if isinstance(value,complex):
-            self.length=8
-            self.dtype=_dtypes.DTYPE_FLOAT_COMPLEX
-            self.pointer=_C.cast(_C.pointer((_C.c_float*2)(value.real,value.imag)),type(self.pointer))
-            self.addToCache(value)
             return
         
         if isinstance(value,dict) or isinstance(value,list) or isinstance(value,tuple):
@@ -244,11 +189,10 @@ class descriptor(_C.Structure):
             else:
                 c_d.length=2
                 try:
-                    x=_C.c_ushort(value.opcode)
+                    _C_value=_C.c_ushort(value.opcode)
                 except:
                     print("Wrong opcode! ",type(value.opcode),value.opcode)
-                c_d.pointer=_C.cast(_C.pointer(_C.c_ushort(value.opcode)),type(c_d.pointer))
-            arglist=list()
+                c_d.pointer=_C.cast(_C.pointer(_C_value),type(c_d.pointer))
             for i in range(len(value.args)):
                 if value.args[i] is None:
                     c_d.dscptrs[i]=_C.cast(_C.c_void_p(0),type(c_d.dscptrs[i]))
@@ -330,6 +274,53 @@ class descriptor(_C.Structure):
             self.addToCache(apd_a)
             self.addToCache(apd)
             return
+
+        try:
+            if isinstance(value,long):
+                self.length=8
+                self.dtype=_dtypes.DTYPE_Q
+                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
+                self.addToCache(value)
+                return
+
+            if isinstance(value,int):
+                self.length=4
+                self.dtype=_dtypes.DTYPE_L
+                self.pointer=_C.cast(_C.pointer(_C.c_int32(value)),type(self.pointer))
+                self.addToCache(value)
+                return
+        except:
+            if isinstance(value,int):
+                self.length=8
+                self.dtype=_dtypes.DTYPE_Q
+                self.pointer=_C.cast(_C.pointer(_C.c_long(value)),type(self.pointer))
+                self.addToCache(value)
+                return
+        try:
+            isunicode = isinstance(value,unicode)
+        except:
+            isunicode = False
+        if isunicode or isinstance(value,str):
+            str_d=descriptor_string(value)
+            d=_C.cast(_C.pointer(str_d),_C.POINTER(descriptor)).contents
+            self.length=d.length
+            self.dtype=d.dtype
+            self.pointer=d.pointer
+            self.addToCache(value)
+            return
+        if isinstance(value,float):
+            self.length=8
+            self.dtype=_dtypes.DTYPE_NATIVE_DOUBLE
+            self.pointer=_C.cast(_C.pointer(_C.c_double(value)),type(self.pointer))
+            self.addToCache(value)
+            return
+        if isinstance(value,complex):
+            self.length=8
+            self.dtype=_dtypes.DTYPE_FLOAT_COMPLEX
+            self.pointer=_C.cast(_C.pointer((_C.c_float*2)(value.real,value.imag)),type(self.pointer))
+            self.addToCache(value)
+            return
+
         raise TypeError('Cannot make descriptor of '+str(type(value)))
         return
 
@@ -412,7 +403,6 @@ class descriptor(_C.Structure):
                     if descriptor.tree is None:
                       return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,_tree.Tree())
                     else:
-
                       return _treenode.TreeNode(_C.cast(self.pointer,_C.POINTER(_C.c_int32)).contents.value,descriptor.tree)
                 if (self.dtype == _dtypes.DTYPE_PATH):
                     if descriptor.tree is None:
@@ -597,8 +587,8 @@ class descriptor_xd(_C.Structure):
           pass
         
 class descriptor_r(_C.Structure):
-    if _os.name=='nt':
-        _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*4),("dscptrs",_C.POINTER(descriptor)*256)]
+    if _os.name=='nt' and _struct.calcsize("P")==8:
+        _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*6),("dscptrs",_C.POINTER(descriptor)*256)]
     else:
         _fields_=descriptor._fields_+[("ndesc",_C.c_ubyte),("fill1",_C.c_ubyte*3),("dscptrs",_C.POINTER(descriptor)*256)]
 
@@ -638,6 +628,8 @@ class descriptor_string(_C.Structure):
 
 class descriptor_apd(_C.Structure):
     if _os.name=='nt':
+        if _struct.calcsize("P")==4:
+            _pack_=1
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.POINTER(_C.POINTER(descriptor))),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.POINTER(_C.POINTER(descriptor))),("coeff_and_bounds",_C.c_int32 * 24)]
     else:
@@ -694,6 +686,8 @@ class descriptor_apd(_C.Structure):
     
 class descriptor_a(_C.Structure):
     if _os.name=='nt':
+        if _struct.calcsize("P")==4:
+            _pack_=1
         _fields_=[("length",_C.c_ushort),("dtype",_C.c_ubyte),("dclass",_C.c_ubyte),("pointer",_C.c_void_p),("scale",_C.c_byte),("digits",_C.c_ubyte),
                   ("aflags",_C.c_ubyte),("dimct",_C.c_ubyte),("arsize",_C.c_uint),("a0",_C.c_void_p),("coeff_and_bounds",_C.c_int32 * 24)]
     else:

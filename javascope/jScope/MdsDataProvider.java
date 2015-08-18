@@ -675,8 +675,8 @@ public class MdsDataProvider
              {
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, in_y));
-                try {
-                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
+                try {                 
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
                     if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
@@ -697,8 +697,7 @@ public class MdsDataProvider
                     xExpr = in_x;
             }
             else
-            {
-                 
+            {                 
                 if(in_x == null)
                 {
                     yExpr =  in_y;
@@ -740,6 +739,7 @@ public class MdsDataProvider
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
                 args.addElement(new Descriptor(null, xExpr));
+                
                 if(isLong)
                 {
                     args.addElement(new Descriptor(null, new long[]{(xmin == -Double.MAX_VALUE)?0:(long)xmin}));
@@ -755,11 +755,12 @@ public class MdsDataProvider
                 int nSamples;
                 try {
                     if(isLong)
-//                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
                         retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
                     else
-//                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
                         retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
+                    
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -866,12 +867,13 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-//                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+                 //System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
+                
+            
             float y[] = GetFloatArray("("+yExpr+")");
-            //RealArray xReal = GetRealArray(xExpr);
             RealArray xReal = GetRealArray("("+xExpr+";)");
             if(xReal.isLong())
             {
@@ -1357,12 +1359,12 @@ public class MdsDataProvider
         //	    return null;
         return GetByteArray(in);
     }
-    public synchronized byte[] GetByteArray(String in) throws IOException
+    public  synchronized  byte[] GetByteArray(String in) throws IOException
     {
         return GetByteArray(in, null);
     }
 
-    public synchronized byte[] GetByteArray(String in, Vector args) throws IOException
+    public  synchronized  byte[] GetByteArray(String in, Vector args) throws IOException
     {
         byte out_byte[] = null;
         ByteArrayOutputStream dosb = new ByteArrayOutputStream();
