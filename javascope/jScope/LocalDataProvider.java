@@ -11,6 +11,12 @@ import java.text.DateFormat;
 
 public class LocalDataProvider extends MdsDataProvider implements DataProvider
 {
+    public final class DEGUB {
+    //set to false to allow compiler to identify and eliminate
+    //unreachable code
+    public static final boolean ON = true;
+    }
+
     Vector listeners = new Vector();
     Vector eventNames = new Vector();
 
@@ -61,53 +67,59 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
         void configure(String nodeName, String timeName, float timeMin, float timeMax) throws IOException
         {
-              this.nodeName = nodeName;
-              isSegmented = isSegmentedNode(nodeName);
-              if(isSegmented)
-              {
-                  times = getSegmentTimes(nodeName, timeName, timeMin, timeMax);
-                  if(times == null) throw new IOException(LocalDataProvider.this.ErrorString());
-                  frames = new byte[times.length][];
-                  segIdxs = getSegmentIdxs(nodeName, timeMin, timeMax);
-                  if(segIdxs == null) throw new IOException(LocalDataProvider.this.ErrorString());
-             }
-              else
-              {
-                 if(timeName == null || timeName.trim().equals(""))
-                     timeName = "dim_of("+nodeName+")";
-                 float[] allTimes = getAllTimes(nodeName, timeName);
-                 if(allTimes == null) throw new IOException(LocalDataProvider.this.ErrorString());
-                 for(startIdx = 0; startIdx < allTimes.length && allTimes[startIdx] < timeMin; startIdx++);
-                 for(endIdx = startIdx; endIdx < allTimes.length && allTimes[endIdx] < timeMax; endIdx++);
-                 times = new float[endIdx - startIdx];
-                 for(int i = 0; i < endIdx - startIdx; i++)
-                     times[i] = allTimes[startIdx + i];
-                 allFrames = getAllFrames(nodeName, startIdx, endIdx);
-                 if(allFrames == null) throw new IOException(LocalDataProvider.this.ErrorString());
-              }
-              int [] info = getInfo(nodeName, isSegmented);
-              if(info == null) throw new IOException(LocalDataProvider.this.ErrorString());
-              width = info[0];
-              height = info[1];
-              pixelSize = info[2];
+            if (DEGUB.ON){System.out.println("LocalDataProvider.LocalFrameData.configure(\""+nodeName+"\", \""+timeName+"\", "+timeMin+", "+timeMax+")");}
+            this.nodeName = nodeName;
+            isSegmented = isSegmentedNode(nodeName);
+            if(isSegmented)
+            {
+                times = getSegmentTimes(nodeName, timeName, timeMin, timeMax);
+                if(times == null) throw new IOException(LocalDataProvider.this.ErrorString());
+                frames = new byte[times.length][];
+                segIdxs = getSegmentIdxs(nodeName, timeMin, timeMax);
+                if(segIdxs == null) throw new IOException(LocalDataProvider.this.ErrorString());
+            }
+            else
+            {
+                if(timeName == null || timeName.trim().equals(""))
+                   timeName = "dim_of("+nodeName+")";
+                float[] allTimes = getAllTimes(nodeName, timeName);
+                if (DEGUB.ON){System.out.println("LocalDataProvider.getAllTimes(\""+nodeName+"\", \""+timeName+"\") OK allTimes = "+allTimes);}
+                if(allTimes == null) throw new IOException(LocalDataProvider.this.ErrorString());
+                for(startIdx = 0; startIdx < allTimes.length && allTimes[startIdx] < timeMin; startIdx++);
+                for(endIdx = startIdx; endIdx < allTimes.length && allTimes[endIdx] < timeMax; endIdx++);
+                times = new float[endIdx - startIdx];
+                for(int i = 0; i < endIdx - startIdx; i++)
+                   times[i] = allTimes[startIdx + i];
+                allFrames = getAllFrames(nodeName, startIdx, endIdx);
+                if (DEGUB.ON){System.out.println("LocalDataProvider.getAllFrames(\""+nodeName+"\", "+startIdx+", "+endIdx+") OK allFrames = "+allFrames);}
+                if(allFrames == null) throw new IOException(LocalDataProvider.this.ErrorString());
+            }
+            int [] info = getInfo(nodeName, isSegmented);
+            if (DEGUB.ON){System.out.println("LocalDataProvider.getAllTimes.getInfo() info="+info);}
+            if(info == null) throw new IOException(LocalDataProvider.this.ErrorString());
+            width = info[0];
+            height = info[1];
+            pixelSize = info[2];
+            if (DEGUB.ON){System.out.println(">> width="+width+", height="+height);}
         }
-     /**
-     * Returns the type of the corresponding frames. Returned frames can have either of the following types:
-     * <br>
-     * -FrameData.BITMAP_IMAGE meaning that method GetFrameAt will return a byte matrix.
-     * <br>
-     * -FrameData.AWT_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
-     *  content of a gif or jpeg file.
-     * <br>
-     * -FramDeata.JAI_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
-     *  content of every image file supported by the JAI (Java Advanced Imaging) package. The JAI package needs not
-     *  to be installed unless file formats other than gif or jpeg are used.
-     *
-     * @return The type of the corresponding frame.
-     * @exception java.io.IOException
-     */
+      /**
+      * Returns the type of the corresponding frames. Returned frames can have either of the following types:
+      * <br>
+      * -FrameData.BITMAP_IMAGE meaning that method GetFrameAt will return a byte matrix.
+      * <br>
+      * -FrameData.AWT_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
+      *  content of a gif or jpeg file.
+      * <br>
+      * -FramDeata.JAI_IMAGE meaning that method GetFrameAt will return a byte vector representing the binary
+      *  content of every image file supported by the JAI (Java Advanced Imaging) package. The JAI package needs not
+      *  to be installed unless file formats other than gif or jpeg are used.
+      *
+      * @return The type of the corresponding frame.
+      * @exception java.io.IOException
+      */
         public int GetFrameType() throws IOException
         {
+            if (DEGUB.ON){System.out.println("LocalDataProvider.LocalFrameData.GetFrameType()");}
             switch(pixelSize) {
                 case 1:
                      return FrameData.BITMAP_IMAGE_8;
@@ -164,6 +176,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
      */
         public byte[] GetFrameAt(int idx) throws IOException
         {
+            if (DEGUB.ON){System.out.println("LocalDataProvider.LocalFrameData.GetFrameAt("+idx+")");}
             if(isSegmented)
             {
                 if(frames[idx] == null)
@@ -199,6 +212,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     public void Update(String exp, long s)
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.Update(\""+exp+"\", "+s+")");}
         var_idx = 0;
         UpdateNative(exp, s);
     }
@@ -210,6 +224,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     public synchronized double GetFloat(String in) throws IOException
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.GetFloat(\""+in+"\")");}
         error = null;
 
         try {
@@ -250,6 +265,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     public long[] GetShots(String in)
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.GetShots(\""+in+"\")");}
         try {
             int shots[] =  GetIntArray(in.trim());
             long lshots[] = new long[shots.length];
@@ -273,6 +289,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     native public String ErrorString();
     public void AddUpdateEventListener(UpdateEventListener l, String event)
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.AddUpdateEventListener("+l+", \""+event+"\")");}
         int evId;
         int idx;
         try {
@@ -288,6 +305,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
     }
     public void RemoveUpdateEventListener(UpdateEventListener l, String event)
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.RemoveUpdateEventListener("+l+", \""+event+"\")");}
         int idx = listeners.indexOf(new EventDescriptor(l, event, 0));
         if(idx != -1)
         {
@@ -300,8 +318,8 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
                 unregisterEvent(evId);
             }
         }
-
     }
+
     public void AddConnectionListener(ConnectionListener l){}
 
     public void RemoveConnectionListener(ConnectionListener l){}
@@ -310,6 +328,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.GetFrameData(\""+in_y+"\", \""+in_x+"\", "+time_min+", "+time_max+")");}
         LocalFrameData frameData = new LocalFrameData();
         frameData.configure(in_y, in_x, time_min, time_max);
         return frameData;
@@ -328,6 +347,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     int getEventId(String event) throws Exception
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.getEventId(\""+event+"\")");}
         for(int idx = 0; idx < listeners.size(); idx++)
         {
             EventDescriptor evDescr = (EventDescriptor)listeners.elementAt(idx);
@@ -339,6 +359,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     public void fireEvent(int nameIdx)
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.fireEvent("+nameIdx+")");}
         String event = (String)eventNames.elementAt(nameIdx);
         for(int idx = 0; idx < listeners.size(); idx++)
         {
@@ -353,6 +374,7 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
 
     void setResampleLimits(double min, double max)
     {
+        if (DEGUB.ON){System.out.println("LocalDataProvider.setResampleLimits("+min+", "+max+")");}
         String limitsExpr;
         if (Math.abs(min) > RESAMPLE_TRESHOLD ||
             Math.abs(max) > RESAMPLE_TRESHOLD)
@@ -373,6 +395,4 @@ public class LocalDataProvider extends MdsDataProvider implements DataProvider
         GetFloatNative(limitsExpr);
     }
     boolean supportsLargeSignals() {return false;} //Subclass LocalDataProvider will return false
-
-
 }
