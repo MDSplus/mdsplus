@@ -1,4 +1,23 @@
-commit 6bca5dbbe9b5b9e6243113df2ed659ade54c4872 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit 062ae62770c4be886322295f20e9698c647e8362 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: b6044ff 802aaf4
+Author: gabriele.manduchi <gabriele.manduchi@igi.cnr.it>
+Date:   Tue Aug 18 09:35:36 2015 +0200
+
+    Merge branch 'alpha' of https://github.com/MDSplus/mdsplus into alpha
+
+commit b6044ff6b7eebac5411240064c915b5ebcfe2cc6
+Author: root <root@gabriele-VirtualBox.(none)>
+Date:   Tue Aug 18 09:33:25 2015 +0200
+
+    Fix 32 bit swap
+
+commit 802aaf47098f2143ef1917d5a457f2a6eb34f598 (tag: refs/tags/alpha_release-7-0-139)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Fri Aug 14 23:05:31 2015 -0400
+
+    New release ---- alpha_release-7-0-139
+
+commit 6bca5dbbe9b5b9e6243113df2ed659ade54c4872
 Merge: ba3a52d b5efa13
 Author: Tom Fredian <twf@psfc.mit.edu>
 Date:   Fri Aug 14 14:58:23 2015 -0400
