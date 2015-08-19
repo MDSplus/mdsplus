@@ -194,7 +194,7 @@ class AsdexDataProvider extends MdsDataProvider
             {
                 if (currXData == null)
                     currXData = GetXRealData();
-                if (!currXData.isDouble())
+                if (!currXData.isDouble)
                     return null;
                 return currXData.getDoubleArray();
             }
@@ -210,7 +210,7 @@ class AsdexDataProvider extends MdsDataProvider
             {
                 if (currXData == null)
                     currXData = GetXRealData();
-                if (!currXData.isLong())
+                if (!currXData.isLong)
                     return null;
                 return currXData.getLongArray();
             }
