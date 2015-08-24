@@ -783,12 +783,12 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_getAllFrames
       break;
     case 4:
       for (i = 0; i < nSamples; i++) {
-	tmp = buf[2 * i];
-	buf[2 * i] = buf[2 * i + 3];
-	buf[2 * i + 3] = tmp;
-	tmp = buf[2 * i + 1];
-	buf[2 * i + 1] = buf[2 * i + 2];
-	buf[2 * i + 2] = tmp;
+	tmp = buf[4 * i];
+	buf[4 * i] = buf[4 * i + 3];
+	buf[4 * i + 3] = tmp;
+	tmp = buf[4 * i + 1];
+	buf[4 * i + 1] = buf[2 * i + 2];
+	buf[4 * i + 2] = tmp;
       }
       break;
     }
