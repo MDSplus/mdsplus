@@ -11,7 +11,7 @@ function [ shoto,status ] = mdsopen( tree, shot )
 %
    import MDSplus.Data
    global MDSplus_Connection_Obj
-   status = 1;
+   status = true;
    shoto = 'Failed';
    idx=strfind(tree, '::');
    if ~isempty(idx)
@@ -21,18 +21,23 @@ function [ shoto,status ] = mdsopen( tree, shot )
     else
        ltree=tree;
    end
-   if mod(status,2)
+   if status
      if isjava(MDSplus_Connection_Obj)
        try
          MDSplus_Connection_Obj.openTree(ltree,shot);
          shoto = MDSplus_Connection_Obj.get('$shot');
        catch err
-         status=0;
-         shoto=err.message;
+            if nargout==2
+                status = false;
+                shoto  = err.message;
+            else
+                rethrow(err)
+            end
        end
      else
-       status = mdsvalue('TreeOpen($,$)',ltree,shot);
-       if mod(status,2)
+       [result,status] = mdsvalue('TreeOpen($,$)',ltree,shot);
+       status = status && mod(result,2);
+       if status
          shoto = mdsvalue('$shot');
        end
      end

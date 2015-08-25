@@ -14,26 +14,29 @@ function [ status ] = mdsconnect( host )
     global MDSplus_Connection_Host
     global MDSplus_Connection_Obj
    
-    status = 0;
+    status = false;
     if isa(MDSplus_Connection_Host, 'char')
-      if compareIP(MDSplus_Connection_Host, host) == 1 
-         status = 1;
+      if compareIP(MDSplus_Connection_Host, host) 
+         status = true;
       end
     end
-    if status == 0
-      if strcmp(upper(host),'LOCAL') == 1
+    if ~status
+      if strcmpi(host,'LOCAL')
         clearvars -global MDSplusConnection_Obj
         MDSplus_Connection_Host='LOCAL';
-        status = 1;
+        status = true;
       else
         try
           MDSplus_Connection_Obj=Connection(host);
           MDSplus_Connection_Host=host;
-          status = 1;
+          status = true;
         catch err
-	  status = -1;
+            if nargout==1
+                status = false;
+            else
+                rethrow(err)
+            end
         end
       end
     end
 end
-

@@ -8,13 +8,13 @@ function [ result, status ] = mdsvalue( expression, varargin)
   global MDSplus_Connection_Obj
 
   args = javaArray('MDSplus.Data',1);
-  for k = 1: size(varargin, 2)
+  for k = 1: length(varargin)
     args(k) = MDSarg(cell2mat(varargin(k)));
   end
 
   try
     if isjava(MDSplus_Connection_Obj)
-      if size(varargin,2) > 0
+      if ~isempty(varargin)
         result = MDSplus_Connection_Obj.get(expression,args);
       else
         result = MDSplus_Connection_Obj.get(expression);
@@ -24,8 +24,11 @@ function [ result, status ] = mdsvalue( expression, varargin)
     end
     status=1;
   catch err
-    status=0;
-    result=err.message;
+    if nargout==2
+        status = false;
+        result = err.message;
+    else
+        rethrow(err)
+    end
   end
   result=NATIVEvalue(result);
-end
