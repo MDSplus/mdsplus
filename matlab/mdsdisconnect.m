@@ -9,5 +9,3 @@ global MDSplus_Connection_Obj
 MDSplus_Connection_Host='LOCAL';
 clearvars -global MDSplus_Connection_Obj
 status=1;
-end
-

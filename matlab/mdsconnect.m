@@ -15,13 +15,13 @@ global MDSplus_Connection_Host
 global MDSplus_Connection_Obj
 
 status = 0;
-if isa(MDSplus_Connection_Host, 'char')
+if ischar(MDSplus_Connection_Host)
     if compareIP(MDSplus_Connection_Host, host) == 1
         status = 1;
     end
 end
 if status == 0
-    if strcmp(upper(host),'LOCAL') == 1
+    if strcmpi(host,'LOCAL') == 1
         clearvars -global MDSplusConnection_Obj
         MDSplus_Connection_Host='LOCAL';
         status = 1;
@@ -34,6 +34,5 @@ if status == 0
             status = -1;
         end
     end
-end
 end
 

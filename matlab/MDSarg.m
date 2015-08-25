@@ -8,7 +8,7 @@ function  result = MDSarg( thing )
 % syntax:
 %   node.putData(MDSarg(matlab-native-object))
 %
-import MDSplus.*;
+import MDSplus.*
 sz = size(thing);
 if isequal(sz, [1,1])
     switch class(thing)

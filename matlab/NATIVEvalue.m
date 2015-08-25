@@ -8,14 +8,14 @@ function  result = NATIVEvalue( mdsthing )
 % syntax:
 %    answer = NATIVEvalue(mdsnode.getData)
 %
-import MDSplus.*;
+import MDSplus.*
 global MDSplus_legacy_behavior
-if ~strcmp(class(MDSplus_legacy_behavior), 'logical')
-    l = getenv('MDSplus_legacy_behavior')
+if ~islogical(MDSplus_legacy_behavior)
+    l = getenv('MDSplus_legacy_behavior');
     if strcmp(l,'yes')
-        MDSplus_legacy_behavior = true
+        MDSplus_legacy_behavior = true;
     else
-        MDSplus_legacy_behavior = false
+        MDSplus_legacy_behavior = false;
     end
 end
 
@@ -90,8 +90,8 @@ else
         throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
     end
     if MDSplus_legacy_behavior
-        if ~strcmp(class(result),'char')
-            result = double(result)
+        if ~ischar(result)
+            result = double(result);
         end
     end
 end

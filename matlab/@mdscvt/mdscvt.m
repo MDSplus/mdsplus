@@ -16,7 +16,7 @@ else
         switch class(x)
             case 'double', t = 'd';
             case 'char',   t = 't';
-            otherwise, 'Unsupported class.'
+            otherwise, error('Unsupported class.')
         end
     end
     y.x = x;
