@@ -2,7 +2,7 @@ public fun SetEvent(in _eventname,optional in _eventdata)
 {
   if (vms())
   {
-    _edata = present(_eventdata) ? ((size(_eventdata) < 12) ? [_eventdata,zero(12,0b)] : _eventdata) : zero(12,0b);
+    _edata = present(_eventdata) ? ((size(_eventdata) < 12) ? [BYTE(_eventdata),zero(12,0b)] : BYTE(_eventdata)) : zero(12,0b);
     _status = MDSSHR->MDS$EVENT(_eventname,_edata);
   }
   else
