@@ -14,14 +14,10 @@ function [ status ] = mdsconnect( host )
     global MDSplus_Connection_Host
     global MDSplus_Connection_Obj
    
-    status = 0;
-    if isa(MDSplus_Connection_Host, 'char')
-      if compareIP(MDSplus_Connection_Host, host) == 1 
-         status = 1;
-      end
-    end
+status = compareIP(MDSplus_Connection_Host, host);
+
     if status == 0
-      if strcmp(upper(host),'LOCAL') == 1
+      if strcmpi(host,'LOCAL') == 1
         clearvars -global MDSplusConnection_Obj
         MDSplus_Connection_Host='LOCAL';
         status = 1;
@@ -35,5 +31,7 @@ function [ status ] = mdsconnect( host )
         end
       end
     end
-end
 
+function [ status ] = compareIP( ip1, ip2 )
+% so far only compares if the strings match
+status = ischar(ip1) && strcmp(ip1, ip2);
