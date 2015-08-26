@@ -1,0 +1,71 @@
+#!/bin/bash
+set -o verbose
+set -e 
+wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+mkdir -p /buildroot
+cd /buildsrc
+if [ "$ARCH" == "x86_64" -o "$ARCH" == "amd64" ]
+then
+    bits=64
+    if [ -z "$host" ]
+    then
+	host=x86_64-linux
+    fi
+else
+    bits=32
+    if [ -z "$host" ]
+    then
+	host=i686-linux
+    fi
+fi
+./configure --prefix=/buildroot/usr/local/mdsplus \
+            --exec_prefix=/buildroot/usr/local/mdsplus \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=/3rd-party-apis-master/idl \
+            --with-gsi=/usr:gcc${bits} \
+            --host=$host \
+            --with-java_target=6 --with-java_bootclasspath=$(pwd)/rt.jar
+make clean > /dev/null
+env LANG=en_US.UTF-8 make
+if [ -z "$BNAME" ]
+then
+  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+else
+  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
+fi
+make install
+if [ -d /buildroot/usr/local/mdsplus/uid32 ]
+then
+    mv /buildroot/usr/local/mdsplus/uid32 /buildroot/usr/local/mdsplus/uid
+fi
+    
+if [ -d /installer ]
+then
+    echo "Building debian packages"
+    mkdir -p /tmp/repo/conf
+    mkdir -p /tmp/repo/db
+    mkdir -p /tmp/repo/dists
+    mkdir -p /tmp/repo/pool
+    mkdir -p /tmp/${BNAME}/DEBS/amd64
+    mkdir -p /tmp/${BNAME}/DEBS/i386
+    mkdir -p /tmp{BNAME}/DEBS/noarch
+    cat - <<EOF > /tmp/repo/conf/distributions
+Origin: MDSplus Development Team
+Label: MDSplus
+Codename: MDSplus
+Version: ${MAJOR}.${MINOR}.${RELEASE}
+Architectures: i386 amd64 source
+Components: alpha stable local
+Description: MDSplus packages
+EOF
+    if [ -d /root/.gnupg ]
+    then 
+      echo "SignWith: MDSplus" >> /tmp/repo/conf/distributions
+    fi
+    build_debs_mdsplus
+    if [ -z "$NOT_DONE" ]
+    then
+      touch /installer/mdsplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}
+    fi
+fi

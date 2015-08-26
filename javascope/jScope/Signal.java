@@ -2234,6 +2234,7 @@ public class Signal implements WaveDataListener
         }
         if (increasing_x || type == Signal.TYPE_2D)
         {
+            if(currX == null) return -1;
             if(prev_idx >= currX.length)
                 prev_idx = currX.length - 1;
             if (curr_x > currX[prev_idx])

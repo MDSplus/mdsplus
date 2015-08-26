@@ -1,5 +1,5 @@
-Using self generated documentation  {#use_docs}
-==================================
+Generate doxygen documentation  {#use_docs}
+==============================
 
 
 This explains how to make MDSplus self generating documentation.
@@ -151,6 +151,10 @@ referenced within other libraries. The name this anchor should be uniform with
 The way doxygen can link among different libraries is the tag description.
 For a reference of doxygen Tags and exterlan linkage see http://www.doxygen.org
 
+Tags are usefull as they can keep references of the code symbols among the
+built libraries. \image html img/search_tips.png
+
+
 Each time MDSplus build a documentation it also build a special target called
 "build_tag" that write tag information relative to current project inside the
 /docs/dtags special directory. The tag filename is the name of the library plus
@@ -194,7 +198,7 @@ sublib would be added:
     
 In this way the main documentation can brawse all sub libraries symbols and can
 access pages and anchors .. usually in the main index.md there is a link to the
-sublibrary MainPage ( \subpage sublib_manual in this case ).
+sublibrary MainPage ( \\subpage sublib_manual in this case ).
 
 
 

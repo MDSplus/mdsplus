@@ -663,10 +663,8 @@ int TdiDoFun(struct descriptor *ident_ptr,
   MdsFree1Dx(&tmp, NULL);
   private->head = old_head;
   *new_narg = old_narg;
-#ifdef PYTHON
   if (status == TdiUNKNOWN_VAR)
     status = TdiExtPython(ident_ptr, nactual, actual_arg_ptr, out_ptr);
-#endif
   return status;
 }
 

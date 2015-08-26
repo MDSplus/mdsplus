@@ -1,5 +1,4 @@
 import numpy
-import copy
 
 if '__package__' not in globals() or __package__ is None or len(__package__)==0:
   def _mimport(name,level):

@@ -1,0 +1,9 @@
+
+{
+   supression for overloaded new operator
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:_Znwm
+   fun:_ZN7MDSplus8TreeNodenwEm
+}
+

@@ -120,9 +120,6 @@ Tree::Tree(char const *name, int shot): name(name), shot(shot), ctx(nullptr)
 	//setActiveTree(this);
 }
 
-Tree::Tree(void *dbid, char const *name, int shot): name(name), shot(shot), ctx(dbid)
-{
-}
 
 Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr)
 {
@@ -133,7 +130,7 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 	if(upMode == "NORMAL")
 		status = _TreeOpen(&ctx, name, shot, 0);
 	else if(upMode == "READONLY")
-		status = _TreeOpen(&ctx, name, shot, 0);
+		status = _TreeOpen(&ctx, name, shot, 1);
 	else if(upMode == "NEW")
 		status = _TreeOpenNew(&ctx, name, shot);
 	else if(upMode == "EDIT")
@@ -146,11 +143,20 @@ Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot)
 }
 
 Tree::~Tree()
-{
-    int status = _TreeClose(&ctx, name.c_str(), shot);
-    if(status & 1)
-    	TreeFreeDbid(ctx);
+{    
+    if( isModified() ) {
+        int status = _TreeQuitTree(&ctx, name.c_str(), shot);
+        if(!(status & 1))
+            throw MdsException(status); 
+    } else {
+        int status = _TreeClose(&ctx, name.c_str(), shot);
+        if(!(status & 1))
+            throw MdsException(status);
+    }
+    TreeFreeDbid(ctx);    
 }
+
+// WINDOWS dll force export new and delete //
 
 EXPORT void *Tree::operator new(size_t sz)
 {
@@ -162,21 +168,16 @@ EXPORT void Tree::operator delete(void *p)
 	::operator delete(p);
 }
 
-void Tree::edit()
+void Tree::edit(const bool st)
 {
-	int status = _TreeOpenEdit(&ctx, name.c_str(), shot);
+    if( isReadOnly() )
+        throw MdsException("Tree is read only");
+    int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot) :
+                      _TreeOpen(&ctx, name.c_str(), shot,0);     
 	if(!(status & 1))
 		throw MdsException(status);
 }
 
-Tree *Tree::create(char const * name, int shot)
-{
-	void *dbid;
-	int status = _TreeOpenNew(&dbid, name, shot);
-	if(!(status & 1))
-		throw MdsException(status);
-	return new Tree(dbid, name, shot);
-}
 
 void Tree::write()
 {
@@ -185,14 +186,14 @@ void Tree::write()
 		throw MdsException(status);
 }
 
-void Tree::quit()
-{
-	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
-	if(!(status & 1))
-		throw MdsException(status);
-}
+//void Tree::quit()
+//{
+//	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
+//	if(!(status & 1))
+//		throw MdsException(status);
+//}
 
-TreeNode *Tree::addNode(char const * name, char *usage)
+TreeNode *Tree::addNode(char const * name, char const * usage)
 {
 	int newNid;
 	int status = _TreeAddNode(ctx, name, &newNid, convertUsage(usage));
@@ -201,7 +202,7 @@ TreeNode *Tree::addNode(char const * name, char *usage)
 	return new TreeNode(newNid, this);
 }
 
-TreeNode *Tree::addDevice(char const * name, char *type)
+TreeNode *Tree::addDevice(char const * name, char const * type)
 {
 	int newNid;
 	int status = _TreeAddConglom(ctx, name, type, &newNid);
@@ -426,7 +427,12 @@ int64_t Tree::getDatafileSize()
 		throw MdsException("Cannot retrieve datafile size");
 	return size;
 }
-//////////////////////TreeNode Methods/////////////////
+
+
+////////////////////////////////////////////////////////////////////////////////
+//  TreeNode  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
 
 void *TreeNode::convertToDsc()
 {
@@ -446,7 +452,7 @@ Data *TreeNode::data()
 
 template<class T>
 static T getNci(void * ctx, int nid, short int code) {
-	T value;
+	T value = 0;
 	int len;
 	struct nci_itm nciList[] =  {
 			{ sizeof(T), code, &value, &len},
@@ -511,11 +517,11 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 
 EXPORT void *TreeNode::operator new(size_t sz)
 {
-	return ::operator new(sz);
+    return ::operator new(sz);
 }
 EXPORT void TreeNode::operator delete(void *p)
 {
-	::operator delete(p);
+    ::operator delete(p);
 }
 
 char *TreeNode::getPath()
@@ -530,8 +536,8 @@ char *TreeNode::getPath()
 
 std::string TreeNode::getPathStr()
 {
-	resolveNid();
-	return AutoString(_TreeGetPath(tree->getCtx(), nid)).string;
+	resolveNid();    
+    return AutoString(getPath()).string;
 }
 
 char *TreeNode::getMinPath() {
@@ -543,7 +549,7 @@ char *TreeNode::getMinPath() {
 }
 
 std::string TreeNode::getMinPathStr() {
-	return AutoString(getMinPath()).string;
+	return AutoString(getMinPath()).string;    
 }
 
 char *TreeNode::getFullPath() {
@@ -1064,7 +1070,13 @@ Data *TreeNode::getSegmentDim(int segIdx)
 	Data *retDim = (Data *)convertFromDsc(timeDsc);
 	freeDsc(dataDsc);
 	freeDsc(timeDsc);
-	return retDim;
+    return retDim;
+}
+
+void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimension)
+{
+    segment = getSegment(segIdx);
+    dimension = getSegmentDim(segIdx);
 }
 
 void TreeNode::beginTimestampedSegment(Array *initData)
@@ -1111,22 +1123,7 @@ void TreeNode::putRow(Data *data, int64_t *time, int size)
 		throw MdsException(status);
 }
 
-void TreeNode::acceptSegment(Array *data, Data *start, Data *end, Data *times)
-{
-	resolveNid();
-	int status = beginTreeSegment(tree->getCtx(), getNid(), data->convertToDsc(), start->convertToDsc(), 
-		end->convertToDsc(), times->convertToDsc());
-	if(!(status & 1))
-		throw MdsException(status);
-}
 
-void TreeNode::acceptRow(Data *data, int64_t time, bool isLast)
-{
-	resolveNid();
-	int status = putTreeRow(tree->getCtx(), getNid(), data->convertToDsc(), &time, 1024);
-	if(!(status & 1))
-		throw MdsException(status);
-}
 
 TreeNode *TreeNode::getNode(char const * relPath)
 {
@@ -1271,7 +1268,11 @@ StringArray *TreeNode::findTags()
 }
 
 
-//////////////////TreePath Methods//////////////////
+////////////////////////////////////////////////////////////////////////////////
+//  TreePath  //////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 TreePath::TreePath(std::string const & path, Tree *tree, Data *units, Data *error, Data *help, Data *validation):
 		TreeNode(0, tree, units, error, help, validation),
@@ -1298,7 +1299,12 @@ void TreePath::resolveNid()
 		nid = -1;
 }
 
-///////////////TreeNode methods
+
+////////////////////////////////////////////////////////////////////////////////
+//  TreeNodeArray  /////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 EXPORT TreeNodeArray::TreeNodeArray(TreeNode **nodes, int numNodes)
 {

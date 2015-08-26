@@ -1,5 +1,6 @@
 #ifndef TRAITS_HPP
 #define TRAITS_HPP
+#ifndef DOXYGEN // hide this part from documentation
 
 ////////////////////////////////////////////////////////////////////////////////
 //  ENABLE IF  /////////////////////////////////////////////////////////////////
@@ -18,5 +19,6 @@ struct enable_if<false, T> {};
 } // MDSplus
 
 
+#endif // DOXYGEN end of hidden code
 #endif // TRAITS_HPP
 

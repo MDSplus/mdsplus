@@ -947,7 +947,7 @@ public class WaveInterface
         if (is_image)
             return;
 
-        dp.enableAsyncUpdate(false);
+        //dp.enableAsyncUpdate(false);
 
         for (curr_wave = 0; curr_wave < num_waves; curr_wave++)
         {
@@ -970,7 +970,7 @@ public class WaveInterface
                 }
             }
         }
-        dp.enableAsyncUpdate(true);
+        //dp.enableAsyncUpdate(true);
    }
 
     public void setLimits()
@@ -1106,8 +1106,10 @@ public class WaveInterface
             if (fd != null)
             {
                 CreateNewFramesClass(fd.GetFrameType());
+                /*
                 frames.setHorizontalFlip(horizontal_flip);
                 frames.setVerticalFlip(vertical_flip);
+                */
                 frames.SetFrameData(fd);
                 if (in_label != null && in_label[0] != null &&
                     in_label[0].length() != 0)
@@ -1118,6 +1120,7 @@ public class WaveInterface
             }
             else
             {
+                frames = null;
                 curr_error = dp.ErrorString();
                 evaluated[0] = false;
             }

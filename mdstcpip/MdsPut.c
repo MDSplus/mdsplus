@@ -5,17 +5,11 @@
 #include <string.h>
 
 
-///
-/// Variadic argument function to \em put a TDI expression result into a remote 
-/// tree node. This calls the TreePut($) command on server side with the sent 
-/// expression string and arguments passed as descriptors through the connection.
-/// 
-/// \param id the id of the used connection in connection list.
-/// \param node the node path of the remote target tree.
-/// \param expression the TDI expression to execute on server.
-/// \return the exit status of the remote command converted to int or the status
-/// of SendArg() function if it fails.
-///
+////////////////////////////////////////////////////////////////////////////////
+//  MdsPut  ////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 #ifdef _USE_VARARGS
 int MdsPut(va_alist)

@@ -4,9 +4,6 @@
 
 
 
-///
-/// Calculate the length of a descriptor data from the instance dtype value.
-/// 
 short ArgLen(struct descrip *d)
 {
   short len;

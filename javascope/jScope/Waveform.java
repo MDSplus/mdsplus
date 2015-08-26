@@ -1,19 +1,12 @@
 package jScope;
 
 /* $Id$ */
-import jScope.Signal;
-import jScope.Frames;
-import jScope.FrameData;
-import jScope.Grid;
-import jScope.ColorMap;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.Insets;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.image.*;
 import java.awt.geom.*;
 
@@ -1998,50 +1991,45 @@ public class Waveform
     int sy1;// the y coordinate of the first corner of the source rectangle.
     int sx2;// the x coordinate of the second corner of the source rectangle.
     int sy2;// the y coordinate of the second corner of the source rectangle.
-        
+
+   
       dx1 = 1;
       dy1 = 1;
       dx2 = dim.width;
       dy2 = dim.height;
-      //if( frames.getVerticaFlipState() && frames.getHorizontalFlipState() )  
-      if( frames.vertical_flip && frames.horizontal_flip )  
+
+      sx1 = r == null ? 0 : r.x;
+      sy1 = r == null ? 0 : r.y;          
+      sx2 = r == null ? imgDim.width  : r.x + r.width ;
+      sy2 = r == null ? imgDim.height : r.y + r.height ;
+
+    
+      if( frames.getVerticalFlip() && frames.getHorizontalFlip() )  
       {
-        System.out.println("FLIP V & H");  
-        sx1 = r == null ? imgDim.width  : r.x + r.width ;
-        sy1 = r == null ? imgDim.height : r.y + r.height ;
-        sx2 = r == null ? 0 : r.x;
-        sy2 = r == null ? 0 : r.y;          
+        dx1 = dim.width;
+        dy1 = dim.height;
+        dx2 = 1;
+        dy2 = 1;
       }
       else
       {
-          //if( frames.getVerticaFlipState() )
-          if( frames.vertical_flip )
-          
+          if( frames.getVerticalFlip() )
           {              
-                System.out.println("FLIP V");  
-                sx1 = r == null ? 0 : r.x;
-                sy1 = r == null ? imgDim.height : r.y + r.height ;
-                sx2 = r == null ? imgDim.width  : r.x + r.width ;
-                sy2 = r == null ? 0 : r.y;          
+
+                dx1 = dim.width;
+                dy1 = 1;
+                dx2 = 1;
+                dy2 = dim.height;
+              
           }
           else
           {
-              //if( frames.getHorizontalFlipState() )
-              if( frames.horizontal_flip )
+              if( frames.getHorizontalFlip() )
               {
-                //System.out.println("FLIP H");  
-                sx1 = r == null ? imgDim.width  : r.x + r.width ;
-                sy1 = r == null ? 0 : r.y;          
-                sx2 = r == null ? 0 : r.x;
-                sy2 = r == null ? imgDim.height : r.y + r.height ;                  
-              }
-              else
-              {
-                //System.out.println("NO FLIP");  
-                sx1 = r == null ? 0 : r.x;
-                sy1 = r == null ? 0 : r.y;          
-                sx2 = r == null ? imgDim.width  : r.x + r.width ;
-                sy2 = r == null ? imgDim.height : r.y + r.height ;
+                dx1 = 1;
+                dy1 = dim.height;
+                dx2 = dim.width;
+                dy2 = 1;                
               }
           }
       }
@@ -2392,20 +2380,22 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
 
       for (int i = 0; i < sig.getNumPoints(); i++)
       {
-        up = wm.YPixel(up_error[i] + sig.getY(i), d);
-        if (!sig.hasAsymError())
-        {
-          low = wm.YPixel(sig.getY(i) - up_error[i], d);
-        }
-        else
-        {
-          low = wm.YPixel(sig.getY(i) - low_error[i], d);
-        }
-        x = wm.XPixel(sig.getX(i), d);
+        try {
+            up = wm.YPixel(up_error[i] + sig.getY(i), d);
+            if (!sig.hasAsymError())
+            {
+              low = wm.YPixel(sig.getY(i) - up_error[i], d);
+            }
+            else
+            {
+              low = wm.YPixel(sig.getY(i) - low_error[i], d);
+            }
+            x = wm.XPixel(sig.getX(i), d);
 
-        g.drawLine(x, up, x, low);
-        g.drawLine(x - 2, up, x + 2, up);
-        g.drawLine(x - 2, low, x + 2, low);
+            g.drawLine(x, up, x, low);
+            g.drawLine(x - 2, up, x + 2, up);
+            g.drawLine(x - 2, low, x + 2, low);
+        }catch(Exception exc){}
       }
     }
 
@@ -2486,13 +2476,12 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       frames.Resize();
     }
     else {
-
       if (waveform_signal == null) {
         return;
       }
       waveform_signal.Autoscale();
+      waveform_signal.unfreeze();
     }
-    waveform_signal.unfreeze();
     ReportChanges();
   }
 
@@ -2826,10 +2815,4 @@ protected void drawMarkers(Graphics g, Vector segments, int marker, int step,
       not_drawn = true;
       repaint();
   }
-  
-  
- 
-  
-  
-  
 }

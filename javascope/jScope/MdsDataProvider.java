@@ -10,6 +10,8 @@ import java.lang.OutOfMemoryError;
 import java.lang.InterruptedException;
 import javax.swing.*;
 import java.text.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class MdsDataProvider
     implements DataProvider
@@ -673,8 +675,8 @@ public class MdsDataProvider
              {
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, in_y));
-                try {
-                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
+                try {                 
+                    byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);                              
                     if(retData[0] > 0)
                         segmentMode = SEGMENTED_YES;
                     else
@@ -695,8 +697,7 @@ public class MdsDataProvider
                     xExpr = in_x;
             }
             else
-            {
-                 
+            {                 
                 if(in_x == null)
                 {
                     yExpr =  in_y;
@@ -709,7 +710,7 @@ public class MdsDataProvider
                 }
             }
 //             try   {
-                 
+/*                 
                 String setTimeContext;
                 if(xmin == -Double.MAX_VALUE && xmax == Double.MAX_VALUE)
                     setTimeContext = "SetTimeContext(*,*,*);";
@@ -734,10 +735,11 @@ public class MdsDataProvider
                     else
                          setTimeContext = "SetTimeContext("+xmin+","+xmax+", *);";
                }
-                 
+ */                
                 Vector args = new Vector();
                 args.addElement(new Descriptor(null, yExpr));
                 args.addElement(new Descriptor(null, xExpr));
+                
                 if(isLong)
                 {
                     args.addElement(new Descriptor(null, new long[]{(xmin == -Double.MAX_VALUE)?0:(long)xmin}));
@@ -753,9 +755,12 @@ public class MdsDataProvider
                 int nSamples;
                 try {
                     if(isLong)
-                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignalLongTimes:DSC", args);
+                        retData = GetByteArray(" MdsMisc->GetXYSignalLongTimes:DSC", args);
                     else
-                        retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+//                      retData = GetByteArray(setTimeContext+" MdsMisc->GetXYSignal:DSC", args);
+                        retData = GetByteArray(" MdsMisc->GetXYSignal:DSC", args);
+                    
                 /*Decode data: Format:
                        -retResolution(float)
                        -number of samples (minumum between X and Y)
@@ -862,12 +867,13 @@ public class MdsDataProvider
                 return res;
              }catch(Exception exc)
              {
-//                 System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
+                 //System.out.println("MdsMisc->GetXYSignal Failed: "+exc);
              }
  //If execution arrives here probably MdsMisc->GetXYSignal() is not available on the server, so use the traditional approach
 //            float y[] = GetFloatArray("SetTimeContext(*,*,*); ("+yExpr+");");
+                
+            
             float y[] = GetFloatArray("("+yExpr+")");
-            //RealArray xReal = GetRealArray(xExpr);
             RealArray xReal = GetRealArray("("+xExpr+";)");
             if(xReal.isLong())
             {
@@ -1036,14 +1042,28 @@ public class MdsDataProvider
             if(enabled)
                 notify();
         }
+        
+        boolean stopWorker = false;
+        
+        synchronized void stopUpdateWorker()
+        {
+            stopWorker = true;
+            notify();
+        }
+        
         public void run()
         {
+            
+            this.setName("UpdateWorker");
+            
             while(true)
             {
                 synchronized(this)
                 {
                     try {
                         wait();
+                        if(stopWorker)
+                           return;
                     }                           
                     catch(InterruptedException exc) {}
                 }
@@ -1112,12 +1132,18 @@ public class MdsDataProvider
         experiment = null;
         shot = 0;
         open = connected = false;
-        mds = new MdsConnection();
+        mds = getConnection();
         error = null;
-        updateWorker = new UpdateWorker();
-        updateWorker.start();
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
     }
 
+    protected MdsConnection getConnection() 
+    {
+        return new MdsConnection();
+    }
+    
+    
     public MdsDataProvider(String provider)
     {
         setProvider(provider);
@@ -1126,8 +1152,8 @@ public class MdsDataProvider
         open = connected = false;
         mds = new MdsConnection(this.provider);
         error = null;
-        updateWorker = new UpdateWorker();
-        updateWorker.start();
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
     }
 
     public MdsDataProvider(String exp, int s)
@@ -1137,8 +1163,8 @@ public class MdsDataProvider
         open = connected = false;
         mds = new MdsConnection();
         error = null;
-        updateWorker = new UpdateWorker();
-        updateWorker.start();
+        //updateWorker = new UpdateWorker();
+        //updateWorker.start();
     }
 
     protected void finalize()
@@ -1150,7 +1176,7 @@ public class MdsDataProvider
         if (connected)
             status = mds.DisconnectFromMds();
     }
-        //To be overridden by any DataProvider implementation with added dynamic generation
+    //To be overridden by any DataProvider implementation with added dynamic generation
     AsynchDataSource getAsynchSource()
     {
         return null;
@@ -1333,12 +1359,12 @@ public class MdsDataProvider
         //	    return null;
         return GetByteArray(in);
     }
-    public synchronized byte[] GetByteArray(String in) throws IOException
+    public  synchronized  byte[] GetByteArray(String in) throws IOException
     {
         return GetByteArray(in, null);
     }
 
-    public synchronized byte[] GetByteArray(String in, Vector args) throws IOException
+    public  synchronized  byte[] GetByteArray(String in, Vector args) throws IOException
     {
         byte out_byte[] = null;
         ByteArrayOutputStream dosb = new ByteArrayOutputStream();
@@ -1492,6 +1518,7 @@ public class MdsDataProvider
     public void enableAsyncUpdate(boolean enable)
     {
         updateWorker.enableAsyncUpdate(enable);
+                  
     }
 
     
@@ -1608,48 +1635,6 @@ public class MdsDataProvider
         return 0;
     }
 
-    private float[] ExpandTimes(float codedTime[])
-    {
-        float[] expandedTime = null;
-
-        if (codedTime[0] > 0)
-        { //JavaDim decided to apply coding
-            int max_len = 0;
-            int num_blocks = (codedTime.length - 1) / 3;
-            //each block codes start, end, delta
-            int out_idx, in_idx, curr_block = 0;
-            float curr_time;
-
-            for (curr_block = 0; curr_block < num_blocks; curr_block++)
-                max_len +=
-                    (int) ( (codedTime[curr_block * 3 + 2] -
-                             codedTime[curr_block * 3 + 1]) /
-                           codedTime[curr_block * 3 + 3] + 0.5);
-
-            expandedTime = new float[max_len];
-
-            for (curr_block = 0, out_idx = 0;
-                 out_idx < max_len && curr_block < num_blocks;
-                 curr_block++)
-            {
-                for (in_idx = 0; out_idx < max_len; in_idx++)
-                {
-                    curr_time = codedTime[curr_block * 3 + 1] +
-                        in_idx * codedTime[curr_block * 3 + 3];
-                    if (curr_time > codedTime[curr_block * 3 + 2])
-                        break;
-                    expandedTime[out_idx++] = curr_time;
-                }
-            }
-        }
-        else
-        { //JavaDim did not apply coding
-            expandedTime = new float[codedTime.length - 1];
-            System.arraycopy(codedTime, 1, expandedTime, 0, expandedTime.length);
-        }
-        return expandedTime;
-    }
-
     public WaveData GetWaveData(String in)
     {
         return new SimpleWaveData(in, experiment, shot);
@@ -1700,6 +1685,7 @@ public class MdsDataProvider
                 out = new RealArray(desc.double_data);
                 break;
             case Descriptor.DTYPE_LONG:
+            case Descriptor.DTYPE_USHORT:
             {
                 float[] outF = new float[desc.int_data.length];
                 for (int i = 0; i < desc.int_data.length; i++)
@@ -1708,7 +1694,6 @@ public class MdsDataProvider
             }
             break;
             case Descriptor.DTYPE_SHORT:
-            case Descriptor.DTYPE_USHORT:
             {
                 float[] outF = new float[desc.short_data.length];
                 for (int i = 0; i < desc.short_data.length; i++)
@@ -1754,11 +1739,7 @@ public class MdsDataProvider
 
             return GetLongArray(in);
         }
- /*       catch (Exception exc)
-        {
-            return null;
-        }
-*/    }
+    }
 
     public int[] GetIntArray(String in) throws IOException
     {
@@ -1805,53 +1786,6 @@ public class MdsDataProvider
         }
         throw new IOException(error);
      }
-
-
-    boolean setResampleLimits(double min, double max, String inY)
-    {
-        String limitsExpr;
-        boolean useResample;
-//November 2011
-        if(Math.abs(min) > RESAMPLE_TRESHOLD || Math.abs(max) > RESAMPLE_TRESHOLD)
-        {
-            long maxSpecific = jScopeFacade.convertToSpecificTime((long)max);
-            long minSpecific = jScopeFacade.convertToSpecificTime((long)min);
-
-            long dt = ((long)maxSpecific - (long)minSpecific)/MAX_PIXELS;
-            limitsExpr = "JavaSetResampleLimits("+minSpecific+"UQ,"+maxSpecific+"UQ,"+dt+"UQ)";
-            useResample = true;
-        }
-        else
-        {
-            double dt = (max - min) / MAX_PIXELS;
-            String numPointsExpr;
-            if(inY.startsWith("\\"))
-                numPointsExpr = "JavaGetNumPoints(\"\\"+inY+"\","+min+","+max+","+MAX_PIXELS+")";
-            else
-                numPointsExpr = "JavaGetNumPoints(\""+inY+"\","+min+","+max+","+MAX_PIXELS+")";
-            int numPoints[];
-            try {
-                numPoints = GetIntArray(numPointsExpr);
-            }catch(Exception exc){numPoints = new int[0];}
-            if(numPoints.length > 0 && numPoints[0] < MAX_PIXELS)
-            {
-               limitsExpr = "JavaSetResampleLimits("+min + "," +max+",0Q)";
-               useResample = false;
-            }
-            else
-            {
-               limitsExpr = "JavaSetResampleLimits("+min + "," +max+","+dt+")";
-               useResample = true;
-            }
-        }
-        mds.MdsValue(limitsExpr);
-        return useResample;
-    }
-    void resetResampleLimits()
-    {
-       //mds.MdsValue("TreeShr->TreeResetTimeContext()");
-       mds.MdsValue("JavaSetResampleLimits(0,0,0)");
-    }
 
     private synchronized int[] GetIntegerArray(String in) throws IOException
     {
@@ -1904,6 +1838,11 @@ public class MdsDataProvider
                 provider);
             mds.dispatchConnectionEvent(ce);
         }
+       
+        if( updateWorker != null && updateWorker.isAlive() )
+        {
+            updateWorker.stopUpdateWorker();
+        }
     }
 
     protected synchronized void CheckConnection() throws IOException
@@ -1918,7 +1857,11 @@ public class MdsDataProvider
                     throw new IOException("Could not get IO for " + provider);
             }
             else
+            {
                 connected = true;
+                updateWorker = new UpdateWorker();
+                updateWorker.start();
+            }
         }
     }
 
@@ -1943,6 +1886,9 @@ public class MdsDataProvider
                 return false;
             }
             connected = true;
+            updateWorker = new UpdateWorker();
+            updateWorker.start();
+
         }
         if (!open && experiment != null || this.shot != shot || experiment != null && !experiment.equalsIgnoreCase(this.experiment) )
         {

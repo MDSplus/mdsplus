@@ -3343,6 +3343,7 @@ class ServerDialog
     private static String know_provider[] =
         {
         "MdsDataProvider",
+        "MdsDataProviderUdt",
         "JetMdsDataProvider",
         "TwuDataProvider",
         "JetDataProvider",
@@ -3516,23 +3517,27 @@ class ServerDialog
         data_provider_list = new JComboBox();
         gridbag.setConstraints(data_provider_list, c);
         getContentPane().add(data_provider_list);
-        data_provider_list.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
+        data_provider_list.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e)
             {
                 try
                 {
-                    String srv = (String)data_provider_list.getSelectedItem();
-                    if (srv != null)
+                    if( e.getStateChange() == ItemEvent.SELECTED )
                     {
-                        Class cl = Class.forName("jScope."+srv);
-                        boolean state = ( (DataProvider) cl.newInstance()).
-                            SupportsTunneling();
-                        tunneling.setEnabled(state);
-                        tunnel_port.setEnabled(state);
-                    }
+                        String srv = (String)data_provider_list.getSelectedItem();
+                        if (srv != null)
+                        {
+                            Class cl = Class.forName("jScope."+srv);
+                            DataProvider dp = ( (DataProvider) cl.newInstance()); 
+                            boolean state = dp.SupportsTunneling();
+                            tunneling.setEnabled(state);
+                            tunnel_port.setEnabled(state);
+                        }
+                    }                    
                 }
                 catch (Exception exc)
                 {}
+
             }
 
         });

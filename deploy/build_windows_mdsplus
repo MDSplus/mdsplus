@@ -1,0 +1,91 @@
+#!/bin/bash
+set -o verbose
+cleanup() {
+    rm -Rf /winbld/${tmpdir}
+}
+
+set -e
+wget -q -O - https://github.com/MDSplus/3rd-party-apis/archive/master.tar.gz | (cd /; tar zxf -)
+export JNI_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk
+export JNI_MD_INCLUDE_DIR=/3rd-party-apis-master/windows-jdk/win32
+cd /buildsrc
+./configure --prefix=/buildroot \
+            --exec_prefix=/buildroot \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=/3rd-party-apis-master/idl \
+            --bindir=/buildroot/bin_x86_64 \
+            --libdir=/buildroot/bin_x86_64 \
+            --host=x86_64-w64-mingw32 \
+	    --with-python_include=/3rd-party-apis-master/windows-python27 \
+            --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar
+make clean > /dev/null
+env LANG=en_US.UTF-8 make
+make install
+make clean >/dev/null;
+./configure --prefix=/buildroot \
+            --exec_prefix=/buildroot \
+            --with-labview=/3rd-party-apis-master/labview \
+            --with-jdk=$JDK_DIR \
+            --with-idl=$/3rd-party-apis-master/idl \
+            --bindir=/buildroot/bin_x86 \
+            --libdir=/buildroot/bin_x86 \
+            --host=i686-w64-mingw32 \
+	    --with-python_include=/3rd-party-apis-master/windows-python27 \
+            --with-java_target=6 --with-java_bootclasspath=/buildsrc/rt.jar
+env LANG=en_US.UTF-8 make
+if [ -z "$BNAME" ]
+then
+  export MDSPLUS_VERSION=${MAJOR}.${MINOR}.${RELEASE}
+else
+  export MDSPLUS_VERSION=${BRANCH}-${MAJOR}.${MINOR}.${RELEASE}
+fi
+make install
+make clean >/dev/null
+if [   ! -z "$WINBLD_USER" -a \
+       ! -z "$WINBLD_HOST" -a \
+       ! -z "$WINBLD_REMDIR" -a \
+       -d /winbld ]
+then
+    cd /winbld
+    tmpdir=$(mktemp -d mdsplus-XXXXXXXXXX)
+    trap cleanup EXIT
+    topsrcdir=${WINBLD_REMDIR}/${tmpdir}
+    cd ${tmpdir}
+    #
+    # Prepare windows share for building the MdsObjectsCppShr-VS.dll and the import libraries
+    #
+    rsync -am --include="*/" --include="*.h*" --include="*.def" --exclude="*" /buildsrc/ ./
+    rsync -a /buildsrc/mdsobjects/cpp /buildsrc/mdsobjects/MdsObjects* /buildsrc/mdsobjects/VS-* ./mdsobjects/
+    rsync -a /buildsrc/deploy/winbld.bat ./deploy/
+    rsync -a /buildroot/bin_* ./
+    #
+    # Build VS dll's and import libs
+    #
+    # Strange command needed because of winexe behavior when running without a terminal
+    #
+    cat < /dev/null | winexe --debug-stderr -U ${WINBLD_USER} -d 0 //${WINBLD_HOST} "cmd /c ${topsrcdir}/deploy/winbld"
+    # see if files are there
+    ls /winbld/${tmpdir}/bin_x86*/*.lib /winbld/${tmpdir}/bin_x86*/MdsObjectsCppShr-VS.* > /dev/null
+    rsync -av --include="*/" --include="*.lib" --include="MdsObectsCppShr-VS.dll" --exclude="*" /winbld/${tmpdir}/bin_x86* /buildroot/
+    VS_SwITCH=-DVisualStudio
+fi
+if [ -d /installer ]
+then
+    cd /buildroot
+    makensis -DMAJOR=${MAJOR} -DMINOR=${MINOR} -DRELEASE=${RELEASE} -DFLAVOR=${BNAME} -NOCD \
+             -DOUTDIR=/installer ${VS_SWITCH} /buildsrc/deploy/mdsplus.nsi
+    if [ -d /certs ]
+    then
+	echo mdsplus | signcode -spc /certs/mdsplus.spc \
+				-v /certs/mdsplus.pvk \
+				-a sha1 \
+				-$ individual \
+				-n MDSplus  \
+				-i http://www.mdsplus.org/ \
+				-t http://timestamp.verisign.com/scripts/timestamp.dll \
+				-tr 10 /installer/MDSplus${BNAME}-${MAJOR}.${MINOR}-${RELEASE}.exe
+    fi
+fi
+
+ 

@@ -42,29 +42,6 @@ static int SendBytes(int id, void *buffer, size_t bytes_to_send, int options)
 
 
 
-///
-/// This is the main function that is called by user or any higher level functions
-/// to send a message through an instanced network connection.
-/// The message buffer is set as the proper memory endianess of the client to make
-/// the transaction architectural independent. The compression is also applied to
-/// the buffer reading the value of compression level from GetCompressionLevel()
-/// output. The compression is done using a version of zlib library embedded in the
-/// code.
-///
-/// The message buffer is then sent using the send function of the ioRoutine set
-/// in the connection instance.
-/// Socket options can be set from socket flags in socket.h such as MSG_OOB and
-/// MSG_NOWAIT, if no flags are present (msg_options == 0) the connection is pre-flushed.
-/// In case of a transmission failure caused by system interrupt (EINTR) the send
-/// is repeated up to 10 times before to attempt a Disconnection of the channel and
-/// prompting an error message.
-///
-///
-/// \param id used to find the connection and attached connection routine
-/// \param m the message buffer to be sent
-/// \param msg_options socket messags FLAGS
-/// \return true if the message was succesfully sent or false otherwise.
-///
 
 int SendMdsMsg(int id, Message * m, int msg_options)
 {

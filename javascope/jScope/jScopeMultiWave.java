@@ -248,6 +248,9 @@ public class jScopeMultiWave
         if (wi.is_image && wi.getFrames() != null)
         {
             super.frames.setAspectRatio(wi.keep_ratio);
+            super.frames.setHorizontalFlip(wi.horizontal_flip);
+            super.frames.setVerticalFlip(wi.vertical_flip);
+            
             super.curr_point_sig_idx = 0;
 
             if (signals.size() != 0)

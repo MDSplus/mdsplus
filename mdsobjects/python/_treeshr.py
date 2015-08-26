@@ -718,10 +718,10 @@ def TreeGetDbi(tree,itemname):
     if not (status & 1):
         raise TreeException(_mdsshr.MdsGetMsg(status))
     if item[1]==str:
-        if isinstance(ans.value,str):
-          return ans.value
-        else:
+        try:
           return ans.value.decode()
+        except:
+          return ans.value
     else:
         return item[1](ans.value)
 
@@ -735,7 +735,6 @@ def TreeSetDbi(tree,itemname,value):
         retlen=_C.c_int32(0)
         itmlst=DBI_ITM_CHAR(item[0],len(str(value)),_C.c_char_p(str(value)),retlen)
     else:
-        ans=_C.c_int32(0)
         itmlst=DBI_ITM_INT(item[0],_C.c_int32(int(value)))
     try:
         tree.lock()

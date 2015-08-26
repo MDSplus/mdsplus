@@ -64,7 +64,7 @@ interface WaveData
     public String GetYLabel()  throws IOException;
 
     /**
-     * Get the associated label for Z axis (for bidimensional signals only). It is displayed if no X axis label is defined in the setup data
+     * Get the associated label for Z axis (for bi-dimensional signals only). It is displayed if no X axis label is defined in the setup data
      * definition.
      *
      * @return The Z label string.
@@ -72,6 +72,16 @@ interface WaveData
      */
     public String GetZLabel()  throws IOException;
     
+    /**
+     * Start data readout. Expected to return soon, being the data segment communicated later 
+     * @param lowerBound: Lower bound of X region of interest
+     * @param upperBound: Upper bound of X region of interest
+     * @param numPoints: Estimated number of requested point 
+     */
     void getDataAsync(double lowerBound, double upperBound, int numPoints);
-    void setContinuousUpdate(boolean continuopusUpdate);
+    /**
+     * Enables/Disables the option of periodic readout of new data
+     * @param continuousUpdate 
+     */
+    void setContinuousUpdate(boolean continuousUpdate);
 }
