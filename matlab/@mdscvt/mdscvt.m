@@ -8,18 +8,18 @@ function y = mdscvt(x,t)
 %   network bandwidth than MDSDATA('LONG($)',X).
 
 if nargin == 0
- y = mdscvt([]);
+    y = mdscvt([]);
 elseif isa(x,'mdscvt')
- y = x;
+    y = x;
 else
- if nargin == 1
-  switch class(x)
-   case 'double', t = 'd';
-   case 'char',   t = 't';
-   otherwise, 'Unsupported class.'
-  end
- end
- y.x = x;
- y.t = t;
- y = class(y,'mdscvt');
+    if nargin == 1
+        switch class(x)
+            case 'double', t = 'd';
+            case 'char',   t = 't';
+            otherwise, error('Unsupported class.')
+        end
+    end
+    y.x = x;
+    y.t = t;
+    y = class(y,'mdscvt');
 end
