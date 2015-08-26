@@ -31,7 +31,7 @@ if isequal(sz, [1,1])
         case 'int8'
             result = Int8(thing);
         case 'uint8'
-	    result = Uint8(thing);
+            result = Uint8(thing);
         case 'char'
             result = String(thing);
         otherwise
@@ -48,12 +48,12 @@ else
         case 'uint64'
             result = Uint64Array(reshape(thing,[],1),sz(sz > 1));
         case 'int32'
-             result = Int32Array(reshape(thing,[],1),sz(sz > 1));
-         case 'uint32'
-             result = Uint32Array(reshape(thing,[],1),sz(sz > 1));
+            result = Int32Array(reshape(thing,[],1),sz(sz > 1));
+        case 'uint32'
+            result = Uint32Array(reshape(thing,[],1),sz(sz > 1));
         case 'int16'
             result = Int16Array(reshape(thing,[],1),sz(sz > 1));
-         case 'uint16'
+        case 'uint16'
             result = Uint16Array(reshape(thing,[],1),sz(sz > 1));
         case 'int8'
             result = Int8Array(reshape(thing,[],1),sz(sz > 1));
