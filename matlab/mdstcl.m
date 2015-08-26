@@ -1,4 +1,4 @@
-function mdstcl(command);
+function response = mdstcl(command)
 
 % This function provides Matlab with the same MDSTCL interface as IDL.
 % Written by R. Granetz on 2014/12/23
@@ -9,26 +9,21 @@ function mdstcl(command);
 % prompting for, and executing TCL commands, and outputting the responses,
 % until 'exit' is entered.
 
-if (exist('command','var'));
-  mdsvalue('tcl($, _response)', command);
-  response = char(mdsvalue('_response'));
-  if (~isempty(response));
-    fprintf(1, '%s\n', response);
-  end;
-  return;
-end;
-
-while 1;
-  tclcmd = input('TCL> ','s');
-  if (isempty(tclcmd));
-    continue;
-  elseif (any(strcmpi(tclcmd,{'ex','exi','exit'})));
-    return;
-  else;
-    mdsvalue('tcl($, _response)', tclcmd);
+if nargin>0
+    mdsvalue('tcl($, _response)', command);
     response = char(mdsvalue('_response'));
-    if (~isempty(response));
-      fprintf(1, '%s\n', response);
-    end;
-  end;
-end;
+    if ~(nargout || isempty(response))
+        fprintf(1, '%s\n', response);
+    end
+else
+    while true
+        tclcmd = input('TCL> ','s');
+        if (isempty(tclcmd))
+            continue
+        elseif (any(strcmpi(tclcmd,{'ex','exi','exit'})))
+            return
+        else
+            mdstcl(tclcmd);
+        end
+    end
+end
