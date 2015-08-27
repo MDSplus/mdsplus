@@ -1,4 +1,41 @@
-commit 062ae62770c4be886322295f20e9698c647e8362 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+commit fd7a1b8061b063389dea7eadc992be41b320eea7 (HEAD, refs/remotes/origin/alpha, refs/heads/alpha)
+Merge: 96ade28 8c51533
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Aug 26 09:42:53 2015 -0400
+
+    Merge pull request #36 from zack-vii/alpha_matlab_mdsgetmsg
+    
+    mdsgetmsg.m: use MdsShr->MdsGetMsgDsc
+
+commit 96ade28c38e34c81a668ea34ed87f297563154a3
+Merge: abf2ab1 02312b1
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Aug 26 09:38:52 2015 -0400
+
+    Merge branch 'alpha' of github.com:MDSplus/mdsplus into alpha
+
+commit abf2ab17f7265a1dd15073392312b0d5dbd78f47
+Author: Josh Stillerman <jas@psfc.mit.edu>
+Date:   Wed Aug 26 09:38:42 2015 -0400
+
+    fix external clock command string, Fix special clock answer for board level oversampling
+
+commit 8c515333c4f819240e71147f3ce05e267ca5dd60
+Author: zack-vii <zack.vii@live.com>
+Date:   Tue Aug 25 16:19:48 2015 +0200
+
+    mdsgetmsg.m: use MdsShr->MdsGetMsgDsc
+    
+    make use of MdsShr->MdsGetMsgDsc
+    from getmsg.fun
+
+commit 02312b19d0c7d92cb5a2bd58515169504b0d6ea9 (tag: refs/tags/alpha_release-7-0-140)
+Author: MDSplusBuilder <MDSplusBuilder@mdsplus.org>
+Date:   Tue Aug 18 23:12:57 2015 -0400
+
+    New release ---- alpha_release-7-0-140
+
+commit 062ae62770c4be886322295f20e9698c647e8362
 Merge: b6044ff 802aaf4
 Author: gabriele.manduchi <gabriele.manduchi@igi.cnr.it>
 Date:   Tue Aug 18 09:35:36 2015 +0200
