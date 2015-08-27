@@ -1,8 +1,8 @@
 function  result = NATIVEvalue( mdsthing )
 %NATIVEvalue - returns a Native Matlab object from an MDSplus object
-%   
+%
 % This Function takes an argument that is one of native scalar, native
-% array, mdsplus scalar, or mdsplus array.  It returns a Native matlab 
+% array, mdsplus scalar, or mdsplus array.  It returns a Native matlab
 % object of the corresponding type and shape.
 %
 % syntax:
@@ -10,17 +10,17 @@ function  result = NATIVEvalue( mdsthing )
 %
 import MDSplus.*;
 global MDSplus_legacy_behavior
-if ~strcmp(class(MDSplus_legacy_behavior), 'logical')
-    l = getenv('MDSplus_legacy_behavior')
+if ~islogical(MDSplus_legacy_behavior)
+    l = getenv('MDSplus_legacy_behavior');
     if strcmp(l,'yes')
-        MDSplus_legacy_behavior = true
+        MDSplus_legacy_behavior = true;
     else
-	MDSplus_legacy_behavior = false
+        MDSplus_legacy_behavior = false;
     end
 end
 
 
- 
+
 if  isa(mdsthing, 'MDSplus.Data') == 0
     result = mdsthing;
 else
@@ -31,7 +31,7 @@ else
         else
             shape = shape';
         end
-            
+        
         switch class(mdsthing)
             case 'MDSplus.Int64Array'
                 result = reshape(mdsthing.getLongArray, shape);
@@ -54,7 +54,7 @@ else
             case 'MDSplus.Float32Array'
                 result = double(reshape(mdsthing.getFloatArray,  shape));
             case 'MDSplus.StringArray'
-		result = reshape(cellstr(char(mdsthing.getStringArray)),shape);
+                result = reshape(cellstr(char(mdsthing.getStringArray)),shape);
             otherwise
                 throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
         end
@@ -87,11 +87,11 @@ else
         end
         
     else
-        throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));        
+        throw(MException('MDSplus:NATIVEvalue', 'class %s not supported by NATIVEvalue function\n', class(mdsthing)));
     end
     if MDSplus_legacy_behavior
-        if ~strcmp(class(result),'char')
-            result = double(result)
+        if ~ischar(result)
+            result = double(result);
         end
-    end 
+    end
 end
