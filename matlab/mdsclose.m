@@ -8,17 +8,20 @@ function [ status ] = mdsclose()
 %
    import MDSplus.Data
    global MDSplus_Connection_Obj
-   status = 1;
-   shoto = '';
    if isjava(MDSplus_Connection_Obj)
      try
        MDSplus_Connection_Obj.get('TreeClose()');
+       status = true;
      catch err
-         status=0;
-         err.message
+        if nargout==1
+            status = false;
+        else
+            rethrow(err)
+        end
      end
    else
      status = mdsvalue('TreeClose()');   
+     status = status==265388041;% or anything more general
    end
 end
 
