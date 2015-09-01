@@ -1,14 +1,20 @@
-@echo off
-echo preparing
-call ..\setJDK_DIR
-if not defined JDK_DIR (
-echo . . .
-echo You need to set the JDK_DIR environment variable.
-echo Run setJDK_DIR.bat and restart your cmd.
-echo . . .
-pause
-goto end
-)
+@ECHO OFF
+ECHO preparing
+if defined JDK_DIR GOTO:compile
+rem This script located the current version of
+rem "Java Development Kit" and sets the
+rem %JDK_PATH% environment variable
+setlocal ENABLEEXTENSIONS
+set KEY=HKEY_LOCAL_MACHINE\SOFTWARE\JavaSoft\Java Development Kit
+FOR /F "usebackq tokens=2,* skip=2" %%L IN (`reg query "%KEY%" /v CurrentVersion`) DO SET JDKVER=%%M
+FOR /F "usebackq tokens=2,* skip=2" %%L IN (`reg query "%KEY%\%JDKVER%" /v JavaHome`) DO SET JDK_DIR="%%M"
+SET JDK_DIR=%JDK_DIR:"=%
+IF EXIST "%JDK_DIR%" GOTO:start
+ECHO JDK not found. Please set %%JDK_DIR%% to the root path of your jdk.
+SET /A ERROR=1
+GOTO:end
+
+:start
 SET DOCS=jScope.html jScope.jpg popup.jpg about_jscope.jpg ^
 CompositeWaveDisplay.html ^
 ConnectionEvent.html ConnectionListener.html ^
@@ -94,27 +100,44 @@ jScope\WindowDialog.class
 
 SET CLASSPATH=-classpath ".;%MDSPLUS_DIR%\java\classes\MindTerm.jar"
 SET JAVAC="%JDK_DIR%\bin\javac.exe"
+SET JCFLAGS= ||rem -Xlint -deprecation
 SET JAR="%JDK_DIR%\bin\jar.exe"
 SET JARDIR=..\java\classes
-mkdir %JARDIR%\docs
+MKDIR  %JARDIR%\docs 2>NUL
 
-echo compiling *.java to *.class . . .
-%JAVAC% -d %JARDIR% %CLASSPATH% %COMMON_SRC% %JSCOPE_SRC% %WAVEDISPLAY_SRC%
+ECHO compiling *.java to *.class . . .
+%JAVAC% %JCFLAGS% -d %JARDIR% %CLASSPATH% %COMMON_SRC% %JSCOPE_SRC% %WAVEDISPLAY_SRC% ||rem jScope/DEBUG.java
+SET /A ERROR=%ERRORLEVEL%
+IF %ERROR% NEQ 0 GOTO:cleanup
 
-echo gathering data
-copy /Y jScope.properties %JARDIR%\ >nul
-copy /Y colors1.tbl %JARDIR%\ >nul
-for %%I in (%DOCS%) do (copy /Y %%I %JARDIR%\docs >nul)
+:gather
+ECHO gathering data
+COPY /Y jScope.properties %JARDIR%\>NUL
+COPY /Y colors1.tbl %JARDIR%\>NUL
+FOR %%F IN (%DOCS%) DO COPY /Y %%F %JARDIR%\docs>NUL
 
-echo creating jar packages
+:packjar
+ECHO creating jar packages
 PUSHD %JARDIR%
 %JAR% -cf "jScope.jar" jScope.class colors1.tbl jScope docs
 %JAR% -cf "WaveDisplay.jar" %COMMON_SRC:.java=.class%
-
-echo cleaning up
-rmdir /S /Q docs
-del colors1.tbl *.class
-rmdir /S /Q jScope
 POPD
+
+:cleanup
+ECHO cleaning up
+PUSHD %JARDIR%
+RMDIR /S /Q docs>nul
+DEL colors1.tbl *.class>nul
+RMDIR /S /Q jScope>nul
+POPD
+
+:jscope
+IF %ERROR% NEQ 0 GOTO:end
+ECHO start jScope?
+PAUSE
+CLS
+java -cp "%JARDIR%\jScope.jar" -Xmx128M  jScope
+
 :end
-pause
+PAUSE
+EXIT /B ERROR
