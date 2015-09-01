@@ -99,8 +99,8 @@ class CYGNET4K(Device):
           return 0
                 
         listPtr = c_void_p(0);
-#        self.mdsLib.camStartSave(byref(listPtr))
         self.mdsLib.camStartSaveDeferred(byref(listPtr))
+#        self.mdsLib.camStartSave(byref(listPtr))
 
 
         currTime = 0.0
@@ -277,12 +277,7 @@ class CYGNET4K(Device):
         codedTrigMode = 0x0C
       if(trigMode == 'FIXED FRAME RATE'): 
         codedTrigMode = 0x0E
-<<<<<<< HEAD
-    
       print "EXPOSURE: ", exposure
-=======
->>>>>>> efcfa882961abb1e27df7049066b47cf2be7e8dd
-
       raptorLib.epixSetConfiguration(c_int(idx), c_float(frameRate), c_float(exposure), c_int(codedTrigMode))
       PCBTemperature = c_float(0)
       CMOSTemperature = c_float(0)
