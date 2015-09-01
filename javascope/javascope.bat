@@ -119,7 +119,7 @@ FOR %%F IN (%DOCS%) DO COPY /Y %%F %JARDIR%\docs>NUL
 :packjar
 ECHO creating jar packages
 PUSHD %JARDIR%
-%JAR% -cf "jScope.jar" jScope.class colors1.tbl jScope docs
+%JAR% -cf "jScope.jar" jScope.class colors1.tbl jScope.properties jScope docs
 %JAR% -cf "WaveDisplay.jar" %COMMON_SRC:.java=.class%
 POPD
 
@@ -127,7 +127,7 @@ POPD
 ECHO cleaning up
 PUSHD %JARDIR%
 RMDIR /S /Q docs>nul
-DEL colors1.tbl *.class>nul
+DEL colors1.tbl jScope.properties *.class>nul
 RMDIR /S /Q jScope>nul
 POPD
 
