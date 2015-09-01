@@ -246,10 +246,8 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     	if(open_dialog == null)
 	{
 	    if(curr_origin == null)
-		curr_origin = new Point(100, 100);
 	    open_dialog = new JDialog(frame);
 	    open_dialog.setTitle("Open new tree");
-	    //open_dialog.setLocation(curr_origin);
 	    JPanel mjp = new JPanel();
 	    mjp.setLayout(new BorderLayout());
 	    JPanel jp1 = new JPanel();
@@ -283,8 +281,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    open_shot.addKeyListener(this);
 	    open_exp.addKeyListener(this);
 	    open_dialog.pack();
-	    curr_origin.x = frame.getLocation().x+32;
-	    curr_origin.y = frame.getLocation().y+32;
+	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
 	}
@@ -292,8 +289,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	{
 	    open_exp.setText("");
 	    open_shot.setText("");
-	    curr_origin.x = frame.getLocation().x+32;
-	    curr_origin.y = frame.getLocation().y+32;
+	    curr_origin = new Point(frame.getLocation().x+32,frame.getLocation().y+32);
 	    open_dialog.setLocation(curr_origin);
 	    open_dialog.setVisible(true);
         open_edit.setSelected(false);
